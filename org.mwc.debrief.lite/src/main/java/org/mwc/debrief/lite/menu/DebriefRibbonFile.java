@@ -84,6 +84,7 @@ public class DebriefRibbonFile
     private static final String TYPE_REP="rep";
     private static final String TYPE_DPF="dpf";
     private static final String TYPE_NMEA="log";
+    private static final String TYPE_TIF="tif";
     
     private String importFileType;
     protected ImportFileAction(String type) {
@@ -109,6 +110,11 @@ public class DebriefRibbonFile
         fileToOpen = showOpenDialog(initialFileLocation, new String[]
             {"log"}, "NMEA File (*.log)");
       }
+      else if(TYPE_TIF.contentEquals(importFileType))
+      {
+        fileToOpen = showOpenDialog(initialFileLocation, new String[]
+            {"tif"}, "TIF file (*.tif)");
+      }
       else
       {
         fileToOpen = showOpenDialog(initialFileLocation, new String[]
@@ -123,6 +129,10 @@ public class DebriefRibbonFile
         else if(TYPE_NMEA.equalsIgnoreCase(importFileType))
         {
           DebriefLiteApp.openNMEAFile(fileToOpen);
+        }
+        else if(TYPE_TIF.equalsIgnoreCase(importFileType))
+        {
+          DebriefLiteApp.handleImportTIFFile(fileToOpen);
         }
         else {
           DebriefLiteApp.openPlotFile(fileToOpen);
@@ -368,6 +378,9 @@ public class DebriefRibbonFile
         new ImportFileAction(".dpf"), importMenu, RibbonElementPriority.TOP);
     MenuUtils.addCommand("NMEA", "icons/16/pulse.png",
         new ImportFileAction(ImportFileAction.TYPE_NMEA), importMenu, RibbonElementPriority.TOP);
+    MenuUtils.addCommand("TIF", "icons/16/pulse.png",
+        new ImportFileAction(ImportFileAction.TYPE_TIF), importMenu, RibbonElementPriority.TOP);
+    
     importMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         importMenu));
 

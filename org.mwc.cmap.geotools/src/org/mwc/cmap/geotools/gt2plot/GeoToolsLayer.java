@@ -16,7 +16,6 @@ package org.mwc.cmap.geotools.gt2plot;
 
 import java.io.File;
 
-import org.eclipse.core.runtime.Status;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
 
@@ -108,7 +107,7 @@ public abstract class GeoToolsLayer extends ExternallyManagedDataLayer
 		}
 		else
 		{
-			Application.logError2(Status.WARNING, "GeoTools file not found:" + super.getFilename(), null);
+			Application.logError2(2, "GeoTools file not found:" + super.getFilename(), null);
 			//CorePlugin.showMessage("Load GIS dataset", "Sorry, can't find the file:\n" + super.getFilename());
 		}
 

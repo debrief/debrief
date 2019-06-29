@@ -25,11 +25,13 @@ import java.util.List;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.factory.Hints;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
@@ -41,11 +43,14 @@ import org.geotools.swing.event.MapMouseListener;
 import org.geotools.swing.tool.CursorTool;
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.opengis.feature.simple.SimpleFeatureType;
-//import org.geotools.swing.tool.ScrollWheelTool;
+import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 
+import Debrief.GUI.Frames.Application;
+import MWC.GUI.ToolParent;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.BriefFormatLocation;
 
@@ -54,7 +59,7 @@ import MWC.Utilities.TextFormatting.BriefFormatLocation;
  * @author Unni Mana <unnivm@gmail.com>
  *
  */
-public class GeoToolMapRenderer implements BaseMap
+public class GeoToolMapRenderer
 {
 
   private static class CustomMapPane extends JMapPane
@@ -65,6 +70,9 @@ public class GeoToolMapRenderer implements BaseMap
      */
     private static final long serialVersionUID = 1L;
 
+    private static final String WORLD_PROJECTION = "EPSG:3395"; // 3395 for Mercator proj (? or may
+                                                                // be 3857?)
+    private static final String DATA_PROJECTION = "EPSG:4326";
     private final MouseDragLine dragLine;
 
     private final GeoToolMapRenderer _renderer;
@@ -73,8 +81,23 @@ public class GeoToolMapRenderer implements BaseMap
 
       void handleMouseMovement(final MapMouseEvent ev)
       {
-
+        // mouse pos in Map coordinates
         final DirectPosition2D curPos = ev.getWorldPos();
+
+        if (ev.getWorldPos()
+            .getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84)
+        {
+          try
+          {
+            data_transform.transform(curPos, curPos);
+          }
+          catch (MismatchedDimensionException | TransformException e)
+          {
+            Application.logError2(ToolParent.ERROR,
+                "Failure in projection transform", e);
+          }
+        }
+
         final WorldLocation current = new WorldLocation(curPos.getY(), curPos
             .getX(), 0);
         final String message = BriefFormatLocation.toString(current);
@@ -115,9 +138,30 @@ public class GeoToolMapRenderer implements BaseMap
       }
     };
 
+    private CoordinateReferenceSystem worldCoords;
+
+    private CoordinateReferenceSystem worldDegs;
+
+    private MathTransform data_transform;
+
     public CustomMapPane(final GeoToolMapRenderer geoToolMapRenderer)
     {
       super();
+      // Would be better to pass in a GeoToolMapProjection or GTProjection here?
+      try
+      {
+        worldCoords = CRS.decode(WORLD_PROJECTION);
+
+        Hints.putSystemDefault(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER,
+            Boolean.TRUE);
+        worldDegs = CRS.decode(DATA_PROJECTION);
+        data_transform = CRS.findMathTransform(worldCoords, worldDegs);
+      }
+      catch (final FactoryException e)
+      {
+        Application.logError2(ToolParent.ERROR,
+            "Failure in projection transform", e);
+      }
       _renderer = geoToolMapRenderer;
 
       dragLine = new MouseDragLine(this);
@@ -174,9 +218,9 @@ public class GeoToolMapRenderer implements BaseMap
     public void paint(final Graphics gc);
   }
 
-  private JMapPane mapPane;
+  private CustomMapPane mapPane;
 
-  private MapContent mapComponent;
+  private final MapContent mapContent;
 
   private Graphics graphics;
 
@@ -184,19 +228,26 @@ public class GeoToolMapRenderer implements BaseMap
 
   private final List<MapRenderer> _myRenderers = new ArrayList<MapRenderer>();
 
+  public GeoToolMapRenderer()
+  {
+    super();
+
+    // Create a map content and add our shape file to it
+    mapContent = new MapContent();
+    mapContent.setTitle("Debrief Lite");
+  }
+
   public void addRenderer(final MapRenderer renderer)
   {
     _myRenderers.add(renderer);
   }
 
-  @Override
   public void createMapLayout()
   {
     mapPane = new CustomMapPane(this);
-
     final StreamingRenderer streamer = new StreamingRenderer();
     mapPane.setRenderer(streamer);
-    mapPane.setMapContent(mapComponent);
+    mapPane.setMapContent(mapContent);
   }
 
   /**
@@ -221,7 +272,12 @@ public class GeoToolMapRenderer implements BaseMap
    */
   public MapContent getMapComponent()
   {
-    return mapComponent;
+    return mapContent;
+  }
+
+  public MathTransform getTransform()
+  {
+    return mapPane.data_transform;
   }
 
   /**
@@ -234,7 +290,7 @@ public class GeoToolMapRenderer implements BaseMap
     final SimpleFeatureType schema = featureSource.getSchema();
     final CoordinateReferenceSystem dataCRS = schema
         .getCoordinateReferenceSystem();
-    final CoordinateReferenceSystem worldCRS = mapComponent
+    final CoordinateReferenceSystem worldCRS = mapContent
         .getCoordinateReferenceSystem();
     MathTransform transform = null;
     try
@@ -243,18 +299,18 @@ public class GeoToolMapRenderer implements BaseMap
     }
     catch (final FactoryException e)
     {
-      e.printStackTrace();
+      Application.logError2(ToolParent.ERROR, "Failure in projection transform",
+          e);
     }
     return transform;
   }
 
-  @Override
   public void loadMapContent()
   {
 
     // this is for dev
 
-    final String shape_path = "data/ne_10M_admin0_countries_89S.shp";
+    final String shape_path = "data/coastline/ne_10M_admin0_countries_89S.shp";
 
     File file = new File(shape_path);
     // System.out.println("Checking for shape file at:"+file.getAbsolutePath());
@@ -277,17 +333,13 @@ public class GeoToolMapRenderer implements BaseMap
     }
     catch (final IOException e)
     {
-      e.printStackTrace();
+      Application.logError2(ToolParent.ERROR, "Failure in projection transform",
+          e);
     }
-
-    // Create a map content and add our shape file to it
-    mapComponent = new MapContent();
-    mapComponent.setTitle("Debrief Lite");
 
     final Style style = SLD.createSimpleStyle(featureSource.getSchema());
     final Layer layer = new FeatureLayer(featureSource, style);
-    mapComponent.addLayer(layer);
-
+    mapContent.addLayer(layer);
   }
 
   private void paintEvent(final Graphics arg0)

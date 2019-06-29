@@ -26,7 +26,7 @@
 		<condition property="pluginTemp" value="${buildTempFolder}/plugins"		>
 			<isset property="buildTempFolder"/>
 		</condition>
-		<condition property="build.result.folder" value="${pluginTemp}/org.mwc.debrief.legacy_1.0.377"		>
+		<condition property="build.result.folder" value="${pluginTemp}/org.mwc.cmap.legacy_1.0.377"		>
 			<isset property="buildTempFolder"/>
 		</condition>
 		<property name="build.result.folder" value="${basedir}"/>
