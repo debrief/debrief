@@ -5,6 +5,8 @@ import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
@@ -25,6 +27,8 @@ import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.mwc.debrief.lite.gui.LiteStepControl;
 
@@ -197,7 +201,18 @@ public class NarrativePanelToolbar extends JPanel
     super(new FlowLayout(FlowLayout.LEFT));
 
     this._narrativeList.setCellRenderer(new NarrativeEntryItemRenderer());
+    this._narrativeList.addComponentListener(new ComponentAdapter()
+    {
 
+      @Override
+      public void componentResized(ComponentEvent e)
+      {
+        _narrativeList.setFixedCellHeight(55);
+        _narrativeList.setFixedCellHeight(-1);
+      }
+      
+    });
+    
     this._stepControl = stepControl;
     this._model = model;
     init();
@@ -419,14 +434,6 @@ public class NarrativePanelToolbar extends JPanel
       public void actionPerformed(final ActionEvent e)
       {
         _model.setWrapping(wrapTextButton.isSelected());
-        if (wrapTextButton.isSelected())
-        {
-          _narrativeList.setFixedCellHeight(-1);
-        }
-        else
-        {
-          _narrativeList.setFixedCellHeight(50);
-        }
         _narrativeList.repaint();
       }
     });

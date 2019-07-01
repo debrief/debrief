@@ -66,13 +66,6 @@ public class NarrativeEntryItemRenderer extends JPanel implements
     header.add(Box.createHorizontalStrut(3));
     header.add(typeName);
 
-    final AffineTransform affinetransform = new AffineTransform();
-    final FontRenderContext frc = new FontRenderContext(affinetransform, true,
-        true);
-    final int textwidth = (int) (bigFont.getStringBounds(text, frc).getWidth());
-    final int textheight = (int) (bigFont.getStringBounds(text, frc)
-        .getHeight());
-
     final JTextArea name = new JTextArea();
     name.setWrapStyleWord(false);
     name.setLineWrap(value.getModel().isWrapping());
@@ -85,10 +78,18 @@ public class NarrativeEntryItemRenderer extends JPanel implements
     name.setFont(UIManager.getFont("Label.font"));
     name.setBorder(UIManager.getBorder("Label.border"));
     name.setFont(bigFont);
-    // name.setSize(200, 100);
+    int width = list.getWidth();
+    if (width > 0)
+    {
+      name.setSize(width, Short.MAX_VALUE);
+    }
 
-    mainPanel.add(header, BorderLayout.NORTH);
-    mainPanel.add(name, BorderLayout.CENTER);
+    //mainPanel.add(header, BorderLayout.NORTH);
+    final JPanel innerPanel = new JPanel();
+    innerPanel.setLayout(new BorderLayout());
+    innerPanel.add(header, BorderLayout.NORTH);
+    innerPanel.add(name, BorderLayout.CENTER);
+    mainPanel.add(innerPanel, BorderLayout.CENTER);
 
     JLabel highlightIcon;
     if (isSelected)
@@ -102,12 +103,12 @@ public class NarrativeEntryItemRenderer extends JPanel implements
 
     mainPanel.add(highlightIcon, BorderLayout.WEST);
 
-    int availableSpace = list.getSize().width;
     if (cellHasFocus)
     {
       mainPanel.setBackground(selectedColor);
       name.setBackground(selectedColor);
       header.setBackground(selectedColor);
+      innerPanel.setBackground(selectedColor);
       final JLabel editNarrative = new JLabel(Utils.getIcon(
           "icons/16/edit_narrative.png"));
       final JLabel removeNarrative = new JLabel(Utils.getIcon(
@@ -118,15 +119,12 @@ public class NarrativeEntryItemRenderer extends JPanel implements
       iconsPanel.add(editNarrative);
       iconsPanel.add(removeNarrative);
       mainPanel.add(iconsPanel, BorderLayout.EAST);
-
-      availableSpace -= iconsPanel.getSize().width;
     }
-
-    final int rows = (int) Math.ceil((double) textwidth / availableSpace);
     // System.out.println("name.getLineCount() = " + rows + " * " + textheight);
-    mainPanel.setPreferredSize(new Dimension(0, Math.max(rows * textheight,
-        50)));
-    System.out.println(index + " Tam = " + rows * textheight);
+    /*
+     * mainPanel.setPreferredSize(new Dimension(0, Math.max(rows * textheight, 50)));
+     * System.out.println(index + " Tam = " + rows * textheight);
+     */
 
     return mainPanel;
   }
