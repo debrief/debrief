@@ -46,7 +46,7 @@ public class NarrativeEntryItemRenderer extends JPanel implements
 
     // content.setPreferredSize(new Dimension(300, Math.max(amountLines * 20, 60)));
     final JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    header.setPreferredSize(new Dimension(300, 13));
+    header.setPreferredSize(new Dimension(300, 18));
 
     final JLabel time = new JLabel(value.getEntry().getDTGString());
     final Font originalFont = time.getFont();
