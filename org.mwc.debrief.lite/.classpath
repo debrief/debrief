@@ -27,7 +27,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.geotools"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.legacy"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.legacy"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>

@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 
 import org.geotools.swing.JMapPane;
+import org.mwc.debrief.lite.gui.FitToWindow;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.HasEditables;
@@ -40,7 +41,8 @@ public class LiteChart extends PlainChart
   @Override
   public void rescale()
   {
-    throw new IllegalArgumentException("Not implemented");
+    
+    FitToWindow.fitToWindow(_theLayers, _map);
   }
 
   @Override

@@ -186,8 +186,9 @@ public class DebriefRibbonInsert
       }
     };
     polygonShape.setSelectedLayerSource(selectLayerCombo);
-    final JCommandButton polygonCmd = MenuUtils.addCommandButton("Polygon",
-        "icons/16/polygon.png", polygonShape, CommandButtonDisplayState.MEDIUM, null);
+    @SuppressWarnings("unused")
+//    final JCommandButton polygonCmd = MenuUtils.addCommandButton("Polygon",
+//        "icons/16/polygon.png", polygonShape, CommandButtonDisplayState.MEDIUM, null);
     
     final CreateShape rectShape = new CreateShape(toolParent, theProperties,
         theLayers, "Rectangle", "icons/rectangle_add.png", bounds)
@@ -289,12 +290,14 @@ public class DebriefRibbonInsert
         "icons/24/label_add.png",createLabelShape,
             drawingMenu,RibbonElementPriority.TOP);
     drawingMenu.startGroup();
-    drawingMenu.addRibbonComponent(new JRibbonComponent(polygonCmd));
+    
     drawingMenu.addRibbonComponent(new JRibbonComponent(ellipseShapeCmd));
     drawingMenu.addRibbonComponent(new JRibbonComponent(rectCmd));
     drawingMenu.addRibbonComponent(new JRibbonComponent(circleCmd));
     drawingMenu.addRibbonComponent(new JRibbonComponent(lineCmd));
     drawingMenu.addRibbonComponent(new JRibbonComponent(arcCmd));
+    //#4201, dont add polygon shape.
+    //drawingMenu.addRibbonComponent(new JRibbonComponent(polygonCmd));
     
     drawingMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         drawingMenu));
@@ -382,6 +385,7 @@ public class DebriefRibbonInsert
   {
     private final String _layerName;
     private final Layers _theLayers;
+    private Layer _theLayer;
 
     public AddLayerAction(final Layers theLayers, final String layerName)
     {
@@ -403,16 +407,18 @@ public class DebriefRibbonInsert
     @Override
     public void undo()
     {
-      Layer theLayer = _theLayers.findLayer(_layerName);
-      _theLayers.removeThisLayer(theLayer);
+      _theLayer = _theLayers.findLayer(_layerName);
+      _theLayers.removeThisLayer(_theLayer);
     }
 
     @Override
     public void execute()
     {
-      Layer layer = new BaseLayer();
-      layer.setName(_layerName);
-      _theLayers.addThisLayer(layer);
+      if(_theLayer == null) {
+      _theLayer = new BaseLayer();
+      _theLayer.setName(_layerName);
+      }
+      _theLayers.addThisLayer(_theLayer);
     }
   }
   

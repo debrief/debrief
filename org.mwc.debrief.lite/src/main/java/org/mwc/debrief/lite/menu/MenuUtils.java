@@ -38,7 +38,6 @@ import org.pushingpixels.flamingo.api.common.popup.PopupPanelCallback;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies;
-import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies.IconRibbonBandResizePolicy;
 import org.pushingpixels.flamingo.api.ribbon.resize.RibbonBandResizePolicy;
 
 /**
@@ -215,8 +214,8 @@ public class MenuUtils
   {
     final List<RibbonBandResizePolicy> policies = new ArrayList<>();
     policies.add(new CoreRibbonResizePolicies.Mirror(ribbonBand));
-    // policies.add(new CoreRibbonResizePolicies.Mid2Low(ribbonBand));
-    policies.add(new IconRibbonBandResizePolicy(ribbonBand));
+    policies.add(new CoreRibbonResizePolicies.Mid2Low(ribbonBand));
+    policies.add(new CoreRibbonResizePolicies.High2Low(ribbonBand));
     return policies;
   }
 

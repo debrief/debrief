@@ -30,7 +30,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.mwc.asset.netasset2.part.IVPartMovement;
 import org.mwc.asset.netasset2.time.IVTime;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.gt2plot.proj.GtProjection;
+import org.mwc.cmap.geotools.gt2plot.GtProjection;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.editors.painters.PlainHighlighter;

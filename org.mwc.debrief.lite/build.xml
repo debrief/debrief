@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="org.mwc.debrief.lite" default="build.jars" basedir=".">
-
+	<tstamp>
+	      <format property="today_date" pattern="dd MMM yyyy HH:mm"  locale="en,UK" />
+	</tstamp>
 	<!-- Compiler settings. -->
 	<property name="javacSource" value="1.7"/>
 	<property name="javacTarget" value="1.7"/>
@@ -29,26 +31,31 @@
 			<isset property="buildTempFolder"/>
 		</condition>
 		<property name="pluginTemp" value="${basedir}"/>
-		<condition property="build.result.folder" value="${pluginTemp}/org.mwc.debrief.lite_1.0.377"		>
+		<property name="product.version" value="${project.version}"/>
+		<condition property="build.result.folder" value="${pluginTemp}/org.mwc.debrief.lite_${product.version}"		>
 			<isset property="buildTempFolder"/>
 		</condition>
 		<property name="build.result.folder" value="${basedir}"/>
 		<property name="temp.folder" value="${basedir}/temp.folder"/>
 		<property name="dist.dir" value="dist"/>
 		<property name="dist.lib.dir" value="dist/lib"/>
-		<property name="product.version" value="${project.version}"/>
 	</target>
-
-	<target name="debrief_lite.jar" depends="init" unless="debrief_lite.jar" description="Create jar: org.mwc.debrief.lite debrief_lite.jar.">
+	<target name="buildDateReplace">
+		<copy file="conf/builddate.txt" tofile="src/main/java/org/mwc/debrief/lite/BuildDate.java" overwrite="true"/>
+		<replace file="src/main/java/org/mwc/debrief/lite/BuildDate.java" token="$DATE_HERE$" value="${today_date}"/>
+	</target>
+	<target name="debrief_lite.jar" depends="quiet,init" unless="debrief_lite.jar" description="Create jar: org.mwc.debrief.lite debrief_lite.jar.">
 		<delete dir="${temp.folder}/debrief_lite.jar.bin"/>
 		<mkdir dir="${temp.folder}/debrief_lite.jar.bin"/>
+		<antcall target="buildDateReplace"/>
 		<path id="debrief_lite.jar.classpath">
 			<pathelement location="../org.mwc.debrief.legacy/cmap_legacy.jar"/>
 			<pathelement location="../org.mwc.debrief.legacy/debrief_legacy.jar"/>
+			<pathelement location="../org.mwc.cmap.geotools/cmap_geotools.jar"/>
 			<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"></fileset>
 			<fileset dir="../org.mwc.debrief.legacy/libs" includes="*.jar"></fileset>
 			<fileset dir="../org.mwc.cmap.jfreechart/libs" includes="*.jar"></fileset>
-			<fileset dir="../org.geotools/libs" includes="*.jar"></fileset>
+			<fileset dir="../org.mwc.cmap.geotools/libs" includes="*.jar"></fileset>
 			<fileset dir="libs" includes="*.jar"></fileset>
 		</path>
 		<!-- compile the source code -->
@@ -66,6 +73,9 @@
 				<include name="images"/>
 		 	</fileset>
 		</copy>
+		<manifest file="${basedir}/conf/manifest.txt" mode="update">
+			<attribute name="Implementation-Version" value="${product.version}"/>
+		</manifest>
 		<jar  manifest="${basedir}/conf/manifest.txt" destfile="${temp.folder}/debrief_lite.jar" basedir="${temp.folder}/debrief_lite.jar.bin">
 		</jar>
 		<delete dir="${temp.folder}/debrief_lite.jar.bin"/>
@@ -98,12 +108,13 @@
 			<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"/>
 			<fileset dir="../org.mwc.debrief.legacy/libs" includes="*.jar"/>
 			<fileset dir="../org.mwc.cmap.jfreechart/libs" includes="*.jar"/>
-			<fileset dir="../org.geotools/libs" includes="*.jar"/>
+			<fileset dir="../org.mwc.cmap.geotools/libs" includes="*.jar"/>
 			<fileset dir="" includes="cmap_legacy.jar"/>
+			<fileset dir="../org.mwc.cmap.geotools" includes="cmap_geotools.jar"/>
 			<fileset dir="../org.mwc.debrief.legacy" includes="debrief_legacy.jar"/>
 			<fileset dir="libs" includes="*.jar"/>
 		</copy>
-		<zip destfile="${dist.dir}/debrief-lite-1.0.377.zip">
+		<zip destfile="${dist.dir}/debrief-lite-${product.version}.zip">
 			<fileset dir="." includes="data/**/*"/>
 			<fileset dir="${debrief-lite-dist.dir}" includes="**/*"/>
 		</zip>
@@ -119,8 +130,8 @@
 	<target name="clean" depends="quiet,init" description="Clean the plug-in: org.mwc.debrief.lite of all the zips, jars and logs created.">
 		<delete file="${build.result.folder}/debrief_lite.jar"/>
 		<delete file="debrief_lite.jar"/>
-		<delete file="${plugin.destination}/org.mwc.debrief.lite_1.0.377.jar"/>
-		<delete file="${plugin.destination}/org.mwc.debrief.lite_1.0.377.zip"/>
+		<delete file="${plugin.destination}/org.mwc.debrief.lite_*.jar"/>
+		<delete file="${plugin.destination}/org.mwc.debrief.lite_*.zip"/>
 		<delete dir="${temp.folder}"/>
 		<delete dir="${dist.dir}"/>
 	</target>
@@ -142,6 +153,7 @@
 		</target>
 	<target name="dist" depends="clean">
 		<ant antfile="build.xml" dir="../org.mwc.debrief.legacy" target="debrief_legacy.jar"/>
+		<ant antfile="build.xml" dir="../org.mwc.cmap.geotools" target="geotools_jar"/>
 		<antcall target="generate"/>
 	</target>
 </project>

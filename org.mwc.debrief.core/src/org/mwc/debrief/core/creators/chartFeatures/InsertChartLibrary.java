@@ -24,8 +24,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.preferences.ChartPrefsPage;
-import org.mwc.cmap.gt2plot.data.ShapeFileLayer;
-import org.mwc.cmap.gt2plot.data.WorldImageLayer;
+import org.mwc.cmap.geotools.gt2plot.ShapeFileLayer;
+import org.mwc.cmap.geotools.gt2plot.WorldImageLayer;
 
 import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;

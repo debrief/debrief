@@ -255,7 +255,8 @@ public class DragSegment extends DragFeature
 	 * simpler test that just supports tracks
 	 * 
 	 */
-	public void findNearest(final Layer thisLayer,
+	@Override
+	protected void findNearest(final Layer thisLayer,
 			final MWC.GenericData.WorldLocation cursorLoc, final java.awt.Point cursorPos,
 			final LocationConstruct currentNearest, final Layer parentLayer, final Layers theLayers)
 	{

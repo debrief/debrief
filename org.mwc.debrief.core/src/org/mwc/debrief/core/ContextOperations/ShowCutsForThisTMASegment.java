@@ -194,23 +194,27 @@ public class ShowCutsForThisTMASegment implements
       {
         final RelativeTMASegment seg = (RelativeTMASegment) editable;
         final SensorWrapper sensor = seg.getReferenceSensor();
-
-        // ok, found one. increment the counter
-        matchCount++;
-
-        // do we have a list for this segment
-        ArrayList<TimePeriod> list = suitableSegments.get(sensor);
-
-        // nope, create one
-        if (list == null)
+        
+        if (sensor != null)
         {
-          list = new ArrayList<TimePeriod>();
-          suitableSegments.put(sensor, list);
-        }
 
-        // ok, now add this period
-        list.add(new TimePeriod.BaseTimePeriod(seg.getDTG_Start(), seg
-            .getDTG_End()));
+          // ok, found one. increment the counter
+          matchCount++;
+
+          // do we have a list for this segment
+          ArrayList<TimePeriod> list = suitableSegments.get(sensor);
+
+          // nope, create one
+          if (list == null)
+          {
+            list = new ArrayList<TimePeriod>();
+            suitableSegments.put(sensor, list);
+          }
+
+          // ok, now add this period
+          list.add(new TimePeriod.BaseTimePeriod(seg.getDTG_Start(), seg
+              .getDTG_End()));
+        }
       }
     }
 

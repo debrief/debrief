@@ -19,6 +19,7 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.PlainWrapper;
+import MWC.GUI.Plottables.DeleteWithCare;
 import MWC.GUI.ToolParent;
 import MWC.GenericData.ColoredWatchable;
 import MWC.GenericData.HiResDate;
@@ -32,7 +33,7 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
 import junit.framework.TestCase;
 
 public class DynamicInfillSegment extends TrackSegment implements
-    ColoredWatchable
+    ColoredWatchable, DeleteWithCare
 {
 
   public static class TestInterp extends TestCase
@@ -416,7 +417,6 @@ public class DynamicInfillSegment extends TrackSegment implements
 
     // ditch the listeners
     clear();
-
   }
 
   /**
@@ -488,11 +488,6 @@ public class DynamicInfillSegment extends TrackSegment implements
 
     return res;
   }
-  
-  public String getSegmentNames()
-  {
-    return "before:" + _before + " after:" + _after;
-  }
 
   /**
    * accessor, used for file storage
@@ -524,6 +519,11 @@ public class DynamicInfillSegment extends TrackSegment implements
     }
 
     return res;
+  }
+
+  public String getSegmentNames()
+  {
+    return "before:" + _before + " after:" + _after;
   }
 
   /**
@@ -593,7 +593,7 @@ public class DynamicInfillSegment extends TrackSegment implements
   {
     // see if we're currently empty
     final boolean wasEmpty = size() < 2;
-    
+
     // check we know our data
     if (_before == null || _after == null)
       return;
@@ -667,17 +667,16 @@ public class DynamicInfillSegment extends TrackSegment implements
 
     // also produce a minimum time, in case the tracks either side are really sparse
     tDelta = Math.min(tDelta, 60000);
-    
+
     // sort out the start & end times of the infill segment
     final long tStart = _before.endDTG().getDate().getTime() + tDelta;
     final long tEnd = _after.startDTG().getDate().getTime();
 
     // if the tDelta only allows one step, make it smaller
-    if(tEnd - tStart < tDelta * 2)
+    if (tEnd - tStart < tDelta * 2)
     {
       tDelta = tDelta / 2;
     }
-
 
     // remember the last point on the first track, in case we're generating
     // a
@@ -688,7 +687,7 @@ public class DynamicInfillSegment extends TrackSegment implements
     final String labelFormat = origin.getLabelFormat();
     final boolean labelOn = false; // see note below.
     // don't show labels for every item...
-    // of the infill if the last item has label visible.  
+    // of the infill if the last item has label visible.
     // was: origin.getLabelShowing();
     final Integer labelLoc = origin.getLabelLocation();
 
@@ -713,7 +712,7 @@ public class DynamicInfillSegment extends TrackSegment implements
       final double nextTime;
 
       // we have an issue where the last point of the infill
-      // jumps to the first point on the next leg, which 
+      // jumps to the first point on the next leg, which
       // give a blip on the range plot between two tracks.
       // This occurs when the TMA solution comes from sensor
       // data that has been resampled:
@@ -814,13 +813,14 @@ public class DynamicInfillSegment extends TrackSegment implements
     {
       this.getData().clear();
     }
-    
-    if(wasEmpty && size() >= 2)
+
+    if (wasEmpty && size() >= 2)
     {
       // ok, we can now share our name
-      if(this.getWrapper() != null)
+      if (this.getWrapper() != null)
       {
-        this.getWrapper().firePropertyChange(PlainWrapper.TEXT_CHANGED, null, getName());
+        this.getWrapper().firePropertyChange(PlainWrapper.TEXT_CHANGED, null,
+            getName());
       }
     }
 
@@ -835,6 +835,29 @@ public class DynamicInfillSegment extends TrackSegment implements
           this);
     }
 
+  }
+
+  @Override
+  public void removeElement(final Editable p)
+  {
+    // let the parent do some tidying
+    super.removeElement(p);
+
+    // oh-oh, are we empty?
+    if (isEmpty())
+    {
+
+      // ok detach from the before/after legs
+      clear();
+
+      // safety check. if we're being deleted, our parent may already be
+      // nnull
+      if (getWrapper() != null)
+      {
+        // and remove ourselves from our parent
+        getWrapper().removeElement(this);
+      }
+    }
   }
 
   @Override

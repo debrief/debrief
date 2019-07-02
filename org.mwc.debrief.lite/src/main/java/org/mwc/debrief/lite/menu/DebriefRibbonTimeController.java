@@ -26,6 +26,7 @@ import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
@@ -60,11 +61,14 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
+import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.StepperListener;
 import MWC.GUI.ToolParent;
+import MWC.GUI.Layers.DataListener;
 import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.HiResDate;
@@ -119,6 +123,11 @@ public class DebriefRibbonTimeController
       }
     }
 
+    public void reset()
+    {
+      minimumValue.setText(" ");
+      maximumValue.setText(" ");
+    }
   }
 
   private static class LiteSliderControls implements SliderControls
@@ -663,6 +672,57 @@ public class DebriefRibbonTimeController
     // ok, start off with the buttons disabled
     setButtonsEnabled(topButtonsPanel, false);
 
+
+    
+    final DataListener updateTimeController = new DataListener()
+    {
+      
+      @Override
+      public void dataReformatted(Layers theData, Layer changedLayer)
+      {
+        updateTimeController();
+      }
+      
+      @Override
+      public void dataModified(Layers theData, Layer changedLayer)
+      {
+        updateTimeController();
+      }
+      
+      @Override
+      public void dataExtended(Layers theData)
+      {
+        updateTimeController();
+      }
+      
+      private void updateTimeController()
+      {
+        stepControl.startStepping(false);
+        boolean hasTracks = false;
+        
+        final Enumeration<Editable> lIter = stepControl.getLayers().elements();
+        while (lIter.hasMoreElements())
+        {
+          final Editable next = lIter.nextElement();
+          if (next instanceof TrackWrapper)
+          {
+            hasTracks = true;
+            break;
+          }
+        }
+        
+        if ( !hasTracks )
+        {
+          doSoftReset(timeSlider, timeManager);
+        }else
+        {
+          DebriefLiteApp.setDirty(true);
+          DebriefLiteApp.setState(DebriefLiteApp.ACTIVE_STATE);
+          timeSlider.setEnabled(true);
+        }
+      }
+    };
+    
     // we also need to listen out for the stepper control mode changing
     stepControl.addStepperListener(new LiteStepperListener(playCommandButton)
     {
@@ -670,15 +730,12 @@ public class DebriefRibbonTimeController
       @Override
       public void reset()
       {
-        // move the slider to the start
-        timeSlider.setValue(0);
-        label.setValue(LiteStepControl.timeFormat);
-
-        // ok, do some disabling
-        DebriefLiteApp.setState(DebriefLiteApp.INACTIVE_STATE);
-        timeSlider.setEnabled(false);
+        doSoftReset(timeSlider, timeManager);
       }
     });
+    
+    stepControl.getLayers().addDataExtendedListener(updateTimeController);
+    stepControl.getLayers().addDataModifiedListener(updateTimeController);
 
     control.addRibbonComponent(new JRibbonComponent(topButtonsPanel));
     control.addRibbonComponent(new JRibbonComponent(timeSlider));
@@ -686,6 +743,19 @@ public class DebriefRibbonTimeController
     control.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         control));
     return control;
+  }
+  
+  public static void doSoftReset(final JSlider timeSlider, final TimeManager timeManager)
+  {
+    // move the slider to the start
+    timeSlider.setValue(0);
+    label.setValue(LiteStepControl.timeFormat);
+
+    // ok, do some disabling
+    DebriefLiteApp.setState(DebriefLiteApp.INACTIVE_STATE);
+    timeSlider.setEnabled(false);
+    timeManager.setPeriod(null, null);
+    formatBinder.reset();
   }
 
   private static JRibbonBand createDisplayMode(final Runnable normalPainter,
