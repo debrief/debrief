@@ -114,7 +114,7 @@ public class CreateDebriefProject
 	        WizardDialog dialog = new WizardDialog(shell, wizard)
 	        {
 	          @Override
-	          protected void setShellStyle(int newShellStyle)
+	          public void setShellStyle(int newShellStyle)
 	          {
 	            super.setShellStyle(newShellStyle| SWT.SHEET);
 	          }

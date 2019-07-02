@@ -1,36 +1,29 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="eclipse48" sequenceNumber="34">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.8"?>
+<target name="eclipse-latest" sequenceNumber="34">
 <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<locations>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<unit id="org.eclipse.sdk.ide" version="4.11.0.I20190307-0500"/>
-			<repository location="http://download.eclipse.org/eclipse/updates/4.11"/>
-			<unit id="org.eclipse.equinox.sdk.feature.group" version="3.17.0.v20190305-2225"/>
-			<unit id="org.eclipse.jdt.feature.group" version="3.17.0.v20190307-0500"/>
-			<unit id="org.eclipse.pde.api.tools.ee.feature.feature.group" version="1.0.400.v20180829-0709"/>
-			<unit id="org.eclipse.platform.ide" version="4.11.0.I20190307-0500"/>
-			<unit id="org.eclipse.platform.sdk" version="4.11.0.I20190307-0500"/>
-			<unit id="org.eclipse.rcp.id" version="4.11.0.I20190307-0500"/>
-			<unit id="org.eclipse.releng.tools.feature.group" version="3.10.300.v20181214-1310"/>
-			<unit id="org.eclipse.sdk.tests.feature.group" version="4.11.0.v20190307-0500"/>
-			<unit id="org.eclipse.swt.tools.feature.feature.group" version="3.107.300.v20190205-1016"/>
-			<unit id="org.eclipse.test.feature.group" version="3.7.600.v20190107-0639"/>
-			<unit id="org.eclipse.equinox.p2.sdk.feature.group" version="3.11.300.v20190220-1158"/>
-			<unit id="org.eclipse.equinox.p2.rcp.feature.feature.group" version="1.4.300.v20190220-1158"/>
+			<repository location="https://download.eclipse.org/releases/2019-06/"/>
+			<unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.14.0.v201905291408"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<unit id="org.eclipse.emf.sdk.feature.group" version="2.17.0.v20190301-1325"/>
-			<unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.13.0.v201903050402"/>
-			<repository location="https://download.eclipse.org/releases/2019-03/"/>
-		</location>
-		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<unit id="org.eclipse.wst.jsdt_sdk.feature.feature.group" version="2.1.1.v201802281510"/>
-			<repository location="http://download.eclipse.org/webtools/repository/2019-03"/>
-		</location>
-		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<unit id="org.eclipse.nebula.widgets.xviewer.feature.feature.group" version="1.1.0.201812241324"/>
 			<repository location="https://download.eclipse.org/nebula/releases/latest/"/>
+			<unit id="org.eclipse.nebula.widgets.xviewer.feature.feature.group" version="1.1.0.201812241324"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
+			<repository location="https://download.eclipse.org/releases/2019-06/"/>
+			<unit id="org.eclipse.emf.ecore.feature.group" version="2.18.0.v20190528-0845"/>
+			<unit id="org.eclipse.jdt.feature.group" version="3.18.0.v20190605-1800"/>
+			<unit id="org.eclipse.platform.feature.group" version="4.12.0.v20190605-1801"/>
+			<unit id="org.eclipse.rcp.feature.group" version="4.12.0.v20190605-1801"/>
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
+			<repository location="https://download.eclipse.org/releases/2019-06/"/>
+			<unit id="org.eclipse.wst.jsdt.feature.feature.group" version="2.1.1.v201903222101"/>
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
+			<repository location="http://download.eclipse.org/ease/update/release"/>
 			<unit id="org.eclipse.ease.feature.feature.group" version="0.6.0.I201802271533"/>
 			<unit id="org.eclipse.ease.lang.javascript.feature.feature.group" version="0.6.0.I201802201511"/>
 			<unit id="org.eclipse.ease.lang.jvm.feature.feature.group" version="0.6.0.I201711281359"/>
@@ -40,8 +33,20 @@
 			<unit id="org.eclipse.ease.modules.modeling.feature.feature.group" version="0.6.0.I201802191612"/>
 			<unit id="org.eclipse.ease.modules.unittest.feature.feature.group" version="0.4.0.I201611210751"/>
 			<unit id="org.eclipse.ease.ui.feature.feature.group" version="0.6.0.I201804241621"/>
-			<repository location="http://download.eclipse.org/ease/update/release"/>
 			<unit id="org.eclipse.ease.lang.scriptarchive.feature.feature.group" version="0.6.0.I201711281359"/>
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
+			<repository location="https://download.eclipse.org/releases/2019-06/"/>
+			<unit id="org.eclipse.ecf.remoteservice.feature.feature.group" version="2.5.100.v20180926-1748"/>
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
+			<repository location="https://download.eclipse.org/releases/2019-06/"/>
+			<unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="3.14.5.v20190423-0614"/>
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
+			<repository location="https://download.eclipse.org/releases/2019-06/"/>
+			<unit id="org.eclipse.equinox.core.feature.feature.group" version="1.9.0.v20190517-1309"/>
+			<unit id="org.eclipse.equinox.executable.feature.group" version="0.0.0"/>
 		</location>
 	</locations>
 </target>
