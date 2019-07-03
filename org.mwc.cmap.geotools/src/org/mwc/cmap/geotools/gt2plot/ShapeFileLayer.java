@@ -18,7 +18,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.eclipse.core.runtime.Status;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -65,12 +64,12 @@ public class ShapeFileLayer extends GeoToolsLayer
 		}
 		catch(final FileNotFoundException f)
 		{
-		  Application.logError2(Status.ERROR, "Can't find the shape file", f);
+		  Application.logError2(-1, "Can't find the shape file", f);
 			//CorePlugin.showMessage("Load ShapeFile", "Sorry, can't find the requested shapefile:\n" + openFile.getName());
 		}
 		catch (final IOException e)
 		{
-		  Application.logError2(Status.ERROR, "Trouble loading shape file", e);
+		  Application.logError2(-1, "Trouble loading shape file", e);
 		}
 		catch (final Exception e)
 		{

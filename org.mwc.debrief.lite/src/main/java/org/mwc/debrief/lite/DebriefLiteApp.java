@@ -49,6 +49,9 @@ import javax.swing.WindowConstants;
 import org.geotools.map.MapContent;
 import org.geotools.swing.JMapPane;
 import org.geotools.swing.action.ResetAction;
+import org.mwc.cmap.geotools.gt2plot.GeoToolsLayer;
+import org.mwc.cmap.geotools.gt2plot.ShapeFileLayer;
+import org.mwc.cmap.geotools.gt2plot.WorldImageLayer;
 import org.mwc.debrief.lite.graph.GraphPanelView;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
@@ -64,6 +67,7 @@ import org.mwc.debrief.lite.menu.DebriefRibbonTimeController;
 import org.mwc.debrief.lite.menu.MenuUtils;
 import org.mwc.debrief.lite.outline.OutlinePanelView;
 import org.mwc.debrief.lite.util.DoSaveAs;
+import org.opengis.referencing.operation.MathTransform;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.substance.api.SubstanceCortex;
@@ -89,6 +93,7 @@ import MWC.GUI.Defaults;
 import MWC.GUI.Defaults.PreferenceProvider;
 import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
+import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -104,6 +109,7 @@ import MWC.GUI.Canvas.ExtendedCanvasAdapter;
 import MWC.GUI.Dialogs.DialogFactory;
 import MWC.GUI.DragDrop.FileDropSupport;
 import MWC.GUI.DragDrop.FileDropSupport.FileDropListener;
+import MWC.GUI.Shapes.ChartBoundsWrapper;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -216,8 +222,7 @@ public class DebriefLiteApp implements FileDropListener
 
   protected static boolean _plotDirty;
 
-  private static String defaultTitle = appName + " (" + Debrief.GUI.VersionInfo
-      .getVersion() + ")";
+  private static String defaultTitle = appName + " (" + BuildDate.BUILD_DATE + ")";
 
   private final static LiteApplication app = new LiteApplication(
       ImportReplay.IMPORT_AS_OTG, 0L);
@@ -230,6 +235,7 @@ public class DebriefLiteApp implements FileDropListener
    *
    * @param geoMapRenderer
    * @param dropSupport
+   * @param mapContent
    *
    * @return
    */
@@ -269,6 +275,19 @@ public class DebriefLiteApp implements FileDropListener
   public static DebriefLiteApp getInstance()
   {
     return _instance;
+  }
+
+  public static void handleImportTIFFile(final File file)
+  {
+    final String layerName = file.getName();
+
+    // ok - get loading going
+    final ExternallyManagedDataLayer dl = new ExternallyManagedDataLayer(
+        ChartBoundsWrapper.WORLDIMAGE_TYPE, layerName, file.getAbsolutePath());
+
+    // note: our layers.addThisLayer() has extra processing to wrap
+    // ExternallyManagedDataLayer instances
+    _instance._theLayers.addThisLayer(dl);
   }
 
   public static boolean isDirty()
@@ -351,7 +370,7 @@ public class DebriefLiteApp implements FileDropListener
     }
 
   }
-  
+
   public static void openNMEAFile(final File file)
   {
     try
@@ -492,8 +511,89 @@ public class DebriefLiteApp implements FileDropListener
       new JXCollapsiblePaneWithTitle(Direction.DOWN, "Graph", 150);
   private final JRibbonFrame theFrame;
 
-  final private Layers _theLayers = new Layers();
-  private GeoToolMapProjection projection;
+  private final Layers _theLayers = new Layers()
+  {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    public void addThisLayer(final Layer theLayer)
+    {
+      Layer wrappedLayer = null;
+
+      // ok, if this is an externally managed layer (and we're doing
+      // GT-plotting, we will wrap it, and actually add the wrapped layer
+      if (theLayer instanceof ExternallyManagedDataLayer)
+      {
+        final ExternallyManagedDataLayer dl =
+            (ExternallyManagedDataLayer) theLayer;
+        if (dl.getDataType().equals(ChartBoundsWrapper.WORLDIMAGE_TYPE))
+        {
+          final GeoToolsLayer gt = new WorldImageLayer(dl.getName(), dl
+              .getFilename());
+
+          gt.setVisible(dl.getVisible());
+          projection.addGeoToolsLayer(gt);
+          wrappedLayer = gt;
+        }
+        else if (dl.getDataType().equals(ChartBoundsWrapper.SHAPEFILE_TYPE))
+        {
+          // just see if it's a raster extent layer (special processing)
+          if (dl.getName().equals(WorldImageLayer.RASTER_FILE))
+          {
+            // special processing - wrap it.
+            wrappedLayer = WorldImageLayer.RasterExtentHelper.loadRasters(dl
+                .getFilename(), this);
+          }
+          else
+          {
+            // ok, it's a normal shapefile: load it.
+            final GeoToolsLayer gt = new ShapeFileLayer(dl.getName(), dl
+                .getFilename());
+            gt.setVisible(dl.getVisible());
+            projection.addGeoToolsLayer(gt);
+            wrappedLayer = gt;
+          }
+        }
+        if (wrappedLayer != null)
+          super.addThisLayer(wrappedLayer);
+      }
+      else
+      {
+        super.addThisLayer(theLayer);
+      }
+
+    }
+
+    @Override
+    public void removeThisLayer(final Layer theLayer)
+    {
+      if (theLayer instanceof GeoToolsLayer)
+      {
+        // get the content
+        /*
+         * final GtProjection gp = (GtProjection) _myChart.getCanvas().getProjection();
+         */
+        final GeoToolsLayer gt = (GeoToolsLayer) theLayer;
+        gt.clearMap();
+
+        /*
+         * if (gp.numLayers() == 0) { // ok - we've got to force the data rea final WorldArea area =
+         * _myChart.getCanvas().getProjection().getDataArea();
+         * _myChart.getCanvas().getProjection().setDataArea(area); }
+         */
+
+      }
+
+      // and remove from the actual list
+      super.removeThisLayer(theLayer);
+    }
+
+  };
+  private final GeoToolMapProjection projection;
 
   private final LiteSession session;
 
@@ -553,6 +653,10 @@ public class DebriefLiteApp implements FileDropListener
     // set the substance look and feel
     System.setProperty(SupportedApps.APP_NAME_SYSTEM_PROPERTY,
         SupportedApps.DEBRIEF_LITE_APP);
+
+    // don't try to load jai lib
+    System.setProperty("com.sun.media.jai.disableMediaLib", "true");
+
     JFrame.setDefaultLookAndFeelDecorated(true);
     SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
     final DisplaySplash splashScreen = new DisplaySplash(5);
@@ -581,8 +685,12 @@ public class DebriefLiteApp implements FileDropListener
     geoMapRenderer = new GeoToolMapRenderer();
     initializeMapContent();
 
+    final MapContent mapComponent = geoMapRenderer.getMapComponent();
+    projection = new GeoToolMapProjection(mapComponent, _theLayers);
+
     final FileDropSupport dropSupport = new FileDropSupport();
-    dropSupport.setFileDropListener(this, " .REP, .XML, .DSF, .DTF, .DPF, .LOG");
+    dropSupport.setFileDropListener(this,
+        " .REP, .XML, .DSF, .DTF, .DPF, .LOG,.TIF");
 
     // provide some file helpers
     ImportReplay.initialise(app);
@@ -603,7 +711,12 @@ public class DebriefLiteApp implements FileDropListener
     safeChartFeatures = _theLayers.findLayer(Layers.CHART_FEATURES);
 
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));
+
     mapPane = createMapPane(geoMapRenderer, dropSupport);
+
+    // ok, ready to load map content
+    initializeMapContent();
+
     final CanvasAdaptor theCanvas = new CanvasAdaptor(projection, mapPane
         .getGraphics());
 
@@ -661,9 +774,10 @@ public class DebriefLiteApp implements FileDropListener
 
     // create the components
     initForm();
+    final MathTransform screenTransform = geoMapRenderer.getTransform();
     createAppPanels(geoMapRenderer, session.getUndoBuffer(), dropSupport,
         mapPane, _stepControl, timeManager, _myOperations, normalT, snailT,
-        statusBar);
+        statusBar, screenTransform);
     _listenForMods = new DataListenerAdaptor()
     {
 
@@ -708,7 +822,8 @@ public class DebriefLiteApp implements FileDropListener
       final UndoBuffer undoBuffer, final FileDropSupport dropSupport,
       final Component mapPane, final LiteStepControl stepControl,
       final TimeManager timeManager, final PlotOperations operation,
-      final ToteSetter normalT, final ToteSetter snailT, final JLabel statusBar)
+      final ToteSetter normalT, final ToteSetter snailT, final JLabel statusBar,
+      final MathTransform transform)
   {
     // final Dimension frameSize = theFrame.getSize();
     // final int width = (int) frameSize.getWidth();
@@ -754,7 +869,7 @@ public class DebriefLiteApp implements FileDropListener
     };
     new DebriefRibbon(theFrame.getRibbon(), _theLayers, app, geoMapRenderer,
         stepControl, timeManager, operation, session, resetAction, normalT,
-        snailT, statusBar, exitAction, projection);
+        snailT, statusBar, exitAction, projection, transform);
   }
 
   protected void doPaint(final Graphics gc)
@@ -893,10 +1008,14 @@ public class DebriefLiteApp implements FileDropListener
           {
             handleImportDPF(file);
           }
-          else if(suff.equalsIgnoreCase(".LOG"))
+          else if (suff.equalsIgnoreCase(".LOG"))
           {
             handleImportNMEAFile(file);
-            //layerManager.resetTree();
+            // layerManager.resetTree();
+          }
+          else if (suff.equalsIgnoreCase(".TIF"))
+          {
+            handleImportTIFFile(file);
           }
           else
           {
@@ -913,7 +1032,7 @@ public class DebriefLiteApp implements FileDropListener
       MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file",
           "Error Opening the file: " + e.getMessage());
     }
-    
+
     restoreCursor();
   }
 
@@ -970,6 +1089,28 @@ public class DebriefLiteApp implements FileDropListener
     final long endTime = System.currentTimeMillis();
     final long timeElapsed = endTime - startTime;
     System.out.println("Time taken:" + timeElapsed);
+  }
+
+  private void handleImportNMEAFile(final File file)
+  {
+    // show the dialog first, then import the file
+
+    final ImportNMEA importer = new ImportNMEA(_theLayers);
+    FileInputStream fs;
+    try
+    {
+      fs = new FileInputStream(file);
+      importer.importThis(file.getName(), fs, 60000, 60000);
+    }
+    catch (final FileNotFoundException e)
+    {
+      JOptionPane.showMessageDialog(null, "File :" + file + " was not found",
+          "File error", JOptionPane.ERROR_MESSAGE);
+    }
+    catch (final Exception e)
+    {
+      Trace.trace(e);
+    }
   }
 
   private void handleImportRep(final File[] fList)
@@ -1096,8 +1237,6 @@ public class DebriefLiteApp implements FileDropListener
   private void initializeMapContent()
   {
     geoMapRenderer.loadMapContent();
-    final MapContent mapComponent = geoMapRenderer.getMapComponent();
-    projection = new GeoToolMapProjection(mapComponent, _theLayers);
 
     geoMapRenderer.addRenderer(new MapRenderer()
     {
@@ -1195,9 +1334,17 @@ public class DebriefLiteApp implements FileDropListener
 
   public void resetPlot()
   {
-    // clear teh data
+    // clear the data
     _theLayers.clear();
     layerManager.resetTree();
+
+    // also remove the data from the GeoMap
+    final MapContent content = mapPane.getMapContent();
+    final List<org.geotools.map.Layer> layers = content.layers();
+    for (final org.geotools.map.Layer layer : layers)
+    {
+      content.removeLayer(layer);
+    }
 
     // special behaviour. The chart creator objects take a point to the
     // target layer on creation. So, we need to keep the same chart features layer

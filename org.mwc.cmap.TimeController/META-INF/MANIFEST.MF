@@ -21,6 +21,5 @@ Require-Bundle: org.mwc.cmap.legacy,
  org.mwc.cmap.core,
  org.eclipse.ui.views,
  org.mwc.debrief.core,
- org.mwc.cmap.plotViewer,
- org.mwc.cmap.gt2Plot
+ org.mwc.cmap.plotViewer
 Bundle-ActivationPolicy: lazy
