@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    /*******************************************************************************
+     * Copyright (c) 2009, 2019 Xored Software Inc and others.
+     * All rights reserved. This program and the accompanying materials
+     * are made available under the terms of the Eclipse Public License v1.0
+     * which accompanies this distribution, and is available at
+     * http://www.eclipse.org/legal/epl-v10.html
+     *
+     * Contributors:
+     *     Xored Software Inc - initial API and implementation and/or initial documentation
+     *******************************************************************************/
+ -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>updates</artifactId>
+    <groupId>org.eclipse.rcptt.module.rap</groupId>
+    <version>2.5.0-SNAPSHOT</version>
+  </parent>
+  
+  <artifactId>org.eclipse.rcptt.updates.runtime.rap</artifactId>
+  <packaging>eclipse-plugin</packaging>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>q7</directory>
+              <includes>
+                <include>**/*.*</include>
+              </includes>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/q7</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>../../../../repositories/org.eclipse.rcptt.runtime-updatesite.rap/target/repository/</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>${tycho-groupid}</groupId>
+        <artifactId>tycho-packaging-plugin</artifactId>
+        <configuration>
+          <timestampProvider>default</timestampProvider>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>enforce-artifacts</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <phase>compile</phase>
+            <configuration>
+              <rules>
+                <requireFilesExist>
+                  <files>
+                   <file>${basedir}/q7/artifacts.jar</file>
+                   <file>${basedir}/q7/content.jar</file>
+                  </files>
+                </requireFilesExist>
+              </rules>
+              <fail>true</fail>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
