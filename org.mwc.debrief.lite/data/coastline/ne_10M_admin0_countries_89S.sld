@@ -11,14 +11,13 @@
       <se:FeatureTypeStyle>
         <se:Rule>
           <se:Name>Simple Line</se:Name>
-          <se:MaxScaleDenominator>10000000</se:MaxScaleDenominator>
           <se:PolygonSymbolizer>
             <se:Fill>
-              <se:CssParameter name="fill">#ebdbbc</se:CssParameter>
+              <se:CssParameter name="fill">#efe2ce</se:CssParameter>
             </se:Fill>
             <se:Stroke>
               <se:CssParameter name="stroke">#D0A275</se:CssParameter>
-              <se:CssParameter name="stroke-width">1.5</se:CssParameter>
+              <se:CssParameter name="stroke-width">0.75</se:CssParameter>
               <se:CssParameter name="stroke-linejoin">bevel</se:CssParameter>
             </se:Stroke>
           </se:PolygonSymbolizer>
