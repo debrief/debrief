@@ -227,7 +227,8 @@ public class DebriefLiteApp implements FileDropListener
 
   protected static boolean _plotDirty;
 
-  private static String defaultTitle = appName + " (" + BuildDate.BUILD_DATE + ")";
+  private static String defaultTitle = appName + " (" + BuildDate.BUILD_DATE
+      + ")";
 
   private final static LiteApplication app = new LiteApplication(
       ImportReplay.IMPORT_AS_OTG, 0L);
@@ -433,6 +434,28 @@ public class DebriefLiteApp implements FileDropListener
 
   }
 
+  private static void setInitialArea(final JMapPane mapPane,
+      final MathTransform transform)
+  {
+    // give it a default viewport - overlooking Europe
+    final DirectPosition2D tl = new DirectPosition2D(-14, 65);
+    final DirectPosition2D br = new DirectPosition2D(35, 30);
+
+    try
+    {
+      // convert to map units
+      transform.inverse().transform(tl, tl);
+      transform.inverse().transform(br, br);
+      final Envelope2D envelope = new Envelope2D(tl, br);
+      mapPane.setDisplayArea(envelope);
+    }
+    catch (MismatchedDimensionException | TransformException e)
+    {
+      Application.logError2(ToolParent.ERROR,
+          "Failure in setting initial viewport coverage", e);
+    }
+  }
+
   /**
    * State of the application. Inactive will disable all the button.
    *
@@ -486,8 +509,8 @@ public class DebriefLiteApp implements FileDropListener
       new JXCollapsiblePaneWithTitle(Direction.LEFT, "Outline", 400);
   private final JXCollapsiblePaneWithTitle graphPanel =
       new JXCollapsiblePaneWithTitle(Direction.DOWN, "Graph", 150);
-  private final JRibbonFrame theFrame;
 
+  private final JRibbonFrame theFrame;
   private final Layers _theLayers = new Layers()
   {
 
@@ -570,6 +593,7 @@ public class DebriefLiteApp implements FileDropListener
     }
 
   };
+
   private final GeoToolMapProjection projection;
 
   private final LiteSession session;
@@ -690,7 +714,7 @@ public class DebriefLiteApp implements FileDropListener
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));
 
     mapPane = createMapPane(geoMapRenderer, dropSupport);
-    
+
     setInitialArea(mapPane, geoMapRenderer.getTransform());
 
     // ok, ready to load map content
@@ -779,27 +803,6 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
     theFrame.setVisible(true);
     theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
-  }
-
-  private static void setInitialArea(final JMapPane mapPane, final MathTransform transform)
-  {
-    // give it a default viewport - overlooking Europe
-    final DirectPosition2D tl = new DirectPosition2D(-14, 65);
-    final DirectPosition2D br = new DirectPosition2D(35, 30);
-    
-    try
-    {
-      // convert to map units
-      transform.inverse().transform(tl, tl);
-      transform.inverse().transform(br, br);
-      final Envelope2D envelope = new Envelope2D(tl, br);
-      mapPane.setDisplayArea(envelope);
-    }
-    catch (MismatchedDimensionException | TransformException e)
-    {
-      Application.logError2(ToolParent.ERROR,
-          "Failure in setting initial viewport coverage", e);
-    }
   }
 
   private void addGraphView()
@@ -1091,11 +1094,11 @@ public class DebriefLiteApp implements FileDropListener
     System.out.println("Time taken:" + timeElapsed);
   }
 
-  private void handleImportNMEAFile(File file)
+  private void handleImportNMEAFile(final File file)
   {
-    //show the dialog first, then import the file
-    
-    ImportNMEA importer = new ImportNMEA(_theLayers);
+    // show the dialog first, then import the file
+
+    final ImportNMEA importer = new ImportNMEA(_theLayers);
     FileInputStream fs;
     try
     {
@@ -1109,11 +1112,12 @@ public class DebriefLiteApp implements FileDropListener
         timeManager.setTime(this, period.getStartDTG(), true);
       }
     }
-    catch (FileNotFoundException e)
+    catch (final FileNotFoundException e)
     {
-      JOptionPane.showMessageDialog(null, "File :"+file +" was not found", "File error", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(null, "File :" + file + " was not found",
+          "File error", JOptionPane.ERROR_MESSAGE);
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       Trace.trace(e);
     }
