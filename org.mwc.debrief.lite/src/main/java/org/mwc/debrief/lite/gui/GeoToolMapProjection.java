@@ -146,18 +146,19 @@ public class GeoToolMapProjection extends PlainProjection implements
       try
       {
         data_transform.transform(_workDegs, _workDegs);
+        _view.getWorldToScreen().transform(_workDegs, _workScreen);
+        // output the results
+        res = new Point((int) _workScreen.getCoordinate()[0], (int) _workScreen
+            .getCoordinate()[1]);
       }
       catch (MismatchedDimensionException | TransformException e)
       {
         Application.logError2(ToolParent.ERROR,
-            "Failure in projection transform", e);
+            "Failure in projection transform in toScreen operation:" + e
+                .getMessage(), null);
       }
     }
 
-    _view.getWorldToScreen().transform(_workDegs, _workScreen);
-    // output the results
-    res = new Point((int) _workScreen.getCoordinate()[0], (int) _workScreen
-        .getCoordinate()[1]);
     return res;
   }
 
