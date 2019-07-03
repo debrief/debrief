@@ -33,7 +33,6 @@ import org.geotools.map.MapContent;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.lite.StreamingRenderer;
-import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
 import org.geotools.swing.JMapPane;
 import org.geotools.swing.data.JFileDataStoreChooser;
@@ -41,6 +40,7 @@ import org.geotools.swing.event.MapMouseAdapter;
 import org.geotools.swing.event.MapMouseEvent;
 import org.geotools.swing.event.MapMouseListener;
 import org.geotools.swing.tool.CursorTool;
+import org.geotools.swt.utils.Utils;
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.geometry.MismatchedDimensionException;
@@ -324,12 +324,14 @@ public class GeoToolMapRenderer
       return;
     }
 
-    FileDataStore store;
-    featureSource = null;
     try
     {
-      store = FileDataStoreFinder.getDataStore(file);
-      featureSource = store.getFeatureSource();
+      final FileDataStore store = FileDataStoreFinder.getDataStore(file);
+      final SimpleFeatureSource featureSource = store.getFeatureSource();
+      final Style style = Utils.createStyle(file, featureSource);
+      final Layer layer = new FeatureLayer(featureSource, style);
+
+      mapContent.addLayer(layer);
     }
     catch (final IOException e)
     {
@@ -337,9 +339,6 @@ public class GeoToolMapRenderer
           e);
     }
 
-    final Style style = SLD.createSimpleStyle(featureSource.getSchema());
-    final Layer layer = new FeatureLayer(featureSource, style);
-    mapContent.addLayer(layer);
   }
 
   private void paintEvent(final Graphics arg0)
