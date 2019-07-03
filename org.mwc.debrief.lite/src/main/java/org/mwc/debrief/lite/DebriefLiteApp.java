@@ -383,34 +383,6 @@ public class DebriefLiteApp implements FileDropListener
     }
   }
 
-  private void handleImportNMEAFile(File file)
-  {
-    //show the dialog first, then import the file
-    
-    ImportNMEA importer = new ImportNMEA(_theLayers);
-    FileInputStream fs;
-    try
-    {
-      fs = new FileInputStream(file);
-      importer.importThis(file.getName(), fs, 60000, 60000);
-      final TimePeriod period = _theLayers.getTimePeriod();
-      _myOperations.setPeriod(period);
-      timeManager.setPeriod(this, period);
-      if (period != null)
-      {
-        timeManager.setTime(this, period.getStartDTG(), true);
-      }
-    }
-    catch (FileNotFoundException e)
-    {
-      JOptionPane.showMessageDialog(null, "File :"+file +" was not found", "File error", JOptionPane.ERROR_MESSAGE);
-    }
-    catch (Exception e)
-    {
-      Trace.trace(e);
-    }
-  }
-
   public static void openPlotFile(final File file)
   {
 
@@ -1091,23 +1063,29 @@ public class DebriefLiteApp implements FileDropListener
     System.out.println("Time taken:" + timeElapsed);
   }
 
-  private void handleImportNMEAFile(final File file)
+  private void handleImportNMEAFile(File file)
   {
-    // show the dialog first, then import the file
-
-    final ImportNMEA importer = new ImportNMEA(_theLayers);
+    //show the dialog first, then import the file
+    
+    ImportNMEA importer = new ImportNMEA(_theLayers);
     FileInputStream fs;
     try
     {
       fs = new FileInputStream(file);
       importer.importThis(file.getName(), fs, 60000, 60000);
+      final TimePeriod period = _theLayers.getTimePeriod();
+      _myOperations.setPeriod(period);
+      timeManager.setPeriod(this, period);
+      if (period != null)
+      {
+        timeManager.setTime(this, period.getStartDTG(), true);
+      }
     }
-    catch (final FileNotFoundException e)
+    catch (FileNotFoundException e)
     {
-      JOptionPane.showMessageDialog(null, "File :" + file + " was not found",
-          "File error", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(null, "File :"+file +" was not found", "File error", JOptionPane.ERROR_MESSAGE);
     }
-    catch (final Exception e)
+    catch (Exception e)
     {
       Trace.trace(e);
     }
