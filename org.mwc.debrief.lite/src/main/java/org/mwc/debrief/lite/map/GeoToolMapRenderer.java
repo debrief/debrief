@@ -14,6 +14,7 @@
  */
 package org.mwc.debrief.lite.map;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Graphics;
@@ -147,6 +148,7 @@ public class GeoToolMapRenderer
     public CustomMapPane(final GeoToolMapRenderer geoToolMapRenderer)
     {
       super();
+      
       // Would be better to pass in a GeoToolMapProjection or GTProjection here?
       try
       {
@@ -168,6 +170,9 @@ public class GeoToolMapRenderer
       addMouseListener(dragLine);
       addMouseMotionListener(dragLine);
       addMouseListener(mouseMotionListener);
+      
+      // try to set background color
+      super.setBackground(new Color(135, 172, 215));
     }
 
     @Override
