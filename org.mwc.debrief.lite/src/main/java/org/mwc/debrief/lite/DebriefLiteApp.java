@@ -556,8 +556,6 @@ public class DebriefLiteApp implements FileDropListener
             gt.setVisible(dl.getVisible());
             projection.addGeoToolsLayer(gt);
             wrappedLayer = gt;
-            
-            gt.setCanBeDeleted( dl.canBeDeleted());
           }
         }
         else
@@ -587,7 +585,7 @@ public class DebriefLiteApp implements FileDropListener
         final GeoToolsLayer gt = (GeoToolsLayer) theLayer;
 
         // just check it can be deleted
-        if (gt.canBeDeleted())
+        if (mapPane.getMapContent().layers().size() > 1)
         {
           gt.clearMap();
 
@@ -597,7 +595,7 @@ public class DebriefLiteApp implements FileDropListener
         else
         {
           Application.logError2(ToolParent.WARNING,
-              "We can't let GeoTools delete this, we'll lose world reference frame",
+              "We need to keep one backround layer, to enable correct projection",
               null);
         }
       }
@@ -830,7 +828,7 @@ public class DebriefLiteApp implements FileDropListener
     final String shape_path = "data/coastline/ne_10M_admin0_countries_89S.shp";
     ExternallyManagedDataLayer extFile = new ExternallyManagedDataLayer(
         MWC.GUI.Shapes.ChartBoundsWrapper.SHAPEFILE_TYPE,
-        "Background coastline", shape_path, false);
+        "Background coastline", shape_path);
     layers.addThisLayer(extFile);
   }
 
