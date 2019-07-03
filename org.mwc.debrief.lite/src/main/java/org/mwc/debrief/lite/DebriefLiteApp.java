@@ -522,10 +522,10 @@ public class DebriefLiteApp implements FileDropListener
     @Override
     public void addThisLayer(final Layer theLayer)
     {
-      Layer wrappedLayer = null;
 
       // ok, if this is an externally managed layer (and we're doing
       // GT-plotting, we will wrap it, and actually add the wrapped layer
+      final Layer wrappedLayer;
       if (theLayer instanceof ExternallyManagedDataLayer)
       {
         final ExternallyManagedDataLayer dl =
@@ -556,8 +556,15 @@ public class DebriefLiteApp implements FileDropListener
             gt.setVisible(dl.getVisible());
             projection.addGeoToolsLayer(gt);
             wrappedLayer = gt;
+            
+            gt.setCanBeDeleted( dl.canBeDeleted());
           }
         }
+        else
+        {
+          wrappedLayer = null;
+        }
+        
         if (wrappedLayer != null)
           super.addThisLayer(wrappedLayer);
       }
@@ -578,20 +585,28 @@ public class DebriefLiteApp implements FileDropListener
          * final GtProjection gp = (GtProjection) _myChart.getCanvas().getProjection();
          */
         final GeoToolsLayer gt = (GeoToolsLayer) theLayer;
-        gt.clearMap();
 
-        /*
-         * if (gp.numLayers() == 0) { // ok - we've got to force the data rea final WorldArea area =
-         * _myChart.getCanvas().getProjection().getDataArea();
-         * _myChart.getCanvas().getProjection().setDataArea(area); }
-         */
+        // just check it can be deleted
+        if (gt.canBeDeleted())
+        {
+          gt.clearMap();
 
+          // and remove from the actual list
+          super.removeThisLayer(theLayer);
+        }
+        else
+        {
+          Application.logError2(ToolParent.WARNING,
+              "We can't let GeoTools delete this, we'll lose world reference frame",
+              null);
+        }
       }
-
-      // and remove from the actual list
-      super.removeThisLayer(theLayer);
+      else
+      {
+        // and remove from the actual list
+        super.removeThisLayer(theLayer);
+      }
     }
-
   };
 
   private final GeoToolMapProjection projection;
@@ -684,7 +699,6 @@ public class DebriefLiteApp implements FileDropListener
         .createImage("icons/d_lite.png"), MenuUtils.ICON_SIZE_32));
 
     geoMapRenderer = new GeoToolMapRenderer();
-    initializeMapContent();
 
     final MapContent mapComponent = geoMapRenderer.getMapComponent();
     projection = new GeoToolMapProjection(mapComponent, _theLayers);
@@ -800,9 +814,24 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataExtendedListener(_listenForMods);
     _theLayers.addDataModifiedListener(_listenForMods);
     _theLayers.addDataReformattedListener(_listenForMods);
+    
+    // lastly give us some backdrop data
+    loadBackdropdata(_theLayers);
+    
     theFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
     theFrame.setVisible(true);
     theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
+    
+  }
+
+  private static void loadBackdropdata(final Layers layers)
+  {
+    // ok, do the shapefile
+    final String shape_path = "data/coastline/ne_10M_admin0_countries_89S.shp";
+    ExternallyManagedDataLayer extFile = new ExternallyManagedDataLayer(
+        MWC.GUI.Shapes.ChartBoundsWrapper.SHAPEFILE_TYPE,
+        "Background coastline", shape_path, false);
+    layers.addThisLayer(extFile);
   }
 
   private void addGraphView()
@@ -1246,18 +1275,14 @@ public class DebriefLiteApp implements FileDropListener
 
   private void initializeMapContent()
   {
-    geoMapRenderer.loadMapContent();
-
     geoMapRenderer.addRenderer(new MapRenderer()
     {
-
       @Override
       public void paint(final Graphics gc)
       {
         doPaint(gc);
       }
     });
-
   }
 
   /**
