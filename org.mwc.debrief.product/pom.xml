@@ -67,7 +67,7 @@
 									tofile="${project.build.directory}/products/DebriefNG-Linux32Bit.tar.gz" verbose="yes" />
 -->
 								<copy file="${project.build.directory}/products/DebriefNG-linux.gtk.x86_64.zip" tofile="${project.build.directory}/products/DebriefNG-Linux64Bit.zip" verbose="yes"/>
-								<copy file="${project.build.directory}/products/DebriefNG-win32.win32.x86.zip" tofile="${project.build.directory}/products/DebriefNG-Windows32Bit.zip" verbose="yes"/>
+								<!--<copy file="${project.build.directory}/products/DebriefNG-win32.win32.x86.zip" tofile="${project.build.directory}/products/DebriefNG-Windows32Bit.zip" verbose="yes"/>-->
 								<copy file="${project.build.directory}/products/DebriefNG-win32.win32.x86_64.zip" tofile="${project.build.directory}/products/DebriefNG-Windows64Bit.zip" verbose="yes"/>
 								<copy file="${project.build.directory}/products/DebriefNG-macosx.cocoa.x86_64.zip" tofile="${project.build.directory}/products/DebriefNG-MacOSX64Bit.zip" verbose="yes"/>
 								<copy file="${project.build.directory}/product-${project.version}.zip" tofile="${project.build.directory}/products/P2_Repository.zip" verbose="yes"/>
@@ -81,5 +81,10 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+	<dependencies>
+	
+	
+	</dependencies>
 <version>3.0.485</version>
 </project>
