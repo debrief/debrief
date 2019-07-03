@@ -827,8 +827,7 @@ public class DebriefLiteApp implements FileDropListener
     // ok, do the shapefile
     final String shape_path = "data/coastline/ne_10M_admin0_countries_89S.shp";
     ExternallyManagedDataLayer extFile = new ExternallyManagedDataLayer(
-        MWC.GUI.Shapes.ChartBoundsWrapper.SHAPEFILE_TYPE,
-        "Background coastline", shape_path);
+        ChartBoundsWrapper.SHAPEFILE_TYPE, "Background coastline", shape_path);
     layers.addThisLayer(extFile);
   }
 
