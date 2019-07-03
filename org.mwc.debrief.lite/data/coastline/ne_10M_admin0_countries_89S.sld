@@ -16,8 +16,8 @@
               <se:CssParameter name="fill">#efe2ce</se:CssParameter>
             </se:Fill>
             <se:Stroke>
-              <se:CssParameter name="stroke">#D0A275</se:CssParameter>
-              <se:CssParameter name="stroke-width">0.75</se:CssParameter>
+              <se:CssParameter name="stroke">#dbb793</se:CssParameter>
+              <se:CssParameter name="stroke-width">1.0</se:CssParameter>
               <se:CssParameter name="stroke-linejoin">bevel</se:CssParameter>
             </se:Stroke>
           </se:PolygonSymbolizer>
