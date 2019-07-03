@@ -120,11 +120,12 @@
 		</zip>
 	</target>
 	<target name="quiet">
-
+<!--
 				<script language="javascript">
 				        var logger = project.getBuildListeners( ).firstElement( );
 				        logger.setMessageOutputLevel( 0 );
 				    </script>
+		-->
 	</target>
 
 	<target name="clean" depends="quiet,init" description="Clean the plug-in: org.mwc.debrief.lite of all the zips, jars and logs created.">

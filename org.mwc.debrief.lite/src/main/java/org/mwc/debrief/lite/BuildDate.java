@@ -20,5 +20,5 @@ package org.mwc.debrief.lite;
  */
 public class BuildDate
 {
-  public static final String BUILD_DATE="28 Jun 2019 11:25";
+  public static final String BUILD_DATE="03 Jul 2019 07:30";
 }
