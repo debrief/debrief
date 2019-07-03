@@ -46,6 +46,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import org.geotools.geometry.DirectPosition2D;
+import org.geotools.geometry.Envelope2D;
 import org.geotools.map.MapContent;
 import org.geotools.swing.JMapPane;
 import org.geotools.swing.action.ResetAction;
@@ -67,12 +69,15 @@ import org.mwc.debrief.lite.menu.DebriefRibbonTimeController;
 import org.mwc.debrief.lite.menu.MenuUtils;
 import org.mwc.debrief.lite.outline.OutlinePanelView;
 import org.mwc.debrief.lite.util.DoSaveAs;
+import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.substance.api.SubstanceCortex;
 import org.pushingpixels.substance.api.skin.BusinessBlueSteelSkin;
 
+import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Tote.Painters.PainterManager;
 import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.GUI.Tote.Painters.TotePainter;
@@ -685,6 +690,8 @@ public class DebriefLiteApp implements FileDropListener
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));
 
     mapPane = createMapPane(geoMapRenderer, dropSupport);
+    
+    setInitialArea(mapPane, geoMapRenderer.getTransform());
 
     // ok, ready to load map content
     initializeMapContent();
@@ -772,6 +779,27 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
     theFrame.setVisible(true);
     theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
+  }
+
+  private static void setInitialArea(final JMapPane mapPane, final MathTransform transform)
+  {
+    // give it a default viewport - overlooking Europe
+    final DirectPosition2D tl = new DirectPosition2D(-14, 65);
+    final DirectPosition2D br = new DirectPosition2D(35, 30);
+    
+    try
+    {
+      // convert to map units
+      transform.inverse().transform(tl, tl);
+      transform.inverse().transform(br, br);
+      final Envelope2D envelope = new Envelope2D(tl, br);
+      mapPane.setDisplayArea(envelope);
+    }
+    catch (MismatchedDimensionException | TransformException e)
+    {
+      Application.logError2(ToolParent.ERROR,
+          "Failure in setting initial viewport coverage", e);
+    }
   }
 
   private void addGraphView()
@@ -1225,6 +1253,7 @@ public class DebriefLiteApp implements FileDropListener
         doPaint(gc);
       }
     });
+
   }
 
   /**
