@@ -19,20 +19,14 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
-// import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JToggleButton;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
 
 import org.mwc.debrief.lite.gui.LiteStepControl;
 
@@ -67,8 +61,8 @@ public class NarrativePanelToolbar extends JPanel
 
   private final List<JComponent> componentsToDisable = new ArrayList<>();
 
-  private int HEIGHT_FIXED_SIZE = 33;
-  
+  private final int HEIGHT_FIXED_SIZE = 33;
+
   /**
    * Maybe this should be inside the abstract model.
    */
@@ -79,7 +73,7 @@ public class NarrativePanelToolbar extends JPanel
   private final TreeMap<NarrativeEntry, Integer> entry2Index = new TreeMap<>();
 
   private final AbstractNarrativeConfiguration _model;
-  
+
   private final NarrativePanelToolbar _toolbarInstance;
 
   private final PropertyChangeListener enableDisableButtonsListener =
@@ -217,7 +211,7 @@ public class NarrativePanelToolbar extends JPanel
     {
 
       @Override
-      public void componentResized(ComponentEvent e)
+      public void componentResized(final ComponentEvent e)
       {
         _toolbarInstance.updateRowHeights();
       }
@@ -450,31 +444,6 @@ public class NarrativePanelToolbar extends JPanel
     });
     return wrapTextButton;
   }
-  
-  public void updateRowHeights()
-  {
-    for (int row = 0; row < _narrativeList.getRowCount(); row++)
-    {
-      if ( _model.isWrapping() )
-      {
-
-        int rowHeight = _narrativeList.getRowHeight();
-
-        for (int column = 0; column < _narrativeList
-            .getColumnCount(); column++)
-        {
-          Component comp = _narrativeList.prepareRenderer(_narrativeList
-              .getCellRenderer(row, column), row, column);
-          rowHeight = Math.max(rowHeight, comp.getPreferredSize().height);
-        }
-
-        _narrativeList.setRowHeight(row, rowHeight);
-      }else
-      {
-        _narrativeList.setRowHeight(row, HEIGHT_FIXED_SIZE);
-      }
-    }
-  }
 
   public JTable getNarrativeList()
   {
@@ -497,19 +466,19 @@ public class NarrativePanelToolbar extends JPanel
     /*
      * final JButton copyButton = createCommandButton("Copy Selected Entrey",
      * "icons/16/copy_to_clipboard.png"); copyButton.addActionListener(new ActionListener() {
-     * 
+     *
      * @Override public void actionPerformed(final ActionEvent e) {
      * System.out.println("Copy selected entry not implemented"); } });
-     * 
+     *
      * final JButton addBulkEntriesButton = createCommandButton("Add Bulk Entries",
      * "icons/16/list.png"); addBulkEntriesButton.addActionListener(new ActionListener() {
-     * 
+     *
      * @Override public void actionPerformed(final ActionEvent e) {
      * System.out.println("Add Bulk Entries not implemented"); } });
-     * 
+     *
      * final JButton addSingleEntryButton = createCommandButton("Add Single Entry",
      * "icons/16/add.png"); addBulkEntriesButton.addActionListener(new ActionListener() {
-     * 
+     *
      * @Override public void actionPerformed(final ActionEvent e) {
      * System.out.println("Add single entry not implemented"); } });
      */
@@ -549,6 +518,31 @@ public class NarrativePanelToolbar extends JPanel
     if (newState != null && !newState.equals(oldState))
     {
       notifyListenersStateChanged(this, STATE_PROPERTY, oldState, newState);
+    }
+  }
+
+  public void updateRowHeights()
+  {
+    for (int row = 0; row < _narrativeList.getRowCount(); row++)
+    {
+      if (_model.isWrapping())
+      {
+
+        int rowHeight = _narrativeList.getRowHeight();
+
+        for (int column = 0; column < _narrativeList.getColumnCount(); column++)
+        {
+          final Component comp = _narrativeList.prepareRenderer(_narrativeList
+              .getCellRenderer(row, column), row, column);
+          rowHeight = Math.max(rowHeight, comp.getPreferredSize().height);
+        }
+
+        _narrativeList.setRowHeight(row, rowHeight);
+      }
+      else
+      {
+        _narrativeList.setRowHeight(row, HEIGHT_FIXED_SIZE);
+      }
     }
   }
 

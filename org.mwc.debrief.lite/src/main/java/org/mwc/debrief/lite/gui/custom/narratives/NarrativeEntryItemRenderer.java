@@ -6,16 +6,12 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.font.FontRenderContext;
-import java.awt.geom.AffineTransform;
 
 import javax.swing.Box;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
-import javax.swing.ListCellRenderer;
 import javax.swing.UIManager;
 import javax.swing.table.TableCellRenderer;
 
@@ -29,25 +25,19 @@ public class NarrativeEntryItemRenderer extends JPanel implements
   private static final long serialVersionUID = -2227870470228775898L;
 
   @Override
-  public Component getTableCellRendererComponent(JTable table, Object value,
-      boolean isSelected, boolean hasFocus, int row, int column)
+  public Component getTableCellRendererComponent(final JTable table,
+      final Object value, final boolean isSelected, final boolean hasFocus,
+      final int row, final int column)
   {
     final Color selectedColor = new Color(229, 229, 229);
 
-    if ( value instanceof NarrativeEntryItem )
+    if (value instanceof NarrativeEntryItem)
     {
       final NarrativeEntryItem valueItem = (NarrativeEntryItem) value;
       final String text = valueItem.getEntry().getEntry();
-      if (!valueItem.getModel().isWrapping())
-      {
-        // text = (text.substring(0, Math.min(text.length(), 26)));
-      }
-      // final int amountLines = (int) Math.ceil(text.length() / 26.0);
-
       final JPanel mainPanel = new JPanel();
       mainPanel.setLayout(new BorderLayout());
 
-      // content.setPreferredSize(new Dimension(300, Math.max(amountLines * 20, 60)));
       final JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT));
       header.setPreferredSize(new Dimension(300, 18));
 
@@ -81,13 +71,12 @@ public class NarrativeEntryItemRenderer extends JPanel implements
       name.setFont(UIManager.getFont("Label.font"));
       name.setBorder(UIManager.getBorder("Label.border"));
       name.setFont(bigFont);
-      int width = table.getWidth();
+      final int width = table.getWidth();
       if (width > 0)
       {
         name.setSize(width, Short.MAX_VALUE);
       }
 
-      //mainPanel.add(header, BorderLayout.NORTH);
       final JPanel innerPanel = new JPanel();
       innerPanel.setLayout(new BorderLayout());
       innerPanel.add(header, BorderLayout.NORTH);
@@ -123,14 +112,10 @@ public class NarrativeEntryItemRenderer extends JPanel implements
         iconsPanel.add(removeNarrative);
         mainPanel.add(iconsPanel, BorderLayout.EAST);
       }
-      // System.out.println("name.getLineCount() = " + rows + " * " + textheight);
-      /*
-       * mainPanel.setPreferredSize(new Dimension(0, Math.max(rows * textheight, 50)));
-       * System.out.println(index + " Tam = " + rows * textheight);
-       */
 
       return mainPanel;
-    }else
+    }
+    else
     {
       return null;
     }
