@@ -473,42 +473,6 @@ public class NarrativePanelToolbar extends JPanel
     });
     return wrapTextButton;
   }
-
-
-  private void createDataListeners()
-  {
-    if (_stepControl != null && _stepControl.getLayers() != null)
-    {
-      final DataListener registerNarrativeListener = new DataListener()
-      {
-
-        @Override
-        public void dataExtended(final Layers theData)
-        {
-          checkNewNarratives(theData);
-        }
-
-        @Override
-        public void dataModified(final Layers theData, final Layer changedLayer)
-        {
-          checkNewNarratives(theData);
-        }
-
-        @Override
-        public void dataReformatted(final Layers theData,
-            final Layer changedLayer)
-        {
-          checkNewNarratives(theData);
-        }
-      };
-      _stepControl.getLayers().addDataExtendedListener(
-          registerNarrativeListener);
-      _stepControl.getLayers().addDataModifiedListener(
-          registerNarrativeListener);
-      _stepControl.getLayers().addDataReformattedListener(
-          registerNarrativeListener);
-    }
-  }
   
   public JTable getNarrativeList()
   {
