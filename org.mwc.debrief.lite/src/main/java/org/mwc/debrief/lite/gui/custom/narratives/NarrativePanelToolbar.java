@@ -70,7 +70,8 @@ public class NarrativePanelToolbar extends JPanel
 
   private final JTable _narrativeList = new JTable();
 
-  private final TreeMap<NarrativeEntry, NarrativeEntryItem> entry2Index = new TreeMap<>();
+  private final TreeMap<NarrativeEntry, NarrativeEntryItem> entry2Index =
+      new TreeMap<>();
 
   private final AbstractNarrativeConfiguration _model;
 
@@ -162,9 +163,10 @@ public class NarrativePanelToolbar extends JPanel
               }
               for (final NarrativeEntry entry : toRemove)
               {
-                for ( int i = 0 ; i < _narrativeListModel.getRowCount(); i++ )
+                for (int i = 0; i < _narrativeListModel.getRowCount(); i++)
                 {
-                  if ( _narrativeListModel.getValueAt(i, 0) == entry2Index.get(entry) )
+                  if (_narrativeListModel.getValueAt(i, 0) == entry2Index.get(
+                      entry))
                   {
                     _narrativeListModel.removeRow(i);
                     break;
@@ -185,11 +187,12 @@ public class NarrativePanelToolbar extends JPanel
             while (iteratorToRemove.hasMoreElements())
             {
               final Editable thisE = iteratorToRemove.nextElement();
-              if ( entry2Index.containsKey(thisE) )
+              if (entry2Index.containsKey(thisE))
               {
-                for ( int i = 0 ; i < _narrativeListModel.getRowCount(); i++ )
+                for (int i = 0; i < _narrativeListModel.getRowCount(); i++)
                 {
-                  if ( _narrativeListModel.getValueAt(i, 0) == entry2Index.get(thisE) )
+                  if (_narrativeListModel.getValueAt(i, 0) == entry2Index.get(
+                      thisE))
                   {
                     _narrativeListModel.removeRow(i);
                     entry2Index.remove(thisE);
@@ -265,7 +268,14 @@ public class NarrativePanelToolbar extends JPanel
         {
           final NarrativeEntryItem itemToCompare = new NarrativeEntryItem(
               (NarrativeEntry) evt.getNewValue(), _model);
-          _narrativeList.setSelectedValue(itemToCompare, true);
+          for (int i = 0; i < _narrativeList.getRowCount(); i++)
+          {
+            if (_narrativeList.getValueAt(i, 0) == itemToCompare)
+            {
+              _narrativeList.setRowSelectionInterval(i, i + 1);
+              break;
+            }
+          }
           _model.repaintView();
         }
       }
@@ -305,11 +315,10 @@ public class NarrativePanelToolbar extends JPanel
       @Override
       public void mouseClicked(MouseEvent e)
       {
-        if (e.getClickCount() == 2)
-        {
-          _stepControl.changeTime(_narrativeList.getSelectedValue()
-              .getEntry().getDTG());
-        }
+        int selectedRow = _narrativeList.getSelectedRow();
+        NarrativeEntryItem entryItem = (NarrativeEntryItem) _narrativeList
+            .getValueAt(selectedRow, 0);
+        _stepControl.changeTime(entryItem.getEntry().getDTG());
       }
     });
     setState(INACTIVE_STATE);
@@ -531,7 +540,7 @@ public class NarrativePanelToolbar extends JPanel
     });
     return wrapTextButton;
   }
-  
+
   public JTable getNarrativeList()
   {
     return _narrativeList;
