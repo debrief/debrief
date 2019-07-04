@@ -19,6 +19,7 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.PlainWrapper;
+import MWC.GUI.Plottables.DeleteWithCare;
 import MWC.GUI.ToolParent;
 import MWC.GenericData.ColoredWatchable;
 import MWC.GenericData.HiResDate;
@@ -32,7 +33,7 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
 import junit.framework.TestCase;
 
 public class DynamicInfillSegment extends TrackSegment implements
-    ColoredWatchable
+    ColoredWatchable, DeleteWithCare
 {
 
   public static class TestInterp extends TestCase
@@ -372,12 +373,8 @@ public class DynamicInfillSegment extends TrackSegment implements
 
   public void clear()
   {
-    Application.logError2(Application.INFO, "Clear - about to stop watching", null);
-
     stopWatching(_before);
     stopWatching(_after);
-
-    Application.logError2(Application.INFO, "Stopped watching", null);
 
     _before = null;
     _after = null;
@@ -843,37 +840,22 @@ public class DynamicInfillSegment extends TrackSegment implements
   @Override
   public void removeElement(final Editable p)
   {
-    Application.logError2(Application.INFO, "About to remove element from infill", null);
-    
     // let the parent do some tidying
     super.removeElement(p);
-
-    Application.logError2(Application.INFO, "Removed element from infill", null);
-
-    Application.logError2(Application.INFO, "About to check if empty", null);
 
     // oh-oh, are we empty?
     if (isEmpty())
     {
-      
-      Application.logError2(Application.INFO, "Is empty, about to clear", null);
 
       // ok detach from the before/after legs
       clear();
-
-      Application.logError2(Application.INFO, "have cleared. About to check for parent track", null);
 
       // safety check. if we're being deleted, our parent may already be
       // nnull
       if (getWrapper() != null)
       {
-        Application.logError2(Application.INFO, "Parent track found. About to remove from parent", null);
-
         // and remove ourselves from our parent
         getWrapper().removeElement(this);
-        
-        Application.logError2(Application.INFO, "Removed from parent", null);
-
       }
     }
   }
