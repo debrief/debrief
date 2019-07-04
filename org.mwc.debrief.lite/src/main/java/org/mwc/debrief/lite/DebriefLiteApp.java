@@ -392,28 +392,6 @@ public class DebriefLiteApp implements FileDropListener
     }
   }
 
-  private void handleImportNMEAFile(File file)
-  {
-    // show the dialog first, then import the file
-
-    ImportNMEA importer = new ImportNMEA(_theLayers);
-    FileInputStream fs;
-    try
-    {
-      fs = new FileInputStream(file);
-      importer.importThis(file.getName(), fs, 60000, 60000);
-    }
-    catch (FileNotFoundException e)
-    {
-      JOptionPane.showMessageDialog(null, "File :" + file + " was not found",
-          "File error", JOptionPane.ERROR_MESSAGE);
-    }
-    catch (Exception e)
-    {
-      Trace.trace(e);
-    }
-  }
-
   public static void openPlotFile(final File file)
   {
 
@@ -725,7 +703,9 @@ public class DebriefLiteApp implements FileDropListener
         .createImage("icons/d_lite.png"), MenuUtils.ICON_SIZE_32));
 
     geoMapRenderer = new GeoToolMapRenderer();
-    initializeMapContent();
+
+    final MapContent mapComponent = geoMapRenderer.getMapComponent();
+    projection = new GeoToolMapProjection(mapComponent, _theLayers);
 
     final FileDropSupport dropSupport = new FileDropSupport();
     dropSupport.setFileDropListener(this,
@@ -752,6 +732,11 @@ public class DebriefLiteApp implements FileDropListener
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));
 
     mapPane = createMapPane(geoMapRenderer, dropSupport);
+
+    setInitialArea(mapPane, geoMapRenderer.getTransform());
+
+    // ok, ready to load map content
+    initializeMapContent();
     final CanvasAdaptor theCanvas = new CanvasAdaptor(projection, mapPane
         .getGraphics());
 

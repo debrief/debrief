@@ -83,8 +83,8 @@ public class NarrativeEntryItemRenderer extends JPanel implements
       mainPanel.add(innerPanel, BorderLayout.CENTER);
 
       JLabel highlightIcon;
-      if (value.getModel().getCurrentHighLight() != null && value.getModel()
-        .getCurrentHighLight().equals(value.getEntry()))
+      if (valueItem.getModel().getCurrentHighLight() != null && valueItem.getModel()
+        .getCurrentHighLight().equals(valueItem.getEntry()))
       {
         highlightIcon = new JLabel(Utils.getIcon("icons/16/highlight.png"));
       }
