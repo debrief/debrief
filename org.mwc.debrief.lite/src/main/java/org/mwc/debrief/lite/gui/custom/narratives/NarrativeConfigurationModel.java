@@ -189,8 +189,6 @@ public class NarrativeConfigurationModel implements
     }
   }
   
-  
-
   @Override
   public boolean isWrapping()
   {

@@ -4,7 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 
 import javax.swing.BoxLayout;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 public class NarrativePanelView extends JPanel
@@ -27,15 +29,19 @@ public class NarrativePanelView extends JPanel
     add(_toolbar, BorderLayout.NORTH);
     final JPanel mainPanel = new JPanel();
     mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-    // final JScrollPane scrollPane = new JScrollPane(mainPanel);
-
-    final JTextField filterTextField = new JTextField();
+    final JScrollPane scrollPane = new JScrollPane();
+    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    scrollPane.setViewportView(mainPanel);
+    //toolbar.getNarrativeList().setLayoutOrientation(JList.VERTICAL);
+    /*final JTextField filterTextField = new JTextField();
     filterTextField.setPreferredSize(new Dimension(30, 20));
-    mainPanel.add(filterTextField);
+    filterTextField.setMaximumSize(new Dimension(10000, 20));
+    mainPanel.add(filterTextField);*/
 
     mainPanel.add(toolbar.getNarrativeList());
 
-    add(toolbar.getNarrativeList(), BorderLayout.CENTER);
+    add(scrollPane, BorderLayout.CENTER);
 
   }
 }

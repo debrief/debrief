@@ -26,9 +26,13 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.JToggleButton;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
 
 import org.mwc.debrief.lite.gui.LiteStepControl;
 
@@ -63,19 +67,20 @@ public class NarrativePanelToolbar extends JPanel
 
   private final List<JComponent> componentsToDisable = new ArrayList<>();
 
+  private int HEIGHT_FIXED_SIZE = 33;
+  
   /**
    * Maybe this should be inside the abstract model.
    */
-  private final DefaultListModel<NarrativeEntryItem> _narrativeListModel =
-      new DefaultListModel<>();
+  private final DefaultTableModel _narrativeListModel = new DefaultTableModel();
 
-  private final JList<NarrativeEntryItem> _narrativeList = new JList<>(
-      _narrativeListModel);
+  private final JTable _narrativeList = new JTable();
 
-  private final TreeMap<NarrativeEntry, NarrativeEntryItem> entry2entryItem =
-      new TreeMap<>();
+  private final TreeMap<NarrativeEntry, Integer> entry2Index = new TreeMap<>();
 
   private final AbstractNarrativeConfiguration _model;
+  
+  private final NarrativePanelToolbar _toolbarInstance;
 
   private final PropertyChangeListener enableDisableButtonsListener =
       new PropertyChangeListener()
@@ -155,14 +160,16 @@ public class NarrativePanelToolbar extends JPanel
               {
                 final NarrativeEntryItem entryItem = new NarrativeEntryItem(
                     entry, _model);
-                _narrativeListModel.addElement(entryItem);
-                entry2entryItem.put(entry, entryItem);
+                _narrativeListModel.addRow(new NarrativeEntryItem[]
+                {entryItem});
+                entry2Index.put(entry, _narrativeListModel.getRowCount());
                 _model.registerNewNarrativeEntry(narrativeWrapper, entry);
 
               }
               for (final NarrativeEntry entry : toRemove)
               {
-                _narrativeListModel.removeElement(entry2entryItem.get(entry));
+                _narrativeListModel.removeRow(entry2Index.get(entry));
+                entry2Index.remove(entry);
               }
               // Sort it.
             }
@@ -177,12 +184,12 @@ public class NarrativePanelToolbar extends JPanel
             while (iteratorToRemove.hasMoreElements())
             {
               final Editable thisE = iteratorToRemove.nextElement();
-              _narrativeListModel.removeElement(entry2entryItem.get(thisE));
+              _narrativeListModel.removeRow(entry2Index.get(thisE));
             }
             _model.removeNarrativeWrapper(wrapperRemoved);
           }
 
-          if (!_narrativeListModel.isEmpty())
+          if (_narrativeListModel.getRowCount() > 0)
           {
             setState(ACTIVE_STATE);
           }
@@ -200,19 +207,23 @@ public class NarrativePanelToolbar extends JPanel
   {
     super(new FlowLayout(FlowLayout.LEFT));
 
-    this._narrativeList.setCellRenderer(new NarrativeEntryItemRenderer());
+    this._narrativeList.setModel(_narrativeListModel);
+    this._toolbarInstance = this;
+    this._narrativeListModel.addColumn("");
+    final TableColumn column = this._narrativeList.getColumnModel().getColumn(
+        0);
+    column.setCellRenderer(new NarrativeEntryItemRenderer());
     this._narrativeList.addComponentListener(new ComponentAdapter()
     {
 
       @Override
       public void componentResized(ComponentEvent e)
       {
-        _narrativeList.setFixedCellHeight(55);
-        _narrativeList.setFixedCellHeight(-1);
+        _toolbarInstance.updateRowHeights();
       }
-      
+
     });
-    
+
     this._stepControl = stepControl;
     this._model = model;
     init();
@@ -434,13 +445,38 @@ public class NarrativePanelToolbar extends JPanel
       public void actionPerformed(final ActionEvent e)
       {
         _model.setWrapping(wrapTextButton.isSelected());
-        _narrativeList.repaint();
+        updateRowHeights();
       }
     });
     return wrapTextButton;
   }
+  
+  public void updateRowHeights()
+  {
+    for (int row = 0; row < _narrativeList.getRowCount(); row++)
+    {
+      if ( _model.isWrapping() )
+      {
 
-  public JList<NarrativeEntryItem> getNarrativeList()
+        int rowHeight = _narrativeList.getRowHeight();
+
+        for (int column = 0; column < _narrativeList
+            .getColumnCount(); column++)
+        {
+          Component comp = _narrativeList.prepareRenderer(_narrativeList
+              .getCellRenderer(row, column), row, column);
+          rowHeight = Math.max(rowHeight, comp.getPreferredSize().height);
+        }
+
+        _narrativeList.setRowHeight(row, rowHeight);
+      }else
+      {
+        _narrativeList.setRowHeight(row, HEIGHT_FIXED_SIZE);
+      }
+    }
+  }
+
+  public JTable getNarrativeList()
   {
     return _narrativeList;
   }
