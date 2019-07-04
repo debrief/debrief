@@ -70,7 +70,7 @@ public class NarrativePanelToolbar extends JPanel
 
   private final JTable _narrativeList = new JTable();
 
-  private final TreeMap<NarrativeEntry, Integer> entry2Index = new TreeMap<>();
+  private final TreeMap<NarrativeEntry, NarrativeEntryItem> entry2Index = new TreeMap<>();
 
   private final AbstractNarrativeConfiguration _model;
 
@@ -156,13 +156,20 @@ public class NarrativePanelToolbar extends JPanel
                     entry, _model);
                 _narrativeListModel.addRow(new NarrativeEntryItem[]
                 {entryItem});
-                entry2Index.put(entry, _narrativeListModel.getRowCount());
+                entry2Index.put(entry, entryItem);
                 _model.registerNewNarrativeEntry(narrativeWrapper, entry);
 
               }
               for (final NarrativeEntry entry : toRemove)
               {
-                _narrativeListModel.removeRow(entry2Index.get(entry));
+                for ( int i = 0 ; i < _narrativeListModel.getRowCount(); i++ )
+                {
+                  if ( _narrativeListModel.getValueAt(i, 0) == entry2Index.get(entry) )
+                  {
+                    _narrativeListModel.removeRow(i);
+                    break;
+                  }
+                }
                 entry2Index.remove(entry);
               }
               // Sort it.
@@ -178,7 +185,18 @@ public class NarrativePanelToolbar extends JPanel
             while (iteratorToRemove.hasMoreElements())
             {
               final Editable thisE = iteratorToRemove.nextElement();
-              _narrativeListModel.removeRow(entry2Index.get(thisE));
+              if ( entry2Index.containsKey(thisE) )
+              {
+                for ( int i = 0 ; i < _narrativeListModel.getRowCount(); i++ )
+                {
+                  if ( _narrativeListModel.getValueAt(i, 0) == entry2Index.get(thisE) )
+                  {
+                    _narrativeListModel.removeRow(i);
+                    entry2Index.remove(thisE);
+                    break;
+                  }
+                }
+              }
             }
             _model.removeNarrativeWrapper(wrapperRemoved);
           }
