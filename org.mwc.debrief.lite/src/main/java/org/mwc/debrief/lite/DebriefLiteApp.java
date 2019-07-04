@@ -54,7 +54,6 @@ import org.geotools.swing.action.ResetAction;
 import org.mwc.cmap.geotools.gt2plot.GeoToolsLayer;
 import org.mwc.cmap.geotools.gt2plot.ShapeFileLayer;
 import org.mwc.cmap.geotools.gt2plot.WorldImageLayer;
-import org.mwc.debrief.lite.graph.GraphPanelView;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.gui.LiteStepControl;
