@@ -8,6 +8,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 
 import javax.swing.Box;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
@@ -18,6 +19,15 @@ import javax.swing.table.TableCellRenderer;
 public class NarrativeEntryItemRenderer extends JPanel implements
     TableCellRenderer
 {
+
+  private static final ImageIcon HIGHLIGHT_ICON = Utils.getIcon(
+      "icons/16/highlight.png");
+  private static final ImageIcon BLANK_ICON = Utils.getIcon(
+      "icons/16/blank.png");
+  private static final ImageIcon REMOVE_NARRATIVE_ICON = Utils.getIcon(
+      "icons/16/remove_narrative.png");
+  private static final ImageIcon EDIT_NARRATIVE_ICON = Utils.getIcon(
+      "icons/16/edit_narrative.png");
 
   /**
    *
@@ -86,11 +96,11 @@ public class NarrativeEntryItemRenderer extends JPanel implements
       JLabel highlightIcon;
       if (isSelected)
       {
-        highlightIcon = new JLabel(Utils.getIcon("icons/16/highlight.png"));
+        highlightIcon = new JLabel(HIGHLIGHT_ICON);
       }
       else
       {
-        highlightIcon = new JLabel(Utils.getIcon("icons/16/blank.png"));
+        highlightIcon = new JLabel(BLANK_ICON);
       }
 
       mainPanel.add(highlightIcon, BorderLayout.WEST);
@@ -101,10 +111,8 @@ public class NarrativeEntryItemRenderer extends JPanel implements
         name.setBackground(selectedColor);
         header.setBackground(selectedColor);
         innerPanel.setBackground(selectedColor);
-        final JLabel editNarrative = new JLabel(Utils.getIcon(
-            "icons/16/edit_narrative.png"));
-        final JLabel removeNarrative = new JLabel(Utils.getIcon(
-            "icons/16/remove_narrative.png"));
+        final JLabel editNarrative = new JLabel(EDIT_NARRATIVE_ICON);
+        final JLabel removeNarrative = new JLabel(REMOVE_NARRATIVE_ICON);
 
         final JPanel iconsPanel = new JPanel();
         iconsPanel.setBackground(selectedColor);
