@@ -25,6 +25,18 @@
             <se:Label>
               <ogc:PropertyName>NAME</ogc:PropertyName>
             </se:Label>
+            <se:LabelPlacement>
+							<se:PointPlacement>
+								<se:AnchorPoint>
+									<se:AnchorPointX>
+										0.5
+									</se:AnchorPointX>
+									<se:AnchorPointY>
+										0.5
+									</se:AnchorPointY>
+								</se:AnchorPoint>
+							</se:PointPlacement>
+						</se:LabelPlacement>
             <se:Font>
               <se:CssParameter name="font-family">Arial</se:CssParameter>
               <se:CssParameter name="font-size">14</se:CssParameter>
