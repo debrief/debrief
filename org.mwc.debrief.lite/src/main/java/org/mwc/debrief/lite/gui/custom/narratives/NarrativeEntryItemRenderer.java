@@ -12,8 +12,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.UIManager;
 import javax.swing.table.TableCellRenderer;
 
 public class NarrativeEntryItemRenderer extends JPanel implements
@@ -29,6 +27,8 @@ public class NarrativeEntryItemRenderer extends JPanel implements
   private static final ImageIcon EDIT_NARRATIVE_ICON = Utils.getIcon(
       "icons/16/edit_narrative.png");
 
+  private int panelWidth;
+  
   /**
    *
    */
@@ -69,17 +69,13 @@ public class NarrativeEntryItemRenderer extends JPanel implements
       header.add(Box.createHorizontalStrut(3));
       header.add(typeName);
 
-      final JTextArea name = new JTextArea();
-      name.setWrapStyleWord(false);
-      name.setLineWrap(valueItem.getModel().isWrapping());
-      name.setOpaque(false);
-      name.setEditable(false);
-      name.setFocusable(false);
-      name.setText(text);
+      final JLabel name = new JLabel();
+      final String html = "<html><body style='width: %1spx'>%1s";
 
-      name.setBackground(UIManager.getColor("Label.background"));
-      name.setFont(UIManager.getFont("Label.font"));
-      name.setBorder(UIManager.getBorder("Label.border"));
+      name.setOpaque(false);
+      name.setFocusable(false);
+      name.setText(String.format(html, panelWidth, text));
+
       name.setFont(bigFont);
       final int width = table.getWidth();
       if (width > 0)
@@ -127,5 +123,15 @@ public class NarrativeEntryItemRenderer extends JPanel implements
     {
       return null;
     }
+  }
+
+  public int getPanelWidth()
+  {
+    return panelWidth;
+  }
+
+  public void setPanelWidth(int panelWidth)
+  {
+    this.panelWidth = panelWidth;
   }
 }

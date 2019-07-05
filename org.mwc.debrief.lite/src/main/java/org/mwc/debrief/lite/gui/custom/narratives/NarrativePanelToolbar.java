@@ -66,7 +66,8 @@ public class NarrativePanelToolbar extends JPanel
   /**
    * Maybe this should be inside the abstract model.
    */
-  private final DefaultTableModel _narrativeListModel = new DefaultTableModel() {
+  private final DefaultTableModel _narrativeListModel = new DefaultTableModel()
+  {
 
     /**
      * 
@@ -78,12 +79,13 @@ public class NarrativePanelToolbar extends JPanel
     {
       return false;
     }
-    
+
   };
 
   private final JTable _narrativeList = new JTable();
 
-  private final TreeMap<NarrativeEntry, NarrativeEntryItem> entry2Index = new TreeMap<>();
+  private final TreeMap<NarrativeEntry, NarrativeEntryItem> entry2Index =
+      new TreeMap<>();
 
   private final AbstractNarrativeConfiguration _model;
 
@@ -175,9 +177,10 @@ public class NarrativePanelToolbar extends JPanel
               }
               for (final NarrativeEntry entry : toRemove)
               {
-                for ( int i = 0 ; i < _narrativeListModel.getRowCount(); i++ )
+                for (int i = 0; i < _narrativeListModel.getRowCount(); i++)
                 {
-                  if ( _narrativeListModel.getValueAt(i, 0) == entry2Index.get(entry) )
+                  if (_narrativeListModel.getValueAt(i, 0) == entry2Index.get(
+                      entry))
                   {
                     _narrativeListModel.removeRow(i);
                     break;
@@ -198,11 +201,12 @@ public class NarrativePanelToolbar extends JPanel
             while (iteratorToRemove.hasMoreElements())
             {
               final Editable thisE = iteratorToRemove.nextElement();
-              if ( entry2Index.containsKey(thisE) )
+              if (entry2Index.containsKey(thisE))
               {
-                for ( int i = 0 ; i < _narrativeListModel.getRowCount(); i++ )
+                for (int i = 0; i < _narrativeListModel.getRowCount(); i++)
                 {
-                  if ( _narrativeListModel.getValueAt(i, 0) == entry2Index.get(thisE) )
+                  if (_narrativeListModel.getValueAt(i, 0) == entry2Index.get(
+                      thisE))
                   {
                     _narrativeListModel.removeRow(i);
                     entry2Index.remove(thisE);
@@ -237,13 +241,16 @@ public class NarrativePanelToolbar extends JPanel
     this._narrativeListModel.addColumn("");
     final TableColumn column = this._narrativeList.getColumnModel().getColumn(
         0);
-    column.setCellRenderer(new NarrativeEntryItemRenderer());
+    final NarrativeEntryItemRenderer narrativeEntryItemRenderer =
+        new NarrativeEntryItemRenderer();
+    column.setCellRenderer(narrativeEntryItemRenderer);
     this._narrativeList.addComponentListener(new ComponentAdapter()
     {
 
       @Override
       public void componentResized(final ComponentEvent e)
       {
+        narrativeEntryItemRenderer.setPanelWidth(_narrativeList.getWidth());
         _toolbarInstance.updateRowHeights();
       }
 
