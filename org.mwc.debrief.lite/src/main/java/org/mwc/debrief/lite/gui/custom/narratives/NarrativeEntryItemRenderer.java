@@ -29,6 +29,8 @@ public class NarrativeEntryItemRenderer extends JPanel implements
 
   private int panelWidth;
   
+  private boolean isWrapping;
+  
   /**
    *
    */
@@ -74,7 +76,14 @@ public class NarrativeEntryItemRenderer extends JPanel implements
 
       name.setOpaque(false);
       name.setFocusable(false);
-      name.setText(String.format(html, panelWidth, text));
+      if ( isWrapping() )
+      {
+        name.setText(String.format(html, panelWidth, text));
+      }else
+      {
+        name.setText(text);
+      }
+      
 
       name.setFont(bigFont);
       final int width = table.getWidth();
@@ -134,4 +143,16 @@ public class NarrativeEntryItemRenderer extends JPanel implements
   {
     this.panelWidth = panelWidth;
   }
+
+  public boolean isWrapping()
+  {
+    return isWrapping;
+  }
+
+  public void setWrapping(boolean isWrapping)
+  {
+    this.isWrapping = isWrapping;
+  }
+  
+  
 }

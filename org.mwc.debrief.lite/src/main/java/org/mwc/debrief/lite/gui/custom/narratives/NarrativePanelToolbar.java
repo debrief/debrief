@@ -251,6 +251,7 @@ public class NarrativePanelToolbar extends JPanel
       public void componentResized(final ComponentEvent e)
       {
         narrativeEntryItemRenderer.setPanelWidth(_narrativeList.getWidth());
+        narrativeEntryItemRenderer.setWrapping(model.isWrapping());
         _toolbarInstance.updateRowHeights();
       }
 
