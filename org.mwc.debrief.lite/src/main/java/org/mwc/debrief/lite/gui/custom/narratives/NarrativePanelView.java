@@ -15,8 +15,7 @@ public class NarrativePanelView extends JPanel
    */
   private static final long serialVersionUID = 1218759123615315561L;
 
-  public NarrativePanelView(final NarrativePanelToolbar toolbar,
-      final AbstractNarrativeConfiguration model)
+  public NarrativePanelView(final NarrativePanelToolbar toolbar)
   {
     super();
 
