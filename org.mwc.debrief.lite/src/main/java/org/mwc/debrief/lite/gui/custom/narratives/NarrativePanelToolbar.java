@@ -71,12 +71,12 @@ public class NarrativePanelToolbar extends JPanel
   {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = -3080607575902259924L;
 
     @Override
-    public boolean isCellEditable(int row, int column)
+    public boolean isCellEditable(final int row, final int column)
     {
       return false;
     }
@@ -276,7 +276,7 @@ public class NarrativePanelToolbar extends JPanel
     {
 
       @Override
-      public void propertyChange(PropertyChangeEvent evt)
+      public void propertyChange(final PropertyChangeEvent evt)
       {
         if (NarrativeConfigurationModel.NARRATIVE_HIGHLIGHT.equals(evt
             .getPropertyName()))
@@ -291,11 +291,12 @@ public class NarrativePanelToolbar extends JPanel
             if (actualEntry.equals(itemToCompare.getEntry()))
             {
               _narrativeList.getSelectionModel().setSelectionInterval(i, i);
-              _narrativeList.scrollRectToVisible(new Rectangle(_narrativeList.getCellRect(i, 0, true)));
+              _narrativeList.scrollRectToVisible(new Rectangle(_narrativeList
+                  .getCellRect(i, 0, true)));
               break;
             }
           }
-          //_model.repaintView();
+          // _model.repaintView();
         }
       }
     });
@@ -304,40 +305,40 @@ public class NarrativePanelToolbar extends JPanel
     {
 
       @Override
-      public void mouseReleased(MouseEvent e)
+      public void mouseClicked(final MouseEvent e)
       {
-        // TODO Auto-generated method stub
-
-      }
-
-      @Override
-      public void mousePressed(MouseEvent e)
-      {
-        // TODO Auto-generated method stub
-
-      }
-
-      @Override
-      public void mouseExited(MouseEvent e)
-      {
-        // TODO Auto-generated method stub
-
-      }
-
-      @Override
-      public void mouseEntered(MouseEvent e)
-      {
-        // TODO Auto-generated method stub
-
-      }
-
-      @Override
-      public void mouseClicked(MouseEvent e)
-      {
-        int selectedRow = _narrativeList.getSelectedRow();
-        NarrativeEntryItem entryItem = (NarrativeEntryItem) _narrativeList
+        final int selectedRow = _narrativeList.getSelectedRow();
+        final NarrativeEntryItem entryItem = (NarrativeEntryItem) _narrativeList
             .getValueAt(selectedRow, 0);
         _stepControl.changeTime(entryItem.getEntry().getDTG());
+      }
+
+      @Override
+      public void mouseEntered(final MouseEvent e)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void mouseExited(final MouseEvent e)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void mousePressed(final MouseEvent e)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void mouseReleased(final MouseEvent e)
+      {
+        // TODO Auto-generated method stub
+
       }
     });
     setState(INACTIVE_STATE);
