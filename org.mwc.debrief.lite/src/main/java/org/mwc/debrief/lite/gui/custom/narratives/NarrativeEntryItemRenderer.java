@@ -27,16 +27,17 @@ public class NarrativeEntryItemRenderer extends JPanel implements
   private static final ImageIcon EDIT_NARRATIVE_ICON = Utils.getIcon(
       "icons/16/edit_narrative.png");
 
-  private int panelWidth;
-  
-  private boolean isWrapping;
-  
   /**
    *
    */
   private static final long serialVersionUID = -2227870470228775898L;
 
-  private JPanel getHeader(final NarrativeEntryItem valueItem, final JLabel time, final Font originalFont)
+  private int panelWidth;
+
+  private boolean isWrapping;
+
+  private JPanel getHeader(final NarrativeEntryItem valueItem,
+      final JLabel time, final Font originalFont)
   {
     final JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT));
     header.setPreferredSize(new Dimension(300, 18));
@@ -56,7 +57,50 @@ public class NarrativeEntryItemRenderer extends JPanel implements
     header.add(typeName);
     return header;
   }
-  
+
+  private JLabel getName(final String text, final boolean hasFocus,
+      final Font originalFont, final JTable table)
+  {
+    final JLabel name = new JLabel();
+    final String html = "<html><body style='width: %1spx'>%1s";
+
+    name.setOpaque(false);
+    name.setFocusable(false);
+    if (isWrapping())
+    {
+      final int emptySpace;
+      if (hasFocus)
+      {
+        emptySpace = 120;
+      }
+      else
+      {
+        emptySpace = 80;
+      }
+      name.setText(String.format(html, panelWidth - emptySpace, text));
+    }
+    else
+    {
+      name.setText(text);
+    }
+
+    final Font bigFont = new Font(originalFont.getName(), originalFont
+        .getStyle(), 12);
+    name.setFont(bigFont);
+    final int width = table.getWidth();
+    if (width > 0)
+    {
+      name.setSize(width, Short.MAX_VALUE);
+    }
+
+    return name;
+  }
+
+  public int getPanelWidth()
+  {
+    return panelWidth;
+  }
+
   @Override
   public Component getTableCellRendererComponent(final JTable table,
       final Object value, final boolean isSelected, final boolean hasFocus,
@@ -73,10 +117,10 @@ public class NarrativeEntryItemRenderer extends JPanel implements
 
       final JLabel time = new JLabel(valueItem.getEntry().getDTGString());
       final Font originalFont = time.getFont();
-      
+
       // the header bar, with the metadata
       final JPanel header = getHeader(valueItem, time, originalFont);
-      
+
       // the content of the narrative entry
       final JLabel name = getName(text, hasFocus, originalFont, table);
 
@@ -122,60 +166,19 @@ public class NarrativeEntryItemRenderer extends JPanel implements
     }
   }
 
-  private JLabel getName(String text, boolean hasFocus, final Font originalFont,final JTable table)
-  {
-    final JLabel name = new JLabel();
-    final String html = "<html><body style='width: %1spx'>%1s";
-
-    name.setOpaque(false);
-    name.setFocusable(false);
-    if ( isWrapping() )
-    {
-      final int emptySpace;
-      if ( hasFocus )
-      {
-        emptySpace = 120;
-      }else
-      {
-        emptySpace = 80;
-      }
-      name.setText(String.format(html, panelWidth - emptySpace, text));
-    }else
-    {
-      name.setText(text);
-    }
-    
-    final Font bigFont = new Font(originalFont.getName(), originalFont
-        .getStyle(), 12);
-    name.setFont(bigFont);
-    final int width = table.getWidth();
-    if (width > 0)
-    {
-      name.setSize(width, Short.MAX_VALUE);
-    }
-    
-    return name;
-  }
-
-  public int getPanelWidth()
-  {
-    return panelWidth;
-  }
-
-  public void setPanelWidth(int panelWidth)
-  {
-    this.panelWidth = panelWidth;
-  }
-
   public boolean isWrapping()
   {
     return isWrapping;
   }
 
-  public void setWrapping(boolean isWrapping)
+  public void setPanelWidth(final int panelWidth)
+  {
+    this.panelWidth = panelWidth;
+  }
+
+  public void setWrapping(final boolean isWrapping)
   {
     this.isWrapping = isWrapping;
   }
-  
-  
+
 }
