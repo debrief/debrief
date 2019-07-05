@@ -438,8 +438,8 @@ public class DebriefLiteApp implements FileDropListener
       final MathTransform transform)
   {
     // give it a default viewport - overlooking Europe
-    final DirectPosition2D tl = new DirectPosition2D(-14, 65);
-    final DirectPosition2D br = new DirectPosition2D(35, 30);
+    final DirectPosition2D tl = new DirectPosition2D(-7, 53);
+    final DirectPosition2D br = new DirectPosition2D(14, 42);
 
     try
     {
@@ -1259,8 +1259,8 @@ public class DebriefLiteApp implements FileDropListener
      * .createApplicationMenu(theFrame));
      */
     // It cannot be smaller than this size to have the ribbon complete!
-    final int sizeWidth = Math.max((int) (dim.width * 0.6), 870);
-    final int sizeHeight = (int) (dim.height * 0.6);
+    final int sizeWidth = Math.max((int) (dim.width * 0.8), 870);
+    final int sizeHeight = (int) (dim.height * 0.8);
     theFrame.setSize(sizeWidth, sizeHeight);
     final Dimension sz = theFrame.getSize();
     theFrame.setLocation((dim.width - sz.width) / 2, (dim.height - sz.height)
