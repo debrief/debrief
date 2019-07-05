@@ -3,6 +3,7 @@ package org.mwc.debrief.lite.gui.custom.narratives;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -66,7 +67,8 @@ public class NarrativePanelToolbar extends JPanel
   /**
    * Maybe this should be inside the abstract model.
    */
-  private final DefaultTableModel _narrativeListModel = new DefaultTableModel() {
+  private final DefaultTableModel _narrativeListModel = new DefaultTableModel()
+  {
 
     /**
      * 
@@ -78,7 +80,7 @@ public class NarrativePanelToolbar extends JPanel
     {
       return false;
     }
-    
+
   };
 
   private final JTable _narrativeList = new JTable();
@@ -283,13 +285,17 @@ public class NarrativePanelToolbar extends JPanel
               (NarrativeEntry) evt.getNewValue(), _model);
           for (int i = 0; i < _narrativeList.getRowCount(); i++)
           {
-            if (_narrativeList.getValueAt(i, 0) == itemToCompare)
+            final NarrativeEntry actualEntry =
+                ((NarrativeEntryItem) (_narrativeList.getValueAt(i, 0)))
+                    .getEntry();
+            if (actualEntry.equals(itemToCompare.getEntry()))
             {
-              _narrativeList.setRowSelectionInterval(i, i + 1);
+              _narrativeList.getSelectionModel().setSelectionInterval(i, i);
+              _narrativeList.scrollRectToVisible(new Rectangle(_narrativeList.getCellRect(i, 0, true)));
               break;
             }
           }
-          _model.repaintView();
+          //_model.repaintView();
         }
       }
     });
