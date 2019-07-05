@@ -36,6 +36,27 @@ public class NarrativeEntryItemRenderer extends JPanel implements
    */
   private static final long serialVersionUID = -2227870470228775898L;
 
+  private JPanel getHeader(final NarrativeEntryItem valueItem, final JLabel time, final Font originalFont)
+  {
+    final JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    header.setPreferredSize(new Dimension(300, 18));
+
+    final Font smallFont = new Font(originalFont.getName(), originalFont
+        .getStyle(), 8);
+    time.setFont(smallFont);
+    final JLabel trackName = new JLabel(valueItem.getEntry().getTrackName());
+    trackName.setFont(smallFont);
+    final JLabel typeName = new JLabel(valueItem.getEntry().getType());
+    typeName.setFont(smallFont);
+    header.add(Box.createHorizontalStrut(12));
+    header.add(time);
+    header.add(Box.createHorizontalStrut(3));
+    header.add(trackName);
+    header.add(Box.createHorizontalStrut(3));
+    header.add(typeName);
+    return header;
+  }
+  
   @Override
   public Component getTableCellRendererComponent(final JTable table,
       final Object value, final boolean isSelected, final boolean hasFocus,
@@ -50,55 +71,14 @@ public class NarrativeEntryItemRenderer extends JPanel implements
       final JPanel mainPanel = new JPanel();
       mainPanel.setLayout(new BorderLayout());
 
-      final JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT));
-      header.setPreferredSize(new Dimension(300, 18));
-
       final JLabel time = new JLabel(valueItem.getEntry().getDTGString());
       final Font originalFont = time.getFont();
-      final Font smallFont = new Font(originalFont.getName(), originalFont
-          .getStyle(), 8);
-      final Font bigFont = new Font(originalFont.getName(), originalFont
-          .getStyle(), 12);
-      time.setFont(smallFont);
-      final JLabel trackName = new JLabel(valueItem.getEntry().getTrackName());
-      trackName.setFont(smallFont);
-      final JLabel typeName = new JLabel(valueItem.getEntry().getType());
-      typeName.setFont(smallFont);
-      header.add(Box.createHorizontalStrut(12));
-      header.add(time);
-      header.add(Box.createHorizontalStrut(3));
-      header.add(trackName);
-      header.add(Box.createHorizontalStrut(3));
-      header.add(typeName);
-
-      final JLabel name = new JLabel();
-      final String html = "<html><body style='width: %1spx'>%1s";
-
-      name.setOpaque(false);
-      name.setFocusable(false);
-      if ( isWrapping() )
-      {
-        final int emptySpace;
-        if ( hasFocus )
-        {
-          emptySpace = 120;
-        }else
-        {
-          emptySpace = 80;
-        }
-        name.setText(String.format(html, panelWidth - emptySpace, text));
-      }else
-      {
-        name.setText(text);
-      }
       
-
-      name.setFont(bigFont);
-      final int width = table.getWidth();
-      if (width > 0)
-      {
-        name.setSize(width, Short.MAX_VALUE);
-      }
+      // the header bar, with the metadata
+      final JPanel header = getHeader(valueItem, time, originalFont);
+      
+      // the content of the narrative entry
+      final JLabel name = getName(text, hasFocus, originalFont, table);
 
       final JPanel innerPanel = new JPanel();
       innerPanel.setLayout(new BorderLayout());
@@ -140,6 +120,41 @@ public class NarrativeEntryItemRenderer extends JPanel implements
     {
       return null;
     }
+  }
+
+  private JLabel getName(String text, boolean hasFocus, final Font originalFont,final JTable table)
+  {
+    final JLabel name = new JLabel();
+    final String html = "<html><body style='width: %1spx'>%1s";
+
+    name.setOpaque(false);
+    name.setFocusable(false);
+    if ( isWrapping() )
+    {
+      final int emptySpace;
+      if ( hasFocus )
+      {
+        emptySpace = 120;
+      }else
+      {
+        emptySpace = 80;
+      }
+      name.setText(String.format(html, panelWidth - emptySpace, text));
+    }else
+    {
+      name.setText(text);
+    }
+    
+    final Font bigFont = new Font(originalFont.getName(), originalFont
+        .getStyle(), 12);
+    name.setFont(bigFont);
+    final int width = table.getWidth();
+    if (width > 0)
+    {
+      name.setSize(width, Short.MAX_VALUE);
+    }
+    
+    return name;
   }
 
   public int getPanelWidth()
