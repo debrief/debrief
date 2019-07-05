@@ -44,4 +44,8 @@ public interface AbstractNarrativeConfiguration
   public boolean isWrapping();
   
   public void setWrapping(final boolean wrapping);
+  
+  public int getPanelWidth();
+  
+  public void setPanelWidth(final int width);
 }

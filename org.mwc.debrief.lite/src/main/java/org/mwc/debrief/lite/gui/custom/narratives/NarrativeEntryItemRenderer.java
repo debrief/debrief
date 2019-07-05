@@ -27,14 +27,19 @@ public class NarrativeEntryItemRenderer extends JPanel implements
   private static final ImageIcon EDIT_NARRATIVE_ICON = Utils.getIcon(
       "icons/16/edit_narrative.png");
 
+
+  private final int HEIGHT_FIXED_SIZE = 33;
   /**
    *
    */
   private static final long serialVersionUID = -2227870470228775898L;
 
-  private int panelWidth;
+  private final AbstractNarrativeConfiguration _model;
 
-  private boolean isWrapping;
+  public NarrativeEntryItemRenderer(final AbstractNarrativeConfiguration model)
+  {
+    this._model = model;
+  }
 
   private JPanel getHeader(final NarrativeEntryItem valueItem,
       final JLabel time, final Font originalFont)
@@ -66,7 +71,7 @@ public class NarrativeEntryItemRenderer extends JPanel implements
 
     name.setOpaque(false);
     name.setFocusable(false);
-    if (isWrapping())
+    if (_model.isWrapping())
     {
       final int emptySpace;
       if (hasFocus)
@@ -77,7 +82,7 @@ public class NarrativeEntryItemRenderer extends JPanel implements
       {
         emptySpace = 80;
       }
-      name.setText(String.format(html, panelWidth - emptySpace, text));
+      name.setText(String.format(html, _model.getPanelWidth() - emptySpace, text));
     }
     else
     {
@@ -94,11 +99,6 @@ public class NarrativeEntryItemRenderer extends JPanel implements
     }
 
     return name;
-  }
-
-  public int getPanelWidth()
-  {
-    return panelWidth;
   }
 
   @Override
@@ -158,27 +158,28 @@ public class NarrativeEntryItemRenderer extends JPanel implements
         mainPanel.add(iconsPanel, BorderLayout.EAST);
       }
 
+      if (_model.isWrapping())
+      {
+        final int currentRowHeight = table.getRowHeight(row);
+        if (currentRowHeight != mainPanel.getPreferredSize().height)
+        {
+          table.setRowHeight(row, mainPanel.getPreferredSize().height);
+        }
+      }
+      else
+      {
+        if (table.getRowHeight(row) != HEIGHT_FIXED_SIZE)
+        {
+          table.setRowHeight(row, HEIGHT_FIXED_SIZE);
+        }
+      }
+
       return mainPanel;
     }
     else
     {
       return null;
     }
-  }
-
-  public boolean isWrapping()
-  {
-    return isWrapping;
-  }
-
-  public void setPanelWidth(final int panelWidth)
-  {
-    this.panelWidth = panelWidth;
-  }
-
-  public void setWrapping(final boolean isWrapping)
-  {
-    this.isWrapping = isWrapping;
   }
 
 }

@@ -61,8 +61,6 @@ public class NarrativePanelToolbar extends JPanel
 
   private final List<JComponent> componentsToDisable = new ArrayList<>();
 
-  private final int HEIGHT_FIXED_SIZE = 33;
-
   /**
    * Maybe this should be inside the abstract model.
    */
@@ -88,8 +86,6 @@ public class NarrativePanelToolbar extends JPanel
       new TreeMap<>();
 
   private final AbstractNarrativeConfiguration _model;
-
-  private final NarrativePanelToolbar _toolbarInstance;
 
   private final PropertyChangeListener enableDisableButtonsListener =
       new PropertyChangeListener()
@@ -237,12 +233,11 @@ public class NarrativePanelToolbar extends JPanel
     super(new FlowLayout(FlowLayout.LEFT));
 
     this._narrativeList.setModel(_narrativeListModel);
-    this._toolbarInstance = this;
     this._narrativeListModel.addColumn("");
     final TableColumn column = this._narrativeList.getColumnModel().getColumn(
         0);
     final NarrativeEntryItemRenderer narrativeEntryItemRenderer =
-        new NarrativeEntryItemRenderer();
+        new NarrativeEntryItemRenderer(model);
     column.setCellRenderer(narrativeEntryItemRenderer);
     this._narrativeList.addComponentListener(new ComponentAdapter()
     {
@@ -250,9 +245,8 @@ public class NarrativePanelToolbar extends JPanel
       @Override
       public void componentResized(final ComponentEvent e)
       {
-        narrativeEntryItemRenderer.setPanelWidth(_narrativeList.getWidth());
-        narrativeEntryItemRenderer.setWrapping(model.isWrapping());
-        _toolbarInstance.updateRowHeights();
+        model.setPanelWidth(_narrativeList.getWidth());
+        model.setWrapping(model.isWrapping());
       }
 
     });
@@ -478,7 +472,8 @@ public class NarrativePanelToolbar extends JPanel
       public void actionPerformed(final ActionEvent e)
       {
         _model.setWrapping(wrapTextButton.isSelected());
-        updateRowHeights();
+        _narrativeList.invalidate();
+        _narrativeList.repaint();
       }
     });
     return wrapTextButton;
@@ -557,31 +552,6 @@ public class NarrativePanelToolbar extends JPanel
     if (newState != null && !newState.equals(oldState))
     {
       notifyListenersStateChanged(this, STATE_PROPERTY, oldState, newState);
-    }
-  }
-
-  public void updateRowHeights()
-  {
-    for (int row = 0; row < _narrativeList.getRowCount(); row++)
-    {
-      if (_model.isWrapping())
-      {
-
-        int rowHeight = _narrativeList.getRowHeight();
-
-        for (int column = 0; column < _narrativeList.getColumnCount(); column++)
-        {
-          final Component comp = _narrativeList.prepareRenderer(_narrativeList
-              .getCellRenderer(row, column), row, column);
-          rowHeight = Math.max(rowHeight, comp.getPreferredSize().height);
-        }
-
-        _narrativeList.setRowHeight(row, rowHeight);
-      }
-      else
-      {
-        _narrativeList.setRowHeight(row, HEIGHT_FIXED_SIZE);
-      }
     }
   }
 
