@@ -78,7 +78,15 @@ public class NarrativeEntryItemRenderer extends JPanel implements
       name.setFocusable(false);
       if ( isWrapping() )
       {
-        name.setText(String.format(html, panelWidth, text));
+        final int emptySpace;
+        if ( hasFocus )
+        {
+          emptySpace = 120;
+        }else
+        {
+          emptySpace = 80;
+        }
+        name.setText(String.format(html, panelWidth - emptySpace, text));
       }else
       {
         name.setText(text);
