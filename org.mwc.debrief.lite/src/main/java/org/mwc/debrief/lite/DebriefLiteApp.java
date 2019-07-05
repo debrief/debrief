@@ -438,8 +438,8 @@ public class DebriefLiteApp implements FileDropListener
       final MathTransform transform)
   {
     // give it a default viewport - overlooking Europe
-    final DirectPosition2D tl = new DirectPosition2D(-7, 53);
-    final DirectPosition2D br = new DirectPosition2D(14, 42);
+    final DirectPosition2D tl = new DirectPosition2D(-22, 59.75);
+    final DirectPosition2D br = new DirectPosition2D(37, 36.5);
 
     try
     {
