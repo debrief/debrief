@@ -12,36 +12,25 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
-package org.mwc.debrief.lite.gui.custom;
+package org.mwc.debrief.lite.gui.custom.graph;
 
 import java.beans.PropertyChangeListener;
 import java.util.List;
+
+import org.mwc.debrief.lite.gui.custom.AbstractSelection;
 
 import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3.CalculationHolder;
 import Debrief.Wrappers.TrackWrapper;
 
 public interface AbstractTrackConfiguration
 {
-  static class TrackWrapperSelect
-  {
-    public TrackWrapper track;
-    public Boolean selected;
-
-    public TrackWrapperSelect(final TrackWrapper track, final Boolean selected)
-    {
-      super();
-      this.track = track;
-      this.selected = selected;
-    }
-  }
-
   public void addPropertyChangeListener(final PropertyChangeListener listener);
 
   public CalculationHolder getOperation();
 
   public TrackWrapper getPrimaryTrack();
 
-  public List<TrackWrapperSelect> getTracks();
+  public List<AbstractSelection<TrackWrapper>> getTracks();
 
   public void setActiveTrack(final TrackWrapper track, final boolean check);
 

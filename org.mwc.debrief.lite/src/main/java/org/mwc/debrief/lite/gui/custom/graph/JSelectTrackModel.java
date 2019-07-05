@@ -12,13 +12,15 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
-package org.mwc.debrief.lite.gui.custom;
+package org.mwc.debrief.lite.gui.custom.graph;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+
+import org.mwc.debrief.lite.gui.custom.AbstractSelection;
 
 import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3.CalculationHolder;
 import Debrief.Wrappers.TrackWrapper;
@@ -36,7 +38,7 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
 
   private TrackWrapper _primaryTrack;
 
-  private final List<TrackWrapperSelect> _tracks = new ArrayList<>();
+  private final List<AbstractSelection<TrackWrapper>> _tracks = new ArrayList<>();
 
   private CalculationHolder _calculation;
 
@@ -69,7 +71,7 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
   }
 
   @Override
-  public List<TrackWrapperSelect> getTracks()
+  public List<AbstractSelection<TrackWrapper>> getTracks()
   {
     return _tracks;
   }
@@ -87,15 +89,16 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
   @Override
   public void setActiveTrack(final TrackWrapper track, final boolean check)
   {
+    // TODO this should be move to somewhere else.
     Boolean oldValue = null;
     Boolean newValue = null;
-    for (final TrackWrapperSelect currentTrack : _tracks)
+    for (final AbstractSelection<TrackWrapper> currentTrack : _tracks)
     {
-      if (currentTrack.track.equals(track))
+      if (currentTrack.getItem().equals(track))
       {
         newValue = check;
-        oldValue = currentTrack.selected;
-        currentTrack.selected = newValue;
+        oldValue = currentTrack.isSelected();
+        currentTrack.setSelected(newValue);
       }
     }
 
@@ -123,13 +126,13 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
   {
     final TrackWrapper oldPrimary = getPrimaryTrack();
     // Do we have it?
-    for (final TrackWrapperSelect currentTrack : _tracks)
+    for (final AbstractSelection<TrackWrapper> currentTrack : _tracks)
     {
-      if (currentTrack.track.equals(newPrimary))
+      if (currentTrack.getItem().equals(newPrimary))
       {
         this._primaryTrack = newPrimary;
 
-        if (!currentTrack.selected)
+        if (!currentTrack.isSelected())
         {
           setActiveTrack(newPrimary, true);
         }
@@ -152,19 +155,19 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
   public boolean setTracks(final List<TrackWrapper> tracks)
   {
     boolean isDifferent = false;
-    final List<TrackWrapperSelect> oldTracks = new ArrayList<>(this._tracks);
-    final List<TrackWrapperSelect> newTracks = new ArrayList<>();
+    final List<AbstractSelection<TrackWrapper>> oldTracks = new ArrayList<>(this._tracks);
+    final List<AbstractSelection<TrackWrapper>> newTracks = new ArrayList<>();
     final HashSet<TrackWrapper> oldTracksSet = new HashSet<>();
     if (oldTracks != null)
     {
-      for (TrackWrapperSelect oldTrack : oldTracks)
+      for (AbstractSelection<TrackWrapper> oldTrack : oldTracks)
       {
-        oldTracksSet.add(oldTrack.track);
+        oldTracksSet.add(oldTrack.getItem());
       }
     }
     for (final TrackWrapper track : tracks)
     {
-      newTracks.add(new TrackWrapperSelect(track, false));
+      newTracks.add(new AbstractSelection<TrackWrapper>(track, false));
       isDifferent |= !oldTracksSet.contains(track);
     }
     for (TrackWrapper oldTrackItem : oldTracksSet)

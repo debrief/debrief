@@ -54,11 +54,14 @@ import org.geotools.swing.action.ResetAction;
 import org.mwc.cmap.geotools.gt2plot.GeoToolsLayer;
 import org.mwc.cmap.geotools.gt2plot.ShapeFileLayer;
 import org.mwc.cmap.geotools.gt2plot.WorldImageLayer;
-import org.mwc.debrief.lite.graph.GraphPanelView;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.gui.custom.JXCollapsiblePane.Direction;
+import org.mwc.debrief.lite.gui.custom.graph.GraphPanelView;
+import org.mwc.debrief.lite.gui.custom.narratives.NarrativeConfigurationModel;
+import org.mwc.debrief.lite.gui.custom.narratives.NarrativePanelToolbar;
+import org.mwc.debrief.lite.gui.custom.narratives.NarrativePanelView;
 import org.mwc.debrief.lite.gui.custom.JXCollapsiblePaneWithTitle;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer.MapRenderer;
@@ -510,6 +513,9 @@ public class DebriefLiteApp implements FileDropListener
   private final JXCollapsiblePaneWithTitle graphPanel =
       new JXCollapsiblePaneWithTitle(Direction.DOWN, "Graph", 150);
 
+  private final JXCollapsiblePaneWithTitle narrativePanel =
+      new JXCollapsiblePaneWithTitle(Direction.RIGHT, "Narratives", 350);
+
   private final JRibbonFrame theFrame;
   private final Layers _theLayers = new Layers()
   {
@@ -775,6 +781,8 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataReformattedListener(dListener);
     _theLayers.addDataExtendedListener(dListener);
     _theLayers.addDataModifiedListener(dListener);
+    
+    
 
     painterManager = new PainterManager(_stepControl);
     final PlainChart theChart = new LiteChart(_theLayers, theCanvas, mapPane);
@@ -838,6 +846,15 @@ public class DebriefLiteApp implements FileDropListener
     graphPanel.add(graphPanelView, BorderLayout.CENTER);
   }
 
+  private void addNarrativeView()
+  {
+    final NarrativeConfigurationModel model = new NarrativeConfigurationModel();
+    final NarrativePanelToolbar toolbar = new NarrativePanelToolbar(_stepControl,model);
+    final NarrativePanelView narrativePanelView = new NarrativePanelView(toolbar);
+    narrativePanel.setCollapsed(true);
+    narrativePanel.add(narrativePanelView, BorderLayout.CENTER);
+  }
+
   private void addOutlineView(final ToolParent toolParent,
       final UndoBuffer undoBuffer)
   {
@@ -876,8 +893,12 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.add(centerPanel, BorderLayout.CENTER);
 
     theFrame.add(outlinePanel, BorderLayout.WEST);
+
+    theFrame.add(narrativePanel, BorderLayout.EAST);
+    
     addOutlineView(app, undoBuffer);
     addGraphView();
+    addNarrativeView();
 
     theFrame.add(statusBar, BorderLayout.SOUTH);
     final Runnable resetAction = new Runnable()
