@@ -66,7 +66,20 @@ public class NarrativePanelToolbar extends JPanel
   /**
    * Maybe this should be inside the abstract model.
    */
-  private final DefaultTableModel _narrativeListModel = new DefaultTableModel();
+  private final DefaultTableModel _narrativeListModel = new DefaultTableModel() {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -3080607575902259924L;
+
+    @Override
+    public boolean isCellEditable(int row, int column)
+    {
+      return false;
+    }
+    
+  };
 
   private final JTable _narrativeList = new JTable();
 
