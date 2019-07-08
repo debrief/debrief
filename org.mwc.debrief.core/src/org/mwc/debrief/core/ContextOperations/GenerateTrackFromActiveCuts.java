@@ -504,7 +504,7 @@ public class GenerateTrackFromActiveCuts implements
         
 
         // ONE LAST CHANCE.  What if it's a series of sensors?
-        List<SensorWrapper> sensors = new ArrayList<SensorWrapper>();
+        final List<SensorWrapper> sensors = new ArrayList<SensorWrapper>();
         
         for (int i = 0; i < subjects.length; i++)
         {
