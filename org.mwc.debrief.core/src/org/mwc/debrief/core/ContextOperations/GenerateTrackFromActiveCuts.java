@@ -15,7 +15,9 @@
 package org.mwc.debrief.core.ContextOperations;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -196,14 +198,14 @@ public class GenerateTrackFromActiveCuts implements
     }
   }
 
-  private class TrackfromSensorCuts extends TrackfromSensorData
+  private static class TrackfromSensorCuts extends TrackfromSensorData
   {
     private final SensorContactWrapper[] _items;
 
     public TrackfromSensorCuts(final SensorContactWrapper[] items,
-        final Layers theLayers)
+        final Layers theLayers, ErrorLogger logger)
     {
-      super("Create Track from Active cuts", theLayers);
+      super("Create Track from Active cuts", theLayers, logger);
       _items = items;
     }
 
@@ -214,16 +216,18 @@ public class GenerateTrackFromActiveCuts implements
     }
   }
 
-  private abstract class TrackfromSensorData extends CMAPOperation
+  private static abstract class TrackfromSensorData extends CMAPOperation
   {
 
     private final Layers _layers;
     private TrackWrapper _newTrack;
+    private final ErrorLogger logger;
 
-    public TrackfromSensorData(final String title, final Layers theLayers)
+    public TrackfromSensorData(final String title, final Layers theLayers, final ErrorLogger logger)
     {
       super(title);
       _layers = theLayers;
+      this.logger = logger;
     }
 
     @Override
@@ -272,7 +276,7 @@ public class GenerateTrackFromActiveCuts implements
           else
           {
 
-            _logger.logError(IStatus.WARNING,
+            logger.logError(IStatus.WARNING,
                 "Ownship location not found for sensor at:" + cut.getDTG()
                     .getDate(), null);
           }
@@ -315,14 +319,14 @@ public class GenerateTrackFromActiveCuts implements
 
   }
 
-  private class TrackfromSensorWrappers extends TrackfromSensorData
+  private static class TrackfromSensorWrappers extends TrackfromSensorData
   {
     private final SensorWrapper _wrapper;
 
     public TrackfromSensorWrappers(final SensorWrapper wrapper,
-        final Layers theLayers)
+        final Layers theLayers, ErrorLogger logger)
     {
-      super("Create Track from Active cuts", theLayers);
+      super("Create Track from Active cuts", theLayers, logger);
       _wrapper = wrapper;
     }
 
@@ -441,12 +445,18 @@ public class GenerateTrackFromActiveCuts implements
                 // ok, go for it.
                 // sort it out as an operation
                 final IUndoableOperation convertToTrack1 =
-                    new TrackfromSensorWrappers(sw, theLayers);
+                    new TrackfromSensorWrappers(sw, theLayers, _logger);
 
                 // ok, stick it on the buffer
                 runIt(convertToTrack1);
               }
             };
+          }
+          else
+          {
+            _logger.logError(Status.WARNING,
+                "Missing range or bearing data (or is ambiguous) for sensor:"
+                    + sw.getName(), null);
           }
         }
       }
@@ -491,6 +501,69 @@ public class GenerateTrackFromActiveCuts implements
       {
         // nope, clear the items list
         sonarCuts = null;
+        
+
+        // ONE LAST CHANCE.  What if it's a series of sensors?
+        List<SensorWrapper> sensors = new ArrayList<SensorWrapper>();
+        
+        for (int i = 0; i < subjects.length; i++)
+        {
+          final Editable editable = subjects[i];
+          if (editable instanceof SensorWrapper)
+          {
+            SensorWrapper sensor = (SensorWrapper) editable;
+            // have a look at the first cut
+            if (sensor.size() > 0)
+            {
+              SensorContactWrapper scw = (SensorContactWrapper) sensor
+                  .elements().nextElement();
+              if (!scw.getHasBearing())
+              {
+                _logger.logError(Status.WARNING,
+                    "Missing bearing data from sensor:" + sensor.getName(),
+                    null);
+                return;
+              }
+              else if (scw.getRange() == null)
+              {
+                _logger.logError(Status.WARNING,
+                    "Missing range data from sensor:" + sensor.getName(),
+                    null);
+                return;
+              }
+              else if (scw.getHasAmbiguousBearing())
+              {
+                _logger.logError(Status.WARNING,
+                    "Cannot produce track for ambiguous data:" + sensor
+                        .getName(), null);
+                return;
+              }
+              else
+              {
+                // must be ok, go for it.
+                sensors.add(sensor);
+              }
+            }
+          }
+        }
+        if(!sensors.isEmpty())
+        {
+          // ok, create composite operation.
+          _myAction = new Action("Generate Tracks from multiple Active Sensors")
+          {
+            @Override
+            public void run()
+            {
+              // ok, go for it.
+              // sort it out as an operation
+              final IUndoableOperation convertToTrack1 = new BulkTrackGenerate(
+                  sensors, theLayers, _logger);
+
+              // ok, stick it on the buffer
+              runIt(convertToTrack1);
+            }
+          };
+        }
       }
       else
       {
@@ -506,7 +579,7 @@ public class GenerateTrackFromActiveCuts implements
             // ok, go for it.
             // sort it out as an operation
             final IUndoableOperation convertToTrack1 = new TrackfromSensorCuts(
-                finalItems, theLayers);
+                finalItems, theLayers, _logger);
 
             // ok, stick it on the buffer
             runIt(convertToTrack1);
@@ -520,7 +593,46 @@ public class GenerateTrackFromActiveCuts implements
       parent.add(_myAction);
     }
   }
+  
 
+  private class BulkTrackGenerate extends CMAPOperation
+  {
+    private List<TrackfromSensorWrappers> list = new ArrayList<TrackfromSensorWrappers>();
+
+    BulkTrackGenerate(final List<SensorWrapper> sensors, final Layers layers, ErrorLogger logger)
+    {
+      super("Generate multiple tracks from active sensors");
+      
+      for(SensorWrapper sensor: sensors)
+      {
+        TrackfromSensorWrappers genny = new TrackfromSensorWrappers(sensor, layers, logger);
+        list.add(genny);
+      }
+    }
+
+    @Override
+    public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+        throws ExecutionException
+    {
+      for(final TrackfromSensorWrappers t: list)
+      {
+        t.execute(monitor, info);
+      }
+      return Status.OK_STATUS;
+    }
+
+    @Override
+    public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+        throws ExecutionException
+    {
+      for(final TrackfromSensorWrappers t: list)
+      {
+        t.undo(monitor, info);
+      }
+      return Status.OK_STATUS;
+    }
+  }
+  
   /**
    * put the operation firer onto the undo history. We've refactored this into a separate method so
    * testing classes don't have to simulate the CorePlugin
