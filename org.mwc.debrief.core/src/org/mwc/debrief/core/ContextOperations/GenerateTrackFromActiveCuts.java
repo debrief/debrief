@@ -208,6 +208,7 @@ public class GenerateTrackFromActiveCuts implements RightClickContextItemGenerat
       item.run();
       
       assertEquals("Errors reported",  1, ctr.get());
+      assertEquals("now has new track", 2, layers.size());
       
 		}
 	}
