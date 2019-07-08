@@ -58,6 +58,47 @@ public class GenerateTrackFromActiveCuts implements
     RightClickContextItemGenerator
 {
 
+  private class BulkTrackGenerate extends CMAPOperation
+  {
+    private final List<TrackfromSensorWrappers> list =
+        new ArrayList<TrackfromSensorWrappers>();
+
+    BulkTrackGenerate(final List<SensorWrapper> sensors, final Layers layers,
+        final ErrorLogger logger)
+    {
+      super("Generate multiple tracks from active sensors");
+
+      for (final SensorWrapper sensor : sensors)
+      {
+        final TrackfromSensorWrappers genny = new TrackfromSensorWrappers(
+            sensor, layers, logger);
+        list.add(genny);
+      }
+    }
+
+    @Override
+    public IStatus execute(final IProgressMonitor monitor,
+        final IAdaptable info) throws ExecutionException
+    {
+      for (final TrackfromSensorWrappers t : list)
+      {
+        t.execute(monitor, info);
+      }
+      return Status.OK_STATUS;
+    }
+
+    @Override
+    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
+        throws ExecutionException
+    {
+      for (final TrackfromSensorWrappers t : list)
+      {
+        t.undo(monitor, info);
+      }
+      return Status.OK_STATUS;
+    }
+  }
+
   private static class DummyMenu extends MenuManager
   {
 
@@ -94,36 +135,32 @@ public class GenerateTrackFromActiveCuts implements
           4, 4, 4, 0);
 
       cal.set(2001, 10, 4, 4, 4, 0);
-      track.addFix(new FixWrapper(new Fix(new HiResDate(cal
-          .getTime().getTime(), 0), new WorldLocation(2.0, 2.0, 0.0), 12, 12)));
+      track.addFix(new FixWrapper(new Fix(new HiResDate(cal.getTime().getTime(),
+          0), new WorldLocation(2.0, 2.0, 0.0), 12, 12)));
 
       cal.set(2001, 10, 4, 4, 4, 01);
-      track.addFix(new FixWrapper(new Fix(new HiResDate(cal
-          .getTime().getTime(), 0), new WorldLocation(2.0, 2.25, 0.0), 12,
-          12)));
+      track.addFix(new FixWrapper(new Fix(new HiResDate(cal.getTime().getTime(),
+          0), new WorldLocation(2.0, 2.25, 0.0), 12, 12)));
 
       cal.set(2001, 10, 4, 4, 4, 02);
-      track.addFix(new FixWrapper(new Fix(new HiResDate(cal
-          .getTime().getTime(), 0), new WorldLocation(2.0, 2.5, 0.0), 12, 12)));
+      track.addFix(new FixWrapper(new Fix(new HiResDate(cal.getTime().getTime(),
+          0), new WorldLocation(2.0, 2.5, 0.0), 12, 12)));
       cal.set(2001, 10, 4, 4, 4, 05);
-      track.addFix(new FixWrapper(new Fix(new HiResDate(cal
-          .getTime().getTime(), 0), new WorldLocation(2.0, 2.75, 0.0), 12,
-          12)));
+      track.addFix(new FixWrapper(new Fix(new HiResDate(cal.getTime().getTime(),
+          0), new WorldLocation(2.0, 2.75, 0.0), 12, 12)));
       cal.set(2001, 10, 4, 4, 4, 23);
-      track.addFix(new FixWrapper(new Fix(new HiResDate(cal
-          .getTime().getTime(), 0), new WorldLocation(2.25, 2.0, 0.0), 12,
-          12)));
+      track.addFix(new FixWrapper(new Fix(new HiResDate(cal.getTime().getTime(),
+          0), new WorldLocation(2.25, 2.0, 0.0), 12, 12)));
       cal.set(2001, 10, 4, 4, 4, 25);
-      track.addFix(new FixWrapper(new Fix(new HiResDate(cal
-          .getTime().getTime(), 0), new WorldLocation(2.5, 2.0, 0.0), 12, 12)));
+      track.addFix(new FixWrapper(new Fix(new HiResDate(cal.getTime().getTime(),
+          0), new WorldLocation(2.5, 2.0, 0.0), 12, 12)));
       cal.set(2001, 10, 4, 4, 4, 28);
       final WorldLocation theLoc = new WorldLocation(2.75d, 2.0, 0.0);
-      track.addFix(new FixWrapper(new Fix(new HiResDate(cal
-          .getTime().getTime(), 0), theLoc, 12, 12)));
+      track.addFix(new FixWrapper(new Fix(new HiResDate(cal.getTime().getTime(),
+          0), theLoc, 12, 12)));
       cal.set(2001, 10, 4, 4, 4, 55);
-      track.addFix(new FixWrapper(new Fix(new HiResDate(cal
-          .getTime().getTime(), 0), new WorldLocation(2.25, 2.25, 0.0), 12,
-          12)));
+      track.addFix(new FixWrapper(new Fix(new HiResDate(cal.getTime().getTime(),
+          0), new WorldLocation(2.25, 2.25, 0.0), 12, 12)));
 
       // and some sensor data, which goes past the end of O/S track
       final SensorWrapper sensor = new SensorWrapper("SensorName");
@@ -203,7 +240,7 @@ public class GenerateTrackFromActiveCuts implements
     private final SensorContactWrapper[] _items;
 
     public TrackfromSensorCuts(final SensorContactWrapper[] items,
-        final Layers theLayers, ErrorLogger logger)
+        final Layers theLayers, final ErrorLogger logger)
     {
       super("Create Track from Active cuts", theLayers, logger);
       _items = items;
@@ -223,7 +260,8 @@ public class GenerateTrackFromActiveCuts implements
     private TrackWrapper _newTrack;
     private final ErrorLogger logger;
 
-    public TrackfromSensorData(final String title, final Layers theLayers, final ErrorLogger logger)
+    public TrackfromSensorData(final String title, final Layers theLayers,
+        final ErrorLogger logger)
     {
       super(title);
       _layers = theLayers;
@@ -324,7 +362,7 @@ public class GenerateTrackFromActiveCuts implements
     private final SensorWrapper _wrapper;
 
     public TrackfromSensorWrappers(final SensorWrapper wrapper,
-        final Layers theLayers, ErrorLogger logger)
+        final Layers theLayers, final ErrorLogger logger)
     {
       super("Create Track from Active cuts", theLayers, logger);
       _wrapper = wrapper;
@@ -454,7 +492,7 @@ public class GenerateTrackFromActiveCuts implements
           }
           else
           {
-            _logger.logError(Status.WARNING,
+            _logger.logError(IStatus.WARNING,
                 "Missing range or bearing data (or is ambiguous) for sensor:"
                     + sw.getName(), null);
           }
@@ -501,39 +539,37 @@ public class GenerateTrackFromActiveCuts implements
       {
         // nope, clear the items list
         sonarCuts = null;
-        
 
-        // ONE LAST CHANCE.  What if it's a series of sensors?
+        // ONE LAST CHANCE. What if it's a series of sensors?
         final List<SensorWrapper> sensors = new ArrayList<SensorWrapper>();
-        
+
         for (int i = 0; i < subjects.length; i++)
         {
           final Editable editable = subjects[i];
           if (editable instanceof SensorWrapper)
           {
-            SensorWrapper sensor = (SensorWrapper) editable;
+            final SensorWrapper sensor = (SensorWrapper) editable;
             // have a look at the first cut
             if (sensor.size() > 0)
             {
-              SensorContactWrapper scw = (SensorContactWrapper) sensor
+              final SensorContactWrapper scw = (SensorContactWrapper) sensor
                   .elements().nextElement();
               if (!scw.getHasBearing())
               {
-                _logger.logError(Status.WARNING,
+                _logger.logError(IStatus.WARNING,
                     "Missing bearing data from sensor:" + sensor.getName(),
                     null);
                 return;
               }
               else if (scw.getRange() == null)
               {
-                _logger.logError(Status.WARNING,
-                    "Missing range data from sensor:" + sensor.getName(),
-                    null);
+                _logger.logError(IStatus.WARNING,
+                    "Missing range data from sensor:" + sensor.getName(), null);
                 return;
               }
               else if (scw.getHasAmbiguousBearing())
               {
-                _logger.logError(Status.WARNING,
+                _logger.logError(IStatus.WARNING,
                     "Cannot produce track for ambiguous data:" + sensor
                         .getName(), null);
                 return;
@@ -546,7 +582,7 @@ public class GenerateTrackFromActiveCuts implements
             }
           }
         }
-        if(!sensors.isEmpty())
+        if (!sensors.isEmpty())
         {
           // ok, create composite operation.
           _myAction = new Action("Generate Tracks from multiple Active Sensors")
@@ -593,50 +629,11 @@ public class GenerateTrackFromActiveCuts implements
       parent.add(_myAction);
     }
   }
-  
 
-  private class BulkTrackGenerate extends CMAPOperation
-  {
-    private List<TrackfromSensorWrappers> list = new ArrayList<TrackfromSensorWrappers>();
-
-    BulkTrackGenerate(final List<SensorWrapper> sensors, final Layers layers, ErrorLogger logger)
-    {
-      super("Generate multiple tracks from active sensors");
-      
-      for(SensorWrapper sensor: sensors)
-      {
-        TrackfromSensorWrappers genny = new TrackfromSensorWrappers(sensor, layers, logger);
-        list.add(genny);
-      }
-    }
-
-    @Override
-    public IStatus execute(IProgressMonitor monitor, IAdaptable info)
-        throws ExecutionException
-    {
-      for(final TrackfromSensorWrappers t: list)
-      {
-        t.execute(monitor, info);
-      }
-      return Status.OK_STATUS;
-    }
-
-    @Override
-    public IStatus undo(IProgressMonitor monitor, IAdaptable info)
-        throws ExecutionException
-    {
-      for(final TrackfromSensorWrappers t: list)
-      {
-        t.undo(monitor, info);
-      }
-      return Status.OK_STATUS;
-    }
-  }
-  
   /**
    * put the operation firer onto the undo history. We've refactored this into a separate method so
    * testing classes don't have to simulate the CorePlugin
-   * 
+   *
    * @param operation
    */
   protected void runIt(final IUndoableOperation operation)
