@@ -3,12 +3,13 @@ package org.mwc.debrief.lite.gui.custom.narratives;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.Callable;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
@@ -60,7 +62,7 @@ public class NarrativePanelToolbar extends JPanel
   private final LiteStepControl _stepControl;
 
   private final List<JComponent> componentsToDisable = new ArrayList<>();
-
+  
   /**
    * Maybe this should be inside the abstract model.
    */
@@ -68,12 +70,12 @@ public class NarrativePanelToolbar extends JPanel
   {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = -3080607575902259924L;
 
     @Override
-    public boolean isCellEditable(int row, int column)
+    public boolean isCellEditable(final int row, final int column)
     {
       return false;
     }
@@ -161,7 +163,8 @@ public class NarrativePanelToolbar extends JPanel
         {
           if (layerChanged instanceof NarrativeWrapper)
           {
-            final NarrativeWrapper narrativeWrapper = (NarrativeWrapper) layerChanged;
+            final NarrativeWrapper narrativeWrapper =
+                (NarrativeWrapper) layerChanged;
 
             final Set<NarrativeEntry> toRemove = new TreeSet<>();
             final Set<NarrativeEntry> toAdd = new TreeSet<>();
@@ -265,6 +268,57 @@ public class NarrativePanelToolbar extends JPanel
     stateListeners = new ArrayList<>(Arrays.asList(enableDisableButtonsListener,
         updatingNarrativesListener));
 
+    model.setRepaintMethod(new Callable<Void>()
+    {
+
+      @Override
+      public Void call() throws Exception
+      {
+        _narrativeList.repaint();
+        return null;
+      }
+    });
+
+    this._model.addPropertyChangeListener(new PropertyChangeListener()
+    {
+
+      @Override
+      public void propertyChange(final PropertyChangeEvent evt)
+      {
+        if (NarrativeConfigurationModel.NARRATIVE_HIGHLIGHT.equals(evt
+            .getPropertyName()))
+        {
+          final NarrativeEntryItem itemToCompare = new NarrativeEntryItem(
+              (NarrativeEntry) evt.getNewValue(), _model);
+          for (int i = 0; i < _narrativeList.getRowCount(); i++)
+          {
+            final NarrativeEntry actualEntry =
+                ((NarrativeEntryItem) (_narrativeList.getValueAt(i, 0)))
+                    .getEntry();
+            if (actualEntry.equals(itemToCompare.getEntry()))
+            {
+              _narrativeList.getSelectionModel().setSelectionInterval(i, i);
+              _narrativeList.scrollRectToVisible(new Rectangle(_narrativeList
+                  .getCellRect(i, 0, true)));
+              break;
+            }
+          }
+          // _model.repaintView();
+        }
+      }
+    });
+
+    this._narrativeList.addMouseListener(new MouseAdapter()
+    {
+      @Override
+      public void mouseClicked(final MouseEvent e)
+      {
+        final int selectedRow = _narrativeList.getSelectedRow();
+        final NarrativeEntryItem entryItem = (NarrativeEntryItem) _narrativeList
+            .getValueAt(selectedRow, 0);
+        _stepControl.changeTime(entryItem.getEntry().getDTG());
+      }
+    });
     setState(INACTIVE_STATE);
   }
 
@@ -367,27 +421,8 @@ public class NarrativePanelToolbar extends JPanel
     final JComboBox<String> tracksFilterLabel = new JComboBox<>(new String[]
     {"Sources"});
     tracksFilterLabel.setEnabled(true);
-    tracksFilterLabel.addMouseListener(new MouseListener()
+    tracksFilterLabel.addMouseListener(new MouseAdapter()
     {
-
-      @Override
-      public void mouseClicked(final MouseEvent e)
-      {
-        System.out.println(); // Removing Codacy warning
-      }
-
-      @Override
-      public void mouseEntered(final MouseEvent e)
-      {
-        System.out.println(); // Removing Codacy warning
-      }
-
-      @Override
-      public void mouseExited(final MouseEvent e)
-      {
-        System.out.println(); // Removing Codacy warning
-      }
-
       @Override
       public void mousePressed(final MouseEvent e)
       {
@@ -404,12 +439,6 @@ public class NarrativePanelToolbar extends JPanel
           selectTrack.setLocation(p.x, p.y + component.getHeight());
         }
       }
-
-      @Override
-      public void mouseReleased(final MouseEvent e)
-      {
-        System.out.println(); // Removing Codacy warning
-      }
     });
     return tracksFilterLabel;
   }
@@ -420,27 +449,8 @@ public class NarrativePanelToolbar extends JPanel
     final JComboBox<String> typeFilterLabel = new JComboBox<>(new String[]
     {"Types"});
     typeFilterLabel.setEnabled(true);
-    typeFilterLabel.addMouseListener(new MouseListener()
+    typeFilterLabel.addMouseListener(new MouseAdapter()
     {
-
-      @Override
-      public void mouseClicked(final MouseEvent e)
-      {
-        System.out.println(); // Removing Codacy warning
-      }
-
-      @Override
-      public void mouseEntered(final MouseEvent e)
-      {
-        System.out.println(); // Removing Codacy warning
-      }
-
-      @Override
-      public void mouseExited(final MouseEvent e)
-      {
-        System.out.println(); // Removing Codacy warning
-      }
-
       @Override
       public void mousePressed(final MouseEvent e)
       {
@@ -456,12 +466,6 @@ public class NarrativePanelToolbar extends JPanel
 
           selectTrack.setLocation(p.x, p.y + component.getHeight());
         }
-      }
-
-      @Override
-      public void mouseReleased(final MouseEvent e)
-      {
-        System.out.println(); // Removing Codacy warning
       }
     });
     return typeFilterLabel;

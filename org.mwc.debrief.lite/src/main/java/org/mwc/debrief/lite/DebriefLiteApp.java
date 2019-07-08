@@ -709,7 +709,7 @@ public class DebriefLiteApp implements FileDropListener
 
     final FileDropSupport dropSupport = new FileDropSupport();
     dropSupport.setFileDropListener(this,
-        " .REP, .XML, .DSF, .DTF, .DPF, .LOG,.TIF");
+        " .REP, .XML, .DSF, .DTF, .DPF, .LOG, .TIF");
 
     // provide some file helpers
     ImportReplay.initialise(app);
@@ -737,7 +737,6 @@ public class DebriefLiteApp implements FileDropListener
 
     // ok, ready to load map content
     initializeMapContent();
-
     final CanvasAdaptor theCanvas = new CanvasAdaptor(projection, mapPane
         .getGraphics());
 
@@ -781,8 +780,6 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataReformattedListener(dListener);
     _theLayers.addDataExtendedListener(dListener);
     _theLayers.addDataModifiedListener(dListener);
-    
-    
 
     painterManager = new PainterManager(_stepControl);
     final PlainChart theChart = new LiteChart(_theLayers, theCanvas, mapPane);
@@ -848,9 +845,12 @@ public class DebriefLiteApp implements FileDropListener
 
   private void addNarrativeView()
   {
-    final NarrativeConfigurationModel model = new NarrativeConfigurationModel();
-    final NarrativePanelToolbar toolbar = new NarrativePanelToolbar(_stepControl,model);
-    final NarrativePanelView narrativePanelView = new NarrativePanelView(toolbar);
+    final NarrativeConfigurationModel model = new NarrativeConfigurationModel(
+        timeManager);
+    final NarrativePanelToolbar toolbar = new NarrativePanelToolbar(
+        _stepControl, model);
+    final NarrativePanelView narrativePanelView = new NarrativePanelView(
+        toolbar);
     narrativePanel.setCollapsed(true);
     narrativePanel.add(narrativePanelView, BorderLayout.CENTER);
   }
@@ -895,7 +895,7 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.add(outlinePanel, BorderLayout.WEST);
 
     theFrame.add(narrativePanel, BorderLayout.EAST);
-    
+
     addOutlineView(app, undoBuffer);
     addGraphView();
     addNarrativeView();

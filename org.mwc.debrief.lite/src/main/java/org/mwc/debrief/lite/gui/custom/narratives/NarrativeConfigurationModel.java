@@ -22,12 +22,16 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import org.mwc.debrief.lite.gui.custom.AbstractSelection;
 
 import MWC.GUI.Editable;
+import MWC.GenericData.HiResDate;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
+import MWC.TacticalData.temporal.TimeManager;
+import MWC.TacticalData.temporal.TimeProvider;
 
 public class NarrativeConfigurationModel implements
     AbstractNarrativeConfiguration
@@ -40,12 +44,16 @@ public class NarrativeConfigurationModel implements
   public static final String NARRATIVE_CHANGE = "NARRATIVE_CHANGED";
 
   private NarrativeEntry _currentHighLight;
-  
+
   private boolean _wrapping = true;
   
   private int panelWidth = 0;
 
   private String _filterText;
+
+  private Callable<Void> _repaintMethod;
+
+  private TimeManager _timeManager;
 
   private final ArrayList<PropertyChangeListener> _stateListeners =
       new ArrayList<>();
@@ -55,6 +63,25 @@ public class NarrativeConfigurationModel implements
 
   private final HashMap<NarrativeWrapper, Set<NarrativeEntry>> _narrativeWrappers =
       new HashMap<>();
+
+  public NarrativeConfigurationModel(final TimeManager timeManager)
+  {
+    this._timeManager = timeManager;
+
+    final PropertyChangeListener timeChangedListener =
+        new PropertyChangeListener()
+        {
+
+          @Override
+          public void propertyChange(PropertyChangeEvent evt)
+          {
+            highlightNarrative((HiResDate) evt.getNewValue());
+          }
+        };
+
+    _timeManager.addListener(timeChangedListener,
+        TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+  }
 
   @Override
   public void addNarrativeWrapper(final NarrativeWrapper narrativeWrapper)
@@ -94,17 +121,37 @@ public class NarrativeConfigurationModel implements
   }
 
   @Override
-  public void highlightNarrative(final NarrativeEntry narrative)
+  public void highlightNarrative(final HiResDate object)
   {
-    final boolean update = _currentHighLight == null || !_currentHighLight
-        .equals(narrative);
-
-    if (update)
+    NarrativeEntry narrative = null;
+    long closestDistance = Long.MAX_VALUE;
+    for (Set<NarrativeEntry> narrativeEntries : _narrativeWrappers.values())
     {
-      final NarrativeEntry oldValue = _currentHighLight;
-      final NarrativeEntry newValue = narrative;
-      notifyListenersStateChanged(narrative, NARRATIVE_HIGHLIGHT, oldValue,
-          newValue);
+      for (NarrativeEntry narrativeEntry : narrativeEntries)
+      {
+        if (narrative == null || closestDistance > Math.abs(narrativeEntry
+            .getDTG().getMicros() - object.getMicros()))
+        {
+          closestDistance = Math.abs(narrativeEntry.getDTG().getMicros()
+              - object.getMicros());
+
+          narrative = narrativeEntry;
+        }
+      }
+    }
+    if (narrative != null)
+    {
+      final boolean update = _currentHighLight == null || !_currentHighLight
+          .equals(narrative);
+
+      if (update)
+      {
+        final NarrativeEntry oldValue = _currentHighLight;
+        final NarrativeEntry newValue = narrative;
+        _currentHighLight = narrative;
+        notifyListenersStateChanged(narrative, NARRATIVE_HIGHLIGHT, oldValue,
+            newValue);
+      }
     }
   }
 
@@ -204,6 +251,34 @@ public class NarrativeConfigurationModel implements
   }
 
   @Override
+  public TimeManager getTimeManager()
+  {
+    return _timeManager;
+  }
+
+  public void setRepaintMethod(final Callable<Void> repaint)
+  {
+    this._repaintMethod = repaint;
+  }
+
+  public NarrativeEntry getCurrentHighLight()
+  {
+    return _currentHighLight;
+  }
+
+  @Override
+  public void repaintView()
+  {
+    try
+    {
+      _repaintMethod.call();
+    }
+    catch (Exception e)
+    {
+      // It should never happen
+    }
+  }
+
   public int getPanelWidth()
   {
     return panelWidth;
