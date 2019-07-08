@@ -17,6 +17,7 @@ package org.mwc.debrief.core.ContextOperations;
 import java.awt.Color;
 import java.util.Enumeration;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
@@ -31,6 +32,7 @@ import org.eclipse.jface.action.IContributionManager;
 import org.eclipse.jface.action.IContributionManagerOverrides;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.swt.widgets.Menu;
@@ -44,6 +46,7 @@ import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
+import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
@@ -58,9 +61,38 @@ import MWC.TacticalData.Fix;
  */
 public class GenerateTrackFromActiveCuts implements RightClickContextItemGenerator {
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
+  
+  private final ErrorLogger _logger;
+
+  public GenerateTrackFromActiveCuts()
+  {
+    this(new ErrorLogger() {
+
+      @Override
+      public void logError(int status, String text, Exception e)
+      {
+        CorePlugin.logError(status, text, e);
+      }
+
+      @Override
+      public void logError(int status, String text, Exception e,
+          boolean revealLog)
+      {
+        throw new IllegalArgumentException("Not implemented in GenerateTrackFromActiveCuts");
+      }
+
+      @Override
+      public void logStack(int status, String text)
+      {
+        throw new IllegalArgumentException("Not implemented in GenerateTrackFromActiveCuts");
+      }});
+  }
+  
+  public GenerateTrackFromActiveCuts(ErrorLogger logger)
+  {
+    _logger = logger;
+  }
+  
 	static public final class testMe extends junit.framework.TestCase {
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
@@ -119,31 +151,52 @@ public class GenerateTrackFromActiveCuts implements RightClickContextItemGenerat
 			
 			cal.set(2001, 10, 4, 4, 4, 25);
 			sensor.add(new SensorContactWrapper("track", new HiResDate(cal.getTime().getTime()),
-					new WorldDistance(1000, WorldDistance.YARDS), 23.3d, new WorldLocation(0d, 0d, 0d), Color.RED,
+					new WorldDistance(1000, WorldDistance.YARDS), 23.3d, null, Color.RED,
 					"Some lable", 1, sensor.getName()));
 
 			cal.set(2001, 10, 4, 4, 4, 27);
 			sensor.add(new SensorContactWrapper("track", new HiResDate(cal.getTime().getTime()),
-					new WorldDistance(1000, WorldDistance.YARDS), 23.3d, new WorldLocation(0d, 0d, 0d), Color.RED,
+					new WorldDistance(1000, WorldDistance.YARDS), 23.3d, null, Color.RED,
 					"Some lable", 1, sensor.getName()));
 
 			cal.set(2001, 10, 4, 4, 4, 55);
 			sensor.add(new SensorContactWrapper("track", new HiResDate(cal.getTime().getTime()),
-					new WorldDistance(1000, WorldDistance.YARDS), 23.3d, new WorldLocation(0d, 0d, 0d), Color.RED,
+					new WorldDistance(1000, WorldDistance.YARDS), 23.3d, null, Color.RED,
 					"Some lable", 1, sensor.getName()));
 
-			cal.set(2001, 10, 4, 4, 5, 05);
+			cal.set(2001, 10, 4, 4, 15, 05);
 			sensor.add(new SensorContactWrapper("track", new HiResDate(cal.getTime().getTime()),
-					new WorldDistance(1000, WorldDistance.YARDS), 23.3d, new WorldLocation(0d, 0d, 0d), Color.RED,
+					new WorldDistance(1000, WorldDistance.YARDS), 23.3d, null, Color.RED,
 					"Some lable", 1, sensor.getName()));
 			
 			track.add(sensor);
 			Layers layers = new Layers();
 			layers.addThisLayer(track);
 			
+			final AtomicInteger ctr = new AtomicInteger(0);
 			
-			// now try to offer cuts
-			GenerateTrackFromActiveCuts genny = new GenerateTrackFromActiveCuts();
+			ErrorLogger logger = new ErrorLogger() {
+
+        @Override
+        public void logError(int status, String text, Exception e)
+        {
+          ctr.getAndIncrement();
+        }
+
+        @Override
+        public void logError(int status, String text, Exception e,
+            boolean revealLog)
+        {
+          ctr.getAndIncrement();
+        }
+
+        @Override
+        public void logStack(int status, String text)
+        {
+          ctr.getAndIncrement();
+        }};
+      // now try to offer cuts
+			GenerateTrackFromActiveCuts genny = new GenerateTrackFromActiveCuts(logger);
 			Layer[] parentLayers = new Layer[] {track};
       Editable[] subjects = new Editable[] {sensor};
       DummyMenu parent = new DummyMenu();
@@ -154,12 +207,14 @@ public class GenerateTrackFromActiveCuts implements RightClickContextItemGenerat
       Action item = (Action) parent.items.firstElement();
       item.run();
       
+      assertEquals("Errors reported",  1, ctr.get());
+      
 		}
 	}
 	
-	private static class DummyMenu implements IMenuManager{
+	private static class DummyMenu extends MenuManager{
 
-	  Vector<Object> items = new Vector<>();
+	  final Vector<Object> items = new Vector<>();
 	  
     @Override
     public void add(IAction action)
@@ -172,297 +227,9 @@ public class GenerateTrackFromActiveCuts implements RightClickContextItemGenerat
     {
       items.add(item);
     }
-
-    @Override
-    public void appendToGroup(String groupName, IAction action)
-    {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public void appendToGroup(String groupName, IContributionItem item)
-    {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public IContributionItem find(String id)
-    {
-      // TODO Auto-generated method stub
-      return null;
-    }
-
-    @Override
-    public IContributionItem[] getItems()
-    {
-      // TODO Auto-generated method stub
-      return null;
-    }
-
-    @Override
-    public IContributionManagerOverrides getOverrides()
-    {
-      // TODO Auto-generated method stub
-      return null;
-    }
-
-    @Override
-    public void insertAfter(String id, IAction action)
-    {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public void insertAfter(String id, IContributionItem item)
-    {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public void insertBefore(String id, IAction action)
-    {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public void insertBefore(String id, IContributionItem item)
-    {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public boolean isDirty()
-    {
-      // TODO Auto-generated method stub
-      return false;
-    }
-
-    @Override
-    public boolean isEmpty()
-    {
-      // TODO Auto-generated method stub
-      return false;
-    }
-
-    @Override
-    public void markDirty()
-    {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public void prependToGroup(String groupName, IAction action)
-    {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public void prependToGroup(String groupName, IContributionItem item)
-    {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public IContributionItem remove(String id)
-    {
-      // TODO Auto-generated method stub
-      return null;
-    }
-
-    @Override
-    public IContributionItem remove(IContributionItem item)
-    {
-      // TODO Auto-generated method stub
-      return null;
-    }
-
-    @Override
-    public void removeAll()
-    {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public void update(boolean force)
-    {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public void dispose()
-    {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public void fill(Composite parent)
-    {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public void fill(Menu parent, int index)
-    {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public void fill(ToolBar parent, int index)
-    {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public void fill(CoolBar parent, int index)
-    {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public String getId()
-    {
-      // TODO Auto-generated method stub
-      return null;
-    }
-
-    @Override
-    public boolean isDynamic()
-    {
-      // TODO Auto-generated method stub
-      return false;
-    }
-
-    @Override
-    public boolean isGroupMarker()
-    {
-      // TODO Auto-generated method stub
-      return false;
-    }
-
-    @Override
-    public boolean isSeparator()
-    {
-      // TODO Auto-generated method stub
-      return false;
-    }
-
-    @Override
-    public boolean isVisible()
-    {
-      // TODO Auto-generated method stub
-      return false;
-    }
-
-    @Override
-    public void saveWidgetState()
-    {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public void setParent(IContributionManager parent)
-    {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public void setVisible(boolean visible)
-    {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public void update()
-    {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public void update(String id)
-    {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public void addMenuListener(IMenuListener listener)
-    {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public IMenuManager findMenuUsingPath(String path)
-    {
-      // TODO Auto-generated method stub
-      return null;
-    }
-
-    @Override
-    public IContributionItem findUsingPath(String path)
-    {
-      // TODO Auto-generated method stub
-      return null;
-    }
-
-    @Override
-    public boolean getRemoveAllWhenShown()
-    {
-      // TODO Auto-generated method stub
-      return false;
-    }
-
-    @Override
-    public boolean isEnabled()
-    {
-      // TODO Auto-generated method stub
-      return false;
-    }
-
-    @Override
-    public void removeMenuListener(IMenuListener listener)
-    {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public void setRemoveAllWhenShown(boolean removeAll)
-    {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public void updateAll(boolean force)
-    {
-      // TODO Auto-generated method stub
-      
-    }
-	  
 	}
 
-	private static class TrackfromSensorCuts extends TrackfromSensorData {
+	private class TrackfromSensorCuts extends TrackfromSensorData {
 		private final SensorContactWrapper[] _items;
 
 		public TrackfromSensorCuts(final SensorContactWrapper[] items, final Layers theLayers) {
@@ -475,7 +242,7 @@ public class GenerateTrackFromActiveCuts implements RightClickContextItemGenerat
 		}
 	}
 
-	private static class TrackfromSensorWrappers extends TrackfromSensorData {
+	private class TrackfromSensorWrappers extends TrackfromSensorData {
 		private final SensorWrapper _wrapper;
 
 		public TrackfromSensorWrappers(final SensorWrapper wrapper, final Layers theLayers) {
@@ -512,7 +279,7 @@ public class GenerateTrackFromActiveCuts implements RightClickContextItemGenerat
 		}
 	}
 
-	private abstract static class TrackfromSensorData extends CMAPOperation {
+	private abstract class TrackfromSensorData extends CMAPOperation {
 
 		private final Layers _layers;
 		private TrackWrapper _newTrack;
@@ -561,7 +328,13 @@ public class GenerateTrackFromActiveCuts implements RightClickContextItemGenerat
             _newTrack.add(fw);
 
             fixesAdded = true;
-
+          }
+          else
+          {
+            
+            _logger.logError(Status.WARNING,
+                "Ownship location not found for sensor at:" + cut.getDTG()
+                    .getDate(), null);
           }
 				}
 			}
