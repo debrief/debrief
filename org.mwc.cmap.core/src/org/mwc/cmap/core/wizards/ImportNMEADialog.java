@@ -22,8 +22,11 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -51,9 +54,12 @@ public class ImportNMEADialog extends CoreFreqImportDialog
   private long ownshipFreq;
 
   private long thirdPartyFreq;
+  
+  private boolean splitOwnshipJumps;
 
   public final String OS_FREQ = "NMEA_OwnshipFreq";
   public final String TGT_FREQ = "NMEA_TargetFreq";
+  public final String SPLIT_OWNSHIP_JUMPS = "NMEA_SplitOwnshipJumps";
 
   
   public ImportNMEADialog()
@@ -77,6 +83,8 @@ public class ImportNMEADialog extends CoreFreqImportDialog
     {
       thirdPartyFreq = Long.valueOf(freq);
     }
+    
+    splitOwnshipJumps = CorePlugin.getDefault().getPreferenceStore().getBoolean(SPLIT_OWNSHIP_JUMPS);
 
   }
 
@@ -155,6 +163,22 @@ public class ImportNMEADialog extends CoreFreqImportDialog
         }
       });
     }
+    {
+      final Button splitOwnshipCheck = new Button(composite,SWT.CHECK);
+      splitOwnshipCheck.setText("Split Ownship Jumps");
+      splitOwnshipCheck.setSelection(splitOwnshipJumps);
+      splitOwnshipCheck.addSelectionListener(new SelectionAdapter()
+      {
+        
+        @Override
+        public void widgetSelected(SelectionEvent e)
+        {
+          splitOwnshipJumps = splitOwnshipCheck.getSelection();
+          CorePlugin.getDefault().getPreferenceStore().setValue(SPLIT_OWNSHIP_JUMPS, splitOwnshipJumps);
+        }
+      });
+    }
+    
     return composite;
   }
 
