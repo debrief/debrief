@@ -59,7 +59,7 @@ public class GenerateTrackFromActiveCuts implements
   private static class DummyMenu extends MenuManager
   {
 
-    final Vector<Object> items = new Vector<>();
+    private final Vector<Object> items = new Vector<>();
 
     @Override
     public void add(final IAction action)
@@ -92,34 +92,34 @@ public class GenerateTrackFromActiveCuts implements
           4, 4, 4, 0);
 
       cal.set(2001, 10, 4, 4, 4, 0);
-      track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal
+      track.addFix(new FixWrapper(new Fix(new HiResDate(cal
           .getTime().getTime(), 0), new WorldLocation(2.0, 2.0, 0.0), 12, 12)));
 
       cal.set(2001, 10, 4, 4, 4, 01);
-      track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal
+      track.addFix(new FixWrapper(new Fix(new HiResDate(cal
           .getTime().getTime(), 0), new WorldLocation(2.0, 2.25, 0.0), 12,
           12)));
 
       cal.set(2001, 10, 4, 4, 4, 02);
-      track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal
+      track.addFix(new FixWrapper(new Fix(new HiResDate(cal
           .getTime().getTime(), 0), new WorldLocation(2.0, 2.5, 0.0), 12, 12)));
       cal.set(2001, 10, 4, 4, 4, 05);
-      track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal
+      track.addFix(new FixWrapper(new Fix(new HiResDate(cal
           .getTime().getTime(), 0), new WorldLocation(2.0, 2.75, 0.0), 12,
           12)));
       cal.set(2001, 10, 4, 4, 4, 23);
-      track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal
+      track.addFix(new FixWrapper(new Fix(new HiResDate(cal
           .getTime().getTime(), 0), new WorldLocation(2.25, 2.0, 0.0), 12,
           12)));
       cal.set(2001, 10, 4, 4, 4, 25);
-      track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal
+      track.addFix(new FixWrapper(new Fix(new HiResDate(cal
           .getTime().getTime(), 0), new WorldLocation(2.5, 2.0, 0.0), 12, 12)));
       cal.set(2001, 10, 4, 4, 4, 28);
       final WorldLocation theLoc = new WorldLocation(2.75d, 2.0, 0.0);
-      track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal
+      track.addFix(new FixWrapper(new Fix(new HiResDate(cal
           .getTime().getTime(), 0), theLoc, 12, 12)));
       cal.set(2001, 10, 4, 4, 4, 55);
-      track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal
+      track.addFix(new FixWrapper(new Fix(new HiResDate(cal
           .getTime().getTime(), 0), new WorldLocation(2.25, 2.25, 0.0), 12,
           12)));
 
