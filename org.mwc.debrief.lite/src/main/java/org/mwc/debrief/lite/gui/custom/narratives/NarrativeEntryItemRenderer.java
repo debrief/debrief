@@ -12,8 +12,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.UIManager;
 import javax.swing.table.TableCellRenderer;
 
 public class NarrativeEntryItemRenderer extends JPanel implements
@@ -29,10 +27,79 @@ public class NarrativeEntryItemRenderer extends JPanel implements
   private static final ImageIcon EDIT_NARRATIVE_ICON = Utils.getIcon(
       "icons/16/edit_narrative.png");
 
+
+  private final int HEIGHT_FIXED_SIZE = 33;
   /**
    *
    */
   private static final long serialVersionUID = -2227870470228775898L;
+
+  private final AbstractNarrativeConfiguration _model;
+
+  public NarrativeEntryItemRenderer(final AbstractNarrativeConfiguration model)
+  {
+    this._model = model;
+  }
+
+  private JPanel getHeader(final NarrativeEntryItem valueItem,
+      final JLabel time, final Font originalFont)
+  {
+    final JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    header.setPreferredSize(new Dimension(300, 18));
+
+    final Font smallFont = new Font(originalFont.getName(), originalFont
+        .getStyle(), 8);
+    time.setFont(smallFont);
+    final JLabel trackName = new JLabel(valueItem.getEntry().getTrackName());
+    trackName.setFont(smallFont);
+    final JLabel typeName = new JLabel(valueItem.getEntry().getType());
+    typeName.setFont(smallFont);
+    header.add(Box.createHorizontalStrut(12));
+    header.add(time);
+    header.add(Box.createHorizontalStrut(3));
+    header.add(trackName);
+    header.add(Box.createHorizontalStrut(3));
+    header.add(typeName);
+    return header;
+  }
+
+  private JLabel getName(final String text, final boolean hasFocus,
+      final Font originalFont, final JTable table)
+  {
+    final JLabel name = new JLabel();
+    final String html = "<html><body style='width: %1spx'>%1s";
+
+    name.setOpaque(false);
+    name.setFocusable(false);
+    if (_model.isWrapping())
+    {
+      final int emptySpace;
+      if (hasFocus)
+      {
+        emptySpace = 120;
+      }
+      else
+      {
+        emptySpace = 80;
+      }
+      name.setText(String.format(html, _model.getPanelWidth() - emptySpace, text));
+    }
+    else
+    {
+      name.setText(text);
+    }
+
+    final Font bigFont = new Font(originalFont.getName(), originalFont
+        .getStyle(), 12);
+    name.setFont(bigFont);
+    final int width = table.getWidth();
+    if (width > 0)
+    {
+      name.setSize(width, Short.MAX_VALUE);
+    }
+
+    return name;
+  }
 
   @Override
   public Component getTableCellRendererComponent(final JTable table,
@@ -47,44 +114,15 @@ public class NarrativeEntryItemRenderer extends JPanel implements
       final String text = valueItem.getEntry().getEntry();
       final JPanel mainPanel = new JPanel();
       mainPanel.setLayout(new BorderLayout());
-      final JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT));
-      header.setPreferredSize(new Dimension(300, 18));
 
       final JLabel time = new JLabel(valueItem.getEntry().getDTGString());
       final Font originalFont = time.getFont();
-      final Font smallFont = new Font(originalFont.getName(), originalFont
-          .getStyle(), 8);
-      final Font bigFont = new Font(originalFont.getName(), originalFont
-          .getStyle(), 12);
-      time.setFont(smallFont);
-      final JLabel trackName = new JLabel(valueItem.getEntry().getTrackName());
-      trackName.setFont(smallFont);
-      final JLabel typeName = new JLabel(valueItem.getEntry().getType());
-      typeName.setFont(smallFont);
-      header.add(Box.createHorizontalStrut(12));
-      header.add(time);
-      header.add(Box.createHorizontalStrut(3));
-      header.add(trackName);
-      header.add(Box.createHorizontalStrut(3));
-      header.add(typeName);
 
-      final JTextArea name = new JTextArea();
-      name.setWrapStyleWord(false);
-      name.setLineWrap(valueItem.getModel().isWrapping());
-      name.setOpaque(false);
-      name.setEditable(false);
-      name.setFocusable(false);
-      name.setText(text);
+      // the header bar, with the metadata
+      final JPanel header = getHeader(valueItem, time, originalFont);
 
-      name.setBackground(UIManager.getColor("Label.background"));
-      name.setFont(UIManager.getFont("Label.font"));
-      name.setBorder(UIManager.getBorder("Label.border"));
-      name.setFont(bigFont);
-      final int width = table.getWidth();
-      if (width > 0)
-      {
-        name.setSize(width, Short.MAX_VALUE);
-      }
+      // the content of the narrative entry
+      final JLabel name = getName(text, hasFocus, originalFont, table);
 
       final JPanel innerPanel = new JPanel();
       innerPanel.setLayout(new BorderLayout());
@@ -121,6 +159,22 @@ public class NarrativeEntryItemRenderer extends JPanel implements
         mainPanel.add(iconsPanel, BorderLayout.EAST);
       }
 
+      if (_model.isWrapping())
+      {
+        final int currentRowHeight = table.getRowHeight(row);
+        if (currentRowHeight != mainPanel.getPreferredSize().height)
+        {
+          table.setRowHeight(row, mainPanel.getPreferredSize().height);
+        }
+      }
+      else
+      {
+        if (table.getRowHeight(row) != HEIGHT_FIXED_SIZE)
+        {
+          table.setRowHeight(row, HEIGHT_FIXED_SIZE);
+        }
+      }
+
       return mainPanel;
     }
     else
@@ -128,4 +182,5 @@ public class NarrativeEntryItemRenderer extends JPanel implements
       return null;
     }
   }
+
 }

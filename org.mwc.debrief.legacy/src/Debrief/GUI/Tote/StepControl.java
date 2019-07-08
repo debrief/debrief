@@ -615,7 +615,7 @@ abstract public class StepControl implements Editable,
 
   public final void setStepSmall(final long val)
   {
-    _smallStep = (int) (val);
+    _smallStep = val;
   }
 
   /**
@@ -628,7 +628,7 @@ abstract public class StepControl implements Editable,
 
   public final void setStepLarge(final long val)
   {
-    _largeStep = (int) (val);
+    _largeStep = val;
   }
 
   /**
@@ -637,7 +637,7 @@ abstract public class StepControl implements Editable,
    *
    * @param val time interval in milliseconds
    */
-  public final void setAutoStep(final int val)
+  public final void setAutoStep(final long val)
   {
     _theTimer.setDelay(val);
   }
@@ -648,9 +648,9 @@ abstract public class StepControl implements Editable,
    *
    * @return time interval in milliseconds
    */
-  public final int getAutoStep()
+  public final long getAutoStep()
   {
-    return (int) _theTimer.getDelay();
+    return  _theTimer.getDelay();
   }
 
   public final boolean isPlaying()

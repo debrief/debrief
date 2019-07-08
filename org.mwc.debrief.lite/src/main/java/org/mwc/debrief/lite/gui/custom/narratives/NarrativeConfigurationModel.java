@@ -46,6 +46,8 @@ public class NarrativeConfigurationModel implements
   private NarrativeEntry _currentHighLight;
 
   private boolean _wrapping = true;
+  
+  private int panelWidth = 0;
 
   private String _filterText;
 
@@ -275,5 +277,16 @@ public class NarrativeConfigurationModel implements
     {
       // It should never happen
     }
+  }
+
+  public int getPanelWidth()
+  {
+    return panelWidth;
+  }
+
+  @Override
+  public void setPanelWidth(int width)
+  {
+    this.panelWidth = width;
   }
 }

@@ -55,4 +55,8 @@ public interface AbstractNarrativeConfiguration
   public void repaintView();
   
   public NarrativeEntry getCurrentHighLight();
+  
+  public int getPanelWidth();
+  
+  public void setPanelWidth(final int width);
 }
