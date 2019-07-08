@@ -584,7 +584,9 @@ public class DebriefRibbonTimeController
     topButtonsPanel.add(rewindCommandButton);
     topButtonsPanel.add(backCommandButton);
     topButtonsPanel.add(playCommandButton);
-    topButtonsPanel.add(recordCommandButton);
+    // don't add record button, yet.
+ //   topButtonsPanel.add(recordCommandButton);
+    
     topButtonsPanel.add(forwardCommandButton);
     topButtonsPanel.add(fastForwardCommandButton);
     topButtonsPanel.add(endCommandButton);
