@@ -54,11 +54,14 @@ import org.geotools.swing.action.ResetAction;
 import org.mwc.cmap.geotools.gt2plot.GeoToolsLayer;
 import org.mwc.cmap.geotools.gt2plot.ShapeFileLayer;
 import org.mwc.cmap.geotools.gt2plot.WorldImageLayer;
-import org.mwc.debrief.lite.graph.GraphPanelView;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.gui.custom.JXCollapsiblePane.Direction;
+import org.mwc.debrief.lite.gui.custom.graph.GraphPanelView;
+import org.mwc.debrief.lite.gui.custom.narratives.NarrativeConfigurationModel;
+import org.mwc.debrief.lite.gui.custom.narratives.NarrativePanelToolbar;
+import org.mwc.debrief.lite.gui.custom.narratives.NarrativePanelView;
 import org.mwc.debrief.lite.gui.custom.JXCollapsiblePaneWithTitle;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer.MapRenderer;
@@ -438,8 +441,8 @@ public class DebriefLiteApp implements FileDropListener
       final MathTransform transform)
   {
     // give it a default viewport - overlooking Europe
-    final DirectPosition2D tl = new DirectPosition2D(-14, 65);
-    final DirectPosition2D br = new DirectPosition2D(35, 30);
+    final DirectPosition2D tl = new DirectPosition2D(-22, 59.75);
+    final DirectPosition2D br = new DirectPosition2D(37, 36.5);
 
     try
     {
@@ -509,6 +512,9 @@ public class DebriefLiteApp implements FileDropListener
       new JXCollapsiblePaneWithTitle(Direction.LEFT, "Outline", 400);
   private final JXCollapsiblePaneWithTitle graphPanel =
       new JXCollapsiblePaneWithTitle(Direction.DOWN, "Graph", 150);
+
+  private final JXCollapsiblePaneWithTitle narrativePanel =
+      new JXCollapsiblePaneWithTitle(Direction.RIGHT, "Narratives", 350);
 
   private final JRibbonFrame theFrame;
   private final Layers _theLayers = new Layers()
@@ -703,7 +709,7 @@ public class DebriefLiteApp implements FileDropListener
 
     final FileDropSupport dropSupport = new FileDropSupport();
     dropSupport.setFileDropListener(this,
-        " .REP, .XML, .DSF, .DTF, .DPF, .LOG,.TIF");
+        " .REP, .XML, .DSF, .DTF, .DPF, .LOG, .TIF");
 
     // provide some file helpers
     ImportReplay.initialise(app);
@@ -731,7 +737,6 @@ public class DebriefLiteApp implements FileDropListener
 
     // ok, ready to load map content
     initializeMapContent();
-
     final CanvasAdaptor theCanvas = new CanvasAdaptor(projection, mapPane
         .getGraphics());
 
@@ -838,6 +843,18 @@ public class DebriefLiteApp implements FileDropListener
     graphPanel.add(graphPanelView, BorderLayout.CENTER);
   }
 
+  private void addNarrativeView()
+  {
+    final NarrativeConfigurationModel model = new NarrativeConfigurationModel(
+        timeManager);
+    final NarrativePanelToolbar toolbar = new NarrativePanelToolbar(
+        _stepControl, model);
+    final NarrativePanelView narrativePanelView = new NarrativePanelView(
+        toolbar);
+    narrativePanel.setCollapsed(true);
+    narrativePanel.add(narrativePanelView, BorderLayout.CENTER);
+  }
+
   private void addOutlineView(final ToolParent toolParent,
       final UndoBuffer undoBuffer)
   {
@@ -876,8 +893,12 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.add(centerPanel, BorderLayout.CENTER);
 
     theFrame.add(outlinePanel, BorderLayout.WEST);
+
+    theFrame.add(narrativePanel, BorderLayout.EAST);
+
     addOutlineView(app, undoBuffer);
     addGraphView();
+    addNarrativeView();
 
     theFrame.add(statusBar, BorderLayout.SOUTH);
     final Runnable resetAction = new Runnable()
@@ -1259,8 +1280,8 @@ public class DebriefLiteApp implements FileDropListener
      * .createApplicationMenu(theFrame));
      */
     // It cannot be smaller than this size to have the ribbon complete!
-    final int sizeWidth = Math.max((int) (dim.width * 0.6), 870);
-    final int sizeHeight = (int) (dim.height * 0.6);
+    final int sizeWidth = Math.max((int) (dim.width * 0.8), 870);
+    final int sizeHeight = (int) (dim.height * 0.8);
     theFrame.setSize(sizeWidth, sizeHeight);
     final Dimension sz = theFrame.getSize();
     theFrame.setLocation((dim.width - sz.width) / 2, (dim.height - sz.height)
