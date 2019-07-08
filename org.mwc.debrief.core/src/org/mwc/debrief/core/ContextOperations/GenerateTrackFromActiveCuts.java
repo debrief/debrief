@@ -25,7 +25,16 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IContributionItem;
+import org.eclipse.jface.action.IContributionManager;
+import org.eclipse.jface.action.IContributionManagerOverrides;
+import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.CoolBar;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.ToolBar;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
@@ -127,8 +136,330 @@ public class GenerateTrackFromActiveCuts implements RightClickContextItemGenerat
 			sensor.add(new SensorContactWrapper("track", new HiResDate(cal.getTime().getTime()),
 					new WorldDistance(1000, WorldDistance.YARDS), 23.3d, new WorldLocation(0d, 0d, 0d), Color.RED,
 					"Some lable", 1, sensor.getName()));
-
+			
+			track.add(sensor);
+			Layers layers = new Layers();
+			layers.addThisLayer(track);
+			
+			
+			// now try to offer cuts
+			GenerateTrackFromActiveCuts genny = new GenerateTrackFromActiveCuts();
+			Layer[] parentLayers = new Layer[] {track};
+      Editable[] subjects = new Editable[] {sensor};
+      DummyMenu parent = new DummyMenu();
+      genny.generate(parent, layers, parentLayers, subjects);
+      
+      assertEquals("items added", 1, parent.items.size());
+      
+      Action item = (Action) parent.items.firstElement();
+      item.run();
+      
 		}
+	}
+	
+	private static class DummyMenu implements IMenuManager{
+
+	  Vector<Object> items = new Vector<>();
+	  
+    @Override
+    public void add(IAction action)
+    {
+      items.add(action);
+    }
+
+    @Override
+    public void add(IContributionItem item)
+    {
+      items.add(item);
+    }
+
+    @Override
+    public void appendToGroup(String groupName, IAction action)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public void appendToGroup(String groupName, IContributionItem item)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public IContributionItem find(String id)
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    @Override
+    public IContributionItem[] getItems()
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    @Override
+    public IContributionManagerOverrides getOverrides()
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    @Override
+    public void insertAfter(String id, IAction action)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public void insertAfter(String id, IContributionItem item)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public void insertBefore(String id, IAction action)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public void insertBefore(String id, IContributionItem item)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public boolean isDirty()
+    {
+      // TODO Auto-generated method stub
+      return false;
+    }
+
+    @Override
+    public boolean isEmpty()
+    {
+      // TODO Auto-generated method stub
+      return false;
+    }
+
+    @Override
+    public void markDirty()
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public void prependToGroup(String groupName, IAction action)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public void prependToGroup(String groupName, IContributionItem item)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public IContributionItem remove(String id)
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    @Override
+    public IContributionItem remove(IContributionItem item)
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    @Override
+    public void removeAll()
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public void update(boolean force)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public void dispose()
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public void fill(Composite parent)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public void fill(Menu parent, int index)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public void fill(ToolBar parent, int index)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public void fill(CoolBar parent, int index)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public String getId()
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    @Override
+    public boolean isDynamic()
+    {
+      // TODO Auto-generated method stub
+      return false;
+    }
+
+    @Override
+    public boolean isGroupMarker()
+    {
+      // TODO Auto-generated method stub
+      return false;
+    }
+
+    @Override
+    public boolean isSeparator()
+    {
+      // TODO Auto-generated method stub
+      return false;
+    }
+
+    @Override
+    public boolean isVisible()
+    {
+      // TODO Auto-generated method stub
+      return false;
+    }
+
+    @Override
+    public void saveWidgetState()
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public void setParent(IContributionManager parent)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public void setVisible(boolean visible)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public void update()
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public void update(String id)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public void addMenuListener(IMenuListener listener)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public IMenuManager findMenuUsingPath(String path)
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    @Override
+    public IContributionItem findUsingPath(String path)
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    @Override
+    public boolean getRemoveAllWhenShown()
+    {
+      // TODO Auto-generated method stub
+      return false;
+    }
+
+    @Override
+    public boolean isEnabled()
+    {
+      // TODO Auto-generated method stub
+      return false;
+    }
+
+    @Override
+    public void removeMenuListener(IMenuListener listener)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public void setRemoveAllWhenShown(boolean removeAll)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public void updateAll(boolean force)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+	  
 	}
 
 	private static class TrackfromSensorCuts extends TrackfromSensorData {
@@ -214,19 +545,24 @@ public class GenerateTrackFromActiveCuts implements RightClickContextItemGenerat
 					WorldVector vec = new WorldVector(Math.toRadians(cut.getBearing()),
 							cut.getRange().getValueIn(WorldDistance.DEGS), 0);
 
-					// also do the far end
-					WorldLocation loc = cut.getLocation().add(vec);
+					// check we have a location
+					WorldLocation origin = cut.getLocation();
+          if (origin != null)
+          {
+            // also do the far end
+            WorldLocation loc = origin.add(vec);
 
-					Fix fix = new Fix(cut.getDTG(), loc, 0d, 0d);
-					FixWrapper fw = new FixWrapper(fix);
+            Fix fix = new Fix(cut.getDTG(), loc, 0d, 0d);
+            FixWrapper fw = new FixWrapper(fix);
 
-					// give it a sensible label
-					fw.resetName();
+            // give it a sensible label
+            fw.resetName();
 
-					_newTrack.add(fw);
+            _newTrack.add(fw);
 
-					fixesAdded = true;
+            fixesAdded = true;
 
+          }
 				}
 			}
 
