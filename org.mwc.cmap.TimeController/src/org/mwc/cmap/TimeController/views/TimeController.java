@@ -2440,8 +2440,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
           _controllablePeriod.setPeriod(period);
 
-          // are we set to filter?
-          if (_filterToSelectionAction.isChecked())
+          // are we set to filter, but we're not loading new data...
+          if (_filterToSelectionAction.isChecked() && !_isLoadingNewPlot)
           {
             _controllablePeriod.performOperation(
                 ControllablePeriod.FILTER_TO_TIME_PERIOD);
@@ -2614,9 +2614,15 @@ public class TimeController extends ViewPart implements ISelectionProvider,
                 // ranges
                 _dtgRangeSlider.updateOuterRanges(timeRange);
 
+                // remember the fact that we're loading a new plot,
+                // and that slider changes aren't from the user
+                _isLoadingNewPlot = true;
+
                 // ok, now the user ranges...
                 _dtgRangeSlider.updateSelectedRanges(timeRange.getStartDTG(),
                     timeRange.getEndDTG());
+
+                _isLoadingNewPlot = false;
 
                 // and the time slider range
                 _slideManager.resetRange(timeRange.getStartDTG(), timeRange
@@ -3052,8 +3058,13 @@ public class TimeController extends ViewPart implements ISelectionProvider,
                 // ok, set the filtered time period
                 _slideManager.resetRange(startTime, endTime);
 
+                // set flag, to tell everyone we're loading a new plot
+                _isLoadingNewPlot = true;
+                
                 // ok, set the slider ranges...
                 _dtgRangeSlider.updateSelectedRanges(startTime, endTime);
+
+                _isLoadingNewPlot = false;
 
                 // and set the time again - the slider has
                 // probably forgotten
@@ -3064,6 +3075,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
           }
         });
   }
+  
+  private boolean _isLoadingNewPlot = false;
 
   protected void setVCREnabled(final boolean enable)
   {
