@@ -62,8 +62,7 @@ public class NarrativePanelToolbar extends JPanel
   private final LiteStepControl _stepControl;
 
   private final List<JComponent> componentsToDisable = new ArrayList<>();
-
-  private final int HEIGHT_FIXED_SIZE = 33;
+  
   /**
    * Maybe this should be inside the abstract model.
    */
