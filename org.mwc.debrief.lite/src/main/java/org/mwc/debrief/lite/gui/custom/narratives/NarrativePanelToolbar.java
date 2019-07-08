@@ -8,8 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -308,9 +308,8 @@ public class NarrativePanelToolbar extends JPanel
       }
     });
 
-    this._narrativeList.addMouseListener(new MouseListener()
+    this._narrativeList.addMouseListener(new MouseAdapter()
     {
-
       @Override
       public void mouseClicked(final MouseEvent e)
       {
@@ -318,30 +317,6 @@ public class NarrativePanelToolbar extends JPanel
         final NarrativeEntryItem entryItem = (NarrativeEntryItem) _narrativeList
             .getValueAt(selectedRow, 0);
         _stepControl.changeTime(entryItem.getEntry().getDTG());
-      }
-
-      @Override
-      public void mouseEntered(final MouseEvent e)
-      {
-        System.out.print(""); // Codacy warning
-      }
-
-      @Override
-      public void mouseExited(final MouseEvent e)
-      {
-        System.out.print(""); // Codacy warning
-      }
-
-      @Override
-      public void mousePressed(final MouseEvent e)
-      {
-        System.out.print(""); // Codacy warning
-      }
-
-      @Override
-      public void mouseReleased(final MouseEvent e)
-      {
-        System.out.print(""); // Codacy warning
       }
     });
     setState(INACTIVE_STATE);
@@ -446,27 +421,8 @@ public class NarrativePanelToolbar extends JPanel
     final JComboBox<String> tracksFilterLabel = new JComboBox<>(new String[]
     {"Sources"});
     tracksFilterLabel.setEnabled(true);
-    tracksFilterLabel.addMouseListener(new MouseListener()
+    tracksFilterLabel.addMouseListener(new MouseAdapter()
     {
-
-      @Override
-      public void mouseClicked(final MouseEvent e)
-      {
-        System.out.println(); // Removing Codacy warning
-      }
-
-      @Override
-      public void mouseEntered(final MouseEvent e)
-      {
-        System.out.println(); // Removing Codacy warning
-      }
-
-      @Override
-      public void mouseExited(final MouseEvent e)
-      {
-        System.out.println(); // Removing Codacy warning
-      }
-
       @Override
       public void mousePressed(final MouseEvent e)
       {
@@ -483,12 +439,6 @@ public class NarrativePanelToolbar extends JPanel
           selectTrack.setLocation(p.x, p.y + component.getHeight());
         }
       }
-
-      @Override
-      public void mouseReleased(final MouseEvent e)
-      {
-        System.out.println(); // Removing Codacy warning
-      }
     });
     return tracksFilterLabel;
   }
@@ -499,27 +449,8 @@ public class NarrativePanelToolbar extends JPanel
     final JComboBox<String> typeFilterLabel = new JComboBox<>(new String[]
     {"Types"});
     typeFilterLabel.setEnabled(true);
-    typeFilterLabel.addMouseListener(new MouseListener()
+    typeFilterLabel.addMouseListener(new MouseAdapter()
     {
-
-      @Override
-      public void mouseClicked(final MouseEvent e)
-      {
-        System.out.println(); // Removing Codacy warning
-      }
-
-      @Override
-      public void mouseEntered(final MouseEvent e)
-      {
-        System.out.println(); // Removing Codacy warning
-      }
-
-      @Override
-      public void mouseExited(final MouseEvent e)
-      {
-        System.out.println(); // Removing Codacy warning
-      }
-
       @Override
       public void mousePressed(final MouseEvent e)
       {
@@ -535,12 +466,6 @@ public class NarrativePanelToolbar extends JPanel
 
           selectTrack.setLocation(p.x, p.y + component.getHeight());
         }
-      }
-
-      @Override
-      public void mouseReleased(final MouseEvent e)
-      {
-        System.out.println(); // Removing Codacy warning
       }
     });
     return typeFilterLabel;
