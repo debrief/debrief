@@ -54,18 +54,19 @@ public class NarrativeEntryItemRenderer extends JPanel implements
     trackName.setFont(smallFont);
     final JLabel typeName = new JLabel(valueItem.getEntry().getType());
     typeName.setFont(smallFont);
-    header.add(Box.createHorizontalStrut(12));
     header.add(time);
     header.add(Box.createHorizontalStrut(3));
     header.add(trackName);
     header.add(Box.createHorizontalStrut(3));
     header.add(typeName);
+    header.add(Box.createHorizontalBox());
     return header;
   }
 
-  private JLabel getName(final String text, final boolean hasFocus,
+  private JPanel getName(final String text, final boolean hasFocus,
       final Font originalFont, final JTable table)
   {
+    final JPanel pane = new JPanel(new FlowLayout(FlowLayout.LEFT));
     final JLabel name = new JLabel();
     final String html = "<html><body style='width: %1spx'>%1s";
 
@@ -98,7 +99,8 @@ public class NarrativeEntryItemRenderer extends JPanel implements
       name.setSize(width, Short.MAX_VALUE);
     }
 
-    return name;
+    pane.add(name);
+    return pane;
   }
 
   @Override
@@ -115,14 +117,14 @@ public class NarrativeEntryItemRenderer extends JPanel implements
       final JPanel mainPanel = new JPanel();
       mainPanel.setLayout(new BorderLayout());
 
-      final JLabel time = new JLabel(valueItem.getEntry().getDTGString());
+      final JLabel time = new JLabel(valueItem.getEntry().getDTGString().trim());
       final Font originalFont = time.getFont();
 
       // the header bar, with the metadata
       final JPanel header = getHeader(valueItem, time, originalFont);
 
       // the content of the narrative entry
-      final JLabel name = getName(text, hasFocus, originalFont, table);
+      final JPanel name = getName(text, hasFocus, originalFont, table);
 
       final JPanel innerPanel = new JPanel();
       innerPanel.setLayout(new BorderLayout());
@@ -131,7 +133,8 @@ public class NarrativeEntryItemRenderer extends JPanel implements
       mainPanel.add(innerPanel, BorderLayout.CENTER);
 
       JLabel highlightIcon;
-      if (isSelected)
+      if (valueItem.getModel().getCurrentHighLight() != null && valueItem
+          .getModel().getCurrentHighLight().equals(valueItem.getEntry()))
       {
         highlightIcon = new JLabel(HIGHLIGHT_ICON);
       }
