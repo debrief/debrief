@@ -169,15 +169,18 @@ public class ImportNMEA
       importer.importThis(testFile, is, 15000L, 15000L, false);
 
       assertEquals("got new layers", 4, tLayers.size());
-
+      
       tOne = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP_POS_GPS");
       assertEquals("found GPS cuts", 4141, tOne.numFixes());
-
+      assertEquals("correct legs",  1, tOne.getSegments().size());
+    
       tTwo = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP-DR");
       assertEquals("found GPS cuts", 4816, tTwo.numFixes());
-
+      assertEquals("correct legs",  1, tTwo.getSegments().size());
+    
       tThree = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP_POS_CMP");
       assertEquals("found GPS cuts", 26, tThree.numFixes());
+      assertEquals("correct legs",  1, tThree.getSegments().size());
 
       contacts = tLayers.findLayer("WECDIS Contacts");
       assertEquals("loaded tracks", "WECDIS Contacts (14 items)", contacts
@@ -375,6 +378,71 @@ public class ImportNMEA
       assertEquals("correct size", 4, a1.numFixes());
       assertEquals("correct size", 1, a2.numFixes());
 
+    }
+
+    public void testFullImportAllValuesWithSplit() throws Exception
+    {
+      final String testFile =
+          "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/NMEA_TRIAL.log";
+      final File testI = new File(testFile);
+    
+      // only run the test if we have the log-file available
+      assertTrue(testI.exists());
+    
+      InputStream is = new FileInputStream(testI);
+    
+      final Layers tLayers = new Layers();
+    
+      final ImportNMEA importer = new ImportNMEA(tLayers);
+      importer.importThis(testFile, is, 0l, 0l, false);
+    
+      assertEquals("got new layers", 4, tLayers.size());
+    
+      TrackWrapper tOne = (TrackWrapper) tLayers.findLayer(
+          "WECDIS_OWNSHIP_POS_GPS");
+      assertEquals("found GPS cuts", 12736, tOne.numFixes());
+    
+      TrackWrapper tTwo = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP-DR");
+      assertEquals("found GPS cuts", 21746, tTwo.numFixes());
+    
+      TrackWrapper tThree = (TrackWrapper) tLayers.findLayer(
+          "WECDIS_OWNSHIP_POS_CMP");
+      assertEquals("found GPS cuts", 87, tThree.numFixes());
+    
+      Layer contacts = tLayers.findLayer("WECDIS Contacts");
+      assertEquals("loaded tracks", "WECDIS Contacts (14 items)", contacts
+          .toString());
+      LightweightTrackWrapper aisTrack = (LightweightTrackWrapper) contacts
+          .elements().nextElement();
+      assertEquals("loaded lwt track", 1250, aisTrack.numFixes());
+    
+      // try another import frequency
+      tLayers.clear();
+    
+      assertEquals("layers empty", 0, tLayers.size());
+    
+      is = new FileInputStream(testI);
+      importer.importThis(testFile, is, 15000L, 15000L, true);
+    
+      assertEquals("got new layers", 4, tLayers.size());
+    
+      tOne = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP_POS_GPS");
+      assertEquals("found GPS cuts", 4141, tOne.numFixes());
+      assertEquals("correct legs",  2, tOne.getSegments().size());
+    
+      tTwo = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP-DR");
+      assertEquals("found GPS cuts", 4816, tTwo.numFixes());
+      assertEquals("correct legs",  1, tTwo.getSegments().size());
+    
+      tThree = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP_POS_CMP");
+      assertEquals("found GPS cuts", 26, tThree.numFixes());
+      assertEquals("correct legs",  1, tThree.getSegments().size());
+    
+      contacts = tLayers.findLayer("WECDIS Contacts");
+      assertEquals("loaded tracks", "WECDIS Contacts (14 items)", contacts
+          .toString());
+      aisTrack = (LightweightTrackWrapper) contacts.elements().nextElement();
+      assertEquals("loaded lwt track", 744, aisTrack.numFixes());
     }
   }
 
@@ -967,7 +1035,7 @@ public class ImportNMEA
       }
     }
     
-    final long JUMP_DELTA_MILLIS = 4 * 60 * 1000;
+    final long JUMP_DELTA_MILLIS = 8 * 60 * 1000;
 
     for (final String trackName : tracks.keySet())
     {
