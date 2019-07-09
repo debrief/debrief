@@ -20,6 +20,7 @@ import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
+import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -97,7 +98,7 @@ public class ImportNMEA
     }
   }
 
-  public static class TestImportAIS extends TestCase
+  public static class TestImportNMEA extends TestCase
   {
     @SuppressWarnings("deprecation")
     public void testDate()
@@ -137,7 +138,7 @@ public class ImportNMEA
       final Layers tLayers = new Layers();
 
       final ImportNMEA importer = new ImportNMEA(tLayers);
-      importer.importThis(testFile, is, 0l, 0l);
+      importer.importThis(testFile, is, 0L, 0L, false);
 
       assertEquals("got new layers", 4, tLayers.size());
 
@@ -165,18 +166,86 @@ public class ImportNMEA
       assertEquals("layers empty", 0, tLayers.size());
 
       is = new FileInputStream(testI);
-      importer.importThis(testFile, is, 15000L, 15000L);
+      importer.importThis(testFile, is, 15000L, 15000L, false);
 
       assertEquals("got new layers", 4, tLayers.size());
 
       tOne = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP_POS_GPS");
       assertEquals("found GPS cuts", 4141, tOne.numFixes());
+      assertEquals("correct legs", 1, tOne.getSegments().size());
 
       tTwo = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP-DR");
       assertEquals("found GPS cuts", 4816, tTwo.numFixes());
+      assertEquals("correct legs", 1, tTwo.getSegments().size());
 
       tThree = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP_POS_CMP");
       assertEquals("found GPS cuts", 26, tThree.numFixes());
+      assertEquals("correct legs", 1, tThree.getSegments().size());
+
+      contacts = tLayers.findLayer("WECDIS Contacts");
+      assertEquals("loaded tracks", "WECDIS Contacts (14 items)", contacts
+          .toString());
+      aisTrack = (LightweightTrackWrapper) contacts.elements().nextElement();
+      assertEquals("loaded lwt track", 744, aisTrack.numFixes());
+    }
+
+    public void testFullImportAllValuesWithSplit() throws Exception
+    {
+      final String testFile =
+          "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/NMEA_TRIAL.log";
+      final File testI = new File(testFile);
+
+      // only run the test if we have the log-file available
+      assertTrue(testI.exists());
+
+      InputStream is = new FileInputStream(testI);
+
+      final Layers tLayers = new Layers();
+
+      final ImportNMEA importer = new ImportNMEA(tLayers);
+      importer.importThis(testFile, is, 0L, 0L, false);
+
+      assertEquals("got new layers", 4, tLayers.size());
+
+      TrackWrapper tOne = (TrackWrapper) tLayers.findLayer(
+          "WECDIS_OWNSHIP_POS_GPS");
+      assertEquals("found GPS cuts", 12736, tOne.numFixes());
+
+      TrackWrapper tTwo = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP-DR");
+      assertEquals("found GPS cuts", 21746, tTwo.numFixes());
+
+      TrackWrapper tThree = (TrackWrapper) tLayers.findLayer(
+          "WECDIS_OWNSHIP_POS_CMP");
+      assertEquals("found GPS cuts", 87, tThree.numFixes());
+
+      Layer contacts = tLayers.findLayer("WECDIS Contacts");
+      assertEquals("loaded tracks", "WECDIS Contacts (14 items)", contacts
+          .toString());
+      LightweightTrackWrapper aisTrack = (LightweightTrackWrapper) contacts
+          .elements().nextElement();
+      assertEquals("loaded lwt track", 1250, aisTrack.numFixes());
+
+      // try another import frequency
+      tLayers.clear();
+
+      assertEquals("layers empty", 0, tLayers.size());
+
+      is = new FileInputStream(testI);
+      importer.importThis(testFile, is, 15000L, 15000L, true);
+
+      assertEquals("got new layers", 4, tLayers.size());
+
+      tOne = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP_POS_GPS");
+      assertEquals("found GPS cuts", 4141, tOne.numFixes());
+      assertEquals("correct legs", 2, tOne.getSegments().size());
+
+      tTwo = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP-DR");
+      assertEquals("found GPS cuts", 4816, tTwo.numFixes());
+      assertEquals("correct legs", 1, tTwo.getSegments().size());
+
+      tThree = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP_POS_CMP");
+      assertEquals("found GPS cuts", 26, tThree.numFixes());
+      assertEquals("correct legs", 1, tThree.getSegments().size());
 
       contacts = tLayers.findLayer("WECDIS Contacts");
       assertEquals("loaded tracks", "WECDIS Contacts (14 items)", contacts
@@ -344,7 +413,7 @@ public class ImportNMEA
       assertEquals("empty", 0, layers.size());
 
       final ImportNMEA importer = new ImportNMEA(layers);
-      importer.importThis("file.log", is, 0, 0);
+      importer.importThis("file.log", is, 0, 0, false);
 
       assertEquals("not empty", 4, layers.size());
       final LightweightTrackWrapper t1 = (LightweightTrackWrapper) layers
@@ -767,7 +836,8 @@ public class ImportNMEA
   }
 
   public void importThis(final String fName, final InputStream is,
-      final long osFreq, final long aisFreq) throws Exception
+      final long osFreq, final long aisFreq, final boolean splitOwnshipJumps)
+      throws Exception
   {
     String myName = null;
     double myDepth = 0d;
@@ -797,7 +867,7 @@ public class ImportNMEA
     // from different messages
     Double drCourse = null;
 
- //   int ctr = 0;
+    // int ctr = 0;
 
     // loop through the lines
     while ((nmea_sentence = br.readLine()) != null)
@@ -805,17 +875,17 @@ public class ImportNMEA
 
       final MsgType msg = parseType(nmea_sentence);
 
-//      ctr++;
-//
-//      if (ctr % 10000 == 0)
-//      {
-//        System.out.print(".");
-//      }
-//      if (ctr % 50000 == 0)
-//      {
-//        System.out.println("");
-//        System.out.print(ctr);
-//      }
+      // ctr++;
+      //
+      // if (ctr % 10000 == 0)
+      // {
+      // System.out.print(".");
+      // }
+      // if (ctr % 50000 == 0)
+      // {
+      // System.out.println("");
+      // System.out.print(ctr);
+      // }
 
       switch (msg)
       {
@@ -966,6 +1036,8 @@ public class ImportNMEA
       }
     }
 
+    final long JUMP_DELTA_MILLIS = 8 * 60 * 1000;
+
     for (final String trackName : tracks.keySet())
     {
       final ArrayList<FixWrapper> track = tracks.get(trackName);
@@ -973,8 +1045,6 @@ public class ImportNMEA
       final TrackWrapper tr = new TrackWrapper();
       tr.setName(trackName);
       tr.setColor(colors.get(trackName));
-
-//      System.out.println("storing " + track.size() + " for " + trackName);
 
       // SPECIAL HANDLING - we filter DR tracks at this stage
       Long lastTime = null;
@@ -996,7 +1066,42 @@ public class ImportNMEA
 
         if ((!resample) || lastTime == null || delta >= osFreq)
         {
-          tr.add(fix);
+          // ok, see if there's a jump
+          // do we know the last time?
+          final boolean added;
+
+          if (lastTime != null)
+          {
+            delta = thisTime - lastTime;
+            if (delta > JUMP_DELTA_MILLIS)
+            {
+              if (splitOwnshipJumps)
+              {
+                // ok, we're adding an new track segment
+                final TrackSegment newSeg = new TrackSegment(false);
+                newSeg.add(fix);
+                tr.add(newSeg);
+                added = true;
+              }
+              else
+              {
+                added = false;
+              }
+            }
+            else
+            {
+              added = false;
+            }
+          }
+          else
+          {
+            added = false;
+          }
+
+          if (!added)
+          {
+            tr.add(fix);
+          }
           lastTime = thisTime;
         }
       }
@@ -1009,7 +1114,7 @@ public class ImportNMEA
     {
       final ArrayList<FixWrapper> track = contacts.get(trackName);
 
-//      System.out.println("storing " + track.size() + " for " + trackName);
+      // System.out.println("storing " + track.size() + " for " + trackName);
 
       if (contactHolder == null)
       {
@@ -1031,12 +1136,13 @@ public class ImportNMEA
 
       contactHolder.add(tr);
     }
-    
-    //Ayesha: added contactholder finally after contacts are added.
-    if(contactHolder!=null) {
+
+    // Ayesha: added contactholder finally after contacts are added.
+    if (contactHolder != null)
+    {
       _layers.addThisLayer(contactHolder);
     }
-    
+
     _layers.fireExtended();
   }
 
