@@ -1309,4 +1309,10 @@
             splashId="org.mwc.debrief.core.splashHandlers.extensible">	
       </splashHandlerProductBinding>
    </extension>
+   <extension
+         point="org.mwc.cmap.core.EarthModelProvider">
+      <provider
+            class="org.mwc.debrief.core.gt2plot.GeoCalculatorProvider">
+      </provider>
+   </extension>
 </plugin>

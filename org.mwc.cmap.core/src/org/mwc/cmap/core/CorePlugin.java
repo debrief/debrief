@@ -1114,6 +1114,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner,
     // if we don't try to get an image reader right at the start of the app,
     // we can't get a TIFF loader later on.
     System.setProperty("com.sun.media.jai.disableMediaLib", "true");
+    System.setProperty("org.geotools.referencing.forceXY", "true");
     final Iterator<ImageReader> iter2 = ImageIO.getImageReadersBySuffix("tif");
     if (!iter2.hasNext())
     {
