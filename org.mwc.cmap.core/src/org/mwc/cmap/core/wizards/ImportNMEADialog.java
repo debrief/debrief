@@ -181,6 +181,11 @@ public class ImportNMEADialog extends CoreFreqImportDialog
     
     return composite;
   }
+  
+  public boolean getSplitOwnshipJumps()
+  {
+    return splitOwnshipJumps;
+  }
 
   public long getOwnshipFreq()
   {

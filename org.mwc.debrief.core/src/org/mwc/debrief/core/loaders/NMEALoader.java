@@ -80,10 +80,12 @@ public class NMEALoader extends CoreLoader
             // get the selected values
             final long osFreq = dialog.getOwnshipFreq();
             final long tgtFreq = dialog.getThirdPartyFreq();
+            final boolean splitOwnshipJumps = dialog.getSplitOwnshipJumps();
 
             // ok - get loading going
             ImportNMEA importer = new ImportNMEA(theLayers);
-            importer.importThis(fileName, inputStream, osFreq, tgtFreq);
+            importer.importThis(fileName, inputStream, osFreq, tgtFreq,
+                splitOwnshipJumps);
           }
           else
           {
