@@ -27,6 +27,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JToggleButton;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
@@ -292,14 +293,23 @@ public class NarrativePanelToolbar extends JPanel
               (NarrativeEntry) evt.getNewValue(), _model);
           for (int i = 0; i < _narrativeList.getRowCount(); i++)
           {
+            final int finalCtr = i;
             final NarrativeEntry actualEntry =
                 ((NarrativeEntryItem) (_narrativeList.getValueAt(i, 0)))
                     .getEntry();
             if (actualEntry.equals(itemToCompare.getEntry()))
             {
-              _narrativeList.getSelectionModel().setSelectionInterval(i, i);
-              _narrativeList.scrollRectToVisible(new Rectangle(_narrativeList
-                  .getCellRect(i, 0, true)));
+              SwingUtilities.invokeLater(new Runnable()
+              {
+                @Override
+                public void run()
+                {
+                  _narrativeList.getSelectionModel().setSelectionInterval(
+                      finalCtr, finalCtr);
+                  _narrativeList.scrollRectToVisible(new Rectangle(
+                      _narrativeList.getCellRect(finalCtr, 0, true)));
+                }
+              });
               break;
             }
           }
