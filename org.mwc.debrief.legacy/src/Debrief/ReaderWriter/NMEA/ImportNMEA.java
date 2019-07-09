@@ -138,7 +138,7 @@ public class ImportNMEA
       final Layers tLayers = new Layers();
 
       final ImportNMEA importer = new ImportNMEA(tLayers);
-      importer.importThis(testFile, is, 0l, 0l, false);
+      importer.importThis(testFile, is, 0L, 0L, false);
 
       assertEquals("got new layers", 4, tLayers.size());
 
@@ -203,7 +203,7 @@ public class ImportNMEA
       final Layers tLayers = new Layers();
 
       final ImportNMEA importer = new ImportNMEA(tLayers);
-      importer.importThis(testFile, is, 0l, 0l, false);
+      importer.importThis(testFile, is, 0L, 0L, false);
 
       assertEquals("got new layers", 4, tLayers.size());
 
