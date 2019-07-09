@@ -20,6 +20,7 @@ import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
+import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -97,7 +98,7 @@ public class ImportNMEA
     }
   }
 
-  public static class TestImportAIS extends TestCase
+  public static class TestImportNMEA extends TestCase
   {
     @SuppressWarnings("deprecation")
     public void testDate()
@@ -137,7 +138,7 @@ public class ImportNMEA
       final Layers tLayers = new Layers();
 
       final ImportNMEA importer = new ImportNMEA(tLayers);
-      importer.importThis(testFile, is, 0l, 0l);
+      importer.importThis(testFile, is, 0l, 0l, false);
 
       assertEquals("got new layers", 4, tLayers.size());
 
@@ -165,7 +166,7 @@ public class ImportNMEA
       assertEquals("layers empty", 0, tLayers.size());
 
       is = new FileInputStream(testI);
-      importer.importThis(testFile, is, 15000L, 15000L);
+      importer.importThis(testFile, is, 15000L, 15000L, false);
 
       assertEquals("got new layers", 4, tLayers.size());
 
@@ -344,7 +345,7 @@ public class ImportNMEA
       assertEquals("empty", 0, layers.size());
 
       final ImportNMEA importer = new ImportNMEA(layers);
-      importer.importThis("file.log", is, 0, 0);
+      importer.importThis("file.log", is, 0, 0, false);
 
       assertEquals("not empty", 4, layers.size());
       final LightweightTrackWrapper t1 = (LightweightTrackWrapper) layers
@@ -728,7 +729,7 @@ public class ImportNMEA
     {
       // create a fix from the state
       final FixWrapper theF = fixFor(date, state, lastFix, myDepth);
-
+      
       // and store it
       track.add(theF);
     }
@@ -767,7 +768,7 @@ public class ImportNMEA
   }
 
   public void importThis(final String fName, final InputStream is,
-      final long osFreq, final long aisFreq) throws Exception
+      final long osFreq, final long aisFreq, final boolean splitOwnshipJumps) throws Exception
   {
     String myName = null;
     double myDepth = 0d;
@@ -965,6 +966,8 @@ public class ImportNMEA
           break;
       }
     }
+    
+    final long JUMP_DELTA_MILLIS = 4 * 60 * 1000;
 
     for (final String trackName : tracks.keySet())
     {
@@ -973,8 +976,6 @@ public class ImportNMEA
       final TrackWrapper tr = new TrackWrapper();
       tr.setName(trackName);
       tr.setColor(colors.get(trackName));
-
-//      System.out.println("storing " + track.size() + " for " + trackName);
 
       // SPECIAL HANDLING - we filter DR tracks at this stage
       Long lastTime = null;
@@ -996,7 +997,42 @@ public class ImportNMEA
 
         if ((!resample) || lastTime == null || delta >= osFreq)
         {
-          tr.add(fix);
+          // ok, see if there's a jump
+          // do we know the last time?
+          final boolean added;
+          
+          if(lastTime != null)
+          {
+            delta = thisTime - lastTime;
+            if(delta > JUMP_DELTA_MILLIS)
+            {
+              if(splitOwnshipJumps)
+              {
+                // ok, we're adding an new track segment
+                TrackSegment newSeg = new TrackSegment(false);
+                newSeg.add(fix);
+                tr.add(newSeg);
+                added = true;
+              }
+              else
+              {
+                added = false;
+              }
+            }
+            else
+            {
+              added = false;
+            }
+          }
+          else
+          {
+            added = false;
+          }
+          
+          if(!added)
+          {
+            tr.add(fix);
+          }
           lastTime = thisTime;
         }
       }
