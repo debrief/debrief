@@ -165,7 +165,7 @@ public class ImportNMEADialog extends CoreFreqImportDialog
     }
     {
       final Button splitOwnshipCheck = new Button(composite,SWT.CHECK);
-      splitOwnshipCheck.setText("Split Ownship Jumps");
+      splitOwnshipCheck.setText("Split Ownship track into legs (on 8 mins or more of missing data)");
       splitOwnshipCheck.setSelection(splitOwnshipJumps);
       splitOwnshipCheck.addSelectionListener(new SelectionAdapter()
       {
