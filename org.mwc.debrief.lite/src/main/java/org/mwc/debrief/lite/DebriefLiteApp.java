@@ -792,12 +792,19 @@ public class DebriefLiteApp implements FileDropListener
     final ToteSetter snailT = new ToteSetter(painterManager, sp);
     normalT.run();
 
+    final Runnable collapseAction = new Runnable() {
+      @Override
+      public void run()
+      {
+        doExpandCollapse();
+      }};
+
     // create the components
     initForm();
     final MathTransform screenTransform = geoMapRenderer.getTransform();
     createAppPanels(geoMapRenderer, session.getUndoBuffer(), dropSupport,
         mapPane, _stepControl, timeManager, _myOperations, normalT, snailT,
-        statusBar, screenTransform);
+        statusBar, screenTransform, collapseAction);
     _listenForMods = new DataListenerAdaptor()
     {
 
@@ -869,7 +876,7 @@ public class DebriefLiteApp implements FileDropListener
       final Component mapPane, final LiteStepControl stepControl,
       final TimeManager timeManager, final PlotOperations operation,
       final ToteSetter normalT, final ToteSetter snailT, final JLabel statusBar,
-      final MathTransform transform)
+      final MathTransform transform, final Runnable collapseAction)
   {
     // final Dimension frameSize = theFrame.getSize();
     // final int width = (int) frameSize.getWidth();
@@ -919,7 +926,34 @@ public class DebriefLiteApp implements FileDropListener
     };
     new DebriefRibbon(theFrame.getRibbon(), _theLayers, app, geoMapRenderer,
         stepControl, timeManager, operation, session, resetAction, normalT,
-        snailT, statusBar, exitAction, projection, transform);
+        snailT, statusBar, exitAction, projection, transform, collapseAction);
+  }
+  
+  protected void doExpandCollapse()
+  {
+    List<JXCollapsiblePaneWithTitle> items = new ArrayList<JXCollapsiblePaneWithTitle>();
+    items.add(outlinePanel);
+    items.add(graphPanel);
+    items.add(narrativePanel);
+    
+    
+    boolean doCollapse = false;
+    
+    for(final JXCollapsiblePaneWithTitle panel: items)
+    {
+      if(!panel.isCollapsed())
+      {
+        doCollapse = true; 
+        break;
+      }
+    }
+
+    // ok, now make it so
+    for(final JXCollapsiblePaneWithTitle panel: items)
+    {
+      panel.setCollapsed(doCollapse);
+    }
+
   }
 
   protected void doPaint(final Graphics gc)
