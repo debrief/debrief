@@ -56,14 +56,13 @@ import org.mwc.cmap.geotools.gt2plot.ShapeFileLayer;
 import org.mwc.cmap.geotools.gt2plot.WorldImageLayer;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
-import org.mwc.debrief.lite.gui.LiteSnailPainter;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.gui.custom.JXCollapsiblePane.Direction;
+import org.mwc.debrief.lite.gui.custom.JXCollapsiblePaneWithTitle;
 import org.mwc.debrief.lite.gui.custom.graph.GraphPanelView;
 import org.mwc.debrief.lite.gui.custom.narratives.NarrativeConfigurationModel;
 import org.mwc.debrief.lite.gui.custom.narratives.NarrativePanelToolbar;
 import org.mwc.debrief.lite.gui.custom.narratives.NarrativePanelView;
-import org.mwc.debrief.lite.gui.custom.JXCollapsiblePaneWithTitle;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer.MapRenderer;
 import org.mwc.debrief.lite.map.MapBuilder;
@@ -83,7 +82,7 @@ import org.pushingpixels.substance.api.skin.BusinessBlueSteelSkin;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Tote.Painters.PainterManager;
-import Debrief.GUI.Tote.Painters.SnailPainter;
+import Debrief.GUI.Tote.Painters.SnailPainter2;
 import Debrief.GUI.Tote.Painters.TotePainter;
 import Debrief.ReaderWriter.NMEA.ImportNMEA;
 import Debrief.ReaderWriter.Replay.ImportReplay;
@@ -668,6 +667,8 @@ public class DebriefLiteApp implements FileDropListener
   private final LiteStepControl _stepControl;
 
   private final Layer safeChartFeatures;
+  private HiResDate _pendingNewTime;
+  private HiResDate _pendingOldTime;
 
   public DebriefLiteApp()
   {
@@ -751,8 +752,7 @@ public class DebriefLiteApp implements FileDropListener
       @Override
       public void propertyChange(final PropertyChangeEvent evt)
       {
-        redoTimePainter(false, theCanvas, (HiResDate) evt.getOldValue(),
-            (HiResDate) evt.getNewValue());
+        timeUpdate(theCanvas, evt);
       }
     }, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 
@@ -787,7 +787,7 @@ public class DebriefLiteApp implements FileDropListener
     theTote = new LiteTote(_theLayers, _stepControl);
     final TotePainter tp = new TotePainter(theChart, _theLayers, theTote);
     tp.setColor(Color.white);
-    final TotePainter sp = new LiteSnailPainter(theChart, _theLayers, theTote);
+    final TotePainter sp = new SnailPainter2(theChart, _theLayers, theTote);
 
     final ToteSetter normalT = new ToteSetter(painterManager, tp);
     final ToteSetter snailT = new ToteSetter(painterManager, sp);
@@ -833,6 +833,16 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.setVisible(true);
     theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
     
+  }
+
+  protected void timeUpdate(final CanvasAdaptor theCanvas, final PropertyChangeEvent evt)
+  {
+    // ok, redraw the whole map
+    mapPane.repaint();
+    _pendingNewTime =(HiResDate) evt.getNewValue();
+    _pendingOldTime = (HiResDate) evt.getOldValue();
+    redoTimePainter(false, theCanvas, (HiResDate) evt.getOldValue(),
+               (HiResDate) evt.getNewValue());
   }
 
   private static void loadBackdropdata(final Layers layers)
@@ -982,8 +992,11 @@ public class DebriefLiteApp implements FileDropListener
     }
 
     // and the time marker
-    redoTimePainter(true, dest, null, null);
+    redoTimePainter(true, dest, _pendingOldTime, _pendingNewTime);
 
+    _pendingNewTime = null;
+    _pendingOldTime = null;
+    
     dest.endDraw(gc);
   }
 
@@ -1129,7 +1142,6 @@ public class DebriefLiteApp implements FileDropListener
   private void handleImportDPF(final File file)
   {
     final long startTime = System.currentTimeMillis();
-    System.out.println("Started loading file");
     boolean success = true;
     final DebriefXMLReaderWriter reader = new DebriefXMLReaderWriter(app);
     try
@@ -1173,7 +1185,6 @@ public class DebriefLiteApp implements FileDropListener
     }
     final long endTime = System.currentTimeMillis();
     final long timeElapsed = endTime - startTime;
-    System.out.println("Time taken:" + timeElapsed);
   }
 
   private void handleImportNMEAFile(final File file)
@@ -1399,7 +1410,7 @@ public class DebriefLiteApp implements FileDropListener
     {
       if (!isNormal)
       {
-        final SnailPainter snail = (SnailPainter) current;
+        final SnailPainter2 snail = (SnailPainter2) current;
         snail.setVectorStretch(1d);
       }
 
