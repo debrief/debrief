@@ -690,7 +690,7 @@ public class SnailPainter extends TotePainter
 		// we will plot the non-watchables aswell)
 		if ((oldDTG == null) || (_oldWatchables.size() == 0))
 		{
-			final Vector<Plottable> nonWatches = getNonWatchables(super._theData);
+			final Vector<Plottable> nonWatches = getNonWatchables(super.getLayers());
 			final Enumeration<Plottable> iter = nonWatches.elements();
 			while (iter.hasMoreElements())
 			{
@@ -768,7 +768,7 @@ public class SnailPainter extends TotePainter
 		}
 
 		// determine the new items
-		final Vector<Plottable> theWatchableLists = getWatchables(super._theData);
+		final Vector<Plottable> theWatchableLists = getWatchables(super.getLayers());
 		_paintingOldies = false;
 
 		// sort out the line width of the primary
