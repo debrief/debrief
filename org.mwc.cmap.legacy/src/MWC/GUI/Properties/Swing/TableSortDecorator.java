@@ -20,6 +20,8 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
+import MWC.GUI.Editable.CategorisedPropertyDescriptor;
+
 public class TableSortDecorator extends TableModelDecorator 
 								implements TableModelListener {
 	/**
@@ -74,7 +76,18 @@ public class TableSortDecorator extends TableModelDecorator
 			iStr = iPd.getDisplayName();
 			final java.beans.PropertyDescriptor jPd = (java.beans.PropertyDescriptor)jo;
 			jStr = jPd.getDisplayName();
-		}
+			
+			if(io instanceof CategorisedPropertyDescriptor)
+			{
+			  CategorisedPropertyDescriptor catI = (CategorisedPropertyDescriptor) io;
+        iStr = catI.getCategory() + iStr;
+			}
+      if(jo instanceof CategorisedPropertyDescriptor)
+      {
+        CategorisedPropertyDescriptor catJ = (CategorisedPropertyDescriptor) jo;
+        jStr = catJ.getCategory() + jStr;
+			}
+		} 
 		else
 		{
 			iStr = io.toString();
