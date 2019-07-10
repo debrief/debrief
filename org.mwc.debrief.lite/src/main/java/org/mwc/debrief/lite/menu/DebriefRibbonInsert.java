@@ -29,6 +29,7 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
+import Debrief.GUI.Frames.Application;
 import Debrief.Tools.Palette.CoreCreateShape;
 import Debrief.Tools.Palette.CreateLabel;
 import Debrief.Tools.Palette.CreateShape;
@@ -105,8 +106,9 @@ public class DebriefRibbonInsert
         }
         catch (MismatchedDimensionException | TransformException e)
         {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+          Application.logError2(ToolParent.ERROR,
+              "Failed to convert from metres proj to degs",
+              null);
         }
         return res;
       }
