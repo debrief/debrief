@@ -116,6 +116,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.beans.PropertyDescriptor;
 
+import Debrief.GUI.Tote.Painters.SnailPainter2.ColorFadeCalculator;
 import Debrief.Wrappers.FixWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Properties.BoundedInteger;
@@ -174,7 +175,7 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2, Editab
 																	 final Watchable watch,
 																	 final TotePainter parent,
 																	 final HiResDate dtg,
-                                   final java.awt.Color backColor)
+                                   final ColorFadeCalculator fader)
 	{
     Rectangle thisR = null;
 
@@ -276,7 +277,7 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2, Editab
 																											 watch,
 																											 parent,
 																											 dtg,
-                                                       backColor);
+                                                       fader);
 
 		// extend the rectangle, if necesary
 		if(dotsArea != null)

@@ -264,23 +264,24 @@ public class SnailPainter2 extends TotePainter
   public interface drawHighLight2
   {
     public java.awt.Rectangle drawMe(MWC.Algorithms.PlainProjection proj,
-        Graphics dest, WatchableList list, Watchable watch,
-        TotePainter parent, HiResDate dtg, Color backColor);
+        Graphics dest, WatchableList list, Watchable watch, TotePainter parent,
+        HiResDate dtg, ColorFadeCalculator fader);
 
     public boolean canPlot(Watchable wt);
   }
-  
+
   public static class ColorFadeCalculator
   {
     private long _trail_lenMillis;
     private long _datumTime;
 
-    public ColorFadeCalculator(final long trail_lenMillis, final HiResDate datumTime)
+    public ColorFadeCalculator(final long trail_lenMillis,
+        final HiResDate datumTime)
     {
       _trail_lenMillis = trail_lenMillis;
       _datumTime = datumTime.getDate().getTime();
     }
-    
+
     public float fadeAt(final HiResDate currentTime)
     {
       // how far back through the time period are we?
@@ -289,736 +290,722 @@ public class SnailPainter2 extends TotePainter
       // just double check that we have a positive time offset
       our_time = Math.max(0, our_time);
 
-      return (((float) _trail_lenMillis - our_time) / _trail_lenMillis);
+      float proportion = (((float) _trail_lenMillis - our_time)
+          / _trail_lenMillis);
+      proportion = Math.max(0, proportion);
+      return proportion;
     }
 
     public Color fadeColorAt(final Color trkColor, final HiResDate currentTime)
     {
       final float thisFade = fadeAt(currentTime);
-      return new Color(trkColor.getRed() / 255f, trkColor.getGreen()
-          / 255f, trkColor.getBlue() / 255f, thisFade);
+      return new Color(trkColor.getRed(), trkColor.getGreen(), trkColor
+          .getBlue(), (int) (thisFade * 255f));
     }
   }
 
-	public static final String SNAIL_NAME = "Snail";
+  public static final String SNAIL_NAME = "Snail";
 
-	/**
-	 * the highlight plotters we know about
-	 */
-	protected final Vector<drawHighLight2> _myHighlightPlotters;
+  /**
+   * the highlight plotters we know about
+   */
+  protected final Vector<drawHighLight2> _myHighlightPlotters;
 
-	/**
-	 * the size to draw myself
-	 */
-	protected final int _mySize = 5;
+  /**
+   * the size to draw myself
+   */
+  protected final int _mySize = 5;
 
-	/**
-	 * the list of painters previously used by the canvas
-	 */
-	protected Vector<PaintListener> _oldPainters;
+  /**
+   * the list of painters previously used by the canvas
+   */
+  protected Vector<PaintListener> _oldPainters;
 
-	/**
-	 * the snail track plotter to use
-	 */
-	private final SnailDrawFix2 _mySnailPlotter;
+  /**
+   * the snail track plotter to use
+   */
+  private final SnailDrawFix2 _mySnailPlotter;
 
-	// /////////////////////////////////
-	// constructorsna
-	// ////////////////////////////////
-	public SnailPainter2(final PlainChart theChart, final Layers theData,
-			final AnalysisTote theTote)
-	{
-		this(theChart, theData, theTote, "Snail");
-	}
+  public SnailPainter2(final PlainChart theChart, final Layers theData,
+      final AnalysisTote theTote)
+  {
+    super(theChart, theData, theTote);
 
-	public SnailPainter2(final PlainChart theChart, final Layers theData,
-			final AnalysisTote theTote, final String myName)
-	{
-		super(theChart, theData, theTote);
+    _mySnailPlotter = new SnailDrawFix2("Snail");
 
-		_mySnailPlotter = new SnailDrawFix2(myName);
+    _myHighlightPlotters = new Vector<drawHighLight2>();
+    _myHighlightPlotters.addElement(_mySnailPlotter);
+     _myHighlightPlotters.addElement(new SnailDrawBuoyPattern2());
+    _myHighlightPlotters.addElement(new SnailDrawAnnotation2());
+    _myHighlightPlotters.addElement(new SnailDrawSensorContact2(
+        _mySnailPlotter));
+     _myHighlightPlotters.addElement(new SnailDrawTMAContact2(_mySnailPlotter));
 
-		_myHighlightPlotters = new Vector<drawHighLight2>();
-		_myHighlightPlotters.addElement(_mySnailPlotter);
-	//	_myHighlightPlotters.addElement(new SnailDrawBuoyPattern());
-	//	_myHighlightPlotters.addElement(new SnailDrawAnnotation());
-//		_myHighlightPlotters
-//				.addElement(new SnailDrawSensorContact(_mySnailPlotter));
-//		_myHighlightPlotters.addElement(new SnailDrawTMAContact(_mySnailPlotter));
+    _mySnailPlotter.setPointSize(new BoundedInteger(5, 0, 0));
+    _mySnailPlotter.setVectorStretch(1);
+  }
 
-		_mySnailPlotter.setPointSize(new BoundedInteger(5, 0, 0));
-		_mySnailPlotter.setVectorStretch(1);
-	}
+  // /////////////////////////////////
+  // member functions
+  // ////////////////////////////////
 
-	// /////////////////////////////////
-	// member functions
-	// ////////////////////////////////
+  /**
+   * how much to stretch this vector
+   * 
+   * @return the stretch to apply
+   */
+  public final double getVectorStretch()
+  {
+    return _mySnailPlotter.getVectorStretch();
+  }
 
-	/**
-	 * how much to stretch this vector
-	 * 
-	 * @return the stretch to apply
-	 */
-	public final double getVectorStretch()
-	{
-		return _mySnailPlotter.getVectorStretch();
-	}
+  /**
+   * the stretch to apply to the speed vector (pixels per knot)
+   * 
+   * @param val
+   *          the strech to use = 1 is 1 pixel per knot
+   */
+  public final void setVectorStretch(final double val)
+  {
+    _mySnailPlotter.setVectorStretch(val);
+  }
 
-	/**
-	 * the stretch to apply to the speed vector (pixels per knot)
-	 * 
-	 * @param val
-	 *          the strech to use = 1 is 1 pixel per knot
-	 */
-	public final void setVectorStretch(final double val)
-	{
-		_mySnailPlotter.setVectorStretch(val);
-	}
+  /**
+   * ok, get the watchables for this layer
+   * 
+   * @param theData
+   *          the layer to extract the watchables for
+   * @return the set of watchable items in this layer
+   */
+  public static Vector<Plottable> getWatchables(final Layer thisLayer)
+  {
+    // get the output ready
+    final Vector<Plottable> res = new Vector<Plottable>(0, 1);
 
-	/**
-	 * ok, get the watchables for this layer
-	 * 
-	 * @param theData
-	 *          the layer to extract the watchables for
-	 * @return the set of watchable items in this layer
-	 */
-	public static Vector<Plottable> getWatchables(final Layer thisLayer)
-	{
-		// get the output ready
-		final Vector<Plottable> res = new Vector<Plottable>(0, 1);
+    // is this layer visible?
+    if (thisLayer.getVisible())
+    {
+      // is this a watchable?
+      if (thisLayer instanceof WatchableList)
+      {
+        // just double-check this isn't a buoy-pattern, we don't want to display
+        // them
+        if (thisLayer instanceof Editable.DoNotHighlightMe)
+        {
+          // ignore it, we don't want to plot it.
+        }
+        else
+        {
 
-		// is this layer visible?
-		if (thisLayer.getVisible())
-		{
-			// is this a watchable?
-			if (thisLayer instanceof WatchableList)
-			{
-				// just double-check this isn't a buoy-pattern, we don't want to display
-				// them
-				if (thisLayer instanceof Editable.DoNotHighlightMe)
-				{
-					// ignore it, we don't want to plot it.
-				}
-				else
-				{
+          res.addElement(thisLayer);
 
-					res.addElement(thisLayer);
+          // just have a look if it's a track - if so we want to add it's
+          // sensors
+          if (thisLayer instanceof TrackWrapper)
+          {
+            final TrackWrapper trw = (TrackWrapper) thisLayer;
 
-					// just have a look if it's a track - if so we want to add it's
-					// sensors
-					if (thisLayer instanceof TrackWrapper)
-					{
-						final TrackWrapper trw = (TrackWrapper) thisLayer;
+            // first plot the sensors
+            final BaseLayer sensorsLayer = trw.getSensors();
+            if (sensorsLayer.getVisible())
+            {
+              final Enumeration<Editable> sensors = sensorsLayer.elements();
+              if (sensors != null)
+              {
+                while (sensors.hasMoreElements())
+                {
+                  final SensorWrapper sw = (SensorWrapper) sensors
+                      .nextElement();
+                  // just check if it's visible
+                  if (sw.getVisible())
+                  {
+                    res.add(sw);
+                  }
+                }
+              }
+            }
 
-						// first plot the sensors
-						final BaseLayer sensorsLayer = trw.getSensors();
-						if (sensorsLayer.getVisible())
-						{
-							final Enumeration<Editable> sensors = sensorsLayer.elements();
-							if (sensors != null)
-							{
-								while (sensors.hasMoreElements())
-								{
-									final SensorWrapper sw = (SensorWrapper) sensors
-											.nextElement();
-									// just check if it's visible
-									if (sw.getVisible())
-									{
-										res.add(sw);
-									}
-								}
-							}
-						}
+            // now the TMA solutons
+            final BaseLayer tuaLayer = trw.getSolutions();
+            if (tuaLayer.getVisible())
+            {
+              final Enumeration<Editable> solutions = tuaLayer.elements();
+              if (solutions != null)
+              {
+                while (solutions.hasMoreElements())
+                {
+                  final TMAWrapper sw = (TMAWrapper) solutions.nextElement();
+                  // just check if it's visible
+                  if (sw.getVisible())
+                  {
+                    res.add(sw);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      else
+      {
+        final Enumeration<Editable> iter = thisLayer.elements();
+        while (iter.hasMoreElements())
+        {
 
-						// now the TMA solutons
-						final BaseLayer tuaLayer = trw.getSolutions();
-						if (tuaLayer.getVisible())
-						{
-							final Enumeration<Editable> solutions = tuaLayer.elements();
-							if (solutions != null)
-							{
-								while (solutions.hasMoreElements())
-								{
-									final TMAWrapper sw = (TMAWrapper) solutions.nextElement();
-									// just check if it's visible
-									if (sw.getVisible())
-									{
-										res.add(sw);
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-			else
-			{
-				final Enumeration<Editable> iter = thisLayer.elements();
-				while (iter.hasMoreElements())
-				{
+          final Editable thisE = iter.nextElement();
+          if (thisE instanceof Plottable)
+          {
+            final Plottable p = (Plottable) thisE;
+            if (p instanceof WatchableList)
+            {
+              // look at the date date
+              final WatchableList wl = (WatchableList) p;
+              final HiResDate startDTG = wl.getStartDTG();
 
-					final Editable thisE = iter.nextElement();
-					if (thisE instanceof Plottable)
-					{
-						final Plottable p = (Plottable) thisE;
-						if (p instanceof WatchableList)
-						{
-							// look at the date date
-							final WatchableList wl = (WatchableList) p;
-							final HiResDate startDTG = wl.getStartDTG();
+              // is it a real date?
+              if (startDTG != null)
+              {
+                // yup, add to list
+                res.addElement(p);
+              }
+            }
+          }
+        }
+      }
+    }
 
-							// is it a real date?
-							if (startDTG != null)
-							{
-								// yup, add to list
-								res.addElement(p);
-							}
-						}
-					}
-				}
-			}
-		}
+    return res;
+  }
 
-		return res;
-	}
+  /**
+   * ok, get the watchables for this set of layers
+   * 
+   * @param theData
+   *          the layers to extract the watchables for
+   * @return the set of watchable items in these layers
+   */
+  private static Vector<Plottable> getWatchables(final Layers theData)
+  {
+    final Vector<Plottable> res = new Vector<Plottable>(0, 1);
+    // step through the layers
+    final int cnt = theData.size();
+    for (int i = 0; i < cnt; i++)
+    {
+      // ok, do this layer
+      final Layer thisLayer = theData.elementAt(i);
 
-	/**
-	 * ok, get the watchables for this set of layers
-	 * 
-	 * @param theData
-	 *          the layers to extract the watchables for
-	 * @return the set of watchable items in these layers
-	 */
-	private static Vector<Plottable> getWatchables(final Layers theData)
-	{
-		final Vector<Plottable> res = new Vector<Plottable>(0, 1);
-		// step through the layers
-		final int cnt = theData.size();
-		for (int i = 0; i < cnt; i++)
-		{
-			// ok, do this layer
-			final Layer thisLayer = theData.elementAt(i);
+      // get the watchables from this layer
+      final Vector<Plottable> newElements = getWatchables(thisLayer);
 
-			// get the watchables from this layer
-			final Vector<Plottable> newElements = getWatchables(thisLayer);
+      // and add to our growing total
+      res.addAll(newElements);
+    }
+    return res;
+  }
 
-			// and add to our growing total
-			res.addAll(newElements);
-		}
-		return res;
-	}
-
-	/**
-	 * method to return the non-tactical items on the plot, such as scale, grid,
-	 * coast etc.
-	 */
-	public static Vector<Plottable> getNonWatchables(final Layer thisLayer)
-	{
-		final Vector<Plottable> res = new Vector<Plottable>(0, 1);
-		// is this layer visible?
-		if (thisLayer.getVisible())
-		{
-			if (thisLayer instanceof Layer.BackgroundLayer)
-			{
-				res.addElement(thisLayer);
-			}
-			else if ((thisLayer instanceof FixWrapper)
+  /**
+   * method to return the non-tactical items on the plot, such as scale, grid, coast etc.
+   */
+  public static Vector<Plottable> getNonWatchables(final Layer thisLayer)
+  {
+    final Vector<Plottable> res = new Vector<Plottable>(0, 1);
+    // is this layer visible?
+    if (thisLayer.getVisible())
+    {
+      if (thisLayer instanceof Layer.BackgroundLayer)
+      {
+        res.addElement(thisLayer);
+      }
+      else if ((thisLayer instanceof FixWrapper)
           || (thisLayer instanceof LightweightTrackWrapper)
-					|| (thisLayer instanceof TrackWrapper)
-					|| (thisLayer instanceof BuoyPatternWrapper)
-					|| (thisLayer instanceof SensorWrapper)
-					|| (thisLayer instanceof TMAWrapper)
-					|| (thisLayer instanceof TrackSegment)
-					|| (thisLayer instanceof SegmentList))
-			{
-				// ignore it - it's clearly tactical, and there's just no way
-				// it can contain non-tactical child elements
-			}
-			else
-			{
-				// just see if this layer is one of our back-ground layesr
-				final Enumeration<Editable> iter = thisLayer.elements();
-				while (iter.hasMoreElements())
-				{
-					final Plottable thisPlottable = (Plottable) iter.nextElement();
-					if (thisPlottable instanceof ShapeWrapper)
-					{
-						// see if has a valid DTG -- IS IT TIME-RELATED?
-						final ShapeWrapper swp = (ShapeWrapper) thisPlottable;
-						final HiResDate dat = swp.getStartDTG();
-						if (dat == null)
-						{
-							// let's use it
-							res.addElement(thisPlottable);
-						}
-						else
-						{
-							// so it's got a date, check if the date represents our null
-							// value
-							// anyway
-							if (dat.getMicros() == -1)
-								res.addElement(thisPlottable);
-						}
-					}
-					else if (thisPlottable instanceof LabelWrapper)
-					{
-						// see if has a valid DTG -- IS IT TIME-RELATED?
-						final LabelWrapper lwp = (LabelWrapper) thisPlottable;
-						final HiResDate dat = lwp.getStartDTG();
-						// check if it is using our "null" date value
-						if (dat == null)
-						{
-							// let's use it
-							res.addElement(thisPlottable);
-						}
-						else
-						{
-							// it's got a date, which makes it one of our watchables, it
-							// will
-							// get caught elsewhere
-						}
-					}
-					else if (thisPlottable instanceof LightweightTrackWrapper)
-					{
-					  // ok, ignore it. it's tactical
-					}
-					else
-					{
-						// it's not a shape - it's probably the grid or the scale,
-						res.addElement(thisPlottable);
-					} // whether it's a labelwrapper
-				} // looping through the elements of this layer
-			} // if this is a background layer (or not)
-		} // whether this layer is visible
-		return res;
-	}
+          || (thisLayer instanceof TrackWrapper)
+          || (thisLayer instanceof BuoyPatternWrapper)
+          || (thisLayer instanceof SensorWrapper)
+          || (thisLayer instanceof TMAWrapper)
+          || (thisLayer instanceof TrackSegment)
+          || (thisLayer instanceof SegmentList))
+      {
+        // ignore it - it's clearly tactical, and there's just no way
+        // it can contain non-tactical child elements
+      }
+      else
+      {
+        // just see if this layer is one of our back-ground layesr
+        final Enumeration<Editable> iter = thisLayer.elements();
+        while (iter.hasMoreElements())
+        {
+          final Plottable thisPlottable = (Plottable) iter.nextElement();
+          if (thisPlottable instanceof ShapeWrapper)
+          {
+            // see if has a valid DTG -- IS IT TIME-RELATED?
+            final ShapeWrapper swp = (ShapeWrapper) thisPlottable;
+            final HiResDate dat = swp.getStartDTG();
+            if (dat == null)
+            {
+              // let's use it
+              res.addElement(thisPlottable);
+            }
+            else
+            {
+              // so it's got a date, check if the date represents our null
+              // value
+              // anyway
+              if (dat.getMicros() == -1)
+                res.addElement(thisPlottable);
+            }
+          }
+          else if (thisPlottable instanceof LabelWrapper)
+          {
+            // see if has a valid DTG -- IS IT TIME-RELATED?
+            final LabelWrapper lwp = (LabelWrapper) thisPlottable;
+            final HiResDate dat = lwp.getStartDTG();
+            // check if it is using our "null" date value
+            if (dat == null)
+            {
+              // let's use it
+              res.addElement(thisPlottable);
+            }
+            else
+            {
+              // it's got a date, which makes it one of our watchables, it
+              // will
+              // get caught elsewhere
+            }
+          }
+          else if (thisPlottable instanceof LightweightTrackWrapper)
+          {
+            // ok, ignore it. it's tactical
+          }
+          else
+          {
+            // it's not a shape - it's probably the grid or the scale,
+            res.addElement(thisPlottable);
+          } // whether it's a labelwrapper
+        } // looping through the elements of this layer
+      } // if this is a background layer (or not)
+    } // whether this layer is visible
+    return res;
+  }
 
-	/**
-	 * method to return the non-tactical items on the plot, such as scale, grid,
-	 * coast etc.
-	 */
-	private static Vector<Plottable> getNonWatchables(final Layers theData)
-	{
-		final Vector<Plottable> res = new Vector<Plottable>(0, 1);
-		// step through the layers
-		final int cnt = theData.size();
-		for (int i = 0; i < cnt; i++)
-		{
-			// right, now for the next layer
-			final Layer thisLayer = theData.elementAt(i);
+  /**
+   * method to return the non-tactical items on the plot, such as scale, grid, coast etc.
+   */
+  private static Vector<Plottable> getNonWatchables(final Layers theData)
+  {
+    final Vector<Plottable> res = new Vector<Plottable>(0, 1);
+    // step through the layers
+    final int cnt = theData.size();
+    for (int i = 0; i < cnt; i++)
+    {
+      // right, now for the next layer
+      final Layer thisLayer = theData.elementAt(i);
 
-			// get the non-watchables for this layer
-			final Vector<Plottable> theseElements = getNonWatchables(thisLayer);
+      // get the non-watchables for this layer
+      final Vector<Plottable> theseElements = getNonWatchables(thisLayer);
 
-			// and add them to our list
-			res.addAll(theseElements);
+      // and add them to our list
+      res.addAll(theseElements);
 
-		} // loop through the layers
-		return res;
-	}
+    } // loop through the layers
+    return res;
+  }
 
-	//
-	public void steppingModeChanged(final boolean on)
-	{
-		if (on)
-		{
-			// remove the current painters for the canvas
-			final Enumeration<CanvasType.PaintListener> iter = _theChart.getCanvas()
-					.getPainters();
+  //
+  public void steppingModeChanged(final boolean on)
+  {
+    if (on)
+    {
+      // remove the current painters for the canvas
+      final Enumeration<CanvasType.PaintListener> iter = _theChart.getCanvas()
+          .getPainters();
 
-			_oldPainters = new Vector<PaintListener>(0, 1);
+      _oldPainters = new Vector<PaintListener>(0, 1);
 
-			// take a copy of these painters
-			while (iter.hasMoreElements())
-			{
-				_oldPainters.addElement((PaintListener) iter.nextElement());
-			}
+      // take a copy of these painters
+      while (iter.hasMoreElements())
+      {
+        _oldPainters.addElement((PaintListener) iter.nextElement());
+      }
 
-			// and remove the painters
-			final Enumeration<CanvasType.PaintListener> oldies = _oldPainters
-					.elements();
-			while (oldies.hasMoreElements())
-			{
-				_theChart.getCanvas().removePainter(
-						(CanvasType.PaintListener) oldies.nextElement());
-			}
+      // and remove the painters
+      final Enumeration<CanvasType.PaintListener> oldies = _oldPainters
+          .elements();
+      while (oldies.hasMoreElements())
+      {
+        _theChart.getCanvas().removePainter((CanvasType.PaintListener) oldies
+            .nextElement());
+      }
 
-			// add us as a painter
-			_theChart.getCanvas().addPainter(this);
+      // add us as a painter
+      _theChart.getCanvas().addPainter(this);
 
-			// and redraw the chart
-			_theChart.update();
+      // and redraw the chart
+      _theChart.update();
 
-		}
-		else
-		{
-			// remove us as a painter
-			_theChart.getCanvas().removePainter(this);
+    }
+    else
+    {
+      // remove us as a painter
+      _theChart.getCanvas().removePainter(this);
 
-			// restore the painters
-			final Enumeration<CanvasType.PaintListener> oldies = _oldPainters
-					.elements();
-			while (oldies.hasMoreElements())
-			{
-				_theChart.getCanvas().addPainter(
-						(CanvasType.PaintListener) oldies.nextElement());
-			}
+      // restore the painters
+      final Enumeration<CanvasType.PaintListener> oldies = _oldPainters
+          .elements();
+      while (oldies.hasMoreElements())
+      {
+        _theChart.getCanvas().addPainter((CanvasType.PaintListener) oldies
+            .nextElement());
+      }
 
-		}
+    }
 
-	}
+  }
 
-	public void newTime(final HiResDate oldDTG, final HiResDate newDTG,
-			final MWC.GUI.CanvasType canvas)
-	{
-		
-		// check if we have any data
-		if (_theTote.getPrimary() == null)
-			return;
+  public void newTime(final HiResDate oldDTG, final HiResDate newDTG,
+      final MWC.GUI.CanvasType canvas)
+  {
 
-		// check we have a valid new DTG
-		if (newDTG == null)
-		{
-			return;
-		}
+    // check if we have any data
+    if (_theTote.getPrimary() == null)
+      return;
 
+    // check we have a valid new DTG
+    if (newDTG == null)
+    {
+      return;
+    }
 
-		// initialise the area covered
-		_areaCovered = null;
+    // sort out the fade function
+    final long trailLength = _mySnailPlotter.getTrailLength().getMillis();
+    SnailPainter2.ColorFadeCalculator fader = new ColorFadeCalculator(
+        trailLength, newDTG);
 
-		// prepare the chart
-		MWC.GUI.CanvasType theCanvas = canvas;
-		if (theCanvas == null)
-			theCanvas = _theChart.getCanvas();
+    // initialise the area covered
+    _areaCovered = null;
 
-		final Graphics2D dest = (Graphics2D) theCanvas.getGraphicsTemp();
+    // prepare the chart
+    MWC.GUI.CanvasType theCanvas = canvas;
+    if (theCanvas == null)
+      theCanvas = _theChart.getCanvas();
 
-		// just drop out if we can't create any graphics though
-		if (dest == null)
-			return;
+    final Graphics2D dest = (Graphics2D) theCanvas.getGraphicsTemp();
 
-		// switch to paint mode, so we can draw the background correctly
-//		dest.setPaintMode();
+    // just drop out if we can't create any graphics though
+    if (dest == null)
+      return;
 
-	
-			final Vector<Plottable> nonWatches = getNonWatchables(super.getLayers());
-			final Enumeration<Plottable> iter = nonWatches.elements();
-			while (iter.hasMoreElements())
-			{
-				final Plottable p = (Plottable) iter.nextElement();
-				p.paint(new MWC.GUI.Canvas.CanvasAdaptor(theCanvas.getProjection(), dest));
-			}
-	
+    final Vector<Plottable> nonWatches = getNonWatchables(super.getLayers());
+    final Enumeration<Plottable> iter = nonWatches.elements();
+    while (iter.hasMoreElements())
+    {
+      final Plottable p = (Plottable) iter.nextElement();
+      p.paint(new MWC.GUI.Canvas.CanvasAdaptor(theCanvas.getProjection(),
+          dest));
+    }
 
-	//	dest.setXORMode(theCanvas.getBackgroundColor());
+    // get the primary track
+    final WatchableList _thePrimary = _theTote.getPrimary();
 
-		final java.awt.Color backColor = theCanvas.getBackgroundColor();
+    // determine the new items
+    final Vector<Plottable> theWatchableLists = getWatchables(
+        super.getLayers());
 
-		// get the primary track
-		final WatchableList _thePrimary = _theTote.getPrimary();
+    // sort out the line width of the primary
+    if (_thePrimary instanceof Layer)
+    {
+      final Layer ly = (Layer) _thePrimary;
+      if (dest instanceof Graphics2D)
+      {
+        final Graphics2D g2 = (Graphics2D) dest;
+        g2.setStroke(new BasicStroke(ly.getLineThickness()));
+      }
+    }
 
-	
-		// determine the new items
-		final Vector<Plottable> theWatchableLists = getWatchables(super.getLayers());
+    // show the current highlighter
+    Watchable[] wList = _theTote.getPrimary().getNearestTo(newDTG);
 
-		// sort out the line width of the primary
-		if (_thePrimary instanceof Layer)
-		{
-			final Layer ly = (Layer) _thePrimary;
-			if (dest instanceof Graphics2D)
-			{
-				final Graphics2D g2 = (Graphics2D) dest;
-				g2.setStroke(new BasicStroke(ly.getLineThickness()));
-			}
-		}
+    Watchable newPrimary = null;
+    if (wList.length > 0)
+      newPrimary = wList[0];
+    if (newPrimary != null)
+    {
+      final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter thisHighlighter =
+          getCurrentPrimaryHighlighter();
+      if (thisHighlighter.getName().equals("Range Rings"))
+      {
+        thisHighlighter.highlightIt(theCanvas.getProjection(), dest, _theTote
+            .getPrimary(), newPrimary, true);
+      }
+    }
 
-		// show the current highlighter
-		Watchable[] wList = _theTote.getPrimary().getNearestTo(newDTG);
+    // got through to highlight the data
+    final Enumeration<Plottable> watches = theWatchableLists.elements();
+    while (watches.hasMoreElements())
+    {
+      final WatchableList list = (WatchableList) watches.nextElement();
+      // is the primary an instance of layer (with it's own line thickness?)
+      if (list instanceof Layer)
+      {
+        final Layer ly = (Layer) list;
+        dest.setStroke(new BasicStroke(ly.getLineThickness()));
+      }
 
-		Watchable newPrimary = null;
-		if (wList.length > 0)
-			newPrimary = wList[0];
-		if (newPrimary != null)
-		{
-			final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter thisHighlighter = getCurrentPrimaryHighlighter();
-			if (thisHighlighter.getName().equals("Range Rings"))
-			{
+      // ok, clear the nearest items
+      wList = list.getNearestTo(newDTG);
+      Watchable watch = null;
+      if (wList.length > 0)
+        watch = wList[0];
 
-				thisHighlighter.highlightIt(theCanvas.getProjection(), dest,
-						_theTote.getPrimary(), newPrimary, true);
-			}
-		}
+      if (watch != null)
+      {
+        // plot it
+        highlightIt(theCanvas.getProjection(), dest, list, watch, newDTG,
+            fader);
+      }
+    }
 
-		// got through to highlight the data
-		final Enumeration<Plottable> watches = theWatchableLists.elements();
-		while (watches.hasMoreElements())
-		{
-			final WatchableList list = (WatchableList) watches.nextElement();
-			// is the primary an instance of layer (with it's own line thickness?)
-			if (list instanceof Layer)
-			{
-				final Layer ly = (Layer) list;
-				dest.setStroke(new BasicStroke(ly.getLineThickness()));
-			}
+    // restore the painting setup
+    dest.setPaintMode();
+    dest.dispose();
 
-			// ok, clear the nearest items
-			wList = list.getNearestTo(newDTG);
-			Watchable watch = null;
-			if (wList.length > 0)
-				watch = wList[0];
+    // we know we're finished with the first step now anyway
+    _firstStep = false;
+    _lastDTG = newDTG;
 
-			if (watch != null)
-			{
-				// plot it
-				highlightIt(theCanvas.getProjection(), dest, list, watch, newDTG,
-						backColor);
-			}
-		}
+    // do a repaint, if we have to
+    if (!_inRepaint)
+    {
 
-		// restore the painting setup
-		dest.setPaintMode();
-		dest.dispose();
+      // are any of the bits which changed visible?
+      if (_areaCovered != null)
+      {
 
-		// we know we're finished with the first step now anyway
-		_firstStep = false;
-		_lastDTG = newDTG;
+        // force a repaint of the plot
 
-		// do a repaint, if we have to
-		if (!_inRepaint)
-		{
+        // grow the area covered by a shade,
+        _areaCovered.grow(2, 2);
 
-			// are any of the bits which changed visible?
-			if (_areaCovered != null)
-			{
+        // see if we are trying to plot in relative mode - in which
+        // case we need a full repaint
+        if (theCanvas.getProjection().getNonStandardPlotting())
+        {
+          _theChart.update();
+        }
+        else
+        {
+          // and ask for an instant update
+          // NOTE: changed this to stop JDK1.3
+          // plotting in a purple background _theChart.repaintNow(_areaCovered);
+          _theChart.repaint();
+        }
+      }
+    }
+    else
+    {
+    }
 
-				// force a repaint of the plot
+  }
 
-				// grow the area covered by a shade,
-				_areaCovered.grow(2, 2);
+  /**
+   * method to highlight a watchable.
+   */
+  private void highlightIt(final PlainProjection proj, final Graphics dest,
+      final WatchableList list, final Watchable watch, final HiResDate dtg,
+      final ColorFadeCalculator fader)
+  {
+    // check that our graphics context is still valid -
+    // we can't, so we will just have to trap any exceptions it raises
+    try
+    {
+      // set the highlight colour
+      dest.setColor(Color.white);
 
-				// see if we are trying to plot in relative mode - in which
-				// case we need a full repaint
-				if (theCanvas.getProjection().getNonStandardPlotting())
-				{
-					_theChart.update();
-				}
-				else
-				{
-					// and ask for an instant update
-					// NOTE: changed this to stop JDK1.3
-					// plotting in a purple background _theChart.repaintNow(_areaCovered);
-					_theChart.repaint();
-				}
-			}
-		}
-		else
-		{
-		}
+      // see if our plotters can plot this type of watchable
+      final Enumeration<drawHighLight2> iter = _myHighlightPlotters.elements();
+      while (iter.hasMoreElements())
+      {
+        final drawHighLight2 plotter = (drawHighLight2) iter.nextElement();
 
-	}
+        if (plotter.canPlot(watch))
+        {
+          // does this list have a width?
+          if (list instanceof Layer)
+          {
+            final Layer ly = (Layer) list;
+            if (dest instanceof Graphics2D)
+            {
+              final Graphics2D g2 = (Graphics2D) dest;
+              g2.setStroke(new BasicStroke(ly.getLineThickness()));
+            }
+          }
+          else if (list instanceof ShapeWrapper)
+          {
+            final ShapeWrapper sw = (ShapeWrapper) list;
+            if (dest instanceof Graphics2D)
+            {
+              final Graphics2D g2 = (Graphics2D) dest;
+              g2.setStroke(new BasicStroke(sw.getShape().getLineWidth()));
+            }
+          }
 
-	/**
-	 * method to highlight a watchable.
-	 */
-	private void highlightIt(final PlainProjection proj, final Graphics dest,
-			final WatchableList list, final Watchable watch, final HiResDate dtg,
-			final java.awt.Color backColor)
-	{
-		// check that our graphics context is still valid -
-		// we can't, so we will just have to trap any exceptions it raises
-		try
-		{
-			// set the highlight colour
-			dest.setColor(Color.white);
+          final Rectangle rec = plotter.drawMe(proj, dest, list, watch, this,
+              dtg, fader);
 
-			// see if our plotters can plot this type of watchable
-			final Enumeration<drawHighLight2> iter = _myHighlightPlotters
-					.elements();
-			while (iter.hasMoreElements())
-			{
-				final drawHighLight2 plotter = (drawHighLight2) iter
-						.nextElement();
+          // just check if a rectangle got returned at all (there may not
+          // have been any valid data
+          if (rec != null)
+          {
+            if (_areaCovered == null)
+              _areaCovered = rec;
+            else
+              _areaCovered.add(rec);
+          }
 
-				if (plotter.canPlot(watch))
-				{
-					// does this list have a width?
-					if (list instanceof Layer)
-					{
-						final Layer ly = (Layer) list;
-						if (dest instanceof Graphics2D)
-						{
-							final Graphics2D g2 = (Graphics2D) dest;
-							g2.setStroke(new BasicStroke(ly.getLineThickness()));
-						}
-					}
-					else if (list instanceof ShapeWrapper)
-					{
-						final ShapeWrapper sw = (ShapeWrapper) list;
-						if (dest instanceof Graphics2D)
-						{
-							final Graphics2D g2 = (Graphics2D) dest;
-							g2.setStroke(new BasicStroke(sw.getShape().getLineWidth()));
-						}
-					}
+          // and drop out of the loop
+          break;
+        }
+      }
 
-					final Rectangle rec = plotter.drawMe(proj, dest, list, watch, this,
-							dtg, backColor);
+    }
+    catch (final IllegalStateException e)
+    {
+      MWC.Utilities.Errors.Trace.trace(e);
+    }
+  }
 
-					// just check if a rectangle got returned at all (there may not
-					// have been any valid data
-					if (rec != null)
-					{
-						if (_areaCovered == null)
-							_areaCovered = rec;
-						else
-							_areaCovered.add(rec);
-					}
+  public String toString()
+  {
+    return SNAIL_NAME;
+  }
 
-					// and drop out of the loop
-					break;
-				}
-			}
+  public final String getName()
+  {
+    return toString();
+  }
 
-		}
-		catch (final IllegalStateException e)
-		{
-			MWC.Utilities.Errors.Trace.trace(e);
-		}
-	}
+  public final boolean hasEditor()
+  {
+    return true;
+  }
 
-	public String toString()
-	{
-		return SNAIL_NAME;
-	}
+  /**
+   * NON-STANDARD implementation, we are returning the editor for our snail plotter object, not
+   * ourself
+   */
+  public final Editable.EditorType getInfo()
+  {
+    return _mySnailPlotter.getInfo();
+  }
 
-	public final String getName()
-	{
-		return toString();
-	}
+  /**
+   * override the method provided by TotePainter. That method returns null, since it can rely on the
+   * other painters to generate the current data area --> there aren't any other painters here
+   * though, so we need to calculate it
+   */
+  public final WorldArea getDataArea()
+  {
+    return this._theChart.getDataArea();
+  }
 
-	public final boolean hasEditor()
-	{
-		return true;
-	}
+  // ///////////////////////////////////////
+  // accessors for the beaninfo
+  // //////////////////////////////////////
+  // ////////////////////////////////////////////////////////
+  // accessors for editable parameters
+  // ///////////////////////////////////////////////////////
 
-	/**
-	 * NON-STANDARD implementation, we are returning the editor for our snail
-	 * plotter object, not ourself
-	 */
-	public final Editable.EditorType getInfo()
-	{
-		return _mySnailPlotter.getInfo();
-	}
+  /**
+   * whether to plot in the name of the vessel
+   */
+  public final boolean getPlotTrackName()
+  {
+    return _mySnailPlotter.getPlotTrackName();
+  }
 
-	/**
-	 * override the method provided by TotePainter. That method returns null,
-	 * since it can rely on the other painters to generate the current data area
-	 * --> there aren't any other painters here though, so we need to calculate it
-	 */
-	public final WorldArea getDataArea()
-	{
-		return this._theChart.getDataArea();
-	}
+  /**
+   * whether to plot in the name of the vessel
+   */
+  public final void setPlotTrackName(final boolean val)
+  {
+    _mySnailPlotter.setPlotTrackName(val);
+  }
 
-	// ///////////////////////////////////////
-	// accessors for the beaninfo
-	// //////////////////////////////////////
-	// ////////////////////////////////////////////////////////
-	// accessors for editable parameters
-	// ///////////////////////////////////////////////////////
+  // //////////////////////////////////////////////////////////
+  // nested class describing how to edit this class
+  // //////////////////////////////////////////////////////////
+  // public class SnailPainterInfo extends Editable.EditorType
+  // {
+  //
+  // public SnailPainterInfo(SnailPainter data)
+  // {
+  // super(data, "Snail","");
+  // }
+  //
+  // /** extra constructor which may be over-ridden by the relative painter
+  // *
+  // */
+  // public SnailPainterInfo(SnailPainter data, String name)
+  // {
+  // super(data, name,"");
+  // }
+  //
+  // public BeanInfo[] getAdditionalBeanInfo()
+  // {
+  // BeanInfo[] res = {_mySnailPlotter.getInfo()};
+  // return res;
+  // }
+  //
+  // public PropertyDescriptor[] getPropertyDescriptors()
+  // {
+  // try{
+  // PropertyDescriptor[] res=
+  // {
+  // prop("PlotTrackName", "whether to plot the name of the track"),
+  // prop("LinkPositions", "whether to join the points in the trail"),
+  // prop("PointSize", "the size of the points in the trail"),
+  // prop("TrailLength", "the length of trail to draw"),
+  // prop("VectorStretch", "how far to stretch the speed vector"),
+  // };
+  // return res;
+  // }
+  // catch(Exception e)
+  // {
+  // MWC.Utilities.Errors.Trace.trace(e);
+  // return super.getPropertyDescriptors();
+  // }
+  //
+  // }
+  //
+  // }
 
-	/**
-	 * whether to plot in the name of the vessel
-	 */
-	public final boolean getPlotTrackName()
-	{
-		return _mySnailPlotter.getPlotTrackName();
-	}
+  // ////////////////////////////////////////////////////////////////////////////////////////////////
+  // testing for this class
+  // ////////////////////////////////////////////////////////////////////////////////////////////////
+  static public final class testMe extends junit.framework.TestCase
+  {
+    static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-	/**
-	 * whether to plot in the name of the vessel
-	 */
-	public final void setPlotTrackName(final boolean val)
-	{
-		_mySnailPlotter.setPlotTrackName(val);
-	}
+    public testMe(final String val)
+    {
+      super(val);
+    }
 
-	// //////////////////////////////////////////////////////////
-	// nested class describing how to edit this class
-	// //////////////////////////////////////////////////////////
-	// public class SnailPainterInfo extends Editable.EditorType
-	// {
-	//
-	// public SnailPainterInfo(SnailPainter data)
-	// {
-	// super(data, "Snail","");
-	// }
-	//
-	// /** extra constructor which may be over-ridden by the relative painter
-	// *
-	// */
-	// public SnailPainterInfo(SnailPainter data, String name)
-	// {
-	// super(data, name,"");
-	// }
-	//
-	// public BeanInfo[] getAdditionalBeanInfo()
-	// {
-	// BeanInfo[] res = {_mySnailPlotter.getInfo()};
-	// return res;
-	// }
-	//
-	// public PropertyDescriptor[] getPropertyDescriptors()
-	// {
-	// try{
-	// PropertyDescriptor[] res=
-	// {
-	// prop("PlotTrackName", "whether to plot the name of the track"),
-	// prop("LinkPositions", "whether to join the points in the trail"),
-	// prop("PointSize", "the size of the points in the trail"),
-	// prop("TrailLength", "the length of trail to draw"),
-	// prop("VectorStretch", "how far to stretch the speed vector"),
-	// };
-	// return res;
-	// }
-	// catch(Exception e)
-	// {
-	// MWC.Utilities.Errors.Trace.trace(e);
-	// return super.getPropertyDescriptors();
-	// }
-	//
-	// }
-	//
-	// }
+    public final void testMyParams()
+    {
+      Editable ed = new SnailPainter2(null, null, null);
+      editableTesterSupport.testParams(ed, this);
+      ed = null;
+    }
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase
-	{
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+    public final void testFade()
+    {
+      ColorFadeCalculator fader = new ColorFadeCalculator(1000, new HiResDate(
+          10000));
+      assertEquals(0f, fader.fadeAt(new HiResDate(9000)));
+      assertEquals(1f, fader.fadeAt(new HiResDate(10000)));
+      assertEquals(0.5f, fader.fadeAt(new HiResDate(9500)));
+    }
 
-		public testMe(final String val)
-		{
-			super(val);
-		}
-
-		public final void testMyParams()
-		{
-			Editable ed = new SnailPainter2(null, null, null);
-			editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-		
-		
-		public final void testFade()
-		{
-		  ColorFadeCalculator fader = new ColorFadeCalculator(1000, new HiResDate(10000));
-		  assertEquals(0f, fader.fadeAt(new HiResDate(9000)));
-		  assertEquals(1f,  fader.fadeAt(new HiResDate(10000)));
-		  assertEquals(0.5f, fader.fadeAt(new HiResDate(9500)));
-		}
-		
-	}
+  }
 
 }

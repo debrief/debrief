@@ -138,14 +138,11 @@ final class SnailDrawTrack2
   public final Rectangle drawMe(
       final MWC.Algorithms.PlainProjection proj, final java.awt.Graphics dest,
       final Watchable watch, final TotePainter parent, final HiResDate dtg,
-      final Color backColor)
+      final ColorFadeCalculator fader)
   {
     // represent this area as a rectangle
     java.awt.Rectangle thisR = null;
     
-    // sort out the fade function
-    SnailPainter2.ColorFadeCalculator fader = new ColorFadeCalculator(_trailLength / 1000, dtg);
-
     // get the fix and the track
     final FixWrapper theFix = (FixWrapper) watch;
     final WatchableList trk = theFix.getTrackWrapper();
