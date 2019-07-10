@@ -92,7 +92,7 @@ public class ViewTest extends ViewPart
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
-	public static final String ID = "org.mwc.cmap.gt2plot.views.SampleView";
+	public static final String ID = "org.mwc.debrief.core.gt2plot.views.SampleView";
 
 	private Action action1;
 
