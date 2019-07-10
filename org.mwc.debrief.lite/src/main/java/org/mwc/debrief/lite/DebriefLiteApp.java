@@ -184,19 +184,28 @@ public class DebriefLiteApp implements FileDropListener
   {
     final private PainterManager _manager;
     final private StepperListener _painter;
+    final private RefreshStepper _refresher;
+    
+    public static interface RefreshStepper
+    {
+      void refresh(StepperListener listener);
+    }
 
     public ToteSetter(final PainterManager manager,
-        final StepperListener painter)
+        final StepperListener painter,
+        final RefreshStepper refresher)
     {
       _manager = manager;
       _manager.addPainter(painter);
       _painter = painter;
+      _refresher = refresher;
     }
 
     @Override
     public void run()
     {
       _manager.setCurrentListener(_painter);
+      _refresher.refresh(_painter);
     }
   }
 
@@ -788,9 +797,26 @@ public class DebriefLiteApp implements FileDropListener
     final TotePainter tp = new TotePainter(theChart, _theLayers, theTote);
     tp.setColor(Color.white);
     final TotePainter sp = new SnailPainter2(theChart, _theLayers, theTote);
+    
+    final ToteSetter.RefreshStepper refresher = new ToteSetter.RefreshStepper()
+    {
+      
+      @Override
+      public void refresh(StepperListener listener)
+      {
+        
+        // and the time marker
+        final Graphics graphics = mapPane.getGraphics();
 
-    final ToteSetter normalT = new ToteSetter(painterManager, tp);
-    final ToteSetter snailT = new ToteSetter(painterManager, sp);
+        final CanvasAdaptor adapter = new CanvasAdaptor(projection, graphics,
+            Color.blue);
+        
+        listener.newTime(null, timeManager.getTime(), adapter);
+      }
+    };
+
+    final ToteSetter normalT = new ToteSetter(painterManager, tp, refresher);
+    final ToteSetter snailT = new ToteSetter(painterManager, sp, refresher);
     normalT.run();
 
     final Runnable collapseAction = new Runnable() {
@@ -1275,8 +1301,6 @@ public class DebriefLiteApp implements FileDropListener
                 // and the spatial bounds
                 final FitToWindow fitMe = new FitToWindow(_theLayers, mapPane);
                 fitMe.actionPerformed(null);
-
-                populateTote();
               }
             });
           }
@@ -1346,14 +1370,6 @@ public class DebriefLiteApp implements FileDropListener
     });
   }
 
-  /**
-   * new data has been added - have a look at the times
-   */
-  protected void layersExtended()
-  {
-
-  }
-
   private void paintDynamicLayers(final CanvasType dest)
   {
     final HiResDate tNow = timeManager.getTime();
@@ -1372,11 +1388,6 @@ public class DebriefLiteApp implements FileDropListener
         }
       }
     }
-  }
-
-  private void populateTote()
-  {
-    // not implemented.
   }
 
   private void redoTimePainter(final boolean bigPaint, final CanvasAdaptor dest,
