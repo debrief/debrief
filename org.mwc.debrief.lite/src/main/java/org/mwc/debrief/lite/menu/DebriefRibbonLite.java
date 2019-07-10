@@ -15,6 +15,7 @@
 package org.mwc.debrief.lite.menu;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.AbstractAction;
 
@@ -73,7 +74,8 @@ public class DebriefRibbonLite
   }
 
   protected static void addLiteTab(final JRibbon ribbon, final Session session,
-      final Runnable resetAction, final Runnable exitAction)
+      final Runnable resetAction, final Runnable exitAction,
+      final Runnable collapseAction)
   {
     final JRibbonBand liteMenu = new JRibbonBand("Lite", null);
     liteMenu.startGroup();
@@ -93,13 +95,31 @@ public class DebriefRibbonLite
     redoAction.setActionCommand(redoCommand);
     redoCommand.setEnabled(false);
     ribbon.addTaskbarCommand(redoCommand);
+
+    ActionListener collapsePopup = new ActionListener()
+    {
+
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        collapseAction.run();
+      }
+    };
+    // and the expand/collapse button
+    final FlamingoCommand collapseCommand = MenuUtils.createCommand("Collapse",
+        "icons/24/fit_to_win.png", collapsePopup, RibbonElementPriority.TOP, null);
+    // so that action has the command it has to enable/disable
+    redoAction.setActionCommand(collapseCommand);
+    collapseCommand.setEnabled(true);
+    ribbon.addTaskbarCommand(collapseCommand);
+
     // add the action as observer of undobuffer
     session.getUndoBuffer().addObserver(redoAction);
     liteMenu.startGroup();
     MenuUtils.addCommand("Help", "icons/24/help.png", new HelpAction(),
         liteMenu, RibbonElementPriority.TOP);
-    MenuUtils.addCommand("Exit", "icons/24/exit.png", new ExitLiteApp(exitAction),
-        liteMenu, RibbonElementPriority.TOP);
+    MenuUtils.addCommand("Exit", "icons/24/exit.png", new ExitLiteApp(
+        exitAction), liteMenu, RibbonElementPriority.TOP);
 
     liteMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         liteMenu));
