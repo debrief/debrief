@@ -256,8 +256,6 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
   {
     Rectangle thisR = null;
 
-    // dest.setXORMode(backColor);
-
     // get a pointer to the fix
     final FixWrapper fix = (FixWrapper) watch;
 
@@ -363,9 +361,6 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
 
       // shift the centre point across a bit
       p.translate(5, 0);
-
-      // HACK: TRY TO PAINT THIS IN
-      // dest.setXORMode(Color.black);
 
       // and draw the text
       dest.drawString(msg, p.x, p.y);
