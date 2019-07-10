@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package Debrief.GUI.Tote.Painters;
 
@@ -34,29 +34,28 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
 /**
- * Created by IntelliJ IDEA.
- * User: ian.mayo
- * Date: 22-Feb-2005
- * Time: 09:10:33
- * To change this template use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: ian.mayo Date: 22-Feb-2005 Time: 09:10:33 To change this template
+ * use File | Settings | File Templates.
  */
-public abstract class SnailDrawTacticalContact2 implements SnailPainter2.drawHighLight2, MWC.GUI.Editable
+public abstract class SnailDrawTacticalContact2 implements
+    SnailPainter2.drawHighLight2, MWC.GUI.Editable
 {
   /**
    * the snail plotter we are using = we look at this to determine plotting characteristics
    */
   protected SnailDrawFix2 _fixPlotter = null;
 
+  @Override
+  public abstract boolean canPlot(Watchable wt);
+
   /**
    * do the plotting
    */
+  @Override
   public final Rectangle drawMe(final MWC.Algorithms.PlainProjection proj,
-                                final Graphics dest,
-                                final WatchableList list,
-                                final Watchable watch,
-                                final TotePainter parent,
-                                final HiResDate dtg,
-                                final ColorFadeCalculator fader)
+      final Graphics dest, final WatchableList list, final Watchable watch,
+      final TotePainter parent, final HiResDate dtg,
+      final ColorFadeCalculator fader)
   {
 
     Rectangle thisR = null;
@@ -65,15 +64,16 @@ public abstract class SnailDrawTacticalContact2 implements SnailPainter2.drawHig
 
     // get a pointer to the fix
     final PlottableWrapperWithTimeAndOverrideableColor contact =
-      (PlottableWrapperWithTimeAndOverrideableColor) watch;
+        (PlottableWrapperWithTimeAndOverrideableColor) watch;
     final HostedList wrapper = (HostedList) list;
 
     // wrap the canvas
-    final MWC.GUI.Canvas.CanvasAdaptor adaptor = new MWC.GUI.Canvas.CanvasAdaptor(proj, dest);
-
+    final MWC.GUI.Canvas.CanvasAdaptor adaptor =
+        new MWC.GUI.Canvas.CanvasAdaptor(proj, dest);
 
     // how long? (convert to millis)
-    final long trail_len = (long) _fixPlotter.getTrailLength().getValueIn(Duration.MICROSECONDS);
+    final long trail_len = (long) _fixPlotter.getTrailLength().getValueIn(
+        Duration.MICROSECONDS);
 
     final String alphaStr = Defaults.getPreference(
         SensorContactWrapper.TRANSPARENCY);
@@ -84,7 +84,7 @@ public abstract class SnailDrawTacticalContact2 implements SnailPainter2.drawHig
       {
         alpha = Integer.parseInt(alphaStr);
       }
-      catch (NumberFormatException e)
+      catch (final NumberFormatException e)
       {
         alpha = 255;
         e.printStackTrace();
@@ -99,13 +99,15 @@ public abstract class SnailDrawTacticalContact2 implements SnailPainter2.drawHig
     if (trail_len > 0)
     {
       // calculate the start time
-      final HiResDate start_time = new HiResDate(0, dtg.getMicros() - trail_len);
+      final HiResDate start_time = new HiResDate(0, dtg.getMicros()
+          - trail_len);
 
       // get the list of contacts
-      final java.util.Collection<Editable> contacts = list.getItemsBetween(start_time, dtg);
+      final java.util.Collection<Editable> contacts = list.getItemsBetween(
+          start_time, dtg);
 
       // get the parent track - so we can plot relative to it..
-      final TrackWrapper hostTrack = (TrackWrapper) wrapper.getHost();
+      final TrackWrapper hostTrack = wrapper.getHost();
 
       // how long is it?
       if (contacts != null)
@@ -120,13 +122,14 @@ public abstract class SnailDrawTacticalContact2 implements SnailPainter2.drawHig
           {
             // get the next contact
             final PlottableWrapperWithTimeAndOverrideableColor scw =
-              (PlottableWrapperWithTimeAndOverrideableColor) cons.next();
+                (PlottableWrapperWithTimeAndOverrideableColor) cons.next();
 
             // sort out the area for this tua
             final WorldArea wa = scw.getBounds();
 
             // did we find an area?
-            // there's a chance that we have tua data which extends beyond the time period of the track,
+            // there's a chance that we have tua data which extends beyond the time period of the
+            // track,
             // and for relative tua data we shouldn't even try to plot it
             if (wa != null)
             {
@@ -136,7 +139,7 @@ public abstract class SnailDrawTacticalContact2 implements SnailPainter2.drawHig
 
               // now take the colour in use (which may in fact belong to the parent class)
               final Color thisCol = scw.getColor();
-              
+
               final Color newCol = fader.fadeColorAt(thisCol, scw.getDTG());
 
               // and put this colour back into the data item
@@ -147,7 +150,6 @@ public abstract class SnailDrawTacticalContact2 implements SnailPainter2.drawHig
 
               // restore the colour, if it's non-null
               scw.setColor(oldCol);
-
 
               // cool, we've found the location. sorted.
               final WorldLocation tl = wa.getTopLeft();
@@ -162,7 +164,7 @@ public abstract class SnailDrawTacticalContact2 implements SnailPainter2.drawHig
                 thisR.add(thisArea);
             }
 
-          }  // while there are still contacts
+          } // while there are still contacts
         } // if one or more contacts got returned
       } // if a list of contacts got returned
     } // if we are plotting a back-track at all
@@ -184,31 +186,30 @@ public abstract class SnailDrawTacticalContact2 implements SnailPainter2.drawHig
 
     }
 
-
     return thisR;
   }
 
-  public abstract boolean canPlot(Watchable wt);
+  @Override
+  public final EditorType getInfo()
+  {
+    return null;
+  }
 
-
+  @Override
   public final String getName()
   {
     return "Snail";
   }
 
-
-  public final String toString()
-  {
-    return getName();
-  }
-
+  @Override
   public final boolean hasEditor()
   {
     return false;
   }
 
-  public final EditorType getInfo()
+  @Override
+  public final String toString()
   {
-    return null;
+    return getName();
   }
 }

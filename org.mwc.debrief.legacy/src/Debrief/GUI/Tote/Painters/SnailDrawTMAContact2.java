@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package Debrief.GUI.Tote.Painters;
 
@@ -44,10 +44,9 @@ package Debrief.GUI.Tote.Painters;
 import Debrief.Wrappers.TMAContactWrapper;
 import MWC.GenericData.Watchable;
 
-
 /**
- * Class to perform custom plotting of tma solution data,
- * when in a Snail-mode.  (this may include Snail-mode or relative-mode).
+ * Class to perform custom plotting of tma solution data, when in a Snail-mode. (this may include
+ * Snail-mode or relative-mode).
  */
 public final class SnailDrawTMAContact2 extends SnailDrawTacticalContact2
 {
@@ -64,15 +63,15 @@ public final class SnailDrawTMAContact2 extends SnailDrawTacticalContact2
   // member functions
   //////////////////////////////////
 
+  @Override
   public final boolean canPlot(final Watchable wt)
-	{
-		boolean res = false;
+  {
+    boolean res = false;
 
-		if(wt instanceof TMAContactWrapper)
-		{
-			res = true;
-		}
-		return res;
-	}
+    if (wt instanceof TMAContactWrapper)
+    {
+      res = true;
+    }
+    return res;
+  }
 }
-

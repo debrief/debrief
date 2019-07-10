@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package Debrief.GUI.Tote.Painters;
 
@@ -79,14 +79,12 @@ package Debrief.GUI.Tote.Painters;
 
 import MWC.GenericData.Watchable;
 
-
 /**
- * Class to perform custom plotting of Sensor data,
- * when in a Snail-mode.  (this may include Snail-mode or relative-mode).
+ * Class to perform custom plotting of Sensor data, when in a Snail-mode. (this may include
+ * Snail-mode or relative-mode).
  */
-public final class SnailDrawSensorContact2  extends SnailDrawTacticalContact2
+public final class SnailDrawSensorContact2 extends SnailDrawTacticalContact2
 {
-
 
   ////////////////////////////////////////////////
   // constructor
@@ -96,18 +94,16 @@ public final class SnailDrawSensorContact2  extends SnailDrawTacticalContact2
     _fixPlotter = plotter;
   }
 
+  @Override
+  public final boolean canPlot(final Watchable wt)
+  {
+    boolean res = false;
 
-	public final boolean canPlot(final Watchable wt)
-	{
-		boolean res = false;
-
-		if(wt instanceof Debrief.Wrappers.SensorContactWrapper)
-		{
-			res = true;
-		}
-		return res;
-	}
-
+    if (wt instanceof Debrief.Wrappers.SensorContactWrapper)
+    {
+      res = true;
+    }
+    return res;
+  }
 
 }
-

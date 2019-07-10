@@ -10,13 +10,11 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package Debrief.GUI.Tote.Painters;
 
 import java.awt.Graphics;
-
-
 import java.awt.Point;
 import java.awt.Rectangle;
 
@@ -29,28 +27,40 @@ import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 
-
-/** class to handle drawing a buoy pattern when we're in snail mode
+/**
+ * class to handle drawing a buoy pattern when we're in snail mode
  *
  */
-public final class SnailDrawBuoyPattern2 implements SnailPainter2.drawHighLight2, Editable
+public final class SnailDrawBuoyPattern2 implements
+    SnailPainter2.drawHighLight2, Editable
 {
+
+  @Override
+  public final boolean canPlot(final Watchable wt)
+  {
+    boolean res = false;
+
+    if (wt instanceof Debrief.Wrappers.BuoyPatternWrapper.BuoyPatternAdaptor)
+    {
+      res = true;
+    }
+    return res;
+  }
 
   ///////////////////////////////////
   // member functions
   //////////////////////////////////
+  @Override
   public final Rectangle drawMe(final MWC.Algorithms.PlainProjection proj,
-      final Graphics dest,
-      final WatchableList list,
-      final Watchable watch,
-      final TotePainter parent,
-      final HiResDate dtg,
+      final Graphics dest, final WatchableList list, final Watchable watch,
+      final TotePainter parent, final HiResDate dtg,
       final ColorFadeCalculator fader)
-	{
+  {
     Rectangle thisR = null;
 
     // get a pointer to the fix
-		final BuoyPatternWrapper.BuoyPatternAdaptor adaptor = (BuoyPatternWrapper.BuoyPatternAdaptor)watch;
+    final BuoyPatternWrapper.BuoyPatternAdaptor adaptor =
+        (BuoyPatternWrapper.BuoyPatternAdaptor) watch;
 
     final BuoyPatternWrapper pattern = adaptor.getPattern();
 
@@ -68,41 +78,33 @@ public final class SnailDrawBuoyPattern2 implements SnailPainter2.drawHighLight2
 
     // extend the area covered to include the stick
 
-    thisR =  new Rectangle(tl);
+    thisR = new Rectangle(tl);
     thisR.add(br);
 
-		return thisR;
-	}
+    return thisR;
+  }
 
-	public final boolean canPlot(final Watchable wt)
-	{
-		boolean res = false;
+  @Override
+  public final Editable.EditorType getInfo()
+  {
+    return null;
+  }
 
-		if(wt instanceof Debrief.Wrappers.BuoyPatternWrapper.BuoyPatternAdaptor)
-		{
-			res = true;
-		}
-		return res;
-	}
-
+  @Override
   public final String getName()
   {
     return "Snail Bouypattern Plotter";
   }
 
-  public final String toString()
-  {
-    return getName();
-  }
-
+  @Override
   public final boolean hasEditor()
   {
     return false;
   }
 
-  public final Editable.EditorType getInfo()
+  @Override
+  public final String toString()
   {
-    return null;
+    return getName();
   }
 }
-

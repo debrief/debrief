@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package Debrief.GUI.Tote.Painters;
 
@@ -48,7 +48,7 @@ final class SnailDrawTrack2
   /**
    * helper class that assists in the production of a graduated colors that blend into the
    * background
-   * 
+   *
    * @author ian
    *
    */
@@ -94,6 +94,15 @@ final class SnailDrawTrack2
     }
   }
 
+  private static void drawDot(final Point loc, final java.awt.Graphics dest,
+      final int size, final Rectangle area)
+  {
+    final int wid = size / 2;
+    dest.fillOval(loc.x - wid, loc.y - wid, size, size);
+    area.add(loc.x - size - 2, loc.y - size - 2);
+    area.add(loc.x + size + 2, loc.y + size + 2);
+  }
+
   /**
    * the size of points to draw
    */
@@ -135,14 +144,14 @@ final class SnailDrawTrack2
   ///////////////////////////////////
   // member functions
   //////////////////////////////////
-  public final Rectangle drawMe(
-      final MWC.Algorithms.PlainProjection proj, final java.awt.Graphics dest,
-      final Watchable watch, final TotePainter parent, final HiResDate dtg,
+  public final Rectangle drawMe(final MWC.Algorithms.PlainProjection proj,
+      final java.awt.Graphics dest, final Watchable watch,
+      final TotePainter parent, final HiResDate dtg,
       final ColorFadeCalculator fader)
   {
     // represent this area as a rectangle
     java.awt.Rectangle thisR = null;
-    
+
     // get the fix and the track
     final FixWrapper theFix = (FixWrapper) watch;
     final WatchableList trk = theFix.getTrackWrapper();
@@ -177,7 +186,7 @@ final class SnailDrawTrack2
       // retrieve the points in range
       if (trk instanceof LightweightTrackWrapper)
       {
-        LightweightTrackWrapper track = (LightweightTrackWrapper) trk;
+        final LightweightTrackWrapper track = (LightweightTrackWrapper) trk;
         dotPoints = track.getUnfilteredItems(new HiResDate(0, dtg.getMicros()
             - _trailLength), new HiResDate(0, dtg.getMicros() + 2));
       }
@@ -207,14 +216,13 @@ final class SnailDrawTrack2
         {
           final Color newCol;
 
-          FixWrapper fix = (FixWrapper) iter.next();
-          
+          final FixWrapper fix = (FixWrapper) iter.next();
+
           // see if we are fading to black
           if (_fadePoints)
           {
             final Color trkColor = trk.getColor();
-            newCol = fader.fadeColorAt(trkColor, fix
-                .getDateTimeGroup());
+            newCol = fader.fadeColorAt(trkColor, fix.getDateTimeGroup());
           }
           else
           {
@@ -298,15 +306,6 @@ final class SnailDrawTrack2
     return thisR;
   }
 
-  private static void drawDot(final Point loc, final java.awt.Graphics dest,
-      final int size, final Rectangle area)
-  {
-    final int wid = size / 2;
-    dest.fillOval(loc.x - wid, loc.y - wid, size, size);
-    area.add(loc.x - size - 2, loc.y - size - 2);
-    area.add(loc.x + size + 2, loc.y + size + 2);
-  }
-
   // public boolean canPlot(Watchable wt)
   // {
   // boolean res = false;
@@ -319,24 +318,14 @@ final class SnailDrawTrack2
   // return res;
   // }
 
-  public final void setJoinPositions(final boolean val)
+  public final boolean getFadePoints()
   {
-    _joinPoints = val;
+    return _fadePoints;
   }
 
   public final boolean getJoinPositions()
   {
     return _joinPoints;
-  }
-
-  public final void setFadePoints(final boolean val)
-  {
-    _fadePoints = val;
-  }
-
-  public final boolean getFadePoints()
-  {
-    return _fadePoints;
   }
 
   /**
@@ -353,6 +342,16 @@ final class SnailDrawTrack2
   public final Long getTrailLength()
   {
     return new Long(_trailLength);
+  }
+
+  public final void setFadePoints(final boolean val)
+  {
+    _fadePoints = val;
+  }
+
+  public final void setJoinPositions(final boolean val)
+  {
+    _joinPoints = val;
   }
 
   /**
