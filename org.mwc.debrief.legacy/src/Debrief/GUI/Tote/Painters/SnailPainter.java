@@ -278,7 +278,7 @@ public class SnailPainter extends TotePainter
 	/**
 	 * the highlight plotters we know about
 	 */
-	private final Vector<SnailPainter.drawHighLight> _myHighlightPlotters;
+	protected final Vector<SnailPainter.drawHighLight> _myHighlightPlotters;
 
 	/**
 	 * the size to draw myself
@@ -288,7 +288,7 @@ public class SnailPainter extends TotePainter
 	/**
 	 * the list of painters previously used by the canvas
 	 */
-	private Vector<PaintListener> _oldPainters;
+	protected Vector<PaintListener> _oldPainters;
 
 	/**
 	 * whether we are currently painting(hiding) the old points
@@ -299,11 +299,6 @@ public class SnailPainter extends TotePainter
 	 * the snail track plotter to use
 	 */
 	private final SnailDrawFix _mySnailPlotter;
-
-	/**
-	 * the snail buoy-pattern plotter to use
-	 */
-	private final SnailDrawBuoyPattern _mySnailBuoyPlotter;
 
 	// /////////////////////////////////
 	// constructorsna
@@ -322,11 +317,10 @@ public class SnailPainter extends TotePainter
 		_oldWatchables = new HashMap<Watchable, WatchableList>();
 
 		_mySnailPlotter = new SnailDrawFix(myName);
-		_mySnailBuoyPlotter = new SnailDrawBuoyPattern();
 
 		_myHighlightPlotters = new Vector<SnailPainter.drawHighLight>(0, 1);
 		_myHighlightPlotters.addElement(_mySnailPlotter);
-		_myHighlightPlotters.addElement(_mySnailBuoyPlotter);
+		_myHighlightPlotters.addElement(new SnailDrawBuoyPattern());
 		_myHighlightPlotters.addElement(new SnailDrawAnnotation());
 		_myHighlightPlotters
 				.addElement(new SnailDrawSensorContact(_mySnailPlotter));
@@ -334,7 +328,6 @@ public class SnailPainter extends TotePainter
 
 		_mySnailPlotter.setPointSize(new BoundedInteger(5, 0, 0));
 		_mySnailPlotter.setVectorStretch(1);
-
 	}
 
 	// /////////////////////////////////
@@ -476,7 +469,7 @@ public class SnailPainter extends TotePainter
 	 *          the layers to extract the watchables for
 	 * @return the set of watchable items in these layers
 	 */
-	private static Vector<Plottable> getWatchables(final Layers theData)
+	public static Vector<Plottable> getWatchables(final Layers theData)
 	{
 		final Vector<Plottable> res = new Vector<Plottable>(0, 1);
 		// step through the layers
@@ -584,7 +577,7 @@ public class SnailPainter extends TotePainter
 	 * method to return the non-tactical items on the plot, such as scale, grid,
 	 * coast etc.
 	 */
-	private static Vector<Plottable> getNonWatchables(final Layers theData)
+	public static Vector<Plottable> getNonWatchables(final Layers theData)
 	{
 		final Vector<Plottable> res = new Vector<Plottable>(0, 1);
 		// step through the layers
@@ -655,7 +648,7 @@ public class SnailPainter extends TotePainter
 
 	}
 
-	public final void newTime(final HiResDate oldDTG, final HiResDate newDTG,
+	public void newTime(final HiResDate oldDTG, final HiResDate newDTG,
 			final MWC.GUI.CanvasType canvas)
 	{
 		
@@ -690,7 +683,7 @@ public class SnailPainter extends TotePainter
 		// we will plot the non-watchables aswell)
 		if ((oldDTG == null) || (_oldWatchables.size() == 0))
 		{
-			final Vector<Plottable> nonWatches = getNonWatchables(super._theData);
+			final Vector<Plottable> nonWatches = getNonWatchables(super.getLayers());
 			final Enumeration<Plottable> iter = nonWatches.elements();
 			while (iter.hasMoreElements())
 			{
@@ -768,7 +761,7 @@ public class SnailPainter extends TotePainter
 		}
 
 		// determine the new items
-		final Vector<Plottable> theWatchableLists = getWatchables(super._theData);
+		final Vector<Plottable> theWatchableLists = getWatchables(super.getLayers());
 		_paintingOldies = false;
 
 		// sort out the line width of the primary
@@ -996,58 +989,7 @@ public class SnailPainter extends TotePainter
 	{
 		_mySnailPlotter.setPlotTrackName(val);
 	}
-
-	// //////////////////////////////////////////////////////////
-	// nested class describing how to edit this class
-	// //////////////////////////////////////////////////////////
-	// public class SnailPainterInfo extends Editable.EditorType
-	// {
-	//
-	// public SnailPainterInfo(SnailPainter data)
-	// {
-	// super(data, "Snail","");
-	// }
-	//
-	// /** extra constructor which may be over-ridden by the relative painter
-	// *
-	// */
-	// public SnailPainterInfo(SnailPainter data, String name)
-	// {
-	// super(data, name,"");
-	// }
-	//
-	// public BeanInfo[] getAdditionalBeanInfo()
-	// {
-	// BeanInfo[] res = {_mySnailPlotter.getInfo()};
-	// return res;
-	// }
-	//
-	// public PropertyDescriptor[] getPropertyDescriptors()
-	// {
-	// try{
-	// PropertyDescriptor[] res=
-	// {
-	// prop("PlotTrackName", "whether to plot the name of the track"),
-	// prop("LinkPositions", "whether to join the points in the trail"),
-	// prop("PointSize", "the size of the points in the trail"),
-	// prop("TrailLength", "the length of trail to draw"),
-	// prop("VectorStretch", "how far to stretch the speed vector"),
-	// };
-	// return res;
-	// }
-	// catch(Exception e)
-	// {
-	// MWC.Utilities.Errors.Trace.trace(e);
-	// return super.getPropertyDescriptors();
-	// }
-	//
-	// }
-	//
-	// }
-
-	// /////////////////////////////////////////////////
-	// nested interface for painters which can draw snail trail components
-	// /////////////////////////////////////////////////
+	
 	public interface drawHighLight
 	{
 		public java.awt.Rectangle drawMe(MWC.Algorithms.PlainProjection proj,
@@ -1057,9 +999,6 @@ public class SnailPainter extends TotePainter
 		public boolean canPlot(Watchable wt);
 	}
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	static public final class testMe extends junit.framework.TestCase
 	{
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
