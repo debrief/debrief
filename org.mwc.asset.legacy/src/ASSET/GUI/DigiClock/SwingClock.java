@@ -67,7 +67,7 @@ public class SwingClock extends javax.swing.JComponent
 
     setSize(204, 54);
 
-    _dateF = new GMTDateFormat("hhmmss");
+    _dateF = new GMTDateFormat("HHmmss");
 
     init();
   }

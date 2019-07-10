@@ -80,7 +80,7 @@ public final class timeCalc extends plainCalc
   ////////////////////////////////////////////////////////////
   public timeCalc()
   {  
-    super(new DecimalFormat("000.0"), "Time", "hhmmss");
+    super(new DecimalFormat("000.0"), "Time", "HHmmss");
   }
   
   /////////////////////////////////////////////////////////////
