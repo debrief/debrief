@@ -989,58 +989,7 @@ public class SnailPainter extends TotePainter
 	{
 		_mySnailPlotter.setPlotTrackName(val);
 	}
-
-	// //////////////////////////////////////////////////////////
-	// nested class describing how to edit this class
-	// //////////////////////////////////////////////////////////
-	// public class SnailPainterInfo extends Editable.EditorType
-	// {
-	//
-	// public SnailPainterInfo(SnailPainter data)
-	// {
-	// super(data, "Snail","");
-	// }
-	//
-	// /** extra constructor which may be over-ridden by the relative painter
-	// *
-	// */
-	// public SnailPainterInfo(SnailPainter data, String name)
-	// {
-	// super(data, name,"");
-	// }
-	//
-	// public BeanInfo[] getAdditionalBeanInfo()
-	// {
-	// BeanInfo[] res = {_mySnailPlotter.getInfo()};
-	// return res;
-	// }
-	//
-	// public PropertyDescriptor[] getPropertyDescriptors()
-	// {
-	// try{
-	// PropertyDescriptor[] res=
-	// {
-	// prop("PlotTrackName", "whether to plot the name of the track"),
-	// prop("LinkPositions", "whether to join the points in the trail"),
-	// prop("PointSize", "the size of the points in the trail"),
-	// prop("TrailLength", "the length of trail to draw"),
-	// prop("VectorStretch", "how far to stretch the speed vector"),
-	// };
-	// return res;
-	// }
-	// catch(Exception e)
-	// {
-	// MWC.Utilities.Errors.Trace.trace(e);
-	// return super.getPropertyDescriptors();
-	// }
-	//
-	// }
-	//
-	// }
-
-	// /////////////////////////////////////////////////
-	// nested interface for painters which can draw snail trail components
-	// /////////////////////////////////////////////////
+	
 	public interface drawHighLight
 	{
 		public java.awt.Rectangle drawMe(MWC.Algorithms.PlainProjection proj,
@@ -1050,9 +999,6 @@ public class SnailPainter extends TotePainter
 		public boolean canPlot(Watchable wt);
 	}
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	static public final class testMe extends junit.framework.TestCase
 	{
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
