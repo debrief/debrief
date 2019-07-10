@@ -231,7 +231,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 	/**
 	 * the information we are plotting
 	 */
-	final Layers _theData;
+	private final Layers _theData;
 
 	/**
 	 * whether this was the first step we tool
@@ -439,6 +439,11 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 		return "Time Highlighter";
 	}
 
+	protected Layers getLayers()
+	{
+	  return _theData;
+	}
+	
   @Override
   public void reset()
   {
