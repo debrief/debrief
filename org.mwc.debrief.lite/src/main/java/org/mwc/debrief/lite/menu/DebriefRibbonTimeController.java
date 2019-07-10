@@ -432,6 +432,7 @@ public class DebriefRibbonTimeController
 
     });
 
+    @SuppressWarnings("unused")
     final JCommandButton recordCommandButton = MenuUtils.addCommandButton(
         "Record", "icons/24/media_record.png", new AbstractAction()
         {

@@ -14,14 +14,16 @@
  */
 package ASSET.GUI.DigiClock;
 
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.MediaTracker;
+import java.util.Date;
+
+import javax.swing.ImageIcon;
 
 import MWC.Utilities.TextFormatting.GMTDateFormat;
-
-import java.awt.*;
-import java.util.Date;
-import java.util.TimeZone;
-import java.text.SimpleDateFormat;
 
 public class SwingClock extends javax.swing.JComponent
 {
