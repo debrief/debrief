@@ -289,7 +289,7 @@ public class DebriefRibbonTimeController
   public static JPanel topButtonsPanel;
   private static final String[] timeFormats = new String[]
   {"mm:ss.SSS", "HHmm.ss", "HHmm", "ddHHmm", "ddHHmm:ss", "yy/MM/dd HH:mm",
-      "yy/MM/dd hh:mm:ss"};
+      "yy/MM/dd HH:mm:ss"};
 
   private static SliderConverter converter = new SliderConverter();
 
@@ -432,6 +432,7 @@ public class DebriefRibbonTimeController
 
     });
 
+    @SuppressWarnings("unused")
     final JCommandButton recordCommandButton = MenuUtils.addCommandButton(
         "Record", "icons/24/media_record.png", new AbstractAction()
         {
