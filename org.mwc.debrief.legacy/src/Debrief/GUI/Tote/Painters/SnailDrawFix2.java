@@ -129,32 +129,38 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
-
-public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2, Editable
+public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
+    Editable
 {
 
-	/** keep a copy of the track plotter we are using
-	 */
-	private final SnailDrawTrack2 _trackPlotter = new SnailDrawTrack2();
+  /**
+   * keep a copy of the track plotter we are using
+   */
+  private final SnailDrawTrack2 _trackPlotter = new SnailDrawTrack2();
 
-	/** keep a copy of the requested point size
-	 */
+  /**
+   * keep a copy of the requested point size
+   */
   private int _pointSize;
 
-	/** do we draw in the track/vessel name?
-	 */
+  /**
+   * do we draw in the track/vessel name?
+   */
   private boolean _plotName;
 
-	/** the 'stretch' factor to put on the speed vector (factor to apply to the speed vector, in pixels)
-	 */
+  /**
+   * the 'stretch' factor to put on the speed vector (factor to apply to the speed vector, in
+   * pixels)
+   */
   private double _vectorStretch;
 
-  /** our editor
+  /**
+   * our editor
    */
   transient private Editable.EditorType _myEditor = null;
 
-  /** the name we display when shown in an editor
-   *  (which may initially be Snail or Relative)
+  /**
+   * the name we display when shown in an editor (which may initially be Snail or Relative)
    */
   private final String _myName;
 
@@ -169,31 +175,29 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2, Editab
   ///////////////////////////////////
   // member functions
   //////////////////////////////////
-	public final java.awt.Rectangle drawMe(final MWC.Algorithms.PlainProjection proj,
-																	 final java.awt.Graphics dest,
-																	 final WatchableList list,
-																	 final Watchable watch,
-																	 final TotePainter parent,
-																	 final HiResDate dtg,
-                                   final ColorFadeCalculator fader)
-	{
+  public final java.awt.Rectangle drawMe(
+      final MWC.Algorithms.PlainProjection proj, final java.awt.Graphics dest,
+      final WatchableList list, final Watchable watch, final TotePainter parent,
+      final HiResDate dtg, final ColorFadeCalculator fader)
+  {
     Rectangle thisR = null;
 
-//    dest.setXORMode(backColor);
+    // dest.setXORMode(backColor);
 
     // get a pointer to the fix
-		final FixWrapper fix = (FixWrapper)watch;
+    final FixWrapper fix = (FixWrapper) watch;
 
-		// get the colour of the track
-		final Color col = fix.getColor();
-		dest.setColor(col);
+    // get the colour of the track
+    final Color col = fix.getColor();
+    dest.setColor(col);
 
     // produce the centre point
     final Point p = new Point(proj.toScreen(fix.getLocation()));
 
     // see if we are in symbol plotting mode
-    final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter thisHighlighter = parent.getCurrentPrimaryHighlighter ();
-    if(thisHighlighter instanceof Debrief.GUI.Tote.Painters.Highlighters.SymbolHighlighter)
+    final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter thisHighlighter =
+        parent.getCurrentPrimaryHighlighter();
+    if (thisHighlighter instanceof Debrief.GUI.Tote.Painters.Highlighters.SymbolHighlighter)
     {
       // just plot away!
       thisHighlighter.highlightIt(proj, dest, list, watch, true);
@@ -231,25 +235,24 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2, Editab
       thisR = new Rectangle(x, y, wid, ht);
 
       // plot the rectangle anyway
-      dest.drawOval(x , y, wid, ht);
+      dest.drawOval(x, y, wid, ht);
 
       // get the fix to draw itself
 
       // create our own canvas object (don't bother - do it all from the Track, so we know
       // the correct size of the resulting object
-//      final CanvasAdaptor cad = new CanvasAdaptor(proj, dest);
+      // final CanvasAdaptor cad = new CanvasAdaptor(proj, dest);
 
       // and do the paint
-   //   fix.paintMe(cad);
+      // fix.paintMe(cad);
 
       // and now plot the vector
       final double crse = watch.getCourse();
       final double spd = watch.getSpeed();
 
       //
-      final int dx = (int)(Math.sin(crse) * mySize * spd * _vectorStretch);
-      final int dy = (int)(Math.cos(crse) * mySize * spd * _vectorStretch);
-
+      final int dx = (int) (Math.sin(crse) * mySize * spd * _vectorStretch);
+      final int dy = (int) (Math.cos(crse) * mySize * spd * _vectorStretch);
 
       // produce the end of the stick (just to establish the length in data units)
       final Point p2 = new Point(p.x + dx, p.y - dy);
@@ -259,7 +262,8 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2, Editab
       final double len = w3.rangeFrom(fix.getLocation());
 
       // now sort out the real end of this stalk
-      final WorldLocation stalkEnd = fix.getLocation().add(new WorldVector(crse, len, 0));
+      final WorldLocation stalkEnd = fix.getLocation().add(new WorldVector(crse,
+          len, 0));
       // and get this in screen coordinates
       final Point pStalkEnd = proj.toScreen(stalkEnd);
 
@@ -268,72 +272,67 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2, Editab
 
       // extend the area covered to include the stick
       thisR.add(p2);
-
     }
 
-		// draw the trailing dots
-		final java.awt.Rectangle dotsArea = _trackPlotter.drawMe(proj,
-																											 dest,
-																											 watch,
-																											 parent,
-																											 dtg,
-                                                       fader);
+    // draw the trailing dots
+    final java.awt.Rectangle dotsArea = _trackPlotter.drawMe(proj, dest, watch,
+        parent, watch.getTime(), fader);
 
-		// extend the rectangle, if necesary
-		if(dotsArea != null)
-			thisR.add(dotsArea);
+    // extend the rectangle, if necesary
+    if (dotsArea != null)
+      thisR.add(dotsArea);
 
-		// plot the track name
-		if(_plotName)
-		{
-			final String msg = fix.getTrackWrapper().getName();
+    // plot the track name
+    if (_plotName)
+    {
+      final String msg = fix.getTrackWrapper().getName();
 
-			// shift the centre point across a bit
-			p.translate(5, 0);
+      // shift the centre point across a bit
+      p.translate(5, 0);
 
-			// HACK: TRY TO PAINT THIS IN
-	//		dest.setXORMode(Color.black);
+      // HACK: TRY TO PAINT THIS IN
+      // dest.setXORMode(Color.black);
 
-			// and draw the text
-			dest.drawString(msg, p.x, p.y);
+      // and draw the text
+      dest.drawString(msg, p.x, p.y);
 
-			// somehow we need to include this extended area
-			final FontMetrics fm = dest.getFontMetrics();
+      // somehow we need to include this extended area
+      final FontMetrics fm = dest.getFontMetrics();
 
-			final int sWid = fm.stringWidth(msg);
+      final int sWid = fm.stringWidth(msg);
 
-			// shift from the start of the string
-			p.translate(sWid, 0);
+      // shift from the start of the string
+      p.translate(sWid, 0);
 
-			// and add to the limits rectangle
-			thisR.add(p);
-		}
+      // and add to the limits rectangle
+      thisR.add(p);
+    }
 
     // set the width
-//    if(dest instanceof CanvasType)
-//    {
-//      CanvasType ct = (CanvasType)dest;
-//      ct.setLineWidth(1);
-//    }
-//    if(dest instanceof Graphics2D)
-//    {
-//      Graphics2D g2 = (Graphics2D)dest;
-//      BasicStroke bs = new BasicStroke(1);
-//    }
+    // if(dest instanceof CanvasType)
+    // {
+    // CanvasType ct = (CanvasType)dest;
+    // ct.setLineWidth(1);
+    // }
+    // if(dest instanceof Graphics2D)
+    // {
+    // Graphics2D g2 = (Graphics2D)dest;
+    // BasicStroke bs = new BasicStroke(1);
+    // }
 
-		return thisR;
-	}
+    return thisR;
+  }
 
-	public final boolean canPlot(final Watchable wt)
-	{
-		boolean res = false;
+  public final boolean canPlot(final Watchable wt)
+  {
+    boolean res = false;
 
-		if(wt instanceof Debrief.Wrappers.FixWrapper)
-		{
-			res = true;
-		}
-		return res;
-	}
+    if (wt instanceof Debrief.Wrappers.FixWrapper)
+    {
+      res = true;
+    }
+    return res;
+  }
 
   public final String getName()
   {
@@ -352,7 +351,7 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2, Editab
 
   public final Editable.EditorType getInfo()
   {
-    if(_myEditor == null)
+    if (_myEditor == null)
       _myEditor = new SnailFixPainterInfo(this);
 
     return _myEditor;
@@ -362,7 +361,6 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2, Editab
   // accessors for editable parameters
   /////////////////////////////////////////////////////////
 
-
   public final void setLinkPositions(final boolean val)
   {
     _trackPlotter.setJoinPositions(val);
@@ -370,7 +368,7 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2, Editab
 
   public final boolean getLinkPositions()
   {
-    return  _trackPlotter.getJoinPositions();
+    return _trackPlotter.getJoinPositions();
   }
 
   public final void setFadePoints(final boolean val)
@@ -383,66 +381,73 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2, Editab
     return _trackPlotter.getFadePoints();
   }
 
-  /** point size of symbols (pixels)
+  /**
+   * point size of symbols (pixels)
    */
   public final BoundedInteger getPointSize()
   {
-    return new BoundedInteger(_trackPlotter.getPointSize(),
-															1,
-															20);
+    return new BoundedInteger(_trackPlotter.getPointSize(), 1, 20);
   }
 
-  /** length of trail to plot
+  /**
+   * length of trail to plot
    */
   public final Duration getTrailLength()
   {
-    return new Duration(_trackPlotter.getTrailLength().longValue(), Duration.MICROSECONDS);
+    return new Duration(_trackPlotter.getTrailLength().longValue(),
+        Duration.MICROSECONDS);
   }
 
-  /** size of points to draw (pixels)
+  /**
+   * size of points to draw (pixels)
    */
   public final void setPointSize(final BoundedInteger val)
   {
 
     _trackPlotter.setPointSize(val.getCurrent());
-		_pointSize = val.getCurrent();
+    _pointSize = val.getCurrent();
   }
 
-  /** length of trail to draw
+  /**
+   * length of trail to draw
    */
   public final void setTrailLength(final Duration len)
   {
-    _trackPlotter.setTrailLength(new Long((long)len.getValueIn(Duration.MICROSECONDS)));
+    _trackPlotter.setTrailLength(new Long((long) len.getValueIn(
+        Duration.MICROSECONDS)));
   }
 
-	/** whether to plot in the name of the vessel
-	 */
-	public final boolean getPlotTrackName()
-	{
-		return _plotName;
-	}
+  /**
+   * whether to plot in the name of the vessel
+   */
+  public final boolean getPlotTrackName()
+  {
+    return _plotName;
+  }
 
-	/** whether to plot in the name of the vessel
-	 */
-	public final void setPlotTrackName(final boolean val)
-	{
-		_plotName = val;
-	}
+  /**
+   * whether to plot in the name of the vessel
+   */
+  public final void setPlotTrackName(final boolean val)
+  {
+    _plotName = val;
+  }
 
-	/** how much to stretch the vector
-	 */
-	public final void setVectorStretch(final double val)
-	{
-		_vectorStretch = val;
-	}
+  /**
+   * how much to stretch the vector
+   */
+  public final void setVectorStretch(final double val)
+  {
+    _vectorStretch = val;
+  }
 
-	/** how much to stretch the vector
-	 */
-	public final double getVectorStretch()
-	{
-		return _vectorStretch;
-	}
-
+  /**
+   * how much to stretch the vector
+   */
+  public final double getVectorStretch()
+  {
+    return _vectorStretch;
+  }
 
   //////////////////////////////////////////////////////////
   // nested editable class
@@ -458,21 +463,27 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2, Editab
 
     public final PropertyDescriptor[] getPropertyDescriptors()
     {
-      try{
-        final PropertyDescriptor[] res={
-          displayProp("LinkPositions", "Link positions", "whether to join the points in the trail"),
-          displayProp("PlotTrackName", "Plot track name", "whether to plot the name of the track"),
-          displayProp("FadePoints", "Fade points", "whether the trails should fade to black"),
-          displayProp("PointSize", "Point size", "the size of the points in the trail"),
-          displayProp("TrailLength", "Trail length", "the length of trail to draw"),
-          displayProp("VectorStretch", "Vector stretch", "how far to stretch the speed vector (pixels per knot)"),
-        };
+      try
+      {
+        final PropertyDescriptor[] res =
+        {displayProp("LinkPositions", "Link positions",
+            "whether to join the points in the trail"), displayProp(
+                "PlotTrackName", "Plot track name",
+                "whether to plot the name of the track"), displayProp(
+                    "FadePoints", "Fade points",
+                    "whether the trails should fade to black"), displayProp(
+                        "PointSize", "Point size",
+                        "the size of the points in the trail"), displayProp(
+                            "TrailLength", "Trail length",
+                            "the length of trail to draw"), displayProp(
+                                "VectorStretch", "Vector stretch",
+                                "how far to stretch the speed vector (pixels per knot)"),};
 
         res[5].setPropertyEditorClass(FractionPropertyEditor.class);
 
         return res;
       }
-      catch(final Exception e)
+      catch (final Exception e)
       {
         MWC.Utilities.Errors.Trace.trace(e);
         return super.getPropertyDescriptors();
@@ -480,18 +491,20 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2, Editab
 
     }
 
-	}
+  }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // testing for this class
   //////////////////////////////////////////////////////////////////////////////////////////////////
   static public final class testMe extends junit.framework.TestCase
   {
-    static public final String TEST_ALL_TEST_TYPE  = "UNIT";
+    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
     public testMe(final String val)
     {
       super(val);
     }
+
     public final void testMyParams()
     {
       Editable ed = new SnailDrawFix2("testing");
@@ -500,4 +513,3 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2, Editab
     }
   }
 }
-

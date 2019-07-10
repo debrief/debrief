@@ -14,216 +14,6 @@
  */
 package Debrief.GUI.Tote.Painters;
 
-// Copyright MWC 2000, Debrief 3 Project
-// $RCSfile: SnailPainter.java,v $
-// @author $Author: ian.mayo $
-// @version $Revision: 1.12 $
-// $Log: SnailPainter.java,v $
-// Revision 1.12  2007/04/16 09:48:08  ian.mayo
-// Remove debug lines, slight JDK1.5 syntax updates (generics)
-//
-// Revision 1.11  2007/04/16 08:23:13  ian.mayo
-// Include debug code
-//
-// Revision 1.10  2007/04/05 13:38:10  ian.mayo
-// Improve how we decide whether to show plot highlight, make sure debrief legacy plugin gets installed
-//
-// Revision 1.9  2007/04/04 14:12:13  ian.mayo
-// Correct how buoy patterns displayed by plot highlighter
-//
-// Revision 1.8  2005/07/01 15:34:25  Ian.Mayo
-// Tidy how we retrieve non-watchables
-//
-// Revision 1.7  2005/07/01 08:49:45  Ian.Mayo
-// Refactor, to allow use in Eclipse implementation
-//
-// Revision 1.6  2005/06/13 11:02:51  Ian.Mayo
-// Minor tidying whilst overcoming annotation line widths in snail mode.
-//
-// Revision 1.5  2004/12/16 11:17:51  Ian.Mayo
-// Only trigger redraw if area to be redrawn is visible
-//
-// Revision 1.4  2004/11/25 10:24:05  Ian.Mayo
-// Switch to Hi Res dates
-//
-// Revision 1.3  2004/11/22 13:40:50  Ian.Mayo
-// Replace old variable name used for stepping through enumeration, since it is now part of language (Jdk1.5)
-//
-// Revision 1.2  2004/09/09 10:22:53  Ian.Mayo
-// Reflect method name change in Layer interface
-//
-// Revision 1.1.1.2  2003/07/21 14:47:23  Ian.Mayo
-// Re-import Java files to keep correct line spacing
-//
-// Revision 1.11  2003-07-04 10:59:18+01  ian_mayo
-// reflect name change in parent testing class
-//
-// Revision 1.10  2003-07-01 16:35:18+01  ian_mayo
-// Change default value of vector stretch
-//
-// Revision 1.9  2003-06-23 13:41:33+01  ian_mayo
-// Add TMA solution handling
-//
-// Revision 1.8  2003-03-19 15:37:59+00  ian_mayo
-// improvements according to IntelliJ inspector
-//
-// Revision 1.7  2003-02-07 09:02:39+00  ian_mayo
-// Remove unnecessary
-//
-// Revision 1.6  2002-12-16 15:12:24+00  ian_mayo
-// Tidying & better Vector Stretch
-//
-// Revision 1.5  2002-10-28 09:04:33+00  ian_mayo
-// provide support for variable thickness of lines in tracks, etc
-//
-// Revision 1.4  2002-07-10 14:59:25+01  ian_mayo
-// handle correct returning of nearest points - zero length list instead of null when no matches
-//
-// Revision 1.3  2002-07-09 15:26:55+01  ian_mayo
-// Minor renaming, and add BackgroundLayers as nonWatchables when in view
-//
-// Revision 1.2  2002-05-28 12:28:00+01  ian_mayo
-// after update
-//
-// Revision 1.1  2002-05-28 09:12:17+01  ian_mayo
-// Initial revision
-//
-// Revision 1.1  2002-04-23 12:30:01+01  ian_mayo
-// Initial revision
-//
-// Revision 1.8  2002-03-18 20:36:15+00  administrator
-// Only plot items if their layer is visible
-//
-// Revision 1.7  2002-03-13 08:57:59+00  administrator
-// Reflect name change
-//
-// Revision 1.6  2002-01-17 20:21:45+00  administrator
-// Reflect switch to Duration object
-//
-// Revision 1.5  2001-10-22 11:26:11+01  administrator
-// Handle instance where no area of screen has been updated
-//
-// Revision 1.4  2001-10-03 16:07:35+01  administrator
-// Provide flexibility in how we show our name (to allow us to be overwritten)
-//
-// Revision 1.3  2001-10-01 12:49:48+01  administrator
-// the getNearest method of WatchableList now returns an array of points (since a contact wrapper may contain several points at the same DTG).  We have had to reflect this across the application
-//
-// Revision 1.2  2001-08-24 16:36:29+01  administrator
-// Handle stepping before tracks assigned
-//
-// Revision 1.1  2001-08-14 14:07:09+01  administrator
-// Add the new SnailDrawContact, and extend getWatchables to recognise any SensorWrapper's which are in a Track
-//
-// Revision 1.0  2001-07-17 08:41:39+01  administrator
-// Initial revision
-//
-// Revision 1.8  2001-04-08 10:45:57+01  novatech
-// Correct problem where LabelWrapper with times are stored as Watchables and Non-Watchables (since we did not recognise their type)
-//
-// Revision 1.7  2001-02-01 09:29:42+00  novatech
-// implement correct handling of null time (-1, not 0 as before) and reflect fact that we no longer create/re-create our oldWatchables list, we empty and fill it
-//
-// Revision 1.6  2001-01-22 12:30:04+00  novatech
-// added JUnit testing code
-//
-// Revision 1.5  2001-01-18 13:15:07+00  novatech
-// create buoy plotter for snail mode
-//
-// Revision 1.4  2001-01-17 13:23:45+00  novatech
-// reflect use of -1 as null time, rather than 0
-//
-// Revision 1.3  2001-01-15 11:21:28+00  novatech
-// store the old points in a hashmap instead of a vector, so that the track can be stored aswell as the fix
-//
-// Revision 1.2  2001-01-09 10:27:25+00  novatech
-// use WatchableList as well as  TrackWrapper
-//
-// Revision 1.1  2001-01-03 13:40:53+00  novatech
-// Initial revision
-//
-// Revision 1.1.1.1  2000/12/12 20:45:49  ianmayo
-// initial import of files
-//
-// Revision 1.26  2000-11-24 10:53:23+00  ian_mayo
-// tidying up
-//
-// Revision 1.25  2000-11-17 09:15:32+00  ian_mayo
-// allow code to drop out if we can't create our graphics object (ie before panels are setVisible)
-//
-// Revision 1.24  2000-11-08 11:48:25+00  ian_mayo
-// reflect change in status of TrackWrapper to Layer
-//
-// Revision 1.23  2000-11-02 16:45:48+00  ian_mayo
-// changing Layer into Interface, replaced by BaseLayer, also changed TrackWrapper so that it implements Layer,  and as we read in files, we put them into track and add Track to Layers, not to Layer then Layers
-//
-// Revision 1.22  2000-10-17 16:07:09+01  ian_mayo
-// move HighlightPlotting to before vector plotting, so that vectors are visible.  Play around with when we plot non-watchables, so that scale is always plotted
-//
-// Revision 1.21  2000-10-09 13:37:47+01  ian_mayo
-// Switch stackTrace to go to file
-//
-// Revision 1.20  2000-10-03 14:17:17+01  ian_mayo
-// draw primary with specified highlighter
-//
-// Revision 1.19  2000-09-27 14:47:40+01  ian_mayo
-// name changes
-//
-// Revision 1.18  2000-09-27 14:31:45+01  ian_mayo
-// put relativePlotting into correct place
-//
-// Revision 1.17  2000-09-26 09:50:37+01  ian_mayo
-// support for relative plotting
-//
-// Revision 1.16  2000-09-22 11:44:51+01  ian_mayo
-// add AnnotationPlotter, & improve method for detecting if a plottable should be added to the Watchable list or not
-//
-// Revision 1.15  2000-09-18 09:14:37+01  ian_mayo
-// GUI name changes
-//
-// Revision 1.14  2000-08-30 14:49:05+01  ian_mayo
-// rx background colour, instead of retrieving it yourself
-//
-// Revision 1.13  2000-08-14 15:50:05+01  ian_mayo
-// GUI name changes
-//
-// Revision 1.12  2000-08-11 08:41:00+01  ian_mayo
-// tidy beaninfo
-//
-// Revision 1.11  2000-07-07 09:58:59+01  ian_mayo
-// Tidy up name of panel
-//
-// Revision 1.10  2000-06-19 15:06:19+01  ian_mayo
-// newlines tidied up
-//
-// Revision 1.9  2000-06-06 12:43:47+01  ian_mayo
-// replot full diagram, not just small areas (to overcome problem in JDK1.3)
-//
-// Revision 1.8  2000-04-03 10:19:21+01  ian_mayo
-// switch to returning editable belonging to Painter, not us
-//
-// Revision 1.7  2000-03-27 14:44:01+01  ian_mayo
-// redraw chart after we have been changed
-//
-// Revision 1.6  2000-03-17 13:38:44+00  ian_mayo
-// Tidying up
-//
-// Revision 1.5  2000-03-14 09:52:39+00  ian_mayo
-// allow configurable "leg" for vector plotting
-//
-// Revision 1.4  2000-03-09 11:26:31+00  ian_mayo
-// add method/accessor to allow user to request vessel name on track
-//
-// Revision 1.3  2000-03-08 16:23:35+00  ian_mayo
-// represent symbol shape size as bounded integer
-//
-// Revision 1.2  2000-03-08 14:26:10+00  ian_mayo
-// further through implementation
-//
-// Revision 1.1  2000-03-07 13:44:08+00  ian_mayo
-// Initial revision
-//
-
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -233,18 +23,8 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 import Debrief.GUI.Tote.AnalysisTote;
-import Debrief.Wrappers.BuoyPatternWrapper;
-import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.LabelWrapper;
-import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.ShapeWrapper;
-import Debrief.Wrappers.TMAWrapper;
-import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Track.LightweightTrackWrapper;
-import Debrief.Wrappers.Track.TrackSegment;
-import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.Algorithms.PlainProjection;
-import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.CanvasType.PaintListener;
 import MWC.GUI.Editable;
@@ -261,9 +41,21 @@ import MWC.GenericData.WorldArea;
 public class SnailPainter2 extends TotePainter
 {
 
+  /** utility class, to help determine a semi-transparent color
+   * shade that fades with time
+   * @author ian
+   *
+   */
   public static class ColorFadeCalculator
   {
+    /* how long the trail is
+     * 
+     */
     private final long _trail_lenMillis;
+    
+    /* the time now
+     * 
+     */
     private final long _datumTime;
 
     public ColorFadeCalculator(final long trail_lenMillis,
@@ -342,250 +134,6 @@ public class SnailPainter2 extends TotePainter
   }
 
   public static final String SNAIL_NAME = "Snail";
-
-  /**
-   * method to return the non-tactical items on the plot, such as scale, grid, coast etc.
-   */
-  public static Vector<Plottable> getNonWatchables(final Layer thisLayer)
-  {
-    final Vector<Plottable> res = new Vector<Plottable>(0, 1);
-    // is this layer visible?
-    if (thisLayer.getVisible())
-    {
-      if (thisLayer instanceof Layer.BackgroundLayer)
-      {
-        res.addElement(thisLayer);
-      }
-      else if ((thisLayer instanceof FixWrapper)
-          || (thisLayer instanceof LightweightTrackWrapper)
-          || (thisLayer instanceof TrackWrapper)
-          || (thisLayer instanceof BuoyPatternWrapper)
-          || (thisLayer instanceof SensorWrapper)
-          || (thisLayer instanceof TMAWrapper)
-          || (thisLayer instanceof TrackSegment)
-          || (thisLayer instanceof SegmentList))
-      {
-        // ignore it - it's clearly tactical, and there's just no way
-        // it can contain non-tactical child elements
-      }
-      else
-      {
-        // just see if this layer is one of our back-ground layesr
-        final Enumeration<Editable> iter = thisLayer.elements();
-        while (iter.hasMoreElements())
-        {
-          final Plottable thisPlottable = (Plottable) iter.nextElement();
-          if (thisPlottable instanceof ShapeWrapper)
-          {
-            // see if has a valid DTG -- IS IT TIME-RELATED?
-            final ShapeWrapper swp = (ShapeWrapper) thisPlottable;
-            final HiResDate dat = swp.getStartDTG();
-            if (dat == null)
-            {
-              // let's use it
-              res.addElement(thisPlottable);
-            }
-            else
-            {
-              // so it's got a date, check if the date represents our null
-              // value
-              // anyway
-              if (dat.getMicros() == -1)
-                res.addElement(thisPlottable);
-            }
-          }
-          else if (thisPlottable instanceof LabelWrapper)
-          {
-            // see if has a valid DTG -- IS IT TIME-RELATED?
-            final LabelWrapper lwp = (LabelWrapper) thisPlottable;
-            final HiResDate dat = lwp.getStartDTG();
-            // check if it is using our "null" date value
-            if (dat == null)
-            {
-              // let's use it
-              res.addElement(thisPlottable);
-            }
-            else
-            {
-              // it's got a date, which makes it one of our watchables, it
-              // will
-              // get caught elsewhere
-            }
-          }
-          else if (thisPlottable instanceof LightweightTrackWrapper)
-          {
-            // ok, ignore it. it's tactical
-          }
-          else
-          {
-            // it's not a shape - it's probably the grid or the scale,
-            res.addElement(thisPlottable);
-          } // whether it's a labelwrapper
-        } // looping through the elements of this layer
-      } // if this is a background layer (or not)
-    } // whether this layer is visible
-    return res;
-  }
-
-  /**
-   * method to return the non-tactical items on the plot, such as scale, grid, coast etc.
-   */
-  private static Vector<Plottable> getNonWatchables(final Layers theData)
-  {
-    final Vector<Plottable> res = new Vector<Plottable>(0, 1);
-    // step through the layers
-    final int cnt = theData.size();
-    for (int i = 0; i < cnt; i++)
-    {
-      // right, now for the next layer
-      final Layer thisLayer = theData.elementAt(i);
-
-      // get the non-watchables for this layer
-      final Vector<Plottable> theseElements = getNonWatchables(thisLayer);
-
-      // and add them to our list
-      res.addAll(theseElements);
-
-    } // loop through the layers
-    return res;
-  }
-
-  /**
-   * ok, get the watchables for this layer
-   *
-   * @param theData
-   *          the layer to extract the watchables for
-   * @return the set of watchable items in this layer
-   */
-  public static Vector<Plottable> getWatchables(final Layer thisLayer)
-  {
-    // get the output ready
-    final Vector<Plottable> res = new Vector<Plottable>(0, 1);
-
-    // is this layer visible?
-    if (thisLayer.getVisible())
-    {
-      // is this a watchable?
-      if (thisLayer instanceof WatchableList)
-      {
-        // just double-check this isn't a buoy-pattern, we don't want to display
-        // them
-        if (thisLayer instanceof Editable.DoNotHighlightMe)
-        {
-          // ignore it, we don't want to plot it.
-        }
-        else
-        {
-
-          res.addElement(thisLayer);
-
-          // just have a look if it's a track - if so we want to add it's
-          // sensors
-          if (thisLayer instanceof TrackWrapper)
-          {
-            final TrackWrapper trw = (TrackWrapper) thisLayer;
-
-            // first plot the sensors
-            final BaseLayer sensorsLayer = trw.getSensors();
-            if (sensorsLayer.getVisible())
-            {
-              final Enumeration<Editable> sensors = sensorsLayer.elements();
-              if (sensors != null)
-              {
-                while (sensors.hasMoreElements())
-                {
-                  final SensorWrapper sw = (SensorWrapper) sensors
-                      .nextElement();
-                  // just check if it's visible
-                  if (sw.getVisible())
-                  {
-                    res.add(sw);
-                  }
-                }
-              }
-            }
-
-            // now the TMA solutons
-            final BaseLayer tuaLayer = trw.getSolutions();
-            if (tuaLayer.getVisible())
-            {
-              final Enumeration<Editable> solutions = tuaLayer.elements();
-              if (solutions != null)
-              {
-                while (solutions.hasMoreElements())
-                {
-                  final TMAWrapper sw = (TMAWrapper) solutions.nextElement();
-                  // just check if it's visible
-                  if (sw.getVisible())
-                  {
-                    res.add(sw);
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-      else
-      {
-        final Enumeration<Editable> iter = thisLayer.elements();
-        while (iter.hasMoreElements())
-        {
-
-          final Editable thisE = iter.nextElement();
-          if (thisE instanceof Plottable)
-          {
-            final Plottable p = (Plottable) thisE;
-            if (p instanceof WatchableList)
-            {
-              // look at the date date
-              final WatchableList wl = (WatchableList) p;
-              final HiResDate startDTG = wl.getStartDTG();
-
-              // is it a real date?
-              if (startDTG != null)
-              {
-                // yup, add to list
-                res.addElement(p);
-              }
-            }
-          }
-        }
-      }
-    }
-
-    return res;
-  }
-
-  /**
-   * ok, get the watchables for this set of layers
-   *
-   * @param theData
-   *          the layers to extract the watchables for
-   * @return the set of watchable items in these layers
-   */
-  private static Vector<Plottable> getWatchables(final Layers theData)
-  {
-    final Vector<Plottable> res = new Vector<Plottable>(0, 1);
-    // step through the layers
-    final int cnt = theData.size();
-    for (int i = 0; i < cnt; i++)
-    {
-      // ok, do this layer
-      final Layer thisLayer = theData.elementAt(i);
-
-      // get the watchables from this layer
-      final Vector<Plottable> newElements = getWatchables(thisLayer);
-
-      // and add to our growing total
-      res.addAll(newElements);
-    }
-    return res;
-  }
-
-  // /////////////////////////////////
-  // member functions
-  // ////////////////////////////////
 
   /**
    * the highlight plotters we know about
@@ -778,7 +326,7 @@ public class SnailPainter2 extends TotePainter
     if (dest == null)
       return;
 
-    final Vector<Plottable> nonWatches = getNonWatchables(super.getLayers());
+    final Vector<Plottable> nonWatches = SnailPainter.getNonWatchables(super.getLayers());
     final Enumeration<Plottable> iter = nonWatches.elements();
     while (iter.hasMoreElements())
     {
@@ -791,7 +339,7 @@ public class SnailPainter2 extends TotePainter
     final WatchableList _thePrimary = _theTote.getPrimary();
 
     // determine the new items
-    final Vector<Plottable> theWatchableLists = getWatchables(
+    final Vector<Plottable> theWatchableLists = SnailPainter.getWatchables(
         super.getLayers());
 
     // sort out the line width of the primary
@@ -884,10 +432,6 @@ public class SnailPainter2 extends TotePainter
         }
       }
     }
-    else
-    {
-    }
-
   }
 
   /**
@@ -897,13 +441,6 @@ public class SnailPainter2 extends TotePainter
   {
     _mySnailPlotter.setPlotTrackName(val);
   }
-
-  // ///////////////////////////////////////
-  // accessors for the beaninfo
-  // //////////////////////////////////////
-  // ////////////////////////////////////////////////////////
-  // accessors for editable parameters
-  // ///////////////////////////////////////////////////////
 
   /**
    * the stretch to apply to the speed vector (pixels per knot)
@@ -947,7 +484,6 @@ public class SnailPainter2 extends TotePainter
 
       // and redraw the chart
       _theChart.update();
-
     }
     else
     {
@@ -961,58 +497,8 @@ public class SnailPainter2 extends TotePainter
       {
         _theChart.getCanvas().addPainter(oldies.nextElement());
       }
-
     }
-
   }
-
-  // //////////////////////////////////////////////////////////
-  // nested class describing how to edit this class
-  // //////////////////////////////////////////////////////////
-  // public class SnailPainterInfo extends Editable.EditorType
-  // {
-  //
-  // public SnailPainterInfo(SnailPainter data)
-  // {
-  // super(data, "Snail","");
-  // }
-  //
-  // /** extra constructor which may be over-ridden by the relative painter
-  // *
-  // */
-  // public SnailPainterInfo(SnailPainter data, String name)
-  // {
-  // super(data, name,"");
-  // }
-  //
-  // public BeanInfo[] getAdditionalBeanInfo()
-  // {
-  // BeanInfo[] res = {_mySnailPlotter.getInfo()};
-  // return res;
-  // }
-  //
-  // public PropertyDescriptor[] getPropertyDescriptors()
-  // {
-  // try{
-  // PropertyDescriptor[] res=
-  // {
-  // prop("PlotTrackName", "whether to plot the name of the track"),
-  // prop("LinkPositions", "whether to join the points in the trail"),
-  // prop("PointSize", "the size of the points in the trail"),
-  // prop("TrailLength", "the length of trail to draw"),
-  // prop("VectorStretch", "how far to stretch the speed vector"),
-  // };
-  // return res;
-  // }
-  // catch(Exception e)
-  // {
-  // MWC.Utilities.Errors.Trace.trace(e);
-  // return super.getPropertyDescriptors();
-  // }
-  //
-  // }
-  //
-  // }
 
   @Override
   public String toString()

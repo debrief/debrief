@@ -45,55 +45,6 @@ import MWC.GenericData.WorldLocation;
 final class SnailDrawTrack2
 {
 
-  /**
-   * helper class that assists in the production of a graduated colors that blend into the
-   * background
-   *
-   * @author ian
-   *
-   */
-  public static class PhasedColorDef
-  {
-    public final float deltaRed;
-    public final float deltaGreen;
-    public final float deltaBlue;
-    public final int startRed;
-    public final int startGreen;
-    public final int startBlue;
-
-    public PhasedColorDef(final Color mainCol, final Color backColor,
-        final int numShades)
-    {
-
-      // get the colour of the track
-      /**
-       * NOTE that we are working in floats for all of the color stuff - if we were to work in ints,
-       * then when we want more than 255 shades, the deltas become zero and the track dissappears.
-       * By working in floats we can provide very fine deltas, allowing very large numbers of points
-       * to be tidily plotted in the track
-       */
-      float red, green, blue;
-      red = mainCol.getRed();
-      green = mainCol.getGreen();
-      blue = mainCol.getBlue();
-
-      // sort out the r,g,b components of the background colour
-      startRed = backColor.getRed();
-      startGreen = backColor.getGreen();
-      startBlue = backColor.getBlue();
-
-      // now switch r,g,b to their deltas from the back ground colour
-      red -= startRed;
-      green -= startGreen;
-      blue -= startBlue;
-
-      // what are the deltas?
-      deltaRed = red / numShades;
-      deltaGreen = green / numShades;
-      deltaBlue = blue / numShades;
-    }
-  }
-
   private static void drawDot(final Point loc, final java.awt.Graphics dest,
       final int size, final Rectangle area)
   {
@@ -188,7 +139,7 @@ final class SnailDrawTrack2
       {
         final LightweightTrackWrapper track = (LightweightTrackWrapper) trk;
         dotPoints = track.getUnfilteredItems(new HiResDate(0, dtg.getMicros()
-            - _trailLength), new HiResDate(0, dtg.getMicros() + 2));
+            - _trailLength), new HiResDate(0, dtg.getMicros() + 2000));
       }
       else
       {
@@ -246,12 +197,11 @@ final class SnailDrawTrack2
           // see if this fix is visible
           if (fix.getSymbolShowing())
           {
-
             // and draw the dot
             drawDot(screenP, dest, _pointSize, thisR);
           }
 
-          // see if we are joining them
+          // do we know the previous position?
           if (lastLoc == null)
           {
             lastLoc = screenP;
@@ -263,7 +213,6 @@ final class SnailDrawTrack2
             {
               dest.drawLine(lastLoc.x, lastLoc.y, screenP.x, screenP.y);
             }
-
             lastLoc = screenP;
           }
 
