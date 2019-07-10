@@ -187,7 +187,7 @@ public final class RelativePainter extends SnailPainter
                      final Layers theData,
                      final AnalysisTote theTote)
   {
-    super(theChart, theData, theTote, "Relative");
+    super(theChart, theData, theTote, "Relative", null);
   }
 
 
@@ -249,7 +249,7 @@ public final class RelativePainter extends SnailPainter
     }
     public final void testMyParams()
     {
-      Editable ed = new SnailPainter(null,null,null);
+      Editable ed = new SnailPainter(null,null,null, null);
       Editable.editableTesterSupport.testParams(ed, this);
       ed = null;
     }

@@ -265,9 +265,10 @@ public class SnailPainter extends TotePainter
 
 	public static final String SNAIL_NAME = "Snail";
 
-	// /////////////////////////////////
-	// member variables
-	// ////////////////////////////////
+	public interface BackgroundColorProvider
+	{
+	  Color getColor();
+	}
 
 	/**
 	 * this is the list of items which we know have been plotted to the screen, so
@@ -305,19 +306,46 @@ public class SnailPainter extends TotePainter
 	 */
 	private final SnailDrawBuoyPattern _mySnailBuoyPlotter;
 
+  private final BackgroundColorProvider _colorProvider;
+
 	// /////////////////////////////////
 	// constructorsna
 	// ////////////////////////////////
 	public SnailPainter(final PlainChart theChart, final Layers theData,
-			final AnalysisTote theTote)
+			final AnalysisTote theTote, BackgroundColorProvider colProvider)
 	{
-		this(theChart, theData, theTote, "Snail");
+		this(theChart, theData, theTote, "Snail", providerFor(theChart, colProvider));
 	}
+	
 
-	public SnailPainter(final PlainChart theChart, final Layers theData,
-			final AnalysisTote theTote, final String myName)
+	private static BackgroundColorProvider providerFor(final PlainChart theChart,
+      final BackgroundColorProvider colProvider)
+  {
+	  final BackgroundColorProvider res;
+	  if(colProvider != null)
+	  {
+	    res = colProvider;
+	  }
+	  else
+	  {
+	    res = new BackgroundColorProvider(){
+
+        @Override
+        public Color getColor()
+        {
+          return theChart.getCanvas().getBackgroundColor();
+        }
+	    };
+	  }
+    return res;
+  }
+
+
+  public SnailPainter(final PlainChart theChart, final Layers theData,
+			final AnalysisTote theTote, final String myName, final BackgroundColorProvider backgroundColorProvider)
 	{
 		super(theChart, theData, theTote);
+		_colorProvider = backgroundColorProvider;
 
 		_oldWatchables = new HashMap<Watchable, WatchableList>();
 
@@ -698,10 +726,12 @@ public class SnailPainter extends TotePainter
 				p.paint(new MWC.GUI.Canvas.CanvasAdaptor(theCanvas.getProjection(), dest));
 			}
 		}
+		
+		
+    final java.awt.Color backColor = _colorProvider != null ?
+        _colorProvider.getColor() : theCanvas.getBackgroundColor();
 
-		dest.setXORMode(theCanvas.getBackgroundColor());
-
-		final java.awt.Color backColor = theCanvas.getBackgroundColor();
+		dest.setXORMode(backColor);
 
 		// get the primary track
 		final WatchableList _thePrimary = _theTote.getPrimary();
@@ -1071,7 +1101,7 @@ public class SnailPainter extends TotePainter
 
 		public final void testMyParams()
 		{
-			Editable ed = new SnailPainter(null, null, null);
+			Editable ed = new SnailPainter(null, null, null, null);
 			editableTesterSupport.testParams(ed, this);
 			ed = null;
 		}

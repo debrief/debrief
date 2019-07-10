@@ -83,6 +83,7 @@ import org.pushingpixels.substance.api.skin.BusinessBlueSteelSkin;
 import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Tote.Painters.PainterManager;
 import Debrief.GUI.Tote.Painters.SnailPainter;
+import Debrief.GUI.Tote.Painters.SnailPainter.BackgroundColorProvider;
 import Debrief.GUI.Tote.Painters.TotePainter;
 import Debrief.ReaderWriter.NMEA.ImportNMEA;
 import Debrief.ReaderWriter.Replay.ImportReplay;
@@ -244,14 +245,15 @@ public class DebriefLiteApp implements FileDropListener
    *
    * @param geoMapRenderer
    * @param dropSupport
+   * @param backColor 
    * @param mapContent
    *
    * @return
    */
   private static JMapPane createMapPane(final GeoToolMapRenderer geoMapRenderer,
-      final FileDropSupport dropSupport)
+      final FileDropSupport dropSupport, final Color backColor)
   {
-    geoMapRenderer.createMapLayout();
+    geoMapRenderer.createMapLayout(backColor);
     final MapBuilder builder = new MapBuilder();
     final JMapPane mapPane = (JMapPane) builder.setMapRenderer(geoMapRenderer)
         .build();
@@ -731,7 +733,8 @@ public class DebriefLiteApp implements FileDropListener
 
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));
 
-    mapPane = createMapPane(geoMapRenderer, dropSupport);
+    Color backColor = new Color(135, 172, 215);
+    mapPane = createMapPane(geoMapRenderer, dropSupport, backColor);
 
     setInitialArea(mapPane, geoMapRenderer.getTransform());
 
@@ -786,7 +789,19 @@ public class DebriefLiteApp implements FileDropListener
     theTote = new LiteTote(_theLayers, _stepControl);
     final TotePainter tp = new TotePainter(theChart, _theLayers, theTote);
     tp.setColor(Color.white);
-    final SnailPainter sp = new SnailPainter(theChart, _theLayers, theTote);
+    
+    
+    
+    BackgroundColorProvider colProvider = new 
+        BackgroundColorProvider() {
+
+          @Override
+          public Color getColor()
+          {
+            return backColor;
+          }};
+    final SnailPainter sp = new SnailPainter(theChart, _theLayers,
+        theTote, colProvider);
 
     final ToteSetter normalT = new ToteSetter(painterManager, tp);
     final ToteSetter snailT = new ToteSetter(painterManager, sp);

@@ -221,7 +221,8 @@ final class SnailDrawTrack
           final Color newCol;
 
           // see if we are fading to black
-          if (_fadePoints)
+          final boolean doFade = _fadePoints;
+          if (doFade)
           {
             // produce the next colour
             red += def.deltaRed;
@@ -257,7 +258,7 @@ final class SnailDrawTrack
           {
 
             // and draw the dot
-            drawDot(screenP, dest, _pointSize, thisR);
+     //       drawDot(screenP, dest, _pointSize, thisR);
           }
 
           // see if we are joining them

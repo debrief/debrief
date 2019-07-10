@@ -474,7 +474,7 @@ public class SwingAnalysisView extends AnalysisView
     final Debrief.GUI.Tote.Painters.SnailPainter sp =
       new Debrief.GUI.Tote.Painters.SnailPainter(getChart(),
                                                  theSession.getData(),
-                                                 getTote());
+                                                 getTote(), null);
     final Debrief.GUI.Tote.Painters.TotePainter tp
       = new Debrief.GUI.Tote.Painters.TotePainter(getChart(),
                                                   theSession.getData(),

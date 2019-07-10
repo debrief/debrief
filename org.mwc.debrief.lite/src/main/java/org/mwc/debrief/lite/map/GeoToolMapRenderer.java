@@ -136,7 +136,7 @@ public class GeoToolMapRenderer
 
     private MathTransform data_transform;
 
-    public CustomMapPane(final GeoToolMapRenderer geoToolMapRenderer)
+    public CustomMapPane(final GeoToolMapRenderer geoToolMapRenderer, Color backColor)
     {
       super();
       
@@ -163,7 +163,7 @@ public class GeoToolMapRenderer
       addMouseListener(mouseMotionListener);
       
       // try to set background color
-      super.setBackground(new Color(135, 172, 215));
+      super.setBackground(backColor);
     }
 
     @Override
@@ -238,9 +238,9 @@ public class GeoToolMapRenderer
     _myRenderers.add(renderer);
   }
 
-  public void createMapLayout()
+  public void createMapLayout(final Color backColor)
   {
-    mapPane = new CustomMapPane(this);
+    mapPane = new CustomMapPane(this, backColor);
     final StreamingRenderer streamer = new StreamingRenderer();
     mapPane.setRenderer(streamer);
     mapPane.setMapContent(mapContent);

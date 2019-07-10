@@ -195,7 +195,7 @@ public final class AWTAnalysisView extends AnalysisView {
     final Debrief.GUI.Tote.Painters.TotePainter sp
       = new Debrief.GUI.Tote.Painters.SnailPainter(_theChart,
                                                   theSession.getData(),
-																									_theTote);
+																									_theTote, null);
 
     final Debrief.GUI.Tote.Painters.TotePainter tp
       = new Debrief.GUI.Tote.Painters.TotePainter(_theChart,
