@@ -278,7 +278,7 @@ public class SnailPainter extends TotePainter
 	/**
 	 * the highlight plotters we know about
 	 */
-	private final Vector<SnailPainter.drawHighLight> _myHighlightPlotters;
+	protected final Vector<SnailPainter.drawHighLight> _myHighlightPlotters;
 
 	/**
 	 * the size to draw myself
@@ -288,7 +288,7 @@ public class SnailPainter extends TotePainter
 	/**
 	 * the list of painters previously used by the canvas
 	 */
-	private Vector<PaintListener> _oldPainters;
+	protected Vector<PaintListener> _oldPainters;
 
 	/**
 	 * whether we are currently painting(hiding) the old points
@@ -299,11 +299,6 @@ public class SnailPainter extends TotePainter
 	 * the snail track plotter to use
 	 */
 	private final SnailDrawFix _mySnailPlotter;
-
-	/**
-	 * the snail buoy-pattern plotter to use
-	 */
-	private final SnailDrawBuoyPattern _mySnailBuoyPlotter;
 
 	// /////////////////////////////////
 	// constructorsna
@@ -322,11 +317,10 @@ public class SnailPainter extends TotePainter
 		_oldWatchables = new HashMap<Watchable, WatchableList>();
 
 		_mySnailPlotter = new SnailDrawFix(myName);
-		_mySnailBuoyPlotter = new SnailDrawBuoyPattern();
 
 		_myHighlightPlotters = new Vector<SnailPainter.drawHighLight>(0, 1);
 		_myHighlightPlotters.addElement(_mySnailPlotter);
-		_myHighlightPlotters.addElement(_mySnailBuoyPlotter);
+		_myHighlightPlotters.addElement(new SnailDrawBuoyPattern());
 		_myHighlightPlotters.addElement(new SnailDrawAnnotation());
 		_myHighlightPlotters
 				.addElement(new SnailDrawSensorContact(_mySnailPlotter));
@@ -334,7 +328,6 @@ public class SnailPainter extends TotePainter
 
 		_mySnailPlotter.setPointSize(new BoundedInteger(5, 0, 0));
 		_mySnailPlotter.setVectorStretch(1);
-
 	}
 
 	// /////////////////////////////////
@@ -655,7 +648,7 @@ public class SnailPainter extends TotePainter
 
 	}
 
-	public final void newTime(final HiResDate oldDTG, final HiResDate newDTG,
+	public void newTime(final HiResDate oldDTG, final HiResDate newDTG,
 			final MWC.GUI.CanvasType canvas)
 	{
 		
