@@ -1141,7 +1141,6 @@ public class DebriefLiteApp implements FileDropListener
 
   private void handleImportDPF(final File file)
   {
-    final long startTime = System.currentTimeMillis();
     boolean success = true;
     final DebriefXMLReaderWriter reader = new DebriefXMLReaderWriter(app);
     try
@@ -1183,8 +1182,6 @@ public class DebriefLiteApp implements FileDropListener
     {
       resetFileName(file);
     }
-    final long endTime = System.currentTimeMillis();
-    final long timeElapsed = endTime - startTime;
   }
 
   private void handleImportNMEAFile(final File file)
