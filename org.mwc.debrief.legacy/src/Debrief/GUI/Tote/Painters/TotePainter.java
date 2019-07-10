@@ -290,6 +290,8 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 	 */
 	private final float MARKER_THICKNESS = 2.0f;
 
+  private final boolean _doXOR;
+
 	// ///////////////////////////////////////////////////////////
 	// constructor
 	// //////////////////////////////////////////////////////////
@@ -307,7 +309,15 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 	 */
 	public TotePainter(final PlainChart theChart, final Layers theData,
 			final AnalysisTote theTote) {
-		// remember the chart
+	  this(theChart, theData, theTote, true);
+	}
+
+	  public TotePainter(final PlainChart theChart, final Layers theData,
+	      final AnalysisTote theTote, boolean doXOR) {
+
+	    _doXOR = doXOR;
+	    
+	  // remember the chart
 		_theChart = theChart;
 
 		// remember the data
@@ -563,10 +573,14 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 			g2.setStroke(new BasicStroke(MARKER_THICKNESS));
 		}
 
-		// set the XOR painting mode
-		dest.setXORMode(theCanvas.getBackgroundColor());
-		final PlainProjection proj = _theChart.getCanvas().getProjection();
+    final PlainProjection proj = _theChart.getCanvas().getProjection();
 
+
+		// set the XOR painting mode
+		if(_doXOR)
+		{
+		  dest.setXORMode(theCanvas.getBackgroundColor());
+		
 		// remove the old primary highlight
 		if (!_firstStep) {
 			// check that we had an old primary point - since we may
@@ -599,6 +613,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 							thisTrack, oldWt, isPrimary);
 			}
 
+		}
 		}
 
 		// and now plot the new ones, if we have a valid primary point

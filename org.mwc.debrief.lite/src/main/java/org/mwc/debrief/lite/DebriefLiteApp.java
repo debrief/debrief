@@ -794,7 +794,7 @@ public class DebriefLiteApp implements FileDropListener
     painterManager = new PainterManager(_stepControl);
     final PlainChart theChart = new LiteChart(_theLayers, theCanvas, mapPane);
     theTote = new LiteTote(_theLayers, _stepControl);
-    final TotePainter tp = new TotePainter(theChart, _theLayers, theTote);
+    final TotePainter tp = new TotePainter(theChart, _theLayers, theTote, false);
     tp.setColor(Color.white);
     final TotePainter sp = new SnailPainter2(theChart, _theLayers, theTote);
     
