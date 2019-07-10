@@ -14,8 +14,11 @@ import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
+import org.opengis.geometry.MismatchedDimensionException;
+import org.opengis.referencing.operation.TransformException;
 import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
@@ -26,6 +29,7 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
+import Debrief.GUI.Frames.Application;
 import Debrief.Tools.Palette.CoreCreateShape;
 import Debrief.Tools.Palette.CreateLabel;
 import Debrief.Tools.Palette.CreateShape;
@@ -82,13 +86,30 @@ public class DebriefRibbonInsert
       @Override
       public WorldArea getViewport()
       {
+        WorldArea res = null;
+
         final ReferencedEnvelope env = geoMapRenderer.getMapComponent()
             .getViewport().getBounds();
-        final WorldLocation tl = new WorldLocation(env.getMaxY(), env.getMinX(),
-            0);
-        final WorldLocation br = new WorldLocation(env.getMinY(), env.getMaxX(),
-            0);
-        final WorldArea res = new WorldArea(tl, br);
+        
+        // convert to degs
+        DirectPosition2D tl = (DirectPosition2D) env.getUpperCorner();
+        DirectPosition2D br = (DirectPosition2D) env.getLowerCorner();
+        try
+        {
+          geoMapRenderer.getTransform().transform(tl, tl);
+          geoMapRenderer.getTransform().transform(br, br);
+          final WorldLocation tlD = new WorldLocation(tl.getY(), tl.getX(),
+              0);
+          final WorldLocation brD = new WorldLocation(br.getY(), br.getX(),
+              0);
+          res = new WorldArea(tlD, brD);
+        }
+        catch (MismatchedDimensionException | TransformException e)
+        {
+          Application.logError2(ToolParent.ERROR,
+              "Failed to convert from metres proj to degs",
+              null);
+        }
         return res;
       }
     };
