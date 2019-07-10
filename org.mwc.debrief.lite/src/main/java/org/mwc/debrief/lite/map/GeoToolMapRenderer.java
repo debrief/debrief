@@ -14,29 +14,21 @@
  */
 package org.mwc.debrief.lite.map;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Graphics;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.geotools.data.FileDataStore;
-import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.Hints;
 import org.geotools.geometry.DirectPosition2D;
-import org.geotools.map.FeatureLayer;
-import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.lite.StreamingRenderer;
-import org.geotools.styling.SLD;
-import org.geotools.styling.Style;
 import org.geotools.swing.JMapPane;
-import org.geotools.swing.data.JFileDataStoreChooser;
 import org.geotools.swing.event.MapMouseAdapter;
 import org.geotools.swing.event.MapMouseEvent;
 import org.geotools.swing.event.MapMouseListener;
@@ -147,6 +139,7 @@ public class GeoToolMapRenderer
     public CustomMapPane(final GeoToolMapRenderer geoToolMapRenderer)
     {
       super();
+      
       // Would be better to pass in a GeoToolMapProjection or GTProjection here?
       try
       {
@@ -168,6 +161,9 @@ public class GeoToolMapRenderer
       addMouseListener(dragLine);
       addMouseMotionListener(dragLine);
       addMouseListener(mouseMotionListener);
+      
+      // try to set background color
+      super.setBackground(new Color(135, 172, 215));
     }
 
     @Override
@@ -303,43 +299,6 @@ public class GeoToolMapRenderer
           e);
     }
     return transform;
-  }
-
-  public void loadMapContent()
-  {
-
-    // this is for dev
-
-    final String shape_path = "data/coastline/ne_10M_admin0_countries_89S.shp";
-
-    File file = new File(shape_path);
-    // System.out.println("Checking for shape file at:"+file.getAbsolutePath());
-    if (!file.exists())
-    {
-      // System.out.println("File does not exist");
-      file = JFileDataStoreChooser.showOpenFile("shp", null);
-    }
-    if (file == null)
-    {
-      return;
-    }
-
-    FileDataStore store;
-    featureSource = null;
-    try
-    {
-      store = FileDataStoreFinder.getDataStore(file);
-      featureSource = store.getFeatureSource();
-    }
-    catch (final IOException e)
-    {
-      Application.logError2(ToolParent.ERROR, "Failure in projection transform",
-          e);
-    }
-
-    final Style style = SLD.createSimpleStyle(featureSource.getSchema());
-    final Layer layer = new FeatureLayer(featureSource, style);
-    mapContent.addLayer(layer);
   }
 
   private void paintEvent(final Graphics arg0)

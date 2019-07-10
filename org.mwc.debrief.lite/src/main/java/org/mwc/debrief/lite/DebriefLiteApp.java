@@ -46,17 +46,22 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import org.geotools.geometry.DirectPosition2D;
+import org.geotools.geometry.Envelope2D;
 import org.geotools.map.MapContent;
 import org.geotools.swing.JMapPane;
 import org.geotools.swing.action.ResetAction;
 import org.mwc.cmap.geotools.gt2plot.GeoToolsLayer;
 import org.mwc.cmap.geotools.gt2plot.ShapeFileLayer;
 import org.mwc.cmap.geotools.gt2plot.WorldImageLayer;
-import org.mwc.debrief.lite.graph.GraphPanelView;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.gui.custom.JXCollapsiblePane.Direction;
+import org.mwc.debrief.lite.gui.custom.graph.GraphPanelView;
+import org.mwc.debrief.lite.gui.custom.narratives.NarrativeConfigurationModel;
+import org.mwc.debrief.lite.gui.custom.narratives.NarrativePanelToolbar;
+import org.mwc.debrief.lite.gui.custom.narratives.NarrativePanelView;
 import org.mwc.debrief.lite.gui.custom.JXCollapsiblePaneWithTitle;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer.MapRenderer;
@@ -67,12 +72,15 @@ import org.mwc.debrief.lite.menu.DebriefRibbonTimeController;
 import org.mwc.debrief.lite.menu.MenuUtils;
 import org.mwc.debrief.lite.outline.OutlinePanelView;
 import org.mwc.debrief.lite.util.DoSaveAs;
+import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.substance.api.SubstanceCortex;
 import org.pushingpixels.substance.api.skin.BusinessBlueSteelSkin;
 
+import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Tote.Painters.PainterManager;
 import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.GUI.Tote.Painters.TotePainter;
@@ -222,7 +230,8 @@ public class DebriefLiteApp implements FileDropListener
 
   protected static boolean _plotDirty;
 
-  private static String defaultTitle = appName + " (" + BuildDate.BUILD_DATE + ")";
+  private static String defaultTitle = appName + " (" + BuildDate.BUILD_DATE
+      + ")";
 
   private final static LiteApplication app = new LiteApplication(
       ImportReplay.IMPORT_AS_OTG, 0L);
@@ -428,6 +437,28 @@ public class DebriefLiteApp implements FileDropListener
 
   }
 
+  private static void setInitialArea(final JMapPane mapPane,
+      final MathTransform transform)
+  {
+    // give it a default viewport - overlooking Europe
+    final DirectPosition2D tl = new DirectPosition2D(-22, 59.75);
+    final DirectPosition2D br = new DirectPosition2D(37, 36.5);
+
+    try
+    {
+      // convert to map units
+      transform.inverse().transform(tl, tl);
+      transform.inverse().transform(br, br);
+      final Envelope2D envelope = new Envelope2D(tl, br);
+      mapPane.setDisplayArea(envelope);
+    }
+    catch (MismatchedDimensionException | TransformException e)
+    {
+      Application.logError2(ToolParent.ERROR,
+          "Failure in setting initial viewport coverage", e);
+    }
+  }
+
   /**
    * State of the application. Inactive will disable all the button.
    *
@@ -481,8 +512,11 @@ public class DebriefLiteApp implements FileDropListener
       new JXCollapsiblePaneWithTitle(Direction.LEFT, "Outline", 400);
   private final JXCollapsiblePaneWithTitle graphPanel =
       new JXCollapsiblePaneWithTitle(Direction.DOWN, "Graph", 150);
-  private final JRibbonFrame theFrame;
 
+  private final JXCollapsiblePaneWithTitle narrativePanel =
+      new JXCollapsiblePaneWithTitle(Direction.RIGHT, "Narratives", 350);
+
+  private final JRibbonFrame theFrame;
   private final Layers _theLayers = new Layers()
   {
 
@@ -494,10 +528,10 @@ public class DebriefLiteApp implements FileDropListener
     @Override
     public void addThisLayer(final Layer theLayer)
     {
-      Layer wrappedLayer = null;
 
       // ok, if this is an externally managed layer (and we're doing
       // GT-plotting, we will wrap it, and actually add the wrapped layer
+      final Layer wrappedLayer;
       if (theLayer instanceof ExternallyManagedDataLayer)
       {
         final ExternallyManagedDataLayer dl =
@@ -530,6 +564,11 @@ public class DebriefLiteApp implements FileDropListener
             wrappedLayer = gt;
           }
         }
+        else
+        {
+          wrappedLayer = null;
+        }
+        
         if (wrappedLayer != null)
           super.addThisLayer(wrappedLayer);
       }
@@ -550,21 +589,30 @@ public class DebriefLiteApp implements FileDropListener
          * final GtProjection gp = (GtProjection) _myChart.getCanvas().getProjection();
          */
         final GeoToolsLayer gt = (GeoToolsLayer) theLayer;
-        gt.clearMap();
 
-        /*
-         * if (gp.numLayers() == 0) { // ok - we've got to force the data rea final WorldArea area =
-         * _myChart.getCanvas().getProjection().getDataArea();
-         * _myChart.getCanvas().getProjection().setDataArea(area); }
-         */
+        // just check it can be deleted
+        if (mapPane.getMapContent().layers().size() > 1)
+        {
+          gt.clearMap();
 
+          // and remove from the actual list
+          super.removeThisLayer(theLayer);
+        }
+        else
+        {
+          Application.logError2(ToolParent.WARNING,
+              "We need to keep one backround layer, to enable correct projection",
+              null);
+        }
       }
-
-      // and remove from the actual list
-      super.removeThisLayer(theLayer);
+      else
+      {
+        // and remove from the actual list
+        super.removeThisLayer(theLayer);
+      }
     }
-
   };
+
   private final GeoToolMapProjection projection;
 
   private final LiteSession session;
@@ -655,14 +703,13 @@ public class DebriefLiteApp implements FileDropListener
         .createImage("icons/d_lite.png"), MenuUtils.ICON_SIZE_32));
 
     geoMapRenderer = new GeoToolMapRenderer();
-    initializeMapContent();
 
     final MapContent mapComponent = geoMapRenderer.getMapComponent();
     projection = new GeoToolMapProjection(mapComponent, _theLayers);
 
     final FileDropSupport dropSupport = new FileDropSupport();
     dropSupport.setFileDropListener(this,
-        " .REP, .XML, .DSF, .DTF, .DPF, .LOG,.TIF");
+        " .REP, .XML, .DSF, .DTF, .DPF, .LOG, .TIF");
 
     // provide some file helpers
     ImportReplay.initialise(app);
@@ -686,9 +733,10 @@ public class DebriefLiteApp implements FileDropListener
 
     mapPane = createMapPane(geoMapRenderer, dropSupport);
 
+    setInitialArea(mapPane, geoMapRenderer.getTransform());
+
     // ok, ready to load map content
     initializeMapContent();
-
     final CanvasAdaptor theCanvas = new CanvasAdaptor(projection, mapPane
         .getGraphics());
 
@@ -769,9 +817,23 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataExtendedListener(_listenForMods);
     _theLayers.addDataModifiedListener(_listenForMods);
     _theLayers.addDataReformattedListener(_listenForMods);
+    
+    // lastly give us some backdrop data
+    loadBackdropdata(_theLayers);
+    
     theFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
     theFrame.setVisible(true);
     theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
+    
+  }
+
+  private static void loadBackdropdata(final Layers layers)
+  {
+    // ok, do the shapefile
+    final String shape_path = "data/coastline/ne_10M_admin0_countries_89S.shp";
+    ExternallyManagedDataLayer extFile = new ExternallyManagedDataLayer(
+        ChartBoundsWrapper.SHAPEFILE_TYPE, "Background coastline", shape_path);
+    layers.addThisLayer(extFile);
   }
 
   private void addGraphView()
@@ -779,6 +841,18 @@ public class DebriefLiteApp implements FileDropListener
     graphPanelView = new GraphPanelView(_stepControl);
     graphPanel.setCollapsed(true);
     graphPanel.add(graphPanelView, BorderLayout.CENTER);
+  }
+
+  private void addNarrativeView()
+  {
+    final NarrativeConfigurationModel model = new NarrativeConfigurationModel(
+        timeManager);
+    final NarrativePanelToolbar toolbar = new NarrativePanelToolbar(
+        _stepControl, model);
+    final NarrativePanelView narrativePanelView = new NarrativePanelView(
+        toolbar);
+    narrativePanel.setCollapsed(true);
+    narrativePanel.add(narrativePanelView, BorderLayout.CENTER);
   }
 
   private void addOutlineView(final ToolParent toolParent,
@@ -819,8 +893,12 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.add(centerPanel, BorderLayout.CENTER);
 
     theFrame.add(outlinePanel, BorderLayout.WEST);
+
+    theFrame.add(narrativePanel, BorderLayout.EAST);
+
     addOutlineView(app, undoBuffer);
     addGraphView();
+    addNarrativeView();
 
     theFrame.add(statusBar, BorderLayout.SOUTH);
     final Runnable resetAction = new Runnable()
@@ -1072,7 +1150,14 @@ public class DebriefLiteApp implements FileDropListener
     try
     {
       fs = new FileInputStream(file);
-      importer.importThis(file.getName(), fs, 60000, 60000);
+      importer.importThis(file.getName(), fs, 60000, 60000, false);
+      final TimePeriod period = _theLayers.getTimePeriod();
+      _myOperations.setPeriod(period);
+      timeManager.setPeriod(this, period);
+      if (period != null)
+      {
+        timeManager.setTime(this, period.getStartDTG(), true);
+      }
     }
     catch (final FileNotFoundException e)
     {
@@ -1195,8 +1280,8 @@ public class DebriefLiteApp implements FileDropListener
      * .createApplicationMenu(theFrame));
      */
     // It cannot be smaller than this size to have the ribbon complete!
-    final int sizeWidth = Math.max((int) (dim.width * 0.6), 870);
-    final int sizeHeight = (int) (dim.height * 0.6);
+    final int sizeWidth = Math.max((int) (dim.width * 0.8), 870);
+    final int sizeHeight = (int) (dim.height * 0.8);
     theFrame.setSize(sizeWidth, sizeHeight);
     final Dimension sz = theFrame.getSize();
     theFrame.setLocation((dim.width - sz.width) / 2, (dim.height - sz.height)
@@ -1208,11 +1293,8 @@ public class DebriefLiteApp implements FileDropListener
 
   private void initializeMapContent()
   {
-    geoMapRenderer.loadMapContent();
-
     geoMapRenderer.addRenderer(new MapRenderer()
     {
-
       @Override
       public void paint(final Graphics gc)
       {

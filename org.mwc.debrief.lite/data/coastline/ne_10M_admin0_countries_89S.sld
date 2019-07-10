@@ -11,14 +11,13 @@
       <se:FeatureTypeStyle>
         <se:Rule>
           <se:Name>Simple Line</se:Name>
-          <se:MaxScaleDenominator>10000000</se:MaxScaleDenominator>
           <se:PolygonSymbolizer>
             <se:Fill>
-              <se:CssParameter name="fill">#ebdbbc</se:CssParameter>
+              <se:CssParameter name="fill">#efe2ce</se:CssParameter>
             </se:Fill>
             <se:Stroke>
-              <se:CssParameter name="stroke">#D0A275</se:CssParameter>
-              <se:CssParameter name="stroke-width">1.5</se:CssParameter>
+              <se:CssParameter name="stroke">#dbb793</se:CssParameter>
+              <se:CssParameter name="stroke-width">1.0</se:CssParameter>
               <se:CssParameter name="stroke-linejoin">bevel</se:CssParameter>
             </se:Stroke>
           </se:PolygonSymbolizer>
@@ -26,6 +25,18 @@
             <se:Label>
               <ogc:PropertyName>NAME</ogc:PropertyName>
             </se:Label>
+            <se:LabelPlacement>
+							<se:PointPlacement>
+								<se:AnchorPoint>
+									<se:AnchorPointX>
+										0.5
+									</se:AnchorPointX>
+									<se:AnchorPointY>
+										0.5
+									</se:AnchorPointY>
+								</se:AnchorPoint>
+							</se:PointPlacement>
+						</se:LabelPlacement>
             <se:Font>
               <se:CssParameter name="font-family">Arial</se:CssParameter>
               <se:CssParameter name="font-size">14</se:CssParameter>

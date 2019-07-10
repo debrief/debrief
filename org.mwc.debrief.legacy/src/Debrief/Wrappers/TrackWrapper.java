@@ -1508,7 +1508,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
   @Override
   public int compareTo(final Plottable arg0)
   {
-    Integer answer = null;
+    final int answer;
 
     // SPECIAL PROCESSING: we wish to push TMA tracks to the top of any
     // tracks shown in the outline view.
@@ -1524,38 +1524,23 @@ public class TrackWrapper extends LightweightTrackWrapper implements
       // is he relative?
       final boolean heIsTMA = other.isTMATrack();
 
-      if (heIsTMA)
+      if (heIsTMA && !iAmTMA)
       {
-        // ok, he's a TMA segment. now we need to sort out if we are.
-        if (iAmTMA)
-        {
-          // we're both relative, compare names
-          answer = getName().compareTo(other.getName());
-        }
-        else
-        {
-          // only he is relative, he comes first
-          answer = 1;
-        }
+        // ok, he's a TMA segment, I'm not. Put him first
+        answer = 1;
+      }
+      else if (!heIsTMA && iAmTMA)
+      {
+        // he's not TMA, but I am. Put me first
+        answer = -1;
       }
       else
       {
-        // he's not relative. am I?
-        if (iAmTMA)
-        {
-          // I am , so go first
-          answer = -1;
-        }
+        // we're both relative, or neither negative, compare names
+        answer = super.compareTo(arg0);
       }
     }
     else
-    {
-      // we're a track, they're not - put us at the end!
-      answer = 1;
-    }
-
-    // if we haven't worked anything out yet, just use the parent implementation
-    if (answer == null)
     {
       answer = super.compareTo(arg0);
     }

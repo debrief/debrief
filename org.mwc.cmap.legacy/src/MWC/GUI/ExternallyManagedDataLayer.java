@@ -72,13 +72,13 @@ public class ExternallyManagedDataLayer extends BaseLayer
 	 */
 	private final String _dataType;
 
-	public ExternallyManagedDataLayer(final String dataType, final String layerName,
-			final String fileName)
-	{
-		setName(layerName);
-		_dataType = dataType;
-		_fileName = fileName;
-	}
+  public ExternallyManagedDataLayer(final String dataType,
+      final String layerName, final String fileName)
+  {
+    _dataType = dataType;
+    _fileName = fileName;
+    setName(layerName);
+  }
 
 	/** whether this type of BaseLayer is able to have shapes added to it
 	 * 
