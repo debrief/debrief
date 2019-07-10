@@ -469,7 +469,7 @@ public class SnailPainter extends TotePainter
 	 *          the layers to extract the watchables for
 	 * @return the set of watchable items in these layers
 	 */
-	private static Vector<Plottable> getWatchables(final Layers theData)
+	public static Vector<Plottable> getWatchables(final Layers theData)
 	{
 		final Vector<Plottable> res = new Vector<Plottable>(0, 1);
 		// step through the layers
@@ -577,7 +577,7 @@ public class SnailPainter extends TotePainter
 	 * method to return the non-tactical items on the plot, such as scale, grid,
 	 * coast etc.
 	 */
-	private static Vector<Plottable> getNonWatchables(final Layers theData)
+	public static Vector<Plottable> getNonWatchables(final Layers theData)
 	{
 		final Vector<Plottable> res = new Vector<Plottable>(0, 1);
 		// step through the layers
