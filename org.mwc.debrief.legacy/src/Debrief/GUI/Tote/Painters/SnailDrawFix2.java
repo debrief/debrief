@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package Debrief.GUI.Tote.Painters;
 
@@ -133,6 +133,67 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
     Editable
 {
 
+  public static final class SnailFixPainterInfo extends Editable.EditorType
+  {
+
+    public SnailFixPainterInfo(final SnailDrawFix2 data)
+    {
+      super(data, "Snail Painter", "");
+    }
+
+    @Override
+    public final PropertyDescriptor[] getPropertyDescriptors()
+    {
+      try
+      {
+        final PropertyDescriptor[] res =
+        {displayProp("LinkPositions", "Link positions",
+            "whether to join the points in the trail"), displayProp(
+                "PlotTrackName", "Plot track name",
+                "whether to plot the name of the track"), displayProp(
+                    "FadePoints", "Fade points",
+                    "whether the trails should fade to black"), displayProp(
+                        "PointSize", "Point size",
+                        "the size of the points in the trail"), displayProp(
+                            "TrailLength", "Trail length",
+                            "the length of trail to draw"), displayProp(
+                                "VectorStretch", "Vector stretch",
+                                "how far to stretch the speed vector (pixels per knot)"),};
+
+        res[5].setPropertyEditorClass(FractionPropertyEditor.class);
+
+        return res;
+      }
+      catch (final Exception e)
+      {
+        MWC.Utilities.Errors.Trace.trace(e);
+        return super.getPropertyDescriptors();
+      }
+
+    }
+
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  // testing for this class
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  static public final class testMe extends junit.framework.TestCase
+  {
+    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+    public testMe(final String val)
+    {
+      super(val);
+    }
+
+    public final void testMyParams()
+    {
+      Editable ed = new SnailDrawFix2("testing");
+      Editable.editableTesterSupport.testParams(ed, this);
+      ed = null;
+    }
+  }
+
   /**
    * keep a copy of the track plotter we are using
    */
@@ -172,9 +233,22 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
     _myName = name;
   }
 
+  @Override
+  public final boolean canPlot(final Watchable wt)
+  {
+    boolean res = false;
+
+    if (wt instanceof Debrief.Wrappers.FixWrapper)
+    {
+      res = true;
+    }
+    return res;
+  }
+
   ///////////////////////////////////
   // member functions
   //////////////////////////////////
+  @Override
   public final java.awt.Rectangle drawMe(
       final MWC.Algorithms.PlainProjection proj, final java.awt.Graphics dest,
       final WatchableList list, final Watchable watch, final TotePainter parent,
@@ -323,32 +397,12 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
     return thisR;
   }
 
-  public final boolean canPlot(final Watchable wt)
+  public final boolean getFadePoints()
   {
-    boolean res = false;
-
-    if (wt instanceof Debrief.Wrappers.FixWrapper)
-    {
-      res = true;
-    }
-    return res;
+    return _trackPlotter.getFadePoints();
   }
 
-  public final String getName()
-  {
-    return _myName;
-  }
-
-  public final String toString()
-  {
-    return getName();
-  }
-
-  public final boolean hasEditor()
-  {
-    return true;
-  }
-
+  @Override
   public final Editable.EditorType getInfo()
   {
     if (_myEditor == null)
@@ -361,24 +415,23 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
   // accessors for editable parameters
   /////////////////////////////////////////////////////////
 
-  public final void setLinkPositions(final boolean val)
-  {
-    _trackPlotter.setJoinPositions(val);
-  }
-
   public final boolean getLinkPositions()
   {
     return _trackPlotter.getJoinPositions();
   }
 
-  public final void setFadePoints(final boolean val)
+  @Override
+  public final String getName()
   {
-    _trackPlotter.setFadePoints(val);
+    return _myName;
   }
 
-  public final boolean getFadePoints()
+  /**
+   * whether to plot in the name of the vessel
+   */
+  public final boolean getPlotTrackName()
   {
-    return _trackPlotter.getFadePoints();
+    return _plotName;
   }
 
   /**
@@ -396,6 +449,38 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
   {
     return new Duration(_trackPlotter.getTrailLength().longValue(),
         Duration.MICROSECONDS);
+  }
+
+  /**
+   * how much to stretch the vector
+   */
+  public final double getVectorStretch()
+  {
+    return _vectorStretch;
+  }
+
+  @Override
+  public final boolean hasEditor()
+  {
+    return true;
+  }
+
+  public final void setFadePoints(final boolean val)
+  {
+    _trackPlotter.setFadePoints(val);
+  }
+
+  public final void setLinkPositions(final boolean val)
+  {
+    _trackPlotter.setJoinPositions(val);
+  }
+
+  /**
+   * whether to plot in the name of the vessel
+   */
+  public final void setPlotTrackName(final boolean val)
+  {
+    _plotName = val;
   }
 
   /**
@@ -417,21 +502,9 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
         Duration.MICROSECONDS)));
   }
 
-  /**
-   * whether to plot in the name of the vessel
-   */
-  public final boolean getPlotTrackName()
-  {
-    return _plotName;
-  }
-
-  /**
-   * whether to plot in the name of the vessel
-   */
-  public final void setPlotTrackName(final boolean val)
-  {
-    _plotName = val;
-  }
+  //////////////////////////////////////////////////////////
+  // nested editable class
+  /////////////////////////////////////////////////////////
 
   /**
    * how much to stretch the vector
@@ -441,75 +514,9 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
     _vectorStretch = val;
   }
 
-  /**
-   * how much to stretch the vector
-   */
-  public final double getVectorStretch()
+  @Override
+  public final String toString()
   {
-    return _vectorStretch;
-  }
-
-  //////////////////////////////////////////////////////////
-  // nested editable class
-  /////////////////////////////////////////////////////////
-
-  public static final class SnailFixPainterInfo extends Editable.EditorType
-  {
-
-    public SnailFixPainterInfo(final SnailDrawFix2 data)
-    {
-      super(data, "Snail Painter", "");
-    }
-
-    public final PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try
-      {
-        final PropertyDescriptor[] res =
-        {displayProp("LinkPositions", "Link positions",
-            "whether to join the points in the trail"), displayProp(
-                "PlotTrackName", "Plot track name",
-                "whether to plot the name of the track"), displayProp(
-                    "FadePoints", "Fade points",
-                    "whether the trails should fade to black"), displayProp(
-                        "PointSize", "Point size",
-                        "the size of the points in the trail"), displayProp(
-                            "TrailLength", "Trail length",
-                            "the length of trail to draw"), displayProp(
-                                "VectorStretch", "Vector stretch",
-                                "how far to stretch the speed vector (pixels per knot)"),};
-
-        res[5].setPropertyEditorClass(FractionPropertyEditor.class);
-
-        return res;
-      }
-      catch (final Exception e)
-      {
-        MWC.Utilities.Errors.Trace.trace(e);
-        return super.getPropertyDescriptors();
-      }
-
-    }
-
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  static public final class testMe extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-    public testMe(final String val)
-    {
-      super(val);
-    }
-
-    public final void testMyParams()
-    {
-      Editable ed = new SnailDrawFix2("testing");
-      Editable.editableTesterSupport.testParams(ed, this);
-      ed = null;
-    }
+    return getName();
   }
 }

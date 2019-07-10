@@ -41,20 +41,23 @@ import MWC.GenericData.WorldArea;
 public class SnailPainter2 extends TotePainter
 {
 
-  /** utility class, to help determine a semi-transparent color
-   * shade that fades with time
+  /**
+   * utility class, to help determine a semi-transparent color shade that fades with time
+   * 
    * @author ian
    *
    */
   public static class ColorFadeCalculator
   {
-    /* how long the trail is
-     * 
+    /*
+     * how long the trail is
+     *
      */
     private final long _trail_lenMillis;
-    
-    /* the time now
-     * 
+
+    /*
+     * the time now
+     *
      */
     private final long _datumTime;
 
@@ -115,9 +118,9 @@ public class SnailPainter2 extends TotePainter
       assertEquals(0f, fader.fadeAt(new HiResDate(9000)));
       assertEquals(1f, fader.fadeAt(new HiResDate(10000)));
       assertEquals(0.5f, fader.fadeAt(new HiResDate(9500)));
-      
-      Color base = Color.red;
-      Color faded = fader.fadeColorAt(base, new HiResDate(9500));
+
+      final Color base = Color.red;
+      final Color faded = fader.fadeColorAt(base, new HiResDate(9500));
       assertEquals("half fade", 127, faded.getAlpha());
       assertEquals("right red", 255, faded.getRed());
       assertEquals("right greem", 0, faded.getGreen());
@@ -326,7 +329,8 @@ public class SnailPainter2 extends TotePainter
     if (dest == null)
       return;
 
-    final Vector<Plottable> nonWatches = SnailPainter.getNonWatchables(super.getLayers());
+    final Vector<Plottable> nonWatches = SnailPainter.getNonWatchables(
+        super.getLayers());
     final Enumeration<Plottable> iter = nonWatches.elements();
     while (iter.hasMoreElements())
     {
