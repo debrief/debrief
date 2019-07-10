@@ -56,6 +56,7 @@ import org.mwc.cmap.geotools.gt2plot.ShapeFileLayer;
 import org.mwc.cmap.geotools.gt2plot.WorldImageLayer;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
+import org.mwc.debrief.lite.gui.LiteSnailPainter;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.gui.custom.JXCollapsiblePane.Direction;
 import org.mwc.debrief.lite.gui.custom.graph.GraphPanelView;
@@ -786,7 +787,7 @@ public class DebriefLiteApp implements FileDropListener
     theTote = new LiteTote(_theLayers, _stepControl);
     final TotePainter tp = new TotePainter(theChart, _theLayers, theTote);
     tp.setColor(Color.white);
-    final SnailPainter sp = new SnailPainter(theChart, _theLayers, theTote);
+    final TotePainter sp = new LiteSnailPainter(theChart, _theLayers, theTote);
 
     final ToteSetter normalT = new ToteSetter(painterManager, tp);
     final ToteSetter snailT = new ToteSetter(painterManager, sp);
