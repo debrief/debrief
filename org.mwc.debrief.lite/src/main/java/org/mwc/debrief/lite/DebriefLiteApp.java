@@ -65,7 +65,7 @@ import org.mwc.debrief.lite.gui.custom.narratives.NarrativePanelToolbar;
 import org.mwc.debrief.lite.gui.custom.narratives.NarrativePanelView;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer.MapRenderer;
-import org.mwc.debrief.lite.map.MapBuilder;
+import org.mwc.debrief.lite.map.LiteMapPane;
 import org.mwc.debrief.lite.menu.DebriefRibbon;
 import org.mwc.debrief.lite.menu.DebriefRibbonFile;
 import org.mwc.debrief.lite.menu.DebriefRibbonTimeController;
@@ -246,26 +246,6 @@ public class DebriefLiteApp implements FileDropListener
 
   private static final JLabel statusBar = new JLabel(
       "Status bar for displaying statuses");
-
-  /**
-   * creates a scroll pane with map
-   *
-   * @param geoMapRenderer
-   * @param dropSupport
-   * @param mapContent
-   *
-   * @return
-   */
-  private static JMapPane createMapPane(final GeoToolMapRenderer geoMapRenderer,
-      final FileDropSupport dropSupport)
-  {
-    geoMapRenderer.createMapLayout();
-    final MapBuilder builder = new MapBuilder();
-    final JMapPane mapPane = (JMapPane) builder.setMapRenderer(geoMapRenderer)
-        .build();
-    dropSupport.addComponent(mapPane);
-    return mapPane;
-  }
 
   private static List<TrackWrapper> determineCandidateHosts()
   {
@@ -625,7 +605,7 @@ public class DebriefLiteApp implements FileDropListener
 
   private final LiteSession session;
 
-  private final JMapPane mapPane;
+  private final LiteMapPane mapPane;
 
   private final PlotOperations _myOperations = new PlotOperations()
   {
@@ -741,7 +721,10 @@ public class DebriefLiteApp implements FileDropListener
 
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));
 
-    mapPane = createMapPane(geoMapRenderer, dropSupport);
+    mapPane = geoMapRenderer.createMapLayout();
+
+    dropSupport.addComponent(mapPane);
+
 
     setInitialArea(mapPane, geoMapRenderer.getTransform());
 
