@@ -1437,6 +1437,7 @@ public class DebriefLiteApp implements FileDropListener
     {
       DebriefLiteApp.currentFileName = file.getAbsolutePath();
       DebriefLiteApp.setTitle(file.getName());
+      setState(ACTIVE_STATE);
     }
   }
 
