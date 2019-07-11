@@ -185,15 +185,14 @@ public class DebriefLiteApp implements FileDropListener
     final private PainterManager _manager;
     final private StepperListener _painter;
     final private RefreshStepper _refresher;
-    
+
     public static interface RefreshStepper
     {
       void refresh(StepperListener listener);
     }
 
     public ToteSetter(final PainterManager manager,
-        final StepperListener painter,
-        final RefreshStepper refresher)
+        final StepperListener painter, final RefreshStepper refresher)
     {
       _manager = manager;
       _manager.addPainter(painter);
@@ -577,7 +576,7 @@ public class DebriefLiteApp implements FileDropListener
         {
           wrappedLayer = null;
         }
-        
+
         if (wrappedLayer != null)
           super.addThisLayer(wrappedLayer);
       }
@@ -794,23 +793,24 @@ public class DebriefLiteApp implements FileDropListener
     painterManager = new PainterManager(_stepControl);
     final PlainChart theChart = new LiteChart(_theLayers, theCanvas, mapPane);
     theTote = new LiteTote(_theLayers, _stepControl);
-    final TotePainter tp = new TotePainter(theChart, _theLayers, theTote, false);
+    final TotePainter tp = new TotePainter(theChart, _theLayers, theTote,
+        false);
     tp.setColor(Color.white);
     final TotePainter sp = new SnailPainter2(theChart, _theLayers, theTote);
-    
+
     final ToteSetter.RefreshStepper refresher = new ToteSetter.RefreshStepper()
     {
-      
+
       @Override
       public void refresh(StepperListener listener)
       {
-        
+
         // and the time marker
         final Graphics graphics = mapPane.getGraphics();
 
         final CanvasAdaptor adapter = new CanvasAdaptor(projection, graphics,
             Color.blue);
-        
+
         listener.newTime(null, timeManager.getTime(), adapter);
       }
     };
@@ -819,12 +819,14 @@ public class DebriefLiteApp implements FileDropListener
     final ToteSetter snailT = new ToteSetter(painterManager, sp, refresher);
     normalT.run();
 
-    final Runnable collapseAction = new Runnable() {
+    final Runnable collapseAction = new Runnable()
+    {
       @Override
       public void run()
       {
         doExpandCollapse();
-      }};
+      }
+    };
 
     // create the components
     initForm();
@@ -851,24 +853,25 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataExtendedListener(_listenForMods);
     _theLayers.addDataModifiedListener(_listenForMods);
     _theLayers.addDataReformattedListener(_listenForMods);
-    
+
     // lastly give us some backdrop data
     loadBackdropdata(_theLayers);
-    
+
     theFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
     theFrame.setVisible(true);
     theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
-    
+
   }
 
-  protected void timeUpdate(final CanvasAdaptor theCanvas, final PropertyChangeEvent evt)
+  protected void timeUpdate(final CanvasAdaptor theCanvas,
+      final PropertyChangeEvent evt)
   {
     // ok, redraw the whole map
     mapPane.repaint();
-    _pendingNewTime =(HiResDate) evt.getNewValue();
+    _pendingNewTime = (HiResDate) evt.getNewValue();
     _pendingOldTime = (HiResDate) evt.getOldValue();
     redoTimePainter(false, theCanvas, (HiResDate) evt.getOldValue(),
-               (HiResDate) evt.getNewValue());
+        (HiResDate) evt.getNewValue());
   }
 
   private static void loadBackdropdata(final Layers layers)
@@ -965,28 +968,28 @@ public class DebriefLiteApp implements FileDropListener
         stepControl, timeManager, operation, session, resetAction, normalT,
         snailT, statusBar, exitAction, projection, transform, collapseAction);
   }
-  
+
   protected void doExpandCollapse()
   {
-    List<JXCollapsiblePaneWithTitle> items = new ArrayList<JXCollapsiblePaneWithTitle>();
+    List<JXCollapsiblePaneWithTitle> items =
+        new ArrayList<JXCollapsiblePaneWithTitle>();
     items.add(outlinePanel);
     items.add(graphPanel);
     items.add(narrativePanel);
-    
-    
+
     boolean doCollapse = false;
-    
-    for(final JXCollapsiblePaneWithTitle panel: items)
+
+    for (final JXCollapsiblePaneWithTitle panel : items)
     {
-      if(!panel.isCollapsed())
+      if (!panel.isCollapsed())
       {
-        doCollapse = true; 
+        doCollapse = true;
         break;
       }
     }
 
     // ok, now make it so
-    for(final JXCollapsiblePaneWithTitle panel: items)
+    for (final JXCollapsiblePaneWithTitle panel : items)
     {
       panel.setCollapsed(doCollapse);
     }
@@ -1022,7 +1025,7 @@ public class DebriefLiteApp implements FileDropListener
 
     _pendingNewTime = null;
     _pendingOldTime = null;
-    
+
     dest.endDraw(gc);
   }
 
@@ -1492,6 +1495,9 @@ public class DebriefLiteApp implements FileDropListener
     // reset the map
     final ResetAction resetMap = new ResetAction(mapPane);
     resetMap.actionPerformed(null);
+
+    // put some backdrop data back in
+    loadBackdropdata(_theLayers);
 
     graphPanelView.reset();
     graphPanel.setCollapsed(true);
