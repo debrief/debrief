@@ -117,6 +117,17 @@ public class ImportPolygon extends AbstractPlainLineImporter
 
   public static class TestImport extends TestCase
   {
+    
+    public void testIsName()
+    {
+      assertTrue(isNameLabel("23A"));
+      assertTrue(isNameLabel("A23"));
+      assertTrue(isNameLabel("23-A"));
+      assertTrue(isNameLabel("A-23"));
+      assertFalse(isNameLabel("23"));
+      assertFalse(isNameLabel("23.5"));
+    }
+    
     public void testImport() throws ParseException
     {
       final String line =
@@ -466,7 +477,7 @@ public class ImportPolygon extends AbstractPlainLineImporter
     return _myType;
   }
 
-  private boolean hasDate(final String line, final int skip)
+  private static boolean hasDate(final String line, final int skip)
   {
     final StringTokenizer st = new StringTokenizer(line);
     for (int i = 0; i < skip; i++)
@@ -479,19 +490,19 @@ public class ImportPolygon extends AbstractPlainLineImporter
     return 'N' == longHem || 'S' == longHem;
   }
 
-  private boolean hasStartDateOnly(final String line)
+  private static boolean hasStartDateOnly(final String line)
   {
     return hasDate(line, 7);
   }
 
-  private boolean hasStartEndDates(final String line)
+  private static boolean hasStartEndDates(final String line)
   {
     return hasDate(line, 9);
   }
 
-  private boolean isNameLabel(final String token)
+  private static boolean isNameLabel(final String token)
   {
-    return (token.matches("^[a-zA-Z0-9_]*$") && !(token.matches("\\d+") || token
+    return (token.matches("^[a-zA-Z0-9_-]*$") && !(token.matches("\\d+") || token
         .matches("\\d+\\.\\d+")));
   }
 
