@@ -763,7 +763,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
   {
     if (changedLayer != null)
     {
-      updateInThread(changedLayer);
+      myUpdateInThread(changedLayer);
     }
     else
     {
@@ -1363,7 +1363,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 
   }
 
-  private void updateInThread(final Layer changedLayer)
+  private void myUpdateInThread(final Layer changedLayer)
   {
     // in case only the narratives have changed refresh only those.
     final Runnable runner;
