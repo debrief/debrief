@@ -16,7 +16,6 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.swing.JMapPane;
 import org.geotools.swing.event.MapMouseAdapter;
 import org.geotools.swing.event.MapMouseEvent;
-import org.geotools.swing.event.MapMouseListener;
 import org.geotools.swing.tool.CursorTool;
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.opengis.geometry.MismatchedDimensionException;
@@ -50,7 +49,6 @@ public class LiteMapPane extends JMapPane
   private final MouseDragLine dragLine;
 
   private final GeoToolMapRenderer _renderer;
-  private final MapMouseListener mouseMotionListener;
 
   private final MathTransform data_transform;
 
@@ -82,11 +80,9 @@ public class LiteMapPane extends JMapPane
     _renderer = geoToolMapRenderer;
     dragLine = new MouseDragLine(this);
 
-    mouseMotionListener = getMouseListener(data_transform);
-
     addMouseListener(dragLine);
     addMouseMotionListener(dragLine);
-    addMouseListener(mouseMotionListener);
+    addMouseListener(getMouseListener(data_transform));
 
     // try to set background color
     super.setBackground(new Color(135, 172, 215));
