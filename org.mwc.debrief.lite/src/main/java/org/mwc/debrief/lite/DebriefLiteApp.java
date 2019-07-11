@@ -814,6 +814,8 @@ public class DebriefLiteApp implements FileDropListener
         doExpandCollapse();
       }
     };
+    
+    final String path = "ReadMe.pdf";
 
     final ChangeListener alphaListener = new ChangeListener()
     {
@@ -834,10 +836,9 @@ public class DebriefLiteApp implements FileDropListener
     createAppPanels(geoMapRenderer, session.getUndoBuffer(), dropSupport,
         mapPane, _stepControl, timeManager, _myOperations, normalT, snailT,
         statusBar, screenTransform, collapseAction, alphaListener,
-        initialAlpha);
+        initialAlpha, path);
     _listenForMods = new DataListenerAdaptor()
     {
-
       @Override
       public void dataExtended(final Layers theData, final Plottable newItem,
           final HasEditables parent)
@@ -918,7 +919,7 @@ public class DebriefLiteApp implements FileDropListener
       final TimeManager timeManager, final PlotOperations operation,
       final ToteSetter normalT, final ToteSetter snailT, final JLabel statusBar,
       final MathTransform transform, final Runnable collapseAction,
-      final ChangeListener alphaListener, final float alpha)
+      final ChangeListener alphaListener, final float alpha, final String path)
   {
     final JPanel centerPanel = new JPanel();
     centerPanel.setLayout(new BorderLayout());
@@ -966,7 +967,7 @@ public class DebriefLiteApp implements FileDropListener
     new DebriefRibbon(theFrame.getRibbon(), _theLayers, app, geoMapRenderer,
         stepControl, timeManager, operation, session, resetAction, normalT,
         snailT, statusBar, exitAction, projection, transform, collapseAction,
-        alphaListener, alpha);
+        alphaListener, alpha, path);
   }
 
   protected void doExpandCollapse()

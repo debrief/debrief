@@ -43,10 +43,11 @@ public class DebriefRibbon
       final Runnable snailPainter, final JLabel statusBar,
       final Runnable exitAction, final GeoToolMapProjection projection,
       final MathTransform transform, final Runnable collapseAction,
-      final ChangeListener alphaListener, final float alpha)
+      final ChangeListener alphaListener, final float alpha, final String path)
   {
     // add menus here
-    DebriefRibbonLite.addLiteTab(ribbon, session, resetAction, exitAction, collapseAction);
+    DebriefRibbonLite.addLiteTab(ribbon, session, resetAction, exitAction,
+        collapseAction, path);
     DebriefRibbonFile.addFileTab(ribbon, geoMapRenderer, session, resetAction);
     DebriefRibbonView.addViewTab(ribbon, geoMapRenderer, layers, statusBar,
         projection, transform, alphaListener, alpha);
