@@ -2,6 +2,7 @@ package org.mwc.debrief.lite.map;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -165,10 +166,21 @@ public class LiteMapPane extends JMapPane
         if (image != null)
         {
           final Graphics2D g2 = (Graphics2D) g;
-          final AlphaComposite ac = AlphaComposite.getInstance(
+
+          // remember the imaging composite
+          final Composite before = g2.getComposite();
+          
+          // ok, set transparency
+          final AlphaComposite transOne = AlphaComposite.getInstance(
               AlphaComposite.SRC_OVER, mapTransparency);
-          g2.setComposite(ac);
+          g2.setComposite(transOne);
+          
+          // draw the image
           g2.drawImage((Image) image, imageOrigin.x, imageOrigin.y, null);
+          
+          // restore the mode
+          g2.setComposite(before);
+
         }
       }
       finally
