@@ -409,7 +409,6 @@ public class NarrativePanelToolbar extends JPanel
           narrativeWrappersInPanel instanceof BaseLayer) &&
           !loadedNarratives.contains(narrativeWrappersInPanel))
       {
-        System.out.println("Quitar capa completa");
         notifyListenersStateChanged(narrativeWrappersInPanel,
             NARRATIVES_REMOVE_COMPLETE_LAYER, null, narrativeWrappersInPanel);
       }
