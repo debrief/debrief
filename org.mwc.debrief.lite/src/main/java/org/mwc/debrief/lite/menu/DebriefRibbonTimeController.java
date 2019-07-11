@@ -598,6 +598,7 @@ public class DebriefRibbonTimeController
 
     controlPanel.add(topButtonsPanel);
     final JSlider timeSlider = new JSlider();
+    timeSlider.setBackground(Color.DARK_GRAY);
     timeSlider.setPreferredSize(new Dimension(420, 30));
     timeSlider.setEnabled(false);
 
@@ -810,6 +811,7 @@ public class DebriefRibbonTimeController
     final JLabel minimumValue = new JLabel();
     final JLabel maximumValue = new JLabel();
     final RangeSlider slider = new RangeSlider(start, end);
+    slider.setBackground(Color.DARK_GRAY);
 
     formatBinder.stepControl = stepControl;
     formatBinder.maximumValue = maximumValue;
