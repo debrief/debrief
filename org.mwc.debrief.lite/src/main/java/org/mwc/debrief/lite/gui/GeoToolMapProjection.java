@@ -155,7 +155,7 @@ public class GeoToolMapProjection extends PlainProjection implements
       {
         Application.logError2(ToolParent.ERROR,
             "Failure in projection transform in toScreen operation:" + e
-                .getMessage(), null);
+                .getMessage() + " from location:" + val, null);
       }
     }
 
