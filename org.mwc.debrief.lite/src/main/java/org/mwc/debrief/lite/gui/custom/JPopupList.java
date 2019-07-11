@@ -14,8 +14,8 @@
  */
 package org.mwc.debrief.lite.gui.custom;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JList;
 import javax.swing.JPopupMenu;
@@ -43,13 +43,12 @@ public class JPopupList<T> extends JPopupMenu
       List<AbstractSelection<T>> items)
   {
     super();
-    // TODO Change this.
-    final ArrayList<T> itemsArrayList = new ArrayList();
+    Vector<T> list = new Vector<T>();
     for ( AbstractSelection<T> abstractItem : items )
     {
-      itemsArrayList.add(abstractItem.getItem());
+      list.add(abstractItem.getItem());
     }
-    this._items = new JList(itemsArrayList.toArray());
+    this._items = new JList<T>(list);
     
     initializeComponents();
   }
