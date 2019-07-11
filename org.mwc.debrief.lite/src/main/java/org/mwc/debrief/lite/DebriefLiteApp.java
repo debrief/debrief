@@ -43,8 +43,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.Envelope2D;
@@ -65,7 +68,7 @@ import org.mwc.debrief.lite.gui.custom.narratives.NarrativePanelToolbar;
 import org.mwc.debrief.lite.gui.custom.narratives.NarrativePanelView;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer.MapRenderer;
-import org.mwc.debrief.lite.map.MapBuilder;
+import org.mwc.debrief.lite.map.LiteMapPane;
 import org.mwc.debrief.lite.menu.DebriefRibbon;
 import org.mwc.debrief.lite.menu.DebriefRibbonFile;
 import org.mwc.debrief.lite.menu.DebriefRibbonTimeController;
@@ -245,27 +248,7 @@ public class DebriefLiteApp implements FileDropListener
       ImportReplay.IMPORT_AS_OTG, 0L);
 
   private static final JLabel statusBar = new JLabel(
-      "Status bar for displaying statuses");
-
-  /**
-   * creates a scroll pane with map
-   *
-   * @param geoMapRenderer
-   * @param dropSupport
-   * @param mapContent
-   *
-   * @return
-   */
-  private static JMapPane createMapPane(final GeoToolMapRenderer geoMapRenderer,
-      final FileDropSupport dropSupport)
-  {
-    geoMapRenderer.createMapLayout();
-    final MapBuilder builder = new MapBuilder();
-    final JMapPane mapPane = (JMapPane) builder.setMapRenderer(geoMapRenderer)
-        .build();
-    dropSupport.addComponent(mapPane);
-    return mapPane;
-  }
+      "[pending]");
 
   private static List<TrackWrapper> determineCandidateHosts()
   {
@@ -625,7 +608,7 @@ public class DebriefLiteApp implements FileDropListener
 
   private final LiteSession session;
 
-  private final JMapPane mapPane;
+  private final LiteMapPane mapPane;
 
   private final PlotOperations _myOperations = new PlotOperations()
   {
@@ -741,7 +724,11 @@ public class DebriefLiteApp implements FileDropListener
 
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));
 
-    mapPane = createMapPane(geoMapRenderer, dropSupport);
+    final float initialAlpha = 0.7f;
+
+    mapPane = geoMapRenderer.createMapLayout(initialAlpha);
+
+    dropSupport.addComponent(mapPane);
 
     setInitialArea(mapPane, geoMapRenderer.getTransform());
 
@@ -830,12 +817,26 @@ public class DebriefLiteApp implements FileDropListener
     
     final String path = "ReadMe.pdf";
 
+    final ChangeListener alphaListener = new ChangeListener()
+    {
+
+      @Override
+      public void stateChanged(ChangeEvent e)
+      {
+        JSlider source = (JSlider) e.getSource();
+        int alpha = source.getValue();
+        mapPane.setTransparency(alpha / 100f);
+        mapPane.repaint();
+      }
+    };
+
     // create the components
     initForm();
     final MathTransform screenTransform = geoMapRenderer.getTransform();
     createAppPanels(geoMapRenderer, session.getUndoBuffer(), dropSupport,
         mapPane, _stepControl, timeManager, _myOperations, normalT, snailT,
-        statusBar, screenTransform, collapseAction, path);
+        statusBar, screenTransform, collapseAction, alphaListener,
+        initialAlpha, path);
     _listenForMods = new DataListenerAdaptor()
     {
       @Override
@@ -917,11 +918,9 @@ public class DebriefLiteApp implements FileDropListener
       final Component mapPane, final LiteStepControl stepControl,
       final TimeManager timeManager, final PlotOperations operation,
       final ToteSetter normalT, final ToteSetter snailT, final JLabel statusBar,
-      final MathTransform transform, final Runnable collapseAction, String path)
+      final MathTransform transform, final Runnable collapseAction,
+      final ChangeListener alphaListener, final float alpha, final String path)
   {
-    // final Dimension frameSize = theFrame.getSize();
-    // final int width = (int) frameSize.getWidth();
-
     final JPanel centerPanel = new JPanel();
     centerPanel.setLayout(new BorderLayout());
     mapPane.addComponentListener(new ComponentAdapter()
@@ -968,7 +967,7 @@ public class DebriefLiteApp implements FileDropListener
     new DebriefRibbon(theFrame.getRibbon(), _theLayers, app, geoMapRenderer,
         stepControl, timeManager, operation, session, resetAction, normalT,
         snailT, statusBar, exitAction, projection, transform, collapseAction,
-        path);
+        alphaListener, alpha, path);
   }
 
   protected void doExpandCollapse()
