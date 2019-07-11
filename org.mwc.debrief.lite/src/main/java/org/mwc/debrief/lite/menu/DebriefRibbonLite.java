@@ -109,7 +109,6 @@ public class DebriefRibbonLite
     final FlamingoCommand collapseCommand = MenuUtils.createCommand("Collapse",
         "icons/24/fit_to_win.png", collapsePopup, RibbonElementPriority.TOP, null);
     // so that action has the command it has to enable/disable
-    redoAction.setActionCommand(collapseCommand);
     collapseCommand.setEnabled(true);
     ribbon.addTaskbarCommand(collapseCommand);
 
