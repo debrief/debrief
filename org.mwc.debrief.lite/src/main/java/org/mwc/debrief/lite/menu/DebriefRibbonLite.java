@@ -14,10 +14,15 @@
  */
 package org.mwc.debrief.lite.menu;
 
+import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.AbstractAction;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.mwc.debrief.lite.undo.RedoAction;
 import org.mwc.debrief.lite.undo.UndoAction;
@@ -27,6 +32,7 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
+import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Frames.Session;
 
 /**
@@ -64,10 +70,37 @@ public class DebriefRibbonLite
      *
      */
     private static final long serialVersionUID = 1L;
+    private final String _path;
+
+    public HelpAction(String path)
+    {
+      _path = path;
+    }
 
     @Override
     public void actionPerformed(final ActionEvent e)
     {
+      if (Desktop.isDesktopSupported())
+      {
+        try
+        {
+          final File myFile = new File(_path);
+          Desktop.getDesktop().open(myFile);
+        }
+        catch (Exception ex)
+        {
+          Application.logError2(Application.ERROR, "Failed to open PDF", ex);
+          SwingUtilities.invokeLater(new Runnable()
+          {
+            @Override
+            public void run()
+            {
+              JOptionPane.showMessageDialog(null, "Failed to find help file:"
+                  + _path);
+            }
+          });
+        }
+      }
       System.out.println("Not implemented yet");
     }
 
@@ -75,7 +108,7 @@ public class DebriefRibbonLite
 
   protected static void addLiteTab(final JRibbon ribbon, final Session session,
       final Runnable resetAction, final Runnable exitAction,
-      final Runnable collapseAction)
+      final Runnable collapseAction, final String path)
   {
     final JRibbonBand liteMenu = new JRibbonBand("Lite", null);
     liteMenu.startGroup();
@@ -107,7 +140,8 @@ public class DebriefRibbonLite
     };
     // and the expand/collapse button
     final FlamingoCommand collapseCommand = MenuUtils.createCommand("Collapse",
-        "icons/24/fit_to_win.png", collapsePopup, RibbonElementPriority.TOP, null);
+        "icons/24/fit_to_win.png", collapsePopup, RibbonElementPriority.TOP,
+        null);
     // so that action has the command it has to enable/disable
     collapseCommand.setEnabled(true);
     ribbon.addTaskbarCommand(collapseCommand);
@@ -115,7 +149,7 @@ public class DebriefRibbonLite
     // add the action as observer of undobuffer
     session.getUndoBuffer().addObserver(redoAction);
     liteMenu.startGroup();
-    MenuUtils.addCommand("Help", "icons/24/help.png", new HelpAction(),
+    MenuUtils.addCommand("Help", "icons/24/help.png", new HelpAction(path),
         liteMenu, RibbonElementPriority.TOP);
     MenuUtils.addCommand("Exit", "icons/24/exit.png", new ExitLiteApp(
         exitAction), liteMenu, RibbonElementPriority.TOP);
