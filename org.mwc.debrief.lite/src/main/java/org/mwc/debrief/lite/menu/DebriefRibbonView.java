@@ -1,10 +1,8 @@
 package org.mwc.debrief.lite.menu;
 
 import java.awt.Color;
-import java.awt.Dimension;
 
 import javax.swing.AbstractAction;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeListener;
@@ -33,9 +31,18 @@ import MWC.GUI.Layers;
 
 public class DebriefRibbonView
 {
-  public static interface NewTransparencyAction
+  private static JRibbonComponent addAlphaSlider(
+      final ChangeListener alphaListener)
   {
-    void updated(float alpha);
+    final JSlider slider = new JSlider(0, 100);
+    slider.setMajorTickSpacing(20);
+    slider.setPaintTicks(true);
+    slider.setBackground(Color.DARK_GRAY);
+    slider.addChangeListener(alphaListener);
+
+    final JRibbonComponent component = new JRibbonComponent(null,
+        "Transparency:", slider);
+    return component;
   }
 
   protected static void addViewTab(final JRibbon ribbon,
@@ -46,10 +53,16 @@ public class DebriefRibbonView
     final JRibbonBand mouseMode = createMouseModes(geoMapRenderer, statusBar,
         layers, projection, transform);
     final JRibbonBand mapCommands = createMapCommands(geoMapRenderer, layers);
+    
+    // and the slider
     final JRibbonBand layersMenu = new JRibbonBand("Background", null);
-    addDropDown(alphaListener,layersMenu,RibbonElementPriority.TOP,null);
-    final RibbonTask fileTask = new RibbonTask("View", mouseMode, mapCommands, layersMenu);
-    ribbon.addTask(fileTask);
+    final JRibbonComponent slider = addAlphaSlider(alphaListener);
+    slider.setDisplayPriority(RibbonElementPriority.TOP);
+    layersMenu.addRibbonComponent(slider);
+
+    final RibbonTask viewTask = new RibbonTask("View", mouseMode, mapCommands,
+        layersMenu);
+    ribbon.addTask(viewTask);
   }
 
   private static JRibbonBand createMapCommands(
@@ -66,27 +79,6 @@ public class DebriefRibbonView
     commandBand.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         commandBand));
     return commandBand;
-  }
-  
-  
-  private static JRibbonComponent addDropDown(final ChangeListener alphaListener,
-      final JRibbonBand mapBand, final RibbonElementPriority priority,final Layers theLayers)
-  {
-    final DefaultComboBoxModel<String>  selectLayerModel = new DefaultComboBoxModel<String>();
-    for(int i=0;i<=10;i+=2)
-    {
-      selectLayerModel.addElement(i * 10 + "%");
-    }
-    JSlider slider = new JSlider(0, 100);
-    slider.setPreferredSize(new Dimension(200,40));
-    slider.setMajorTickSpacing(20);
-    slider.setPaintTicks(true);
-    slider.setForeground(Color.DARK_GRAY);
-    slider.addChangeListener(alphaListener);
-    JRibbonComponent component = new JRibbonComponent(null,"Transparency",slider);
-    component.setDisplayPriority(priority);
-    mapBand.addRibbonComponent(component);
-    return component;
   }
 
   private static JRibbonBand createMouseModes(
