@@ -248,7 +248,7 @@ public class DebriefLiteApp implements FileDropListener
       ImportReplay.IMPORT_AS_OTG, 0L);
 
   private static final JLabel statusBar = new JLabel(
-      "Status bar for displaying statuses");
+      "[pending]");
 
   private static List<TrackWrapper> determineCandidateHosts()
   {
