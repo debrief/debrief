@@ -168,7 +168,6 @@ public class LiteMapPane extends JMapPane
           final AlphaComposite ac = AlphaComposite.getInstance(
               AlphaComposite.SRC_OVER, mapTransparency);
           g2.setComposite(ac);
-
           g2.drawImage((Image) image, imageOrigin.x, imageOrigin.y, null);
         }
       }

@@ -43,8 +43,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.Envelope2D;
@@ -811,12 +814,23 @@ public class DebriefLiteApp implements FileDropListener
       }
     };
 
+    final ChangeListener alphaListener = new ChangeListener() {
+
+      @Override
+      public void stateChanged(ChangeEvent e)
+      {
+        JSlider source = (JSlider) e.getSource();
+        int alpha = source.getValue();
+        mapPane.setTransparency(alpha / 100f);
+        mapPane.repaint();
+      }};
+
     // create the components
     initForm();
     final MathTransform screenTransform = geoMapRenderer.getTransform();
     createAppPanels(geoMapRenderer, session.getUndoBuffer(), dropSupport,
         mapPane, _stepControl, timeManager, _myOperations, normalT, snailT,
-        statusBar, screenTransform, collapseAction);
+        statusBar, screenTransform, collapseAction, alphaListener);
     _listenForMods = new DataListenerAdaptor()
     {
 
@@ -899,11 +913,9 @@ public class DebriefLiteApp implements FileDropListener
       final Component mapPane, final LiteStepControl stepControl,
       final TimeManager timeManager, final PlotOperations operation,
       final ToteSetter normalT, final ToteSetter snailT, final JLabel statusBar,
-      final MathTransform transform, final Runnable collapseAction)
+      final MathTransform transform, final Runnable collapseAction,
+      ChangeListener alphaListener)
   {
-    // final Dimension frameSize = theFrame.getSize();
-    // final int width = (int) frameSize.getWidth();
-
     final JPanel centerPanel = new JPanel();
     centerPanel.setLayout(new BorderLayout());
     mapPane.addComponentListener(new ComponentAdapter()
@@ -949,7 +961,7 @@ public class DebriefLiteApp implements FileDropListener
     };
     new DebriefRibbon(theFrame.getRibbon(), _theLayers, app, geoMapRenderer,
         stepControl, timeManager, operation, session, resetAction, normalT,
-        snailT, statusBar, exitAction, projection, transform, collapseAction);
+        snailT, statusBar, exitAction, projection, transform, collapseAction, alphaListener);
   }
 
   protected void doExpandCollapse()

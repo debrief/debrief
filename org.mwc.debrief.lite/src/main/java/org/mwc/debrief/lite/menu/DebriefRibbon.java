@@ -15,6 +15,7 @@
 package org.mwc.debrief.lite.menu;
 
 import javax.swing.JLabel;
+import javax.swing.event.ChangeListener;
 
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.gui.LiteStepControl;
@@ -41,13 +42,14 @@ public class DebriefRibbon
       final Runnable resetAction, final Runnable normalPainter,
       final Runnable snailPainter, final JLabel statusBar,
       final Runnable exitAction, final GeoToolMapProjection projection,
-      final MathTransform transform, final Runnable collapseAction)
+      final MathTransform transform, final Runnable collapseAction,
+      final ChangeListener alphaListener)
   {
     // add menus here
     DebriefRibbonLite.addLiteTab(ribbon, session, resetAction, exitAction, collapseAction);
     DebriefRibbonFile.addFileTab(ribbon, geoMapRenderer, session, resetAction);
     DebriefRibbonView.addViewTab(ribbon, geoMapRenderer, layers, statusBar,
-        projection, transform);
+        projection, transform, alphaListener);
     DebriefRibbonInsert.addInsertTab(ribbon, geoMapRenderer, layers, null,
         parent);
     DebriefRibbonTimeController.addTimeControllerTab(ribbon, geoMapRenderer,

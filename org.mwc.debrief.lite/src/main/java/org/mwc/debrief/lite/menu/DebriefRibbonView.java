@@ -1,7 +1,13 @@
 package org.mwc.debrief.lite.menu;
 
+import java.awt.Color;
+import java.awt.Dimension;
+
 import javax.swing.AbstractAction;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JLabel;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeListener;
 
 import org.geotools.swing.JMapPane;
 import org.geotools.swing.action.PanAction;
@@ -19,6 +25,7 @@ import org.opengis.referencing.operation.MathTransform;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandToggleGroup;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
+import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
@@ -26,16 +33,22 @@ import MWC.GUI.Layers;
 
 public class DebriefRibbonView
 {
+  public static interface NewTransparencyAction
+  {
+    void updated(float alpha);
+  }
 
   protected static void addViewTab(final JRibbon ribbon,
       final GeoToolMapRenderer geoMapRenderer, final Layers layers,
       final JLabel statusBar, final GeoToolMapProjection projection,
-      final MathTransform transform)
+      final MathTransform transform, final ChangeListener alphaListener)
   {
     final JRibbonBand mouseMode = createMouseModes(geoMapRenderer, statusBar,
         layers, projection, transform);
     final JRibbonBand mapCommands = createMapCommands(geoMapRenderer, layers);
-    final RibbonTask fileTask = new RibbonTask("View", mouseMode, mapCommands);
+    final JRibbonBand layersMenu = new JRibbonBand("Background", null);
+    addDropDown(alphaListener,layersMenu,RibbonElementPriority.TOP,null);
+    final RibbonTask fileTask = new RibbonTask("View", mouseMode, mapCommands, layersMenu);
     ribbon.addTask(fileTask);
   }
 
@@ -53,6 +66,27 @@ public class DebriefRibbonView
     commandBand.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         commandBand));
     return commandBand;
+  }
+  
+  
+  private static JRibbonComponent addDropDown(final ChangeListener alphaListener,
+      final JRibbonBand mapBand, final RibbonElementPriority priority,final Layers theLayers)
+  {
+    final DefaultComboBoxModel<String>  selectLayerModel = new DefaultComboBoxModel<String>();
+    for(int i=0;i<=10;i+=2)
+    {
+      selectLayerModel.addElement(i * 10 + "%");
+    }
+    JSlider slider = new JSlider(0, 100);
+    slider.setPreferredSize(new Dimension(200,40));
+    slider.setMajorTickSpacing(20);
+    slider.setPaintTicks(true);
+    slider.setForeground(Color.DARK_GRAY);
+    slider.addChangeListener(alphaListener);
+    JRibbonComponent component = new JRibbonComponent(null,"Transparency",slider);
+    component.setDisplayPriority(priority);
+    mapBand.addRibbonComponent(component);
+    return component;
   }
 
   private static JRibbonBand createMouseModes(
