@@ -117,14 +117,44 @@ public class ImportPolygon extends AbstractPlainLineImporter
 
   public static class TestImport extends TestCase
   {
-    public void testExport() throws ParseException
+    public void testImport() throws ParseException
     {
       final String line =
           ";POLY: @@ 49 43 49.08 N 004 10 11.60 E 49 38 25.80 N 004 23 58.02 E label";
       final ImportPolygon ip = new ImportPolygon();
       final ShapeWrapper sw = (ShapeWrapper) ip.readThisLine(line);
       assertEquals(line, ip.exportThis(sw));
+      final PolygonShape polygon = (PolygonShape) sw.getShape();
+      assertNotNull("found shape", polygon);
+      assertEquals("correct numb nodes", 2, polygon.getPoints().size());
     }
+    
+    public void testWeirdImport1() throws ParseException
+    {
+      final String line =
+          ";POLY: @EA0 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E 51.6405 0 0 N 3.39945 0 0 E numlabel";
+      final ImportPolygon ip = new ImportPolygon();
+      final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
+      assertEquals("numlabel", res.getLabel());
+      assertNotNull("read it in", res);
+      final PolygonShape polygon = (PolygonShape) res.getShape();
+      assertNotNull("found shape", polygon);
+      assertEquals("correct nodes", 3, polygon.getPoints().size());
+    }
+
+    public void testWeirdImport2() throws ParseException
+    {
+      final String line =
+          ";POLY: @EA0 49 0 0.7303 N 4 0 0.16989 E 49 0 0.6405 N 4 0 0.39945 E 51 0 0.6405 N 3 0 0.39945 E numlabel";
+      final ImportPolygon ip = new ImportPolygon();
+      final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
+      assertEquals("numlabel", res.getLabel());
+      assertNotNull("read it in", res);
+      final PolygonShape polygon = (PolygonShape) res.getShape();
+      assertNotNull("found shape", polygon);
+      assertEquals("correct nodes", 3, polygon.getPoints().size());
+    }
+
 
     public void testImportAlphaLabel() throws ParseException
     {
@@ -461,7 +491,7 @@ public class ImportPolygon extends AbstractPlainLineImporter
 
   private boolean isNameLabel(final String token)
   {
-    return (token.matches("^[a-zA-Z0-9_]*$") && !(token.matches("\\d?+") || token
+    return (token.matches("^[a-zA-Z0-9_]*$") && !(token.matches("\\d+") || token
         .matches("\\d+\\.\\d+")));
   }
 
