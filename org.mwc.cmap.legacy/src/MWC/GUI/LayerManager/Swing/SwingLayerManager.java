@@ -742,6 +742,9 @@ public class SwingLayerManager extends SwingCustomEditor implements
       children.add((MutableTreeNode) item);
     }
     
+    // we're doing too many layer updates.  Keep track of if we need to do it
+    boolean needToReloadThisLayer = false;
+    
     // and work through the elements of this layer
     final Enumeration<Editable> enumer = thisLayer.elements();
     if (enumer != null)
@@ -773,7 +776,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
           if (nodeL == null)
           {
             thisL.add(new PlottableNode(pl, theTopLayer));
-            ((DefaultTreeModel) _myTree.getModel()).reload(thisL);
+            needToReloadThisLayer = true;
           }
           else
           {
@@ -785,6 +788,11 @@ public class SwingLayerManager extends SwingCustomEditor implements
           }
         }
       }
+    }
+    
+    if(needToReloadThisLayer)
+    {
+      ((DefaultTreeModel) _myTree.getModel()).reload(thisL);
     }
     
     if(!children.isEmpty())
