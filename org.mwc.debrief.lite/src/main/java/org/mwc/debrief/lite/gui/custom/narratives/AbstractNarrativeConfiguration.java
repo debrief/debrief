@@ -29,19 +29,19 @@ public interface AbstractNarrativeConfiguration
 
   public String getFilterText();
 
-  public Set<NarrativeWrapper> getRegisteredNarrativeWrapper();
+  public Set<Object> getRegisteredNarrativeWrapper();
 
-  public void addNarrativeWrapper(final NarrativeWrapper narrativeWrapper);
+  public void addNarrativeLayer(final Object narrativeWrapper);
 
   public Set<NarrativeEntry> getCurrentNarrativeEntries(
-      final NarrativeWrapper narrativeWrapper);
+      final Object narrativeWrapper);
 
-  public void registerNewNarrativeEntry(final NarrativeWrapper wrapper,
+  public void registerNewNarrativeEntry(final Object wrapper,
       final NarrativeEntry entry);
 
-  public void removeNarrativeWrapper(final NarrativeWrapper narrativeWrapper);
+  public void removeNarrativeLayer(final Object narrativeWrapper);
 
-  public void unregisterNarrativeEntry(final NarrativeWrapper wrapper,
+  public void unregisterNarrativeEntry(final Object wrapper,
       final NarrativeEntry entry);
   
   public boolean isWrapping();

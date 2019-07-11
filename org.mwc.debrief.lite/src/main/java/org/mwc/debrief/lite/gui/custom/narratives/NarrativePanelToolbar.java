@@ -15,6 +15,7 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
@@ -32,6 +33,7 @@ import javax.swing.table.TableColumn;
 
 import org.mwc.debrief.lite.gui.LiteStepControl;
 
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -121,7 +123,7 @@ public class NarrativePanelToolbar extends JPanel
           else if (NARRATIVES_REMOVE_COMPLETE_LAYER.equals(evt
               .getPropertyName()))
           {
-            removeCompleteNarrativeLayer((NarrativeWrapper) evt.getNewValue());
+            removeCompleteNarrativeLayer(evt.getNewValue());
           }
 
           if (_narrativeListModel.getRowCount() > 0)
@@ -135,104 +137,126 @@ public class NarrativePanelToolbar extends JPanel
         }
 
         public void removeCompleteNarrativeLayer(
-            final NarrativeWrapper wrapperRemoved)
+            final Object wrapperRemoved)
         {
-          final Enumeration<Editable> iteratorToRemove = wrapperRemoved
-              .elements();
-          while (iteratorToRemove.hasMoreElements())
+          final Enumeration<Editable> iteratorToRemove;
+          
+          if ( wrapperRemoved instanceof NarrativeWrapper )
           {
-            final Editable thisE = iteratorToRemove.nextElement();
-            if (entry2Index.containsKey(thisE))
+            iteratorToRemove = ((NarrativeWrapper)wrapperRemoved).elements();
+          }else if ( wrapperRemoved instanceof BaseLayer )
+          {
+            iteratorToRemove = ((BaseLayer)wrapperRemoved).elements();
+          }else
+          {
+            iteratorToRemove = null;
+          }
+          if ( iteratorToRemove != null )
+          {
+            while (iteratorToRemove.hasMoreElements())
             {
-              for (int i = 0; i < _narrativeListModel.getRowCount(); i++)
+              final Editable thisE = iteratorToRemove.nextElement();
+              if (entry2Index.containsKey(thisE))
               {
-                if (_narrativeListModel.getValueAt(i, 0) == entry2Index.get(
-                    thisE))
+                for (int i = 0; i < _narrativeListModel.getRowCount(); i++)
                 {
-                  _narrativeListModel.removeRow(i);
-                  entry2Index.remove(thisE);
-                  break;
+                  if (_narrativeListModel.getValueAt(i, 0) == entry2Index.get(
+                      thisE))
+                  {
+                    _narrativeListModel.removeRow(i);
+                    entry2Index.remove(thisE);
+                    break;
+                  }
                 }
               }
             }
           }
-          _model.removeNarrativeWrapper(wrapperRemoved);
+          _model.removeNarrativeLayer(wrapperRemoved);
         }
 
         public void updateNarratives(final Object layerChanged)
         {
           if (layerChanged instanceof NarrativeWrapper)
           {
-            final NarrativeWrapper narrativeWrapper =
-                (NarrativeWrapper) layerChanged;
+            final NarrativeWrapper nativeWrapper = (NarrativeWrapper) layerChanged;
+            extracted(layerChanged, nativeWrapper.elements());
+          }else if (layerChanged instanceof BaseLayer)
+          {
+            final BaseLayer currentLayer = (BaseLayer) layerChanged;
+            extracted(layerChanged, currentLayer.elements());
+          }
+        }
 
-            final Set<NarrativeEntry> toRemove = new TreeSet<>();
-            final Set<NarrativeEntry> toAdd = new TreeSet<>();
-            // Check difference
-            if (_model.getRegisteredNarrativeWrapper().contains(
-                narrativeWrapper))
+        public void extracted(final Object layerChanged, final Enumeration<Editable> items)
+        {
+
+          final Set<NarrativeEntry> toRemove = new TreeSet<>();
+          final Set<NarrativeEntry> toAdd = new TreeSet<>();
+          // Check difference
+          if (_model.getRegisteredNarrativeWrapper().contains(
+              layerChanged))
+          {
+            final Set<NarrativeEntry> newEntries = new TreeSet<>();
+            while (items.hasMoreElements())
             {
-              final Set<NarrativeEntry> newEntries = new TreeSet<>();
-              final Enumeration<Editable> items = narrativeWrapper.elements();
-              while (items.hasMoreElements())
+              final Editable thisE = items.nextElement();
+              if ( thisE instanceof NarrativeEntry )
               {
-                final Editable thisE = items.nextElement();
                 newEntries.add((NarrativeEntry) thisE);
               }
-              for (final NarrativeEntry currentEntry : _model
-                  .getCurrentNarrativeEntries(narrativeWrapper))
-              {
-                if (!newEntries.contains(currentEntry))
-                {
-                  toRemove.add(currentEntry);
-                }
-              }
-              for (final NarrativeEntry newEntry : newEntries)
-              {
-                if (!_model.getCurrentNarrativeEntries(narrativeWrapper)
-                    .contains(newEntry))
-                {
-                  toAdd.add(newEntry);
-                }
-              }
             }
-            else
+            for (final NarrativeEntry currentEntry : _model
+                .getCurrentNarrativeEntries(layerChanged))
             {
-              _model.addNarrativeWrapper(narrativeWrapper);
-              final Enumeration<Editable> items = narrativeWrapper.elements();
-              while (items.hasMoreElements())
+              if (!newEntries.contains(currentEntry))
               {
-                final Editable thisE = items.nextElement();
-                toAdd.add((NarrativeEntry) thisE);
+                toRemove.add(currentEntry);
               }
-
             }
-
-            for (final NarrativeEntry entry : toAdd)
+            for (final NarrativeEntry newEntry : newEntries)
             {
-              final NarrativeEntryItem entryItem = new NarrativeEntryItem(entry,
-                  _model);
-              _narrativeListModel.addRow(new NarrativeEntryItem[]
-              {entryItem});
-              entry2Index.put(entry, entryItem);
-              _model.registerNewNarrativeEntry(narrativeWrapper, entry);
-
-            }
-            for (final NarrativeEntry entry : toRemove)
-            {
-              for (int i = 0; i < _narrativeListModel.getRowCount(); i++)
+              if (!_model.getCurrentNarrativeEntries(layerChanged)
+                  .contains(newEntry))
               {
-                if (_narrativeListModel.getValueAt(i, 0) == entry2Index.get(
-                    entry))
-                {
-                  _narrativeListModel.removeRow(i);
-                  break;
-                }
+                toAdd.add(newEntry);
               }
-              entry2Index.remove(entry);
             }
-            // Sort it.
           }
+          else
+          {
+            _model.addNarrativeLayer(layerChanged);
+            while (items.hasMoreElements())
+            {
+              final Editable thisE = items.nextElement();
+              toAdd.add((NarrativeEntry) thisE);
+            }
+
+          }
+
+          for (final NarrativeEntry entry : toAdd)
+          {
+            final NarrativeEntryItem entryItem = new NarrativeEntryItem(entry,
+                _model);
+            _narrativeListModel.addRow(new NarrativeEntryItem[]
+            {entryItem});
+            entry2Index.put(entry, entryItem);
+            _model.registerNewNarrativeEntry(layerChanged, entry);
+
+          }
+          for (final NarrativeEntry entry : toRemove)
+          {
+            for (int i = 0; i < _narrativeListModel.getRowCount(); i++)
+            {
+              if (_narrativeListModel.getValueAt(i, 0) == entry2Index.get(
+                  entry))
+              {
+                _narrativeListModel.removeRow(i);
+                break;
+              }
+            }
+            entry2Index.remove(entry);
+          }
+          // Sort it.
         }
       };
 
@@ -325,7 +349,7 @@ public class NarrativePanelToolbar extends JPanel
   protected void checkNewNarratives(final Layers layers)
   {
     final Enumeration<Editable> elem = layers.elements();
-    final Set<NarrativeWrapper> loadedNarratives = new TreeSet<>();
+    final Set<Object> loadedNarratives = new TreeSet<>();
     while (elem.hasMoreElements())
     {
       final Editable nextItem = elem.nextElement();
@@ -335,7 +359,7 @@ public class NarrativePanelToolbar extends JPanel
         loadedNarratives.add(newNarrative);
         if (!_model.getRegisteredNarrativeWrapper().contains(nextItem))
         {
-          _model.addNarrativeWrapper(newNarrative);
+          _model.addNarrativeLayer(newNarrative);
           newNarrative.getSupport().addPropertyChangeListener(
               new PropertyChangeListener()
               {
@@ -350,15 +374,42 @@ public class NarrativePanelToolbar extends JPanel
           notifyListenersStateChanged(nextItem, NARRATIVES_PROPERTY, null,
               nextItem);
         }
+      }else if (nextItem instanceof BaseLayer)
+      {
+        final BaseLayer baseLayer = (BaseLayer)nextItem;
+        loadedNarratives.add(baseLayer);
+        if ( !_model.getRegisteredNarrativeWrapper().contains(nextItem) )
+        {
+          _model.addNarrativeLayer(baseLayer);
+          baseLayer.addPropertyChangeListener(
+              new PropertyChangeListener()
+              {
+                
+                @Override
+                public void propertyChange(PropertyChangeEvent evt)
+                {
+                  notifyListenersStateChanged(nextItem, NARRATIVES_PROPERTY,
+                      null, nextItem);
+                }
+              }
+          );
+          notifyListenersStateChanged(nextItem, NARRATIVES_PROPERTY, null,
+              nextItem);
+        }
+        
       }
     }
 
-    for (final NarrativeWrapper narrativeWrappersInPanel : _model
-        .getRegisteredNarrativeWrapper())
+    for (final Object narrativeWrappersInPanel : new HashSet<Object>(_model
+        .getRegisteredNarrativeWrapper()))
     {
+      
       // Some items has been removed.
-      if (!loadedNarratives.contains(narrativeWrappersInPanel))
+      if ((narrativeWrappersInPanel instanceof NarrativeWrapper ||
+          narrativeWrappersInPanel instanceof BaseLayer) &&
+          !loadedNarratives.contains(narrativeWrappersInPanel))
       {
+        System.out.println("Quitar capa completa");
         notifyListenersStateChanged(narrativeWrappersInPanel,
             NARRATIVES_REMOVE_COMPLETE_LAYER, null, narrativeWrappersInPanel);
       }

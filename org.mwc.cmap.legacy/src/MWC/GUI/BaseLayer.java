@@ -202,6 +202,11 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 	 */
 	private final boolean _orderedChildren;
 
+  /**
+   * property type to signify data being added or removed
+   */
+  public final static String CONTENTS_CHANGED = "CONTENTS_BASE_LAYER_CHANGED";
+
 	/**
 	 * the name of the visibility change event
 	 */
@@ -257,7 +262,10 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 		if (thePlottable instanceof NotInBaseLayer)
 			throw new RuntimeException("Can't hold such item: " + thePlottable.getClass() + "!");
 		else
+		{
 			super.add(thePlottable);
+			getProperties().firePropertyChange(CONTENTS_CHANGED, null, this);
+		}
 	}
 
 	/** whether this type of BaseLayer is able to have shapes added to it

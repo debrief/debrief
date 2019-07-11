@@ -61,7 +61,7 @@ public class NarrativeConfigurationModel implements
   private final List<AbstractSelection<NarrativeEntry>> _narrativeSelection =
       new ArrayList<>();
 
-  private final HashMap<NarrativeWrapper, Set<NarrativeEntry>> _narrativeWrappers =
+  private final HashMap<Object, Set<NarrativeEntry>> _narrativeWrappers =
       new HashMap<>();
 
   public NarrativeConfigurationModel(final TimeManager timeManager)
@@ -84,7 +84,7 @@ public class NarrativeConfigurationModel implements
   }
 
   @Override
-  public void addNarrativeWrapper(final NarrativeWrapper narrativeWrapper)
+  public void addNarrativeLayer(final Object narrativeWrapper)
   {
     _narrativeWrappers.put(narrativeWrapper, new HashSet<NarrativeEntry>());
   }
@@ -97,7 +97,7 @@ public class NarrativeConfigurationModel implements
 
   @Override
   public Set<NarrativeEntry> getCurrentNarrativeEntries(
-      final NarrativeWrapper narrativeWrapper)
+      final Object narrativeWrapper)
   {
     return _narrativeWrappers.get(narrativeWrapper);
   }
@@ -115,7 +115,7 @@ public class NarrativeConfigurationModel implements
   }
 
   @Override
-  public Set<NarrativeWrapper> getRegisteredNarrativeWrapper()
+  public Set<Object> getRegisteredNarrativeWrapper()
   {
     return _narrativeWrappers.keySet();
   }
@@ -166,18 +166,18 @@ public class NarrativeConfigurationModel implements
   }
 
   @Override
-  public void registerNewNarrativeEntry(final NarrativeWrapper wrapper,
+  public void registerNewNarrativeEntry(final Object wrapper,
       final NarrativeEntry entry)
   {
     if (!_narrativeWrappers.containsKey(wrapper))
     {
-      addNarrativeWrapper(wrapper);
+      addNarrativeLayer(wrapper);
     }
     _narrativeWrappers.get(wrapper).add(entry);
   }
 
   @Override
-  public void removeNarrativeWrapper(final NarrativeWrapper narrativeWrapper)
+  public void removeNarrativeLayer(final Object narrativeWrapper)
   {
     _narrativeWrappers.remove(narrativeWrapper);
   }
@@ -229,7 +229,7 @@ public class NarrativeConfigurationModel implements
   }
 
   @Override
-  public void unregisterNarrativeEntry(final NarrativeWrapper wrapper,
+  public void unregisterNarrativeEntry(final Object wrapper,
       final NarrativeEntry entry)
   {
     if (_narrativeWrappers.containsKey(wrapper))
