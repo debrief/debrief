@@ -724,10 +724,11 @@ public class DebriefLiteApp implements FileDropListener
 
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));
 
-    mapPane = geoMapRenderer.createMapLayout();
+    final float initialAlpha = 0.7f;
+
+    mapPane = geoMapRenderer.createMapLayout(initialAlpha);
 
     dropSupport.addComponent(mapPane);
-
 
     setInitialArea(mapPane, geoMapRenderer.getTransform());
 
@@ -814,7 +815,8 @@ public class DebriefLiteApp implements FileDropListener
       }
     };
 
-    final ChangeListener alphaListener = new ChangeListener() {
+    final ChangeListener alphaListener = new ChangeListener()
+    {
 
       @Override
       public void stateChanged(ChangeEvent e)
@@ -823,14 +825,16 @@ public class DebriefLiteApp implements FileDropListener
         int alpha = source.getValue();
         mapPane.setTransparency(alpha / 100f);
         mapPane.repaint();
-      }};
+      }
+    };
 
     // create the components
     initForm();
     final MathTransform screenTransform = geoMapRenderer.getTransform();
     createAppPanels(geoMapRenderer, session.getUndoBuffer(), dropSupport,
         mapPane, _stepControl, timeManager, _myOperations, normalT, snailT,
-        statusBar, screenTransform, collapseAction, alphaListener);
+        statusBar, screenTransform, collapseAction, alphaListener,
+        initialAlpha);
     _listenForMods = new DataListenerAdaptor()
     {
 
@@ -914,7 +918,7 @@ public class DebriefLiteApp implements FileDropListener
       final TimeManager timeManager, final PlotOperations operation,
       final ToteSetter normalT, final ToteSetter snailT, final JLabel statusBar,
       final MathTransform transform, final Runnable collapseAction,
-      ChangeListener alphaListener)
+      final ChangeListener alphaListener, final float alpha)
   {
     final JPanel centerPanel = new JPanel();
     centerPanel.setLayout(new BorderLayout());
@@ -961,7 +965,8 @@ public class DebriefLiteApp implements FileDropListener
     };
     new DebriefRibbon(theFrame.getRibbon(), _theLayers, app, geoMapRenderer,
         stepControl, timeManager, operation, session, resetAction, normalT,
-        snailT, statusBar, exitAction, projection, transform, collapseAction, alphaListener);
+        snailT, statusBar, exitAction, projection, transform, collapseAction,
+        alphaListener, alpha);
   }
 
   protected void doExpandCollapse()

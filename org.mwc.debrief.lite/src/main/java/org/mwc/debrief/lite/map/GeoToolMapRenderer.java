@@ -68,9 +68,9 @@ public class GeoToolMapRenderer
     _myRenderers.add(renderer);
   }
 
-  public LiteMapPane createMapLayout()
+  public LiteMapPane createMapLayout(final float alpha)
   {
-    mapPane = new LiteMapPane(this);
+    mapPane = new LiteMapPane(this, alpha);
     final StreamingRenderer streamer = new StreamingRenderer();
     mapPane.setRenderer(streamer);
     mapPane.setMapContent(mapContent);
@@ -104,7 +104,7 @@ public class GeoToolMapRenderer
 
   public MathTransform getTransform()
   {
-    return mapPane.data_transform;
+    return mapPane.getTransform();
   }
 
   /**
@@ -132,7 +132,7 @@ public class GeoToolMapRenderer
     return transform;
   }
 
-  void paintEvent(final Graphics arg0)
+  public void paintEvent(final Graphics arg0)
   {
     for (final MapRenderer r : _myRenderers)
     {

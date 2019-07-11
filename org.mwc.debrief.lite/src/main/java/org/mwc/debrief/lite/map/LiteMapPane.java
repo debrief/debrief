@@ -33,112 +33,57 @@ import MWC.Utilities.TextFormatting.BriefFormatLocation;
 public class LiteMapPane extends JMapPane
 {
 
-  /** background transparency
-   * 
-   */
-  private float mapTransparency = 0.7f;
-  
   /**
    *
    */
   private static final long serialVersionUID = 1L;
 
   private static final String WORLD_PROJECTION = "EPSG:3395"; // 3395 for Mercator proj (? or may
-                                                              // be 3857?)
+
+  // be 3857?)
   private static final String DATA_PROJECTION = "EPSG:4326";
+  /**
+   * background transparency
+   *
+   */
+  private float mapTransparency;
   private final MouseDragLine dragLine;
 
   private final GeoToolMapRenderer _renderer;
-  private final MapMouseListener mouseMotionListener = new MapMouseAdapter()
-  {
+  private final MapMouseListener mouseMotionListener;
 
-    void handleMouseMovement(final MapMouseEvent ev)
-    {
-      // mouse pos in Map coordinates
-      final DirectPosition2D curPos = ev.getWorldPos();
+  private final MathTransform data_transform;
 
-      if (ev.getWorldPos()
-          .getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84)
-      {
-        try
-        {
-          data_transform.transform(curPos, curPos);
-        }
-        catch (MismatchedDimensionException | TransformException e)
-        {
-          Application.logError2(ToolParent.ERROR,
-              "Failure in projection transform", e);
-        }
-      }
-
-      final WorldLocation current = new WorldLocation(curPos.getY(), curPos
-          .getX(), 0);
-      final String message = BriefFormatLocation.toString(current);
-      DebriefLiteApp.updateStatusMessage(message);
-    }
-
-    @Override
-    public void onMouseDragged(final MapMouseEvent arg0)
-    {
-      if (!(currentCursorTool instanceof RangeBearingTool))
-      {
-        handleMouseMovement(arg0);
-      }
-    }
-
-    @Override
-    public void onMouseEntered(final MapMouseEvent arg0)
-    {
-      handleMouseMovement(arg0);
-    }
-
-    @Override
-    public void onMouseExited(final MapMouseEvent arg0)
-    {
-      handleMouseMovement(arg0);
-    }
-
-    @Override
-    public void onMouseMoved(final MapMouseEvent arg0)
-    {
-      handleMouseMovement(arg0);
-    }
-
-    @Override
-    public void onMouseWheelMoved(final MapMouseEvent arg0)
-    {
-      handleMouseMovement(arg0);
-    }
-  };
-
-  private CoordinateReferenceSystem worldCoords;
-
-  private CoordinateReferenceSystem worldDegs;
-
-  MathTransform data_transform;
-
-  public LiteMapPane(final GeoToolMapRenderer geoToolMapRenderer)
+  public LiteMapPane(final GeoToolMapRenderer geoToolMapRenderer, final float alpha)
   {
     super();
+    
+    mapTransparency = alpha;
 
     // Would be better to pass in a GeoToolMapProjection or GTProjection here?
+    MathTransform theTransform = null;
     try
     {
-      worldCoords = CRS.decode(WORLD_PROJECTION);
+      final CoordinateReferenceSystem worldCoords = CRS.decode(
+          WORLD_PROJECTION);
 
       Hints.putSystemDefault(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER,
           Boolean.TRUE);
-      worldDegs = CRS.decode(DATA_PROJECTION);
-      data_transform = CRS.findMathTransform(worldCoords, worldDegs);
+      final CoordinateReferenceSystem worldDegs = CRS.decode(DATA_PROJECTION);
+      theTransform = CRS.findMathTransform(worldCoords, worldDegs);
     }
     catch (final FactoryException e)
     {
-      Application.logError2(ToolParent.ERROR,
-          "Failure in projection transform", e);
+      Application.logError2(ToolParent.ERROR, "Failure in projection transform",
+          e);
     }
-    _renderer = geoToolMapRenderer;
 
+    data_transform = theTransform;
+    _renderer = geoToolMapRenderer;
     dragLine = new MouseDragLine(this);
+
+    mouseMotionListener = getMouseListener(data_transform);
+
     addMouseListener(dragLine);
     addMouseMotionListener(dragLine);
     addMouseListener(mouseMotionListener);
@@ -147,17 +92,83 @@ public class LiteMapPane extends JMapPane
     super.setBackground(new Color(135, 172, 215));
   }
   
-  public void setTransparency(final float transparency)
+  public MathTransform getTransform()
   {
-    mapTransparency = transparency;
+    return data_transform;
+  }
+
+  public MapMouseAdapter getMouseListener(final MathTransform transform)
+  {
+    return new MapMouseAdapter()
+    {
+
+      void handleMouseMovement(final MapMouseEvent ev)
+      {
+        // mouse pos in Map coordinates
+        final DirectPosition2D curPos = ev.getWorldPos();
+
+        if (ev.getWorldPos()
+            .getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84)
+        {
+          try
+          {
+            transform.transform(curPos, curPos);
+          }
+          catch (MismatchedDimensionException | TransformException e)
+          {
+            Application.logError2(ToolParent.ERROR,
+                "Failure in projection transform", e);
+          }
+        }
+
+        final WorldLocation current = new WorldLocation(curPos.getY(), curPos
+            .getX(), 0);
+        final String message = BriefFormatLocation.toString(current);
+        DebriefLiteApp.updateStatusMessage(message);
+      }
+
+      @Override
+      public void onMouseDragged(final MapMouseEvent arg0)
+      {
+        if (!(currentCursorTool instanceof RangeBearingTool))
+        {
+          handleMouseMovement(arg0);
+        }
+      }
+
+      @Override
+      public void onMouseEntered(final MapMouseEvent arg0)
+      {
+        handleMouseMovement(arg0);
+      }
+
+      @Override
+      public void onMouseExited(final MapMouseEvent arg0)
+      {
+        handleMouseMovement(arg0);
+      }
+
+      @Override
+      public void onMouseMoved(final MapMouseEvent arg0)
+      {
+        handleMouseMovement(arg0);
+      }
+
+      @Override
+      public void onMouseWheelMoved(final MapMouseEvent arg0)
+      {
+        handleMouseMovement(arg0);
+      }
+    };
+
   }
 
   @Override
-  protected void paintComponent(Graphics g)
+  protected void paintComponent(final Graphics g)
   {
     // don't ask the parent to paint, since we're doing it, instead
     // super.paintComponent(g);
-    
+
     if (drawingLock.tryLock())
     {
       try
@@ -169,15 +180,15 @@ public class LiteMapPane extends JMapPane
 
           // remember the imaging composite
           final Composite before = g2.getComposite();
-          
+
           // ok, set transparency
           final AlphaComposite transOne = AlphaComposite.getInstance(
               AlphaComposite.SRC_OVER, mapTransparency);
           g2.setComposite(transOne);
-          
+
           // draw the image
           g2.drawImage((Image) image, imageOrigin.x, imageOrigin.y, null);
-          
+
           // restore the mode
           g2.setComposite(before);
 
@@ -190,12 +201,6 @@ public class LiteMapPane extends JMapPane
     }
     _renderer.paintEvent(g);
   }
-
-  // @Override
-  // protected void paintComponent(final Graphics arg0)
-  // {
-  // super.paintComponent(arg0);
-  // }
 
   @Override
   public void setCursorTool(final CursorTool tool)
@@ -230,5 +235,16 @@ public class LiteMapPane extends JMapPane
     {
       paramsLock.writeLock().unlock();
     }
+  }
+
+  // @Override
+  // protected void paintComponent(final Graphics arg0)
+  // {
+  // super.paintComponent(arg0);
+  // }
+
+  public void setTransparency(final float transparency)
+  {
+    mapTransparency = transparency;
   }
 }

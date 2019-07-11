@@ -32,13 +32,14 @@ import MWC.GUI.Layers;
 public class DebriefRibbonView
 {
   private static JRibbonComponent addAlphaSlider(
-      final ChangeListener alphaListener)
+      final ChangeListener alphaListener, final float alpha)
   {
     final JSlider slider = new JSlider(0, 100);
     slider.setMajorTickSpacing(20);
     slider.setPaintTicks(true);
     slider.setBackground(Color.DARK_GRAY);
     slider.addChangeListener(alphaListener);
+    slider.setValue((int)(alpha * 100f));
 
     final JRibbonComponent component = new JRibbonComponent(null,
         "Transparency:", slider);
@@ -48,7 +49,7 @@ public class DebriefRibbonView
   protected static void addViewTab(final JRibbon ribbon,
       final GeoToolMapRenderer geoMapRenderer, final Layers layers,
       final JLabel statusBar, final GeoToolMapProjection projection,
-      final MathTransform transform, final ChangeListener alphaListener)
+      final MathTransform transform, final ChangeListener alphaListener, final float alpha)
   {
     final JRibbonBand mouseMode = createMouseModes(geoMapRenderer, statusBar,
         layers, projection, transform);
@@ -56,7 +57,7 @@ public class DebriefRibbonView
     
     // and the slider
     final JRibbonBand layersMenu = new JRibbonBand("Background", null);
-    final JRibbonComponent slider = addAlphaSlider(alphaListener);
+    final JRibbonComponent slider = addAlphaSlider(alphaListener, alpha);
     slider.setDisplayPriority(RibbonElementPriority.TOP);
     layersMenu.addRibbonComponent(slider);
 
