@@ -864,16 +864,30 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
 
   }
+  
+  private boolean _plotUpdating = false;
 
   protected void timeUpdate(final CanvasAdaptor theCanvas,
       final PropertyChangeEvent evt)
   {
-    // ok, redraw the whole map
-    mapPane.repaint();
-    _pendingNewTime = (HiResDate) evt.getNewValue();
-    _pendingOldTime = (HiResDate) evt.getOldValue();
-    redoTimePainter(false, theCanvas, (HiResDate) evt.getOldValue(),
-        (HiResDate) evt.getNewValue());
+    if(!_plotUpdating)
+    {
+      _plotUpdating = true;
+      
+      // ok, redraw the whole map
+      mapPane.repaint();
+      _pendingNewTime = (HiResDate) evt.getNewValue();
+      _pendingOldTime = (HiResDate) evt.getOldValue();
+      redoTimePainter(false, theCanvas, (HiResDate) evt.getOldValue(),
+          (HiResDate) evt.getNewValue());
+      
+      _plotUpdating = false;
+    }
+    else
+    {
+      System.err.println("Skipping plot update");
+    }
+    
   }
 
   private static void loadBackdropdata(final Layers layers)
