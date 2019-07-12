@@ -27,6 +27,7 @@ import java.awt.event.MouseMotionListener;
 import javax.swing.SwingConstants;
 
 import org.jdesktop.swingx.JXLabel;
+import org.mwc.debrief.lite.DebriefLiteApp;
 
 public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
 {
@@ -99,6 +100,7 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
         {
           collapsiblePaneInstance.setCollapsed(!collapsiblePaneInstance
               .isCollapsed());
+         DebriefLiteApp.getInstance().savePanelState();
         }
       }
 
@@ -155,6 +157,7 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
             collapsiblePaneInstance.setCollapsed(false);
           }
           collapsiblePaneInstance.validate();
+          DebriefLiteApp.getInstance().savePanelState();
         }
       }
 
@@ -174,5 +177,10 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
     {
       titleLabel.setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
     }
+  }
+  @Override
+  public String getName()
+  {
+    return titleLabel.getText();
   }
 }

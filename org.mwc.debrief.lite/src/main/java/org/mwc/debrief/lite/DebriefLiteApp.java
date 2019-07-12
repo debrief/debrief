@@ -221,6 +221,7 @@ public class DebriefLiteApp implements FileDropListener
   public static final String INACTIVE_STATE = "INACTIVE";
 
   public static String state = INACTIVE_STATE;
+  public static boolean collapsedState=false;
 
   public static PropertyChangeListener enableDisableButtons =
       new PropertyChangeListener()
@@ -303,6 +304,7 @@ public class DebriefLiteApp implements FileDropListener
       public void run()
       {
         _instance = new DebriefLiteApp();
+        
       }
     });
 
@@ -506,7 +508,7 @@ public class DebriefLiteApp implements FileDropListener
 
   private final JXCollapsiblePaneWithTitle narrativePanel =
       new JXCollapsiblePaneWithTitle(Direction.RIGHT, "Narratives", 350);
-
+  private final List<String> openPanelNames = new ArrayList<String>();
   private final JRibbonFrame theFrame;
   private final Layers _theLayers = new Layers()
   {
@@ -862,7 +864,7 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
     theFrame.setVisible(true);
     theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
-
+    savePanelState();
   }
 
   protected void timeUpdate(final CanvasAdaptor theCanvas,
@@ -970,6 +972,22 @@ public class DebriefLiteApp implements FileDropListener
         alphaListener, alpha, path);
   }
 
+  public void savePanelState()
+  {
+    openPanelNames.clear();
+    if(!outlinePanel.isCollapsed()) {
+      openPanelNames.add(outlinePanel.getName());
+    }
+    if(!narrativePanel.isCollapsed()) {
+      openPanelNames.add(narrativePanel.getName());
+    }
+    if(!graphPanel.isCollapsed())
+    {
+      openPanelNames.add(graphPanel.getName());
+    }
+    
+  }
+
   protected void doExpandCollapse()
   {
     List<JXCollapsiblePaneWithTitle> items =
@@ -977,23 +995,27 @@ public class DebriefLiteApp implements FileDropListener
     items.add(outlinePanel);
     items.add(graphPanel);
     items.add(narrativePanel);
-
-    boolean doCollapse = false;
-
-    for (final JXCollapsiblePaneWithTitle panel : items)
-    {
-      if (!panel.isCollapsed())
+    
+    if(collapsedState) {
+      
+      for (final JXCollapsiblePaneWithTitle panel : items)
       {
-        doCollapse = true;
-        break;
+        if (collapsedState && openPanelNames.contains(panel.getName()))
+        {
+
+          panel.setCollapsed(false);
+          
+        }
+      }
+      savePanelState();
+    }
+    else {
+      for (final JXCollapsiblePaneWithTitle panel : items)
+      {
+        panel.setCollapsed(true);
       }
     }
-
-    // ok, now make it so
-    for (final JXCollapsiblePaneWithTitle panel : items)
-    {
-      panel.setCollapsed(doCollapse);
-    }
+    collapsedState=!collapsedState;
 
   }
 
