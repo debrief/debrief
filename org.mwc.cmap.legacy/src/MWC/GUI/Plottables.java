@@ -186,6 +186,11 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	 * the name of this list
 	 */
 	private String _theName;
+	
+	/** cache the value of toString()
+	 * 
+	 */
+	private String _cachedName = null;
 
 	/**
 	 * specify if this layer is currently visible or not
@@ -412,7 +417,13 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	 */
 	public String toString()
 	{
-		return getName() + " (" + size() + " " + collectiveName() + ")";
+	  // do we have a cached value?
+	  if(_cachedName == null)
+	  {
+	    // nope, better create one
+	    _cachedName = getName() + " (" + size() + " " + collectiveName() + ")";
+	  }
+		return _cachedName;
 	}
 
 	/** the collective name for items of this type
@@ -431,6 +442,8 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	public void setName(final String theName)
 	{
 		_theName = theName;
+		
+		clearCachedName();
 	}
 
 	/**
@@ -483,6 +496,8 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 		if (thePlottable == null)
 			return;
 
+		clearCachedName();
+		
 		// right, add it.
 		_thePlottables.add(thePlottable);
 
@@ -521,6 +536,8 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	{
 		// stop listening to it
 		stopListeningTo(p);
+		
+		clearCachedName();
 
 		// double check we've got it.
 		final boolean worked;
@@ -575,6 +592,8 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	 */
 	public void removeAllElements()
 	{
+	  clearCachedName();
+	  
 		// undo all the moved listeners
 		final Iterator<Editable> iter = _thePlottables.iterator();
 		while (iter.hasNext())
@@ -600,6 +619,14 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 			final Plottable p = (Plottable) enumer.nextElement();
 			add(p);
 		}
+	}
+	
+	/** clear the cached name, if the name changes,
+	 * or the number of children changes
+	 */
+	private void clearCachedName()
+	{
+	  _cachedName = null;
 	}
 	
 	/** do we already contain this object?
