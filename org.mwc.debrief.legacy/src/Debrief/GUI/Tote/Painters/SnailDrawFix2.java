@@ -263,8 +263,15 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
     final Color col = fix.getColor();
     dest.setColor(col);
 
+    final Point screenPos = proj.toScreen(fix.getLocation());
+//    if(screenPos != null)
+//    {
+//      // skip, we've got a projection problem
+//      return thisR;
+//    }
+    
     // produce the centre point
-    final Point p = new Point(proj.toScreen(fix.getLocation()));
+    final Point p = new Point(screenPos);
 
     // see if we are in symbol plotting mode
     final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter thisHighlighter =
@@ -376,18 +383,6 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
       // and add to the limits rectangle
       thisR.add(p);
     }
-
-    // set the width
-    // if(dest instanceof CanvasType)
-    // {
-    // CanvasType ct = (CanvasType)dest;
-    // ct.setLineWidth(1);
-    // }
-    // if(dest instanceof Graphics2D)
-    // {
-    // Graphics2D g2 = (Graphics2D)dest;
-    // BasicStroke bs = new BasicStroke(1);
-    // }
 
     return thisR;
   }
