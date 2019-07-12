@@ -15,6 +15,7 @@
 package org.mwc.debrief.lite.menu;
 
 import java.awt.Desktop;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -26,6 +27,8 @@ import javax.swing.SwingUtilities;
 import org.mwc.debrief.lite.undo.RedoAction;
 import org.mwc.debrief.lite.undo.UndoAction;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand;
+import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandBuilder;
+import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
@@ -138,9 +141,9 @@ public class DebriefRibbonLite
       }
     };
     // and the expand/collapse button
-    final FlamingoCommand collapseCommand = MenuUtils.createCommand("Collapse",
-        "icons/24/fit_to_win.png", collapsePopup, RibbonElementPriority.TOP,
-        null);
+    
+    final FlamingoCommand collapseCommand = addToggleCommand("Collapse",
+        "icons/24/fit_to_win.png", collapsePopup);
     // so that action has the command it has to enable/disable
     collapseCommand.setEnabled(true);
     ribbon.addTaskbarCommand(collapseCommand);
@@ -157,5 +160,23 @@ public class DebriefRibbonLite
         liteMenu));
     final RibbonTask liteTask = new RibbonTask("Lite", liteMenu);
     ribbon.addTask(liteTask);
+  }
+  
+  private static FlamingoCommand addToggleCommand(String commandName,String imagePath,ActionListener actionToAdd) {
+    ImageWrapperResizableIcon imageIcon = null;
+    if (imagePath != null)
+    {
+      final Image zoominImage = MenuUtils.createImage(imagePath);
+      imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, MenuUtils.ICON_SIZE_16);
+    }
+    final FlamingoCommandBuilder builder = new FlamingoCommandBuilder()
+        .setTitle(commandName).setIcon(imageIcon).setAction(actionToAdd)
+        .setTitleClickAction();
+
+      builder.setToggle();
+      builder.setToggleSelected(false);
+      final FlamingoCommand command = builder.build();
+
+      return command;
   }
 }
