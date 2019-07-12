@@ -233,7 +233,6 @@ public class DebriefLiteApp implements FileDropListener
           final boolean isActive = ACTIVE_STATE.equals(evt.getNewValue());
           DebriefRibbonTimeController.setButtonsEnabled(
               DebriefRibbonTimeController.topButtonsPanel, isActive);
-          DebriefRibbonFile.closeButton.setEnabled(isActive);
         }
       };
 
@@ -1467,6 +1466,7 @@ public class DebriefLiteApp implements FileDropListener
       DebriefLiteApp.currentFileName = file.getAbsolutePath();
       DebriefLiteApp.setTitle(file.getName());
       setState(ACTIVE_STATE);
+      DebriefRibbonFile.closeButton.setEnabled(true);
     }
   }
 
@@ -1497,6 +1497,7 @@ public class DebriefLiteApp implements FileDropListener
     // continue with reset processing
     _plotDirty = false;
     setState(INACTIVE_STATE);
+    DebriefRibbonFile.closeButton.setEnabled(false);
     currentFileName = null;
     setTitle(defaultTitle);
 
