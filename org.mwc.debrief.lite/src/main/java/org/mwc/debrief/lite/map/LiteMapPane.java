@@ -4,6 +4,7 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -163,8 +164,13 @@ public class LiteMapPane extends JMapPane
   protected void paintComponent(final Graphics g)
   {
     // don't ask the parent to paint, since we're doing it, instead
-    // super.paintComponent(g);
+    //super.paintComponent(g);
 
+    // draw in background
+    Dimension dim = this.getSize();
+    g.setColor(Color.white);
+    g.fillRect(0, 0, dim.width, dim.height);
+    
     if (drawingLock.tryLock())
     {
       try
