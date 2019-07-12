@@ -221,7 +221,7 @@ public class DebriefLiteApp implements FileDropListener
   public static final String INACTIVE_STATE = "INACTIVE";
 
   public static String state = INACTIVE_STATE;
-  public static boolean collapsedState=false;
+  public static boolean collapsedState = false;
 
   public static PropertyChangeListener enableDisableButtons =
       new PropertyChangeListener()
@@ -248,8 +248,7 @@ public class DebriefLiteApp implements FileDropListener
   private final static LiteApplication app = new LiteApplication(
       ImportReplay.IMPORT_AS_OTG, 0L);
 
-  private static final JLabel statusBar = new JLabel(
-      "[pending]");
+  private static final JLabel statusBar = new JLabel("[pending]");
 
   private static List<TrackWrapper> determineCandidateHosts()
   {
@@ -304,7 +303,7 @@ public class DebriefLiteApp implements FileDropListener
       public void run()
       {
         _instance = new DebriefLiteApp();
-        
+
       }
     });
 
@@ -508,7 +507,8 @@ public class DebriefLiteApp implements FileDropListener
 
   private final JXCollapsiblePaneWithTitle narrativePanel =
       new JXCollapsiblePaneWithTitle(Direction.RIGHT, "Narratives", 350);
-  private final List<String> openPanelNames = new ArrayList<String>();
+  private final List<JXCollapsiblePaneWithTitle> openPanels =
+      new ArrayList<JXCollapsiblePaneWithTitle>();
   private final JRibbonFrame theFrame;
   private final Layers _theLayers = new Layers()
   {
@@ -816,7 +816,7 @@ public class DebriefLiteApp implements FileDropListener
         doExpandCollapse();
       }
     };
-    
+
     final String path = "ReadMe.pdf";
 
     final ChangeListener alphaListener = new ChangeListener()
@@ -837,8 +837,8 @@ public class DebriefLiteApp implements FileDropListener
     final MathTransform screenTransform = geoMapRenderer.getTransform();
     createAppPanels(geoMapRenderer, session.getUndoBuffer(), dropSupport,
         mapPane, _stepControl, timeManager, _myOperations, normalT, snailT,
-        statusBar, screenTransform, collapseAction, alphaListener,
-        initialAlpha, path);
+        statusBar, screenTransform, collapseAction, alphaListener, initialAlpha,
+        path);
     _listenForMods = new DataListenerAdaptor()
     {
       @Override
@@ -864,7 +864,6 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
     theFrame.setVisible(true);
     theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
-    savePanelState();
   }
 
   protected void timeUpdate(final CanvasAdaptor theCanvas,
@@ -972,51 +971,41 @@ public class DebriefLiteApp implements FileDropListener
         alphaListener, alpha, path);
   }
 
-  private void savePanelState()
-  {
-    openPanelNames.clear();
-    if(!outlinePanel.isCollapsed()) {
-      openPanelNames.add(outlinePanel.getName());
-    }
-    if(!narrativePanel.isCollapsed()) {
-      openPanelNames.add(narrativePanel.getName());
-    }
-    if(!graphPanel.isCollapsed())
-    {
-      openPanelNames.add(graphPanel.getName());
-    }
-    
-  }
-
   protected void doExpandCollapse()
   {
-    List<JXCollapsiblePaneWithTitle> items =
-        new ArrayList<JXCollapsiblePaneWithTitle>();
-    items.add(outlinePanel);
-    items.add(graphPanel);
-    items.add(narrativePanel);
-    
-    if(collapsedState) {
+    if (collapsedState)
+    {
+      for (final JXCollapsiblePaneWithTitle panel : openPanels)
+      {
+        panel.setCollapsed(false);
+      }
+    }
+    else
+    {
+      // clear the list
+      openPanels.clear();
+
+      // get list of panels
+      final List<JXCollapsiblePaneWithTitle> items =
+          new ArrayList<JXCollapsiblePaneWithTitle>();
+      items.add(outlinePanel);
+      items.add(graphPanel);
+      items.add(narrativePanel);
       
       for (final JXCollapsiblePaneWithTitle panel : items)
       {
-        if (collapsedState && openPanelNames.contains(panel.getName()))
+        // is it currently open?
+        if(!panel.isCollapsed())
         {
-
-          panel.setCollapsed(false);
+          // remember it was open
+          openPanels.add(panel);
           
+          // and collapse it
+          panel.setCollapsed(true);
         }
       }
     }
-    else {
-      savePanelState();
-      for (final JXCollapsiblePaneWithTitle panel : items)
-      {
-        panel.setCollapsed(true);
-      }
-    }
-    collapsedState=!collapsedState;
-
+    collapsedState = !collapsedState;
   }
 
   protected void doPaint(final Graphics gc)
