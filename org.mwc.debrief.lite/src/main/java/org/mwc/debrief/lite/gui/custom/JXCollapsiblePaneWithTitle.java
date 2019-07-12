@@ -27,7 +27,6 @@ import java.awt.event.MouseMotionListener;
 import javax.swing.SwingConstants;
 
 import org.jdesktop.swingx.JXLabel;
-import org.mwc.debrief.lite.DebriefLiteApp;
 
 public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
 {
