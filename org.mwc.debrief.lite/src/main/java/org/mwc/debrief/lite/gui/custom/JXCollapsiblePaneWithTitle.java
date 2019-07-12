@@ -100,7 +100,6 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
         {
           collapsiblePaneInstance.setCollapsed(!collapsiblePaneInstance
               .isCollapsed());
-         DebriefLiteApp.getInstance().savePanelState();
         }
       }
 
@@ -157,7 +156,6 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
             collapsiblePaneInstance.setCollapsed(false);
           }
           collapsiblePaneInstance.validate();
-          DebriefLiteApp.getInstance().savePanelState();
         }
       }
 

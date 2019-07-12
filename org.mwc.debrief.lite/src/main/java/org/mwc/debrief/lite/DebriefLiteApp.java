@@ -972,7 +972,7 @@ public class DebriefLiteApp implements FileDropListener
         alphaListener, alpha, path);
   }
 
-  public void savePanelState()
+  private void savePanelState()
   {
     openPanelNames.clear();
     if(!outlinePanel.isCollapsed()) {
@@ -1007,9 +1007,9 @@ public class DebriefLiteApp implements FileDropListener
           
         }
       }
-      savePanelState();
     }
     else {
+      savePanelState();
       for (final JXCollapsiblePaneWithTitle panel : items)
       {
         panel.setCollapsed(true);
