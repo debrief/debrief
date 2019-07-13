@@ -177,6 +177,7 @@ import javax.swing.AbstractCellEditor;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -205,6 +206,7 @@ import MWC.GUI.Properties.PlainPropertyEditor;
 import MWC.GUI.Properties.Swing.SwingCustomEditor;
 import MWC.GUI.Tools.Chart.RightClickEdit;
 import MWC.GUI.Tools.Chart.RightClickEdit.PlottableMenuCreator;
+import MWC.TacticalData.NarrativeEntry;
 
 public class SwingLayerManager extends SwingCustomEditor implements
     Layers.DataListener, MWC.GUI.Properties.NoEditorButtons,
@@ -654,15 +656,32 @@ public class SwingLayerManager extends SwingCustomEditor implements
 
     if (s != null && !s.isEmpty())
     {
-      // create the layer
-      ly = new BaseLayer();
-      ly.setName(s);
+      // check it's not the narratives layer
+      if(NarrativeEntry.NARRATIVE_LAYER.equals(s))
+      {
+        SwingUtilities.invokeLater(new Runnable() {
 
-      // add to the data
-      _myData.addThisLayer(ly);
+          @Override
+          public void run()
+          {
+            JOptionPane.showMessageDialog(_myTree, "Sorry, the name `"
+                + NarrativeEntry.NARRATIVE_LAYER
+                + "` is reserved for narratives.\nPlease choose another layer name",
+                "Add layer", JOptionPane.WARNING_MESSAGE);
+          }
+          
+        });
+        ly = null;
+      }
+      else
+      {
+        // create the layer
+        ly = new BaseLayer();
+        ly.setName(s);
 
-      // the layers object should inform us of any update, anyway
-
+        // add to the data
+        _myData.addThisLayer(ly);
+      }
     }
     else
     {
