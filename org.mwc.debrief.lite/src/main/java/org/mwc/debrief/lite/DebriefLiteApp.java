@@ -965,8 +965,9 @@ public class DebriefLiteApp implements FileDropListener
       public void componentResized(final ComponentEvent e)
       {
         // TODO . This must be change once we update geotools.
-        mapPane.setVisible(false);
-        mapPane.setVisible(true);
+//        mapPane.setVisible(false);
+//        mapPane.setVisible(true);
+        mapPane.repaint();
       }
     });
 
@@ -1237,6 +1238,9 @@ public class DebriefLiteApp implements FileDropListener
             .getDateFormat(), true, true);
       }
       _theLayers.fireModified(null);
+      
+      // also tell the layers they've been reformatted
+      _theLayers.fireReformatted(null);
 
       // and the spatial bounds
       new FitToWindow(_theLayers, mapPane).actionPerformed(null);
