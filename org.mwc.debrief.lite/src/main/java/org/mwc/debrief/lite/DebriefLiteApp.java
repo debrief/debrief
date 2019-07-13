@@ -683,6 +683,8 @@ public class DebriefLiteApp implements FileDropListener
   private final Layer safeChartFeatures;
   private HiResDate _pendingNewTime;
   private HiResDate _pendingOldTime;
+  private final ToteSetter _normalSetter;
+  private final ToteSetter _snailSetter;
 
   public DebriefLiteApp()
   {
@@ -825,9 +827,9 @@ public class DebriefLiteApp implements FileDropListener
       }
     };
 
-    final ToteSetter normalT = new ToteSetter(painterManager, tp, refresher);
-    final ToteSetter snailT = new ToteSetter(painterManager, sp, refresher);
-    normalT.run();
+    _normalSetter = new ToteSetter(painterManager, tp, refresher);
+    _snailSetter = new ToteSetter(painterManager, sp, refresher);
+    _normalSetter.run();
 
     final Runnable collapseAction = new Runnable()
     {
@@ -857,7 +859,7 @@ public class DebriefLiteApp implements FileDropListener
     initForm();
     final MathTransform screenTransform = geoMapRenderer.getTransform();
     createAppPanels(geoMapRenderer, session.getUndoBuffer(), dropSupport,
-        mapPane, _stepControl, timeManager, _myOperations, normalT, snailT,
+        mapPane, _stepControl, timeManager, _myOperations, _normalSetter, _snailSetter,
         statusBar, screenTransform, collapseAction, alphaListener, initialAlpha,
         path);
     _listenForMods = new DataListenerAdaptor()
@@ -1219,6 +1221,7 @@ public class DebriefLiteApp implements FileDropListener
   private void handleImportDPF(final File file)
   {
     boolean success = true;
+    
     final DebriefXMLReaderWriter reader = new DebriefXMLReaderWriter(app);
     try
     {
@@ -1257,7 +1260,14 @@ public class DebriefLiteApp implements FileDropListener
       DialogFactory.showMessage("Error in opening file", ie.getMessage());
       success = false;
     }
-
+    
+    // ok, the plot may have loaded with a stepping mode (snail mode).
+    // we can't see how to change the button in the Ribbon bar, so, instead
+    // we'll change the listener to what the ribbon is showing
+    final ToteSetter listener = DebriefRibbonTimeController.isNormalDisplayMode()
+        ? _normalSetter : _snailSetter;
+    listener.run();
+    
     if (success)
     {
       resetFileName(file);
