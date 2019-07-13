@@ -173,7 +173,7 @@ public class SnailPainter2 extends TotePainter
         _mySnailPlotter));
     _myHighlightPlotters.addElement(new SnailDrawTMAContact2(_mySnailPlotter));
 
-    _mySnailPlotter.setPointSize(new BoundedInteger(5, 0, 0));
+    _mySnailPlotter.setPointSize(new BoundedInteger(7, 0, 20));
     _mySnailPlotter.setVectorStretch(1);
   }
 
