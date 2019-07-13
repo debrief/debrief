@@ -170,11 +170,15 @@ public interface PlotHighlighter extends Editable
         final java.awt.Graphics dest, final MWC.GenericData.WatchableList list,
         final MWC.GenericData.Watchable watch, final boolean isPrimary)
     {
+      if (!list.getVisible())
+      {
+        return;
+      }
+
       // check that our graphics context is still valid -
       // we can't, so we will just have to trap any exceptions it raises
       try
       {
-
         // set the highlight colour
         /*
          * dest.setColor(new Color(255 - _myColor.getRed(), 255 - _myColor.getGreen(), 255 -
