@@ -1216,6 +1216,9 @@ public class DebriefLiteApp implements FileDropListener
             .getDateFormat(), true, true);
       }
       _theLayers.fireModified(null);
+      
+      // also tell the layers they've been reformatted
+      _theLayers.fireReformatted(null);
 
       // and the spatial bounds
       new FitToWindow(_theLayers, mapPane).actionPerformed(null);
