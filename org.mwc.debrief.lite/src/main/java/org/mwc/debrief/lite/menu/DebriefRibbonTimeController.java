@@ -299,6 +299,9 @@ public class DebriefRibbonTimeController
 
   private static JCheckBoxMenuItem[] _menuItem;
 
+  /** track snail mode
+   * 
+   */
   private static boolean _isNormal = true;
 
   protected static void addTimeControllerTab(final JRibbon ribbon,
