@@ -66,9 +66,9 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Layers.DataListener;
 import MWC.GUI.StepperListener;
 import MWC.GUI.ToolParent;
-import MWC.GUI.Layers.DataListener;
 import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.HiResDate;
@@ -299,6 +299,13 @@ public class DebriefRibbonTimeController
 
   private static JCheckBoxMenuItem[] _menuItem;
 
+  private static boolean _isNormal = true;
+
+  public static boolean isNormalDisplayMode()
+  {
+    return _isNormal;
+  }
+  
   protected static void addTimeControllerTab(final JRibbon ribbon,
       final GeoToolMapRenderer _geoMapRenderer,
       final LiteStepControl stepControl, final TimeManager timeManager,
@@ -777,6 +784,7 @@ public class DebriefRibbonTimeController
           public void actionPerformed(final ActionEvent e)
           {
             normalPainter.run();
+            _isNormal = true;
           }
         }, displayMode, RibbonElementPriority.TOP, true, displayModeGroup,
         true);
@@ -789,6 +797,7 @@ public class DebriefRibbonTimeController
           public void actionPerformed(final ActionEvent e)
           {
             snailPainter.run();
+            _isNormal = false;
           }
         }, displayMode, RibbonElementPriority.TOP, true, displayModeGroup,
         false);
