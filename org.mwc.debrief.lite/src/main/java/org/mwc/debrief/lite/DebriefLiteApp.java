@@ -944,8 +944,9 @@ public class DebriefLiteApp implements FileDropListener
       public void componentResized(final ComponentEvent e)
       {
         // TODO . This must be change once we update geotools.
-        mapPane.setVisible(false);
-        mapPane.setVisible(true);
+//        mapPane.setVisible(false);
+//        mapPane.setVisible(true);
+        mapPane.repaint();
       }
     });
 
