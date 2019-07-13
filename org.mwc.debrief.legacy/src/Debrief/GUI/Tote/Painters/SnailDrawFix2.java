@@ -264,7 +264,7 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
     dest.setColor(col);
 
     final Point screenPos = proj.toScreen(fix.getLocation());
-    if(screenPos != null)
+    if(screenPos == null)
     {
       // skip, we've got a projection problem
       return thisR;
