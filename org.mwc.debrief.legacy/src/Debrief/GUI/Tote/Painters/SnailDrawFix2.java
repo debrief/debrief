@@ -262,20 +262,15 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
     // get the colour of the track
     final Color col = fix.getColor();
     dest.setColor(col);
-
-    final Point screenPos = proj.toScreen(fix.getLocation());
-    if(screenPos == null)
-    {
-      // skip, we've got a projection problem
-      return thisR;
-    }
     
     // is this item even visible?
-    if(!watch.getVisible())
+    if (!watch.getVisible())
     {
       return thisR;
     }
-    
+
+    final Point screenPos = proj.toScreen(fix.getLocation());
+
     // produce the centre point
     final Point p = new Point(screenPos);
 
@@ -296,7 +291,6 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
       final Rectangle thisArea = new java.awt.Rectangle(pTL);
       thisArea.add(pBR);
       thisR = thisArea;
-
     }
     else
     {
@@ -305,8 +299,11 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
       // get the current area of the watchable
       final WorldArea wa = watch.getBounds();
       // convert to screen coordinates
-      final Point tl = new Point(proj.toScreen(wa.getTopLeft()));
-      final Point br = new Point(proj.toScreen(wa.getBottomRight()));
+      Point tlPos = proj.toScreen(wa.getTopLeft());
+      Point brPos = proj.toScreen(wa.getBottomRight());
+
+      final Point tl = new Point(tlPos);
+      final Point br = new Point(brPos);
 
       final int mySize = _pointSize;
 
@@ -321,15 +318,6 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
 
       // plot the rectangle anyway
       dest.drawOval(x, y, wid, ht);
-
-      // get the fix to draw itself
-
-      // create our own canvas object (don't bother - do it all from the Track, so we know
-      // the correct size of the resulting object
-      // final CanvasAdaptor cad = new CanvasAdaptor(proj, dest);
-
-      // and do the paint
-      // fix.paintMe(cad);
 
       // and now plot the vector
       final double crse = watch.getCourse();
@@ -365,7 +353,9 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
 
     // extend the rectangle, if necesary
     if (dotsArea != null)
+    {
       thisR.add(dotsArea);
+    }
 
     // plot the track name
     if (_plotName)
