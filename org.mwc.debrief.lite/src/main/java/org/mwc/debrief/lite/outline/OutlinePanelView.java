@@ -117,13 +117,19 @@ public class OutlinePanelView extends SwingLayerManager implements
     public void actionPerformed(final ActionEvent e)
     {
       layerToAdd = addLayer();
-      _undoBuffer.add(this);
+      if (layerToAdd != null)
+      {
+        _undoBuffer.add(this);
+      }
     }
 
     @Override
     public void execute()
     {
-      _myData.addThisLayer(layerToAdd);
+      if (layerToAdd != null)
+      {
+        _myData.addThisLayer(layerToAdd);
+      }
     }
 
     @Override
@@ -141,7 +147,10 @@ public class OutlinePanelView extends SwingLayerManager implements
     @Override
     public void undo()
     {
-      _myData.removeThisLayer(layerToAdd);
+      if (layerToAdd != null)
+      {
+        _myData.removeThisLayer(layerToAdd);
+      }
     }
   }
 
@@ -716,7 +725,7 @@ public class OutlinePanelView extends SwingLayerManager implements
   private Transferable _cutContents;
 
   private TreePath _theCutParent;
-  
+
   public OutlinePanelView(final UndoBuffer undoBuffer,
       final Clipboard clipboard)
   {
@@ -1047,7 +1056,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     final EnabledTest selectionIsLayer = getIsLayerTest();
     final EnabledTest clipboardIsFixes = getIsFixesTest();
     final EnabledTest clipboardIsShapes = getIsShapesTest();
-    //final EnabledTest isEmpty = getSelectionEmptyTest();
+    // final EnabledTest isEmpty = getSelectionEmptyTest();
     final EnabledTest notNarrative = getNotNarrativeTest();
     final EnabledTest notIsLayer = getNotLayerTest();
 
@@ -1361,7 +1370,8 @@ public class OutlinePanelView extends SwingLayerManager implements
               }
             });
           }
-          else {
+          else
+          {
             System.out.println("Found null itemnode");
           }
         }
