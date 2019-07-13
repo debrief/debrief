@@ -270,6 +270,12 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
       return thisR;
     }
     
+    // is this item even visible?
+    if(!watch.getVisible())
+    {
+      return thisR;
+    }
+    
     // produce the centre point
     final Point p = new Point(screenPos);
 

@@ -140,6 +140,8 @@ import MWC.Utilities.ReaderWriter.PlainImporter;
 public class DebriefLiteApp implements FileDropListener
 {
 
+  private static final String BACKGROUND_NAME = "Background coastline";
+
   /**
    * introduce a preferences helper, particularly to give default font sizes
    *
@@ -448,6 +450,7 @@ public class DebriefLiteApp implements FileDropListener
       Application.logError2(ToolParent.ERROR,
           "Failure in setting initial viewport coverage", e);
     }
+    mapPane.getMapContent().getViewport().setFixedBoundsOnResize(true);
   }
 
   /**
@@ -548,8 +551,27 @@ public class DebriefLiteApp implements FileDropListener
           }
           else
           {
+
+            // special handling. D-Lite includes background chart, by default.  But, when
+            // a plot gets saved, it will save this background chart.  We wish to avoid
+            // loading more and more background charts
+            final String layerName = dl.getName();
+            if (BACKGROUND_NAME.equals(layerName))
+            {
+              // hmm, see of we've already got background data
+              List<org.geotools.map.Layer> layers = mapPane.getMapContent().layers();
+              for(org.geotools.map.Layer layer: layers)
+              {
+                if(layer.getTitle().equals(BACKGROUND_NAME))
+                {
+                  // ok, skip it - we've already got it loaded
+                  return;
+                }
+              }
+            }
+            
             // ok, it's a normal shapefile: load it.
-            final GeoToolsLayer gt = new ShapeFileLayer(dl.getName(), dl
+            final GeoToolsLayer gt = new ShapeFileLayer(layerName, dl
                 .getFilename());
             gt.setVisible(dl.getVisible());
             projection.addGeoToolsLayer(gt);
@@ -866,30 +888,30 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.setVisible(true);
     theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
   }
-  
+
   private boolean _plotUpdating = false;
 
   protected void timeUpdate(final CanvasAdaptor theCanvas,
       final PropertyChangeEvent evt)
   {
-    if(!_plotUpdating)
+    if (!_plotUpdating)
     {
       _plotUpdating = true;
-      
+
       // ok, redraw the whole map
       mapPane.repaint();
       _pendingNewTime = (HiResDate) evt.getNewValue();
       _pendingOldTime = (HiResDate) evt.getOldValue();
       redoTimePainter(false, theCanvas, (HiResDate) evt.getOldValue(),
           (HiResDate) evt.getNewValue());
-      
+
       _plotUpdating = false;
     }
     else
     {
       System.err.println("Skipping plot update");
     }
-    
+
   }
 
   private static void loadBackdropdata(final Layers layers)
@@ -897,7 +919,7 @@ public class DebriefLiteApp implements FileDropListener
     // ok, do the shapefile
     final String shape_path = "data/coastline/ne_10M_admin0_countries_89S.shp";
     ExternallyManagedDataLayer extFile = new ExternallyManagedDataLayer(
-        ChartBoundsWrapper.SHAPEFILE_TYPE, "Background coastline", shape_path);
+        ChartBoundsWrapper.SHAPEFILE_TYPE, BACKGROUND_NAME, shape_path);
     layers.addThisLayer(extFile);
   }
 
@@ -945,8 +967,9 @@ public class DebriefLiteApp implements FileDropListener
       public void componentResized(final ComponentEvent e)
       {
         // TODO . This must be change once we update geotools.
-        mapPane.setVisible(false);
-        mapPane.setVisible(true);
+//        mapPane.setVisible(false);
+//        mapPane.setVisible(true);
+        mapPane.repaint();
       }
     });
 
@@ -1006,15 +1029,15 @@ public class DebriefLiteApp implements FileDropListener
       items.add(outlinePanel);
       items.add(graphPanel);
       items.add(narrativePanel);
-      
+
       for (final JXCollapsiblePaneWithTitle panel : items)
       {
         // is it currently open?
-        if(!panel.isCollapsed())
+        if (!panel.isCollapsed())
         {
           // remember it was open
           openPanels.add(panel);
-          
+
           // and collapse it
           panel.setCollapsed(true);
         }
@@ -1218,6 +1241,9 @@ public class DebriefLiteApp implements FileDropListener
             .getDateFormat(), true, true);
       }
       _theLayers.fireModified(null);
+      
+      // also tell the layers they've been reformatted
+      _theLayers.fireReformatted(null);
 
       // and the spatial bounds
       new FitToWindow(_theLayers, mapPane).actionPerformed(null);
@@ -1480,17 +1506,17 @@ public class DebriefLiteApp implements FileDropListener
 
   public void resetPlot()
   {
-    // clear the data
-    _theLayers.clear();
-    layerManager.resetTree();
-
-    // also remove the data from the GeoMap
+    // remove the data from the GeoMap
     final MapContent content = mapPane.getMapContent();
     final List<org.geotools.map.Layer> layers = content.layers();
     for (final org.geotools.map.Layer layer : layers)
     {
       content.removeLayer(layer);
     }
+
+    // clear the data
+    _theLayers.clear();
+    layerManager.resetTree();
 
     // special behaviour. The chart creator objects take a point to the
     // target layer on creation. So, we need to keep the same chart features layer
