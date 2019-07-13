@@ -553,24 +553,25 @@ public class DebriefLiteApp implements FileDropListener
           else
           {
 
-            // special handling. D-Lite includes background chart, by default.  But, when
-            // a plot gets saved, it will save this background chart.  We wish to avoid
+            // special handling. D-Lite includes background chart, by default. But, when
+            // a plot gets saved, it will save this background chart. We wish to avoid
             // loading more and more background charts
             final String layerName = dl.getName();
             if (BACKGROUND_NAME.equals(layerName))
             {
               // hmm, see of we've already got background data
-              List<org.geotools.map.Layer> layers = mapPane.getMapContent().layers();
-              for(org.geotools.map.Layer layer: layers)
+              List<org.geotools.map.Layer> layers = mapPane.getMapContent()
+                  .layers();
+              for (org.geotools.map.Layer layer : layers)
               {
-                if(layer.getTitle().equals(BACKGROUND_NAME))
+                if (layer.getTitle().equals(BACKGROUND_NAME))
                 {
                   // ok, skip it - we've already got it loaded
                   return;
                 }
               }
             }
-            
+
             // ok, it's a normal shapefile: load it.
             final GeoToolsLayer gt = new ShapeFileLayer(layerName, dl
                 .getFilename());
@@ -860,9 +861,9 @@ public class DebriefLiteApp implements FileDropListener
     initForm();
     final MathTransform screenTransform = geoMapRenderer.getTransform();
     createAppPanels(geoMapRenderer, session.getUndoBuffer(), dropSupport,
-        mapPane, _stepControl, timeManager, _myOperations, _normalSetter, _snailSetter,
-        statusBar, screenTransform, collapseAction, alphaListener, initialAlpha,
-        path);
+        mapPane, _stepControl, timeManager, _myOperations, _normalSetter,
+        _snailSetter, statusBar, screenTransform, collapseAction, alphaListener,
+        initialAlpha, path);
     _listenForMods = new DataListenerAdaptor()
     {
       @Override
@@ -895,24 +896,34 @@ public class DebriefLiteApp implements FileDropListener
   protected void timeUpdate(final CanvasAdaptor theCanvas,
       final PropertyChangeEvent evt)
   {
+    // are we already plotting?
     if (!_plotUpdating)
     {
+      // no - capture the fact that we are
       _plotUpdating = true;
-
-      // ok, redraw the whole map
-      mapPane.repaint();
-      _pendingNewTime = (HiResDate) evt.getNewValue();
-      _pendingOldTime = (HiResDate) evt.getOldValue();
-      redoTimePainter(false, theCanvas, (HiResDate) evt.getOldValue(),
-          (HiResDate) evt.getNewValue());
-
-      _plotUpdating = false;
+      
+      // trigger screen update to happen on UI thread
+      SwingUtilities.invokeLater(new Runnable()
+      {
+        @Override
+        public void run()
+        {
+          try
+          {
+            // ok, redraw the whole map
+            mapPane.repaint();
+            _pendingNewTime = (HiResDate) evt.getNewValue();
+            _pendingOldTime = (HiResDate) evt.getOldValue();
+            redoTimePainter(false, theCanvas, (HiResDate) evt.getOldValue(),
+                (HiResDate) evt.getNewValue());
+          }
+          finally
+          {
+            _plotUpdating = false;
+          }
+        }
+      });
     }
-    else
-    {
-      System.err.println("Skipping plot update");
-    }
-
   }
 
   private static void loadBackdropdata(final Layers layers)
@@ -968,8 +979,8 @@ public class DebriefLiteApp implements FileDropListener
       public void componentResized(final ComponentEvent e)
       {
         // TODO . This must be change once we update geotools.
-//        mapPane.setVisible(false);
-//        mapPane.setVisible(true);
+        // mapPane.setVisible(false);
+        // mapPane.setVisible(true);
         mapPane.repaint();
       }
     });
@@ -1222,7 +1233,7 @@ public class DebriefLiteApp implements FileDropListener
   private void handleImportDPF(final File file)
   {
     boolean success = true;
-    
+
     final DebriefXMLReaderWriter reader = new DebriefXMLReaderWriter(app);
     try
     {
@@ -1242,7 +1253,7 @@ public class DebriefLiteApp implements FileDropListener
             .getDateFormat(), true, true);
       }
       _theLayers.fireModified(null);
-      
+
       // also tell the layers they've been reformatted
       _theLayers.fireReformatted(null);
 
@@ -1261,14 +1272,14 @@ public class DebriefLiteApp implements FileDropListener
       DialogFactory.showMessage("Error in opening file", ie.getMessage());
       success = false;
     }
-    
+
     // ok, the plot may have loaded with a stepping mode (snail mode).
     // we can't see how to change the button in the Ribbon bar, so, instead
     // we'll change the listener to what the ribbon is showing
-    final ToteSetter listener = DebriefRibbonTimeController.isNormalDisplayMode()
-        ? _normalSetter : _snailSetter;
+    final ToteSetter listener = DebriefRibbonTimeController
+        .isNormalDisplayMode() ? _normalSetter : _snailSetter;
     listener.run();
-    
+
     if (success)
     {
       resetFileName(file);
@@ -1465,7 +1476,7 @@ public class DebriefLiteApp implements FileDropListener
 
     // and the time marker
     final Graphics graphics = mapPane.getGraphics();
-    
+
     if (graphics instanceof Graphics2D)
     {
       Graphics2D g2 = (Graphics2D) graphics;
