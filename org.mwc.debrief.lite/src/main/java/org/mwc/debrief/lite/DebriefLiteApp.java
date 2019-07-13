@@ -32,13 +32,17 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -76,6 +80,8 @@ import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.substance.api.SubstanceCortex;
 import org.pushingpixels.substance.api.skin.BusinessBlueSteelSkin;
+
+import com.vividsolutions.jts.algorithm.CentralEndpointIntersector;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Tote.Painters.PainterManager;
@@ -252,6 +258,7 @@ public class DebriefLiteApp implements FileDropListener
     final MapBuilder builder = new MapBuilder();
     final JMapPane mapPane = (JMapPane) builder.setMapRenderer(geoMapRenderer)
         .build();
+    
     dropSupport.addComponent(mapPane);
     return mapPane;
   }
@@ -448,6 +455,7 @@ public class DebriefLiteApp implements FileDropListener
       transform.inverse().transform(br, br);
       final Envelope2D envelope = new Envelope2D(tl, br);
       mapPane.setDisplayArea(envelope);
+      mapPane.getMapContent().getViewport().setFixedBoundsOnResize(true);
     }
     catch (MismatchedDimensionException | TransformException e)
     {
@@ -858,23 +866,26 @@ public class DebriefLiteApp implements FileDropListener
     // final int width = (int) frameSize.getWidth();
 
     final JPanel centerPanel = new JPanel();
+
     centerPanel.setLayout(new BorderLayout());
     mapPane.addComponentListener(new ComponentAdapter()
     {
+    	
       @Override
       public void componentResized(final ComponentEvent e)
       {
         // TODO . This must be change once we update geotools.
-        mapPane.setVisible(false);
-        mapPane.setVisible(true);
+//        mapPane.setVisible(false);
+//        mapPane.setVisible(true);
+        mapPane.repaint();
       }
     });
-
+ 
     centerPanel.add(mapPane, BorderLayout.CENTER);
     centerPanel.add(graphPanel, BorderLayout.PAGE_END);
-
+    
     theFrame.add(centerPanel, BorderLayout.CENTER);
-
+    
     theFrame.add(outlinePanel, BorderLayout.WEST);
     addOutlineView(app, undoBuffer);
     addGraphView();
