@@ -114,9 +114,10 @@
 			<fileset dir="../org.mwc.debrief.legacy" includes="debrief_legacy.jar"/>
 			<fileset dir="libs" includes="*.jar"/>
 		</copy>
+		<copy todir="${debrief-lite-dist.dir}" file="src/main/java/icons/d_lite.png" failonerror="true" overwrite="false">
+		</copy>
 		<zip destfile="${dist.dir}/debrief-lite-${product.version}.zip">
 			<fileset dir="." includes="data/**/*"/>
-			<fileset dir="." includes="src/main/java/icons/d_lite.png"/>
 			<fileset dir="${debrief-lite-dist.dir}" includes="**/*"/>
 		</zip>
 	</target>
