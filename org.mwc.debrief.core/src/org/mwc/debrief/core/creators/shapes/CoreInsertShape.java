@@ -17,6 +17,11 @@ package org.mwc.debrief.core.creators.shapes;
 import java.util.Date;
 import java.util.Enumeration;
 
+import org.eclipse.core.internal.runtime.Activator;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -56,7 +61,7 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
   @Override
   protected String getLayerName()
   {
-    final String res;
+    String res;
     // ok, are we auto-deciding?
     if (!AutoSelectTarget.getAutoSelectTarget())
     {
@@ -118,12 +123,35 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
             if (dlg.open() == Window.OK)
             {
               res = dlg.getValue();
-              // create base layer
-              final Layer newLayer = new BaseLayer();
-              newLayer.setName(res);
+           
+              final String title = "Forbidden Name for Layer";
+              final String messageNarratives = "\'Narratives\' is a reserved Layer name";
+              final String messageNarratives2 = "Choose a different name for your layer";
+              final String messageCannotBeEmpty = "Message cannot be empty";
+              final String messageCannotBeEmpty2 = "You need to have at least one character in your layer name";
+              if ( res == null || res.isEmpty() )
+              {
+                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,  messageCannotBeEmpty2, new Exception(""));
 
-              // add to layers object
-              theLayers.addThisLayer(newLayer);
+                ErrorDialog.openError(Display.getCurrent().getActiveShell(), title, messageCannotBeEmpty, status);
+                
+                res = null;
+              }else if ( "narratives".equals(res.toLowerCase()) )
+              {
+                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,  messageNarratives, new Exception(""));
+
+                ErrorDialog.openError(Display.getCurrent().getActiveShell(), title, messageNarratives2, status);
+                
+                res = null;
+              }else
+              {
+                // create base layer
+                final Layer newLayer = new BaseLayer();
+                newLayer.setName(res);
+
+                // add to layers object
+                theLayers.addThisLayer(newLayer);
+              }
             }
             else
             {
