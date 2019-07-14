@@ -94,8 +94,7 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
       list.setHelpAvailable(false);
 
       // select the first item, so it's valid to press OK immediately
-      list.setInitialSelections(new Object[]
-      {ourLayers[0]});
+      list.setInitialSelections(new Object[]{ourLayers[0]});
 
       // open it
       final int selection = list.open();
@@ -123,7 +122,7 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
             if (dlg.open() == Window.OK)
             {
               res = dlg.getValue();
-           
+
               final String title = "Forbidden Name for Layer";
               final String messageNarrativesStatus =
                   "\'Narratives\' is a reserved Layer name";
@@ -132,7 +131,7 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
               final String messageCannotBeEmptyStatus =
                   "You need to have at least one character in your layer name";
               final String messageCannotBeEmpty = "Message cannot be empty";
-              
+
               if (res == null || res.isEmpty())
               {
                 Status status = new Status(IStatus.ERROR,
@@ -142,8 +141,7 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
                     title, messageCannotBeEmpty, status);
                 res = null;
               }
-              else if (NarrativeEntry.NARRATIVE_LAYER.toLowerCase().equals(res
-                  .toLowerCase()))
+              else if (NarrativeEntry.NARRATIVE_LAYER.equalsIgnoreCase(res))
               {
                 Status status = new Status(IStatus.ERROR,
                     DebriefPlugin.PLUGIN_NAME, messageNarrativesStatus,
@@ -166,7 +164,6 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
             {
               res = null;
             }
-
           }
           else
           {
