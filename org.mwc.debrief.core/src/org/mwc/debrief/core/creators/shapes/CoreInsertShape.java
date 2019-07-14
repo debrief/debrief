@@ -17,9 +17,7 @@ package org.mwc.debrief.core.creators.shapes;
 import java.util.Date;
 import java.util.Enumeration;
 
-import org.eclipse.core.internal.runtime.Activator;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -30,6 +28,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.dialogs.ListDialog;
+import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.creators.chartFeatures.CoreInsertChartFeature;
 
 import Debrief.Wrappers.ShapeWrapper;
@@ -42,6 +41,7 @@ import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.PlainShape;
 import MWC.GenericData.WorldLocation;
+import MWC.TacticalData.NarrativeEntry;
 
 /**
  * @author ian.mayo
@@ -125,25 +125,34 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
               res = dlg.getValue();
            
               final String title = "Forbidden Name for Layer";
-              final String messageNarratives = "\'Narratives\' is a reserved Layer name";
-              final String messageNarratives2 = "Choose a different name for your layer";
+              final String messageNarrativesStatus =
+                  "\'Narratives\' is a reserved Layer name";
+              final String messageNarratives =
+                  "Choose a different name for your layer";
+              final String messageCannotBeEmptyStatus =
+                  "You need to have at least one character in your layer name";
               final String messageCannotBeEmpty = "Message cannot be empty";
-              final String messageCannotBeEmpty2 = "You need to have at least one character in your layer name";
-              if ( res == null || res.isEmpty() )
+              
+              if (res == null || res.isEmpty())
               {
-                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,  messageCannotBeEmpty2, new Exception(""));
-
-                ErrorDialog.openError(Display.getCurrent().getActiveShell(), title, messageCannotBeEmpty, status);
-                
+                Status status = new Status(IStatus.ERROR,
+                    DebriefPlugin.PLUGIN_NAME, messageCannotBeEmptyStatus,
+                    new Exception(""));
+                ErrorDialog.openError(Display.getCurrent().getActiveShell(),
+                    title, messageCannotBeEmpty, status);
                 res = null;
-              }else if ( "narratives".equals(res.toLowerCase()) )
+              }
+              else if (NarrativeEntry.NARRATIVE_LAYER.toLowerCase().equals(res
+                  .toLowerCase()))
               {
-                Status status = new Status(IStatus.ERROR, Activator.PLUGIN_ID,  messageNarratives, new Exception(""));
-
-                ErrorDialog.openError(Display.getCurrent().getActiveShell(), title, messageNarratives2, status);
-                
+                Status status = new Status(IStatus.ERROR,
+                    DebriefPlugin.PLUGIN_NAME, messageNarrativesStatus,
+                    new Exception(""));
+                ErrorDialog.openError(Display.getCurrent().getActiveShell(),
+                    title, messageNarratives, status);
                 res = null;
-              }else
+              }
+              else
               {
                 // create base layer
                 final Layer newLayer = new BaseLayer();
