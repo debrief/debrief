@@ -116,6 +116,7 @@
 		</copy>
 		<zip destfile="${dist.dir}/debrief-lite-${product.version}.zip">
 			<fileset dir="." includes="data/**/*"/>
+			<fileset dir="." includes="src/main/java/icons/d_lite.png"/>
 			<fileset dir="${debrief-lite-dist.dir}" includes="**/*"/>
 		</zip>
 	</target>
