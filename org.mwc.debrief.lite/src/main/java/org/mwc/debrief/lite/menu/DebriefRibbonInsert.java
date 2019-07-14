@@ -125,8 +125,13 @@ public class DebriefRibbonInsert
     final JRibbonBand drawingMenu = createShapes(theLayers, theProperties,
         toolParent, bounds);
     
+    /** temporarily drop reference data
+     * 
+     */
+//    final RibbonTask drawingTask = new RibbonTask("Insert", chartfeaturesMenu,
+//        referenceDataMenu, layersMenu, drawingMenu);
     final RibbonTask drawingTask = new RibbonTask("Insert", chartfeaturesMenu,
-        referenceDataMenu, layersMenu, drawingMenu);
+         layersMenu, drawingMenu);
     ribbon.addTask(drawingTask);
   }
 
