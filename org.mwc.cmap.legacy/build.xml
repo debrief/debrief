@@ -56,7 +56,6 @@
 				<exclude name="**/package.htm*"/>
 			</fileset>
 		</copy>
-		<mkdir dir="${build.result.folder}"/>
 		<jar destfile="${build.result.folder}/cmap_legacy.jar" basedir="${temp.folder}/cmap_legacy.jar.bin"/>
 		<delete dir="${temp.folder}/cmap_legacy.jar.bin"/>
 	</target>
