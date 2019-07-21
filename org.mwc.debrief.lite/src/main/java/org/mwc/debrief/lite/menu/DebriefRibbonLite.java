@@ -85,26 +85,26 @@ public class DebriefRibbonLite
     {
       if (Desktop.isDesktopSupported())
       {
-        JOptionPane.showMessageDialog(null, "Please see the file titled ReadMe.pdf");
+//        JOptionPane.showMessageDialog(null, "Please see the file titled ReadMe.pdf");
 
-//        try
-//        {
-//          final File myFile = new File(_path);
-//          Desktop.getDesktop().open(myFile);
-//        }
-//        catch (Exception ex)
-//        {
-//          Application.logError2(Application.ERROR, "Failed to open PDF", ex);
-//          SwingUtilities.invokeLater(new Runnable()
-//          {
-//            @Override
-//            public void run()
-//            {
-//              JOptionPane.showMessageDialog(null, "Failed to find help file:"
-//                  + _path);
-//            }
-//          });
-//        }
+        try
+        {
+          final File myFile = new File(_path);
+          Desktop.getDesktop().open(myFile);
+        }
+        catch (Exception ex)
+        {
+          Application.logError2(Application.ERROR, "Failed to open PDF", ex);
+          SwingUtilities.invokeLater(new Runnable()
+          {
+            @Override
+            public void run()
+            {
+              JOptionPane.showMessageDialog(null, "Failed to find help file:"
+                  + _path);
+            }
+          });
+        }
       }
     }
 
