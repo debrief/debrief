@@ -38,7 +38,8 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
 
   private TrackWrapper _primaryTrack;
 
-  private final List<AbstractSelection<TrackWrapper>> _tracks = new ArrayList<>();
+  private final List<AbstractSelection<TrackWrapper>> _tracks =
+      new ArrayList<>();
 
   private CalculationHolder _calculation;
 
@@ -74,6 +75,12 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
   public List<AbstractSelection<TrackWrapper>> getTracks()
   {
     return _tracks;
+  }
+
+  @Override
+  public boolean isRelativeEnabled()
+  {
+    return this._tracks.size() > 1;
   }
 
   private void notifyListenersStateChanged(final Object source,
@@ -146,7 +153,7 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
   }
 
   /**
-   * 
+   *
    * @param tracks
    *          Tracks to assign
    * @return true if it was actually assigned. If they are the same, they are not assigned.
@@ -155,12 +162,13 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
   public boolean setTracks(final List<TrackWrapper> tracks)
   {
     boolean isDifferent = false;
-    final List<AbstractSelection<TrackWrapper>> oldTracks = new ArrayList<>(this._tracks);
+    final List<AbstractSelection<TrackWrapper>> oldTracks = new ArrayList<>(
+        this._tracks);
     final List<AbstractSelection<TrackWrapper>> newTracks = new ArrayList<>();
     final HashSet<TrackWrapper> oldTracksSet = new HashSet<>();
     if (oldTracks != null)
     {
-      for (AbstractSelection<TrackWrapper> oldTrack : oldTracks)
+      for (final AbstractSelection<TrackWrapper> oldTrack : oldTracks)
       {
         oldTracksSet.add(oldTrack.getItem());
       }
@@ -170,7 +178,7 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
       newTracks.add(new AbstractSelection<TrackWrapper>(track, false));
       isDifferent |= !oldTracksSet.contains(track);
     }
-    for (TrackWrapper oldTrackItem : oldTracksSet)
+    for (final TrackWrapper oldTrackItem : oldTracksSet)
     {
       isDifferent |= !tracks.contains(oldTrackItem);
     }
@@ -178,7 +186,7 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
     {
       this._tracks.clear();
       this._tracks.addAll(newTracks);
-      if ( _primaryTrack != null && !tracks.contains(_primaryTrack) )
+      if (_primaryTrack != null && !tracks.contains(_primaryTrack))
       {
         setPrimaryTrack(null);
       }
@@ -187,16 +195,9 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
       {
         final TrackWrapper newPrimary = newTracks.get(0).getItem();
         setActiveTrack(newPrimary, true);
-        notifyListenersStateChanged(this, PRIMARY_CHANGED, null,
-            newPrimary);
+        notifyListenersStateChanged(this, PRIMARY_CHANGED, null, newPrimary);
       }
     }
     return isDifferent;
-  }
-
-  @Override
-  public boolean isRelativeEnabled()
-  {
-    return this._tracks.size() > 1;
   }
 }
