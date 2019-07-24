@@ -183,6 +183,13 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
         setPrimaryTrack(null);
       }
       notifyListenersStateChanged(this, TRACK_LIST_CHANGED, oldTracks, tracks);
+      if (newTracks.size() == 1)
+      {
+        final TrackWrapper newPrimary = newTracks.get(0).getItem();
+        setActiveTrack(newPrimary, true);
+        notifyListenersStateChanged(this, PRIMARY_CHANGED, null,
+            newPrimary);
+      }
     }
     return isDifferent;
   }
