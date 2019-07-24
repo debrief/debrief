@@ -97,30 +97,20 @@ public class AdvancedZoomInTool extends ZoomInTool
 
     final double scaleVal = Math.sqrt((existingArea.getHeight() * existingArea
         .getWidth()) / (selectedArea.height * selectedArea.width));
+    
+    // only allow zoom out if we're not already too far our
+    if (existingArea.getArea() < 2.0E15)
+    {
+      final double deltaX3 = existingArea.getMaxX() - actualCenter.getX();
+      final double deltaY3 = existingArea.getMinY() - actualCenter.getY();
 
-    // final double deltaX2 = selectedArea.getMaxX() - desiredCenter.x;
-    // final double deltaY2 = selectedArea.getMinY() - desiredCenter.y;
+      final DirectPosition2D corner = new DirectPosition2D(desiredCenter.x
+          + deltaX3 * scaleVal, desiredCenter.y + deltaY3 * scaleVal);
 
-    final double deltaX3 = existingArea.getMaxX() - actualCenter.getX();
-    final double deltaY3 = existingArea.getMinY() - actualCenter.getY();
+      final Envelope2D newMapArea = new Envelope2D();
+      newMapArea.setFrameFromCenter(desiredCenter, corner);
 
-    final DirectPosition2D corner = new DirectPosition2D(desiredCenter.x
-        + deltaX3 * scaleVal, desiredCenter.y + deltaY3 * scaleVal);
-
-    // selectedArea.getMaxX() - selected desiredCenter.getX()
-    // - 0.5d * existingArea.getWidth() / newScale, desiredCenter.getY() + 0.5d
-    // * existingArea.getHeight() / newScale);
-    //
-    final Envelope2D newMapArea = new Envelope2D();
-    newMapArea.setFrameFromCenter(desiredCenter, corner);
-
-    // final double height = newMapArea.getHeight();
-    // final double width = newMapArea.getWidth();
-    // // translate
-    // newMapArea.setFrameFromDiagonal(newMapArea.getBounds().x - deltaX
-    // * scaleVal, newMapArea.getBounds().y + deltaY + scaleVal, newMapArea
-    // .getBounds().x + deltaX * scaleVal, newMapArea.getBounds().y
-    // - deltaY * scaleVal);
-    ev.getSource().setDisplayArea(newMapArea);
+      ev.getSource().setDisplayArea(newMapArea);
+    }
   }
 }

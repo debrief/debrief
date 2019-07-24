@@ -105,7 +105,7 @@ public final class timeSecsCalc extends plainCalc
 
   public timeSecsCalc()
   {
-    super(new DecimalFormat("00.00"), "Time", "hhmm.ss");
+    super(new DecimalFormat("00.00"), "Time", "HHmm.ss");
 
     // create the format
     _myDateFormat = new GMTDateFormat("HHmm.ss");

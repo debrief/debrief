@@ -178,6 +178,11 @@ import org.jdesktop.swingx.util.GraphicsUtilities;
 public class JXCollapsiblePane extends JXPanel
 {
   /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
+
+  /**
    * The direction defines how the collapsible pane will collapse. The constant names were designed
    * by choosing a fixed point and then determining the collapsing direction from that fixed point.
    * This means {@code RIGHT} expands to the right and this is probably the best expansion for a
@@ -290,6 +295,11 @@ public class JXCollapsiblePane extends JXPanel
   private class ToggleAction extends AbstractAction implements
       PropertyChangeListener
   {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
     public ToggleAction()
     {
       super(TOGGLE_ACTION);
@@ -954,8 +964,6 @@ public class JXCollapsiblePane extends JXPanel
     /**
      * The current alpha setting used during "animation" (fade-in/fade-out)
      */
-    @SuppressWarnings(
-    {"FieldCanBeLocal"})
     private float animateAlpha = 1.0f;
 
     @Override
@@ -1176,6 +1184,10 @@ public class JXCollapsiblePane extends JXPanel
   protected final class WrapperContainer extends JViewport implements
       AlphaPaintable
   {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     boolean collapsedState;
     private volatile float alpha;
     private boolean oldOpaque;

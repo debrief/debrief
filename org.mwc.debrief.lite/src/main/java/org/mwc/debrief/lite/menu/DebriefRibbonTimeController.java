@@ -66,9 +66,9 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Layers.DataListener;
 import MWC.GUI.StepperListener;
 import MWC.GUI.ToolParent;
-import MWC.GUI.Layers.DataListener;
 import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.HiResDate;
@@ -98,6 +98,12 @@ public class DebriefRibbonTimeController
       return stepControl.getDateFormat();
     }
 
+    public void reset()
+    {
+      minimumValue.setText(" ");
+      maximumValue.setText(" ");
+    }
+
     public void updateFilterDateFormat()
     {
       final Date low = RangeSlider.toDate(slider.getValue()).getTime();
@@ -121,12 +127,6 @@ public class DebriefRibbonTimeController
       {
         updateFilterDateFormat();
       }
-    }
-
-    public void reset()
-    {
-      minimumValue.setText(" ");
-      maximumValue.setText(" ");
     }
   }
 
@@ -289,7 +289,7 @@ public class DebriefRibbonTimeController
   public static JPanel topButtonsPanel;
   private static final String[] timeFormats = new String[]
   {"mm:ss.SSS", "HHmm.ss", "HHmm", "ddHHmm", "ddHHmm:ss", "yy/MM/dd HH:mm",
-      "yy/MM/dd hh:mm:ss"};
+      "yy/MM/dd HH:mm:ss"};
 
   private static SliderConverter converter = new SliderConverter();
 
@@ -298,6 +298,11 @@ public class DebriefRibbonTimeController
   private static TimeLabel label;
 
   private static JCheckBoxMenuItem[] _menuItem;
+
+  /** track snail mode
+   * 
+   */
+  private static boolean _isNormal = true;
 
   protected static void addTimeControllerTab(final JRibbon ribbon,
       final GeoToolMapRenderer _geoMapRenderer,
@@ -432,6 +437,7 @@ public class DebriefRibbonTimeController
 
     });
 
+    @SuppressWarnings("unused")
     final JCommandButton recordCommandButton = MenuUtils.addCommandButton(
         "Record", "icons/24/media_record.png", new AbstractAction()
         {
@@ -516,14 +522,16 @@ public class DebriefRibbonTimeController
               owner = (ToolbarOwner) parent;
             }
             final Layer parentLayer;
-            if(parent instanceof Layer) {
-              parentLayer = (Layer)parent;
+            if (parent instanceof Layer)
+            {
+              parentLayer = (Layer) parent;
             }
-            else {
+            else
+            {
               parentLayer = null;
             }
             final PropertiesDialog dialog = new PropertiesDialog(stepControl
-                .getInfo(), layers, undoBuffer, parent, owner,parentLayer);
+                .getInfo(), layers, undoBuffer, parent, owner, parentLayer);
             dialog.setSize(400, 500);
             dialog.setLocationRelativeTo(null);
             dialog.setVisible(true);
@@ -585,8 +593,8 @@ public class DebriefRibbonTimeController
     topButtonsPanel.add(backCommandButton);
     topButtonsPanel.add(playCommandButton);
     // don't add record button, yet.
- //   topButtonsPanel.add(recordCommandButton);
-    
+    // topButtonsPanel.add(recordCommandButton);
+
     topButtonsPanel.add(forwardCommandButton);
     topButtonsPanel.add(fastForwardCommandButton);
     topButtonsPanel.add(endCommandButton);
@@ -597,6 +605,7 @@ public class DebriefRibbonTimeController
 
     controlPanel.add(topButtonsPanel);
     final JSlider timeSlider = new JSlider();
+    timeSlider.setBackground(Color.DARK_GRAY);
     timeSlider.setPreferredSize(new Dimension(420, 30));
     timeSlider.setEnabled(false);
 
@@ -674,34 +683,33 @@ public class DebriefRibbonTimeController
     // ok, start off with the buttons disabled
     setButtonsEnabled(topButtonsPanel, false);
 
-
-    
     final DataListener updateTimeController = new DataListener()
     {
-      
+
       @Override
-      public void dataReformatted(Layers theData, Layer changedLayer)
+      public void dataExtended(final Layers theData)
       {
         updateTimeController();
       }
-      
+
       @Override
-      public void dataModified(Layers theData, Layer changedLayer)
+      public void dataModified(final Layers theData, final Layer changedLayer)
       {
         updateTimeController();
       }
-      
+
       @Override
-      public void dataExtended(Layers theData)
+      public void dataReformatted(final Layers theData,
+          final Layer changedLayer)
       {
         updateTimeController();
       }
-      
+
       private void updateTimeController()
       {
         stepControl.startStepping(false);
         boolean hasTracks = false;
-        
+
         final Enumeration<Editable> lIter = stepControl.getLayers().elements();
         while (lIter.hasMoreElements())
         {
@@ -712,11 +720,12 @@ public class DebriefRibbonTimeController
             break;
           }
         }
-        
-        if ( !hasTracks )
+
+        if (!hasTracks)
         {
           doSoftReset(timeSlider, timeManager);
-        }else
+        }
+        else
         {
           DebriefLiteApp.setDirty(true);
           DebriefLiteApp.setState(DebriefLiteApp.ACTIVE_STATE);
@@ -724,7 +733,7 @@ public class DebriefRibbonTimeController
         }
       }
     };
-    
+
     // we also need to listen out for the stepper control mode changing
     stepControl.addStepperListener(new LiteStepperListener(playCommandButton)
     {
@@ -735,7 +744,7 @@ public class DebriefRibbonTimeController
         doSoftReset(timeSlider, timeManager);
       }
     });
-    
+
     stepControl.getLayers().addDataExtendedListener(updateTimeController);
     stepControl.getLayers().addDataModifiedListener(updateTimeController);
 
@@ -745,19 +754,6 @@ public class DebriefRibbonTimeController
     control.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         control));
     return control;
-  }
-  
-  public static void doSoftReset(final JSlider timeSlider, final TimeManager timeManager)
-  {
-    // move the slider to the start
-    timeSlider.setValue(0);
-    label.setValue(LiteStepControl.timeFormat);
-
-    // ok, do some disabling
-    DebriefLiteApp.setState(DebriefLiteApp.INACTIVE_STATE);
-    timeSlider.setEnabled(false);
-    timeManager.setPeriod(null, null);
-    formatBinder.reset();
   }
 
   private static JRibbonBand createDisplayMode(final Runnable normalPainter,
@@ -775,6 +771,7 @@ public class DebriefRibbonTimeController
           public void actionPerformed(final ActionEvent e)
           {
             normalPainter.run();
+            _isNormal = true;
           }
         }, displayMode, RibbonElementPriority.TOP, true, displayModeGroup,
         true);
@@ -787,6 +784,7 @@ public class DebriefRibbonTimeController
           public void actionPerformed(final ActionEvent e)
           {
             snailPainter.run();
+            _isNormal = false;
           }
         }, displayMode, RibbonElementPriority.TOP, true, displayModeGroup,
         false);
@@ -809,6 +807,7 @@ public class DebriefRibbonTimeController
     final JLabel minimumValue = new JLabel();
     final JLabel maximumValue = new JLabel();
     final RangeSlider slider = new RangeSlider(start, end);
+    slider.setBackground(Color.DARK_GRAY);
 
     formatBinder.stepControl = stepControl;
     formatBinder.maximumValue = maximumValue;
@@ -855,6 +854,30 @@ public class DebriefRibbonTimeController
     });
 
     return timePeriod;
+  }
+
+  public static void doSoftReset(final JSlider timeSlider,
+      final TimeManager timeManager)
+  {
+    // move the slider to the start
+    timeSlider.setValue(0);
+    label.setValue(LiteStepControl.timeFormat);
+
+    // ok, do some disabling
+    DebriefLiteApp.setState(DebriefLiteApp.INACTIVE_STATE);
+    timeSlider.setEnabled(false);
+    timeManager.setPeriod(null, null);
+    formatBinder.reset();
+  }
+
+  /**
+   * track if we're in normal mode, or in snail mode
+   *
+   * @return
+   */
+  public static boolean isNormalDisplayMode()
+  {
+    return _isNormal;
   }
 
   public static void resetDateFormat()

@@ -39,8 +39,6 @@ public class GeoToolMapProjection extends PlainProjection implements
    */
   private final CoordinateReferenceSystem dataCRS;
   private final MapViewport _view;
-  private final DirectPosition2D _workDegs;
-  private final DirectPosition2D _workScreen;
   private final Layers _layers;
   private final MapContent _map;
   private final MathTransform data_transform;
@@ -53,9 +51,6 @@ public class GeoToolMapProjection extends PlainProjection implements
     _layers = data;
 
     // initialise our working data stores
-    _workDegs = new DirectPosition2D();
-    new DirectPosition2D();
-    _workScreen = new DirectPosition2D();
 
     // we'll tell GeoTools to use the projection that's used by most of our
     // charts,
@@ -138,35 +133,40 @@ public class GeoToolMapProjection extends PlainProjection implements
   @Override
   public Point toScreen(final WorldLocation val)
   {
+    DirectPosition2D workDegs = new DirectPosition2D();
+    DirectPosition2D workScreen = new DirectPosition2D();
+
     Point res = null;
     // and now for the actual projection bit
-    _workDegs.setLocation(val.getLong(), val.getLat());
+    workDegs.setLocation(val.getLong(), val.getLat());
     if (_view.getCoordinateReferenceSystem() != dataCRS)
     {
       try
       {
-        data_transform.transform(_workDegs, _workDegs);
-        _view.getWorldToScreen().transform(_workDegs, _workScreen);
+        data_transform.transform(workDegs, workDegs);
+        _view.getWorldToScreen().transform(workDegs, workScreen);
         // output the results
-        res = new Point((int) _workScreen.getCoordinate()[0], (int) _workScreen
+        res = new Point((int) workScreen.getCoordinate()[0], (int) workScreen
             .getCoordinate()[1]);
       }
       catch (MismatchedDimensionException | TransformException e)
       {
         Application.logError2(ToolParent.ERROR,
             "Failure in projection transform in toScreen operation:" + e
-                .getMessage(), null);
+                .getMessage() + " from location:" + val, null);
       }
     }
-
     return res;
   }
 
   @Override
   public WorldLocation toWorld(final Point val)
   {
+    DirectPosition2D workDegs = new DirectPosition2D();
+    DirectPosition2D workScreen = new DirectPosition2D();
+
     WorldLocation res = null;
-    _workScreen.setLocation(val.x, val.y);
+    workScreen.setLocation(val.x, val.y);
     try
     {
       // hmm, do we have an area?
@@ -177,14 +177,14 @@ public class GeoToolMapProjection extends PlainProjection implements
         final AffineTransform currentTransform = _view.getScreenToWorld();
         if (currentTransform != null)
         {
-          currentTransform.transform(_workScreen, _workDegs);
+          currentTransform.transform(workScreen, workDegs);
         }
 
         if (_view.getCoordinateReferenceSystem() != dataCRS)
         {
           try
           {
-            data_transform.inverse().transform(_workDegs, _workDegs);
+            data_transform.inverse().transform(workDegs, workDegs);
           }
           catch (MismatchedDimensionException | TransformException e)
           {
@@ -193,7 +193,7 @@ public class GeoToolMapProjection extends PlainProjection implements
           }
         }
 
-        res = new WorldLocation(_workDegs.getCoordinate()[1], _workDegs
+        res = new WorldLocation(workDegs.getCoordinate()[1], workDegs
             .getCoordinate()[0], 0);
       }
     }

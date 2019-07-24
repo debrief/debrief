@@ -376,9 +376,9 @@ public class DebriefRibbonFile
         new ImportFileAction(ImportFileAction.TYPE_REP), importMenu, RibbonElementPriority.TOP);
     MenuUtils.addCommand("Plot", "icons/24/plot_file.png",
         new ImportFileAction(".dpf"), importMenu, RibbonElementPriority.TOP);
-    MenuUtils.addCommand("NMEA", "icons/16/pulse.png",
+    MenuUtils.addCommand("NMEA", "icons/24/pulse.png",
         new ImportFileAction(ImportFileAction.TYPE_NMEA), importMenu, RibbonElementPriority.TOP);
-    MenuUtils.addCommand("TIF", "icons/16/pulse.png",
+    MenuUtils.addCommand("TIF", "icons/24/map.png",
         new ImportFileAction(ImportFileAction.TYPE_TIF), importMenu, RibbonElementPriority.TOP);
     
     importMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
@@ -386,7 +386,7 @@ public class DebriefRibbonFile
 
     final JRibbonBand exportMenu = new JRibbonBand("Export", null);
 
-    MenuUtils.addCommand("PNG", "icons/24/export_gpx.png", new CopyPlotAsPNG(
+    MenuUtils.addCommand("Clipboard", "icons/24/export_gpx.png", new CopyPlotAsPNG(
         geoMapRenderer), exportMenu, RibbonElementPriority.TOP);
     exportMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         exportMenu));

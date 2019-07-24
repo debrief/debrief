@@ -561,19 +561,21 @@ public class PolygonShape extends PlainShape implements Editable,
         // convert to screen
         final Point thisP = dest.toScreen(next);
 
-        // remember the coords
-        xP[counter] = thisP.x;
-        yP[counter] = thisP.y;
+        if(thisP != null)
+				{
+					// remember the coords
+					xP[counter] = thisP.x;
+					yP[counter] = thisP.y;
 
-        // move the counter
-        counter++;
+					// move the counter
+					counter++;
 
-        if (_showLabels)
-        {
-          // and show this label
-          final int yPos = thisP.y + 5;
-          dest.drawText(node.getName(), thisP.x + 5, yPos);
-        }
+					if (_showLabels) {
+						// and show this label
+						final int yPos = thisP.y + 5;
+						dest.drawText(node.getName(), thisP.x + 5, yPos);
+					}
+				}
       }
 
       // ok, now plot it

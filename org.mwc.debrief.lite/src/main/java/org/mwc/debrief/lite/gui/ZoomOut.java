@@ -39,14 +39,18 @@ public class ZoomOut extends AbstractAction
     // decide on a new scale
     final double scale = _map.getWorldToScreenTransform().getScaleX();
     final double newScale = scale / 1.5;
-
-    final DirectPosition2D corner = new DirectPosition2D(centre.x - 0.5d
-        * paneArea.getWidth() / newScale, centre.y + 0.5d * paneArea.getHeight()
-            / newScale);
-
-    final Envelope2D newMapArea = new Envelope2D();
-    newMapArea.setFrameFromCenter(mapPos, corner);
-    _map.setDisplayArea(newMapArea);
+    
+    // don't bother zooming out too far
+    if(newScale > 2.5E-5)
+    {
+      final DirectPosition2D corner = new DirectPosition2D(centre.x - 0.5d
+          * paneArea.getWidth() / newScale, centre.y + 0.5d * paneArea.getHeight()
+              / newScale);
+  
+      final Envelope2D newMapArea = new Envelope2D();
+      newMapArea.setFrameFromCenter(mapPos, corner);
+      _map.setDisplayArea(newMapArea);
+    }
   }
 
 }
