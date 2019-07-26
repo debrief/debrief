@@ -188,7 +188,9 @@ final class SnailDrawTrack2
           final WorldLocation loc = fix.getLocation();
 
           // get the screen location
-          final Point screenP = new Point(proj.toScreen(loc));
+          final Point scrPos = proj.toScreen(loc);
+          
+          final Point screenP = new Point(scrPos);
 
           // initialise the area, if we have to
           if (thisR == null)

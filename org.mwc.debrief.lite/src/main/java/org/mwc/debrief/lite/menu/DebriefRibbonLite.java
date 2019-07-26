@@ -72,6 +72,7 @@ public class DebriefRibbonLite
      *
      */
     private static final long serialVersionUID = 1L;
+    @SuppressWarnings("unused")
     private final String _path;
 
     public HelpAction(String path)
@@ -84,26 +85,27 @@ public class DebriefRibbonLite
     {
       if (Desktop.isDesktopSupported())
       {
-        try
-        {
-          final File myFile = new File(_path);
-          Desktop.getDesktop().open(myFile);
-        }
-        catch (Exception ex)
-        {
-          Application.logError2(Application.ERROR, "Failed to open PDF", ex);
-          SwingUtilities.invokeLater(new Runnable()
-          {
-            @Override
-            public void run()
-            {
-              JOptionPane.showMessageDialog(null, "Failed to find help file:"
-                  + _path);
-            }
-          });
-        }
+        JOptionPane.showMessageDialog(null, "Please see the file titled ReadMe.pdf");
+
+//        try
+//        {
+//          final File myFile = new File(_path);
+//          Desktop.getDesktop().open(myFile);
+//        }
+//        catch (Exception ex)
+//        {
+//          Application.logError2(Application.ERROR, "Failed to open PDF", ex);
+//          SwingUtilities.invokeLater(new Runnable()
+//          {
+//            @Override
+//            public void run()
+//            {
+//              JOptionPane.showMessageDialog(null, "Failed to find help file:"
+//                  + _path);
+//            }
+//          });
+//        }
       }
-      System.out.println("Not implemented yet");
     }
 
   }

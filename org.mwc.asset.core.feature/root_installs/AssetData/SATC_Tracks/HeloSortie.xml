@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ScenarioController OutputDirectory="SATC_Tracks/Output"  xmlns="http://www.mwc.org/asset" >
+		<ScenarioGenerator></ScenarioGenerator>
+	
+	<ObserverList>
+		<TimeObserver Name="Domesday Timer" Active="true">
+			<Duration Value="180" Units="minutes" ></Duration>
+		</TimeObserver>
+		<DebriefReplayObserver Name="All data" record_detections="false"
+			record_positions="true" Active="true" record_decisions="false"
+			file_name="red">
+			<SubjectToTrack>
+				<Type Name="RED" />
+			</SubjectToTrack>
+		</DebriefReplayObserver>
+	</ObserverList>
+</ScenarioController>
