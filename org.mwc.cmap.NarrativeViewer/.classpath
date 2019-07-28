@@ -8,7 +8,11 @@
 	<classpathentry kind="lib" path="libs/ca.odell.glazedlists_1.9.0.v201303080712.jar"/>
 	<classpathentry kind="lib" path="libs/org.eclipse.nebula.cwt_1.0.0.201612121953.jar"/>
 	<classpathentry kind="lib" path="libs/org.eclipse.nebula.widgets.cdatetime_1.0.0.201612121953.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-12">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="output" path="bin"/>

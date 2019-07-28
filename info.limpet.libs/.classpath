@@ -11,7 +11,11 @@
 	<classpathentry kind="lib" path="libs/slf4j-simple-1.7.25.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.nebula.visualization.xygraph_2.1.0.201703081533.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.nebula.visualization.widgets_1.0.0.201703081533.jar" sourcepath="libs/org.eclipse.nebula.visualization.widgets.source_1.0.0.201703081533.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-12">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="output" path="bin"/>

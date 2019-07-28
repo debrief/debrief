@@ -151,7 +151,7 @@ public class SimulationRunner
     }
     if (oThread != null)
     {
-      oThread.destroy();
+     // oThread.destroy();
       oThread = null;
     }
   }
