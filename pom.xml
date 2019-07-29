@@ -23,6 +23,7 @@
     <debrief.keystore.alias>business</debrief.keystore.alias>
     <debrief.keystore.store.password>store123</debrief.keystore.store.password>
     <debrief.keystore.key.password>key123</debrief.keystore.key.password>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
   </properties>
 
