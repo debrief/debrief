@@ -276,4 +276,4 @@ Export-Package:
    org.eclipse.january.io",
  org.eclipse.january.metadata;uses:="org.eclipse.january.dataset,org.eclipse.january.io"
 Require-Bundle: org.mwc.cmap.legacy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-11

@@ -4,7 +4,7 @@ Bundle-Name: Debrief tests
 Bundle-SymbolicName: org.mwc.debrief.test2
 Bundle-Version: 1.0.25
 Bundle-Vendor: MWC
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Require-Bundle: org.mwc.cmap.TimeController;bundle-version="1.1.53",
  org.mwc.cmap.core;bundle-version="1.0.159",
  org.mwc.cmap.legacy;bundle-version="1.0.172",

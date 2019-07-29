@@ -22,7 +22,7 @@ Require-Bundle: org.mwc.cmap.jfreechart,
  org.eclipse.ui.editors,
  org.eclipse.ui.workbench.texteditor,
  javax.xml.bind
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Export-Package: org.mwc.debrief.dis,
  org.mwc.debrief.dis.ui.preferences,
