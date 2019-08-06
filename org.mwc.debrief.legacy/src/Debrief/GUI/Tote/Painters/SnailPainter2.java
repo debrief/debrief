@@ -163,7 +163,7 @@ public class SnailPainter2 extends TotePainter
   {
     super(theChart, theData, theTote);
 
-    _mySnailPlotter = new SnailDrawFix2("Snail");
+    _mySnailPlotter = new SnailDrawFix2("Snail", theTote);
 
     _myHighlightPlotters = new Vector<drawHighLight2>();
     _myHighlightPlotters.addElement(_mySnailPlotter);
@@ -241,6 +241,7 @@ public class SnailPainter2 extends TotePainter
     {
       // set the highlight colour
       dest.setColor(Color.white);
+      //_theTote.getStepper()
 
       // see if our plotters can plot this type of watchable
       final Enumeration<drawHighLight2> iter = _myHighlightPlotters.elements();
