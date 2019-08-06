@@ -9,6 +9,7 @@ import java.util.Vector;
 import Debrief.GUI.Tote.AnalysisTote;
 import Debrief.GUI.Tote.StepControl;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -113,6 +114,36 @@ public class LiteTote extends AnalysisTote
         }
       }
     }
-  }
 
+    // hey, did we fail to find a primary track?
+    if (getPrimary() == null)
+    {
+      // nope, see if there are any child layers
+      final Enumeration<Editable> iter2 = getData().elements();
+      while (iter2.hasMoreElements())
+      {
+        final Layer thisL = (Layer) iter2.nextElement();
+        if (thisL instanceof BaseLayer)
+        {
+          // check the children, to see if they're like a track
+          final BaseLayer baseL = (BaseLayer) thisL;
+          final Enumeration<Editable> ele = baseL.elements();
+          while (ele.hasMoreElements())
+          {
+            final Editable nextE = ele.nextElement();
+            if (nextE instanceof WatchableList)
+            {
+              final WatchableList wat = (WatchableList) nextE;
+              if (getPrimary() == null)
+              {
+                setPrimary(wat);
+              }
+              // done, drop out.
+              return;
+            }
+          }
+        }
+      }
+    }
+  }
 }
