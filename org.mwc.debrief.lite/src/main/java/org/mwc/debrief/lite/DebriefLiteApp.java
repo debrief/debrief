@@ -299,6 +299,11 @@ public class DebriefLiteApp implements FileDropListener
 
   public static void main(final String[] args)
   {
+    launchApp();
+  }
+  
+  public static void launchApp() {
+    if(_instance == null) {
     SwingUtilities.invokeLater(new Runnable()
     {
       @Override
@@ -308,7 +313,7 @@ public class DebriefLiteApp implements FileDropListener
 
       }
     });
-
+    }
   }
 
   private static void notifyListenersStateChanged(final Object source,
@@ -688,7 +693,7 @@ public class DebriefLiteApp implements FileDropListener
   private final ToteSetter _normalSetter;
   private final ToteSetter _snailSetter;
 
-  public DebriefLiteApp()
+  private DebriefLiteApp()
   {
     // set the substance look and feel
     System.setProperty(SupportedApps.APP_NAME_SYSTEM_PROPERTY,
