@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="org.mwc.debrief.lite" default="build.jars" basedir=".">
+<project name="org.mwc.debrief.lite" default="dist" basedir=".">
 	<tstamp>
 	      <format property="today_date" pattern="dd MMM yyyy HH:mm"  locale="en,UK" />
 	</tstamp>
@@ -117,6 +117,7 @@
 		<copy todir="${debrief-lite-dist.dir}" file="src/main/java/icons/d_lite.png" failonerror="true" overwrite="false"/>
 		<zip destfile="${dist.dir}/debrief-lite-${product.version}.zip">
 			<fileset dir="." includes="data/**/*"/>
+			<fileset dir="." includes="*.pdf"/>
 			<fileset dir="${debrief-lite-dist.dir}" includes="**/*"/>
 		</zip>
 	</target>
