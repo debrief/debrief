@@ -320,7 +320,7 @@ public class CircleShape extends PlainShape implements Editable,
 
 		// and the circle as a series of points (so it turns properly in relative
 		// mode)
-		final int STEPS = 5;
+		final int STEPS = NUM_SEGMENTS;
 		for (int i = 0; i < STEPS; i++)
 		{
 			final double thisAngle = (Math.PI * 2) / (double) STEPS * i;
