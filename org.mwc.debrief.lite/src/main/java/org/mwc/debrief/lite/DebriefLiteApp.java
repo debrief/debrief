@@ -1501,8 +1501,11 @@ public class DebriefLiteApp implements FileDropListener
     {
       if (!isNormal)
       {
+        @SuppressWarnings("unused")
         final SnailPainter2 snail = (SnailPainter2) current;
-        snail.setVectorStretch(1d);
+        // note: we were over-writing the vector stretch
+        // value, but I can't see why. Comment it out.
+        // snail.setVectorStretch(1d);
       }
 
       final CanvasAdaptor adapter = new CanvasAdaptor(projection, graphics,

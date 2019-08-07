@@ -58,7 +58,7 @@ public class LegOfData
 	@Override
 	public String toString()
 	{
-		final SimpleDateFormat sdf = new GMTDateFormat("hh:mm:ss");
+		final SimpleDateFormat sdf = new GMTDateFormat("HH:mm:ss");
 		return getName() + " " + sdf.format(new Date(tStart)) + "-"
 				+ sdf.format(new Date(tEnd));
 	}

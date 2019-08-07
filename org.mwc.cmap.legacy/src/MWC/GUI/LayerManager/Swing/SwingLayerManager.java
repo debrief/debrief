@@ -657,7 +657,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
     if (s != null && !s.isEmpty())
     {
       // check it's not the narratives layer
-      if(NarrativeEntry.NARRATIVE_LAYER.equals(s))
+      if(NarrativeEntry.NARRATIVE_LAYER.equalsIgnoreCase(s))
       {
         SwingUtilities.invokeLater(new Runnable() {
 
