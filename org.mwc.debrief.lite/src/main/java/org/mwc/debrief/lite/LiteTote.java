@@ -96,53 +96,41 @@ public class LiteTote extends AnalysisTote
       if (thisL instanceof TrackWrapper)
       {
         final TrackWrapper thisT = (TrackWrapper) thisL;
-        if (getPrimary() == null)
+        addItem(thisT);
+      }else if (thisL instanceof BaseLayer)
+      {
+        // check the children, to see if they're like a track
+        final BaseLayer baseL = (BaseLayer) thisL;
+        final Enumeration<Editable> ele = baseL.elements();
+        while (ele.hasMoreElements())
         {
-          // and now store as primary
-          setPrimary(thisT);
-
-          // ok, that may have been a secondary, remove it
-          removeParticipant(thisT);
-        }
-        else if (getPrimary() != thisT)
-        {
-          final Vector<WatchableList> secs = getSecondary();
-          if (!secs.contains(thisT))
+          final Editable nextE = ele.nextElement();
+          if (nextE instanceof WatchableList)
           {
-            setSecondary(thisT);
+            final WatchableList wat = (WatchableList) nextE;
+            addItem(wat);
           }
         }
       }
     }
+  }
 
-    // hey, did we fail to find a primary track?
+  public void addItem(final WatchableList thisT)
+  {
     if (getPrimary() == null)
     {
-      // nope, see if there are any child layers
-      final Enumeration<Editable> iter2 = getData().elements();
-      while (iter2.hasMoreElements())
+      // and now store as primary
+      setPrimary(thisT);
+
+      // ok, that may have been a secondary, remove it
+      removeParticipant(thisT);
+    }
+    else if (getPrimary() != thisT)
+    {
+      final Vector<WatchableList> secs = getSecondary();
+      if (!secs.contains(thisT))
       {
-        final Layer thisL = (Layer) iter2.nextElement();
-        if (thisL instanceof BaseLayer)
-        {
-          // check the children, to see if they're like a track
-          final BaseLayer baseL = (BaseLayer) thisL;
-          final Enumeration<Editable> ele = baseL.elements();
-          while (ele.hasMoreElements())
-          {
-            final Editable nextE = ele.nextElement();
-            if (nextE instanceof WatchableList)
-            {
-              final WatchableList wat = (WatchableList) nextE;
-              if (getPrimary() == null)
-              {
-                setPrimary(wat);
-              }
-              // done, drop out.
-              return;
-            }
-          }
-        }
+        setSecondary(thisT);
       }
     }
   }
