@@ -178,7 +178,7 @@ public class DateFormatPropertyEditor extends PropertyEditorSupport
   /**
    * default format for time label
    */
-  public static final String DEFAULT_DATETIME_FORMAT = "yy/MM/dd hh:mm:ss";
+  public static final String DEFAULT_DATETIME_FORMAT = "yy/MM/dd HH:mm:ss";
 
   /**
    * retrieve/initialise our list of date formats
