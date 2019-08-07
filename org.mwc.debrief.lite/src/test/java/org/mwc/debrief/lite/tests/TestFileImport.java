@@ -14,39 +14,42 @@
  */
 package org.mwc.debrief.lite.tests;
 
-import org.mwc.debrief.lite.DebriefLiteApp;
+import java.io.File;
 
-import junit.framework.TestCase;
+import javax.swing.SwingUtilities;
+
+import org.mwc.debrief.lite.DebriefLiteApp;
 
 /**
  * @author Ayesha
  *
  */
-public abstract class BaseTestCase extends TestCase
+public class TestFileImport extends BaseTestCase
 {
   
-  @Override
-  protected void setUp() throws Exception
+  public void testImportRepFile()
   {
-    System.out.println("Setup");
-    DebriefLiteApp.launchApp();    
+    System.out.println("started test");
+    File[] f = new File[1];
+    f[0]=new File("c:/Users/ayesha/git/debrief/org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep");
+    SwingUtilities.invokeLater(new Runnable()
+    {
+      
+      @Override
+      public void run()
+      {
+        DebriefLiteApp.openRepFile(f[0]);    
+      }
+    });
     try
     {
-      System.out.println("waiting");
-      Thread.sleep(20000);
+      Thread.sleep(200);
     }
     catch (InterruptedException e)
     {
       e.printStackTrace();
     }
+    //do assertions here
   }
-  
 
-  @Override
-  protected void tearDown() throws Exception
-  {
-    System.out.println("teardown");
-    DebriefLiteApp.getInstance().getApplicationFrame().setVisible(false);
-    super.tearDown();
-  }
 }

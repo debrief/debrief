@@ -978,6 +978,7 @@ public class DebriefLiteApp implements FileDropListener
   {
     final JPanel centerPanel = new JPanel();
     centerPanel.setLayout(new BorderLayout());
+    centerPanel.setName("Center Panel");
     mapPane.addComponentListener(new ComponentAdapter()
     {
       @Override
@@ -1612,6 +1613,12 @@ public class DebriefLiteApp implements FileDropListener
       final HasEditables theLayer)
   {
     getLayerManager().updateData((Layer) theLayer, newItem);
+  }
+
+  public JRibbonFrame getApplicationFrame()
+  {
+    return _instance.theFrame;
+    
   }
 
 }
