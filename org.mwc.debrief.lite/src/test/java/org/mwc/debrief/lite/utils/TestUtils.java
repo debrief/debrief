@@ -28,7 +28,7 @@ import javax.swing.JMenu;
 public class TestUtils
 {
 
-  static int counter;
+  private static int counter;
 
   public static Component getChildIndexed(final Component parent,
       final String klass, final int index)
