@@ -77,6 +77,26 @@ public class LiteTote extends AnalysisTote
     });
   }
 
+  public void addItem(final WatchableList thisT)
+  {
+    if (getPrimary() == null)
+    {
+      // and now store as primary
+      setPrimary(thisT);
+
+      // ok, that may have been a secondary, remove it
+      removeParticipant(thisT);
+    }
+    else if (getPrimary() != thisT)
+    {
+      final Vector<WatchableList> secs = getSecondary();
+      if (!secs.contains(thisT))
+      {
+        setSecondary(thisT);
+      }
+    }
+  }
+
   @Override
   public Container getPanel()
   {
@@ -97,7 +117,8 @@ public class LiteTote extends AnalysisTote
       {
         final TrackWrapper thisT = (TrackWrapper) thisL;
         addItem(thisT);
-      }else if (thisL instanceof BaseLayer)
+      }
+      else if (thisL instanceof BaseLayer)
       {
         // check the children, to see if they're like a track
         final BaseLayer baseL = (BaseLayer) thisL;
@@ -111,26 +132,6 @@ public class LiteTote extends AnalysisTote
             addItem(wat);
           }
         }
-      }
-    }
-  }
-
-  public void addItem(final WatchableList thisT)
-  {
-    if (getPrimary() == null)
-    {
-      // and now store as primary
-      setPrimary(thisT);
-
-      // ok, that may have been a secondary, remove it
-      removeParticipant(thisT);
-    }
-    else if (getPrimary() != thisT)
-    {
-      final Vector<WatchableList> secs = getSecondary();
-      if (!secs.contains(thisT))
-      {
-        setSecondary(thisT);
       }
     }
   }
