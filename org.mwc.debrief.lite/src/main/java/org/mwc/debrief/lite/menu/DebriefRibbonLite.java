@@ -152,7 +152,6 @@ public class DebriefRibbonLite
 
     // add the action as observer of undobuffer
     session.getUndoBuffer().addObserver(redoAction);
-    liteMenu.startGroup();
     MenuUtils.addCommand("Help", "icons/24/help.png", new HelpAction(path),
         liteMenu, RibbonElementPriority.TOP);
     MenuUtils.addCommand("Exit", "icons/24/exit.png", new ExitLiteApp(
