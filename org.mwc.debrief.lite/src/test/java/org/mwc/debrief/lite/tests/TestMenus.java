@@ -14,6 +14,8 @@
  */
 package org.mwc.debrief.lite.tests;
 
+import java.util.Arrays;
+
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
@@ -21,7 +23,10 @@ import javax.swing.JSlider;
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.utils.TestUtils;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
+import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
 import org.pushingpixels.flamingo.api.common.JCommandToggleButton;
+import org.pushingpixels.flamingo.api.common.JScrollablePanel;
+import org.pushingpixels.flamingo.api.common.popup.JPopupPanel;
 import org.pushingpixels.flamingo.api.ribbon.AbstractRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
@@ -35,6 +40,7 @@ import org.pushingpixels.flamingo.internal.ui.ribbon.JBandControlPanel;
 public class TestMenus extends BaseTestCase
 {
 
+  final static String[] disabledButtons = new String[] {"Close"};
   public void testLiteMenu() {
     JRibbonFrame ribbonFrame = DebriefLiteApp.getInstance().getApplicationFrame();
     assertEquals(ribbonFrame.getRibbon().getTaskCount(),5);
@@ -46,7 +52,9 @@ public class TestMenus extends BaseTestCase
     assertEquals(ribbonFrame.getRibbon().getTask(1).getTitle(),"File");
     RibbonTask fileMenu = ribbonFrame.getRibbon().getTask(1);
     assertTrue(fileMenu.getBandCount()==3);
+    
     doAssertions(fileMenu.getBand(0),"File",new String[] {"New","Open","Save","Close"},false);
+    assertSaveAs(fileMenu.getBand(0));
     doAssertions(fileMenu.getBand(1),"Import",new String[] {"Replay","Plot","NMEA","TIF"},false);
     doAssertions(fileMenu.getBand(2),"Export",new String[] {"Clipboard"},false);
     }
@@ -99,6 +107,7 @@ public class TestMenus extends BaseTestCase
     assertRibbonLabel("Arc",(JRibbonComponent)liteBand.getComponent(6));
     JCommandButton labelButton = ((JCommandButton)liteBand.getComponent(0));
     assertTrue(labelButton.getText().equals("Label"));
+    assertTrue(labelButton.isEnabled());
     assertTrue(liteBand.getComponent(3) instanceof JRibbonComponent);
     }
   
@@ -108,7 +117,7 @@ public class TestMenus extends BaseTestCase
     assertTrue(component.getComponent(1) instanceof JCommandButton);
     JCommandButton lbl = (JCommandButton)component.getComponent(1);
     assertEquals(lbl.getText(),string);
-    
+    assertTrue(lbl.isEnabled());   
   }
 
   private void doAssertionTransparencySliderBar(AbstractRibbonBand liteBand1,String menuName,String itemname) {
@@ -140,19 +149,49 @@ public class TestMenus extends BaseTestCase
           assertTrue(liteBand.getComponent(i) instanceof JCommandToggleButton);
           JCommandToggleButton newButton = ((JCommandToggleButton)liteBand.getComponent(i));
           assertTrue(newButton.getText().equals(item));
+          if(Arrays.asList(disabledButtons).contains(newButton.getText())) {
+            assertFalse(newButton.isEnabled());
+          }
+          else {
+            assertTrue(newButton.isEnabled());
+          }
         }
         else {
           assertTrue(liteBand.getComponent(i) instanceof JCommandButton);
           JCommandButton newButton = ((JCommandButton)liteBand.getComponent(i));
           assertTrue(newButton.getText().equals(item));
+          if(Arrays.asList(disabledButtons).contains(newButton.getText())) {
+            assertFalse(newButton.isEnabled());
+          }
+          else {
+            assertTrue(newButton.isEnabled());
+          }
         }
         
       }
       i++;
     }
-    
-    
-    
   }
-  
+  private void assertSaveAs(AbstractRibbonBand rb) {
+    JBandControlPanel liteBand = (JBandControlPanel)rb.getComponent(0);
+    JCommandButton newButton = ((JCommandButton)liteBand.getComponent(2));
+    assertTrue(newButton.getText().equals("Save"));
+    if(Arrays.asList(disabledButtons).contains(newButton.getText())) {
+      assertFalse(newButton.isEnabled());
+    }
+    else {
+      assertTrue(newButton.isEnabled());
+    }
+    assertTrue(newButton.getCommandButtonKind().equals(CommandButtonKind.ACTION_AND_POPUP_MAIN_ACTION));
+    assertNotNull(newButton.getPopupCallback());
+    assertNotNull(newButton.getPopupCallback().getPopupPanel(newButton));
+    JPopupPanel panel = (JPopupPanel)newButton.getPopupCallback().getPopupPanel(newButton);
+    assertEquals(panel.getComponentCount(),1);
+    JScrollablePanel<JCommandButton> scrollPanel = (JScrollablePanel<JCommandButton>)panel.getComponent(0);
+    //3 as there is a panel to which the command buttons are added.
+    assertEquals(3,scrollPanel.getComponentCount());
+    /*assertEquals("Save",((JCommandButton)scrollPanel.getComponent(1)).getText());
+    assertEquals("Save As",((JCommandButton)scrollPanel.getComponent(2)).getText());*/
+  }
+    
 }
