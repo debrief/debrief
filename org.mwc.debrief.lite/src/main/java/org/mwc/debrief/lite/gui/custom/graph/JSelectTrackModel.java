@@ -131,10 +131,6 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
   @Override
   public void setPrimaryTrack(final TrackWrapper newPrimary)
   {
-    if ( newPrimary != null )
-    {
-      System.out.println("Cambiando el primario " + newPrimary.getName());
-    }
     
     final TrackWrapper oldPrimary = getPrimaryTrack();
     // Do we have it?
@@ -190,17 +186,12 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
       {
         isDifferent = true;
         deltaMinus.add(new AbstractSelection<TrackWrapper>(oldTrackItem, false));
-        System.out.println("Hace falta eliminar a " + oldTrackItem.getName());
       }
     }
     if (isDifferent)
     {
       this._tracks.removeAll(deltaMinus);
       this._tracks.addAll(deltaPlus);
-      if ( _primaryTrack != null )
-      {
-        System.out.println("Primario " + _primaryTrack.getName());
-      }
       
       if (_primaryTrack != null && !tracks.contains(_primaryTrack))
       {

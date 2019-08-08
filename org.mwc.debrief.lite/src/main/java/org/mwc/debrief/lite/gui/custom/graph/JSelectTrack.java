@@ -68,7 +68,6 @@ public class JSelectTrack extends JPopupMenu
       {
         if (JSelectTrackModel.PRIMARY_CHANGED.equals(evt.getPropertyName()))
         {
-          System.out.println("Primario cambio " + evt.getPropertyName());
           final TrackWrapper newPrimary = (TrackWrapper) evt.getNewValue();
           final JRadioButton component = _relatedToComponentsMap.get(
               newPrimary);
@@ -154,7 +153,6 @@ public class JSelectTrack extends JPopupMenu
 
     for (final AbstractSelection<TrackWrapper> track : _model.getTracks())
     {
-      System.out.println("El modelo tiene el track " + track.getItem().getName() + " " + track.isSelected());
       final JCheckBox displayCheckBox = new JCheckBox(track.getItem().getName(), track.isSelected());
       displayCheckBox.addItemListener(new ItemListener()
       {
