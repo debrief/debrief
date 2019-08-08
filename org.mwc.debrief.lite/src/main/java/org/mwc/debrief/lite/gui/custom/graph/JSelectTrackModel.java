@@ -96,7 +96,7 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
   @Override
   public void setActiveTrack(final TrackWrapper track, final boolean check)
   {
-    // TODO this should be move to somewhere else.
+    // TODO this should be moved to somewhere else.
     Boolean oldValue = null;
     Boolean newValue = null;
     for (final AbstractSelection<TrackWrapper> currentTrack : _tracks)
@@ -131,6 +131,11 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
   @Override
   public void setPrimaryTrack(final TrackWrapper newPrimary)
   {
+    if ( newPrimary != null )
+    {
+      System.out.println("Cambiando el primario " + newPrimary.getName());
+    }
+    
     final TrackWrapper oldPrimary = getPrimaryTrack();
     // Do we have it?
     for (final AbstractSelection<TrackWrapper> currentTrack : _tracks)
@@ -162,40 +167,51 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
   public boolean setTracks(final List<TrackWrapper> tracks)
   {
     boolean isDifferent = false;
-    final List<AbstractSelection<TrackWrapper>> oldTracks = new ArrayList<>(
-        this._tracks);
-    final List<AbstractSelection<TrackWrapper>> newTracks = new ArrayList<>();
+    
+    final List<AbstractSelection<TrackWrapper>> deltaPlus = new ArrayList<>();
+    final List<AbstractSelection<TrackWrapper>> deltaMinus = new ArrayList<>();
+    
     final HashSet<TrackWrapper> oldTracksSet = new HashSet<>();
-    if (oldTracks != null)
+    for (final AbstractSelection<TrackWrapper> oldTrack : _tracks)
     {
-      for (final AbstractSelection<TrackWrapper> oldTrack : oldTracks)
-      {
-        oldTracksSet.add(oldTrack.getItem());
-      }
+      oldTracksSet.add(oldTrack.getItem());
     }
     for (final TrackWrapper track : tracks)
     {
-      newTracks.add(new AbstractSelection<TrackWrapper>(track, false));
-      isDifferent |= !oldTracksSet.contains(track);
+      if ( !oldTracksSet.contains(track) )
+      {
+        isDifferent = true;
+        deltaPlus.add(new AbstractSelection<TrackWrapper>(track, false));
+      }
     }
     for (final TrackWrapper oldTrackItem : oldTracksSet)
     {
-      isDifferent |= !tracks.contains(oldTrackItem);
+      if ( !tracks.contains(oldTrackItem) )
+      {
+        isDifferent = true;
+        deltaMinus.add(new AbstractSelection<TrackWrapper>(oldTrackItem, false));
+        System.out.println("Hace falta eliminar a " + oldTrackItem.getName());
+      }
     }
     if (isDifferent)
     {
-      this._tracks.clear();
-      this._tracks.addAll(newTracks);
+      this._tracks.removeAll(deltaMinus);
+      this._tracks.addAll(deltaPlus);
+      if ( _primaryTrack != null )
+      {
+        System.out.println("Primario " + _primaryTrack.getName());
+      }
+      
       if (_primaryTrack != null && !tracks.contains(_primaryTrack))
       {
         setPrimaryTrack(null);
       }
-      notifyListenersStateChanged(this, TRACK_LIST_CHANGED, oldTracks, tracks);
-      if (newTracks.size() == 1)
+      notifyListenersStateChanged(this, TRACK_LIST_CHANGED, null, tracks);
+      if (tracks.size() == 1)
       {
-        final TrackWrapper newPrimary = newTracks.get(0).getItem();
+        final TrackWrapper newPrimary = tracks.get(0);
         setActiveTrack(newPrimary, true);
-        notifyListenersStateChanged(this, PRIMARY_CHANGED, null, newPrimary);
+        notifyListenersStateChanged(newPrimary, TRACK_SELECTION, null, true);
       }
     }
     return isDifferent;

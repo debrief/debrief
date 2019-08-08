@@ -44,4 +44,24 @@ public class AbstractSelection<T>
   {
     this._item = _item;
   }
+  
+  @Override
+  public boolean equals(Object obj)
+  {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    AbstractSelection other = (AbstractSelection) obj;
+    if (_item == null)
+    {
+      if (other._item != null)
+        return false;
+    }
+    else if (!_item.equals(other._item))
+      return false;
+    return true;
+  }
 }
