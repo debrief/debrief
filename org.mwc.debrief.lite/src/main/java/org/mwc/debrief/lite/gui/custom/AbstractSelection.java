@@ -54,7 +54,7 @@ public class AbstractSelection<T>
       return false;
     if (getClass() != obj.getClass())
       return false;
-    AbstractSelection other = (AbstractSelection) obj;
+    AbstractSelection<?> other = (AbstractSelection<?>) obj;
     if (_item == null)
     {
       if (other._item != null)
