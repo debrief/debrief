@@ -12,101 +12,6 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
-// $RCSfile: WorldVector.java,v $
-// @author $Author: Ian.Mayo $
-// @version $Revision: 1.7 $
-// $Log: WorldVector.java,v $
-// Revision 1.7  2006/05/02 13:43:50  Ian.Mayo
-// Correct comment typo, add 'inverse' generator
-//
-// Revision 1.6  2004/10/28 12:52:18  ian
-// Allow use of null object for depth in constructor
-//
-// Revision 1.5  2004/08/31 15:28:19  Ian.Mayo
-// Polish off test refactoring, start Intercept behaviour
-//
-// Revision 1.4  2004/08/31 09:38:32  Ian.Mayo
-// Rename inner static tests to match signature **Test to make automated testing more consistent
-//
-// Revision 1.3  2004/07/08 15:48:38  Ian.Mayo
-// Tidy toString operation, accept inspector bits
-//
-// Revision 1.2  2004/05/24 16:27:38  Ian.Mayo
-// Commit updates from home
-//
-// Revision 1.1.1.1  2004/03/04 20:31:14  ian
-// no message
-//
-// Revision 1.1.1.1  2003/07/17 10:07:01  Ian.Mayo
-// Initial import
-//
-// Revision 1.4  2002-10-28 09:25:11+00  ian_mayo
-// minor tidying (from IntelliJ Idea)
-//
-// Revision 1.3  2002-10-11 08:34:12+01  ian_mayo
-// IntelliJ optimisations
-//
-// Revision 1.2  2002-05-28 09:25:33+01  ian_mayo
-// after switch to new system
-//
-// Revision 1.1  2002-05-28 09:15:16+01  ian_mayo
-// Initial revision
-//
-// Revision 1.1  2002-04-11 14:02:35+01  ian_mayo
-// Initial revision
-//
-// Revision 1.2  2001-10-22 14:50:50+01  administrator
-// Setup the tests correctly (specifying the correct earth model)
-//
-// Revision 1.1  2001-08-21 12:11:21+01  administrator
-// put units in parameter names
-//
-// Revision 1.0  2001-07-17 08:46:40+01  administrator
-// Initial revision
-//
-// Revision 1.3  2001-01-21 21:39:51+00  novatech
-// add JUnit testing
-//
-// Revision 1.2  2001-01-18 13:21:29+00  novatech
-// optimisations to reduce object creation
-//
-// Revision 1.1  2001-01-03 13:43:11+00  novatech
-// Initial revision
-//
-// Revision 1.1.1.1  2000/12/12 21:42:40  ianmayo
-// initial version
-//
-// Revision 1.3  2000-04-19 11:40:00+01  ian_mayo
-// make methods final
-//
-// Revision 1.2  2000-02-02 14:24:06+00  ian_mayo
-// made serializable
-//
-// Revision 1.1  1999-10-12 15:37:14+01  ian_mayo
-// Initial revision
-//
-// Revision 1.2  1999-08-04 09:45:32+01  administrator
-// minor mods, tidying up
-//
-// Revision 1.1  1999-07-27 10:50:53+01  administrator
-// Initial revision
-//
-// Revision 1.2  1999-07-23 14:03:53+01  administrator
-// Updating MWC utilities, & catching up on changes (removed deprecated code from PtPlot)
-//
-// Revision 1.1  1999-07-07 11:10:11+01  administrator
-// Initial revision
-//
-// Revision 1.1  1999-06-16 15:38:02+01  sm11td
-// Initial revision
-//
-// Revision 1.2  1999-02-04 08:02:24+00  sm11td
-// Plotting to canvas, scaling canvas,
-//
-// Revision 1.1  1999-01-31 13:32:59+00  sm11td
-// Initial revision
-//
-
 package MWC.GenericData;
 
 import java.io.Serializable;
@@ -161,19 +66,12 @@ public final class WorldVector implements Serializable, Cloneable
     }
   }
 
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
   // keep track of versions
   static final long serialVersionUID = 1L;
   private double _brg; // rads
   private double _rng; // degs
-
   private double _depth; // metres
-
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
+  
   /**
    * constructor for a vector (separation between 2 points)
    *
@@ -207,10 +105,6 @@ public final class WorldVector implements Serializable, Cloneable
     if (depth != null)
       _depth = depth.getValueIn(WorldDistance.METRES);
   }
-
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
 
   /**
    * copy constructor
