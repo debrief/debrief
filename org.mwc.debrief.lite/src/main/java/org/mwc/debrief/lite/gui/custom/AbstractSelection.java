@@ -69,7 +69,7 @@ public class AbstractSelection<T>
   public int hashCode()
   {
     final int prime = 31;
-    int result = 111;
+    int result = 111 * getClass().hashCode();
     if (_item != null)
     {
       result += prime * _item.hashCode();
