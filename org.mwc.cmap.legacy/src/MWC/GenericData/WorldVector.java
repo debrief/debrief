@@ -127,9 +127,9 @@ public final class WorldVector implements Serializable, Cloneable
   // keep track of versions
   static final long serialVersionUID = 1L;
 
-  private double _brg;
-  private double _rng;
-  private double _depth;
+  private double _brg; // rads
+  private double _rng; // degs
+  private double _depth; // metres
 
   /////////////////////////////////////////////////////////////
   // constructor
@@ -173,7 +173,7 @@ public final class WorldVector implements Serializable, Cloneable
     this(brgRads, dist.getValueIn(WorldDistance.DEGS), 0);
 
     if (depth != null)
-      _depth = depth.getValueIn(WorldDistance.DEGS);
+      _depth = depth.getValueIn(WorldDistance.METRES);
   }
   
   /////////////////////////////////////////////////////////////
