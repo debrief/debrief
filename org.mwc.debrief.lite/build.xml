@@ -156,7 +156,7 @@
 		</target>
 	<target name="dist" depends="clean">
 		<ant antfile="build.xml" dir="../org.mwc.debrief.legacy" target="debrief_legacy.jar" inheritAll="false"/>
-		<ant antfile="build.xml" dir="../org.mwc.cmap.geotools" target="geotools_jar"/>
+		<ant antfile="build.xml" dir="../org.mwc.cmap.geotools" target="geotools_jar" inheritAll="false"/>
 		<antcall target="generate"/>
 	</target>
 </project>
