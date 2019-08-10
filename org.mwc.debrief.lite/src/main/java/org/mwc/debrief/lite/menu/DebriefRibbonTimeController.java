@@ -76,7 +76,6 @@ import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
-import MWC.GenericData.WatchableList;
 import MWC.TacticalData.SliderConverter;
 import MWC.TacticalData.temporal.ControllablePeriod;
 import MWC.TacticalData.temporal.PlotOperations;
@@ -303,8 +302,9 @@ public class DebriefRibbonTimeController
 
   private static JCheckBoxMenuItem[] _menuItem;
 
-  /** track snail mode
-   * 
+  /**
+   * track snail mode
+   *
    */
   private static boolean _isNormal = true;
 
@@ -722,7 +722,8 @@ public class DebriefRibbonTimeController
           {
             hasItems = true;
             break;
-          }else if (next instanceof BaseLayer)
+          }
+          else if (next instanceof BaseLayer)
           {
             // check the children, to see if they're like a track
             final BaseLayer baseL = (BaseLayer) next;
@@ -730,9 +731,9 @@ public class DebriefRibbonTimeController
             while (ele.hasMoreElements() && !hasItems)
             {
               final Editable nextE = ele.nextElement();
-              hasItems |= nextE instanceof LightweightTrackWrapper ||
-                          nextE instanceof TrackWrapper ||
-                          nextE instanceof DynamicTrackShapeSetWrapper;
+              hasItems |= nextE instanceof LightweightTrackWrapper
+                  || nextE instanceof TrackWrapper
+                  || nextE instanceof DynamicTrackShapeSetWrapper;
             }
           }
         }
