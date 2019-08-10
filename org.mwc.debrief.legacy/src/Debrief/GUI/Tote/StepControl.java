@@ -576,7 +576,8 @@ abstract public class StepControl implements Editable,
   {
     boolean res = false;
 
-    if ((val >= _startTime.getMicros()) && (val <= _endTime.getMicros()))
+    if ((_startTime != null && val >= _startTime.getMicros()) &&
+        (_endTime != null && val <= _endTime.getMicros()))
       res = true;
 
     return res;
