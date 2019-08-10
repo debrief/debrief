@@ -78,18 +78,18 @@ public class LightweightTrackWrapper extends PlainWrapper implements
             SymbolFactoryPropertyEditor.class), displayExpertProp("SymbolColor",
                 "Symbol color", "the color of the symbol (when used)", FORMAT),
             prop("Visible", "the Layer visibility", VISIBILITY), prop("Name",
-                "the name of the track", FORMAT), displayExpertProp("NameVisible",
-                    "Name Visible",
-                    "show the name of the track", FORMAT), prop("Color",
-                        "color of the track", FORMAT), displayExpertLongProp(
-                            "ResampleDataAt", "Resample data at",
-                            "the data sample rate", TEMPORAL,
-                            TimeFrequencyPropertyEditor.class),
-            displayExpertLongProp("LineThickness", "Line thickness",
-                "the width to draw this track", FORMAT,
-                LineWidthPropertyEditor.class), displayExpertLongProp(
-                    "LabelFrequency", "Label frequency", "the label frequency",
-                    TEMPORAL, TimeFrequencyPropertyEditor.class),
+                "the name of the track", FORMAT), displayExpertProp(
+                    "NameVisible", "Name Visible", "show the name of the track",
+                    FORMAT), prop("Color", "color of the track", FORMAT),
+            displayExpertLongProp("ResampleDataAt", "Resample data at",
+                "the data sample rate", TEMPORAL,
+                TimeFrequencyPropertyEditor.class), displayExpertLongProp(
+                    "LineThickness", "Line thickness",
+                    "the width to draw this track", FORMAT,
+                    LineWidthPropertyEditor.class), displayExpertLongProp(
+                        "LabelFrequency", "Label frequency",
+                        "the label frequency", TEMPORAL,
+                        TimeFrequencyPropertyEditor.class),
             displayExpertLongProp("SymbolFrequency", "Symbol frequency",
                 "the symbol frequency", TEMPORAL,
                 TimeFrequencyPropertyEditor.class), displayExpertLongProp(
@@ -154,21 +154,6 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     {
       boolean isValid(FixWrapper fix);
     }
-    
-
-    public final void testMyParams1()
-    {
-      Editable ed = new LightweightTrackWrapper("name", true, true, Color.red, 1);
-      editableTesterSupport.testParams(ed, this);
-      ed = null;
-    }
-
-    public final void testMyParams2()
-    {
-      Editable ed = new LightweightTrackWrapper();
-      editableTesterSupport.testParams(ed, this);
-      ed = null;
-    }
 
     private static FixWrapper create(final long date, final double lat,
         final double lon)
@@ -210,18 +195,33 @@ public class LightweightTrackWrapper extends PlainWrapper implements
       return track;
     }
 
-    public void testResampleUp()
+    public final void testMyParams1()
     {
-      LightweightTrackWrapper track = getTrack();
-      track.setResampleDataAt(new HiResDate(20000));
-      assertEquals("correct size", 5, track._thePositions.size());
+      Editable ed = new LightweightTrackWrapper("name", true, true, Color.red,
+          1);
+      editableTesterSupport.testParams(ed, this);
+      ed = null;
+    }
+
+    public final void testMyParams2()
+    {
+      Editable ed = new LightweightTrackWrapper();
+      editableTesterSupport.testParams(ed, this);
+      ed = null;
     }
 
     public void testResampleDown()
     {
-      LightweightTrackWrapper track = getTrack();
+      final LightweightTrackWrapper track = getTrack();
       track.setResampleDataAt(new HiResDate(5000));
       assertEquals("correct size", 19, track._thePositions.size());
+    }
+
+    public void testResampleUp()
+    {
+      final LightweightTrackWrapper track = getTrack();
+      track.setResampleDataAt(new HiResDate(20000));
+      assertEquals("correct size", 5, track._thePositions.size());
     }
 
     public void testSetFreq()
@@ -384,11 +384,11 @@ public class LightweightTrackWrapper extends PlainWrapper implements
 
     // set default line-style
     setLineStyle(LineStylePropertyEditor.SOLID);
-    
+
     // initialise the symbol to use for plotting this track in snail mode
     _theSnailShape = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol(
         "Submarine");
-   }
+  }
 
   public LightweightTrackWrapper(final String name, final boolean visible,
       final boolean nameVisible, final Color color, final int lineStyle)
@@ -434,68 +434,6 @@ public class LightweightTrackWrapper extends PlainWrapper implements
 
     // finally, store it.
     _thePositions.add(e);
-  }
-
-  public final void setSymbolColor(final Color col)
-  {
-    _theSnailShape.setColor(col);
-  }
-
-  public void setSymbolLength(final WorldDistance symbolLength)
-  {
-    if (_theSnailShape instanceof WorldScaledSym)
-    {
-      final WorldScaledSym sym = (WorldScaledSym) _theSnailShape;
-      sym.setLength(symbolLength);
-    }
-  }
-
-  public void setSnailSymbolSize(final double scaleVal)
-  {
-    if (_theSnailShape != null)
-    {
-      _theSnailShape.setScaleVal(scaleVal);
-    }
-  }
-
-  public final void setSymbolType(final String val)
-  {
-    // is this the type of our symbol?
-    if (val.equals(_theSnailShape.getType()))
-    {
-      // don't bother we're using it already
-    }
-    else
-    {
-      // remember the size of the symbol
-      final double scale = _theSnailShape.getScaleVal();
-      
-      // remember the color of the symbol
-      final Color oldCol = _theSnailShape.getColor();
-
-      // replace our symbol with this new one
-      final PlainSymbol shape =
-          MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol(val);
-      if (shape != null)
-      {
-        _theSnailShape = shape;
-        _theSnailShape.setColor(oldCol);
-        _theSnailShape.setScaleVal(scale);
-      }
-      else
-      {
-        Trace.trace("Failed to find symbol for type:" + val);
-      }
-    }
-  }
-
-  public void setSymbolWidth(final WorldDistance symbolWidth)
-  {
-    if (_theSnailShape instanceof WorldScaledSym)
-    {
-      final WorldScaledSym sym = (WorldScaledSym) _theSnailShape;
-      sym.setHeight(symbolWidth);
-    }
   }
 
   /**
@@ -792,6 +730,19 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     return _theSnailShape;
   }
 
+  public final double getSnailSymbolSize()
+  {
+    return _theSnailShape.getScaleVal();
+  }
+
+  @Override
+  public HiResDate getStartDTG()
+  {
+    final HiResDate res = _thePositions.isEmpty() ? null
+        : ((FixWrapper) _thePositions.first()).getTime();
+    return res;
+  }
+
   /**
    * get the color used to plot the symbol
    *
@@ -800,6 +751,16 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   public final Color getSymbolColor()
   {
     return _theSnailShape.getColor();
+  }
+
+  /**
+   * return the symbol frequencies for the track
+   *
+   * @return frequency in seconds
+   */
+  public final HiResDate getSymbolFrequency()
+  {
+    return _lastSymbolFrequency;
   }
 
   public WorldDistance getSymbolLength()
@@ -821,11 +782,6 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     return _theSnailShape.getType();
   }
 
-  public final double getSnailSymbolSize()
-  {
-    return _theSnailShape.getScaleVal();
-  }
-
   public WorldDistance getSymbolWidth()
   {
     WorldDistance res = null;
@@ -835,24 +791,6 @@ public class LightweightTrackWrapper extends PlainWrapper implements
       res = sym.getWidth();
     }
     return res;
-  }
-
-  @Override
-  public HiResDate getStartDTG()
-  {
-    final HiResDate res = _thePositions.isEmpty() ? null
-        : ((FixWrapper) _thePositions.first()).getTime();
-    return res;
-  }
-
-  /**
-   * return the symbol frequencies for the track
-   *
-   * @return frequency in seconds
-   */
-  public final HiResDate getSymbolFrequency()
-  {
-    return _lastSymbolFrequency;
   }
 
   /**
@@ -1044,7 +982,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
       public void remove()
       {
         // TODO Auto-generated method stub
-        
+
       }
     };
   }
@@ -1129,7 +1067,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   public double rangeFrom(final WorldLocation other)
   {
     double nearest = Double.MAX_VALUE;
-    Enumeration<Editable> pIter = getPositionIterator();
+    final Enumeration<Editable> pIter = getPositionIterator();
     while (pIter.hasMoreElements())
     {
       final FixWrapper next = (FixWrapper) pIter.nextElement();
@@ -1440,7 +1378,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
       _thePositions.removeAllElements();
 
       // tell them who's the daddy
-      for(FixWrapper t: newItems)
+      for (final FixWrapper t : newItems)
       {
         t.setTrackWrapper(this);
       }
@@ -1450,6 +1388,19 @@ public class LightweightTrackWrapper extends PlainWrapper implements
       // ok, we have to clear the bounds
       flushBounds();
     }
+  }
+
+  public void setSnailSymbolSize(final double scaleVal)
+  {
+    if (_theSnailShape != null)
+    {
+      _theSnailShape.setScaleVal(scaleVal);
+    }
+  }
+
+  public final void setSymbolColor(final Color col)
+  {
+    _theSnailShape.setColor(col);
   }
 
   /**
@@ -1483,6 +1434,55 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     };
 
     setFixes(setSymbols, theVal);
+  }
+
+  public void setSymbolLength(final WorldDistance symbolLength)
+  {
+    if (_theSnailShape instanceof WorldScaledSym)
+    {
+      final WorldScaledSym sym = (WorldScaledSym) _theSnailShape;
+      sym.setLength(symbolLength);
+    }
+  }
+
+  public final void setSymbolType(final String val)
+  {
+    // is this the type of our symbol?
+    if (val.equals(_theSnailShape.getType()))
+    {
+      // don't bother we're using it already
+    }
+    else
+    {
+      // remember the size of the symbol
+      final double scale = _theSnailShape.getScaleVal();
+
+      // remember the color of the symbol
+      final Color oldCol = _theSnailShape.getColor();
+
+      // replace our symbol with this new one
+      final PlainSymbol shape = MWC.GUI.Shapes.Symbols.SymbolFactory
+          .createSymbol(val);
+      if (shape != null)
+      {
+        _theSnailShape = shape;
+        _theSnailShape.setColor(oldCol);
+        _theSnailShape.setScaleVal(scale);
+      }
+      else
+      {
+        Trace.trace("Failed to find symbol for type:" + val);
+      }
+    }
+  }
+
+  public void setSymbolWidth(final WorldDistance symbolWidth)
+  {
+    if (_theSnailShape instanceof WorldScaledSym)
+    {
+      final WorldScaledSym sym = (WorldScaledSym) _theSnailShape;
+      sym.setHeight(symbolWidth);
+    }
   }
 
   /**
