@@ -62,6 +62,8 @@ import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -725,14 +727,12 @@ public class DebriefRibbonTimeController
             // check the children, to see if they're like a track
             final BaseLayer baseL = (BaseLayer) next;
             final Enumeration<Editable> ele = baseL.elements();
-            while (ele.hasMoreElements())
+            while (ele.hasMoreElements() && !hasItems)
             {
               final Editable nextE = ele.nextElement();
-              if (nextE instanceof WatchableList)
-              {
-                hasItems = true;
-                break;
-              }
+              hasItems |= nextE instanceof LightweightTrackWrapper ||
+                          nextE instanceof TrackWrapper ||
+                          nextE instanceof DynamicTrackShapeSetWrapper;
             }
           }
         }
