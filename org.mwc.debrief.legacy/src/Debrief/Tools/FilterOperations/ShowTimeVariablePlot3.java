@@ -1333,7 +1333,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
     _theOperations.addElement(new CalculationHolder(new rangeCalc(), null, true,
         0));
     _theOperations.addElement(new CalculationHolder(new bearingCalc(), null,
-        true, 180));
+        true, 360));
     _theOperations.addElement(new CalculationHolder(new bearingRateCalc(),
         new BearingRateFormatter(), true, 180));
 
