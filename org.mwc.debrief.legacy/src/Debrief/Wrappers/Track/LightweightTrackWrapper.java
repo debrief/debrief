@@ -78,7 +78,8 @@ public class LightweightTrackWrapper extends PlainWrapper implements
             SymbolFactoryPropertyEditor.class), displayExpertProp("SymbolColor",
                 "Symbol color", "the color of the symbol (when used)", FORMAT),
             prop("Visible", "the Layer visibility", VISIBILITY), prop("Name",
-                "the name of the track", FORMAT), prop("NameVisible",
+                "the name of the track", FORMAT), displayExpertProp("NameVisible",
+                    "Name Visible",
                     "show the name of the track", FORMAT), prop("Color",
                         "color of the track", FORMAT), displayExpertLongProp(
                             "ResampleDataAt", "Resample data at",
