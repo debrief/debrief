@@ -153,7 +153,7 @@ final class ImportTimeText extends AbstractPlainLineImporter
 
       // create the fix ready to store it
       final LabelWrapper lw = new LabelWrapper(theText, theLoc, ImportReplay
-          .replayColorFor(symbology), theDate, null);
+          .replayColorFor(symbology), theDate, theDate);
 
       // update the symbol
       final String symType = ImportReplay.replayTrackSymbolFor(symbology);
