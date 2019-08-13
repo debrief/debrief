@@ -18,12 +18,14 @@ import java.util.Arrays;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JSlider;
 
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.utils.TestUtils;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
+import org.pushingpixels.flamingo.api.common.JCommandMenuButton;
 import org.pushingpixels.flamingo.api.common.JCommandToggleButton;
 import org.pushingpixels.flamingo.api.common.JScrollablePanel;
 import org.pushingpixels.flamingo.api.common.popup.JPopupPanel;
@@ -80,6 +82,8 @@ public class TestMenus extends BaseTestCase
       RibbonTask fileMenu = ribbonFrame.getRibbon().getTask(4);
       assertTrue(fileMenu.getBandCount()==3);
       doAssertions(fileMenu.getBand(0),"Display Mode",new String[] {"Normal","Snail"},true);
+      doAssertionsTimeController(fileMenu.getBand(1));
+      doAssertionsTimeSlider(fileMenu.getBand(2));
     }
   }
   
@@ -187,11 +191,53 @@ public class TestMenus extends BaseTestCase
     assertNotNull(newButton.getPopupCallback().getPopupPanel(newButton));
     JPopupPanel panel = (JPopupPanel)newButton.getPopupCallback().getPopupPanel(newButton);
     assertEquals(panel.getComponentCount(),1);
+    JCommandMenuButton saveButton = (JCommandMenuButton)TestUtils.getChildNamed(panel, "save");
+    assertEquals("Save",saveButton.getText());
+    JCommandMenuButton saveAsButton = (JCommandMenuButton)TestUtils.getChildNamed(panel, "saveas");
+    assertEquals("Save As",saveAsButton.getText());
+    
     JScrollablePanel<JCommandButton> scrollPanel = (JScrollablePanel<JCommandButton>)panel.getComponent(0);
     //3 as there is a panel to which the command buttons are added.
     assertEquals(3,scrollPanel.getComponentCount());
-    /*assertEquals("Save",((JCommandButton)scrollPanel.getComponent(1)).getText());
-    assertEquals("Save As",((JCommandButton)scrollPanel.getComponent(2)).getText());*/
   }
+  
+  private void doAssertionsTimeController(AbstractRibbonBand rb)
+  {
+    JPanel panel = (JPanel)TestUtils.getChildNamed(rb.getComponent(0),"topbuttonspanel");
+    assertEquals(11,panel.getComponentCount());
+    JCommandButton btn = (JCommandButton)TestUtils.getChildNamed(panel, "play"); 
+    assertNotNull(btn);
+    assertFalse(btn.isEnabled());
+    btn = (JCommandButton)TestUtils.getChildNamed(panel, "rewind"); 
+    assertNotNull(btn);
+    assertFalse(btn.isEnabled());
+    btn = (JCommandButton)TestUtils.getChildNamed(panel, "back"); 
+    assertNotNull(btn);
+    assertFalse(btn.isEnabled());
+    btn = (JCommandButton)TestUtils.getChildNamed(panel, "starttime"); 
+    assertNotNull(btn);
+    assertFalse(btn.isEnabled());    
+    btn = (JCommandButton)TestUtils.getChildNamed(panel, "endtime"); 
+    assertNotNull(btn);
+    assertFalse(btn.isEnabled());
+    btn = (JCommandButton)TestUtils.getChildNamed(panel, "forward"); 
+    assertNotNull(btn);
+    assertFalse(btn.isEnabled());
+    btn = (JCommandButton)TestUtils.getChildNamed(panel, "fastforward"); 
+    assertNotNull(btn);
+    assertFalse(btn.isEnabled());
+    btn = (JCommandButton)TestUtils.getChildNamed(panel, "timeprops"); 
+    assertNotNull(btn);
+    assertFalse(btn.isEnabled());
+    assertNotNull(TestUtils.getChildNamed(panel, "timeformatlabel"));
     
+  }
+  private void doAssertionsTimeSlider(AbstractRibbonBand rb) {
+    JBandControlPanel panel = ((JBandControlPanel)rb.getComponent(0));
+    assertEquals(2,panel.getComponentCount());
+    JRibbonComponent rc = (JRibbonComponent)panel.getComponent(0);
+    JSlider slider = (JSlider)rc.getComponent(1);
+    assertFalse(slider.isEnabled());
+    assertNotNull(slider);
+  }
 }

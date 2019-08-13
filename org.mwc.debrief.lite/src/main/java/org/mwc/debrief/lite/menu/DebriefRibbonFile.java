@@ -319,6 +319,7 @@ public class DebriefRibbonFile
           .getIcon(saveImage, new Dimension(16, 16));
       final JCommandMenuButton saveButton = new JCommandMenuButton("Save",
           imageIcon);
+      saveButton.setName("save");
       saveButton.getActionModel().addActionListener(new DoSave(session,
           theFrame));
       addMenuButton(saveButton);
@@ -327,6 +328,7 @@ public class DebriefRibbonFile
           .getIcon(saveAsImage, new Dimension(16, 16));
       final JCommandMenuButton saveAsButton = new JCommandMenuButton("Save As",
           imageIcon2);
+      saveAsButton.setName("saveas");
       saveAsButton.getActionModel().addActionListener(new DoSaveAs(session,
           theFrame));
       addMenuButton(saveAsButton);

@@ -354,7 +354,7 @@ public class DebriefRibbonTimeController
 
     topButtonsPanel = new JPanel();
     topButtonsPanel.setLayout(new BoxLayout(topButtonsPanel, BoxLayout.X_AXIS));
-
+    topButtonsPanel.setName("topbuttonspanel");
     final JCommandButton behindCommandButton = MenuUtils.addCommandButton(
         "Behind", "icons/24/media_beginning.png", new AbstractAction()
         {
@@ -371,7 +371,7 @@ public class DebriefRibbonTimeController
                 .getStartDTG(), timeManager.getPeriod().getStartDTG()), true);
           }
         }, CommandButtonDisplayState.SMALL, "Move to start time");
-
+    behindCommandButton.setName("starttime");
     final JCommandButton rewindCommandButton = MenuUtils.addCommandButton(
         "Rewind", "icons/24/media_rewind.png", new AbstractAction()
         {
@@ -387,7 +387,7 @@ public class DebriefRibbonTimeController
             stepControl.doStep(false, true);
           }
         }, CommandButtonDisplayState.SMALL, "Large step backwards");
-
+    rewindCommandButton.setName("rewind");
     final JCommandButton backCommandButton = MenuUtils.addCommandButton("Back",
         "icons/24/media_back.png", new AbstractAction()
         {
@@ -403,7 +403,7 @@ public class DebriefRibbonTimeController
             stepControl.doStep(false, false);
           }
         }, CommandButtonDisplayState.SMALL, "Small step backwards");
-
+    backCommandButton.setName("back");
     final JCommandButton playCommandButton = MenuUtils.addCommandButton("Play",
         PLAY_IMAGE, new AbstractAction()
         {
@@ -419,6 +419,7 @@ public class DebriefRibbonTimeController
             // ignore, we define the action once we've finished creating the button
           }
         }, CommandButtonDisplayState.SMALL, START_TEXT);
+    playCommandButton.setName("play");
 
     playCommandButton.addActionListener(new ActionListener()
     {
@@ -455,7 +456,7 @@ public class DebriefRibbonTimeController
 
           }
         }, CommandButtonDisplayState.SMALL, "Start recording");
-
+    recordCommandButton.setName("record");
     final JCommandButton forwardCommandButton = MenuUtils.addCommandButton(
         "Forward", "icons/24/media_forward.png", new AbstractAction()
         {
@@ -471,7 +472,7 @@ public class DebriefRibbonTimeController
             stepControl.doStep(true, false);
           }
         }, CommandButtonDisplayState.SMALL, "Small step forwards");
-
+    forwardCommandButton.setName("forward");
     final JCommandButton fastForwardCommandButton = MenuUtils.addCommandButton(
         "Fast Forward", "icons/24/media_fast_forward.png", new AbstractAction()
         {
@@ -487,7 +488,7 @@ public class DebriefRibbonTimeController
             stepControl.doStep(true, true);
           }
         }, CommandButtonDisplayState.SMALL, "Large step forwards");
-
+    fastForwardCommandButton.setName("fastforward");
     final JCommandButton endCommandButton = MenuUtils.addCommandButton("End",
         "icons/24/media_end.png", new AbstractAction()
         {
@@ -503,7 +504,7 @@ public class DebriefRibbonTimeController
                 .getEndDTG(), timeManager.getPeriod().getEndDTG()), true);
           }
         }, CommandButtonDisplayState.SMALL, "Move to end time");
-
+    endCommandButton.setName("endtime");
     final JCommandButton propertiesCommandButton = MenuUtils.addCommandButton(
         "Properties", "icons/16/properties.png", new AbstractAction()
         {
@@ -537,7 +538,7 @@ public class DebriefRibbonTimeController
             dialog.setVisible(true);
           }
         }, CommandButtonDisplayState.SMALL, "Edit time-step properties");
-
+    propertiesCommandButton.setName("timeprops");
     // we need to give the menu to the command popup
     final JPopupMenu menu = new JPopupMenu();
 
@@ -560,6 +561,7 @@ public class DebriefRibbonTimeController
         super.paintComponent(g);
       }
     };
+    timeLabel.setName("timeformatlabel");
     timeLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 16));
 
     timeLabel.setForeground(new Color(0, 255, 0));
@@ -608,7 +610,7 @@ public class DebriefRibbonTimeController
     timeSlider.setBackground(Color.DARK_GRAY);
     timeSlider.setPreferredSize(new Dimension(420, 30));
     timeSlider.setEnabled(false);
-
+    timeSlider.setName("timeslider");
     label = new TimeLabel()
     {
 
@@ -679,7 +681,7 @@ public class DebriefRibbonTimeController
         }
       }
     });
-
+    
     // ok, start off with the buttons disabled
     setButtonsEnabled(topButtonsPanel, false);
 
