@@ -128,12 +128,13 @@ public class LiteTote extends AnalysisTote
         while (ele.hasMoreElements())
         {
           final Editable nextE = ele.nextElement();
-          if (nextE instanceof LightweightTrackWrapper ||
-              nextE instanceof TrackWrapper ||
-              nextE instanceof DynamicTrackShapeSetWrapper)
+          if (nextE instanceof WatchableList)
           {
             final WatchableList wat = (WatchableList) nextE;
-            addItem(wat);
+            if ( wat.getVisible() && wat.getEndDTG() != null && wat.getStartDTG() != null )
+            {
+              addItem(wat); 
+            }
           }
         }
       }
