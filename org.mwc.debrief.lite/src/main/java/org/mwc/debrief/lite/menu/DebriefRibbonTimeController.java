@@ -62,8 +62,6 @@ import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
-import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -76,6 +74,7 @@ import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WatchableList;
 import MWC.TacticalData.SliderConverter;
 import MWC.TacticalData.temporal.ControllablePeriod;
 import MWC.TacticalData.temporal.PlotOperations;
@@ -731,18 +730,18 @@ public class DebriefRibbonTimeController
             while (ele.hasMoreElements() && !hasItems)
             {
               final Editable nextE = ele.nextElement();
-              hasItems |= nextE instanceof LightweightTrackWrapper
-                  || nextE instanceof TrackWrapper
-                  || nextE instanceof DynamicTrackShapeSetWrapper;
+              if (nextE instanceof WatchableList)
+              {
+                final WatchableList wat = (WatchableList) nextE;
+                hasItems |= wat.getVisible() && wat.getEndDTG() != null && wat
+                    .getStartDTG() != null;
+              }
+
             }
           }
         }
 
-        if (!hasItems)
-        {
-          doSoftReset(timeSlider, timeManager);
-        }
-        else
+        if (hasItems)
         {
           DebriefLiteApp.setDirty(true);
           DebriefLiteApp.setState(DebriefLiteApp.ACTIVE_STATE);
