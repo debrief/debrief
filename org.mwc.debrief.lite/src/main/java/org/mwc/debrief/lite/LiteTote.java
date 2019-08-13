@@ -9,8 +9,6 @@ import java.util.Vector;
 import Debrief.GUI.Tote.AnalysisTote;
 import Debrief.GUI.Tote.StepControl;
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
-import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
