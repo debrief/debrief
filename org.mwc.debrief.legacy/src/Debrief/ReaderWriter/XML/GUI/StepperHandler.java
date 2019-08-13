@@ -28,6 +28,7 @@ import java.text.ParseException;
 import Debrief.GUI.Frames.Session;
 import Debrief.GUI.Tote.StepControl;
 import Debrief.GUI.Tote.Painters.SnailPainter;
+import Debrief.GUI.Tote.Painters.SnailPainter2;
 import Debrief.ReaderWriter.XML.GUIHandler;
 import MWC.GUI.StepperListener;
 import MWC.GenericData.HiResDate;
@@ -61,13 +62,21 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
         if (vector_stretch != null)
         {
           // set the cursor
-          final SnailPainter sp = (SnailPainter) step.getCurrentPainter();
+
           try {
-        	  sp.setVectorStretch( MWCXMLReader.readThisDouble(vector_stretch));
+            if ( step.getCurrentPainter() instanceof SnailPainter )
+            {
+              final SnailPainter sp = (SnailPainter) step.getCurrentPainter();
+              sp.setVectorStretch( MWCXMLReader.readThisDouble(vector_stretch));
+            }else if ( step.getCurrentPainter() instanceof SnailPainter2 )
+            {
+              final SnailPainter2 sp = (SnailPainter2) step.getCurrentPainter();
+              sp.setVectorStretch( MWCXMLReader.readThisDouble(vector_stretch));
+            }
           } catch (final ParseException pe) {
-        	  MWC.Utilities.Errors.Trace.trace(pe,
-						"Reader: Whilst reading in VectorStretch value of :"
-								+ vector_stretch);
+            MWC.Utilities.Errors.Trace.trace(pe,
+            "Reader: Whilst reading in VectorStretch value of :"
+                + vector_stretch);
           }
         }
       }
