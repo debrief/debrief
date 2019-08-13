@@ -15,14 +15,21 @@
 package com.planetmayo.debrief.satc.util.calculator;
 
 import static java.lang.Math.PI;
+import static java.lang.Math.abs;
+import static java.lang.Math.asin;
+import static java.lang.Math.atan2;
+import static java.lang.Math.cos;
+import static java.lang.Math.floor;
+import static java.lang.Math.sin;
+import static java.lang.Math.sqrt;
+import static java.lang.Math.toDegrees;
+import static java.lang.Math.toRadians;
 
 import java.awt.Shape;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.text.Format;
-
-import javax.measure.unit.NonSI;
 
 import org.eclipse.core.runtime.Status;
 import org.geotools.geometry.DirectPosition2D;
@@ -58,7 +65,8 @@ import org.opengis.referencing.operation.TransformException;
 
 import com.planetmayo.debrief.satc.util.MathUtils;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
-import static java.lang.Math.*;
+
+import systems.uom.common.USCustomary;
 
 
 /**
@@ -342,7 +350,7 @@ public class FastGeodeticCalculator implements GeodeticCalculator {
      * uses decimal degrees units.
      */
     private static boolean isStandard(final CoordinateSystemAxis axis, final AxisDirection direction) {
-        return direction.equals(axis.getDirection()) && NonSI.DEGREE_ANGLE.equals(axis.getUnit());
+        return direction.equals(axis.getDirection()) && USCustomary.DEGREE_ANGLE.equals(axis.getUnit());
     }
 
     /**
