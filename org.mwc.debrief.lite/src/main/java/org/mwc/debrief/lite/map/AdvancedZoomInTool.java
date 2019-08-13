@@ -9,8 +9,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.MapViewport;
 import org.geotools.swing.event.MapMouseEvent;
 import org.geotools.swing.tool.ZoomInTool;
-
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 
 public class AdvancedZoomInTool extends ZoomInTool
 {
