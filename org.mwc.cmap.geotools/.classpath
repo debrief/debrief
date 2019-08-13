@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="libs/indriya-2.0-PRD.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/uom-lib-common-2.0-PRD.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/unit-tck-2.0-PRD.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/si-quantity-1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/si-units-1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/si-units-java8-1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/unit-api-2.0-PRD.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/systems-common-java8-0.7.2.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11">
+		
+	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="lib" path="libs/commons-pool-1.5.4.jar"/>
