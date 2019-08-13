@@ -19,6 +19,7 @@ import java.awt.Component;
 import javax.swing.JFrame;
 
 import org.mwc.debrief.lite.DebriefLiteApp;
+import org.mwc.debrief.lite.gui.custom.JXCollapsiblePaneWithTitle;
 import org.mwc.debrief.lite.utils.TestUtils;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 
@@ -68,7 +69,10 @@ public class TestLiteLaunch extends BaseTestCase
     assertNotNull(outlinePanel);
     assertTrue(outlinePanel.isVisible());
     assertTrue(outlinePanel.isEnabled());
-    
+    JXCollapsiblePaneWithTitle graphPanel = (JXCollapsiblePaneWithTitle)TestUtils.getChildNamed(ribbonFrame, "Graph");
+    assertTrue(graphPanel.isCollapsed());
+    JXCollapsiblePaneWithTitle narrativesPanel = (JXCollapsiblePaneWithTitle)TestUtils.getChildNamed(ribbonFrame, "Narratives");
+    assertTrue(narrativesPanel.isCollapsed());
   }
   public static void main(String args[]) {
     junit.textui.TestRunner.run(TestLiteLaunch.class);    
