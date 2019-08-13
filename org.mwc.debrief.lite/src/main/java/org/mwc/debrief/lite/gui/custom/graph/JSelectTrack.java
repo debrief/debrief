@@ -153,7 +153,7 @@ public class JSelectTrack extends JPopupMenu
 
     for (final AbstractSelection<TrackWrapper> track : _model.getTracks())
     {
-      final JCheckBox displayCheckBox = new JCheckBox(track.getItem().getName());
+      final JCheckBox displayCheckBox = new JCheckBox(track.getItem().getName(), track.isSelected());
       displayCheckBox.addItemListener(new ItemListener()
       {
 

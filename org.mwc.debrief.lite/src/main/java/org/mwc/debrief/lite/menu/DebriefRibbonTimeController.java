@@ -62,6 +62,7 @@ import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -73,6 +74,7 @@ import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WatchableList;
 import MWC.TacticalData.SliderConverter;
 import MWC.TacticalData.temporal.ControllablePeriod;
 import MWC.TacticalData.temporal.PlotOperations;
@@ -710,7 +712,7 @@ public class DebriefRibbonTimeController
       private void updateTimeController()
       {
         stepControl.startStepping(false);
-        boolean hasTracks = false;
+        boolean hasItems = false;
 
         final Enumeration<Editable> lIter = stepControl.getLayers().elements();
         while (lIter.hasMoreElements())
@@ -718,12 +720,26 @@ public class DebriefRibbonTimeController
           final Editable next = lIter.nextElement();
           if (next instanceof TrackWrapper)
           {
-            hasTracks = true;
+            hasItems = true;
             break;
+          }else if (next instanceof BaseLayer)
+          {
+            // check the children, to see if they're like a track
+            final BaseLayer baseL = (BaseLayer) next;
+            final Enumeration<Editable> ele = baseL.elements();
+            while (ele.hasMoreElements())
+            {
+              final Editable nextE = ele.nextElement();
+              if (nextE instanceof WatchableList)
+              {
+                hasItems = true;
+                break;
+              }
+            }
           }
         }
 
-        if (!hasTracks)
+        if (!hasItems)
         {
           doSoftReset(timeSlider, timeManager);
         }
