@@ -8,10 +8,6 @@
 			<unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.14.0.v201905291408"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/nebula/releases/latest/"/>
-			<unit id="org.eclipse.nebula.widgets.xviewer.feature.feature.group" version="1.1.0.201812241324"/>
-		</location>
-		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
 			<repository location="https://download.eclipse.org/releases/2019-06/"/>
 			<unit id="org.eclipse.emf.ecore.feature.group" version="2.18.0.v20190528-0845"/>
 			<unit id="org.eclipse.jdt.feature.group" version="3.18.0.v20190605-1800"/>
@@ -37,16 +33,20 @@
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
 			<repository location="https://download.eclipse.org/releases/2019-06/"/>
-			<unit id="org.eclipse.ecf.remoteservice.feature.feature.group" version="2.5.100.v20180926-1748"/>
-		</location>
-		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/releases/2019-06/"/>
 			<unit id="org.eclipse.ecf.filetransfer.feature.feature.group" version="3.14.5.v20190423-0614"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
 			<repository location="https://download.eclipse.org/releases/2019-06/"/>
 			<unit id="org.eclipse.equinox.core.feature.feature.group" version="1.9.0.v20190517-1309"/>
 			<unit id="org.eclipse.equinox.executable.feature.group" version="0.0.0"/>
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
+			<repository location="https://download.eclipse.org/releases/2019-06/"/>
+			<unit id="org.eclipse.ecf.remoteservice.feature.feature.group" version="2.5.100.v20180926-1748"/>
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
+			<repository location="http://download.eclipse.org/nebula/releases/2.2.0"/>
+			<unit id="org.eclipse.nebula.widgets.xviewer.feature.feature.group" version="1.1.0.201907151344"/>
 		</location>
 	</locations>
 </target>
