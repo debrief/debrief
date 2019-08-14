@@ -16,9 +16,16 @@ package org.mwc.debrief.lite.tests;
 
 import java.io.File;
 
+import javax.swing.JTree;
 import javax.swing.SwingUtilities;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.mwc.debrief.lite.DebriefLiteApp;
+import org.mwc.debrief.lite.gui.custom.JXCollapsiblePaneWithTitle;
+import org.mwc.debrief.lite.utils.TestUtils;
+import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
+
+import MWC.GUI.Plottable;
 
 /**
  * @author Ayesha
@@ -26,12 +33,15 @@ import org.mwc.debrief.lite.DebriefLiteApp;
  */
 public class TestFileImport extends BaseTestCase
 {
+  //load a file that doesnt exist
+  //load a file that exists and see if it is loaded
   
   public void testImportRepFile()
   {
     System.out.println("started test");
     File[] f = new File[1];
-    f[0]=new File("c:/Users/ayesha/git/debrief/org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep");
+    
+    f[0]=new File("../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep");
     SwingUtilities.invokeLater(new Runnable()
     {
       
@@ -50,6 +60,29 @@ public class TestFileImport extends BaseTestCase
       e.printStackTrace();
     }
     //do assertions here
+    //outline view should have track nelson and by default should have layers chart features and background
+    JRibbonFrame ribbonFrame = DebriefLiteApp.getInstance().getApplicationFrame();
+    JXCollapsiblePaneWithTitle outlinePanel = (JXCollapsiblePaneWithTitle)TestUtils.getChildNamed(ribbonFrame,"Outline");
+    assertNotNull(outlinePanel);
+    assertTrue(outlinePanel.isVisible());
+    assertTrue(outlinePanel.isEnabled());
+    JTree tree = (JTree)TestUtils.getChildNamed(outlinePanel, "Layer Tree");
+    assertEquals(tree.getModel().getChildCount(tree.getModel().getRoot()),3);
+    DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 2);
+    assertNotNull(node);
+    
+    assertFalse(node.isLeaf());
+    assertNotNull(node.getFirstChild());
+    DefaultMutableTreeNode treenode = (DefaultMutableTreeNode)node.getFirstChild();
+    Plottable object = (Plottable)treenode.getUserObject();
+    assertEquals(object.getName(),"120500.00");
+    
+    node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 0);
+    assertNotNull(node);
+    assertTrue(node.isLeaf());
+    node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 1);
+    assertTrue(node.isLeaf());
+    assertNotNull(node);
   }
 
 }
