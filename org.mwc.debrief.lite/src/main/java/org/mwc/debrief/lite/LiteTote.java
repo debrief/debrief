@@ -9,6 +9,7 @@ import java.util.Vector;
 import Debrief.GUI.Tote.AnalysisTote;
 import Debrief.GUI.Tote.StepControl;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -76,6 +77,26 @@ public class LiteTote extends AnalysisTote
     });
   }
 
+  public void addItem(final WatchableList thisT)
+  {
+    if (getPrimary() == null)
+    {
+      // and now store as primary
+      setPrimary(thisT);
+
+      // ok, that may have been a secondary, remove it
+      removeParticipant(thisT);
+    }
+    else if (getPrimary() != thisT)
+    {
+      final Vector<WatchableList> secs = getSecondary();
+      if (!secs.contains(thisT))
+      {
+        setSecondary(thisT);
+      }
+    }
+  }
+
   @Override
   public Container getPanel()
   {
@@ -95,24 +116,23 @@ public class LiteTote extends AnalysisTote
       if (thisL instanceof TrackWrapper)
       {
         final TrackWrapper thisT = (TrackWrapper) thisL;
-        if (getPrimary() == null)
+        addItem(thisT);
+      }
+      else if (thisL instanceof BaseLayer)
+      {
+        // check the children, to see if they're like a track
+        final BaseLayer baseL = (BaseLayer) thisL;
+        final Enumeration<Editable> ele = baseL.elements();
+        while (ele.hasMoreElements())
         {
-          // and now store as primary
-          setPrimary(thisT);
-
-          // ok, that may have been a secondary, remove it
-          removeParticipant(thisT);
-        }
-        else if (getPrimary() != thisT)
-        {
-          final Vector<WatchableList> secs = getSecondary();
-          if (!secs.contains(thisT))
+          final Editable nextE = ele.nextElement();
+          if (nextE instanceof WatchableList)
           {
-            setSecondary(thisT);
+            final WatchableList wat = (WatchableList) nextE;
+            addItem(wat);
           }
         }
       }
     }
   }
-
 }

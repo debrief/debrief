@@ -717,7 +717,7 @@ public class ImportRiderNarrativeDocument
         final ImportRiderNarrativeDocument importer, final TableBreakdown data)
     {
       final SimpleDateFormat dateF = new GMTDateFormat(
-          "yyyy/MM/dd hh:mm:ss");
+          "yyyy/MM/dd HH:mm:ss");
 
       assertNotNull(data);
       assertNotNull(data.header);
@@ -725,7 +725,7 @@ public class ImportRiderNarrativeDocument
       assertNotNull(data.entries);
       assertEquals(15, data.entries.size());
       assertEquals("HMS Nonsuch", data.header.platform);
-      assertEquals("2009/07/22 12:00:00", dateF.format(data.header.startDate));
+      assertEquals("2009/07/22 00:00:00", dateF.format(data.header.startDate));
 
       final RiderEntry entry4 = data.entries.get(4);
       assertEquals("2009/07/22 04:14:16", dateF.format(entry4.date));
