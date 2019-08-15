@@ -36,6 +36,7 @@ import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.DebriefColors;
+import MWC.GUI.Shapes.EllipseShape;
 import MWC.GUI.Tools.Action;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
@@ -342,14 +343,19 @@ public class OTH_Importer
       }
       else if (line.startsWith(POS_STR))
       {
-        // ok, store this position
-        WorldLocation loc = locationFrom(line, logger);
-        HiResDate date = dateFor(line, logger, year);
-        double courseRads = courseFor(line, logger);
-        double speedYps = speedFor(line, logger);
-        Fix fix = new Fix(date, loc, courseRads, speedYps);
-        FixWrapper wrapped = new FixWrapper(fix);
-        thisTrack.addFix(wrapped);
+        // ok, generate a position
+        FixWrapper wrapped = produceFix(logger, line, year);
+        if(wrapped != null)
+        {
+          thisTrack.addFix(wrapped);
+        }
+        
+        // also generate an ellipse
+        EllipseShape ellipse = produceEllipse(logger, line, year);
+        if(ellipse != null)
+        {
+          thisLayer.add(ellipse);
+        }
       }
 
       ctr++;
@@ -358,6 +364,25 @@ public class OTH_Importer
     final OTH_Data brtData = new OTH_Data(tracks, ellipseLayers);
 
     return brtData;
+  }
+
+  private static EllipseShape produceEllipse(ErrorLogger logger, String line,
+      int year)
+  {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public static FixWrapper produceFix(final ErrorLogger logger, final String line,
+      final int year)
+  {
+    WorldLocation loc = locationFrom(line, logger);
+    HiResDate date = dateFor(line, logger, year);
+    double courseRads = courseFor(line, logger);
+    double speedYps = speedFor(line, logger);
+    Fix fix = new Fix(date, loc, courseRads, speedYps);
+    FixWrapper wrapped = new FixWrapper(fix);
+    return wrapped;
   }
 
   private static double speedFor(String line, ErrorLogger logger)
