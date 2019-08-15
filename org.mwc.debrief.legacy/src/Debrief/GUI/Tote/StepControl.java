@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package Debrief.GUI.Tote;
 
@@ -52,7 +52,7 @@ import java.util.Vector;
 //
 // Revision 1.8  2004/12/01 09:17:50  Ian.Mayo
 // Set correct initial auto-step frequency (1 second, not 1000 seconds)
- //
+//
 // Revision 1.7  2004/11/29 15:33:38  Ian.Mayo
 // Provide correct step-sizes when editing stepper for hi-res data
 //
@@ -254,18 +254,298 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 abstract public class StepControl implements Editable,
-  MWC.Utilities.Timer.TimerListener,
-  java.beans.PropertyChangeListener,
-  StepperListener.StepperController
+    MWC.Utilities.Timer.TimerListener, java.beans.PropertyChangeListener,
+    StepperListener.StepperController
 
 {
   /////////////////////////////////////////////////////////////
   // member variables
   ////////////////////////////////////////////////////////////
 
+  ///////////////////////////////////////////////////////////
+  // property editor to let us add our extra (T-Zero related) formats to the dates list
+  ///////////////////////////////////////////////////////////
+  public static final class MyDateEditor extends
+      MWC.GUI.Properties.DateFormatPropertyEditor
+  {
 
+  }
 
-  /** the filter itself, only really used from Swing
+  /////////////////////////////////////////////////////////////
+  // nested class storing start and end times for a participant
+  ////////////////////////////////////////////////////////////
+  static public final class somePeriod
+  {
+    public HiResDate _start;
+    public HiResDate _end;
+
+    public somePeriod(final HiResDate start, final HiResDate end)
+    {
+      _start = start;
+      _end = end;
+    }
+
+    public final void extend(final somePeriod other)
+    {
+      if (other != null && other._start != null && other._start.lessThan(
+          _start))
+        _start = other._start;
+
+      if (other != null && other._end != null && other._end.greaterThan(_end))
+        _end = other._end;
+    }
+
+    @Override
+    public final String toString()
+    {
+      final String res = " start:" + DebriefFormatDateTime.toStringHiRes(_start)
+          + " end:" + DebriefFormatDateTime.toStringHiRes(_end);
+      return res;
+    }
+  }
+
+  /////////////////////////////////////////////////////////////
+  // nested class describing how to edit this class
+  ////////////////////////////////////////////////////////////
+  public final class StepControlInfo extends Editable.EditorType
+  {
+
+    public StepControlInfo(final StepControl data)
+    {
+      super(data, "Step Control", "");
+    }
+
+    @Override
+    public final BeanInfo[] getAdditionalBeanInfo()
+    {
+      BeanInfo[] res = null;
+      if (_thePainterManager != null)
+      {
+        // see if the painter manager has any additionals aswell
+        final BeanInfo pm = _thePainterManager.getInfo();
+        final BeanInfo[] adds = pm.getAdditionalBeanInfo();
+        if (adds != null)
+        {
+          final BeanInfo[] res3 = new BeanInfo[adds.length + 1];
+          System.arraycopy(adds, 0, res3, 0, adds.length);
+          res3[res3.length - 1] = pm;
+          res = res3;
+        }
+        else
+        {
+          final BeanInfo[] res2 =
+          {_thePainterManager.getInfo()};
+          res = res2;
+        }
+      }
+      return res;
+    }
+
+    @Override
+    public final MethodDescriptor[] getMethodDescriptors()
+    {
+      // just add the reset color field first
+      final Class<StepControl> c = StepControl.class;
+      final MethodDescriptor[] mds =
+      {method(c, "editHighlighter", null, "Edit Highlighter"), method(c,
+          "editDisplay", null, "Edit Display mode"),};
+      return mds;
+    }
+
+    @Override
+    public final PropertyDescriptor[] getPropertyDescriptors()
+    {
+      try
+      {
+        final PropertyDescriptor[] res =
+        {displayProp("StepSmall", "Small step", "the small step size"),
+            displayProp("StepLarge", "Large step", "the large step size"),
+            displayProp("AutoStep", "Auto step", "the automatic step"),
+            displayProp("FontSize", "Font size",
+                "the font size for the time label"), displayProp("DateFormat",
+                    "Date format", "the format to use for the date/time"),
+            longProp("Highlighter", "the highlighter to use",
+                TagListEditor.class)
+
+        };
+
+        // right, special processing here. If we're in hi-res mode, we want to specify the very
+        // hi res timers.
+        if (HiResDate.inHiResProcessingMode())
+        {
+          // use hi res property editor
+          res[0].setPropertyEditorClass(
+              MWC.GUI.Properties.HiFreqTimeStepPropertyEditor.class);
+          res[1].setPropertyEditorClass(
+              MWC.GUI.Properties.HiFreqTimeStepPropertyEditor.class);
+        }
+        else
+        {
+          res[0].setPropertyEditorClass(
+              MWC.GUI.Properties.TimeStepPropertyEditor.class);
+          res[1].setPropertyEditorClass(
+              MWC.GUI.Properties.TimeStepPropertyEditor.class);
+        }
+
+        res[2].setPropertyEditorClass(
+            MWC.GUI.Properties.TimeIntervalPropertyEditor.class);
+        res[4].setPropertyEditorClass(MyDateEditor.class);
+
+        return res;
+      }
+      catch (final Exception e)
+      {
+        MWC.Utilities.Errors.Trace.trace(e);
+        return super.getPropertyDescriptors();
+      }
+    }
+
+  }
+
+  public static final class TagListEditor extends PropertyEditorSupport
+  {
+
+    // the working copy we are editing
+    String current;
+
+    @Override
+    public final String getAsText()
+    {
+      return current;
+    }
+
+    /**
+     * return a tag list of the current editors
+     */
+    @Override
+    public final String[] getTags()
+    {
+
+      String[] strings = null;
+      final Vector<String> res = new Vector<String>(0, 1);
+      final Enumeration<PlotHighlighter> iter = _myHighlighters.elements();
+      while (iter.hasMoreElements())
+      {
+        final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter l = iter
+            .nextElement();
+        res.addElement(l.toString());
+      }
+
+      // are there any results?
+      if (res.size() > 0)
+      {
+        strings = new String[res.size()];
+        res.copyInto(strings);
+      }
+
+      return strings;
+    }
+
+    @Override
+    public final Object getValue()
+    {
+      return current;
+    }
+
+    @Override
+    public final void setAsText(final String p1)
+    {
+      current = p1;
+    }
+
+    @Override
+    public final void setValue(final Object p1)
+    {
+      if (p1 instanceof String)
+      {
+        final String val = (String) p1;
+        setAsText(val);
+      }
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  // testing for this class
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  static public final class testMe extends junit.framework.TestCase
+  {
+    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+    public testMe(final String val)
+    {
+      super(val);
+    }
+
+    public final void testMyParams()
+    {
+      StepControl ed = new StepControl(null, null)
+      {
+        @Override
+        protected void doEditPainter()
+        {
+        }
+
+        @Override
+        protected void formatTimeText()
+        {
+        }
+
+        @Override
+        protected PropertiesPanel getPropertiesPanel()
+        {
+          return null;
+        }
+
+        @Override
+        public HiResDate getToolboxEndTime()
+        {
+          return null;
+        }
+
+        @Override
+        public HiResDate getToolboxStartTime()
+        {
+          return null;
+        }
+
+        @Override
+        protected void initForm()
+        {
+        }
+
+        @Override
+        protected void painterIsDefined()
+        {
+        }
+
+        @Override
+        public void setToolboxEndTime(final HiResDate val)
+        {
+        }
+
+        @Override
+        public void setToolboxStartTime(final HiResDate val)
+        {
+        }
+
+        @Override
+        protected void updateForm(final HiResDate DTG)
+        {
+        }
+      };
+
+      editableTesterSupport.testParams(ed, this);
+      ed = null;
+    }
+  }
+
+  /**
+   * the list of highlighters we know about
+   */
+  static Vector<PlotHighlighter> _myHighlighters;
+
+  /**
+   * the filter itself, only really used from Swing
    *
    */
   protected Debrief.GUI.Tote.Swing.TimeFilter.TimeEditorPanel _timeFilter;
@@ -301,11 +581,10 @@ abstract public class StepControl implements Editable,
   private HiResDate _endTime;
 
   /**
-   * the list of participants from which we produce our time period.  This hashtable
-   * actually contains a list of valid time periods for our watchables, indexed
-   * by the watchables themselves.
-   * The values for  time period (expressed as a somePeriod) for a participant are
-   * updated following a property change from that item
+   * the list of participants from which we produce our time period. This hashtable actually
+   * contains a list of valid time periods for our watchables, indexed by the watchables themselves.
+   * The values for time period (expressed as a somePeriod) for a participant are updated following
+   * a property change from that item
    */
   private final Hashtable<Object, somePeriod> _participants;
 
@@ -340,11 +619,6 @@ abstract public class StepControl implements Editable,
   transient private Editable.EditorType _myEditor = null;
 
   /**
-   * the list of highlighters we know about
-   */
-  static Vector<PlotHighlighter> _myHighlighters;
-
-  /**
    * the highlighter currently selected
    */
   private Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter _currentHighlighter;
@@ -354,10 +628,14 @@ abstract public class StepControl implements Editable,
    */
   private Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter _defaultHighlighter;
 
+  /////////////////////////////////////////////////////////////
+  // member functions
+  ////////////////////////////////////////////////////////////
+
   /**
-   * the date format we are using.  Note, we do some wierd stuff in this.  When we
-   * want to represent a date in a T-Zero style we store the text pattern (eg T+ mm:ss)
-   * in this String, knowing it may be an invalid pattern
+   * the date format we are using. Note, we do some wierd stuff in this. When we want to represent a
+   * date in a T-Zero style we store the text pattern (eg T+ mm:ss) in this String, knowing it may
+   * be an invalid pattern
    */
   protected final java.text.SimpleDateFormat _dateFormatter;
 
@@ -374,7 +652,8 @@ abstract public class StepControl implements Editable,
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
-  public StepControl(final ToolParent parent, final Color defaultHighlighterColor)
+  public StepControl(final ToolParent parent,
+      final Color defaultHighlighterColor)
   {
 
     // sort out the small & large time steps
@@ -383,7 +662,8 @@ abstract public class StepControl implements Editable,
     _listeners = new Vector<StepperListener>(0, 1);
     _participants = new Hashtable<Object, somePeriod>();
 
-    /** the timer-related settings
+    /**
+     * the timer-related settings
      */
     _theTimer = new MWC.Utilities.Timer.Timer();
     _theTimer.stop();
@@ -394,74 +674,56 @@ abstract public class StepControl implements Editable,
     _largeSteps = true;
 
     // create our default highlighter
-    _defaultHighlighter = new Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter.RectangleHighlight(defaultHighlighterColor);
+    _defaultHighlighter =
+        new Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter.RectangleHighlight(
+            defaultHighlighterColor);
 
     if (_myHighlighters == null)
     {
       _myHighlighters = new Vector<PlotHighlighter>(0, 1);
       _myHighlighters.add(_defaultHighlighter);
-      _myHighlighters.add(new Debrief.GUI.Tote.Painters.Highlighters.SymbolHighlighter());
+      _myHighlighters.add(
+          new Debrief.GUI.Tote.Painters.Highlighters.SymbolHighlighter());
     }
 
     _currentHighlighter = _myHighlighters.elementAt(0);
 
     // initialise the date format
-    _dateFormatter = new GMTDateFormat(MWC.Utilities.TextFormatting.FormatRNDateTime.getExample());
+    _dateFormatter = new GMTDateFormat(
+        MWC.Utilities.TextFormatting.FormatRNDateTime.getExample());
   }
 
   /**
-   * set the initial size of the time step
+   * add a new exercise participant to the list we monitor, providing the start and stop times
+   * aswell
+   *
+   * @param participant
+   * @param start
+   * @param end
    */
-  private void initialiseTimeStepSizes()
+  public final void addParticipant(final WatchableList participant,
+      final HiResDate start, final HiResDate end)
   {
-    if (HiResDate.inHiResProcessingMode())
+    // remember this participant
+    _participants.put(participant, new somePeriod(start, end));
+
+    // start listening out for property changes
+    if (participant instanceof MWC.GUI.PlainWrapper)
     {
-      _smallStep =  100;
-      _largeStep = 1000;
+      final SupportsPropertyListeners val =
+          (SupportsPropertyListeners) participant;
+      val.addPropertyChangeListener(
+          MWC.GenericData.WatchableList.FILTERED_PROPERTY, this);
     }
-    else
-    {
-      _smallStep =  60000 * 1000;
-      _largeStep = 600000 * 1000;
-    }
+
+    // recalculate the start and end times
+    recalcTimes();
   }
-
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
-
-  /**
-   * method to manage the clear up of this class
-   */
-  public void closeMe()
-  {
-    _defaultHighlighter = null;
-    _listeners.removeAllElements();
-
-    _participants.clear();
-    _theTimer = null;
-    _currentHighlighter = null;
-    _defaultHighlighter = null;
-  }
-  
-  protected Vector<StepperListener> getListeners()
-  {
-    return _listeners;
-  }
-
-  abstract protected void initForm();
-
-  abstract protected void updateForm(HiResDate DTG);
-
-  abstract protected void formatTimeText();
-
-  abstract protected MWC.GUI.Properties.PropertiesPanel getPropertiesPanel();
-
-  abstract protected void doEditPainter();
 
   /**
    * handle new listeners (add)
    */
+  @Override
   public final void addStepperListener(final StepperListener l)
   {
     _listeners.addElement(l);
@@ -471,554 +733,6 @@ abstract public class StepControl implements Editable,
       _thePainterManager = (Debrief.GUI.Tote.Painters.PainterManager) l;
       painterIsDefined();
     }
-  }
-
-  /**
-   * method intended to be overwritten by concrete classes, to find
-   * out that the painter has been defined
-   */
-  abstract protected void painterIsDefined();
-
-  public final void removeStepperListener(final StepperListener l)
-  {
-    _listeners.removeElement(l);
-  }
-
-  //////////////////////////////////////////////////
-  //
-  /////////////////////////////////////////////////
-  public final StepperListener getCurrentPainter()
-  {
-    final StepperListener res;
-    if(_thePainterManager != null)
-    {
-      res = _thePainterManager.getCurrentPainterObject();
-    }
-    else
-    {
-      res = null;
-    }
-    return res;
-  }
-
-
-
-  //////////////////////////////////////////////////
-  // stepping related methods
-  /////////////////////////////////////////////////
-
-
-  public final void doStep(final boolean forwards, final boolean large)
-  {
-
-    // have we been initialised?
-    if (_currentTime != null)
-    {
-      // yup, process the step.
-
-      // remember the DTG
-      long newDTG = -1;
-
-      long step = 0;
-      if (large)
-        step = _largeStep;
-      else
-        step = _smallStep;
-
-      final long nowMicros = _currentTime.getMicros();     
-      
-      if (forwards)
-      {
-        newDTG = nowMicros + step;
-      }
-      else
-      {
-        newDTG = nowMicros - step;
-      }
-      
-      // and check the limits, if there are any
-      if (!validTime(newDTG))
-      {
-        if (newDTG < _startTime.getMicros())
-        {
-          newDTG = _startTime.getMicros();
-        }
-        if (newDTG > _endTime.getMicros())
-        {
-          newDTG = _endTime.getMicros();
-        }
-        
-        // inform to the closing listeners
-        final Enumeration<StepperListener> iter = _listeners.elements();
-        while (iter.hasMoreElements())
-        {
-          final StepperListener l = iter.nextElement();
-          try
-          {
-            l.steppingModeChanged(false);
-          }
-          catch (final Exception e)
-          {
-            e.printStackTrace();  // If the listener fails, hmmm,I guess we cannot solve it from here.
-          }
-        }
-        
-        stopTimer();
-      }
-      
-      // we should now have a valid time
-      changeTime(new HiResDate(0, newDTG));
-    }
-
-  }
-
-  private boolean validTime(final long val)
-  {
-    boolean res = false;
-
-    if ((_startTime != null && val >= _startTime.getMicros()) &&
-        (_endTime != null && val <= _endTime.getMicros()))
-      res = true;
-
-    return res;
-  }
-
-  public final String toString()
-  {
-    return getName();
-  }
-
-  public final String getName()
-  {
-    return "Step Control";
-  }
-
-  public final boolean hasEditor()
-  {
-    return true;
-  }
-
-  public final Editable.EditorType getInfo()
-  {
-    if (_myEditor == null)
-      _myEditor = new StepControlInfo(this);
-
-    return _myEditor;
-  }
-
-  /**
-   * gets the small step size (in double millis)
-   */
-  public final long getStepSmall()
-  {
-    return _smallStep;
-  }
-
-  public final void setStepSmall(final long val)
-  {
-    _smallStep = val;
-  }
-
-  /**
-   * gets the large step size (in double millis)
-   */
-  public final long getStepLarge()
-  {
-    return _largeStep;
-  }
-
-  public final void setStepLarge(final long val)
-  {
-    _largeStep = val;
-  }
-
-  /**
-   * set the real-time interval on the timer, the value
-   * is in millis
-   *
-   * @param val time interval in milliseconds
-   */
-  public final void setAutoStep(final long val)
-  {
-    _theTimer.setDelay(val);
-  }
-
-  /**
-   * get the real-time interval on the timer, the value
-   * is in millis
-   *
-   * @return time interval in milliseconds
-   */
-  public final long getAutoStep()
-  {
-    return  _theTimer.getDelay();
-  }
-
-  public final boolean isPlaying()
-  {
-    return _theTimer.isRunning();
-  }
-  
-  public final String getDateFormat()
-  {
-    return _dateFormatter.toPattern();
-  }
-
-  public final void setDateFormat(final String val)
-  {
-    // update the formatter
-    _dateFormatter.applyPattern(val);
-
-    // has our date been set?
-    final HiResDate tNow = this.getCurrentTime();
-    if (tNow != null)
-    {
-      // and update the form
-      updateForm(tNow);
-    }
-  }
-
-
-  /***************************************************
-   * set of methods to control the time displayed in the toolbox (of particular
-   * use in remembering the T-Zero time)
-   */
-
-  /**
-   * get the time in the start slider in the toolbox
-   */
-  abstract public HiResDate getToolboxStartTime();
-
-  /**
-   * get the time in the finish slider in the toolbox
-   */
-  abstract public HiResDate getToolboxEndTime();
-
-  /**
-   * set the time in the start slider in the toolbox
-   */
-  abstract public void setToolboxStartTime(HiResDate val);
-
-  /**
-   * set the time in the start slider in the toolbox
-   */
-  abstract public void setToolboxEndTime(HiResDate val);
-
-  /**
-   * set the time-zero value
-   *
-   * @param newVal the new time (or null for no Time Zero)
-   */
-  public void setTimeZero(final HiResDate newVal)
-  {
-    _timeZero = newVal;
-  }
-
-  /**
-   * get the time-zero value (or null if we don't have one)
-   *
-   * @return the date
-   */
-  public HiResDate getTimeZero()
-  {
-    return _timeZero;
-  }
-
-  /**
-   * indicate that we no longer have a time period (this implementation favours D-Lite, TimeManager
-   * provides equivalent support in full Debrief)
-   */
-  public void reset()
-  {
-    // stop the timer, we may fall over if we carry on stepping
-    stopTimer();
-    
-    // clear the times
-    _startTime = null;
-    _endTime = null;
-    _currentTime = null;
-
-    // inform anyone that wants to know.
-    final Enumeration<StepperListener> numer = _listeners.elements();
-    while (numer.hasMoreElements())
-    {
-      final StepperListener next = numer.nextElement();
-      next.reset();
-    }
-    // clear all the participants.
-    _participants.clear();
-  }
-
-  public void setStartTime(final HiResDate val)
-  {
-    _startTime = val;
-  }
-
-  public void setEndTime(final HiResDate val)
-  {
-    _endTime = val;
-  }
-
-  public final void setCurrentTime(final HiResDate val)
-  {
-    _currentTime = val;
-  }
-
-  public final HiResDate getStartTime()
-  {
-    return _startTime;
-  }
-
-  public final HiResDate getEndTime()
-  {
-    return _endTime;
-  }
-
-  public final HiResDate getCurrentTime()
-  {
-    return _currentTime;
-  }
-
-  public final BoundedInteger getFontSize()
-  {
-    return new BoundedInteger(_fontSize, 1, 20);
-  }
-
-  public final void setFontSize(final BoundedInteger val)
-  {
-    _fontSize = val.getCurrent();
-    formatTimeText();
-  }
-
-  public final String getHighlighter()
-  {
-    return _currentHighlighter.toString();
-  }
-
-  /**
-   * retrieve the currently selected highlighter
-   *
-   * @return the current highlighter
-   */
-  public final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter getCurrentHighlighter()
-  {
-    return _currentHighlighter;
-  }
-
-  /**
-   * retrieve the default highlighter - used primarily to show secondary highlights
-   *
-   * @return the default highlighter
-   */
-  public final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter getDefaultHighlighter()
-  {
-    return _defaultHighlighter;
-  }
-
-  public final void setHighlighter(final String val)
-  {
-    final Enumeration<PlotHighlighter> iter = _myHighlighters.elements();
-    while (iter.hasMoreElements())
-    {
-      final Object l = iter.nextElement();
-      if (l.toString().equals(val))
-      {
-        _currentHighlighter = (Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter) l;
-        break;
-      }
-    }
-  }
-
-  public final void editHighlighter()
-  {
-    if (_currentHighlighter.hasEditor())
-    {
-      PropertiesPanel panel = getPropertiesPanel();
-      if ( panel != null )
-      {
-        panel.addEditor(_currentHighlighter.getInfo(), null);
-      }
-    }
-  }
-
-
-  public final void editDisplay()
-  {
-    doEditPainter();
-  }
-
-
-  // one of the objects we're listening to may have changed.
-  public void propertyChange(final PropertyChangeEvent evt)
-  {
-    // what sort is it?
-    final String type = evt.getPropertyName();
-
-    // is it one we're interested in?
-    if (type.equals(MWC.GenericData.WatchableList.FILTERED_PROPERTY))
-    {
-      // see if we have received the new time period
-      final Object newVal = evt.getNewValue();
-
-      // is this a valid time period?
-      if (newVal instanceof somePeriod)
-      {
-        final somePeriod newPeriod = (somePeriod) newVal;
-
-        // remove the old values
-        _participants.remove(evt.getSource());
-
-        // add the new one
-        _participants.put(evt.getSource(), newPeriod);
-      }
-
-      // finally trigger a recalculation of the time limits
-      recalcTimes();
-    }
-
-  }
-
-  //////////////////////////////////////////////
-  // handle addition/removal of participants
-  /////////////////////////////////////
-
-  /**
-   * add a new exercise participant to the list we monitor, providing
-   * the start and stop times aswell
-   *
-   * @param participant
-   * @param start
-   * @param end
-   */
-  public final void addParticipant(final WatchableList participant, final HiResDate start, final HiResDate end)
-  {
-    // remember this participant
-    _participants.put(participant, new somePeriod(start, end));
-
-    // start listening out for property changes
-    if (participant instanceof MWC.GUI.PlainWrapper)
-    {
-      final SupportsPropertyListeners val = (SupportsPropertyListeners) participant;
-      val.addPropertyChangeListener(MWC.GenericData.WatchableList.FILTERED_PROPERTY, this);
-    }
-
-    // recalculate the start and end times
-    recalcTimes();
-  }
-
-  public final void removeParticpant(final Object participant)
-  {
-    // remember this participant
-    _participants.remove(participant);
-
-    // stop listening out for property changes
-    if (participant instanceof MWC.GUI.PlainWrapper)
-    {
-      final SupportsPropertyListeners val = (SupportsPropertyListeners) participant;
-      val.removePropertyChangeListener(MWC.GenericData.WatchableList.FILTERED_PROPERTY, this);
-    }
-    // recalculate the start and end times
-    recalcTimes();
-  }
-
-  /**
-   * return the participants as a hashtable
-   */
-  public final java.util.Hashtable<Object, somePeriod> getParticipants()
-  {
-    return _participants;
-  }
-
-
-  /**
-   * event handler for new selection of painter
-   */
-  public final void setPainter(final String val)
-  {
-    if (val != null)
-    {
-      if(_thePainterManager != null)
-      {
-        _thePainterManager.setDisplay(val);
-  
-        // and fire the event in the painter manager
-        _thePainterManager.getInfo().fireChanged(this, "Painter", null, val);
-      }
-    }
-  }
-
-
-  public void recalcTimes()
-  {
-    // our results object
-    somePeriod res = null;
-
-    // working value
-    somePeriod sp = null;
-
-    // go through the participant data
-    final Enumeration<somePeriod> iter = _participants.elements();
-
-    while (iter.hasMoreElements())
-    {
-      // get our data next item
-      sp = iter.nextElement();
-
-      // are we in our first cycle?
-      if (res == null)
-        res = sp;
-      else
-      {
-        // extend our period to include new data
-        res.extend(sp);
-      }
-    }
-
-    // check we have some data
-    if (res != null)
-    {
-      // so, done now
-      setStartTime(res._start);
-      setEndTime(res._end);
-    }
-
-    // do we have a current time?
-    if (_currentTime != null)
-    {
-      // do we know our start time?
-      if(_startTime != null)
-      {
-        // and check that the current time is in range
-        if (!validTime(_currentTime.getMicros()))
-        {
-          _currentTime = new HiResDate(_startTime);
-        }
-      }
-    }
-    else
-    {
-      // hmm, do we have a start time?
-      if(_startTime != null)
-      {
-        // hey, we don't have a time, we might as well use thsi one
-        _currentTime = new HiResDate(_startTime);
-      }
-    }
-
-    // if we have a filter configured, reset it
-    if(_timeFilter != null)
-       _timeFilter.reIntitialise();
-
-  }
-
-  protected final void gotoStart()
-  {
-    changeTime(_startTime);
-  }
-
-  public final void gotoEnd()
-  {
-    changeTime(_endTime);
   }
 
   public final void changeTime(final HiResDate rawTime)
@@ -1042,9 +756,9 @@ abstract public class StepControl implements Editable,
 
     // trim to whole minutes
     final long roundedTimeMillis = (timeMillis / 1000) * 1000;
-//    long roundedTimeMillis = timeMillis;
-    final HiResDate roundedTime = new HiResDate(roundedTimeMillis, 0);   
-    
+    // long roundedTimeMillis = timeMillis;
+    final HiResDate roundedTime = new HiResDate(roundedTimeMillis, 0);
+
     // update the GUI
     updateForm(roundedTime);
 
@@ -1059,7 +773,8 @@ abstract public class StepControl implements Editable,
       }
       catch (final Exception e)
       {
-        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        e.printStackTrace(); // To change body of catch statement use File | Settings | File
+                             // Templates.
       }
     }
 
@@ -1067,44 +782,209 @@ abstract public class StepControl implements Editable,
     _currentTime = roundedTime;
   }
 
-  // timer listener event
-  public final void onTime(final java.awt.event.ActionEvent event)
+  /**
+   * method to manage the clear up of this class
+   */
+  public void closeMe()
   {
-    // temporarily remove ourselves, to prevent being called twice
-    _theTimer.removeTimerListener(this);
+    _defaultHighlighter = null;
+    _listeners.removeAllElements();
 
-    // catch any exceptions raised here, it doesn't really
-    // matter if we miss a time step
-    try
-    {
-
-      // pass the step operation on to our parent
-      doStep(_goingForward, _largeSteps);
-
-    }
-    catch (final Exception e)
-    {
-      MWC.Utilities.Errors.Trace.trace(e);
-    }
-
-    // register ourselves as a time again
-    _theTimer.addTimerListener(this);
+    _participants.clear();
+    _theTimer = null;
+    _currentHighlighter = null;
+    _defaultHighlighter = null;
   }
 
-  protected final void startTimer()
+  abstract protected void doEditPainter();
+
+  @Override
+  public final void doStep(final boolean forwards, final boolean large)
   {
-    _theTimer.start();
+
+    // have we been initialised?
+    if (_currentTime != null)
+    {
+      // yup, process the step.
+
+      // remember the DTG
+      long newDTG = -1;
+
+      long step = 0;
+      if (large)
+        step = _largeStep;
+      else
+        step = _smallStep;
+
+      final long nowMicros = _currentTime.getMicros();
+
+      if (forwards)
+      {
+        newDTG = nowMicros + step;
+      }
+      else
+      {
+        newDTG = nowMicros - step;
+      }
+
+      // and check the limits, if there are any
+      if (!validTime(newDTG))
+      {
+        if (newDTG < _startTime.getMicros())
+        {
+          newDTG = _startTime.getMicros();
+        }
+        if (newDTG > _endTime.getMicros())
+        {
+          newDTG = _endTime.getMicros();
+        }
+
+        // inform to the closing listeners
+        final Enumeration<StepperListener> iter = _listeners.elements();
+        while (iter.hasMoreElements())
+        {
+          final StepperListener l = iter.nextElement();
+          try
+          {
+            l.steppingModeChanged(false);
+          }
+          catch (final Exception e)
+          {
+            e.printStackTrace(); // If the listener fails, hmmm,I guess we cannot solve it from
+                                 // here.
+          }
+        }
+
+        stopTimer();
+      }
+
+      // we should now have a valid time
+      changeTime(new HiResDate(0, newDTG));
+    }
+
   }
 
-  protected final void stopTimer()
+  public final void editDisplay()
   {
-    _theTimer.stop();
+    doEditPainter();
+  }
+
+  //////////////////////////////////////////////////
+  // stepping related methods
+  /////////////////////////////////////////////////
+
+  public final void editHighlighter()
+  {
+    if (_currentHighlighter.hasEditor())
+    {
+      final PropertiesPanel panel = getPropertiesPanel();
+      if (panel != null)
+      {
+        panel.addEditor(_currentHighlighter.getInfo(), null);
+      }
+    }
+  }
+
+  abstract protected void formatTimeText();
+
+  /**
+   * get the real-time interval on the timer, the value is in millis
+   *
+   * @return time interval in milliseconds
+   */
+  public final long getAutoStep()
+  {
+    return _theTimer.getDelay();
   }
 
   /**
-   * private method to produce a time string from the indicated DTG
-   * we've moved it out of the newTime box so that we can access
-   * it from a tester
+   * retrieve the currently selected highlighter
+   *
+   * @return the current highlighter
+   */
+  public final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter
+      getCurrentHighlighter()
+  {
+    return _currentHighlighter;
+  }
+
+  //////////////////////////////////////////////////
+  //
+  /////////////////////////////////////////////////
+  public final StepperListener getCurrentPainter()
+  {
+    final StepperListener res;
+    if (_thePainterManager != null)
+    {
+      res = _thePainterManager.getCurrentPainterObject();
+    }
+    else
+    {
+      res = null;
+    }
+    return res;
+  }
+
+  @Override
+  public final HiResDate getCurrentTime()
+  {
+    return _currentTime;
+  }
+
+  public final String getDateFormat()
+  {
+    return _dateFormatter.toPattern();
+  }
+
+  /**
+   * retrieve the default highlighter - used primarily to show secondary highlights
+   *
+   * @return the default highlighter
+   */
+  public final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter
+      getDefaultHighlighter()
+  {
+    return _defaultHighlighter;
+  }
+
+  public final HiResDate getEndTime()
+  {
+    return _endTime;
+  }
+
+  public final BoundedInteger getFontSize()
+  {
+    return new BoundedInteger(_fontSize, 1, 20);
+  }
+
+  public final String getHighlighter()
+  {
+    return _currentHighlighter.toString();
+  }
+
+  @Override
+  public final Editable.EditorType getInfo()
+  {
+    if (_myEditor == null)
+      _myEditor = new StepControlInfo(this);
+
+    return _myEditor;
+  }
+
+  protected Vector<StepperListener> getListeners()
+  {
+    return _listeners;
+  }
+
+  @Override
+  public final String getName()
+  {
+    return "Step Control";
+  }
+
+  /**
+   * private method to produce a time string from the indicated DTG we've moved it out of the
+   * newTime box so that we can access it from a tester
    */
   public String getNewTime(final HiResDate DTG)
   {
@@ -1165,7 +1045,6 @@ abstract public class StepControl implements Editable,
           if (_secondsFormat == null)
             _secondsFormat = new java.text.DecimalFormat("000s");
 
-
           res += _secondsFormat.format(secs);
         }
         else if (format.equals("MM:SS"))
@@ -1180,12 +1059,14 @@ abstract public class StepControl implements Editable,
 
           res += ":";
 
-          res += MWC.Utilities.TextFormatting.BriefFormatLocation.df2.format(secs);
+          res += MWC.Utilities.TextFormatting.BriefFormatLocation.df2.format(
+              secs);
 
         }
         else
         {
-          MWC.Utilities.Errors.Trace.trace("Step control: invalid TZero format found:" + format);
+          MWC.Utilities.Errors.Trace.trace(
+              "Step control: invalid TZero format found:" + format);
         }
       }
     }
@@ -1201,261 +1082,419 @@ abstract public class StepControl implements Editable,
     return res;
   }
 
+  /***************************************************
+   * set of methods to control the time displayed in the toolbox (of particular use in remembering
+   * the T-Zero time)
+   */
 
-  /////////////////////////////////////////////////////////////
-  // nested class storing start and end times for a participant
-  ////////////////////////////////////////////////////////////
-  static public final class somePeriod
+  /**
+   * return the participants as a hashtable
+   */
+  public final java.util.Hashtable<Object, somePeriod> getParticipants()
   {
-    public HiResDate _start;
-    public HiResDate _end;
+    return _participants;
+  }
 
-    public somePeriod(final HiResDate start, final HiResDate end)
+  abstract protected MWC.GUI.Properties.PropertiesPanel getPropertiesPanel();
+
+  public final HiResDate getStartTime()
+  {
+    return _startTime;
+  }
+
+  /**
+   * gets the large step size (in double millis)
+   */
+  public final long getStepLarge()
+  {
+    return _largeStep;
+  }
+
+  /**
+   * gets the small step size (in double millis)
+   */
+  public final long getStepSmall()
+  {
+    return _smallStep;
+  }
+
+  /**
+   * get the time-zero value (or null if we don't have one)
+   *
+   * @return the date
+   */
+  @Override
+  public HiResDate getTimeZero()
+  {
+    return _timeZero;
+  }
+
+  /**
+   * get the time in the finish slider in the toolbox
+   */
+  abstract public HiResDate getToolboxEndTime();
+
+  /**
+   * get the time in the start slider in the toolbox
+   */
+  abstract public HiResDate getToolboxStartTime();
+
+  public final void gotoEnd()
+  {
+    changeTime(_endTime);
+  }
+
+  protected final void gotoStart()
+  {
+    changeTime(_startTime);
+  }
+
+  @Override
+  public final boolean hasEditor()
+  {
+    return true;
+  }
+
+  abstract protected void initForm();
+
+  /**
+   * set the initial size of the time step
+   */
+  private void initialiseTimeStepSizes()
+  {
+    if (HiResDate.inHiResProcessingMode())
     {
-      _start = start;
-      _end = end;
+      _smallStep = 100;
+      _largeStep = 1000;
     }
-
-    public final void extend(final somePeriod other)
+    else
     {
-      if (other != null && other._start != null && 
-          other._start.lessThan(_start))
-        _start = other._start;
-
-      if (other != null && other._end != null &&
-          other._end.greaterThan(_end))
-        _end = other._end;
-    }
-
-    public final String toString()
-    {
-      final String res = " start:" + DebriefFormatDateTime.toStringHiRes(_start) +
-        " end:" + DebriefFormatDateTime.toStringHiRes(_end);
-      return res;
+      _smallStep = 60000 * 1000;
+      _largeStep = 600000 * 1000;
     }
   }
 
-  /////////////////////////////////////////////////////////////
-  // nested class describing how to edit this class
-  ////////////////////////////////////////////////////////////
-  public final class StepControlInfo extends Editable.EditorType
+  public final boolean isPlaying()
   {
+    return _theTimer.isRunning();
+  }
 
-    public StepControlInfo(final StepControl data)
+  // timer listener event
+  @Override
+  public final void onTime(final java.awt.event.ActionEvent event)
+  {
+    // temporarily remove ourselves, to prevent being called twice
+    _theTimer.removeTimerListener(this);
+
+    // catch any exceptions raised here, it doesn't really
+    // matter if we miss a time step
+    try
     {
-      super(data, "Step Control", "");
+
+      // pass the step operation on to our parent
+      doStep(_goingForward, _largeSteps);
+
+    }
+    catch (final Exception e)
+    {
+      MWC.Utilities.Errors.Trace.trace(e);
     }
 
-    public final BeanInfo[] getAdditionalBeanInfo()
+    // register ourselves as a time again
+    _theTimer.addTimerListener(this);
+  }
+
+  /**
+   * method intended to be overwritten by concrete classes, to find out that the painter has been
+   * defined
+   */
+  abstract protected void painterIsDefined();
+
+  // one of the objects we're listening to may have changed.
+  @Override
+  public void propertyChange(final PropertyChangeEvent evt)
+  {
+    // what sort is it?
+    final String type = evt.getPropertyName();
+
+    // is it one we're interested in?
+    if (type.equals(MWC.GenericData.WatchableList.FILTERED_PROPERTY))
     {
-      BeanInfo[] res = null;
+      // see if we have received the new time period
+      final Object newVal = evt.getNewValue();
+
+      // is this a valid time period?
+      if (newVal instanceof somePeriod)
+      {
+        final somePeriod newPeriod = (somePeriod) newVal;
+
+        // remove the old values
+        _participants.remove(evt.getSource());
+
+        // add the new one
+        _participants.put(evt.getSource(), newPeriod);
+      }
+
+      // finally trigger a recalculation of the time limits
+      recalcTimes();
+    }
+
+  }
+
+  public void recalcTimes()
+  {
+    // our results object
+    somePeriod res = null;
+
+    // working value
+    somePeriod sp = null;
+
+    // go through the participant data
+    final Enumeration<somePeriod> iter = _participants.elements();
+
+    while (iter.hasMoreElements())
+    {
+      // get our data next item
+      sp = iter.nextElement();
+
+      // are we in our first cycle?
+      if (res == null)
+        res = sp;
+      else
+      {
+        // extend our period to include new data
+        res.extend(sp);
+      }
+    }
+
+    // check we have some data
+    if (res != null)
+    {
+      // so, done now
+      setStartTime(res._start);
+      setEndTime(res._end);
+    }
+
+    // do we have a current time?
+    if (_currentTime != null)
+    {
+      // do we know our start time?
+      if (_startTime != null)
+      {
+        // and check that the current time is in range
+        if (!validTime(_currentTime.getMicros()))
+        {
+          _currentTime = new HiResDate(_startTime);
+        }
+      }
+    }
+    else
+    {
+      // hmm, do we have a start time?
+      if (_startTime != null)
+      {
+        // hey, we don't have a time, we might as well use thsi one
+        _currentTime = new HiResDate(_startTime);
+      }
+    }
+
+    // if we have a filter configured, reset it
+    if (_timeFilter != null)
+      _timeFilter.reIntitialise();
+
+  }
+
+  public final void removeParticpant(final Object participant)
+  {
+    // remember this participant
+    _participants.remove(participant);
+
+    // stop listening out for property changes
+    if (participant instanceof MWC.GUI.PlainWrapper)
+    {
+      final SupportsPropertyListeners val =
+          (SupportsPropertyListeners) participant;
+      val.removePropertyChangeListener(
+          MWC.GenericData.WatchableList.FILTERED_PROPERTY, this);
+    }
+    // recalculate the start and end times
+    recalcTimes();
+  }
+
+  @Override
+  public final void removeStepperListener(final StepperListener l)
+  {
+    _listeners.removeElement(l);
+  }
+
+  /**
+   * indicate that we no longer have a time period (this implementation favours D-Lite, TimeManager
+   * provides equivalent support in full Debrief)
+   */
+  public void reset()
+  {
+    // stop the timer, we may fall over if we carry on stepping
+    stopTimer();
+
+    // clear the times
+    _startTime = null;
+    _endTime = null;
+    _currentTime = null;
+
+    // inform anyone that wants to know.
+    final Enumeration<StepperListener> numer = _listeners.elements();
+    while (numer.hasMoreElements())
+    {
+      final StepperListener next = numer.nextElement();
+      next.reset();
+    }
+    // clear all the participants.
+    _participants.clear();
+  }
+
+  /**
+   * set the real-time interval on the timer, the value is in millis
+   *
+   * @param val
+   *          time interval in milliseconds
+   */
+  public final void setAutoStep(final long val)
+  {
+    _theTimer.setDelay(val);
+  }
+
+  //////////////////////////////////////////////
+  // handle addition/removal of participants
+  /////////////////////////////////////
+
+  public final void setCurrentTime(final HiResDate val)
+  {
+    _currentTime = val;
+  }
+
+  public final void setDateFormat(final String val)
+  {
+    // update the formatter
+    _dateFormatter.applyPattern(val);
+
+    // has our date been set?
+    final HiResDate tNow = this.getCurrentTime();
+    if (tNow != null)
+    {
+      // and update the form
+      updateForm(tNow);
+    }
+  }
+
+  public void setEndTime(final HiResDate val)
+  {
+    _endTime = val;
+  }
+
+  public final void setFontSize(final BoundedInteger val)
+  {
+    _fontSize = val.getCurrent();
+    formatTimeText();
+  }
+
+  public final void setHighlighter(final String val)
+  {
+    final Enumeration<PlotHighlighter> iter = _myHighlighters.elements();
+    while (iter.hasMoreElements())
+    {
+      final Object l = iter.nextElement();
+      if (l.toString().equals(val))
+      {
+        _currentHighlighter =
+            (Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter) l;
+        break;
+      }
+    }
+  }
+
+  /**
+   * event handler for new selection of painter
+   */
+  public final void setPainter(final String val)
+  {
+    if (val != null)
+    {
       if (_thePainterManager != null)
       {
-        // see if the painter manager has any additionals aswell
-        final BeanInfo pm = _thePainterManager.getInfo();
-        final BeanInfo[] adds = pm.getAdditionalBeanInfo();
-        if (adds != null)
-        {
-          final BeanInfo[] res3 = new BeanInfo[adds.length + 1];
-          System.arraycopy(adds, 0, res3, 0, adds.length);
-          res3[res3.length - 1] = pm;
-          res = res3;
-        }
-        else
-        {
-          final BeanInfo[] res2 = {_thePainterManager.getInfo()};
-          res = res2;
-        }
-      }
-      return res;
-    }
+        _thePainterManager.setDisplay(val);
 
-    public final PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try
-      {
-        final PropertyDescriptor[] res = {
-          displayProp("StepSmall", "Small step", "the small step size"),
-          displayProp("StepLarge", "Large step", "the large step size"),
-          displayProp("AutoStep", "Auto step", "the automatic step"),
-          displayProp("FontSize", "Font size", "the font size for the time label"),
-          displayProp("DateFormat", "Date format", "the format to use for the date/time"),
-          longProp("Highlighter", "the highlighter to use", TagListEditor.class)
-
-        };
-
-        // right, special processing here.  If we're in hi-res mode, we want to specify the very
-        // hi res timers.
-        if (HiResDate.inHiResProcessingMode())
-        {
-          // use hi res property editor
-          res[0].setPropertyEditorClass(MWC.GUI.Properties.HiFreqTimeStepPropertyEditor.class);
-          res[1].setPropertyEditorClass(MWC.GUI.Properties.HiFreqTimeStepPropertyEditor.class);
-        }
-        else
-        {
-          res[0].setPropertyEditorClass(MWC.GUI.Properties.TimeStepPropertyEditor.class);
-          res[1].setPropertyEditorClass(MWC.GUI.Properties.TimeStepPropertyEditor.class);
-        }
-
-
-        res[2].setPropertyEditorClass(MWC.GUI.Properties.TimeIntervalPropertyEditor.class);
-        res[4].setPropertyEditorClass(MyDateEditor.class);
-
-        return res;
-      }
-      catch (final Exception e)
-      {
-        MWC.Utilities.Errors.Trace.trace(e);
-        return super.getPropertyDescriptors();
+        // and fire the event in the painter manager
+        _thePainterManager.getInfo().fireChanged(this, "Painter", null, val);
       }
     }
-
-    public final MethodDescriptor[] getMethodDescriptors()
-    {
-      // just add the reset color field first
-      final Class<StepControl> c = StepControl.class;
-      final MethodDescriptor[] mds = {
-        method(c, "editHighlighter", null, "Edit Highlighter"),
-        method(c, "editDisplay", null, "Edit Display mode"),
-      };
-      return mds;
-    }
-
-
   }
 
-  ///////////////////////////////////////////////////////////
-  // property editor to let us add our extra (T-Zero related) formats to the dates list
-  ///////////////////////////////////////////////////////////
-  public static final class MyDateEditor extends MWC.GUI.Properties.DateFormatPropertyEditor
+  public void setStartTime(final HiResDate val)
   {
-    
+    _startTime = val;
+  }
+
+  public final void setStepLarge(final long val)
+  {
+    _largeStep = val;
+  }
+
+  public final void setStepSmall(final long val)
+  {
+    _smallStep = val;
+  }
+
+  /**
+   * set the time-zero value
+   *
+   * @param newVal
+   *          the new time (or null for no Time Zero)
+   */
+  public void setTimeZero(final HiResDate newVal)
+  {
+    _timeZero = newVal;
+  }
+
+  /**
+   * set the time in the start slider in the toolbox
+   */
+  abstract public void setToolboxEndTime(HiResDate val);
+
+  /**
+   * set the time in the start slider in the toolbox
+   */
+  abstract public void setToolboxStartTime(HiResDate val);
+
+  protected final void startTimer()
+  {
+    _theTimer.start();
+  }
+
+  protected final void stopTimer()
+  {
+    _theTimer.stop();
+  }
+
+  @Override
+  public final String toString()
+  {
+    return getName();
   }
 
   ////////////////////////////////////////////////////////////
   // property editor to return the painters as a combo box
   ////////////////////////////////////////////////////////////
 
-  public static final class TagListEditor extends PropertyEditorSupport
+  abstract protected void updateForm(HiResDate DTG);
+
+  private boolean validTime(final long val)
   {
+    boolean res = false;
 
-    // the working copy we are editing
-    String current;
+    if ((_startTime != null && val >= _startTime.getMicros())
+        && (_endTime != null && val <= _endTime.getMicros()))
+      res = true;
 
-    /**
-     * return a tag list of the current editors
-     */
-    public final String[] getTags()
-    {
-
-      String[] strings = null;
-      final Vector<String> res = new Vector<String>(0, 1);
-      final Enumeration<PlotHighlighter> iter = _myHighlighters.elements();
-      while (iter.hasMoreElements())
-      {
-        final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter l = iter.nextElement();
-        res.addElement(l.toString());
-      }
-
-      // are there any results?
-      if (res.size() > 0)
-      {
-        strings = new String[res.size()];
-        res.copyInto(strings);
-      }
-
-      return strings;
-    }
-
-
-    public final Object getValue()
-    {
-      return current;
-    }
-
-    public final void setValue(final Object p1)
-    {
-      if (p1 instanceof String)
-      {
-        final String val = (String) p1;
-        setAsText(val);
-      }
-    }
-
-    public final void setAsText(final String p1)
-    {
-      current = p1;
-    }
-
-    public final String getAsText()
-    {
-      return current;
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  static public final class testMe extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-    public testMe(final String val)
-    {
-      super(val);
-    }
-
-    public final void testMyParams()
-    {
-      StepControl ed = new StepControl(null, null)
-      {
-        protected void doEditPainter()
-        {
-        }
-
-        protected void formatTimeText()
-        {
-        }
-
-        protected PropertiesPanel getPropertiesPanel()
-        {
-          return null;
-        }
-
-        public HiResDate getToolboxEndTime()
-        {
-          return null;
-        }
-
-        public HiResDate getToolboxStartTime()
-        {
-          return null;
-        }
-
-        protected void initForm()
-        {
-        }
-
-        protected void painterIsDefined()
-        {
-        }
-
-        public void setToolboxEndTime(final HiResDate val)
-        {
-        }
-
-        public void setToolboxStartTime(final HiResDate val)
-        {
-        }
-
-        protected void updateForm(final HiResDate DTG)
-        {
-        }
-      };
-
-      editableTesterSupport.testParams(ed, this);
-      ed = null;
-    }
+    return res;
   }
 }
