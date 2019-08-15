@@ -38,7 +38,8 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
 
   private TrackWrapper _primaryTrack;
 
-  private final List<AbstractSelection<TrackWrapper>> _tracks = new ArrayList<>();
+  private final List<AbstractSelection<TrackWrapper>> _tracks =
+      new ArrayList<>();
 
   private CalculationHolder _calculation;
 
@@ -76,6 +77,12 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
     return _tracks;
   }
 
+  @Override
+  public boolean isRelativeEnabled()
+  {
+    return this._tracks.size() > 1;
+  }
+
   private void notifyListenersStateChanged(final Object source,
       final String property, final Object oldValue, final Object newValue)
   {
@@ -89,7 +96,7 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
   @Override
   public void setActiveTrack(final TrackWrapper track, final boolean check)
   {
-    // TODO this should be move to somewhere else.
+    // TODO this should be moved to somewhere else.
     Boolean oldValue = null;
     Boolean newValue = null;
     for (final AbstractSelection<TrackWrapper> currentTrack : _tracks)
@@ -124,6 +131,7 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
   @Override
   public void setPrimaryTrack(final TrackWrapper newPrimary)
   {
+    
     final TrackWrapper oldPrimary = getPrimaryTrack();
     // Do we have it?
     for (final AbstractSelection<TrackWrapper> currentTrack : _tracks)
@@ -146,7 +154,7 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
   }
 
   /**
-   * 
+   *
    * @param tracks
    *          Tracks to assign
    * @return true if it was actually assigned. If they are the same, they are not assigned.
@@ -155,41 +163,48 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
   public boolean setTracks(final List<TrackWrapper> tracks)
   {
     boolean isDifferent = false;
-    final List<AbstractSelection<TrackWrapper>> oldTracks = new ArrayList<>(this._tracks);
-    final List<AbstractSelection<TrackWrapper>> newTracks = new ArrayList<>();
+    
+    final List<AbstractSelection<TrackWrapper>> deltaPlus = new ArrayList<>();
+    final List<AbstractSelection<TrackWrapper>> deltaMinus = new ArrayList<>();
+    
     final HashSet<TrackWrapper> oldTracksSet = new HashSet<>();
-    if (oldTracks != null)
+    for (final AbstractSelection<TrackWrapper> oldTrack : _tracks)
     {
-      for (AbstractSelection<TrackWrapper> oldTrack : oldTracks)
-      {
-        oldTracksSet.add(oldTrack.getItem());
-      }
+      oldTracksSet.add(oldTrack.getItem());
     }
     for (final TrackWrapper track : tracks)
     {
-      newTracks.add(new AbstractSelection<TrackWrapper>(track, false));
-      isDifferent |= !oldTracksSet.contains(track);
+      if ( !oldTracksSet.contains(track) )
+      {
+        isDifferent = true;
+        deltaPlus.add(new AbstractSelection<TrackWrapper>(track, false));
+      }
     }
-    for (TrackWrapper oldTrackItem : oldTracksSet)
+    for (final TrackWrapper oldTrackItem : oldTracksSet)
     {
-      isDifferent |= !tracks.contains(oldTrackItem);
+      if ( !tracks.contains(oldTrackItem) )
+      {
+        isDifferent = true;
+        deltaMinus.add(new AbstractSelection<TrackWrapper>(oldTrackItem, false));
+      }
     }
     if (isDifferent)
     {
-      this._tracks.clear();
-      this._tracks.addAll(newTracks);
-      if ( _primaryTrack != null && !tracks.contains(_primaryTrack) )
+      this._tracks.removeAll(deltaMinus);
+      this._tracks.addAll(deltaPlus);
+      
+      if (_primaryTrack != null && !tracks.contains(_primaryTrack))
       {
         setPrimaryTrack(null);
       }
-      notifyListenersStateChanged(this, TRACK_LIST_CHANGED, oldTracks, tracks);
+      notifyListenersStateChanged(this, TRACK_LIST_CHANGED, null, tracks);
+      if (tracks.size() == 1)
+      {
+        final TrackWrapper newPrimary = tracks.get(0);
+        setActiveTrack(newPrimary, true);
+        notifyListenersStateChanged(newPrimary, TRACK_SELECTION, null, true);
+      }
     }
     return isDifferent;
-  }
-
-  @Override
-  public boolean isRelativeEnabled()
-  {
-    return this._tracks.size() > 1;
   }
 }

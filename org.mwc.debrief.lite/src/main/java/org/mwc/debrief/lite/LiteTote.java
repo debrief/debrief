@@ -129,7 +129,10 @@ public class LiteTote extends AnalysisTote
           if (nextE instanceof WatchableList)
           {
             final WatchableList wat = (WatchableList) nextE;
-            addItem(wat);
+            if ( wat.getVisible() && wat.getEndDTG() != null && wat.getStartDTG() != null )
+            {
+              addItem(wat); 
+            }
           }
         }
       }

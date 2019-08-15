@@ -301,8 +301,9 @@ public class DebriefRibbonTimeController
 
   private static JCheckBoxMenuItem[] _menuItem;
 
-  /** track snail mode
-   * 
+  /**
+   * track snail mode
+   *
    */
   private static boolean _isNormal = true;
 
@@ -720,28 +721,27 @@ public class DebriefRibbonTimeController
           {
             hasItems = true;
             break;
-          }else if (next instanceof BaseLayer)
+          }
+          else if (next instanceof BaseLayer)
           {
             // check the children, to see if they're like a track
             final BaseLayer baseL = (BaseLayer) next;
             final Enumeration<Editable> ele = baseL.elements();
-            while (ele.hasMoreElements())
+            while (ele.hasMoreElements() && !hasItems)
             {
               final Editable nextE = ele.nextElement();
               if (nextE instanceof WatchableList)
               {
-                hasItems = true;
-                break;
+                final WatchableList wat = (WatchableList) nextE;
+                hasItems |= wat.getVisible() && wat.getEndDTG() != null && wat
+                    .getStartDTG() != null;
               }
+
             }
           }
         }
 
-        if (!hasItems)
-        {
-          doSoftReset(timeSlider, timeManager);
-        }
-        else
+        if (hasItems)
         {
           DebriefLiteApp.setDirty(true);
           DebriefLiteApp.setState(DebriefLiteApp.ACTIVE_STATE);
