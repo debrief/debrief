@@ -1218,10 +1218,12 @@ abstract public class StepControl implements Editable,
 
     public final void extend(final somePeriod other)
     {
-      if (other._start.lessThan(_start))
+      if (other != null && other._start != null && 
+          other._start.lessThan(_start))
         _start = other._start;
 
-      if (other._end.greaterThan(_end))
+      if (other != null && other._end != null &&
+          other._end.greaterThan(_end))
         _end = other._end;
     }
 

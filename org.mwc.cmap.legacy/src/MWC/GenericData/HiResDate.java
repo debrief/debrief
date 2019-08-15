@@ -220,7 +220,7 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
 
   public boolean greaterThan(final HiResDate other)
   {
-    return getMicros() > other.getMicros();
+    return other != null && getMicros() > other.getMicros();
   }
 
   public boolean greaterThanOrEqualTo(final HiResDate other)
