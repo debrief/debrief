@@ -175,14 +175,11 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
     final String start_time = details.properties.get("Toolbox_Start_Time");
     if (start_time != null)
     {
-      HiResDate startTime = null;
       // get a date from this
       try
       {
-        startTime = DebriefFormatDateTime.parseThis(start_time);
-
         // set the cursor
-        step.setToolboxStartTime(startTime);
+        step.setToolboxStartTime(DebriefFormatDateTime.parseThis(start_time));
       }
       catch (final ParseException e)
       {
@@ -195,15 +192,11 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
     final String end_time = details.properties.get("Toolbox_End_Time");
     if (end_time != null)
     {
-      HiResDate endTime = null;
-
       // get a date from this
       try
       {
-        endTime = DebriefFormatDateTime.parseThis(end_time);
-
         // set the cursor
-        step.setToolboxEndTime(endTime);
+        step.setToolboxEndTime(DebriefFormatDateTime.parseThis(end_time));
       }
       catch (final ParseException e)
       {
@@ -216,13 +209,10 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
     if (tZero != null)
     {
       // get a date from this
-      HiResDate dt;
       try
       {
-        dt = DebriefFormatDateTime.parseThis(tZero);
-
         // set the cursor
-        step.setTimeZero(dt);
+        step.setTimeZero(DebriefFormatDateTime.parseThis(tZero));
       }
       catch (final ParseException e)
       {
@@ -234,10 +224,9 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
     if (currentTime != null)
     {
       // and set the time
-      HiResDate dtg;
       try
       {
-        dtg = DebriefFormatDateTime.parseThis(currentTime);
+        final HiResDate dtg = DebriefFormatDateTime.parseThis(currentTime);
 
         // did we find a valid dtg?
         if (dtg != null)
@@ -253,8 +242,7 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
     if (val != null)
     {
       // set the auto step to this number of millis
-      final int len = Integer.valueOf(val).intValue();
-      step.setAutoStep(len);
+      step.setAutoStep(Integer.valueOf(val).intValue());
     }
 
     ///////////////////////////////////////////////////////////////
@@ -299,8 +287,7 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
       // set the large step to this number of millis
       try
       {
-        final double len = MWCXMLReader.readThisDouble(val);
-        step.setStepLarge((long) len);
+        step.setStepLarge((long) MWCXMLReader.readThisDouble(val));
       }
       catch (final java.text.ParseException pe)
       {
@@ -317,8 +304,7 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
       try
       {
         // set the small step to this number of millis
-        final double len = MWCXMLReader.readThisDouble(val);
-        step.setStepSmall((long) len);
+        step.setStepSmall((long) MWCXMLReader.readThisDouble(val));
       }
       catch (final java.text.ParseException pe)
       {
@@ -332,7 +318,5 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
     {
       step.recalcTimes();
     }
-
   }
-
 }
