@@ -30,6 +30,7 @@ import Debrief.GUI.Tote.StepControl;
 import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.GUI.Tote.Painters.SnailPainter2;
 import Debrief.ReaderWriter.XML.GUIHandler;
+import Debrief.ReaderWriter.XML.GUIHandler.ComponentDetails;
 import MWC.GUI.StepperListener;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.Errors.Trace;
@@ -108,8 +109,7 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
   }
 
   @Override
-  public final void makeThis(
-      final Debrief.ReaderWriter.XML.GUIHandler.ComponentDetails details,
+  public final void makeThis(final ComponentDetails details,
       final Session session)
   {
     String val = null;
