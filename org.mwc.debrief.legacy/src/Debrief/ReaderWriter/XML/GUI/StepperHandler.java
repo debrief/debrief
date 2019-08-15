@@ -112,7 +112,7 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
   public final void makeThis(final ComponentDetails details,
       final Session session)
   {
-    String val = null;
+    String val;
     final StepControl step = session.getStepControl();
 
     //////////////////////////////////////////////////////////////
@@ -152,7 +152,6 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
           }
         }
       }
-
     }
 
     //////////////////////////////////////////////////////////////
@@ -183,9 +182,8 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
       }
       catch (final ParseException e)
       {
-        Trace.trace(e, "While parsing date");
+        Trace.trace(e, "While parsing start time");
       }
-
     }
 
     //////////////////////////////////////////////////////////////
@@ -200,7 +198,7 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
       }
       catch (final ParseException e)
       {
-        Trace.trace(e, "While parsing date");
+        Trace.trace(e, "While parsing end time");
       }
     }
 
@@ -216,9 +214,10 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
       }
       catch (final ParseException e)
       {
-        Trace.trace(e, "While parsing date");
+        Trace.trace(e, "While parsing time zero");
       }
     }
+
     //////////////////////////////////////////////////////////////
     final String currentTime = details.properties.get("CurrentTime");
     if (currentTime != null)
@@ -234,9 +233,10 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
       }
       catch (final ParseException e)
       {
-        Trace.trace(e, "While parsing date");
+        Trace.trace(e, "While parsing current time");
       }
     }
+
     //////////////////////////////////////////////////////////////
     val = details.properties.get("AutoStep");
     if (val != null)
@@ -260,7 +260,6 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
         MWC.Utilities.Errors.Trace.trace(pe,
             "Failed reading large step size value is:" + val);
       }
-
     }
 
     ///////////////////////////////////////////////////////////////
@@ -294,7 +293,6 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
         MWC.Utilities.Errors.Trace.trace(pe,
             "Failed reading large step size value is:" + val);
       }
-
     }
 
     ///////////////////////////////////////////////////////////////
