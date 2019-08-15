@@ -121,9 +121,9 @@ public class OTH_Importer
       super();
 
       // prevent these objects from being null, to reduce null-checking when we execute
-      _tracks = tracks != null ? tracks : new ArrayList<TrackWrapper>();
+      _tracks = tracks != null ? tracks : Collections.<TrackWrapper>emptyList();
       _ellipseLayers = ellipseLayers != null && importEllipses ? ellipseLayers
-          : new ArrayList<BaseLayer>();
+          : Collections.<BaseLayer>emptyList();
       _layers = layers;
     }
 
