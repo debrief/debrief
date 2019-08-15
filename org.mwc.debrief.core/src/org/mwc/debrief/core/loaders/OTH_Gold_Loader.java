@@ -99,7 +99,7 @@ public class OTH_Gold_Loader extends CoreLoader
             OTH_Helper brtHelper = new OTH_Helper_Headless(true);
 
             // ok - get loading going
-            importer.importThis(brtHelper, inputStream, layers);
+            importer.importThis(brtHelper, inputStream, layers, CorePlugin.getToolParent());
           }
           else
           {

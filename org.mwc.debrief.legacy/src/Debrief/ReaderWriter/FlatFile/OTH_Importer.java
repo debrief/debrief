@@ -32,6 +32,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Tools.Action;
+import MWC.GenericData.WorldLocation;
 import junit.framework.TestCase;
 
 public class OTH_Importer
@@ -83,7 +84,7 @@ public class OTH_Importer
       }
     }
     
-    public void testLoad()
+    public void testCanLoad()
     {
       assertFalse("doesn't load dodgy file", canLoad(root + "/really_bad.txt", new Logger()));
       assertTrue("loads valid file", canLoad(root + "/valid.txt", new Logger()));
@@ -92,6 +93,17 @@ public class OTH_Importer
       Logger logger = new Logger();
       assertFalse("missing pos", canLoad(root + "/missing_pos.txt", logger));
       assertEquals("correct error message", "OTH Import rejecting file, Header:true Track:true Pos:false", logger.messages.get(0));
+    }
+    
+    public void testGetName()
+    {
+      assertEquals("got good name", "TYPE 12-HOOD", nameFrom("CTC/12345AB6/TYPE 12-HOOD//DDGH/NAV/D 32/UK/"));
+      assertNull("not got name", nameFrom("CTC/12345AB6"));
+    }
+    
+    public void testGetLocation()
+    {
+      assertEquals("got location", null, locationFrom("POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/000T/0K/").toString());
     }
   }
 
@@ -109,9 +121,9 @@ public class OTH_Importer
       super();
 
       // prevent these objects from being null, to reduce null-checking when we execute
-      _tracks = tracks != null ? tracks : Collections.emptyList();
+      _tracks = tracks != null ? tracks : new ArrayList<TrackWrapper>();
       _ellipseLayers = ellipseLayers != null && importEllipses ? ellipseLayers
-          : Collections.emptyList();
+          : new ArrayList<BaseLayer>();
       _layers = layers;
     }
 
@@ -216,16 +228,48 @@ public class OTH_Importer
     {});
   }
 
-  private static OTH_Data read_OTH(final InputStream is)
+  private static OTH_Data read_OTH(final InputStream is, ErrorLogger logger)
       throws NumberFormatException, IOException, Exception
   {
     final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+
     String line;
 
     final ArrayList<Long> times = new ArrayList<>();
     final ArrayList<Double> bearings = new ArrayList<>();
+    
+    TrackWrapper thisTrack = null;
+    BaseLayer thisLayer = null;
+    
     while ((line = reader.readLine()) != null)
     {
+      // looking for new track
+      if(line.startsWith(TRACK_STR))
+      {
+        // ok, time to move on.
+        thisTrack = null;
+        thisLayer = null;
+        
+        final String trackName = nameFrom(line);
+        
+        if(trackName == null)
+        {
+          logger.logError(ErrorLogger.ERROR, "Failed to get track name from:" + line, null);
+        }
+        else
+        {
+          thisTrack = new TrackWrapper();
+          thisTrack.setName(trackName);
+          thisLayer = new BaseLayer();
+          thisLayer.setName(trackName + " TUAs");
+        }
+      }
+      else if(line.startsWith(POS_STR))
+      {
+        // ok, store this position
+        WorldLocation loc = locationFrom(line);
+      }
+      
       final String[] tokens = line.split(",");
       if (tokens.length != 2)
       {
@@ -245,6 +289,53 @@ public class OTH_Importer
     return brtData;
   }
 
+  private static WorldLocation locationFrom(String line)
+  {
+   //  POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/000T/0K/
+
+    final String[] tokens = line.split("/");
+    if(tokens.length >= 5)
+    {
+      double dLat = latFor(tokens[3]);
+      double dLong = longFor(tokens[4]);
+     // WorldLocation res = new World
+    }
+    else
+    {
+    }
+
+    return null;
+  }
+
+  private static double latFor(final String string)
+  {
+    // 4612N34
+    final double degs = Double.parseDouble(string.substring(0, 2));
+    final double mins = Double.parseDouble(string.substring(3, 2));
+    return degs + mins / 60d;
+  }
+
+  private static double longFor(final String string)
+  {
+    // 4612N34
+    final double degs = Double.parseDouble(string.substring(0, 3));
+    final double mins = Double.parseDouble(string.substring(4, 2));
+    return degs + mins / 60d;
+  }
+
+  private static String nameFrom(String line)
+  {
+    final String[] tokens = line.split("/");
+    if(tokens.length >= 3)
+    {
+      return tokens[2];
+    }
+    else
+    {
+      return null;
+    }
+  }
+
   /**
    * Default Constructor
    *
@@ -259,9 +350,9 @@ public class OTH_Importer
   }
 
   public ImportOTHAction importThis(final OTH_Helper brtHelper,
-      final InputStream is,final Layers layers) throws Exception
+      final InputStream is,final Layers layers, final ErrorLogger logger) throws Exception
   {
-    final OTH_Data brtData = read_OTH(is);
+    final OTH_Data brtData = read_OTH(is, logger);
 
     return createImportAction(brtHelper, brtData, layers);
   }
