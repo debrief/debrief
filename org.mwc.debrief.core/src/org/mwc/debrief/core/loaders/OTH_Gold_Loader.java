@@ -42,7 +42,6 @@ public class OTH_Gold_Loader extends CoreLoader
     super("OTH Gold", ".txt");
   }
 
-
   @Override
   public boolean canLoad(String fileName)
   {

@@ -39,9 +39,60 @@ public class OTH_Importer
 
   public static class OTH_ImporterTest extends TestCase
   {
-
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
+    
+    final String root =
+        "../org.mwc.debrief.legacy/test_data/OTH_Import";
+    
+    static class Logger implements ErrorLogger
+    {
+      List<String> messages = new ArrayList<String>();
+      
+      private boolean console = true;
+      
+      @Override
+      public void logError(int status, String text, Exception e)
+      {
+        output(text, e);
+      }
 
+      @Override
+      public void logError(int status, String text, Exception e,
+          boolean revealLog)
+      {
+        output(text, e);
+      }
+
+      @Override
+      public void logStack(int status, String text)
+      {
+        output(text, null);
+      }
+
+      public void output(String text, final Exception e)
+      {
+        messages.add(text);
+        if(console)
+        {
+          System.out.println(text);
+          if(e != null)
+          {
+            e.printStackTrace();
+          }
+        }
+      }
+    }
+    
+    public void testLoad()
+    {
+      assertFalse("doesn't load dodgy file", canLoad(root + "/really_bad.txt", new Logger()));
+      assertTrue("loads valid file", canLoad(root + "/valid.txt", new Logger()));
+
+      // this time, verify the message
+      Logger logger = new Logger();
+      assertFalse("missing pos", canLoad(root + "/missing_pos.txt", logger));
+      assertEquals("correct error message", "OTH Import rejecting file, Header:true Track:true Pos:false", logger.messages.get(0));
+    }
   }
 
   private static class ImportOTHAction implements Action
@@ -218,7 +269,7 @@ public class OTH_Importer
 
   private static final String HEADER_STR = "MSGID";
   private static final String TRACK_STR = "CTC";
-  private static final String POS_STR = "CTC";
+  private static final String POS_STR = "POS";
   
   public static boolean canLoad(final String fileName, final ErrorLogger logger)
   {
@@ -235,10 +286,15 @@ public class OTH_Importer
 
       final int MAX_LINES = 100;
       int ctr = 0;
-      while (ctr < MAX_LINES && !hasHeader && !hasPosition && !hasTrack)
+      while (ctr < MAX_LINES && ! (hasHeader && hasPosition && hasTrack))
       {
         // try this line
         final String line = r.readLine();
+        
+        if(line == null)
+        {
+          break;
+        }
 
         if (!hasHeader)
         {
@@ -260,6 +316,13 @@ public class OTH_Importer
           break;
         }
       }
+      
+      if(!res)
+      {
+        logger.logError(ErrorLogger.INFO, "OTH Import rejecting file, Header:" + hasHeader + " Track:"
+            + hasTrack + " Pos:" + hasPosition, null);
+      }
+      
     }
     catch (Exception e)
     {
