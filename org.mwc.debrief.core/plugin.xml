@@ -146,6 +146,10 @@
         />
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
+        <loader class="org.mwc.debrief.core.loaders.OTH_Gold_Loader" extensions="txt" name="OTH-Gold Log File"        
+        />
+    </extension>
+    <extension point="org.mwc.debrief.core.DebriefPlotLoader">
         <loader class="org.mwc.debrief.core.loaders.AISLoader" extensions="txt" first_line="!AIVDM" name="AIS Track File"        
         />
     </extension>
