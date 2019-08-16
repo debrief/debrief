@@ -19,9 +19,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -44,9 +48,9 @@ import junit.framework.TestCase;
 public class OTH_Importer
 {
 
-  private static interface ExtractValue
+  private static interface ExtractValue<T extends Object>
   {
-    double extract(String txt);
+    T extract(String txt);
   }
 
   private static class ImportOTHAction implements Action
@@ -216,6 +220,23 @@ public class OTH_Importer
               "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/000T/0K/",
               _logger).toString());
     }
+    
+    public void testParseDate() throws ParseException
+    {
+      // 112313Z1/AUG
+      
+      DateFormat df = new SimpleDateFormat("ddHHmm");
+      assertEquals("correct date", "Sun Jan 11 23:13:00 GMT 1970", df.parse("112313").toString());
+      
+      DateFormat df2 = new SimpleDateFormat("ddHHmm'Z'");
+      assertEquals("correct date", "Sun Jan 11 23:13:00 GMT 1970", df2.parse("112313Z").toString());
+      
+      DateFormat df3 = new SimpleDateFormat("ddHHmm'Z'MMM");
+      assertEquals("correct date", "Tue Aug 11 23:13:00 GMT 1970", df3.parse("112313ZAUG").toString());
+
+      DateFormat df4 = new SimpleDateFormat("ddHHmm'Z'MMMyy");
+      assertEquals("correct date", "Sat Aug 11 23:13:00 BST 2018", df4.parse("112313ZAUG18").toString());
+    }
 
     public void testGetName()
     {
@@ -227,7 +248,7 @@ public class OTH_Importer
     public void testGoodFields()
     {
 
-      assertEquals("got course", GeneratedMaths.toRadians(300d), courseFor(
+      assertEquals("got course", Math.toRadians(300d), courseFor(
           "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/300T/2K/",
           _logger));
       assertEquals("got speed", new WorldSpeed(2, WorldSpeed.Kts).getValueIn(
@@ -342,16 +363,17 @@ public class OTH_Importer
 
   private static double courseFor(final String line, final ErrorLogger logger)
   {
-    return getField(line, logger, "T", 9, "course", new ExtractValue()
+    Double res = getField(line, logger, "T", 9, "course", new ExtractValue<Double>()
     {
 
       @Override
-      public double extract(final String txt)
+      public Double extract(final String txt)
       {
         final double courseDegs = Double.parseDouble(txt);
         return Math.toRadians(courseDegs);
       }
     });
+    return res != null ? res : 0d;
   }
 
   private static ImportOTHAction createImportAction(final OTH_Helper helper,
@@ -368,15 +390,19 @@ public class OTH_Importer
       final int year)
   {
     final String[] tokens = line.split("/");
-    final HiResDate res = null;
+    HiResDate res = null;
     if (tokens.length >= 3)
     {
       try
       {
-        final String dateStr = tokens[1];
+        final String dateStr = tokens[1].substring(0, 5);
         final String monStr = tokens[2];
+        final String wholeStr = dateStr + monStr + year;
+        DateFormat df = new SimpleDateFormat("ddHHmm`Z`MMMyy");
+        Date date = df.parse(wholeStr);
+        res = new HiResDate(date);
       }
-      catch (final NumberFormatException fe)
+      catch (final ParseException fe)
       {
         logger.logError(ErrorLogger.ERROR, "Failed to parse date:" + fe
             .getMessage(), null);
@@ -413,12 +439,12 @@ public class OTH_Importer
     return null;
   }
 
-  private static double getField(final String line, final ErrorLogger logger,
+  private static <T> T getField(final String line, final ErrorLogger logger,
       final String separator, final int tokenId, final String fieldName,
-      final ExtractValue extractor)
+      final ExtractValue<T> extractor)
   {
     final String[] tokens = line.split("/");
-    double res = 0d;
+    T res = null;
     if (tokens.length > tokenId)
     {
       try
@@ -653,17 +679,18 @@ public class OTH_Importer
 
   private static double speedFor(final String line, final ErrorLogger logger)
   {
-    return getField(line, logger, "K", 10, "speed", new ExtractValue()
+    final Double res = getField(line, logger, "K", 10, "speed", new ExtractValue<Double>()
     {
-
       @Override
-      public double extract(final String txt)
+      public Double extract(final String txt)
       {
         final double speedKts = Double.parseDouble(txt);
         return new WorldSpeed(speedKts, WorldSpeed.Kts).getValueIn(
             WorldSpeed.ft_sec) / 3;
       }
     });
+    
+    return res != null  ? res : 0d;
   }
 
   /**
