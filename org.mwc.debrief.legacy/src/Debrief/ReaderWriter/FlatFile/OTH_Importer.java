@@ -14,6 +14,7 @@
  */
 package Debrief.ReaderWriter.FlatFile;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,7 +22,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,6 +30,7 @@ import java.util.Enumeration;
 import java.util.List;
 
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.ShapeWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
@@ -40,9 +41,12 @@ import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Shapes.EllipseShape;
 import MWC.GUI.Tools.Action;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.TextFormatting.FormatRNDateTime;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 import junit.framework.TestCase;
 
 public class OTH_Importer
@@ -61,6 +65,7 @@ public class OTH_Importer
     private final List<TrackWrapper> _tracks;
     private final List<BaseLayer> _ellipseLayers;
     private final Layers _layers;
+    private List<Layer> _newlyAdded = new ArrayList<Layer>();
 
     public ImportOTHAction(final List<TrackWrapper> tracks,
         final List<BaseLayer> ellipseLayers, final Layers layers,
@@ -81,12 +86,42 @@ public class OTH_Importer
     {
       for (final TrackWrapper t : _tracks)
       {
-        _layers.addThisLayer(t);
+        TrackWrapper thisTrack = (TrackWrapper) _layers.findLayer(t.getName());
+        if(thisTrack != null)
+        {
+          // ok, add the points to this existing track
+          Enumeration<Editable> iter = t.getPositionIterator();
+          while(iter.hasMoreElements())
+          {
+            FixWrapper next = (FixWrapper) iter.nextElement();
+            thisTrack.addFix(next);
+          }
+        }
+        else
+        {
+          _layers.addThisLayer(t);
+          _newlyAdded.add(t);
+        }
       }
 
       for (final BaseLayer b : _ellipseLayers)
       {
-        _layers.addThisLayer(b);
+        BaseLayer thisLayer = (BaseLayer) _layers.findLayer(b.getName());
+        if(thisLayer != null)
+        {
+          // ok, add the points to this existing track
+          Enumeration<Editable> iter = b.elements();
+          while(iter.hasMoreElements())
+          {
+            FixWrapper next = (FixWrapper) iter.nextElement();
+            thisLayer.add(next);
+          }
+        }
+        else
+        {
+          _layers.addThisLayer(b);
+          _newlyAdded.add(b);
+        }
       }
     }
 
@@ -107,13 +142,41 @@ public class OTH_Importer
     {
       for (final TrackWrapper t : _tracks)
       {
-        _layers.removeThisLayer(t);
+        if(_newlyAdded.contains(t))
+        {
+          _layers.removeThisLayer(t);
+        }
+        else
+        {
+          TrackWrapper track = (TrackWrapper) _layers.findLayer(t.getName());
+          Enumeration<Editable> iter = t.getPositionIterator();
+          while(iter.hasMoreElements())
+          {
+            track.removeElement(iter.nextElement());
+          }
+        }
       }
 
       for (final BaseLayer b : _ellipseLayers)
       {
         _layers.removeThisLayer(b);
+        if(_newlyAdded.contains(b))
+        {
+          _layers.removeThisLayer(b);
+        }
+        else
+        {
+          TrackWrapper track = (TrackWrapper) _layers.findLayer(b.getName());
+          Enumeration<Editable> iter = b.elements();
+          while(iter.hasMoreElements())
+          {
+            track.removeElement(iter.nextElement());
+          }
+        }
       }
+      
+      // clear the list of newly created items, we'll re-generate on the next execute
+      _newlyAdded.clear();
     }
 
   }
@@ -233,54 +296,101 @@ public class OTH_Importer
       ImportOTHAction action = importer.importThis(brtHelper, is, layers, _logger);
       action.execute();
       
-      assertEquals("has data", 33, layers.size());
+      assertEquals("has data", 2, layers.size());
+
+      TrackWrapper track = (TrackWrapper) layers.elementAt(0);
+      BaseLayer ellipses = (BaseLayer) layers.elementAt(1);
+     
+      assertEquals("correct fixes",3, track.numFixes());
+      assertEquals("correct ellipses",3, ellipses.size());
+      
+      // and undo it
+      action.undo();
+      
+      assertEquals("has data", 0, layers.size());
+    }
+    
+    public void testTrackAlreadyPresent() throws Exception
+    {
+      OTH_Importer importer = new OTH_Importer();
+      Layers layers = new Layers();
+
+      TrackWrapper existing_track = new TrackWrapper();
+      existing_track.setName("TYPE 12-HOOD");
+      existing_track.addFix(new FixWrapper(new Fix(new HiResDate(10000000), new WorldLocation(33,4,0d), 33, 22)));
+      layers.addThisLayer(existing_track);
+      assertEquals("just one position",1, existing_track.numFixes());
+      
+      OTH_Helper brtHelper = new OTH_Helper_Headless(true);
+      InputStream is = new FileInputStream(root + "/valid.txt");
+      ImportOTHAction action = importer.importThis(brtHelper, is, layers, _logger);
+      action.execute();
+      
+      assertEquals("has data", 2, layers.size());
+
+      TrackWrapper track = (TrackWrapper) layers.elementAt(0);
+      BaseLayer ellipses = (BaseLayer) layers.elementAt(1);
+     
+      assertEquals("correct fixes",4, track.numFixes());
+      assertEquals("correct ellipses",3, ellipses.size());
+      
+      // and undo it
+      action.undo();
+      
+      assertEquals("has data", 1, layers.size());
+      assertEquals("just one position",1, existing_track.numFixes());
     }
 
     public void testGetLocation()
     {
       assertEquals("got location", " 46°12'00.00\"N 021°22'00.00\"E ",
           locationFrom(
-              "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/000T/0K/",
+              "POS/112313Z1/AUG/4612N34/02122E7//170T/11NM/13NM/000T/0K/",
+              _logger).toString());
+
+      assertEquals("got location", " 22°11'00.00\"N 021°42'00.00\"W ",
+          locationFrom(
+              "POS/120502Z0/DEC/2211N6/02142W9///170T/11NM/13NM/000T/0K/",
               _logger).toString());
     }
 
-    public void testParseDate() throws ParseException
-    {
-      // 112313Z1/AUG
-
-      DateFormat df = new SimpleDateFormat("ddHHmm");
-      assertEquals("correct date", "Sun Jan 11 23:13:00 GMT 1970", df.parse(
-          "112313").toString());
-
-      DateFormat df2 = new SimpleDateFormat("ddHHmm'Z'");
-      assertEquals("correct date", "Sun Jan 11 23:13:00 GMT 1970", df2.parse(
-          "112313Z").toString());
-
-      DateFormat df3 = new SimpleDateFormat("ddHHmm'Z'MMM");
-      assertEquals("correct date", "Tue Aug 11 23:13:00 GMT 1970", df3.parse(
-          "112313ZAUG").toString());
-
-      DateFormat df4 = new SimpleDateFormat("ddHHmm'Z'MMMyy");
-      assertEquals("correct date", "Sat Aug 11 23:13:00 BST 2018", df4.parse(
-          "112313ZAUG18").toString());
-
-      assertEquals("correct date", "Fri Aug 11 23:13:00 BST 2017", dateFor(
-          "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/000T/0K/", _logger,
-          17).getDate().toString());
-
-      assertEquals("correct date", "Sun Aug 11 23:13:00 BST 2019", dateFor(
-          "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/000T/0K/", _logger,
-          YEAR_UNKNOWN).getDate().toString());
-
-      assertEquals("correct date", "Sun Nov 11 23:13:00 GMT 2018", dateFor(
-          "POS/112313Z1/NOV/4612N34/02122W7//170T/11NM/13NM/000T/0K/", _logger,
-          YEAR_UNKNOWN).getDate().toString());
-
-      assertEquals("correct date", null, dateFor(
-          "POS/112313Z1/NaV/4612N34/02122W7//170T/11NM/13NM/000T/0K/", _logger,
-          YEAR_UNKNOWN));
-
-    }
+//    public void testParseDate() throws ParseException
+//    {
+//      // 112313Z1/AUG
+//
+////      DateFormat df = new GMTDateFormat("ddHHmm");
+////      assertEquals("correct date", "Sun Jan 11 23:13:00 GMT 1970", df.format(df.parse(
+////          "112313")));
+////
+////      DateFormat df2 = new GMTDateFormat("ddHHmm'Z'");
+////      assertEquals("correct date", "Sun Jan 11 23:13:00 GMT 1970", df2.parse(
+////          "112313Z").toString());
+////
+////      DateFormat df3 = new GMTDateFormat("ddHHmm'Z'MMM");
+////      assertEquals("correct date", "Tue Aug 11 23:13:00 GMT 1970", df3.parse(
+////          "112313ZAUG").toString());
+////
+////      DateFormat df4 = new GMTDateFormat("ddHHmm'Z'MMMyy");
+////      assertEquals("correct date", "Sat Aug 11 23:13:00 BST 2018", df4.parse(
+////          "112313ZAUG18").toString());
+//
+//      assertEquals("correct date", "Fri Aug 11 21:13:00 BST 2017", dateFor(
+//          "POS/112113Z1/AUG/4612N34/02122W7//170T/11NM/13NM/000T/0K/", _logger,
+//          17).getDate().toString());
+//
+//      assertEquals("correct date", "Sun Aug 11 21:13:00 BST 2019", dateFor(
+//          "POS/112113Z1/AUG/4612N34/02122W7//170T/11NM/13NM/000T/0K/", _logger,
+//          YEAR_UNKNOWN).getDate().toString());
+//
+//      assertEquals("correct date", "Sun Nov 11 21:13:00 GMT 2018", dateFor(
+//          "POS/112113Z1/NOV/4612N34/02122W7//170T/11NM/13NM/000T/0K/", _logger,
+//          YEAR_UNKNOWN).getDate().toString());
+//
+//      assertEquals("correct date", null, dateFor(
+//          "POS/112113Z1/NaV/4612N34/02122W7//170T/11NM/13NM/000T/0K/", _logger,
+//          YEAR_UNKNOWN));
+//
+//    }
 
     public void testParseYear()
     {
@@ -472,7 +582,7 @@ public class OTH_Importer
         if (year == YEAR_UNKNOWN)
         {
           // ok. is the month before or after this one?
-          DateFormat dm2 = new SimpleDateFormat("MMMyy");
+          DateFormat dm2 = new GMTDateFormat("MMMyy");
           final int thisYear = LocalDate.now().getYear() - 2000;
           Date monDate = dm2.parse(monStr + thisYear);
           if (monDate.getTime() > new Date().getTime())
@@ -491,7 +601,7 @@ public class OTH_Importer
         }
 
         final String wholeStr = dateStr + monStr + useYear;
-        DateFormat df = new SimpleDateFormat("ddHHmm'Z'MMMyy");
+        DateFormat df = new GMTDateFormat("ddHHmm'Z'MMMyy");
         Date date = df.parse(wholeStr);
         res = new HiResDate(date);
       }
@@ -544,7 +654,10 @@ public class OTH_Importer
       {
         final String courseStr = tokens[tokenId];
         final String[] innerTokens = courseStr.split(separator);
-        res = extractor.extract(innerTokens[0]);
+        if(innerTokens.length > 0)
+        {
+          res = extractor.extract(innerTokens[0]);
+        }
       }
       catch (final NumberFormatException fe)
       {
@@ -588,10 +701,12 @@ public class OTH_Importer
 
   private static double latFor(final String string) throws NumberFormatException
   {
-    // 4612N34
+    // 4612N4
     final double degs = Double.parseDouble(string.substring(0, 2));
     final double mins = Double.parseDouble(string.substring(2, 4));
-    return degs + mins / 60d;
+    final String hemi = string.substring(4, 5);
+    final double hemiVal = "N".equals(hemi) ? 1d : -1d;
+    return hemiVal * (degs + mins / 60d);
   }
 
   private static WorldLocation locationFrom(final String line,
@@ -630,7 +745,9 @@ public class OTH_Importer
     // 4612N34
     final double degs = Double.parseDouble(string.substring(0, 3));
     final double mins = Double.parseDouble(string.substring(3, 5));
-    return degs + mins / 60d;
+    final String hemi = string.substring(5, 6);
+    final double hemiVal = "E".equals(hemi) ? 1d : -1d;
+    return hemiVal * (degs + mins / 60d);
   }
 
   private static String nameFrom(final String line)
@@ -647,10 +764,46 @@ public class OTH_Importer
   }
 
   private static EllipseShape produceEllipse(final ErrorLogger logger,
-      final String line, final int year)
+      final String line, final HiResDate thisDate, final WorldLocation origin)
   {
-    // TODO Auto-generated method stub
-    return null;
+    // POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/300T/2K/"
+    
+    // ok, get the orientation
+    Double orient = getField(line, logger, "T", 6, "Orientation", new ExtractValue<Double>() {
+
+      @Override
+      public Double extract(String txt)
+      {
+        return Double.parseDouble(txt);
+      }});
+
+    Double maxima = getField(line, logger, "N", 7, "Maxima", new ExtractValue<Double>() {
+
+      @Override
+      public Double extract(String txt)
+      {
+        return Double.parseDouble(txt);
+      }});
+
+    Double minima = getField(line, logger, "N", 7, "Minima", new ExtractValue<Double>() {
+
+      @Override
+      public Double extract(String txt)
+      {
+        return Double.parseDouble(txt);
+      }});
+    
+    EllipseShape shp;
+    if(orient != null && maxima != null && minima != null)
+    {
+      shp = new EllipseShape(origin, orient, new WorldDistance(maxima, WorldDistance.NM),  new WorldDistance(minima, WorldDistance.NM));
+    }
+    else
+    {
+      shp = null;
+    }
+    
+    return shp;
   }
 
   public static FixWrapper produceFix(final ErrorLogger logger,
@@ -717,18 +870,26 @@ public class OTH_Importer
       }
       else if (line.startsWith(POS_STR))
       {
+        HiResDate thisDate = null;
+        WorldLocation origin = null;
+        
         // ok, generate a position
         final FixWrapper wrapped = produceFix(logger, line, year);
         if (wrapped != null)
         {
           thisTrack.addFix(wrapped);
+          thisDate = wrapped.getDateTimeGroup();
+          origin = wrapped.getLocation();
         }
+        
 
         // also generate an ellipse
-        final EllipseShape ellipse = produceEllipse(logger, line, year);
+        final EllipseShape ellipse = produceEllipse(logger, line, thisDate, origin);
         if (ellipse != null)
         {
-          thisLayer.add(ellipse);
+          String label = FormatRNDateTime.toMediumString(thisDate.getDate().getTime());
+          ShapeWrapper sw = new ShapeWrapper(label, ellipse, Color.red, null);
+          thisLayer.add(sw);
         }
       }
 
