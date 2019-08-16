@@ -104,6 +104,8 @@ public class DebriefRibbonTimeController
     {
       minimumValue.setText(" ");
       maximumValue.setText(" ");
+      slider.setMinimum(0);
+      slider.setMaximum(0);
     }
 
     public void updateFilterDateFormat()
