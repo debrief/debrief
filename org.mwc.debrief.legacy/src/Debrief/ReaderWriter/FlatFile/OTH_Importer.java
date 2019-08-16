@@ -230,8 +230,9 @@ public class OTH_Importer
 
       OTH_Helper brtHelper = new OTH_Helper_Headless(true);
       InputStream is = new FileInputStream(root + "/valid.txt");
-      importer.importThis(brtHelper, is, layers, _logger);
-
+      ImportOTHAction action = importer.importThis(brtHelper, is, layers, _logger);
+      action.execute();
+      
       assertEquals("has data", 33, layers.size());
     }
 
@@ -692,25 +693,10 @@ public class OTH_Importer
       if (line.startsWith(TRACK_STR))
       {
         // is there already a track?
-        if (thisTrack != null)
-        {
-          // ok, store it, it has contents
-          if (thisTrack.getPositionIterator().hasMoreElements())
-          {
-            tracks.add(thisTrack);
-          }
-          thisTrack = null;
-        }
+        thisTrack = tidyTrack(tracks, thisTrack);
 
         // is there already a layer
-        if (thisLayer != null)
-        {
-          if (thisLayer.size() > 0)
-          {
-            ellipseLayers.add(thisLayer);
-          }
-          thisLayer = null;
-        }
+        thisLayer = tidyLayer(ellipseLayers, thisLayer);
 
         // ok, time to move on.
 
@@ -749,9 +735,44 @@ public class OTH_Importer
       ctr++;
     }
 
+    // tidy any pending items
+    tidyTrack(tracks, thisTrack);
+    tidyLayer(ellipseLayers, thisLayer);
+
+
+
     final OTH_Data brtData = new OTH_Data(tracks, ellipseLayers);
 
     return brtData;
+  }
+
+  public static BaseLayer tidyLayer(final List<BaseLayer> ellipseLayers,
+      BaseLayer thisLayer)
+  {
+    if (thisLayer != null)
+    {
+      if (thisLayer.size() > 0)
+      {
+        ellipseLayers.add(thisLayer);
+      }
+      thisLayer = null;
+    }
+    return thisLayer;
+  }
+
+  public static TrackWrapper tidyTrack(final List<TrackWrapper> tracks,
+      TrackWrapper thisTrack)
+  {
+    if (thisTrack != null)
+    {
+      // ok, store it, it has contents
+      if (thisTrack.getPositionIterator().hasMoreElements())
+      {
+        tracks.add(thisTrack);
+      }
+      thisTrack = null;
+    }
+    return thisTrack;
   }
 
   private static int parseYear(final ErrorLogger logger, String line, final int year)
