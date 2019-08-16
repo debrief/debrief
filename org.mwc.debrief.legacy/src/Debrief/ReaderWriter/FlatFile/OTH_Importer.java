@@ -186,7 +186,7 @@ public class OTH_Importer
   {
     static class Logger implements ErrorLogger
     {
-      List<String> messages = new ArrayList<String>();
+      private List<String> messages = new ArrayList<String>();
 
       private final boolean console = true;
 
@@ -241,11 +241,11 @@ public class OTH_Importer
 
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-    final String root = "../org.mwc.debrief.legacy/test_data/OTH_Import";
+    private final String root = "../org.mwc.debrief.legacy/test_data/OTH_Import";
 
-    Logger _logger = new Logger();
+    private Logger _logger = new Logger();
 
-    public void setup()
+    public void setUp()
     {
       _logger.clear();
     }
@@ -407,19 +407,18 @@ public class OTH_Importer
     {
       _logger.clear();
       assertEquals("good year", 19, parseYear(_logger,
-          "some string more string 19", YEAR_UNKNOWN));
+          "some string more string 19"));
       assertTrue("empty logger", _logger.isEmpty());
 
       _logger.clear();
       assertEquals("bad year", YEAR_UNKNOWN, parseYear(_logger,
-          "some string more string 1a9", YEAR_UNKNOWN));
+          "some string more string 1a9"));
       assertEquals("correct message",
           "Failed to extract year from last token in:some string more string 1a9",
           _logger.last());
 
       _logger.clear();
-      assertEquals("bad year", YEAR_UNKNOWN, parseYear(_logger, "",
-          YEAR_UNKNOWN));
+      assertEquals("bad year", YEAR_UNKNOWN, parseYear(_logger, ""));
       assertEquals("correct message",
           "Failed to extract year from empty first line", _logger.last());
 
@@ -774,8 +773,7 @@ public class OTH_Importer
     }
   }
 
-  private static int parseYear(final ErrorLogger logger, final String line,
-      final int year)
+  private static int parseYear(final ErrorLogger logger, final String line)
   {
     int res = YEAR_UNKNOWN;
     final String[] tokens = line.split(" ");
@@ -805,7 +803,7 @@ public class OTH_Importer
   }
 
   private static EllipseShape produceEllipse(final ErrorLogger logger,
-      final String line, final HiResDate thisDate, final WorldLocation origin)
+      final String line, final WorldLocation origin)
   {
     // POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/300T/2K/"
 
@@ -869,7 +867,7 @@ public class OTH_Importer
     return wrapped;
   }
 
-  private static OTH_Data read_OTH(final InputStream is,
+  private static OTH_Data readOTHData(final InputStream is,
       final ErrorLogger logger) throws IOException
   {
     final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -890,7 +888,7 @@ public class OTH_Importer
       // if it's the first line, look for a date
       if (ctr == 0)
       {
-        year = parseYear(logger, line, year);
+        year = parseYear(logger, line);
       }
 
       // looking for new track
@@ -944,8 +942,7 @@ public class OTH_Importer
         }
 
         // also generate an ellipse
-        final EllipseShape ellipse = produceEllipse(logger, line, thisDate,
-            origin);
+        final EllipseShape ellipse = produceEllipse(logger, line, origin);
         if (ellipse != null)
         {
           final String label = FormatRNDateTime.toMediumString(thisDate
@@ -986,22 +983,28 @@ public class OTH_Importer
   }
 
   public static BaseLayer tidyLayer(final List<BaseLayer> ellipseLayers,
-      BaseLayer thisLayer)
+      final BaseLayer thisLayer)
   {
+    final BaseLayer res;
     if (thisLayer != null)
     {
       if (thisLayer.size() > 0)
       {
         ellipseLayers.add(thisLayer);
       }
-      thisLayer = null;
+      res = null;
     }
-    return thisLayer;
+    else
+    {
+      res = thisLayer;
+    }
+    return res;
   }
 
   public static TrackWrapper tidyTrack(final List<TrackWrapper> tracks,
-      TrackWrapper thisTrack)
+      final TrackWrapper thisTrack)
   {
+    final TrackWrapper res;
     if (thisTrack != null)
     {
       // ok, store it, it has contents
@@ -1009,29 +1012,20 @@ public class OTH_Importer
       {
         tracks.add(thisTrack);
       }
-      thisTrack = null;
+      res = null;
     }
-    return thisTrack;
-  }
-
-  /**
-   * Default Constructor
-   *
-   * @param hB
-   *          Contains the information given by the user using the UI.
-   * @param _layers
-   *          layers available in the plot
-   */
-  public OTH_Importer()
-  {
-    super();
+    else
+    {
+      res = thisTrack;
+    }
+    return res;
   }
 
   public ImportOTHAction importThis(final OTH_Helper brtHelper,
       final InputStream is, final Layers layers, final ErrorLogger logger)
       throws Exception
   {
-    final OTH_Data brtData = read_OTH(is, logger);
+    final OTH_Data brtData = readOTHData(is, logger);
 
     return createImportAction(brtHelper, brtData, layers);
   }
