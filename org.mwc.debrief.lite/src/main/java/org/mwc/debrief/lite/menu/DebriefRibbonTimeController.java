@@ -62,6 +62,8 @@ import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -735,8 +737,9 @@ public class DebriefRibbonTimeController
               if (nextE instanceof WatchableList)
               {
                 final WatchableList wat = (WatchableList) nextE;
-                hasItems |= wat.getVisible() && wat.getEndDTG() != null && wat
-                    .getStartDTG() != null;
+                hasItems |= wat instanceof LightweightTrackWrapper
+                    || wat instanceof TrackWrapper
+                    || wat instanceof DynamicTrackShapeSetWrapper;
               }
 
             }
