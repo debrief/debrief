@@ -31,6 +31,7 @@ import Debrief.ReaderWriter.FlatFile.OTH_Helper;
 import Debrief.ReaderWriter.FlatFile.OTH_Helper_Headless;
 import Debrief.ReaderWriter.FlatFile.OTH_Importer;
 import MWC.GUI.Layers;
+import MWC.GUI.Tools.Action;
 
 /**
  */
@@ -99,7 +100,10 @@ public class OTH_Gold_Loader extends CoreLoader
             OTH_Helper brtHelper = new OTH_Helper_Headless(true);
 
             // ok - get loading going
-            importer.importThis(brtHelper, inputStream, layers, CorePlugin.getToolParent());
+            Action importAction = importer.importThis(brtHelper, inputStream, layers, CorePlugin.getToolParent());
+            
+            WrapDebriefAction dAction = new WrapDebriefAction(importAction);
+            CorePlugin.run(dAction);
           }
           else
           {
