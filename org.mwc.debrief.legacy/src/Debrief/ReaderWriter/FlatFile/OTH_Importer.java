@@ -785,7 +785,7 @@ public class OTH_Importer
         return Double.parseDouble(txt);
       }});
 
-    Double minima = getField(line, logger, "N", 7, "Minima", new ExtractValue<Double>() {
+    Double minima = getField(line, logger, "N", 8, "Minima", new ExtractValue<Double>() {
 
       @Override
       public Double extract(String txt)
@@ -888,7 +888,7 @@ public class OTH_Importer
         if (ellipse != null)
         {
           String label = FormatRNDateTime.toMediumString(thisDate.getDate().getTime());
-          ShapeWrapper sw = new ShapeWrapper(label, ellipse, Color.red, null);
+          ShapeWrapper sw = new ShapeWrapper(label, ellipse, Color.red, thisDate);
           thisLayer.add(sw);
         }
       }
