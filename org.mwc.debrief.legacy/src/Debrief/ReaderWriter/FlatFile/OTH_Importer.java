@@ -22,6 +22,7 @@ import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -47,6 +48,8 @@ import junit.framework.TestCase;
 
 public class OTH_Importer
 {
+  
+  private final static int YEAR_UNKNOWN = -1;
 
   private static interface ExtractValue<T extends Object>
   {
@@ -234,8 +237,20 @@ public class OTH_Importer
       DateFormat df3 = new SimpleDateFormat("ddHHmm'Z'MMM");
       assertEquals("correct date", "Tue Aug 11 23:13:00 GMT 1970", df3.parse("112313ZAUG").toString());
 
-      DateFormat df4 = new SimpleDateFormat("ddHHmm'Z'MMMyy");
+      DateFormat df4 = new SimpleDateFormat("ddHHmm'Z'MMMyy");  
       assertEquals("correct date", "Sat Aug 11 23:13:00 BST 2018", df4.parse("112313ZAUG18").toString());
+      
+      assertEquals("correct date", "Fri Aug 11 23:13:00 BST 2017", dateFor(
+          "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/000T/0K/", _logger,
+          17).getDate().toString());
+
+      assertEquals("correct date", "Sun Aug 11 23:13:00 BST 2019", dateFor(
+          "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/000T/0K/", _logger,
+          YEAR_UNKNOWN).getDate().toString());
+
+      assertEquals("correct date", "Sun Nov 11 23:13:00 GMT 2018", dateFor(
+          "POS/112313Z1/NOV/4612N34/02122W7//170T/11NM/13NM/000T/0K/", _logger,
+          YEAR_UNKNOWN).getDate().toString());
     }
 
     public void testGetName()
@@ -395,10 +410,35 @@ public class OTH_Importer
     {
       try
       {
-        final String dateStr = tokens[1].substring(0, 5);
+        
+        final String dateStr = tokens[1].substring(0, 7);
         final String monStr = tokens[2];
-        final String wholeStr = dateStr + monStr + year;
-        DateFormat df = new SimpleDateFormat("ddHHmm`Z`MMMyy");
+        
+        // sort out the year
+        final int useYear;
+        if(year == YEAR_UNKNOWN)
+        {
+          // ok. is the month before or after this one?
+          DateFormat dm2 = new SimpleDateFormat("MMMyy");
+          final int thisYear = LocalDate.now().getYear()- 2000;
+          Date monDate = dm2.parse(monStr+thisYear);
+          if(monDate.getTime() > new Date().getTime())
+          {
+            // ok, later in the year. use previous year
+            useYear = thisYear - 1;
+          }
+          else
+          {
+            useYear = thisYear;
+          }
+        }
+        else
+        {
+          useYear = year;
+        }
+        
+        final String wholeStr = dateStr + monStr + useYear;
+        DateFormat df = new SimpleDateFormat("ddHHmm'Z'MMMyy");
         Date date = df.parse(wholeStr);
         res = new HiResDate(date);
       }
@@ -580,7 +620,7 @@ public class OTH_Importer
 
     String line;
 
-    int year = Calendar.getInstance().get(Calendar.YEAR);
+    int year = YEAR_UNKNOWN;
     int ctr = 0;
 
     final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
