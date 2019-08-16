@@ -22,11 +22,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
-
-import org.eclipse.january.dataset.Maths;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -47,141 +44,9 @@ import junit.framework.TestCase;
 public class OTH_Importer
 {
 
-  public static class OTH_ImporterTest extends TestCase
+  private static interface ExtractValue
   {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-    final String root = "../org.mwc.debrief.legacy/test_data/OTH_Import";
-    
-    Logger _logger = new Logger();
-    
-    public void setup()
-    {
-      _logger.clear();
-    }
-
-    static class Logger implements ErrorLogger
-    {
-      List<String> messages = new ArrayList<String>();
-
-      private boolean console = true;
-      
-      private void clear()
-      {
-        messages.clear();
-      }
-
-      @Override
-      public void logError(int status, String text, Exception e)
-      {
-        output(text, e);
-      }
-
-      @Override
-      public void logError(int status, String text, Exception e,
-          boolean revealLog)
-      {
-        output(text, e);
-      }
-
-      @Override
-      public void logStack(int status, String text)
-      {
-        output(text, null);
-      }
-
-      public void output(String text, final Exception e)
-      {
-        messages.add(text);
-        if (console)
-        {
-          System.out.println(text);
-          if (e != null)
-          {
-            e.printStackTrace();
-          }
-        }
-      }
-    }
-
-    public void testCanLoad()
-    {
-      assertFalse("doesn't load dodgy file", canLoad(root + "/really_bad.txt",
-          new Logger()));
-      assertTrue("loads valid file", canLoad(root + "/valid.txt",
-          new Logger()));
-
-      // this time, verify the message
-      assertFalse("missing pos", canLoad(root + "/missing_pos.txt", _logger));
-      assertEquals("correct error message",
-          "OTH Import rejecting file, Header:true Track:true Pos:false",
-          _logger.messages.get(0));
-    }
-
-    public void testGetName()
-    {
-      assertEquals("got good name", "TYPE 12-HOOD", nameFrom(
-          "CTC/12345AB6/TYPE 12-HOOD//DDGH/NAV/D 32/UK/"));
-      assertNull("not got name", nameFrom("CTC/12345AB6"));
-    }
-
-    public void testGetLocation()
-    {
-      assertEquals("got location", " 46°12'00.00\"N 021°22'00.00\"E ",
-          locationFrom(
-              "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/000T/0K/",
-              _logger).toString());
-    }
-
-    public void testGoodFields()
-    {
-      
-      assertEquals("got course", Maths.toRadians(300d) , courseFor(
-          "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/300T/2K/",
-          _logger));
-      assertEquals("got speed", new WorldSpeed(2, WorldSpeed.Kts).getValueIn(WorldSpeed.ft_sec)/3d , speedFor(
-          "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/200T/2K/",
-          _logger));
-    }
-    
-    public void testInsufficientFields()
-    {
-      /* missing fields
-       * 
-       */
-      _logger.clear();
-      assertEquals("not got speed", 0d , speedFor(
-          "POS/112313Z1/AUG/4612N34/02122W7",
-          _logger));
-      assertEquals("correct message", "Insufficient fields in POS line:POS/112313Z1/AUG/4612N34/02122W7", _logger.messages.get(0));
-      
-      _logger.clear();
-      assertEquals("not got course", 0d , courseFor(
-          "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM",
-          _logger));
-      assertEquals("correct message", "Insufficient fields in POS line:POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM", _logger.messages.get(0));
-    }
-    
-      public void testBadlyFormattedFields()
-      {
-      
-      /* unexpected units in the bagging area
-       * 
-       */
-      _logger.clear();
-      assertEquals("not T markers", 0d , courseFor(
-          "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/300a/2K/",
-          _logger));
-      assertEquals("correct message", "Failed to parse course:For input string: \"300a\"", _logger.messages.get(0));
-      
-      _logger.clear();
-      assertEquals("got speed", 0d , speedFor(
-          "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/200T/2MS/",
-          _logger));
-      assertEquals("correct message", "Failed to parse speed:For input string: \"2MS\"", _logger.messages.get(0));
-
-      
-    }
+    double extract(String txt);
   }
 
   private static class ImportOTHAction implements Action
@@ -208,12 +73,12 @@ public class OTH_Importer
     @Override
     public void execute()
     {
-      for (TrackWrapper t : _tracks)
+      for (final TrackWrapper t : _tracks)
       {
         _layers.addThisLayer(t);
       }
 
-      for (BaseLayer b : _ellipseLayers)
+      for (final BaseLayer b : _ellipseLayers)
       {
         _layers.addThisLayer(b);
       }
@@ -234,17 +99,259 @@ public class OTH_Importer
     @Override
     public void undo()
     {
-      for (TrackWrapper t : _tracks)
+      for (final TrackWrapper t : _tracks)
       {
         _layers.removeThisLayer(t);
       }
 
-      for (BaseLayer b : _ellipseLayers)
+      for (final BaseLayer b : _ellipseLayers)
       {
         _layers.removeThisLayer(b);
       }
     }
 
+  }
+
+  public static class OTH_ImporterTest extends TestCase
+  {
+    static class Logger implements ErrorLogger
+    {
+      List<String> messages = new ArrayList<String>();
+
+      private final boolean console = true;
+
+      private void clear()
+      {
+        messages.clear();
+      }
+
+      @Override
+      public void logError(final int status, final String text,
+          final Exception e)
+      {
+        output(text, e);
+      }
+
+      @Override
+      public void logError(final int status, final String text,
+          final Exception e, final boolean revealLog)
+      {
+        output(text, e);
+      }
+
+      @Override
+      public void logStack(final int status, final String text)
+      {
+        output(text, null);
+      }
+
+      public void output(final String text, final Exception e)
+      {
+        messages.add(text);
+        if (console)
+        {
+          System.out.println(text);
+          if (e != null)
+          {
+            e.printStackTrace();
+          }
+        }
+      }
+    }
+
+    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+    final String root = "../org.mwc.debrief.legacy/test_data/OTH_Import";
+
+    Logger _logger = new Logger();
+
+    public void setup()
+    {
+      _logger.clear();
+    }
+
+    public void testBadlyFormattedFields()
+    {
+
+      /*
+       * unexpected units in the bagging area
+       * 
+       */
+      _logger.clear();
+      assertEquals("not T markers", 0d, courseFor(
+          "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/300a/2K/",
+          _logger));
+      assertEquals("correct message",
+          "Failed to parse course:For input string: \"300a\"", _logger.messages
+              .get(0));
+
+      _logger.clear();
+      assertEquals("got speed", 0d, speedFor(
+          "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/200T/2MS/",
+          _logger));
+      assertEquals("correct message",
+          "Failed to parse speed:For input string: \"2MS\"", _logger.messages
+              .get(0));
+
+    }
+
+    public void testCanLoad()
+    {
+      assertFalse("doesn't load dodgy file", canLoad(root + "/really_bad.txt",
+          new Logger()));
+      assertTrue("loads valid file", canLoad(root + "/valid.txt",
+          new Logger()));
+
+      // this time, verify the message
+      assertFalse("missing pos", canLoad(root + "/missing_pos.txt", _logger));
+      assertEquals("correct error message",
+          "OTH Import rejecting file, Header:true Track:true Pos:false",
+          _logger.messages.get(0));
+    }
+
+    public void testGetLocation()
+    {
+      assertEquals("got location", " 46°12'00.00\"N 021°22'00.00\"E ",
+          locationFrom(
+              "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/000T/0K/",
+              _logger).toString());
+    }
+
+    public void testGetName()
+    {
+      assertEquals("got good name", "TYPE 12-HOOD", nameFrom(
+          "CTC/12345AB6/TYPE 12-HOOD//DDGH/NAV/D 32/UK/"));
+      assertNull("not got name", nameFrom("CTC/12345AB6"));
+    }
+
+    public void testGoodFields()
+    {
+
+      assertEquals("got course", GeneratedMaths.toRadians(300d), courseFor(
+          "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/300T/2K/",
+          _logger));
+      assertEquals("got speed", new WorldSpeed(2, WorldSpeed.Kts).getValueIn(
+          WorldSpeed.ft_sec) / 3d, speedFor(
+              "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/200T/2K/",
+              _logger));
+    }
+
+    public void testInsufficientFields()
+    {
+      /*
+       * missing fields
+       * 
+       */
+      _logger.clear();
+      assertEquals("not got speed", 0d, speedFor(
+          "POS/112313Z1/AUG/4612N34/02122W7", _logger));
+      assertEquals("correct message",
+          "Insufficient fields in POS line:POS/112313Z1/AUG/4612N34/02122W7",
+          _logger.messages.get(0));
+
+      _logger.clear();
+      assertEquals("not got course", 0d, courseFor(
+          "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM", _logger));
+      assertEquals("correct message",
+          "Insufficient fields in POS line:POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM",
+          _logger.messages.get(0));
+    }
+  }
+
+  private static final String HEADER_STR = "MSGID";
+
+  private static final String TRACK_STR = "CTC";
+
+  private static final String POS_STR = "POS";
+
+  public static boolean canLoad(final String fileName, final ErrorLogger logger)
+  {
+    boolean res = false;
+    BufferedReader r = null;
+    FileInputStream fis = null;
+    try
+    {
+      fis = new FileInputStream(fileName);
+      r = new BufferedReader(new InputStreamReader(fis));
+      boolean hasHeader = false;
+      boolean hasPosition = false;
+      boolean hasTrack = false;
+
+      final int MAX_LINES = 100;
+      final int ctr = 0;
+      while (ctr < MAX_LINES && !(hasHeader && hasPosition && hasTrack))
+      {
+        // try this line
+        final String line = r.readLine();
+
+        if (line == null)
+        {
+          break;
+        }
+
+        if (!hasHeader)
+        {
+          hasHeader = line.startsWith(HEADER_STR);
+        }
+        if (!hasPosition)
+        {
+          hasPosition = line.startsWith(POS_STR);
+        }
+        if (!hasTrack)
+        {
+          hasTrack = line.startsWith(TRACK_STR);
+        }
+
+        // are we ready?
+        if (hasHeader && hasPosition && hasTrack)
+        {
+          res = true;
+          break;
+        }
+      }
+
+      if (!res)
+      {
+        logger.logError(ErrorLogger.INFO, "OTH Import rejecting file, Header:"
+            + hasHeader + " Track:" + hasTrack + " Pos:" + hasPosition, null);
+      }
+
+    }
+    catch (final Exception e)
+    {
+      logger.logError(ErrorLogger.ERROR, "Trouble whilst checking valid OTH",
+          e);
+    }
+    finally
+    {
+      try
+      {
+        if (r != null)
+          r.close();
+        if (fis != null)
+          fis.close();
+      }
+      catch (final IOException e)
+      {
+        logger.logError(ErrorLogger.ERROR, "Couldn't close file:" + fileName,
+            e);
+      }
+    }
+    return res;
+  }
+
+  private static double courseFor(final String line, final ErrorLogger logger)
+  {
+    return getField(line, logger, "T", 9, "course", new ExtractValue()
+    {
+
+      @Override
+      public double extract(final String txt)
+      {
+        final double courseDegs = Double.parseDouble(txt);
+        return Math.toRadians(courseDegs);
+      }
+    });
   }
 
   private static ImportOTHAction createImportAction(final OTH_Helper helper,
@@ -255,6 +362,32 @@ public class OTH_Importer
 
     return new ImportOTHAction(brtData.getTracks(), brtData.getEllipseLayers(),
         layers, doEllipses);
+  }
+
+  private static HiResDate dateFor(final String line, final ErrorLogger logger,
+      final int year)
+  {
+    final String[] tokens = line.split("/");
+    final HiResDate res = null;
+    if (tokens.length >= 3)
+    {
+      try
+      {
+        final String dateStr = tokens[1];
+        final String monStr = tokens[2];
+      }
+      catch (final NumberFormatException fe)
+      {
+        logger.logError(ErrorLogger.ERROR, "Failed to parse date:" + fe
+            .getMessage(), null);
+      }
+    }
+    else
+    {
+      logger.logError(ErrorLogger.WARNING, "Insufficient fields in POS line:"
+          + line, null);
+    }
+    return res;
   }
 
   public static TrackWrapper findTrack(final TrackWrapper[] allTracks)
@@ -278,6 +411,34 @@ public class OTH_Importer
       return allTracks[indexOfBlueTrack];
     }
     return null;
+  }
+
+  private static double getField(final String line, final ErrorLogger logger,
+      final String separator, final int tokenId, final String fieldName,
+      final ExtractValue extractor)
+  {
+    final String[] tokens = line.split("/");
+    double res = 0d;
+    if (tokens.length > tokenId)
+    {
+      try
+      {
+        final String courseStr = tokens[tokenId];
+        final String[] innerTokens = courseStr.split(separator);
+        res = extractor.extract(innerTokens[0]);
+      }
+      catch (final NumberFormatException fe)
+      {
+        logger.logError(ErrorLogger.ERROR, "Failed to parse " + fieldName + ":"
+            + fe.getMessage(), null);
+      }
+    }
+    else
+    {
+      logger.logError(ErrorLogger.WARNING, "Insufficient fields in POS line:"
+          + line, null);
+    }
+    return res;
   }
 
   /**
@@ -306,6 +467,85 @@ public class OTH_Importer
     {});
   }
 
+  private static double latFor(final String string) throws NumberFormatException
+  {
+    // 4612N34
+    final double degs = Double.parseDouble(string.substring(0, 2));
+    final double mins = Double.parseDouble(string.substring(2, 4));
+    return degs + mins / 60d;
+  }
+
+  private static WorldLocation locationFrom(final String line,
+      final ErrorLogger logger)
+  {
+    // POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/000T/0K/
+
+    WorldLocation res = null;
+
+    final String[] tokens = line.split("/");
+    if (tokens.length >= 5)
+    {
+      try
+      {
+        final double dLat = latFor(tokens[3]);
+        final double dLong = longFor(tokens[4]);
+        res = new WorldLocation(dLat, dLong, 0d);
+      }
+      catch (final NumberFormatException fe)
+      {
+        logger.logError(ErrorLogger.ERROR, "Failed to parse location:" + fe
+            .getMessage(), null);
+      }
+    }
+    else
+    {
+      logger.logError(ErrorLogger.WARNING, "Insufficient fields in POS line:"
+          + line, null);
+    }
+
+    return res;
+  }
+
+  private static double longFor(final String string)
+  {
+    // 4612N34
+    final double degs = Double.parseDouble(string.substring(0, 3));
+    final double mins = Double.parseDouble(string.substring(3, 5));
+    return degs + mins / 60d;
+  }
+
+  private static String nameFrom(final String line)
+  {
+    final String[] tokens = line.split("/");
+    if (tokens.length >= 3)
+    {
+      return tokens[2];
+    }
+    else
+    {
+      return null;
+    }
+  }
+
+  private static EllipseShape produceEllipse(final ErrorLogger logger,
+      final String line, final int year)
+  {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public static FixWrapper produceFix(final ErrorLogger logger,
+      final String line, final int year)
+  {
+    final WorldLocation loc = locationFrom(line, logger);
+    final HiResDate date = dateFor(line, logger, year);
+    final double courseRads = courseFor(line, logger);
+    final double speedYps = speedFor(line, logger);
+    final Fix fix = new Fix(date, loc, courseRads, speedYps);
+    final FixWrapper wrapped = new FixWrapper(fix);
+    return wrapped;
+  }
+
   private static OTH_Data read_OTH(final InputStream is,
       final ErrorLogger logger) throws NumberFormatException, IOException,
       Exception
@@ -317,8 +557,8 @@ public class OTH_Importer
     int year = Calendar.getInstance().get(Calendar.YEAR);
     int ctr = 0;
 
-    List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
-    List<BaseLayer> ellipseLayers = new ArrayList<BaseLayer>();
+    final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
+    final List<BaseLayer> ellipseLayers = new ArrayList<BaseLayer>();
 
     TrackWrapper thisTrack = null;
     BaseLayer thisLayer = null;
@@ -338,7 +578,7 @@ public class OTH_Importer
             year = yr + 2000;
           }
         }
-        catch (NumberFormatException ne)
+        catch (final NumberFormatException ne)
         {
           logger.logError(ErrorLogger.WARNING,
               "Failed to extract year from last token in:" + line, null);
@@ -389,15 +629,15 @@ public class OTH_Importer
       else if (line.startsWith(POS_STR))
       {
         // ok, generate a position
-        FixWrapper wrapped = produceFix(logger, line, year);
-        if(wrapped != null)
+        final FixWrapper wrapped = produceFix(logger, line, year);
+        if (wrapped != null)
         {
           thisTrack.addFix(wrapped);
         }
-        
+
         // also generate an ellipse
-        EllipseShape ellipse = produceEllipse(logger, line, year);
-        if(ellipse != null)
+        final EllipseShape ellipse = produceEllipse(logger, line, year);
+        if (ellipse != null)
         {
           thisLayer.add(ellipse);
         }
@@ -411,166 +651,19 @@ public class OTH_Importer
     return brtData;
   }
 
-  private static EllipseShape produceEllipse(ErrorLogger logger, String line,
-      int year)
+  private static double speedFor(final String line, final ErrorLogger logger)
   {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  public static FixWrapper produceFix(final ErrorLogger logger, final String line,
-      final int year)
-  {
-    WorldLocation loc = locationFrom(line, logger);
-    HiResDate date = dateFor(line, logger, year);
-    double courseRads = courseFor(line, logger);
-    double speedYps = speedFor(line, logger);
-    Fix fix = new Fix(date, loc, courseRads, speedYps);
-    FixWrapper wrapped = new FixWrapper(fix);
-    return wrapped;
-  }
-
-  private static double getField(String line, ErrorLogger logger, String separator, final int tokenId, final String fieldName, ExtractValue extractor)
-  {
-    final String[] tokens = line.split("/");
-    double res = 0d;
-    if (tokens.length > tokenId)
+    return getField(line, logger, "K", 10, "speed", new ExtractValue()
     {
-      try
-      {
-        final String courseStr = tokens[tokenId];
-        final String[] innerTokens = courseStr.split(separator);
-        res = extractor.extract(innerTokens[0]);
-      }
-      catch (NumberFormatException fe)
-      {
-        logger.logError(ErrorLogger.ERROR, "Failed to parse " + fieldName + ":" + fe
-            .getMessage(), null);
-      }
-    }
-    else
-    {
-      logger.logError(ErrorLogger.WARNING, "Insufficient fields in POS line:"
-          + line, null);
-    }
-    return res;
-  }
-  
-  private static double speedFor(String line, ErrorLogger logger)
-  {
-    return getField(line, logger, "K", 10, "speed", new ExtractValue() {
 
       @Override
-      public double extract(String txt)
+      public double extract(final String txt)
       {
-        double speedKts = Double.parseDouble(txt);
+        final double speedKts = Double.parseDouble(txt);
         return new WorldSpeed(speedKts, WorldSpeed.Kts).getValueIn(
             WorldSpeed.ft_sec) / 3;
-      }});
-  }
-  
-  private static double courseFor(String line, ErrorLogger logger)
-  {
-    return getField(line, logger, "T", 9, "course", new ExtractValue() {
-
-      @Override
-      public double extract(String txt)
-      {
-        double courseDegs = Double.parseDouble(txt);
-        return Math.toRadians(courseDegs);
-      }});
-  }
-
-  
-  private static interface ExtractValue
-  {
-    double extract(String txt);
-  }
-
-  private static HiResDate dateFor(String line, ErrorLogger logger,
-      final int year)
-  {
-    final String[] tokens = line.split("/");
-    HiResDate res = null;
-    if (tokens.length >= 3)
-    {
-      try
-      {
-        final String dateStr = tokens[1];
-        final String monStr = tokens[2];
       }
-      catch (NumberFormatException fe)
-      {
-        logger.logError(ErrorLogger.ERROR, "Failed to parse date:" + fe
-            .getMessage(), null);
-      }
-    }
-    else
-    {
-      logger.logError(ErrorLogger.WARNING, "Insufficient fields in POS line:"
-          + line, null);
-    }
-    return res;
-  }
-
-  private static WorldLocation locationFrom(String line,
-      final ErrorLogger logger)
-  {
-    // POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/000T/0K/
-
-    WorldLocation res = null;
-
-    final String[] tokens = line.split("/");
-    if (tokens.length >= 5)
-    {
-      try
-      {
-        double dLat = latFor(tokens[3]);
-        double dLong = longFor(tokens[4]);
-        res = new WorldLocation(dLat, dLong, 0d);
-      }
-      catch (NumberFormatException fe)
-      {
-        logger.logError(ErrorLogger.ERROR, "Failed to parse location:" + fe
-            .getMessage(), null);
-      }
-    }
-    else
-    {
-      logger.logError(ErrorLogger.WARNING, "Insufficient fields in POS line:"
-          + line, null);
-    }
-
-    return res;
-  }
-
-  private static double latFor(final String string) throws NumberFormatException
-  {
-    // 4612N34
-    final double degs = Double.parseDouble(string.substring(0, 2));
-    final double mins = Double.parseDouble(string.substring(2, 4));
-    return degs + mins / 60d;
-  }
-
-  private static double longFor(final String string)
-  {
-    // 4612N34
-    final double degs = Double.parseDouble(string.substring(0, 3));
-    final double mins = Double.parseDouble(string.substring(3, 5));
-    return degs + mins / 60d;
-  }
-
-  private static String nameFrom(String line)
-  {
-    final String[] tokens = line.split("/");
-    if (tokens.length >= 3)
-    {
-      return tokens[2];
-    }
-    else
-    {
-      return null;
-    }
+    });
   }
 
   /**
@@ -593,85 +686,5 @@ public class OTH_Importer
     final OTH_Data brtData = read_OTH(is, logger);
 
     return createImportAction(brtHelper, brtData, layers);
-  }
-
-  private static final String HEADER_STR = "MSGID";
-  private static final String TRACK_STR = "CTC";
-  private static final String POS_STR = "POS";
-
-  public static boolean canLoad(final String fileName, final ErrorLogger logger)
-  {
-    boolean res = false;
-    BufferedReader r = null;
-    FileInputStream fis = null;
-    try
-    {
-      fis = new FileInputStream(fileName);
-      r = new BufferedReader(new InputStreamReader(fis));
-      boolean hasHeader = false;
-      boolean hasPosition = false;
-      boolean hasTrack = false;
-
-      final int MAX_LINES = 100;
-      int ctr = 0;
-      while (ctr < MAX_LINES && !(hasHeader && hasPosition && hasTrack))
-      {
-        // try this line
-        final String line = r.readLine();
-
-        if (line == null)
-        {
-          break;
-        }
-
-        if (!hasHeader)
-        {
-          hasHeader = line.startsWith(HEADER_STR);
-        }
-        if (!hasPosition)
-        {
-          hasPosition = line.startsWith(POS_STR);
-        }
-        if (!hasTrack)
-        {
-          hasTrack = line.startsWith(TRACK_STR);
-        }
-
-        // are we ready?
-        if (hasHeader && hasPosition && hasTrack)
-        {
-          res = true;
-          break;
-        }
-      }
-
-      if (!res)
-      {
-        logger.logError(ErrorLogger.INFO, "OTH Import rejecting file, Header:"
-            + hasHeader + " Track:" + hasTrack + " Pos:" + hasPosition, null);
-      }
-
-    }
-    catch (Exception e)
-    {
-      logger.logError(ErrorLogger.ERROR, "Trouble whilst checking valid OTH",
-          e);
-    }
-    finally
-    {
-      try
-      {
-        if (r != null)
-          r.close();
-        if (fis != null)
-          fis.close();
-      }
-      catch (IOException e)
-      {
-        logger.logError(ErrorLogger.ERROR, "Couldn't close file:" + fileName,
-            e);
-      }
-    }
-    return res;
   }
 }
