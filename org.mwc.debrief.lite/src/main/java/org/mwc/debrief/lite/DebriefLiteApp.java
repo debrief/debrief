@@ -464,7 +464,7 @@ public class DebriefLiteApp implements FileDropListener
     final String oldState = state;
     state = newState;
 
-    if (newState != null && !newState.equals(oldState))
+    if (newState != null && !newState.equals(oldState) && _instance != null)
     {
       notifyListenersStateChanged(_instance, "STATE", oldState, newState);
     }
