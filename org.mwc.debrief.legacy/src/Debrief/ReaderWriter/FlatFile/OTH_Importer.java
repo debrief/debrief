@@ -186,7 +186,7 @@ public class OTH_Importer
   {
     static class Logger implements ErrorLogger
     {
-      private List<String> messages = new ArrayList<String>();
+      private final List<String> messages = new ArrayList<String>();
 
       private final boolean console = true;
 
@@ -241,10 +241,12 @@ public class OTH_Importer
 
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-    private final String root = "../org.mwc.debrief.legacy/test_data/OTH_Import";
+    private final String root =
+        "../org.mwc.debrief.legacy/test_data/OTH_Import";
 
-    private Logger _logger = new Logger();
+    private final Logger _logger = new Logger();
 
+    @Override
     public void setUp()
     {
       _logger.clear();
@@ -465,43 +467,9 @@ public class OTH_Importer
   private static final String TRACK_STR = "CTC";
 
   private static final String POS_STR = "POS";
-  
-  public static boolean canLoad(final String fileName, final ErrorLogger logger)
-  {
-    boolean res = false;
-    BufferedReader r = null;
-    FileInputStream fis = null;
-    try
-    {
-      fis = new FileInputStream(fileName);
-      r = new BufferedReader(new InputStreamReader(fis));
-      res = canLoad(logger, res, r);
-    }
-    catch (final Exception e)
-    {
-      logger.logError(ErrorLogger.ERROR, "Trouble whilst checking valid OTH",
-          e);
-    }
-    finally
-    {
-      try
-      {
-        if (r != null)
-          r.close();
-        if (fis != null)
-          fis.close();
-      }
-      catch (final IOException e)
-      {
-        logger.logError(ErrorLogger.ERROR, "Couldn't close file:" + fileName,
-            e);
-      }
-    }
-    return res;
-  }
 
   public static boolean canLoad(final ErrorLogger logger, boolean res,
-      BufferedReader r) throws IOException
+      final BufferedReader r) throws IOException
   {
     boolean hasHeader = false;
     boolean hasPosition = false;
@@ -544,6 +512,40 @@ public class OTH_Importer
     {
       logger.logError(ErrorLogger.INFO, "OTH Import rejecting file, Header:"
           + hasHeader + " Track:" + hasTrack + " Pos:" + hasPosition, null);
+    }
+    return res;
+  }
+
+  public static boolean canLoad(final String fileName, final ErrorLogger logger)
+  {
+    boolean res = false;
+    BufferedReader r = null;
+    FileInputStream fis = null;
+    try
+    {
+      fis = new FileInputStream(fileName);
+      r = new BufferedReader(new InputStreamReader(fis));
+      res = canLoad(logger, res, r);
+    }
+    catch (final Exception e)
+    {
+      logger.logError(ErrorLogger.ERROR, "Trouble whilst checking valid OTH",
+          e);
+    }
+    finally
+    {
+      try
+      {
+        if (r != null)
+          r.close();
+        if (fis != null)
+          fis.close();
+      }
+      catch (final IOException e)
+      {
+        logger.logError(ErrorLogger.ERROR, "Couldn't close file:" + fileName,
+            e);
+      }
     }
     return res;
   }
