@@ -635,7 +635,7 @@ public class DebriefRibbonTimeController
         timeSlider.setEnabled(true);
 
         // and we can use the buttons
-        DebriefLiteApp.setState(DebriefLiteApp.ACTIVE_STATE);
+        //DebriefLiteApp.setState(DebriefLiteApp.ACTIVE_STATE);
 
         converter.init(start, end);
         timeSlider.setMinimum(converter.getStart());
