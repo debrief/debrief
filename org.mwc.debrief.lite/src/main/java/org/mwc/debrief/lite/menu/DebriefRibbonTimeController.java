@@ -746,6 +746,9 @@ public class DebriefRibbonTimeController
           DebriefLiteApp.setDirty(true);
           DebriefLiteApp.setState(DebriefLiteApp.ACTIVE_STATE);
           timeSlider.setEnabled(true);
+        }else
+        {
+          doSoftReset(timeSlider, timeManager);
         }
       }
     };
