@@ -52,8 +52,6 @@ import junit.framework.TestCase;
 public class OTH_Importer
 {
 
-  private final static int YEAR_UNKNOWN = -1;
-
   private static interface ExtractValue<T extends Object>
   {
     T extract(String txt);
@@ -65,7 +63,7 @@ public class OTH_Importer
     private final List<TrackWrapper> _tracks;
     private final List<BaseLayer> _ellipseLayers;
     private final Layers _layers;
-    private List<Layer> _newlyAdded = new ArrayList<Layer>();
+    private final List<Layer> _newlyAdded = new ArrayList<Layer>();
 
     public ImportOTHAction(final List<TrackWrapper> tracks,
         final List<BaseLayer> ellipseLayers, final Layers layers,
@@ -86,14 +84,15 @@ public class OTH_Importer
     {
       for (final TrackWrapper t : _tracks)
       {
-        TrackWrapper thisTrack = (TrackWrapper) _layers.findLayer(t.getName());
-        if(thisTrack != null)
+        final TrackWrapper thisTrack = (TrackWrapper) _layers.findLayer(t
+            .getName());
+        if (thisTrack != null)
         {
           // ok, add the points to this existing track
-          Enumeration<Editable> iter = t.getPositionIterator();
-          while(iter.hasMoreElements())
+          final Enumeration<Editable> iter = t.getPositionIterator();
+          while (iter.hasMoreElements())
           {
-            FixWrapper next = (FixWrapper) iter.nextElement();
+            final FixWrapper next = (FixWrapper) iter.nextElement();
             thisTrack.addFix(next);
           }
         }
@@ -106,14 +105,14 @@ public class OTH_Importer
 
       for (final BaseLayer b : _ellipseLayers)
       {
-        BaseLayer thisLayer = (BaseLayer) _layers.findLayer(b.getName());
-        if(thisLayer != null)
+        final BaseLayer thisLayer = (BaseLayer) _layers.findLayer(b.getName());
+        if (thisLayer != null)
         {
           // ok, add the points to this existing track
-          Enumeration<Editable> iter = b.elements();
-          while(iter.hasMoreElements())
+          final Enumeration<Editable> iter = b.elements();
+          while (iter.hasMoreElements())
           {
-            FixWrapper next = (FixWrapper) iter.nextElement();
+            final FixWrapper next = (FixWrapper) iter.nextElement();
             thisLayer.add(next);
           }
         }
@@ -142,15 +141,16 @@ public class OTH_Importer
     {
       for (final TrackWrapper t : _tracks)
       {
-        if(_newlyAdded.contains(t))
+        if (_newlyAdded.contains(t))
         {
           _layers.removeThisLayer(t);
         }
         else
         {
-          TrackWrapper track = (TrackWrapper) _layers.findLayer(t.getName());
-          Enumeration<Editable> iter = t.getPositionIterator();
-          while(iter.hasMoreElements())
+          final TrackWrapper track = (TrackWrapper) _layers.findLayer(t
+              .getName());
+          final Enumeration<Editable> iter = t.getPositionIterator();
+          while (iter.hasMoreElements())
           {
             track.removeElement(iter.nextElement());
           }
@@ -160,21 +160,22 @@ public class OTH_Importer
       for (final BaseLayer b : _ellipseLayers)
       {
         _layers.removeThisLayer(b);
-        if(_newlyAdded.contains(b))
+        if (_newlyAdded.contains(b))
         {
           _layers.removeThisLayer(b);
         }
         else
         {
-          TrackWrapper track = (TrackWrapper) _layers.findLayer(b.getName());
-          Enumeration<Editable> iter = b.elements();
-          while(iter.hasMoreElements())
+          final TrackWrapper track = (TrackWrapper) _layers.findLayer(b
+              .getName());
+          final Enumeration<Editable> iter = b.elements();
+          while (iter.hasMoreElements())
           {
             track.removeElement(iter.nextElement());
           }
         }
       }
-      
+
       // clear the list of newly created items, we'll re-generate on the next execute
       _newlyAdded.clear();
     }
@@ -254,7 +255,7 @@ public class OTH_Importer
 
       /*
        * unexpected units in the bagging area
-       * 
+       *
        */
       _logger.clear();
       assertEquals("not T markers", 0d, courseFor(
@@ -286,61 +287,6 @@ public class OTH_Importer
               .last());
     }
 
-    public void testGoodLoad() throws Exception
-    {
-      OTH_Importer importer = new OTH_Importer();
-      Layers layers = new Layers();
-
-      OTH_Helper brtHelper = new OTH_Helper_Headless(true);
-      InputStream is = new FileInputStream(root + "/valid.txt");
-      ImportOTHAction action = importer.importThis(brtHelper, is, layers, _logger);
-      action.execute();
-      
-      assertEquals("has data", 2, layers.size());
-
-      TrackWrapper track = (TrackWrapper) layers.elementAt(0);
-      BaseLayer ellipses = (BaseLayer) layers.elementAt(1);
-     
-      assertEquals("correct fixes",3, track.numFixes());
-      assertEquals("correct ellipses",3, ellipses.size());
-      
-      // and undo it
-      action.undo();
-      
-      assertEquals("has data", 0, layers.size());
-    }
-    
-    public void testTrackAlreadyPresent() throws Exception
-    {
-      OTH_Importer importer = new OTH_Importer();
-      Layers layers = new Layers();
-
-      TrackWrapper existing_track = new TrackWrapper();
-      existing_track.setName("TYPE 12-HOOD");
-      existing_track.addFix(new FixWrapper(new Fix(new HiResDate(10000000), new WorldLocation(33,4,0d), 33, 22)));
-      layers.addThisLayer(existing_track);
-      assertEquals("just one position",1, existing_track.numFixes());
-      
-      OTH_Helper brtHelper = new OTH_Helper_Headless(true);
-      InputStream is = new FileInputStream(root + "/valid.txt");
-      ImportOTHAction action = importer.importThis(brtHelper, is, layers, _logger);
-      action.execute();
-      
-      assertEquals("has data", 2, layers.size());
-
-      TrackWrapper track = (TrackWrapper) layers.elementAt(0);
-      BaseLayer ellipses = (BaseLayer) layers.elementAt(1);
-     
-      assertEquals("correct fixes",4, track.numFixes());
-      assertEquals("correct ellipses",3, ellipses.size());
-      
-      // and undo it
-      action.undo();
-      
-      assertEquals("has data", 1, layers.size());
-      assertEquals("just one position",1, existing_track.numFixes());
-    }
-
     public void testGetLocation()
     {
       assertEquals("got location", " 46°12'00.00\"N 021°22'00.00\"E ",
@@ -352,67 +298,6 @@ public class OTH_Importer
           locationFrom(
               "POS/120502Z0/DEC/2211N6/02142W9///170T/11NM/13NM/000T/0K/",
               _logger).toString());
-    }
-
-//    public void testParseDate() throws ParseException
-//    {
-//      // 112313Z1/AUG
-//
-////      DateFormat df = new GMTDateFormat("ddHHmm");
-////      assertEquals("correct date", "Sun Jan 11 23:13:00 GMT 1970", df.format(df.parse(
-////          "112313")));
-////
-////      DateFormat df2 = new GMTDateFormat("ddHHmm'Z'");
-////      assertEquals("correct date", "Sun Jan 11 23:13:00 GMT 1970", df2.parse(
-////          "112313Z").toString());
-////
-////      DateFormat df3 = new GMTDateFormat("ddHHmm'Z'MMM");
-////      assertEquals("correct date", "Tue Aug 11 23:13:00 GMT 1970", df3.parse(
-////          "112313ZAUG").toString());
-////
-////      DateFormat df4 = new GMTDateFormat("ddHHmm'Z'MMMyy");
-////      assertEquals("correct date", "Sat Aug 11 23:13:00 BST 2018", df4.parse(
-////          "112313ZAUG18").toString());
-//
-//      assertEquals("correct date", "Fri Aug 11 21:13:00 BST 2017", dateFor(
-//          "POS/112113Z1/AUG/4612N34/02122W7//170T/11NM/13NM/000T/0K/", _logger,
-//          17).getDate().toString());
-//
-//      assertEquals("correct date", "Sun Aug 11 21:13:00 BST 2019", dateFor(
-//          "POS/112113Z1/AUG/4612N34/02122W7//170T/11NM/13NM/000T/0K/", _logger,
-//          YEAR_UNKNOWN).getDate().toString());
-//
-//      assertEquals("correct date", "Sun Nov 11 21:13:00 GMT 2018", dateFor(
-//          "POS/112113Z1/NOV/4612N34/02122W7//170T/11NM/13NM/000T/0K/", _logger,
-//          YEAR_UNKNOWN).getDate().toString());
-//
-//      assertEquals("correct date", null, dateFor(
-//          "POS/112113Z1/NaV/4612N34/02122W7//170T/11NM/13NM/000T/0K/", _logger,
-//          YEAR_UNKNOWN));
-//
-//    }
-
-    public void testParseYear()
-    {
-      _logger.clear();
-      assertEquals("good year", 19, parseYear(_logger,
-          "some string more string 19", YEAR_UNKNOWN));
-      assertTrue("empty logger", _logger.isEmpty());
-
-      _logger.clear();
-      assertEquals("bad year", YEAR_UNKNOWN, parseYear(_logger,
-          "some string more string 1a9", YEAR_UNKNOWN));
-      assertEquals("correct message",
-          "Failed to extract year from last token in:some string more string 1a9",
-          _logger.last());
-
-      _logger.clear();
-      assertEquals("bad year", YEAR_UNKNOWN, parseYear(_logger, "",
-          YEAR_UNKNOWN));
-      assertEquals("correct message",
-          "Failed to extract year from empty first line",
-          _logger.last());
-
     }
 
     public void testGetName()
@@ -434,11 +319,74 @@ public class OTH_Importer
               _logger));
     }
 
+    // public void testParseDate() throws ParseException
+    // {
+    // // 112313Z1/AUG
+    //
+    //// DateFormat df = new GMTDateFormat("ddHHmm");
+    //// assertEquals("correct date", "Sun Jan 11 23:13:00 GMT 1970", df.format(df.parse(
+    //// "112313")));
+    ////
+    //// DateFormat df2 = new GMTDateFormat("ddHHmm'Z'");
+    //// assertEquals("correct date", "Sun Jan 11 23:13:00 GMT 1970", df2.parse(
+    //// "112313Z").toString());
+    ////
+    //// DateFormat df3 = new GMTDateFormat("ddHHmm'Z'MMM");
+    //// assertEquals("correct date", "Tue Aug 11 23:13:00 GMT 1970", df3.parse(
+    //// "112313ZAUG").toString());
+    ////
+    //// DateFormat df4 = new GMTDateFormat("ddHHmm'Z'MMMyy");
+    //// assertEquals("correct date", "Sat Aug 11 23:13:00 BST 2018", df4.parse(
+    //// "112313ZAUG18").toString());
+    //
+    // assertEquals("correct date", "Fri Aug 11 21:13:00 BST 2017", dateFor(
+    // "POS/112113Z1/AUG/4612N34/02122W7//170T/11NM/13NM/000T/0K/", _logger,
+    // 17).getDate().toString());
+    //
+    // assertEquals("correct date", "Sun Aug 11 21:13:00 BST 2019", dateFor(
+    // "POS/112113Z1/AUG/4612N34/02122W7//170T/11NM/13NM/000T/0K/", _logger,
+    // YEAR_UNKNOWN).getDate().toString());
+    //
+    // assertEquals("correct date", "Sun Nov 11 21:13:00 GMT 2018", dateFor(
+    // "POS/112113Z1/NOV/4612N34/02122W7//170T/11NM/13NM/000T/0K/", _logger,
+    // YEAR_UNKNOWN).getDate().toString());
+    //
+    // assertEquals("correct date", null, dateFor(
+    // "POS/112113Z1/NaV/4612N34/02122W7//170T/11NM/13NM/000T/0K/", _logger,
+    // YEAR_UNKNOWN));
+    //
+    // }
+
+    public void testGoodLoad() throws Exception
+    {
+      final OTH_Importer importer = new OTH_Importer();
+      final Layers layers = new Layers();
+
+      final OTH_Helper brtHelper = new OTH_Helper_Headless(true);
+      final InputStream is = new FileInputStream(root + "/valid.txt");
+      final ImportOTHAction action = importer.importThis(brtHelper, is, layers,
+          _logger);
+      action.execute();
+
+      assertEquals("has data", 2, layers.size());
+
+      final TrackWrapper track = (TrackWrapper) layers.elementAt(0);
+      final BaseLayer ellipses = (BaseLayer) layers.elementAt(1);
+
+      assertEquals("correct fixes", 3, track.numFixes());
+      assertEquals("correct ellipses", 3, ellipses.size());
+
+      // and undo it
+      action.undo();
+
+      assertEquals("has data", 0, layers.size());
+    }
+
     public void testInsufficientFields()
     {
       /*
        * missing fields
-       * 
+       *
        */
       _logger.clear();
       assertEquals("not got speed", 0d, speedFor(
@@ -454,14 +402,71 @@ public class OTH_Importer
           "Insufficient fields in POS line:POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM",
           _logger.last());
     }
+
+    public void testParseYear()
+    {
+      _logger.clear();
+      assertEquals("good year", 19, parseYear(_logger,
+          "some string more string 19", YEAR_UNKNOWN));
+      assertTrue("empty logger", _logger.isEmpty());
+
+      _logger.clear();
+      assertEquals("bad year", YEAR_UNKNOWN, parseYear(_logger,
+          "some string more string 1a9", YEAR_UNKNOWN));
+      assertEquals("correct message",
+          "Failed to extract year from last token in:some string more string 1a9",
+          _logger.last());
+
+      _logger.clear();
+      assertEquals("bad year", YEAR_UNKNOWN, parseYear(_logger, "",
+          YEAR_UNKNOWN));
+      assertEquals("correct message",
+          "Failed to extract year from empty first line", _logger.last());
+
+    }
+
+    public void testTrackAlreadyPresent() throws Exception
+    {
+      final OTH_Importer importer = new OTH_Importer();
+      final Layers layers = new Layers();
+
+      final TrackWrapper existing_track = new TrackWrapper();
+      existing_track.setName("TYPE 12-HOOD");
+      existing_track.addFix(new FixWrapper(new Fix(new HiResDate(10000000),
+          new WorldLocation(33, 4, 0d), 33, 22)));
+      layers.addThisLayer(existing_track);
+      assertEquals("just one position", 1, existing_track.numFixes());
+
+      final OTH_Helper brtHelper = new OTH_Helper_Headless(true);
+      final InputStream is = new FileInputStream(root + "/valid.txt");
+      final ImportOTHAction action = importer.importThis(brtHelper, is, layers,
+          _logger);
+      action.execute();
+
+      assertEquals("has data", 2, layers.size());
+
+      final TrackWrapper track = (TrackWrapper) layers.elementAt(0);
+      final BaseLayer ellipses = (BaseLayer) layers.elementAt(1);
+
+      assertEquals("correct fixes", 4, track.numFixes());
+      assertEquals("correct ellipses", 3, ellipses.size());
+
+      // and undo it
+      action.undo();
+
+      assertEquals("has data", 1, layers.size());
+      assertEquals("just one position", 1, existing_track.numFixes());
+    }
   }
+
+  private final static int YEAR_UNKNOWN = -1;
 
   private static final String HEADER_STR = "MSGID";
 
   private static final String TRACK_STR = "CTC";
 
   private static final String POS_STR = "POS";
-
+  
   public static boolean canLoad(final String fileName, final ErrorLogger logger)
   {
     boolean res = false;
@@ -471,49 +476,7 @@ public class OTH_Importer
     {
       fis = new FileInputStream(fileName);
       r = new BufferedReader(new InputStreamReader(fis));
-      boolean hasHeader = false;
-      boolean hasPosition = false;
-      boolean hasTrack = false;
-
-      final int MAX_LINES = 100;
-      final int ctr = 0;
-      while (ctr < MAX_LINES && !(hasHeader && hasPosition && hasTrack))
-      {
-        // try this line
-        final String line = r.readLine();
-
-        if (line == null)
-        {
-          break;
-        }
-
-        if (!hasHeader)
-        {
-          hasHeader = line.startsWith(HEADER_STR);
-        }
-        if (!hasPosition)
-        {
-          hasPosition = line.startsWith(POS_STR);
-        }
-        if (!hasTrack)
-        {
-          hasTrack = line.startsWith(TRACK_STR);
-        }
-
-        // are we ready?
-        if (hasHeader && hasPosition && hasTrack)
-        {
-          res = true;
-          break;
-        }
-      }
-
-      if (!res)
-      {
-        logger.logError(ErrorLogger.INFO, "OTH Import rejecting file, Header:"
-            + hasHeader + " Track:" + hasTrack + " Pos:" + hasPosition, null);
-      }
-
+      res = canLoad(logger, res, r);
     }
     catch (final Exception e)
     {
@@ -538,9 +501,57 @@ public class OTH_Importer
     return res;
   }
 
+  public static boolean canLoad(final ErrorLogger logger, boolean res,
+      BufferedReader r) throws IOException
+  {
+    boolean hasHeader = false;
+    boolean hasPosition = false;
+    boolean hasTrack = false;
+
+    final int MAX_LINES = 100;
+    final int ctr = 0;
+    while (ctr < MAX_LINES && !(hasHeader && hasPosition && hasTrack))
+    {
+      // try this line
+      final String line = r.readLine();
+
+      if (line == null)
+      {
+        break;
+      }
+
+      if (!hasHeader)
+      {
+        hasHeader = line.startsWith(HEADER_STR);
+      }
+      if (!hasPosition)
+      {
+        hasPosition = line.startsWith(POS_STR);
+      }
+      if (!hasTrack)
+      {
+        hasTrack = line.startsWith(TRACK_STR);
+      }
+
+      // are we ready?
+      if (hasHeader && hasPosition && hasTrack)
+      {
+        res = true;
+        break;
+      }
+    }
+
+    if (!res)
+    {
+      logger.logError(ErrorLogger.INFO, "OTH Import rejecting file, Header:"
+          + hasHeader + " Track:" + hasTrack + " Pos:" + hasPosition, null);
+    }
+    return res;
+  }
+
   private static double courseFor(final String line, final ErrorLogger logger)
   {
-    Double res = getField(line, logger, "T", 9, "course",
+    final Double res = getField(line, logger, "T", 9, "course",
         new ExtractValue<Double>()
         {
 
@@ -582,9 +593,9 @@ public class OTH_Importer
         if (year == YEAR_UNKNOWN)
         {
           // ok. is the month before or after this one?
-          DateFormat dm2 = new GMTDateFormat("MMMyy");
+          final DateFormat dm2 = new GMTDateFormat("MMMyy");
           final int thisYear = LocalDate.now().getYear() - 2000;
-          Date monDate = dm2.parse(monStr + thisYear);
+          final Date monDate = dm2.parse(monStr + thisYear);
           if (monDate.getTime() > new Date().getTime())
           {
             // ok, later in the year. use previous year
@@ -601,8 +612,8 @@ public class OTH_Importer
         }
 
         final String wholeStr = dateStr + monStr + useYear;
-        DateFormat df = new GMTDateFormat("ddHHmm'Z'MMMyy");
-        Date date = df.parse(wholeStr);
+        final DateFormat df = new GMTDateFormat("ddHHmm'Z'MMMyy");
+        final Date date = df.parse(wholeStr);
         res = new HiResDate(date);
       }
       catch (final ParseException fe)
@@ -654,7 +665,7 @@ public class OTH_Importer
       {
         final String courseStr = tokens[tokenId];
         final String[] innerTokens = courseStr.split(separator);
-        if(innerTokens.length > 0)
+        if (innerTokens.length > 0)
         {
           res = extractor.extract(innerTokens[0]);
         }
@@ -763,46 +774,86 @@ public class OTH_Importer
     }
   }
 
+  private static int parseYear(final ErrorLogger logger, final String line,
+      final int year)
+  {
+    int res = YEAR_UNKNOWN;
+    final String[] tokens = line.split(" ");
+    if (tokens.length <= 1)
+    {
+      logger.logError(ErrorLogger.WARNING,
+          "Failed to extract year from empty first line", null);
+    }
+    else
+    {
+      final String lastToken = tokens[tokens.length - 1];
+      try
+      {
+        final int yr = Integer.parseInt(lastToken);
+        if (yr > 0 && yr < 100)
+        {
+          res = yr;
+        }
+      }
+      catch (final NumberFormatException ne)
+      {
+        logger.logError(ErrorLogger.WARNING,
+            "Failed to extract year from last token in:" + line, null);
+      }
+    }
+    return res;
+  }
+
   private static EllipseShape produceEllipse(final ErrorLogger logger,
       final String line, final HiResDate thisDate, final WorldLocation origin)
   {
     // POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/300T/2K/"
-    
+
     // ok, get the orientation
-    Double orient = getField(line, logger, "T", 6, "Orientation", new ExtractValue<Double>() {
+    final Double orient = getField(line, logger, "T", 6, "Orientation",
+        new ExtractValue<Double>()
+        {
 
-      @Override
-      public Double extract(String txt)
-      {
-        return Double.parseDouble(txt);
-      }});
+          @Override
+          public Double extract(final String txt)
+          {
+            return Double.parseDouble(txt);
+          }
+        });
 
-    Double maxima = getField(line, logger, "N", 7, "Maxima", new ExtractValue<Double>() {
+    final Double maxima = getField(line, logger, "N", 7, "Maxima",
+        new ExtractValue<Double>()
+        {
 
-      @Override
-      public Double extract(String txt)
-      {
-        return Double.parseDouble(txt);
-      }});
+          @Override
+          public Double extract(final String txt)
+          {
+            return Double.parseDouble(txt);
+          }
+        });
 
-    Double minima = getField(line, logger, "N", 8, "Minima", new ExtractValue<Double>() {
+    final Double minima = getField(line, logger, "N", 8, "Minima",
+        new ExtractValue<Double>()
+        {
 
-      @Override
-      public Double extract(String txt)
-      {
-        return Double.parseDouble(txt);
-      }});
-    
+          @Override
+          public Double extract(final String txt)
+          {
+            return Double.parseDouble(txt);
+          }
+        });
+
     EllipseShape shp;
-    if(orient != null && maxima != null && minima != null)
+    if (orient != null && maxima != null && minima != null)
     {
-      shp = new EllipseShape(origin, orient, new WorldDistance(maxima, WorldDistance.NM),  new WorldDistance(minima, WorldDistance.NM));
+      shp = new EllipseShape(origin, orient, new WorldDistance(maxima,
+          WorldDistance.NM), new WorldDistance(minima, WorldDistance.NM));
     }
     else
     {
       shp = null;
     }
-    
+
     return shp;
   }
 
@@ -855,6 +906,7 @@ public class OTH_Importer
 
         final String trackName = nameFrom(line);
 
+        // sort out color
         if (trackName == null)
         {
           logger.logError(ErrorLogger.ERROR, "Failed to get track name from:"
@@ -862,8 +914,13 @@ public class OTH_Importer
         }
         else
         {
+          final int hash = trackName.hashCode();
+          final Color thisColor = DebriefColors.RandomColorProvider
+              .getRandomColor(hash);
+
           thisTrack = new TrackWrapper();
           thisTrack.setName(trackName);
+          thisTrack.setColor(thisColor);
           thisLayer = new BaseLayer();
           thisLayer.setName(trackName + " TUAs");
         }
@@ -872,7 +929,11 @@ public class OTH_Importer
       {
         HiResDate thisDate = null;
         WorldLocation origin = null;
-        
+
+        final int hash = thisTrack.getName().hashCode();
+        final Color thisColor = DebriefColors.RandomColorProvider
+            .getRandomColor(hash);
+
         // ok, generate a position
         final FixWrapper wrapped = produceFix(logger, line, year);
         if (wrapped != null)
@@ -881,14 +942,16 @@ public class OTH_Importer
           thisDate = wrapped.getDateTimeGroup();
           origin = wrapped.getLocation();
         }
-        
 
         // also generate an ellipse
-        final EllipseShape ellipse = produceEllipse(logger, line, thisDate, origin);
+        final EllipseShape ellipse = produceEllipse(logger, line, thisDate,
+            origin);
         if (ellipse != null)
         {
-          String label = FormatRNDateTime.toMediumString(thisDate.getDate().getTime());
-          ShapeWrapper sw = new ShapeWrapper(label, ellipse, Color.red, thisDate);
+          final String label = FormatRNDateTime.toMediumString(thisDate
+              .getDate().getTime());
+          final ShapeWrapper sw = new ShapeWrapper(label, ellipse, thisColor,
+              thisDate);
           thisLayer.add(sw);
         }
       }
@@ -900,11 +963,26 @@ public class OTH_Importer
     tidyTrack(tracks, thisTrack);
     tidyLayer(ellipseLayers, thisLayer);
 
-
-
     final OTH_Data brtData = new OTH_Data(tracks, ellipseLayers);
 
     return brtData;
+  }
+
+  private static double speedFor(final String line, final ErrorLogger logger)
+  {
+    final Double res = getField(line, logger, "K", 10, "speed",
+        new ExtractValue<Double>()
+        {
+          @Override
+          public Double extract(final String txt)
+          {
+            final double speedKts = Double.parseDouble(txt);
+            return new WorldSpeed(speedKts, WorldSpeed.Kts).getValueIn(
+                WorldSpeed.ft_sec) / 3;
+          }
+        });
+
+    return res != null ? res : 0d;
   }
 
   public static BaseLayer tidyLayer(final List<BaseLayer> ellipseLayers,
@@ -934,52 +1012,6 @@ public class OTH_Importer
       thisTrack = null;
     }
     return thisTrack;
-  }
-
-  private static int parseYear(final ErrorLogger logger, String line, final int year)
-  {
-    int res = YEAR_UNKNOWN;
-    final String[] tokens = line.split(" ");
-    if (tokens.length <= 1)
-    {
-      logger.logError(ErrorLogger.WARNING,
-          "Failed to extract year from empty first line", null);
-    }
-    else
-    {
-      final String lastToken = tokens[tokens.length - 1];
-      try
-      {
-        final int yr = Integer.parseInt(lastToken);
-        if (yr > 0 && yr < 100)
-        {
-          res = yr;
-        }
-      }
-      catch (final NumberFormatException ne)
-      {
-        logger.logError(ErrorLogger.WARNING,
-            "Failed to extract year from last token in:" + line, null);
-      }
-    }
-    return res;
-  }
-
-  private static double speedFor(final String line, final ErrorLogger logger)
-  {
-    final Double res = getField(line, logger, "K", 10, "speed",
-        new ExtractValue<Double>()
-        {
-          @Override
-          public Double extract(final String txt)
-          {
-            final double speedKts = Double.parseDouble(txt);
-            return new WorldSpeed(speedKts, WorldSpeed.Kts).getValueIn(
-                WorldSpeed.ft_sec) / 3;
-          }
-        });
-
-    return res != null ? res : 0d;
   }
 
   /**
