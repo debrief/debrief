@@ -901,7 +901,7 @@ public class DebriefLiteApp implements FileDropListener
     {
       // no - capture the fact that we are
       _plotUpdating = true;
-      
+
       // trigger screen update to happen on UI thread
       SwingUtilities.invokeLater(new Runnable()
       {
@@ -1523,7 +1523,7 @@ public class DebriefLiteApp implements FileDropListener
     {
       DebriefLiteApp.currentFileName = file.getAbsolutePath();
       DebriefLiteApp.setTitle(file.getName());
-      //setState(ACTIVE_STATE);
+      // setState(ACTIVE_STATE);
       DebriefRibbonFile.closeButton.setEnabled(true);
     }
   }
