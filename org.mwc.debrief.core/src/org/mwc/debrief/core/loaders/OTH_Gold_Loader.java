@@ -15,19 +15,19 @@
 package org.mwc.debrief.core.loaders;
 
 import java.io.InputStream;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.window.Window;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.wizards.ImportNMEADialog;
 import org.mwc.debrief.core.DebriefPlugin;
 
-import Debrief.ReaderWriter.FlatFile.OTH_Helper;
 import Debrief.ReaderWriter.FlatFile.OTH_Helper_Headless;
 import Debrief.ReaderWriter.FlatFile.OTH_Importer;
 import MWC.GUI.Layers;
@@ -44,7 +44,7 @@ public class OTH_Gold_Loader extends CoreLoader
   }
 
   @Override
-  public boolean canLoad(String fileName)
+  public boolean canLoad(final String fileName)
   {
     boolean res = false;
 
@@ -71,45 +71,42 @@ public class OTH_Gold_Loader extends CoreLoader
       public void run(final IProgressMonitor pm)
       {
         // create way of passing reference back from dialog
-        final AtomicReference<ImportNMEADialog> dialogO =
-            new AtomicReference<ImportNMEADialog>();
+        final AtomicInteger msgRes = new AtomicInteger(SWT.CANCEL);
+
         Display.getDefault().syncExec(new Runnable()
         {
           @Override
           public void run()
           {
-            final ImportNMEADialog dialog = new ImportNMEADialog();
-            if (dialog.open() != Window.CANCEL)
-            {
-              dialogO.set(dialog);
-            }
+            final Shell s = Display.getCurrent().getActiveShell();
+            final MessageBox messageBox = new MessageBox(s, SWT.ICON_QUESTION
+                | SWT.YES | SWT.NO | SWT.CANCEL);
+            messageBox.setMessage(
+                "Do you wish to generate ellipse shapes for TUAs?");
+            messageBox.setText("Import OTH-Gold");
+            msgRes.set(messageBox.open());
           }
         });
+
+        if (msgRes.get() == SWT.CANCEL)
+        {
+          // ok, just drop out
+          return;
+        }
+
+        final boolean importOTH = msgRes.get() == SWT.YES;
+        final OTH_Importer importer = new OTH_Importer();
+        final OTH_Helper_Headless othHelper = new OTH_Helper_Headless(
+            importOTH);
+
         try
         {
-          // did user press finish?
-          if (dialogO.get() != null)
-          {
-            @SuppressWarnings("unused")
-            final ImportNMEADialog dialog = dialogO.get();
-            // get the selected values
+          // ok - get loading going
+          final Action importAction = importer.importThis(othHelper,
+              inputStream, layers, CorePlugin.getToolParent());
 
-            OTH_Importer importer = new OTH_Importer();
-
-            // TODO: replace with "real" dialog
-            OTH_Helper brtHelper = new OTH_Helper_Headless(true);
-
-            // ok - get loading going
-            Action importAction = importer.importThis(brtHelper, inputStream, layers, CorePlugin.getToolParent());
-            
-            WrapDebriefAction dAction = new WrapDebriefAction(importAction);
-            CorePlugin.run(dAction);
-          }
-          else
-          {
-            DebriefPlugin.logError(IStatus.INFO, "User cancelled loading:"
-                + fileName, null);
-          }
+          final WrapDebriefAction dAction = new WrapDebriefAction(importAction);
+          CorePlugin.run(dAction);
         }
         catch (final Exception e)
         {
