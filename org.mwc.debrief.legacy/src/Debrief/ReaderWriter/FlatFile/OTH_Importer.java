@@ -52,12 +52,24 @@ public class OTH_Importer
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
     final String root = "../org.mwc.debrief.legacy/test_data/OTH_Import";
+    
+    Logger _logger = new Logger();
+    
+    public void setup()
+    {
+      _logger.clear();
+    }
 
     static class Logger implements ErrorLogger
     {
       List<String> messages = new ArrayList<String>();
 
       private boolean console = true;
+      
+      private void clear()
+      {
+        messages.clear();
+      }
 
       @Override
       public void logError(int status, String text, Exception e)
@@ -100,11 +112,10 @@ public class OTH_Importer
           new Logger()));
 
       // this time, verify the message
-      Logger logger = new Logger();
-      assertFalse("missing pos", canLoad(root + "/missing_pos.txt", logger));
+      assertFalse("missing pos", canLoad(root + "/missing_pos.txt", _logger));
       assertEquals("correct error message",
           "OTH Import rejecting file, Header:true Track:true Pos:false",
-          logger.messages.get(0));
+          _logger.messages.get(0));
     }
 
     public void testGetName()
@@ -119,23 +130,57 @@ public class OTH_Importer
       assertEquals("got location", " 46°12'00.00\"N 021°22'00.00\"E ",
           locationFrom(
               "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/000T/0K/",
-              new Logger()).toString());
+              _logger).toString());
     }
 
-    public void testGetFields()
+    public void testGoodFields()
     {
+      
       assertEquals("got course", Maths.toRadians(300d) , courseFor(
           "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/300T/2K/",
-          new Logger()));
+          _logger));
       assertEquals("got speed", new WorldSpeed(2, WorldSpeed.Kts).getValueIn(WorldSpeed.ft_sec)/3d , speedFor(
           "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/200T/2K/",
-          new Logger()));
+          _logger));
+    }
+    
+    public void testInsufficientFields()
+    {
+      /* missing fields
+       * 
+       */
+      _logger.clear();
       assertEquals("not got speed", 0d , speedFor(
           "POS/112313Z1/AUG/4612N34/02122W7",
-          new Logger()));
+          _logger));
+      assertEquals("correct message", "Insufficient fields in POS line:POS/112313Z1/AUG/4612N34/02122W7", _logger.messages.get(0));
+      
+      _logger.clear();
       assertEquals("not got course", 0d , courseFor(
           "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM",
-          new Logger()));
+          _logger));
+      assertEquals("correct message", "Insufficient fields in POS line:POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM", _logger.messages.get(0));
+    }
+    
+      public void testBadlyFormattedFields()
+      {
+      
+      /* unexpected units in the bagging area
+       * 
+       */
+      _logger.clear();
+      assertEquals("not T markers", 0d , courseFor(
+          "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/300a/2K/",
+          _logger));
+      assertEquals("correct message", "Failed to parse course:For input string: \"300a\"", _logger.messages.get(0));
+      
+      _logger.clear();
+      assertEquals("got speed", 0d , speedFor(
+          "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/200T/2MS/",
+          _logger));
+      assertEquals("correct message", "Failed to parse speed:For input string: \"2MS\"", _logger.messages.get(0));
+
+      
     }
   }
 
@@ -385,23 +430,21 @@ public class OTH_Importer
     return wrapped;
   }
 
-  private static double speedFor(String line, ErrorLogger logger)
+  private static double getField(String line, ErrorLogger logger, String separator, final int tokenId, final String fieldName, ExtractValue extractor)
   {
     final String[] tokens = line.split("/");
     double res = 0d;
-    if (tokens.length >= 11)
+    if (tokens.length > tokenId)
     {
       try
       {
-        final String courseStr = tokens[10];
-        final String[] innerTokens = courseStr.split("K");
-        double speedKts = Double.parseDouble(innerTokens[0]);
-        res = new WorldSpeed(speedKts, WorldSpeed.Kts).getValueIn(
-            WorldSpeed.ft_sec) / 3;
+        final String courseStr = tokens[tokenId];
+        final String[] innerTokens = courseStr.split(separator);
+        res = extractor.extract(innerTokens[0]);
       }
       catch (NumberFormatException fe)
       {
-        logger.logError(ErrorLogger.ERROR, "Failed to parse speed:" + fe
+        logger.logError(ErrorLogger.ERROR, "Failed to parse " + fieldName + ":" + fe
             .getMessage(), null);
       }
     }
@@ -412,32 +455,36 @@ public class OTH_Importer
     }
     return res;
   }
+  
+  private static double speedFor(String line, ErrorLogger logger)
+  {
+    return getField(line, logger, "K", 10, "speed", new ExtractValue() {
 
+      @Override
+      public double extract(String txt)
+      {
+        double speedKts = Double.parseDouble(txt);
+        return new WorldSpeed(speedKts, WorldSpeed.Kts).getValueIn(
+            WorldSpeed.ft_sec) / 3;
+      }});
+  }
+  
   private static double courseFor(String line, ErrorLogger logger)
   {
-    final String[] tokens = line.split("/");
-    double res = 0d;
-    if (tokens.length >= 10)
-    {
-      try
+    return getField(line, logger, "T", 9, "course", new ExtractValue() {
+
+      @Override
+      public double extract(String txt)
       {
-        final String courseStr = tokens[9];
-        final String[] innerTokens = courseStr.split("T");
-        double courseDegs = Double.parseDouble(innerTokens[0]);
-        res = Math.toRadians(courseDegs);
-      }
-      catch (NumberFormatException fe)
-      {
-        logger.logError(ErrorLogger.ERROR, "Failed to parse course:" + fe
-            .getMessage(), null);
-      }
-    }
-    else
-    {
-      logger.logError(ErrorLogger.WARNING, "Insufficient fields in POS line:"
-          + line, null);
-    }
-    return res;
+        double courseDegs = Double.parseDouble(txt);
+        return Math.toRadians(courseDegs);
+      }});
+  }
+
+  
+  private static interface ExtractValue
+  {
+    double extract(String txt);
   }
 
   private static HiResDate dateFor(String line, ErrorLogger logger,
