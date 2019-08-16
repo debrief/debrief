@@ -24,7 +24,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
@@ -48,7 +47,7 @@ import junit.framework.TestCase;
 
 public class OTH_Importer
 {
-  
+
   private final static int YEAR_UNKNOWN = -1;
 
   private static interface ExtractValue<T extends Object>
@@ -132,6 +131,16 @@ public class OTH_Importer
         messages.clear();
       }
 
+      private boolean isEmpty()
+      {
+        return messages.isEmpty();
+      }
+
+      private String last()
+      {
+        return messages.get(messages.size() - 1);
+      }
+
       @Override
       public void logError(final int status, final String text,
           final Exception e)
@@ -189,16 +198,14 @@ public class OTH_Importer
           "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/300a/2K/",
           _logger));
       assertEquals("correct message",
-          "Failed to parse course:For input string: \"300a\"", _logger.messages
-              .get(0));
+          "Failed to parse course:For input string: \"300a\"", _logger.last());
 
       _logger.clear();
       assertEquals("got speed", 0d, speedFor(
           "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/200T/2MS/",
           _logger));
       assertEquals("correct message",
-          "Failed to parse speed:For input string: \"2MS\"", _logger.messages
-              .get(0));
+          "Failed to parse speed:For input string: \"2MS\"", _logger.last());
 
     }
 
@@ -212,8 +219,20 @@ public class OTH_Importer
       // this time, verify the message
       assertFalse("missing pos", canLoad(root + "/missing_pos.txt", _logger));
       assertEquals("correct error message",
-          "OTH Import rejecting file, Header:true Track:true Pos:false",
-          _logger.messages.get(0));
+          "OTH Import rejecting file, Header:true Track:true Pos:false", _logger
+              .last());
+    }
+
+    public void testGoodLoad() throws Exception
+    {
+      OTH_Importer importer = new OTH_Importer();
+      Layers layers = new Layers();
+
+      OTH_Helper brtHelper = new OTH_Helper_Headless(true);
+      InputStream is = new FileInputStream(root + "/valid.txt");
+      importer.importThis(brtHelper, is, layers, _logger);
+
+      assertEquals("has data", 33, layers.size());
     }
 
     public void testGetLocation()
@@ -223,23 +242,27 @@ public class OTH_Importer
               "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/000T/0K/",
               _logger).toString());
     }
-    
+
     public void testParseDate() throws ParseException
     {
       // 112313Z1/AUG
-      
-      DateFormat df = new SimpleDateFormat("ddHHmm");
-      assertEquals("correct date", "Sun Jan 11 23:13:00 GMT 1970", df.parse("112313").toString());
-      
-      DateFormat df2 = new SimpleDateFormat("ddHHmm'Z'");
-      assertEquals("correct date", "Sun Jan 11 23:13:00 GMT 1970", df2.parse("112313Z").toString());
-      
-      DateFormat df3 = new SimpleDateFormat("ddHHmm'Z'MMM");
-      assertEquals("correct date", "Tue Aug 11 23:13:00 GMT 1970", df3.parse("112313ZAUG").toString());
 
-      DateFormat df4 = new SimpleDateFormat("ddHHmm'Z'MMMyy");  
-      assertEquals("correct date", "Sat Aug 11 23:13:00 BST 2018", df4.parse("112313ZAUG18").toString());
-      
+      DateFormat df = new SimpleDateFormat("ddHHmm");
+      assertEquals("correct date", "Sun Jan 11 23:13:00 GMT 1970", df.parse(
+          "112313").toString());
+
+      DateFormat df2 = new SimpleDateFormat("ddHHmm'Z'");
+      assertEquals("correct date", "Sun Jan 11 23:13:00 GMT 1970", df2.parse(
+          "112313Z").toString());
+
+      DateFormat df3 = new SimpleDateFormat("ddHHmm'Z'MMM");
+      assertEquals("correct date", "Tue Aug 11 23:13:00 GMT 1970", df3.parse(
+          "112313ZAUG").toString());
+
+      DateFormat df4 = new SimpleDateFormat("ddHHmm'Z'MMMyy");
+      assertEquals("correct date", "Sat Aug 11 23:13:00 BST 2018", df4.parse(
+          "112313ZAUG18").toString());
+
       assertEquals("correct date", "Fri Aug 11 23:13:00 BST 2017", dateFor(
           "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/000T/0K/", _logger,
           17).getDate().toString());
@@ -251,6 +274,34 @@ public class OTH_Importer
       assertEquals("correct date", "Sun Nov 11 23:13:00 GMT 2018", dateFor(
           "POS/112313Z1/NOV/4612N34/02122W7//170T/11NM/13NM/000T/0K/", _logger,
           YEAR_UNKNOWN).getDate().toString());
+
+      assertEquals("correct date", null, dateFor(
+          "POS/112313Z1/NaV/4612N34/02122W7//170T/11NM/13NM/000T/0K/", _logger,
+          YEAR_UNKNOWN));
+
+    }
+
+    public void testParseYear()
+    {
+      _logger.clear();
+      assertEquals("good year", 19, parseYear(_logger,
+          "some string more string 19", YEAR_UNKNOWN));
+      assertTrue("empty logger", _logger.isEmpty());
+
+      _logger.clear();
+      assertEquals("bad year", YEAR_UNKNOWN, parseYear(_logger,
+          "some string more string 1a9", YEAR_UNKNOWN));
+      assertEquals("correct message",
+          "Failed to extract year from last token in:some string more string 1a9",
+          _logger.last());
+
+      _logger.clear();
+      assertEquals("bad year", YEAR_UNKNOWN, parseYear(_logger, "",
+          YEAR_UNKNOWN));
+      assertEquals("correct message",
+          "Failed to extract year from empty first line",
+          _logger.last());
+
     }
 
     public void testGetName()
@@ -283,14 +334,14 @@ public class OTH_Importer
           "POS/112313Z1/AUG/4612N34/02122W7", _logger));
       assertEquals("correct message",
           "Insufficient fields in POS line:POS/112313Z1/AUG/4612N34/02122W7",
-          _logger.messages.get(0));
+          _logger.last());
 
       _logger.clear();
       assertEquals("not got course", 0d, courseFor(
           "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM", _logger));
       assertEquals("correct message",
           "Insufficient fields in POS line:POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM",
-          _logger.messages.get(0));
+          _logger.last());
     }
   }
 
@@ -378,16 +429,17 @@ public class OTH_Importer
 
   private static double courseFor(final String line, final ErrorLogger logger)
   {
-    Double res = getField(line, logger, "T", 9, "course", new ExtractValue<Double>()
-    {
+    Double res = getField(line, logger, "T", 9, "course",
+        new ExtractValue<Double>()
+        {
 
-      @Override
-      public Double extract(final String txt)
-      {
-        final double courseDegs = Double.parseDouble(txt);
-        return Math.toRadians(courseDegs);
-      }
-    });
+          @Override
+          public Double extract(final String txt)
+          {
+            final double courseDegs = Double.parseDouble(txt);
+            return Math.toRadians(courseDegs);
+          }
+        });
     return res != null ? res : 0d;
   }
 
@@ -410,19 +462,19 @@ public class OTH_Importer
     {
       try
       {
-        
+
         final String dateStr = tokens[1].substring(0, 7);
         final String monStr = tokens[2];
-        
+
         // sort out the year
         final int useYear;
-        if(year == YEAR_UNKNOWN)
+        if (year == YEAR_UNKNOWN)
         {
           // ok. is the month before or after this one?
           DateFormat dm2 = new SimpleDateFormat("MMMyy");
-          final int thisYear = LocalDate.now().getYear()- 2000;
-          Date monDate = dm2.parse(monStr+thisYear);
-          if(monDate.getTime() > new Date().getTime())
+          final int thisYear = LocalDate.now().getYear() - 2000;
+          Date monDate = dm2.parse(monStr + thisYear);
+          if (monDate.getTime() > new Date().getTime())
           {
             // ok, later in the year. use previous year
             useYear = thisYear - 1;
@@ -436,7 +488,7 @@ public class OTH_Importer
         {
           useYear = year;
         }
-        
+
         final String wholeStr = dateStr + monStr + useYear;
         DateFormat df = new SimpleDateFormat("ddHHmm'Z'MMMyy");
         Date date = df.parse(wholeStr);
@@ -613,8 +665,7 @@ public class OTH_Importer
   }
 
   private static OTH_Data read_OTH(final InputStream is,
-      final ErrorLogger logger) throws NumberFormatException, IOException,
-      Exception
+      final ErrorLogger logger) throws IOException
   {
     final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
@@ -634,21 +685,7 @@ public class OTH_Importer
       // if it's the first line, look for a date
       if (ctr == 0)
       {
-        final String[] tokens = line.split(" ");
-        final String lastToken = tokens[tokens.length - 1];
-        try
-        {
-          final int yr = Integer.parseInt(lastToken);
-          if (yr > 0 && yr < 100)
-          {
-            year = yr + 2000;
-          }
-        }
-        catch (final NumberFormatException ne)
-        {
-          logger.logError(ErrorLogger.WARNING,
-              "Failed to extract year from last token in:" + line, null);
-        }
+        year = parseYear(logger, line, year);
       }
 
       // looking for new track
@@ -717,20 +754,50 @@ public class OTH_Importer
     return brtData;
   }
 
+  private static int parseYear(final ErrorLogger logger, String line, final int year)
+  {
+    int res = YEAR_UNKNOWN;
+    final String[] tokens = line.split(" ");
+    if (tokens.length <= 1)
+    {
+      logger.logError(ErrorLogger.WARNING,
+          "Failed to extract year from empty first line", null);
+    }
+    else
+    {
+      final String lastToken = tokens[tokens.length - 1];
+      try
+      {
+        final int yr = Integer.parseInt(lastToken);
+        if (yr > 0 && yr < 100)
+        {
+          res = yr;
+        }
+      }
+      catch (final NumberFormatException ne)
+      {
+        logger.logError(ErrorLogger.WARNING,
+            "Failed to extract year from last token in:" + line, null);
+      }
+    }
+    return res;
+  }
+
   private static double speedFor(final String line, final ErrorLogger logger)
   {
-    final Double res = getField(line, logger, "K", 10, "speed", new ExtractValue<Double>()
-    {
-      @Override
-      public Double extract(final String txt)
-      {
-        final double speedKts = Double.parseDouble(txt);
-        return new WorldSpeed(speedKts, WorldSpeed.Kts).getValueIn(
-            WorldSpeed.ft_sec) / 3;
-      }
-    });
-    
-    return res != null  ? res : 0d;
+    final Double res = getField(line, logger, "K", 10, "speed",
+        new ExtractValue<Double>()
+        {
+          @Override
+          public Double extract(final String txt)
+          {
+            final double speedKts = Double.parseDouble(txt);
+            return new WorldSpeed(speedKts, WorldSpeed.Kts).getValueIn(
+                WorldSpeed.ft_sec) / 3;
+          }
+        });
+
+    return res != null ? res : 0d;
   }
 
   /**
