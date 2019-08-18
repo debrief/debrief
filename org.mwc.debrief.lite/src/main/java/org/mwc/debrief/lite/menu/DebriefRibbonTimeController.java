@@ -238,12 +238,14 @@ public class DebriefRibbonTimeController
   {
     final private PlotOperations operations;
     final private TimeManager timeManager;
+    final private LiteStepControl stepcontrol;
 
     private SliderListener(final PlotOperations operations,
-        final TimeManager time)
+        final TimeManager time, final LiteStepControl step)
     {
       this.operations = operations;
-      timeManager = time;
+      this.timeManager = time;
+      this.stepcontrol = step;
     }
 
     @Override
@@ -270,6 +272,7 @@ public class DebriefRibbonTimeController
         {
           oldTime = high;
         }
+        stepcontrol.setEndTime(new HiResDate(high));
         label.setRange(low.getTime(), high.getTime());
         label.setValue(oldTime.getTime());
 
@@ -832,7 +835,8 @@ public class DebriefRibbonTimeController
     formatBinder.timeManager = timeManager;
 
     formatBinder.updateFilterDateFormat();
-    slider.addChangeListener(new SliderListener(operations, timeManager));
+    slider.addChangeListener(new SliderListener(operations, timeManager, 
+        stepControl));
     slider.setEnabled(false);
     slider.setPreferredSize(new Dimension(250, 200));
 
