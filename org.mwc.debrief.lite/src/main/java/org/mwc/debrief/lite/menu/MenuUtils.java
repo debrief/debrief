@@ -108,6 +108,7 @@ public class MenuUtils
     final RichTooltip richTooltip = builder.setTitle(commandName)
         .addDescriptionSection(desc).build();
     commandButton.setActionRichTooltip(richTooltip);
+    commandButton.setName(commandName);
     commandButton.addActionListener(actionToAdd);
     if (priority != null)
     {
@@ -129,6 +130,7 @@ public class MenuUtils
     }
     final JCommandToggleButton commandButton = new JCommandToggleButton(
         commandName, imageIcon);
+    commandButton.setName(commandName);
     commandButton.addActionListener(actionToAdd);
     commandButton.setDisplayState(priority);
     return commandButton;

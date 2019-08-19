@@ -46,44 +46,44 @@ public class TestMenus extends BaseTestCase
   public void testLiteMenu() {
     JRibbonFrame ribbonFrame = DebriefLiteApp.getInstance().getApplicationFrame();
     assertEquals(ribbonFrame.getRibbon().getTaskCount(),5);
-    assertEquals(ribbonFrame.getRibbon().getTask(0).getTitle(),"Lite");
+    assertEquals(TestUtils.getTask(0).getTitle(),"Lite");
     RibbonTask liteMenu = ribbonFrame.getRibbon().getTask(0);
     assertTrue(liteMenu.getBandCount()==1);
-    doAssertions(liteMenu.getBand(0),"Lite",new String[] {"Help","Exit"},false);
+    doAssertions(TestUtils.getRibbonBand(0,0),"Lite",new String[] {"Help","Exit"},false);
     {
     assertEquals(ribbonFrame.getRibbon().getTask(1).getTitle(),"File");
-    RibbonTask fileMenu = ribbonFrame.getRibbon().getTask(1);
+    RibbonTask fileMenu = TestUtils.getTask(1);
     assertTrue(fileMenu.getBandCount()==3);
+    doAssertions(TestUtils.getRibbonBand(1,0),"File",new String[] {"New","Open","Save","Close"},false);
+    assertSaveAs(TestUtils.getRibbonBand(1,0));
+    doAssertions(TestUtils.getRibbonBand(1,1),"Import",new String[] {"Replay","Plot","NMEA","TIF"},false);
+    doAssertions(TestUtils.getRibbonBand(1,2),"Export",new String[] {"Clipboard"},false);
+    }
+    {
+    assertEquals(TestUtils.getTask(2).getTitle(),"View");
+    RibbonTask viewMenu = TestUtils.getTask(2);
+    assertTrue(viewMenu.getBandCount()==3);
+    doAssertions(TestUtils.getRibbonBand(2,0),"Mouse mode",new String[] {"Pan","Zoom In","Rng/Brg","Drag Whole Feature","Drag Element"},true);
+    doAssertions(TestUtils.getRibbonBand(2,1),"Map commands",new String[] {"Zoom Out","Fit to Window"},false);
+    doAssertionTransparencySliderBar(TestUtils.getRibbonBand(2,2),"Background","Transparency:");
     
-    doAssertions(fileMenu.getBand(0),"File",new String[] {"New","Open","Save","Close"},false);
-    assertSaveAs(fileMenu.getBand(0));
-    doAssertions(fileMenu.getBand(1),"Import",new String[] {"Replay","Plot","NMEA","TIF"},false);
-    doAssertions(fileMenu.getBand(2),"Export",new String[] {"Clipboard"},false);
     }
     {
-    assertEquals(ribbonFrame.getRibbon().getTask(2).getTitle(),"View");
-    RibbonTask fileMenu = ribbonFrame.getRibbon().getTask(2);
-    assertTrue(fileMenu.getBandCount()==3);
-    doAssertions(fileMenu.getBand(0),"Mouse mode",new String[] {"Pan","Zoom In","Rng/Brg","Drag Whole Feature","Drag Element"},true);
-    doAssertions(fileMenu.getBand(1),"Map commands",new String[] {"Zoom Out","Fit to Window"},false);
-    doAssertionTransparencySliderBar(fileMenu.getBand(2),"Background","Transparency:");
+    assertEquals(TestUtils.getTask(3).getTitle(),"Insert");
+    RibbonTask insertMenu = TestUtils.getTask(3);
+    assertTrue(insertMenu.getBandCount()==3);
+    doAssertions(TestUtils.getRibbonBand(3,0),"Decorations",new String[] {"Scale","Grid"},false);
+    doAssertionActiveLayerCombo(TestUtils.getRibbonBand(3, 1));
+    doShapesAssertions(TestUtils.getRibbonBand(3, 2));
     
     }
     {
-    assertEquals(ribbonFrame.getRibbon().getTask(3).getTitle(),"Insert");
-    RibbonTask fileMenu = ribbonFrame.getRibbon().getTask(3);
-    assertTrue(fileMenu.getBandCount()==3);
-    doAssertions(fileMenu.getBand(0),"Decorations",new String[] {"Scale","Grid"},false);
-    doAssertionActiveLayerCombo(fileMenu.getBand(1));
-    doShapesAssertions(fileMenu.getBand(2));
-    assertEquals(ribbonFrame.getRibbon().getTask(4).getTitle(),"Time");
-    }
-    {
-      RibbonTask fileMenu = ribbonFrame.getRibbon().getTask(4);
-      assertTrue(fileMenu.getBandCount()==3);
-      doAssertions(fileMenu.getBand(0),"Display Mode",new String[] {"Normal","Snail"},true);
-      doAssertionsTimeController(fileMenu.getBand(1));
-      doAssertionsTimeSlider(fileMenu.getBand(2));
+      assertEquals(TestUtils.getTask(4).getTitle(),"Time");
+      RibbonTask timeMenu = TestUtils.getTask(4);
+      assertTrue(timeMenu.getBandCount()==3);
+      doAssertions(TestUtils.getRibbonBand(4, 0),"Display Mode",new String[] {"Normal","Snail"},true);
+      doAssertionsTimeController(TestUtils.getRibbonBand(4, 1));
+      doAssertionsTimeSlider(TestUtils.getRibbonBand(4, 2));
     }
   }
   
@@ -196,6 +196,7 @@ public class TestMenus extends BaseTestCase
     JCommandMenuButton saveAsButton = (JCommandMenuButton)TestUtils.getChildNamed(panel, "saveas");
     assertEquals("Save As",saveAsButton.getText());
     
+    @SuppressWarnings("unchecked")
     JScrollablePanel<JCommandButton> scrollPanel = (JScrollablePanel<JCommandButton>)panel.getComponent(0);
     //3 as there is a panel to which the command buttons are added.
     assertEquals(3,scrollPanel.getComponentCount());
