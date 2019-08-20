@@ -106,6 +106,8 @@ public class DebriefRibbonTimeController
     {
       minimumValue.setText(" ");
       maximumValue.setText(" ");
+      slider.setMinimum(0);
+      slider.setMaximum(0);
     }
 
     public void updateFilterDateFormat()
@@ -633,7 +635,7 @@ public class DebriefRibbonTimeController
         timeSlider.setEnabled(true);
 
         // and we can use the buttons
-        DebriefLiteApp.setState(DebriefLiteApp.ACTIVE_STATE);
+        //DebriefLiteApp.setState(DebriefLiteApp.ACTIVE_STATE);
 
         converter.init(start, end);
         timeSlider.setMinimum(converter.getStart());
