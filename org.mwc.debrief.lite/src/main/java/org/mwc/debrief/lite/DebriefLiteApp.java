@@ -33,6 +33,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -303,15 +304,21 @@ public class DebriefLiteApp implements FileDropListener
   }
   
   public static void launchApp() {
-    SwingUtilities.invokeLater(new Runnable()
+    try
     {
-      @Override
-      public void run()
+      SwingUtilities.invokeAndWait(new Runnable()
       {
-        _instance = new DebriefLiteApp();
-
-      }
-    });
+        @Override
+        public void run()
+        {
+          _instance = new DebriefLiteApp();
+        }
+      });
+    }
+    catch (InvocationTargetException | InterruptedException e)
+    {
+      e.printStackTrace();
+    }
   }
 
   private static void notifyListenersStateChanged(final Object source,
