@@ -27,7 +27,6 @@ import org.mwc.debrief.lite.utils.TestUtils;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 
 import MWC.GUI.Plottable;
-import junit.framework.TestCase;
 
 /**
  * @author Ayesha
