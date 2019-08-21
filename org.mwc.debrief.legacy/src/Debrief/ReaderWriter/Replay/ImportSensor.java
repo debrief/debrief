@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 // $RCSfile: ImportSensor.java,v $
 // @author $Author: Ian.Mayo $
@@ -110,78 +110,133 @@ import junit.framework.TestCase;
  */
 final class ImportSensor extends AbstractPlainLineImporter
 {
-  /**
-   * the type for this string
-   */
-  private final String _myType = ";SENSOR:";
-  
   public static class TestImport extends TestCase
   {
-    
+
     static public final String TEST_ALL_TEST_TYPE = "CONV";
 
     public void testValues1() throws ParseException
     {
       // ;SENSOR: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B RRR XXX YYY.....YYY
-      
+
       final String iLine =
           ";SENSOR: 100112 121314 T23 @A NULL 90.0 40503.2 \"Plain Cookie\" FisherOne held on Plain Cookie";
       final AbstractPlainLineImporter iff = new ImportSensor();
-      final SensorContactWrapper res = (SensorContactWrapper) iff.readThisLine(iLine);
+      final SensorContactWrapper res = (SensorContactWrapper) iff.readThisLine(
+          iLine);
 
       assertNotNull("Read it in", res);
-      
+
       // and check the result
       assertNotNull("read it in", res);
-      assertEquals("right track", "FisherOne held on Plain Cookie", res.getLabel());
-      assertEquals("right color", new java.awt.Color(0, 100, 189), res.getColor());
+      assertEquals("right track", "FisherOne held on Plain Cookie", res
+          .getLabel());
+      assertEquals("right color", new java.awt.Color(0, 100, 189), res
+          .getColor());
       assertEquals("right name", "100112 121314", res.getName());
-     }
-    
+    }
+
     public void testValuesNANBearing() throws ParseException
     {
       // ;SENSOR: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B RRR XXX YYY.....YYY
-      
+
       final String iLine =
           ";SENSOR: 100112 121314 T23 @A NULL NAN 40503.2 \"Plain Cookie\" FisherOne held on Plain Cookie";
       final AbstractPlainLineImporter iff = new ImportSensor();
-      final SensorContactWrapper res = (SensorContactWrapper) iff.readThisLine(iLine);
+      final SensorContactWrapper res = (SensorContactWrapper) iff.readThisLine(
+          iLine);
 
       assertNotNull("Read it in", res);
-      
+
       // and check the result
       assertNotNull("read it in", res);
-      assertEquals("right track", "FisherOne held on Plain Cookie", res.getLabel());
-      assertEquals("right color", new java.awt.Color(0, 100, 189), res.getColor());
+      assertEquals("right track", "FisherOne held on Plain Cookie", res
+          .getLabel());
+      assertEquals("right color", new java.awt.Color(0, 100, 189), res
+          .getColor());
       assertEquals("right name", "100112 121314", res.getName());
-     }
-    
+    }
+
     public void testValuesNullBearing() throws ParseException
     {
       // ;SENSOR: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B RRR XXX YYY.....YYY
-      
+
       final String iLine =
           ";SENSOR: 100112 121314 T23 @A NULL NULL 40503.2 \"Plain Cookie\" FisherOne held on Plain Cookie";
       final AbstractPlainLineImporter iff = new ImportSensor();
-      final SensorContactWrapper res = (SensorContactWrapper) iff.readThisLine(iLine);
+      final SensorContactWrapper res = (SensorContactWrapper) iff.readThisLine(
+          iLine);
 
       assertNotNull("Read it in", res);
-      
+
       // and check the result
       assertNotNull("read it in", res);
-      assertEquals("right track", "FisherOne held on Plain Cookie", res.getLabel());
-      assertEquals("right color", new java.awt.Color(0, 100, 189), res.getColor());
+      assertEquals("right track", "FisherOne held on Plain Cookie", res
+          .getLabel());
+      assertEquals("right color", new java.awt.Color(0, 100, 189), res
+          .getColor());
       assertEquals("right name", "100112 121314", res.getName());
-     }
-
+    }
 
   }
-  
+
+  /**
+   * the type for this string
+   */
+  private final String _myType = ";SENSOR:";
+
+  /**
+   * indicate if you can export this type of object
+   *
+   * @param val
+   *          the object to test
+   * @return boolean saying whether you can do it
+   */
+  @Override
+  public final boolean canExportThis(final Object val)
+  {
+    boolean res = false;
+
+    if (val instanceof SensorWrapper)
+    {
+      res = true;
+    }
+
+    return res;
+
+  }
+
+  /**
+   * export the specified shape as a string
+   *
+   * @param theWrapper
+   *          the thing we are going to export
+   * @return the shape in String form
+   */
+  @Override
+  public final String exportThis(final MWC.GUI.Plottable theWrapper)
+  {
+    // result value
+    final String line = ";; Export of sensor data not implemented";
+    return line;
+
+  }
+
+  /**
+   * determine the identifier returning this type of annotation
+   */
+  @Override
+  public final String getYourType()
+  {
+    return _myType;
+  }
 
   /**
    * read in this string and return a Label
-   * @throws ParseException 
+   * 
+   * @throws ParseException
    */
+  @Override
   public final Object readThisLine(final String theLine) throws ParseException
   {
 
@@ -210,7 +265,7 @@ final class ImportSensor extends AbstractPlainLineImporter
     theDtg = DebriefFormatDateTime.parseThis(dateToken, timeToken);
 
     // get the (possibly multi-word) track name
-    theTrack = ImportFix.checkForQuotedName(st);
+    theTrack = AbstractPlainLineImporter.checkForQuotedName(st);
 
     // start with the symbology
     symbology = st.nextToken(normalDelimiters);
@@ -256,9 +311,8 @@ final class ImportSensor extends AbstractPlainLineImporter
         final char longHem = st.nextToken().charAt(0);
 
         // create the origin
-        origin =
-            new WorldLocation(latDeg, latMin, latSec, latHem, longDeg, longMin,
-                longSec, longHem, 0);
+        origin = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg,
+            longMin, longSec, longHem, 0);
       } // whether the duff origin data was entered
 
       final String brgStr = st.nextToken();
@@ -271,7 +325,7 @@ final class ImportSensor extends AbstractPlainLineImporter
         brg = MWCXMLReader.readThisDouble(brgStr);
       }
 
-      String rangeStr = st.nextToken();
+      final String rangeStr = st.nextToken();
       if (rangeStr.startsWith("N"))
       {
         rng = 0;
@@ -289,7 +343,7 @@ final class ImportSensor extends AbstractPlainLineImporter
         sensorRng = null;
 
       // get the (possibly multi-word) track name
-      sensorName = ImportFix.checkForQuotedName(st);
+      sensorName = AbstractPlainLineImporter.checkForQuotedName(st);
 
       // and ditch some whitespace
       sensorName = sensorName.trim();
@@ -310,9 +364,8 @@ final class ImportSensor extends AbstractPlainLineImporter
       final int theStyle = ImportReplay.replayLineStyleFor(symbology);
 
       // create the contact object
-      final SensorContactWrapper data =
-          new SensorContactWrapper(theTrack, theDtg, sensorRng, brg, origin,
-              theColor, null, theStyle, sensorName);
+      final SensorContactWrapper data = new SensorContactWrapper(theTrack,
+          theDtg, sensorRng, brg, origin, theColor, null, theStyle, sensorName);
 
       // sort out the (optional) comment
       data.setLabel(ImportReplay.getLabel(labelTxt));
@@ -325,49 +378,6 @@ final class ImportSensor extends AbstractPlainLineImporter
       MWC.Utilities.Errors.Trace.trace(pe, "Whilst import sensor");
       return null;
     }
-  }
-
-  /**
-   * determine the identifier returning this type of annotation
-   */
-  public final String getYourType()
-  {
-    return _myType;
-  }
-
-  /**
-   * export the specified shape as a string
-   * 
-   * @param theWrapper
-   *          the thing we are going to export
-   * @return the shape in String form
-   */
-  public final String exportThis(final MWC.GUI.Plottable theWrapper)
-  {
-    // result value
-    final String line = ";; Export of sensor data not implemented";
-    return line;
-
-  }
-
-  /**
-   * indicate if you can export this type of object
-   * 
-   * @param val
-   *          the object to test
-   * @return boolean saying whether you can do it
-   */
-  public final boolean canExportThis(final Object val)
-  {
-    boolean res = false;
-
-    if (val instanceof SensorWrapper)
-    {
-      res = true;
-    }
-
-    return res;
-
   }
 
 }
