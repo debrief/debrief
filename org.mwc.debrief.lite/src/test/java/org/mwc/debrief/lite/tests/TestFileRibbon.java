@@ -18,6 +18,7 @@ import java.awt.AWTException;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -42,40 +43,48 @@ import org.pushingpixels.flamingo.internal.ui.ribbon.JBandControlPanel;
  */
 public class TestFileRibbon extends BaseTestCase
 {
-  
-  public void testNewFile() {
 
-    //load a file and on clicking new, the content of the file should be cleared
+  public void testNewFile() throws InvocationTargetException,
+      InterruptedException
+  {
+
+    // load a file and on clicking new, the content of the file should be cleared
     System.out.println("Started test newfile");
-    openRepFile("../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep");
-    JRibbonFrame ribbonFrame = DebriefLiteApp.getInstance().getApplicationFrame();
-    JXCollapsiblePaneWithTitle outlinePanel = (JXCollapsiblePaneWithTitle)TestUtils.getChildNamed(ribbonFrame,"Outline");
+    openRepFile(
+        "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep");
+    JRibbonFrame ribbonFrame = DebriefLiteApp.getInstance()
+        .getApplicationFrame();
+    JXCollapsiblePaneWithTitle outlinePanel =
+        (JXCollapsiblePaneWithTitle) TestUtils.getChildNamed(ribbonFrame,
+            "Outline");
     assertNotNull(outlinePanel);
     assertTrue(outlinePanel.isVisible());
     assertTrue(outlinePanel.isEnabled());
-    JTree tree = (JTree)TestUtils.getChildNamed(outlinePanel, "Layer Tree");
-    assertEquals(tree.getModel().getChildCount(tree.getModel().getRoot()),3);
-    DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 2);
+    JTree tree = (JTree) TestUtils.getChildNamed(outlinePanel, "Layer Tree");
+    assertEquals(tree.getModel().getChildCount(tree.getModel().getRoot()), 3);
+    DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getModel()
+        .getChild(tree.getModel().getRoot(), 2);
     assertNotNull(node);
-    assertEquals(ribbonFrame.getRibbon().getTask(1).getTitle(),"File");
-    //ribbonFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
+    assertEquals(ribbonFrame.getRibbon().getTask(1).getTitle(), "File");
+    // ribbonFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
     System.out.println("clicking new");
-    JBandControlPanel liteBand = (JBandControlPanel)DebriefRibbonFile.getFileTask().getBand(0).getComponent(0);
-    JCommandButton newButton = ((JCommandButton)liteBand.getComponent(0));
+    JBandControlPanel liteBand = (JBandControlPanel) DebriefRibbonFile
+        .getFileTask().getBand(0).getComponent(0);
+    JCommandButton newButton = ((JCommandButton) liteBand.getComponent(0));
     SwingUtilities.invokeLater(new Runnable()
     {
-
       @Override
       public void run()
       {
-        newButton.doActionClick();    
+        newButton.doActionClick();
       }
     });
     System.out.println("clicked new");
 
-    //check for the dialog
-    JButton ok=null;
-    for (int i = 0; ok == null; ++i) {
+    // check for the dialog
+    JButton ok = null;
+    for (int i = 0; ok == null; ++i)
+    {
       try
       {
         Thread.sleep(200);
@@ -84,12 +93,12 @@ public class TestFileRibbon extends BaseTestCase
       {
         e.printStackTrace();
       }
-      ok = (JButton)TestUtils.getChildIndexed(ribbonFrame, "JButton", 1,true);
-      assertTrue(i < 10);
+      ok = (JButton) TestUtils.getChildIndexed(ribbonFrame, "JButton", 1, true);
+      assertTrue(i < 20);
     }
-    assertEquals(
-        "No", ok.getText());
+    assertEquals("No", ok.getText());
     final JButton no = ok;
+
     SwingUtilities.invokeLater(new Runnable()
     {
 
@@ -99,7 +108,7 @@ public class TestFileRibbon extends BaseTestCase
         no.doClick();
       }
     });
-    //wait for reset to be over.
+    // wait for reset to be over.
     try
     {
       Thread.sleep(200);
@@ -108,50 +117,47 @@ public class TestFileRibbon extends BaseTestCase
     {
       e.printStackTrace();
     }
-    assertEquals(tree.getModel().getChildCount(tree.getModel().getRoot()),2);
+    assertEquals(tree.getModel().getChildCount(tree.getModel().getRoot()), 2);
     System.out.println("end new file test");
   }
+
   private void openRepFile(final String filename)
+      throws InvocationTargetException, InterruptedException
   {
     File[] f = new File[1];
-
-    f[0]=new File(filename);
-    SwingUtilities.invokeLater(new Runnable()
+    f[0] = new File(filename);
+    SwingUtilities.invokeAndWait(new Runnable()
     {
 
       public void run()
       {
-        DebriefLiteApp.openRepFile(f[0]);    
+        DebriefLiteApp.openRepFile(f[0]);
       }
     });
-    try
-    {
-      Thread.sleep(500);
-    }
-    catch (InterruptedException e)
-    {
-      e.printStackTrace();
-    }
     System.out.println("done opening file");
   }
+
   public void testSaveAction() throws Exception
   {
     System.out.println("Start testing save");
-    //open a rep file, insert some shape into it and save it, verify the shape is still there after reopening.
-    openRepFile("../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep");
-    JRibbonFrame ribbonFrame = DebriefLiteApp.getInstance().getApplicationFrame();
-    assertEquals(ribbonFrame.getRibbon().getTask(1).getTitle(),"File");
-    ///ribbonFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
-    //insert a new shape.
-    //ribbonFrame.getRibbon().setSelectedTask(ribbonFrame.getRibbon().getTask(3));
+    // open a rep file, insert some shape into it and save it, verify the shape is still there after
+    // reopening.
+    openRepFile(
+        "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep");
+    JRibbonFrame ribbonFrame = DebriefLiteApp.getInstance()
+        .getApplicationFrame();
+    assertEquals(ribbonFrame.getRibbon().getTask(1).getTitle(), "File");
+    /// ribbonFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
+    // insert a new shape.
+    // ribbonFrame.getRibbon().setSelectedTask(ribbonFrame.getRibbon().getTask(3));
     JComboBox<String> combo = TestUtils.getActiveLayerDropDown();
-    SwingUtilities.invokeLater(new Runnable()
+    SwingUtilities.invokeAndWait(new Runnable()
     {
 
       @Override
       public void run()
       {
-        combo.requestFocus();    
+        combo.requestFocus();
       }
     });
     Thread.sleep(100);
@@ -162,52 +168,54 @@ public class TestFileRibbon extends BaseTestCase
       @Override
       public void run()
       {
-        combo.setSelectedItem(item);    
+        combo.setSelectedItem(item);
       }
     });
     Thread.sleep(100);
-    JBandControlPanel liteBand = (JBandControlPanel)TestUtils.getRibbonBand(3, 2).getComponent(0);
-    JCommandButton ellipseButton = (JCommandButton)((JRibbonComponent)liteBand.getComponent(2)).getComponent(1);
-    SwingUtilities.invokeLater(new Runnable()
+    JBandControlPanel liteBand = (JBandControlPanel) TestUtils.getRibbonBand(3,
+        2).getComponent(0);
+    JCommandButton ellipseButton = (JCommandButton) ((JRibbonComponent) liteBand
+        .getComponent(2)).getComponent(1);
+    SwingUtilities.invokeAndWait(new Runnable()
     {
 
       @Override
       public void run()
       {
-        ellipseButton.doActionClick();    
+        ellipseButton.doActionClick();
       }
     });
     Thread.sleep(200);
     JCommandMenuButton saveDDButton = TestUtils.getSaveButton();
 
+    /**
+     * note: the following call appears to require invokeLater() rather than invokeAndWait. This is
+     * because the modal dialog will block until there is user intervention (click)
+     */
     SwingUtilities.invokeLater(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        saveDDButton.doActionClick();
+      }
+    });
+    Thread.sleep(400);
+
+    // wait for window to open and confirm it is open
+    JFileChooser saveWindow = (JFileChooser) TestUtils.getChildIndexed(
+        ribbonFrame, "JFileChooser", 0, false);
+    assertNotNull("found save window", saveWindow);
+
+    // now actually push the save button
+    System.out.println("Save button:");
+
+    SwingUtilities.invokeAndWait(new Runnable()
     {
 
       @Override
       public void run()
       {
-        saveDDButton.doActionClick();    
-      }
-    });
-    Thread.sleep(200);
-    //wait for window to open and confirm it is open
-    JFileChooser saveWindow=null;
-    for (int i = 0; saveWindow == null; ++i) {
-      try
-      {
-        Thread.sleep(400);
-      }
-      catch (InterruptedException e)
-      {
-        e.printStackTrace();
-      }
-      saveWindow=(JFileChooser)TestUtils.getChildIndexed(ribbonFrame, "JFileChooser", 0,false);
-      assertTrue(i < 10);
-    }
-    System.out.println("Save button:");
-    new Thread(new Runnable() {
-      @Override
-      public void run() {
         Robot robot;
         try
         {
@@ -220,38 +228,44 @@ public class TestFileRibbon extends BaseTestCase
         }
 
       }
-    }).start();
+    });
+
     Thread.sleep(1000);
 
-    JBandControlPanel saveBand = (JBandControlPanel)TestUtils.getRibbonBand(1,0).getComponent(0);
-    JCommandButton closeButton = (JCommandButton)saveBand.getComponent(3);
+    JBandControlPanel saveBand = (JBandControlPanel) TestUtils.getRibbonBand(1,
+        0).getComponent(0);
+    JCommandButton closeButton = (JCommandButton) saveBand.getComponent(3);
     SwingUtilities.invokeLater(new Runnable()
     {
-
       @Override
       public void run()
       {
         closeButton.doActionClick();
       }
     });
-    File f = new File("../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.dpf");
+    Thread.sleep(2000);
+    File f = new File(
+        "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.dpf");
     f.delete();
     System.out.println("Done deleting created file");
   }
 
-  /*public void testOpenFile() {
-
-  }*/
-  public void testClose()throws InterruptedException
+  /*
+   * public void testOpenFile() {
+   * 
+   * }
+   */
+  public void testClose() throws InterruptedException, InvocationTargetException
   {
     System.out.println("Starting test close");
-    openRepFile("../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep");
-    JBandControlPanel fileBand = (JBandControlPanel)TestUtils.getRibbonBand(1, 0).getComponent(0);
-    JCommandButton closeButton = (JCommandButton)fileBand.getComponent(3);
+    openRepFile(
+        "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep");
+    JBandControlPanel fileBand = (JBandControlPanel) TestUtils.getRibbonBand(1,
+        0).getComponent(0);
+    JCommandButton closeButton = (JCommandButton) fileBand.getComponent(3);
     assertTrue(closeButton.isEnabled());
     SwingUtilities.invokeLater(new Runnable()
     {
-
       @Override
       public void run()
       {
@@ -259,9 +273,10 @@ public class TestFileRibbon extends BaseTestCase
       }
     });
     //
-    //check for the dialog
-    JButton ok=null;
-    for (int i = 0; ok == null; ++i) {
+    // check for the dialog
+    JButton ok = null;
+    for (int i = 0; ok == null; ++i)
+    {
       try
       {
         Thread.sleep(200);
@@ -270,23 +285,22 @@ public class TestFileRibbon extends BaseTestCase
       {
         e.printStackTrace();
       }
-      ok = (JButton)TestUtils.getChildIndexed(DebriefLiteApp.getInstance().getApplicationFrame(), "JButton", 1,true);
-      assertTrue(i < 10);
+      ok = (JButton) TestUtils.getChildIndexed(DebriefLiteApp.getInstance()
+          .getApplicationFrame(), "JButton", 1, true);
+      assertTrue(i < 20);
     }
-    assertEquals(
-        "No", ok.getText());
+    assertEquals("No", ok.getText());
     final JButton no = ok;
-    SwingUtilities.invokeLater(new Runnable()
+    SwingUtilities.invokeAndWait(new Runnable()
     {
-
       @Override
       public void run()
       {
         no.doClick();
       }
     });
-    
-    //wait for reset to be over.
+
+    // wait for reset to be over.
     try
     {
       Thread.sleep(200);
@@ -295,19 +309,22 @@ public class TestFileRibbon extends BaseTestCase
     {
       e.printStackTrace();
     }
-    assertFalse(closeButton.isEnabled());   
+    assertFalse(closeButton.isEnabled());
     System.out.println("Done test close");
   }
 
-  public void testImportRepFile(){
+  public void testImportRepFile() throws InvocationTargetException,
+      InterruptedException
+  {
     System.out.println("start testing import rep file");
-    openRepFile("../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep");
+    openRepFile(
+        "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep");
     System.out.println("done testing import rep file");
   }
-  /*public void testImportNMEAFile()
-  {
-
-  }*/
+  /*
+   * public void testImportNMEAFile() {
+   * 
+   * }
+   */
 
 }
-
