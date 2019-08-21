@@ -41,14 +41,21 @@ public class TestUtils
   private static int counter;
 
   public static Component getChildIndexed(final Component parent,
-      final String klass, final int index)
+      final String klass, final int index,boolean owned)
   {
     counter = 0;
 
     // Step in only owned windows and ignore its components in JFrame
     if (parent instanceof Window)
     {
-      final Component[] children = ((Window) parent).getWindows();
+      final Component[] children;
+      if(owned)
+      {
+        children = ((Window) parent).getOwnedWindows();        
+      }
+      else {
+        children = ((Window) parent).getWindows();
+      }
 
       for (int i = 0; i < children.length; ++i)
       {

@@ -35,6 +35,8 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 import org.pushingpixels.flamingo.internal.ui.ribbon.JBandControlPanel;
 
+import junit.framework.TestCase;
+
 /**
  * @author Ayesha
  *

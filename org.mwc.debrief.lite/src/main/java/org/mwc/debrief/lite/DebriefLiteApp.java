@@ -303,7 +303,6 @@ public class DebriefLiteApp implements FileDropListener
   }
   
   public static void launchApp() {
-    if(_instance == null) {
     SwingUtilities.invokeLater(new Runnable()
     {
       @Override
@@ -313,7 +312,6 @@ public class DebriefLiteApp implements FileDropListener
 
       }
     });
-    }
   }
 
   private static void notifyListenersStateChanged(final Object source,
@@ -703,7 +701,10 @@ public class DebriefLiteApp implements FileDropListener
     System.setProperty("com.sun.media.jai.disableMediaLib", "true");
 
     JFrame.setDefaultLookAndFeelDecorated(true);
-    SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
+    if(SubstanceCortex.GlobalScope.getCurrentSkin()==null)
+    {
+      SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
+    }
     final DisplaySplash splashScreen = new DisplaySplash(5);
     final Thread t = new Thread(splashScreen);
     t.start();
@@ -891,7 +892,7 @@ public class DebriefLiteApp implements FileDropListener
     // lastly give us some backdrop data
     loadBackdropdata(_theLayers);
 
-    theFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+    theFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     theFrame.setVisible(true);
     theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
   }
@@ -1097,6 +1098,10 @@ public class DebriefLiteApp implements FileDropListener
     dest.endDraw(gc);
   }
 
+  public static void disposeForTest()
+  {
+    _instance.theFrame.dispose();
+  }
   public void exit()
   {
     if (DebriefLiteApp.isDirty())
@@ -1162,7 +1167,7 @@ public class DebriefLiteApp implements FileDropListener
   {
     session.close();
     theFrame.dispose();
-    System.exit(0);
+    //System.exit(0);
   }
 
   @Override

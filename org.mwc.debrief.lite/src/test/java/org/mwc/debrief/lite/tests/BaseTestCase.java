@@ -14,6 +14,10 @@
  */
 package org.mwc.debrief.lite.tests;
 
+import javax.swing.SwingUtilities;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.mwc.debrief.lite.DebriefLiteApp;
 
 import junit.framework.TestCase;
@@ -25,7 +29,6 @@ import junit.framework.TestCase;
 public abstract class BaseTestCase extends TestCase
 {
   
-  @Override
   protected void setUp() throws Exception
   {
     System.out.println("Setup");
@@ -42,11 +45,21 @@ public abstract class BaseTestCase extends TestCase
   }
   
 
-  @Override
   protected void tearDown() throws Exception
   {
     System.out.println("teardown");
-    DebriefLiteApp.getInstance().getApplicationFrame().setVisible(false);
+    SwingUtilities.invokeLater(new Runnable()
+    {
+      
+      @Override
+      public void run()
+      {
+        // TODO Auto-generated method stub
+        DebriefLiteApp.disposeForTest();
+        
+      }
+    });
+   
     super.tearDown();
   }
 }

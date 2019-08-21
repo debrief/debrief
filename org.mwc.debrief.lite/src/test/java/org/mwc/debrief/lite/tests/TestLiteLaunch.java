@@ -23,6 +23,8 @@ import org.mwc.debrief.lite.gui.custom.JXCollapsiblePaneWithTitle;
 import org.mwc.debrief.lite.utils.TestUtils;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 
+import junit.framework.TestCase;
+
 /**
  * @author Ayesha
  *
@@ -73,8 +75,5 @@ public class TestLiteLaunch extends BaseTestCase
     assertTrue(graphPanel.isCollapsed());
     JXCollapsiblePaneWithTitle narrativesPanel = (JXCollapsiblePaneWithTitle)TestUtils.getChildNamed(ribbonFrame, "Narratives");
     assertTrue(narrativesPanel.isCollapsed());
-  }
-  public static void main(String args[]) {
-    junit.textui.TestRunner.run(TestLiteLaunch.class);    
-  }  
+  } 
 }
