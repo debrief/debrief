@@ -54,7 +54,7 @@ public class TestUtils
         children = ((Window) parent).getOwnedWindows();        
       }
       else {
-        children = ((Window) parent).getWindows();
+        children = Window.getWindows();
       }
 
       for (int i = 0; i < children.length; ++i)
