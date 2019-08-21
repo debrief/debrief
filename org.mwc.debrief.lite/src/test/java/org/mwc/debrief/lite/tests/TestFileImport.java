@@ -15,6 +15,7 @@
 package org.mwc.debrief.lite.tests;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
@@ -37,29 +38,18 @@ public class TestFileImport extends BaseTestCase
   //load a file that doesnt exist
   //load a file that exists and see if it is loaded
   
-  public void testImportRepFile()
+  public void testImportRepFile() throws InvocationTargetException, InterruptedException
   {
     System.out.println("started test");
-    File[] f = new File[1];
-    
-    f[0]=new File("../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep");
-    SwingUtilities.invokeLater(new Runnable()
+    File[] f = new File[] {new File("../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep")};
+    SwingUtilities.invokeAndWait(new Runnable()
     {
-      
       @Override
       public void run()
       {
         DebriefLiteApp.openRepFile(f[0]);    
       }
     });
-    try
-    {
-      Thread.sleep(200);
-    }
-    catch (InterruptedException e)
-    {
-      e.printStackTrace();
-    }
     //do assertions here
     //outline view should have track nelson and by default should have layers chart features and background
     JRibbonFrame ribbonFrame = DebriefLiteApp.getInstance().getApplicationFrame();
