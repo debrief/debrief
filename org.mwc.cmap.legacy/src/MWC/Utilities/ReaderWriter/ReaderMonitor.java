@@ -41,101 +41,138 @@
 // Initial revision
 //
 
-
 package MWC.Utilities.ReaderWriter;
-
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 
-import javax.swing.JFrame;
 import javax.swing.ProgressMonitor;
 import javax.swing.SwingUtilities;
 
+import MWC.Utilities.ReaderWriter.PlainImporter.MonitorProvider;
+
 public class ReaderMonitor extends BufferedReader
 {
-  private final int _length;
-  private float _counter;
-  private int _progress;
-  ProgressMonitor _pm;
-  private JFrame _tmpFrame;
-  private final Thread _myThread;
+  private int _counter;
+
+  private MonitorProvider _provider;
+
+  public ReaderMonitor(final Reader r, final int length, final String fileName,
+      MonitorProvider provider)
+  {
+    super(r);
+    _counter = 0;
+    this._provider = provider;
+    _provider.init(fileName, length);
+  }
 
   public ReaderMonitor(final Reader r, final int length, final String fileName)
   {
-    super(r);
-   _length = length;
-    _counter = 0;
-    _progress = 0;
-    _myThread = new showMonitor(fileName);
-    _myThread.start();
+    this(r, length, fileName, new SwingProvider());
   }
 
-  protected class showMonitor extends Thread
-  {
-    String _name;
-    public showMonitor(final String name)
-    {
-      super();
-      _name = name;
-    }
-    public void run()
-    {
-      final java.io.File fl = new java.io.File(_name);
-      _pm = new ProgressMonitor(null, "Reading file:" + fl.getName(), "blank", 0, 99);
-      _pm.setMillisToPopup(200);
-    }
-  }
-
-  /** override the readLine method, to tell us were at a new line
+  /**
+   * override the readLine method, to tell us were at a new line
    *
    */
-  public String readLine()
-          throws IOException
+  public String readLine() throws IOException
   {
     _counter++;
-    final float prog = (_counter / _length * 100);
-    _progress = (int) prog;
-
-    SwingUtilities.invokeLater(new Runnable()
-    {
-      
-      @Override
-      public void run()
-      {
-        if(_pm != null)
-        {
-          _pm.setProgress(_progress);
-          _pm.setNote("" + _progress + "% complete");
-
-          if(_progress >= 99)
-          {
-            _pm.close();
-            _pm = null;
-          }
-
-        }
-      }
-    });
+    if(_provider!=null)
+      _provider.progress(_counter);
     return super.readLine();
   }
 
-  /** finalise, time to close the progress bar
+  /**
+   * finalise, time to close the progress bar
    *
    */
-  protected void finalize()
-              throws Throwable
+  protected void finalize() throws Throwable
   {
     super.finalize();
-    _tmpFrame.dispose();
-    _tmpFrame = null;
-    if(_pm != null)
-    {
-      _pm.close();
-      _pm = null;
-    }
+    if(_provider!=null)
+      _provider.done();
 
   }
+  
+  @Override
+  public void close() throws IOException
+  {
+    super.close();
+    if(_provider!=null)
+      _provider.done();
+  }
 
+  private static class SwingProvider implements MonitorProvider
+  {
+
+    private ProgressMonitor _pm;
+    private Thread _myThread;
+    private int _length;
+
+    @Override
+    public void init(final String fileName, final int length)
+    {
+      _length = length;
+      _myThread = new showMonitor(fileName, length);
+      _myThread.start();
+
+    }
+
+    protected class showMonitor extends Thread
+    {
+      private final String _name;
+      private final int _length;
+
+      public showMonitor(final String name, final int length)
+      {
+        super();
+        _name = name;
+        _length = length;
+      }
+
+      public void run()
+      {
+        final java.io.File fl = new java.io.File(_name);
+        _pm = new ProgressMonitor(null, "Reading file:" + fl.getName(), "blank",
+            0, _length - 1);
+        _pm.setMillisToPopup(0);
+        _pm.setMillisToDecideToPopup(0);
+      }
+    }
+
+    @Override
+    public void progress(final int progress)
+    {
+      SwingUtilities.invokeLater(new Runnable()
+      {
+        
+        @Override
+        public void run()
+        {
+          if (_pm != null)
+          {
+            try
+            {
+              _pm.setNote("" + (progress * 100 / _length) + "% complete");
+              _pm.setProgress(progress);
+            }
+            catch (Exception e)
+            {
+              // This shouldn't happen. Let's leave it just in case.
+            }
+          }
+          
+        }
+      });
+     
+    }
+    
+    @Override
+    public void done()
+    {
+      // Nothing to do here :)
+    }
+  }
 }

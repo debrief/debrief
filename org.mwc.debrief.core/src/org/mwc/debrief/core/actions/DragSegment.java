@@ -256,7 +256,7 @@ public class DragSegment extends DragFeature
 	 * 
 	 */
 	@Override
-	public void findNearest(final Layer thisLayer,
+	protected void findNearest(final Layer thisLayer,
 			final MWC.GenericData.WorldLocation cursorLoc, final java.awt.Point cursorPos,
 			final LocationConstruct currentNearest, final Layer parentLayer, final Layers theLayers)
 	{

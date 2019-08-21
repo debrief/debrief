@@ -14,17 +14,12 @@
  */
 package com.planetmayo.debrief.satc.model.legs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
 import java.util.ArrayList;
 import java.util.Date;
 
 import org.junit.Before;
-import org.junit.Test;
 
 import com.planetmayo.debrief.satc.model.ModelTestBase;
-import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;

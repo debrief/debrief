@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Time Controller Plug-in
 Bundle-SymbolicName: org.mwc.cmap.TimeController; singleton:=true
-Bundle-Version: 1.1.76
+Bundle-Version: 1.1.80
 Bundle-ClassPath: TimeController.jar
 Bundle-Activator: org.mwc.cmap.TimeController.TimeControllerPlugin
 Bundle-Vendor: MWC
@@ -21,6 +21,5 @@ Require-Bundle: org.mwc.cmap.legacy,
  org.mwc.cmap.core,
  org.eclipse.ui.views,
  org.mwc.debrief.core,
- org.mwc.cmap.plotViewer,
- org.mwc.cmap.gt2Plot
+ org.mwc.cmap.plotViewer
 Bundle-ActivationPolicy: lazy

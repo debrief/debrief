@@ -35,8 +35,11 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.SwingUtilities;
+
 import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.Replay.ImportReplay.ProvidesModeSelector.ImportSettings;
+import Debrief.Wrappers.CompositeTrackWrapper;
 import Debrief.Wrappers.DynamicShapeLayer;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.IDynamicShapeWrapper;
@@ -50,6 +53,7 @@ import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
+import Debrief.Wrappers.Track.PlanningSegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
@@ -70,6 +74,7 @@ import MWC.GenericData.Watchable;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
 import MWC.Utilities.ReaderWriter.ExtensibleLineImporter;
+import MWC.Utilities.ReaderWriter.PlainImporter;
 import MWC.Utilities.ReaderWriter.PlainImporterBase;
 import MWC.Utilities.ReaderWriter.PlainLineImporter;
 import MWC.Utilities.ReaderWriter.PlainLineImporter.ImportRequiresFinalisation;
@@ -84,6 +89,11 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 public class ImportReplay extends PlainImporterBase
 {
 
+  public static interface Runner
+  {
+    void run(Runnable runnable);
+  }
+  
   final static class doublet
   {
     public final String label;
@@ -363,18 +373,6 @@ public class ImportReplay extends PlainImporterBase
 
       // and start it running
       reader.start();
-
-      // wait for the results
-      while (reader.isAlive())
-      {
-        try
-        {
-          Thread.sleep(100);
-        }
-        catch (final java.lang.InterruptedException e)
-        {
-        }
-      }
 
       // check it went ok
       assertTrue("File finished received", fileFinished);
@@ -761,6 +759,10 @@ public class ImportReplay extends PlainImporterBase
       // they are handled by the ImportReplay method. We are including it in
       // this list so that we can use it as an exporter
       _coreImporters.addElement(new ImportFix());
+      _coreImporters.addElement(new ImportPlanningLegOrigin());
+      _coreImporters.addElement(new ImportPlanningLegRangeSpeed());
+      _coreImporters.addElement(new ImportPlanningLegRangeTime());
+      _coreImporters.addElement(new ImportPlanningLegSpeedTime());
 
       _coreImporters.addElement(new ImportDynamicRectangle());
       _coreImporters.addElement(new ImportDynamicCircle());
@@ -850,6 +852,8 @@ public class ImportReplay extends PlainImporterBase
 
   private final Map<String, Long> _lastImportedItem =
       new HashMap<String, Long>();
+
+  private final Runner _deferredRunner;
 
   /**
    * the property name we use for importing tracks (DR/ATG)
@@ -1101,17 +1105,31 @@ public class ImportReplay extends PlainImporterBase
     return getThisSymProperty(sym, SYMBOL_PREFIX);
   }
 
-  /**
-   * constructor, initialise Vector with the list of non-Fix items which we will be reading in
-   */
-  public ImportReplay()
+  public ImportReplay(final Runner runner)
   {
+    _deferredRunner = runner;
+    
     _myTypes = new String[]
     {".rep", ".dsf", ".dtf"};
 
     checkImporters();
 
     initialiseColours();
+
+  }
+  
+  /**
+   * constructor, initialise Vector with the list of non-Fix items which we will be reading in
+   */
+  public ImportReplay()
+  {
+    this(new Runner() {
+
+      @Override
+      public void run(final Runnable runnable)
+      {
+        SwingUtilities.invokeLater(runnable);
+      }});
   }
 
   @Override
@@ -1529,21 +1547,35 @@ public class ImportReplay extends PlainImporterBase
   public final void importThis(final String text, final int numLines)
   {
     final InputStream stream = new ByteArrayInputStream(text.getBytes());
-    importRep(null, stream, numLines);
+    importRep(null, stream, numLines,null);
   }
 
   @Override
   public final void importThis(final String fName, InputStream is)
   {
     final int numLines = countLinesFor(fName);
-    importRep(fName, is, numLines);
+    importRep(fName, is, numLines,null);
+  }
+  
+  public final void importThis(final String text, final int numLines,MonitorProvider provider)
+  {
+    final InputStream stream = new ByteArrayInputStream(text.getBytes());
+    importRep(null, stream, numLines,provider);
+  }
+  
+  
+  @Override
+  public final void importThis(final String fName, InputStream is,MonitorProvider provider)
+  {
+    final int numLines = countLinesFor(fName);
+    importRep(fName, is, numLines,provider);
   }
 
   /**
    * import data from this stream
    */
   private final void importRep(final String fName, final InputStream is,
-      final int numLines)
+      final int numLines,MonitorProvider provider)
   {
     // declare linecounter
     int lineCounter = 0;
@@ -1562,7 +1594,7 @@ public class ImportReplay extends PlainImporterBase
       {
         nameToUse = "Pasted REP content";
       }
-      br = new ReaderMonitor(reader, numLines, nameToUse);
+      br = provider == null ? new ReaderMonitor(reader, numLines, nameToUse) :new ReaderMonitor(reader, numLines, nameToUse, provider) ;
       // check stream is valid
       if (is.available() > 0)
       {
@@ -1611,31 +1643,24 @@ public class ImportReplay extends PlainImporterBase
     }
     catch (final java.lang.NumberFormatException e)
     {
-      // produce the error message
-      MWC.Utilities.Errors.Trace.trace(e);
-      // show the message dialog
-      super.readError(fName, lineCounter, "Number format error", thisLine);
+      
+      handleException(e,lineCounter,thisLine,fName,"Number format error:"+e);
+      throw new PlainImporter.ImportException(null, null);
     }
     catch (final IOException e)
     {
-      // produce the error message
-      MWC.Utilities.Errors.Trace.trace(e);
-      // show the message dialog
-      super.readError(fName, lineCounter, "Unknown read error:" + e, thisLine);
+      handleException(e,lineCounter,thisLine,fName,"Unknown read error:"+e);
+      throw new PlainImporter.ImportException(null, null);
     }
     catch (final java.util.NoSuchElementException e)
     {
-      // produce the error message
-      MWC.Utilities.Errors.Trace.trace(e);
-      // show the message dialog
-      super.readError(fName, lineCounter, "Missing field error", thisLine);
+      handleException(e,lineCounter,thisLine,fName,"Missing field error");
+      throw new PlainImporter.ImportException(null, null);
     }
     catch (final ParseException e)
     {
-      // produce the error message
-      MWC.Utilities.Errors.Trace.trace(e);
-      // show the message dialog
-      super.readError(fName, lineCounter, "Date format error", thisLine);
+      handleException(e,lineCounter,thisLine,fName,"Date format error");
+      throw new PlainImporter.ImportException(null, null);
     }
     finally
     {
@@ -1649,7 +1674,24 @@ public class ImportReplay extends PlainImporterBase
       }
     }
   }
-
+  
+  private void handleException(final Exception e, final int lineCount,
+      final String line, final String fName, final String message)
+  {
+    // produce the error message
+    _deferredRunner.run(new Runnable()
+    {
+      
+      @Override
+      public void run()
+      {
+     // produce the error message
+        MWC.Utilities.Errors.Trace.trace(e);
+        // show the message dialog    
+        readError(fName, lineCount, message, line);
+      }
+    }); 
+  }
   private void proccessShapeWrapper(final PlainLineImporter thisOne,
       final Object thisObject)
   {
@@ -2297,6 +2339,36 @@ public class ImportReplay extends PlainImporterBase
     else if (thisObject instanceof SensorContactWrapper)
     {
       res = processSensorContactWrapper((SensorContactWrapper) thisObject);
+    }
+    else if(thisObject instanceof CompositeTrackWrapper)
+    {
+      // ok, add this new track
+      addLayer((Layer) thisObject);
+    }
+    else if(thisObject instanceof PlanningSegment)
+    {
+      PlanningSegment ps = (PlanningSegment) thisObject;
+      
+      String trackName = ps.getParentName();
+      Layer track =  getLayerFor(trackName, false);
+      if(track == null)
+      {
+        Application.logError2(ToolParent.INFO,
+            "Failed to find track origin for planning segment. Track titled:" + trackName, null);
+      }
+      else
+      {
+        if(track instanceof CompositeTrackWrapper)
+        {
+          CompositeTrackWrapper comp = (CompositeTrackWrapper) track;
+          comp.add(ps);
+        }
+        else
+        {
+          Application.logError2(ToolParent.INFO,
+              "Track for this leg isn't planning leg. Track titled:" + trackName, null);
+        }
+      }
     }
     else if (thisObject instanceof DynamicTrackShapeWrapper)
     {

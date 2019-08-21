@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Legacy Plug-in
 Bundle-SymbolicName: org.mwc.debrief.legacy;singleton:=true
-Bundle-Version: 1.0.396
+Bundle-Version: 1.0.413
 Bundle-ClassPath: debrief_legacy.jar,
  libs/poi-3.14-20160307.jar,
  libs/poi-scratchpad-3.14-20160307.jar,
@@ -191,6 +191,7 @@ Export-Package:
    MWC.GUI,
    MWC.TacticalData",
  Debrief.ReaderWriter.XML.Util;uses:="MWC.Utilities.ReaderWriter.XML",
+ Debrief.ReaderWriter.XML.dynamic,
  Debrief.ReaderWriter.XML.extensions;
   uses:="Debrief.Wrappers.Extensions.Measurements,
    MWC.GUI.Properties,
@@ -274,5 +275,5 @@ Export-Package:
    org.apache.commons.math3.complex,
    org.eclipse.january.io",
  org.eclipse.january.metadata;uses:="org.eclipse.january.dataset,org.eclipse.january.io"
-Require-Bundle: org.mwc.cmap.legacy;bundle-version="1.0.165"
+Require-Bundle: org.mwc.cmap.legacy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7

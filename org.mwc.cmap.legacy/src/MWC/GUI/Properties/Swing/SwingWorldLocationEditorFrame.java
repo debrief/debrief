@@ -120,7 +120,7 @@ public class SwingWorldLocationEditorFrame extends javax.swing.JDialog {
 
     /** Creates new form SwingWorldLocationEditorFrame */
     public SwingWorldLocationEditorFrame(final WorldLocation initial, final java.awt.Frame parent) {
-      super(parent, true);
+        super(parent,true);
         initComponents ();
         pack ();
 
@@ -150,6 +150,7 @@ public class SwingWorldLocationEditorFrame extends javax.swing.JDialog {
         DMS_EW.add(DMS_WestBtn);
 
         initData();
+        setLocationRelativeTo(parent);
 
     }
 
@@ -160,14 +161,14 @@ public class SwingWorldLocationEditorFrame extends javax.swing.JDialog {
 
 	static public WorldLocation doEdit(final WorldLocation val)
 	{
-		final JFrame parent = new JFrame("scrap");
+		//final JFrame parent = new JFrame("scrap");
     // work with a copy of the original value
 		WorldLocation res = new WorldLocation(val);
-		final SwingWorldLocationEditorFrame aw = new SwingWorldLocationEditorFrame(res, parent);
+		final SwingWorldLocationEditorFrame aw = new SwingWorldLocationEditorFrame(res, null);
 		aw.setVisible(true);
 		res = new WorldLocation(aw.getResult());
     aw.dispose();
-		parent.dispose();
+		//parent.dispose();
 		return res;
 	}
 

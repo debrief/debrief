@@ -59,34 +59,19 @@
 package MWC.GUI.Tools.Palette;
 
 import MWC.GUI.Chart.Painters.CoastPainter;
-import MWC.GenericData.WorldArea;
 
 public class CreateCoast extends PlainCreate
 {
 	public CreateCoast(final MWC.GUI.ToolParent theParent,
 										final MWC.GUI.Properties.PropertiesPanel thePanel,
-										final MWC.GUI.Layer theLayer,
 										final MWC.GUI.Layers theData,
-                    final MWC.GUI.PlainChart theChart)
+                    final BoundsProvider bounds)
 	{
-		super(theParent, thePanel, theLayer, theData, theChart, "Coast", "images/coast_add.png");
+		super(theParent, thePanel, theData, bounds, "Coast", "images/coast_add.png");
 	}
 
-	protected MWC.GUI.Plottable createItem(final MWC.GUI.PlainChart theChart)
+	protected MWC.GUI.Plottable createItem()
 	{
-		final CoastPainter cp = new CoastPainter(getParent());
-		// see if the chart has a data area defined.  If not, make it cover our
-		final WorldArea wa = theChart.getDataArea();
-
-		if(wa == null)
-		{
-			cp.setVisible(true);
-			final WorldArea ca = cp.getBounds();
-			cp.setVisible(false);
-			theChart.getCanvas().getProjection().setDataArea(ca);
-		}
-
-		//coastline
-		return cp;
+		return new CoastPainter(getParent());
 	}
 }

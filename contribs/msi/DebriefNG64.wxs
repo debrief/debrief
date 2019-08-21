@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='windows-1252'?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
+  <Product Name='Debrief x64' Id='64662A49-3730-42CF-BBA6-8AC39FF4A11E' UpgradeCode='7FD68201-B3D6-46DD-A4B9-D47318246428'
+    Language='1033' Codepage='1251' Version='$(var.Version)' Manufacturer='Ian Mayo'>
+
+    <Package Id='*' Keywords='Installer' Description="DebriefNG x64 Installer" Manufacturer='Oleh Pohorielov'
+      InstallerVersion='300' Languages='1033' Compressed='yes' SummaryCodepage='1252' Platform='x64'/>
+
+	<Icon Id="pdfico" SourceFile="$(var.BuildDir)\AcroRd32_2.ico"/>
+	<Icon Id="debriefico" SourceFile="$(var.BuildDir)\DebriefNG_401.ico"/>
+
+    <Media Id='1' Cabinet='Debrief.cab' EmbedCab='yes' DiskPrompt="DISC #1" />
+    <Property Id='DiskPrompt' Value="Debrief Installation [1]" />
+
+    <Directory Id='TARGETDIR' Name='SourceDir'>
+	  <Directory Id="WindowsFolder" Name="Windows">
+			<Directory Id="SystemFolder" Name="System32" />
+	  </Directory>
+      <Directory Id='ProgramFiles64Folder' Name='PFiles64'>
+          <Directory Id='INSTALLDIR' Name='DebriefNG'>
+		    <Component Id='DebriefNGexe' Guid='AB2A1C3A-CE38-4D10-AA3F-BA06DA2FA1D0' Win64="yes">
+				<File Id='DebriefNGexe' Name='DebriefNG.exe' DiskId='1' Source='$(var.SourceDir)\DebriefNG.exe' KeyPath='yes'/>
+				<RemoveFolder Id='RemoveDebriefNGMenuFolder' Directory='DebriefNGMenuFolder' On='uninstall' />
+				<RemoveFolder Id='RemoveDebriefSampleData' Directory='DebriefSampleData' On='uninstall' />
+            </Component>
+			<Component Id='Tutorials' Guid='3849BE2E-A6BB-4655-89E6-5963FCE68DD8' Win64="yes">
+              <File Id='DebriefNGpdf' Name='DebriefNG.pdf' DiskId='1' Source='$(var.SourceDir)\DebriefNG.pdf' KeyPath='yes'/>
+			  <File Id='DebriefNGTMA_Tutorial' Name='DebriefNG_TMA_Tutorial.pdf' DiskId='1' Source='$(var.SourceDir)\DebriefNG_TMA_Tutorial.pdf'/>
+			  <File Id='IntroductionToDebrief13' Name='IntroductionToDebrief_1-3.pdf' DiskId='1' Source='$(var.SourceDir)\IntroductionToDebrief_1-3.pdf'/>
+			  <File Id='AdvancedAnalysisWithDebrief45' Name='AdvancedAnalysisWithDebrief_4-5.pdf' DiskId='1' Source='$(var.SourceDir)\AdvancedAnalysisWithDebrief_4-5.pdf'/>
+            </Component>
+			<Directory Id='SampleData' Name='sample_data'>
+			</Directory>
+          </Directory>
+        </Directory>
+
+      <Directory Id="DesktopFolder" Name="DesktopFolder" />
+      <Directory Id="ProgramMenuFolder" Name="ProgramMenuFolder">
+        <Directory Id="DebriefNGMenuFolder" Name="DebriefNG x64">
+          <Component Id="Shortcuts" Guid='3FEC36EC-BDA2-4873-9189-CC64CCE09BDA'>
+            <RegistryValue Id="registry_RemoveFile5" Root="HKCU" Key="Software\[Manufacturer]\[ProductName]\RemoveFile" Name="StartMenu" Value="1" Type="string" KeyPath="yes" />
+			<Shortcut Id="DebriefShortcut" Directory="DebriefNGMenuFolder" Icon="debriefico" IconIndex="0" Name="DebriefNG" Description="Main executable" Target="[#DebriefNGexe]" />
+            <Shortcut Id="user_manual" Directory="DebriefNGMenuFolder" Icon="pdfico" IconIndex="0" Name="User Guide" Description="User Guide" Target="[#DebriefNGpdf]" />
+			<Shortcut Id="tma_tutorial" Directory="DebriefNGMenuFolder" Icon="pdfico" IconIndex="0" Name="TMA Skills Tutorial" Description="TMA Skills Tutorial" Target="[#DebriefNGTMA_Tutorial]" />
+			<Shortcut Id="tutorial" Directory="DebriefNGMenuFolder" Icon="pdfico" IconIndex="0" Name="Tutorial" Description="Tutorial" Target="[#IntroductionToDebrief13]" />
+			<Shortcut Id="aa_tutorial" Directory="DebriefNGMenuFolder" Icon="pdfico" IconIndex="0" Name="Advanced Analysis Tutorial" Description="Advanced Analysis Tutorial" Target="[#AdvancedAnalysisWithDebrief45]" />
+          </Component>
+        </Directory>
+      </Directory>
+
+	<Directory Id="LocalAppDataFolder" Name="Local">
+		<Directory Id="DebriefSampleData" Name="Debrief sample data" />
+
+    </Directory>
+	</Directory>
+
+    <Feature Id='Complete' Level='1'>
+		<ComponentGroupRef Id="main" />
+		<ComponentRef Id='DebriefNGexe' />
+		<ComponentRef Id='Tutorials' />
+		<ComponentRef Id='Shortcuts' />
+    </Feature>
+
+	<Property Id="InstallMode" Value="Complete" />
+    <Property Id="ALLUSERS" Value="1" />
+	<Property Id="REBOOT" Value="ReallySuppress" />
+    <Property Id="REBOOTPROMPT" Value="S" />
+    <Property Id="ROOTDRIVE" Value="C:\" />
+    <Property Id="INSTALLLEVEL" Value="3" />
+	<Property Id="ARPPRODUCTICON" Value="debriefico" />
+	<Property Id="ARPNOMODIFY" Value="1" />
+	<Property Id="ARPURLINFOABOUT" Value="http://www.debrief.info" />
+	<Property Id="ARPHELPLINK" Value="support@debrief.info" />
+
+  </Product>
+</Wix>

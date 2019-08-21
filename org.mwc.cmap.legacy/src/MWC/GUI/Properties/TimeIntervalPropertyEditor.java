@@ -78,7 +78,7 @@ public class TimeIntervalPropertyEditor extends PropertyEditorSupport
   /**
    * currently selected interval
    */
-  protected Integer _myFreq; // time interval in millis
+  protected Long _myFreq; // time interval in millis
 
   /**
    * test labels for the available frequencies
@@ -88,7 +88,7 @@ public class TimeIntervalPropertyEditor extends PropertyEditorSupport
   /**
    * values (in millis) for the selectable frequencies
    */
-  private static int _freqs[] = null;
+  private static long _freqs[] = null;
 
   private static void initialise()
   {
@@ -101,7 +101,7 @@ public class TimeIntervalPropertyEditor extends PropertyEditorSupport
               "10 Minutes", "15 Minutes", "30 Minutes", "60 Minutes"};
 
       _freqs =
-          new int[]
+          new long[]
           {100, 200, 333, 500, 1000, 5000, 10 * 1000, 30 * 1000, 60 * 1000,
               2 * 60 * 1000, 5 * 60 * 1000, 10 * 60 * 1000, 15 * 60 * 1000,
               30 * 60 * 1000, 60 * 60 * 1000};
@@ -124,7 +124,7 @@ public class TimeIntervalPropertyEditor extends PropertyEditorSupport
    * 
    * @return
    */
-  public static int[] getValueList()
+  public static long[] getValueList()
   {
     initialise();
     return _freqs;
@@ -143,7 +143,7 @@ public class TimeIntervalPropertyEditor extends PropertyEditorSupport
   /**
    * return the list of integer values
    */
-  public int[] getValues()
+  public long[] getValues()
   {
     return getValueList();
   }
@@ -155,6 +155,7 @@ public class TimeIntervalPropertyEditor extends PropertyEditorSupport
    */
   public Object getValue()
   {
+    System.out.println("getting Value:"+_myFreq);
     return _myFreq;
   }
 
@@ -167,9 +168,13 @@ public class TimeIntervalPropertyEditor extends PropertyEditorSupport
    */
   public void setValue(final Object p1)
   {
-    if (p1 instanceof Integer)
+    if (p1 instanceof Long)
     {
-      _myFreq = (Integer) p1;
+      _myFreq = (Long) p1;
+    }
+    else if(p1 instanceof Integer)
+    {
+      _myFreq = new Long(((Integer)p1).intValue());
     }
     else if (p1 instanceof String)
     {
@@ -186,14 +191,14 @@ public class TimeIntervalPropertyEditor extends PropertyEditorSupport
    */
   public void setAsText(final String val)
   {
-    final int[] list = getValues();
+    final long[] list = getValues();
     final String[] tags = getTags();
     for (int i = 0; i < tags.length; i++)
     {
       final String thisS = tags[i];
       if (thisS.equals(val))
       {
-        _myFreq = new Integer(list[i]);
+        _myFreq = new Long(list[i]);
         break;
       }
     }
@@ -207,11 +212,11 @@ public class TimeIntervalPropertyEditor extends PropertyEditorSupport
    */
   public String getAsText()
   {
-    final int[] list = getValues();
+    final long[] list = getValues();
     final String[] tags = getTags();
 
     String res = null;
-    final double current = _myFreq.intValue();
+    final double current = _myFreq.longValue();
     for (int i = 0; i < list.length; i++)
     {
       final double v = list[i];

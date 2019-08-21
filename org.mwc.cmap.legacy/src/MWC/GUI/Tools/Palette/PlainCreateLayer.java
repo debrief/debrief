@@ -66,7 +66,6 @@ package MWC.GUI.Tools.Palette;
 
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.PlainChart;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Action;
@@ -79,14 +78,12 @@ abstract public class PlainCreateLayer extends PlainTool
 	 */
 	PropertiesPanel _thePanel;
 
-	/** the chart we are dropping onto
-	 */
-	PlainChart _theChart;
-
   /** the Layers object, which we need in order to fire data extended event
    *
    */
   Layers _theData;
+
+  final protected BoundsProvider _theBounds;
 
 
   /////////////////////////////////////////////////////////////
@@ -100,14 +97,14 @@ abstract public class PlainCreateLayer extends PlainTool
 	public PlainCreateLayer(final ToolParent theParent,
 										final PropertiesPanel thePanel,
                     final Layers theData,
-										final PlainChart theChart,
+										final BoundsProvider bounds,
 										final String theName,
 										final String theImage)
 	{
 		super(theParent, theName, theImage);
 
 		_thePanel = thePanel;
-		_theChart = theChart;
+		_theBounds = bounds;
     _theData = theData;
 	}
 
@@ -115,11 +112,6 @@ abstract public class PlainCreateLayer extends PlainTool
   /////////////////////////////////////////////////////////////
   // member functions
   ////////////////////////////////////////////////////////////
-
-  protected PlainChart getChart()
-  {
-    return _theChart;
-  }
 
   /** accessor to retrieve the layered data
    *
@@ -129,14 +121,14 @@ abstract public class PlainCreateLayer extends PlainTool
     return _theData;
   }
 
-	protected abstract Layer createItem(PlainChart theChart);
+	protected abstract Layer createItem();
 
 	public Action getData()
 	{
     Action res = null;
 
     // ask the child class to create itself
-		final Layer theLayer = createItem(_theChart);
+		final Layer theLayer = createItem();
 
     // did it work?
     if(theLayer != null)

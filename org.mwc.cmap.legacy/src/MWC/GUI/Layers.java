@@ -203,6 +203,10 @@ import java.util.List;
 import java.util.Vector;
 
 import MWC.GUI.Layer.BackgroundLayer;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -214,11 +218,6 @@ import MWC.GenericData.WorldVector;
  */
 public class Layers implements Serializable, Plottable, PlottablesType
 {
-
-  // ////////////////////////////////////////////////////
-  // member variables
-  // ////////////////////////////////////////////////////
-
   /**
    * interface to be implemented by classes intending to watch the full set of data for this
    * scenarion
@@ -273,6 +272,10 @@ public class Layers implements Serializable, Plottable, PlottablesType
     public void dataExtended(Layers theData, Plottable newItem,
         HasEditables parent);
   }
+
+  // ////////////////////////////////////////////////////
+  // member variables
+  // ////////////////////////////////////////////////////
 
   /**
    * interface for classes that want to know about new items being added
@@ -392,8 +395,12 @@ public class Layers implements Serializable, Plottable, PlottablesType
    */
   public static interface NeedsWrappingInLayerManager
   {
+    public Layer wrapMe(Layers layers);
+  }
 
-    public Layer wrapMe();
+  public static interface OperateFunction
+  {
+    void operateOn(Editable item);
   }
 
   /**
@@ -419,6 +426,10 @@ public class Layers implements Serializable, Plottable, PlottablesType
 
   }
 
+  public static final String NEW_LAYER_COMMAND = "[Add new layer...]";
+
+  public static final String DEFAULT_TARGET_LAYER = "Misc";
+
   /**
    * the name of the formatters layer
    */
@@ -439,6 +450,75 @@ public class Layers implements Serializable, Plottable, PlottablesType
    */
   private static final long serialVersionUID = 1L;
 
+  private static Layer checkLayer(final Layer layer, final String name)
+  {
+    /**
+     * if it's a monster layer, we won't bother searching it
+     *
+     */
+    final long MAX_TO_SEARCH = 1000;
+
+    Layer res = null;
+    // don't search the layer if it's a monster
+    if (layer instanceof BaseLayer)
+    {
+      final BaseLayer bl = (BaseLayer) layer;
+      if (bl.size() > MAX_TO_SEARCH)
+      {
+        return null;
+      }
+    }
+
+    // ok, continue with normal processing
+    final Enumeration<Editable> iter = layer.elements();
+    while (iter.hasMoreElements() && res == null)
+    {
+      final Editable ele = iter.nextElement();
+      if (ele instanceof Layer)
+      {
+        final Layer l = (Layer) ele;
+        if (l.getName() != null && l.getName().equals(name))
+        {
+          return l;
+        }
+        else
+        {
+          res = checkLayer(l, name);
+        }
+      }
+    }
+    return res;
+  }
+
+  // ////////////////////////////////////////////////////
+  // constructor
+  // ////////////////////////////////////////////////////
+
+  private static TimePeriod extend(final TimePeriod period,
+      final HiResDate date)
+  {
+    final TimePeriod result;
+    // have we received a date?
+    if (date != null)
+    {
+      if (period == null)
+      {
+        result = new TimePeriod.BaseTimePeriod(date, date);
+      }
+      else
+      {
+        result = period;
+        result.extend(date);
+      }
+    }
+    else
+    {
+      result = null;
+    }
+
+    return result;
+  }
+
   /**
    * if we don't have any data, we still want to be able to centre on a geographic location. use HMS
    * Dolphin.
@@ -452,14 +532,14 @@ public class Layers implements Serializable, Plottable, PlottablesType
         'W', 0), new WorldLocation(50, 30, 26.99, 'N', 0, 42, 56.58, 'W', 0));
   }
 
+  // ////////////////////////////////////////////////////
+  // member functions
+  // ////////////////////////////////////////////////////
+
   /**
    * the layer data
    */
   private final Vector<Editable> _theLayers = new Vector<Editable>(0, 1);
-
-  // ////////////////////////////////////////////////////
-  // constructor
-  // ////////////////////////////////////////////////////
 
   /**
    * the set of callbacks for when data has been modified
@@ -470,10 +550,6 @@ public class Layers implements Serializable, Plottable, PlottablesType
    * the set of callbacks for when the data on this layer has been added to or removed
    */
   transient private Vector<DataListener> _dataExtendedListeners;
-
-  // ////////////////////////////////////////////////////
-  // member functions
-  // ////////////////////////////////////////////////////
 
   /**
    * the set of callbacks for when formatting details of data on this layer have been modified
@@ -643,7 +719,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
       // now wrap it
       final NeedsWrappingInLayerManager nl =
           (NeedsWrappingInLayerManager) layer;
-      layer = nl.wrapMe();
+      layer = nl.wrapMe(this);
     }
 
     // does it need to know about the layers, or that it has been added to the layers?
@@ -722,46 +798,6 @@ public class Layers implements Serializable, Plottable, PlottablesType
 
   }
 
-  private static Layer checkLayer(final Layer layer, final String name)
-  {
-    /**
-     * if it's a monster layer, we won't bother searching it
-     *
-     */
-    final long MAX_TO_SEARCH = 1000;
-
-    Layer res = null;
-    // don't search the layer if it's a monster
-    if (layer instanceof BaseLayer)
-    {
-      final BaseLayer bl = (BaseLayer) layer;
-      if (bl.size() > MAX_TO_SEARCH)
-      {
-        return null;
-      }
-    }
-
-    // ok, continue with normal processing
-    final Enumeration<Editable> iter = layer.elements();
-    while (iter.hasMoreElements() && res == null)
-    {
-      final Editable ele = iter.nextElement();
-      if (ele instanceof Layer)
-      {
-        final Layer l = (Layer) ele;
-        if (l.getName() != null && l.getName().equals(name))
-        {
-          return l;
-        }
-        else
-        {
-          res = checkLayer(l, name);
-        }
-      }
-    }
-    return res;
-  }
-
   /**
    * create an empty layer, and return it
    *
@@ -828,6 +864,10 @@ public class Layers implements Serializable, Plottable, PlottablesType
     return res;
   }
 
+  // ////////////////////////////////////////////////////
+  // callback management
+  // ////////////////////////////////////////////////////
+
   /**
    * create a version of the supplied layer name that doesn't exist, by appending a counter
    *
@@ -867,10 +907,6 @@ public class Layers implements Serializable, Plottable, PlottablesType
   {
     return (Layer) _theLayers.elementAt(index);
   }
-
-  // ////////////////////////////////////////////////////
-  // callback management
-  // ////////////////////////////////////////////////////
 
   @Override
   public Enumeration<Editable> elements()
@@ -1126,6 +1162,61 @@ public class Layers implements Serializable, Plottable, PlottablesType
     return res;
   }
 
+  public TimePeriod getTimePeriod()
+  {
+    TimePeriod res = null;
+
+    for (final Enumeration<Editable> iter = elements(); iter.hasMoreElements();)
+    {
+      final Layer thisLayer = (Layer) iter.nextElement();
+
+      // and through this layer
+      if (thisLayer instanceof WatchableList)
+      {
+        final WatchableList thisT = (WatchableList) thisLayer;
+        res = extend(res, thisT.getStartDTG());
+        res = extend(res, thisT.getEndDTG());
+      }
+      else if (thisLayer instanceof BaseLayer)
+      {
+        final Enumeration<Editable> elements = thisLayer.elements();
+        while (elements.hasMoreElements())
+        {
+          final Plottable nextP = (Plottable) elements.nextElement();
+          if (nextP instanceof Watchable)
+          {
+            final Watchable wrapped = (Watchable) nextP;
+            final HiResDate dtg = wrapped.getTime();
+            if (dtg != null)
+            {
+              res = extend(res, dtg);
+
+              // also see if it this data type an end time
+              if (wrapped instanceof WatchableList)
+              {
+                // ok, make sure we also handle the end time
+                final WatchableList wl = (WatchableList) wrapped;
+                final HiResDate endD = wl.getEndDTG();
+                if (endD != null)
+                {
+                  res = extend(res, endD);
+                }
+              }
+            }
+          }
+          else if (nextP instanceof WatchableList)
+          {
+            final WatchableList wl = (WatchableList) nextP;
+            res = extend(res, wl.getStartDTG());
+            res = extend(res, wl.getEndDTG());
+          }
+        }
+      }
+    }
+
+    return res;
+  }
+
   @Override
   public boolean getVisible()
   {
@@ -1187,6 +1278,10 @@ public class Layers implements Serializable, Plottable, PlottablesType
     return -1;
   }
 
+  // ////////////////////////////////////////////////////////////////
+  // interface definition
+  // ////////////////////////////////////////////////////////////////
+
   private void readObject(final java.io.ObjectInputStream in)
       throws IOException, ClassNotFoundException
   {
@@ -1217,10 +1312,6 @@ public class Layers implements Serializable, Plottable, PlottablesType
   {
     _dataModifiedListeners.removeElement(theListener);
   }
-
-  // ////////////////////////////////////////////////////////////////
-  // interface definition
-  // ////////////////////////////////////////////////////////////////
 
   /**
    * remove this listener
@@ -1446,19 +1537,62 @@ public class Layers implements Serializable, Plottable, PlottablesType
   {
     return getName();
   }
-  
-  public static interface OperateFunction{
-    void operateOn(Editable item);
+
+  public String[] trimmedLayers()
+  {
+    final Vector<String> res = new Vector<String>(0, 1);
+    final Enumeration<Editable> enumer = elements();
+    while (enumer.hasMoreElements())
+    {
+      final Layer thisLayer = (Layer) enumer.nextElement();
+      if (thisLayer instanceof BaseLayer)
+      {
+        final BaseLayer bl = (BaseLayer) thisLayer;
+        if (bl.canTakeShapes())
+          res.add(thisLayer.getName());
+      }
+    }
+
+    res.add(NEW_LAYER_COMMAND);
+
+    final String[] sampleArray = new String[]
+    {"aa"};
+    return res.toArray(sampleArray);
   }
-  
+
+  private void walkThis(final BaseLayer layer, final Class<?> mustMatch,
+      final OperateFunction function)
+  {
+    // walk the tree
+    final Enumeration<Editable> lIter = layer.elements();
+    while (lIter.hasMoreElements())
+    {
+      final Plottable item = (Plottable) lIter.nextElement();
+      if (item.getVisible())
+      {
+        if (mustMatch.isAssignableFrom(item.getClass()))
+        {
+          function.operateOn(item);
+        }
+        else
+        {
+          if (item instanceof BaseLayer)
+          {
+            walkThis((BaseLayer) item, mustMatch, function);
+          }
+        }
+      }
+    }
+  }
+
   public void walkVisibleItems(final Class<?> mustMatch,
       final OperateFunction function)
   {
     // walk the tree
-    Enumeration<Editable> lIter = elements();
+    final Enumeration<Editable> lIter = elements();
     while (lIter.hasMoreElements())
     {
-      Layer layer = (Layer) lIter.nextElement();
+      final Layer layer = (Layer) lIter.nextElement();
       if (layer.getVisible())
       {
         if (mustMatch.isAssignableFrom(layer.getClass()))
@@ -1477,29 +1611,4 @@ public class Layers implements Serializable, Plottable, PlottablesType
     }
   }
 
-  private void walkThis(BaseLayer layer, final Class<?> mustMatch,
-      OperateFunction function)
-  {
-    // walk the tree
-    Enumeration<Editable> lIter = layer.elements();
-    while (lIter.hasMoreElements())
-    {
-      Plottable item = (Plottable) lIter.nextElement();
-      if (item.getVisible())
-      {
-        if (mustMatch.isAssignableFrom(item.getClass()))
-        {
-          function.operateOn(item);
-        }
-        else
-        {
-          if (item instanceof BaseLayer)
-          {
-            walkThis((BaseLayer) item, mustMatch, function);
-          }
-        }
-      }
-    }
-  }
-  
 }

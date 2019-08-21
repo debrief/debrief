@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2009, 2016 Xored Software Inc and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+     
+    Contributors:
+    	Xored Software Inc - initial API and implementation and/or initial documentation
+ -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.eclipse.rcptt.external.dependencies</groupId>
+  	<artifactId>bundles</artifactId>
+    <version>2.4.0-SNAPSHOT</version>
+  </parent>
+  <groupId>org.eclipse.rcptt.external.dependencies</groupId>
+  <artifactId>org.eclipse.rcptt.updates.aspectj.e38x</artifactId>
+  <version>2.4.0-SNAPSHOT</version>
+  <packaging>eclipse-plugin</packaging>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>2.4.1</version>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>dependencies</directory>
+              <includes>
+                <include>**/*</include>
+              </includes>
+              <followSymlinks>false</followSymlinks>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+
+      
+      <plugin>
+	<groupId>org.eclipse.tycho.extras</groupId>
+	<artifactId>tycho-p2-extras-plugin</artifactId>
+	<version>${tycho-version}</version>
+	<executions>
+	  <execution>
+	    <phase>generate-resources</phase>
+	    <goals>
+	      <goal>mirror</goal>
+	    </goals>
+	  </execution>
+	</executions>
+	<configuration>
+	  <source>
+	    <repository>
+	      <url>http://download.eclipse.org/tools/ajdt/42/update</url>
+	      <layout>p2</layout>
+	    </repository>
+	  </source>
+	  
+	  <destination>${project.basedir}/dependencies</destination>
+	  <followStrictOnly>true</followStrictOnly>
+	  <includeOptional>false</includeOptional>
+	  <includeNonGreedy>false</includeNonGreedy>
+	  <latestVersionOnly>true</latestVersionOnly>
+	  <mirrorMetadataOnly>false</mirrorMetadataOnly>
+	  <compress>true</compress>
+	  <append>false</append>
+	  <includePacked>false</includePacked>
+
+	  <ius>
+	    <iu><id>org.aspectj.runtime</id></iu>
+	    <iu><id>org.aspectj.weaver</id></iu>
+	    <iu><id>org.eclipse.equinox.weaving.aspectj</id></iu>
+	    <iu><id>org.eclipse.equinox.weaving.hook</id></iu>
+	  </ius>
+	</configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

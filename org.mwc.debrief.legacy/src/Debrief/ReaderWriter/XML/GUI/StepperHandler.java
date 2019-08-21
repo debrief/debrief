@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package Debrief.ReaderWriter.XML.GUI;
 
@@ -25,290 +25,82 @@ package Debrief.ReaderWriter.XML.GUI;
 
 import java.text.ParseException;
 
-import Debrief.GUI.Tote.AnalysisTote;
+import Debrief.GUI.Frames.Session;
+import Debrief.GUI.Tote.StepControl;
 import Debrief.GUI.Tote.Painters.SnailPainter;
+import Debrief.GUI.Tote.Painters.SnailPainter2;
 import Debrief.ReaderWriter.XML.GUIHandler;
+import Debrief.ReaderWriter.XML.GUIHandler.ComponentDetails;
+import MWC.GUI.StepperListener;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.Errors.Trace;
-import MWC.Utilities.ReaderWriter.XML.*;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
-
 
 public final class StepperHandler implements GUIHandler.ComponentCreator
 {
 
-  public final void makeThis(final Debrief.ReaderWriter.XML.GUIHandler.ComponentDetails details,
-                             final Debrief.GUI.Views.AnalysisView _analysisView)
-  {
-    String val = null;
-
-    if (_analysisView == null)
-    {
-      System.err.println("Analysis view missing from Stepper Handler");
-      return;
-    }
-
-    // right. just do some quick checking to ensure we have the right data
-    final AnalysisTote theTote = _analysisView.getTote();
-
-    //////////////////////////////////////////////////////////////
-    final String cursor = (String) details.properties.get("Cursor");
-    if (cursor != null)
-    {
-      // set the cursor
-    	theTote.getStepper().setPainter(cursor);
-
-      //////////////////////////////////////////////////////////////
-      // is this the snail cursor?
-      if (cursor.equals(SnailPainter.SNAIL_NAME))
-      {
-        final String vector_stretch = (String) details.properties.get("VectorStretch");
-        if (vector_stretch != null)
-        {
-          // set the cursor
-          final SnailPainter sp = (SnailPainter) theTote.getStepper().getCurrentPainter();
-          try {
-        	  sp.setVectorStretch( MWCXMLReader.readThisDouble(vector_stretch));
-          } catch (final ParseException pe) {
-        	  MWC.Utilities.Errors.Trace.trace(pe,
-						"Reader: Whilst reading in VectorStretch value of :"
-								+ vector_stretch);
-          }
-        }
-      }
-
-    }
-
-    //////////////////////////////////////////////////////////////
-    final String dateFormat = (String) details.properties.get("DateFormat");
-    if (dateFormat != null)
-    {
-      // set the cursor
-      _analysisView.getTote().getStepper().setDateFormat(dateFormat);
-    }
-
-    //////////////////////////////////////////////////////////////
-    final String highlighter = (String) details.properties.get("Highlighter");
-    if (highlighter != null)
-    {
-      // set the cursor
-      _analysisView.getTote().getStepper().setHighlighter(highlighter);
-    }
-
-    //////////////////////////////////////////////////////////////
-    final String start_time = (String) details.properties.get("Toolbox_Start_Time");
-    if (start_time != null)
-    {
-      HiResDate startTime = null;
-      // get a date from this
-      try
-      {
-        startTime = DebriefFormatDateTime.parseThis(start_time);
-        
-        // set the cursor
-        _analysisView.getTote().getStepper().setToolboxStartTime(startTime);
-      }
-      catch (ParseException e)
-      {
-        Trace.trace(e, "While parsing date");
-      }
-
-    }
-
-    //////////////////////////////////////////////////////////////
-    final String end_time = (String) details.properties.get("Toolbox_End_Time");
-    if (end_time != null)
-    {
-      HiResDate endTime = null;
-
-      // get a date from this
-      try
-      {
-        endTime = DebriefFormatDateTime.parseThis(end_time);
-        
-        // set the cursor
-        _analysisView.getTote().getStepper().setToolboxEndTime(endTime);
-      }
-      catch (ParseException e)
-      {
-        Trace.trace(e, "While parsing date");
-      }
-    }
-
-    //////////////////////////////////////////////////////////////
-    final String tZero = (String) details.properties.get("TimeZero");
-    if (tZero != null)
-    {
-      // get a date from this
-      HiResDate dt;
-      try
-      {
-        dt = DebriefFormatDateTime.parseThis(tZero);
-
-        // set the cursor
-        _analysisView.getTote().getStepper().setTimeZero(dt);
-      }
-      catch (ParseException e)
-      {
-        Trace.trace(e, "While parsing date");
-      }
-    }
-    //////////////////////////////////////////////////////////////
-    final String currentTime = (String) details.properties.get("CurrentTime");
-    if (currentTime != null)
-    {
-      // and set the time
-      HiResDate dtg;
-      try
-      {
-        dtg = DebriefFormatDateTime.parseThis(currentTime);
-
-        // did we find a valid dtg?
-        if (dtg != null)
-          _analysisView.getTote().getStepper().changeTime(dtg);
-      }
-      catch (ParseException e)
-      {
-        Trace.trace(e, "While parsing date");
-      }
-    }
-    //////////////////////////////////////////////////////////////
-    val = (String) details.properties.get("AutoStep");
-    if (val != null)
-    {
-      // set the auto step to this number of millis
-      final int len = Integer.valueOf(val).intValue();
-      _analysisView.getTote().getStepper().setAutoStep(len);
-    }
-
-
-    ///////////////////////////////////////////////////////////////
-    val = (String) details.properties.get("StepLarge");
-    if (val != null)
-    {
-      // set the large step to this number of millis
-      try
-      {
-        final double len = MWCXMLReaderWriter.readThisDouble(val);
-        _analysisView.getTote().getStepper().setStepLarge((long) len * 1000);
-      }
-      catch (final java.text.ParseException pe)
-      {
-        MWC.Utilities.Errors.Trace.trace(pe, "Failed reading large step size value is:" + val);
-      }
-
-    }
-
-    ///////////////////////////////////////////////////////////////
-    val = (String) details.properties.get("StepSmall");
-    if (val != null)
-    {
-      try
-      {
-        // set the small step to this number of millis
-        final double len = MWCXMLReaderWriter.readThisDouble(val);
-        _analysisView.getTote().getStepper().setStepSmall((long) len * 1000);
-      }
-      catch (final java.text.ParseException pe)
-      {
-        MWC.Utilities.Errors.Trace.trace(pe, "Failed reading small step size value is:" + val);
-      }
-    }
-
-    ///////////////////////////////////////////////////////////////
-    val = (String) details.properties.get("StepLargeMicros");
-    if (val != null)
-    {
-      // set the large step to this number of millis
-      try
-      {
-        final double len = MWCXMLReaderWriter.readThisDouble(val);
-        _analysisView.getTote().getStepper().setStepLarge((long) len);
-      }
-      catch (final java.text.ParseException pe)
-      {
-        MWC.Utilities.Errors.Trace.trace(pe, "Failed reading large step size value is:" + val);
-      }
-
-    }
-
-    ///////////////////////////////////////////////////////////////
-    val = (String) details.properties.get("StepSmallMicros");
-    if (val != null)
-    {
-      try
-      {
-        // set the small step to this number of millis
-        final double len = MWCXMLReaderWriter.readThisDouble(val);
-        _analysisView.getTote().getStepper().setStepSmall((long) len);
-      }
-      catch (final java.text.ParseException pe)
-      {
-        MWC.Utilities.Errors.Trace.trace(pe, "Failed reading small step size value is:" + val);
-      }
-    }
-
-
-    // just do some minor tidying here, to check we have start & end times for the slider
-    if((_analysisView.getTote().getStepper().getStartTime() == null) ||
-      (_analysisView.getTote().getStepper().getEndTime() == null))
-    {
-      _analysisView.getTote().getStepper().recalcTimes();
-    }
-
-  }
-
-
-  public final GUIHandler.ComponentDetails exportThis(final Debrief.GUI.Frames.Session session)
+  public final GUIHandler.ComponentDetails exportThis(final Session session)
   {
     // get the stepper
-    final Debrief.GUI.Views.PlainView pv = session.getCurrentView();
-    if (pv instanceof Debrief.GUI.Views.AnalysisView)
+    final StepControl stepper = session.getStepControl();
+    if (stepper != null)
     {
-      final Debrief.GUI.Tote.StepControl stepper = ((Debrief.GUI.Views.AnalysisView) pv).getTote().getStepper();
-
       // collate the details for this component
-      final GUIHandler.ComponentDetails details = new GUIHandler.ComponentDetails();
+      final GUIHandler.ComponentDetails details =
+          new GUIHandler.ComponentDetails();
 
-      final MWC.GUI.StepperListener theStepper = stepper.getCurrentPainter();
+      final StepperListener theStepper = stepper.getCurrentPainter();
 
       // is this the snail painter?
       if (theStepper instanceof SnailPainter)
       {
         final SnailPainter sp = (SnailPainter) theStepper;
-        details.addProperty("VectorStretch", MWCXMLReader.writeThis(sp.getVectorStretch()));
+        details.addProperty("VectorStretch", MWCXMLReader.writeThis(sp
+            .getVectorStretch()));
       }
 
-      details.addProperty("Cursor", stepper.getCurrentPainter().toString());
-
-      //      details.addProperty("StepLarge", MWCXMLReader.writeThis(stepper.getStepLarge()));
-      //      details.addProperty("StepSmall", MWCXMLReader.writeThis(stepper.getStepSmall()));
+      final StepperListener painter = stepper.getCurrentPainter();
+      if (painter != null)
+      {
+        details.addProperty("Cursor", painter.toString());
+      }
 
       // ok, we're switching to exporting the step size in microseconds
       // if we ever get the plain "StepLarge" parameter - we will assume it is millis, else
       // we will always receive the units
 
-      details.addProperty("StepLargeMicros", MWCXMLReader.writeThis(stepper.getStepLarge()));
-      details.addProperty("StepSmallMicros", MWCXMLReader.writeThis(stepper.getStepSmall()));
+      details.addProperty("StepLargeMicros", MWCXMLReader.writeThis(stepper
+          .getStepLarge()));
+      details.addProperty("StepSmallMicros", MWCXMLReader.writeThis(stepper
+          .getStepSmall()));
 
+      details.addProperty("AutoStep", MWCXMLReader.writeThis(stepper
+          .getAutoStep()));
 
-      details.addProperty("AutoStep", MWCXMLReader.writeThis(stepper.getAutoStep()));
-      details.addProperty("DateFormat", stepper.getDateFormat());
+      // note: we trim the date format, since it may have received
+      // white padding in order that all formats consume the same
+      // screen width
+      details.addProperty("DateFormat", stepper.getDateFormat().trim());
       // the current DTG
       final HiResDate cTime = stepper.getCurrentTime();
       if (cTime != null)
         details.addProperty("CurrentTime", MWCXMLReader.writeThis(cTime));
       // the T-zero, if set
       if (stepper.getTimeZero() != null)
-        details.addProperty("TimeZero", MWCXMLReader.writeThis(stepper.getTimeZero()));
-      details.addProperty("Highlighter", stepper.getCurrentHighlighter().getName());
+        details.addProperty("TimeZero", MWCXMLReader.writeThis(stepper
+            .getTimeZero()));
+      details.addProperty("Highlighter", stepper.getCurrentHighlighter()
+          .getName());
       // what's the time?
       final HiResDate theStartTime = stepper.getToolboxStartTime();
       if (theStartTime != null)
-        details.addProperty("Toolbox_Start_Time", DebriefFormatDateTime.toStringHiRes(theStartTime));
+        details.addProperty("Toolbox_Start_Time", DebriefFormatDateTime
+            .toStringHiRes(theStartTime));
       final HiResDate theEndTime = stepper.getToolboxEndTime();
       if (theEndTime != null)
-        details.addProperty("Toolbox_End_Time", DebriefFormatDateTime.toStringHiRes(theEndTime));
+        details.addProperty("Toolbox_End_Time", DebriefFormatDateTime
+            .toStringHiRes(theEndTime));
 
       return details;
     }
@@ -316,4 +108,213 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
       return null;
   }
 
+  @Override
+  public final void makeThis(final ComponentDetails details,
+      final Session session)
+  {
+    String val;
+    final StepControl step = session.getStepControl();
+
+    //////////////////////////////////////////////////////////////
+    final String cursor = details.properties.get("Cursor");
+    if (cursor != null)
+    {
+      // set the cursor
+      step.setPainter(cursor);
+
+      //////////////////////////////////////////////////////////////
+      // is this the snail cursor?
+      if (cursor.equals(SnailPainter.SNAIL_NAME))
+      {
+        final String vector_stretch = details.properties.get("VectorStretch");
+        if (vector_stretch != null)
+        {
+          // set the cursor
+
+          try
+          {
+            if (step.getCurrentPainter() instanceof SnailPainter)
+            {
+              final SnailPainter sp = (SnailPainter) step.getCurrentPainter();
+              sp.setVectorStretch(MWCXMLReader.readThisDouble(vector_stretch));
+            }
+            else if (step.getCurrentPainter() instanceof SnailPainter2)
+            {
+              final SnailPainter2 sp = (SnailPainter2) step.getCurrentPainter();
+              sp.setVectorStretch(MWCXMLReader.readThisDouble(vector_stretch));
+            }
+          }
+          catch (final ParseException pe)
+          {
+            MWC.Utilities.Errors.Trace.trace(pe,
+                "Reader: Whilst reading in VectorStretch value of :"
+                    + vector_stretch);
+          }
+        }
+      }
+    }
+
+    //////////////////////////////////////////////////////////////
+    final String dateFormat = details.properties.get("DateFormat");
+    if (dateFormat != null)
+    {
+      // set the cursor
+      step.setDateFormat(dateFormat);
+    }
+
+    //////////////////////////////////////////////////////////////
+    final String highlighter = details.properties.get("Highlighter");
+    if (highlighter != null)
+    {
+      // set the cursor
+      step.setHighlighter(highlighter);
+    }
+
+    //////////////////////////////////////////////////////////////
+    final String start_time = details.properties.get("Toolbox_Start_Time");
+    if (start_time != null)
+    {
+      // get a date from this
+      try
+      {
+        // set the cursor
+        step.setToolboxStartTime(DebriefFormatDateTime.parseThis(start_time));
+      }
+      catch (final ParseException e)
+      {
+        Trace.trace(e, "While parsing start time");
+      }
+    }
+
+    //////////////////////////////////////////////////////////////
+    final String end_time = details.properties.get("Toolbox_End_Time");
+    if (end_time != null)
+    {
+      // get a date from this
+      try
+      {
+        // set the cursor
+        step.setToolboxEndTime(DebriefFormatDateTime.parseThis(end_time));
+      }
+      catch (final ParseException e)
+      {
+        Trace.trace(e, "While parsing end time");
+      }
+    }
+
+    //////////////////////////////////////////////////////////////
+    final String tZero = details.properties.get("TimeZero");
+    if (tZero != null)
+    {
+      // get a date from this
+      try
+      {
+        // set the cursor
+        step.setTimeZero(DebriefFormatDateTime.parseThis(tZero));
+      }
+      catch (final ParseException e)
+      {
+        Trace.trace(e, "While parsing time zero");
+      }
+    }
+
+    //////////////////////////////////////////////////////////////
+    final String currentTime = details.properties.get("CurrentTime");
+    if (currentTime != null)
+    {
+      // and set the time
+      try
+      {
+        final HiResDate dtg = DebriefFormatDateTime.parseThis(currentTime);
+
+        // did we find a valid dtg?
+        if (dtg != null)
+          step.changeTime(dtg);
+      }
+      catch (final ParseException e)
+      {
+        Trace.trace(e, "While parsing current time");
+      }
+    }
+
+    //////////////////////////////////////////////////////////////
+    val = details.properties.get("AutoStep");
+    if (val != null)
+    {
+      // set the auto step to this number of millis
+      step.setAutoStep(Integer.valueOf(val).intValue());
+    }
+
+    ///////////////////////////////////////////////////////////////
+    val = details.properties.get("StepLarge");
+    if (val != null)
+    {
+      // set the large step to this number of millis
+      try
+      {
+        final double len = MWCXMLReader.readThisDouble(val);
+        step.setStepLarge((long) len * 1000);
+      }
+      catch (final java.text.ParseException pe)
+      {
+        MWC.Utilities.Errors.Trace.trace(pe,
+            "Failed reading large step size value is:" + val);
+      }
+    }
+
+    ///////////////////////////////////////////////////////////////
+    val = details.properties.get("StepSmall");
+    if (val != null)
+    {
+      try
+      {
+        // set the small step to this number of millis
+        final double len = MWCXMLReader.readThisDouble(val);
+        step.setStepSmall((long) len * 1000);
+      }
+      catch (final java.text.ParseException pe)
+      {
+        MWC.Utilities.Errors.Trace.trace(pe,
+            "Failed reading small step size value is:" + val);
+      }
+    }
+
+    ///////////////////////////////////////////////////////////////
+    val = details.properties.get("StepLargeMicros");
+    if (val != null)
+    {
+      // set the large step to this number of millis
+      try
+      {
+        step.setStepLarge((long) MWCXMLReader.readThisDouble(val));
+      }
+      catch (final java.text.ParseException pe)
+      {
+        MWC.Utilities.Errors.Trace.trace(pe,
+            "Failed reading large step size value is:" + val);
+      }
+    }
+
+    ///////////////////////////////////////////////////////////////
+    val = details.properties.get("StepSmallMicros");
+    if (val != null)
+    {
+      try
+      {
+        // set the small step to this number of millis
+        step.setStepSmall((long) MWCXMLReader.readThisDouble(val));
+      }
+      catch (final java.text.ParseException pe)
+      {
+        MWC.Utilities.Errors.Trace.trace(pe,
+            "Failed reading small step size value is:" + val);
+      }
+    }
+
+    // just do some minor tidying here, to check we have start & end times for the slider
+    if ((step.getStartTime() == null) || (step.getEndTime() == null))
+    {
+      step.recalcTimes();
+    }
+  }
 }

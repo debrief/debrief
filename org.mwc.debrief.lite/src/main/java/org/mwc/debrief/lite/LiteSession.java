@@ -17,16 +17,17 @@ package org.mwc.debrief.lite;
 import java.awt.datatransfer.Clipboard;
 
 import Debrief.GUI.Frames.Session;
+import Debrief.GUI.Tote.StepControl;
 import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
-import MWC.GUI.Undo.UndoBuffer;
 
-class LiteSession extends Session
+public class LiteSession extends Session
 {
   /**
    *
    */
   private static final long serialVersionUID = 1L;
+  private StepControl _stepper;
 
   public LiteSession(final Clipboard clipboard, final Layers layers)
   {
@@ -36,7 +37,13 @@ class LiteSession extends Session
   @Override
   public void closeGUI()
   {
-    throw new IllegalArgumentException("Not implemented");
+    // Nothing to do here.
+  }
+
+  @Override
+  public StepControl getStepControl()
+  {
+    return _stepper;
   }
 
   @Override
@@ -51,10 +58,16 @@ class LiteSession extends Session
     throw new IllegalArgumentException("Not implemented");
   }
 
+  public void setStepper(final StepControl _stepper)
+  {
+    this._stepper = _stepper;
+  }
+
   @Override
   protected boolean wantsToClose()
   {
-    throw new IllegalArgumentException("Not implemented");
+    // action handled by DebriefLiteApp class.
+    return true;
   }
 
 }

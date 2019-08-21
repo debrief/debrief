@@ -132,7 +132,7 @@ public class DurationHelper extends EditorHelper
 		protected Object doGetValue()
 		{
 			final Integer index = (Integer) super.doGetValue();
-			final int res = TimeIntervalPropertyEditor.getValueList()[index.intValue()];
+			final long res = TimeIntervalPropertyEditor.getValueList()[index.intValue()];
 			return new Duration(res, Duration.MILLISECONDS);
 		}
 
@@ -145,8 +145,7 @@ public class DurationHelper extends EditorHelper
 			final Duration dur = (Duration) value;
 			final int millis = (int) dur.getValueIn(Duration.MILLISECONDS);
 			
-			
-	    final int[] list = TimeIntervalPropertyEditor.getValueList();
+	    final long[] list = TimeIntervalPropertyEditor.getValueList();
 	    int res = 0;
 	    for (int i = 0; i < list.length; i++)
 	    {
@@ -156,9 +155,7 @@ public class DurationHelper extends EditorHelper
 	        res = i;
 	        break;
 	      }
-
 	    }
-	    
 			super.doSetValue(new Integer(res));
 		}
 		

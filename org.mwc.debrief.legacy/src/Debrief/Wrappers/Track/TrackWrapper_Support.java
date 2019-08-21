@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package Debrief.Wrappers.Track;
 
@@ -37,14 +37,12 @@ public class TrackWrapper_Support
 
   /**
    * convenience class that makes our plottables look like a layer
-   * 
+   *
    * @author ian.mayo
    */
   abstract public static class BaseItemLayer extends Plottables implements
       Layer, SupportsPropertyListeners
   {
-
-    public final static String WRAPPER_CHANGED = "WrapperChanged";
 
     /**
      * class containing editable details of a track
@@ -54,7 +52,7 @@ public class TrackWrapper_Support
 
       /**
        * constructor for this editor, takes the actual track as a parameter
-       * 
+       *
        * @param data
        *          track being edited
        */
@@ -86,30 +84,23 @@ public class TrackWrapper_Support
       }
     }
 
+    public final static String WRAPPER_CHANGED = "WrapperChanged";
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
     /**
      * property support
-     * 
+     *
      */
     private transient PropertyChangeSupport _pSupport = null;
 
-    /**
-		 * 
-		 */
-    private static final long serialVersionUID = 1L;
-
     protected TrackWrapper _myTrack;
 
-    private void checkSupport()
-    {
-      if (_pSupport == null)
-      {
-        _pSupport = new PropertyChangeSupport(this);
-      }
-    }
-
     @Override
-    public void
-        addPropertyChangeListener(final PropertyChangeListener listener)
+    public void addPropertyChangeListener(final PropertyChangeListener listener)
     {
       checkSupport();
       _pSupport.addPropertyChangeListener(listener);
@@ -121,6 +112,14 @@ public class TrackWrapper_Support
     {
       checkSupport();
       _pSupport.addPropertyChangeListener(property, listener);
+    }
+
+    private void checkSupport()
+    {
+      if (_pSupport == null)
+      {
+        _pSupport = new PropertyChangeSupport(this);
+      }
     }
 
     @Override
@@ -182,7 +181,7 @@ public class TrackWrapper_Support
 
     public void setWrapper(final TrackWrapper wrapper)
     {
-      TrackWrapper oldWrap = _myTrack;
+      final TrackWrapper oldWrap = _myTrack;
 
       _myTrack = wrapper;
 
@@ -200,7 +199,7 @@ public class TrackWrapper_Support
   {
     /**
      * operation to apply to a fix
-     * 
+     *
      * @param fix
      *          subject of operation
      * @param val
@@ -239,9 +238,9 @@ public class TrackWrapper_Support
 
   /**
    * the collection of track segments
-   * 
+   *
    * @author Administrator
-   * 
+   *
    */
   final public static class SegmentList extends BaseItemLayer
   {
@@ -254,7 +253,7 @@ public class TrackWrapper_Support
 
       /**
        * constructor for this editor, takes the actual track as a parameter
-       * 
+       *
        * @param data
        *          track being edited
        */
@@ -269,15 +268,15 @@ public class TrackWrapper_Support
         // just add the reset color field first
         final Class<SegmentList> c = SegmentList.class;
         MethodDescriptor[] mds =
-            {method(c, "mergeAllSegments", null, "Merge all track segments"),
-                method(c, "revealAllPositions", null, "Reveal all positions")};
+        {method(c, "mergeAllSegments", null, "Merge all segments"), method(c,
+            "revealAllPositions", null, "Reveal All Positions")};
 
         final MethodDescriptor[] oldMeds = super.getMethodDescriptors();
         // we now need to combine the two sets
         if (oldMeds != null)
         {
-          final MethodDescriptor resMeds[] =
-              new MethodDescriptor[mds.length + oldMeds.length];
+          final MethodDescriptor resMeds[] = new MethodDescriptor[mds.length
+              + oldMeds.length];
           System.arraycopy(mds, 0, resMeds, 0, mds.length);
           System.arraycopy(oldMeds, 0, resMeds, mds.length, oldMeds.length);
           mds = resMeds;
@@ -309,8 +308,8 @@ public class TrackWrapper_Support
     }
 
     /**
-		 * 
-		 */
+     * 
+     */
     private static final long serialVersionUID = 1L;
 
     public SegmentList()
@@ -332,6 +331,69 @@ public class TrackWrapper_Support
       {
         System.err.println("SHOULD NOT BE ADDING NORMAL ITEM TO SEGMENT LIST");
       }
+    }
+
+    public void addSegment(final TrackSegment segment)
+    {
+      segment.setWrapper(_myTrack);
+
+      if (this.size() == 1)
+      {
+        // aah, currently, it's name's probably wrong sort out it's date
+        final TrackSegment first = (TrackSegment) getData().iterator().next();
+        first.sortOutDateLabel(null);
+      }
+
+      super.add(segment);
+
+      // if we've just got the one, set it's name to positions
+      if (this.size() == 1)
+      {
+        final TrackSegment first = (TrackSegment) getData().iterator().next();
+        first.setName("Positions");
+      }
+    }
+
+    @Override
+    public void append(final Layer other)
+    {
+      System.err.println("SHOULD NOT BE ADDING LAYER TO SEGMENTS LIST");
+    }
+
+    @Override
+    protected String collectiveName()
+    {
+      return "legs";
+    }
+
+    @Override
+    public EditorType getInfo()
+    {
+      return new SegmentInfo(this);
+    }
+
+    public TrackSegment getSegmentFor(final long time)
+    {
+      // update our segments
+      final Collection<Editable> items = getData();
+      for (final Iterator<Editable> iterator = items.iterator(); iterator
+          .hasNext();)
+      {
+        final TrackSegment seg = (TrackSegment) iterator.next();
+        if (seg.endDTG().getDate().getTime() >= time && seg.startDTG().getDate()
+            .getTime() <= time)
+        {
+          return seg;
+        }
+      }
+
+      return null;
+    }
+
+    @Override
+    public boolean hasEditor()
+    {
+      return true;
     }
 
     @FireExtended
@@ -376,64 +438,26 @@ public class TrackWrapper_Support
       // and fire some kind of update...
     }
 
-    public void addSegment(final TrackSegment segment)
-    {
-      segment.setWrapper(_myTrack);
-
-      if (this.size() == 1)
-      {
-        // aah, currently, it's name's probably wrong sort out it's date
-        final TrackSegment first = (TrackSegment) getData().iterator().next();
-        first.sortOutDateLabel(null);
-      }
-
-      super.add(segment);
-
-      // if we've just got the one, set it's name to positions
-      if (this.size() == 1)
-      {
-        final TrackSegment first = (TrackSegment) getData().iterator().next();
-        first.setName("Positions");
-      }
-    }
-    
-    protected String collectiveName()
-    {
-      return "legs";
-    }
-
     @Override
-    public void removeElement(Editable p)
+    public void removeElement(final Editable p)
     {
       super.removeElement(p);
 
       // if it's a dynamic infill, we've got to clear it
       if (p instanceof DynamicInfillSegment)
       {
-        DynamicInfillSegment fill = (DynamicInfillSegment) p;
+        final DynamicInfillSegment fill = (DynamicInfillSegment) p;
         fill.clear();
       }
 
-      TrackSegment seg = (TrackSegment) p;
+      final TrackSegment seg = (TrackSegment) p;
       seg.setWrapper(null);
 
     }
 
-    @Override
-    public void append(final Layer other)
-    {
-      System.err.println("SHOULD NOT BE ADDING LAYER TO SEGMENTS LIST");
-    }
-
-    @Override
-    public EditorType getInfo()
-    {
-      return new SegmentInfo(this);
-    }
-
     /**
      * utility method to reveal all positions in a track
-     * 
+     *
      */
     @FireReformatted
     public void revealAllPositions()
@@ -470,24 +494,6 @@ public class TrackWrapper_Support
         final TrackSegment seg = (TrackSegment) iterator.next();
         seg.setWrapper(_myTrack);
       }
-    }
-
-    public TrackSegment getSegmentFor(long time)
-    {
-      // update our segments
-      final Collection<Editable> items = getData();
-      for (final Iterator<Editable> iterator = items.iterator(); iterator
-          .hasNext();)
-      {
-        final TrackSegment seg = (TrackSegment) iterator.next();
-        if (seg.endDTG().getDate().getTime() >= time
-            && seg.startDTG().getDate().getTime() <= time)
-        {
-          return seg;
-        }
-      }
-
-      return null;
     }
   }
 

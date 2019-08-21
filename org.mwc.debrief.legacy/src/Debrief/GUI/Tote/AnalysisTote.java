@@ -222,7 +222,7 @@ abstract public class AnalysisTote implements Pane,
   /**
    * the stepping control we are watching
    */
-  private StepControl _theStepper;
+  protected StepControl _theStepper;
 
   /**
    * the current time
@@ -380,16 +380,32 @@ abstract public class AnalysisTote implements Pane,
    */
   public final void setPrimary(final WatchableList theList)
   {
+    final WatchableList oldP = _thePrimary;
+    
     _thePrimary = theList;
-    /** see if this item is time related
-     */
-    final HiResDate val = theList.getStartDTG();
-    if (val != null)
+    
+    // check it's not null
+    if (_thePrimary != null)
     {
-      _theStepper.addParticipant(theList,
-                                 theList.getStartDTG(),
-                                 theList.getEndDTG());
+      /**
+       * see if this item is time related
+       */
+      final HiResDate val = theList.getStartDTG();
+      if (val != null)
+      {
+        _theStepper.addParticipant(theList, theList.getStartDTG(), theList
+            .getEndDTG());
+      }
     }
+    
+    if(oldP != null)
+    {
+      // hey, we've lost hte primary. also remove it as a participant
+
+      // update the time period of the stepper
+      _theStepper.removeParticpant(oldP);
+    }
+    
     updateToteMembers();
 
     // hmm, do we have a current time?
@@ -475,6 +491,12 @@ abstract public class AnalysisTote implements Pane,
   {
     // not really interested, to be honest
   }
+  
+  @Override
+  public void reset()
+  {
+    // don't worry about it, ignore
+  }
 
   public final void newTime(final HiResDate oldDTG, final HiResDate newDTG, final CanvasType canvas)
   {
@@ -506,6 +528,11 @@ abstract public class AnalysisTote implements Pane,
     return _theCurrentTime;
   }
 
+  
+  public Layers getData()
+  {
+    return _theData;
+  }
 
   /**
    * @param list             the list of items to process
@@ -640,6 +667,13 @@ abstract public class AnalysisTote implements Pane,
     _thePrimary = null;
     _theSecondary.clear();
     _theStepper = null;
+  }
+  
+  public void clear()
+  {
+    _thePrimary = null;
+    _theSecondary.clear();
+    updateToteMembers();
   }
 
   /////////////////////////////////////////////////////////////////

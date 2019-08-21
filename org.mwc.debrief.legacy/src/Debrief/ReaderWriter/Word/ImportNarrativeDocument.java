@@ -750,7 +750,10 @@ public class ImportNarrativeDocument
    */
   public static interface QuestionHelper
   {
-    boolean askYes(String title, String message);
+    boolean askYes(final String title, final String message);
+    String askQuestion(final String title, final String message, final String defaultStr);
+    void showMessage(final String title, final String message);
+    void showMessageWithLogButton(String title, String message);
   }
 
   public static class TestImportWord extends TestCase
@@ -1408,6 +1411,68 @@ public class ImportNarrativeDocument
 
     }
 
+    public static void testNoMetadata1() throws InterruptedException, IOException
+    {
+      final Layers tLayers = new Layers();
+
+      // start off with the ownship track
+      final File boatFile = new File(ownship_track);
+      assertTrue(boatFile.exists());
+      final InputStream bs = new FileInputStream(boatFile);
+
+      final ImportReplay trackImporter = new ImportReplay();
+      ImportReplay.initialise(new ImportReplay.testImport.TestParent(
+          ImportReplay.IMPORT_AS_OTG, 0L));
+      trackImporter.importThis(ownship_track, bs, tLayers);
+
+      assertEquals("read in track", 1, tLayers.size());
+
+      final String testFile = no_metadata_path;
+      final File testI = new File(testFile);
+      assertTrue(testI.exists());
+
+ 
+
+    }
+    
+    public static void testNoMetadata2() throws InterruptedException, IOException
+    {
+      final Layers tLayers = new Layers();
+
+      // start off with the ownship track
+      final File boatFile = new File(ownship_track);
+      assertTrue(boatFile.exists());
+      final InputStream bs = new FileInputStream(boatFile);
+
+      final ImportReplay trackImporter = new ImportReplay();
+      ImportReplay.initialise(new ImportReplay.testImport.TestParent(
+          ImportReplay.IMPORT_AS_OTG, 0L));
+      trackImporter.importThis(ownship_track, bs, tLayers);
+
+      assertEquals("read in track", 1, tLayers.size());
+
+      final String testFile = no_metadata_path;
+      final File testI = new File(testFile);
+      assertTrue(testI.exists());
+
+      final InputStream is = new FileInputStream(testI);
+
+      final ImportNarrativeDocument importer = new ImportNarrativeDocument(
+          tLayers);
+      final HWPFDocument doc = new HWPFDocument(is);
+      final ArrayList<String> strings = importFromWord(doc);
+      importer.processThese(strings);
+
+      // hmmm, how many tracks
+      assertEquals("got new tracks", 3, tLayers.size());
+
+      final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(
+          LayerHandler.NARRATIVE_LAYER);
+
+      // correct final count
+      assertEquals("Got num lines", 350, narrLayer.size());
+
+    }
     public static void testNoMetadata() throws InterruptedException, IOException
     {
       final Layers tLayers = new Layers();

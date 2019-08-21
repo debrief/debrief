@@ -14,22 +14,54 @@
  */
 package org.mwc.debrief.lite;
 
+import java.awt.Cursor;
 import java.awt.MenuShortcut;
+
+import javax.swing.JFrame;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Frames.Session;
+import Debrief.ReaderWriter.Replay.ImportReplay;
+import Debrief.ReaderWriter.Replay.ImportReplay.ProvidesModeSelector;
 import MWC.GUI.Tool;
 
-class LiteApplication extends Application
+class LiteApplication extends Application implements ProvidesModeSelector
 {
+  
+  /** store preferences for import mode, and import frequency
+   * 
+   */
+  private final ImportSettings settings;
+  
+  private final Long freq;
 
-  private final Session _session;
+  private Session _session;
 
-  public LiteApplication(final Session session)
+  private JFrame _theFrame;
+
+  public LiteApplication(final String mode, final long freq)
   {
-    _session = session;
+    settings = new ImportSettings(mode, freq);
+    this.freq = freq;
   }
-
+  
+  @Override
+  public String getProperty(final String name)
+  {
+    if (name.equals(ImportReplay.TRACK_IMPORT_MODE))
+    {
+      return settings.importMode;
+    }
+    else if (name.equals(ImportReplay.RESAMPLE_FREQUENCY))
+    {
+      return "" + settings.sampleFrequency;
+    }
+    else
+    {
+      return super.getProperty(name);
+    }
+  }
+  
   @Override
   protected void addMenuItem(final String theMenu, final String theLabel,
       final Tool theTool, final MenuShortcut theShortCut)
@@ -52,7 +84,7 @@ class LiteApplication extends Application
   @Override
   public Session createSession()
   {
-    return _session;
+    throw new IllegalArgumentException("Not implemented");
   }
 
   @Override
@@ -70,13 +102,13 @@ class LiteApplication extends Application
   @Override
   public void restoreCursor()
   {
-    throw new IllegalArgumentException("Not implemented");
+    _theFrame.getContentPane().setCursor(null);
   }
 
   @Override
   public void setCursor(final int theCursor)
   {
-    throw new IllegalArgumentException("Not implemented");
+    _theFrame.getContentPane().setCursor(new Cursor(theCursor));
   }
 
   @Override
@@ -91,4 +123,26 @@ class LiteApplication extends Application
     throw new IllegalArgumentException("Not implemented");
   }
 
+
+  @Override
+  public Long getSelectedImportFrequency(final String trackName)
+  {
+    return this.freq;
+  }
+
+  @Override
+  public ImportSettings getSelectedImportMode(final String trackName)
+  {
+    return settings;
+  }
+
+  public void setSession(Session sessio)
+  {
+    _session = sessio;
+  }
+
+  public void setFrame(JFrame theFrame)
+  {
+    _theFrame = theFrame;
+  }
 }

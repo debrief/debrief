@@ -717,7 +717,7 @@ public class ImportRiderNarrativeDocument
         final ImportRiderNarrativeDocument importer, final TableBreakdown data)
     {
       final SimpleDateFormat dateF = new GMTDateFormat(
-          "yyyy/MM/dd hh:mm:ss");
+          "yyyy/MM/dd HH:mm:ss");
 
       assertNotNull(data);
       assertNotNull(data.header);
@@ -725,7 +725,7 @@ public class ImportRiderNarrativeDocument
       assertNotNull(data.entries);
       assertEquals(15, data.entries.size());
       assertEquals("HMS Nonsuch", data.header.platform);
-      assertEquals("2009/07/22 12:00:00", dateF.format(data.header.startDate));
+      assertEquals("2009/07/22 00:00:00", dateF.format(data.header.startDate));
 
       final RiderEntry entry4 = data.entries.get(4);
       assertEquals("2009/07/22 04:14:16", dateF.format(entry4.date));
@@ -1284,11 +1284,28 @@ public class ImportRiderNarrativeDocument
       else
       {
         final ImportNarrativeDocument iw = new ImportNarrativeDocument(_layers);
-        final ArrayList<String> strings = ImportNarrativeDocument.importFromWord(doc);
-        iw.processThese(strings);
+        final ArrayList<String> strings = ImportNarrativeDocument
+            .importFromWord(doc);
+        handleOtherImport(strings, iw);
       }
     }
   }
+  
+  private void handleOtherImport(final ArrayList<String> strings,
+      final ImportNarrativeDocument iw)
+  {
+    // ok, just do a quick check that thse aren't in the ASW DAta format
+    if (ImportASWDataDocument.canImport(strings))
+    {
+      ImportASWDataDocument idw = new ImportASWDataDocument(_layers);
+      System.out.println("IMPORTING ASW DOCUMENT");
+      idw.processThese(strings);
+    }
+    else
+    {
+      iw.processThese(strings);
+    }
+  }  
 
   public void handleImportX(final String fileName,
       final InputStream inputStream)
@@ -1319,7 +1336,7 @@ public class ImportRiderNarrativeDocument
     {
       final ImportNarrativeDocument iw = new ImportNarrativeDocument(_layers);
       final ArrayList<String> strings = ImportNarrativeDocument.importFromWordX(doc);
-      iw.processThese(strings);
+      handleOtherImport(strings, iw);
     }
   }
 

@@ -1247,14 +1247,14 @@
     <extension
          point="org.mwc.debrief.core.XMLLayerHandler">
       <helper
-            class="org.mwc.debrief.core.handlers.DynamicShapeLayerHandler">
+            class="Debrief.ReaderWriter.XML.dynamic.DynamicShapeLayerHandler">
       </helper>
     </extension>
     
     <extension
          point="org.mwc.debrief.core.XMLLayerHandler">
       <helper
-            class="org.mwc.debrief.core.handlers.DynamicLayerHandler">
+            class="Debrief.ReaderWriter.XML.dynamic.DynamicLayerHandler">
       </helper>
     </extension>
    <extension
@@ -1304,9 +1304,15 @@
             class="org.mwc.debrief.core.splashHandlers.ExtensibleSplashHandler"
             id="org.mwc.debrief.core.splashHandlers.extensible">
       </splashHandler>
-      <splashHandlerProductBinding
-            productId="org.mwc.debrief.core.Debrief"
-            splashId="org.mwc.debrief.core.splashHandlers.extensible">
+      <splashHandlerProductBinding	
+            productId="org.mwc.debrief.core.Debrief"	
+            splashId="org.mwc.debrief.core.splashHandlers.extensible">	
       </splashHandlerProductBinding>
+   </extension>
+   <extension
+         point="org.mwc.cmap.core.EarthModelProvider">
+      <provider
+            class="org.mwc.debrief.core.gt2plot.GeoCalculatorProvider">
+      </provider>
    </extension>
 </plugin>

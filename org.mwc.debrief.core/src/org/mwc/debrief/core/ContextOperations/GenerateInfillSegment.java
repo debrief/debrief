@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.core.ContextOperations;
 
@@ -21,9 +21,8 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
-
-import junit.framework.TestCase;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
@@ -52,6 +51,7 @@ import Debrief.Wrappers.Track.CoreTMASegment;
 import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
+import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import Debrief.Wrappers.Track.TrackWrapper_Test;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
@@ -61,6 +61,7 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
+import junit.framework.TestCase;
 
 /**
  * @author ian.mayo
@@ -68,688 +69,11 @@ import MWC.GenericData.WorldVector;
 public class GenerateInfillSegment implements RightClickContextItemGenerator
 {
 
-  private static final String DELETE_SUFFIX =
-      " (delete from 2nd track if necessary)";
-
-  public static class TestGenInfill extends TestCase
-  {
-    final private ArrayList<String> messages = new ArrayList<String>();
-    final private GenerateInfillSegment gener = new GenerateInfillSegment()
-    {
-
-      @Override
-      protected ErrorLogger getLogger()
-      {
-        return getMyLogger();
-      }
-    };
-
-    protected ErrorLogger getMyLogger()
-    {
-      return new ErrorLogger()
-      {
-
-        @Override
-        public void logError(int status, String text, Exception e)
-        {
-          messages.add(text);
-        }
-
-        @Override
-        public void logError(int status, String text, Exception e,
-            boolean revealLog)
-        {
-          logError(status, text, null);
-        }
-
-        @Override
-        public void logStack(int status, String text)
-        {
-          logError(status, text, null);
-        }
-      };
-
-    }
-
-    @Override
-    protected void setUp() throws Exception
-    {
-      super.setUp();
-
-      // clear any messages
-      messages.clear();
-    }
-
-    @SuppressWarnings("deprecation")
-    public void testTooSmallSecondTooShort() throws ExecutionException
-    {
-      Layers theLayers = new Layers();
-      TrackWrapper track = new TrackWrapper();
-
-      HiResDate l1_start = new HiResDate(new Date(2012, 1, 1, 11, 0, 0));
-      HiResDate l1_end = new HiResDate(new Date(2012, 1, 1, 12, 0, 0));
-
-      HiResDate l2_start = new HiResDate(new Date(2012, 1, 1, 12, 0, 1));
-      HiResDate l2_end = new HiResDate(new Date(2012, 1, 1, 12, 2, 0));
-
-      WorldLocation origin = new WorldLocation(44, 44, 44);
-      AbsoluteTMASegment legOne = new AbsoluteTMASegment(12, new WorldSpeed(13,
-          WorldSpeed.Kts), origin, l1_start, l1_end);
-      AbsoluteTMASegment legTwo = new AbsoluteTMASegment(12, new WorldSpeed(13,
-          WorldSpeed.Kts), origin, l2_start, l2_end);
-
-      track.add(legOne);
-      track.add(legTwo);
-
-      Editable[] subjects = new Editable[]
-      {legOne, legTwo};
-
-      GenerateInfillOperation operation = new GenerateInfillOperation("title",
-          subjects, theLayers, track, getMyLogger(), true);
-
-      messages.clear();
-
-      operation.execute(null, null);
-
-      assertEquals("got no error message", 1, messages.size());
-      assertEquals("correct message", GenerateInfillOperation.CANT_DELETE,
-          messages.get(0));
-
-      // check how many entries get deleted
-      assertEquals("correct after len", 2, legTwo.getData().size());
-    }
-
-    @SuppressWarnings("deprecation")
-    public void testTooSmall() throws ExecutionException
-    {
-      Layers theLayers = new Layers();
-      IMenuManager parent = new MenuManager();
-      TrackWrapper track = new TrackWrapper();
-      Layer[] parentLayers = new Layer[]
-      {track, track};
-
-      HiResDate l1_start = new HiResDate(new Date(2012, 1, 1, 11, 0, 0));
-      HiResDate l1_end = new HiResDate(new Date(2012, 1, 1, 12, 0, 0));
-
-      HiResDate l2_start = new HiResDate(new Date(2012, 1, 1, 12, 0, 1));
-      HiResDate l2_end = new HiResDate(new Date(2012, 1, 1, 13, 0, 0));
-
-      WorldLocation origin = new WorldLocation(44, 44, 44);
-      AbsoluteTMASegment legOne = new AbsoluteTMASegment(12, new WorldSpeed(13,
-          WorldSpeed.Kts), origin, l1_start, l1_end);
-      AbsoluteTMASegment legTwo = new AbsoluteTMASegment(12, new WorldSpeed(13,
-          WorldSpeed.Kts), origin, l2_start, l2_end);
-
-      track.add(legOne);
-      track.add(legTwo);
-
-      Editable[] subjects = new Editable[]
-      {legOne, legTwo};
-      gener.generate(parent, theLayers, parentLayers, subjects);
-      IContributionItem[] newItems = parent.getItems();
-
-      assertEquals("newItems", 3, newItems.length);
-
-      ActionContributionItem first = (ActionContributionItem) newItems[1];
-      assertEquals("right name", "Generate infill segment", first.getAction()
-          .getText());
-      first.getAction().run();
-
-      assertEquals("got error message", 1, messages.size());
-      assertEquals("correct error message",
-          GenerateInfillOperation.INSUFFICIENT_TIME, messages.get(0));
-
-      assertEquals("correct before len", 60, legTwo.getData().size());
-
-      messages.clear();
-      first = (ActionContributionItem) newItems[2];
-      assertEquals("right name", "Generate infill segment" + DELETE_SUFFIX,
-          first.getAction().getText());
-      first.getAction().run();
-
-      assertEquals("got no error message", 0, messages.size());
-
-      // check how many entries get deleted
-      assertEquals("correct after len", 58, legTwo.getData().size());
-    }
-
-    @SuppressWarnings("deprecation")
-    public void testUndoRelative2() throws ExecutionException
-    {
-      Layers theLayers = new Layers();
-      TrackWrapper tmaTrack = new TrackWrapper();
-      TrackWrapper hostTrack = new TrackWrapper();
-
-      WorldLocation origin = new WorldLocation(44, 44, 44);
-      WorldVector _offset = new WorldVector(12, 0.1, 0);
-
-      SensorWrapper sensor1 = new SensorWrapper("sensor 1");
-      sensor1.setArrayCentreMode(LegacyArrayOffsetModes.PLAIN);
-      hostTrack.add(sensor1);
-      SensorContactWrapper[] cuts1 = new SensorContactWrapper[10];
-      for (int i = 0; i < 10; i++)
-      {
-        HiResDate date = new HiResDate(new Date(2012, 1, 1, 12, 1 + i, 0));
-        SensorContactWrapper contact = new SensorContactWrapper();
-        contact.setDTG(date);
-        contact.setBearing(i);
-        contact.setOrigin(origin);
-        sensor1.add(contact);
-        cuts1[i] = contact;
-      }
-
-      SensorWrapper sensor2 = new SensorWrapper("sensor 2");
-      sensor2.setArrayCentreMode(LegacyArrayOffsetModes.PLAIN);
-      hostTrack.add(sensor2);
-      SensorContactWrapper[] cuts2 = new SensorContactWrapper[10];
-      for (int i = 0; i < 10; i++)
-      {
-        HiResDate date = new HiResDate(new Date(2012, 1, 1, 12, 10 + i, 30));
-        SensorContactWrapper contact = new SensorContactWrapper();
-        contact.setDTG(date);
-        contact.setOrigin(origin);
-        contact.setBearing(i);
-        sensor2.add(contact);
-        cuts2[i] = contact;
-      }
-
-      CoreTMASegment legOne = new RelativeTMASegment(cuts1, _offset,
-          new WorldSpeed(13, WorldSpeed.Kts), 12, theLayers, null);
-
-      CoreTMASegment legTwo = new RelativeTMASegment(cuts2, _offset,
-          new WorldSpeed(13, WorldSpeed.Kts), 12, theLayers, null);
-
-      tmaTrack.add(legOne);
-      tmaTrack.add(legTwo);
-
-      Editable[] subjects = new Editable[]
-      {legOne, legTwo};
-
-      GenerateInfillOperation operation = new GenerateInfillOperation("title",
-          subjects, theLayers, tmaTrack, getMyLogger(), true);
-
-      assertEquals("correct before len", 10, legTwo.getData().size());
-      assertEquals("correct legs", 2, tmaTrack.getSegments().size());
-      messages.clear();
-
-      operation.execute(null, null);
-
-      assertEquals("got no error message", 0, messages.size());
-      assertEquals("correct legs", 3, tmaTrack.getSegments().size());
-
-      // check how many entries get deleted
-      assertEquals("correct after len", 8, legTwo.getData().size());
-
-      // TODO - test undo processing, check second leg same as original length
-      operation.undo(null, null);
-      assertEquals("correct after len", 10, legTwo.getData().size());
-      assertEquals("correct legs", 2, tmaTrack.getSegments().size());
-    }
-
-    @SuppressWarnings("deprecation")
-    public void testUndoRelative() throws ExecutionException
-    {
-      Layers theLayers = new Layers();
-      TrackWrapper tmaTrack = new TrackWrapper();
-      TrackWrapper hostTrack = new TrackWrapper();
-
-      WorldLocation origin = new WorldLocation(44, 44, 44);
-      WorldVector _offset = new WorldVector(12, 0.1, 0);
-
-      SensorWrapper sensor1 = new SensorWrapper("sensor 1");
-      sensor1.setArrayCentreMode(LegacyArrayOffsetModes.PLAIN);
-      hostTrack.add(sensor1);
-      SensorContactWrapper[] cuts1 = new SensorContactWrapper[10];
-      for (int i = 0; i < 10; i++)
-      {
-        HiResDate date = new HiResDate(new Date(2012, 1, 1, 12, 1 + i, 0));
-        SensorContactWrapper contact = new SensorContactWrapper();
-        contact.setDTG(date);
-        contact.setBearing(i);
-        contact.setOrigin(origin);
-        sensor1.add(contact);
-        cuts1[i] = contact;
-      }
-
-      SensorWrapper sensor2 = new SensorWrapper("sensor 2");
-      sensor2.setArrayCentreMode(LegacyArrayOffsetModes.PLAIN);
-      hostTrack.add(sensor2);
-      SensorContactWrapper[] cuts2 = new SensorContactWrapper[10];
-      for (int i = 0; i < 10; i++)
-      {
-        HiResDate date = new HiResDate(new Date(2012, 1, 1, 12, 21 + i, 0));
-        SensorContactWrapper contact = new SensorContactWrapper();
-        contact.setDTG(date);
-        contact.setOrigin(origin);
-        contact.setBearing(i);
-        sensor2.add(contact);
-        cuts2[i] = contact;
-      }
-
-      CoreTMASegment legOne = new RelativeTMASegment(cuts1, _offset,
-          new WorldSpeed(13, WorldSpeed.Kts), 12, theLayers, null);
-
-      CoreTMASegment legTwo = new RelativeTMASegment(cuts2, _offset,
-          new WorldSpeed(13, WorldSpeed.Kts), 12, theLayers, null);
-
-      tmaTrack.add(legOne);
-      tmaTrack.add(legTwo);
-
-      Editable[] subjects = new Editable[]
-      {legOne, legTwo};
-
-      GenerateInfillOperation operation = new GenerateInfillOperation("title",
-          subjects, theLayers, tmaTrack, getMyLogger(), true);
-
-      assertEquals("correct before len", 10, legTwo.getData().size());
-      assertEquals("correct legs", 2, tmaTrack.getSegments().size());
-      messages.clear();
-
-      operation.execute(null, null);
-
-      assertEquals("got no error message", 0, messages.size());
-      assertEquals("correct legs", 3, tmaTrack.getSegments().size());
-
-      // check how many entries get deleted
-      assertEquals("correct after len", 10, legTwo.getData().size());
-
-      // TODO - test undo processing, check second leg same as original length
-      operation.undo(null, null);
-      assertEquals("correct after len", 10, legTwo.getData().size());
-      assertEquals("correct legs", 2, tmaTrack.getSegments().size());
-    }
-
-    @SuppressWarnings("deprecation")
-    public void testRepeat() throws ExecutionException
-    {
-      Layers theLayers = new Layers();
-      TrackWrapper track = new TrackWrapper();
-
-      HiResDate l1_start = new HiResDate(new Date(2012, 1, 1, 11, 0, 0));
-      HiResDate l1_end = new HiResDate(new Date(2012, 1, 1, 12, 0, 0));
-
-      HiResDate l2_start = new HiResDate(new Date(2012, 1, 1, 12, 0, 1));
-      HiResDate l2_end = new HiResDate(new Date(2012, 1, 1, 13, 0, 0));
-
-      WorldLocation origin = new WorldLocation(44, 44, 44);
-      AbsoluteTMASegment legOne = new AbsoluteTMASegment(12, new WorldSpeed(13,
-          WorldSpeed.Kts), origin, l1_start, l1_end);
-      AbsoluteTMASegment legTwo = new AbsoluteTMASegment(12, new WorldSpeed(13,
-          WorldSpeed.Kts), origin, l2_start, l2_end);
-
-      track.add(legOne);
-      track.add(legTwo);
-
-      Editable[] subjects = new Editable[]
-      {legOne, legTwo};
-
-      GenerateInfillOperation operation = new GenerateInfillOperation("title",
-          subjects, theLayers, track, getMyLogger(), true);
-
-      assertEquals("correct before len", 60, legTwo.getData().size());
-      assertEquals("correct legs", 2, track.getSegments().size());
-      messages.clear();
-
-      operation.execute(null, null);
-
-      assertEquals("got no error message", 0, messages.size());
-      assertEquals("correct legs", 3, track.getSegments().size());
-
-      // ok, now try to do it again
-      subjects = new Editable[3];
-      int ctr = 0;
-      Iterator<Editable> iter = track.getSegments().getData().iterator();
-      while (iter.hasNext())
-      {
-        subjects[ctr++] = iter.next();
-      }
-      operation = new GenerateInfillOperation("title", subjects, theLayers,
-          track, getMyLogger(), true);
-
-      assertEquals("correct before len", 58, legTwo.getData().size());
-      assertEquals("correct legs", 3, track.getSegments().size());
-      messages.clear();
-
-      operation.execute(null, null);
-
-      assertEquals("got no error message", 0, messages.size());
-      assertEquals("correct legs", 3, track.getSegments().size());
-
-    }
-
-    @SuppressWarnings("deprecation")
-    public void testUndo() throws ExecutionException
-    {
-      Layers theLayers = new Layers();
-      TrackWrapper track = new TrackWrapper();
-
-      HiResDate l1_start = new HiResDate(new Date(2012, 1, 1, 11, 0, 0));
-      HiResDate l1_end = new HiResDate(new Date(2012, 1, 1, 12, 0, 0));
-
-      HiResDate l2_start = new HiResDate(new Date(2012, 1, 1, 12, 0, 1));
-      HiResDate l2_end = new HiResDate(new Date(2012, 1, 1, 13, 0, 0));
-
-      WorldLocation origin = new WorldLocation(44, 44, 44);
-      AbsoluteTMASegment legOne = new AbsoluteTMASegment(12, new WorldSpeed(13,
-          WorldSpeed.Kts), origin, l1_start, l1_end);
-      AbsoluteTMASegment legTwo = new AbsoluteTMASegment(12, new WorldSpeed(13,
-          WorldSpeed.Kts), origin, l2_start, l2_end);
-
-      track.add(legOne);
-      track.add(legTwo);
-
-      Editable[] subjects = new Editable[]
-      {legOne, legTwo};
-
-      GenerateInfillOperation operation = new GenerateInfillOperation("title",
-          subjects, theLayers, track, getMyLogger(), true);
-
-      assertEquals("correct before len", 60, legTwo.getData().size());
-      assertEquals("correct legs", 2, track.getSegments().size());
-      messages.clear();
-
-      operation.execute(null, null);
-
-      assertEquals("got no error message", 0, messages.size());
-      assertEquals("correct legs", 3, track.getSegments().size());
-
-      // check how many entries get deleted
-      assertEquals("correct after len", 58, legTwo.getData().size());
-
-      // test undo processing, check second leg same as original length
-      operation.undo(null, null);
-      assertEquals("correct after len", 60, legTwo.getData().size());
-      assertEquals("correct legs", 2, track.getSegments().size());
-    }
-
-    public void testReconnectInfillAfterSplit() throws ExecutionException
-    {
-      // //////////////////////////////////
-      // start off building from a track
-      // //////////////////////////////////
-      final TrackWrapper tw = new TrackWrapper();
-
-      final Layers theLayers = new Layers();
-
-      tw.addFix(TrackWrapper_Test.createFix2(100000, 1, 1, 4, 12));
-      tw.addFix(TrackWrapper_Test.createFix2(200000, 2, 3, 4, 12));
-      tw.addFix(TrackWrapper_Test.createFix2(300000, 3, 3, 4, 12));
-      tw.addFix(TrackWrapper_Test.createFix2(400000, 4, 6, 4, 12));
-      tw.addFix(TrackWrapper_Test.createFix2(500000, 4, 6, 4, 12));
-      tw.addFix(TrackWrapper_Test.createFix2(600000, 4, 6, 4, 12));
-      tw.addFix(TrackWrapper_Test.createFix2(700000, 4, 6, 4, 12));
-
-      final WorldVector offset = new WorldVector(12, 12, 0);
-      final WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
-      final double course = 33;
-
-      // ok, create the segment
-      CoreTMASegment seg = null;
-
-      // check the before
-      FixWrapper firstFix = null;
-
-      // ////////////////////////
-      // NOW FROM A SENSOR WRAPPER
-      // /////////////////////////
-      final SensorWrapper sw = new SensorWrapper("some sensor");
-      sw.setHost(tw);
-
-      // attach the sensor to the host
-      tw.add(sw);
-
-      final int senLen = 30;
-      final SensorContactWrapper[] items = new SensorContactWrapper[senLen];
-
-      for (int i = 0; i < senLen; i++)
-      {
-        items[i] = TrackWrapper_Test.createSensorItem(tw, sw, 100000 + i
-            * 10000);
-      }
-
-      // sort out the host
-      for (int i = 0; i < items.length; i++)
-      {
-        final SensorContactWrapper sensorContactWrapper = items[i];
-        sw.add(sensorContactWrapper);
-      }
-
-      // seg = new RelativeTMASegment(sw, offset, speed, course, null);
-      seg = new RelativeTMASegment(items, offset, speed, course, null,
-          Color.yellow);
-      seg.setWrapper(tw);
-
-      // check the create worked
-      assertEquals("enough points created", 30, seg.size());
-
-      // check the before
-      firstFix = (FixWrapper) seg.getData().iterator().next();
-      assertEquals("correct course before", 33, seg.getCourse(), 0.001);
-      assertEquals("correct speed before", 5, seg.getSpeed().getValueIn(
-          WorldSpeed.Kts), 0.001);
-      assertEquals("correct course before", 33, MWC.Algorithms.Conversions
-          .Rads2Degs(firstFix.getCourse()), 0.001);
-      assertEquals("correct speed before", 5, firstFix.getSpeed(), 0.001);
-
-      // ok, now do the split
-      final TrackWrapper segW = new TrackWrapper();
-      segW.setName("TMA");
-      segW.add(seg);
-
-      // get hold of an item in the segment
-      final Enumeration<Editable> enumer = seg.elements();
-      enumer.nextElement();
-      enumer.nextElement();
-      enumer.nextElement();
-      enumer.nextElement();
-      enumer.nextElement();
-      enumer.nextElement();
-      enumer.nextElement();
-      enumer.nextElement();
-      enumer.nextElement();
-      final FixWrapper fw = (FixWrapper) enumer.nextElement();
-      assertNotNull("Found a fix", fw);
-
-      // do the split
-      final Vector<TrackSegment> segs = segW.splitTrack(fw, false);
-
-      // check we have enough segments
-      assertEquals("now two segments", 2, segs.size());
-      assertEquals("first is of correct length", 10, segs.firstElement()
-          .size());
-      assertEquals("second is of correct length", 20, segs.lastElement()
-          .size());
-
-      // check they're of the correct type
-      final TrackSegment seg1 = segs.firstElement();
-      final TrackSegment seg2 = segs.lastElement();
-      assertTrue(" is a tma segment", seg1 instanceof RelativeTMASegment);
-      assertTrue(" is a tma segment", seg2 instanceof RelativeTMASegment);
-
-      // ok, insert infill
-      Editable[] segments = new Editable[]
-      {seg1, seg2};
-      Layer parentTrack = segW;
-      GenerateInfillOperation oper = new GenerateInfillOperation("gen it",
-          segments, theLayers, parentTrack, null, true);
-      oper.execute(null, null);
-
-      // how many legs?
-      assertEquals("has infill", 3, segW.getSegments().size());
-
-      long midPoint = seg1.endDTG().getDate().getTime() + (seg2.startDTG()
-          .getDate().getTime() - seg1.endDTG().getDate().getTime()) / 2;
-      TrackSegment possInfill = segW.getSegments().getSegmentFor(midPoint);
-      assertTrue("found infill", possInfill instanceof DynamicInfillSegment);
-
-      // ok, check the ends
-      DynamicInfillSegment infill = (DynamicInfillSegment) possInfill;
-      assertEquals("correct before", seg1, infill.getBeforeSegment());
-      assertEquals("correct after", seg2, infill.getAfterSegment());
-
-      // ok, slice the first one
-      final Enumeration<Editable> enumer2 = seg1.elements();
-      enumer2.nextElement();
-      enumer2.nextElement();
-      enumer2.nextElement();
-      final FixWrapper fw2 = (FixWrapper) enumer2.nextElement();
-      assertNotNull("Found a fix", fw2);
-
-      // do the split
-      final Vector<TrackSegment> segs2 = segW.splitTrack(fw2, false);
-      assertEquals(2, segs2.size());
-      
-      TrackSegment newSeg2 = segs2.get(1);
-      
-      assertEquals("correct before", newSeg2, infill.getBeforeSegment());
-      assertEquals("correct after", seg2, infill.getAfterSegment());
-      
-      // ok, split the second leg
-      final Enumeration<Editable> enumer3 = seg2.elements();
-      enumer3.nextElement();
-      enumer3.nextElement();
-      enumer3.nextElement();
-      final FixWrapper fw3 = (FixWrapper) enumer3.nextElement();
-      assertNotNull("Found a fix", fw3);
-      
-      // do the split
-      final Vector<TrackSegment> segs3 = segW.splitTrack(fw3, false);
-      assertEquals(2, segs2.size());
-
-      infill.reconstruct();
-      System.out.println(infill.getSegmentNames());
-
-      TrackSegment newSeg3 = segs3.get(0);
-      
-      assertEquals("correct before", newSeg2, infill.getBeforeSegment());
-      assertEquals("correct after", newSeg3, infill.getAfterSegment());
-
-    }
-    
-    @SuppressWarnings("unused")
-    private static void listLegs(TrackWrapper track)
-    {
-      System.out.println("=========");
-      Enumeration<Editable> segs = track.getSegments().elements();
-      while(segs.hasMoreElements())
-      {
-        TrackSegment seg = (TrackSegment) segs.nextElement();
-        System.out.println(seg.getName() + " " + seg.getClass());
-      }
-    }
-    
-
-    @SuppressWarnings("deprecation")
-    public void testOverlap()
-    {
-      Layers theLayers = new Layers();
-      IMenuManager parent = new MenuManager();
-      TrackWrapper track = new TrackWrapper();
-      Layer[] parentLayers = new Layer[]
-      {track, track};
-
-      HiResDate l1_start = new HiResDate(new Date(2012, 1, 1, 11, 0, 0));
-      HiResDate l1_end = new HiResDate(new Date(2012, 1, 1, 12, 0, 0));
-
-      HiResDate l2_start = new HiResDate(new Date(2012, 1, 1, 11, 55, 0));
-      HiResDate l2_end = new HiResDate(new Date(2012, 1, 1, 13, 0, 0));
-
-      WorldLocation origin = new WorldLocation(44, 44, 44);
-      AbsoluteTMASegment legOne = new AbsoluteTMASegment(12, new WorldSpeed(13,
-          WorldSpeed.Kts), origin, l1_start, l1_end);
-      AbsoluteTMASegment legTwo = new AbsoluteTMASegment(12, new WorldSpeed(13,
-          WorldSpeed.Kts), origin, l2_start, l2_end);
-
-      track.add(legOne);
-      track.add(legTwo);
-
-      Editable[] subjects = new Editable[]
-      {legOne, legTwo};
-      gener.generate(parent, theLayers, parentLayers, subjects);
-      IContributionItem[] newItems = parent.getItems();
-
-      assertEquals("newItems", 3, newItems.length);
-
-      ActionContributionItem first = (ActionContributionItem) newItems[1];
-      assertEquals("right name", "Generate infill segment", first.getAction()
-          .getText());
-      first.getAction().run();
-
-      assertEquals("got error message", 1, messages.size());
-      assertEquals("correct error message", GenerateInfillOperation.OVERLAPPING,
-          messages.get(0));
-    }
-
-    @SuppressWarnings("deprecation")
-    public void testValid()
-    {
-      Layers theLayers = new Layers();
-      IMenuManager parent = new MenuManager();
-      TrackWrapper track = new TrackWrapper();
-      Layer[] parentLayers = new Layer[]
-      {track, track};
-
-      HiResDate l1_start = new HiResDate(new Date(2012, 1, 1, 11, 0, 0));
-      HiResDate l1_end = new HiResDate(new Date(2012, 1, 1, 12, 0, 0));
-
-      HiResDate l2_start = new HiResDate(new Date(2012, 1, 1, 12, 15, 0));
-      HiResDate l2_end = new HiResDate(new Date(2012, 1, 1, 13, 0, 0));
-
-      WorldLocation origin = new WorldLocation(44, 44, 44);
-      AbsoluteTMASegment legOne = new AbsoluteTMASegment(12, new WorldSpeed(13,
-          WorldSpeed.Kts), origin, l1_start, l1_end);
-      AbsoluteTMASegment legTwo = new AbsoluteTMASegment(12, new WorldSpeed(13,
-          WorldSpeed.Kts), origin, l2_start, l2_end);
-
-      track.add(legOne);
-      track.add(legTwo);
-
-      Editable[] subjects = new Editable[]
-      {legOne, legTwo};
-      gener.generate(parent, theLayers, parentLayers, subjects);
-      IContributionItem[] newItems = parent.getItems();
-
-      assertEquals("newItems", 3, newItems.length);
-
-      ActionContributionItem first = (ActionContributionItem) newItems[1];
-      assertEquals("right name", "Generate infill segment", first.getAction()
-          .getText());
-
-      // check the before len
-      assertEquals("Correct before len", 46, legTwo.getData().size());
-      final int beforeLen = legTwo.getData().size();
-
-      first.getAction().run();
-
-      assertEquals("got error message", 0, messages.size());
-      assertEquals("correct legs", 3, track.getSegments().size());
-
-      // check the len still valid
-      assertEquals("Correct before len", beforeLen, legTwo.getData().size());
-
-      // ok, check that if we split the second, we don't lose the infill
-
-      // get a point in the second leg
-      FixWrapper target = null;
-      Collection<Editable> secondCuts = legTwo.getData();
-      Iterator<Editable> iter = secondCuts.iterator();
-      for (int i = 0; i < 6; i++)
-      {
-        target = (FixWrapper) iter.next();
-      }
-
-      assertNotNull("found it", target);
-
-      track.splitTrack(target, false);
-
-      // check we now have 4 legs
-      assertEquals("correct legs", 4, track.getSegments().size());
-    }
-  }
-
   public static class GenerateInfillOperation extends CMAPOperation
   {
 
+    public static final String INSUFFICIENT_POINTS =
+        "Legs must include at least two points for dynamic infill to be generated";
     public static final String INSUFFICIENT_TIME =
         "Insufficient time to insert data. Please try deleting some points.";
     public static final String OVERLAPPING =
@@ -771,7 +95,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
     private HashMap<TrackSegment, ArrayList<FixWrapper>> _deletedFixes = null;
 
     /**
-     * 
+     *
      * @param title
      *          What to call this operation
      * @param segments
@@ -851,11 +175,11 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
                 // can we restore deleted fixes?
                 if (_deletedFixes != null)
                 {
-                  ArrayList<FixWrapper> thesefixes = _deletedFixes.get(
+                  final ArrayList<FixWrapper> thesefixes = _deletedFixes.get(
                       trackTwo);
                   if (thesefixes != null)
                   {
-                    for (FixWrapper t : thesefixes)
+                    for (final FixWrapper t : thesefixes)
                     {
                       trackTwo.add(t);
                     }
@@ -876,7 +200,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
               else
               {
                 // ok, delete a point from the second leg
-                FixWrapper firstPoint = (FixWrapper) trackTwo.getData()
+                final FixWrapper firstPoint = (FixWrapper) trackTwo.getData()
                     .iterator().next();
 
                 if (_deletedFixes == null)
@@ -925,7 +249,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 
     /**
      * create a joining infill segment for these two sections
-     * 
+     *
      * @param trackOne
      * @param trackTwo
      * @return null for ok, status message for fail
@@ -940,6 +264,12 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
         // fail, they overlap
         res = new Status(IStatus.ERROR, DebriefPlugin.PLUGIN_NAME, OVERLAPPING,
             null);
+      }
+      else if (trackOne.size() < 2 || trackTwo.size() < 2)
+      {
+        // fail, too few points
+        res = new Status(IStatus.ERROR, DebriefPlugin.PLUGIN_NAME,
+            INSUFFICIENT_POINTS, null);
       }
       else
       {
@@ -995,10 +325,10 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       // and reinstore deleted fixes
       if (_deletedFixes != null)
       {
-        for (TrackSegment t : _deletedFixes.keySet())
+        for (final TrackSegment t : _deletedFixes.keySet())
         {
-          ArrayList<FixWrapper> fixes = _deletedFixes.get(t);
-          for (FixWrapper f : fixes)
+          final ArrayList<FixWrapper> fixes = _deletedFixes.get(t);
+          for (final FixWrapper f : fixes)
           {
             t.add(f);
           }
@@ -1013,6 +343,805 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
           "ditch infill successful", null);
     }
   }
+
+  public static class TestGenInfill extends TestCase
+  {
+    @SuppressWarnings("unused")
+    private static void listLegs(final TrackWrapper track)
+    {
+      System.out.println("=========");
+      final Enumeration<Editable> segs = track.getSegments().elements();
+      while (segs.hasMoreElements())
+      {
+        final TrackSegment seg = (TrackSegment) segs.nextElement();
+        System.out.println(seg.getName() + " " + seg.getClass());
+      }
+    }
+
+    final private ArrayList<String> messages = new ArrayList<String>();
+
+    final private GenerateInfillSegment gener = new GenerateInfillSegment()
+    {
+
+      @Override
+      protected ErrorLogger getLogger()
+      {
+        return getMyLogger();
+      }
+    };
+
+    protected ErrorLogger getMyLogger()
+    {
+      return new ErrorLogger()
+      {
+
+        @Override
+        public void logError(final int status, final String text,
+            final Exception e)
+        {
+          messages.add(text);
+        }
+
+        @Override
+        public void logError(final int status, final String text,
+            final Exception e, final boolean revealLog)
+        {
+          logError(status, text, null);
+        }
+
+        @Override
+        public void logStack(final int status, final String text)
+        {
+          logError(status, text, null);
+        }
+      };
+
+    }
+
+    @Override
+    protected void setUp() throws Exception
+    {
+      super.setUp();
+
+      // clear any messages
+      messages.clear();
+    }
+
+    @SuppressWarnings("deprecation")
+    public void testInfillForRegularSensorData() throws ExecutionException, InterruptedException
+    {
+      final Layers theLayers = new Layers();
+      final TrackWrapper tmaTrack = new TrackWrapper();
+      final TrackWrapper hostTrack = new TrackWrapper();
+
+      final WorldLocation origin = new WorldLocation(44, 44, 44);
+      final WorldVector offset1 = new WorldVector(12, 0.1, 0);
+      final WorldVector offset2 = new WorldVector(12, 0.15, 0.1);
+
+      final SensorWrapper sensor1 = new SensorWrapper("sensor 1");
+      sensor1.setArrayCentreMode(LegacyArrayOffsetModes.PLAIN);
+      hostTrack.add(sensor1);
+      final SensorContactWrapper[] cuts1 = new SensorContactWrapper[10];
+      for (int i = 0; i < 10; i++)
+      {
+        final HiResDate date = new HiResDate(new Date(2012, 1, 1, 12, 1 + i,
+            0));
+        final SensorContactWrapper contact = new SensorContactWrapper();
+        contact.setDTG(date);
+        contact.setBearing(i);
+        contact.setOrigin(origin);
+        sensor1.add(contact);
+        cuts1[i] = contact;
+      }
+
+      final SensorWrapper sensor2 = new SensorWrapper("sensor 2");
+      sensor2.setArrayCentreMode(LegacyArrayOffsetModes.PLAIN);
+      hostTrack.add(sensor2);
+      final SensorContactWrapper[] cuts2 = new SensorContactWrapper[10];
+      for (int i = 0; i < 10; i++)
+      {
+        final HiResDate date = new HiResDate(new Date(2012, 1, 1, 12, 30 + i,
+            0));
+        final SensorContactWrapper contact = new SensorContactWrapper();
+        contact.setDTG(date);
+        contact.setOrigin(origin);
+        contact.setBearing(i);
+        sensor2.add(contact);
+        cuts2[i] = contact;
+      }
+
+      final CoreTMASegment legOne = new RelativeTMASegment(cuts1, offset1,
+          new WorldSpeed(13, WorldSpeed.Kts), 12, theLayers, null);
+
+      final CoreTMASegment legTwo = new RelativeTMASegment(cuts2, offset2,
+          new WorldSpeed(13, WorldSpeed.Kts), 12, theLayers, null);
+
+      tmaTrack.add(legOne);
+      tmaTrack.add(legTwo);
+
+      final Editable[] subjects = new Editable[]
+      {legOne, legTwo};
+
+      final GenerateInfillOperation operation = new GenerateInfillOperation(
+          "title", subjects, theLayers, tmaTrack, getMyLogger(), true);
+
+      assertEquals("correct before len", 10, legTwo.getData().size());
+      assertEquals("correct legs", 2, tmaTrack.getSegments().size());
+      messages.clear();
+
+      operation.execute(null, null);
+
+      assertEquals("got no error message", 0, messages.size());
+      assertEquals("correct legs", 3, tmaTrack.getSegments().size());
+
+      // check how many entries get deleted
+      assertEquals("correct after len", 10, legTwo.getData().size());
+
+      // have a look at the legs
+      final SegmentList segs = tmaTrack.getSegments();
+      final Enumeration<Editable> ele = segs.elements();
+      while (ele.hasMoreElements())
+      {
+        final TrackSegment seg = (TrackSegment) ele.nextElement();
+        // System.out.println(seg.getName());
+        final Enumeration<Editable> ele2 = seg.elements();
+        while (ele2.hasMoreElements())
+        {
+          @SuppressWarnings("unused")
+          final FixWrapper fw = (FixWrapper) ele2.nextElement();
+          // System.out.println(fw.getLocation().getLong() + ", " + fw.getLocation().getLat()+ ", "
+          // + fw.getDateTimeGroup().getDate());
+        }
+      }
+
+      // check that the last point in the infill isn't the same as the first point in the second set
+      final FixWrapper startOfNext = (FixWrapper) legTwo.first();
+      final TrackSegment infill = tmaTrack.getSegments().getSegmentFor(
+          startOfNext.getDateTimeGroup().getDate().getTime() - 120000);
+      final FixWrapper endOfInfill = (FixWrapper) infill.last();
+      assertFalse("Locations not equal", startOfNext.getLocation().equals(
+          endOfInfill.getLocation()));
+
+      // also test deleting points
+      final List<FixWrapper> infillFixes = new ArrayList<FixWrapper>();
+      final Enumeration<Editable> pts = infill.elements();
+      while (pts.hasMoreElements())
+      {
+        infillFixes.add((FixWrapper) pts.nextElement());
+      }
+
+      assertEquals("correct elements before clearing infill", 3, tmaTrack
+          .getSegments().size());
+
+      // ok, now delete them
+      for (final FixWrapper f : infillFixes)
+      {
+        infill.removeElement(f);
+      }
+
+//      Thread.sleep(1000);
+//    
+//      // tests causing intermittent issue in Travis. Invetigate.
+//      assertEquals("dynamic infill removed", 2, tmaTrack.getSegments().size());
+//      assertNull("infill detached", infill.getWrapper());
+
+    }
+
+    @SuppressWarnings("deprecation")
+    public void testOverlap()
+    {
+      final Layers theLayers = new Layers();
+      final IMenuManager parent = new MenuManager();
+      final TrackWrapper track = new TrackWrapper();
+      final Layer[] parentLayers = new Layer[]
+      {track, track};
+
+      final HiResDate l1_start = new HiResDate(new Date(2012, 1, 1, 11, 0, 0));
+      final HiResDate l1_end = new HiResDate(new Date(2012, 1, 1, 12, 0, 0));
+
+      final HiResDate l2_start = new HiResDate(new Date(2012, 1, 1, 11, 55, 0));
+      final HiResDate l2_end = new HiResDate(new Date(2012, 1, 1, 13, 0, 0));
+
+      final WorldLocation origin = new WorldLocation(44, 44, 44);
+      final AbsoluteTMASegment legOne = new AbsoluteTMASegment(12,
+          new WorldSpeed(13, WorldSpeed.Kts), origin, l1_start, l1_end);
+      final AbsoluteTMASegment legTwo = new AbsoluteTMASegment(12,
+          new WorldSpeed(13, WorldSpeed.Kts), origin, l2_start, l2_end);
+
+      track.add(legOne);
+      track.add(legTwo);
+
+      final Editable[] subjects = new Editable[]
+      {legOne, legTwo};
+      gener.generate(parent, theLayers, parentLayers, subjects);
+      final IContributionItem[] newItems = parent.getItems();
+
+      assertEquals("newItems", 3, newItems.length);
+
+      final ActionContributionItem first = (ActionContributionItem) newItems[1];
+      assertEquals("right name", "Generate infill segment", first.getAction()
+          .getText());
+      first.getAction().run();
+
+      assertEquals("got error message", 1, messages.size());
+      assertEquals("correct error message", GenerateInfillOperation.OVERLAPPING,
+          messages.get(0));
+    }
+
+    public void testReconnectInfillAfterSplit() throws ExecutionException
+    {
+      final TrackWrapper tw = new TrackWrapper();
+
+      final Layers theLayers = new Layers();
+
+      tw.addFix(TrackWrapper_Test.createFix2(100000, 1, 1, 4, 12));
+      tw.addFix(TrackWrapper_Test.createFix2(200000, 2, 3, 4, 12));
+      tw.addFix(TrackWrapper_Test.createFix2(300000, 3, 3, 4, 12));
+      tw.addFix(TrackWrapper_Test.createFix2(400000, 4, 6, 4, 12));
+      tw.addFix(TrackWrapper_Test.createFix2(500000, 4, 6, 4, 12));
+      tw.addFix(TrackWrapper_Test.createFix2(600000, 4, 6, 4, 12));
+      tw.addFix(TrackWrapper_Test.createFix2(700000, 4, 6, 4, 12));
+
+      final WorldVector offset = new WorldVector(12, 12, 0);
+      final WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
+      final double course = 33;
+
+      // ok, create the segment
+      CoreTMASegment seg = null;
+
+      // check the before
+      FixWrapper firstFix = null;
+
+      final SensorWrapper sw = new SensorWrapper("some sensor");
+      sw.setHost(tw);
+
+      // attach the sensor to the host
+      tw.add(sw);
+
+      final int senLen = 30;
+      final SensorContactWrapper[] items = new SensorContactWrapper[senLen];
+
+      for (int i = 0; i < senLen; i++)
+      {
+        items[i] = TrackWrapper_Test.createSensorItem(tw, sw, 100000 + i
+            * 10000);
+      }
+
+      // sort out the host
+      for (int i = 0; i < items.length; i++)
+      {
+        final SensorContactWrapper sensorContactWrapper = items[i];
+        sw.add(sensorContactWrapper);
+      }
+
+      // seg = new RelativeTMASegment(sw, offset, speed, course, null);
+      seg = new RelativeTMASegment(items, offset, speed, course, null,
+          Color.yellow);
+      seg.setWrapper(tw);
+
+      // check the create worked
+      assertEquals("enough points created", 30, seg.size());
+
+      // check the before
+      firstFix = (FixWrapper) seg.getData().iterator().next();
+      assertEquals("correct course before", 33, seg.getCourse(), 0.001);
+      assertEquals("correct speed before", 5, seg.getSpeed().getValueIn(
+          WorldSpeed.Kts), 0.001);
+      assertEquals("correct course before", 33, MWC.Algorithms.Conversions
+          .Rads2Degs(firstFix.getCourse()), 0.001);
+      assertEquals("correct speed before", 5, firstFix.getSpeed(), 0.001);
+
+      // ok, now do the split
+      final TrackWrapper segW = new TrackWrapper();
+      segW.setName("TMA");
+      segW.add(seg);
+
+      // get hold of an item in the segment
+      final Enumeration<Editable> enumer = seg.elements();
+      enumer.nextElement();
+      enumer.nextElement();
+      enumer.nextElement();
+      enumer.nextElement();
+      enumer.nextElement();
+      enumer.nextElement();
+      enumer.nextElement();
+      enumer.nextElement();
+      enumer.nextElement();
+      final FixWrapper fw = (FixWrapper) enumer.nextElement();
+      assertNotNull("Found a fix", fw);
+
+      // do the split
+      final Vector<TrackSegment> segs = segW.splitTrack(fw, false);
+
+      // check we have enough segments
+      assertEquals("now two segments", 2, segs.size());
+      assertEquals("first is of correct length", 10, segs.firstElement()
+          .size());
+      assertEquals("second is of correct length", 20, segs.lastElement()
+          .size());
+
+      // check they're of the correct type
+      final TrackSegment seg1 = segs.firstElement();
+      final TrackSegment seg2 = segs.lastElement();
+      assertTrue(" is a tma segment", seg1 instanceof RelativeTMASegment);
+      assertTrue(" is a tma segment", seg2 instanceof RelativeTMASegment);
+
+      // ok, insert infill
+      final Editable[] segments = new Editable[]
+      {seg1, seg2};
+      final Layer parentTrack = segW;
+      final GenerateInfillOperation oper = new GenerateInfillOperation("gen it",
+          segments, theLayers, parentTrack, null, true);
+      oper.execute(null, null);
+
+      // how many legs?
+      assertEquals("has infill", 3, segW.getSegments().size());
+
+      final long midPoint = seg1.endDTG().getDate().getTime() + (seg2.startDTG()
+          .getDate().getTime() - seg1.endDTG().getDate().getTime()) / 2;
+      final TrackSegment possInfill = segW.getSegments().getSegmentFor(
+          midPoint);
+      assertTrue("found infill", possInfill instanceof DynamicInfillSegment);
+
+      // ok, check the ends
+      final DynamicInfillSegment infill = (DynamicInfillSegment) possInfill;
+      assertEquals("correct before", seg1, infill.getBeforeSegment());
+      assertEquals("correct after", seg2, infill.getAfterSegment());
+
+      // ok, slice the first one
+      final Enumeration<Editable> enumer2 = seg1.elements();
+      enumer2.nextElement();
+      enumer2.nextElement();
+      enumer2.nextElement();
+      final FixWrapper fw2 = (FixWrapper) enumer2.nextElement();
+      assertNotNull("Found a fix", fw2);
+
+      // do the split
+      final Vector<TrackSegment> segs2 = segW.splitTrack(fw2, false);
+      assertEquals(2, segs2.size());
+
+      final TrackSegment newSeg2 = segs2.get(1);
+
+      assertEquals("correct before", newSeg2, infill.getBeforeSegment());
+      assertEquals("correct after", seg2, infill.getAfterSegment());
+
+      // ok, split the second leg
+      final Enumeration<Editable> enumer3 = seg2.elements();
+      enumer3.nextElement();
+      enumer3.nextElement();
+      enumer3.nextElement();
+      final FixWrapper fw3 = (FixWrapper) enumer3.nextElement();
+      assertNotNull("Found a fix", fw3);
+
+      // do the split
+      final Vector<TrackSegment> segs3 = segW.splitTrack(fw3, false);
+      assertEquals(2, segs2.size());
+
+      infill.reconstruct();
+      System.out.println(infill.getSegmentNames());
+
+      final TrackSegment newSeg3 = segs3.get(0);
+
+      assertEquals("correct before", newSeg2, infill.getBeforeSegment());
+      assertEquals("correct after", newSeg3, infill.getAfterSegment());
+
+    }
+
+    @SuppressWarnings("deprecation")
+    public void testRepeat() throws ExecutionException
+    {
+      final Layers theLayers = new Layers();
+      final TrackWrapper track = new TrackWrapper();
+
+      final HiResDate l1_start = new HiResDate(new Date(2012, 1, 1, 11, 0, 0));
+      final HiResDate l1_end = new HiResDate(new Date(2012, 1, 1, 12, 0, 0));
+
+      final HiResDate l2_start = new HiResDate(new Date(2012, 1, 1, 12, 0, 1));
+      final HiResDate l2_end = new HiResDate(new Date(2012, 1, 1, 13, 0, 0));
+
+      final WorldLocation origin = new WorldLocation(44, 44, 44);
+      final AbsoluteTMASegment legOne = new AbsoluteTMASegment(12,
+          new WorldSpeed(13, WorldSpeed.Kts), origin, l1_start, l1_end);
+      final AbsoluteTMASegment legTwo = new AbsoluteTMASegment(12,
+          new WorldSpeed(13, WorldSpeed.Kts), origin, l2_start, l2_end);
+
+      track.add(legOne);
+      track.add(legTwo);
+
+      Editable[] subjects = new Editable[]
+      {legOne, legTwo};
+
+      GenerateInfillOperation operation = new GenerateInfillOperation("title",
+          subjects, theLayers, track, getMyLogger(), true);
+
+      assertEquals("correct before len", 60, legTwo.getData().size());
+      assertEquals("correct legs", 2, track.getSegments().size());
+      messages.clear();
+
+      operation.execute(null, null);
+
+      assertEquals("got no error message", 0, messages.size());
+      assertEquals("correct legs", 3, track.getSegments().size());
+
+      // ok, now try to do it again
+      subjects = new Editable[3];
+      int ctr = 0;
+      final Iterator<Editable> iter = track.getSegments().getData().iterator();
+      while (iter.hasNext())
+      {
+        subjects[ctr++] = iter.next();
+      }
+      operation = new GenerateInfillOperation("title", subjects, theLayers,
+          track, getMyLogger(), true);
+
+      assertEquals("correct before len", 58, legTwo.getData().size());
+      assertEquals("correct legs", 3, track.getSegments().size());
+      messages.clear();
+
+      operation.execute(null, null);
+
+      assertEquals("got no error message", 0, messages.size());
+      assertEquals("correct legs", 3, track.getSegments().size());
+
+    }
+
+    @SuppressWarnings("deprecation")
+    public void testTooSmall() throws ExecutionException
+    {
+      final Layers theLayers = new Layers();
+      final IMenuManager parent = new MenuManager();
+      final TrackWrapper track = new TrackWrapper();
+      final Layer[] parentLayers = new Layer[]
+      {track, track};
+
+      final HiResDate l1_start = new HiResDate(new Date(2012, 1, 1, 11, 0, 0));
+      final HiResDate l1_end = new HiResDate(new Date(2012, 1, 1, 12, 0, 0));
+
+      final HiResDate l2_start = new HiResDate(new Date(2012, 1, 1, 12, 0, 1));
+      final HiResDate l2_end = new HiResDate(new Date(2012, 1, 1, 13, 0, 0));
+
+      final WorldLocation origin = new WorldLocation(44, 44, 44);
+      final AbsoluteTMASegment legOne = new AbsoluteTMASegment(12,
+          new WorldSpeed(13, WorldSpeed.Kts), origin, l1_start, l1_end);
+      final AbsoluteTMASegment legTwo = new AbsoluteTMASegment(12,
+          new WorldSpeed(13, WorldSpeed.Kts), origin, l2_start, l2_end);
+
+      track.add(legOne);
+      track.add(legTwo);
+
+      final Editable[] subjects = new Editable[]
+      {legOne, legTwo};
+      gener.generate(parent, theLayers, parentLayers, subjects);
+      final IContributionItem[] newItems = parent.getItems();
+
+      assertEquals("newItems", 3, newItems.length);
+
+      ActionContributionItem first = (ActionContributionItem) newItems[1];
+      assertEquals("right name", "Generate infill segment", first.getAction()
+          .getText());
+      first.getAction().run();
+
+      assertEquals("got error message", 1, messages.size());
+      assertEquals("correct error message",
+          GenerateInfillOperation.INSUFFICIENT_TIME, messages.get(0));
+
+      assertEquals("correct before len", 60, legTwo.getData().size());
+
+      messages.clear();
+      first = (ActionContributionItem) newItems[2];
+      assertEquals("right name", "Generate infill segment" + DELETE_SUFFIX,
+          first.getAction().getText());
+      first.getAction().run();
+
+      assertEquals("got no error message", 0, messages.size());
+
+      // check how many entries get deleted
+      assertEquals("correct after len", 58, legTwo.getData().size());
+    }
+
+    @SuppressWarnings("deprecation")
+    public void testTooSmallSecondTooShort() throws ExecutionException
+    {
+      final Layers theLayers = new Layers();
+      final TrackWrapper track = new TrackWrapper();
+
+      final HiResDate l1_start = new HiResDate(new Date(2012, 1, 1, 11, 0, 0));
+      final HiResDate l1_end = new HiResDate(new Date(2012, 1, 1, 12, 0, 0));
+
+      final HiResDate l2_start = new HiResDate(new Date(2012, 1, 1, 12, 0, 1));
+      final HiResDate l2_end = new HiResDate(new Date(2012, 1, 1, 12, 2, 0));
+
+      final WorldLocation origin = new WorldLocation(44, 44, 44);
+      final AbsoluteTMASegment legOne = new AbsoluteTMASegment(12,
+          new WorldSpeed(13, WorldSpeed.Kts), origin, l1_start, l1_end);
+      final AbsoluteTMASegment legTwo = new AbsoluteTMASegment(12,
+          new WorldSpeed(13, WorldSpeed.Kts), origin, l2_start, l2_end);
+
+      track.add(legOne);
+      track.add(legTwo);
+
+      final Editable[] subjects = new Editable[]
+      {legOne, legTwo};
+
+      final GenerateInfillOperation operation = new GenerateInfillOperation(
+          "title", subjects, theLayers, track, getMyLogger(), true);
+
+      messages.clear();
+
+      operation.execute(null, null);
+
+      assertEquals("got no error message", 1, messages.size());
+      assertEquals("correct message", GenerateInfillOperation.CANT_DELETE,
+          messages.get(0));
+
+      // check how many entries get deleted
+      assertEquals("correct after len", 2, legTwo.getData().size());
+    }
+
+    @SuppressWarnings("deprecation")
+    public void testUndo() throws ExecutionException
+    {
+      final Layers theLayers = new Layers();
+      final TrackWrapper track = new TrackWrapper();
+
+      final HiResDate l1_start = new HiResDate(new Date(2012, 1, 1, 11, 0, 0));
+      final HiResDate l1_end = new HiResDate(new Date(2012, 1, 1, 12, 0, 0));
+
+      final HiResDate l2_start = new HiResDate(new Date(2012, 1, 1, 12, 0, 1));
+      final HiResDate l2_end = new HiResDate(new Date(2012, 1, 1, 13, 0, 0));
+
+      final WorldLocation origin = new WorldLocation(44, 44, 44);
+      final AbsoluteTMASegment legOne = new AbsoluteTMASegment(12,
+          new WorldSpeed(13, WorldSpeed.Kts), origin, l1_start, l1_end);
+      final AbsoluteTMASegment legTwo = new AbsoluteTMASegment(12,
+          new WorldSpeed(13, WorldSpeed.Kts), origin, l2_start, l2_end);
+
+      track.add(legOne);
+      track.add(legTwo);
+
+      final Editable[] subjects = new Editable[]
+      {legOne, legTwo};
+
+      final GenerateInfillOperation operation = new GenerateInfillOperation(
+          "title", subjects, theLayers, track, getMyLogger(), true);
+
+      assertEquals("correct before len", 60, legTwo.getData().size());
+      assertEquals("correct legs", 2, track.getSegments().size());
+      messages.clear();
+
+      operation.execute(null, null);
+
+      assertEquals("got no error message", 0, messages.size());
+      assertEquals("correct legs", 3, track.getSegments().size());
+
+      // check how many entries get deleted
+      assertEquals("correct after len", 58, legTwo.getData().size());
+
+      // test undo processing, check second leg same as original length
+      operation.undo(null, null);
+      assertEquals("correct after len", 60, legTwo.getData().size());
+      assertEquals("correct legs", 2, track.getSegments().size());
+    }
+
+    @SuppressWarnings("deprecation")
+    public void testUndoRelative() throws ExecutionException
+    {
+      final Layers theLayers = new Layers();
+      final TrackWrapper tmaTrack = new TrackWrapper();
+      final TrackWrapper hostTrack = new TrackWrapper();
+
+      final WorldLocation origin = new WorldLocation(44, 44, 44);
+      final WorldVector _offset = new WorldVector(12, 0.1, 0);
+
+      final SensorWrapper sensor1 = new SensorWrapper("sensor 1");
+      sensor1.setArrayCentreMode(LegacyArrayOffsetModes.PLAIN);
+      hostTrack.add(sensor1);
+      final SensorContactWrapper[] cuts1 = new SensorContactWrapper[10];
+      for (int i = 0; i < 10; i++)
+      {
+        final HiResDate date = new HiResDate(new Date(2012, 1, 1, 12, 1 + i,
+            0));
+        final SensorContactWrapper contact = new SensorContactWrapper();
+        contact.setDTG(date);
+        contact.setBearing(i);
+        contact.setOrigin(origin);
+        sensor1.add(contact);
+        cuts1[i] = contact;
+      }
+
+      final SensorWrapper sensor2 = new SensorWrapper("sensor 2");
+      sensor2.setArrayCentreMode(LegacyArrayOffsetModes.PLAIN);
+      hostTrack.add(sensor2);
+      final SensorContactWrapper[] cuts2 = new SensorContactWrapper[10];
+      for (int i = 0; i < 10; i++)
+      {
+        final HiResDate date = new HiResDate(new Date(2012, 1, 1, 12, 21 + i,
+            0));
+        final SensorContactWrapper contact = new SensorContactWrapper();
+        contact.setDTG(date);
+        contact.setOrigin(origin);
+        contact.setBearing(i);
+        sensor2.add(contact);
+        cuts2[i] = contact;
+      }
+
+      final CoreTMASegment legOne = new RelativeTMASegment(cuts1, _offset,
+          new WorldSpeed(13, WorldSpeed.Kts), 12, theLayers, null);
+
+      final CoreTMASegment legTwo = new RelativeTMASegment(cuts2, _offset,
+          new WorldSpeed(13, WorldSpeed.Kts), 12, theLayers, null);
+
+      tmaTrack.add(legOne);
+      tmaTrack.add(legTwo);
+
+      final Editable[] subjects = new Editable[]
+      {legOne, legTwo};
+
+      final GenerateInfillOperation operation = new GenerateInfillOperation(
+          "title", subjects, theLayers, tmaTrack, getMyLogger(), true);
+
+      assertEquals("correct before len", 10, legTwo.getData().size());
+      assertEquals("correct legs", 2, tmaTrack.getSegments().size());
+      messages.clear();
+
+      operation.execute(null, null);
+
+      assertEquals("got no error message", 0, messages.size());
+      assertEquals("correct legs", 3, tmaTrack.getSegments().size());
+
+      // check how many entries get deleted
+      assertEquals("correct after len", 10, legTwo.getData().size());
+
+      // TODO - test undo processing, check second leg same as original length
+      operation.undo(null, null);
+      assertEquals("correct after len", 10, legTwo.getData().size());
+      assertEquals("correct legs", 2, tmaTrack.getSegments().size());
+    }
+
+    @SuppressWarnings("deprecation")
+    public void testUndoRelative2() throws ExecutionException
+    {
+      final Layers theLayers = new Layers();
+      final TrackWrapper tmaTrack = new TrackWrapper();
+      final TrackWrapper hostTrack = new TrackWrapper();
+
+      final WorldLocation origin = new WorldLocation(44, 44, 44);
+      final WorldVector _offset = new WorldVector(12, 0.1, 0);
+
+      final SensorWrapper sensor1 = new SensorWrapper("sensor 1");
+      sensor1.setArrayCentreMode(LegacyArrayOffsetModes.PLAIN);
+      hostTrack.add(sensor1);
+      final SensorContactWrapper[] cuts1 = new SensorContactWrapper[10];
+      for (int i = 0; i < 10; i++)
+      {
+        final HiResDate date = new HiResDate(new Date(2012, 1, 1, 12, 1 + i,
+            0));
+        final SensorContactWrapper contact = new SensorContactWrapper();
+        contact.setDTG(date);
+        contact.setBearing(i);
+        contact.setOrigin(origin);
+        sensor1.add(contact);
+        cuts1[i] = contact;
+      }
+
+      final SensorWrapper sensor2 = new SensorWrapper("sensor 2");
+      sensor2.setArrayCentreMode(LegacyArrayOffsetModes.PLAIN);
+      hostTrack.add(sensor2);
+      final SensorContactWrapper[] cuts2 = new SensorContactWrapper[10];
+      for (int i = 0; i < 10; i++)
+      {
+        final HiResDate date = new HiResDate(new Date(2012, 1, 1, 12, 10 + i,
+            30));
+        final SensorContactWrapper contact = new SensorContactWrapper();
+        contact.setDTG(date);
+        contact.setOrigin(origin);
+        contact.setBearing(i);
+        sensor2.add(contact);
+        cuts2[i] = contact;
+      }
+
+      final CoreTMASegment legOne = new RelativeTMASegment(cuts1, _offset,
+          new WorldSpeed(13, WorldSpeed.Kts), 12, theLayers, null);
+
+      final CoreTMASegment legTwo = new RelativeTMASegment(cuts2, _offset,
+          new WorldSpeed(13, WorldSpeed.Kts), 12, theLayers, null);
+
+      tmaTrack.add(legOne);
+      tmaTrack.add(legTwo);
+
+      final Editable[] subjects = new Editable[]
+      {legOne, legTwo};
+
+      final GenerateInfillOperation operation = new GenerateInfillOperation(
+          "title", subjects, theLayers, tmaTrack, getMyLogger(), true);
+
+      assertEquals("correct before len", 10, legTwo.getData().size());
+      assertEquals("correct legs", 2, tmaTrack.getSegments().size());
+      messages.clear();
+
+      operation.execute(null, null);
+
+      assertEquals("got no error message", 0, messages.size());
+      assertEquals("correct legs", 3, tmaTrack.getSegments().size());
+
+      // check how many entries get deleted
+      assertEquals("correct after len", 8, legTwo.getData().size());
+
+      // TODO - test undo processing, check second leg same as original length
+      operation.undo(null, null);
+      assertEquals("correct after len", 10, legTwo.getData().size());
+      assertEquals("correct legs", 2, tmaTrack.getSegments().size());
+    }
+
+    @SuppressWarnings("deprecation")
+    public void testValid()
+    {
+      final Layers theLayers = new Layers();
+      final IMenuManager parent = new MenuManager();
+      final TrackWrapper track = new TrackWrapper();
+      final Layer[] parentLayers = new Layer[]
+      {track, track};
+
+      final HiResDate l1_start = new HiResDate(new Date(2012, 1, 1, 11, 0, 0));
+      final HiResDate l1_end = new HiResDate(new Date(2012, 1, 1, 12, 0, 0));
+
+      final HiResDate l2_start = new HiResDate(new Date(2012, 1, 1, 12, 15, 0));
+      final HiResDate l2_end = new HiResDate(new Date(2012, 1, 1, 13, 0, 0));
+
+      final WorldLocation origin = new WorldLocation(44, 44, 44);
+      final AbsoluteTMASegment legOne = new AbsoluteTMASegment(12,
+          new WorldSpeed(13, WorldSpeed.Kts), origin, l1_start, l1_end);
+      final AbsoluteTMASegment legTwo = new AbsoluteTMASegment(12,
+          new WorldSpeed(13, WorldSpeed.Kts), origin, l2_start, l2_end);
+
+      track.add(legOne);
+      track.add(legTwo);
+
+      final Editable[] subjects = new Editable[]
+      {legOne, legTwo};
+      gener.generate(parent, theLayers, parentLayers, subjects);
+      final IContributionItem[] newItems = parent.getItems();
+
+      assertEquals("newItems", 3, newItems.length);
+
+      final ActionContributionItem first = (ActionContributionItem) newItems[1];
+      assertEquals("right name", "Generate infill segment", first.getAction()
+          .getText());
+
+      // check the before len
+      assertEquals("Correct before len", 46, legTwo.getData().size());
+      final int beforeLen = legTwo.getData().size();
+
+      first.getAction().run();
+
+      assertEquals("got error message", 0, messages.size());
+      assertEquals("correct legs", 3, track.getSegments().size());
+
+      // check the len still valid
+      assertEquals("Correct before len", beforeLen, legTwo.getData().size());
+
+      // ok, check that if we split the second, we don't lose the infill
+
+      // get a point in the second leg
+      FixWrapper target = null;
+      final Collection<Editable> secondCuts = legTwo.getData();
+      final Iterator<Editable> iter = secondCuts.iterator();
+      for (int i = 0; i < 6; i++)
+      {
+        target = (FixWrapper) iter.next();
+      }
+
+      assertNotNull("found it", target);
+
+      track.splitTrack(target, false);
+
+      // check we now have 4 legs
+      assertEquals("correct legs", 4, track.getSegments().size());
+    }
+  }
+
+  private static final String DELETE_SUFFIX =
+      " (delete from 2nd track if necessary)";
 
   /**
    * @param parent
@@ -1110,7 +1239,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 
   /**
    * provide an error logger
-   * 
+   *
    * @return
    */
   protected ErrorLogger getLogger()

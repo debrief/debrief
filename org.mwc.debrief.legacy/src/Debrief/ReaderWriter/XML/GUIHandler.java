@@ -27,6 +27,7 @@ import java.awt.Color;
 
 import org.w3c.dom.Element;
 
+import Debrief.GUI.Frames.Session;
 import Debrief.GUI.Views.*;
 import Debrief.ReaderWriter.XML.GUI.*;
 
@@ -34,14 +35,14 @@ import Debrief.ReaderWriter.XML.GUI.*;
 public final class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
-  final Debrief.GUI.Frames.Session _session;
-  private Debrief.GUI.Views.AnalysisView _analysisView;
+  final Session _session;
+  private AnalysisView _analysisView;
 
   static private final java.util.Hashtable<String, StepperHandler> _myCreators = new java.util.Hashtable<String, StepperHandler>();
 
   static private StepperHandler _myStepperHandler;
 
-  public GUIHandler(final Debrief.GUI.Frames.Session session)
+  public GUIHandler(final Session session)
   {
     // inform our parent what type of class we are
     super("gui");
@@ -93,7 +94,7 @@ public final class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReade
     final ComponentCreator cc = _myCreators.get(cType);
     if(cc != null)
     {
-      cc.makeThis(details, _analysisView);
+      cc.makeThis(details, _session);
     }
     else
       MWC.Utilities.Errors.Trace.trace("XML Handler not found for " + cType);
@@ -125,7 +126,7 @@ public final class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReade
 
   public static  interface ComponentCreator
   {
-    public void makeThis(ComponentDetails details, Debrief.GUI.Views.AnalysisView view);
+    public void makeThis(ComponentDetails details, final Session session);
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -148,8 +149,11 @@ public final class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReade
     if(_myStepperHandler == null)
       _myStepperHandler = new StepperHandler();
     final ComponentDetails stepperD = _myStepperHandler.exportThis(session);
-    stepperD.exportTo("Stepper", gui, doc);
-
+    if(stepperD != null)
+    {
+      stepperD.exportTo("Stepper", gui, doc);
+    }
+    
     final PlainView pv = session.getCurrentView();
     if(pv instanceof AnalysisView)
     {

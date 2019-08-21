@@ -72,16 +72,24 @@ public abstract class SnailDrawTacticalContact implements SnailPainter.drawHighL
     // how long? (convert to millis)
     final long trail_len = (long) _fixPlotter.getTrailLength().getValueIn(Duration.MICROSECONDS);
 
-    final String alphaStr = Defaults.getPreference(SensorContactWrapper.TRANSPARENCY);
+    final String alphaStr = Defaults.getPreference(
+        SensorContactWrapper.TRANSPARENCY);
     int alpha;
-    try
+    if (alphaStr != null && alphaStr.length() > 0)
     {
-      alpha = Integer.parseInt(alphaStr);
+      try
+      {
+        alpha = Integer.parseInt(alphaStr);
+      }
+      catch (NumberFormatException e)
+      {
+        alpha = 255;
+        e.printStackTrace();
+      }
     }
-    catch (NumberFormatException e)
+    else
     {
       alpha = 255;
-      e.printStackTrace();
     }
 
     // are we plotting a back-track?

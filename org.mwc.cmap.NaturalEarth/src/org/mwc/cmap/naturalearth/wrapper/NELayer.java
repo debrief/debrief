@@ -29,7 +29,7 @@ import org.geotools.styling.Rule;
 import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
-import org.mwc.cmap.gt2plot.data.GeoToolsLayer;
+import org.mwc.cmap.geotools.gt2plot.GeoToolsLayer;
 import org.mwc.cmap.naturalearth.Activator;
 import org.mwc.cmap.naturalearth.NaturalearthUtil;
 import org.mwc.cmap.naturalearth.preferences.PreferenceConstants;

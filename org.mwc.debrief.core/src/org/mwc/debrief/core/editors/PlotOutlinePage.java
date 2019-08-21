@@ -807,6 +807,20 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
     _treeViewer.setLabelProvider(_myLabelProvider);
     _treeViewer.setComparator(_myComparator);
     _treeViewer.setInput(_myLayers);
+    //this will eliminate the need for user to do a ctrl+click to deselect.
+    _treeViewer.getTree().addMouseListener(new MouseAdapter()
+    {
+      @Override
+      public void mouseDown(MouseEvent e)
+      {
+        Tree tree = (Tree) e.getSource();
+        if (tree.getItem(new Point(e.x, e.y)) == null) 
+        {
+          // no item was clicked.
+          tree.deselectAll();
+        }
+      }
+    });
     _treeViewer.setComparer(new IElementComparer()
     {
       @Override

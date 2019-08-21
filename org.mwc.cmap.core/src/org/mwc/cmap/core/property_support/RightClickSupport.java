@@ -900,6 +900,7 @@ public class RightClickSupport
             }
           }
         };
+    changeThis.setEnabled(theAction.isEnabled());
     return changeThis;
   }
 
@@ -1230,9 +1231,8 @@ public class RightClickSupport
           final SubjectAction thisMethD = actions[i];
 
           // create button for this method
-          final IAction doThisAction =
-              generateUndoableActionFor(thisMethD, editables, theLayers,
-                  theTopLayer);
+          final IAction doThisAction = generateUndoableActionFor(thisMethD,
+              editables, theLayers, theTopLayer);
 
           // ok - add to the list.
           manager.add(doThisAction);

@@ -30,6 +30,7 @@ import org.junit.runners.Suite;
     Debrief.GUI.Tote.StepControl.testMe.class,
     Debrief.GUI.Tote.StepControl.testMe.class,
     Debrief.GUI.Tote.Swing.SwingStepControl.testStepper.class,
+    Debrief.GUI.Views.LogicHelpers.TestLogic.class,
     Debrief.ReaderWriter.FlatFile.FlatFileExporter.testMe.class,
     Debrief.ReaderWriter.Replay.ImportFix.testImport.class,
     Debrief.ReaderWriter.Replay.ImportNarrative.testImport.class,
@@ -40,6 +41,7 @@ import org.junit.runners.Suite;
     Debrief.ReaderWriter.Replay.ImportSensor2.testMe.class,
     Debrief.ReaderWriter.Replay.ImportSensor3.testMe.class,
     Debrief.ReaderWriter.Replay.ImportTMA_Pos.testImportTMA_POS.class,
+    Debrief.ReaderWriter.Replay.ImportPlanningLegOrigin.PlanningLegImporterTest.class,    
     Debrief.ReaderWriter.Replay.extensions.TA_ForeAft_DataHandler.TestMe.class,
     Debrief.ReaderWriter.Replay.extensions.TA_Modules_DataHandler.TestMe.class,
     Debrief.ReaderWriter.Replay.ImportTMA_RngBrg.testImportTMA_RngBrg.class,
@@ -48,6 +50,7 @@ import org.junit.runners.Suite;
     Debrief.ReaderWriter.Word.ImportNarrativeDocument.TestImportWord.class,
     Debrief.ReaderWriter.Word.ImportWordDummy.TestImportDummyWord.class,
     Debrief.ReaderWriter.Word.ImportRiderNarrativeDocument.TestImportRider.class,
+    Debrief.ReaderWriter.Word.ImportASWDataDocument.TestImportWord.class,
     Debrief.Tools.FilterOperations.ReformatFixes.testListOfProperties.class,
     Debrief.Tools.Palette.BuoyPatterns.ArcBuilder.testMe.class,
     Debrief.Tools.Palette.BuoyPatterns.BarrierBuilder.testMe.class,
@@ -144,7 +147,8 @@ import org.junit.runners.Suite;
     org.mwc.debrief.core.ContextOperations.ConvertTrackToLightweightTrack.testMe.class,
     org.mwc.cmap.TimeController.recorders.CoordinateRecorder.CoordinateRecorderTest.class,
     org.mwc.debrief.core.ContextOperations.SmoothTrackJumps.TestMe.class,
-    Debrief.ReaderWriter.BRT.BRTImporter.BRTImporterTest.class
+    Debrief.ReaderWriter.BRT.BRTImporter.BRTImporterTest.class,
+    MWC.TacticalData.SliderConverter.SliderConverterTest.class
     })
 @RunWith(Suite.class)
 public class AllTests

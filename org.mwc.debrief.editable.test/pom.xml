@@ -9,7 +9,7 @@
   </parent>
   <groupId>org.mwc.debrief</groupId>
   <artifactId>org.mwc.debrief.editable.test</artifactId>
-  <version>1.0.10</version>
+  <version>1.0.11</version>
   <packaging>eclipse-test-plugin</packaging>
 
   <build>
@@ -21,9 +21,17 @@
 			<configuration>
 				<useUIThread>false</useUIThread>
 				<useUIHarness>true</useUIHarness>
+				
+				<redirectTestOutputToFile>true</redirectTestOutputToFile>
 				<includes>
 					<include>**/*Tests.class</include>
 				</includes>
+				<dependencies>
+						<dependency>
+							<artifactId>org.eclipse.e4.rcp</artifactId>
+							<type>eclipse-feature</type>
+						</dependency>
+				</dependencies>
 			</configuration>
 		</plugin>
 	</plugins>

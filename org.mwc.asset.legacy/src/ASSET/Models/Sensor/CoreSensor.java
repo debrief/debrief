@@ -764,7 +764,7 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
       if (_watchMethod != null)
       {
         final MethodDescriptor[] mds =
-        {method(c, "watchMe", null, "Monitor this sensor"),};
+        {method(c, "watchMe", null, "Monitor Sensor"),};
         res = mds;
       }
       return res;

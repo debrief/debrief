@@ -303,9 +303,9 @@ public class SATC_Solution extends BaseLayer implements
       final MethodDescriptor[] mds =
           {
               method(c, "convertToLegs", null,
-                  "Convert to manual TMA track"),
-              method(c, "convertToTrack", null, "Convert to merged track"),
-              method(c, "recalculate", null, "Recalculate solutions")};
+                  "Convert To Manual TMA"),
+              method(c, "convertToTrack", null, "Merge To Track"),
+              method(c, "recalculate", null, "Recalculate Solutions")};
 
       return mds;
     }
@@ -669,10 +669,20 @@ public class SATC_Solution extends BaseLayer implements
                 new HiResDate(straight.getStartTime().getTime());
             final HiResDate endTime =
                 new HiResDate(straight.getEndTime().getTime());
+            
+            // ensure the new track fixes are at the same times
+            // as the measurements
+            final ArrayList<State> states = straight.getStates();
+            final long[] stamps = new long[states.size()];
+            int ctr = 0;
+            for(State state: states)
+            {
+              stamps[ctr++] = state.getTime().getTime();
+            }
 
             final AbsoluteTMASegment abs =
                 new AbsoluteTMASegment(courseDegs, speed, origin, startTime,
-                    endTime);
+                    endTime, stamps);
             
             abs.setName(straight.getName());
             

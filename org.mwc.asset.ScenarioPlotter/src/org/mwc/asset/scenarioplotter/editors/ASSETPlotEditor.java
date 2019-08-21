@@ -40,7 +40,7 @@ import org.mwc.asset.core.ASSETPlugin;
 import org.mwc.asset.scenariocontroller2.views.ScenarioWrapper;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
-import org.mwc.cmap.gt2plot.proj.GtProjection;
+import org.mwc.cmap.geotools.gt2plot.GtProjection;
 import org.mwc.cmap.plotViewer.PlotViewerPlugin;
 import org.mwc.cmap.plotViewer.actions.ExportWMF;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
@@ -252,7 +252,7 @@ public class ASSETPlotEditor extends CorePlotEditor
 			stopListeningToThis(_myLayers);
 
 		_myScenario = null;
-		_myLayers = null;
+		_myLayers.close();
 
 		// empty the part monitor
 		if (_myPartMonitor != null)

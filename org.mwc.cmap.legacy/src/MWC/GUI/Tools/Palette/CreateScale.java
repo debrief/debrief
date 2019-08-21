@@ -55,14 +55,13 @@ public class CreateScale extends PlainCreate
 {
 	public CreateScale(final MWC.GUI.ToolParent theParent,
 										final MWC.GUI.Properties.PropertiesPanel thePanel,
-										final MWC.GUI.Layer theLayer,
 										final MWC.GUI.Layers theData,
-										final MWC.GUI.PlainChart theChart)
+										final BoundsProvider theBounds)
 	{
-		super(theParent, thePanel, theLayer, theData, theChart, "Scale", "images/scale_add.png");
+		super(theParent, thePanel, theData, theBounds, "Scale", "images/scale_add.png");
 	}
 
-	protected MWC.GUI.Plottable createItem(final MWC.GUI.PlainChart theChart)
+	protected MWC.GUI.Plottable createItem()
 	{
 		return new ScalePainter();
 	}

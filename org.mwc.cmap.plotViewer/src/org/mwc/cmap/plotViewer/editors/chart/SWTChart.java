@@ -187,8 +187,8 @@ import org.mwc.cmap.core.preferences.ChartPrefsPage.PreferenceConstants;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
-import org.mwc.cmap.gt2plot.proj.GeoToolsPainter;
-import org.mwc.cmap.gt2plot.proj.GtProjection;
+import org.mwc.cmap.geotools.gt2plot.GeoToolsPainter;
+import org.mwc.cmap.geotools.gt2plot.GtProjection;
 import org.mwc.cmap.plotViewer.actions.Pan;
 import org.mwc.cmap.plotViewer.actions.ZoomIn;
 

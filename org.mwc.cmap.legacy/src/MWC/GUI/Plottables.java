@@ -151,6 +151,7 @@ package MWC.GUI;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Enumeration;
@@ -163,6 +164,7 @@ import MWC.GUI.Chart.Painters.GridPainter;
 import MWC.GUI.Chart.Painters.ScalePainter;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
+import MWC.Utilities.Errors.Trace;
 
 /**
  * a list of Plottables
@@ -184,6 +186,11 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	 * the name of this list
 	 */
 	private String _theName;
+	
+	/** cache the value of toString()
+	 * 
+	 */
+	private String _cachedName = null;
 
 	/**
 	 * specify if this layer is currently visible or not
@@ -410,7 +417,13 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	 */
 	public String toString()
 	{
-		return getName() + " (" + size() + " " + collectiveName() + ")";
+	  // do we have a cached value?
+	  if(_cachedName == null)
+	  {
+	    // nope, better create one
+	    _cachedName = getName() + " (" + size() + " " + collectiveName() + ")";
+	  }
+		return _cachedName;
 	}
 
 	/** the collective name for items of this type
@@ -429,6 +442,8 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	public void setName(final String theName)
 	{
 		_theName = theName;
+		
+		clearCachedName();
 	}
 
 	/**
@@ -481,6 +496,8 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 		if (thePlottable == null)
 			return;
 
+		clearCachedName();
+		
 		// right, add it.
 		_thePlottables.add(thePlottable);
 
@@ -517,16 +534,40 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	 */
 	public void removeElement(final Editable p)
 	{
-
 		// stop listening to it
 		stopListeningTo(p);
+		
+		clearCachedName();
 
 		// double check we've got it.
-		final boolean worked = _thePlottables.remove(p);
+		final boolean worked;
+		if(p instanceof DeleteWithCare)
+		{
+		  // create simple list, that uses sequential find (remove)
+		  final ArrayList<Editable> items = new ArrayList<Editable>();
+		  
+		  // add all the plottables
+		  items.addAll(_thePlottables);
+		  
+		  // remove our one
+		  worked = items.remove(p);
+		  
+		  // did it work?
+		  if(worked)
+		  {
+		    // yes. Replace our editables with the trimmed list
+		    _thePlottables.clear();
+		    _thePlottables.addAll(items);
+		  }
+		}
+		else
+		{
+	    worked = _thePlottables.remove(p);
+		}
 
 		if (!worked)
 		{
-			System.err.println("Failed trying to remove " + p + " from " + this);
+		  Trace.trace("Failed trying to remove " + p + " from " + this, false);
 		}
 
 		// don't recalculate the area just yet, defer it until
@@ -551,6 +592,8 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	 */
 	public void removeAllElements()
 	{
+	  clearCachedName();
+	  
 		// undo all the moved listeners
 		final Iterator<Editable> iter = _thePlottables.iterator();
 		while (iter.hasNext())
@@ -576,6 +619,14 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 			final Plottable p = (Plottable) enumer.nextElement();
 			add(p);
 		}
+	}
+	
+	/** clear the cached name, if the name changes,
+	 * or the number of children changes
+	 */
+	private void clearCachedName()
+	{
+	  _cachedName = null;
 	}
 	
 	/** do we already contain this object?
@@ -686,6 +737,17 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	 * 
 	 */
 	public static interface PlotMeFirst
+	{
+	}
+	
+	/** marker interface.  Plottables stores its data in a high performance
+	 * time-sequenced dataset. When removing an item, it does a binary
+	 * search to find the relevant item to delete.  But, some elements
+	 * lose their time marker as they're being deleted, so we should handle
+	 * their removal with a traditional sequential search
+	 *
+	 */
+	public static interface DeleteWithCare
 	{
 	}
 
