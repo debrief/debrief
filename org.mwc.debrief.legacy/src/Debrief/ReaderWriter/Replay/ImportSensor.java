@@ -103,6 +103,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
+import junit.framework.TestCase;
 
 /**
  * class to parse a label from a line of text
@@ -113,6 +114,69 @@ final class ImportSensor extends AbstractPlainLineImporter
    * the type for this string
    */
   private final String _myType = ";SENSOR:";
+  
+  public static class TestImport extends TestCase
+  {
+    
+    static public final String TEST_ALL_TEST_TYPE = "CONV";
+
+    public void testValues1() throws ParseException
+    {
+      // ;SENSOR: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B RRR XXX YYY.....YYY
+      
+      final String iLine =
+          ";SENSOR: 100112 121314 T23 @A NULL 90.0 40503.2 \"Plain Cookie\" FisherOne held on Plain Cookie";
+      final AbstractPlainLineImporter iff = new ImportSensor();
+      final SensorContactWrapper res = (SensorContactWrapper) iff.readThisLine(iLine);
+
+      assertNotNull("Read it in", res);
+      
+      // and check the result
+      assertNotNull("read it in", res);
+      assertEquals("right track", "FisherOne held on Plain Cookie", res.getLabel());
+      assertEquals("right color", new java.awt.Color(0, 100, 189), res.getColor());
+      assertEquals("right name", "100112 121314", res.getName());
+     }
+    
+    public void testValuesNANBearing() throws ParseException
+    {
+      // ;SENSOR: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B RRR XXX YYY.....YYY
+      
+      final String iLine =
+          ";SENSOR: 100112 121314 T23 @A NULL NAN 40503.2 \"Plain Cookie\" FisherOne held on Plain Cookie";
+      final AbstractPlainLineImporter iff = new ImportSensor();
+      final SensorContactWrapper res = (SensorContactWrapper) iff.readThisLine(iLine);
+
+      assertNotNull("Read it in", res);
+      
+      // and check the result
+      assertNotNull("read it in", res);
+      assertEquals("right track", "FisherOne held on Plain Cookie", res.getLabel());
+      assertEquals("right color", new java.awt.Color(0, 100, 189), res.getColor());
+      assertEquals("right name", "100112 121314", res.getName());
+     }
+    
+    public void testValuesNullBearing() throws ParseException
+    {
+      // ;SENSOR: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B RRR XXX YYY.....YYY
+      
+      final String iLine =
+          ";SENSOR: 100112 121314 T23 @A NULL NULL 40503.2 \"Plain Cookie\" FisherOne held on Plain Cookie";
+      final AbstractPlainLineImporter iff = new ImportSensor();
+      final SensorContactWrapper res = (SensorContactWrapper) iff.readThisLine(iLine);
+
+      assertNotNull("Read it in", res);
+      
+      // and check the result
+      assertNotNull("read it in", res);
+      assertEquals("right track", "FisherOne held on Plain Cookie", res.getLabel());
+      assertEquals("right color", new java.awt.Color(0, 100, 189), res.getColor());
+      assertEquals("right name", "100112 121314", res.getName());
+     }
+
+
+  }
+  
 
   /**
    * read in this string and return a Label
@@ -131,7 +195,8 @@ final class ImportSensor extends AbstractPlainLineImporter
     String sensorName;
     WorldLocation origin = null;
     HiResDate theDtg = null;
-    double brg, rng;
+    final Double brg;
+    final double rng;
     java.awt.Color theColor;
 
     // skip the comment identifier
@@ -196,7 +261,15 @@ final class ImportSensor extends AbstractPlainLineImporter
                 longSec, longHem, 0);
       } // whether the duff origin data was entered
 
-      brg = MWCXMLReader.readThisDouble(st.nextToken());
+      final String brgStr = st.nextToken();
+      if (brgStr.startsWith("N"))
+      {
+        brg = null;
+      }
+      else
+      {
+        brg = MWCXMLReader.readThisDouble(brgStr);
+      }
 
       String rangeStr = st.nextToken();
       if (rangeStr.startsWith("N"))
@@ -209,7 +282,7 @@ final class ImportSensor extends AbstractPlainLineImporter
       }
 
       // only store a sensor range if a legitimate one was passed in
-      WorldDistance sensorRng;
+      final WorldDistance sensorRng;
       if (rng != 0)
         sensorRng = new WorldDistance(rng, WorldDistance.YARDS);
       else
