@@ -23,6 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -282,13 +283,15 @@ public class TestFileRibbon extends BaseTestCase
         saveDDButton.doActionClick();
       }
     });
-    Thread.sleep(400);
+    JFileChooser saveWindow=null;
+    for(int i=0;i<10||saveWindow == null;++i) {
 
     // wait for window to open and confirm it is open
-    final JFileChooser saveWindow = (JFileChooser) TestUtils.getChildIndexed(
+        saveWindow = (JFileChooser) TestUtils.getChildIndexed(
         ribbonFrame, "JFileChooser", 0, false);
-    assertNotNull("found save window", saveWindow);
-
+        Thread.sleep(200);
+        assertTrue(i<10);
+    }
     // now actually push the save button
     System.out.println("Save button:");
 
@@ -332,5 +335,39 @@ public class TestFileRibbon extends BaseTestCase
     f.delete();
     System.out.println("Done deleting created file");
   }
+  
+  public void testImportNMEAFile() throws InterruptedException,InvocationTargetException
+  {
+    SwingUtilities.invokeAndWait(new Runnable()
+    {
+
+      public void run()
+      {
+        DebriefLiteApp.openNMEAFile(new File("../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/NMEA_TRIAL.log"));    
+      }
+    });
+    try
+    {
+      Thread.sleep(500);
+    }
+    catch (InterruptedException e)
+    {
+      e.printStackTrace();
+    }
+    Thread.sleep(200);
+    JFrame ribbonFrame = DebriefLiteApp.getInstance().getApplicationFrame();
+    JXCollapsiblePaneWithTitle outlinePanel = (JXCollapsiblePaneWithTitle)TestUtils.getChildNamed(ribbonFrame,"Outline");
+    assertNotNull(outlinePanel);
+    assertTrue(outlinePanel.isVisible());
+    assertTrue(outlinePanel.isEnabled());
+    JTree tree = (JTree)TestUtils.getChildNamed(outlinePanel, "Layer Tree");
+    assertEquals(tree.getModel().getChildCount(tree.getModel().getRoot()),6);
+    DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 2);
+    assertNotNull(node);
+   
+    System.out.println("done opening file");
+  }
+
+  
 
 }
