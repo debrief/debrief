@@ -63,6 +63,74 @@ public class DragElementTool extends GenericDragTool
     }
   }
 
+  @Override
+  public void onMouseMoved(MapMouseEvent ev)
+  {
+    super.onMouseMoved(ev);
+
+    // try to determine if we're going over an item, to
+    // change the cursor
+    
+    // don't bother if we're already in a pan operation
+    if (!panning && !lastCursor.equals(draggingCursor))
+    {
+      panePos = mouseDelta(ev.getPoint());
+
+      final WorldLocation cursorLoc = _projection.toWorld(panePos);
+      // find the nearest editable item
+      final ComponentConstruct currentNearest = new ComponentConstruct();
+      final int num = layers.size();
+      for (int i = 0; i < num; i++)
+      {
+        final Layer thisL = layers.elementAt(i);
+        if (thisL.getVisible())
+        {
+          // find the nearest items, this method call will recursively pass down
+          // through
+          // the layers
+          // final Layer thisLayer,
+          FindNearest.findNearest(thisL, cursorLoc, panePos, currentNearest,
+              null);
+        }
+      }
+
+      // Note - the following test does a distance check using world distance,
+      // which is quite unreliable,
+      
+      // did we find anything?
+      if (currentNearest.populated())
+      {
+        // generate a screen point from the cursor pos plus our distnace
+        // NOTE: we're not basing this on the target location - we may not have
+        // a
+        // target location as such for a strangely shaped object
+        final WorldLocation tgtPt =
+            cursorLoc.add(new WorldVector(Math.PI / 2,
+                currentNearest._distance, null));
+
+        // is it close enough
+        final Point tPoint = _projection.toScreen(tgtPt);
+
+        // get click point
+        Point cursorPos = ev.getPoint();
+        
+        // get distance of click point from nearest object, in screen coords
+        final double scrDist = tPoint.distance(cursorPos);
+
+        if (scrDist <= SCREEN_JITTER && !lastCursor.equals(greenCursor))
+        {
+          lastCursor = greenCursor;
+          _mapPane.setCursor(greenCursor);
+        }
+        else if ( scrDist > SCREEN_JITTER && !lastCursor.equals(normalCursor) )
+        {
+          lastCursor = normalCursor;
+          _mapPane.setCursor(normalCursor);
+        }
+      }
+    }
+  }
+
   /**
    * Respond to a mouse button press event from the map mapPane. This may signal the start of a
    * mouse drag. Records the event's window position.
