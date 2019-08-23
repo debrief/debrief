@@ -25,12 +25,10 @@ public class GenericDragTool extends CursorTool
   public static final String TOOL_TIP = "Drag Element";
 
   /** Cursor */
-  public static final String CURSOR_IMAGE =
-      "/icons/16/whitehand.png";
+  public static final String CURSOR_IMAGE = "/icons/16/whitehand.png";
 
   /** Icon for the control */
-  public static final String ICON_IMAGE =
-      "/icons/16/whitehand.png";
+  public static final String ICON_IMAGE = "/icons/16/whitehand.png";
 
   /** Icon for the control */
   public static final String ICON_IMAGE_GREEN =
@@ -43,12 +41,17 @@ public class GenericDragTool extends CursorTool
   /** Cursor hotspot coordinates */
   public static final Point CURSOR_HOTSPOT = new Point(15, 15);
 
+  /**
+   * how close we have to be (in screen pixels) to display hotspot cursor
+   */
+  protected static double SCREEN_JITTER = 11;
+
   protected final Cursor normalCursor;
-  
+
   protected final Cursor greenCursor;
-  
+
   protected final Cursor draggingCursor;
-  
+
   /**
    * We are going to use this to avoid re-assigning the same cursor.
    */
@@ -64,11 +67,6 @@ public class GenericDragTool extends CursorTool
 
   protected final JMapPane _mapPane;
 
-  /** how close we have to be (in screen pixels) to display
-   * hotspot cursor 
-   */
-  protected static double SCREEN_JITTER = 11;
-  
   /**
    * the component we're going to drag
    */
@@ -100,11 +98,11 @@ public class GenericDragTool extends CursorTool
 
     final ImageIcon imgDragIcon = new ImageIcon(getClass().getResource(
         ICON_IMAGE_DRAGGING));
-    draggingCursor = tk.createCustomCursor(imgDragIcon.getImage(), CURSOR_HOTSPOT,
-        TOOL_NAME);
-    
+    draggingCursor = tk.createCustomCursor(imgDragIcon.getImage(),
+        CURSOR_HOTSPOT, TOOL_NAME);
+
     lastCursor = normalCursor;
-    
+
     this.layers = _layers;
     this._projection = projection;
     this._mapPane = mapPane;
@@ -138,6 +136,16 @@ public class GenericDragTool extends CursorTool
     return new Point(originalPoint.x - 10, originalPoint.y - 10);
   }
 
+  @Override
+  public void onMousePressed(final MapMouseEvent ev)
+  {
+    if (lastCursor.equals(greenCursor))
+    {
+      lastCursor = draggingCursor;
+      _mapPane.setCursor(draggingCursor);
+    }
+  }
+
   /**
    * If this button release is the end of a mouse dragged event, requests the map mapPane to repaint
    * the display
@@ -152,15 +160,5 @@ public class GenericDragTool extends CursorTool
 
     lastCursor = greenCursor;
     _mapPane.setCursor(greenCursor);
-  }
-
-  @Override
-  public void onMousePressed(MapMouseEvent ev)
-  {
-    if ( lastCursor.equals(greenCursor) )
-    {
-      lastCursor = draggingCursor;
-      _mapPane.setCursor(draggingCursor);
-    }
   }
 }
