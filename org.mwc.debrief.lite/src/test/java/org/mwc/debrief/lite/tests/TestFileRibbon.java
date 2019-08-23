@@ -38,6 +38,9 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.flamingo.internal.ui.ribbon.JBandControlPanel;
 
+import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Plottable;
+
 /**
  * @author Ayesha
  *
@@ -62,11 +65,7 @@ public class TestFileRibbon extends BaseTestCase
     System.out.println("done opening file");
   }
 
-  /*
-   * public void testOpenFile() {
-   *
-   * }
-   */
+  
   public void testClose() throws InterruptedException, InvocationTargetException
   {
     System.out.println("Starting test close");
@@ -183,16 +182,9 @@ public class TestFileRibbon extends BaseTestCase
     JButton ok = null;
     for (int i = 0; ok == null; ++i)
     {
-      try
-      {
-        Thread.sleep(200);
-      }
-      catch (final InterruptedException e)
-      {
-        e.printStackTrace();
-      }
+      Thread.sleep(200);
       ok = (JButton) TestUtils.getChildIndexed(ribbonFrame, "JButton", 1, true);
-      assertTrue(i < 20);
+      assertTrue(i < 10);
     }
     assertEquals("No", ok.getText());
     final JButton no = ok;
@@ -204,6 +196,7 @@ public class TestFileRibbon extends BaseTestCase
       public void run()
       {
         no.doClick();
+        System.out.println("Clicked no");
       }
     });
     // wait for reset to be over.
@@ -284,7 +277,7 @@ public class TestFileRibbon extends BaseTestCase
       }
     });
     JFileChooser saveWindow=null;
-    for(int i=0;i<10||saveWindow == null;++i) {
+    for(int i=0;saveWindow == null;++i) {
 
     // wait for window to open and confirm it is open
         saveWindow = (JFileChooser) TestUtils.getChildIndexed(
@@ -292,6 +285,7 @@ public class TestFileRibbon extends BaseTestCase
         Thread.sleep(200);
         assertTrue(i<10);
     }
+    Thread.sleep(200);
     // now actually push the save button
     System.out.println("Save button:");
 
@@ -346,15 +340,6 @@ public class TestFileRibbon extends BaseTestCase
         DebriefLiteApp.openNMEAFile(new File("../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/NMEA_TRIAL.log"));    
       }
     });
-    try
-    {
-      Thread.sleep(500);
-    }
-    catch (InterruptedException e)
-    {
-      e.printStackTrace();
-    }
-    Thread.sleep(200);
     JFrame ribbonFrame = DebriefLiteApp.getInstance().getApplicationFrame();
     JXCollapsiblePaneWithTitle outlinePanel = (JXCollapsiblePaneWithTitle)TestUtils.getChildNamed(ribbonFrame,"Outline");
     assertNotNull(outlinePanel);
@@ -362,10 +347,203 @@ public class TestFileRibbon extends BaseTestCase
     assertTrue(outlinePanel.isEnabled());
     JTree tree = (JTree)TestUtils.getChildNamed(outlinePanel, "Layer Tree");
     assertEquals(tree.getModel().getChildCount(tree.getModel().getRoot()),6);
+    DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 5);
+    assertNotNull(node);
+    assertEquals("contacts validation failed",14,node.getChildCount());
+    node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 2);
+    assertTrue("didnt find a track object",node.getUserObject() instanceof TrackWrapper);
+    assertEquals("invalid childcount for :"+node,node.getFirstChild().getChildCount(),1395);
+    node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 3);
+    assertTrue("didnt find a track object",node.getUserObject() instanceof TrackWrapper);
+    assertEquals("invalid childcount for :"+node,node.getFirstChild().getChildCount(),1327);
+    node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 4);
+    assertTrue("didnt find a track object",node.getUserObject() instanceof TrackWrapper);
+    assertEquals("invalid childcount for :"+node,node.getFirstChild().getChildCount(),9);
+    System.out.println("done opening file");
+  }
+  
+  public void testImportMultipleFiles()throws InterruptedException,InvocationTargetException
+  {
+    //when you import more than one file it should just import to the same file.
+    //try adding boat1.rep and nmea file and verify all the elements are added in the outlline panel.
+    System.out.println("Start testing save");
+    // open a rep file, insert some shape into it and save it, verify the shape is still there after
+    // reopening.
+    openRepFile(
+        "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep");
+    final JRibbonFrame ribbonFrame = DebriefLiteApp.getInstance()
+        .getApplicationFrame();
+    JXCollapsiblePaneWithTitle outlinePanel = (JXCollapsiblePaneWithTitle)TestUtils.getChildNamed(ribbonFrame,"Outline");
+    assertNotNull(outlinePanel);
+    assertTrue(outlinePanel.isVisible());
+    assertTrue(outlinePanel.isEnabled());
+    JTree tree = (JTree)TestUtils.getChildNamed(outlinePanel, "Layer Tree");
+    assertEquals(tree.getModel().getChildCount(tree.getModel().getRoot()),3);
     DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 2);
     assertNotNull(node);
-   
+    
+    assertFalse(node.isLeaf());
+    assertNotNull(node.getFirstChild());
+    DefaultMutableTreeNode treenode = (DefaultMutableTreeNode)node.getFirstChild();
+    Plottable object = (Plottable)treenode.getUserObject();
+    assertEquals(object.getName(),"120500.00");
+    
+    node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 0);
+    assertNotNull(node);
+    assertTrue(node.isLeaf());
+    node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 1);
+    assertTrue(node.isLeaf());
+    assertNotNull(node);
+    SwingUtilities.invokeAndWait(new Runnable()
+    {
+
+      public void run()
+      {
+        DebriefLiteApp.openNMEAFile(new File("../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/NMEA_TRIAL.log"));    
+      }
+    });
+    assertEquals(tree.getModel().getChildCount(tree.getModel().getRoot()),7);
+    node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 6);
+    assertNotNull(node);
+    assertEquals("contacts validation failed",14,node.getChildCount());
+    node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 3);
+    assertTrue("didnt find a track object",node.getUserObject() instanceof TrackWrapper);
+    assertEquals("invalid childcount for :"+node,node.getFirstChild().getChildCount(),1395);
+    node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 4);
+    assertTrue("didnt find a track object",node.getUserObject() instanceof TrackWrapper);
+    assertEquals("invalid childcount for :"+node,node.getFirstChild().getChildCount(),1327);
+    node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 5);
+    assertTrue("didnt find a track object",node.getUserObject() instanceof TrackWrapper);
+    assertEquals("invalid childcount for :"+node,node.getFirstChild().getChildCount(),9);
     System.out.println("done opening file");
+    JBandControlPanel panel = (JBandControlPanel)TestUtils.getRibbonBand(1, 0).getComponent(0);
+    JCommandButton closeButton = (JCommandButton)panel.getComponent(3);
+    SwingUtilities.invokeLater(new Runnable()
+    {
+      
+      @Override
+      public void run()
+      {
+        closeButton.doActionClick();
+        
+      }
+    });
+    Thread.sleep(300);
+    JButton ok = null;
+    for (int i = 0; ok == null; ++i)
+    {
+      try
+      {
+        Thread.sleep(200);
+      }
+      catch (final InterruptedException e)
+      {
+        e.printStackTrace();
+      }
+      ok = (JButton) TestUtils.getChildIndexed(ribbonFrame, "JButton", 1, true);
+      assertTrue(i < 20);
+    }
+    assertEquals("No", ok.getText());
+    final JButton no = ok;
+
+    SwingUtilities.invokeLater(new Runnable()
+    {
+
+      @Override
+      public void run()
+      {
+        no.doClick();
+      }
+    });
+    // wait for reset to be over.
+    try
+    {
+      Thread.sleep(200);
+    }
+    catch (final InterruptedException e)
+    {
+      e.printStackTrace();
+    }
+    
+  }
+  
+  public void testOpenDpfFile()throws InterruptedException,InvocationTargetException
+  {
+    JBandControlPanel liteBand = (JBandControlPanel)TestUtils.getRibbonBand(1,0).getComponent(0);
+    JCommandButton openButton = (JCommandButton)liteBand.getComponent(1);
+    SwingUtilities.invokeLater(new Runnable()
+    {
+      
+      @Override
+      public void run()
+      {
+        openButton.doActionClick();
+      }
+    });
+    JFrame ribbonFrame = DebriefLiteApp.getInstance().getApplicationFrame();
+    //wait for file chooser dialog
+    JFileChooser fc=null;
+    final File file = new File("../org.mwc.cmap.combined.feature/root_installs/sample_data/sample.dpf").getAbsoluteFile();
+    
+    for(int i=0;fc == null;++i) {
+
+    // wait for window to open and confirm it is open
+        fc = (JFileChooser) TestUtils.getChildIndexed(
+        ribbonFrame, "JFileChooser", 0, false);
+        Thread.sleep(200);
+        assertTrue(i<10);
+    }
+    Thread.sleep(200);
+    final JFileChooser saveWindow = fc;
+    //we have the window, set the path on the filechooser dialog to open the file
+    SwingUtilities.invokeAndWait(new Runnable()
+    {
+
+      @Override
+      public void run()
+      {
+        if(saveWindow!=null)
+        {
+          saveWindow.setSelectedFile(file);
+        }
+        Robot robot;
+        try
+        {
+          robot = new Robot();
+          robot.delay(200);
+          robot.keyPress(KeyEvent.VK_ENTER);
+        }
+        catch (final AWTException e)
+        {
+          e.printStackTrace();
+        }
+
+      }
+    });
+
+    Thread.sleep(1000);
+    //verify the file got opened
+    //do save and close
+    JCommandButton saveButton = TestUtils.getSaveButton();
+    SwingUtilities.invokeAndWait(new Runnable()
+    {
+      
+      @Override
+      public void run()
+      {
+        saveButton.doActionClick();
+      }
+    });
+    Thread.sleep(200);
+    JXCollapsiblePaneWithTitle outlinePanel = (JXCollapsiblePaneWithTitle)TestUtils.getChildNamed(ribbonFrame,"Outline");
+    assertNotNull(outlinePanel);
+    assertTrue(outlinePanel.isVisible());
+    assertTrue(outlinePanel.isEnabled());
+    JTree tree = (JTree)TestUtils.getChildNamed(outlinePanel, "Layer Tree");
+    assertEquals(tree.getModel().getChildCount(tree.getModel().getRoot()),7);
+    DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getModel().getRoot();
+    assertEquals(node.getLastChild().getChildCount(),19);
+    
   }
 
   

@@ -38,7 +38,7 @@ public abstract class BaseTestCase extends TestCase
   protected void tearDown() throws Exception
   {
     System.out.println("teardown");
-    SwingUtilities.invokeAndWait(new Runnable()
+    SwingUtilities.invokeLater(new Runnable()
     {
       @Override
       public void run()
