@@ -344,7 +344,7 @@ public class SnailPainter2 extends TotePainter
     final WatchableList _thePrimary = _theTote.getPrimary();
 
     // determine the new items
-    final Vector<Plottable> theWatchableLists = SnailPainter.getWatchables(
+    final Vector<Plottable> theWatchableLists = getWatchables(
         super.getLayers());
 
     // sort out the line width of the primary

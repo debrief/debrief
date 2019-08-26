@@ -201,11 +201,17 @@ import java.util.Vector;
 
 import Debrief.GUI.Tote.AnalysisTote;
 import Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter;
+import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.TMAWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import MWC.Algorithms.PlainProjection;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
+import MWC.GUI.Plottable;
 import MWC.GUI.StepperListener;
 import MWC.GUI.Canvas.MetafileCanvas;
 import MWC.GUI.Properties.BoundedInteger;
@@ -525,15 +531,15 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 			newPrimary = list[0];
 
 		// so, step through the participants
-		final Vector<WatchableList> theParticipants = _theTote.getSecondary();
+		final Vector<Plottable> theParticipants = getWatchables(getLayers());
 
 		if (theParticipants != null) {
 			// the watchables are used as keys in the hashtable, so
 			// just retrieve them and we can look through them
-			final Enumeration<WatchableList> iter = theParticipants.elements();
+			final Enumeration<Plottable> iter = theParticipants.elements();
 			while (iter.hasMoreElements()) {
 				final Object oj = iter.nextElement();
-				if (oj instanceof WatchableList && !primaryTrack.equals(oj)) {
+				if (oj instanceof WatchableList) {
 					final WatchableList thisList = (WatchableList) oj;
 					// check if this watchable found is visible
 
@@ -580,16 +586,6 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 		if(_doXOR)
 		{
 		  dest.setXORMode(theCanvas.getBackgroundColor());
-		
-		// remove the old primary highlight
-		if (!_firstStep) {
-			// check that we had an old primary point - since we may
-			// have been looking outside the time period for this track
-			if (oldPrimary != null) {
-				getCurrentPrimaryHighlighter().highlightIt(proj, dest,
-						primaryTrack, oldPrimary,true);
-			}
-		}
 
 		// now step through our old highlights, hiding them
 		final Iterator<Watchable> oldies = oldHighlights.keySet().iterator();
@@ -614,13 +610,6 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 			}
 
 		}
-		}
-
-		// and now plot the new ones, if we have a valid primary point
-		if (newPrimary != null) {
-			getCurrentPrimaryHighlighter().highlightIt(proj, dest,
-					primaryTrack, newPrimary, true);
-
 		}
 
 		// now step through our new highlights, showing them
@@ -695,6 +684,141 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 	private PlotHighlighter getCurrentSecondaryHighlighter() {
 		return _theTote.getDefaultHighlighter();
 	}
+	
+
+
+  /**
+   * ok, get the watchables for this layer
+   * 
+   * @param theData
+   *          the layer to extract the watchables for
+   * @return the set of watchable items in this layer
+   */
+  public static Vector<Plottable> getWatchables(final Layer thisLayer)
+  {
+    // get the output ready
+    final Vector<Plottable> res = new Vector<Plottable>(0, 1);
+
+    // is this layer visible?
+    if (thisLayer.getVisible())
+    {
+      // is this a watchable?
+      if (thisLayer instanceof WatchableList)
+      {
+        // just double-check this isn't a buoy-pattern, we don't want to display
+        // them
+        if (thisLayer instanceof Editable.DoNotHighlightMe)
+        {
+          // ignore it, we don't want to plot it.
+        }
+        else
+        {
+
+          res.addElement(thisLayer);
+
+          // just have a look if it's a track - if so we want to add it's
+          // sensors
+          if (thisLayer instanceof TrackWrapper)
+          {
+            final TrackWrapper trw = (TrackWrapper) thisLayer;
+
+            // first plot the sensors
+            final BaseLayer sensorsLayer = trw.getSensors();
+            if (sensorsLayer.getVisible())
+            {
+              final Enumeration<Editable> sensors = sensorsLayer.elements();
+              if (sensors != null)
+              {
+                while (sensors.hasMoreElements())
+                {
+                  final SensorWrapper sw = (SensorWrapper) sensors
+                      .nextElement();
+                  // just check if it's visible
+                  if (sw.getVisible())
+                  {
+                    res.add(sw);
+                  }
+                }
+              }
+            }
+
+            // now the TMA solutons
+            final BaseLayer tuaLayer = trw.getSolutions();
+            if (tuaLayer.getVisible())
+            {
+              final Enumeration<Editable> solutions = tuaLayer.elements();
+              if (solutions != null)
+              {
+                while (solutions.hasMoreElements())
+                {
+                  final TMAWrapper sw = (TMAWrapper) solutions.nextElement();
+                  // just check if it's visible
+                  if (sw.getVisible())
+                  {
+                    res.add(sw);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      else
+      {
+        final Enumeration<Editable> iter = thisLayer.elements();
+        while (iter.hasMoreElements())
+        {
+
+          final Editable thisE = iter.nextElement();
+          if (thisE instanceof Plottable)
+          {
+            final Plottable p = (Plottable) thisE;
+            if (p instanceof WatchableList)
+            {
+              // look at the date date
+              final WatchableList wl = (WatchableList) p;
+              final HiResDate startDTG = wl.getStartDTG();
+
+              // is it a real date?
+              if (startDTG != null)
+              {
+                // yup, add to list
+                res.addElement(p);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return res;
+  }
+
+  /**
+   * ok, get the watchables for this set of layers
+   * 
+   * @param theData
+   *          the layers to extract the watchables for
+   * @return the set of watchable items in these layers
+   */
+  public static Vector<Plottable> getWatchables(final Layers theData)
+  {
+    final Vector<Plottable> res = new Vector<Plottable>(0, 1);
+    // step through the layers
+    final int cnt = theData.size();
+    for (int i = 0; i < cnt; i++)
+    {
+      // ok, do this layer
+      final Layer thisLayer = theData.elementAt(i);
+
+      // get the watchables from this layer
+      final Vector<Plottable> newElements = getWatchables(thisLayer);
+
+      // and add to our growing total
+      res.addAll(newElements);
+    }
+    return res;
+  }
 
 	/**
 	 * draw a highlight around this point
