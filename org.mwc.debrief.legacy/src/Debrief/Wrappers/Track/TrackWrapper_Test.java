@@ -2839,6 +2839,22 @@ public class TrackWrapper_Test extends TestCase
 
   }
 
+
+  public final static void testInterpolateDepth()
+  {
+    final WorldLocation loc_1 = new WorldLocation(0, 0, 10);
+    final FixWrapper fw1 =
+        new FixWrapper(new Fix(new HiResDate(1000, 0), loc_1, 0.10, 110));
+    fw1.setLabel("fw1");
+    final FixWrapper fw2 =
+        new FixWrapper(new Fix(new HiResDate(2000, 0), loc_1
+            .add(new WorldVector(33, new WorldDistance(20,
+                WorldDistance.METRES), new WorldDistance(10, WorldDistance.METRES))), 0.20, 120));
+    fw2.setLabel("fw2");
+    FixWrapper res = FixWrapper.interpolateFix(fw1, fw2, new HiResDate(1500, 0));
+    assertEquals("correct depth", 15d, res.getDepth());
+  }
+
   public final static void testInterpolation()
   {
     final TrackWrapper tw = new TrackWrapper();

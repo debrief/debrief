@@ -116,6 +116,10 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.beans.PropertyDescriptor;
 
+import Debrief.GUI.Tote.AnalysisTote;
+import Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter;
+import Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter.RectangleHighlight;
+import Debrief.GUI.Tote.Painters.Highlighters.SymbolHighlighter;
 import Debrief.GUI.Tote.Painters.SnailPainter2.ColorFadeCalculator;
 import Debrief.Wrappers.FixWrapper;
 import MWC.GUI.Editable;
@@ -188,7 +192,7 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
 
     public final void testMyParams()
     {
-      Editable ed = new SnailDrawFix2("testing");
+      Editable ed = new SnailDrawFix2("testing", null);
       Editable.editableTesterSupport.testParams(ed, this);
       ed = null;
     }
@@ -224,13 +228,20 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
    * the name we display when shown in an editor (which may initially be Snail or Relative)
    */
   private final String _myName;
+  
+  /*
+   * We are storing the tote to retrieve the properties of the highlighter
+   * specified by the user.
+   */
+  private final AnalysisTote _theTote;
 
   /*******************************************************
    * constructor
    ******************************************************/
-  public SnailDrawFix2(final String name)
+  public SnailDrawFix2(final String name, final AnalysisTote theTote)
   {
     _myName = name;
+    _theTote = theTote;
   }
 
   @Override
@@ -260,8 +271,25 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
     final FixWrapper fix = (FixWrapper) watch;
 
     // get the colour of the track
-    final Color col = fix.getColor();
-    dest.setColor(col);
+    final Color snailColor = fix.getColor();
+    Color selectedColor = fix.getColor();
+    int selectedSize = _pointSize;
+    
+    if ( _theTote != null )
+    {
+      final PlotHighlighter highlighter = _theTote.getCurrentHighlighter();
+      if ( highlighter instanceof RectangleHighlight )
+      {
+        selectedColor = ((RectangleHighlight) highlighter).getColor();
+        selectedSize = ((RectangleHighlight) highlighter).getSize().getCurrent();
+      }else if ( highlighter instanceof SymbolHighlighter )
+      {
+        // Are we using the symbol highlighter?? I think not, let's add this just in case. Saul 
+        selectedColor = ((SymbolHighlighter) highlighter).getColor();
+        selectedSize = (int) ((SymbolHighlighter) highlighter).getScale();
+      }
+    }
+    dest.setColor(snailColor);
     
     // is this item even visible?
     if (!watch.getVisible())
@@ -305,7 +333,7 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
       final Point tl = new Point(tlPos);
       final Point br = new Point(brPos);
 
-      final int mySize = _pointSize;
+      final int mySize = selectedSize;
 
       // get the width
       final int x = tl.x - mySize;
@@ -316,9 +344,11 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
       // represent this area as a rectangle
       thisR = new Rectangle(x, y, wid, ht);
 
+      dest.setColor(selectedColor);
       // plot the rectangle anyway
       dest.drawOval(x, y, wid, ht);
 
+      dest.setColor(snailColor);
       // and now plot the vector
       final double crse = watch.getCourse();
       final double spd = watch.getSpeed();

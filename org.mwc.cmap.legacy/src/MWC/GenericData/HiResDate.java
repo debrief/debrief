@@ -41,7 +41,7 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
   /**
    * when an application is capable of alternate time resolution processing modes, this method
    * indicates the user preference
-   * 
+   *
    * @return yes/no
    */
   public static boolean inHiResProcessingMode()
@@ -66,7 +66,7 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
 
   /**
    * Return the max of two HiResDate
-   * 
+   *
    * @param a
    * @param b
    * @return Return the max of two HiResDate
@@ -85,7 +85,7 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
 
   /**
    * Return the min of two HiResDate
-   * 
+   *
    * @param a
    * @param b
    * @return min of two HiResDate
@@ -104,7 +104,7 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
 
   /**
    * convert NULL_DATE object back to null value, which we use in property editors
-   * 
+   *
    * @param date
    * @return converted value
    */
@@ -115,7 +115,7 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
 
   /**
    * convert null date into the NULL_DATE object, which we use in property editors
-   * 
+   *
    * @param date
    * @return converted value
    */
@@ -126,7 +126,7 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
 
   /**
    * number of microseconds
-   * 
+   *
    */
   long _micros;
 
@@ -159,7 +159,7 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
   // ////////////////////////////////////////////////
   /**
    * if the current application has alternate processing for hi-res & lo-res timings,
-   * 
+   *
    * @param millis
    * @param micros
    */
@@ -170,7 +170,7 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
 
   /**
    * compare the supplied date to us
-   * 
+   *
    * @param o
    *          other date
    * @return whether we're later than it
@@ -220,7 +220,7 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
 
   public boolean greaterThan(final HiResDate other)
   {
-    return getMicros() > other.getMicros();
+    return other != null && getMicros() > other.getMicros();
   }
 
   public boolean greaterThanOrEqualTo(final HiResDate other)

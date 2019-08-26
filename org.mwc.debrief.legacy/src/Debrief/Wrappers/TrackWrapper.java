@@ -2276,8 +2276,11 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     if (!_theSegments.isEmpty())
     {
 
+      final HiResDate startDTG = getStartDTG();
+      final HiResDate endDTG = getEndDTG();
       // see if we have _any_ points in range
-      if ((getStartDTG().greaterThan(end)) || (getEndDTG().lessThan(start)))
+      if ((startDTG == null || startDTG.greaterThan(end)) ||
+          (endDTG == null || endDTG.lessThan(start)))
       {
         // don't bother with it.
       }
