@@ -31,6 +31,7 @@ public abstract class BaseTestCase extends TestCase
   {
     System.out.println("Setup");
     DebriefLiteApp.launchApp(); 
+    Thread.sleep(3000);
   }
   
 
@@ -42,10 +43,12 @@ public abstract class BaseTestCase extends TestCase
       @Override
       public void run()
       {
+        // TODO Auto-generated method stub
         DebriefLiteApp.disposeForTest();
         
       }
     });
+    Thread.sleep(3000);
     super.tearDown();
   }
 }

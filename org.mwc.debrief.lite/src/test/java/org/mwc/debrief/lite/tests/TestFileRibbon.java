@@ -90,14 +90,7 @@ public class TestFileRibbon extends BaseTestCase
     JButton ok = null;
     for (int i = 0; ok == null; ++i)
     {
-      try
-      {
-        Thread.sleep(200);
-      }
-      catch (final InterruptedException e)
-      {
-        e.printStackTrace();
-      }
+      Thread.sleep(200);
       ok = (JButton) TestUtils.getChildIndexed(DebriefLiteApp.getInstance()
           .getApplicationFrame(), "JButton", 1, true);
       assertTrue(i < 20);
@@ -114,14 +107,7 @@ public class TestFileRibbon extends BaseTestCase
     });
 
     // wait for reset to be over.
-    try
-    {
-      Thread.sleep(200);
-    }
-    catch (final InterruptedException e)
-    {
-      e.printStackTrace();
-    }
+    Thread.sleep(200);
     assertFalse(closeButton.isEnabled());
     System.out.println("Done test close");
   }
@@ -135,14 +121,31 @@ public class TestFileRibbon extends BaseTestCase
     openRepFile(
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep");
     assertTrue("expected boat1.rep found "+ribbonFrame.getTitle(),ribbonFrame.getTitle().contains("boat1.rep"));
-    System.out.println("done testing import rep file");
+    //do assertions here
+    //outline view should have track nelson and by default should have layers chart features and background
+    JXCollapsiblePaneWithTitle outlinePanel = (JXCollapsiblePaneWithTitle)TestUtils.getChildNamed(ribbonFrame,"Outline");
+    assertNotNull(outlinePanel);
+    assertTrue(outlinePanel.isVisible());
+    assertTrue(outlinePanel.isEnabled());
+    JTree tree = (JTree)TestUtils.getChildNamed(outlinePanel, "Layer Tree");
+    assertEquals(tree.getModel().getChildCount(tree.getModel().getRoot()),3);
+    DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 2);
+    assertNotNull(node);
+    
+    assertFalse(node.isLeaf());
+    assertNotNull(node.getFirstChild());
+    DefaultMutableTreeNode treenode = (DefaultMutableTreeNode)node.getFirstChild();
+    Plottable object = (Plottable)treenode.getUserObject();
+    assertEquals(object.getName(),"120500.00");
+    
+    node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 0);
+    assertNotNull(node);
+    assertTrue(node.isLeaf());
+    node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 1);
+    assertTrue(node.isLeaf());
+    assertNotNull(node);
   }
-  /*
-   * public void testImportNMEAFile() {
-   *
-   * }
-   */
-
+  
   public void testNewFile() throws InvocationTargetException,
       InterruptedException
   {
@@ -208,14 +211,8 @@ public class TestFileRibbon extends BaseTestCase
       }
     });
     // wait for reset to be over.
-    try
-    {
       Thread.sleep(200);
-    }
-    catch (final InterruptedException e)
-    {
-      e.printStackTrace();
-    }
+    
     assertEquals(tree.getModel().getChildCount(tree.getModel().getRoot()), 2);
     System.out.println("end new file test");
   }
