@@ -464,7 +464,7 @@ public class DebriefLiteApp implements FileDropListener
     final String oldState = state;
     state = newState;
 
-    if (newState != null && !newState.equals(oldState))
+    if (newState != null && !newState.equals(oldState) && _instance != null)
     {
       notifyListenersStateChanged(_instance, "STATE", oldState, newState);
     }
@@ -901,7 +901,7 @@ public class DebriefLiteApp implements FileDropListener
     {
       // no - capture the fact that we are
       _plotUpdating = true;
-      
+
       // trigger screen update to happen on UI thread
       SwingUtilities.invokeLater(new Runnable()
       {
@@ -1501,8 +1501,11 @@ public class DebriefLiteApp implements FileDropListener
     {
       if (!isNormal)
       {
+        @SuppressWarnings("unused")
         final SnailPainter2 snail = (SnailPainter2) current;
-        snail.setVectorStretch(1d);
+        // note: we were over-writing the vector stretch
+        // value, but I can't see why. Comment it out.
+        // snail.setVectorStretch(1d);
       }
 
       final CanvasAdaptor adapter = new CanvasAdaptor(projection, graphics,
@@ -1520,7 +1523,7 @@ public class DebriefLiteApp implements FileDropListener
     {
       DebriefLiteApp.currentFileName = file.getAbsolutePath();
       DebriefLiteApp.setTitle(file.getName());
-      setState(ACTIVE_STATE);
+      // setState(ACTIVE_STATE);
       DebriefRibbonFile.closeButton.setEnabled(true);
     }
   }

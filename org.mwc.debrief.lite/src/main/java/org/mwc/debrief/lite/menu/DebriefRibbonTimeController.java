@@ -62,6 +62,9 @@ import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -73,6 +76,7 @@ import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WatchableList;
 import MWC.TacticalData.SliderConverter;
 import MWC.TacticalData.temporal.ControllablePeriod;
 import MWC.TacticalData.temporal.PlotOperations;
@@ -102,6 +106,8 @@ public class DebriefRibbonTimeController
     {
       minimumValue.setText(" ");
       maximumValue.setText(" ");
+      slider.setMinimum(0);
+      slider.setMaximum(0);
     }
 
     public void updateFilterDateFormat()
@@ -236,12 +242,14 @@ public class DebriefRibbonTimeController
   {
     final private PlotOperations operations;
     final private TimeManager timeManager;
+    final private LiteStepControl stepcontrol;
 
     private SliderListener(final PlotOperations operations,
-        final TimeManager time)
+        final TimeManager time, final LiteStepControl step)
     {
       this.operations = operations;
-      timeManager = time;
+      this.timeManager = time;
+      this.stepcontrol = step;
     }
 
     @Override
@@ -268,6 +276,7 @@ public class DebriefRibbonTimeController
         {
           oldTime = high;
         }
+        stepcontrol.setEndTime(new HiResDate(high));
         label.setRange(low.getTime(), high.getTime());
         label.setValue(oldTime.getTime());
 
@@ -299,8 +308,9 @@ public class DebriefRibbonTimeController
 
   private static JCheckBoxMenuItem[] _menuItem;
 
-  /** track snail mode
-   * 
+  /**
+   * track snail mode
+   *
    */
   private static boolean _isNormal = true;
 
@@ -628,7 +638,7 @@ public class DebriefRibbonTimeController
         timeSlider.setEnabled(true);
 
         // and we can use the buttons
-        DebriefLiteApp.setState(DebriefLiteApp.ACTIVE_STATE);
+        //DebriefLiteApp.setState(DebriefLiteApp.ACTIVE_STATE);
 
         converter.init(start, end);
         timeSlider.setMinimum(converter.getStart());
@@ -708,7 +718,7 @@ public class DebriefRibbonTimeController
       private void updateTimeController()
       {
         stepControl.startStepping(false);
-        boolean hasTracks = false;
+        boolean hasItems = false;
 
         final Enumeration<Editable> lIter = stepControl.getLayers().elements();
         while (lIter.hasMoreElements())
@@ -716,20 +726,37 @@ public class DebriefRibbonTimeController
           final Editable next = lIter.nextElement();
           if (next instanceof TrackWrapper)
           {
-            hasTracks = true;
+            hasItems = true;
             break;
+          }
+          else if (next instanceof BaseLayer)
+          {
+            // check the children, to see if they're like a track
+            final BaseLayer baseL = (BaseLayer) next;
+            final Enumeration<Editable> ele = baseL.elements();
+            while (ele.hasMoreElements() && !hasItems)
+            {
+              final Editable nextE = ele.nextElement();
+              if (nextE instanceof WatchableList)
+              {
+                final WatchableList wat = (WatchableList) nextE;
+                hasItems |= wat instanceof LightweightTrackWrapper
+                    || wat instanceof TrackWrapper
+                    || wat instanceof DynamicTrackShapeSetWrapper;
+              }
+
+            }
           }
         }
 
-        if (!hasTracks)
-        {
-          doSoftReset(timeSlider, timeManager);
-        }
-        else
+        if (hasItems)
         {
           DebriefLiteApp.setDirty(true);
           DebriefLiteApp.setState(DebriefLiteApp.ACTIVE_STATE);
           timeSlider.setEnabled(true);
+        }else
+        {
+          doSoftReset(timeSlider, timeManager);
         }
       }
     };
@@ -816,7 +843,8 @@ public class DebriefRibbonTimeController
     formatBinder.timeManager = timeManager;
 
     formatBinder.updateFilterDateFormat();
-    slider.addChangeListener(new SliderListener(operations, timeManager));
+    slider.addChangeListener(new SliderListener(operations, timeManager, 
+        stepControl));
     slider.setEnabled(false);
     slider.setPreferredSize(new Dimension(250, 200));
 
