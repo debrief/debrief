@@ -6,7 +6,6 @@ import org.junit.runners.Suite;
 import junit.framework.TestCase;
 
 @Suite.SuiteClasses({
-  TestFileImport.class,
   TestFileRibbon.class,
   TestLiteLaunch.class,
   TestMenus.class
