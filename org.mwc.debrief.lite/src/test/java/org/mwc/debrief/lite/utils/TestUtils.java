@@ -171,6 +171,15 @@ public class TestUtils
     JCommandMenuButton saveDDButton = (JCommandMenuButton)TestUtils.getChildNamed(panel, "save");
     return saveDDButton;
   }
+  
+  public static JCommandMenuButton getSaveASButton()
+  {
+    JBandControlPanel liteBand = (JBandControlPanel)getRibbonBand(1,0).getComponent(0);
+    JCommandButton saveButton = ((JCommandButton)liteBand.getComponent(2));
+    JPopupPanel panel = (JPopupPanel)saveButton.getPopupCallback().getPopupPanel(saveButton);
+    JCommandMenuButton saveDDButton = (JCommandMenuButton)TestUtils.getChildNamed(panel, "saveas");
+    return saveDDButton;
+  }
   public static JCommandMenuButton getSaveAsButton()
   {
     JBandControlPanel liteBand = (JBandControlPanel)getRibbonBand(1,0).getComponent(0);

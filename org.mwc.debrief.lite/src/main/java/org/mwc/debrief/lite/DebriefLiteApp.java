@@ -277,6 +277,7 @@ public class DebriefLiteApp implements FileDropListener
 
   public static DebriefLiteApp getInstance()
   {
+    System.out.println("using:"+_instance);
     return _instance;
   }
 
@@ -413,6 +414,7 @@ public class DebriefLiteApp implements FileDropListener
   {
     try
     {
+      System.out.println("Using instance:"+_instance);
       _instance.handleImportRep(new File[]
       {file});
     }
@@ -1107,7 +1109,13 @@ public class DebriefLiteApp implements FileDropListener
 
   public static void disposeForTest()
   {
+    System.out.println("Disposed:"+_instance);
     _instance.theFrame.dispose();
+    currentFileName = null;
+    state = null;
+    collapsedState =false;
+    stateListeners.clear();
+    _instance = null;
   }
   public void exit()
   {
