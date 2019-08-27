@@ -315,93 +315,104 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
       // is this a watchable?
       if (thisLayer instanceof WatchableList)
       {
-        // just double-check this isn't a buoy-pattern, we don't want to display
-        // them
-        if (thisLayer instanceof Editable.DoNotHighlightMe)
-        {
-          // ignore it, we don't want to plot it.
-        }
-        else
-        {
+        extractFromWatchableList(thisLayer, res);
+      }
+      else
+      {
+        extractFromNotWatchableList(thisLayer, res);
+      }
+    }
 
-          res.addElement(thisLayer);
+    return res;
+  }
 
-          // just have a look if it's a track - if so we want to add it's
-          // sensors
-          if (thisLayer instanceof TrackWrapper)
+  public static void extractFromWatchableList(final Layer thisLayer,
+      final Vector<Plottable> res)
+  {
+    // just double-check this isn't a buoy-pattern, we don't want to display
+    // them
+    if (thisLayer instanceof Editable.DoNotHighlightMe)
+    {
+      // ignore it, we don't want to plot it.
+    }
+    else
+    {
+
+      res.addElement(thisLayer);
+
+      // just have a look if it's a track - if so we want to add it's
+      // sensors
+      if (thisLayer instanceof TrackWrapper)
+      {
+        final TrackWrapper trw = (TrackWrapper) thisLayer;
+
+        // first plot the sensors
+        final BaseLayer sensorsLayer = trw.getSensors();
+        if (sensorsLayer.getVisible())
+        {
+          final Enumeration<Editable> sensors = sensorsLayer.elements();
+          if (sensors != null)
           {
-            final TrackWrapper trw = (TrackWrapper) thisLayer;
-
-            // first plot the sensors
-            final BaseLayer sensorsLayer = trw.getSensors();
-            if (sensorsLayer.getVisible())
+            while (sensors.hasMoreElements())
             {
-              final Enumeration<Editable> sensors = sensorsLayer.elements();
-              if (sensors != null)
+              final SensorWrapper sw = (SensorWrapper) sensors.nextElement();
+              // just check if it's visible
+              if (sw.getVisible())
               {
-                while (sensors.hasMoreElements())
-                {
-                  final SensorWrapper sw = (SensorWrapper) sensors
-                      .nextElement();
-                  // just check if it's visible
-                  if (sw.getVisible())
-                  {
-                    res.add(sw);
-                  }
-                }
-              }
-            }
-
-            // now the TMA solutons
-            final BaseLayer tuaLayer = trw.getSolutions();
-            if (tuaLayer.getVisible())
-            {
-              final Enumeration<Editable> solutions = tuaLayer.elements();
-              if (solutions != null)
-              {
-                while (solutions.hasMoreElements())
-                {
-                  final TMAWrapper sw = (TMAWrapper) solutions.nextElement();
-                  // just check if it's visible
-                  if (sw.getVisible())
-                  {
-                    res.add(sw);
-                  }
-                }
+                res.add(sw);
               }
             }
           }
         }
-      }
-      else
-      {
-        final Enumeration<Editable> iter = thisLayer.elements();
-        while (iter.hasMoreElements())
+
+        // now the TMA solutons
+        final BaseLayer tuaLayer = trw.getSolutions();
+        if (tuaLayer.getVisible())
         {
-
-          final Editable thisE = iter.nextElement();
-          if (thisE instanceof Plottable)
+          final Enumeration<Editable> solutions = tuaLayer.elements();
+          if (solutions != null)
           {
-            final Plottable p = (Plottable) thisE;
-            if (p instanceof WatchableList)
+            while (solutions.hasMoreElements())
             {
-              // look at the date date
-              final WatchableList wl = (WatchableList) p;
-              final HiResDate startDTG = wl.getStartDTG();
-
-              // is it a real date?
-              if (startDTG != null)
+              final TMAWrapper sw = (TMAWrapper) solutions.nextElement();
+              // just check if it's visible
+              if (sw.getVisible())
               {
-                // yup, add to list
-                res.addElement(p);
+                res.add(sw);
               }
             }
           }
         }
       }
     }
+  }
 
-    return res;
+  public static void extractFromNotWatchableList(final Layer thisLayer,
+      final Vector<Plottable> res)
+  {
+    final Enumeration<Editable> iter = thisLayer.elements();
+    while (iter.hasMoreElements())
+    {
+
+      final Editable thisE = iter.nextElement();
+      if (thisE instanceof Plottable)
+      {
+        final Plottable p = (Plottable) thisE;
+        if (p instanceof WatchableList)
+        {
+          // look at the date date
+          final WatchableList wl = (WatchableList) p;
+          final HiResDate startDTG = wl.getStartDTG();
+
+          // is it a real date?
+          if (startDTG != null)
+          {
+            // yup, add to list
+            res.addElement(p);
+          }
+        }
+      }
+    }
   }
 
   /**
@@ -717,8 +728,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
       if (oldHighlights == null)
         oldHighlights = new HashMap<Watchable, WatchableList>();
 
-      final Watchable[] list = primaryTrack.getNearestTo(
-          oldDTG);
+      final Watchable[] list = primaryTrack.getNearestTo(oldDTG);
       if (list.length > 0)
         oldPrimary = list[0];
     }
@@ -730,35 +740,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
     if (list.length > 0)
       newPrimary = list[0];
 
-    // so, step through the participants
-    final Vector<Plottable> theParticipants = getWatchables(getLayers());
-
-    if (theParticipants != null)
-    {
-      // the watchables are used as keys in the hashtable, so
-      // just retrieve them and we can look through them
-      final Enumeration<Plottable> iter = theParticipants.elements();
-      while (iter.hasMoreElements())
-      {
-        final Object oj = iter.nextElement();
-        if (oj instanceof WatchableList)
-        {
-          final WatchableList thisList = (WatchableList) oj;
-          // check if this watchable found is visible
-
-          list = thisList.getNearestTo(newDTG);
-
-          Watchable wat = null;
-          if (list.length > 0)
-            wat = list[0];
-
-          if (wat != null && wat.getVisible())
-          {
-            newHighlights.put(wat, thisList);
-          }
-        }
-      }
-    }
+    listNewHighlights(newDTG, newHighlights);
 
     // we now have our lists, lets plot them
     // Get the graphics
@@ -785,6 +767,17 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 
     final PlainProjection proj = _theChart.getCanvas().getProjection();
 
+    removeOldHighlights(primaryTrack, plottingSymbols, theCanvas, dest, proj);
+
+    createNewHighlights(newDTG, primaryTrack, plottingSymbols, newHighlights,
+        newPrimary, dest, proj);
+
+  }
+
+  public void removeOldHighlights(final WatchableList primaryTrack,
+      boolean plottingSymbols, CanvasType theCanvas, final Graphics dest,
+      final PlainProjection proj)
+  {
     // set the XOR painting mode
     if (_doXOR)
     {
@@ -820,7 +813,13 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 
       }
     }
+  }
 
+  public void createNewHighlights(final HiResDate newDTG,
+      final WatchableList primaryTrack, boolean plottingSymbols,
+      final HashMap<Watchable, WatchableList> newHighlights,
+      Watchable newPrimary, final Graphics dest, final PlainProjection proj)
+  {
     // now step through our new highlights, showing them
     final Iterator<Watchable> newies = newHighlights.keySet().iterator();
 
@@ -885,9 +884,43 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
       // everything has been handled OK if we are repainting
       // Adding an empty print to avoid Codacy Warning. Previous commend
       // has value. It is not worth it to remove it.
-      System.out.print(""); 
+      System.out.print("");
     }
+  }
 
+  public void listNewHighlights(final HiResDate newDTG,
+      final HashMap<Watchable, WatchableList> newHighlights)
+  {
+    Watchable[] list;
+    // so, step through the participants
+    final Vector<Plottable> theParticipants = getWatchables(getLayers());
+
+    if (theParticipants != null)
+    {
+      // the watchables are used as keys in the hashtable, so
+      // just retrieve them and we can look through them
+      final Enumeration<Plottable> iter = theParticipants.elements();
+      while (iter.hasMoreElements())
+      {
+        final Object oj = iter.nextElement();
+        if (oj instanceof WatchableList)
+        {
+          final WatchableList thisList = (WatchableList) oj;
+          // check if this watchable found is visible
+
+          list = thisList.getNearestTo(newDTG);
+
+          Watchable wat = null;
+          if (list.length > 0)
+            wat = list[0];
+
+          if (wat != null && wat.getVisible())
+          {
+            newHighlights.put(wat, thisList);
+          }
+        }
+      }
+    }
   }
 
   /**

@@ -266,9 +266,9 @@ public class SnailPainter extends TotePainter
   {
     public boolean canPlot(Watchable wt);
 
-    public java.awt.Rectangle drawMe(PlainProjection proj,
-        Graphics dest, WatchableList list, Watchable watch, SnailPainter parent,
-        HiResDate dtg, Color backColor);
+    public java.awt.Rectangle drawMe(PlainProjection proj, Graphics dest,
+        WatchableList list, Watchable watch, SnailPainter parent, HiResDate dtg,
+        Color backColor);
   }
 
   // /////////////////////////////////
@@ -321,61 +321,67 @@ public class SnailPainter extends TotePainter
       }
       else
       {
-        // just see if this layer is one of our back-ground layesr
-        final Enumeration<Editable> iter = thisLayer.elements();
-        while (iter.hasMoreElements())
-        {
-          final Plottable thisPlottable = (Plottable) iter.nextElement();
-          if (thisPlottable instanceof ShapeWrapper)
-          {
-            // see if has a valid DTG -- IS IT TIME-RELATED?
-            final ShapeWrapper swp = (ShapeWrapper) thisPlottable;
-            final HiResDate dat = swp.getStartDTG();
-            if (dat == null)
-            {
-              // let's use it
-              res.addElement(thisPlottable);
-            }
-            else
-            {
-              // so it's got a date, check if the date represents our null
-              // value
-              // anyway
-              if (dat.getMicros() == -1)
-                res.addElement(thisPlottable);
-            }
-          }
-          else if (thisPlottable instanceof LabelWrapper)
-          {
-            // see if has a valid DTG -- IS IT TIME-RELATED?
-            final LabelWrapper lwp = (LabelWrapper) thisPlottable;
-            final HiResDate dat = lwp.getStartDTG();
-            // check if it is using our "null" date value
-            if (dat == null)
-            {
-              // let's use it
-              res.addElement(thisPlottable);
-            }
-            else
-            {
-              // it's got a date, which makes it one of our watchables, it
-              // will
-              // get caught elsewhere
-            }
-          }
-          else if (thisPlottable instanceof LightweightTrackWrapper)
-          {
-            // ok, ignore it. it's tactical
-          }
-          else
-          {
-            // it's not a shape - it's probably the grid or the scale,
-            res.addElement(thisPlottable);
-          } // whether it's a labelwrapper
-        } // looping through the elements of this layer
+        extractPlottables(thisLayer, res);
       } // if this is a background layer (or not)
     } // whether this layer is visible
     return res;
+  }
+
+  public static void extractPlottables(final Layer thisLayer,
+      final Vector<Plottable> res)
+  {
+    // just see if this layer is one of our back-ground layesr
+    final Enumeration<Editable> iter = thisLayer.elements();
+    while (iter.hasMoreElements())
+    {
+      final Plottable thisPlottable = (Plottable) iter.nextElement();
+      if (thisPlottable instanceof ShapeWrapper)
+      {
+        // see if has a valid DTG -- IS IT TIME-RELATED?
+        final ShapeWrapper swp = (ShapeWrapper) thisPlottable;
+        final HiResDate dat = swp.getStartDTG();
+        if (dat == null)
+        {
+          // let's use it
+          res.addElement(thisPlottable);
+        }
+        else
+        {
+          // so it's got a date, check if the date represents our null
+          // value
+          // anyway
+          if (dat.getMicros() == -1)
+            res.addElement(thisPlottable);
+        }
+      }
+      else if (thisPlottable instanceof LabelWrapper)
+      {
+        // see if has a valid DTG -- IS IT TIME-RELATED?
+        final LabelWrapper lwp = (LabelWrapper) thisPlottable;
+        final HiResDate dat = lwp.getStartDTG();
+        // check if it is using our "null" date value
+        if (dat == null)
+        {
+          // let's use it
+          res.addElement(thisPlottable);
+        }
+        else
+        {
+          // it's got a date, which makes it one of our watchables, it
+          // will
+          // get caught elsewhere
+        }
+      }
+      else if (thisPlottable instanceof LightweightTrackWrapper)
+      {
+        // ok, ignore it. it's tactical
+      }
+      else
+      {
+        // it's not a shape - it's probably the grid or the scale,
+        res.addElement(thisPlottable);
+      } // whether it's a labelwrapper
+    } // looping through the elements of this layer
   }
 
   /**
@@ -603,7 +609,7 @@ public class SnailPainter extends TotePainter
     {
       return;
     }
-    
+
     // get the primary track
     final WatchableList _thePrimary = _theTote.getPrimary();
 
@@ -618,7 +624,7 @@ public class SnailPainter extends TotePainter
     final Graphics2D dest = (Graphics2D) theCanvas.getGraphicsTemp();
 
     final Color backColor = theCanvas.getBackgroundColor();
-    
+
     // just drop out if we can't create any graphics though
     if (dest == null)
       return;
