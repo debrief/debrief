@@ -56,10 +56,41 @@ public class OTH_Importer
   {
     T extract(String txt);
   }
+  
+  /** collect together data read in from OTH file
+   * 
+   * @author ian
+   *
+   */
+  private static class OTH_Data
+  {
+    private final List<TrackWrapper> _tracks;
+    private final List<BaseLayer> _ellipseShapes;
 
+    public OTH_Data(final List<TrackWrapper> tracks, final List<BaseLayer> ellipseShapes)
+    {
+      _tracks = tracks;
+      _ellipseShapes = ellipseShapes;
+    }
+
+    public List<TrackWrapper> getTracks()
+    {
+      return _tracks;
+    }
+    
+    public List<BaseLayer> getEllipseLayers()
+    {
+      return _ellipseShapes;
+    }
+  }
+
+
+  /** package up the action that adds the data
+   * to the layers target
+   *
+   */
   private static class ImportOTHAction implements Action
   {
-
     private final List<TrackWrapper> _tracks;
     private final List<BaseLayer> _ellipseLayers;
     private final Layers _layers;
@@ -468,12 +499,13 @@ public class OTH_Importer
 
   private static final String POS_STR = "POS";
 
-  public static boolean canLoad(final ErrorLogger logger, boolean res,
-      final BufferedReader r) throws IOException
+  public static boolean canLoad(final ErrorLogger logger, final BufferedReader r) throws IOException
   {
     boolean hasHeader = false;
     boolean hasPosition = false;
     boolean hasTrack = false;
+    
+    boolean res = false;
 
     final int MAX_LINES = 100;
     final int ctr = 0;
@@ -525,7 +557,7 @@ public class OTH_Importer
     {
       fis = new FileInputStream(fileName);
       r = new BufferedReader(new InputStreamReader(fis));
-      res = canLoad(logger, res, r);
+      res = canLoad(logger, r);
     }
     catch (final Exception e)
     {

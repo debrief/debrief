@@ -34,7 +34,7 @@ public class OTH_G_ContentDescriber extends TextContentDescriber
 			r = new BufferedReader(new InputStreamReader(contents));
 			
 			ErrorLogger logger = CorePlugin.getToolParent();
-      boolean canRead =  OTH_Importer.canLoad(logger, false ,r);
+      boolean canRead =  OTH_Importer.canLoad(logger, r);
       res.set(canRead);
 		}
 		catch (Exception e)
