@@ -62,7 +62,7 @@ public class ZoomIn extends CoreDragAction
 		
 		private boolean dragResult;
 
-		private KeyListener listener = new KeyAdapter()
+		final private KeyListener listener = new KeyAdapter()
 		{
 			@Override
 			public void keyPressed(KeyEvent e)
@@ -71,35 +71,31 @@ public class ZoomIn extends CoreDragAction
 					dragResult = false;
 				}
 			}
-			
 		};
 		
-    private PaintListener paintListener = new PaintListener()
+    final private PaintListener paintListener = new PaintListener()
     {
+      @SuppressWarnings("deprecation")
       public void paintControl(PaintEvent e)
       {
-        GC gc = e.gc;
-        Color fc = new Color(Display.getDefault(), 155, 155, 155);
+        final GC gc = e.gc;
+        final Color fc = new Color(Display.getDefault(), 155, 155, 155);
         gc.setForeground(fc);
         gc.setXORMode(true);
         gc.setLineAttributes(new LineAttributes(2, SWT.CAP_FLAT, SWT.JOIN_MITER,
             SWT.LINE_SOLID, null, 0, 10));
         gc.drawRectangle(res);
+        gc.setXORMode(false);
         fc.dispose();
       }
     };
 
-
-
-
-		@SuppressWarnings("deprecation")
 		@Override
 		public void doMouseDrag(final Point pt, final int JITTER,
-				final Layers theLayers, SWTCanvas theCanvas)
+				final Layers theLayers, final SWTCanvas theCanvas)
 		{
-			// redraw canvas
+			// redraw canvas backdrop
 			_myCanvas.getCanvas().redraw();
-			Display.getCurrent().update();
 			// just do a check that we have our start point (it may have been cleared
 			// at the end of the move operation)
 			if (_startPoint != null)
@@ -109,11 +105,11 @@ public class ZoomIn extends CoreDragAction
 
 				this.JITTER = JITTER;
 				this.layers = theLayers;
-				Rectangle rect = new Rectangle(_startPoint.x, _startPoint.y, -deltaX,
+				final Rectangle rect = new Rectangle(_startPoint.x, _startPoint.y, -deltaX,
 						-deltaY);
 				res = rect;
-				
 			}
+      Display.getCurrent().update();
 		}
 
 		@Override
