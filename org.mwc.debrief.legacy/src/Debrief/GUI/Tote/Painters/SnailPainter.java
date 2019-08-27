@@ -266,7 +266,7 @@ public class SnailPainter extends TotePainter
   {
     public boolean canPlot(Watchable wt);
 
-    public java.awt.Rectangle drawMe(MWC.Algorithms.PlainProjection proj,
+    public java.awt.Rectangle drawMe(PlainProjection proj,
         Graphics dest, WatchableList list, Watchable watch, SnailPainter parent,
         HiResDate dtg, Color backColor);
   }
@@ -522,7 +522,7 @@ public class SnailPainter extends TotePainter
    */
   private void highlightIt(final PlainProjection proj, final Graphics dest,
       final WatchableList list, final Watchable watch, final HiResDate dtg,
-      final java.awt.Color backColor)
+      final Color backColor)
   {
     // check that our graphics context is still valid -
     // we can't, so we will just have to trap any exceptions it raises
@@ -591,7 +591,7 @@ public class SnailPainter extends TotePainter
 
   @Override
   public void newTime(final HiResDate oldDTG, final HiResDate newDTG,
-      final MWC.GUI.CanvasType canvas)
+      final CanvasType canvas)
   {
 
     // check if we have any data
@@ -603,106 +603,36 @@ public class SnailPainter extends TotePainter
     {
       return;
     }
+    
+    // get the primary track
+    final WatchableList _thePrimary = _theTote.getPrimary();
 
     // initialise the area covered
     _areaCovered = null;
 
     // prepare the chart
-    MWC.GUI.CanvasType theCanvas = canvas;
+    CanvasType theCanvas = canvas;
     if (theCanvas == null)
       theCanvas = _theChart.getCanvas();
 
     final Graphics2D dest = (Graphics2D) theCanvas.getGraphicsTemp();
 
+    final Color backColor = theCanvas.getBackgroundColor();
+    
     // just drop out if we can't create any graphics though
     if (dest == null)
       return;
 
-    // switch to paint mode, so we can draw the background correctly
-    dest.setPaintMode();
+    removeOldHighLights(oldDTG, _thePrimary, theCanvas, dest, backColor);
 
-    // see if we are doing a fresh plot (in which case
-    // we will plot the non-watchables aswell)
-    if ((oldDTG == null) || (_oldWatchables.size() == 0))
-    {
-      final Vector<Plottable> nonWatches = getNonWatchables(super.getLayers());
-      final Enumeration<Plottable> iter = nonWatches.elements();
-      while (iter.hasMoreElements())
-      {
-        final Plottable p = iter.nextElement();
-        p.paint(new MWC.GUI.Canvas.CanvasAdaptor(theCanvas.getProjection(),
-            dest));
-      }
-    }
+    createNewHighlights(newDTG, _thePrimary, theCanvas, dest, backColor);
 
-    dest.setXORMode(theCanvas.getBackgroundColor());
+  }
 
-    final java.awt.Color backColor = theCanvas.getBackgroundColor();
-
-    // get the primary track
-    final WatchableList _thePrimary = _theTote.getPrimary();
-
-    // hide the old watchables
-    if (_oldWatchables.size() > 0)
-    {
-      _paintingOldies = true;
-
-      // check this isn't the first step
-      if (!_firstStep)
-      {
-        // find the watchable representing the current data point
-        final Watchable[] wList = _thePrimary.getNearestTo(_lastDTG);
-
-        // is the primary an instance of layer (with it's own line thickness?)
-        if (_thePrimary instanceof Layer)
-        {
-          final Layer ly = (Layer) _thePrimary;
-          dest.setStroke(new BasicStroke(ly.getLineThickness()));
-        }
-
-        // and carry on!
-
-        Watchable oldPrimary = null;
-        if (wList.length > 0)
-          oldPrimary = wList[0];
-        if (oldPrimary != null)
-        {
-          final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter thisHighlighter =
-              getCurrentPrimaryHighlighter();
-          if (thisHighlighter.getName().equals("Range Rings"))
-          {
-            thisHighlighter.highlightIt(theCanvas.getProjection(), dest,
-                _theTote.getPrimary(), oldPrimary, true);
-          }
-        }
-
-        // sort out the oldies
-        final Iterator<Watchable> oldies = _oldWatchables.keySet().iterator();
-        while (oldies.hasNext())
-        {
-          final Watchable thisOne = oldies.next();
-          // is this one instance of layer (with it's own line thickness?)
-          if (thisOne instanceof Layer)
-          {
-            final Layer ly = (Layer) thisOne;
-            if (dest instanceof Graphics2D)
-            {
-              final Graphics2D g2 = dest;
-              g2.setStroke(new BasicStroke(ly.getLineThickness()));
-            }
-          }
-
-          // ok, clear the nearest items
-          final WatchableList list = _oldWatchables.get(thisOne);
-          highlightIt(theCanvas.getProjection(), dest, list, thisOne, _lastDTG,
-              backColor);
-        }
-      }
-
-      // now remove all of the watchables from it
-      _oldWatchables.clear();
-    }
-
+  public void createNewHighlights(final HiResDate newDTG,
+      final WatchableList _thePrimary, CanvasType theCanvas,
+      final Graphics2D dest, final Color backColor)
+  {
     // determine the new items
     final Vector<Plottable> theWatchableLists = getWatchables(
         super.getLayers());
@@ -799,10 +729,91 @@ public class SnailPainter extends TotePainter
         }
       }
     }
-    else
+  }
+
+  public void removeOldHighLights(final HiResDate oldDTG,
+      final WatchableList _thePrimary, CanvasType theCanvas,
+      final Graphics2D dest, final Color backColor)
+  {
+    // switch to paint mode, so we can draw the background correctly
+    dest.setPaintMode();
+
+    // see if we are doing a fresh plot (in which case
+    // we will plot the non-watchables aswell)
+    if ((oldDTG == null) || (_oldWatchables.size() == 0))
     {
+      final Vector<Plottable> nonWatches = getNonWatchables(super.getLayers());
+      final Enumeration<Plottable> iter = nonWatches.elements();
+      while (iter.hasMoreElements())
+      {
+        final Plottable p = iter.nextElement();
+        p.paint(new MWC.GUI.Canvas.CanvasAdaptor(theCanvas.getProjection(),
+            dest));
+      }
     }
 
+    dest.setXORMode(theCanvas.getBackgroundColor());
+
+    // hide the old watchables
+    if (_oldWatchables.size() > 0)
+    {
+      _paintingOldies = true;
+
+      // check this isn't the first step
+      if (!_firstStep)
+      {
+        // find the watchable representing the current data point
+        final Watchable[] wList = _thePrimary.getNearestTo(_lastDTG);
+
+        // is the primary an instance of layer (with it's own line thickness?)
+        if (_thePrimary instanceof Layer)
+        {
+          final Layer ly = (Layer) _thePrimary;
+          dest.setStroke(new BasicStroke(ly.getLineThickness()));
+        }
+
+        // and carry on!
+
+        Watchable oldPrimary = null;
+        if (wList.length > 0)
+          oldPrimary = wList[0];
+        if (oldPrimary != null)
+        {
+          final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter thisHighlighter =
+              getCurrentPrimaryHighlighter();
+          if (thisHighlighter.getName().equals("Range Rings"))
+          {
+            thisHighlighter.highlightIt(theCanvas.getProjection(), dest,
+                _theTote.getPrimary(), oldPrimary, true);
+          }
+        }
+
+        // sort out the oldies
+        final Iterator<Watchable> oldies = _oldWatchables.keySet().iterator();
+        while (oldies.hasNext())
+        {
+          final Watchable thisOne = oldies.next();
+          // is this one instance of layer (with it's own line thickness?)
+          if (thisOne instanceof Layer)
+          {
+            final Layer ly = (Layer) thisOne;
+            if (dest instanceof Graphics2D)
+            {
+              final Graphics2D g2 = dest;
+              g2.setStroke(new BasicStroke(ly.getLineThickness()));
+            }
+          }
+
+          // ok, clear the nearest items
+          final WatchableList list = _oldWatchables.get(thisOne);
+          highlightIt(theCanvas.getProjection(), dest, list, thisOne, _lastDTG,
+              backColor);
+        }
+      }
+
+      // now remove all of the watchables from it
+      _oldWatchables.clear();
+    }
   }
 
   // ///////////////////////////////////////
