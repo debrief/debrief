@@ -97,12 +97,14 @@ import java.util.StringTokenizer;
 
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
+import MWC.Utilities.TextFormatting.FormatRNDateTime;
 import junit.framework.TestCase;
 
 /**
@@ -133,7 +135,14 @@ final class ImportSensor extends AbstractPlainLineImporter
           .getLabel());
       assertEquals("right color", new java.awt.Color(0, 100, 189), res
           .getColor());
+      assertEquals("right sensor", "Plain Cookie", res.getSensorName());
+      assertEquals("correct date", "1213", FormatRNDateTime.toShortString(res.getDTG().getDate().getTime()));
+      assertEquals("correct date", "121213.14", FormatRNDateTime.toString(res.getDTG().getDate().getTime()));
+      assertEquals("correct bearing", 90d, res.getBearing(), 0.01);
+      assertEquals("correct range", 40503.2, res.getRange().getValueIn(WorldDistance.YARDS), 0.001);
+      assertEquals("correct track", "T23", res.getTrackName());
       assertEquals("right name", "100112 121314", res.getName());
+      assertEquals("correct color", DebriefColors.BLUE, res.getColor());
     }
 
     public void testValuesNANBearing() throws ParseException
