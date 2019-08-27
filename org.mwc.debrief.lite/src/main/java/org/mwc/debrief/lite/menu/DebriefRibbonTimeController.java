@@ -774,6 +774,7 @@ public class DebriefRibbonTimeController
 
     stepControl.getLayers().addDataExtendedListener(updateTimeController);
     stepControl.getLayers().addDataModifiedListener(updateTimeController);
+    stepControl.getLayers().addDataReformattedListener(updateTimeController);
 
     control.addRibbonComponent(new JRibbonComponent(topButtonsPanel));
     control.addRibbonComponent(new JRibbonComponent(timeSlider));
