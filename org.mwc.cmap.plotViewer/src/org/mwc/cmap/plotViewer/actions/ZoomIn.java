@@ -20,6 +20,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.LineAttributes;
@@ -71,6 +73,22 @@ public class ZoomIn extends CoreDragAction
 			}
 			
 		};
+		
+    private PaintListener paintListener = new PaintListener()
+    {
+      public void paintControl(PaintEvent e)
+      {
+        GC gc = e.gc;
+        Color fc = new Color(Display.getDefault(), 155, 155, 155);
+        gc.setForeground(fc);
+        gc.setXORMode(true);
+        gc.setLineAttributes(new LineAttributes(2, SWT.CAP_FLAT, SWT.JOIN_MITER,
+            SWT.LINE_SOLID, null, 0, 10));
+        gc.drawRectangle(res);
+        fc.dispose();
+      }
+    };
+
 
 
 
@@ -94,14 +112,7 @@ public class ZoomIn extends CoreDragAction
 				Rectangle rect = new Rectangle(_startPoint.x, _startPoint.y, -deltaX,
 						-deltaY);
 				res = rect;
-				GC gc = new GC(_myCanvas.getCanvas());
-				Color fc = new Color(Display.getDefault(), 155, 155, 155);
-				gc.setForeground(fc);
-				gc.setXORMode(true);
-				gc.setLineAttributes(new LineAttributes(2, SWT.CAP_FLAT, SWT.JOIN_MITER, SWT.LINE_SOLID, null, 0, 10));
-				gc.drawRectangle(rect);
-				fc.dispose();
-				gc.dispose();
+				
 			}
 		}
 
@@ -110,6 +121,7 @@ public class ZoomIn extends CoreDragAction
 		{
 			run();
 			_myCanvas.getCanvas().removeKeyListener(listener);
+			_myCanvas.getCanvas().removePaintListener(paintListener);
 			_myCanvas.getCanvas().redraw();
 			Display.getCurrent().update();
 			_myChart = null;
@@ -124,6 +136,7 @@ public class ZoomIn extends CoreDragAction
 			_myCanvas = canvas;
 			_myChart = theChart;
 			_myCanvas.getCanvas().addKeyListener(listener);
+			_myCanvas.getCanvas().addPaintListener(paintListener);
 			dragResult = true;
 		}
 
