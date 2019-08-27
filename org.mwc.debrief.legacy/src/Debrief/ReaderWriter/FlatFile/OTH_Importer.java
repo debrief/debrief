@@ -351,45 +351,7 @@ public class OTH_Importer
               "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/200T/2K/",
               _logger));
     }
-
-    // public void testParseDate() throws ParseException
-    // {
-    // // 112313Z1/AUG
-    //
-    //// DateFormat df = new GMTDateFormat("ddHHmm");
-    //// assertEquals("correct date", "Sun Jan 11 23:13:00 GMT 1970", df.format(df.parse(
-    //// "112313")));
-    ////
-    //// DateFormat df2 = new GMTDateFormat("ddHHmm'Z'");
-    //// assertEquals("correct date", "Sun Jan 11 23:13:00 GMT 1970", df2.parse(
-    //// "112313Z").toString());
-    ////
-    //// DateFormat df3 = new GMTDateFormat("ddHHmm'Z'MMM");
-    //// assertEquals("correct date", "Tue Aug 11 23:13:00 GMT 1970", df3.parse(
-    //// "112313ZAUG").toString());
-    ////
-    //// DateFormat df4 = new GMTDateFormat("ddHHmm'Z'MMMyy");
-    //// assertEquals("correct date", "Sat Aug 11 23:13:00 BST 2018", df4.parse(
-    //// "112313ZAUG18").toString());
-    //
-    // assertEquals("correct date", "Fri Aug 11 21:13:00 BST 2017", dateFor(
-    // "POS/112113Z1/AUG/4612N34/02122W7//170T/11NM/13NM/000T/0K/", _logger,
-    // 17).getDate().toString());
-    //
-    // assertEquals("correct date", "Sun Aug 11 21:13:00 BST 2019", dateFor(
-    // "POS/112113Z1/AUG/4612N34/02122W7//170T/11NM/13NM/000T/0K/", _logger,
-    // YEAR_UNKNOWN).getDate().toString());
-    //
-    // assertEquals("correct date", "Sun Nov 11 21:13:00 GMT 2018", dateFor(
-    // "POS/112113Z1/NOV/4612N34/02122W7//170T/11NM/13NM/000T/0K/", _logger,
-    // YEAR_UNKNOWN).getDate().toString());
-    //
-    // assertEquals("correct date", null, dateFor(
-    // "POS/112113Z1/NaV/4612N34/02122W7//170T/11NM/13NM/000T/0K/", _logger,
-    // YEAR_UNKNOWN));
-    //
-    // }
-
+ 
     public void testGoodLoad() throws Exception
     {
       final OTH_Importer importer = new OTH_Importer();
