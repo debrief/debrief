@@ -136,10 +136,13 @@ final class ImportSensor extends AbstractPlainLineImporter
       assertEquals("right color", new java.awt.Color(0, 100, 189), res
           .getColor());
       assertEquals("right sensor", "Plain Cookie", res.getSensorName());
-      assertEquals("correct date", "1213", FormatRNDateTime.toShortString(res.getDTG().getDate().getTime()));
-      assertEquals("correct date", "121213.14", FormatRNDateTime.toString(res.getDTG().getDate().getTime()));
+      assertEquals("correct date", "1213", FormatRNDateTime.toShortString(res
+          .getDTG().getDate().getTime()));
+      assertEquals("correct date", "121213.14", FormatRNDateTime.toString(res
+          .getDTG().getDate().getTime()));
       assertEquals("correct bearing", 90d, res.getBearing(), 0.01);
-      assertEquals("correct range", 40503.2, res.getRange().getValueIn(WorldDistance.YARDS), 0.001);
+      assertEquals("correct range", 40503.2, res.getRange().getValueIn(
+          WorldDistance.YARDS), 0.001);
       assertEquals("correct track", "T23", res.getTrackName());
       assertEquals("right name", "100112 121314", res.getName());
       assertEquals("correct color", DebriefColors.BLUE, res.getColor());
@@ -242,7 +245,7 @@ final class ImportSensor extends AbstractPlainLineImporter
 
   /**
    * read in this string and return a Label
-   * 
+   *
    * @throws ParseException
    */
   @Override
