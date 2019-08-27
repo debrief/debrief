@@ -259,7 +259,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 
     /**
      * constructor for editable
-     * 
+     *
      * @param data
      *          the object we are editing
      */
@@ -270,7 +270,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 
     /**
      * the set of descriptions for this object
-     * 
+     *
      * @return the properties
      */
     @Override
@@ -297,33 +297,32 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 
   public static final String NORMAL_NAME = "Normal";
 
-  /**
-   * ok, get the watchables for this layer
-   *
-   * @param theData
-   *          the layer to extract the watchables for
-   * @return the set of watchable items in this layer
-   */
-  public static Vector<Plottable> getWatchables(final Layer thisLayer)
+  public static void extractFromNotWatchableList(final Layer thisLayer,
+      final Vector<Plottable> res)
   {
-    // get the output ready
-    final Vector<Plottable> res = new Vector<Plottable>(0, 1);
-
-    // is this layer visible?
-    if (thisLayer.getVisible())
+    final Enumeration<Editable> iter = thisLayer.elements();
+    while (iter.hasMoreElements())
     {
-      // is this a watchable?
-      if (thisLayer instanceof WatchableList)
+
+      final Editable thisE = iter.nextElement();
+      if (thisE instanceof Plottable)
       {
-        extractFromWatchableList(thisLayer, res);
-      }
-      else
-      {
-        extractFromNotWatchableList(thisLayer, res);
+        final Plottable p = (Plottable) thisE;
+        if (p instanceof WatchableList)
+        {
+          // look at the date date
+          final WatchableList wl = (WatchableList) p;
+          final HiResDate startDTG = wl.getStartDTG();
+
+          // is it a real date?
+          if (startDTG != null)
+          {
+            // yup, add to list
+            res.addElement(p);
+          }
+        }
       }
     }
-
-    return res;
   }
 
   public static void extractFromWatchableList(final Layer thisLayer,
@@ -387,32 +386,33 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
     }
   }
 
-  public static void extractFromNotWatchableList(final Layer thisLayer,
-      final Vector<Plottable> res)
+  /**
+   * ok, get the watchables for this layer
+   *
+   * @param theData
+   *          the layer to extract the watchables for
+   * @return the set of watchable items in this layer
+   */
+  public static Vector<Plottable> getWatchables(final Layer thisLayer)
   {
-    final Enumeration<Editable> iter = thisLayer.elements();
-    while (iter.hasMoreElements())
+    // get the output ready
+    final Vector<Plottable> res = new Vector<Plottable>(0, 1);
+
+    // is this layer visible?
+    if (thisLayer.getVisible())
     {
-
-      final Editable thisE = iter.nextElement();
-      if (thisE instanceof Plottable)
+      // is this a watchable?
+      if (thisLayer instanceof WatchableList)
       {
-        final Plottable p = (Plottable) thisE;
-        if (p instanceof WatchableList)
-        {
-          // look at the date date
-          final WatchableList wl = (WatchableList) p;
-          final HiResDate startDTG = wl.getStartDTG();
-
-          // is it a real date?
-          if (startDTG != null)
-          {
-            // yup, add to list
-            res.addElement(p);
-          }
-        }
+        extractFromWatchableList(thisLayer, res);
+      }
+      else
+      {
+        extractFromNotWatchableList(thisLayer, res);
       }
     }
+
+    return res;
   }
 
   /**
@@ -443,7 +443,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 
   /**
    * draw a highlight around this point
-   * 
+   *
    * @param proj
    *          screen projection we are using
    * @param dest
@@ -524,7 +524,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 
   /**
    * the thickness of the marker line
-   * 
+   *
    */
   private final float MARKER_THICKNESS = 2.0f;
 
@@ -535,7 +535,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
   // //////////////////////////////////////////////////////////
   /**
    * constructor, of course
-   * 
+   *
    * @param theChart
    *          the chart we will plot onto
    * @param theData
@@ -575,250 +575,11 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
     _inRepaint = false;
   }
 
-  /**
-   * return the current highlight colour
-   * 
-   * @return the colour
-   */
-  public final Color getColor()
-  {
-    return _myColor;
-  }
-
-  /**
-   * return the hightlighter currently in use
-   */
-  public final PlotHighlighter getCurrentPrimaryHighlighter()
-  {
-    return _theTote.getCurrentHighlighter();
-  }
-
-  /**
-   * return the highlighter for the primary track
-   */
-  private PlotHighlighter getCurrentSecondaryHighlighter()
-  {
-    return _theTote.getDefaultHighlighter();
-  }
-
-  /**
-   * return the area covered - not necessary
-   * 
-   * @return null, don't bother
-   */
-  @Override
-  public WorldArea getDataArea()
-  {
-    return null;
-  }
-
-  /**
-   * get the editable information for this painter
-   * 
-   * @return editable details
-   */
-  @Override
-  public Editable.EditorType getInfo()
-  {
-    if (_myEditor == null)
-      _myEditor = new TotePainterInfo(this);
-
-    return _myEditor;
-  }
-
-  protected Layers getLayers()
-  {
-    return _theData;
-  }
-
-  /**
-   * the name of this painter
-   * 
-   * @return our name
-   */
-  @Override
-  public String getName()
-  {
-    return "Time Highlighter";
-  }
-
-  /**
-   * return the current size of the highlight
-   * 
-   * @return current size, stored with it's constraints
-   */
-  public final BoundedInteger getSize()
-  {
-    return new BoundedInteger(_mySize, 1, 20);
-  }
-
-  /**
-   * whether we have an editor
-   * 
-   * @return yes, of course
-   */
-  @Override
-  public boolean hasEditor()
-  {
-    return true;
-  }
-
-  /**
-   * whether we are in a repaint event
-   * 
-   * @return whether we are currently repainting
-   */
-  public final boolean isRepainting()
-  {
-    return _inRepaint;
-  }
-
-  /**
-   * following a time step, this method draws a highlight around the "current" points on the primary
-   * and secondary tracks.
-   * 
-   * @param oldDTG
-   *          last time value
-   * @param newDTG
-   *          new time value
-   * @param canvas
-   *          plotting destination
-   */
-  @Override
-  public void newTime(final HiResDate oldDTG, final HiResDate newDTG,
-      final CanvasType canvas)
-  {
-    // check we have a valid new DTG
-    if (newDTG == null)
-      return;
-
-    // check that there is at least one track on the plot
-    final WatchableList primaryTrack = _theTote.getPrimary();
-    if (primaryTrack == null)
-      return;
-
-    // initialise flag to handle if the primary highlighter is symbols - if
-    // so, we
-    // use it for both tracks
-    boolean plottingSymbols = false;
-    if (this
-        .getCurrentPrimaryHighlighter() instanceof Debrief.GUI.Tote.Painters.Highlighters.SymbolHighlighter)
-    {
-      plottingSymbols = true;
-    }
-
-    // initialise the area covered
-    _areaCovered = null;
-
-    // first build up our list of points to highlight, then plot them,
-    // so that we are using our "borrowed" graphics object for the
-    // shortest time period
-    final HashMap<Watchable, WatchableList> newHighlights =
-        new HashMap<Watchable, WatchableList>();
-
-    // check that tracks have been defined
-    // see if we need to initialise the old vector
-    if (oldPrimary == null)
-    {
-      /**
-       * there is a chance that we already have an oldHighlights object - since there may be a
-       * primary track assigned, but that no points were visible, in which case we don't need to
-       * re-create the old highlights track
-       */
-      if (oldHighlights == null)
-        oldHighlights = new HashMap<Watchable, WatchableList>();
-
-      final Watchable[] list = primaryTrack.getNearestTo(oldDTG);
-      if (list.length > 0)
-        oldPrimary = list[0];
-    }
-
-    // find the point on the primary track which is nearest to the new point
-    Watchable[] list = primaryTrack.getNearestTo(newDTG);
-
-    Watchable newPrimary = null;
-    if (list.length > 0)
-      newPrimary = list[0];
-
-    listNewHighlights(newDTG, newHighlights);
-
-    // we now have our lists, lets plot them
-    // Get the graphics
-    CanvasType theCanvas = canvas;
-    if (theCanvas == null)
-      theCanvas = _theChart.getCanvas();
-
-    final Graphics dest = theCanvas.getGraphicsTemp();
-
-    // check we were able to get our destination plotting canvas
-    // and drop out if we haven't - it's no surprise if we
-    // can't get the temp graphics item --> it may be in a redraw
-    if (dest == null)
-    {
-      return;
-    }
-
-    // over-ride the line thickness to ensure it's only 1 pixel wide
-    if (dest instanceof Graphics2D)
-    {
-      final Graphics2D g2 = (Graphics2D) dest;
-      g2.setStroke(new BasicStroke(MARKER_THICKNESS));
-    }
-
-    final PlainProjection proj = _theChart.getCanvas().getProjection();
-
-    removeOldHighlights(primaryTrack, plottingSymbols, theCanvas, dest, proj);
-
-    createNewHighlights(newDTG, primaryTrack, plottingSymbols, newHighlights,
-        newPrimary, dest, proj);
-
-  }
-
-  public void removeOldHighlights(final WatchableList primaryTrack,
-      boolean plottingSymbols, CanvasType theCanvas, final Graphics dest,
-      final PlainProjection proj)
-  {
-    // set the XOR painting mode
-    if (_doXOR)
-    {
-      dest.setXORMode(theCanvas.getBackgroundColor());
-
-      // now step through our old highlights, hiding them
-      final Iterator<Watchable> oldies = oldHighlights.keySet().iterator();
-
-      // get rid of the old ones
-      while (oldies.hasNext())
-      {
-        final Watchable oldWt = oldies.next();
-
-        if (_firstStep)
-        {
-          // first step, nothing to delete!
-        }
-        else
-        {
-          // if the primary highlighter is symbols, we use them for both
-          // tracks
-          final WatchableList thisTrack = oldHighlights.get(oldWt);
-          final boolean isPrimary = thisTrack == primaryTrack;
-          if (plottingSymbols)
-          {
-            getCurrentPrimaryHighlighter().highlightIt(proj, dest, thisTrack,
-                oldWt, isPrimary);
-          }
-          else
-            getCurrentSecondaryHighlighter().highlightIt(proj, dest, thisTrack,
-                oldWt, isPrimary);
-        }
-
-      }
-    }
-  }
-
   public void createNewHighlights(final HiResDate newDTG,
-      final WatchableList primaryTrack, boolean plottingSymbols,
+      final WatchableList primaryTrack, final boolean plottingSymbols,
       final HashMap<Watchable, WatchableList> newHighlights,
-      Watchable newPrimary, final Graphics dest, final PlainProjection proj)
+      final Watchable newPrimary, final Graphics dest,
+      final PlainProjection proj)
   {
     // now step through our new highlights, showing them
     final Iterator<Watchable> newies = newHighlights.keySet().iterator();
@@ -888,6 +649,104 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
     }
   }
 
+  /**
+   * return the current highlight colour
+   *
+   * @return the colour
+   */
+  public final Color getColor()
+  {
+    return _myColor;
+  }
+
+  /**
+   * return the hightlighter currently in use
+   */
+  public final PlotHighlighter getCurrentPrimaryHighlighter()
+  {
+    return _theTote.getCurrentHighlighter();
+  }
+
+  /**
+   * return the highlighter for the primary track
+   */
+  private PlotHighlighter getCurrentSecondaryHighlighter()
+  {
+    return _theTote.getDefaultHighlighter();
+  }
+
+  /**
+   * return the area covered - not necessary
+   *
+   * @return null, don't bother
+   */
+  @Override
+  public WorldArea getDataArea()
+  {
+    return null;
+  }
+
+  /**
+   * get the editable information for this painter
+   *
+   * @return editable details
+   */
+  @Override
+  public Editable.EditorType getInfo()
+  {
+    if (_myEditor == null)
+      _myEditor = new TotePainterInfo(this);
+
+    return _myEditor;
+  }
+
+  protected Layers getLayers()
+  {
+    return _theData;
+  }
+
+  /**
+   * the name of this painter
+   *
+   * @return our name
+   */
+  @Override
+  public String getName()
+  {
+    return "Time Highlighter";
+  }
+
+  /**
+   * return the current size of the highlight
+   *
+   * @return current size, stored with it's constraints
+   */
+  public final BoundedInteger getSize()
+  {
+    return new BoundedInteger(_mySize, 1, 20);
+  }
+
+  /**
+   * whether we have an editor
+   *
+   * @return yes, of course
+   */
+  @Override
+  public boolean hasEditor()
+  {
+    return true;
+  }
+
+  /**
+   * whether we are in a repaint event
+   *
+   * @return whether we are currently repainting
+   */
+  public final boolean isRepainting()
+  {
+    return _inRepaint;
+  }
+
   public void listNewHighlights(final HiResDate newDTG,
       final HashMap<Watchable, WatchableList> newHighlights)
   {
@@ -924,8 +783,109 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
   }
 
   /**
+   * following a time step, this method draws a highlight around the "current" points on the primary
+   * and secondary tracks.
+   *
+   * @param oldDTG
+   *          last time value
+   * @param newDTG
+   *          new time value
+   * @param canvas
+   *          plotting destination
+   */
+  @Override
+  public void newTime(final HiResDate oldDTG, final HiResDate newDTG,
+      final CanvasType canvas)
+  {
+    // check we have a valid new DTG
+    if (newDTG == null)
+      return;
+
+    // check that there is at least one track on the plot
+    final WatchableList primaryTrack = _theTote.getPrimary();
+    if (primaryTrack == null)
+      return;
+
+    // initialise flag to handle if the primary highlighter is symbols - if
+    // so, we
+    // use it for both tracks
+    boolean plottingSymbols = false;
+    if (this
+        .getCurrentPrimaryHighlighter() instanceof Debrief.GUI.Tote.Painters.Highlighters.SymbolHighlighter)
+    {
+      plottingSymbols = true;
+    }
+
+    // initialise the area covered
+    _areaCovered = null;
+
+    // first build up our list of points to highlight, then plot them,
+    // so that we are using our "borrowed" graphics object for the
+    // shortest time period
+    final HashMap<Watchable, WatchableList> newHighlights =
+        new HashMap<Watchable, WatchableList>();
+
+    // check that tracks have been defined
+    // see if we need to initialise the old vector
+    if (oldPrimary == null)
+    {
+      /**
+       * there is a chance that we already have an oldHighlights object - since there may be a
+       * primary track assigned, but that no points were visible, in which case we don't need to
+       * re-create the old highlights track
+       */
+      if (oldHighlights == null)
+        oldHighlights = new HashMap<Watchable, WatchableList>();
+
+      final Watchable[] list = primaryTrack.getNearestTo(oldDTG);
+      if (list.length > 0)
+        oldPrimary = list[0];
+    }
+
+    // find the point on the primary track which is nearest to the new point
+    final Watchable[] list = primaryTrack.getNearestTo(newDTG);
+
+    Watchable newPrimary = null;
+    if (list.length > 0)
+      newPrimary = list[0];
+
+    listNewHighlights(newDTG, newHighlights);
+
+    // we now have our lists, lets plot them
+    // Get the graphics
+    CanvasType theCanvas = canvas;
+    if (theCanvas == null)
+      theCanvas = _theChart.getCanvas();
+
+    final Graphics dest = theCanvas.getGraphicsTemp();
+
+    // check we were able to get our destination plotting canvas
+    // and drop out if we haven't - it's no surprise if we
+    // can't get the temp graphics item --> it may be in a redraw
+    if (dest == null)
+    {
+      return;
+    }
+
+    // over-ride the line thickness to ensure it's only 1 pixel wide
+    if (dest instanceof Graphics2D)
+    {
+      final Graphics2D g2 = (Graphics2D) dest;
+      g2.setStroke(new BasicStroke(MARKER_THICKNESS));
+    }
+
+    final PlainProjection proj = _theChart.getCanvas().getProjection();
+
+    removeOldHighlights(primaryTrack, plottingSymbols, theCanvas, dest, proj);
+
+    createNewHighlights(newDTG, primaryTrack, plottingSymbols, newHighlights,
+        newPrimary, dest, proj);
+
+  }
+
+  /**
    * screen update
-   * 
+   *
    * @param dest
    *          canvas to paint to
    */
@@ -948,6 +908,47 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 
   }
 
+  public void removeOldHighlights(final WatchableList primaryTrack,
+      final boolean plottingSymbols, final CanvasType theCanvas,
+      final Graphics dest, final PlainProjection proj)
+  {
+    // set the XOR painting mode
+    if (_doXOR)
+    {
+      dest.setXORMode(theCanvas.getBackgroundColor());
+
+      // now step through our old highlights, hiding them
+      final Iterator<Watchable> oldies = oldHighlights.keySet().iterator();
+
+      // get rid of the old ones
+      while (oldies.hasNext())
+      {
+        final Watchable oldWt = oldies.next();
+
+        if (_firstStep)
+        {
+          // first step, nothing to delete!
+        }
+        else
+        {
+          // if the primary highlighter is symbols, we use them for both
+          // tracks
+          final WatchableList thisTrack = oldHighlights.get(oldWt);
+          final boolean isPrimary = thisTrack == primaryTrack;
+          if (plottingSymbols)
+          {
+            getCurrentPrimaryHighlighter().highlightIt(proj, dest, thisTrack,
+                oldWt, isPrimary);
+          }
+          else
+            getCurrentSecondaryHighlighter().highlightIt(proj, dest, thisTrack,
+                oldWt, isPrimary);
+        }
+
+      }
+    }
+  }
+
   @Override
   public void reset()
   {
@@ -957,7 +958,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 
   /**
    * ignore
-   * 
+   *
    * @param theProj
    *          ignore
    * @param newScreenArea
@@ -972,7 +973,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 
   /**
    * change the colour of the highlight
-   * 
+   *
    * @param val
    *          the new colour
    */
@@ -983,7 +984,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 
   /**
    * change the size of the highlight to plot
-   * 
+   *
    * @param val
    *          the new size (stored with its constraints)
    */
@@ -994,7 +995,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 
   /**
    * we have switched to a differed tote highlighter
-   * 
+   *
    * @param on
    *          whether we are being switched on or off
    */
@@ -1019,7 +1020,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 
   /**
    * our string representation
-   * 
+   *
    * @return the name
    */
   @Override
