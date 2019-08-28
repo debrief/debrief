@@ -514,6 +514,19 @@ public class RectangleShape extends PlainShape implements Editable,
 		// now check the ranges...
 		checkThisOne(bl, cursorLoc, currentNearest, this, parentLayer);
 		checkThisOne(tr, cursorLoc, currentNearest, this, parentLayer);
+
+    final WorldLocation center = new WorldLocation(_myArea.getCentre()) {
+      private static final long serialVersionUID = 1L;
+
+      public void addToMe(final WorldVector delta)
+      {
+        final WorldLocation newBL = _myArea.getBottomLeft().add(delta);
+        final WorldLocation newTR = _myArea.getTopRight().add(delta);
+        _myArea = new WorldArea(newBL, newTR);
+        _myArea.normalise();
+      }
+    };
+		checkThisOne(center, cursorLoc, currentNearest, this, parentLayer);
 	}
 
 }
