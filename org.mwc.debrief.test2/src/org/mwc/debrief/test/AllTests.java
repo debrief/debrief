@@ -91,6 +91,7 @@ import org.junit.runners.Suite;
     MWC.GUI.Shapes.EllipseShape.EllipseTest.class,
     MWC.GUI.Shapes.FurthestOnCircleShape.WheelTest.class,
     MWC.GUI.Shapes.LineShape.LineTest.class,
+    MWC.GUI.Shapes.PolygonShape.TestPolygonShape.class,
     MWC.GUI.Shapes.RangeRingShape.WheelTest.class,
     MWC.GUI.Shapes.RectangleShape.RectangleTest.class,
     MWC.GUI.Shapes.Symbols.Geog.ReferenceSym.ReferenceTest.class,
