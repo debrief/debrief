@@ -267,6 +267,19 @@ public class PolygonShape extends PlainShape implements Editable,
       assertEquals("returns valid range", realRange, poly.rangeFrom(origin));
     }
 
+    public void testRangeIdenticalPoints()
+    {
+      final Vector<PolygonNode> nodes = new Vector<PolygonNode>();
+      final PolygonShape poly = new PolygonShape(nodes);
+      final WorldLocation origin = new WorldLocation(4, 4, 0d);
+      final WorldLocation locA = new WorldLocation(3, 3, 0d);
+      final WorldLocation locB = new WorldLocation(3, 3, 0d);
+      final double realRange = origin.rangeFrom(locA);
+      poly.add(new PolygonNode("1", locA, poly));
+      poly.add(new PolygonNode("2", locB, poly));
+      assertEquals("returns valid range", realRange, poly.rangeFrom(origin));
+    }
+
     public void testRangeSinglePoint()
     {
       final Vector<PolygonNode> nodes = new Vector<PolygonNode>();
@@ -670,15 +683,18 @@ public class PolygonShape extends PlainShape implements Editable,
         }
         else
         {
-          final WorldDistance dist = point.rangeFrom(last, thisL);
+          if (!thisL.equals(last))
+          {
+            final WorldDistance dist = point.rangeFrom(last, thisL);
 
-          if (shortest == null)
-          {
-            shortest = dist;
-          }
-          else if (shortest.greaterThan(dist))
-          {
-            shortest = dist;
+            if (shortest == null)
+            {
+              shortest = dist;
+            }
+            else if (shortest.greaterThan(dist))
+            {
+              shortest = dist;
+            }
           }
         }
         last = thisL;
