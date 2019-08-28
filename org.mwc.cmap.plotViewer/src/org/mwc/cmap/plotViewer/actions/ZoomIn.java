@@ -78,6 +78,10 @@ public class ZoomIn extends CoreDragAction
       @SuppressWarnings("deprecation")
       public void paintControl(PaintEvent e)
       {
+        //check do we have to print rect 
+        if(res==null)
+          return;
+        
         final GC gc = e.gc;
         final Color fc = new Color(Display.getDefault(), 155, 155, 155);
         gc.setForeground(fc);
