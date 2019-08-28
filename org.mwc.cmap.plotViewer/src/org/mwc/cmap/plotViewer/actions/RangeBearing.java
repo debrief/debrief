@@ -98,12 +98,7 @@ final public class RangeBearing extends CoreDragAction
 			if (_startPoint != null)
 			{
 				
-				// Erase existing rectangle
-				if (_lastRect != null) {
-					//plotUpdate(gc);
-					_myCanvas.getCanvas().redraw();
-					Display.getCurrent().update();
-				}
+			
 
 				final int dx = pt.x - _startPoint.x;
 				final int dy = pt.y - _startPoint.y;
@@ -111,7 +106,10 @@ final public class RangeBearing extends CoreDragAction
 				// Draw selection rectangle
 				_lastRect = new Rectangle(_startPoint.x, _startPoint.y, dx, dy);
 
-				
+				if(_myCanvas!=null)
+  				_myCanvas.getCanvas().redraw();
+  	      _myCanvas.getCanvas().update();
+        
 
 			} else
 			{
@@ -122,28 +120,15 @@ final public class RangeBearing extends CoreDragAction
 
 		final public void doMouseUp(final Point point, final int keyState)
 		{
-			// Erase existing rectangle
-			if (_lastRect != null)
-			{
-				// hmm, we've finished plotting. see if the ctrl button is
-				// down
-				if ((keyState & SWT.CTRL) == 0)
-					try
-					{
-						//plotUpdate(gc);
-						_myCanvas.getCanvas().redraw();
-						Display.getCurrent().update();
-					} 
-					catch(final Exception e)
-					{	
-						e.printStackTrace();
-					}
-			}
+			
 			_myCanvas.getCanvas().removePaintListener(paintListener);
+			_myCanvas.getCanvas().redraw();
+      _myCanvas.getCanvas().update();
 			_startPoint = null;
 			_lastRect = null;
 			_myCanvas = null;
 			_startLocation = null;
+			
 		}
 
 		final public void mouseDown(final Point point, final SWTCanvas canvas,

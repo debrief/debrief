@@ -98,8 +98,8 @@ public class ZoomIn extends CoreDragAction
 		public void doMouseDrag(final Point pt, final int JITTER,
 				final Layers theLayers, final SWTCanvas theCanvas)
 		{
-			// redraw canvas backdrop
-			_myCanvas.getCanvas().redraw();
+			
+			
 			// just do a check that we have our start point (it may have been cleared
 			// at the end of the move operation)
 			if (_startPoint != null)
@@ -113,7 +113,10 @@ public class ZoomIn extends CoreDragAction
 						-deltaY);
 				res = rect;
 			}
-      Display.getCurrent().update();
+			if(_myCanvas!=null) {
+  			_myCanvas.getCanvas().redraw();
+  			_myCanvas.getCanvas().update();
+			}
 		}
 
 		@Override
@@ -122,11 +125,16 @@ public class ZoomIn extends CoreDragAction
 			run();
 			_myCanvas.getCanvas().removeKeyListener(listener);
 			_myCanvas.getCanvas().removePaintListener(paintListener);
-			_myCanvas.getCanvas().redraw();
-			Display.getCurrent().update();
+		
+			
+			res = null;
+      _myCanvas.getCanvas().redraw();
+      _myCanvas.getCanvas().update();
+      
 			_myChart = null;
 			_myCanvas = null;
 			_startPoint = null;
+			
 		}
 
 		@Override
