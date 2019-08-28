@@ -64,15 +64,28 @@ public class PolygonShape extends PlainShape implements Editable,
     {
       Vector<PolygonNode> nodes = new Vector<PolygonNode>();
       PolygonShape poly = new PolygonShape(nodes);
-      final WorldLocation locA = new WorldLocation(4,4,0d);
-      final WorldLocation locB = new WorldLocation(3,3,0d);
-      final double realRange = locA.rangeFrom(locB);
+      final WorldLocation origin = new WorldLocation(4,4,0d);
+      final WorldLocation locA = new WorldLocation(3,3,0d);
+      final double realRange = origin.rangeFrom(locA);
       poly.add(new PolygonNode("1", locA, poly));
       assertEquals("returns valid range", realRange, poly
-          .rangeFrom(locB));
+          .rangeFrom(origin));
+    }
+    
+    public void testRangeMultiPoints()
+    {
+      Vector<PolygonNode> nodes = new Vector<PolygonNode>();
+      PolygonShape poly = new PolygonShape(nodes);
+      final WorldLocation origin = new WorldLocation(4,4,0d);
+      final WorldLocation locA = new WorldLocation(3,3,0d);
+      final WorldLocation locB = new WorldLocation(5,5,0d);
+      final double realRange = 0d; // origin is mid-way between the points
+      poly.add(new PolygonNode("1", locA, poly));
+      poly.add(new PolygonNode("2", locB, poly));
+      assertEquals("returns valid range", realRange, poly
+          .rangeFrom(origin));
     }
   }
-  
   
   public class PolygonInfo extends Editable.EditorType
   {
@@ -641,11 +654,9 @@ public class PolygonShape extends PlainShape implements Editable,
   @Override
   public double rangeFrom(final WorldLocation point)
   {
-    double res = Plottable.INVALID_RANGE;
-
+    final double res;
     if (_nodes.size() > 0)
     {
-
       // loop through the legs
       final Enumeration<PolygonNode> points = _nodes.elements();
 
@@ -654,9 +665,10 @@ public class PolygonShape extends PlainShape implements Editable,
       while (points.hasMoreElements())
       {
         final WorldLocation thisL = points.nextElement().getLocation();
-        if(last == null)
+        if (last == null)
         {
-          final WorldDistance dist = new WorldDistance(point.rangeFrom(thisL), WorldDistance.DEGS);
+          final WorldDistance dist = new WorldDistance(point.rangeFrom(thisL),
+              WorldDistance.DEGS);
           shortest = dist;
         }
         else
@@ -676,7 +688,10 @@ public class PolygonShape extends PlainShape implements Editable,
       }
       res = shortest.getValueIn(WorldDistance.DEGS);
     }
-
+    else
+    {
+      res = Plottable.INVALID_RANGE;
+    }
     return res;
   }
 
