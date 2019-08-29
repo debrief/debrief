@@ -548,7 +548,6 @@ public class RightClickSupport
         try
         {
           _action.execute(thisSubject);
-          
         }
         catch (final IllegalArgumentException e)
         {
@@ -559,13 +558,26 @@ public class RightClickSupport
       }
 
       // and tell everybody
-      fireUpdate();
+      fireUpdate(_action.doFireExtended());
       return res;
     }
 
-    private void fireUpdate()
+    /**
+     * tell everyone we've updated
+     * 
+     * @param fireExtended
+     *          whether to fire extended (or just reformatted)
+     */
+    private void fireUpdate(final boolean fireExtended)
     {
-      _layers.fireExtended(null, _parentLayer);
+      if (fireExtended)
+      {
+        _layers.fireExtended(null, _parentLayer);
+      }
+      else
+      {
+        _layers.fireReformatted(_parentLayer);
+      }
     }
 
     @Override
@@ -589,7 +601,7 @@ public class RightClickSupport
       }
 
       // and tell everybody
-      fireUpdate();
+   //   fireUpdate();
 
       return res;
     }
@@ -614,7 +626,7 @@ public class RightClickSupport
         }
       }
       // and tell everybody
-      fireUpdate();
+      fireUpdate(_action.doFireExtended());
 
       return res;
     }
