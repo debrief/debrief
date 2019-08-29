@@ -676,7 +676,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     @Override
     public boolean doFireExtended()
     {
-      return false;
+      return true;
     }
 
   }
