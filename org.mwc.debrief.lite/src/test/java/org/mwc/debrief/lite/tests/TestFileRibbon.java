@@ -528,7 +528,7 @@ public class TestFileRibbon extends BaseTestCase
       }
     });
 
-    Thread.sleep(1000);
+    Thread.sleep(2000);
     assertTrue(ribbonFrame.getTitle().contains("sample.dpf"));
     //verify the file got opened
     //do save and close

@@ -16,7 +16,10 @@ package org.mwc.debrief.lite.tests;
 
 import java.awt.Component;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.gui.custom.JXCollapsiblePaneWithTitle;
@@ -69,9 +72,39 @@ public class TestLiteLaunch extends BaseTestCase
     assertNotNull(outlinePanel);
     assertTrue(outlinePanel.isVisible());
     assertTrue(outlinePanel.isEnabled());
+    doOutlinePanelAssertions(outlinePanel);
     JXCollapsiblePaneWithTitle graphPanel = (JXCollapsiblePaneWithTitle)TestUtils.getChildNamed(ribbonFrame, "Graph");
     assertTrue(graphPanel.isCollapsed());
     JXCollapsiblePaneWithTitle narrativesPanel = (JXCollapsiblePaneWithTitle)TestUtils.getChildNamed(ribbonFrame, "Narratives");
     assertTrue(narrativesPanel.isCollapsed());
   } 
+  public void doOutlinePanelAssertions(Component outlinePanel)
+  {
+    JButton button1 = (JButton)TestUtils.getChildNamed(outlinePanel, "Edit");
+    assertNotNull(button1);
+    assertTrue(button1.isEnabled());
+    JTree tree = (JTree)TestUtils.getChildNamed(outlinePanel, "Layer Tree");
+    assertEquals(tree.getModel().getChildCount(tree.getModel().getRoot()),2);
+    DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 1);
+    assertNotNull(node);
+    assertEquals("last item is not selected:",1,tree.getSelectionCount());
+    button1 = (JButton)TestUtils.getChildNamed(outlinePanel, "Cut");
+    assertNotNull(button1);
+    assertFalse(button1.isEnabled());
+    button1 = (JButton)TestUtils.getChildNamed(outlinePanel, "Copy");
+    assertNotNull(button1);
+    assertFalse(button1.isEnabled());
+    button1 = (JButton)TestUtils.getChildNamed(outlinePanel, "Paste");
+    assertNotNull(button1);
+    assertFalse(button1.isEnabled());
+    button1 = (JButton)TestUtils.getChildNamed(outlinePanel, "Add Layer");
+    assertNotNull(button1);
+    assertTrue(button1.isEnabled());
+    button1 = (JButton)TestUtils.getChildNamed(outlinePanel, "Delete");
+    assertNotNull(button1);
+    assertTrue(button1.isEnabled());
+    button1 = (JButton)TestUtils.getChildNamed(outlinePanel, "Update View");
+    assertNotNull(button1);
+    assertTrue(button1.isEnabled());
+  }
 }

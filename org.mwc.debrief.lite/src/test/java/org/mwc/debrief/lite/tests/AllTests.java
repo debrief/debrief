@@ -6,9 +6,10 @@ import org.junit.runners.Suite;
 import junit.framework.TestCase;
 
 @Suite.SuiteClasses({
-  TestFileRibbon.class,
   TestLiteLaunch.class,
-  TestMenus.class
+  TestMenus.class,
+  TestFileRibbon.class,
+  TestInsertRibbon.class
 })
 
 @RunWith(Suite.class)
