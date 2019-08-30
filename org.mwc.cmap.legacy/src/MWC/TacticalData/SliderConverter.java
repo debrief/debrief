@@ -13,7 +13,7 @@ public class SliderConverter
   private int range;
   private long origin;
   // have one second steps
-  private final int step = 1000;
+  private final long step = 1000;
 
   public int getCurrentAt(final long now)
   {
