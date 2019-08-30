@@ -322,12 +322,12 @@ public class OTH_Importer
 
     public void testGetLocation()
     {
-      assertEquals("got location", " 46Â°12'00.00\"N 021Â°22'00.00\"E ",
+      assertEquals("got location", " 46°12'00.00\"N 021°22'00.00\"E ",
           locationFrom(
               "POS/112313Z1/AUG/4612N34/02122E7//170T/11NM/13NM/000T/0K/",
               _logger).toString());
 
-      assertEquals("got location", " 22Â°11'00.00\"N 021Â°42'00.00\"W ",
+      assertEquals("got location", " 22°11'00.00\"N 021°42'00.00\"W ",
           locationFrom(
               "POS/120502Z0/DEC/2211N6/02142W9///170T/11NM/13NM/000T/0K/",
               _logger).toString());

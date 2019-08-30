@@ -402,7 +402,7 @@ public class ImportASWDataDocument
       
       WorldArea area = track.getBounds();
       System.out.println(area);
-      assertEquals("correct area", " Area TL: 00Â°10'40.00\"N 000Â°35'00.00\"W  BR: 00Â°01'00.00\"N 000Â°21'00.00\"W ",area.toString());
+      assertEquals("correct area", " Area TL: 00°10'40.00\"N 000°35'00.00\"W  BR: 00°01'00.00\"N 000°21'00.00\"W ",area.toString());
     }
 
     
@@ -461,7 +461,7 @@ public class ImportASWDataDocument
       
       WorldArea area = track.getBounds();
       System.out.println(area);
-      assertEquals("correct area", " Area TL: 00Â°10'45.00\"N 000Â°34'45.00\"W  BR: 00Â°01'00.00\"N 000Â°21'00.00\"W ",area.toString());
+      assertEquals("correct area", " Area TL: 00°10'45.00\"N 000°34'45.00\"W  BR: 00°01'00.00\"N 000°21'00.00\"W ",area.toString());
     }
     
     public void testParseDocument()
@@ -587,19 +587,19 @@ public class ImportASWDataDocument
       final String d7 = "04.02.01N/211.22.11W";
       final String d8 = "94.02.01N/211.22.11W";
 
-      assertEquals(" 12Â°23'34.00\"N 121Â°12'01.00\"E ", locationFor(d1, "")
+      assertEquals(" 12°23'34.00\"N 121°12'01.00\"E ", locationFor(d1, "")
           .toString());
-      assertEquals(" 13Â°14'15.00\"S 011Â°22'33.00\"W ", locationFor(d2, "")
+      assertEquals(" 13°14'15.00\"S 011°22'33.00\"W ", locationFor(d2, "")
           .toString());
-      assertEquals(" 12Â°30'00.00\"N 012Â°15'00.00\"W ", locationFor(d3, "")
+      assertEquals(" 12°30'00.00\"N 012°15'00.00\"W ", locationFor(d3, "")
           .toString());
-      assertEquals(" 22Â°33'44.00\"N 020Â°11'22.00\"W ", locationFor(d4, "")
+      assertEquals(" 22°33'44.00\"N 020°11'22.00\"W ", locationFor(d4, "")
           .toString());
-      assertEquals(" 04Â°02'01.00\"N 111Â°22'11.00\"W ", locationFor(d5, "")
+      assertEquals(" 04°02'01.00\"N 111°22'11.00\"W ", locationFor(d5, "")
           .toString());
-      assertEquals(" 04Â°02'01.00\"N 111Â°22'11.00\"W ", locationFor(d6, "")
+      assertEquals(" 04°02'01.00\"N 111°22'11.00\"W ", locationFor(d6, "")
           .toString());
-      assertEquals(" 22Â°33'00.00\"N 020Â°11'00.00\"W ", locationFor(
+      assertEquals(" 22°33'00.00\"N 020°11'00.00\"W ", locationFor(
           "22.33N-020.11W", "").toString());
 
       // and some mangled one
