@@ -512,7 +512,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 
 			final MWC.GenericData.Watchable[] list = primaryTrack
 					.getNearestTo(oldDTG);
-			if (list.length > 0)
+			if (list != null && list.length > 0)
 				oldPrimary = list[0];
 		}
 
@@ -521,7 +521,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 				.getNearestTo(newDTG);
 
 		Watchable newPrimary = null;
-		if (list.length > 0)
+		if (list != null && list.length > 0)
 			newPrimary = list[0];
 
 		// so, step through the participants
@@ -540,7 +540,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 					list = thisList.getNearestTo(newDTG);
 
 					Watchable wat = null;
-					if (list.length > 0)
+					if (list != null && list.length > 0)
 						wat = list[0];
 
 					if (wat != null) {
