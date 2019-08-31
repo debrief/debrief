@@ -54,5 +54,16 @@ public class SliderConverter
       final int newStep = test.getCurrentAt(roundedTime);
       assertEquals("Rounding slider converter", originalStep, newStep);
     }
+    
+    public void testOverflow()
+    {
+      final SliderConverter test = new SliderConverter();
+      test.init(0L, 1240427422390L);
+      
+      final int position = 20006218;
+      final long time = test.getTimeAt(position);
+      assertTrue("Slider Converter Overflow in getTimeAt calculation", time > 0);
+      
+    }
   }
 }
