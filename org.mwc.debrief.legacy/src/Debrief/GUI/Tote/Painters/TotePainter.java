@@ -500,7 +500,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 
 		// check that tracks have been defined
 		// see if we need to initialise the old vector
-		if (oldPrimary == null) {
+		if (oldPrimary == null && oldDTG != null) {
 			/**
 			 * there is a chance that we already have an oldHighlights object -
 			 * since there may be a primary track assigned, but that no points
