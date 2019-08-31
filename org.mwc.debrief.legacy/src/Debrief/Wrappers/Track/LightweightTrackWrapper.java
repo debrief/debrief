@@ -673,6 +673,11 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   @Override
   public Watchable[] getNearestTo(final HiResDate DTG)
   {
+    if (DTG == null || DTG.getDate() == null)
+    {
+      return new Watchable[]
+      {};
+    }
     final long dtg = DTG.getDate().getTime();
     FixWrapper nearest = null;
 
