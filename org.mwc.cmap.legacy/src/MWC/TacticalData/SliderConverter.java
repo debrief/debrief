@@ -10,8 +10,36 @@ import junit.framework.TestCase;
  */
 public class SliderConverter
 {
+  public static class SliderConverterTest extends TestCase
+  {
+    public void testConverter()
+    {
+      final SliderConverter test = new SliderConverter();
+      test.init(1240423198490L, 1240427422390L);
+
+      final int originalStep = 21;
+      final long originalTime = test.getTimeAt(originalStep);
+      final long roundedTime = originalTime / 1000L * 1000L;
+      final int newStep = test.getCurrentAt(roundedTime);
+      assertEquals("Rounding slider converter", originalStep, newStep);
+    }
+
+    public void testOverflow()
+    {
+      final SliderConverter test = new SliderConverter();
+      test.init(0L, 1240427422390L);
+
+      final int position = 20006218;
+      final long time = test.getTimeAt(position);
+      assertTrue("Slider Converter Overflow in getTimeAt calculation",
+          time > 0);
+
+    }
+  }
+
   private int range;
   private long origin;
+
   // have one second steps
   private final long step = 1000;
 
@@ -39,31 +67,5 @@ public class SliderConverter
   {
     origin = start;
     range = (int) ((end - start) / step);
-  }
-  
-  public static class SliderConverterTest extends TestCase
-  {
-    public void testConverter()
-    {
-      final SliderConverter test = new SliderConverter();
-      test.init(1240423198490L, 1240427422390L);
-
-      final int originalStep = 21;
-      final long originalTime = test.getTimeAt(originalStep);
-      final long roundedTime = originalTime / 1000L * 1000L;
-      final int newStep = test.getCurrentAt(roundedTime);
-      assertEquals("Rounding slider converter", originalStep, newStep);
-    }
-    
-    public void testOverflow()
-    {
-      final SliderConverter test = new SliderConverter();
-      test.init(0L, 1240427422390L);
-      
-      final int position = 20006218;
-      final long time = test.getTimeAt(position);
-      assertTrue("Slider Converter Overflow in getTimeAt calculation", time > 0);
-      
-    }
   }
 }
