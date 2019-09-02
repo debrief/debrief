@@ -981,7 +981,6 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
   public void reset()
   {
     // don't worry about it, ignore
-    System.out.print(""); // Hello Codacy
   }
 
   /**
@@ -996,7 +995,6 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
   public final void resizedEvent(final PlainProjection theProj,
       final Dimension newScreenArea)
   {
-    System.out.print(""); // Hello Codacy
   }
 
   /**
