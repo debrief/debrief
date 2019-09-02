@@ -500,7 +500,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 
 		// check that tracks have been defined
 		// see if we need to initialise the old vector
-		if (oldPrimary == null) {
+		if (oldPrimary == null && oldDTG != null) {
 			/**
 			 * there is a chance that we already have an oldHighlights object -
 			 * since there may be a primary track assigned, but that no points
@@ -520,9 +520,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 		MWC.GenericData.Watchable[] list = primaryTrack
 				.getNearestTo(newDTG);
 
-		Watchable newPrimary = null;
-		if (list.length > 0)
-			newPrimary = list[0];
+    final Watchable newPrimary = list.length > 0 ? list[0] : null;
 
 		// so, step through the participants
 		final Vector<WatchableList> theParticipants = _theTote.getSecondary();
