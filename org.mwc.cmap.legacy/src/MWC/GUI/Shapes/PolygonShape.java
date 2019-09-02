@@ -36,21 +36,14 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
+import junit.framework.TestCase;
 
 public class PolygonShape extends PlainShape implements Editable,
     HasDraggableComponents, Layer
 {
 
-  // ////////////////////////////////////////////////
-  // member variables
-  // ////////////////////////////////////////////////
-
-  // ////////////////////////////////////////////////////
-  // bean info for this class
-  // ///////////////////////////////////////////////////
   public class PolygonInfo extends Editable.EditorType
   {
-
     public PolygonInfo(final PolygonShape data, final String theName)
     {
       super(data, theName, "");
@@ -140,7 +133,7 @@ public class PolygonShape extends PlainShape implements Editable,
      */
     private static final long serialVersionUID = 1L;
 
-    private String _myName;
+    private final String _myName;
     private WorldLocation _myLocation;
     private transient EditorType _myEditor;
     private transient PolygonShape _myParent;
@@ -242,6 +235,61 @@ public class PolygonShape extends PlainShape implements Editable,
       return getName();
     }
 
+  }
+
+  public static class TestPolygonShape extends TestCase
+  {
+    public void testConstructor()
+    {
+      final Vector<PolygonNode> nodes = new Vector<PolygonNode>();
+      final PolygonShape poly = new PolygonShape(nodes);
+      nodes.add(new PolygonNode("1", new WorldLocation(2, 2, 0d), poly));
+    }
+
+    public void testRangeFromEmpty()
+    {
+      final Vector<PolygonNode> nodes = new Vector<PolygonNode>();
+      final PolygonShape poly = new PolygonShape(nodes);
+      assertEquals("returns duff range", Plottable.INVALID_RANGE, poly
+          .rangeFrom(new WorldLocation(3, 3, 3d)), 0.001);
+    }
+
+    public void testRangeMultiPoints()
+    {
+      final Vector<PolygonNode> nodes = new Vector<PolygonNode>();
+      final PolygonShape poly = new PolygonShape(nodes);
+      final WorldLocation origin = new WorldLocation(4, 4, 0d);
+      final WorldLocation locA = new WorldLocation(3, 3, 0d);
+      final WorldLocation locB = new WorldLocation(5, 5, 0d);
+      final double realRange = 0d; // origin is mid-way between the points
+      poly.add(new PolygonNode("1", locA, poly));
+      poly.add(new PolygonNode("2", locB, poly));
+      assertEquals("returns valid range", realRange, poly.rangeFrom(origin));
+    }
+
+    public void testRangeIdenticalPoints()
+    {
+      final Vector<PolygonNode> nodes = new Vector<PolygonNode>();
+      final PolygonShape poly = new PolygonShape(nodes);
+      final WorldLocation origin = new WorldLocation(4, 4, 0d);
+      final WorldLocation locA = new WorldLocation(3, 3, 0d);
+      final WorldLocation locB = new WorldLocation(3, 3, 0d);
+      final double realRange = origin.rangeFrom(locA);
+      poly.add(new PolygonNode("1", locA, poly));
+      poly.add(new PolygonNode("2", locB, poly));
+      assertEquals("returns valid range", realRange, poly.rangeFrom(origin));
+    }
+
+    public void testRangeSinglePoint()
+    {
+      final Vector<PolygonNode> nodes = new Vector<PolygonNode>();
+      final PolygonShape poly = new PolygonShape(nodes);
+      final WorldLocation origin = new WorldLocation(4, 4, 0d);
+      final WorldLocation locA = new WorldLocation(3, 3, 0d);
+      final double realRange = origin.rangeFrom(locA);
+      poly.add(new PolygonNode("1", locA, poly));
+      assertEquals("returns valid range", realRange, poly.rangeFrom(origin));
+    }
   }
 
   /**
@@ -561,21 +609,22 @@ public class PolygonShape extends PlainShape implements Editable,
         // convert to screen
         final Point thisP = dest.toScreen(next);
 
-        if(thisP != null)
-				{
-					// remember the coords
-					xP[counter] = thisP.x;
-					yP[counter] = thisP.y;
+        if (thisP != null)
+        {
+          // remember the coords
+          xP[counter] = thisP.x;
+          yP[counter] = thisP.y;
 
-					// move the counter
-					counter++;
+          // move the counter
+          counter++;
 
-					if (_showLabels) {
-						// and show this label
-						final int yPos = thisP.y + 5;
-						dest.drawText(node.getName(), thisP.x + 5, yPos);
-					}
-				}
+          if (_showLabels)
+          {
+            // and show this label
+            final int yPos = thisP.y + 5;
+            dest.drawText(node.getName(), thisP.x + 5, yPos);
+          }
+        }
       }
 
       // ok, now plot it
@@ -615,11 +664,9 @@ public class PolygonShape extends PlainShape implements Editable,
   @Override
   public double rangeFrom(final WorldLocation point)
   {
-    double res = -1;
-
+    final double res;
     if (_nodes.size() > 0)
     {
-
       // loop through the legs
       final Enumeration<PolygonNode> points = _nodes.elements();
 
@@ -628,24 +675,36 @@ public class PolygonShape extends PlainShape implements Editable,
       while (points.hasMoreElements())
       {
         final WorldLocation thisL = points.nextElement().getLocation();
-        if (last != null)
+        if (last == null)
         {
-          final WorldDistance dist = point.rangeFrom(last, thisL);
+          final WorldDistance dist = new WorldDistance(point.rangeFrom(thisL),
+              WorldDistance.DEGS);
+          shortest = dist;
+        }
+        else
+        {
+          if (!thisL.equals(last))
+          {
+            final WorldDistance dist = point.rangeFrom(last, thisL);
 
-          if (shortest == null)
-          {
-            shortest = dist;
-          }
-          else if (shortest.greaterThan(dist))
-          {
-            shortest = dist;
+            if (shortest == null)
+            {
+              shortest = dist;
+            }
+            else if (shortest.greaterThan(dist))
+            {
+              shortest = dist;
+            }
           }
         }
         last = thisL;
       }
       res = shortest.getValueIn(WorldDistance.DEGS);
     }
-
+    else
+    {
+      res = Plottable.INVALID_RANGE;
+    }
     return res;
   }
 

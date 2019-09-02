@@ -91,6 +91,7 @@ import org.junit.runners.Suite;
     MWC.GUI.Shapes.EllipseShape.EllipseTest.class,
     MWC.GUI.Shapes.FurthestOnCircleShape.WheelTest.class,
     MWC.GUI.Shapes.LineShape.LineTest.class,
+    MWC.GUI.Shapes.PolygonShape.TestPolygonShape.class,
     MWC.GUI.Shapes.RangeRingShape.WheelTest.class,
     MWC.GUI.Shapes.RectangleShape.RectangleTest.class,
     MWC.GUI.Shapes.Symbols.Geog.ReferenceSym.ReferenceTest.class,
@@ -148,6 +149,7 @@ import org.junit.runners.Suite;
     org.mwc.cmap.TimeController.recorders.CoordinateRecorder.CoordinateRecorderTest.class,
     org.mwc.debrief.core.ContextOperations.SmoothTrackJumps.TestMe.class,
     Debrief.ReaderWriter.BRT.BRTImporter.BRTImporterTest.class,
+    Debrief.ReaderWriter.FlatFile.OTH_Importer.OTH_ImporterTest.class,
     MWC.TacticalData.SliderConverter.SliderConverterTest.class
     })
 @RunWith(Suite.class)

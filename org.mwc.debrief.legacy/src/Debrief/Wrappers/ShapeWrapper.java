@@ -721,7 +721,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 					if (diff <= getThreshold())
 						res = new MWC.GenericData.Watchable[] { this };
 					else
-						res = new MWC.GenericData.Watchable[] {};
+						res = EMPTY_WATCHABLE_LIST;
 				}
 			}
 			else
