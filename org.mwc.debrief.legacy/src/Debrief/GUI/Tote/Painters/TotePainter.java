@@ -783,6 +783,135 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
   }
 
   /**
+   * following a time step, this method draws a highlight around the "current" points on the primary
+   * and secondary tracks.
+   * 
+   * @param oldDTG
+   *          last time value
+   * @param newDTG
+   *          new time value
+   * @param canvas
+   *          plotting destination
+   */
+  @Override
+  public void newTime(final HiResDate oldDTG, final HiResDate newDTG,
+      final CanvasType canvas)
+  {
+    // check we have a valid new DTG
+    if (newDTG == null)
+      return;
+
+    // check that there is at least one track on the plot
+    final WatchableList primaryTrack = _theTote.getPrimary();
+    if (primaryTrack == null)
+      return;
+
+    // initialise flag to handle if the primary highlighter is symbols - if
+    // so, we
+    // use it for both tracks
+    boolean plottingSymbols = false;
+    if (this
+        .getCurrentPrimaryHighlighter() instanceof Debrief.GUI.Tote.Painters.Highlighters.SymbolHighlighter)
+    {
+      plottingSymbols = true;
+    }
+
+    // initialise the area covered
+    _areaCovered = null;
+
+    // first build up our list of points to highlight, then plot them,
+    // so that we are using our "borrowed" graphics object for the
+    // shortest time period
+    final HashMap<Watchable, WatchableList> newHighlights =
+        new HashMap<Watchable, WatchableList>();
+
+    // check that tracks have been defined
+    // see if we need to initialise the old vector
+    if (oldPrimary == null && oldDTG != null)
+    {
+      /**
+       * there is a chance that we already have an oldHighlights object - since there may be a
+       * primary track assigned, but that no points were visible, in which case we don't need to
+       * re-create the old highlights track
+       */
+      if (oldHighlights == null)
+        oldHighlights = new HashMap<Watchable, WatchableList>();
+
+      final MWC.GenericData.Watchable[] list = primaryTrack.getNearestTo(
+          oldDTG);
+      if (list.length > 0)
+        oldPrimary = list[0];
+    }
+
+    // find the point on the primary track which is nearest to the new point
+    final MWC.GenericData.Watchable[] list = primaryTrack.getNearestTo(newDTG);
+
+    final Watchable newPrimary = list.length > 0 ? list[0] : null;
+
+    // so, step through the participants
+    final Vector<WatchableList> theParticipants = _theTote.getSecondary();
+
+    if (theParticipants != null)
+    {
+      // the watchables are used as keys in the hashtable, so
+      // just retrieve them and we can look through them
+      final Enumeration<WatchableList> iter = theParticipants.elements();
+      while (iter.hasMoreElements())
+      {
+        final Object oj = iter.nextElement();
+        if (oj instanceof WatchableList && !primaryTrack.equals(oj))
+        {
+          final WatchableList thisList = (WatchableList) oj;
+
+          // check if this watchable found is visible
+          final MWC.GenericData.Watchable[] theseMatches = thisList
+              .getNearestTo(newDTG);
+          final Watchable wat = theseMatches.length > 0 ? theseMatches[0]
+              : null;
+
+          if (wat != null)
+          {
+            if (wat.getVisible())
+            {
+              newHighlights.put(wat, thisList);
+            }
+          }
+        }
+      }
+    }
+
+    // we now have our lists, lets plot them
+    // Get the graphics
+    final CanvasType theCanvas = canvas != null ? canvas : _theChart
+        .getCanvas();
+
+    final Graphics dest = theCanvas.getGraphicsTemp();
+
+    // check we were able to get our destination plotting canvas
+    // and drop out if we haven't - it's no surprise if we
+    // can't get the temp graphics item --> it may be in a redraw
+    if (dest == null)
+    {
+      return;
+    }
+
+    // over-ride the line thickness to ensure it's only 1 pixel wide
+    if (dest instanceof Graphics2D)
+    {
+      final Graphics2D g2 = (Graphics2D) dest;
+      g2.setStroke(new BasicStroke(MARKER_THICKNESS));
+    }
+
+    final PlainProjection proj = _theChart.getCanvas().getProjection();
+
+    removeOldHighlights(primaryTrack, plottingSymbols, theCanvas, dest, proj);
+
+    createNewHighlights(newDTG, primaryTrack, plottingSymbols, newHighlights,
+        newPrimary, dest, proj);
+
+  }
+
+  /**
    * screen update
    *
    * @param dest
@@ -870,125 +999,6 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
     System.out.print(""); // Hello Codacy
   }
 
-	/**
-	 * following a time step, this method draws a highlight around the "current"
-	 * points on the primary and secondary tracks.
-	 * 
-	 * @param oldDTG
-	 *            last time value
-	 * @param newDTG
-	 *            new time value
-	 * @param canvas
-	 *            plotting destination
-	 */
-	public void newTime(final HiResDate oldDTG, final HiResDate newDTG,
-			final CanvasType canvas) {
-		// check we have a valid new DTG
-		if (newDTG == null)
-			return;
-
-		// check that there is at least one track on the plot
-		final WatchableList primaryTrack = _theTote.getPrimary();
-		if (primaryTrack == null)
-			return;
-
-		// initialise flag to handle if the primary highlighter is symbols - if
-		// so, we
-		// use it for both tracks
-		boolean plottingSymbols = false;
-		if (this.getCurrentPrimaryHighlighter() instanceof Debrief.GUI.Tote.Painters.Highlighters.SymbolHighlighter) {
-			plottingSymbols = true;
-		}
-
-		// initialise the area covered
-		_areaCovered = null;
-
-		// first build up our list of points to highlight, then plot them,
-		// so that we are using our "borrowed" graphics object for the
-		// shortest time period
-		final HashMap<Watchable, WatchableList> newHighlights = new HashMap<Watchable, WatchableList>();
-
-		// check that tracks have been defined
-		// see if we need to initialise the old vector
-		if (oldPrimary == null && oldDTG != null) {
-			/**
-			 * there is a chance that we already have an oldHighlights object -
-			 * since there may be a primary track assigned, but that no points
-			 * were visible, in which case we don't need to re-create the old
-			 * highlights track
-			 */
-			if (oldHighlights == null)
-				oldHighlights = new HashMap<Watchable, WatchableList>();
-
-			final MWC.GenericData.Watchable[] list = primaryTrack
-					.getNearestTo(oldDTG);
-			if (list.length > 0)
-				oldPrimary = list[0];
-		}
-
-		// find the point on the primary track which is nearest to the new point
-		final MWC.GenericData.Watchable[] list = primaryTrack
-				.getNearestTo(newDTG);
-
-    final Watchable newPrimary = list.length > 0 ? list[0] : null;
-
-		// so, step through the participants
-		final Vector<WatchableList> theParticipants = _theTote.getSecondary();
-
-		if (theParticipants != null) {
-			// the watchables are used as keys in the hashtable, so
-			// just retrieve them and we can look through them
-			final Enumeration<WatchableList> iter = theParticipants.elements();
-			while (iter.hasMoreElements()) {
-				final Object oj = iter.nextElement();
-				if (oj instanceof WatchableList && !primaryTrack.equals(oj)) {
-					final WatchableList thisList = (WatchableList) oj;
-					
-          // check if this watchable found is visible
-          final MWC.GenericData.Watchable[] theseMatches = thisList
-              .getNearestTo(newDTG);
-          final Watchable wat = theseMatches.length > 0 ? theseMatches[0]
-              : null;
-
-          if (wat != null)
-          {
-            if (wat.getVisible())
-            {
-              newHighlights.put(wat, thisList);
-            }
-          }
-				}
-			}
-		}
-
-    // we now have our lists, lets plot them
-    // Get the graphics
-    final CanvasType theCanvas = canvas != null ? canvas : _theChart
-        .getCanvas();
-
-		final Graphics dest = theCanvas.getGraphicsTemp();
-
-		// check we were able to get our destination plotting canvas
-		// and drop out if we haven't - it's no surprise if we
-		// can't get the temp graphics item --> it may be in a redraw
-		if (dest == null) {
-			return;
-		}
-
-		// over-ride the line thickness to ensure it's only 1 pixel wide
-		if (dest instanceof Graphics2D) {
-			final Graphics2D g2 = (Graphics2D) dest;
-			g2.setStroke(new BasicStroke(MARKER_THICKNESS));
-		}
-
-    final PlainProjection proj = _theChart.getCanvas().getProjection();
-
-    removeOldHighlights(primaryTrack, plottingSymbols, theCanvas, dest, proj);
-
-    createNewHighlights(newDTG, primaryTrack, plottingSymbols, newHighlights,
-        newPrimary, dest, proj);
-
-  }
   /**
    * change the colour of the highlight
    *
