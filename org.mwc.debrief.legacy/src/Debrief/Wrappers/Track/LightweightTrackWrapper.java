@@ -675,15 +675,14 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   {
     if (DTG == null || DTG.getDate() == null)
     {
-      return new Watchable[]
-      {};
+      return EMPTY_WATCHABLE_LIST;
     }
     final long dtg = DTG.getDate().getTime();
     FixWrapper nearest = null;
 
     if (_thePositions.isEmpty())
     {
-      return null;
+      return EMPTY_WATCHABLE_LIST;
     }
 
     final FixWrapper myFirst = (FixWrapper) _thePositions.first();
