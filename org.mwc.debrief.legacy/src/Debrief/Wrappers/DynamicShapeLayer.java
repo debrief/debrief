@@ -255,7 +255,7 @@ public class DynamicShapeLayer extends BaseLayer implements DynamicPlottable,
 	public Watchable[] getNearestTo(HiResDate DTG)
 	{
 
-		Watchable[] res = new Watchable[] {};
+		Watchable[] res = EMPTY_WATCHABLE_LIST;
 
     // just check it's worth testing
     if (!isEmpty())
