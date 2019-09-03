@@ -43,7 +43,7 @@ public class SnailPainter2 extends TotePainter
 
   /**
    * utility class, to help determine a semi-transparent color shade that fades with time
-   * 
+   *
    * @author ian
    *
    */
@@ -241,7 +241,7 @@ public class SnailPainter2 extends TotePainter
     {
       // set the highlight colour
       dest.setColor(Color.white);
-      //_theTote.getStepper()
+      // _theTote.getStepper()
 
       // see if our plotters can plot this type of watchable
       final Enumeration<drawHighLight2> iter = _myHighlightPlotters.elements();
@@ -344,7 +344,7 @@ public class SnailPainter2 extends TotePainter
     final WatchableList _thePrimary = _theTote.getPrimary();
 
     // determine the new items
-    final Vector<Plottable> theWatchableLists = SnailPainter.getWatchables(
+    final Vector<Plottable> theWatchableLists = getWatchables(
         super.getLayers());
 
     // sort out the line width of the primary
