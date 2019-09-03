@@ -849,17 +849,17 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
     final Watchable newPrimary = list.length > 0 ? list[0] : null;
 
     // so, step through the participants
-    final Vector<WatchableList> theParticipants = _theTote.getSecondary();
+    final Vector<Plottable> theParticipants = getWatchables(getLayers());
 
     if (theParticipants != null)
     {
       // the watchables are used as keys in the hashtable, so
       // just retrieve them and we can look through them
-      final Enumeration<WatchableList> iter = theParticipants.elements();
+      final Enumeration<Plottable> iter = theParticipants.elements();
       while (iter.hasMoreElements())
       {
         final Object oj = iter.nextElement();
-        if (oj instanceof WatchableList && !primaryTrack.equals(oj))
+        if (oj instanceof WatchableList)
         {
           final WatchableList thisList = (WatchableList) oj;
 
