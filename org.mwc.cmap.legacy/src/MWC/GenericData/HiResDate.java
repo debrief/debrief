@@ -36,7 +36,7 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
    */
   private static Boolean _hiResProcessing = null;
 
-  public static final HiResDate NULL_DATE = new HiResDate(-1);
+  public static final HiResDate NULL_DATE = new HiResDate(new Date());
 
   /**
    * when an application is capable of alternate time resolution processing modes, this method
