@@ -115,6 +115,7 @@ import org.junit.runners.Suite;
     MWC.GenericData.WorldVector.VectorTest.class,
     MWC.GenericData.TimePeriod.TestTimePeriod.class,
     MWC.TacticalData.NarrativeEntry.testMe.class,
+    MWC.TacticalData.SliderConverter.SliderConverterTest.class,
     MWC.Utilities.Errors.Testing.EmptyTestCase.class,
     MWC.Utilities.Errors.Testing.TestEmpty.class,
     MWC.Utilities.Errors.Testing.TestEmpty.InnerTestEmpty.class,
