@@ -114,7 +114,9 @@ public class BearingMeasurementContributionView extends
         if (oLegs != null && !oLegs.isEmpty())
         {
           final int num = oLegs.size();
-          final String message = "Ownship sliced into " + num + " legs.";
+          final String suffix = num == 1 ? "leg" : "legs";
+          final String message = "Ownship sliced into " + num + " " + suffix
+              + ".";
           SATC_Activator.showMessage("Slice ownship legs", message);
         }
       }
