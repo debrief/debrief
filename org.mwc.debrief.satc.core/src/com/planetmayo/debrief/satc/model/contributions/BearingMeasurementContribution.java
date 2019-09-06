@@ -45,6 +45,7 @@ import com.planetmayo.debrief.satc.util.ObjectUtils;
 import com.planetmayo.debrief.satc.util.calculator.GeodeticCalculator;
 import com.planetmayo.debrief.satc.zigdetector.LegOfData;
 import com.planetmayo.debrief.satc.zigdetector.OwnshipLegDetector;
+import com.planetmayo.debrief.satc.zigdetector.ZigDetectorTest;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -644,12 +645,14 @@ public class BearingMeasurementContribution extends
 			}
 
 			double zigScore = ZIG_DETECTOR_RMS;
-			zigScore = 0.5;
-//			detector.sliceThis(SATC_Activator.getDefault().getLog(), SATC_Activator.PLUGIN_ID, "some name", legStart, legEnd, legStorer,
-//					zigStorer, zigScore, 0.000001, thisLegTimes, thisLegBearings);
-      detector.sliceThis2(SATC_Activator.getDefault().getLog(), SATC_Activator.PLUGIN_ID,
-          "some name",  legStorer,
-           zigScore, 0.000001, thisLegTimes, thisLegBearings);
+			zigScore = 0.5d;
+			final double zigTolerance = 0.0001;
+		//	zigScore = 0.5;
+			detector.sliceThis(SATC_Activator.getDefault().getLog(), SATC_Activator.PLUGIN_ID, "some name", legStart, legEnd, legStorer,
+					zigStorer, zigScore, zigTolerance, thisLegTimes, thisLegBearings);
+//      detector.sliceThis2(SATC_Activator.getDefault().getLog(), SATC_Activator.PLUGIN_ID,
+//          "some name",  legStorer,
+//           zigScore, zigTolerance, thisLegTimes, thisLegBearings);
 			
 			lastLegTimes = thisLegTimes;
 			lastLegBearings = thisLegBearings;
