@@ -70,9 +70,9 @@ public class BearingMeasurementContributionView extends
         new PrefixSuffixLabelConverter(Object.class, "+/- ", " degs");
     labelConverter.setNestedUnitConverter(UnitConverter.ANGLE_DEG
         .getModelToUI());
-    final IObservableValue errorValue = BeansObservables.observeValue(
+    final IObservableValue<?> errorValue = BeansObservables.observeValue(
         contribution, BearingMeasurementContribution.BEARING_ERROR);
-    final IObservableValue observationNumberValue = BeansObservables
+    final IObservableValue<?> observationNumberValue = BeansObservables
         .observeValue(contribution,
             CoreMeasurementContribution.OBSERVATIONS_NUMBER);
     bindCommonHeaderWidgets(context, errorValue, observationNumberValue,
