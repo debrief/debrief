@@ -754,6 +754,9 @@ public class DebriefRibbonTimeController
           DebriefLiteApp.setDirty(true);
           DebriefLiteApp.setState(DebriefLiteApp.ACTIVE_STATE);
           timeSlider.setEnabled(true);
+          final TimePeriod period = stepControl.getLayers().getTimePeriod();
+          //_myOperations.setPeriod(period);
+          timeManager.setPeriod(this, period);
         }else
         {
           doSoftReset(timeSlider, timeManager);
