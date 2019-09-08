@@ -638,7 +638,7 @@ public class DebriefRibbonTimeController
         timeSlider.setEnabled(true);
 
         // and we can use the buttons
-        //DebriefLiteApp.setState(DebriefLiteApp.ACTIVE_STATE);
+        // DebriefLiteApp.setState(DebriefLiteApp.ACTIVE_STATE);
 
         converter.init(start, end);
         timeSlider.setMinimum(converter.getStart());
@@ -755,9 +755,10 @@ public class DebriefRibbonTimeController
           DebriefLiteApp.setState(DebriefLiteApp.ACTIVE_STATE);
           timeSlider.setEnabled(true);
           final TimePeriod period = stepControl.getLayers().getTimePeriod();
-          //_myOperations.setPeriod(period);
+          // _myOperations.setPeriod(period);
           timeManager.setPeriod(this, period);
-        }else
+        }
+        else
         {
           doSoftReset(timeSlider, timeManager);
         }
@@ -847,7 +848,7 @@ public class DebriefRibbonTimeController
     formatBinder.timeManager = timeManager;
 
     formatBinder.updateFilterDateFormat();
-    slider.addChangeListener(new SliderListener(operations, timeManager, 
+    slider.addChangeListener(new SliderListener(operations, timeManager,
         stepControl));
     slider.setEnabled(false);
     slider.setPreferredSize(new Dimension(250, 200));
