@@ -249,6 +249,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
 import MWC.GUI.hasPropertyListeners;
+import MWC.GUI.Properties.Swing.SwingDatePropertyEditor;
 import MWC.GUI.Properties.Swing.SwingPropertiesPanel;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Undo.UndoBuffer;
@@ -1155,6 +1156,13 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     // current one for this object - or if there isn't a current value
     if ((newVal == null) || (!newVal.equals(oldVal)))
     {
+      if (newVal == null && pe instanceof SwingDatePropertyEditor)
+      {
+        JOptionPane.showMessageDialog(null, "Property " + pei.theDescriptor
+            .getDisplayName()
+            + " has an invalid value. It will be interpreted as \'Not set\"",
+            "Invalid property value", JOptionPane.ERROR_MESSAGE);
+      }
 
       // find out the type of the editor
       final Method write = pd.getWriteMethod();
