@@ -105,6 +105,7 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 public class SwingDatePropertyEditor extends
   MWC.GUI.Properties.DatePropertyEditor implements java.awt.event.FocusListener
 {
+
   /////////////////////////////////////////////////////////////
   // member variables
   ////////////////////////////////////////////////////////////
@@ -260,8 +261,14 @@ public class SwingDatePropertyEditor extends
    */
   protected void setMicroText(final long val)
   {
-    // output the number of microseconds
-    _theMicrosTxt.setText(DebriefFormatDateTime.formatMicros(new HiResDate(0, val)) + " micros");
+    if (val == -1)
+    {
+      //_theMicrosTxt.setText(NOT_SET_TEXT);
+    }else
+    {
+      // output the number of microseconds
+      _theMicrosTxt.setText(DebriefFormatDateTime.formatMicros(new HiResDate(0, val)) + " micros");
+    }
   }
 
   /////////////////////////////

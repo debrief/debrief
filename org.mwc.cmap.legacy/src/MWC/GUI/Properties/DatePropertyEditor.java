@@ -141,6 +141,7 @@ abstract public class DatePropertyEditor extends
 
   static protected final String NULL_DATE = "dd/MM/yy";
   static protected final String NULL_TIME = "HH:mm:ss";
+  static protected final String NOT_SET_TEXT = "Not Set";
 
   /**
    * date formats
@@ -259,6 +260,11 @@ abstract public class DatePropertyEditor extends
     {
       setDateText(NULL_DATE);
       setTimeText(NULL_TIME);
+    }
+    else if (_myVal.getTime()==-1)
+    {
+      setDateText(NOT_SET_TEXT);
+      setTimeText(NOT_SET_TEXT);
     }
     else
     {
