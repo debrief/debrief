@@ -1662,5 +1662,10 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
       textArea.setText(pe.getAsText());
       textArea.invalidate();
     }
+    if ( pe instanceof SwingDatePropertyEditor )
+    {
+      ((SwingDatePropertyEditor)pe).resetData();
+      c.invalidate();
+    }
   }
 }
