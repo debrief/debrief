@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package MWC.GUI.Properties.Swing;
 
@@ -97,13 +97,15 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import MWC.GUI.Dialogs.DialogFactory;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 public class SwingDatePropertyEditor extends
-  MWC.GUI.Properties.DatePropertyEditor implements java.awt.event.FocusListener
+    MWC.GUI.Properties.DatePropertyEditor implements
+    java.awt.event.FocusListener
 {
 
   /////////////////////////////////////////////////////////////
@@ -139,8 +141,52 @@ public class SwingDatePropertyEditor extends
   ////////////////////////////////////////////////////////////
 
   /**
+   * user wants to edit the microseconds. give him a popup
+   */
+  void editMicrosPressed()
+  {
+    // To change body of created methods use File | Settings | File Templates.
+    final Integer res = DialogFactory.getInteger("Edit microseconds",
+        "Enter microseconds", _theMicros);
+
+    // did user enter anything?
+    if (res != null)
+    {
+      // store the data
+      _theMicros = res.intValue();
+
+      // and update the screen
+      resetData();
+    }
+  }
+
+  /**
+   * Invoked when a component gains the keyboard focus.
+   */
+  @Override
+  public void focusGained(final FocusEvent e)
+  {
+    final java.awt.Component c = e.getComponent();
+    if (c instanceof JTextField)
+    {
+      final JTextField jt = (JTextField) c;
+      jt.setSelectionStart(0);
+      jt.setSelectionEnd(jt.getText().length());
+    }
+  }
+
+  /**
+   * Invoked when a component loses the keyboard focus.
+   */
+  @Override
+  public void focusLost(final FocusEvent e)
+  {
+  }
+
+  /**
    * build the editor
    */
+  @Override
   public java.awt.Component getCustomEditor()
   {
     _theHolder = new JPanel();
@@ -162,9 +208,9 @@ public class SwingDatePropertyEditor extends
     _theDate.setToolTipText("Format: " + NULL_DATE);
     _theTime = new JTextField();
     _theTime.setToolTipText("Format: " + NULL_TIME);
-    lPanel.add("Center", new JLabel("Date:", JLabel.RIGHT));
+    lPanel.add("Center", new JLabel("Date:", SwingConstants.RIGHT));
     lPanel.add("East", _theDate);
-    rPanel.add("Center", new JLabel("Time:", JLabel.RIGHT));
+    rPanel.add("Center", new JLabel("Time:", SwingConstants.RIGHT));
     rPanel.add("East", _theTime);
 
     _theHolder.add(lPanel);
@@ -181,6 +227,7 @@ public class SwingDatePropertyEditor extends
       final JButton editMicros = new JButton("Micros");
       editMicros.addActionListener(new ActionListener()
       {
+        @Override
         public void actionPerformed(final ActionEvent e)
         {
           editMicrosPressed();
@@ -198,27 +245,9 @@ public class SwingDatePropertyEditor extends
   }
 
   /**
-   * user wants to edit the microseconds.  give him a popup
-   */
-  void editMicrosPressed()
-  {
-    //To change body of created methods use File | Settings | File Templates.
-    final Integer res = DialogFactory.getInteger("Edit microseconds", "Enter microseconds",(int) _theMicros);
-
-    // did user enter anything?
-    if(res != null)
-    {
-      // store the data
-      _theMicros = res.intValue();
-
-      // and update the screen
-      resetData();
-    }
-  }
-
-  /**
    * get the date text as a string
    */
+  @Override
   protected String getDateText()
   {
     return _theDate.getText();
@@ -227,6 +256,7 @@ public class SwingDatePropertyEditor extends
   /**
    * get the date text as a string
    */
+  @Override
   protected String getTimeText()
   {
     return _theTime.getText();
@@ -235,6 +265,7 @@ public class SwingDatePropertyEditor extends
   /**
    * set the date text in string form
    */
+  @Override
   protected void setDateText(final String val)
   {
     if (_theHolder != null)
@@ -243,51 +274,32 @@ public class SwingDatePropertyEditor extends
     }
   }
 
-  /**
-   * set the time text in string form
-   */
-  protected void setTimeText(final String val)
-  {
-    if (_theHolder != null)
-    {
-      _theTime.setText(val);
-    }
-  }
+  /////////////////////////////
+  // focus listener support classes
+  /////////////////////////////
 
   /**
    * show the user how many microseconds there are
    *
    * @param val
    */
+  @Override
   protected void setMicroText(final long val)
   {
     // output the number of microseconds
-    _theMicrosTxt.setText(DebriefFormatDateTime.formatMicros(new HiResDate(0, val)) + " micros");
+    _theMicrosTxt.setText(DebriefFormatDateTime.formatMicros(new HiResDate(0,
+        val)) + " micros");
   }
 
-  /////////////////////////////
-  // focus listener support classes
-  /////////////////////////////
-
-
   /**
-   * Invoked when a component gains the keyboard focus.
+   * set the time text in string form
    */
-  public void focusGained(final FocusEvent e)
+  @Override
+  protected void setTimeText(final String val)
   {
-    final java.awt.Component c = e.getComponent();
-    if (c instanceof JTextField)
+    if (_theHolder != null)
     {
-      final JTextField jt = (JTextField) c;
-      jt.setSelectionStart(0);
-      jt.setSelectionEnd(jt.getText().length());
+      _theTime.setText(val);
     }
-  }
-
-  /**
-   * Invoked when a component loses the keyboard focus.
-   */
-  public void focusLost(final FocusEvent e)
-  {
   }
 }

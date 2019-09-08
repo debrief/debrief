@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package MWC.GUI.Properties;
 
@@ -108,9 +108,14 @@ import java.util.Date;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
-abstract public class DatePropertyEditor extends
-  PropertyEditorSupport
+abstract public class DatePropertyEditor extends PropertyEditorSupport
 {
+  static protected final String NULL_DATE = "dd/MM/yy";
+
+  static protected final String NULL_TIME = "HH:mm:ss";
+
+  static protected final String NOT_SET_TEXT = "Not Set";
+
   /////////////////////////////////////////////////////////////
   // member variables
   ////////////////////////////////////////////////////////////
@@ -128,27 +133,20 @@ abstract public class DatePropertyEditor extends
    * field to edit the date
    */
   protected TextField _theDate;
-
   /**
    * field to edit the time
    */
   protected TextField _theTime;
-
   /**
    * panel to hold everything
    */
   protected Panel _theHolder;
-
-  static protected final String NULL_DATE = "dd/MM/yy";
-  static protected final String NULL_TIME = "HH:mm:ss";
-  static protected final String NOT_SET_TEXT = "Not Set";
 
   /**
    * date formats
    */
   protected DateFormat _dateF = new GMTDateFormat(NULL_DATE);
   protected DateFormat _timeF = new GMTDateFormat(NULL_TIME);
-
 
   /////////////////////////////////////////////////////////////
   // constructor
@@ -159,63 +157,25 @@ abstract public class DatePropertyEditor extends
   ////////////////////////////////////////////////////////////
 
   /**
-   * indicate that we can't just be painted, we've got to be edited
-   */
-  public boolean isPaintable()
-  {
-    return false;
-  }
-
-  /**
    * build the editor
    */
+  @Override
   abstract public java.awt.Component getCustomEditor();
 
   /**
-   * store the new value
+   * get the date text as a string
    */
-  public synchronized void setValue(final Object p1)
-  {
-    // reset value
-    _myVal = null;
-
-    // try to catch if we are receiving a null (uninitialised) value
-    if (p1 != null)
-    {
-      // check it's a date
-      if (p1 instanceof HiResDate)
-      {
-        final HiResDate val = (HiResDate) p1;
-
-        // extract the date portion
-        _myVal = val.getDate();
-
-        // just check if the date contains a duff micros
-        if (val.getMicros() != -1000)
-        {
-          // and the microsecond portion
-          _theMicros = (int) (val.getMicros() % 1000000);
-        }
-
-        // @@ we're no longer checking whether the date has been set.
-        // check that the date value has been set
-        //        long timeVal = val.getDate().getTime();
-        //        if(timeVal != -1)
-      }
-    }
-  }
+  abstract protected String getDateText();
 
   /**
-   * return flag to say that we'd rather use our own (custom) editor
+   * get the date text as a string
    */
-  public boolean supportsCustomEditor()
-  {
-    return true;
-  }
+  abstract protected String getTimeText();
 
   /**
    * extract the values currently stored in the text boxes
    */
+  @Override
   public synchronized Object getValue()
   {
     HiResDate res = null;
@@ -251,8 +211,16 @@ abstract public class DatePropertyEditor extends
   }
 
   /**
-   * put the data into the text fields, if they have been
-   * created yet
+   * indicate that we can't just be painted, we've got to be edited
+   */
+  @Override
+  public boolean isPaintable()
+  {
+    return false;
+  }
+
+  /**
+   * put the data into the text fields, if they have been created yet
    */
   public synchronized void resetData()
   {
@@ -261,7 +229,7 @@ abstract public class DatePropertyEditor extends
       setDateText(NULL_DATE);
       setTimeText(NULL_TIME);
     }
-    else if (_myVal.getTime()==-1)
+    else if (_myVal.getTime() == -1)
     {
       setDateText(NOT_SET_TEXT);
       setTimeText(NOT_SET_TEXT);
@@ -278,6 +246,11 @@ abstract public class DatePropertyEditor extends
   }
 
   /**
+   * set the date text in string form
+   */
+  abstract protected void setDateText(String val);
+
+  /**
    * show the user how many microseconds there are
    *
    * @param val
@@ -285,23 +258,52 @@ abstract public class DatePropertyEditor extends
   abstract protected void setMicroText(long val);
 
   /**
-   * get the date text as a string
-   */
-  abstract protected String getDateText();
-
-  /**
-   * get the date text as a string
-   */
-  abstract protected String getTimeText();
-
-  /**
-   * set the date text in string form
-   */
-  abstract protected void setDateText(String val);
-
-  /**
    * set the time text in string form
    */
   abstract protected void setTimeText(String val);
+
+  /**
+   * store the new value
+   */
+  @Override
+  public synchronized void setValue(final Object p1)
+  {
+    // reset value
+    _myVal = null;
+
+    // try to catch if we are receiving a null (uninitialised) value
+    if (p1 != null)
+    {
+      // check it's a date
+      if (p1 instanceof HiResDate)
+      {
+        final HiResDate val = (HiResDate) p1;
+
+        // extract the date portion
+        _myVal = val.getDate();
+
+        // just check if the date contains a duff micros
+        if (val.getMicros() != -1000)
+        {
+          // and the microsecond portion
+          _theMicros = (int) (val.getMicros() % 1000000);
+        }
+
+        // @@ we're no longer checking whether the date has been set.
+        // check that the date value has been set
+        // long timeVal = val.getDate().getTime();
+        // if(timeVal != -1)
+      }
+    }
+  }
+
+  /**
+   * return flag to say that we'd rather use our own (custom) editor
+   */
+  @Override
+  public boolean supportsCustomEditor()
+  {
+    return true;
+  }
 
 }
