@@ -261,14 +261,8 @@ public class SwingDatePropertyEditor extends
    */
   protected void setMicroText(final long val)
   {
-    if (val == -1)
-    {
-      //_theMicrosTxt.setText(NOT_SET_TEXT);
-    }else
-    {
-      // output the number of microseconds
-      _theMicrosTxt.setText(DebriefFormatDateTime.formatMicros(new HiResDate(0, val)) + " micros");
-    }
+    // output the number of microseconds
+    _theMicrosTxt.setText(DebriefFormatDateTime.formatMicros(new HiResDate(0, val)) + " micros");
   }
 
   /////////////////////////////
