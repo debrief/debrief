@@ -657,9 +657,10 @@ public class SwingLayerManager extends SwingCustomEditor implements
     if (s != null && !s.isEmpty())
     {
       // check it's not the narratives layer
-      if(NarrativeEntry.NARRATIVE_LAYER.equalsIgnoreCase(s))
+      if (NarrativeEntry.NARRATIVE_LAYER.equalsIgnoreCase(s))
       {
-        SwingUtilities.invokeLater(new Runnable() {
+        SwingUtilities.invokeLater(new Runnable()
+        {
 
           @Override
           public void run()
@@ -669,7 +670,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
                 + "` is reserved for narratives.\nPlease choose another layer name",
                 "Add layer", JOptionPane.WARNING_MESSAGE);
           }
-          
+
         });
         ly = null;
       }
@@ -1112,6 +1113,21 @@ public class SwingLayerManager extends SwingCustomEditor implements
     return thisL;
   }
 
+  private void myUpdateInThread(final Layer changedLayer)
+  {
+    // in case only the narratives have changed refresh only those.
+    final Runnable runner;
+    runner = new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        updateThisLayer(changedLayer);
+      }
+    };
+    updateInThread(runner);
+  }
+
   public void resetTree()
   {
     _myData.clear();
@@ -1128,6 +1144,10 @@ public class SwingLayerManager extends SwingCustomEditor implements
   {
     _myTree.setCellRenderer(cellRenderer);
   }
+
+  // ///////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * this is where we receive the data we are plotting, effectively the constructor
@@ -1147,9 +1167,9 @@ public class SwingLayerManager extends SwingCustomEditor implements
     createAndInitializeTree();
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // ///////////////////////////////////////////////////////////////////////////
-  // ///////////////////////////////////////////////////////////////////////////
+  // ////////////////////////////////////////////////
+  //
+  // ////////////////////////////////////////////////
 
   /**
    * here's the data
@@ -1162,10 +1182,6 @@ public class SwingLayerManager extends SwingCustomEditor implements
   {
     _myParent = theParent;
   }
-
-  // ////////////////////////////////////////////////
-  //
-  // ////////////////////////////////////////////////
 
   public void showButtonPanel(final boolean show)
   {
@@ -1380,21 +1396,6 @@ public class SwingLayerManager extends SwingCustomEditor implements
     // trigger a repaint
     _myTree.invalidate();
 
-  }
-
-  private void myUpdateInThread(final Layer changedLayer)
-  {
-    // in case only the narratives have changed refresh only those.
-    final Runnable runner;
-    runner = new Runnable()
-    {
-      @Override
-      public void run()
-      {
-        updateThisLayer(changedLayer);
-      }
-    };
-    updateInThread(runner);
   }
 
   protected DefaultMutableTreeNode updateLayer(
