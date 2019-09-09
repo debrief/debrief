@@ -14,6 +14,8 @@
  */
 package MWC.GUI.Properties.Swing;
 
+import java.awt.Dimension;
+
 // Copyright MWC 1999, Debrief 3 Project
 // $RCSfile: SwingDatePropertyEditor.java,v $
 // @author $Author: Ian.Mayo $
@@ -132,6 +134,11 @@ public class SwingDatePropertyEditor extends
    */
   JPanel _theHolder;
 
+  /**
+   * Prefered size of the JTextFields
+   */
+  final Dimension jtextFieldDimension = new Dimension(60, 20);
+
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
@@ -205,8 +212,10 @@ public class SwingDatePropertyEditor extends
 
     _theHolder.setLayout(new java.awt.GridLayout(0, 2));
     _theDate = new JTextField();
+    _theDate.setPreferredSize(jtextFieldDimension);
     _theDate.setToolTipText("Format: " + NULL_DATE);
     _theTime = new JTextField();
+    _theTime.setPreferredSize(jtextFieldDimension);
     _theTime.setToolTipText("Format: " + NULL_TIME);
     lPanel.add("Center", new JLabel("Date:", SwingConstants.RIGHT));
     lPanel.add("East", _theDate);
