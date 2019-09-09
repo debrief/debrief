@@ -1455,7 +1455,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
           else
           {
             // reload just that node that was modified
-            ((DefaultTreeModel) _myTree.getModel()).reload(nodeL.getParent());
+            ((DefaultTreeModel) _myTree.getModel()).reload(nodeL);
 
             // ok, we've used this one
             children.remove(nodeL);
