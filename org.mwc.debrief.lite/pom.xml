@@ -7,7 +7,6 @@
     <artifactId>parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <groupId>org.mwc.debrief</groupId>
   <artifactId>org.mwc.debrief.lite</artifactId>
   <version>1.0.408</version>
   <packaging>eclipse-plugin</packaging>
@@ -17,12 +16,43 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <version>1.7</version>
+        <dependencies>
+        <dependency>
+                    <groupId>ant</groupId>
+                    <artifactId>ant-junit</artifactId>
+                    <version>1.6.5</version>
+                    <!--scope>test</scope -->
+                </dependency>
+                <dependency>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                    <version>4.8.2</version>
+                    <!--scope>test</scope -->
+                </dependency>
+                <dependency>
+                    <groupId>commons-net</groupId>
+                    <artifactId>commons-net</artifactId>
+                    <version>1.4.1</version>
+                </dependency>
+                </dependencies>
         <executions>
           <execution>
             <phase>compile</phase>
             <configuration>
                 <target>
                   <ant  dir="${basedir}" target="dist" antfile="build.xml" />
+                </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>testing</id>
+            <phase>test</phase>
+            <configuration>
+                <target>
+                  <ant  dir="${basedir}" target="runTests" antfile="build.xml" />
                 </target>
             </configuration>
             <goals>
