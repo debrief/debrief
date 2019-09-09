@@ -1158,9 +1158,9 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     {
       if (newVal == null && pe instanceof SwingDatePropertyEditor)
       {
-        JOptionPane.showMessageDialog(null, "Property " + pei.theDescriptor
-            .getDisplayName()
-            + " has an invalid value. It will be interpreted as \'Not set\"",
+        JOptionPane.showMessageDialog(null, pei.theDescriptor.getDisplayName()
+            + " has an invalid value. It will be interpreted as \'Not set\'. \n"
+            + " Use the following formats (Date - dd/mm/yy), (Time - hh:mm:ss).",
             "Invalid property value", JOptionPane.ERROR_MESSAGE);
       }
 
