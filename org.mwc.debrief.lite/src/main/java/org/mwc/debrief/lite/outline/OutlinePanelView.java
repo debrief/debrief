@@ -72,6 +72,7 @@ import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.menu.OutlineViewSelection;
 import org.mwc.debrief.lite.properties.PropertiesDialog;
 
@@ -88,11 +89,13 @@ import MWC.GUI.CanEnumerate;
 import MWC.GUI.Editable;
 import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
+import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 import MWC.GUI.PlottableSelection;
 import MWC.GUI.Plottables;
 import MWC.GUI.ToolParent;
 import MWC.GUI.LayerManager.Swing.SwingLayerManager;
+import MWC.GUI.Tools.PlainTool;
 import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
 import MWC.GUI.Undo.UndoBuffer;
 
@@ -104,54 +107,74 @@ public class OutlinePanelView extends SwingLayerManager implements
     ClipboardOwner, Helper
 {
 
-  final class AddLayerAction extends AbstractAction implements
-      MWC.GUI.Tools.Action
+  final class DoAddLayer extends PlainTool implements ActionListener
   {
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
     private Layer layerToAdd;
-
+    
+    DoAddLayer()
+    {
+      super(DebriefLiteApp.getDefault(),"Add Layer",null);
+    }
+    
     @Override
     public void actionPerformed(final ActionEvent e)
     {
       layerToAdd = addLayer();
-      if (layerToAdd != null)
+      super.execute();
+    }
+    
+    @Override
+    public MWC.GUI.Tools.Action getData()
+    {
+      return new AddLayerAction(layerToAdd);
+    }
+  
+    final class AddLayerAction  implements
+        MWC.GUI.Tools.Action
+    {
+      /**
+       *
+       */
+      private Layer _layer;
+  
+      public AddLayerAction(Layer layer)
       {
-        _undoBuffer.add(this);
+        _layer = layer;
+      }
+  
+      @Override
+      public void execute()
+      {
+        if (_layer != null)
+        {
+          _myData.addThisLayer(_layer);
+        }
+      }
+  
+      @Override
+      public boolean isRedoable()
+      {
+        return true;
+      }
+  
+      @Override
+      public boolean isUndoable()
+      {
+        return true;
+      }
+  
+      @Override
+      public void undo()
+      {
+        if (_layer != null)
+        {
+          _myData.removeThisLayer(_layer);
+        }
       }
     }
-
-    @Override
-    public void execute()
-    {
-      if (layerToAdd != null)
-      {
-        _myData.addThisLayer(layerToAdd);
-      }
-    }
-
-    @Override
-    public boolean isRedoable()
-    {
-      return true;
-    }
-
-    @Override
-    public boolean isUndoable()
-    {
-      return true;
-    }
-
-    @Override
-    public void undo()
-    {
-      if (layerToAdd != null)
-      {
-        _myData.removeThisLayer(layerToAdd);
-      }
-    }
+  }  
+  protected Layers getDataLayers() {
+    return getData();
   }
 
   private static class ButtonEnabler
@@ -184,25 +207,25 @@ public class OutlinePanelView extends SwingLayerManager implements
       return _title;
     }
   }
-
-  final class DeleteAction extends AbstractAction implements
-      MWC.GUI.Tools.Action, ClipboardOwner
+  
+  final class DoDelete extends PlainTool
   {
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
     private Plottable itemToDelete;
     private Layer parentItem;
     private Plottable[] data;
     private Transferable _oldData;
-    private final boolean _isCut;
-
-    DeleteAction(final boolean isCut)
+    private boolean _isCut;
+    
+    DoDelete()
     {
-      _isCut = isCut;
+      super(DebriefLiteApp.getDefault(),"Delete",null);
     }
-
+    
+    public final MWC.GUI.Tools.Action getData()
+    {
+        return new DeleteAction(false,itemToDelete,parentItem,data,_oldData);
+    }
+    
     @Override
     public void actionPerformed(final ActionEvent e)
     {
@@ -251,13 +274,30 @@ public class OutlinePanelView extends SwingLayerManager implements
                 parentItem = null;
                 itemToDelete = (Plottable) object;
               }
-              execute();
-              _undoBuffer.add(this);
+              super.execute();
+             // _undoBuffer.add(getData());
             }
           }
         }
       }
     }
+
+    final class DeleteAction  implements
+      MWC.GUI.Tools.Action,ClipboardOwner
+      {
+      private Plottable plottable;
+      private Layer parent;
+      private Plottable[] _data;
+      private Transferable _oldData;
+    DeleteAction(final boolean isCut,Plottable itemToDelete,Layer parentItem,Plottable[] data,Transferable oldData)
+    {
+      _isCut = isCut;
+      plottable=itemToDelete;
+      parent = parentItem;
+      _data = data;
+      _oldData = oldData;
+    }
+    
 
     @Override
     public void execute()
@@ -265,16 +305,16 @@ public class OutlinePanelView extends SwingLayerManager implements
       if (_isCut)
       {
         storeOld();
-        _clipboard.setContents(new OutlineViewSelection(data, true), this);
+        _clipboard.setContents(new OutlineViewSelection(_data, true), this);
       }
-      if (parentItem != null)
+      if (parent != null)
       {
-        parentItem.removeElement(itemToDelete);
-        _myData.fireModified(parentItem);
+        parent.removeElement(plottable);
+        _myData.fireModified(parent);
       }
       else
       {
-        getData().removeThisLayer((Layer) itemToDelete);
+        getDataLayers().removeThisLayer((Layer) plottable);
         _myData.fireExtended();
       }
 
@@ -313,16 +353,16 @@ public class OutlinePanelView extends SwingLayerManager implements
     @Override
     public void undo()
     {
-      if (parentItem != null)
+      if (parent != null)
       {
-        parentItem.add(itemToDelete);
-        _myData.fireExtended(itemToDelete, parentItem);
+        parent.add(plottable);
+        _myData.fireExtended(plottable, parent);
       }
       else
       {
-        if (itemToDelete instanceof Layer)
+        if (plottable instanceof Layer)
         {
-          _myData.addThisLayer((Layer) itemToDelete);
+          _myData.addThisLayer((Layer) plottable);
           _myData.fireExtended();
         }
       }
@@ -332,6 +372,7 @@ public class OutlinePanelView extends SwingLayerManager implements
       }
 
     }
+  }
   }
 
   private class OutlineCellEditor extends AbstractCellEditor implements
@@ -1184,13 +1225,13 @@ public class OutlinePanelView extends SwingLayerManager implements
             .getMenuShortcutKeyMask()), "edit");
     editButton.getActionMap().put("edit", editAction);
     editButton.addActionListener(editAction);
-    final MWC.GUI.Tools.Action addLayerAction = new AddLayerAction();
-    addLayerButton.addActionListener((ActionListener) addLayerAction);
-    final Action cutAction = new DeleteAction(true);
+    final ActionListener addLayerAction = new DoAddLayer();
+    addLayerButton.addActionListener(addLayerAction);
+    final ActionListener cutAction = new DoDelete();
     cutButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
         .getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit()
             .getMenuShortcutKeyMask()), "cut");
-    cutButton.getActionMap().put("cut", cutAction);
+    //cutButton.getActionMap().put("cut", cutAction);
     cutButton.addActionListener(cutAction);
     final Action copyAction = new AbstractAction()
     {
@@ -1217,7 +1258,7 @@ public class OutlinePanelView extends SwingLayerManager implements
             .getMenuShortcutKeyMask()), "copy");
     copyButton.getActionMap().put("copy", copyAction);
     copyButton.addActionListener(copyAction);
-    final Action deleteAction = new DeleteAction(false);
+    final ActionListener deleteAction = new DoDelete();
     copyButton.setEnabled(false);
     deleteButton.setEnabled(false);
     pasteButton.setEnabled(false);
@@ -1225,7 +1266,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     cutButton.setEnabled(false);
     deleteButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
         .getKeyStroke("DELETE"), "delete");
-    deleteButton.getActionMap().put("delete", deleteAction);
+    //deleteButton.getActionMap().put("delete", deleteAction);
     deleteButton.addActionListener(deleteAction);
     add(commandBar, BorderLayout.NORTH);
     setCellRenderer(new OutlineRenderer());
