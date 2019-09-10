@@ -33,6 +33,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -276,6 +277,7 @@ public class DebriefLiteApp implements FileDropListener
 
   public static DebriefLiteApp getInstance()
   {
+    System.out.println("using:"+_instance);
     return _instance;
   }
 
@@ -299,16 +301,25 @@ public class DebriefLiteApp implements FileDropListener
 
   public static void main(final String[] args)
   {
-    SwingUtilities.invokeLater(new Runnable()
+    launchApp();
+  }
+  
+  public static void launchApp() {
+    try
     {
-      @Override
-      public void run()
+      SwingUtilities.invokeAndWait(new Runnable()
       {
-        _instance = new DebriefLiteApp();
-
-      }
-    });
-
+        @Override
+        public void run()
+        {
+          _instance = new DebriefLiteApp();
+        }
+      });
+    }
+    catch (InvocationTargetException | InterruptedException e)
+    {
+      e.printStackTrace();
+    }
   }
 
   private static void notifyListenersStateChanged(final Object source,
@@ -403,6 +414,7 @@ public class DebriefLiteApp implements FileDropListener
   {
     try
     {
+      System.out.println("Using instance:"+_instance);
       _instance.handleImportRep(new File[]
       {file});
     }
@@ -688,7 +700,7 @@ public class DebriefLiteApp implements FileDropListener
   private final ToteSetter _normalSetter;
   private final ToteSetter _snailSetter;
 
-  public DebriefLiteApp()
+  private DebriefLiteApp()
   {
     // set the substance look and feel
     System.setProperty(SupportedApps.APP_NAME_SYSTEM_PROPERTY,
@@ -698,7 +710,10 @@ public class DebriefLiteApp implements FileDropListener
     System.setProperty("com.sun.media.jai.disableMediaLib", "true");
 
     JFrame.setDefaultLookAndFeelDecorated(true);
-    SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
+    if(SubstanceCortex.GlobalScope.getCurrentSkin()==null)
+    {
+      SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
+    }
     final DisplaySplash splashScreen = new DisplaySplash(5);
     final Thread t = new Thread(splashScreen);
     t.start();
@@ -886,7 +901,7 @@ public class DebriefLiteApp implements FileDropListener
     // lastly give us some backdrop data
     loadBackdropdata(_theLayers);
 
-    theFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+    theFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     theFrame.setVisible(true);
     theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
   }
@@ -973,6 +988,7 @@ public class DebriefLiteApp implements FileDropListener
   {
     final JPanel centerPanel = new JPanel();
     centerPanel.setLayout(new BorderLayout());
+    centerPanel.setName("Center Panel");
     mapPane.addComponentListener(new ComponentAdapter()
     {
       @Override
@@ -1091,6 +1107,16 @@ public class DebriefLiteApp implements FileDropListener
     dest.endDraw(gc);
   }
 
+  public static void disposeForTest()
+  {
+    System.out.println("Disposed:"+_instance);
+    _instance.theFrame.dispose();
+    currentFileName = null;
+    state = null;
+    collapsedState =false;
+    stateListeners.clear();
+    _instance = null;
+  }
   public void exit()
   {
     if (DebriefLiteApp.isDirty())
@@ -1156,7 +1182,7 @@ public class DebriefLiteApp implements FileDropListener
   {
     session.close();
     theFrame.dispose();
-    System.exit(0);
+    //System.exit(0);
   }
 
   @Override
@@ -1607,6 +1633,12 @@ public class DebriefLiteApp implements FileDropListener
       final HasEditables theLayer)
   {
     getLayerManager().updateData((Layer) theLayer, newItem);
+  }
+
+  public JRibbonFrame getApplicationFrame()
+  {
+    return _instance.theFrame;
+    
   }
 
 }
