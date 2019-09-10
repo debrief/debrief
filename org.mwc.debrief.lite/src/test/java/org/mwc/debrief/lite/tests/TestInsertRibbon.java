@@ -380,7 +380,7 @@ public class TestInsertRibbon extends BaseTestCase
 
     assertTrue(outlinePanel.isVisible());
     assertTrue(outlinePanel.isEnabled());
-    JTree tree = (JTree)TestUtils.getChildNamed(outlinePanel, "Layer Tree");
+    final JTree tree = (JTree)TestUtils.getChildNamed(outlinePanel, "Layer Tree");
     assertEquals(tree.getModel().getChildCount(tree.getModel().getRoot()),2);
     DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 0);
     DefaultMutableTreeNode arcNode = (DefaultMutableTreeNode)node.getFirstChild();
@@ -401,7 +401,7 @@ public class TestInsertRibbon extends BaseTestCase
       }
     });
     Thread.sleep(2000);
-    JButton editButton = (JButton)TestUtils.getChildNamed(outlinePanel, "Edit");
+    final JButton editButton = (JButton)TestUtils.getChildNamed(outlinePanel, "Edit");
     assertNotNull(editButton);
     assertTrue(editButton.isEnabled());
     SwingUtilities.invokeLater(new Runnable()

@@ -384,7 +384,7 @@ public class TestFileRibbon extends BaseTestCase
     assertNotNull(outlinePanel);
     assertTrue(outlinePanel.isVisible());
     assertTrue(outlinePanel.isEnabled());
-    JTree tree = (JTree)TestUtils.getChildNamed(outlinePanel, "Layer Tree");
+    final JTree tree = (JTree)TestUtils.getChildNamed(outlinePanel, "Layer Tree");
     assertEquals(tree.getModel().getChildCount(tree.getModel().getRoot()),3);
     DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getModel().getChild(tree.getModel().getRoot(), 2);
     assertNotNull(node);
@@ -425,7 +425,7 @@ public class TestFileRibbon extends BaseTestCase
     assertEquals("invalid childcount for :"+node,node.getFirstChild().getChildCount(),9);
     System.out.println("done opening file");
     JBandControlPanel panel = (JBandControlPanel)TestUtils.getRibbonBand(1, 0).getComponent(0);
-    JCommandButton closeButton = (JCommandButton)panel.getComponent(3);
+    final JCommandButton closeButton = (JCommandButton)panel.getComponent(3);
     SwingUtilities.invokeLater(new Runnable()
     {
       
@@ -478,7 +478,7 @@ public class TestFileRibbon extends BaseTestCase
   public void testOpenDpfFile()throws InterruptedException,InvocationTargetException
   {
     JBandControlPanel liteBand = (JBandControlPanel)TestUtils.getRibbonBand(1,0).getComponent(0);
-    JCommandButton openButton = (JCommandButton)liteBand.getComponent(1);
+    final JCommandButton openButton = (JCommandButton)liteBand.getComponent(1);
     SwingUtilities.invokeLater(new Runnable()
     {
       
@@ -532,7 +532,7 @@ public class TestFileRibbon extends BaseTestCase
     assertTrue(ribbonFrame.getTitle().contains("sample.dpf"));
     //verify the file got opened
     //do save and close
-    JCommandButton saveButton = TestUtils.getSaveButton();
+    final JCommandButton saveButton = TestUtils.getSaveButton();
     SwingUtilities.invokeAndWait(new Runnable()
     {
       
