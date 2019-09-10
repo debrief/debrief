@@ -65,6 +65,10 @@
 		</javac>
 		<!-- Copy necessary resources -->
 		<copy todir="${temp.folder}/debrief_lite.jar.bin" failonerror="true" overwrite="false">
+			<fileset dir="src/test/java">
+				<exclude name="**/*.java"/>
+				<exclude name="**/package.htm*"/>
+			</fileset>
 			<fileset dir="src/main/java">
 				<exclude name="**/*.java"/>
 				<exclude name="**/package.htm*"/>
@@ -79,6 +83,44 @@
 		<jar  manifest="${basedir}/conf/manifest.txt" destfile="${temp.folder}/debrief_lite.jar" basedir="${temp.folder}/debrief_lite.jar.bin">
 		</jar>
 		<delete dir="${temp.folder}/debrief_lite.jar.bin"/>
+	</target>
+	
+	<target name="unitTests" depends="init">
+		<mkdir dir="${temp.folder}/reports"/>
+		<property name="report.dir" value="${temp.folder}/reports"/>
+				<path id="debrief_lite.test.classpath">
+							<pathelement location="../org.mwc.debrief.legacy/cmap_legacy.jar"/>
+							<pathelement location="../org.mwc.debrief.legacy/debrief_legacy.jar"/>
+							<pathelement location="../org.mwc.cmap.geotools/cmap_geotools.jar"/>
+							<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"></fileset>
+							<fileset dir="../org.mwc.debrief.legacy/libs" includes="*.jar"></fileset>
+							<fileset dir="../org.mwc.cmap.jfreechart/libs" includes="*.jar"></fileset>
+							<fileset dir="../org.mwc.cmap.geotools/libs" includes="*.jar"></fileset>
+							<fileset dir="libs" includes="*.jar"></fileset>
+							<fileset file="${temp.folder}/debrief_lite.jar"/>
+						</path>
+				<junit dir="${basedir}"
+					printsummary="yes" haltonfailure="yes">
+					<classpath refid="debrief_lite.test.classpath" />
+					<classpath location="src/test/java" />
+					<classpath location="${env.ANT_HOME}/lib"> </classpath>
+					<formatter type="xml" />
+						<formatter type="plain" />
+					<batchtest fork="true" todir="${report.dir}">
+							<fileset dir="src/test/java">
+								<include name="**/*Test*.java" />
+								<exclude name="**/*Util*.java"/>
+								<exclude name="**/*TestCase*.java"/>
+								<exclude name="**/*AllTests.java"/>
+							</fileset>
+						
+						</batchtest>
+				</junit>
+	</target>
+	
+	<target name="runTests" depends="init,debrief_lite.jar" description="run the tests independently">
+		
+		<antcall target="unitTests"></antcall>
 	</target>
 
 
@@ -158,5 +200,8 @@
 		<ant antfile="build.xml" dir="../org.mwc.debrief.legacy" target="debrief_legacy.jar" inheritAll="false"/>
 		<ant antfile="build.xml" dir="../org.mwc.cmap.geotools" target="geotools_jar" inheritAll="false"/>
 		<antcall target="generate"/>
+	</target>
+	
+	<target name="all" depends="dist,unitTests">
 	</target>
 </project>

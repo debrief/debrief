@@ -673,12 +673,16 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   @Override
   public Watchable[] getNearestTo(final HiResDate DTG)
   {
+    if (DTG == null || DTG.getDate() == null)
+    {
+      return EMPTY_WATCHABLE_LIST;
+    }
     final long dtg = DTG.getDate().getTime();
     FixWrapper nearest = null;
 
     if (_thePositions.isEmpty())
     {
-      return null;
+      return EMPTY_WATCHABLE_LIST;
     }
 
     final FixWrapper myFirst = (FixWrapper) _thePositions.first();
