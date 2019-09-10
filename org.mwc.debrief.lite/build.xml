@@ -99,8 +99,8 @@
 							<fileset dir="libs" includes="*.jar"></fileset>
 							<fileset file="${temp.folder}/debrief_lite.jar"/>
 						</path>
-				<junit dir="${basedir}
-					" printsummary="yes" haltonfailure="no">
+				<junit dir="${basedir}"
+					printsummary="yes" haltonfailure="no">
 					<classpath refid="debrief_lite.test.classpath" />
 					<classpath location="src/test/java" />
 					<classpath location="${env.ANT_HOME}/lib"> </classpath>
@@ -108,7 +108,6 @@
 						<formatter type="plain" />
 					<batchtest fork="true" todir="${report.dir}">
 							<fileset dir="src/test/java">
-								
 								<include name="**/*Test*.java" />
 								<exclude name="**/*Util*.java"/>
 								<exclude name="**/*TestCase*.java"/>
