@@ -217,10 +217,6 @@ public class SwingLayerManager extends SwingCustomEditor implements
    */
   protected class ChangeVis implements MWC.GUI.Tools.Action
   {
-    // ////////////////////////////////////////////////
-    // member objects
-    // ////////////////////////////////////////////////
-
     /**
      * the thing we're operating on
      */
@@ -233,9 +229,6 @@ public class SwingLayerManager extends SwingCustomEditor implements
 
     private final Layer _parent;
 
-    // ////////////////////////////////////////////////
-    // constructor
-    // ////////////////////////////////////////////////
     public ChangeVis(final Plottable myPlottable, final boolean isVis,
         final Layer parentLayer)
     {
@@ -243,10 +236,6 @@ public class SwingLayerManager extends SwingCustomEditor implements
       _myPlottable = myPlottable;
       _parent = parentLayer;
     }
-
-    // ////////////////////////////////////////////////
-    // member methods
-    // ////////////////////////////////////////////////
 
     /**
      * this method calls the 'do' event in the parent tool, passing the necessary data to it
@@ -576,10 +565,6 @@ public class SwingLayerManager extends SwingCustomEditor implements
    */
   static private final String ROOT_OBJECT = new String("Data");
 
-  // ///////////////////////////////////////////////////////////
-  // constructor
-  // //////////////////////////////////////////////////////////
-
   /*
    * thread-safe way of updating UI
    *
@@ -614,9 +599,6 @@ public class SwingLayerManager extends SwingCustomEditor implements
     }
   }
 
-  // ///////////////////////////////////////////////////////////
-  // member variables
-  // //////////////////////////////////////////////////////////
   /**
    * the data we are plotting
    */
@@ -892,9 +874,6 @@ public class SwingLayerManager extends SwingCustomEditor implements
     }
   }
 
-  // ///////////////////////////////////////////////////////////
-  // member functions
-  // //////////////////////////////////////////////////////////
   /**
    * return the updated data object - not really used.
    */
@@ -1145,10 +1124,6 @@ public class SwingLayerManager extends SwingCustomEditor implements
     _myTree.setCellRenderer(cellRenderer);
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // ///////////////////////////////////////////////////////////////////////////
-  // ///////////////////////////////////////////////////////////////////////////
-
   /**
    * this is where we receive the data we are plotting, effectively the constructor
    */
@@ -1166,10 +1141,6 @@ public class SwingLayerManager extends SwingCustomEditor implements
 
     createAndInitializeTree();
   }
-
-  // ////////////////////////////////////////////////
-  //
-  // ////////////////////////////////////////////////
 
   /**
    * here's the data
