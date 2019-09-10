@@ -100,7 +100,7 @@
 							<fileset file="${temp.folder}/debrief_lite.jar"/>
 						</path>
 				<junit dir="${basedir}"
-					printsummary="yes" haltonfailure="no">
+					printsummary="yes" haltonfailure="yes">
 					<classpath refid="debrief_lite.test.classpath" />
 					<classpath location="src/test/java" />
 					<classpath location="${env.ANT_HOME}/lib"> </classpath>
