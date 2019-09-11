@@ -26,6 +26,8 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Status;
 import org.jfree.data.statistics.Regression;
+import org.mwc.debrief.track_shift.views.BaseStackedDotsView;
+import org.mwc.debrief.track_shift.zig_detector.Precision;
 import org.mwc.debrief.track_shift.zig_detector.target.ILegStorer;
 import org.mwc.debrief.track_shift.zig_detector.target.IZigStorer;
 import org.mwc.debrief.track_shift.zig_detector.target.ZigDetector;
@@ -34,6 +36,7 @@ import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.legs.LegType;
+import com.planetmayo.debrief.satc.model.manager.ISolversManager;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
@@ -59,8 +62,6 @@ import junit.framework.TestCase;
 public class BearingMeasurementContribution extends
 		CoreMeasurementContribution<BearingMeasurementContribution.BMeasurement>
 {
-	private static final double ZIG_DETECTOR_RMS = 0.6;
-
 	private static final long serialVersionUID = 1L;
 
 	public static final String BEARING_ERROR = "bearingError";
@@ -529,7 +530,7 @@ public class BearingMeasurementContribution extends
 			}
 		}
 	}
-
+	
 	public void runMDA(final IContributions contributions)
 	{
 		// ok, we've got to find the ownship data, somehow :-(
@@ -643,9 +644,21 @@ public class BearingMeasurementContribution extends
 				}
 			}
 
-			double zigScore = ZIG_DETECTOR_RMS;
-			zigScore = 10d;
 			final double zigTolerance = 0.000001;
+			
+      ISolversManager solversManager = SATC_Activator.getDefault().getService(
+          ISolversManager.class, false);
+      final Precision precision;
+      if(solversManager != null)
+      {
+         precision = solversManager.getActiveSolver().getPrecision();
+      }
+      else
+      {
+        precision = Precision.MEDIUM;
+      }
+      final double zigScore = BaseStackedDotsView.getPrecision(precision);
+			
 		//	zigScore = 0.5;
 //			detector.sliceThis(SATC_Activator.getDefault().getLog(), SATC_Activator.PLUGIN_ID, "some name", legStart, legEnd, legStorer,
 //					zigStorer, zigScore, zigTolerance, thisLegTimes, thisLegBearings);
