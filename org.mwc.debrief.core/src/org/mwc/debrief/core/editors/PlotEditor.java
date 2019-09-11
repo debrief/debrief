@@ -1959,9 +1959,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     // to start off with a dirty plot
     startIgnoringDirtyCalls();
 
-    DebriefPlugin.logError(IStatus.INFO, "File loading complete received",
-        null);
-
     // and update the time management bits
     final TimePeriod timePeriod = getPeriodFor(_myLayers);
 
