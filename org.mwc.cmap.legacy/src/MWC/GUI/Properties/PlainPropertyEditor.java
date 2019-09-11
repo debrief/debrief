@@ -252,6 +252,7 @@ import MWC.GUI.hasPropertyListeners;
 import MWC.GUI.Properties.Swing.SwingPropertiesPanel;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Undo.UndoBuffer;
+import MWC.GenericData.HiResDate;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
@@ -1155,7 +1156,8 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     // current one for this object - or if there isn't a current value
     if ((newVal == null) || (!newVal.equals(oldVal)))
     {
-      if (newVal == null && pe instanceof DatePropertyEditor)
+      if (newVal == null && HiResDate.class.equals(pei.theDescriptor
+          .getPropertyType()))
       {
         JOptionPane.showMessageDialog(_propsPanel, pei.theDescriptor
             .getDisplayName()
