@@ -687,7 +687,7 @@ public class ZigDetector
       final List<Double> bearingList = new ArrayList<Double>();
       bearingList.addAll(Arrays.asList(bearings));
 
-      final TPeriod minRate = findLowestRateIn(timeList, bearingList, 300000L);
+      final TPeriod minRate = findLowestRateIn(timeList, bearingList, 300000L, 0);
       System.out.println("flattest:" + minRate.toString(timeList));
       assertEquals("correct start", 202, minRate.start);
       assertEquals("correct end", 209, minRate.end);
@@ -1293,7 +1293,7 @@ public class ZigDetector
    * @return
    */
   private static TPeriod findLowestRateIn(final List<Long> legTimes,
-      final List<Double> legBearings, final long periodSecs)
+      final List<Double> legBearings, final long periodSecs, final int offsetIndex)
   {
     // check the period is long enough
     final long dataPeriod = legTimes.get(legTimes.size() - 1) - legTimes.get(0);
@@ -1372,11 +1372,11 @@ public class ZigDetector
         if (ctr > 1)
         {
           // ok, store the score
-          final TPeriod thisP = new TPeriod(i, lastProcessed);
+          final TPeriod thisP = new TPeriod(offsetIndex + i, offsetIndex + lastProcessed);
           final double meanRate = runningSum / ctr;
           final double rootMeanRate = meanRate;
-          double startT = legTimes.get(thisP.start);
-          double endT = legTimes.get(thisP.end);
+          double startT = legTimes.get(i);
+          double endT = legTimes.get(lastProcessed);
 
           // we may end up finishing slightly before the required period.
           // let's stay relaxed about it
@@ -2209,7 +2209,7 @@ public class ZigDetector
       final List<Long> legTimes = slicedTimes.get(thisSlice);
       final List<Double> legBearings = slicedBearings.get(thisSlice);
 
-      // sort out the beraings
+      // sort out the bearings
       final List<Double> legBearings1 = prepareBearings(legBearings);
 
       // give the times a zero offset
@@ -2239,6 +2239,8 @@ public class ZigDetector
 
         log("====");
         log("Analysing:" + outerPeriod.toString(fullTimes));
+        
+        final int indexOffset = outerPeriod.start;
 
         // slice the data
         final List<Long> thisTimes = zeroTimes.subList(outerPeriod.start,
@@ -2248,7 +2250,7 @@ public class ZigDetector
 
         final long minPeriod = 1000 * 60 * 7;
         // ok, find the period with the lowest bearing rate
-        TPeriod thisLeg = findLowestRateIn(thisTimes, thisBearings, minPeriod);
+        TPeriod thisLeg = findLowestRateIn(thisTimes, thisBearings, minPeriod, indexOffset);
 
         // check we can find a flat section
         if (thisLeg == null)
