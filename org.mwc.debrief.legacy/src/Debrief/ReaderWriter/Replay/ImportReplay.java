@@ -1874,14 +1874,14 @@ public class ImportReplay extends PlainImporterBase
 
     // do we have a sensor capable of handling this contact?
     final String sensorName = sw.getSensorName();
-    String trackName = sw.getTrackName();
+    final String trackName = sw.getTrackName();
     Object val = getLayerFor(trackName);
 
     // if we failed to get the trackname, try shortening it -
     // it may have been mangled by BabelFish
     if (val == null)
     {
-      val = getLayerFor(trackName = trackName.substring(6));
+      val = getLayerFor(trackName.substring(6));
     }
 
     // did we get anything?
@@ -1889,8 +1889,8 @@ public class ImportReplay extends PlainImporterBase
     if (val == null || !(val instanceof TrackWrapper))
     {
       MWC.Utilities.Errors.Trace.trace(
-          "Attemp of adding sensor data to a lightweight track. "
-              + "Sensor data ignored: " + sensorName);
+          "Dynamic shapes can only be added to top level tracks. "
+              + "Dynamic data ignored: " + sensorName);
       return res;
     }
 
