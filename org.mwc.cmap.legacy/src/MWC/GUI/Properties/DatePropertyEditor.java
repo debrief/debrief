@@ -141,7 +141,6 @@ abstract public class DatePropertyEditor extends
 
   static protected final String NULL_DATE = "dd/MM/yy";
   static protected final String NULL_TIME = "HH:mm:ss";
-  static protected final String NOT_SET_TEXT = "Not Set";
 
   /**
    * date formats
@@ -228,8 +227,7 @@ abstract public class DatePropertyEditor extends
 
     try
     {
-      if ( dateVal.equalsIgnoreCase(NOT_SET_TEXT) ||
-           timeVal.equalsIgnoreCase(NOT_SET_TEXT))
+      if ( dateVal.isEmpty() || dateVal.equals(NULL_DATE))
       {
         theTime = -1000;
       }else
