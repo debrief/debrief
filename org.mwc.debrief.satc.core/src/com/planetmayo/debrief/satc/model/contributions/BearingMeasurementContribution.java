@@ -45,7 +45,6 @@ import com.planetmayo.debrief.satc.util.ObjectUtils;
 import com.planetmayo.debrief.satc.util.calculator.GeodeticCalculator;
 import com.planetmayo.debrief.satc.zigdetector.LegOfData;
 import com.planetmayo.debrief.satc.zigdetector.OwnshipLegDetector;
-import com.planetmayo.debrief.satc.zigdetector.ZigDetectorTest;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -541,7 +540,7 @@ public class BearingMeasurementContribution extends
 
 		// decide if we are going to split at ownship and target zigs, or just
 		// target zigs
-		final boolean justTargetZigs = true;
+		final boolean justTargetZigs = false;
 
 		// ok, now ditch any straight leg contributions that we generated
 		Iterator<BaseContribution> ditchIter = contributions.iterator();
@@ -660,7 +659,10 @@ public class BearingMeasurementContribution extends
 		}
 
 		// ok, finalise the zig-detector, if we have one
-		zigStorer.finish();
+	//	if(zigConts != null)
+//		{
+	//	  zigStorer.finish();
+	//	}
 
 		// ok, slicing done!
 		if (_listeners != null)
@@ -965,8 +967,8 @@ public class BearingMeasurementContribution extends
 		{
 			String name = "Tgt-" + ctr++;
 			
-//			SATC_Activator.log(Status.INFO, " FOUND LEG FROM " + new Date(tStart)
-//					+ " - " + new Date(tEnd), null);
+			SATC_Activator.log(Status.INFO, " FOUND LEG FROM " + new Date(tStart)
+					+ " - " + new Date(tEnd), null);
 						
 			StraightLegForecastContribution slf = new CompositeStraightLegForecastContribution();
 			slf.setStartDate(new Date(tStart));
