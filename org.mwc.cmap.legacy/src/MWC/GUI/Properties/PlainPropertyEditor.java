@@ -249,11 +249,9 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
 import MWC.GUI.hasPropertyListeners;
-import MWC.GUI.Properties.Swing.SwingDatePropertyEditor;
 import MWC.GUI.Properties.Swing.SwingPropertiesPanel;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Undo.UndoBuffer;
-import MWC.GenericData.HiResDate;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
