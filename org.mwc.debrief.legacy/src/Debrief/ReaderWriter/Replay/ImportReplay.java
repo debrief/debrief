@@ -1833,6 +1833,8 @@ public class ImportReplay extends PlainImporterBase
     // is this indeed a sensor?
     if (val == null || !(val instanceof TrackWrapper))
     {
+      MWC.Utilities.Errors.Trace.trace("Attemp of adding sensor data to a lightweight track. "
+          + "Sensor data ignored: " + sensorName);
       return res;
     }
 
