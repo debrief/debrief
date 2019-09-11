@@ -1157,7 +1157,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     // current one for this object - or if there isn't a current value
     if ((newVal == null) || (!newVal.equals(oldVal)))
     {
-      if (newVal == null && newVal instanceof HiResDate)
+      if (newVal == null && pe instanceof DatePropertyEditor)
       {
         JOptionPane.showMessageDialog(_propsPanel, pei.theDescriptor
             .getDisplayName()
