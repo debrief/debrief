@@ -299,13 +299,11 @@ public class ZigDetector
 
     final static class DownHelper extends BaseHelper
     {
-      private int otherEnd = -1;
-      private final int _minIndex;
+      private  int otherEnd = -1;
 
-      public DownHelper(final TPeriod thisLeg, final int minIndex)
+      public DownHelper(final TPeriod thisLeg)
       {
         super(thisLeg, "Down");
-        _minIndex = minIndex;
       }
 
       @Override
@@ -335,7 +333,7 @@ public class ZigDetector
       @Override
       public boolean smallEnough()
       {
-        return _thisLeg.start > _minIndex;
+        return _thisLeg.start > 0;
       }
 
       @Override
@@ -689,7 +687,7 @@ public class ZigDetector
       final List<Double> bearingList = new ArrayList<Double>();
       bearingList.addAll(Arrays.asList(bearings));
 
-      final TPeriod minRate = findLowestRateIn(timeList, bearingList, 300000L, 0);
+      final TPeriod minRate = findLowestRateIn(timeList, bearingList, 300000L);
       System.out.println("flattest:" + minRate.toString(timeList));
       assertEquals("correct start", 202, minRate.start);
       assertEquals("correct end", 209, minRate.end);
@@ -1295,7 +1293,7 @@ public class ZigDetector
    * @return
    */
   private static TPeriod findLowestRateIn(final List<Long> legTimes,
-      final List<Double> legBearings, final long periodSecs, final int offsetIndex)
+      final List<Double> legBearings, final long periodSecs)
   {
     // check the period is long enough
     final long dataPeriod = legTimes.get(legTimes.size() - 1) - legTimes.get(0);
@@ -1374,11 +1372,11 @@ public class ZigDetector
         if (ctr > 1)
         {
           // ok, store the score
-          final TPeriod thisP = new TPeriod(offsetIndex + i, offsetIndex + lastProcessed);
+          final TPeriod thisP = new TPeriod(i, lastProcessed);
           final double meanRate = runningSum / ctr;
           final double rootMeanRate = meanRate;
-          double startT = legTimes.get(i);
-          double endT = legTimes.get(lastProcessed);
+          double startT = legTimes.get(thisP.start);
+          double endT = legTimes.get(thisP.end);
 
           // we may end up finishing slightly before the required period.
           // let's stay relaxed about it
@@ -1510,12 +1508,13 @@ public class ZigDetector
     {
       return null;
     }
-    
+
     // take safe copy of leg
     final TPeriod originalLeg = new TPeriod(thisLeg.start, thisLeg.end);
 
-    final Helpers.WalkHelper downHelper = new Helpers.DownHelper(thisLeg, thisLeg.start);
-    final Helpers.WalkHelper upHelper = new Helpers.UpHelper(thisLeg, thisLeg.end);
+    final Helpers.WalkHelper downHelper = new Helpers.DownHelper(thisLeg);
+    final Helpers.WalkHelper upHelper = new Helpers.UpHelper(thisLeg, outerTimes
+        .size());
 
     // remember the value at hte other end
     downHelper.rememberOtherStart();
@@ -1525,11 +1524,6 @@ public class ZigDetector
 
     while (upHelper.isGrowing() || downHelper.isGrowing())
     {
-      if (thisLeg.end == 49)
-      {
-        System.out.println(thisLeg.end);
-      }
-      
       if (upHelper.isGrowing() && upHelper.smallEnough())
       {
         // ok - work it, girl
@@ -1692,7 +1686,8 @@ public class ZigDetector
   {
 
     // represent the new slice in overall values
-    final TPeriod relative = new TPeriod(newLeg.start, newLeg.end);
+    final TPeriod relative = new TPeriod(outerPeriod.start + newLeg.start,
+        outerPeriod.start + newLeg.end);
 
     // remove this period
     sliceQueue.remove(outerPeriod);
@@ -2209,13 +2204,13 @@ public class ZigDetector
 
     // ok, now loop through them
     final int len = slicedTimes.size();
-    for (int sliceIndex = 0; sliceIndex < len; sliceIndex++)
+    for (int thisSlice = 0; thisSlice < len; thisSlice++)
     {
-      final List<Long> legTimes = slicedTimes.get(sliceIndex);
-      final List<Double> legBearings = slicedBearings.get(sliceIndex);
+      final List<Long> legTimes = slicedTimes.get(thisSlice);
+      final List<Double> legBearings = slicedBearings.get(thisSlice);
 
-      // sort out the bearings
-      final List<Double> continuousBearings = prepareBearings(legBearings);
+      // sort out the beraings
+      final List<Double> legBearings1 = prepareBearings(legBearings);
 
       // give the times a zero offset
       final List<Long> zeroTimes = prepareTimes(legTimes);
@@ -2225,7 +2220,7 @@ public class ZigDetector
 
       while (!sliceQueue.isEmpty())
       {
-        final TPeriod thisSlice = sliceQueue.get(0);
+        final TPeriod outerPeriod = sliceQueue.get(0);
 
         // create helper, to ditch data we can't use
         final PeriodHandler deleter = new PeriodHandler()
@@ -2234,34 +2229,32 @@ public class ZigDetector
           public void doIt(final TPeriod innerPeriod, double score)
           {
             log("deleting:" + innerPeriod.toString(fullTimes)
-                + " from " + thisSlice.toString(fullTimes) + " score:"
+                + " from " + outerPeriod.toString(fullTimes) + " score:"
                 + score);
             // get rid of this period of data, create legs either side.
-            handleNewSlices(sliceQueue, legs, thisSlice, innerPeriod, 5,
+            handleNewSlices(sliceQueue, legs, outerPeriod, innerPeriod, 5,
                 false);
           }
         };
 
         log("====");
-        log("Analysing:" + thisSlice.toString(fullTimes));
-        
-        final int indexOffset = thisSlice.start;
+        log("Analysing:" + outerPeriod.toString(fullTimes));
 
         // slice the data
-        final List<Long> thisTimes = zeroTimes.subList(thisSlice.start,
-            thisSlice.end+1);
-        final List<Double> thisBearings = continuousBearings.subList(
-            thisSlice.start, thisSlice.end+1);
+        final List<Long> thisTimes = zeroTimes.subList(outerPeriod.start,
+            outerPeriod.end);
+        final List<Double> thisBearings = legBearings1.subList(
+            outerPeriod.start, outerPeriod.end);
 
         final long minPeriod = 1000 * 60 * 7;
         // ok, find the period with the lowest bearing rate
-        TPeriod thisLeg = findLowestRateIn(thisTimes, thisBearings, minPeriod, indexOffset);
+        TPeriod thisLeg = findLowestRateIn(thisTimes, thisBearings, minPeriod);
 
         // check we can find a flat section
         if (thisLeg == null)
         {
           // ok, ditch this leg
-          sliceQueue.remove(thisSlice);
+          sliceQueue.remove(outerPeriod);
           continue;
         }
 
@@ -2271,18 +2264,18 @@ public class ZigDetector
 
         // grow right first, since turns normally start more sharply
         // than they finish
-        final TPeriod grownLeg = growLeg(optimiseTolerance, zeroTimes, continuousBearings, thisLeg,
+        thisLeg = growLeg(optimiseTolerance, thisTimes, thisBearings, thisLeg,
             validFit, deleter, true);
 
         // have we finished growing?
-        if (grownLeg != null)
+        if (thisLeg != null)
         {
-          if (grownLeg.toString().equals("aPeriod:30-35"))
+          if (thisLeg.toString().equals("aPeriod:30-35"))
           {
             System.out.println("bad");
           }
-          showLeg("STORING:", fullTimes, grownLeg);
-          handleNewSlices(sliceQueue, legs, thisSlice, grownLeg, 5, true);
+          showLeg("STORING:", fullTimes, thisLeg);
+          handleNewSlices(sliceQueue, legs, outerPeriod, thisLeg, 5, true);
         }
 
         // return;
@@ -2295,7 +2288,7 @@ public class ZigDetector
   {
     if (thisLeg != null)
     {
-      log(msg + " start index:" + thisLeg.start + " " + thisLeg.toString(thisTimes));
+      log(msg + thisLeg.toString(thisTimes));
     }
     else
     {
