@@ -2326,7 +2326,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   abstract protected ZoneSlicer getOwnshipZoneSlicer(
       final ColorProvider blueProv);
 
-  private static double getPrecision(final Precision slicePrecision)
+  public static double getPrecision(final Precision slicePrecision)
   {
     final double RMS_ZIG_RATIO;
     switch (slicePrecision)
