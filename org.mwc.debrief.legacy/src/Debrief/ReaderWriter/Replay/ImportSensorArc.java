@@ -143,14 +143,18 @@ final class ImportSensorArc extends AbstractPlainLineImporter {
 	    {
 				if ("1".equals(fillStyle))
 				{
+				  data.setFilled(true);
 					data.setSemiTransparent(false);
 				}
 				else if ("2".equals(fillStyle))
 				{
+				  data.setFilled(true);
 					data.setSemiTransparent(true);
 				}
 				else
 				{
+				  data.setFilled(false);
+				  data.setSemiTransparent(false);
 				}
 	    }
 	    

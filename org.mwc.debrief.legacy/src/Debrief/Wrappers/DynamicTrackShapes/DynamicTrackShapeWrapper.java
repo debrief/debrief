@@ -89,6 +89,12 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 	private int _lineWidth;
 
 	private boolean _semiTransparent = true;
+	
+  /**
+   * whether this shape is filled
+   * 
+   */
+  private boolean _isFilled = false;
 
 	/**
 	 * default constructor, used when we read in from XML
@@ -440,6 +446,7 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 						displayProp("StartDTG", "Start DTG", "the start time this entry was recorded", FORMAT),
 						displayProp("EndDTG", "End DTG", "the end time this entry was recorded", FORMAT),
 						displayProp("SemiTransparent", "Semi transparent", "whether to make the coverage semi-transparent", FORMAT),
+            prop("Filled", "whether to fill the circle", FORMAT),
 						prop("Constraints", "sensor arcs: min max angle range", FORMAT),
 				};
 				return res;
@@ -488,6 +495,27 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 	{
 		return _values;
 	}
+	
+  /**
+   * is this shape filled? (where applicable)
+   * 
+   * @return
+   */
+  public boolean getFilled()
+  {
+    return _isFilled;
+  }
+
+  /**
+   * is this shape filled? (where applicable)
+   * 
+   * @param isFilled
+   *          yes/no
+   */
+  public void setFilled(final boolean isFilled)
+  {
+    this._isFilled = isFilled;
+  }
 
 	abstract public String getConstraints();
 
