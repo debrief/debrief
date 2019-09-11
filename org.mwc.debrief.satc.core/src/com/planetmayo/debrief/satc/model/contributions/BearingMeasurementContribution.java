@@ -544,29 +544,7 @@ public class BearingMeasurementContribution extends
 		final boolean justTargetZigs = false;
 
 		// ok, now ditch any straight leg contributions that we generated
-		Iterator<BaseContribution> ditchIter = contributions.iterator();
-		ArrayList<StraightLegForecastContribution> toRemove = new ArrayList<StraightLegForecastContribution>();
-		while (ditchIter.hasNext())
-		{
-			BaseContribution baseContribution = (BaseContribution) ditchIter.next();
-			if (baseContribution instanceof StraightLegForecastContribution)
-			{
-				StraightLegForecastContribution sfl = (StraightLegForecastContribution) baseContribution;
-				if (sfl.getAutoGenBy().equals(getName()))
-				{
-					toRemove.add(sfl);
-				}
-			}
-		}
-
-		// ditch any that we did find
-		Iterator<StraightLegForecastContribution> remover = toRemove.iterator();
-		while (remover.hasNext())
-		{
-			StraightLegForecastContribution toDitch = (StraightLegForecastContribution) remover
-					.next();
-			contributions.removeContribution(toDitch);
-		}
+		ditchExistingStraightLegContributions(contributions);
 
 		// create object that can store the new legs
 		IContributions zigConts, legConts;
@@ -680,10 +658,10 @@ public class BearingMeasurementContribution extends
 		// ok, slicing done!
 		if (_listeners != null)
 		{
-			Iterator<MDAResultsListener> iter = _listeners.iterator();
+			final Iterator<MDAResultsListener> iter = _listeners.iterator();
 			while (iter.hasNext())
 			{
-				BearingMeasurementContribution.MDAResultsListener thisL = (BearingMeasurementContribution.MDAResultsListener) iter
+				final BearingMeasurementContribution.MDAResultsListener thisL = (BearingMeasurementContribution.MDAResultsListener) iter
 						.next();
 
 				if (justTargetZigs)
@@ -694,11 +672,37 @@ public class BearingMeasurementContribution extends
 				{
 					thisL.sliced(this.getName(), legStorer.getSlices());
 				}
+			}
+		}
+	}
 
+  public void ditchExistingStraightLegContributions(
+      final IContributions contributions)
+  {
+    Iterator<BaseContribution> ditchIter = contributions.iterator();
+		ArrayList<StraightLegForecastContribution> toRemove = new ArrayList<StraightLegForecastContribution>();
+		while (ditchIter.hasNext())
+		{
+			BaseContribution baseContribution = (BaseContribution) ditchIter.next();
+			if (baseContribution instanceof StraightLegForecastContribution)
+			{
+				StraightLegForecastContribution sfl = (StraightLegForecastContribution) baseContribution;
+				if (sfl.getAutoGenBy().equals(getName()))
+				{
+					toRemove.add(sfl);
+				}
 			}
 		}
 
-	}
+		// ditch any that we did find
+		Iterator<StraightLegForecastContribution> remover = toRemove.iterator();
+		while (remover.hasNext())
+		{
+			StraightLegForecastContribution toDitch = (StraightLegForecastContribution) remover
+					.next();
+			contributions.removeContribution(toDitch);
+		}
+  }
 
 	private boolean checkForTargetZig(String legName, List<Long> lastLegTimes,
 			List<Double> lastLegBearings, List<Long> thisLegTimes,
