@@ -645,14 +645,14 @@ public class BearingMeasurementContribution extends
 			}
 
 			double zigScore = ZIG_DETECTOR_RMS;
-			zigScore = 0.5d;
-			final double zigTolerance = 0.0001;
+			zigScore = 10d;
+			final double zigTolerance = 0.000001;
 		//	zigScore = 0.5;
-			detector.sliceThis(SATC_Activator.getDefault().getLog(), SATC_Activator.PLUGIN_ID, "some name", legStart, legEnd, legStorer,
-					zigStorer, zigScore, zigTolerance, thisLegTimes, thisLegBearings);
-//      detector.sliceThis2(SATC_Activator.getDefault().getLog(), SATC_Activator.PLUGIN_ID,
-//          "some name",  legStorer,
-//           zigScore, zigTolerance, thisLegTimes, thisLegBearings);
+//			detector.sliceThis(SATC_Activator.getDefault().getLog(), SATC_Activator.PLUGIN_ID, "some name", legStart, legEnd, legStorer,
+//					zigStorer, zigScore, zigTolerance, thisLegTimes, thisLegBearings);
+      detector.sliceThis2(SATC_Activator.getDefault().getLog(), SATC_Activator.PLUGIN_ID,
+          "some name",  legStorer,
+           zigScore, zigTolerance, thisLegTimes, thisLegBearings);
 			
 			lastLegTimes = thisLegTimes;
 			lastLegBearings = thisLegBearings;
