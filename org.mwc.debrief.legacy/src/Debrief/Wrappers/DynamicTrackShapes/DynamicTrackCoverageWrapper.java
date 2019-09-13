@@ -229,7 +229,7 @@ public class DynamicTrackCoverageWrapper extends DynamicTrackShapeWrapper
 	  
     @Override
     public void paint(CanvasType dest, Color color, boolean semiTransparent,
-        WorldLocation originWd, double courseDegs)
+        WorldLocation originWd, double courseDegs, final boolean filled)
     {
       // update the color
       dest.setColor(color);
@@ -264,7 +264,11 @@ public class DynamicTrackCoverageWrapper extends DynamicTrackShapeWrapper
 
       if (dest instanceof ExtendedCanvasType)
       {
-        if (semiTransparent)
+        if (!filled)
+        {
+          ((ExtendedCanvasType) dest).nofillShape(shape);
+        }
+        else if (semiTransparent)
         {
           ((ExtendedCanvasType) dest).semiFillShape(shape);
         }

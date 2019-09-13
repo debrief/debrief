@@ -60,6 +60,12 @@ public interface ExtendedCanvasType extends ShapeCanvasType
 			final int height);
 	
 	public void semiFillShape(Shape shape);
+
+	/**
+	 * Draws a shape without filling it.
+	 * @param shape Shape to draw
+	 */
+  public void nofillShape(Shape shape);
 	
   public void drawLine(final int x1, final int y1, final int x2,
       final int y2, final int transparency);

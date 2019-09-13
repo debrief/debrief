@@ -109,4 +109,13 @@ public class ExtendedCanvasAdapter extends CanvasAdaptor implements
     return _xorOn;
   }
 
+  @Override
+  public void nofillShape(Shape shape)
+  {
+    if (shape != null)
+    {
+      _dest.draw(shape);
+    }
+  }
+
 }

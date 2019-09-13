@@ -52,7 +52,7 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 		 * @param location current platform location
 		 * @param courseDegs current platform heading
 		 */
-		public void paint(CanvasType dest, Color color, boolean semiTransparent, WorldLocation location, double courseDegs);
+		public void paint(CanvasType dest, Color color, boolean semiTransparent, WorldLocation location, double courseDegs, boolean filled);
 
 	}
 	
@@ -94,7 +94,7 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
    * whether this shape is filled
    * 
    */
-  private boolean _isFilled = false;
+  private boolean _isFilled = true;
 
 	/**
 	 * default constructor, used when we read in from XML
@@ -219,7 +219,7 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
     // ok, we've got enough to do the paint!
     for (DynamicShape value : _values)
     {
-      value.paint(dest, getColor(), _semiTransparent, origin, courseDegs);
+      value.paint(dest, getColor(), _semiTransparent, origin, courseDegs, _isFilled);
     }
 
 		// and restore the background color
