@@ -137,7 +137,7 @@ public class SwingDatePropertyEditor extends
   /**
    * Prefered size of the JTextFields
    */
-  final Dimension jtextFieldDimension = new Dimension(70, 20);
+  final Dimension jtextFieldDimension = new Dimension(75, 20);
 
   /////////////////////////////////////////////////////////////
   // constructor
