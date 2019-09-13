@@ -114,8 +114,6 @@ abstract public class DatePropertyEditor extends PropertyEditorSupport
 
   static protected final String NULL_TIME = "HH:mm:ss";
 
-  static protected final String NOT_SET_TEXT = "Not Set";
-
   /////////////////////////////////////////////////////////////
   // member variables
   ////////////////////////////////////////////////////////////
@@ -224,15 +222,10 @@ abstract public class DatePropertyEditor extends PropertyEditorSupport
    */
   public synchronized void resetData()
   {
-    if (_myVal == null)
+    if (_myVal == null || _myVal.getTime() == -1)
     {
       setDateText(NULL_DATE);
       setTimeText(NULL_TIME);
-    }
-    else if (_myVal.getTime() == -1)
-    {
-      setDateText(NOT_SET_TEXT);
-      setTimeText(NOT_SET_TEXT);
     }
     else
     {
