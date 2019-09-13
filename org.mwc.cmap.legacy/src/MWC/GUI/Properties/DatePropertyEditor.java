@@ -235,7 +235,7 @@ abstract public class DatePropertyEditor extends
         if (!dateVal.equals(NULL_DATE))
           theTime += _dateF.parse(dateVal).getTime() * 1000;
 
-        if (!timeVal.equals(NULL_TIME))
+        if (!timeVal.isEmpty() && !timeVal.equals(NULL_TIME))
           theTime += _timeF.parse(timeVal).getTime() * 1000;
 
         // also add any micros
