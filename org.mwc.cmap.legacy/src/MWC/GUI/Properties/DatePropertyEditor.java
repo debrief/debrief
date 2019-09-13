@@ -227,14 +227,20 @@ abstract public class DatePropertyEditor extends
 
     try
     {
-      if (!dateVal.equals(NULL_DATE))
-        theTime += _dateF.parse(dateVal).getTime() * 1000;
+      if ( dateVal.isEmpty() || dateVal.equals(NULL_DATE))
+      {
+        theTime = -1000;
+      }else
+      {
+        if (!dateVal.equals(NULL_DATE))
+          theTime += _dateF.parse(dateVal).getTime() * 1000;
 
-      if (!timeVal.equals(NULL_TIME))
-        theTime += _timeF.parse(timeVal).getTime() * 1000;
+        if (!timeVal.isEmpty() && !timeVal.equals(NULL_TIME))
+          theTime += _timeF.parse(timeVal).getTime() * 1000;
 
-      // also add any micros
-      theTime += _theMicros;
+        // also add any micros
+        theTime += _theMicros;
+      }
     }
     catch (final ParseException e)
     {
