@@ -120,7 +120,7 @@ public class GraphPanelToolbar extends JPanel
       new CalculationHolder(new courseCalc(), new CourseFormatter(), false,
           360), new CalculationHolder(new speedCalc(), null, false, 0),
       new CalculationHolder(new rangeCalc(), null, true, 0),
-      new CalculationHolder(new bearingCalc(), null, true, 180),
+      new CalculationHolder(new bearingCalc(), null, true, 360),
       new CalculationHolder(new bearingRateCalc(), new BearingRateFormatter(),
           true, 180), new CalculationHolder(new relBearingCalc(), theFormatter,
               true, 180), new CalculationHolder(new atbCalc(), theFormatter,
@@ -156,6 +156,7 @@ public class GraphPanelToolbar extends JPanel
             if (selectTrackModel.getTracks().isEmpty())
             {
               operationComboModel.removeAllElements();
+              setState(INACTIVE_STATE);
             }
             else
             {
@@ -598,7 +599,8 @@ public class GraphPanelToolbar extends JPanel
     Vector<WatchableList> selectedTracksByUser = null;
 
     if (selectTrackModel != null && _stepControl != null && _stepControl
-        .getStartTime() != null && _stepControl.getEndTime() != null)
+        .getStartTime() != null && _stepControl.getEndTime() != null &&
+        operation != null)
     {
       _xytool.setPreselectedPrimaryTrack(selectTrackModel.getPrimaryTrack());
       final List<AbstractSelection<TrackWrapper>> tracks = selectTrackModel.getTracks();

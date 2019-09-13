@@ -2276,8 +2276,11 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     if (!_theSegments.isEmpty())
     {
 
+      final HiResDate startDTG = getStartDTG();
+      final HiResDate endDTG = getEndDTG();
       // see if we have _any_ points in range
-      if ((getStartDTG().greaterThan(end)) || (getEndDTG().lessThan(start)))
+      if ((startDTG == null || startDTG.greaterThan(end)) ||
+          (endDTG == null || endDTG.lessThan(start)))
       {
         // don't bother with it.
       }
@@ -2433,8 +2436,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     // check that we do actually contain some data
     if (_theSegments.isEmpty())
     {
-      return new Watchable[]
-      {};
+      return EMPTY_WATCHABLE_LIST;
     }
     else if (isSinglePointTrack())
     {
@@ -2601,8 +2603,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     }
     else
     {
-      return new MWC.GenericData.Watchable[]
-      {};
+      return EMPTY_WATCHABLE_LIST;
     }
 
   }

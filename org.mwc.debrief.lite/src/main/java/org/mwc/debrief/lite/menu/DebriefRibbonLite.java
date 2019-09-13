@@ -14,18 +14,27 @@
  */
 package org.mwc.debrief.lite.menu;
 
+import java.awt.Desktop;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.AbstractAction;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.mwc.debrief.lite.undo.RedoAction;
 import org.mwc.debrief.lite.undo.UndoAction;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand;
+import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandBuilder;
+import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
+import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Frames.Session;
 
 /**
@@ -63,17 +72,47 @@ public class DebriefRibbonLite
      *
      */
     private static final long serialVersionUID = 1L;
+    @SuppressWarnings("unused")
+    private final String _path;
+
+    public HelpAction(String path)
+    {
+      _path = path;
+    }
 
     @Override
     public void actionPerformed(final ActionEvent e)
     {
-      System.out.println("Not implemented yet");
+      if (Desktop.isDesktopSupported())
+      {
+//        JOptionPane.showMessageDialog(null, "Please see the file titled ReadMe.pdf");
+
+        try
+        {
+          final File myFile = new File(_path);
+          Desktop.getDesktop().open(myFile);
+        }
+        catch (Exception ex)
+        {
+          Application.logError2(Application.ERROR, "Failed to open PDF", ex);
+          SwingUtilities.invokeLater(new Runnable()
+          {
+            @Override
+            public void run()
+            {
+              JOptionPane.showMessageDialog(null, "Failed to find help file:"
+                  + _path);
+            }
+          });
+        }
+      }
     }
 
   }
 
   protected static void addLiteTab(final JRibbon ribbon, final Session session,
-      final Runnable resetAction, final Runnable exitAction)
+      final Runnable resetAction, final Runnable exitAction,
+      final Runnable collapseAction, final String path)
   {
     final JRibbonBand liteMenu = new JRibbonBand("Lite", null);
     liteMenu.startGroup();
@@ -93,17 +132,52 @@ public class DebriefRibbonLite
     redoAction.setActionCommand(redoCommand);
     redoCommand.setEnabled(false);
     ribbon.addTaskbarCommand(redoCommand);
+
+    ActionListener collapsePopup = new ActionListener()
+    {
+
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        collapseAction.run();
+      }
+    };
+    // and the expand/collapse button
+    
+    final FlamingoCommand collapseCommand = addToggleCommand("Collapse",
+        "icons/24/fit_to_win.png", collapsePopup);
+    // so that action has the command it has to enable/disable
+    collapseCommand.setEnabled(true);
+    ribbon.addTaskbarCommand(collapseCommand);
+
     // add the action as observer of undobuffer
     session.getUndoBuffer().addObserver(redoAction);
-    liteMenu.startGroup();
-    MenuUtils.addCommand("Help", "icons/24/help.png", new HelpAction(),
+    MenuUtils.addCommand("Help", "icons/24/help.png", new HelpAction(path),
         liteMenu, RibbonElementPriority.TOP);
-    MenuUtils.addCommand("Exit", "icons/24/exit.png", new ExitLiteApp(exitAction),
-        liteMenu, RibbonElementPriority.TOP);
+    MenuUtils.addCommand("Exit", "icons/24/exit.png", new ExitLiteApp(
+        exitAction), liteMenu, RibbonElementPriority.TOP);
 
     liteMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         liteMenu));
     final RibbonTask liteTask = new RibbonTask("Lite", liteMenu);
     ribbon.addTask(liteTask);
+  }
+  
+  private static FlamingoCommand addToggleCommand(String commandName,String imagePath,ActionListener actionToAdd) {
+    ImageWrapperResizableIcon imageIcon = null;
+    if (imagePath != null)
+    {
+      final Image zoominImage = MenuUtils.createImage(imagePath);
+      imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, MenuUtils.ICON_SIZE_16);
+    }
+    final FlamingoCommandBuilder builder = new FlamingoCommandBuilder()
+        .setTitle(commandName).setIcon(imageIcon).setAction(actionToAdd)
+        .setTitleClickAction();
+
+      builder.setToggle();
+      builder.setToggleSelected(false);
+      final FlamingoCommand command = builder.build();
+
+      return command;
   }
 }

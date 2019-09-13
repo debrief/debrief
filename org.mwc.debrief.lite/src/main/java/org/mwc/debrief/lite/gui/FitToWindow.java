@@ -62,7 +62,7 @@ public class FitToWindow extends AbstractAction
             final MathTransform degsToWorld = CRS.findMathTransform(
                 DefaultGeographicCRS.WGS84, crs);
             final DirectPosition2D tlDegs = new DirectPosition2D(long1, lat1);
-            final DirectPosition2D brDegs = new DirectPosition2D(long1, lat2);
+            final DirectPosition2D brDegs = new DirectPosition2D(long2, lat2);
             degsToWorld.transform(tlDegs, tlDegs);
             degsToWorld.transform(brDegs, brDegs);
             long1 = tlDegs.x;
@@ -81,7 +81,7 @@ public class FitToWindow extends AbstractAction
         final ReferencedEnvelope bounds = new ReferencedEnvelope(long1, long2,
             lat1, lat2, crs);
         map.getMapContent().getViewport().setBounds(bounds);
-
+        
         // force repaint
         final ReferencedEnvelope paneArea = map.getDisplayArea();
         map.setDisplayArea(paneArea);

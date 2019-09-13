@@ -241,6 +241,9 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -249,6 +252,8 @@ import MWC.GUI.hasPropertyListeners;
 import MWC.GUI.Properties.Swing.SwingPropertiesPanel;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Undo.UndoBuffer;
+import MWC.GenericData.HiResDate;
+import MWC.TacticalData.NarrativeEntry;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 /**
@@ -429,6 +434,24 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
         final PropertyChangeItem it = enumer.nextElement();
         if ("Name".equals(it.propertyName))
         {
+          if (NarrativeEntry.NARRATIVE_LAYER.equalsIgnoreCase(it.newValue
+              .toString()))
+          {
+            SwingUtilities.invokeLater(new Runnable()
+            {
+
+              @Override
+              public void run()
+              {
+                JOptionPane.showMessageDialog(null, "Sorry, the name `"
+                    + NarrativeEntry.NARRATIVE_LAYER
+                    + "` is reserved for narratives.\nPlease choose another layer name",
+                    "Add layer", JOptionPane.WARNING_MESSAGE);
+              }
+
+            });
+            continue;
+          }
           _theName = it.newValue.toString();
           it.editorInfo.setName(_theName);
           if (_propsPanel != null)
@@ -998,7 +1021,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
 
         // so reset the value of this property editor
         final PropertyEditor pe = pei.theEditor;
-        
+
         if ("Name".equals(pd.getName()))
         {
           _theName = pei.originalValue.toString();
@@ -1133,6 +1156,15 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     // current one for this object - or if there isn't a current value
     if ((newVal == null) || (!newVal.equals(oldVal)))
     {
+      if (newVal == null && HiResDate.class.equals(pei.theDescriptor
+          .getPropertyType()))
+      {
+        JOptionPane.showMessageDialog(_propsPanel, pei.theDescriptor
+            .getDisplayName()
+            + " has an invalid value. It will be interpreted as \'Not set\'. \n"
+            + "Use the following formats (Date - dd/mm/yy), (Time - hh:mm:ss).",
+            "Invalid property value", JOptionPane.ERROR_MESSAGE);
+      }
 
       // find out the type of the editor
       final Method write = pd.getWriteMethod();

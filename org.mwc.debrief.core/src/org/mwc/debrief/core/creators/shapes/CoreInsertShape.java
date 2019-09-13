@@ -17,6 +17,9 @@ package org.mwc.debrief.core.creators.shapes;
 import java.util.Date;
 import java.util.Enumeration;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -25,6 +28,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.dialogs.ListDialog;
+import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.creators.chartFeatures.CoreInsertChartFeature;
 
 import Debrief.Wrappers.ShapeWrapper;
@@ -37,6 +41,7 @@ import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.PlainShape;
 import MWC.GenericData.WorldLocation;
+import MWC.TacticalData.NarrativeEntry;
 
 /**
  * @author ian.mayo
@@ -56,7 +61,7 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
   @Override
   protected String getLayerName()
   {
-    final String res;
+    String res;
     // ok, are we auto-deciding?
     if (!AutoSelectTarget.getAutoSelectTarget())
     {
@@ -89,8 +94,7 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
       list.setHelpAvailable(false);
 
       // select the first item, so it's valid to press OK immediately
-      list.setInitialSelections(new Object[]
-      {ourLayers[0]});
+      list.setInitialSelections(new Object[]{ourLayers[0]});
 
       // open it
       final int selection = list.open();
@@ -118,18 +122,48 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
             if (dlg.open() == Window.OK)
             {
               res = dlg.getValue();
-              // create base layer
-              final Layer newLayer = new BaseLayer();
-              newLayer.setName(res);
 
-              // add to layers object
-              theLayers.addThisLayer(newLayer);
+              final String title = "Forbidden Name for Layer";
+              final String messageNarrativesStatus =
+                  "\'Narratives\' is a reserved Layer name";
+              final String messageNarratives =
+                  "Choose a different name for your layer";
+              final String messageCannotBeEmptyStatus =
+                  "You need to have at least one character in your layer name";
+              final String messageCannotBeEmpty = "Message cannot be empty";
+
+              if (res == null || res.isEmpty())
+              {
+                Status status = new Status(IStatus.ERROR,
+                    DebriefPlugin.PLUGIN_NAME, messageCannotBeEmptyStatus,
+                    new Exception(""));
+                ErrorDialog.openError(Display.getCurrent().getActiveShell(),
+                    title, messageCannotBeEmpty, status);
+                res = null;
+              }
+              else if (NarrativeEntry.NARRATIVE_LAYER.equalsIgnoreCase(res))
+              {
+                Status status = new Status(IStatus.ERROR,
+                    DebriefPlugin.PLUGIN_NAME, messageNarrativesStatus,
+                    new Exception(""));
+                ErrorDialog.openError(Display.getCurrent().getActiveShell(),
+                    title, messageNarratives, status);
+                res = null;
+              }
+              else
+              {
+                // create base layer
+                final Layer newLayer = new BaseLayer();
+                newLayer.setName(res);
+
+                // add to layers object
+                theLayers.addThisLayer(newLayer);
+              }
             }
             else
             {
               res = null;
             }
-
           }
           else
           {

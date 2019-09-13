@@ -258,9 +258,17 @@ public class CircleShape extends PlainShape implements Editable,
 		final Iterator<WorldLocation> iter = _myPoints.iterator();
 		while (iter.hasNext())
 		{
-			final Point pt = dest.toScreen(iter.next());
-			xP[ctr] = pt.x;
-			yP[ctr++] = pt.y;
+			final WorldLocation nextPos = iter.next();
+			final Point pt = dest.toScreen(nextPos);
+			if(pt != null)
+			{
+				xP[ctr] = pt.x;
+				yP[ctr++] = pt.y;
+			}
+			else
+			{
+				System.err.println("no coords for:" + nextPos);
+			}
 		}
 
 		// and plot the polygon
@@ -312,7 +320,7 @@ public class CircleShape extends PlainShape implements Editable,
 
 		// and the circle as a series of points (so it turns properly in relative
 		// mode)
-		final int STEPS = 100;
+		final int STEPS = NUM_SEGMENTS;
 		for (int i = 0; i < STEPS; i++)
 		{
 			final double thisAngle = (Math.PI * 2) / (double) STEPS * i;

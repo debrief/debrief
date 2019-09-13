@@ -49,8 +49,10 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
     final JXCollapsiblePane collapsiblePaneInstance = this;
     collapsiblePaneInstance.setPreferredSize(new Dimension(defaultSize,
         defaultSize));
+    collapsiblePaneInstance.setName(title);
 
     titleLabel = new JXLabel(title, SwingConstants.CENTER);
+    titleLabel.setName("titleLabel");
     final Dimension titleDimension;
 
     if (direction.isVertical())
@@ -174,5 +176,10 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
     {
       titleLabel.setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
     }
+  }
+  @Override
+  public String getName()
+  {
+    return titleLabel.getText();
   }
 }

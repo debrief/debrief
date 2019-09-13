@@ -7,15 +7,17 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
+import org.opengis.geometry.MismatchedDimensionException;
+import org.opengis.referencing.operation.TransformException;
 import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
@@ -26,10 +28,10 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
+import Debrief.GUI.Frames.Application;
 import Debrief.Tools.Palette.CoreCreateShape;
 import Debrief.Tools.Palette.CreateLabel;
 import Debrief.Tools.Palette.CreateShape;
-import Debrief.Wrappers.PolygonWrapper;
 import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
@@ -41,9 +43,6 @@ import MWC.GUI.Shapes.ArcShape;
 import MWC.GUI.Shapes.CircleShape;
 import MWC.GUI.Shapes.EllipseShape;
 import MWC.GUI.Shapes.LineShape;
-import MWC.GUI.Shapes.PlainShape;
-import MWC.GUI.Shapes.PolygonShape;
-import MWC.GUI.Shapes.PolygonShape.PolygonNode;
 import MWC.GUI.Shapes.RectangleShape;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.PlainTool.BoundsProvider;
@@ -82,13 +81,30 @@ public class DebriefRibbonInsert
       @Override
       public WorldArea getViewport()
       {
+        WorldArea res = null;
+
         final ReferencedEnvelope env = geoMapRenderer.getMapComponent()
             .getViewport().getBounds();
-        final WorldLocation tl = new WorldLocation(env.getMaxY(), env.getMinX(),
-            0);
-        final WorldLocation br = new WorldLocation(env.getMinY(), env.getMaxX(),
-            0);
-        final WorldArea res = new WorldArea(tl, br);
+        
+        // convert to degs
+        DirectPosition2D tl = (DirectPosition2D) env.getUpperCorner();
+        DirectPosition2D br = (DirectPosition2D) env.getLowerCorner();
+        try
+        {
+          geoMapRenderer.getTransform().transform(tl, tl);
+          geoMapRenderer.getTransform().transform(br, br);
+          final WorldLocation tlD = new WorldLocation(tl.getY(), tl.getX(),
+              0);
+          final WorldLocation brD = new WorldLocation(br.getY(), br.getX(),
+              0);
+          res = new WorldArea(tlD, brD);
+        }
+        catch (MismatchedDimensionException | TransformException e)
+        {
+          Application.logError2(ToolParent.ERROR,
+              "Failed to convert from metres proj to degs",
+              null);
+        }
         return res;
       }
     };
@@ -104,8 +120,13 @@ public class DebriefRibbonInsert
     final JRibbonBand drawingMenu = createShapes(theLayers, theProperties,
         toolParent, bounds);
     
+    /** temporarily drop reference data
+     * 
+     */
+//    final RibbonTask drawingTask = new RibbonTask("Insert", chartfeaturesMenu,
+//        referenceDataMenu, layersMenu, drawingMenu);
     final RibbonTask drawingTask = new RibbonTask("Insert", chartfeaturesMenu,
-        referenceDataMenu, layersMenu, drawingMenu);
+         layersMenu, drawingMenu);
     ribbon.addTask(drawingTask);
   }
 
@@ -155,7 +176,10 @@ public class DebriefRibbonInsert
     ellipseShape.setSelectedLayerSource(selectLayerCombo);
     final JCommandButton ellipseShapeCmd = MenuUtils.addCommandButton("Ellipse",
         "icons/16/ellipse.png", ellipseShape, CommandButtonDisplayState.MEDIUM, null);
-    final CreateShape polygonShape = new CreateShape(toolParent, theProperties,
+    /**
+     * to be added later on
+     */
+    /*final CreateShape polygonShape = new CreateShape(toolParent, theProperties,
         theLayers, "Polygon", "icons/polygon_add.png", bounds)
     {
       @Override
@@ -189,7 +213,7 @@ public class DebriefRibbonInsert
     @SuppressWarnings("unused")
 //    final JCommandButton polygonCmd = MenuUtils.addCommandButton("Polygon",
 //        "icons/16/polygon.png", polygonShape, CommandButtonDisplayState.MEDIUM, null);
-    
+    */
     final CreateShape rectShape = new CreateShape(toolParent, theProperties,
         theLayers, "Rectangle", "icons/rectangle_add.png", bounds)
     {
@@ -370,6 +394,7 @@ public class DebriefRibbonInsert
         }
       }
     });
+    selectLayerCombo.setName("select-layer-combo");
     
     panel.add(selectLayerCombo);
     final Image activeLayerImg = MenuUtils.createImage("icons/24/auto_layer.png");

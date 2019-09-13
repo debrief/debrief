@@ -28,7 +28,7 @@ public class NarrativeEntryItemRenderer extends JPanel implements
       "icons/16/edit_narrative.png");
 
 
-  private final int HEIGHT_FIXED_SIZE = 33;
+  private final int HEIGHT_FIXED_SIZE = 42;
   /**
    *
    */
@@ -48,7 +48,7 @@ public class NarrativeEntryItemRenderer extends JPanel implements
     header.setPreferredSize(new Dimension(300, 18));
 
     final Font smallFont = new Font(originalFont.getName(), originalFont
-        .getStyle(), 8);
+        .getStyle(), 10);
     time.setFont(smallFont);
     final JLabel trackName = new JLabel(valueItem.getEntry().getTrackName());
     trackName.setFont(smallFont);

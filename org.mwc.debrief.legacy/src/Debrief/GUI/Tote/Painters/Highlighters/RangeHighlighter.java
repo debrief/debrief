@@ -89,6 +89,11 @@ public final class RangeHighlighter implements PlotHighlighter
 		// are we concerend about primary track?
 		if (isJustPlotPrimary() && isPrimary)
 		{
+      if (!list.getVisible())
+      {
+        return;
+      }
+
 			final WorldLocation center = watch.getLocation();
 			final int header = (int) MWC.Algorithms.Conversions
 					.Rads2Degs(watch.getCourse());

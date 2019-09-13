@@ -10,86 +10,122 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package MWC.GUI.Properties.Swing;
-
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
-public class TableSortDecorator extends TableModelDecorator 
-								implements TableModelListener {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	int indexes[];
+import MWC.GUI.Editable.CategorisedPropertyDescriptor;
 
-	public TableSortDecorator(final TableModel m) {
-		super(m);
+public class TableSortDecorator extends TableModelDecorator implements
+    TableModelListener
+{
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
+  int indexes[];
 
-		if(m == null || !(m instanceof AbstractTableModel))
-			throw new IllegalArgumentException("bad model");
+  public TableSortDecorator(final TableModel m)
+  {
+    super(m);
 
-		m.addTableModelListener(this);
-		allocate();
-	}
-	public Object getValueAt(final int row, final int column) {
-		return super.getValueAt(indexes[row], column);
-	}
-	public void tableChanged(final TableModelEvent e) {
-		allocate();
-	}
-	public void sort(final int column) {
-		final int rowCount = model.getRowCount();
+    if (m == null || !(m instanceof AbstractTableModel))
+      throw new IllegalArgumentException("bad model");
 
-		for(int i=0; i < rowCount; i++) {
-			for(int j = i+1; j < rowCount; j++) {
-				if(compare(indexes[i], indexes[j], column) < 0) {
-					swap(i,j);
-				}
-			}
-		}
-		fireTableStructureChanged();
-	}
-    public void swap(final int i, final int j) {
-		final int tmp = indexes[i];
-		indexes[i] = indexes[j];
-		indexes[j] = tmp;
-	}
-	public int compare(final int i, final int j, final int column) {
-		final Object io = model.getValueAt(i,column);
-		final Object jo = model.getValueAt(j,column);
+    m.addTableModelListener(this);
+    allocate();
+  }
 
-		String iStr=null;
-		String jStr=null;
-		// if these are property descriptors, use the featureDescriptor as the
-		// comparison string
-		if(io instanceof java.beans.PropertyDescriptor)
-		{
-			final java.beans.PropertyDescriptor iPd = (java.beans.PropertyDescriptor)io;
-			iStr = iPd.getDisplayName();
-			final java.beans.PropertyDescriptor jPd = (java.beans.PropertyDescriptor)jo;
-			jStr = jPd.getDisplayName();
-		}
-		else
-		{
-			iStr = io.toString();
-			jStr = jo.toString();
-		}
-		
-//		int c = jo.toString().compareTo(io.toString());
-		final int c = jStr.compareTo(iStr);
-		return (c < 0) ? -1 : ((c > 0) ? 1 : 0);
-	}
-	private void allocate() {
-		indexes = new int[model.getRowCount()];
+  private void allocate()
+  {
+    indexes = new int[model.getRowCount()];
 
-		for(int i=0; i < indexes.length; ++i) {
-			indexes[i] = i;			
-		}
-	}
+    for (int i = 0; i < indexes.length; ++i)
+    {
+      indexes[i] = i;
+    }
+  }
+
+  public int compare(final int i, final int j, final int column)
+  {
+    final Object io = model.getValueAt(i, column);
+    final Object jo = model.getValueAt(j, column);
+
+    String iStr = null;
+    String jStr = null;
+    // if these are property descriptors, use the featureDescriptor as the
+    // comparison string
+    if (io instanceof java.beans.PropertyDescriptor)
+    {
+      final java.beans.PropertyDescriptor iPd =
+          (java.beans.PropertyDescriptor) io;
+      iStr = iPd.getDisplayName();
+      final java.beans.PropertyDescriptor jPd =
+          (java.beans.PropertyDescriptor) jo;
+      jStr = jPd.getDisplayName();
+
+      if (io instanceof CategorisedPropertyDescriptor)
+      {
+        final CategorisedPropertyDescriptor catI =
+            (CategorisedPropertyDescriptor) io;
+        iStr = catI.getCategory() + iStr;
+      }
+      if (jo instanceof CategorisedPropertyDescriptor)
+      {
+        final CategorisedPropertyDescriptor catJ =
+            (CategorisedPropertyDescriptor) jo;
+        jStr = catJ.getCategory() + jStr;
+      }
+    }
+    else
+    {
+      iStr = io.toString();
+      jStr = jo.toString();
+    }
+
+    // int c = jo.toString().compareTo(io.toString());
+    final int c = jStr.compareTo(iStr);
+    return (c < 0) ? -1 : ((c > 0) ? 1 : 0);
+  }
+
+  @Override
+  public Object getValueAt(final int row, final int column)
+  {
+    return super.getValueAt(indexes[row], column);
+  }
+
+  public void sort(final int column)
+  {
+    final int rowCount = model.getRowCount();
+
+    for (int i = 0; i < rowCount; i++)
+    {
+      for (int j = i + 1; j < rowCount; j++)
+      {
+        if (compare(indexes[i], indexes[j], column) < 0)
+        {
+          swap(i, j);
+        }
+      }
+    }
+    fireTableStructureChanged();
+  }
+
+  public void swap(final int i, final int j)
+  {
+    final int tmp = indexes[i];
+    indexes[i] = indexes[j];
+    indexes[j] = tmp;
+  }
+
+  @Override
+  public void tableChanged(final TableModelEvent e)
+  {
+    allocate();
+  }
 }

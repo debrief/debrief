@@ -170,7 +170,7 @@ public class DebriefRibbonFile
       // ask user whether to save, if file is dirty.
       if (DebriefLiteApp.isDirty())
       {
-        final int res = JOptionPane.showConfirmDialog(null, _close
+        final int res = JOptionPane.showConfirmDialog(_theFrame, _close
             ? "Do you want to save the plot before closing?"
             : "Save changes before creating new file?");
         if (res == JOptionPane.OK_OPTION)
@@ -319,6 +319,7 @@ public class DebriefRibbonFile
           .getIcon(saveImage, new Dimension(16, 16));
       final JCommandMenuButton saveButton = new JCommandMenuButton("Save",
           imageIcon);
+      saveButton.setName("save");
       saveButton.getActionModel().addActionListener(new DoSave(session,
           theFrame));
       addMenuButton(saveButton);
@@ -327,6 +328,7 @@ public class DebriefRibbonFile
           .getIcon(saveAsImage, new Dimension(16, 16));
       final JCommandMenuButton saveAsButton = new JCommandMenuButton("Save As",
           imageIcon2);
+      saveAsButton.setName("saveas");
       saveAsButton.getActionModel().addActionListener(new DoSaveAs(session,
           theFrame));
       addMenuButton(saveAsButton);
@@ -376,9 +378,9 @@ public class DebriefRibbonFile
         new ImportFileAction(ImportFileAction.TYPE_REP), importMenu, RibbonElementPriority.TOP);
     MenuUtils.addCommand("Plot", "icons/24/plot_file.png",
         new ImportFileAction(".dpf"), importMenu, RibbonElementPriority.TOP);
-    MenuUtils.addCommand("NMEA", "icons/16/pulse.png",
+    MenuUtils.addCommand("NMEA", "icons/24/pulse.png",
         new ImportFileAction(ImportFileAction.TYPE_NMEA), importMenu, RibbonElementPriority.TOP);
-    MenuUtils.addCommand("TIF", "icons/16/pulse.png",
+    MenuUtils.addCommand("TIF", "icons/24/map.png",
         new ImportFileAction(ImportFileAction.TYPE_TIF), importMenu, RibbonElementPriority.TOP);
     
     importMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
@@ -386,7 +388,7 @@ public class DebriefRibbonFile
 
     final JRibbonBand exportMenu = new JRibbonBand("Export", null);
 
-    MenuUtils.addCommand("PNG", "icons/24/export_gpx.png", new CopyPlotAsPNG(
+    MenuUtils.addCommand("Clipboard", "icons/24/export_gpx.png", new CopyPlotAsPNG(
         geoMapRenderer), exportMenu, RibbonElementPriority.TOP);
     exportMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         exportMenu));
