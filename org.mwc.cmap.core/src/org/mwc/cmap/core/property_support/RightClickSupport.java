@@ -1097,39 +1097,8 @@ public class RightClickSupport
         final Map<String, SortedSet<PropertyDescriptor>> map =
             mapThese(commonProps);
 
-        for (final String thisCat : map.keySet())
-        {
-          final SortedSet<PropertyDescriptor> list = map.get(thisCat);
-          for (final PropertyDescriptor thisP : list)
-          {
-
-            // start off with the booleans
-            if (supportsBooleanEditor(thisP))
-            {
-              // generate boolean editors in the sub-menu
-              subMenu =
-                  generateBooleanEditorFor(manager, subMenu, thisP, editables,
-                      theLayers, theTopLayer);
-            }
-            else
-            {
-              // now the drop-down lists
-              if (supportsListEditor(thisP))
-              {
-                // generate boolean editors in the sub-menu
-                subMenu =
-                    generateListEditorFor(manager, subMenu, thisP, editables,
-                        theLayers, theTopLayer);
-              }
-            }
-          }
-          
-          if (subMenu != null)
-          {
-            // and a separator
-            subMenu.add(new Separator(thisCat));
-          }
-        }
+        subMenu = createEditorsFor(manager, editables, theLayers, theTopLayer,
+            subMenu, map);
       }
 
       // special case: if only one item is selected, try adding any additional
@@ -1165,39 +1134,9 @@ public class RightClickSupport
                 // hey, can we group these descriptors?
                 final Map<String, SortedSet<PropertyDescriptor>> map =
                     mapThese(theseProps);
-
-                for (final String thisCat : map.keySet())
-                {
-                  final SortedSet<PropertyDescriptor> list = map.get(thisCat);
-                  for (final PropertyDescriptor thisP : list)
-                  {
-                    // and wrap the object
-                    final Editable[] holder = new Editable[]
-                    {subject};
-                    if (supportsBooleanEditor(thisP))
-                    {
-
-                      // generate boolean editors in the sub-menu
-                      subMenu =
-                          generateBooleanEditorFor(manager, subMenu, thisP,
-                              holder, theLayers, theTopLayer);
-                    }
-                    else
-                    {
-                      // now the drop-down lists
-                      if (supportsListEditor(thisP))
-                      {
-                        // generate boolean editors in the sub-menu
-                        subMenu =
-                            generateListEditorFor(manager, subMenu, thisP,
-                                holder, theLayers, theTopLayer);
-                      }
-                    }
-                  }
-                  // and a separator
-                  subMenu.add(new Separator());
-
-                }
+                
+                subMenu = createEditorsFor(manager, editables, theLayers, theTopLayer,
+                    subMenu, map);
               }
             }
           }
@@ -1304,6 +1243,45 @@ public class RightClickSupport
         }
       }
     }
+  }
+
+  public static MenuManager createEditorsFor(final IMenuManager manager,
+      final Editable[] editables, final Layers theLayers, Layer theTopLayer,
+      MenuManager subMenu, final Map<String, SortedSet<PropertyDescriptor>> map)
+  {
+    for (final String thisCat : map.keySet())
+    {
+      final SortedSet<PropertyDescriptor> list = map.get(thisCat);
+      for (final PropertyDescriptor thisP : list)
+      {
+        // start off with the booleans
+        if (supportsBooleanEditor(thisP))
+        {
+          // generate boolean editors in the sub-menu
+          subMenu =
+              generateBooleanEditorFor(manager, subMenu, thisP, editables,
+                  theLayers, theTopLayer);
+        }
+        else
+        {
+          // now the drop-down lists
+          if (supportsListEditor(thisP))
+          {
+            // generate boolean editors in the sub-menu
+            subMenu =
+                generateListEditorFor(manager, subMenu, thisP, editables,
+                    theLayers, theTopLayer);
+          }
+        }
+      }
+      
+      if (subMenu != null)
+      {
+        // and a separator
+        subMenu.add(new Separator(thisCat));
+      }
+    }
+    return subMenu;
   }
 
   /**
