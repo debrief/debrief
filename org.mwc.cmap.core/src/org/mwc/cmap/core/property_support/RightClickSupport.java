@@ -1081,7 +1081,6 @@ public class RightClickSupport
           editables);
       if (commonProps != null)
       {
-
         // hey, can we group these descriptors?
         final Map<String, SortedSet<PropertyDescriptor>> map = mapThese(
             commonProps);
@@ -1134,45 +1133,16 @@ public class RightClickSupport
       final MethodDescriptor[] meths = getCommonMethodsFor(editables);
       if (meths != null)
       {
-        for (int i = 0; i < meths.length; i++)
-        {
-          final Layer myTopLayer = theTopLayer;
-
-          final MethodDescriptor thisMethD = meths[i];
-
-          if (thisMethD == null)
-          {
-            CorePlugin.logError(IStatus.ERROR,
-                "Failed to create method, props may be wrongly named", null);
-          }
-          else
-          {
-            // create button for this method
-            final Action doThisAction = new SubjectMethod(thisMethD
-                .getDisplayName(), editables, thisMethD.getMethod(), myTopLayer,
-                theLayers);
-
-            // ok - add to the list.
-            manager.add(doThisAction);
-          }
-        }
+        createActionsForTheseMethods(manager, editables, theLayers, theTopLayer,
+            meths);
       }
 
       // hmm, now do the same for the undoable methods
       final SubjectAction[] actions = getUndoableActionsFor(editables);
       if (actions != null)
       {
-        for (int i = 0; i < actions.length; i++)
-        {
-          final SubjectAction thisMethD = actions[i];
-
-          // create button for this method
-          final IAction doThisAction = generateUndoableActionFor(thisMethD,
-              editables, theLayers, theTopLayer);
-
-          // ok - add to the list.
-          manager.add(doThisAction);
-        }
+        createUndoableActionsForThese(manager, editables, theLayers,
+            theTopLayer, actions);
       }
 
     }
@@ -1226,6 +1196,51 @@ public class RightClickSupport
           CorePlugin.logError(IStatus.ERROR,
               "failed whilst creating context menu", e);
         }
+      }
+    }
+  }
+
+  public static void createUndoableActionsForThese(final IMenuManager manager,
+      final Editable[] editables, final Layers theLayers, Layer theTopLayer,
+      final SubjectAction[] actions)
+  {
+    for (int i = 0; i < actions.length; i++)
+    {
+      final SubjectAction thisMethD = actions[i];
+
+      // create button for this method
+      final IAction doThisAction = generateUndoableActionFor(thisMethD,
+          editables, theLayers, theTopLayer);
+
+      // ok - add to the list.
+      manager.add(doThisAction);
+    }
+  }
+
+  public static void createActionsForTheseMethods(final IMenuManager manager,
+      final Editable[] editables, final Layers theLayers, Layer theTopLayer,
+      final MethodDescriptor[] meths)
+  {
+    for (int i = 0; i < meths.length; i++)
+    {
+      final Layer myTopLayer = theTopLayer;
+
+      final MethodDescriptor thisMethD = meths[i];
+
+      if (thisMethD == null)
+      {
+        CorePlugin.logError(IStatus.ERROR,
+            "Failed to create method, props may be wrongly named", null);
+      }
+      else
+      {
+        // create button for this method
+        final Action doThisAction = new SubjectMethod(thisMethD
+            .getDisplayName(), editables, thisMethD.getMethod(), myTopLayer,
+            theLayers);
+
+        // ok - add to the list.
+        manager.add(doThisAction);
       }
     }
   }
