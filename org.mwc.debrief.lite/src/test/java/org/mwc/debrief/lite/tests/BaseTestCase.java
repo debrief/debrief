@@ -30,7 +30,7 @@ public abstract class BaseTestCase extends TestCase
   protected void setUp() throws Exception
   {
     System.out.println("Setup");
-    DebriefLiteApp.launchApp(); 
+    DebriefLiteApp.launchApp();
     Thread.sleep(3000);
   }
   
@@ -43,7 +43,6 @@ public abstract class BaseTestCase extends TestCase
       @Override
       public void run()
       {
-        // TODO Auto-generated method stub
         DebriefLiteApp.disposeForTest();
         
       }

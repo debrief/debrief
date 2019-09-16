@@ -178,6 +178,7 @@
 		<delete file="${plugin.destination}/org.mwc.debrief.lite_*.jar"/>
 		<delete file="${plugin.destination}/org.mwc.debrief.lite_*.zip"/>
 		<delete dir="${temp.folder}"/>
+		<delete file="${basedir}/*.jar"/>
 		<delete dir="${dist.dir}"/>
 	</target>
 	<target name="makeonejar" depends="generate">
