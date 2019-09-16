@@ -26,7 +26,14 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Status;
 import org.jfree.data.statistics.Regression;
+import org.jfree.data.time.FixedMillisecond;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesDataItem;
+import org.mwc.debrief.track_shift.controls.ZoneChart;
+import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
+import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
 import org.mwc.debrief.track_shift.views.BaseStackedDotsView;
+import org.mwc.debrief.track_shift.views.StackedDotHelper;
 import org.mwc.debrief.track_shift.zig_detector.Precision;
 import org.mwc.debrief.track_shift.zig_detector.target.ILegStorer;
 import org.mwc.debrief.track_shift.zig_detector.target.IZigStorer;
@@ -47,7 +54,6 @@ import com.planetmayo.debrief.satc.util.MathUtils;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
 import com.planetmayo.debrief.satc.util.calculator.GeodeticCalculator;
 import com.planetmayo.debrief.satc.zigdetector.LegOfData;
-import com.planetmayo.debrief.satc.zigdetector.OwnshipLegDetector;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -506,16 +512,40 @@ public class BearingMeasurementContribution extends
 				thisL.startingSlice(this.getName());
 			}
 		}
-
-		// ok, extract the ownship legs from this data
-		OwnshipLegDetector osLegDet = new OwnshipLegDetector();
+		
+    TimeSeries ownshipCourseSeries = getOwnshipCourses();
+    ColorProvider blueProv = new ZoneChart.ColorProvider()
+    {
+      @Override
+      public java.awt.Color getZoneColor()
+      {
+        return java.awt.Color.blue;
+      }
+    };
+    
+    ArrayList<Zone> slicedZones = StackedDotHelper.sliceOwnship(ownshipCourseSeries,
+        blueProv);
 
 		if (ownshipLegs != null)
+		{
 			ownshipLegs.clear();
-
-		ownshipLegs = osLegDet.identifyOwnshipLegs(getTimes(), getSpeeds(),
-				getCourses(), 9);
-
+		}
+		else
+		{
+		  ownshipLegs = new ArrayList<LegOfData>();
+		}
+		
+		int ctr = 1;
+		
+		for(Zone zone: slicedZones)
+		{
+		  final long startT = zone.getStart();
+		  final long endT = zone.getEnd();
+      LegOfData newLeg = new LegOfData("Leg-" + ctr++, startT, endT);
+      System.out.println("Leg:" + newLeg);
+      ownshipLegs.add(newLeg);
+		}
+		
 		// ok, share the ownship legs
 		// ok, slicing done!
 		if (_listeners != null)
@@ -531,7 +561,26 @@ public class BearingMeasurementContribution extends
 		}
 	}
 	
-	public void runMDA(final IContributions contributions)
+	/** collate a list of time stamped course values
+	 * 
+	 * @return
+	 */
+	private TimeSeries getOwnshipCourses()
+  {
+	  final TimeSeries res = new TimeSeries("OS_Courses");
+
+    final Iterator<HostState> iter = states.iterator();
+    while (iter.hasNext())
+    {
+      final BearingMeasurementContribution.HostState hostState =
+          (BearingMeasurementContribution.HostState) iter.next();
+      res.add(new TimeSeriesDataItem(new FixedMillisecond(hostState.time),
+          hostState.courseDegs));
+    }
+    return res;
+  }
+
+  public void runMDA(final IContributions contributions)
 	{
 		// ok, we've got to find the ownship data, somehow :-(
 		if ((states == null) || (states.size() == 0))
@@ -567,93 +616,22 @@ public class BearingMeasurementContribution extends
 		// ok, now collate the bearing data
 		ZigDetector detector = new ZigDetector();
 
-		// get ready to remember the previous leg
-		List<Long> lastLegTimes = null;
-		List<Double> lastLegBearings = null;
-
-		//
-
-		// ok, work through the legs. In the absence of a Discrete
-		// Optimisation algorithm we're taking a brute force approach.
-		// Hopefully we can find an optimised alternative to this.
-		for (final Iterator<LegOfData> iterator2 = ownshipLegs.iterator(); iterator2
-				.hasNext();)
+		// whether we break up bearing data in blocks of ownship course
+		// or not.  In 2019, the algorithm is working better when it
+		// just receives all of the bearing ata in one chunk
+		final boolean sliceByOwnship = false;
+		
+		if(sliceByOwnship)
 		{
-			final LegOfData thisLeg = iterator2.next();
-
-			// ok, slice the data for this leg
-			long legStart = thisLeg.getStart();
-			long legEnd = thisLeg.getEnd();
-
-			// trim the start/end to the sensor data
-			legStart = Math.max(legStart, getStartDate().getTime());
-			legEnd = Math.min(legEnd, getFinishDate().getTime());
-
-			List<Long> thisLegTimes = new ArrayList<Long>();
-			List<Double> thisLegBearings = new ArrayList<Double>();
-			ArrayList<BMeasurement> meas = getMeasurements();
-			Iterator<BMeasurement> iter = meas.iterator();
-			while (iter.hasNext())
-			{
-				BearingMeasurementContribution.BMeasurement measurement = (BearingMeasurementContribution.BMeasurement) iter
-						.next();
-				long thisTime = measurement.getDate().getTime();
-				if ((thisTime >= legStart) && (thisTime <= legEnd))
-				{
-					thisLegTimes.add(measurement.getDate().getTime());
-					thisLegBearings.add(Math.toDegrees(measurement.bearingAngle));
-				}
-			}
-
-			// ok, before we slice this leg, let's just try to see if there was
-			// probably a target zig during the
-			// ownship zig
-			if (lastLegTimes != null)
-			{
-				boolean probWasZig = checkForTargetZig(thisLeg.getName(), lastLegTimes, lastLegBearings,
-						thisLegTimes, thisLegBearings);
-
-				if (probWasZig)
-				{
-					// inject a target leg for the period spanning the ownship manouvre
-					long tStart = lastLegTimes.get(lastLegTimes.size()-1);
-					long tEnd = thisLegTimes.get(0);
-					zigStorer.storeZig("some name", tStart, tEnd, 0);
-				}
-			}
-
-			final double zigTolerance = 0.000001;
-			
-      ISolversManager solversManager = SATC_Activator.getDefault().getService(
-          ISolversManager.class, false);
-      final Precision precision;
-      if(solversManager != null)
-      {
-         precision = solversManager.getActiveSolver().getPrecision();
-      }
-      else
-      {
-        precision = Precision.MEDIUM;
-      }
-      final double zigScore = BaseStackedDotsView.getPrecision(precision);
-			
-		//	zigScore = 0.5;
-//			detector.sliceThis(SATC_Activator.getDefault().getLog(), SATC_Activator.PLUGIN_ID, "some name", legStart, legEnd, legStorer,
-//					zigStorer, zigScore, zigTolerance, thisLegTimes, thisLegBearings);
-      detector.sliceThis2(SATC_Activator.getDefault().getLog(), SATC_Activator.PLUGIN_ID,
-          "some name",  legStorer,
-           zigScore, zigTolerance, thisLegTimes, thisLegBearings);
-			
-			lastLegTimes = thisLegTimes;
-			lastLegBearings = thisLegBearings;
-
+		  // first slice the bearing data into ownship legs, then identify
+		  // target legs within these chunks
+		  sliceByOwnshipLegs(legStorer, zigStorer, detector);
 		}
-
-		// ok, finalise the zig-detector, if we have one
-	//	if(zigConts != null)
-//		{
-	//	  zigStorer.finish();
-	//	}
+		else
+		{
+		  // just pass all the data to the algorithm as one big chunk
+		  sliceAllData(legStorer, zigStorer, detector);
+		}
 
 		// ok, slicing done!
 		if (_listeners != null)
@@ -675,6 +653,41 @@ public class BearingMeasurementContribution extends
 			}
 		}
 	}
+
+  public void sliceAllData(final MyLegStorer legStorer, final MyZigStorer zigStorer,
+      final ZigDetector detector)
+  {
+    List<Long> thisLegTimes = new ArrayList<Long>();
+    List<Double> thisLegBearings = new ArrayList<Double>();
+    ArrayList<BMeasurement> meas = getMeasurements();
+    Iterator<BMeasurement> iter = meas.iterator();
+    while (iter.hasNext())
+    {
+      BearingMeasurementContribution.BMeasurement measurement =
+          (BearingMeasurementContribution.BMeasurement) iter.next();
+      thisLegTimes.add(measurement.getDate().getTime());
+      thisLegBearings.add(Math.toDegrees(measurement.bearingAngle));
+    }
+
+    final double zigTolerance = 0.000001;
+
+    ISolversManager solversManager = SATC_Activator.getDefault().getService(
+        ISolversManager.class, false);
+    final Precision precision;
+    if (solversManager != null)
+    {
+      precision = solversManager.getActiveSolver().getPrecision();
+    }
+    else
+    {
+      precision = Precision.MEDIUM;
+    }
+    final double zigScore = BaseStackedDotsView.getPrecision(precision);
+
+    detector.sliceThis2(SATC_Activator.getDefault().getLog(),
+        SATC_Activator.PLUGIN_ID, "some name", legStorer, zigScore,
+        zigTolerance, thisLegTimes, thisLegBearings);
+  }
 
   public void ditchExistingStraightLegContributions(
       final IContributions contributions)
@@ -1012,7 +1025,89 @@ public class BearingMeasurementContribution extends
 		states.add(newState);
 	}
 
-	public static class AssumptionsTest extends TestCase
+	public void sliceByOwnshipLegs(MyLegStorer legStorer, MyZigStorer zigStorer,
+      ZigDetector detector)
+  {
+    // get ready to remember the previous leg
+  	List<Long> lastLegTimes = null;
+  	List<Double> lastLegBearings = null;
+  
+  	//
+  
+  	// ok, work through the legs. In the absence of a Discrete
+  	// Optimisation algorithm we're taking a brute force approach.
+  	// Hopefully we can find an optimised alternative to this.
+  	for (final Iterator<LegOfData> iterator2 = ownshipLegs.iterator(); iterator2
+  			.hasNext();)
+  	{
+  		final LegOfData thisLeg = iterator2.next();
+  
+  		// ok, slice the data for this leg
+  		long legStart = thisLeg.getStart();
+  		long legEnd = thisLeg.getEnd();
+  
+  		// trim the start/end to the sensor data
+  		legStart = Math.max(legStart, getStartDate().getTime());
+  		legEnd = Math.min(legEnd, getFinishDate().getTime());
+  
+  		List<Long> thisLegTimes = new ArrayList<Long>();
+  		List<Double> thisLegBearings = new ArrayList<Double>();
+  		ArrayList<BMeasurement> meas = getMeasurements();
+  		Iterator<BMeasurement> iter = meas.iterator();
+  		while (iter.hasNext())
+  		{
+  			BearingMeasurementContribution.BMeasurement measurement = (BearingMeasurementContribution.BMeasurement) iter
+  					.next();
+  			long thisTime = measurement.getDate().getTime();
+  			if ((thisTime >= legStart) && (thisTime <= legEnd))
+  			{
+  				thisLegTimes.add(measurement.getDate().getTime());
+  				thisLegBearings.add(Math.toDegrees(measurement.bearingAngle));
+  			}
+  		}
+  
+  		// ok, before we slice this leg, let's just try to see if there was
+  		// probably a target zig during the
+  		// ownship zig
+  		if (lastLegTimes != null)
+  		{
+  			boolean probWasZig = checkForTargetZig(thisLeg.getName(), lastLegTimes, lastLegBearings,
+  					thisLegTimes, thisLegBearings);
+  
+  			if (probWasZig)
+  			{
+  				// inject a target leg for the period spanning the ownship manouvre
+  				long tStart = lastLegTimes.get(lastLegTimes.size()-1);
+  				long tEnd = thisLegTimes.get(0);
+  				zigStorer.storeZig("some name", tStart, tEnd, 0);
+  			}
+  		}
+  
+  		final double zigTolerance = 0.000001;
+  		
+      ISolversManager solversManager = SATC_Activator.getDefault().getService(
+          ISolversManager.class, false);
+      final Precision precision;
+      if(solversManager != null)
+      {
+         precision = solversManager.getActiveSolver().getPrecision();
+      }
+      else
+      {
+        precision = Precision.MEDIUM;
+      }
+      final double zigScore = BaseStackedDotsView.getPrecision(precision);
+  		
+      detector.sliceThis2(SATC_Activator.getDefault().getLog(), SATC_Activator.PLUGIN_ID,
+          "some name",  legStorer,
+           zigScore, zigTolerance, thisLegTimes, thisLegBearings);
+  		
+  		lastLegTimes = thisLegTimes;
+  		lastLegBearings = thisLegBearings;
+  	}
+  }
+
+  public static class AssumptionsTest extends TestCase
 	{
 		public void testOLS()
 		{
