@@ -1124,9 +1124,6 @@ public class RightClickSupport
               final BeanInfo thisB = additional[i];
               if (thisB instanceof EditorType)
               {
-                final EditorType editor = (EditorType) thisB;
-                final Editable subject = (Editable) editor.getData();
-
                 // and the properties
                 final PropertyDescriptor[] theseProps =
                     thisB.getPropertyDescriptors();
