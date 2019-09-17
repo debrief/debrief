@@ -1081,11 +1081,12 @@ public class RightClickSupport
           editables);
       if (commonProps != null)
       {
+
         // hey, can we group these descriptors?
         final Map<String, SortedSet<PropertyDescriptor>> map = mapThese(
             commonProps);
 
-        subMenu = createEditorsFor(manager, editables, theLayers, theTopLayer,
+        subMenu = createMenuFor(manager, editables, theLayers, theTopLayer,
             subMenu, map);
       }
 
@@ -1112,6 +1113,9 @@ public class RightClickSupport
               final BeanInfo thisB = additional[i];
               if (thisB instanceof EditorType)
               {
+                final EditorType editor = (EditorType) thisB;
+                final Editable subject = (Editable) editor.getData();
+
                 // and the properties
                 final PropertyDescriptor[] theseProps = thisB
                     .getPropertyDescriptors();
@@ -1120,7 +1124,11 @@ public class RightClickSupport
                 final Map<String, SortedSet<PropertyDescriptor>> map = mapThese(
                     theseProps);
 
-                subMenu = createEditorsFor(manager, editables, theLayers,
+                // and wrap the object
+                final Editable[] editables2 = new Editable[]
+                {subject};
+
+                subMenu = createMenuFor(manager, editables2, theLayers,
                     theTopLayer, subMenu, map);
               }
             }
@@ -1133,16 +1141,45 @@ public class RightClickSupport
       final MethodDescriptor[] meths = getCommonMethodsFor(editables);
       if (meths != null)
       {
-        createActionsForTheseMethods(manager, editables, theLayers, theTopLayer,
-            meths);
+        for (int i = 0; i < meths.length; i++)
+        {
+          final Layer myTopLayer = theTopLayer;
+
+          final MethodDescriptor thisMethD = meths[i];
+
+          if (thisMethD == null)
+          {
+            CorePlugin.logError(IStatus.ERROR,
+                "Failed to create method, props may be wrongly named", null);
+          }
+          else
+          {
+            // create button for this method
+            final Action doThisAction = new SubjectMethod(thisMethD
+                .getDisplayName(), editables, thisMethD.getMethod(), myTopLayer,
+                theLayers);
+
+            // ok - add to the list.
+            manager.add(doThisAction);
+          }
+        }
       }
 
       // hmm, now do the same for the undoable methods
       final SubjectAction[] actions = getUndoableActionsFor(editables);
       if (actions != null)
       {
-        createUndoableActionsForThese(manager, editables, theLayers,
-            theTopLayer, actions);
+        for (int i = 0; i < actions.length; i++)
+        {
+          final SubjectAction thisMethD = actions[i];
+
+          // create button for this method
+          final IAction doThisAction = generateUndoableActionFor(thisMethD,
+              editables, theLayers, theTopLayer);
+
+          // ok - add to the list.
+          manager.add(doThisAction);
+        }
       }
 
     }
@@ -1200,52 +1237,7 @@ public class RightClickSupport
     }
   }
 
-  public static void createUndoableActionsForThese(final IMenuManager manager,
-      final Editable[] editables, final Layers theLayers, Layer theTopLayer,
-      final SubjectAction[] actions)
-  {
-    for (int i = 0; i < actions.length; i++)
-    {
-      final SubjectAction thisMethD = actions[i];
-
-      // create button for this method
-      final IAction doThisAction = generateUndoableActionFor(thisMethD,
-          editables, theLayers, theTopLayer);
-
-      // ok - add to the list.
-      manager.add(doThisAction);
-    }
-  }
-
-  public static void createActionsForTheseMethods(final IMenuManager manager,
-      final Editable[] editables, final Layers theLayers, Layer theTopLayer,
-      final MethodDescriptor[] meths)
-  {
-    for (int i = 0; i < meths.length; i++)
-    {
-      final Layer myTopLayer = theTopLayer;
-
-      final MethodDescriptor thisMethD = meths[i];
-
-      if (thisMethD == null)
-      {
-        CorePlugin.logError(IStatus.ERROR,
-            "Failed to create method, props may be wrongly named", null);
-      }
-      else
-      {
-        // create button for this method
-        final Action doThisAction = new SubjectMethod(thisMethD
-            .getDisplayName(), editables, thisMethD.getMethod(), myTopLayer,
-            theLayers);
-
-        // ok - add to the list.
-        manager.add(doThisAction);
-      }
-    }
-  }
-
-  public static MenuManager createEditorsFor(final IMenuManager manager,
+  public static MenuManager createMenuFor(final IMenuManager manager,
       final Editable[] editables, final Layers theLayers, Layer theTopLayer,
       MenuManager subMenu, final Map<String, SortedSet<PropertyDescriptor>> map)
   {
