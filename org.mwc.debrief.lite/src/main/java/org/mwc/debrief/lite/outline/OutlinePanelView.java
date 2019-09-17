@@ -216,14 +216,15 @@ public class OutlinePanelView extends SwingLayerManager implements
     private Transferable _oldData;
     private boolean _isCut;
     
-    DoDelete()
+    DoDelete(boolean isCut)
     {
       super(DebriefLiteApp.getDefault(),"Delete",null);
+      _isCut = isCut;
     }
     
     public final MWC.GUI.Tools.Action getData()
     {
-        return new DeleteAction(false,itemToDelete,parentItem,data,_oldData);
+        return new DeleteAction(_isCut,itemToDelete,parentItem,data,_oldData);
     }
     
     @Override
@@ -289,9 +290,10 @@ public class OutlinePanelView extends SwingLayerManager implements
       private Layer parent;
       private Plottable[] _data;
       private Transferable _oldData;
+      private boolean cutFlag;
     DeleteAction(final boolean isCut,Plottable itemToDelete,Layer parentItem,Plottable[] data,Transferable oldData)
     {
-      _isCut = isCut;
+      cutFlag = isCut;
       plottable=itemToDelete;
       parent = parentItem;
       _data = data;
@@ -302,7 +304,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     @Override
     public void execute()
     {
-      if (_isCut)
+      if (cutFlag)
       {
         storeOld();
         _clipboard.setContents(new OutlineViewSelection(_data, true), this);
@@ -557,18 +559,26 @@ public class OutlinePanelView extends SwingLayerManager implements
     }
 
   }
-
-  final class PasteAction extends AbstractAction implements
-      MWC.GUI.Tools.Action, ClipboardOwner
+  
+  final class DoPaste extends PlainTool
   {
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
+    
     private ArrayList<Plottable> lastPastedItems = new ArrayList<>();
     private Layer destination;
     private boolean _isCopy;
 
+    public DoPaste()
+    {
+        super(DebriefLiteApp.getDefault(),"Paste",null);
+    }
+
+
+    @Override
+    public MWC.GUI.Tools.Action getData()
+    {
+      
+      return new PasteAction(destination,_isCopy,lastPastedItems);
+    }
     @Override
     public void actionPerformed(final ActionEvent e)
     {
@@ -593,9 +603,29 @@ public class OutlinePanelView extends SwingLayerManager implements
       _isCopy = os.isACopy();
       final ArrayList<Plottable> plottables = getClipboardContents();
       lastPastedItems = plottables;
-      execute();
-      _undoBuffer.add(this);
+      super.execute();
     }
+    
+
+
+  final class PasteAction implements
+      MWC.GUI.Tools.Action, ClipboardOwner
+  {
+    
+    PasteAction(Layer destination,boolean iscopy,ArrayList<Plottable> lastPastedItems){
+      _destination=destination;
+      _isCopy = iscopy;
+      _lastPastedItems = lastPastedItems;
+          
+    }
+    /**
+     *
+     */
+    private ArrayList<Plottable> _lastPastedItems = new ArrayList<>();
+    private Layer _destination;
+    private boolean _isCopy;
+
+    
 
     protected void doPaste()
     {
@@ -603,12 +633,12 @@ public class OutlinePanelView extends SwingLayerManager implements
       // see if it is a layer or not
       if (!lastPastedItems.isEmpty())
       {
-        for (final Plottable theData : lastPastedItems)
+        for (final Plottable theData : _lastPastedItems)
         {
-          addBackData(theData, destination);
+          addBackData(theData, _destination);
         }
 
-        _myData.fireExtended(lastPastedItems.get(0), destination);
+        _myData.fireExtended(_lastPastedItems.get(0), _destination);
       }
       if (!_isCopy)
       {
@@ -665,12 +695,13 @@ public class OutlinePanelView extends SwingLayerManager implements
     @Override
     public void undo()
     {
-      for (final Plottable item : lastPastedItems)
+      for (final Plottable item : _lastPastedItems)
       {
-        destination.removeElement(item);
+        _destination.removeElement(item);
       }
-      _myData.fireExtended(lastPastedItems.get(0), destination);
+      _myData.fireExtended(_lastPastedItems.get(0), _destination);
     }
+  }
   }
 
   /**
@@ -1186,11 +1217,10 @@ public class OutlinePanelView extends SwingLayerManager implements
         }
       }
     });
-    final Action pasteAction = new PasteAction();
+    final DoPaste pasteAction = new DoPaste();
     pasteButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
         .getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit()
             .getMenuShortcutKeyMask()), "paste");
-    pasteButton.getActionMap().put("paste", pasteAction);
     pasteButton.addActionListener(pasteAction);
 
     final Action editAction = new AbstractAction()
@@ -1227,11 +1257,10 @@ public class OutlinePanelView extends SwingLayerManager implements
     editButton.addActionListener(editAction);
     final ActionListener addLayerAction = new DoAddLayer();
     addLayerButton.addActionListener(addLayerAction);
-    final ActionListener cutAction = new DoDelete();
+    final DoDelete cutAction = new DoDelete(true);
     cutButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
         .getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit()
             .getMenuShortcutKeyMask()), "cut");
-    //cutButton.getActionMap().put("cut", cutAction);
     cutButton.addActionListener(cutAction);
     final Action copyAction = new AbstractAction()
     {
@@ -1258,7 +1287,7 @@ public class OutlinePanelView extends SwingLayerManager implements
             .getMenuShortcutKeyMask()), "copy");
     copyButton.getActionMap().put("copy", copyAction);
     copyButton.addActionListener(copyAction);
-    final ActionListener deleteAction = new DoDelete();
+    final ActionListener deleteAction = new DoDelete(false);
     copyButton.setEnabled(false);
     deleteButton.setEnabled(false);
     pasteButton.setEnabled(false);
