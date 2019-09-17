@@ -40,7 +40,7 @@
 	</target>
 
 	<target name="debrief_legacy.jar" depends="init" unless="debrief_legacy.jar" description="Create jar: org.mwc.debrief.legacy debrief_legacy.jar.">
-		<ant antfile="build.xml" dir="../org.mwc.cmap.legacy" target="cmap_legacy_jar"/>
+		<ant antfile="build.xml" dir="../org.mwc.cmap.legacy" target="cmap_legacy_jar" inheritAll="false"/>
 		<delete dir="${temp.folder}/debrief_legacy.jar.bin"/>
 		<mkdir dir="${temp.folder}/debrief_legacy.jar.bin"/>
 		<path id="debrief_legacy.jar.classpath">
