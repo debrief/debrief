@@ -185,6 +185,9 @@ public class GroupLightweightTracks implements RightClickContextItemGenerator
       final Layer[] parentLayers, final Editable[] subjects)
   {
     boolean goForIt = false;
+    
+    // just check that some are lightweight
+    boolean allHeavyweight = true;
 
     final List<LightweightTrackWrapper> tracks =
         new ArrayList<LightweightTrackWrapper>();
@@ -200,6 +203,14 @@ public class GroupLightweightTracks implements RightClickContextItemGenerator
         {
           goForIt = true;
           tracks.add((LightweightTrackWrapper) thisE);
+          
+          
+          // silly test, just to prevent the menu being shown
+          // when they're all actually heavy tracks
+          if(!(thisE instanceof TrackWrapper))
+          {
+            allHeavyweight = false;
+          }
         }
 
         if (!goForIt)
@@ -215,7 +226,7 @@ public class GroupLightweightTracks implements RightClickContextItemGenerator
       goForIt = false;
 
     // ok, is it worth going for?
-    if (goForIt)
+    if (goForIt && !allHeavyweight)
     {
       // right,stick in a separator
       parent.add(new Separator());
