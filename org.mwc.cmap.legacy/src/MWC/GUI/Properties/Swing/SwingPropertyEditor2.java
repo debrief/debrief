@@ -977,9 +977,9 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
   private void apply()
   {
     super.doUpdate();
-    //Ayesha: removed as this is no longer required. we are doing a reload of the
-    //changed layer alone in a previous step. 
-    //_theParent.doApply();
+    // Ayesha: removed as this is no longer required. we are doing a reload of the
+    // changed layer alone in a previous step.
+    // _theParent.doApply();
   }
 
   /**
@@ -1661,6 +1661,11 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
       final JTextArea textArea = (JTextArea) scrollPane.getViewport().getView();
       textArea.setText(pe.getAsText());
       textArea.invalidate();
+    }
+    if (pe instanceof SwingDatePropertyEditor)
+    {
+      ((SwingDatePropertyEditor) pe).resetData();
+      c.invalidate();
     }
   }
 }
