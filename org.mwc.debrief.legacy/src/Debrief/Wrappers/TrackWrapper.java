@@ -2436,8 +2436,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     // check that we do actually contain some data
     if (_theSegments.isEmpty())
     {
-      return new Watchable[]
-      {};
+      return EMPTY_WATCHABLE_LIST;
     }
     else if (isSinglePointTrack())
     {
@@ -2604,8 +2603,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     }
     else
     {
-      return new MWC.GenericData.Watchable[]
-      {};
+      return EMPTY_WATCHABLE_LIST;
     }
 
   }

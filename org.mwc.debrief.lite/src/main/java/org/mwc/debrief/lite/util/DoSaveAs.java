@@ -100,7 +100,7 @@ public class DoSaveAs extends AbstractAction
       {
         if (targetFile.exists())
         {
-          int yesNo = JOptionPane.showConfirmDialog(null, targetFile.getName()
+          int yesNo = JOptionPane.showConfirmDialog(DebriefLiteApp.getInstance().getApplicationFrame(), targetFile.getName()
               + " already exists. Do you want to overwrite?");
           if (JOptionPane.YES_OPTION == yesNo)
           {

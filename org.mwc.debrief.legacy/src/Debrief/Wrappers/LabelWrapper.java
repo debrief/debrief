@@ -679,8 +679,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements
       {this};
     }
     else
-      return new MWC.GenericData.Watchable[]
-      {};
+      return EMPTY_WATCHABLE_LIST;
 
   }
 

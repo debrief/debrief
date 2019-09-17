@@ -786,6 +786,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     }
     final JButton button = new JButton(icon);
     button.setToolTipText(command);
+    button.setName(command);
     return button;
   }
 

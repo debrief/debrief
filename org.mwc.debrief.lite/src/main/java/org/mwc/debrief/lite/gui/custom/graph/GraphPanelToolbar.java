@@ -156,6 +156,7 @@ public class GraphPanelToolbar extends JPanel
             if (selectTrackModel.getTracks().isEmpty())
             {
               operationComboModel.removeAllElements();
+              setState(INACTIVE_STATE);
             }
             else
             {

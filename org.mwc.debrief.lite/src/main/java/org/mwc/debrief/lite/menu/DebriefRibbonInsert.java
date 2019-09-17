@@ -7,7 +7,6 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -33,7 +32,6 @@ import Debrief.GUI.Frames.Application;
 import Debrief.Tools.Palette.CoreCreateShape;
 import Debrief.Tools.Palette.CreateLabel;
 import Debrief.Tools.Palette.CreateShape;
-import Debrief.Wrappers.PolygonWrapper;
 import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
@@ -45,9 +43,6 @@ import MWC.GUI.Shapes.ArcShape;
 import MWC.GUI.Shapes.CircleShape;
 import MWC.GUI.Shapes.EllipseShape;
 import MWC.GUI.Shapes.LineShape;
-import MWC.GUI.Shapes.PlainShape;
-import MWC.GUI.Shapes.PolygonShape;
-import MWC.GUI.Shapes.PolygonShape.PolygonNode;
 import MWC.GUI.Shapes.RectangleShape;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.PlainTool.BoundsProvider;
@@ -181,7 +176,10 @@ public class DebriefRibbonInsert
     ellipseShape.setSelectedLayerSource(selectLayerCombo);
     final JCommandButton ellipseShapeCmd = MenuUtils.addCommandButton("Ellipse",
         "icons/16/ellipse.png", ellipseShape, CommandButtonDisplayState.MEDIUM, null);
-    final CreateShape polygonShape = new CreateShape(toolParent, theProperties,
+    /**
+     * to be added later on
+     */
+    /*final CreateShape polygonShape = new CreateShape(toolParent, theProperties,
         theLayers, "Polygon", "icons/polygon_add.png", bounds)
     {
       @Override
@@ -215,7 +213,7 @@ public class DebriefRibbonInsert
     @SuppressWarnings("unused")
 //    final JCommandButton polygonCmd = MenuUtils.addCommandButton("Polygon",
 //        "icons/16/polygon.png", polygonShape, CommandButtonDisplayState.MEDIUM, null);
-    
+    */
     final CreateShape rectShape = new CreateShape(toolParent, theProperties,
         theLayers, "Rectangle", "icons/rectangle_add.png", bounds)
     {
@@ -396,6 +394,7 @@ public class DebriefRibbonInsert
         }
       }
     });
+    selectLayerCombo.setName("select-layer-combo");
     
     panel.add(selectLayerCombo);
     final Image activeLayerImg = MenuUtils.createImage("icons/24/auto_layer.png");

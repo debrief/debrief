@@ -268,7 +268,7 @@ public class TrackWrapper_Support
         // just add the reset color field first
         final Class<SegmentList> c = SegmentList.class;
         MethodDescriptor[] mds =
-        {method(c, "mergeAllSegments", null, "Merge all segments"), method(c,
+        {method(c, "mergeAllSegments", null, "Merge all track segments"), method(c,
             "revealAllPositions", null, "Reveal All Positions")};
 
         final MethodDescriptor[] oldMeds = super.getMethodDescriptors();

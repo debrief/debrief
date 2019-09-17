@@ -53,4 +53,11 @@ public interface SubjectAction
 	 * @return  yes/no
 	 */
 	boolean isEnabled();
+
+  /**
+   * whether to fire data extended on completion. Otherwise, just fire reformatted
+   * 
+   * @return yes/no
+   */
+  boolean doFireExtended();
 }

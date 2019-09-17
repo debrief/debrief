@@ -17,14 +17,10 @@ package org.mwc.debrief.core.loaders;
 import java.io.File;
 import java.io.InputStream;
 
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.core.commands.operations.IUndoableOperation;
-import org.eclipse.core.commands.operations.UndoContext;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.window.Window;
@@ -38,102 +34,9 @@ import Debrief.ReaderWriter.BRT.BRTImporter;
 import Debrief.ReaderWriter.BRT.BRTImporter.ImportBRTAction;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Layers;
-import MWC.GUI.Tools.Action;
 
 public class BRTLoader extends CoreLoader
 {
-
-  private static class WrapAction implements IUndoableOperation
-  {
-    private final Action _action;
-
-    public WrapAction(final Action action)
-    {
-      _action = action;
-    }
-
-    @Override
-    public void addContext(final IUndoContext context)
-    {
-      // skip;
-    }
-
-    @Override
-    public boolean canExecute()
-    {
-      return true;
-    }
-
-    @Override
-    public boolean canRedo()
-    {
-      return _action.isRedoable();
-    }
-
-    @Override
-    public boolean canUndo()
-    {
-      return _action.isUndoable();
-    }
-
-    @Override
-    public void dispose()
-    {
-      // skip.
-    }
-
-    @Override
-    public IStatus execute(final IProgressMonitor monitor,
-        final IAdaptable info) throws ExecutionException
-    {
-      _action.execute();
-      return Status.OK_STATUS;
-    }
-
-    @Override
-    public IUndoContext[] getContexts()
-    {
-      return new UndoContext[]
-      {};
-    }
-
-    @Override
-    public String getLabel()
-    {
-
-      return _action.toString();
-    }
-
-    @Override
-    public boolean hasContext(final IUndoContext context)
-    {
-
-      return false;
-    }
-
-    @Override
-    public IStatus redo(final IProgressMonitor monitor, final IAdaptable info)
-        throws ExecutionException
-    {
-      _action.execute();
-      return Status.OK_STATUS;
-    }
-
-    @Override
-    public void removeContext(final IUndoContext context)
-    {
-      // skip.
-    }
-
-    @Override
-    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
-        throws ExecutionException
-    {
-      _action.undo();
-      return Status.OK_STATUS;
-    }
-
-  }
 
   public BRTLoader()
   {
@@ -199,7 +102,7 @@ public class BRTLoader extends CoreLoader
           {
             final ImportBRTAction action = importer.importThis(wizard,
                 inputStream);
-            final IUndoableOperation operation = new WrapAction(action);
+            final IUndoableOperation operation = new WrapDebriefAction(action);
             CorePlugin.run(operation);
           }
           else

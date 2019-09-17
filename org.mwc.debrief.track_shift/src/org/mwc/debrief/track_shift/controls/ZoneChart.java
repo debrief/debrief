@@ -1691,8 +1691,11 @@ public class ZoneChart extends Composite
     zones.clear();
 
     // and from the plot
-    final XYPlot thePlot = (XYPlot) chart.getPlot();
-    thePlot.clearDomainMarkers();
+    if (!chartComposite.isDisposed())
+    {
+      final XYPlot thePlot = (XYPlot) chart.getPlot();
+      thePlot.clearDomainMarkers();
+    }
   }
 
   protected void createToolbar(final Composite col1,
