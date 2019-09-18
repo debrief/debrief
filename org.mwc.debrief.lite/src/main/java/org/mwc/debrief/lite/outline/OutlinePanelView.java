@@ -367,7 +367,6 @@ ClipboardOwner, Helper
           if (plottable instanceof Layer)
           {
             _myData.addThisLayer((Layer) plottable);
-            _myData.fireExtended();
           }
         }
         if (_isCut)
