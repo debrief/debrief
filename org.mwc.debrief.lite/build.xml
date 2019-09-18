@@ -151,7 +151,7 @@
 			<fileset dir="../org.mwc.debrief.legacy/libs" includes="*.jar"/>
 			<fileset dir="../org.mwc.cmap.jfreechart/libs" includes="*.jar"/>
 			<fileset dir="../org.mwc.cmap.geotools/libs" includes="*.jar"/>
-			<fileset dir="${basedir}" includes="cmap_legacy.jar"/>
+			<fileset dir="../org.mwc.debrief.legacy" includes="cmap_legacy.jar"/>
 			<fileset dir="../org.mwc.cmap.geotools" includes="cmap_geotools.jar"/>
 			<fileset dir="../org.mwc.debrief.legacy" includes="debrief_legacy.jar"/>
 			<fileset dir="libs" includes="*.jar"/>
