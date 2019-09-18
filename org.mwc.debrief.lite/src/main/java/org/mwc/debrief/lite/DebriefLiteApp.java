@@ -1608,5 +1608,10 @@ public class DebriefLiteApp implements FileDropListener
   {
     getLayerManager().updateData((Layer) theLayer, newItem);
   }
+  
+  public TimeManager getTimeManager()
+  {
+    return _instance.timeManager;
+  }
 
 }

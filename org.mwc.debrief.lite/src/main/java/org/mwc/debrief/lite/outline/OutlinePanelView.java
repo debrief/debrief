@@ -98,50 +98,51 @@ import MWC.GUI.LayerManager.Swing.SwingLayerManager;
 import MWC.GUI.Tools.PlainTool;
 import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
 import MWC.GUI.Undo.UndoBuffer;
+import MWC.GenericData.TimePeriod;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
  *
  */
 public class OutlinePanelView extends SwingLayerManager implements
-    ClipboardOwner, Helper
+ClipboardOwner, Helper
 {
 
   final class DoAddLayer extends PlainTool implements ActionListener
   {
     private Layer layerToAdd;
-    
+
     DoAddLayer()
     {
       super(DebriefLiteApp.getDefault(),"Add Layer",null);
     }
-    
+
     @Override
     public void actionPerformed(final ActionEvent e)
     {
       layerToAdd = addLayer();
       super.execute();
     }
-    
+
     @Override
     public MWC.GUI.Tools.Action getData()
     {
       return new AddLayerAction(layerToAdd);
     }
-  
+
     final class AddLayerAction  implements
-        MWC.GUI.Tools.Action
+    MWC.GUI.Tools.Action
     {
       /**
        *
        */
       private Layer _layer;
-  
+
       public AddLayerAction(Layer layer)
       {
         _layer = layer;
       }
-  
+
       @Override
       public void execute()
       {
@@ -150,19 +151,19 @@ public class OutlinePanelView extends SwingLayerManager implements
           _myData.addThisLayer(_layer);
         }
       }
-  
+
       @Override
       public boolean isRedoable()
       {
         return true;
       }
-  
+
       @Override
       public boolean isUndoable()
       {
         return true;
       }
-  
+
       @Override
       public void undo()
       {
@@ -207,7 +208,7 @@ public class OutlinePanelView extends SwingLayerManager implements
       return _title;
     }
   }
-  
+
   final class DoDelete extends PlainTool
   {
     private Plottable itemToDelete;
@@ -215,18 +216,18 @@ public class OutlinePanelView extends SwingLayerManager implements
     private Plottable[] data;
     private Transferable _oldData;
     private boolean _isCut;
-    
+
     DoDelete(boolean isCut)
     {
       super(DebriefLiteApp.getDefault(),"Delete",null);
       _isCut = isCut;
     }
-    
+
     public final MWC.GUI.Tools.Action getData()
     {
-        return new DeleteAction(_isCut,itemToDelete,parentItem,data,_oldData);
+      return new DeleteAction(_isCut,itemToDelete,parentItem,data,_oldData);
     }
-    
+
     @Override
     public void actionPerformed(final ActionEvent e)
     {
@@ -259,7 +260,7 @@ public class OutlinePanelView extends SwingLayerManager implements
               // ok, delete it, get the parent
               final DefaultMutableTreeNode parentNode =
                   (DefaultMutableTreeNode) _myTree.getSelectionPath()
-                      .getPathComponent(pathCount - 2);
+                  .getPathComponent(pathCount - 2);
               final Object parent = parentNode.getUserObject();
 
               if (parent instanceof Layer)
@@ -276,7 +277,7 @@ public class OutlinePanelView extends SwingLayerManager implements
                 itemToDelete = (Plottable) object;
               }
               super.execute();
-             // _undoBuffer.add(getData());
+              // _undoBuffer.add(getData());
             }
           }
         }
@@ -284,101 +285,112 @@ public class OutlinePanelView extends SwingLayerManager implements
     }
 
     final class DeleteAction  implements
-      MWC.GUI.Tools.Action,ClipboardOwner
-      {
+    MWC.GUI.Tools.Action,ClipboardOwner
+    {
       private Plottable plottable;
       private Layer parent;
       private Plottable[] _data;
       private Transferable _oldData;
       private boolean cutFlag;
-    DeleteAction(final boolean isCut,Plottable itemToDelete,Layer parentItem,Plottable[] data,Transferable oldData)
-    {
-      cutFlag = isCut;
-      plottable=itemToDelete;
-      parent = parentItem;
-      _data = data;
-      _oldData = oldData;
-    }
-    
-
-    @Override
-    public void execute()
-    {
-      if (cutFlag)
+      DeleteAction(final boolean isCut,Plottable itemToDelete,Layer parentItem,Plottable[] data,Transferable oldData)
       {
-        storeOld();
-        _clipboard.setContents(new OutlineViewSelection(_data, true), this);
-      }
-      if (parent != null)
-      {
-        parent.removeElement(plottable);
-        _myData.fireModified(parent);
-      }
-      else
-      {
-        getDataLayers().removeThisLayer((Layer) plottable);
-        _myData.fireExtended();
+        cutFlag = isCut;
+        plottable=itemToDelete;
+        parent = parentItem;
+        _data = data;
+        _oldData = oldData;
       }
 
-    }
 
-    @Override
-    public boolean isRedoable()
-    {
-      return true;
-    }
-
-    @Override
-    public boolean isUndoable()
-    {
-      return true;
-    }
-
-    @Override
-    public void lostOwnership(final Clipboard clipboard,
-        final Transferable contents)
-    {
-      // do nothing
-
-    }
-
-    private void restoreOld()
-    {
-      _clipboard.setContents(_oldData, this);
-    }
-
-    private void storeOld()
-    {
-      _oldData = _clipboard.getContents(this);
-    }
-
-    @Override
-    public void undo()
-    {
-      if (parent != null)
+      @Override
+      public void execute()
       {
-        parent.add(plottable);
-        _myData.fireExtended(plottable, parent);
-      }
-      else
-      {
-        if (plottable instanceof Layer)
+        if (cutFlag)
         {
-          _myData.addThisLayer((Layer) plottable);
-          _myData.fireExtended();
+          storeOld();
+          _clipboard.setContents(new OutlineViewSelection(_data, true), this);
         }
-      }
-      if (_isCut)
-      {
-        restoreOld();
+        if (parent != null)
+        {
+          parent.removeElement(plottable);
+          _myData.fireModified(parent);
+        }
+        else
+        {
+          getDataLayers().removeThisLayer((Layer) plottable);
+          _myData.fireExtended();
+          
+        }
+        updateTime();
       }
 
+      @Override
+      public boolean isRedoable()
+      {
+        return true;
+      }
+
+      @Override
+      public boolean isUndoable()
+      {
+        return true;
+      }
+
+      @Override
+      public void lostOwnership(final Clipboard clipboard,
+          final Transferable contents)
+      {
+        // do nothing
+
+      }
+
+      private void restoreOld()
+      {
+        _clipboard.setContents(_oldData, this);
+      }
+
+      private void storeOld()
+      {
+        _oldData = _clipboard.getContents(this);
+      }
+
+      @Override
+      public void undo()
+      {
+        if (parent != null)
+        {
+          parent.add(plottable);
+          _myData.fireExtended(plottable, parent);
+        }
+        else
+        {
+          if (plottable instanceof Layer)
+          {
+            _myData.addThisLayer((Layer) plottable);
+            _myData.fireExtended();
+          }
+        }
+        if (_isCut)
+        {
+          restoreOld();
+        }
+        updateTime();
+      }
+      private void updateTime()
+      {
+        final TimePeriod period = _myData.getTimePeriod();
+        DebriefLiteApp.getInstance().getTimeManager().setPeriod(this, period);
+        if (period != null)
+        {
+          DebriefLiteApp.getInstance().getTimeManager().setTime(this, period.getStartDTG(), true);
+        }
+        System.out.println("Updated time");
+      }
     }
-  }
   }
 
   private class OutlineCellEditor extends AbstractCellEditor implements
-      TreeCellEditor
+  TreeCellEditor
   {
 
     /**
@@ -559,24 +571,24 @@ public class OutlinePanelView extends SwingLayerManager implements
     }
 
   }
-  
+
   final class DoPaste extends PlainTool
   {
-    
+
     private ArrayList<Plottable> lastPastedItems = new ArrayList<>();
     private Layer destination;
     private boolean _isCopy;
 
     public DoPaste()
     {
-        super(DebriefLiteApp.getDefault(),"Paste",null);
+      super(DebriefLiteApp.getDefault(),"Paste",null);
     }
 
 
     @Override
     public MWC.GUI.Tools.Action getData()
     {
-      
+
       return new PasteAction(destination,_isCopy,lastPastedItems);
     }
     @Override
@@ -605,103 +617,103 @@ public class OutlinePanelView extends SwingLayerManager implements
       lastPastedItems = plottables;
       super.execute();
     }
-    
 
 
-  final class PasteAction implements
-      MWC.GUI.Tools.Action, ClipboardOwner
-  {
-    
-    PasteAction(Layer destination,boolean iscopy,ArrayList<Plottable> lastPastedItems){
-      _destination=destination;
-      _isCopy = iscopy;
-      _lastPastedItems = lastPastedItems;
-          
-    }
-    /**
-     *
-     */
-    private ArrayList<Plottable> _lastPastedItems = new ArrayList<>();
-    private Layer _destination;
-    private boolean _isCopy;
 
-    
-
-    protected void doPaste()
+    final class PasteAction implements
+    MWC.GUI.Tools.Action, ClipboardOwner
     {
-      // see if there is currently a plottable on the clipboard
-      // see if it is a layer or not
-      if (!lastPastedItems.isEmpty())
-      {
-        for (final Plottable theData : _lastPastedItems)
-        {
-          addBackData(theData, _destination);
-        }
 
+      PasteAction(Layer destination,boolean iscopy,ArrayList<Plottable> lastPastedItems){
+        _destination=destination;
+        _isCopy = iscopy;
+        _lastPastedItems = lastPastedItems;
+
+      }
+      /**
+       *
+       */
+      private ArrayList<Plottable> _lastPastedItems = new ArrayList<>();
+      private Layer _destination;
+      private boolean _isCopy;
+
+
+
+      protected void doPaste()
+      {
+        // see if there is currently a plottable on the clipboard
+        // see if it is a layer or not
+        if (!lastPastedItems.isEmpty())
+        {
+          for (final Plottable theData : _lastPastedItems)
+          {
+            addBackData(theData, _destination);
+          }
+
+          _myData.fireExtended(_lastPastedItems.get(0), _destination);
+        }
+        if (!_isCopy)
+        {
+          // clear the clipboard
+          _clipboard.setContents(new Transferable()
+          {
+            @Override
+            public Object getTransferData(final DataFlavor flavor)
+                throws UnsupportedFlavorException
+            {
+              throw new UnsupportedFlavorException(flavor);
+            }
+
+            @Override
+            public DataFlavor[] getTransferDataFlavors()
+            {
+              return new DataFlavor[0];
+            }
+
+            @Override
+            public boolean isDataFlavorSupported(final DataFlavor flavor)
+            {
+              return false;
+            }
+          }, this);
+        }
+      }
+
+      @Override
+      public void execute()
+      {
+        doPaste();
+      }
+
+      @Override
+      public boolean isRedoable()
+      {
+        return true;
+      }
+
+      @Override
+      public boolean isUndoable()
+      {
+        return true;
+      }
+
+      @Override
+      public void lostOwnership(final Clipboard clipboard,
+          final Transferable contents)
+      {
+        // do nothing
+      }
+
+      @Override
+      public void undo()
+      {
+        for (final Plottable item : _lastPastedItems)
+        {
+          _destination.removeElement(item);
+        }
         _myData.fireExtended(_lastPastedItems.get(0), _destination);
       }
-      if (!_isCopy)
-      {
-        // clear the clipboard
-        _clipboard.setContents(new Transferable()
-        {
-          @Override
-          public Object getTransferData(final DataFlavor flavor)
-              throws UnsupportedFlavorException
-          {
-            throw new UnsupportedFlavorException(flavor);
-          }
-
-          @Override
-          public DataFlavor[] getTransferDataFlavors()
-          {
-            return new DataFlavor[0];
-          }
-
-          @Override
-          public boolean isDataFlavorSupported(final DataFlavor flavor)
-          {
-            return false;
-          }
-        }, this);
-      }
     }
-
-    @Override
-    public void execute()
-    {
-      doPaste();
-    }
-
-    @Override
-    public boolean isRedoable()
-    {
-      return true;
-    }
-
-    @Override
-    public boolean isUndoable()
-    {
-      return true;
-    }
-
-    @Override
-    public void lostOwnership(final Clipboard clipboard,
-        final Transferable contents)
-    {
-      // do nothing
-    }
-
-    @Override
-    public void undo()
-    {
-      for (final Plottable item : _lastPastedItems)
-      {
-        _destination.removeElement(item);
-      }
-      _myData.fireExtended(_lastPastedItems.get(0), _destination);
-    }
-  }
   }
 
   /**
@@ -895,7 +907,7 @@ public class OutlinePanelView extends SwingLayerManager implements
             // ok, delete it, get the parent
             final DefaultMutableTreeNode parentNode =
                 (DefaultMutableTreeNode) _myTree.getSelectionPath()
-                    .getPathComponent(pathCount - 2);
+                .getPathComponent(pathCount - 2);
             final Object parent = parentNode.getUserObject();
             if (parent instanceof Layer)
             {
