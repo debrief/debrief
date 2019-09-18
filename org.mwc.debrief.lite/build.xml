@@ -165,10 +165,10 @@
 	</target>
 	<target name="quiet">
 
-				<script language="javascript">
+				<!--script language="javascript">
 				        var logger = project.getBuildListeners( ).firstElement( );
 				        logger.setMessageOutputLevel( 0 );
-				    </script>
+				    </script-->
 
 	</target>
 
