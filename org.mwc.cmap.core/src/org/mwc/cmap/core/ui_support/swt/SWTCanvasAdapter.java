@@ -1199,7 +1199,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
         // width back
         if (thisChar == ' ')
         {
-          thisWid = _theDest.getFontMetrics().getAverageCharWidth();
+          thisWid = (int) _theDest.getFontMetrics().getAverageCharacterWidth();
         }
         else
         {
@@ -1253,7 +1253,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
   }
 
   @Override
-  public void nofillShape(final Shape shape)
+  public void emptyShape(final Shape shape)
   {
     if (_sg2d != null && shape != null)
     {

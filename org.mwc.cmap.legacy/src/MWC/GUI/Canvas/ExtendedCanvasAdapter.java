@@ -59,7 +59,7 @@ public class ExtendedCanvasAdapter extends CanvasAdaptor implements
   }
 
   @Override
-  public void nofillShape(final Shape shape)
+  public void emptyShape(final Shape shape)
   {
     if (shape != null)
     {

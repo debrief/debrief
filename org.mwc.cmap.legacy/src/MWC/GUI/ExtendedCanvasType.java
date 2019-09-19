@@ -29,7 +29,7 @@ public interface ExtendedCanvasType extends ShapeCanvasType
    * @param shape
    *          Shape to draw
    */
-  public void nofillShape(Shape shape);
+  public void emptyShape(Shape shape);
 
   /**
    * produce a semi-transparent filled arc

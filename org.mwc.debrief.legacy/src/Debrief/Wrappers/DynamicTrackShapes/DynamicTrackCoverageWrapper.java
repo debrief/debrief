@@ -193,7 +193,7 @@ public class DynamicTrackCoverageWrapper extends DynamicTrackShapeWrapper
       {
         if (!filled)
         {
-          ((ExtendedCanvasType) dest).nofillShape(shape);
+          ((ExtendedCanvasType) dest).emptyShape(shape);
         }
         else if (semiTransparent)
         {
