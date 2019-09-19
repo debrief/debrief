@@ -23,7 +23,7 @@ before_script:
 - sh -e /etc/init.d/xvfb start
 - sleep 3
 - ./install-msitools.sh
-script: mvn clean verify -U -B -fae -q 
+script: mvn clean verify -U -B -fae -q
 after_failure:
 - ls org.mwc.debrief.ui_test
 - ls org.mwc.debrief.ui_test/target
