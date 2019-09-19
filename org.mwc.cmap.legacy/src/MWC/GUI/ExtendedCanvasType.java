@@ -21,19 +21,19 @@ public interface ExtendedCanvasType extends ShapeCanvasType
   public void drawLine(final int x1, final int y1, final int x2, final int y2,
       final int transparency);
 
-  public boolean getXORMode();
-
   /**
    * Draws a shape without filling it.
-   * 
+   *
    * @param shape
    *          Shape to draw
    */
   public void emptyShape(Shape shape);
 
+  public boolean getXORMode();
+
   /**
    * produce a semi-transparent filled arc
-   * 
+   *
    * @param x
    * @param y
    * @param width
@@ -46,7 +46,7 @@ public interface ExtendedCanvasType extends ShapeCanvasType
 
   /**
    * produce a semi-transparent filled oval
-   * 
+   *
    * @param x
    * @param y
    * @param width
@@ -57,7 +57,7 @@ public interface ExtendedCanvasType extends ShapeCanvasType
 
   /**
    * produce a semi-transparent filled polygon
-   * 
+   *
    * @param xPoints
    * @param yPoints
    * @param nPoints
@@ -67,7 +67,7 @@ public interface ExtendedCanvasType extends ShapeCanvasType
 
   /**
    * produce a semi-transparent filled rectangle
-   * 
+   *
    * @param x
    * @param y
    * @param wid

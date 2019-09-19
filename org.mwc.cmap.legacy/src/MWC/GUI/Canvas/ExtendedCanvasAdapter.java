@@ -41,6 +41,15 @@ public class ExtendedCanvasAdapter extends CanvasAdaptor implements
   }
 
   @Override
+  public void emptyShape(final Shape shape)
+  {
+    if (shape != null)
+    {
+      _dest.draw(shape);
+    }
+  }
+
+  @Override
   public void fillShape(final Shape shape)
   {
     _dest.fill(shape);
@@ -56,15 +65,6 @@ public class ExtendedCanvasAdapter extends CanvasAdaptor implements
   {
     final int type = AlphaComposite.SRC_OVER;
     return (AlphaComposite.getInstance(type, alpha));
-  }
-
-  @Override
-  public void emptyShape(final Shape shape)
-  {
-    if (shape != null)
-    {
-      _dest.draw(shape);
-    }
   }
 
   @Override

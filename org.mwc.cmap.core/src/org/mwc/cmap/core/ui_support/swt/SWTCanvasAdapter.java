@@ -894,6 +894,16 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
   }
 
   @Override
+  public void emptyShape(final Shape shape)
+  {
+    if (_sg2d != null && shape != null)
+    {
+      _theDest.setAlpha(255);
+      _sg2d.draw(shape);
+    }
+  }
+
+  @Override
   public final void endDraw(final Object theVal)
   {
     // _theDest = null;
@@ -1134,31 +1144,6 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
     return _theSize;
   }
 
-  // ///////////////////////////////////////////////////////////
-  // graphics plotting related
-  // //////////////////////////////////////////////////////////
-  /**
-   * find out the current metrics.
-   *
-   * @param theFont
-   *          the font to try
-   * @return the metrics object
-   */
-  // public final java.awt.FontMetrics getFontMetrics(final java.awt.Font
-  // theFont)
-  // {
-  // java.awt.FontMetrics res = null;
-  //
-  // if (_theDest != null)
-  // {
-  // if (theFont != null)
-  // res = _theDest.getFontMetrics(theFont);
-  // else
-  // res = _theDest.getFontMetrics();
-  // }
-  //
-  // return res;
-  // }
   @Override
   public final int getStringHeight(final java.awt.Font theFont)
   {
@@ -1250,16 +1235,6 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
   public final boolean hasEditor()
   {
     return true;
-  }
-
-  @Override
-  public void emptyShape(final Shape shape)
-  {
-    if (_sg2d != null && shape != null)
-    {
-      _theDest.setAlpha(255);
-      _sg2d.draw(shape);
-    }
   }
 
   @Override
