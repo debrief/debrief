@@ -248,4 +248,10 @@ public final class UndoBuffer extends Observable
 
     return res;
   }
+  public void resetBuffer() {
+    theActions.clear();
+    presentAction=-1;
+    bufferChanged();
+  }
+  
 }
