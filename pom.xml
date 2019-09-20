@@ -9,8 +9,8 @@
   <packaging>pom</packaging>
 
   <properties>
-    <tycho.version>1.2.0</tycho.version>
-    <tycho-extras.version>1.2.0</tycho-extras.version>
+    <tycho.version>1.4.0</tycho.version>
+    <tycho-extras.version>1.4.0</tycho-extras.version>
 
     <tycho-repo.url>https://oss.sonatype.org/content/groups/public/</tycho-repo.url>
 
@@ -123,7 +123,7 @@
          <target>
            <artifact>
              <groupId>org.mwc.debrief</groupId>
-             <artifactId>eclipse48</artifactId>
+             <artifactId>eclipse-latest</artifactId>
              <version>0.0.1-SNAPSHOT</version>
            </artifact>
          </target>
@@ -139,11 +139,6 @@
               <os>linux</os>
               <ws>gtk</ws>
               <arch>x86_64</arch>
-            </environment>
-            <environment>
-              <os>win32</os>
-              <ws>win32</ws>
-              <arch>x86</arch>
             </environment>
             <environment>
               <os>win32</os>
@@ -204,8 +199,8 @@
 		<version>${tycho.version}</version>
 		<configuration>
 			<encoding>UTF-8</encoding>
-			<source>1.7</source>
-			<target>1.7</target>
+			<source>1.8</source>
+			<target>1.8</target>
 			<compilerArgument>-warn:+discouraged,forbidden</compilerArgument>
 		</configuration>
 	</plugin>

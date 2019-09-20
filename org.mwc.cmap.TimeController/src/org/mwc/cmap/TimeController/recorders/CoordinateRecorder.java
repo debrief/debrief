@@ -189,9 +189,7 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
 
       assertTrue("found data", _theLayers.size() > 0);
       
-      /*
-       * final PlainProjection projection = new org.mwc.cmap.gt2plot.proj.GtProjection();
-       */
+      
       final PlainProjection projection =
           new MWC.Algorithms.Projections.FlatProjection();
       projection.setScreenArea(new java.awt.Dimension(1443, 901));

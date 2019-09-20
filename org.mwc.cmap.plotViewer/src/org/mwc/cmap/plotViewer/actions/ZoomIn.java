@@ -20,6 +20,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.LineAttributes;
@@ -60,7 +62,7 @@ public class ZoomIn extends CoreDragAction
 		
 		private boolean dragResult;
 
-		private KeyListener listener = new KeyAdapter()
+		final private KeyListener listener = new KeyAdapter()
 		{
 			@Override
 			public void keyPressed(KeyEvent e)
@@ -69,19 +71,35 @@ public class ZoomIn extends CoreDragAction
 					dragResult = false;
 				}
 			}
-			
 		};
+		
+    final private PaintListener paintListener = new PaintListener()
+    {
+      @SuppressWarnings("deprecation")
+      public void paintControl(PaintEvent e)
+      {
+        //check do we have to print rect 
+        if(res==null)
+          return;
+        
+        final GC gc = e.gc;
+        final Color fc = new Color(Display.getDefault(), 155, 155, 155);
+        gc.setForeground(fc);
+        gc.setXORMode(true);
+        gc.setLineAttributes(new LineAttributes(2, SWT.CAP_FLAT, SWT.JOIN_MITER,
+            SWT.LINE_SOLID, null, 0, 10));
+        gc.drawRectangle(res);
+        gc.setXORMode(false);
+        fc.dispose();
+      }
+    };
 
-
-
-		@SuppressWarnings("deprecation")
 		@Override
 		public void doMouseDrag(final Point pt, final int JITTER,
-				final Layers theLayers, SWTCanvas theCanvas)
+				final Layers theLayers, final SWTCanvas theCanvas)
 		{
-			// redraw canvas
-			_myCanvas.getCanvas().redraw();
-			Display.getCurrent().update();
+			
+			
 			// just do a check that we have our start point (it may have been cleared
 			// at the end of the move operation)
 			if (_startPoint != null)
@@ -91,17 +109,13 @@ public class ZoomIn extends CoreDragAction
 
 				this.JITTER = JITTER;
 				this.layers = theLayers;
-				Rectangle rect = new Rectangle(_startPoint.x, _startPoint.y, -deltaX,
+				final Rectangle rect = new Rectangle(_startPoint.x, _startPoint.y, -deltaX,
 						-deltaY);
 				res = rect;
-				GC gc = new GC(_myCanvas.getCanvas());
-				Color fc = new Color(Display.getDefault(), 155, 155, 155);
-				gc.setForeground(fc);
-				gc.setXORMode(true);
-				gc.setLineAttributes(new LineAttributes(2, SWT.CAP_FLAT, SWT.JOIN_MITER, SWT.LINE_SOLID, null, 0, 10));
-				gc.drawRectangle(rect);
-				fc.dispose();
-				gc.dispose();
+			}
+			if(_myCanvas!=null) {
+  			_myCanvas.getCanvas().redraw();
+  			_myCanvas.getCanvas().update();
 			}
 		}
 
@@ -110,11 +124,17 @@ public class ZoomIn extends CoreDragAction
 		{
 			run();
 			_myCanvas.getCanvas().removeKeyListener(listener);
-			_myCanvas.getCanvas().redraw();
-			Display.getCurrent().update();
+			_myCanvas.getCanvas().removePaintListener(paintListener);
+		
+			
+			res = null;
+      _myCanvas.getCanvas().redraw();
+      _myCanvas.getCanvas().update();
+      
 			_myChart = null;
 			_myCanvas = null;
 			_startPoint = null;
+			
 		}
 
 		@Override
@@ -124,6 +144,7 @@ public class ZoomIn extends CoreDragAction
 			_myCanvas = canvas;
 			_myChart = theChart;
 			_myCanvas.getCanvas().addKeyListener(listener);
+			_myCanvas.getCanvas().addPaintListener(paintListener);
 			dragResult = true;
 		}
 

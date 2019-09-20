@@ -66,5 +66,6 @@ Require-Bundle: org.mwc.cmap.core,
  org.eclipse.ui.workbench,
  org.eclipse.nebula.jface.cdatetime;bundle-version="0.14.0",
  org.eclipse.nebula.widgets.cdatetime;bundle-version="0.14.0",
- org.mwc.cmap.geotools;bundle-version="1.0.7"
+ org.mwc.cmap.geotools;bundle-version="1.0.7",
+ org.eclipse.e4.ui.model.workbench;bundle-version="2.1.400"
 Bundle-ActivationPolicy: lazy

@@ -24,8 +24,6 @@
 		<pathelement location="../org.mwc.asset.VesselMonitor/bin"/>
 		<pathelement location="../org.mwc.cmap.core/bin"/>
 		<pathelement location="../org.mwc.cmap.grideditor/bin"/>
-		<pathelement location="../org.mwc.cmap.gt2Plot/bin"/>
-		<pathelement location="../org.mwc.cmap.layer_manager/bin"/>
 		<pathelement location="../org.mwc.cmap.legacy/bin"/>
 		<pathelement location="../org.mwc.cmap.LiveDataMonitor/bin"/>
 		<pathelement location="../org.mwc.cmap.NarrativeViewer/bin"/>
