@@ -39,6 +39,7 @@ abstract public class DynamicTrackCoverageHandler extends
 	private static final String START_DTG = "StartDtg";
 	private static final String END_DTG = "EndDtg";
 	private static final String ARCS = "arcs";
+  private static final String FILLED = "filled";
 
 	DynamicTrackShapeWrapper _theContact;
 
@@ -124,6 +125,14 @@ abstract public class DynamicTrackCoverageHandler extends
 			}
 		});
 
+    addAttributeHandler(new HandleBooleanAttribute(FILLED)
+    {
+      public void setValue(final String name, final boolean value)
+      {
+        _theContact.setFilled(value);
+      }
+    });
+
 		addAttributeHandler(new HandleBooleanAttribute(VISIBLE)
 		{
 			public void setValue(final String name, final boolean value)
@@ -206,6 +215,8 @@ abstract public class DynamicTrackCoverageHandler extends
 		eFix.setAttribute(VISIBLE, writeThis(contact.getVisible()));
 		
 		eFix.setAttribute(SEMI_TRANS, writeThis(contact.getSemiTransparent()));
+    
+    eFix.setAttribute(FILLED, writeThis(contact.getFilled()));
 		
 		// sort out the line style
 		lineStyle.setValue(contact.getLineStyle());
