@@ -503,7 +503,7 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
             // note: we don't allow drag/drop reorganisation of
             // top level layers
           }
-          else
+          else if ( parent.getEditable() instanceof BaseLayer && ((EditableWrapper) event.item.getData()).getEditable() instanceof BaseLayer )
           {
             // ok, handle the drop
             final BaseLayer parentLayer = (BaseLayer) parent.getEditable();
