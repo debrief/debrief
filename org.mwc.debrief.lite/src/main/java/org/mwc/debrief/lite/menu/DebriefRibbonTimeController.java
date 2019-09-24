@@ -834,7 +834,7 @@ public class DebriefRibbonTimeController
   {
     try
     {
-      File file = new File("/home/saul/Movies");
+      File file = new File(System.getProperty("user.home"));
       Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
       int width = screenSize.width;
       int height = screenSize.height;
