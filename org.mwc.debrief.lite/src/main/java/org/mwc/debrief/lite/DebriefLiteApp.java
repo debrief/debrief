@@ -22,6 +22,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -56,6 +58,8 @@ import org.geotools.geometry.Envelope2D;
 import org.geotools.map.MapContent;
 import org.geotools.swing.JMapPane;
 import org.geotools.swing.action.ResetAction;
+import org.monte.media.Format;
+import org.monte.screenrecorder.ScreenRecorder;
 import org.mwc.cmap.geotools.gt2plot.GeoToolsLayer;
 import org.mwc.cmap.geotools.gt2plot.ShapeFileLayer;
 import org.mwc.cmap.geotools.gt2plot.WorldImageLayer;
@@ -312,6 +316,21 @@ public class DebriefLiteApp implements FileDropListener
         @Override
         public void run()
         {
+          GraphicsConfiguration gc = GraphicsEnvironment//
+              .getLocalGraphicsEnvironment()//
+              .getDefaultScreenDevice()//
+              .getDefaultConfiguration();
+          
+          //Create a instance of ScreenRecorder with the required configurations
+          /*new Scree
+          Format fileFormat = new Format(MediaTypeKey, MediaType.FILE, MimeTypeKey, MIME_AVI); 
+          Format screenFormat = new Format(MediaTypeKey, MediaType.VIDEO, EncodingKey, ENCODING_AVI_TECHSMITH_SCREEN_CAPTURE, CompressorNameKey, ENCODING_AVI_TECHSMITH_SCREEN_CAPTURE, DepthKey, (int)24, FrameRateKey, Rational.valueOf(15), QualityKey, 1.0f, KeyFrameIntervalKey, (int) (15 * 60));
+          Format mouseFormat = new Format(MediaTypeKey, MediaType.VIDEO, EncodingKey,"black", FrameRateKey, Rational.valueOf(30));
+          ScreenRecorder screenRecorder = new ScreenRecorder(gc,
+          fileFormat,
+          screenFormat,
+          mouseFormat,
+          null);*/
           _instance = new DebriefLiteApp();
         }
       });

@@ -34,5 +34,6 @@
 	<classpathentry kind="lib" path="libs/swingx-painters-1.6.6-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libs/swingx-common-1.6.6-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libs/swingx-mavensupport-1.6.6-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libs/monte-cc.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
