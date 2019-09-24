@@ -70,6 +70,7 @@ public class LiteStepControl extends StepControl
   private TimeLabel _timeLabel;
   private Layers _layers;
   private UndoBuffer _undoBuffer;
+  private boolean _isRecording = false;
 
   public LiteStepControl(final ToolParent _parent, final Session _theSession)
   {
@@ -278,5 +279,15 @@ public class LiteStepControl extends StepControl
     _timeLabel.setValue(DTG.getDate().getTime());
     DebriefRibbonTimeController.assignThisTimeFormat(_dateFormatter.toPattern(),
         false, true);
+  }
+
+  public boolean isRecording()
+  {
+    return _isRecording;
+  }
+
+  public void setRecording(boolean _isRecording)
+  {
+    this._isRecording = _isRecording;
   }
 }

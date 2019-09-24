@@ -14,6 +14,7 @@
  */
 package org.mwc.debrief.lite;
 
+import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -35,6 +36,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,8 +60,6 @@ import org.geotools.geometry.Envelope2D;
 import org.geotools.map.MapContent;
 import org.geotools.swing.JMapPane;
 import org.geotools.swing.action.ResetAction;
-import org.monte.media.Format;
-import org.monte.screenrecorder.ScreenRecorder;
 import org.mwc.cmap.geotools.gt2plot.GeoToolsLayer;
 import org.mwc.cmap.geotools.gt2plot.ShapeFileLayer;
 import org.mwc.cmap.geotools.gt2plot.WorldImageLayer;
@@ -316,21 +316,53 @@ public class DebriefLiteApp implements FileDropListener
         @Override
         public void run()
         {
-          GraphicsConfiguration gc = GraphicsEnvironment//
+          /*GraphicsConfiguration gc = GraphicsEnvironment//
               .getLocalGraphicsEnvironment()//
               .getDefaultScreenDevice()//
               .getDefaultConfiguration();
           
           //Create a instance of ScreenRecorder with the required configurations
-          /*new Scree
+          
           Format fileFormat = new Format(MediaTypeKey, MediaType.FILE, MimeTypeKey, MIME_AVI); 
           Format screenFormat = new Format(MediaTypeKey, MediaType.VIDEO, EncodingKey, ENCODING_AVI_TECHSMITH_SCREEN_CAPTURE, CompressorNameKey, ENCODING_AVI_TECHSMITH_SCREEN_CAPTURE, DepthKey, (int)24, FrameRateKey, Rational.valueOf(15), QualityKey, 1.0f, KeyFrameIntervalKey, (int) (15 * 60));
           Format mouseFormat = new Format(MediaTypeKey, MediaType.VIDEO, EncodingKey,"black", FrameRateKey, Rational.valueOf(30));
-          ScreenRecorder screenRecorder = new ScreenRecorder(gc,
-          fileFormat,
-          screenFormat,
-          mouseFormat,
-          null);*/
+          try
+          {
+            ScreenRecorder screenRecorder = new ScreenRecorder(gc,
+            fileFormat,
+            screenFormat,
+            mouseFormat,
+            null);
+            
+            screenRecorder.start();
+            new Thread() {
+              @Override
+              public void run()
+              {
+                try
+                {
+                  Thread.sleep(15000);
+                  screenRecorder.stop();
+                  System.out.println("Stopped  Sucessfully");
+                }
+                catch (IOException e)
+                {
+                  // TODO Auto-generated catch block
+                  e.printStackTrace();
+                }
+                catch (InterruptedException e)
+                {
+                  // TODO Auto-generated catch block
+                  e.printStackTrace();
+                }
+              }
+            }.start();
+          }
+          catch (IOException | AWTException e)
+          {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }*/
           _instance = new DebriefLiteApp();
         }
       });

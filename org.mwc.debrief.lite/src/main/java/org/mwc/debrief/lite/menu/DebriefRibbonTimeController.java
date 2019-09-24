@@ -14,15 +14,22 @@
  */
 package org.mwc.debrief.lite.menu;
 
+import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -43,6 +50,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.mwc.debrief.lite.DebriefLiteApp;
+import org.mwc.debrief.lite.LiteApplication;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.gui.LiteStepControl.SliderControls;
 import org.mwc.debrief.lite.gui.LiteStepControl.TimeLabel;
@@ -60,6 +68,11 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
+import org.monte.media.Format;
+import org.monte.screenrecorder.ScreenRecorder;
+import org.monte.media.math.Rational;
+import static org.monte.media.AudioFormatKeys.*;
+import static org.monte.media.VideoFormatKeys.*;
 
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
@@ -448,7 +461,18 @@ public class DebriefRibbonTimeController
 
     });
 
-    @SuppressWarnings("unused")
+    final GraphicsConfiguration graphicConfiguration = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+
+    final Format fileFormat = new Format(MediaTypeKey, MediaType.FILE, MimeTypeKey, MIME_AVI); 
+    final Format screenFormat = new Format(MediaTypeKey, MediaType.VIDEO,
+        EncodingKey, ENCODING_AVI_TECHSMITH_SCREEN_CAPTURE, CompressorNameKey, ENCODING_AVI_TECHSMITH_SCREEN_CAPTURE, DepthKey, (int)24,
+        FrameRateKey, Rational.valueOf(15), QualityKey, 1.0f, KeyFrameIntervalKey, (int) (15 * 60));
+    final Format mouseFormat = new Format(MediaTypeKey, MediaType.VIDEO, EncodingKey,"black", FrameRateKey, Rational.valueOf(30));
+
+
+    final ScreenRecorder screenRecorder = createScreenRecorder(graphicConfiguration, fileFormat,
+        screenFormat, mouseFormat);
+    
     final JCommandButton recordCommandButton = MenuUtils.addCommandButton(
         "Record", "icons/24/media_record.png", new AbstractAction()
         {
@@ -460,10 +484,26 @@ public class DebriefRibbonTimeController
 
           @Override
           public void actionPerformed(final ActionEvent e)
-          {
-            JOptionPane.showMessageDialog(null,
-                "Record to PPT not yet implemented.");
-
+          { 
+            try
+            {
+              if ( screenRecorder != null )
+              {
+                if ( stepControl.isRecording() )
+                {
+                  screenRecorder.stop(); 
+                }else
+                {
+                  screenRecorder.start();
+                }
+                stepControl.setRecording(!stepControl.isRecording());;
+              }
+            }
+            catch (IOException ee)
+            {
+              // TODO Auto-generated catch block
+              ee.printStackTrace();
+            }
           }
         }, CommandButtonDisplayState.SMALL, "Start recording");
     recordCommandButton.setName("record");
@@ -604,9 +644,7 @@ public class DebriefRibbonTimeController
     topButtonsPanel.add(rewindCommandButton);
     topButtonsPanel.add(backCommandButton);
     topButtonsPanel.add(playCommandButton);
-    // don't add record button, yet.
-    // topButtonsPanel.add(recordCommandButton);
-
+    topButtonsPanel.add(recordCommandButton);
     topButtonsPanel.add(forwardCommandButton);
     topButtonsPanel.add(fastForwardCommandButton);
     topButtonsPanel.add(endCommandButton);
@@ -788,6 +826,38 @@ public class DebriefRibbonTimeController
     control.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         control));
     return control;
+  }
+
+  public static ScreenRecorder createScreenRecorder(
+      final GraphicsConfiguration graphicConfiguration, final Format fileFormat,
+      final Format screenFormat, final Format mouseFormat)
+  {
+    try
+    {
+      File file = new File("/home/saul/Movies");
+      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+      int width = screenSize.width;
+      int height = screenSize.height;
+                     
+      Rectangle captureSize = ((LiteApplication)DebriefLiteApp.getDefault()).getTheFrame().getBounds();
+      
+      return new ScreenRecorder(graphicConfiguration, captureSize,
+      fileFormat,
+      screenFormat,
+      mouseFormat,
+      null, file);
+    }
+    catch (IOException e1)
+    {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    }
+    catch (AWTException e1)
+    {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    }
+    return null;
   }
 
   private static JRibbonBand createDisplayMode(final Runnable normalPainter,
