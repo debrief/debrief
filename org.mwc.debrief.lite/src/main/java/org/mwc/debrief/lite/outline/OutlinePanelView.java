@@ -1144,6 +1144,12 @@ ClipboardOwner, Helper
     final EnabledTest notNarrative = getNotNarrativeTest();
     final EnabledTest notIsLayer = getNotLayerTest();
 
+    final JButton collapseAllButton = createCommandButton("Expand All", "icons/24/collapse_all.png");
+    _enablers.add(new ButtonEnabler(collapseAllButton, new And(notEmpty, onlyOne)));
+    collapseAllButton.setEnabled(false);
+    collapseAllButton.setMnemonic(KeyEvent.VK_MINUS);
+    commandBar.add(collapseAllButton);
+    
     final JButton editButton = createCommandButton("Edit", "icons/24/edit.png");
     _enablers.add(new ButtonEnabler(editButton, new And(notEmpty, onlyOne)));
     editButton.setEnabled(false);
@@ -1235,6 +1241,51 @@ ClipboardOwner, Helper
             .getMenuShortcutKeyMask()), "paste");
     pasteButton.addActionListener(pasteAction);
 
+    final Action collapseAction = new AbstractAction()
+        {
+
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1856754284317991555L;
+
+          @Override
+          public void actionPerformed(ActionEvent e)
+          {
+            final int selectionCount = _myTree.getSelectionCount();
+            if (selectionCount == 1)
+            {
+              final TreePath selectionPath = _myTree.getSelectionPath();
+              if (selectionPath != null)
+              {
+                collapseAll(selectionPath);
+              }
+            }
+          }
+
+          private void collapseAll(TreePath selectionPath)
+          {
+            final int count = _myTree.getModel().getChildCount(selectionPath.getLastPathComponent());
+            for ( int i = 0 ; i < count ; i++ )
+            {
+              final Object child = _myTree.getModel().getChild(selectionPath.getLastPathComponent(), i);
+              if ( child instanceof DefaultMutableTreeNode )
+              {
+                final DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) child;
+                collapseAll(new TreePath(childNode.getPath()));
+              }
+            }
+            _myTree.collapsePath(selectionPath);
+          }
+      
+        };
+
+    collapseAllButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
+        .getKeyStroke(KeyEvent.VK_MINUS, Toolkit.getDefaultToolkit()
+            .getMenuShortcutKeyMask()), "collapseall");
+    collapseAllButton.getActionMap().put("collapseall", collapseAction);
+    collapseAllButton.addActionListener(collapseAction);
+    
     final Action editAction = new AbstractAction()
     {
 
