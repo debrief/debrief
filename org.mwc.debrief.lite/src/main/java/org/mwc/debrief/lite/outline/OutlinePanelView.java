@@ -1250,18 +1250,18 @@ public class OutlinePanelView extends SwingLayerManager implements
     {
 
       /**
-       * 
+       *
        */
       private static final long serialVersionUID = 1856754284317991555L;
 
       @Override
       public void actionPerformed(final ActionEvent e)
-      { 
+      {
         final Object root = _myTree.getModel().getRoot();
-        if ( root instanceof DefaultMutableTreeNode )
+        if (root instanceof DefaultMutableTreeNode)
         {
-          final DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode)root;
-          
+          final DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) root;
+
           final int count = _myTree.getModel().getChildCount(rootNode);
           for (int i = 0; i < count; i++)
           {
