@@ -19,6 +19,8 @@ import java.awt.Font;
 import java.awt.Point;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -107,6 +109,10 @@ public class DragComponent extends DragFeature
       _theComponent = theComponent;
     }
 
+    
+    
+    
+    
     /**
      * this method calls the 'do' event in the parent tool, passing the necessary data to it
      */
@@ -212,6 +218,43 @@ public class DragComponent extends DragFeature
      * the start point, in screen coordinates - where we started our drag
      */
     Point _startPoint;
+    
+    
+    
+    private PaintListener paintListener = new PaintListener()
+    {
+      public void paintControl(PaintEvent ev)
+      {
+        if(_lastPoint!=null)
+          try
+          {
+         // This is the same as a !XOR
+            ev.gc.setXORMode(true);
+            ev.gc.setForeground(ev.gc.getBackground());
+           
+
+            ev.gc.setForeground(fc);
+            
+            final WorldLocation newLocation = new WorldLocation(_myCanvas
+                .getProjection().toWorld(_lastPoint));
+
+            // now work out the vector from the last place plotted to the current
+            // place
+             WorldVector _offset = newLocation.subtract(_lastLocation);
+             
+          // remember the last location
+           
+            // draw new track
+            drawHere(ev.gc, _offset);
+            
+            _lastLocation = newLocation;
+          } 
+          catch(final Exception e)
+          { 
+            e.printStackTrace();
+          }
+      }
+    };
 
     @Override
     @SuppressWarnings("deprecation")
@@ -220,11 +263,9 @@ public class DragComponent extends DragFeature
     {
       if ((_startPoint != null) && (_hoverTarget != null))
       {
-        final GC gc = new GC(_myCanvas.getCanvas());
+        //final GC gc = new GC(_myCanvas.getCanvas());
 
-        // This is the same as a !XOR
-        gc.setXORMode(true);
-        gc.setForeground(gc.getBackground());
+        
 
         // Erase existing track, if we have one
         if (_lastPoint != null)
@@ -247,18 +288,10 @@ public class DragComponent extends DragFeature
 
         // remember where we are
         _lastPoint = new java.awt.Point(pt.x, pt.y);
-        final WorldLocation newLocation = new WorldLocation(_myCanvas
-            .getProjection().toWorld(_lastPoint));
+       
 
-        // now work out the vector from the last place plotted to the current
-        // place
-        final WorldVector offset = newLocation.subtract(_lastLocation);
-
-        // draw new track
-        drawHere(gc, offset);
-
-        // remember the last location
-        _lastLocation = newLocation;
+        _myCanvas.getCanvas().redraw();
+        _myCanvas.getCanvas().update();
 
         // cool, is it a track that we've just dragged?
         if (_hoverTarget instanceof TrackWrapper)
@@ -278,8 +311,7 @@ public class DragComponent extends DragFeature
           }
         }
 
-        // and ditch the GC
-        gc.dispose();
+        
       }
       else
       {
@@ -452,6 +484,7 @@ public class DragComponent extends DragFeature
 
       }
 
+      _myCanvas.getCanvas().removePaintListener(paintListener);
       _startPoint = null;
       _lastPoint = null;
       _lastLocation = null;
@@ -534,6 +567,8 @@ public class DragComponent extends DragFeature
       _startLocation = new WorldLocation(_myCanvas.getProjection().toWorld(
           new java.awt.Point(point.x, point.y)));
       _myChart = theChart;
+
+      _myCanvas.getCanvas().addPaintListener(paintListener);
     }
 
   }

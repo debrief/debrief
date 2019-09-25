@@ -20,6 +20,8 @@ import java.awt.Point;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -154,6 +156,9 @@ public class DragFeature extends CoreDragAction
     }
   }
 
+  final static org.eclipse.swt.graphics.Color fc =
+      new org.eclipse.swt.graphics.Color(Display.getDefault(), 255, 0,
+          155);
   /**
    * embedded class that handles the range/bearing measurement
    *
@@ -162,6 +167,7 @@ public class DragFeature extends CoreDragAction
   public class DragFeatureMode extends SWTChart.PlotMouseDragger
   {
 
+  
     /**
      * the thing we're currently hovering over
      */
@@ -195,6 +201,43 @@ public class DragFeature extends CoreDragAction
      * the start point, in screen coordinates - where we started our drag
      */
     Point _startPoint;
+    
+    
+    
+    private PaintListener paintListener = new PaintListener()
+    {
+      public void paintControl(PaintEvent ev)
+      {
+        if(_lastPoint!=null)
+          try
+          {
+            // This is the same as a !XOR
+            ev.gc.setXORMode(true);
+           
+
+            ev.gc.setForeground(fc);
+            
+            final WorldLocation newLocation = new WorldLocation(_myCanvas
+                .getProjection().toWorld(_lastPoint));
+
+            // now work out the vector from the last place plotted to the current
+            // place
+             WorldVector _offset = newLocation.subtract(_lastLocation);
+             
+          // remember the last location
+           
+            // draw new track
+            drawHere(ev.gc, _offset);
+            
+            _lastLocation = newLocation;
+          } 
+          catch(final Exception e)
+          { 
+            e.printStackTrace();
+          }
+      }
+    };
+
 
     @Override
     @SuppressWarnings("deprecation")
@@ -221,15 +264,8 @@ public class DragFeature extends CoreDragAction
 
       if (_startPoint != null)
       {
-        final GC gc = new GC(_myCanvas.getCanvas());
 
-        // This is the same as a !XOR
-        gc.setXORMode(true);
-        final org.eclipse.swt.graphics.Color fc =
-            new org.eclipse.swt.graphics.Color(Display.getDefault(), 255, 0,
-                155);
-
-        gc.setForeground(fc);
+       
 
         // Erase existing track, if we have one
         if (_lastPoint != null)
@@ -263,21 +299,13 @@ public class DragFeature extends CoreDragAction
 
         // remember where we are
         _lastPoint = new java.awt.Point(pt.x, pt.y);
-        final WorldLocation newLocation = new WorldLocation(_myCanvas
-            .getProjection().toWorld(_lastPoint));
+        
+         _myCanvas.getCanvas().redraw();
+         _myCanvas.getCanvas().update();
+       
 
-        // now work out the vector from the last place plotted to the current
-        // place
-        final WorldVector offset = newLocation.subtract(_lastLocation);
-
-        // draw new track
-        drawHere(gc, offset);
-
-        // remember the last location
-        _lastLocation = newLocation;
-        // ok, let's ditch the GC
-        fc.dispose();
-        gc.dispose();
+        
+    
 
       }
       else
@@ -387,6 +415,8 @@ public class DragFeature extends CoreDragAction
         return;
       }
 
+      _myCanvas.getCanvas().removePaintListener(paintListener);
+
       // Erase existing rectangle. hmm, we've finished plotting. see if the ctrl button is
       // down
 
@@ -425,6 +455,7 @@ public class DragFeature extends CoreDragAction
       _lastLocation = null;
       _myCanvas = null;
       _startLocation = null;
+     
 
       // cool, is it a track that we've just dragged?
       if (_parentLayer instanceof TrackWrapper)
@@ -587,6 +618,7 @@ public class DragFeature extends CoreDragAction
       _startLocation = new WorldLocation(_myCanvas.getProjection().toWorld(
           new java.awt.Point(point.x, point.y)));
       _myChart = theChart;
+      _myCanvas.getCanvas().addPaintListener(paintListener);
     }
 
   }
