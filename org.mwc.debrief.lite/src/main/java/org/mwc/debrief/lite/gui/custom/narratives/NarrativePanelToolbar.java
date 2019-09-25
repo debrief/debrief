@@ -14,6 +14,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
@@ -27,9 +28,12 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JToggleButton;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableRowSorter;
 
 import org.mwc.debrief.lite.gui.LiteStepControl;
 
@@ -82,6 +86,12 @@ public class NarrativePanelToolbar extends JPanel
     }
 
   };
+  
+  /**
+   * This should go inside the model too.
+   */
+  private final TableRowSorter<DefaultTableModel> _narrativeListSorter = 
+      new TableRowSorter<DefaultTableModel>(_narrativeListModel);
 
   private final JTable _narrativeList = new JTable();
 
@@ -233,6 +243,8 @@ public class NarrativePanelToolbar extends JPanel
               entry2Index.remove(entry);
             }
             // Sort it.
+            
+            _narrativeListSorter.sort();
           }
         }
       };
@@ -245,6 +257,7 @@ public class NarrativePanelToolbar extends JPanel
     super(new FlowLayout(FlowLayout.LEFT));
 
     this._narrativeList.setModel(_narrativeListModel);
+    
     this._narrativeListModel.addColumn("");
     final TableColumn column = this._narrativeList.getColumnModel().getColumn(
         0);
@@ -261,6 +274,26 @@ public class NarrativePanelToolbar extends JPanel
       }
 
     });
+    
+    this._narrativeList.setRowSorter(_narrativeListSorter);
+    
+    /**
+     * Initialize the sorter
+     */
+    List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+    
+    final int columnIndexToSort = 0;
+    sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.ASCENDING));
+    this._narrativeListSorter.setComparator(columnIndexToSort, new Comparator<NarrativeEntryItem>()
+    {
+
+      @Override
+      public int compare(NarrativeEntryItem o1, NarrativeEntryItem o2)
+      {
+        return o1.compareTo(o2);
+      }
+    });
+    this._narrativeListSorter.setSortKeys(sortKeys);
 
     this._stepControl = stepControl;
     this._model = model;
