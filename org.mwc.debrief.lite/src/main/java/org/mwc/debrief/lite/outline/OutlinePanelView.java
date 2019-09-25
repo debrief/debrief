@@ -1151,9 +1151,7 @@ public class OutlinePanelView extends SwingLayerManager implements
 
     final JButton collapseAllButton = createCommandButton("Expand All",
         "icons/24/collapse_all.png");
-    _enablers.add(new ButtonEnabler(collapseAllButton, new And(notEmpty,
-        onlyOne)));
-    collapseAllButton.setEnabled(false);
+    collapseAllButton.setEnabled(true);
     collapseAllButton.setMnemonic(KeyEvent.VK_MINUS);
     commandBar.add(collapseAllButton);
 
@@ -1258,14 +1256,22 @@ public class OutlinePanelView extends SwingLayerManager implements
 
       @Override
       public void actionPerformed(final ActionEvent e)
-      {
-        final int selectionCount = _myTree.getSelectionCount();
-        if (selectionCount == 1)
+      { 
+        final Object root = _myTree.getModel().getRoot();
+        if ( root instanceof DefaultMutableTreeNode )
         {
-          final TreePath selectionPath = _myTree.getSelectionPath();
-          if (selectionPath != null)
+          final DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode)root;
+          
+          final int count = _myTree.getModel().getChildCount(rootNode);
+          for (int i = 0; i < count; i++)
           {
-            collapseAll(selectionPath);
+            final Object child = _myTree.getModel().getChild(rootNode, i);
+            if (child instanceof DefaultMutableTreeNode)
+            {
+              final DefaultMutableTreeNode childNode =
+                  (DefaultMutableTreeNode) child;
+              collapseAll(new TreePath(childNode.getPath()));
+            }
           }
         }
       }
