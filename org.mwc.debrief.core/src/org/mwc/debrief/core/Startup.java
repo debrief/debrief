@@ -441,7 +441,7 @@ public class Startup implements IStartup
           if (element instanceof MElementContainer<?>)
           {
               //uncomment to find tool item/group  names to add to black-list  
-              System.out.println(element.getElementId());
+             // System.out.println(element.getElementId());
               @SuppressWarnings("unchecked")
               MElementContainer<MToolBarElement> sub = (MElementContainer<MToolBarElement>) element;
               for (MToolBarElement subElement : sub.getChildren())
