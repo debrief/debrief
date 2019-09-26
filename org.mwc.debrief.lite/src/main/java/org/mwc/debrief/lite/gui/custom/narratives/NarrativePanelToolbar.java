@@ -408,6 +408,7 @@ public class NarrativePanelToolbar extends JPanel
             NARRATIVES_REMOVE_COMPLETE_LAYER, null, narrativeWrappersInPanel);
       }
     }
+    _narrativeListSorter.sort();
   }
 
   /*
