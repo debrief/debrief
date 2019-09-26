@@ -208,6 +208,7 @@ public abstract class PlainImporterBase implements PlainImporter
     {
       _newLayers.add(theLayer);
     }
+    _theLayers.fireModified(theLayer);
   }
 
   /**
