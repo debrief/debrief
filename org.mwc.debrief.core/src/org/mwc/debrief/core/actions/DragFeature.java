@@ -156,9 +156,6 @@ public class DragFeature extends CoreDragAction
     }
   }
 
-  final static org.eclipse.swt.graphics.Color fc =
-      new org.eclipse.swt.graphics.Color(Display.getDefault(), 255, 0,
-          155);
   /**
    * embedded class that handles the range/bearing measurement
    *
@@ -167,7 +164,6 @@ public class DragFeature extends CoreDragAction
   public class DragFeatureMode extends SWTChart.PlotMouseDragger
   {
 
-  
     /**
      * the thing we're currently hovering over
      */
@@ -201,46 +197,43 @@ public class DragFeature extends CoreDragAction
      * the start point, in screen coordinates - where we started our drag
      */
     Point _startPoint;
-    
-    
-    
-    private PaintListener paintListener = new PaintListener()
+
+    private final PaintListener paintListener = new PaintListener()
     {
-      public void paintControl(PaintEvent ev)
+      @Override
+      @SuppressWarnings("deprecation")
+      public void paintControl(final PaintEvent ev)
       {
-        if(_lastPoint!=null)
+        if (_lastPoint != null)
           try
           {
             // This is the same as a !XOR
             ev.gc.setXORMode(true);
-           
 
             ev.gc.setForeground(fc);
-            
+
             final WorldLocation newLocation = new WorldLocation(_myCanvas
                 .getProjection().toWorld(_lastPoint));
 
             // now work out the vector from the last place plotted to the current
             // place
-             WorldVector _offset = newLocation.subtract(_lastLocation);
-             
-          // remember the last location
-           
+            final WorldVector _offset = newLocation.subtract(_lastLocation);
+
+            // remember the last location
+
             // draw new track
             drawHere(ev.gc, _offset);
-            
+
             _lastLocation = newLocation;
-          } 
-          catch(final Exception e)
-          { 
+          }
+          catch (final Exception e)
+          {
             e.printStackTrace();
           }
       }
     };
 
-
     @Override
-    @SuppressWarnings("deprecation")
     public void doMouseDrag(final org.eclipse.swt.graphics.Point pt,
         final int JITTER, final Layers theLayers, final SWTCanvas theCanvas)
     {
@@ -264,8 +257,6 @@ public class DragFeature extends CoreDragAction
 
       if (_startPoint != null)
       {
-
-       
 
         // Erase existing track, if we have one
         if (_lastPoint != null)
@@ -299,13 +290,9 @@ public class DragFeature extends CoreDragAction
 
         // remember where we are
         _lastPoint = new java.awt.Point(pt.x, pt.y);
-        
-         _myCanvas.getCanvas().redraw();
-         _myCanvas.getCanvas().update();
-       
 
-        
-    
+        _myCanvas.getCanvas().redraw();
+        _myCanvas.getCanvas().update();
 
       }
       else
@@ -455,7 +442,6 @@ public class DragFeature extends CoreDragAction
       _lastLocation = null;
       _myCanvas = null;
       _startLocation = null;
-     
 
       // cool, is it a track that we've just dragged?
       if (_parentLayer instanceof TrackWrapper)
@@ -642,6 +628,21 @@ public class DragFeature extends CoreDragAction
     public void apply(DraggableItem item, WorldVector offset);
   }
 
+  final static org.eclipse.swt.graphics.Color fc =
+      new org.eclipse.swt.graphics.Color(Display.getDefault(), 255, 0, 155);
+
+  protected void findNearest(final Layer thisLayer,
+      final WorldLocation cursorLoc, final Point cursorPos,
+      final LocationConstruct currentNearest, final Layer parentLayer,
+      final Layers theData)
+  {
+    // find the nearest items, this method call will recursively pass down
+    // through
+    // the layers
+    FindNearest.findNearest(thisLayer, cursorLoc, cursorPos, currentNearest,
+        null, theData);
+  }
+
   public Cursor getDragCursor()
   {
     return CursorRegistry.getCursor(CursorRegistry.SELECT_FEATURE_HIT_DOWN);
@@ -658,16 +659,4 @@ public class DragFeature extends CoreDragAction
     return CursorRegistry.getCursor(CursorRegistry.SELECT_FEATURE_HIT);
   }
 
-
-  protected void findNearest(final Layer thisLayer, final WorldLocation cursorLoc,
-      final Point cursorPos, final LocationConstruct currentNearest,
-      final Layer parentLayer, final Layers theData)
-  {
-    // find the nearest items, this method call will recursively pass down
-    // through
-    // the layers
-    FindNearest.findNearest(thisLayer, cursorLoc, cursorPos, currentNearest,
-        null, theData);
-  }
-  
 }
