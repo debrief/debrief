@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.cmap.core.ui_support;
 
@@ -24,7 +24,7 @@ import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
@@ -55,23 +55,83 @@ import MWC.TacticalData.NarrativeWrapper;
 
 /**
  * nice drag-drop support for layer manager
- * 
+ *
  * @author ian.mayo
  */
 public class DragDropSupport implements DragSourceListener, DropTargetListener
 {
 
-  /**
-   * the control that's providing us with our selection
-   */
-  private final StructuredViewer _parent;
+  abstract public static class XMLFileDropHandler
+  {
+    /**
+     * the type of elements we're interested in
+     */
+    private final String[] _elements;
 
-  /**
-   * it appears that the copy/move operations gets cancelled after we mark something as
-   * "don't drop". remember the previous setting, so that when we want to indicate that something is
-   * a valid drop-target, it can be dropped. that's all/
-   */
-  private int _oldDetail = -1;
+    /**
+     * the types of object we can drop onto
+     */
+    @SuppressWarnings(
+    {"rawtypes"})
+    private final Class[] targets;
+
+    /**
+     * constructor
+     *
+     * @param elementTypes
+     *          the top-level XML elements we can process
+     * @param targetTypes
+     *          the types of thing we drop onto
+     */
+    @SuppressWarnings("rawtypes")
+    public XMLFileDropHandler(final String[] elementTypes,
+        final Class[] targetTypes)
+    {
+      _elements = elementTypes;
+      targets = targetTypes;
+    }
+
+    @SuppressWarnings("rawtypes")
+    public boolean canBeDroppedOn(final Editable targetElement)
+    {
+      boolean res = false;
+      for (int i = 0; i < targets.length; i++)
+      {
+        final Class thisE = targets[i];
+        if (targetElement.getClass() == thisE)
+        {
+          res = true;
+          break;
+        }
+      }
+      return res;
+    }
+
+    /**
+     * ok, load the item, and add it to the indicated layer
+     *
+     * @param source
+     * @param targetElemet
+     * @param parent
+     */
+    abstract public void handleDrop(InputStream source, Editable targetElemet,
+        Layers parent);
+
+    public boolean handlesThis(final String firstElement)
+    {
+      boolean res = false;
+      for (int i = 0; i < _elements.length; i++)
+      {
+        final String thisE = _elements[i];
+        if (thisE.toUpperCase().equals(firstElement.toUpperCase()))
+        {
+          res = true;
+          break;
+        }
+      }
+      return res;
+    }
+  }
 
   /**
    * a list of helper classes - that allow more items to be dropped onto us.
@@ -79,18 +139,8 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
   private static Vector<XMLFileDropHandler> _myDropHelpers;
 
   /**
-   * constructor - something that tells us about the current selection
-   * 
-   * @param parent
-   */
-  public DragDropSupport(final StructuredViewer parent)
-  {
-    _parent = parent;
-  }
-
-  /**
    * provide another class to assist with loaded dropped files
-   * 
+   *
    * @param handler
    */
   public static void addDropHelper(final XMLFileDropHandler handler)
@@ -102,89 +152,50 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
     _myDropHelpers.add(handler);
   }
 
+  /**
+   * the control that's providing us with our selection
+   */
+  private final StructuredViewer _parent;
+
+  /**
+   * it appears that the copy/move operations gets cancelled after we mark something as "don't
+   * drop". remember the previous setting, so that when we want to indicate that something is a
+   * valid drop-target, it can be dropped. that's all/
+   */
+  private int _oldDetail = -1;
+
+  /**
+   * constructor - something that tells us about the current selection
+   *
+   * @param parent
+   */
+  public DragDropSupport(final StructuredViewer parent)
+  {
+    _parent = parent;
+  }
+
+  @Override
+  public void dragEnter(final DropTargetEvent event)
+  {
+  }
+
+  @Override
   public void dragFinished(final DragSourceEvent event)
   {
     LocalSelectionTransfer.getTransfer().setSelection(null);
   }
 
-  public void dragSetData(final DragSourceEvent event)
-  {
-    final StructuredSelection sel = getSelection();
-
-    if (LocalSelectionTransfer.getTransfer().isSupportedType(event.dataType))
-    {
-      LocalSelectionTransfer.getTransfer().setSelection(sel);
-    }
-    else
-    {
-      
-    }
-    event.data = sel;
-  }
-
-  public void dragStart(final DragSourceEvent event)
-  {
-    // ok, clear the old detail flag
-    _oldDetail = -1;
-
-    boolean res = true;
-
-    // get what's selected
-    final StructuredSelection sel = getSelection();
-    final EditableWrapper first = (EditableWrapper) sel.getFirstElement();
-    if (first != null)
-    {
-      final Editable pl = first.getEditable();
-
-      // so, is this draggable?
-      if (pl instanceof BaseLayer)
-        res = true;
-      else if (pl instanceof ETOPOPainter)
-        res = false;
-      else if (pl instanceof TrackWrapper)
-        res = true;
-      else if (pl instanceof SensorWrapper)
-        res = true;
-      else if (pl instanceof FixWrapper)
-        res = false;
-      else if (pl instanceof NarrativeWrapper)
-        res = false;
-      else if (pl instanceof NarrativeEntry)
-        res = false;
-      else if (pl instanceof TacticalDataWrapper)
-        res = false;
-    }
-    event.doit = res;
-    if(event.doit)
-      LocalSelectionTransfer.getTransfer().setSelection(sel);
-    
-  }
-
-  /**
-   * find out what's currently selected
-   * 
-   * @return
-   */
-  private StructuredSelection getSelection()
-  {
-    // ok, get the selection
-    final StructuredSelection sel =
-        (StructuredSelection) _parent.getSelection();
-    return sel;
-  }
-
-  public void dragEnter(final DropTargetEvent event)
-  {
-  }
-
+  @Override
   public void dragLeave(final DropTargetEvent event)
   {
   }
 
+  @Override
   public void dragOperationChanged(final DropTargetEvent event)
   {
   }
 
+  @Override
   public void dragOver(final DropTargetEvent event)
   {
     boolean allowDrop = false;
@@ -201,10 +212,10 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
         if (ti != null)
         {
           final EditableWrapper ew = (EditableWrapper) ti.getData();
-          for (final Iterator<XMLFileDropHandler> iter =
-              _myDropHelpers.iterator(); iter.hasNext();)
+          for (final Iterator<XMLFileDropHandler> iter = _myDropHelpers
+              .iterator(); iter.hasNext();)
           {
-            final XMLFileDropHandler handler = (XMLFileDropHandler) iter.next();
+            final XMLFileDropHandler handler = iter.next();
 
             // right, does it handle this kind of element?
             if (handler.canBeDroppedOn(ew.getEditable()))
@@ -221,7 +232,8 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
         }
       }
     }
-    else if (EditableTransfer.getInstance().isSupportedType(event.currentDataType))
+    else if (EditableTransfer.getInstance().isSupportedType(
+        event.currentDataType))
     {
       // right, we're dragging something off the layer manager itself. have a
       // look at it.
@@ -296,78 +308,62 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
     }
   }
 
-  abstract public static class XMLFileDropHandler
+  @Override
+  public void dragSetData(final DragSourceEvent event)
   {
-    /**
-     * the type of elements we're interested in
-     */
-    private final String[] _elements;
+    final StructuredSelection sel = getSelection();
 
-    /**
-     * the types of object we can drop onto
-     */
-    @SuppressWarnings(
-    {"rawtypes"})
-    private final Class[] targets;
-
-    /**
-     * constructor
-     * 
-     * @param elementTypes
-     *          the top-level XML elements we can process
-     * @param targetTypes
-     *          the types of thing we drop onto
-     */
-    @SuppressWarnings("rawtypes")
-    public XMLFileDropHandler(final String[] elementTypes,
-        final Class[] targetTypes)
+    if (LocalSelectionTransfer.getTransfer().isSupportedType(event.dataType))
     {
-      _elements = elementTypes;
-      targets = targetTypes;
+      LocalSelectionTransfer.getTransfer().setSelection(sel);
     }
-
-    public boolean handlesThis(final String firstElement)
+    else
     {
-      boolean res = false;
-      for (int i = 0; i < _elements.length; i++)
-      {
-        final String thisE = _elements[i];
-        if (thisE.toUpperCase().equals(firstElement.toUpperCase()))
-        {
-          res = true;
-          break;
-        }
-      }
-      return res;
-    }
 
-    @SuppressWarnings("rawtypes")
-    public boolean canBeDroppedOn(final Editable targetElement)
-    {
-      boolean res = false;
-      for (int i = 0; i < targets.length; i++)
-      {
-        final Class thisE = targets[i];
-        if (targetElement.getClass() == thisE)
-        {
-          res = true;
-          break;
-        }
-      }
-      return res;
     }
-
-    /**
-     * ok, load the item, and add it to the indicated layer
-     * 
-     * @param source
-     * @param targetElemet
-     * @param parent
-     */
-    abstract public void handleDrop(InputStream source, Editable targetElemet,
-        Layers parent);
+    event.data = sel;
   }
 
+  @Override
+  public void dragStart(final DragSourceEvent event)
+  {
+    // ok, clear the old detail flag
+    _oldDetail = -1;
+
+    boolean res = true;
+
+    // get what's selected
+    final StructuredSelection sel = getSelection();
+    final EditableWrapper first = (EditableWrapper) sel.getFirstElement();
+    if (first != null)
+    {
+      final Editable pl = first.getEditable();
+
+      // so, is this draggable?
+      if (pl instanceof BaseLayer)
+        res = true;
+      else if (pl instanceof ETOPOPainter)
+        res = false;
+      else if (pl instanceof TrackWrapper)
+        res = true;
+      else if (pl instanceof SensorWrapper)
+        res = true;
+      else if (pl instanceof FixWrapper)
+        res = false;
+      else if (pl instanceof NarrativeWrapper)
+        res = false;
+      else if (pl instanceof NarrativeEntry)
+        res = false;
+      else if (pl instanceof TacticalDataWrapper)
+        res = false;
+    }
+    event.doit = res;
+    if (event.doit)
+      LocalSelectionTransfer.getTransfer().setSelection(sel);
+
+  }
+
+  @Override
   @SuppressWarnings("rawtypes")
   public void drop(final DropTargetEvent event)
   {
@@ -428,17 +424,16 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 
             // now, find the end of this XML item
             final int endOfElement = firstLine.indexOf(" ", index);
-            final String thisElement =
-                firstLine.substring(index + 1, endOfElement);
+            final String thisElement = firstLine.substring(index + 1,
+                endOfElement);
 
             // do we have any loaders?
             if (_myDropHelpers != null)
             {
-              for (final Iterator<XMLFileDropHandler> iter =
-                  _myDropHelpers.iterator(); iter.hasNext();)
+              for (final Iterator<XMLFileDropHandler> iter = _myDropHelpers
+                  .iterator(); iter.hasNext();)
               {
-                final XMLFileDropHandler handler =
-                    (XMLFileDropHandler) iter.next();
+                final XMLFileDropHandler handler = iter.next();
 
                 // right, does it handle this kind of element?
                 if (handler.handlesThis(thisElement))
@@ -463,12 +458,12 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
           }
           catch (final FileNotFoundException e)
           {
-            CorePlugin.logError(Status.ERROR, "File not found for drag/drop:"
+            CorePlugin.logError(IStatus.ERROR, "File not found for drag/drop:"
                 + fileName, e);
           }
           catch (final IOException e)
           {
-            CorePlugin.logError(Status.ERROR, "IOException handling drag/drop:"
+            CorePlugin.logError(IStatus.ERROR, "IOException handling drag/drop:"
                 + fileName, e);
           }
         }
@@ -480,7 +475,8 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
         // hmm, does it start off with <SC
       }
     }
-    else if (EditableTransfer.getInstance().isSupportedType(event.currentDataType))
+    else if (EditableTransfer.getInstance().isSupportedType(
+        event.currentDataType))
     {
 
       final StructuredSelection sel = getSelection();
@@ -503,7 +499,9 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
             // note: we don't allow drag/drop reorganisation of
             // top level layers
           }
-          else
+          else if (parent.getEditable() instanceof BaseLayer
+              && ((EditableWrapper) event.item.getData())
+                  .getEditable() instanceof BaseLayer)
           {
             // ok, handle the drop
             final BaseLayer parentLayer = (BaseLayer) parent.getEditable();
@@ -515,8 +513,8 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 
             // ok, we need to add a new instance of the dragee (so we can support
             // multiple instances)
-            final Editable newDragee =
-                (Editable) RightClickCutCopyAdaptor.cloneThis(dragee);
+            final Editable newDragee = RightClickCutCopyAdaptor.cloneThis(
+                dragee);
 
             // also add it to the plottable layer target
             final BaseLayer dest = (BaseLayer) destination.getEditable();
@@ -531,6 +529,7 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
     destL.fireExtended();
   }
 
+  @Override
   public void dropAccept(final DropTargetEvent event)
   {
     // right, is htis
@@ -538,17 +537,29 @@ public class DragDropSupport implements DragSourceListener, DropTargetListener
 
   public Transfer[] getDragTypes()
   {
-    final Transfer[] res =
-        new Transfer[]
-        {EditableTransfer.getInstance(), LocalSelectionTransfer.getTransfer(),};
+    final Transfer[] res = new Transfer[]
+    {EditableTransfer.getInstance(), LocalSelectionTransfer.getTransfer(),};
     return res;
   }
+
   public Transfer[] getDropTypes()
   {
-    final Transfer[] res =
-        new Transfer[]
-            {EditableTransfer.getInstance(), FileTransfer.getInstance()};
+    final Transfer[] res = new Transfer[]
+    {EditableTransfer.getInstance(), FileTransfer.getInstance()};
     return res;
+  }
+
+  /**
+   * find out what's currently selected
+   *
+   * @return
+   */
+  private StructuredSelection getSelection()
+  {
+    // ok, get the selection
+    final StructuredSelection sel = (StructuredSelection) _parent
+        .getSelection();
+    return sel;
   }
 
 }
