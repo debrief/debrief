@@ -1149,7 +1149,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     final EnabledTest notNarrative = getNotNarrativeTest();
     final EnabledTest notIsLayer = getNotLayerTest();
 
-    final JButton collapseAllButton = createCommandButton("Expand All",
+    final JButton collapseAllButton = createCommandButton("Collapse All",
         "icons/24/collapse_all.png");
     collapseAllButton.setEnabled(true);
     collapseAllButton.setMnemonic(KeyEvent.VK_MINUS);
