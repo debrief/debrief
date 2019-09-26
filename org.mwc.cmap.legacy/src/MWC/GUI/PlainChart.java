@@ -310,10 +310,15 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 				if (!_suspendUpdates)
 				{
 				  WorldArea dataArea = getCanvas().getProjection().getDataArea();
+				  
 					// do we need to rescale the data?
-					if (!(dataArea!=null && dataArea.equals(Layers.getDebriefOrigin())))
+					if (dataArea!=null && dataArea.equals(Layers.getDebriefOrigin()))
+					{
+					  // note - this logic got changed, to meet Full Debrief requirements, since 
+					  // we only want plot to rescale if it has only just loaded.
 						rescale();
-
+					}
+						
 					// and trigger a full repaint
 					//rescale();
 					update(parent);

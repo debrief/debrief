@@ -17,9 +17,12 @@ package org.mwc.cmap.plotViewer.actions;
 import java.text.DecimalFormat;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.LineAttributes;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
@@ -42,6 +45,7 @@ import MWC.GenericData.WorldVector;
 final public class RangeBearing extends CoreDragAction
 {
 	
+  
 	/**
 	 * embedded class that handles the range/bearing measurement
 	 * 
@@ -49,6 +53,24 @@ final public class RangeBearing extends CoreDragAction
 	 */
 	final public static class RangeBearingMode extends SWTChart.PlotMouseDragger
 	{
+	  
+	  private PaintListener paintListener = new PaintListener()
+	  {
+	    public void paintControl(PaintEvent ev)
+	    {
+	      if(_lastRect!=null)
+  	      try
+  	      {
+  	        // update the range/bearing text
+  	        plotUpdate(ev.gc);
+  	      } 
+  	      catch(final Exception e)
+  	      { 
+  	        e.printStackTrace();
+  	      }
+	    }
+	  };
+	  
 		/**
 		 * the start point, in world coordinates (so we don't have to calculate it
 		 * as often)
@@ -75,14 +97,8 @@ final public class RangeBearing extends CoreDragAction
 		{
 			if (_startPoint != null)
 			{
-				final GC gc = new GC(_myCanvas.getCanvas());
-
-				// Erase existing rectangle
-				if (_lastRect != null) {
-					//plotUpdate(gc);
-					_myCanvas.getCanvas().redraw();
-					Display.getCurrent().update();
-				}
+				
+			
 
 				final int dx = pt.x - _startPoint.x;
 				final int dy = pt.y - _startPoint.y;
@@ -90,16 +106,10 @@ final public class RangeBearing extends CoreDragAction
 				// Draw selection rectangle
 				_lastRect = new Rectangle(_startPoint.x, _startPoint.y, dx, dy);
 
-				try
-				{
-					// update the range/bearing text
-					plotUpdate(gc);
-				} 
-				catch(final Exception e)
-				{	
-					e.printStackTrace();
-				}
-				gc.dispose();
+				if(_myCanvas!=null)
+  				_myCanvas.getCanvas().redraw();
+  	      _myCanvas.getCanvas().update();
+        
 
 			} else
 			{
@@ -110,28 +120,15 @@ final public class RangeBearing extends CoreDragAction
 
 		final public void doMouseUp(final Point point, final int keyState)
 		{
-			// Erase existing rectangle
-			if (_lastRect != null)
-			{
-				// hmm, we've finished plotting. see if the ctrl button is
-				// down
-				if ((keyState & SWT.CTRL) == 0)
-					try
-					{
-						//plotUpdate(gc);
-						_myCanvas.getCanvas().redraw();
-						Display.getCurrent().update();
-					} 
-					catch(final Exception e)
-					{	
-						e.printStackTrace();
-					}
-			}
-
+			
+			_myCanvas.getCanvas().removePaintListener(paintListener);
+			_myCanvas.getCanvas().redraw();
+      _myCanvas.getCanvas().update();
 			_startPoint = null;
 			_lastRect = null;
 			_myCanvas = null;
 			_startLocation = null;
+			
 		}
 
 		final public void mouseDown(final Point point, final SWTCanvas canvas,
@@ -141,6 +138,7 @@ final public class RangeBearing extends CoreDragAction
 			_myCanvas = canvas;
 			_startLocation = new WorldLocation(_myCanvas.getProjection().toWorld(
 					new java.awt.Point(point.x, point.y)));
+			_myCanvas.getCanvas().addPaintListener(paintListener);
 		}
 
 		@SuppressWarnings("deprecation")

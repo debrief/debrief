@@ -341,6 +341,12 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     {
       return _reason;
     }
+
+    @Override
+    public boolean doFireExtended()
+    {
+      return false;
+    }
   }
   // //////////////////////////////////////
   // member variables
@@ -665,6 +671,12 @@ public class FixWrapper extends PlainWrapper implements Watchable,
           track.combineSections(_splitSections);
         }
       }
+    }
+
+    @Override
+    public boolean doFireExtended()
+    {
+      return true;
     }
 
   }

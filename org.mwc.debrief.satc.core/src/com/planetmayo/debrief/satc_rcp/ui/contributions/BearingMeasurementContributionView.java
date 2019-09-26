@@ -14,8 +14,6 @@
  */
 package com.planetmayo.debrief.satc_rcp.ui.contributions;
 
-import java.util.List;
-
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
@@ -38,8 +36,6 @@ import org.eclipse.swt.widgets.Text;
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.contributions.CoreMeasurementContribution;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
-import com.planetmayo.debrief.satc.zigdetector.LegOfData;
-import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
@@ -52,7 +48,6 @@ public class BearingMeasurementContributionView extends
   private Scale errorSlider;
   private Label errorLabel;
   private Button errorActiveCheckbox;
-  private Button runSliceOsBtn;
   private Button runSliceTgtBtn;
 
   public BearingMeasurementContributionView(final Composite parent,
@@ -70,9 +65,9 @@ public class BearingMeasurementContributionView extends
         new PrefixSuffixLabelConverter(Object.class, "+/- ", " degs");
     labelConverter.setNestedUnitConverter(UnitConverter.ANGLE_DEG
         .getModelToUI());
-    final IObservableValue errorValue = BeansObservables.observeValue(
+    final IObservableValue<?> errorValue = BeansObservables.observeValue(
         contribution, BearingMeasurementContribution.BEARING_ERROR);
-    final IObservableValue observationNumberValue = BeansObservables
+    final IObservableValue<?> observationNumberValue = BeansObservables
         .observeValue(contribution,
             CoreMeasurementContribution.OBSERVATIONS_NUMBER);
     bindCommonHeaderWidgets(context, errorValue, observationNumberValue,
@@ -84,41 +79,37 @@ public class BearingMeasurementContributionView extends
         errorActiveCheckbox, labelConverter, new BooleanToNullConverter<Double>(
             0d), UnitConverter.ANGLE_DEG);
 
-    // connect up the MDA toggle (note - we've switched from a toggle to a button
-    // IObservableValue autoValue = BeansObservables.observeValue(contribution,
-    // BearingMeasurementContribution.RUN_MDA);
-    // IObservableValue autoButton = WidgetProperties.selection().observe(
-    // runMDACheckbox);
-    // context.bindValue(autoButton, autoValue);
-
     // connect the checkbox to the run MDA event
-    runSliceOsBtn.addSelectionListener(new SelectionListener()
-    {
-      @Override
-      public void widgetDefaultSelected(final SelectionEvent e)
-      {
-      }
-
-      @Override
-      public void widgetSelected(final SelectionEvent e)
-      {
-
-        // ok - run the MDA generator
-        contribution.sliceOwnship(getContributions());
-
-        // ok, done - enable the second btn
-        runSliceTgtBtn.setEnabled(true);
-
-        // share the good news
-        final List<LegOfData> oLegs = contribution.getOwnshipLegs();
-        if (oLegs != null && !oLegs.isEmpty())
-        {
-          final int num = oLegs.size();
-          final String message = "Ownship sliced into " + num + " legs.";
-          SATC_Activator.showMessage("Slice ownship legs", message);
-        }
-      }
-    });
+//    runSliceOsBtn.addSelectionListener(new SelectionListener()
+//    {
+//      @Override
+//      public void widgetDefaultSelected(final SelectionEvent e)
+//      {
+//      }
+//
+//      @Override
+//      public void widgetSelected(final SelectionEvent e)
+//      {
+//
+//        // ok - run the MDA generator
+//        contribution.sliceOwnship(getContributions());
+//
+//        // ok, done - enable the second btn
+//        runSliceTgtBtn.setEnabled(true);
+//
+//        // share the good news
+//        final List<LegOfData> oLegs = contribution.getOwnshipLegs();
+//        if (oLegs != null && !oLegs.isEmpty())
+//        {
+//          final int num = oLegs.size();
+//          final String suffix = num == 1 ? "leg" : "legs";
+//          final String message = "Ownship sliced into " + num + " " + suffix
+//              + ".";
+//          SATC_Activator.showMessage("Slice ownship legs", message);
+//        }
+//      }
+//    });
+//    
     // connect the checkbox to the run MDA event
     runSliceTgtBtn.addSelectionListener(new SelectionListener()
     {
@@ -203,10 +194,10 @@ public class BearingMeasurementContributionView extends
     // Composite group2 = new Composite(bodyGroup, SWT.NONE);
     // group2.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
     // group2.setLayout(UIUtils.createGridLayoutWithoutMargins(5, false));
-    runSliceOsBtn = new Button(bodyGroup, SWT.PUSH);
-    runSliceOsBtn.setText("1. Slice O/S legs");
+//    runSliceOsBtn = new Button(bodyGroup, SWT.PUSH);
+//    runSliceOsBtn.setText("1. Slice O/S legs");
     runSliceTgtBtn = new Button(bodyGroup, SWT.PUSH);
-    runSliceTgtBtn.setText("2. Slice Tgt legs");
+    runSliceTgtBtn.setText("Slice Tgt legs");
     UIUtils.createLabel(bodyGroup, "Auto-detect target manoeuvres",
         new GridData(GridData.HORIZONTAL_ALIGN_FILL));
   }
@@ -225,7 +216,7 @@ public class BearingMeasurementContributionView extends
     endDate.setEnabled(false);
     endTime.setEnabled(false);
 
-    runSliceOsBtn.setEnabled(true);
-    runSliceTgtBtn.setEnabled(false);
+ //   runSliceOsBtn.setEnabled(true);
+    runSliceTgtBtn.setEnabled(true);
   }
 }

@@ -30,7 +30,7 @@ public abstract class BaseTestCase extends TestCase
   protected void setUp() throws Exception
   {
     System.out.println("Setup");
-    DebriefLiteApp.launchApp(); 
+    DebriefLiteApp.launchApp();
     Thread.sleep(3000);
   }
   

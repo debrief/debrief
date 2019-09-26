@@ -449,6 +449,20 @@
 							</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>
+					<xs:attribute name="filled" default="true" type="xs:boolean" >
+						<xs:annotation>
+							<xs:documentation>
+								True if the sensor shape is filled.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="SemiTransparent" default="true" type="xs:boolean" >
+						<xs:annotation>
+							<xs:documentation>
+								True if the sensor shape is Semi-Transparent.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
 				</xs:complexType>
 			</xs:element>
 		</xs:sequence>

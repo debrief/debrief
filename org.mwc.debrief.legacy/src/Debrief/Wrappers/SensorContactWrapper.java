@@ -249,6 +249,12 @@ public final class SensorContactWrapper extends
       return true;
     }
 
+    @Override
+    public boolean doFireExtended()
+    {
+      return false;
+    }
+
   }
 
   // //////////////////////////////////////////////////////////////////////////

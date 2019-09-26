@@ -151,7 +151,7 @@
 			<fileset dir="../org.mwc.debrief.legacy/libs" includes="*.jar"/>
 			<fileset dir="../org.mwc.cmap.jfreechart/libs" includes="*.jar"/>
 			<fileset dir="../org.mwc.cmap.geotools/libs" includes="*.jar"/>
-			<fileset dir="" includes="cmap_legacy.jar"/>
+			<fileset dir="../org.mwc.debrief.legacy" includes="cmap_legacy.jar"/>
 			<fileset dir="../org.mwc.cmap.geotools" includes="cmap_geotools.jar"/>
 			<fileset dir="../org.mwc.debrief.legacy" includes="debrief_legacy.jar"/>
 			<fileset dir="libs" includes="*.jar"/>
@@ -164,12 +164,12 @@
 		</zip>
 	</target>
 	<target name="quiet">
-<!--
+
 				<script language="javascript">
 				        var logger = project.getBuildListeners( ).firstElement( );
 				        logger.setMessageOutputLevel( 0 );
 				    </script>
-		-->
+
 	</target>
 
 	<target name="clean" depends="quiet,init" description="Clean the plug-in: org.mwc.debrief.lite of all the zips, jars and logs created.">
@@ -178,6 +178,7 @@
 		<delete file="${plugin.destination}/org.mwc.debrief.lite_*.jar"/>
 		<delete file="${plugin.destination}/org.mwc.debrief.lite_*.zip"/>
 		<delete dir="${temp.folder}"/>
+		<delete file="${basedir}/*.jar"/>
 		<delete dir="${dist.dir}"/>
 	</target>
 	<target name="makeonejar" depends="generate">

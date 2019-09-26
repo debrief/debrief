@@ -22,6 +22,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.dynamichelpers.IExtensionChangeHandler;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IContributionItem;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
@@ -42,10 +45,16 @@ import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.internal.IPreferenceConstants;
 import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.internal.WorkbenchWindow;
+import org.eclipse.ui.internal.WorkbenchPage;
 import org.eclipse.ui.part.WorkbenchPart;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.eclipse.ui.views.navigator.ResourceNavigator;
 import org.eclipse.ui.views.properties.PropertySheet;
+
+import org.eclipse.e4.ui.model.application.ui.MElementContainer;
+import org.eclipse.e4.ui.model.application.ui.basic.MTrimBar;
+import org.eclipse.e4.ui.model.application.ui.basic.MTrimElement;
+import org.eclipse.e4.ui.model.application.ui.menu.MToolBarElement;
 
 @SuppressWarnings(
 {"deprecation", "restriction"})
@@ -231,6 +240,12 @@ public class Startup implements IStartup
       @Override
       public void run()
       {
+        
+        IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+      
+        hideToolbarMode(window, window.getActivePage());
+        hideMenuMode(window, window.getActivePage());
+        
         final IEditorRegistry editorRegistry = PlatformUI.getWorkbench()
             .getEditorRegistry();
         if (editorRegistry != null)
@@ -381,6 +396,120 @@ public class Startup implements IStartup
         }
       }
     });
+  }
+  
+  
+  
+  
+  private void hideToolbarMode(IWorkbenchWindow window, IWorkbenchPage page)
+  {
+      List<String> blacklist = new ArrayList<String>();
+
+      blacklist.add("SearchField");
+      blacklist.add("org.eclipse.ui.workbench.file");
+      blacklist.add("org.eclipse.debug.ui.launch.toolbar");
+      blacklist.add("org.eclipse.debug.ui.launchActionSet");
+      blacklist.add("org.eclipse.debug.ui.main.toolbar");
+      blacklist.add("org.eclipse.jdt.debug.ui.JavaSnippetToolbarActions");
+      blacklist.add("openType");
+      blacklist.add("org.eclipse.ui.workbench.navigate");
+      blacklist.add("history.group");
+      blacklist.add("group.application");
+      blacklist.add("pin.group");
+      blacklist.add("pin.group");
+      blacklist.add("group.editor");
+      blacklist.add("group.nav");
+      blacklist.add("org.eclipse.ui.edit.text.actionSet.presentation");
+      blacklist.add("org.eclipse.ui.edit.text.gotoNextAnnotation");
+      blacklist.add("org.eclipse.ui.edit.text.gotoPreviousAnnotation");
+      
+      blacklist.add("new.ext");
+      blacklist.add("newWizardDropDown");
+      blacklist.add("new.group");
+
+      MTrimBar topTrim = ((WorkbenchWindow) window).getTopTrim();
+      for (MTrimElement element : topTrim.getChildren())
+      {
+
+          if (blacklist.contains(element.getElementId()))
+          {
+
+              element.setToBeRendered(false);
+
+          }
+
+          if (element instanceof MElementContainer<?>)
+          {
+              //uncomment to find tool item/group  names to add to black-list  
+             // System.out.println(element.getElementId());
+              @SuppressWarnings("unchecked")
+              MElementContainer<MToolBarElement> sub = (MElementContainer<MToolBarElement>) element;
+              for (MToolBarElement subElement : sub.getChildren())
+              {
+
+                  if (blacklist.contains(subElement.getElementId()))
+                  {
+
+                      subElement.setToBeRendered(false);
+                      continue;
+                  }
+                  
+                 //uncomment to find tool item/group  names to add to black-list  
+                 // System.out.println("|_" + subElement.getElementId());
+
+              }
+          }
+      }
+      if (page instanceof WorkbenchPage)
+      {
+          ((WorkbenchPage) page).resetToolBarLayout();
+      }
+  }
+  
+  private void hideMenuMode(IWorkbenchWindow window, IWorkbenchPage page)
+  {
+
+      List<String> blacklist = new ArrayList<String>();
+
+
+      blacklist.add("org.eclipse.ui.run");
+
+
+      WorkbenchWindow workbenchWindow = ((WorkbenchWindow) window);
+
+      IMenuManager manager = workbenchWindow.getMenuBarManager();
+      hideMenuMode(blacklist, manager,1);
+
+  }
+  
+  
+  private void hideMenuMode(List<String> blacklist, IMenuManager manager,int level)
+  {
+      IContributionItem[] items = manager.getItems();
+      for (IContributionItem iContributionItem : items)
+      {
+
+          if (blacklist.contains(iContributionItem.getId()))
+          {
+              iContributionItem.setVisible(false);
+              continue;
+          }
+          if(iContributionItem instanceof MenuManager)
+          {
+            hideMenuMode(blacklist, (MenuManager)iContributionItem, level+1);
+          }
+          //uncomment to find tool item/group  names to add to black-list  
+          
+//          String string = "|_";
+//          for (int i = 0; i <level; i++)
+//          {
+//              string=" "+string;
+//              
+//          }
+//          System.out.println(string+iContributionItem.getId());
+
+      }
+      manager.updateAll(true);
   }
 
 }
