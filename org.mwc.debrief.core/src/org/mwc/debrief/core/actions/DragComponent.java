@@ -92,7 +92,7 @@ public class DragComponent extends DragFeature
 
     /**
      * constructor - providing the parameters to store to execute/reproduce the operation
-     * 
+     *
      * @param theOffset
      * @param theFeature
      * @param theLayers
@@ -109,10 +109,6 @@ public class DragComponent extends DragFeature
       _theComponent = theComponent;
     }
 
-    
-    
-    
-    
     /**
      * this method calls the 'do' event in the parent tool, passing the necessary data to it
      */
@@ -174,7 +170,7 @@ public class DragComponent extends DragFeature
 
   /**
    * embedded class that handles the range/bearing measurement
-   * 
+   *
    * @author Ian
    */
   final public class DragComponentMode extends SWTChart.PlotMouseDragger
@@ -218,55 +214,49 @@ public class DragComponent extends DragFeature
      * the start point, in screen coordinates - where we started our drag
      */
     Point _startPoint;
-    
-    
-    
-    private PaintListener paintListener = new PaintListener()
+
+    private final PaintListener paintListener = new PaintListener()
     {
-      public void paintControl(PaintEvent ev)
+      @Override
+      @SuppressWarnings("deprecation")
+      public void paintControl(final PaintEvent ev)
       {
-        if(_lastPoint!=null)
+        if (_lastPoint != null)
           try
           {
-         // This is the same as a !XOR
+            // This is the same as a !XOR
             ev.gc.setXORMode(true);
             ev.gc.setForeground(ev.gc.getBackground());
-           
 
             ev.gc.setForeground(fc);
-            
+
             final WorldLocation newLocation = new WorldLocation(_myCanvas
                 .getProjection().toWorld(_lastPoint));
 
             // now work out the vector from the last place plotted to the current
             // place
-             WorldVector _offset = newLocation.subtract(_lastLocation);
-             
-          // remember the last location
-           
+            final WorldVector _offset = newLocation.subtract(_lastLocation);
+
+            // remember the last location
+
             // draw new track
             drawHere(ev.gc, _offset);
-            
+
             _lastLocation = newLocation;
-          } 
-          catch(final Exception e)
-          { 
+          }
+          catch (final Exception e)
+          {
             e.printStackTrace();
           }
       }
     };
 
     @Override
-    @SuppressWarnings("deprecation")
     final public void doMouseDrag(final org.eclipse.swt.graphics.Point pt,
         final int JITTER, final Layers theLayers, final SWTCanvas theCanvas)
     {
       if ((_startPoint != null) && (_hoverTarget != null))
       {
-        //final GC gc = new GC(_myCanvas.getCanvas());
-
-        
-
         // Erase existing track, if we have one
         if (_lastPoint != null)
         {
@@ -281,14 +271,11 @@ public class DragComponent extends DragFeature
           _lastLocation = _startLocation;
 
           // override the icon we're using
-
           theCanvas.getCanvas().setCursor(getDragCursor());
-
         }
 
         // remember where we are
         _lastPoint = new java.awt.Point(pt.x, pt.y);
-       
 
         _myCanvas.getCanvas().redraw();
         _myCanvas.getCanvas().update();
@@ -310,19 +297,16 @@ public class DragComponent extends DragFeature
             }
           }
         }
-
-        
       }
       else
       {
         // System.out.println("no point.");
       }
-
     }
 
     /**
      * follow the mouse being moved over the plot. switch cursor when we're over a target
-     * 
+     *
      * @param pt
      * @param JITTER
      * @param theLayers
@@ -391,8 +375,6 @@ public class DragComponent extends DragFeature
         if (scrDist <= JITTER)
         {
           // ok - change what the cursor looks liks
-
-          // and assign it to the control
           theCanvas.getCanvas().setCursor(CursorRegistry.getCursor(
               CursorRegistry.SELECT_POINT_HIT));
 
@@ -401,7 +383,6 @@ public class DragComponent extends DragFeature
           _hoverTarget = currentNearest._object;
           _hoverComponent = currentNearest._draggableComponent;
           _parentLayer = currentNearest._topLayer;
-
         }
       }
 
@@ -425,14 +406,6 @@ public class DragComponent extends DragFeature
       // just check we actually dragged something
       if (_hoverTarget != null)
       {
-
-        // this gc was leaked in old code; not used anymore
-        // final GC gc = new GC(_myCanvas.getCanvas());
-
-        // This is the same as a !XOR
-        // gc.setXORMode(true);
-        // gc.setForeground(gc.getBackground());
-
         // Erase existing rectangle
         if (_lastPoint != null)
         {
@@ -441,7 +414,6 @@ public class DragComponent extends DragFeature
           final int isControlPressed = keyState & SWT.CTRL;
           if (isControlPressed == 0)
           {
-            // drawHere(gc, null);
             _myCanvas.getCanvas().redraw();
             Display.getCurrent().update();
           }
@@ -495,7 +467,7 @@ public class DragComponent extends DragFeature
 
     /**
      * dragging happening. Either draw (or erase) the previous point
-     * 
+     *
      * @param graphics
      *          where we're plotting to
      * @param pt
@@ -509,7 +481,6 @@ public class DragComponent extends DragFeature
       if (newVector != null)
         _hoverTarget.shift(_hoverComponent, newVector);
 
-      // TrackWrapper tw = (TrackWrapper) _hoverTarget;
       final SWTCanvasAdapter ca = new SWTCanvasAdapter(_myCanvas
           .getProjection())
       {
