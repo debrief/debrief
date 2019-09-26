@@ -10,5 +10,5 @@
   <groupId>org.mwc.debrief</groupId>
   <artifactId>org.mwc.cmap.geotools</artifactId>
   <packaging>eclipse-plugin</packaging>
-  <version>1.0.8</version>
+  <version>1.0.9</version>
 </project>
