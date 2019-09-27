@@ -25,6 +25,9 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
@@ -1553,6 +1556,28 @@ public class DebriefLiteApp implements FileDropListener
       DebriefRibbonFile.closeButton.setEnabled(true);
     }
   }
+  private void resetUndoBuffer()
+  {
+    session.getUndoBuffer().resetBuffer();
+    resetClipboard();
+    
+  }
+  private void resetClipboard()
+  {
+    Clipboard theClipboard = session.getClipboard();
+    theClipboard.setContents(new Transferable() {
+      public DataFlavor[] getTransferDataFlavors() {
+        return new DataFlavor[0];
+      }
+
+      public boolean isDataFlavorSupported(DataFlavor flavor) {
+        return false;
+      }
+
+      public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
+        throw new UnsupportedFlavorException(flavor);
+      }},layerManager);
+  }
 
   public void resetPlot()
   {
@@ -1609,7 +1634,7 @@ public class DebriefLiteApp implements FileDropListener
 
     // put some backdrop data back in
     loadBackdropdata(_theLayers);
-
+    resetUndoBuffer();
     graphPanelView.reset();
     graphPanel.setCollapsed(true);
   }

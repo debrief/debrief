@@ -86,8 +86,9 @@ public final class UndoBuffer extends Observable
 {
   static protected final int undo = 1;
   static protected final int redo = 2;
+  private static final int UNSET = -1;
   private final Vector<Action> theActions;
-  private int presentAction;
+  private int presentAction = UNSET;
 
   public UndoBuffer()
   {
@@ -248,4 +249,10 @@ public final class UndoBuffer extends Observable
 
     return res;
   }
+  public void resetBuffer() {
+    theActions.clear();
+    presentAction=UNSET;
+    bufferChanged();
+  }
+  
 }
