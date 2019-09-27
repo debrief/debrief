@@ -30,6 +30,7 @@ import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 import org.mwc.cmap.core.CorePlugin;
 
 import MWC.GenericData.HiResDate;
+import MWC.TacticalData.NarrativeWrapper.GetHiResValue;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class DTGHelper extends EditorHelper
@@ -67,7 +68,8 @@ public class DTGHelper extends EditorHelper
     }
   }
 
-  public static class DTGPropertySource implements IPropertySource2
+  public static class DTGPropertySource implements IPropertySource2,
+  GetHiResValue
   {
 
     protected String _date, _time;

@@ -133,7 +133,6 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 import MWC.GUI.TimeStampedDataItem;
-import MWC.GUI.Properties.PlainPropertyEditor.PropertyChangeAction;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.Utilities.ReaderWriter.ImportManager;
@@ -146,6 +145,11 @@ import junit.framework.TestCase;
 public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
     Layer, IRollingNarrativeProvider, GriddableSeriesMarker
 {
+  
+  public static interface GetHiResValue
+  {
+    public HiResDate getValue();
+  }
 
   /*
    * embedded class to allow us to pass the local iterator (Iterator) used internally outside as an
@@ -427,14 +431,33 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
         // double-check it's the date
         if (evt.getPropertyName().equals(NarrativeEntry.DTG))
         {
-          // ok, remove this entry
-          final PropertyChangeAction pcs = (PropertyChangeAction) evt
-              .getSource();
-          final NarrativeEntry entry = (NarrativeEntry) pcs.getData();
-          _myEntries.remove(entry);
-
-          // and replace it (which re-sort them)
-          _myEntries.add((Editable) entry);
+          if ( evt.getSource() instanceof NarrativeEntry )
+          {
+            final NarrativeEntry entry = (NarrativeEntry) evt.getSource();
+            
+            final Object oldValue = evt.getOldValue();
+            final Object newValue = evt.getNewValue();
+            if ( oldValue instanceof GetHiResValue && newValue instanceof GetHiResValue )
+            {
+              final HiResDate oldHiResValue = ((GetHiResValue)oldValue).getValue();
+              final HiResDate newHiResValue = ((GetHiResValue)newValue).getValue();
+              
+              /**
+               * This part was tricky. Previously we were editing the key,
+               * so the element was getting lost in the tree. So, what I am 
+               * doing here is to store the old value again to find the item
+               * in the tree, removing it, and then adding it again. The idea
+               * is to resort the items.
+               * 
+               * Saul
+               */
+              
+              entry.setDTG(oldHiResValue);
+              _myEntries.remove(entry);              
+              entry.setDTG(newHiResValue);
+              _myEntries.add((Editable) entry);
+            }
+          }
         }
       }
     };
