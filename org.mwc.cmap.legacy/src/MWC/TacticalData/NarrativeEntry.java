@@ -287,7 +287,10 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 
   public final String getDTGString()
   {
-    return DebriefFormatDateTime.toStringHiRes(_DTG);
+    if (_cachedString == null)
+      _cachedString = DebriefFormatDateTime.toStringHiRes(_DTG);
+
+    return _cachedString;
   }
 
   public final String getEntry()
