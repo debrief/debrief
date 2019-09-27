@@ -152,8 +152,6 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 
   private boolean _visible = true;
 
-  String _DTGString = null;
-
   /**
    * cache the hashcode, it's an expensive operation
    */
@@ -289,10 +287,10 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
 
   public final String getDTGString()
   {
-    if (_DTGString == null)
-      _DTGString = DebriefFormatDateTime.toStringHiRes(_DTG);
+    if (_cachedString == null)
+      _cachedString = DebriefFormatDateTime.toStringHiRes(_DTG);
 
-    return _DTGString;
+    return _cachedString;
   }
 
   public final String getEntry()
