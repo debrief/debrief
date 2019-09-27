@@ -76,7 +76,6 @@ import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
-import MWC.GenericData.WatchableList;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
 import MWC.TacticalData.SliderConverter;
@@ -693,7 +692,7 @@ public class DebriefRibbonTimeController
         }
       }
     });
-    
+
     // ok, start off with the buttons disabled
     setButtonsEnabled(topButtonsPanel, false);
 
@@ -743,13 +742,13 @@ public class DebriefRibbonTimeController
             {
               final Editable nextE = ele.nextElement();
               hasItems |= nextE instanceof LightweightTrackWrapper
-                  || nextE instanceof TrackWrapper
                   || nextE instanceof DynamicTrackShapeSetWrapper;
             }
-          }else if (next instanceof NarrativeWrapper)
+          }
+          else if (next instanceof NarrativeWrapper)
           {
             // check if we have any narrative item inside.
-            final NarrativeWrapper narrativeWrapper = (NarrativeWrapper)next;
+            final NarrativeWrapper narrativeWrapper = (NarrativeWrapper) next;
             final Enumeration<Editable> elements = narrativeWrapper.elements();
             while (elements.hasMoreElements() && !hasNarratives)
             {
