@@ -131,26 +131,26 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
           {
             deltaMultiplier *= -1;
           }
-          
+
           int delta;
           if (direction.isVertical())
           {
-            final int newDimensionDelta = (int) (event.getLocationOnScreen().getY()
-                     - dragLocation.getY());
+            final int newDimensionDelta = (int) (event.getLocationOnScreen()
+                .getY() - dragLocation.getY());
 
             delta = newDimensionDelta;
           }
           else
           {
-            final int newDimensionDelta = (int) (event.getLocationOnScreen().getX()
-                     - dragLocation.getX());
+            final int newDimensionDelta = (int) (event.getLocationOnScreen()
+                .getX() - dragLocation.getX());
 
             delta = newDimensionDelta;
           }
           delta *= deltaMultiplier;
-    
+
           wrapper.getView().setVisible(true);
-          
+
           int newDimension;
           if (direction.isVertical())
           {
@@ -160,15 +160,15 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
           {
             newDimension = wrapper.getWidth() + delta;
           }
-    
+
           Rectangle bounds = wrapper.getBounds();
-    
+
           if (direction.isVertical())
           {
-            int oldHeight = bounds.height;
+            final int oldHeight = bounds.height;
             bounds.height = newDimension;
             wrapper.setBounds(bounds);
-    
+
             if (direction.getFixedDirection(
                 getComponentOrientation()) == Direction.DOWN)
             {
@@ -179,17 +179,17 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
             {
               wrapper.setViewPosition(new Point(0, newDimension));
             }
-    
+
             bounds = getBounds();
             bounds.height = (bounds.height - oldHeight) + newDimension;
             currentDimension = bounds.height;
           }
           else
           {
-            int oldWidth = bounds.width;
+            final int oldWidth = bounds.width;
             bounds.width = newDimension;
             wrapper.setBounds(bounds);
-    
+
             if (direction.getFixedDirection(
                 getComponentOrientation()) == Direction.RIGHT)
             {
@@ -200,18 +200,19 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
             {
               wrapper.setViewPosition(new Point(newDimension, 0));
             }
-    
+
             bounds = getBounds();
             bounds.width = (bounds.width - oldWidth) + newDimension;
             currentDimension = bounds.width;
           }
-    
+
           collapsiblePaneInstance.collapsed = false;
-          collapsiblePaneInstance.setPreferredSize(new Dimension(bounds.width, bounds.height));
+          collapsiblePaneInstance.setPreferredSize(new Dimension(bounds.width,
+              bounds.height));
           setBounds(bounds);
-    
+
           validate();
-          
+
           dragLocation = event.getLocationOnScreen();
         }
       }
@@ -233,6 +234,7 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
       titleLabel.setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
     }
   }
+
   @Override
   public String getName()
   {
