@@ -363,7 +363,7 @@ public class JXCollapsiblePane extends JXPanel
   /**
    * Indicates whether the component is collapsed or expanded
    */
-  private boolean collapsed = false;
+  protected boolean collapsed = false;
 
   /**
    * Defines the orientation of the component.
@@ -385,8 +385,8 @@ public class JXCollapsiblePane extends JXPanel
    */
   private Timer animateTimer;
   private AnimationListener animator;
-  private int currentDimension = -1;
-  private WrapperContainer wrapper;
+  protected int currentDimension = -1;
+  protected WrapperContainer wrapper;
   private boolean useAnimation = true;
   private AnimationParams animationParams;
   private boolean collapseFiringState;
