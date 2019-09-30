@@ -160,6 +160,7 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
           {
             newDimension = wrapper.getWidth() + delta;
           }
+          newDimension = Math.max(newDimension, getMinimunAnimationSize());
 
           Rectangle bounds = wrapper.getBounds();
 
