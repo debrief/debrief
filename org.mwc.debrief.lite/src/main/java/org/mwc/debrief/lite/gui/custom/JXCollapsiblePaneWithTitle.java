@@ -183,6 +183,7 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
 
             bounds = getBounds();
             bounds.height = (bounds.height - oldHeight) + newDimension;
+            bounds.width = 0;
             currentDimension = bounds.height;
           }
           else
@@ -204,6 +205,7 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
 
             bounds = getBounds();
             bounds.width = (bounds.width - oldWidth) + newDimension;
+            bounds.height = 0;
             currentDimension = bounds.width;
           }
 
