@@ -293,9 +293,6 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 
 	/**
 	 * we've sorted out the leg scores
-	 * 
-	 * @param theLegs
-	 * 
 	 */
 	protected void fireStartingGeneration()
 	{
@@ -308,7 +305,7 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 	/**
 	 * we've sorted out the leg scores
 	 * 
-	 * @param theLegs
+	 * @param error any error we receive (optional)
 	 * 
 	 */
 	protected void fireFinishedGeneration(Throwable error)
@@ -369,8 +366,9 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 	/**
 	 * extract a set of legs from the space
 	 * 
-	 * @param space
-	 * @return
+	 * @param theStates the current list of bounded states
+	 * @param monitor a progress monitor
+	 * @return the set of legs represented.
 	 */
 	protected List<CoreLeg> getTheLegs(Collection<BoundedState> theStates,
 			IProgressMonitor monitor) throws InterruptedException
@@ -386,7 +384,7 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 		// leg before/after them
 		BoundedState previousState = null;
 
-		// increementing counter, to number turns
+		// incrementing counter, to number turns
 		int counter = 1;
 
 		for (BoundedState thisS : theStates)
