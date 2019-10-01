@@ -424,6 +424,10 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
         final FixWrapper fw = (FixWrapper) thisSecondary;
         parentIsVis = fw.getSymbolShowing() || fw.getArrowShowing();
       }
+      else if(thisSecondary instanceof ColouredDataItem.ShowMarker)
+      {
+        parentIsVis = true;
+      }
       else
       {
         parentIsVis = false;

@@ -69,6 +69,7 @@ import MWC.GUI.Layers.NeedsToKnowAboutLayers;
 import MWC.GUI.NeedsToBeInformedOfRemove;
 import MWC.GUI.SupportsPropertyListeners;
 import MWC.GUI.Canvas.CanvasTypeUtilities;
+import MWC.GUI.JFreeChart.ColouredDataItem;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.HiResDate;
@@ -341,7 +342,7 @@ public class SATC_Solution extends BaseLayer implements
 
   }
 
-  protected static class WrappedState implements Watchable, Editable
+  protected static class WrappedState implements Watchable, Editable, ColouredDataItem.ShowMarker
   {
 
     private final State state;
