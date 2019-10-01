@@ -1408,6 +1408,9 @@ public class MaintainContributionsView extends ViewPart
       return;
 
     zoneChart.clearZones();
+
+    // also clear the bearing timeseries
+    measuredBearingsForZones.clear();
   }
 
   private void updateZoneChart(final IContributions contributions)
