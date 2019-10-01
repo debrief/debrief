@@ -426,8 +426,10 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 						}
 						else
 						{
-							throw new RuntimeException(
-									"A straight leg can only follow an altering leg - some problem here");
+						  // No, we can relax this test.  It made the algorithm fragile when 
+						  // inserting manual legs
+					    //	throw new RuntimeException(
+						  //	"A straight leg can only follow an altering leg - some problem here");
 						}
 					}
 
