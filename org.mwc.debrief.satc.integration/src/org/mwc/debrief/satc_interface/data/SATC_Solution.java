@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.satc_interface.data;
 
@@ -52,6 +52,34 @@ import org.mwc.debrief.satc_interface.data.wrappers.FMC_Wrapper;
 import org.mwc.debrief.satc_interface.data.wrappers.StraightLegWrapper;
 import org.mwc.debrief.satc_interface.utilities.conversions;
 
+import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
+import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.BMeasurement;
+import com.planetmayo.debrief.satc.model.contributions.ContributionDataType;
+import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
+import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
+import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
+import com.planetmayo.debrief.satc.model.generator.IConstrainSpaceListener;
+import com.planetmayo.debrief.satc.model.generator.IContributions;
+import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener;
+import com.planetmayo.debrief.satc.model.generator.ISolver;
+import com.planetmayo.debrief.satc.model.generator.impl.ga.IGASolutionsListener;
+import com.planetmayo.debrief.satc.model.legs.AlteringRoute;
+import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
+import com.planetmayo.debrief.satc.model.legs.CoreRoute;
+import com.planetmayo.debrief.satc.model.legs.LegType;
+import com.planetmayo.debrief.satc.model.legs.StraightRoute;
+import com.planetmayo.debrief.satc.model.manager.ISolversManager;
+import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
+import com.planetmayo.debrief.satc.model.states.BoundedState;
+import com.planetmayo.debrief.satc.model.states.BoundedState.BoundedStateType;
+import com.planetmayo.debrief.satc.model.states.LocationRange;
+import com.planetmayo.debrief.satc.model.states.State;
+import com.planetmayo.debrief.satc.util.MathUtils;
+import com.planetmayo.debrief.satc_rcp.SATC_Activator;
+import com.vividsolutions.jts.geom.Coordinate;
+
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.ISecondaryTrack;
 import Debrief.Wrappers.TrackWrapper;
@@ -83,34 +111,6 @@ import MWC.TacticalData.Fix;
 import MWC.TacticalData.TrackDataProvider;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
-import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
-import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
-import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution.BMeasurement;
-import com.planetmayo.debrief.satc.model.contributions.ContributionDataType;
-import com.planetmayo.debrief.satc.model.contributions.CourseForecastContribution;
-import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution;
-import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
-import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
-import com.planetmayo.debrief.satc.model.generator.IConstrainSpaceListener;
-import com.planetmayo.debrief.satc.model.generator.IContributions;
-import com.planetmayo.debrief.satc.model.generator.IContributionsChangedListener;
-import com.planetmayo.debrief.satc.model.generator.ISolver;
-import com.planetmayo.debrief.satc.model.generator.impl.ga.IGASolutionsListener;
-import com.planetmayo.debrief.satc.model.legs.AlteringRoute;
-import com.planetmayo.debrief.satc.model.legs.CompositeRoute;
-import com.planetmayo.debrief.satc.model.legs.CoreRoute;
-import com.planetmayo.debrief.satc.model.legs.LegType;
-import com.planetmayo.debrief.satc.model.legs.StraightRoute;
-import com.planetmayo.debrief.satc.model.manager.ISolversManager;
-import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
-import com.planetmayo.debrief.satc.model.states.BoundedState;
-import com.planetmayo.debrief.satc.model.states.BoundedState.BoundedStateType;
-import com.planetmayo.debrief.satc.model.states.LocationRange;
-import com.planetmayo.debrief.satc.model.states.State;
-import com.planetmayo.debrief.satc.util.MathUtils;
-import com.planetmayo.debrief.satc_rcp.SATC_Activator;
-import com.vividsolutions.jts.geom.Coordinate;
-
 public class SATC_Solution extends BaseLayer implements
     NeedsToBeInformedOfRemove, NeedsToKnowAboutLayers, WatchableList,
     BaseLayer.ProvidesRange, ISecondaryTrack, NonColoredWatchable
@@ -118,9 +118,9 @@ public class SATC_Solution extends BaseLayer implements
 
   /**
    * utility class to work through a route
-   * 
+   *
    * @author ian
-   * 
+   *
    */
   private static class DoPaint implements RouteStepper
   {
@@ -155,8 +155,8 @@ public class SATC_Solution extends BaseLayer implements
 
         // get the first point
         final State firstState = thisRoute.getStates().get(0);
-        final State lastState =
-            thisRoute.getStates().get(thisRoute.getStates().size() - 1);
+        final State lastState = thisRoute.getStates().get(thisRoute.getStates()
+            .size() - 1);
 
         final Color theColor;
 
@@ -166,21 +166,18 @@ public class SATC_Solution extends BaseLayer implements
           theColor = Color.red;
 
         final Font theFont = LEG_NAME_FONT;
-        final WorldLocation firstLoc =
-            conversions.toLocation(firstState.getLocation().getCoordinate());
-        final WorldLocation lastLoc =
-            conversions.toLocation(lastState.getLocation().getCoordinate());
+        final WorldLocation firstLoc = conversions.toLocation(firstState
+            .getLocation().getCoordinate());
+        final WorldLocation lastLoc = conversions.toLocation(lastState
+            .getLocation().getCoordinate());
 
-        CanvasTypeUtilities.drawLabelOnLine(_dest, thisRoute.getName(),
-            theFont, theColor, firstLoc, lastLoc, LEG_LABEL_CLIPPING_THRESHOLD,
-            true);
+        CanvasTypeUtilities.drawLabelOnLine(_dest, thisRoute.getName(), theFont,
+            theColor, firstLoc, lastLoc, LEG_LABEL_CLIPPING_THRESHOLD, true);
 
-        final String vectorDescription =
-            String.format("%.1f", new WorldSpeed(straight.getSpeed(),
-                WorldSpeed.M_sec).getValueIn(WorldSpeed.Kts))
-                + " kts "
-                + String.format("%.0f", Math.toDegrees(MathUtils
-                    .normalizeAngle(straight.getCourse()))) + "\u00B0";
+        final String vectorDescription = String.format("%.1f", new WorldSpeed(
+            straight.getSpeed(), WorldSpeed.M_sec).getValueIn(WorldSpeed.Kts))
+            + " kts " + String.format("%.0f", Math.toDegrees(MathUtils
+                .normalizeAngle(straight.getCourse()))) + "\u00B0";
 
         CanvasTypeUtilities.drawLabelOnLine(_dest, vectorDescription, theFont,
             theColor, firstLoc, lastLoc, LEG_LABEL_CLIPPING_THRESHOLD, false);
@@ -287,8 +284,8 @@ public class SATC_Solution extends BaseLayer implements
   {
 
     /**
-		 * 
-		 */
+     * 
+     */
     private static final long serialVersionUID = 1L;
 
     public SATC_Info(final SATC_Solution data)
@@ -302,11 +299,9 @@ public class SATC_Solution extends BaseLayer implements
       final Class<SATC_Solution> c = SATC_Solution.class;
 
       final MethodDescriptor[] mds =
-          {
-              method(c, "convertToLegs", null,
-                  "Convert To Manual TMA Track"),
-              method(c, "convertToTrack", null, "Merge To Track"),
-              method(c, "recalculate", null, "Recalculate Solutions")};
+      {method(c, "convertToLegs", null, "Convert To Manual TMA Track"), method(
+          c, "convertToTrack", null, "Merge To Track"), method(c, "recalculate",
+              null, "Recalculate Solutions")};
 
       return mds;
     }
@@ -317,20 +312,18 @@ public class SATC_Solution extends BaseLayer implements
       try
       {
         final PropertyDescriptor[] res =
-            {
-                displayProp("ShowLocationConstraints",
-                    "Show location constraints",
-                    "whether to display location constraints", FORMAT),
-                displayProp("ShowAlterationStates", "Show alteration states",
-                    "whether to states during alteration", FORMAT),
-                displayProp("OnlyPlotLegEnds", "Only plot leg ends",
+        {displayProp("ShowLocationConstraints", "Show location constraints",
+            "whether to display location constraints", FORMAT), displayProp(
+                "ShowAlterationStates", "Show alteration states",
+                "whether to states during alteration", FORMAT), displayProp(
+                    "OnlyPlotLegEnds", "Only plot leg ends",
                     "whether to only plot location bounds at leg ends", FORMAT),
-                displayProp("ShowSolutions", "Show solutions",
-                    "whether to display solutions", FORMAT),
-                prop("Name", "the name for this solution", EditorType.FORMAT),
-                prop("Color", "the color to display this solution",
-                    EditorType.FORMAT),
-                prop("Visible", "whether to plot this solution", VISIBILITY)};
+            displayProp("ShowSolutions", "Show solutions",
+                "whether to display solutions", FORMAT), prop("Name",
+                    "the name for this solution", EditorType.FORMAT), prop(
+                        "Color", "the color to display this solution",
+                        EditorType.FORMAT), prop("Visible",
+                            "whether to plot this solution", VISIBILITY)};
 
         return res;
       }
@@ -342,7 +335,8 @@ public class SATC_Solution extends BaseLayer implements
 
   }
 
-  protected static class WrappedState implements Watchable, Editable, ColouredDataItem.ShowMarker
+  protected static class WrappedState implements Watchable, Editable,
+      ColouredDataItem.ShowMarker
   {
 
     private final State state;
@@ -432,18 +426,18 @@ public class SATC_Solution extends BaseLayer implements
   }
 
   /**
-	 * 
-	 */
+   * 
+   */
   private static final long serialVersionUID = 1L;
-
-  private final ISolver _mySolver;
-
-  private Color _myColor = Color.green;
 
   /**
    * the plain font we use as a base
    */
   static final Font LEG_NAME_FONT = Defaults.getFont();
+
+  private final ISolver _mySolver;
+
+  private Color _myColor = Color.green;
 
   private Layers _myLayers = null;
 
@@ -457,13 +451,13 @@ public class SATC_Solution extends BaseLayer implements
 
   /**
    * the last set of bounded states that we know about
-   * 
+   *
    */
   protected Collection<BoundedState> _lastStates;
 
   /**
    * any solutions returned by hte algorithm
-   * 
+   *
    */
   protected CompositeRoute[] _newRoutes;
 
@@ -475,7 +469,7 @@ public class SATC_Solution extends BaseLayer implements
 
   /**
    * we remember the most recent score, to decide if it should be presented to the user
-   * 
+   *
    */
   protected Double _currentScore;
 
@@ -488,7 +482,7 @@ public class SATC_Solution extends BaseLayer implements
 
   /**
    * whether we interpolate our points during a getNearest() call
-   * 
+   *
    */
   private boolean _interpolatePoints = false;
 
@@ -499,7 +493,7 @@ public class SATC_Solution extends BaseLayer implements
 
   /**
    * wrap the provided solution
-   * 
+   *
    * @param newSolution
    */
   public SATC_Solution(final ISolver newSolution)
@@ -547,33 +541,6 @@ public class SATC_Solution extends BaseLayer implements
     super.add(editable);
   }
 
-
-  public void removeContribution(final BaseContribution cont)
-  {
-    // do we need to pass this to the parent?
-    if (_mySolver.getContributions().contains(cont))
-    {
-      _mySolver.getContributions().removeContribution(cont);
-    }
-    
-    // see if this is any of our conts
-    Enumeration<Editable> ele = this.elements();
-    while(ele.hasMoreElements())
-    {
-      Editable next = ele.nextElement();
-      if(next instanceof ContributionWrapper)
-      {
-        ContributionWrapper cw = (ContributionWrapper) next;
-        BaseContribution thisC = cw.getContribution();
-        if(thisC.equals(cont))
-        {
-          this.removeElement(cw);
-          return;
-        }
-      }
-    }
-  }
-
   public void addContribution(final BaseContribution cont)
   {
     // do we need to pass this to the parent?
@@ -605,15 +572,15 @@ public class SATC_Solution extends BaseLayer implements
   public void beingRemoved()
   {
     // get the manager
-    final ISolversManager mgr =
-        SATC_Activator.getDefault().getService(ISolversManager.class, true);
+    final ISolversManager mgr = SATC_Activator.getDefault().getService(
+        ISolversManager.class, true);
 
     mgr.deactivateSolverIfActive(_mySolver);
   }
 
   /**
    * whether this type of BaseLayer is able to have shapes added to it
-   * 
+   *
    * @return
    */
   @Override
@@ -624,7 +591,7 @@ public class SATC_Solution extends BaseLayer implements
 
   /**
    * convert this solution into a set of SATC legs
-   * 
+   *
    */
   public void convertToLegs()
   {
@@ -661,32 +628,30 @@ public class SATC_Solution extends BaseLayer implements
 
             // ok - produce a TMA leg
             final double courseDegs = Math.toDegrees(straight.getCourse());
-            final WorldSpeed speed =
-                new WorldSpeed(straight.getSpeed(), WorldSpeed.M_sec);
-            final WorldLocation origin =
-                conversions
-                    .toLocation(straight.getStartPoint().getCoordinate());
-            final HiResDate startTime =
-                new HiResDate(straight.getStartTime().getTime());
-            final HiResDate endTime =
-                new HiResDate(straight.getEndTime().getTime());
-            
+            final WorldSpeed speed = new WorldSpeed(straight.getSpeed(),
+                WorldSpeed.M_sec);
+            final WorldLocation origin = conversions.toLocation(straight
+                .getStartPoint().getCoordinate());
+            final HiResDate startTime = new HiResDate(straight.getStartTime()
+                .getTime());
+            final HiResDate endTime = new HiResDate(straight.getEndTime()
+                .getTime());
+
             // ensure the new track fixes are at the same times
             // as the measurements
             final ArrayList<State> states = straight.getStates();
             final long[] stamps = new long[states.size()];
             int ctr = 0;
-            for(State state: states)
+            for (final State state : states)
             {
               stamps[ctr++] = state.getTime().getTime();
             }
 
-            final AbsoluteTMASegment abs =
-                new AbsoluteTMASegment(courseDegs, speed, origin, startTime,
-                    endTime, stamps);
-            
+            final AbsoluteTMASegment abs = new AbsoluteTMASegment(courseDegs,
+                speed, origin, startTime, endTime, stamps);
+
             abs.setName(straight.getName());
-            
+
             // store the parent
             abs.setWrapper(newT);
 
@@ -699,8 +664,8 @@ public class SATC_Solution extends BaseLayer implements
               // right, "abs" doesn't yet have any positions
 
               // ok, stick in a dynamic infill
-              final DynamicInfillSegment infill =
-                  new DynamicInfillSegment(pendingAlteration, abs);
+              final DynamicInfillSegment infill = new DynamicInfillSegment(
+                  pendingAlteration, abs);
               infill.setName(pendingAlteration.getName() + "_a");
               newT.add(infill);
               infill.setWrapper(newT);
@@ -728,16 +693,16 @@ public class SATC_Solution extends BaseLayer implements
 
         // and store it
         _myLayers.addThisLayer(newT);
-        
+
         // and hide ourselves
         setVisible(false);
 
         // see if we can set this track as secondary
         final IEditorPart editor = CorePlugin.getActivePage().getActiveEditor();
-        if(editor != null)
+        if (editor != null)
         {
-          final TrackManager provider = (TrackManager) editor.getAdapter(TrackManager.class);
-          if(provider != null)
+          final TrackManager provider = editor.getAdapter(TrackManager.class);
+          if (provider != null)
           {
             provider.setSecondary(newT);
           }
@@ -748,7 +713,7 @@ public class SATC_Solution extends BaseLayer implements
 
   /**
    * convert this solution into a formal track
-   * 
+   *
    */
   public void convertToTrack()
   {
@@ -779,15 +744,13 @@ public class SATC_Solution extends BaseLayer implements
           while (iter.hasNext())
           {
             final State state = iter.next();
-            final WorldLocation theLoc =
-                conversions.toLocation(state.getLocation().getCoordinate());
+            final WorldLocation theLoc = conversions.toLocation(state
+                .getLocation().getCoordinate());
             final double theCourse = state.getCourse();
-            final double theSpeed =
-                new WorldSpeed(state.getSpeed(), WorldSpeed.M_sec)
-                    .getValueIn(WorldSpeed.ft_sec / 3);
-            final Fix newF =
-                new Fix(new HiResDate(state.getTime().getTime()), theLoc,
-                    theCourse, theSpeed);
+            final double theSpeed = new WorldSpeed(state.getSpeed(),
+                WorldSpeed.M_sec).getValueIn(WorldSpeed.ft_sec / 3);
+            final Fix newF = new Fix(new HiResDate(state.getTime().getTime()),
+                theLoc, theCourse, theSpeed);
             final FixWrapper newFW = new FixWrapper(newF);
 
             // reset the label
@@ -855,8 +818,8 @@ public class SATC_Solution extends BaseLayer implements
           final IEditorPart editor = page.getActiveEditor();
           if (editor != null)
           {
-            final TrackDataProvider dataMgr =
-                (TrackDataProvider) editor.getAdapter(TrackDataProvider.class);
+            final TrackDataProvider dataMgr = editor.getAdapter(
+                TrackDataProvider.class);
             // is it one of ours?
             if (dataMgr != null)
             {
@@ -876,7 +839,7 @@ public class SATC_Solution extends BaseLayer implements
     WorldArea res = null;
 
     // check if we have any solutions
-    if ((_newRoutes != null) && (_newRoutes.length >= 0))
+    if (_newRoutes != null)
     {
       // ok, collate some data
       final CompositeRoute route = _newRoutes[0];
@@ -888,10 +851,10 @@ public class SATC_Solution extends BaseLayer implements
         final CoreRoute thisRoute = iterator.next();
 
         // get the end points for this leg
-        final WorldLocation start =
-            conversions.toLocation(thisRoute.getStartPoint().getCoordinate());
-        final WorldLocation end =
-            conversions.toLocation(thisRoute.getEndPoint().getCoordinate());
+        final WorldLocation start = conversions.toLocation(thisRoute
+            .getStartPoint().getCoordinate());
+        final WorldLocation end = conversions.toLocation(thisRoute.getEndPoint()
+            .getCoordinate());
 
         // is this the first area?
         if (res == null)
@@ -918,16 +881,14 @@ public class SATC_Solution extends BaseLayer implements
   public HiResDate getEndDTG()
   {
     HiResDate endD = null;
-    final Iterator<BaseContribution> iter =
-        _mySolver.getContributions().iterator();
+    final Iterator<BaseContribution> iter = _mySolver.getContributions()
+        .iterator();
     while (iter.hasNext())
     {
       final BaseContribution cont = iter.next();
       final Date thisFinish = cont.getFinishDate();
-      if (thisFinish != null
-          && (endD == null)
-          || (thisFinish != null && thisFinish.getTime() > endD.getDate()
-              .getTime()))
+      if (thisFinish != null && (endD == null) || (thisFinish != null
+          && thisFinish.getTime() > endD.getDate().getTime()))
         endD = new HiResDate(thisFinish.getTime());
     }
 
@@ -960,7 +921,7 @@ public class SATC_Solution extends BaseLayer implements
     final long finishT = end.getDate().getTime();
 
     // check if we have any solutions
-    if ((_newRoutes != null) && (_newRoutes.length >= 0))
+    if (_newRoutes != null)
     {
       // ok, collate some data
       final CompositeRoute route = _newRoutes[0];
@@ -1023,7 +984,7 @@ public class SATC_Solution extends BaseLayer implements
     final long time = DTG.getDate().getTime();
 
     // check if we have any solutions
-    if ((_newRoutes != null) && (_newRoutes.length >= 0))
+    if (_newRoutes != null)
     {
       // ok, collate some data
       final CompositeRoute route = _newRoutes[0];
@@ -1055,9 +1016,8 @@ public class SATC_Solution extends BaseLayer implements
                   // yes, get interpolating
                   final WrappedState beforeWrapped = wrapThis(before);
                   final WrappedState thisWrapped = wrapThis(state);
-                  wrapped =
-                      FixWrapper
-                          .interpolateFix(beforeWrapped, thisWrapped, DTG);
+                  wrapped = FixWrapper.interpolateFix(beforeWrapped,
+                      thisWrapped, DTG);
                 }
                 else
                 {
@@ -1125,15 +1085,15 @@ public class SATC_Solution extends BaseLayer implements
   public HiResDate getStartDTG()
   {
     HiResDate startD = null;
-    final Iterator<BaseContribution> iter =
-        _mySolver.getContributions().iterator();
+    final Iterator<BaseContribution> iter = _mySolver.getContributions()
+        .iterator();
     while (iter.hasNext())
     {
       final BaseContribution cont = iter.next();
       if (cont.getStartDate() != null)
       {
-        if ((startD == null)
-            || (cont.getStartDate().getTime() < startD.getDate().getTime()))
+        if ((startD == null) || (cont.getStartDate().getTime() < startD
+            .getDate().getTime()))
           startD = new HiResDate(cont.getStartDate().getTime());
       }
     }
@@ -1218,7 +1178,8 @@ public class SATC_Solution extends BaseLayer implements
 
       public void fireExtended()
       {
-        firePropertyChange(SupportsPropertyListeners.EXTENDED, null, parentThis);
+        firePropertyChange(SupportsPropertyListeners.EXTENDED, null,
+            parentThis);
       }
 
       @Override
@@ -1235,8 +1196,8 @@ public class SATC_Solution extends BaseLayer implements
         Editable toBeRemoved = null;
 
         // get read-only version of elements
-        final ReadOnlyIterator rIter =
-            new ReadOnlyIterator(getData().iterator());
+        final ReadOnlyIterator rIter = new ReadOnlyIterator(getData()
+            .iterator());
         while (rIter.hasNext())
         {
           final Editable editable = (Editable) rIter.next();
@@ -1348,7 +1309,7 @@ public class SATC_Solution extends BaseLayer implements
   }
 
   @Override
-  public void paint(final CanvasType dest)
+  public synchronized void paint(final CanvasType dest)
   {
     if (getVisible())
     {
@@ -1382,8 +1343,8 @@ public class SATC_Solution extends BaseLayer implements
       final BoundedState thisS = iterator.next();
 
       // we don't plot altering states
-      if (!getShowAlterationStates()
-          && (thisS.getStateType() == BoundedStateType.ALTERING))
+      if (!getShowAlterationStates() && (thisS
+          .getStateType() == BoundedStateType.ALTERING))
         continue;
 
       // do some fancy tests for if users only want the
@@ -1473,6 +1434,32 @@ public class SATC_Solution extends BaseLayer implements
     _mySolver.run(true, true);
   }
 
+  public void removeContribution(final BaseContribution cont)
+  {
+    // do we need to pass this to the parent?
+    if (_mySolver.getContributions().contains(cont))
+    {
+      _mySolver.getContributions().removeContribution(cont);
+    }
+
+    // see if this is any of our conts
+    final Enumeration<Editable> ele = this.elements();
+    while (ele.hasMoreElements())
+    {
+      final Editable next = ele.nextElement();
+      if (next instanceof ContributionWrapper)
+      {
+        final ContributionWrapper cw = (ContributionWrapper) next;
+        final BaseContribution thisC = cw.getContribution();
+        if (thisC.equals(cont))
+        {
+          this.removeElement(cw);
+          return;
+        }
+      }
+    }
+  }
+
   @Override
   public void removeElement(final Editable p)
   {
@@ -1489,7 +1476,7 @@ public class SATC_Solution extends BaseLayer implements
 
   /**
    * return our legs as a series of track segments - for the bearing residuals plot
-   * 
+   *
    */
   @Override
   public Enumeration<Editable> segments()
@@ -1527,7 +1514,7 @@ public class SATC_Solution extends BaseLayer implements
           thisStamps[ctr++] = state.getTime().getTime();
         }
       }
-      
+
       final boolean returnAlteringLegs = false;
 
       // loop through the legs
@@ -1544,23 +1531,23 @@ public class SATC_Solution extends BaseLayer implements
 
           // ok - produce a TMA leg
           final double courseDegs = Math.toDegrees(straight.getCourse());
-          final WorldSpeed speed =
-              new WorldSpeed(straight.getSpeed(), WorldSpeed.M_sec);
-          final WorldLocation origin =
-              conversions.toLocation(straight.getStartPoint().getCoordinate());
-          final HiResDate startTime =
-              new HiResDate(straight.getStartTime().getTime());
-          final HiResDate endTime =
-              new HiResDate(straight.getEndTime().getTime());
+          final WorldSpeed speed = new WorldSpeed(straight.getSpeed(),
+              WorldSpeed.M_sec);
+          final WorldLocation origin = conversions.toLocation(straight
+              .getStartPoint().getCoordinate());
+          final HiResDate startTime = new HiResDate(straight.getStartTime()
+              .getTime());
+          final HiResDate endTime = new HiResDate(straight.getEndTime()
+              .getTime());
 
           ts = new AbsoluteTMASegment(courseDegs, speed, origin, startTime,
-                  endTime, thisStamps);
+              endTime, thisStamps);
 
           ts.setName(straight.getName());
         }
-        else if(returnAlteringLegs)
+        else if (returnAlteringLegs)
         {
-          
+
           // make the segment absolute, which SATC tracks are
           ts = new TrackSegment(TrackSegment.ABSOLUTE);
 
@@ -1569,20 +1556,18 @@ public class SATC_Solution extends BaseLayer implements
           while (iter.hasNext())
           {
             final State state = iter.next();
-            final WorldLocation theLoc =
-                conversions.toLocation(state.getLocation().getCoordinate());
+            final WorldLocation theLoc = conversions.toLocation(state
+                .getLocation().getCoordinate());
             final double theCourse = state.getCourse();
-            final double theSpeed =
-                new WorldSpeed(state.getSpeed(), WorldSpeed.M_sec)
-                    .getValueIn(WorldSpeed.ft_sec / 3);
-            final Fix newF =
-                new Fix(new HiResDate(state.getTime().getTime()), theLoc,
-                    theCourse, theSpeed);
+            final double theSpeed = new WorldSpeed(state.getSpeed(),
+                WorldSpeed.M_sec).getValueIn(WorldSpeed.ft_sec / 3);
+            final Fix newF = new Fix(new HiResDate(state.getTime().getTime()),
+                theLoc, theCourse, theSpeed);
             final FixWrapper newFW = new FixWrapper(newF)
             {
               /**
-						 * 
-						 */
+              * 
+              */
               private static final long serialVersionUID = 1L;
 
               @Override
@@ -1606,8 +1591,8 @@ public class SATC_Solution extends BaseLayer implements
         {
           ts = null;
         }
-        
-        if(ts != null)
+
+        if (ts != null)
         {
           res.add(ts);
         }
@@ -1652,8 +1637,8 @@ public class SATC_Solution extends BaseLayer implements
         }
         else if (baseC instanceof CourseForecastContribution)
         {
-          wrapped =
-              new CourseForecastWrapper((CourseForecastContribution) baseC);
+          wrapped = new CourseForecastWrapper(
+              (CourseForecastContribution) baseC);
         }
         else
         {
@@ -1693,8 +1678,8 @@ public class SATC_Solution extends BaseLayer implements
 
     // also trigger a refresh in maintain contributions
     // get the manager
-    final ISolversManager mgr =
-        SATC_Activator.getDefault().getService(ISolversManager.class, true);
+    final ISolversManager mgr = SATC_Activator.getDefault().getService(
+        ISolversManager.class, true);
     mgr.setActiveSolver(_mySolver);
 
   }

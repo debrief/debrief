@@ -312,9 +312,9 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
    *          the time of the previous course value
    * @param current_time
    *          the time of the current course value
-   * @param theLastCourse
+   * @param lastCourse
    *          the last course value
-   * @param theCurrentCourse
+   * @param currentCourse
    *          the current course value
    * @param clipMax
    * @return the time at which the course would pass through zero
@@ -387,7 +387,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
    *          the point on the secondary track
    * @param currentTime
    *          the current time
-   * @param connectToPrev
+   * @param connectToPrevious
    *          whether to connect to the previous point
    * @param thisColor
    *          the current colour
@@ -424,7 +424,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
         final FixWrapper fw = (FixWrapper) thisSecondary;
         parentIsVis = fw.getSymbolShowing() || fw.getArrowShowing();
       }
-      else if(thisSecondary instanceof ColouredDataItem.ShowMarker)
+      else if (thisSecondary instanceof ColouredDataItem.ShowMarker)
       {
         parentIsVis = true;
       }
@@ -1087,7 +1087,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
    *          the data series we add our new point(s) to
    * @param theAdder
    * @param clipMax
-   * @param connectToPrev
+   * @param connectToPrevious
    *          whether the next data point should connect to these
    *
    * @return whether the next line segment should connect to this one
@@ -1705,4 +1705,4 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
   {
     _theTracks = selectedTracks;
   }
- }
+}
