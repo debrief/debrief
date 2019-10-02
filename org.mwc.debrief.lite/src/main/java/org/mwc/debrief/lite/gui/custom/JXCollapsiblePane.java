@@ -203,6 +203,7 @@ public class JXCollapsiblePane extends JXPanel
      * finished.
      */
     private int finalDimension = 0;
+
     /**
      * The current alpha setting used during "animation" (fade-in/fade-out)
      */
@@ -838,6 +839,16 @@ public class JXCollapsiblePane extends JXPanel
   private boolean collapseFiringState;
 
   /**
+   * Value used for a default animation size.
+   */
+  private final int DEFAULT_ANIMATION_SIZE = 300;
+
+  /**
+   * delta to consider the animation too small.
+   */
+  private final float ANIMATION_MIN_MULTIPLIER = 2.5f;
+
+  /**
    * Constructs a new JXCollapsiblePane with a {@link JXPanel} as content pane and a vertical
    * {@link VerticalLayout} with a gap of 2 pixels as layout manager and a vertical orientation.
    */
@@ -1172,6 +1183,16 @@ public class JXCollapsiblePane extends JXPanel
       {
         final int dimension = direction.isVertical() ? wrapper.getHeight()
             : wrapper.getWidth();
+        final int nextPreferredDimension = direction.isVertical()
+            ? getContentPane().getPreferredSize().height : getContentPane()
+                .getPreferredSize().width;
+
+        if (nextPreferredDimension < ANIMATION_MIN_MULTIPLIER
+            * getMinimunAnimationSize())
+        {
+          getContentPane().setPreferredSize(new Dimension(
+              DEFAULT_ANIMATION_SIZE, DEFAULT_ANIMATION_SIZE));
+        }
         final int preferredDimension = direction.isVertical() ? getContentPane()
             .getPreferredSize().height : getContentPane()
                 .getPreferredSize().width;
