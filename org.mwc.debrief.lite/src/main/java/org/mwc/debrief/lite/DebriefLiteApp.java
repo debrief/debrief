@@ -998,9 +998,12 @@ public class DebriefLiteApp implements FileDropListener
       public void componentResized(final ComponentEvent e)
       {
         // TODO . This must be change once we update geotools.
-        // mapPane.setVisible(false);
-        // mapPane.setVisible(true);
-        mapPane.repaint();
+        // Reverted ec7262026be4cbe07c7c521687703ddfa1acfb97
+        // I _think_ it is causing the behavior described here.
+        // here https://github.com/debrief/debrief/issues/4051#issuecomment-511193288
+        mapPane.setVisible(false);
+        mapPane.setVisible(true);
+        //mapPane.repaint();
       }
     });
 
