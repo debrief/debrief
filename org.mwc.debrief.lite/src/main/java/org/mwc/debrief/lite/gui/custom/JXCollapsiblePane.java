@@ -761,7 +761,7 @@ public class JXCollapsiblePane extends JXPanel
         {
           // it used to be 1, but now is not. Save the oldOpaque
           oldOpaque = isOpaque();
-          setOpaque(false);
+          this.setOpaque(false);
         }
       }
       else
@@ -769,7 +769,7 @@ public class JXCollapsiblePane extends JXPanel
         // restore the oldOpaque if it was true (since opaque is false now)
         if (oldOpaque)
         {
-          setOpaque(true);
+          this.setOpaque(true);
         }
       }
 
