@@ -76,7 +76,8 @@ import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
-import MWC.GenericData.WatchableList;
+import MWC.TacticalData.NarrativeEntry;
+import MWC.TacticalData.NarrativeWrapper;
 import MWC.TacticalData.SliderConverter;
 import MWC.TacticalData.temporal.ControllablePeriod;
 import MWC.TacticalData.temporal.PlotOperations;
@@ -691,7 +692,7 @@ public class DebriefRibbonTimeController
         }
       }
     });
-    
+
     // ok, start off with the buttons disabled
     setButtonsEnabled(topButtonsPanel, false);
 
@@ -721,6 +722,7 @@ public class DebriefRibbonTimeController
       {
         stepControl.startStepping(false);
         boolean hasItems = false;
+        boolean hasNarratives = false;
 
         final Enumeration<Editable> lIter = stepControl.getLayers().elements();
         while (lIter.hasMoreElements())
@@ -739,21 +741,26 @@ public class DebriefRibbonTimeController
             while (ele.hasMoreElements() && !hasItems)
             {
               final Editable nextE = ele.nextElement();
-              if (nextE instanceof WatchableList)
-              {
-                final WatchableList wat = (WatchableList) nextE;
-                hasItems |= wat instanceof LightweightTrackWrapper
-                    || wat instanceof TrackWrapper
-                    || wat instanceof DynamicTrackShapeSetWrapper;
-              }
-
+              hasItems |= nextE instanceof LightweightTrackWrapper
+                  || nextE instanceof DynamicTrackShapeSetWrapper;
+            }
+          }
+          else if (next instanceof NarrativeWrapper)
+          {
+            // check if we have any narrative item inside.
+            final NarrativeWrapper narrativeWrapper = (NarrativeWrapper) next;
+            final Enumeration<Editable> elements = narrativeWrapper.elements();
+            while (elements.hasMoreElements() && !hasNarratives)
+            {
+              final Editable nextE = elements.nextElement();
+              hasNarratives |= nextE instanceof NarrativeEntry;
             }
           }
         }
 
+        DebriefLiteApp.setDirty(hasItems || hasNarratives);
         if (hasItems)
         {
-          DebriefLiteApp.setDirty(true);
           DebriefLiteApp.setState(DebriefLiteApp.ACTIVE_STATE);
           timeSlider.setEnabled(true);
           final TimePeriod period = stepControl.getLayers().getTimePeriod();

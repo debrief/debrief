@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package MWC.GUI.JFreeChart;
 
@@ -49,15 +49,15 @@ public class ColourStandardXYItemRenderer extends DefaultXYItemRenderer
 {
 
   /**
-	 * 
-	 */
+   * 
+   */
   private static final long serialVersionUID = 1L;
   /** A working line (to save creating thousands of instances). */
   // private Line2D workingLine = new Line2D.Double(0.0, 0.0, 0.0, 0.0);
 
   /**
    * the plot whose data we're plotting
-   * 
+   *
    */
   private XYPlot _myPlot;
 
@@ -67,17 +67,15 @@ public class ColourStandardXYItemRenderer extends DefaultXYItemRenderer
    * Constructs a new renderer.
    * <p>
    * To specify the type of renderer, use one of the constants: SHAPES, LINES or SHAPES_AND_LINES.
-   * 
-   * @param type
-   *          the type of renderer.
+   *
    * @param toolTipGenerator
    *          the tooltip generator.
    * @param urlGenerator
    *          the URL generator.
    * @param plot
+   *          the plot to repaint
    */
-  public ColourStandardXYItemRenderer(
-      final XYToolTipGenerator toolTipGenerator,
+  public ColourStandardXYItemRenderer(final XYToolTipGenerator toolTipGenerator,
       final XYURLGenerator urlGenerator, final XYPlot plot)
   {
     super();
@@ -88,7 +86,7 @@ public class ColourStandardXYItemRenderer extends DefaultXYItemRenderer
 
   /**
    * accessor method to find out if we should connect this point to the previous one
-   * 
+   *
    * @param plot
    *          the plot (can be used to obtain standard color information etc).
    * @param series
@@ -139,7 +137,7 @@ public class ColourStandardXYItemRenderer extends DefaultXYItemRenderer
 
   /**
    * Draws the visual representation of a single data item.
-   * 
+   *
    * @param g2
    *          the graphics device.
    * @param state
@@ -347,10 +345,10 @@ public class ColourStandardXYItemRenderer extends DefaultXYItemRenderer
 
   /**
    * Returns a legend item for a series.
-   * 
+   *
    * @param series
    *          the series (zero-based index).
-   * 
+   *
    * @return a legend item for the series.
    */
   public LegendItem getLegendItem(final int series)
@@ -440,7 +438,7 @@ public class ColourStandardXYItemRenderer extends DefaultXYItemRenderer
 
   /**
    * Draws the visual representation of a single data item.
-   * 
+   *
    * @param g2
    *          the graphics device.
    * @param dataArea
