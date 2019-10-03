@@ -545,7 +545,7 @@ public class MaintainContributionsView extends ViewPart
 
   private void clearZoneGraph()
   {
-    if (zoneChart == null)
+    if (zoneChart == null || zoneChart.isDisposed())
       return;
 
     zoneChart.clearZones();
