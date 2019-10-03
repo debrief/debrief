@@ -31,7 +31,7 @@ after_failure:
 - curl -u ianmayo:chunkchunk -T org.mwc.debrief.ui_test/target/results.zip chunk.io
 before_deploy:
 - ls /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/
-# - ./contribs/msi/make_x64msi.sh
+- ./contribs/msi/make_x64msi.sh
 deploy:
   provider: releases
   skip_cleanup: true
