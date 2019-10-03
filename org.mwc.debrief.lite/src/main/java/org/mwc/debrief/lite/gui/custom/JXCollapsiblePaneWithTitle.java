@@ -35,6 +35,8 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
    */
   private static final long serialVersionUID = -2723902372006197600L;
 
+  private static final Integer MIN_ANIMATION_SIZE = 20;
+
   private final JXLabel titleLabel;
 
   // Variables used to implement the resize behavior.
@@ -44,7 +46,7 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
   public JXCollapsiblePaneWithTitle(final Direction direction,
       final String title, final int defaultSize)
   {
-    super(direction, 20, false);
+    super(direction, MIN_ANIMATION_SIZE, false);
 
     final JXCollapsiblePane collapsiblePaneInstance = this;
     collapsiblePaneInstance.setPreferredSize(new Dimension(defaultSize,
@@ -209,7 +211,7 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
             currentDimension = bounds.width;
           }
 
-          collapsiblePaneInstance.collapsed = false;
+          collapsiblePaneInstance.collapsed = newDimension == MIN_ANIMATION_SIZE;
           collapsiblePaneInstance.setPreferredSize(new Dimension(bounds.width,
               bounds.height));
           setBounds(bounds);
