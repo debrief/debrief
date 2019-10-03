@@ -56,7 +56,18 @@ public class RangeBearingTool extends AbstractZoomTool
   private final JLabel _statusBar;
 
   private final MathTransform _transform;
+  
+  /**
+   * Button that we have pressed. It is used to filter
+   * multiple mouse clicking.
+   */
+  private int buttonPressed = -1;
 
+  /**
+   * True if it is getting dragged now
+   */
+  private boolean dragging = false;
+  
   /**
    * Constructor
    *
@@ -149,23 +160,28 @@ public class RangeBearingTool extends AbstractZoomTool
   @Override
   public void onMousePressed(final MapMouseEvent ev)
   {
-    final DirectPosition2D startPosWorld = ev.getWorldPos();
-
-    if (ev.getWorldPos()
-        .getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84)
+    if ( !dragging )
     {
-      try
-      {
-        _transform.transform(startPosWorld, startPosWorld);
-      }
-      catch (MismatchedDimensionException | TransformException e)
-      {
-        Application.logError2(ToolParent.ERROR,
-            "Failure in projection transform", e);
-      }
-    }
+      final DirectPosition2D startPosWorld = ev.getWorldPos();
 
-    startPos = new WorldLocation(startPosWorld.getY(), startPosWorld.getX(), 0);
+      if (ev.getWorldPos()
+          .getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84)
+      {
+        try
+        {
+          _transform.transform(startPosWorld, startPosWorld);
+        }
+        catch (MismatchedDimensionException | TransformException e)
+        {
+          Application.logError2(ToolParent.ERROR,
+              "Failure in projection transform", e);
+        }
+      }
+
+      startPos = new WorldLocation(startPosWorld.getY(), startPosWorld.getX(), 0);
+      buttonPressed = ev.getButton();
+      dragging = true;
+    }
   }
 
   /**
@@ -178,6 +194,11 @@ public class RangeBearingTool extends AbstractZoomTool
   @Override
   public void onMouseReleased(final MapMouseEvent ev)
   {
-    startPos = null;
+    if ( dragging && ev != null && ev.getButton() == buttonPressed )
+    {
+      dragging = false;
+      buttonPressed = -1;
+      startPos = null;
+    }
   }
 }
