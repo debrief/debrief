@@ -819,9 +819,15 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner,
       // and now run it
       try
       {
-        // add, then run the action to the buffer
-        getHistory().execute(theAction, null, null);
-
+        if (theAction.canUndo())
+        {
+          // add, then run the action to the buffer
+          getHistory().execute(theAction, null, null);
+        }
+        else
+        {
+          theAction.execute(null, null);
+        }
       }
       catch (final ExecutionException e)
       {
