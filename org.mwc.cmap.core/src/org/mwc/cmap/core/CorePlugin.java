@@ -153,8 +153,8 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner,
       "org.mwc.debrief.track_shift.views.StackedDotsView";
   public static final String FREQ_RESIDUALS =
       "org.mwc.debrief.track_shift.views.FrequencyResidualsView";
-  
-  public static final String UNIT_CENTRIC = 
+
+  public static final String UNIT_CENTRIC =
       "org.mwc.debrief.core.view.unit_centric";
 
   public static final String GRID_EDITOR = "com.pml.grid.editor";
@@ -164,15 +164,15 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner,
 
   private static final String EARTH_MODEL_PROVIDER =
       "org.mwc.cmap.core.EarthModelProvider";
-  
+
   public static final String VIDEO_PLAYER_VIEW =
       "org.mwc.cmap.media.views.VideoPlayerView";
   public static final String IMAGE_VIEWER_VIEW =
       "org.mwc.cmap.media.views.ImagesView";
-  
+
   public static final String[] SUPPORTED_MEDIA_FORMATS =
-  {"*.avi", "*.vob", "*.mp4", "*.mov", "*.mpeg", "*.flv", "*.mp3",
-      "*.wma", "*.wmv","*.mp3", "*.*"};
+  {"*.avi", "*.vob", "*.mp4", "*.mov", "*.mpeg", "*.flv", "*.mp3", "*.wma",
+      "*.wmv", "*.mp3", "*.*"};
 
   /**
    * preference for detault font size
@@ -1039,7 +1039,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner,
           _defaultFont = new Font(font.getName(), font.getStyle(), font
               .getHeight());
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           // it's ok if we throw an exception here, just in case we had
           // a platform-specific font initialise string
@@ -1075,6 +1075,12 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner,
         break;
     }
     return res;
+  }
+
+  @Override
+  public String getPreference(final String name)
+  {
+    return getPreferenceStore().getString(name);
   }
 
   /**
@@ -1187,12 +1193,6 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner,
     PlatformUI.getWorkbench().removeWorkbenchListener(workbenchListener);
     plugin = null;
     resourceBundle = null;
-  }
-
-  @Override
-  public String getPreference(String name)
-  {
-    return getPreferenceStore().getString(name);
   }
 
 }
