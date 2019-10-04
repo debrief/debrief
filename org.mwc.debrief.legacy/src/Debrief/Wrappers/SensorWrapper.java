@@ -181,6 +181,7 @@ import Debrief.Wrappers.Track.ArrayOffsetHelper.ArrayCentreMode;
 import Debrief.Wrappers.Track.ArrayOffsetHelper.DeferredDatasetArrayMode;
 import Debrief.Wrappers.Track.ArrayOffsetHelper.LegacyArrayOffsetModes;
 import Debrief.Wrappers.Track.ArrayOffsetHelper.MeasuredDatasetArrayMode;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
@@ -413,17 +414,31 @@ public class SensorWrapper extends TacticalDataWrapper implements
     return _additionalData;
   }
 
-  public final void append(final Layer theLayer)
+  public final void append(final Layer theLayer, final Color defaultColor)
   {
     if (theLayer instanceof SensorWrapper)
     {
       final SensorWrapper other = (SensorWrapper) theLayer;
       final SortedSet<Editable> otherC = other._myContacts;
+      final Color hisColor = other.getColor();
+      final Color colorToUse;
+      if(!hisColor.equals(defaultColor))
+      {
+        colorToUse = hisColor;
+      }
+      else
+      {
+        colorToUse = null;
+      }
       for (final Iterator<Editable> iterator = otherC.iterator(); iterator
           .hasNext();)
       {
         final SensorContactWrapper thisC =
             (SensorContactWrapper) iterator.next();
+        if(thisC.getActualColor() == null && colorToUse != null)
+        {
+          thisC.setColor(colorToUse);
+        }
         this.add(thisC);
       }
 
@@ -999,6 +1014,224 @@ public class SensorWrapper extends TacticalDataWrapper implements
       // try before the start
 
     }
+    
+
+    public final void testMergeDiffColors1()
+    {
+      // ok, create the test object
+      final SensorWrapper sensorA = new SensorWrapper("tester");
+      sensorA.setColor(Color.blue);
+
+      final java.util.Calendar cal =
+          new java.util.GregorianCalendar(2001, 10, 4, 4, 4, 0);
+
+      // and create the list of sensor contact data items
+      cal.set(2001, 10, 4, 4, 4, 0);
+      sensorA.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+          .getTime()), null, null, null, null, null, 1, sensorA.getName()));
+
+      cal.set(2001, 10, 4, 4, 4, 23);
+      sensorA.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+          .getTime()), null, null, null, null, null, 1, sensorA.getName()));
+
+      cal.set(2001, 10, 4, 4, 4, 25);
+      sensorA.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+          .getTime()), null, null, null, null, null, 1, sensorA.getName()));
+
+      cal.set(2001, 10, 4, 4, 5, 02);
+      final SensorWrapper sensorB = new SensorWrapper("tester");
+      sensorB.setColor(Color.red);
+      sensorB.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+          .getTime()), null, null, null, null, null, 1, sensorB.getName()));
+
+      cal.set(2001, 10, 4, 4, 5, 03);
+      sensorB.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+          .getTime()), null, null, null, Color.green, null, 1, sensorB.getName()));
+
+      cal.set(2001, 10, 4, 4, 5, 05);
+      sensorB.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+          .getTime()), null, null, null, null, null, 1, sensorB.getName()));
+
+      cal.set(2001, 10, 4, 4, 5, 55);
+      sensorB.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+          .getTime()), null, null, null, null, null, 1, sensorB.getName()));
+      
+      Layer sensorHolder = new BaseLayer();
+      sensorHolder.add(sensorA);
+      sensorHolder.add(sensorB);
+      
+      Editable[] selection = new Editable[] {sensorA, sensorB};
+      
+      assertEquals("sensorA has elements", 3, sensorA.size());
+      assertEquals("sensorB has elements", 4, sensorB.size());
+      
+      // ok, do the merge
+      mergeSensors(sensorA, null, sensorHolder, selection);
+      
+      assertEquals("sensorA has elements", 7, sensorA.size());
+      assertEquals("sensorB has elements", 0, sensorB.size());
+      
+      // now look at the colors
+      Enumeration<Editable> numer = sensorA.elements();
+      int ctr = 0;
+      while(numer.hasMoreElements())
+      {
+        SensorContactWrapper scw = (SensorContactWrapper) numer.nextElement();
+        if(ctr < 3)
+        {
+          assertEquals("Correct color for A", Color.blue, scw.getColor());
+          assertEquals("Correct default for A", null, scw.getActualColor());
+        }
+        else if(ctr == 4)
+        {
+          assertEquals("Correct color for B", Color.green, scw.getColor());          
+        }
+        else
+        {
+          assertEquals("Correct color for B", Color.red, scw.getColor());
+        }
+        ctr++;
+      }
+    }
+    
+
+    public final void testMergeSameColors()
+    {
+      // ok, create the test object
+      final SensorWrapper sensorA = new SensorWrapper("tester");
+      sensorA.setColor(Color.blue);
+
+      final java.util.Calendar cal =
+          new java.util.GregorianCalendar(2001, 10, 4, 4, 4, 0);
+
+      // and create the list of sensor contact data items
+      cal.set(2001, 10, 4, 4, 4, 0);
+      sensorA.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+          .getTime()), null, null, null, null, null, 1, sensorA.getName()));
+
+      cal.set(2001, 10, 4, 4, 4, 23);
+      sensorA.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+          .getTime()), null, null, null, null, null, 1, sensorA.getName()));
+
+      cal.set(2001, 10, 4, 4, 4, 25);
+      sensorA.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+          .getTime()), null, null, null, null, null, 1, sensorA.getName()));
+
+      cal.set(2001, 10, 4, 4, 5, 02);
+      final SensorWrapper sensorB = new SensorWrapper("tester");
+      sensorB.setColor(Color.blue);
+      sensorB.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+          .getTime()), null, null, null, null, null, 1, sensorB.getName()));
+
+      cal.set(2001, 10, 4, 4, 5, 03);
+      sensorB.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+          .getTime()), null, null, null, null, null, 1, sensorB.getName()));
+
+      cal.set(2001, 10, 4, 4, 5, 05);
+      sensorB.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+          .getTime()), null, null, null, null, null, 1, sensorB.getName()));
+
+      cal.set(2001, 10, 4, 4, 5, 55);
+      sensorB.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+          .getTime()), null, null, null, null, null, 1, sensorB.getName()));
+      
+      Layer sensorHolder = new BaseLayer();
+      sensorHolder.add(sensorA);
+      sensorHolder.add(sensorB);
+      
+      Editable[] selection = new Editable[] {sensorA, sensorB};
+      
+      assertEquals("sensorA has elements", 3, sensorA.size());
+      assertEquals("sensorB has elements", 4, sensorB.size());
+      
+      // ok, do the merge
+      mergeSensors(sensorA, null, sensorHolder, selection);
+      
+      assertEquals("sensorA has elements", 7, sensorA.size());
+      assertEquals("sensorB has elements", 0, sensorB.size());
+      
+      // now look at the colors
+      Enumeration<Editable> numer = sensorB.elements();
+      while(numer.hasMoreElements())
+      {
+        SensorContactWrapper scw = (SensorContactWrapper) numer.nextElement();
+        assertEquals("Correct (Default) color for B", null, scw.getColor());
+      }
+    }
+    
+    public final void testMergeDiffColors2()
+    {
+      // ok, create the test object
+      final SensorWrapper sensorA = new SensorWrapper("tester");
+      sensorA.setColor(Color.blue);
+
+      final java.util.Calendar cal =
+          new java.util.GregorianCalendar(2001, 10, 4, 4, 4, 0);
+
+      // and create the list of sensor contact data items
+      cal.set(2001, 10, 4, 4, 4, 0);
+      sensorA.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+          .getTime()), null, null, null, null, null, 1, sensorA.getName()));
+
+      cal.set(2001, 10, 4, 4, 4, 23);
+      sensorA.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+          .getTime()), null, null, null, null, null, 1, sensorA.getName()));
+
+      cal.set(2001, 10, 4, 4, 4, 25);
+      sensorA.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+          .getTime()), null, null, null, null, null, 1, sensorA.getName()));
+
+      cal.set(2001, 10, 4, 4, 4, 27);
+      sensorA.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+          .getTime()), null, null, null, null, null, 1, sensorA.getName()));
+
+      cal.set(2001, 10, 4, 4, 5, 02);
+      final SensorWrapper sensorB = new SensorWrapper("tester");
+      sensorB.setColor(Color.red);
+      sensorB.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+          .getTime()), null, null, null, null, null, 1, sensorB.getName()));
+
+      cal.set(2001, 10, 4, 4, 5, 03);
+      sensorB.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+          .getTime()), null, null, null, null, null, 1, sensorB.getName()));
+
+      cal.set(2001, 10, 4, 4, 5, 05);
+      sensorB.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+          .getTime()), null, null, null, null, null, 1, sensorB.getName()));
+      
+      Layer sensorHolder = new BaseLayer();
+      sensorHolder.add(sensorA);
+      sensorHolder.add(sensorB);
+      
+      Editable[] selection = new Editable[] {sensorA, sensorB};
+      
+      assertEquals("sensorA has elements", 4, sensorA.size());
+      assertEquals("sensorB has elements", 3, sensorB.size());
+      
+      // ok, do the merge
+      mergeSensors(sensorB, null, sensorHolder, selection);
+      
+      assertEquals("sensorA has elements", 0, sensorA.size());
+      assertEquals("sensorB has elements", 7, sensorB.size());
+      
+      // now look at the colors
+      Enumeration<Editable> numer = sensorB.elements();
+      int ctr = 0;
+      while(numer.hasMoreElements())
+      {
+        SensorContactWrapper scw = (SensorContactWrapper) numer.nextElement();
+        if(ctr++ < 4)
+        {
+          assertEquals("Correct color for A", Color.blue, scw.getColor());
+          assertEquals("Correct default for A", Color.blue, scw.getActualColor());
+        }
+        else
+        {
+          assertEquals("Correct color for B", Color.red, scw.getColor());
+          assertEquals("Correct default for A", null, scw.getActualColor());
+        }
+      }
+    }
 
     public final void testValues()
     {
@@ -1441,6 +1674,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
       final Layers theLayers, final Layer parent, final Editable[] subjects)
   {
     final SensorWrapper target = (SensorWrapper) targetE;
+    final Color defaultColor = target.getColor();
 
     for (int i = 0; i < subjects.length; i++)
     {
@@ -1448,7 +1682,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
       if (sensor != target)
       {
         // ok, append the items in this layer to the target
-        target.append(sensor);
+        target.append(sensor, defaultColor);
         parent.removeElement(sensor);
       }
     }
