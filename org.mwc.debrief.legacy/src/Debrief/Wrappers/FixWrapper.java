@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 // $RCSfile: FixWrapper.java,v $
 // @author $Author: ian.mayo $
@@ -297,18 +297,30 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     CreateEditorForParent, CanPlotFaded
 {
 
-  
   private static class CantDoIt implements SubjectAction
   {
-    private String _reason;
+    private final String _reason;
 
     protected CantDoIt(final String reason)
     {
       _reason = reason;
     }
-    
+
     @Override
-    public boolean isUndoable()
+    public boolean doFireExtended()
+    {
+      return false;
+    }
+
+    @Override
+    public void execute(final Editable subject)
+    {
+      throw new IllegalArgumentException(
+          "Can't call this method, it's disabled");
+    }
+
+    @Override
+    public boolean isEnabled()
     {
       return false;
     }
@@ -320,19 +332,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     }
 
     @Override
-    public void execute(Editable subject)
-    {
-      throw new IllegalArgumentException("Can't call this method, it's disabled");
-    }
-
-    @Override
-    public void undo(Editable subject)
-    {
-      throw new IllegalArgumentException("Can't undo this method, it's disabled");
-    }
-
-    @Override
-    public boolean isEnabled()
+    public boolean isUndoable()
     {
       return false;
     }
@@ -344,9 +344,10 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     }
 
     @Override
-    public boolean doFireExtended()
+    public void undo(final Editable subject)
     {
-      return false;
+      throw new IllegalArgumentException(
+          "Can't undo this method, it's disabled");
     }
   }
   // //////////////////////////////////////
@@ -389,17 +390,15 @@ public class FixWrapper extends PlainWrapper implements Watchable,
       {
         if (_griddableDescriptors == null)
         {
-          _griddableDescriptors =
-              new PropertyDescriptor[]
-              {
-                  prop("Label", "the label for this data item"),
-                  prop("Depth", "depth of this position"),
-                  prop("Visible", "whether this position is visible"),
-                  displayProp("FixLocation", "Fix location",
-                      "the location for this position", OPTIONAL),
-                  displayProp("CourseDegs", "Course(degs)",
-                      "current course of this platform (degs)", SPATIAL),
-                  prop("Speed", "current speed of this vehicle", SPATIAL)};
+          _griddableDescriptors = new PropertyDescriptor[]
+          {prop("Label", "the label for this data item"), prop("Depth",
+              "depth of this position"), prop("Visible",
+                  "whether this position is visible"), displayProp(
+                      "FixLocation", "Fix location",
+                      "the location for this position", OPTIONAL), displayProp(
+                          "CourseDegs", "Course(degs)",
+                          "current course of this platform (degs)", SPATIAL),
+              prop("Speed", "current speed of this vehicle", SPATIAL)};
         }
         return _griddableDescriptors;
       }
@@ -415,12 +414,11 @@ public class FixWrapper extends PlainWrapper implements Watchable,
       if (_methodDescriptors == null)
       {
         final Class<FixWrapper> c = FixWrapper.class;
-        _methodDescriptors =
-            new MethodDescriptor[]
-            {method(c, "resetColor", null, "Reset Color"),
-                method(c, "resetName", null, "Reset Label"),
-                method(c, "resetLabelLocation", null, "Reset Label Loc"),
-                method(c, "exportThis", null, "Export Shape")};
+        _methodDescriptors = new MethodDescriptor[]
+        {method(c, "resetColor", null, "Reset Color"), method(c, "resetName",
+            null, "Reset Label"), method(c, "resetLabelLocation", null,
+                "Reset Label Loc"), method(c, "exportThis", null,
+                    "Export Shape")};
       }
       return _methodDescriptors;
     }
@@ -440,38 +438,31 @@ public class FixWrapper extends PlainWrapper implements Watchable,
       {
         if (_coreDescriptors == null)
         {
-          _coreDescriptors =
-              new PropertyDescriptor[]
-              {
-                  displayExpertLongProp("SymbolScale", "Symbol scale",
-                      "the scale of the symbol", FORMAT,
-                      SymbolScalePropertyEditor.class),
-                  displayProp("SymbolShowing", "Symbol showing",
-                      "whether the symbol is showing", VISIBILITY),
-                  displayProp("ArrowShowing", "Arrow showing",
-                      "whether the arrow is showing", VISIBILITY),
-                  displayProp("LineShowing", "Line showing",
-                      "whether the to join this position it's predecessor",
-                      VISIBILITY),
-                  displayProp("DateTimeGroup", "DateTime group",
-                      "the DTG for the fix"),
-                  prop("Color", "the position color", FORMAT),
-                  prop("Label", "the position label", FORMAT),
-                  prop("Font", "the label font", FORMAT),
-                  displayProp("FixLocation", "Fix location",
-                      "the location of the fix", SPATIAL),
-                  prop("Visible", "whether the whole fix is visible",
-                      VISIBILITY),
-                  displayExpertProp("Comment", "Comment", "Comment for this entry",
-                      OPTIONAL),
-                  displayProp("LabelShowing", "Label showing",
-                      "whether the label is showing", VISIBILITY),
-                  displayLongProp("LabelFormat", "Label format",
-                      "the time format of the label, or N/A to leave as-is",
-                      MyDateFormatPropertyEditor.class, FORMAT),
-                  displayLongProp("LabelLocation", "Label location",
-                      "the label location", LocationPropertyEditor.class,
-                      FORMAT)};
+          _coreDescriptors = new PropertyDescriptor[]
+          {displayExpertLongProp("SymbolScale", "Symbol scale",
+              "the scale of the symbol", FORMAT,
+              SymbolScalePropertyEditor.class), displayProp("SymbolShowing",
+                  "Symbol showing", "whether the symbol is showing",
+                  VISIBILITY), displayProp("ArrowShowing", "Arrow showing",
+                      "whether the arrow is showing", VISIBILITY), displayProp(
+                          "LineShowing", "Line showing",
+                          "whether the to join this position it's predecessor",
+                          VISIBILITY), displayProp("DateTimeGroup",
+                              "DateTime group", "the DTG for the fix"), prop(
+                                  "Color", "the position color", FORMAT), prop(
+                                      "Label", "the position label", FORMAT),
+              prop("Font", "the label font", FORMAT), displayProp("FixLocation",
+                  "Fix location", "the location of the fix", SPATIAL), prop(
+                      "Visible", "whether the whole fix is visible",
+                      VISIBILITY), displayExpertProp("Comment", "Comment",
+                          "Comment for this entry", OPTIONAL), displayProp(
+                              "LabelShowing", "Label showing",
+                              "whether the label is showing", VISIBILITY),
+              displayLongProp("LabelFormat", "Label format",
+                  "the time format of the label, or N/A to leave as-is",
+                  MyDateFormatPropertyEditor.class, FORMAT), displayLongProp(
+                      "LabelLocation", "Label location", "the label location",
+                      LocationPropertyEditor.class, FORMAT)};
         }
 
         // do we have a comment?
@@ -484,9 +475,8 @@ public class FixWrapper extends PlainWrapper implements Watchable,
               new PropertyDescriptor[_coreDescriptors.length + 1];
           System.arraycopy(_coreDescriptors, 0, coreDescriptorsWithComment, 1,
               _coreDescriptors.length);
-          coreDescriptorsWithComment[0] =
-              displayProp("CommentShowing", "Comment showing",
-                  "whether the comment is showing", VISIBILITY);
+          coreDescriptorsWithComment[0] = displayProp("CommentShowing",
+              "Comment showing", "whether the comment is showing", VISIBILITY);
           res = coreDescriptorsWithComment;
         }
         else
@@ -502,8 +492,6 @@ public class FixWrapper extends PlainWrapper implements Watchable,
 
       return res;
     }
-    
-   
 
     @Override
     public final SubjectAction[] getUndoableActions()
@@ -587,13 +575,13 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   {
 
     /**
-		 * 
-		 */
+     * 
+     */
     private static final long serialVersionUID = 1L;
 
     /**
      * constructor - just pass the child fix back to the parent
-     * 
+     *
      * @param fixData
      */
     public InterpolatedFixWrapper(final Fix fixData)
@@ -611,7 +599,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
 
     /**
      * create an instance of this operation
-     * 
+     *
      * @param keepPort
      *          whether to keep the port removal
      * @param title
@@ -624,13 +612,19 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     }
 
     @Override
+    public boolean doFireExtended()
+    {
+      return true;
+    }
+
+    @Override
     public void execute(final Editable subject)
     {
       final FixWrapper fix = (FixWrapper) subject;
       final WatchableList parent = fix.getTrackWrapper();
-      if(parent instanceof TrackWrapper)
+      if (parent instanceof TrackWrapper)
       {
-        TrackWrapper track = (TrackWrapper) parent;
+        final TrackWrapper track = (TrackWrapper) parent;
         _splitSections = track.splitTrack(fix, _splitBefore);
       }
     }
@@ -664,20 +658,14 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     {
       final FixWrapper fix = (FixWrapper) subject;
       final WatchableList parent = fix.getTrackWrapper();
-      if(parent instanceof TrackWrapper)
-      { 
-        TrackWrapper track = (TrackWrapper) parent;
-        if(_splitSections != null)
+      if (parent instanceof TrackWrapper)
+      {
+        final TrackWrapper track = (TrackWrapper) parent;
+        if (_splitSections != null)
         {
           track.combineSections(_splitSections);
         }
       }
-    }
-
-    @Override
-    public boolean doFireExtended()
-    {
-      return true;
     }
 
   }
@@ -699,25 +687,25 @@ public class FixWrapper extends PlainWrapper implements Watchable,
      */
     public void testCreateMethods()
     {
-      FixWrapper fw1 = TrackWrapper_Test.createFix2(100, 1, 1, 2, 3);
-      FixWrapper fw2 = TrackWrapper_Test.createFix2(200, 2, 1, 2, 3);
-      FixWrapper fw3 = TrackWrapper_Test.createFix2(300, 2, 1, 2, 3);
-      FixWrapper fw4 = TrackWrapper_Test.createFix2(400, 2, 1, 2, 3);
-      FixWrapper fw5 = TrackWrapper_Test.createFix2(500, 2, 1, 2, 3);
-      FixWrapper fw6 = TrackWrapper_Test.createFix2(600, 2, 1, 2, 3);
-      
-      TrackSegment ats = new TrackSegment(false);
+      final FixWrapper fw1 = TrackWrapper_Test.createFix2(100, 1, 1, 2, 3);
+      final FixWrapper fw2 = TrackWrapper_Test.createFix2(200, 2, 1, 2, 3);
+      final FixWrapper fw3 = TrackWrapper_Test.createFix2(300, 2, 1, 2, 3);
+      final FixWrapper fw4 = TrackWrapper_Test.createFix2(400, 2, 1, 2, 3);
+      final FixWrapper fw5 = TrackWrapper_Test.createFix2(500, 2, 1, 2, 3);
+      final FixWrapper fw6 = TrackWrapper_Test.createFix2(600, 2, 1, 2, 3);
+
+      final TrackSegment ats = new TrackSegment(false);
       ats.add(fw1);
       ats.add(fw2);
       ats.add(fw3);
       ats.add(fw4);
       ats.add(fw5);
       ats.add(fw6);
-      
-      TrackWrapper track = new TrackWrapper();
+
+      final TrackWrapper track = new TrackWrapper();
       track.setName("name");
       track.add(ats);
-      
+
       EditorType info = fw1.getInfo();
       SubjectAction[] methods = info.getUndoableActions();
       assertNotNull("found methods", methods);
@@ -760,9 +748,8 @@ public class FixWrapper extends PlainWrapper implements Watchable,
       assertEquals(methods[0].getClass(), new CantDoIt("aa").getClass());
       assertEquals(methods[1].getClass(), new CantDoIt("aa").getClass());
 
-      
     }
-    
+
     /**
      * Test method for {@link Debrief.Wrappers.TrackWrapper#add(MWC.GUI.Editable)} .
      */
@@ -852,8 +839,8 @@ public class FixWrapper extends PlainWrapper implements Watchable,
 
     public final void testMyParams()
     {
-      final Fix fx =
-          new Fix(new HiResDate(12, 0), new WorldLocation(2d, 2d, 2d), 2d, 2d);
+      final Fix fx = new Fix(new HiResDate(12, 0), new WorldLocation(2d, 2d,
+          2d), 2d, 2d);
       final TrackWrapper tw = new TrackWrapper();
       tw.setName("here ew arw");
       FixWrapper ed = new FixWrapper(fx);
@@ -870,10 +857,10 @@ public class FixWrapper extends PlainWrapper implements Watchable,
           orientationFor(Math.toRadians(20)));
       assertEquals("correct orient", LocationPropertyEditor.LEFT,
           orientationFor(Math.toRadians(60)));
-      assertEquals("correct orient", LocationPropertyEditor.TOP,
-          orientationFor(Math.toRadians(80)));
-      assertEquals("correct orient", LocationPropertyEditor.TOP,
-          orientationFor(Math.toRadians(115)));
+      assertEquals("correct orient", LocationPropertyEditor.TOP, orientationFor(
+          Math.toRadians(80)));
+      assertEquals("correct orient", LocationPropertyEditor.TOP, orientationFor(
+          Math.toRadians(115)));
       assertEquals("correct orient", LocationPropertyEditor.RIGHT,
           orientationFor(Math.toRadians(135)));
       assertEquals("correct orient", LocationPropertyEditor.RIGHT,
@@ -904,9 +891,8 @@ public class FixWrapper extends PlainWrapper implements Watchable,
       track.setName("name");
       track.setColor(Color.YELLOW);
 
-      final FixWrapper fw =
-          new FixWrapper(new Fix(new HiResDate(1000),
-              new WorldLocation(1, 1, 0), 12d, 13d));
+      final FixWrapper fw = new FixWrapper(new Fix(new HiResDate(1000),
+          new WorldLocation(1, 1, 0), 12d, 13d));
       fw.setColor(Color.GREEN);
 
       assertEquals("Correct color", Color.GREEN, fw.getColor());
@@ -940,99 +926,11 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   private static final long serialVersionUID = 1L;
 
   /**
-   * the tactical data item we are storing
-   */
-  private Fix _theFix;
-
-  /**
-   * the label describing this fix
-   */
-  private MWC.GUI.Shapes.TextLabel _theLabel;
-
-  /**
-   * the comment describing this fix
-   */
-  private MWC.GUI.Shapes.TextLabel _theCommentBox;
-
-  /**
-   * the symbol representing the center of the fix
-   */
-  private LocationWrapper _theLocationWrapper;
-
-  /**
-   * flag for whether to show the label
-   */
-  private boolean _showLabel;
-  
-  /** flag for whether to show the comment
-   * 
-   */
-  private boolean _showComment;
-
-  /**
-   * the font to draw this track in.
-   */
-  private Font _theFont;
-
-  /**
-   * whether the location symbol is drawn
-   */
-  private boolean _showSymbol = false;
-
-  /**
-   * whether the arrow symbol is drawn
-   */
-  private boolean _showArrow = false;
-
-  /**
-   * the area covered by this fix
-   */
-  private transient WorldArea _myArea;
-
-  /**
-   * a single instance of our editor type - which can be listened to by multiple listeners
-   */
-  transient private Editable.EditorType _myEditor = null;
-
-  /**
-   * the current format we're using
-   * 
-   */
-  private String _theFormat = MyDateFormatPropertyEditor.getTagList()[0];
-
-  /**
-   * whether to connect this fix to the previous one.
-   * 
-   */
-  private boolean _lineShowing = true;
-  /**
-   * whether a user label was supplied. if it wasn't, we allow the reset labels to run
-   * 
-   */
-  private boolean _userLabelSupplied = false;
-  /**
-   * the segment we're inside
-   * 
-   */
-  private TrackSegment _parentSegment;
-
-  /**
-   * the track we are a part of (note, we're making it static so that when we serialise it we don't
-   * store a full copy of the parent track and all it's other fixes. We don't need to store it since
-   * it gets set when we add it to a new parent layer
-   */
-  private transient WatchableList _trackWrapper;
-
-  /**
    * take a static reference for the list of property descriptors for this object, since we
    * repeatedly retrieve them (each time we do a property edit), yet they are identical across all
    * objects of this type
    */
   private static PropertyDescriptor[] _coreDescriptors;
-
-  // //////////////////////////////////////
-  // member functions
-  // //////////////////////////////////////
 
   private static PropertyDescriptor[] _griddableDescriptors;
 
@@ -1040,7 +938,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
 
   /**
    * produce an interpolated fix between the two supplied ones
-   * 
+   *
    */
   static public FixWrapper interpolateFix(final Watchable previous,
       final Watchable next, final HiResDate dtg)
@@ -1048,8 +946,8 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     FixWrapper res = null;
 
     // and the time different?
-    final long timeDiffMicros =
-        next.getTime().getMicros() - previous.getTime().getMicros();
+    final long timeDiffMicros = next.getTime().getMicros() - previous.getTime()
+        .getMicros();
 
     // through what proportion are we travelling?
     final long thisDelta = dtg.getMicros() - previous.getTime().getMicros();
@@ -1061,10 +959,10 @@ public class FixWrapper extends PlainWrapper implements Watchable,
 
     // do the calcs
     double dLat = next.getLocation().getLat() - previous.getLocation().getLat();
-    double dLong =
-        next.getLocation().getLong() - previous.getLocation().getLong();
-    double dDepth =
-        next.getLocation().getDepth() - previous.getLocation().getDepth();
+    double dLong = next.getLocation().getLong() - previous.getLocation()
+        .getLong();
+    double dDepth = next.getLocation().getDepth() - previous.getLocation()
+        .getDepth();
 
     double dCourse = next.getCourse() - previous.getCourse();
 
@@ -1102,10 +1000,9 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     // proportion, sep.getDepth() * proportion);
 
     // cool, sort out the new location
-    final WorldLocation newLoc =
-        new WorldLocation(previous.getLocation().getLat() + dLat, previous
-            .getLocation().getLong()
-            + dLong, previous.getDepth() + dDepth);
+    final WorldLocation newLoc = new WorldLocation(previous.getLocation()
+        .getLat() + dLat, previous.getLocation().getLong() + dLong, previous
+            .getDepth() + dDepth);
 
     // COURSE + SPEED
     // calculate the course and speed as being the MLA of the unit
@@ -1122,9 +1019,8 @@ public class FixWrapper extends PlainWrapper implements Watchable,
       newCourse -= Math.PI * 2;
     }
 
-    final Fix tmpFix =
-        new Fix(dtg, newLoc, newCourse, MWC.Algorithms.Conversions
-            .Kts2Yps(newSpeed));
+    final Fix tmpFix = new Fix(dtg, newLoc, newCourse,
+        MWC.Algorithms.Conversions.Kts2Yps(newSpeed));
 
     res = new InterpolatedFixWrapper(tmpFix);
     if (previous instanceof FixWrapper)
@@ -1149,7 +1045,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
    * intelligently locate the text label. Note, this isn't exactly according to the quadrants, since
    * we know the label is wider than it is tall, so it's suitable for courses that are more
    * horizontal than vertical
-   * 
+   *
    * @param courseRads
    *          the current course (Rads)
    * @return the label orientation to use
@@ -1191,6 +1087,95 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     return res;
   }
 
+  /**
+   * the tactical data item we are storing
+   */
+  private Fix _theFix;
+
+  /**
+   * the label describing this fix
+   */
+  private MWC.GUI.Shapes.TextLabel _theLabel;
+
+  /**
+   * the comment describing this fix
+   */
+  private MWC.GUI.Shapes.TextLabel _theCommentBox;
+
+  /**
+   * the symbol representing the center of the fix
+   */
+  private LocationWrapper _theLocationWrapper;
+
+  /**
+   * flag for whether to show the label
+   */
+  private boolean _showLabel;
+
+  /**
+   * flag for whether to show the comment
+   *
+   */
+  private boolean _showComment;
+
+  /**
+   * the font to draw this track in.
+   */
+  private Font _theFont;
+  /**
+   * whether the location symbol is drawn
+   */
+  private boolean _showSymbol = false;
+  /**
+   * whether the arrow symbol is drawn
+   */
+  private boolean _showArrow = false;
+
+  /**
+   * the area covered by this fix
+   */
+  private transient WorldArea _myArea;
+
+  /**
+   * a single instance of our editor type - which can be listened to by multiple listeners
+   */
+  transient private Editable.EditorType _myEditor = null;
+
+  // //////////////////////////////////////
+  // member functions
+  // //////////////////////////////////////
+
+  /**
+   * the current format we're using
+   *
+   */
+  private String _theFormat = MyDateFormatPropertyEditor.getTagList()[0];
+
+  /**
+   * whether to connect this fix to the previous one.
+   *
+   */
+  private boolean _lineShowing = true;
+
+  /**
+   * whether a user label was supplied. if it wasn't, we allow the reset labels to run
+   *
+   */
+  private boolean _userLabelSupplied = false;
+
+  /**
+   * the segment we're inside
+   *
+   */
+  private TrackSegment _parentSegment;
+
+  /**
+   * the track we are a part of (note, we're making it static so that when we serialise it we don't
+   * store a full copy of the parent track and all it's other fixes. We don't need to store it since
+   * it gets set when we add it to a new parent layer
+   */
+  private transient WatchableList _trackWrapper;
+
   public FixWrapper(final Fix theFix)
   {
     // store the fix
@@ -1208,14 +1193,14 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     // move the label around a bit
     _theCommentBox.setFixedOffset(new java.awt.Dimension(4, 4));
     _theCommentBox.setRelativeLocation(NullableLocationPropertyEditor.AUTO);
-    
+
     // orient the label according to the current heading
     resetLabelLocation();
 
     // hide the name, by default
     _showLabel = Boolean.FALSE;
     _showComment = Boolean.FALSE;
-    
+
     // declare a duff track
     setTrackWrapper(null);
     // start us off with a nice font
@@ -1238,7 +1223,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
 
   /**
    * instruct this object to clear itself out, ready for ditching
-   * 
+   *
    */
   @Override
   public final void closeMe()
@@ -1261,7 +1246,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
 
   /**
    * meet the requirements of the comparable interface
-   * 
+   *
    */
   @Override
   public final int compareTo(final Plottable o)
@@ -1285,9 +1270,20 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     return res;
   }
 
+  public void fireUpdateIfDR_Track()
+  {
+    // if we're in a DR track, then
+    // changing our time will actually change our location
+    final TrackSegment parent = this.getSegment();
+    if (parent != null && parent.getPlotRelative())
+    {
+      parent.firePropertyChange(CoreTMASegment.ADJUSTED, null, this);
+    }
+  }
+
   /**
    * method to provide the actual colour value stored in this fix
-   * 
+   *
    * @return fix colour, including null if applicable
    */
   public final Color getActualColor()
@@ -1320,7 +1316,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   /**
    * method to return the "sanitised" colour value stored in this fix, that-is if it is null, the
    * colour of the track is returned
-   * 
+   *
    * @return the colour of this fix, or the track if null
    */
   @Override
@@ -1340,6 +1336,11 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     }
 
     return res;
+  }
+
+  public final boolean getCommentShowing()
+  {
+    return _showComment;
   }
 
   /**
@@ -1442,12 +1443,6 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   {
     return _showLabel;
   }
-  
-
-  public final boolean getCommentShowing()
-  {
-    return _showComment;
-  }
 
   public boolean getLineShowing()
   {
@@ -1466,14 +1461,9 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   @Override
   public String getMultiLineName()
   {
-    return "<u>"
-        + _trackWrapper.getName()
-        + ":"
-        + getName()
-        + "</u>\n"
-        + GeneralFormat.formatStatus(MWC.Algorithms.Conversions
-            .Rads2Degs(_theFix.getCourse()), getSpeed(), _theFix.getLocation()
-            .getDepth());
+    return "<u>" + _trackWrapper.getName() + ":" + getName() + "</u>\n"
+        + GeneralFormat.formatStatus(MWC.Algorithms.Conversions.Rads2Degs(
+            _theFix.getCourse()), getSpeed(), _theFix.getLocation().getDepth());
   }
 
   @Override
@@ -1531,7 +1521,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
 
   /**
    * indicate that the user has supplied a label for this position fix
-   * 
+   *
    * @return whether a user label was supplied
    */
   public boolean getUserLabelSupplied()
@@ -1556,7 +1546,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
 
   /**
    * paint the label using the current settings.
-   * 
+   *
    * @param dest
    *          the destination to paint to
    */
@@ -1565,11 +1555,11 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     // now draw the label
     if (getLabelShowing())
     {
-      _theLabel.setColor(theCol);      
+      _theLabel.setColor(theCol);
       _theLabel.paint(dest);
     }
-    
-    if(getCommentShowing() && _theCommentBox != null)
+
+    if (getCommentShowing() && _theCommentBox != null)
     {
       _theCommentBox.setColor(theCol);
       _theCommentBox.paint(dest);
@@ -1578,7 +1568,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
 
   /**
    * paint this shape
-   * 
+   *
    * @param dest
    * @param centre
    */
@@ -1586,13 +1576,13 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   public void paintMe(final CanvasType dest, final WorldLocation centre,
       final Color theColor)
   {
-    if(!getLabelShowing() && !getArrowShowing() && !getSymbolShowing() &&
-        !getCommentShowing())
+    if (!getLabelShowing() && !getArrowShowing() && !getSymbolShowing()
+        && !getCommentShowing())
     {
       // ok, they're all off. ignore
       return;
     }
-    
+
     // take a copy of the color
     final Color safeColor = getColor();
 
@@ -1635,8 +1625,8 @@ public class FixWrapper extends PlainWrapper implements Watchable,
       // point
       final Point p0 = dest.toScreen(centre);
       final Point p1 = new Point(p0);
-      p1.translate(-(int) (len / 2d * Math.cos(direction)),
-          -(int) (len / 2d * Math.sin(direction)));
+      p1.translate(-(int) (len / 2d * Math.cos(direction)), -(int) (len / 2d
+          * Math.sin(direction)));
 
       // now the back corners
       final Point p2 = new Point(p1);
@@ -1689,7 +1679,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   final public void resetLabelLocation()
   {
     _theLabel.setRelativeLocation(orientationFor(getCourse()));
-    
+
     // ok, but the comment opposite the label
     _theCommentBox.setRelativeLocation(orientationFor(getCourse() + Math.PI));
   }
@@ -1732,28 +1722,42 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     }
   }
 
+  @Override
+  public void setComment(final String comment)
+  {
+    _theCommentBox.setString(comment);
+
+    super.setComment(comment);
+  }
+
+  @FireReformatted
+  public final void setCommentShowing(final boolean val)
+  {
+    _showComment = val;
+  }
+
   /**
    * set the course for this observation
-   * 
+   *
    * @param val
    *          the course (rads)
    */
   public void setCourse(final double val)
   {
     _theFix.setCourse(val);
-    
+
     // fire update, if necessary
     fireUpdateIfDR_Track();
   }
 
   /**
    * change the course
-   * 
+   *
    */
   public void setCourseDegs(final double val)
   {
     _theFix.setCourse(MWC.Algorithms.Conversions.Degs2Rads(val));
-    
+
     // fire update, if necessary
     fireUpdateIfDR_Track();
   }
@@ -1767,7 +1771,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   public void setDepth(final double val)
   {
     _theFix.getLocation().setDepth(val);
-    
+
     // fire update, if necessary
     fireUpdateIfDR_Track();
   }
@@ -1784,25 +1788,6 @@ public class FixWrapper extends PlainWrapper implements Watchable,
 
     // fire update, if necessary
     fireUpdateIfDR_Track();
-  }
-
-  public void fireUpdateIfDR_Track()
-  {
-    // if we're in a DR track, then
-    // changing our time will actually change our location
-    final TrackSegment parent = this.getSegment();
-    if(parent != null && parent.getPlotRelative())
-    {
-      parent.firePropertyChange(CoreTMASegment.ADJUSTED, null, this);
-    }
-  }
-  
-  @Override
-  public void setComment(final String comment)
-  {
-    _theCommentBox.setString(comment);
-    
-    super.setComment(comment);
   }
 
   /**
@@ -1864,12 +1849,6 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   {
     _theLabel.setString(val);
   }
-  
-  @Override
-  public void setName(String name)
-  {
-    setLabel(name);
-  }
 
   @FireReformatted
   public final void setLabelFormat(final String format)
@@ -1886,8 +1865,8 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     // check it's a legitimate format
     if (!MyDateFormatPropertyEditor.NULL_VALUE.equals(format))
     {
-      final boolean includesSpeed =
-          MyDateFormatPropertyEditor.DTG_SPEED.equals(format);
+      final boolean includesSpeed = MyDateFormatPropertyEditor.DTG_SPEED.equals(
+          format);
 
       final String theFormat;
       final String suffix;
@@ -1896,9 +1875,8 @@ public class FixWrapper extends PlainWrapper implements Watchable,
         // ok, split it
         final String[] parts = format.split(" ");
         theFormat = parts[0].trim();
-        final String speedStr =
-            GeneralFormat.formatOneDecimalPlace(MWC.Algorithms.Conversions
-                .Yps2Kts(this.getFix().getSpeed()));
+        final String speedStr = GeneralFormat.formatOneDecimalPlace(
+            MWC.Algorithms.Conversions.Yps2Kts(this.getFix().getSpeed()));
         suffix = " " + speedStr + "kt";
       }
       else
@@ -1936,23 +1914,23 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     final int newLoc;
     switch (loc)
     {
-      case NullableLocationPropertyEditor.BOTTOM:
-        newLoc = NullableLocationPropertyEditor.TOP;
+      case LocationPropertyEditor.BOTTOM:
+        newLoc = LocationPropertyEditor.TOP;
         break;
-      case NullableLocationPropertyEditor.TOP:
-        newLoc = NullableLocationPropertyEditor.BOTTOM;
+      case LocationPropertyEditor.TOP:
+        newLoc = LocationPropertyEditor.BOTTOM;
         break;
-      case NullableLocationPropertyEditor.LEFT:
-        newLoc = NullableLocationPropertyEditor.RIGHT;
+      case LocationPropertyEditor.LEFT:
+        newLoc = LocationPropertyEditor.RIGHT;
         break;
-      case NullableLocationPropertyEditor.RIGHT:
-        newLoc = NullableLocationPropertyEditor.LEFT;
+      case LocationPropertyEditor.RIGHT:
+        newLoc = LocationPropertyEditor.LEFT;
         break;
       case NullableLocationPropertyEditor.AUTO:
         newLoc = NullableLocationPropertyEditor.AUTO;
         break;
       default:
-        newLoc = NullableLocationPropertyEditor.TOP;
+        newLoc = LocationPropertyEditor.TOP;
         break;
     }
     _theCommentBox.setRelativeLocation(newLoc);
@@ -1962,12 +1940,6 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   public final void setLabelShowing(final boolean val)
   {
     _showLabel = val;
-  }
-  
-  @FireReformatted
-  public final void setCommentShowing(final boolean val)
-  {
-    _showComment = val;
   }
 
   public void setLineShowing(final boolean val)
@@ -1980,6 +1952,12 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     _theFix.setLocation(val);
   }
 
+  @Override
+  public void setName(final String name)
+  {
+    setLabel(name);
+  }
+
   public void setSegment(final TrackSegment trackSegment)
   {
     _parentSegment = trackSegment;
@@ -1987,14 +1965,14 @@ public class FixWrapper extends PlainWrapper implements Watchable,
 
   /**
    * set the speed of this participant (in knots)
-   * 
+   *
    * @param val
    *          the speed (knots)
    */
   public void setSpeed(final double val)
   {
     _theFix.setSpeed(MWC.Algorithms.Conversions.Kts2Yps(val));
-    
+
     // fire update, if necessary
     fireUpdateIfDR_Track();
   }
@@ -2022,7 +2000,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
 
   /**
    * indicate that the user has supplied a label for this position fix
-   * 
+   *
    * @param yesNo
    *          whether a user label was supplied
    */
@@ -2037,8 +2015,8 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     return getName();
   }
 
-  public final boolean
-      visibleBetween(final HiResDate start, final HiResDate end)
+  public final boolean visibleBetween(final HiResDate start,
+      final HiResDate end)
   {
     return ((this.getTime().greaterThan(start)) && (getTime().lessThan(end)));
   }
