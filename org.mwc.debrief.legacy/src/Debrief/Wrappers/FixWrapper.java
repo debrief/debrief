@@ -260,6 +260,7 @@ import java.beans.PropertyDescriptor;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import Debrief.Wrappers.Track.CoreTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Test;
 import MWC.GUI.CanPlotFaded;
@@ -1740,6 +1741,9 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   public void setCourse(final double val)
   {
     _theFix.setCourse(val);
+    
+    // fire update, if necessary
+    fireUpdateIfDR_Track();
   }
 
   /**
@@ -1749,17 +1753,23 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   public void setCourseDegs(final double val)
   {
     _theFix.setCourse(MWC.Algorithms.Conversions.Degs2Rads(val));
+    
+    // fire update, if necessary
+    fireUpdateIfDR_Track();
   }
 
   @FireReformatted
   public final void setDateTimeGroup(final HiResDate val)
   {
-    _theFix.setTime(val);
+    setDTG(val);
   }
 
   public void setDepth(final double val)
   {
     _theFix.getLocation().setDepth(val);
+    
+    // fire update, if necessary
+    fireUpdateIfDR_Track();
   }
 
   public void setDisplayComment(final boolean displayComment)
@@ -1771,6 +1781,20 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   public void setDTG(final HiResDate date)
   {
     _theFix.setTime(date);
+
+    // fire update, if necessary
+    fireUpdateIfDR_Track();
+  }
+
+  public void fireUpdateIfDR_Track()
+  {
+    // if we're in a DR track, then
+    // changing our time will actually change our location
+    final TrackSegment parent = this.getSegment();
+    if(parent != null && parent.getPlotRelative())
+    {
+      parent.firePropertyChange(CoreTMASegment.ADJUSTED, null, this);
+    }
   }
   
   @Override
@@ -1970,6 +1994,9 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   public void setSpeed(final double val)
   {
     _theFix.setSpeed(MWC.Algorithms.Conversions.Kts2Yps(val));
+    
+    // fire update, if necessary
+    fireUpdateIfDR_Track();
   }
 
   /**
