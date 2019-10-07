@@ -493,7 +493,7 @@ public class GenerateTrackFromActiveCuts implements
           else
           {
             _logger.logError(IStatus.INFO,
-                "ot creating 'Generate track from active cuts': Missing range or bearing data (or is ambiguous) for sensor:"
+                "Not creating 'Generate track from active cuts': Missing range or bearing data (or is ambiguous) for sensor:"
                     + sw.getName(), null);
           }
         }
