@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.cmap.core.ui_support;
 
@@ -32,147 +32,154 @@ import org.mwc.cmap.core.CorePlugin;
 
 /**
  * class representing line of text which may be plased on the status bar
- * 
+ *
  * @author ian.mayo
- * 
+ *
  */
 public class LineItem extends ControlContribution
 {
-	Label label;
+  Label label;
 
-	final String _lastText;
+  final String _lastText;
 
-	// " 00" + BriefFormatLocation.DEGREE_SYMBOL
-	// + "00\'00.00\"N 000" + BriefFormatLocation.DEGREE_SYMBOL
-	// + "00\'00.00\"W ";
+  // " 00" + BriefFormatLocation.DEGREE_SYMBOL
+  // + "00\'00.00\"N 000" + BriefFormatLocation.DEGREE_SYMBOL
+  // + "00\'00.00\"W ";
 
-	/**
-	 * tooltip to show when hovering over panel
-	 * 
-	 */
-	private final String _tooltip;
+  /**
+   * tooltip to show when hovering over panel
+   * 
+   */
+  private final String _tooltip;
 
-	/**
-	 * preferences dialog id to open when user double-clicks
-	 * 
-	 */
-	final String _prefId;
+  /**
+   * preferences dialog id to open when user double-clicks
+   * 
+   */
+  final String _prefId;
 
-	/**
-	 * constructor - get going
-	 * 
-	 * @param id
-	 */
-	public LineItem(final String id, final String template, final String tooltip, final String prefId)
-	{
-		super(id);
-		_prefId = prefId;
-		_tooltip = tooltip;
-		_lastText = template;
-	}
+  /**
+   * constructor - get going
+   * 
+   * @param id
+   */
+  public LineItem(final String id, final String template, final String tooltip,
+      final String prefId)
+  {
+    super(id);
+    _prefId = prefId;
+    _tooltip = tooltip;
+    _lastText = template;
+  }
 
-	/**
-	 * @see org.eclipse.jface.action.IContributionItem#isDynamic()
-	 */
-	public boolean isDynamic()
-	{
-		return true;
-	}
+  /**
+   * @see org.eclipse.jface.action.ControlContribution#createControl(org.eclipse.swt.widgets.Composite)
+   */
+  @Override
+  protected Control createControl(final Composite parent)
+  {
+    final Composite wrapper = new Composite(parent, SWT.NONE);
+    wrapper.setLayout(new RowLayout());
 
-	public void setText(final String val)
-	{
-		if (label == null)
-		{
-		}
-		else if (label.isDisposed())
-		{
-		}
-		else
-		{
-			label.setText(val);
-		}
+    if (label != null)
+    {
+      label.dispose();
+      label = null;
+    }
 
-	}
+    label = new Label(wrapper, SWT.RIGHT | SWT.BORDER);
+    label.setText(_lastText);
+    label.setToolTipText(_tooltip);
+    label.setSize(550, 20);
+    if (_prefId != null)
+    {
+      label.addMouseListener(new MouseAdapter()
+      {
+        @Override
+        public void mouseDoubleClick(final MouseEvent e)
+        {
+          // do the parent bits
+          super.mouseDoubleClick(e);
 
-	public boolean isDisposed()
-	{
-		boolean res = true;
-		if (label != null)
-			res = label.isDisposed();
+          // do our bits
+          final Display dis = Display.getCurrent();
+          final PreferenceDialog dial = PreferencesUtil
+              .createPreferenceDialogOn(dis.getActiveShell(), _prefId, null,
+                  null);
+          dial.open();
+        }
+      });
 
-		return res;
-	}
+      // and the button to edit properties
+      final Button button = new Button(wrapper, SWT.NONE);
+      button.setSize(40, 20);
+      button.setImage(CorePlugin.getImageFromRegistry("properties.png"));
+      button.setToolTipText("Change formatting of this text");
+      button.addSelectionListener(new SelectionListener()
+      {
 
-	/**
-	 * @see org.eclipse.jface.action.ControlContribution#createControl(org.eclipse.swt.widgets.Composite)
-	 */
-	protected Control createControl(final Composite parent)
-	{
-	  Composite wrapper = new Composite(parent, SWT.NONE);
-	  wrapper.setLayout(new RowLayout());
-	  
-		if (label != null)
-		{
-			label.dispose();
-			label = null;
-		}
+        @Override
+        public void widgetDefaultSelected(final SelectionEvent arg0)
+        {
+        }
 
-		label = new Label(wrapper, SWT.RIGHT | SWT.BORDER);
-		label.setText(_lastText);
-		label.setToolTipText(_tooltip);
-		label.setSize(550, 20);
-		if (_prefId != null)
-		{  
-			label.addMouseListener(new MouseAdapter()
-			{
-				public void mouseDoubleClick(final MouseEvent e)
-				{
-					// do the parent bits
-					super.mouseDoubleClick(e);
+        @Override
+        public void widgetSelected(final SelectionEvent arg0)
+        {
+          // do our bits
+          final Display dis = Display.getCurrent();
+          final PreferenceDialog dial = PreferencesUtil
+              .createPreferenceDialogOn(dis.getActiveShell(), _prefId, null,
+                  null);
+          dial.open();
+        }
 
-					// do our bits
-					final Display dis = Display.getCurrent();
-					final PreferenceDialog dial = PreferencesUtil.createPreferenceDialogOn(dis
-							.getActiveShell(), _prefId, null, null);
-					dial.open();
-				}
-			});
-			
-		   // and the button to edit properties
-	    Button button = new Button(wrapper, SWT.NONE);
-	    button.setSize(40,20);
-	    button.setImage(CorePlugin.getImageFromRegistry("properties.png"));
-	    button.setToolTipText("Change formatting of this text");
-	    button.addSelectionListener(new SelectionListener() {
+      });
+    }
 
-	      @Override
-	      public void widgetDefaultSelected(SelectionEvent arg0)
-	      {
-	      }
+    return wrapper;
+  }
 
-	      @Override
-	      public void widgetSelected(SelectionEvent arg0)
-	      {
-	        // do our bits
-	        final Display dis = Display.getCurrent();
-	        final PreferenceDialog dial = PreferencesUtil.createPreferenceDialogOn(dis
-	            .getActiveShell(), _prefId, null, null);
-	        dial.open();
-	      }
-	      
-	    });
-		}
+  public boolean isDisposed()
+  {
+    boolean res = true;
+    if (label != null)
+      res = label.isDisposed();
 
-		return wrapper;
-	}
+    return res;
+  }
 
-	/**
-	 * put the duff text back into the label
-	 * 
-	 */
-	public void reset()
-	{
-		setText(_lastText);
-	}
+  /**
+   * @see org.eclipse.jface.action.IContributionItem#isDynamic()
+   */
+  @Override
+  public boolean isDynamic()
+  {
+    return true;
+  }
+
+  /**
+   * put the duff text back into the label
+   * 
+   */
+  public void reset()
+  {
+    setText(_lastText);
+  }
+
+  public void setText(final String val)
+  {
+    if (label == null)
+    {
+    }
+    else if (label.isDisposed())
+    {
+    }
+    else
+    {
+      label.setText(val);
+    }
+
+  }
 
 }
