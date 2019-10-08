@@ -148,7 +148,7 @@ public class CreateSolutionFromSensorData implements
         {
           CorePlugin
               .logError(
-                  Status.WARNING,
+                  Status.INFO,
                   "NOTE: we're only going to process the first five sensors, and first 2000 cuts",
                   null);
         }
