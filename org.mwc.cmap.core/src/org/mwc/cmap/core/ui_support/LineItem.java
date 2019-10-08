@@ -19,11 +19,16 @@ import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.dialogs.PreferencesUtil;
+import org.mwc.cmap.core.CorePlugin;
 
 /**
  * class representing line of text which may be plased on the status bar
@@ -103,19 +108,21 @@ public class LineItem extends ControlContribution
 	 */
 	protected Control createControl(final Composite parent)
 	{
+	  Composite wrapper = new Composite(parent, SWT.NONE);
+	  wrapper.setLayout(new RowLayout());
+	  
 		if (label != null)
 		{
-
 			label.dispose();
 			label = null;
 		}
 
-		label = new Label(parent, SWT.RIGHT | SWT.BORDER);
+		label = new Label(wrapper, SWT.RIGHT | SWT.BORDER);
 		label.setText(_lastText);
 		label.setToolTipText(_tooltip);
 		label.setSize(550, 20);
 		if (_prefId != null)
-		{
+		{  
 			label.addMouseListener(new MouseAdapter()
 			{
 				public void mouseDoubleClick(final MouseEvent e)
@@ -130,9 +137,33 @@ public class LineItem extends ControlContribution
 					dial.open();
 				}
 			});
+			
+		   // and the button to edit properties
+	    Button button = new Button(wrapper, SWT.NONE);
+	    button.setSize(40,20);
+	    button.setImage(CorePlugin.getImageFromRegistry("properties.png"));
+	    button.setToolTipText("Change formatting of this text");
+	    button.addSelectionListener(new SelectionListener() {
+
+	      @Override
+	      public void widgetDefaultSelected(SelectionEvent arg0)
+	      {
+	      }
+
+	      @Override
+	      public void widgetSelected(SelectionEvent arg0)
+	      {
+	        // do our bits
+	        final Display dis = Display.getCurrent();
+	        final PreferenceDialog dial = PreferencesUtil.createPreferenceDialogOn(dis
+	            .getActiveShell(), _prefId, null, null);
+	        dial.open();
+	      }
+	      
+	    });
 		}
 
-		return label;
+		return wrapper;
 	}
 
 	/**
