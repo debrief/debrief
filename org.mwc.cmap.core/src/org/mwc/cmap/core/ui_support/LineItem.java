@@ -79,7 +79,11 @@ public class LineItem extends ControlContribution
   protected Control createControl(final Composite parent)
   {
     final Composite wrapper = new Composite(parent, SWT.NONE);
-    wrapper.setLayout(new RowLayout());
+    final RowLayout rowLayout = new RowLayout();
+    rowLayout.wrap = false;
+    rowLayout.pack = true;
+    rowLayout.type = SWT.HORIZONTAL;
+    wrapper.setLayout(rowLayout);
 
     if (label != null)
     {
