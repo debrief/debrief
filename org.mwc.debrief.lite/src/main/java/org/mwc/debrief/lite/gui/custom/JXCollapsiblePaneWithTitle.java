@@ -35,6 +35,8 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
    */
   private static final long serialVersionUID = -2723902372006197600L;
 
+  private static final Integer MIN_ANIMATION_SIZE = 20;
+
   private final JXLabel titleLabel;
 
   // Variables used to implement the resize behavior.
@@ -44,7 +46,7 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
   public JXCollapsiblePaneWithTitle(final Direction direction,
       final String title, final int defaultSize)
   {
-    super(direction, 20, false);
+    super(direction, MIN_ANIMATION_SIZE, false);
 
     final JXCollapsiblePane collapsiblePaneInstance = this;
     collapsiblePaneInstance.setPreferredSize(new Dimension(defaultSize,
@@ -108,7 +110,7 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
       public void mousePressed(final MouseEvent e)
       {
         dragging = true;
-        dragLocation = e.getPoint();
+        dragLocation = e.getLocationOnScreen();
       }
 
       @Override
@@ -131,32 +133,92 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
           {
             deltaMultiplier *= -1;
           }
-          final Rectangle bounds = collapsiblePaneInstance.getBounds();
+
+          int delta;
           if (direction.isVertical())
           {
-            final int newDimension = (int) (collapsiblePaneInstance
-                .getContentPane().getHeight() + event.getPoint().getY()
-                    * deltaMultiplier + dragLocation.getY());
+            final int newDimensionDelta = (int) (event.getLocationOnScreen()
+                .getY() - dragLocation.getY());
 
-            bounds.height = Math.max(newDimension, getMinimunAnimationSize());
+            delta = newDimensionDelta;
           }
           else
           {
-            final int newDimension = (int) (collapsiblePaneInstance
-                .getContentPane().getWidth() + event.getPoint().getX()
-                    * deltaMultiplier - dragLocation.getX());
+            final int newDimensionDelta = (int) (event.getLocationOnScreen()
+                .getX() - dragLocation.getX());
 
-            bounds.width = Math.max(newDimension, getMinimunAnimationSize());
+            delta = newDimensionDelta;
           }
-          collapsiblePaneInstance.setBounds(bounds);
+          delta *= deltaMultiplier;
+
+          wrapper.getView().setVisible(true);
+
+          int newDimension;
+          if (direction.isVertical())
+          {
+            newDimension = wrapper.getHeight() + delta;
+          }
+          else
+          {
+            newDimension = wrapper.getWidth() + delta;
+          }
+          newDimension = Math.max(newDimension, getMinimunAnimationSize());
+
+          Rectangle bounds = wrapper.getBounds();
+
+          if (direction.isVertical())
+          {
+            final int oldHeight = bounds.height;
+            bounds.height = newDimension;
+            wrapper.setBounds(bounds);
+
+            if (direction.getFixedDirection(
+                getComponentOrientation()) == Direction.DOWN)
+            {
+              wrapper.setViewPosition(new Point(0, wrapper.getView()
+                  .getPreferredSize().height - newDimension));
+            }
+            else
+            {
+              wrapper.setViewPosition(new Point(0, newDimension));
+            }
+
+            bounds = getBounds();
+            bounds.height = (bounds.height - oldHeight) + newDimension;
+            bounds.width = 0;
+            currentDimension = bounds.height;
+          }
+          else
+          {
+            final int oldWidth = bounds.width;
+            bounds.width = newDimension;
+            wrapper.setBounds(bounds);
+
+            if (direction.getFixedDirection(
+                getComponentOrientation()) == Direction.RIGHT)
+            {
+              wrapper.setViewPosition(new Point(wrapper.getView()
+                  .getPreferredSize().width - newDimension, 0));
+            }
+            else
+            {
+              wrapper.setViewPosition(new Point(newDimension, 0));
+            }
+
+            bounds = getBounds();
+            bounds.width = (bounds.width - oldWidth) + newDimension;
+            bounds.height = 0;
+            currentDimension = bounds.width;
+          }
+
+          collapsiblePaneInstance.collapsed = newDimension == MIN_ANIMATION_SIZE;
           collapsiblePaneInstance.setPreferredSize(new Dimension(bounds.width,
               bounds.height));
+          setBounds(bounds);
 
-          if (collapsiblePaneInstance.isCollapsed())
-          {
-            collapsiblePaneInstance.setCollapsed(false);
-          }
-          collapsiblePaneInstance.validate();
+          validate();
+
+          dragLocation = event.getLocationOnScreen();
         }
       }
 
@@ -177,6 +239,7 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
       titleLabel.setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
     }
   }
+
   @Override
   public String getName()
   {
