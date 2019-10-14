@@ -554,7 +554,7 @@ public class DebriefRibbonTimeController
     final JPopupMenu menu = new JPopupMenu();
 
     final JCommandButton formatCommandButton = MenuUtils.addCommandButton(
-        "Format", "icons/16/time_config.png", new ShowFormatAction(menu),
+        "Format", "icons/24/time_config.png", new ShowFormatAction(menu),
         CommandButtonDisplayState.SMALL, "Format time control");
 
     final JLabel timeLabel = new JLabel(LiteStepControl.timeFormat)
