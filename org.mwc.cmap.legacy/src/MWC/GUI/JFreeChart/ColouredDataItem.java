@@ -33,6 +33,15 @@ import MWC.GUI.Editable;
 public class ColouredDataItem extends TimeSeriesDataItem implements
     AttractiveDataItem
 {
+  
+  /** marker interface for data sources for which it's reasonable to 
+   * optionally show markers
+   *
+   */
+  public static interface ShowMarker
+  {
+  }
+  
   public static interface OffsetProvider
   {
     /**

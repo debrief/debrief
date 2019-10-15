@@ -156,6 +156,7 @@ public class GraphPanelToolbar extends JPanel
             if (selectTrackModel.getTracks().isEmpty())
             {
               operationComboModel.removeAllElements();
+              setState(INACTIVE_STATE);
             }
             else
             {
@@ -598,11 +599,12 @@ public class GraphPanelToolbar extends JPanel
     Vector<WatchableList> selectedTracksByUser = null;
 
     if (selectTrackModel != null && _stepControl != null && _stepControl
-        .getStartTime() != null && _stepControl.getEndTime() != null &&
-        operation != null)
+        .getStartTime() != null && _stepControl.getEndTime() != null
+        && operation != null)
     {
       _xytool.setPreselectedPrimaryTrack(selectTrackModel.getPrimaryTrack());
-      final List<AbstractSelection<TrackWrapper>> tracks = selectTrackModel.getTracks();
+      final List<AbstractSelection<TrackWrapper>> tracks = selectTrackModel
+          .getTracks();
       selectedTracksByUser = new Vector<>();
       for (final AbstractSelection<TrackWrapper> currentTrack : tracks)
       {

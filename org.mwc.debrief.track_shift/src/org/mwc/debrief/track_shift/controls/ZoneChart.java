@@ -1030,9 +1030,9 @@ public class ZoneChart extends Composite
     @Override
     public int compareTo(final Zone z)
     {
-      final Long myStart = this.start;
-      final Long hisStart = z.start;
-      return myStart.compareTo(hisStart);
+      final long myStart = this.start;
+      final long hisStart = z.start;
+      return Long.compare(myStart, hisStart);
     }
 
     public boolean contains(final long other)
@@ -1691,8 +1691,11 @@ public class ZoneChart extends Composite
     zones.clear();
 
     // and from the plot
-    final XYPlot thePlot = (XYPlot) chart.getPlot();
-    thePlot.clearDomainMarkers();
+    if (!chartComposite.isDisposed())
+    {
+      final XYPlot thePlot = (XYPlot) chart.getPlot();
+      thePlot.clearDomainMarkers();
+    }
   }
 
   protected void createToolbar(final Composite col1,
@@ -1906,17 +1909,8 @@ public class ZoneChart extends Composite
     // ok, populate the data
     final IEditorPart curEditor = PlatformUI.getWorkbench()
         .getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-    Layers res;
-    if (curEditor instanceof IAdaptable)
-    {
-      res = (Layers) curEditor.getAdapter(Layers.class);
-    }
-    else
-    {
-      res = null;
-    }
 
-    return res;
+    return (Layers) curEditor.getAdapter(Layers.class);
   }
 
   private void getSomeTrackData(final ReversibleOperation reversOp)

@@ -492,8 +492,8 @@ public class GenerateTrackFromActiveCuts implements
           }
           else
           {
-            _logger.logError(IStatus.WARNING,
-                "Missing range or bearing data (or is ambiguous) for sensor:"
+            _logger.logError(IStatus.INFO,
+                "Not creating 'Generate track from active cuts': Missing range or bearing data (or is ambiguous) for sensor:"
                     + sw.getName(), null);
           }
         }
@@ -556,22 +556,23 @@ public class GenerateTrackFromActiveCuts implements
                   .elements().nextElement();
               if (!scw.getHasBearing())
               {
-                _logger.logError(IStatus.WARNING,
-                    "Missing bearing data from sensor:" + sensor.getName(),
-                    null);
+                _logger.logError(IStatus.INFO,
+                    "Not creating 'Generate track from active cuts': Missing bearing data from sensor:"
+                        + sensor.getName(), null);
                 return;
               }
               else if (scw.getRange() == null)
               {
-                _logger.logError(IStatus.WARNING,
-                    "Missing range data from sensor:" + sensor.getName(), null);
+                _logger.logError(IStatus.INFO,
+                    "Not creating 'Generate track from active cuts': Missing range data from sensor:"
+                        + sensor.getName(), null);
                 return;
               }
               else if (scw.getHasAmbiguousBearing())
               {
-                _logger.logError(IStatus.WARNING,
-                    "Cannot produce track for ambiguous data:" + sensor
-                        .getName(), null);
+                _logger.logError(IStatus.INFO,
+                    "Not creating 'Generate track from active cuts': Cannot produce track for ambiguous data:"
+                        + sensor.getName(), null);
                 return;
               }
               else

@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.lite.gui.custom;
 
@@ -24,12 +24,12 @@ package org.mwc.debrief.lite.gui.custom;
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -75,7 +75,7 @@ import org.jdesktop.swingx.util.GraphicsUtilities;
  * The {@code JXCollapsiblePane} has a "content pane" that actually holds the displayed contents.
  * This means that colors, fonts, and other display configuration items must be set on the content
  * pane.
- * 
+ *
  * <pre>
  * <code>
  * // to set the font
@@ -84,10 +84,10 @@ import org.jdesktop.swingx.util.GraphicsUtilities;
  * collapsiblePane.getContentPane().setBackground(Color.RED);
  * </code>
  * </pre>
- * 
+ *
  * For convenience, the {@code add} and {@code remove} methods forward to the content pane. The
  * following code shows to ways to add a child to the content pane.
- * 
+ *
  * <pre>
  * <code>
  * // to add a child
@@ -96,9 +96,9 @@ import org.jdesktop.swingx.util.GraphicsUtilities;
  * collapsiblePane.add(component);
  * </code>
  * </pre>
- * 
+ *
  * To set the content pane, do not use {@code add}, use {@link #setContentPane(Container)}.
- * 
+ *
  * <p>
  * In this example, the <code>JXCollapsiblePane</code> is used to build a Search pane which can be
  * shown and hidden on demand.
@@ -143,7 +143,7 @@ import org.jdesktop.swingx.util.GraphicsUtilities;
  * {@link #TOGGLE_ACTION}. Bind this action to a button and pressing the button will automatically
  * toggle the pane between expanded and collapsed states. Additionally, you can define the icons to
  * use through the {@link #EXPAND_ICON} and {@link #COLLAPSE_ICON} properties on the action. Example
- * 
+ *
  * <pre>
  * <code>
  * // get the built-in toggle action
@@ -178,764 +178,6 @@ import org.jdesktop.swingx.util.GraphicsUtilities;
 public class JXCollapsiblePane extends JXPanel
 {
   /**
-   * 
-   */
-  private static final long serialVersionUID = 1L;
-
-  /**
-   * The direction defines how the collapsible pane will collapse. The constant names were designed
-   * by choosing a fixed point and then determining the collapsing direction from that fixed point.
-   * This means {@code RIGHT} expands to the right and this is probably the best expansion for a
-   * component in {@link BorderLayout#EAST}.
-   */
-  public enum Direction
-  {
-    /**
-     * Collapses left. Suitable for {@link BorderLayout#WEST}.
-     */
-    LEFT(false),
-
-    /**
-     * Collapses right. Suitable for {@link BorderLayout#EAST}.
-     */
-    RIGHT(false),
-
-    /**
-     * Collapses up. Suitable for {@link BorderLayout#NORTH}.
-     */
-    UP(true),
-
-    /**
-     * Collapses down. Suitable for {@link BorderLayout#SOUTH}.
-     */
-    DOWN(true),
-
-    /**
-     * Collapses toward the leading edge. Suitable for {@link BorderLayout#LINE_START}.
-     */
-    LEADING(false)
-    {
-      @Override
-      Direction getFixedDirection(ComponentOrientation co)
-      {
-        return co.isLeftToRight() ? LEFT : RIGHT;
-      }
-    },
-
-    /**
-     * Collapses toward the trailing edge. Suitable for {@link BorderLayout#LINE_END}.
-     */
-    TRAILING(false)
-    {
-      @Override
-      Direction getFixedDirection(ComponentOrientation co)
-      {
-        return co.isLeftToRight() ? RIGHT : LEFT;
-      }
-    },
-
-    /**
-     * Collapses toward the starting edge. Suitable for {@link BorderLayout#PAGE_START}.
-     */
-    START(true)
-    {
-      @Override
-      Direction getFixedDirection(ComponentOrientation co)
-      {
-        return UP;
-      }
-    },
-
-    /**
-     * Collapses toward the ending edge. Suitable for {@link BorderLayout#PAGE_END}.
-     */
-    END(true)
-    {
-      @Override
-      Direction getFixedDirection(ComponentOrientation co)
-      {
-        return DOWN;
-      }
-    },;
-
-    private final boolean vertical;
-
-    private Direction(boolean vertical)
-    {
-      this.vertical = vertical;
-    }
-
-    /**
-     * Gets the orientation for this direction.
-     * 
-     * @return {@code true} if the direction is vertical, {@code false} otherwise
-     */
-    public boolean isVertical()
-    {
-      return vertical;
-    }
-
-    /**
-     * Gets the fixed direction equivalent to this direction for the specified orientation.
-     * 
-     * @param co
-     *          the component's orientation
-     * @return the fixed direction corresponding to the component's orietnation
-     */
-    Direction getFixedDirection(ComponentOrientation co)
-    {
-      return this;
-    }
-  }
-
-  /**
-   * Toggles the JXCollapsiblePane state and updates its icon based on the JXCollapsiblePane
-   * "collapsed" status.
-   */
-  private class ToggleAction extends AbstractAction implements
-      PropertyChangeListener
-  {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-
-    public ToggleAction()
-    {
-      super(TOGGLE_ACTION);
-      // the action must track the collapsed status of the pane to update its icon
-      JXCollapsiblePane.this.addPropertyChangeListener("collapsed", this);
-    }
-
-    @Override
-    public void putValue(String key, Object newValue)
-    {
-      super.putValue(key, newValue);
-      if (EXPAND_ICON.equals(key) || COLLAPSE_ICON.equals(key))
-      {
-        updateIcon();
-      }
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e)
-    {
-      setCollapsed(!isCollapsed());
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent evt)
-    {
-      updateIcon();
-    }
-
-    void updateIcon()
-    {
-      if (isCollapsed())
-      {
-        putValue(SMALL_ICON, getValue(EXPAND_ICON));
-      }
-      else
-      {
-        putValue(SMALL_ICON, getValue(COLLAPSE_ICON));
-      }
-    }
-  }
-
-  /**
-   * JXCollapsible has a built-in toggle action which can be bound to buttons. Accesses the action
-   * through <code>collapsiblePane.getActionMap().get(JXCollapsiblePane.TOGGLE_ACTION)</code>.
-   */
-  public final static String TOGGLE_ACTION = "toggle";
-
-  /**
-   * The icon used by the "toggle" action when the JXCollapsiblePane is expanded, i.e the icon which
-   * indicates the pane can be collapsed.
-   */
-  public final static String COLLAPSE_ICON = "collapseIcon";
-
-  /**
-   * The icon used by the "toggle" action when the JXCollapsiblePane is collapsed, i.e the icon
-   * which indicates the pane can be expanded.
-   */
-  public final static String EXPAND_ICON = "expandIcon";
-
-  /**
-   * Indicates whether the component is collapsed or expanded
-   */
-  private boolean collapsed = false;
-
-  /**
-   * Defines the orientation of the component.
-   */
-  private Direction direction = Direction.UP;
-
-  /**
-   * Minimum size after being collapsed.
-   */
-  private Integer minimunAnimationSize = 0;
-
-  /**
-   * False for disabling the transparency effect.
-   */
-  private boolean useTransparency = true;
-
-  /**
-   * Timer used for doing the transparency animation (fade-in)
-   */
-  private Timer animateTimer;
-  private AnimationListener animator;
-  private int currentDimension = -1;
-  private WrapperContainer wrapper;
-  private boolean useAnimation = true;
-  private AnimationParams animationParams;
-  private boolean collapseFiringState;
-
-  /**
-   * Constructs a new JXCollapsiblePane with a {@link JXPanel} as content pane and a vertical
-   * {@link VerticalLayout} with a gap of 2 pixels as layout manager and a vertical orientation.
-   */
-  public JXCollapsiblePane()
-  {
-    this(Direction.UP, 0, true);
-  }
-
-  /**
-   * Constructs a new JXCollapsiblePane with a {@link JXPanel} as content pane and the specified
-   * direction.
-   * 
-   * @param direction
-   *          the direction to collapse the container
-   */
-  public JXCollapsiblePane(final Direction direction,
-      final Integer minAnimationSize, final boolean useTransparency)
-  {
-    super.setLayout(new BorderLayout());
-    this.direction = direction;
-    this.minimunAnimationSize = minAnimationSize;
-    this.useTransparency = useTransparency;
-    animator = new AnimationListener();
-    setAnimationParams(new AnimationParams(30, 8, 0.01f, 1.0f));
-
-    setContentPane(createContentPane());
-    setDirection(direction);
-
-    // add an action to automatically toggle the state of the pane
-    getActionMap().put(TOGGLE_ACTION, new ToggleAction());
-  }
-
-  /**
-   * Creates the content pane used by this collapsible pane.
-   * 
-   * @return the content pane
-   */
-  protected Container createContentPane()
-  {
-    return new JXPanel();
-  }
-
-  /**
-   * @return the content pane
-   */
-  public Container getContentPane()
-  {
-    if (wrapper == null)
-    {
-      return null;
-    }
-
-    return (Container) wrapper.getView();
-  }
-
-  /**
-   * Sets the content pane of this JXCollapsiblePane. The {@code contentPanel} <i>should</i>
-   * implement {@code Scrollable} and return {@code true} from
-   * {@link Scrollable#getScrollableTracksViewportHeight()} and
-   * {@link Scrollable#getScrollableTracksViewportWidth()}. If the content pane fails to do so and a
-   * {@code JScrollPane} is added as a child, it is likely that the scroll pane will never correctly
-   * size. While it is not strictly necessary to implement {@code Scrollable} in this way, the
-   * default content pane does so.
-   * 
-   * @param contentPanel
-   *          the container delegate used to hold all of the contents for this collapsible pane
-   * @throws IllegalArgumentException
-   *           if contentPanel is null
-   */
-  public void setContentPane(Container contentPanel)
-  {
-    if (contentPanel == null)
-    {
-      throw new IllegalArgumentException("Content pane can't be null");
-    }
-
-    if (wrapper != null)
-    {
-      // these next two lines are as they are because if I try to remove
-      // the "wrapper" component directly, then super.remove(comp) ends up
-      // calling remove(int), which is overridden in this class, leading to
-      // improper behavior.
-      assert super.getComponent(0) == wrapper;
-      super.remove(0);
-    }
-
-    wrapper = new WrapperContainer(contentPanel);
-    wrapper.collapsedState = isCollapsed();
-    wrapper.getView().setVisible(!wrapper.collapsedState);
-    super.addImpl(wrapper, BorderLayout.CENTER, -1);
-  }
-
-  /**
-   * Overridden to redirect call to the content pane.
-   */
-  @Override
-  public void setLayout(LayoutManager mgr)
-  {
-    // wrapper can be null when setLayout is called by "super()" constructor
-    if (wrapper != null)
-    {
-      getContentPane().setLayout(mgr);
-    }
-  }
-
-  /**
-   * Overridden to redirect call to the content pane.
-   */
-  @Override
-  protected void addImpl(Component comp, Object constraints, int index)
-  {
-    getContentPane().add(comp, constraints, index);
-  }
-
-  /**
-   * Overridden to redirect call to the content pane
-   */
-  @Override
-  public void remove(Component comp)
-  {
-    getContentPane().remove(comp);
-  }
-
-  /**
-   * Overridden to redirect call to the content pane.
-   */
-  @Override
-  public void remove(int index)
-  {
-    getContentPane().remove(index);
-  }
-
-  /**
-   * Overridden to redirect call to the content pane.
-   */
-  @Override
-  public void removeAll()
-  {
-    getContentPane().removeAll();
-  }
-
-  /**
-   * If true, enables the animation when pane is collapsed/expanded. If false, animation is turned
-   * off.
-   *
-   * <p>
-   * When animated, the <code>JXCollapsiblePane</code> will progressively reduce (when collapsing)
-   * or enlarge (when expanding) the height of its content area until it becomes 0 or until it
-   * reaches the preferred height of the components it contains. The transparency of the content
-   * area will also change during the animation.
-   *
-   * <p>
-   * If not animated, the <code>JXCollapsiblePane</code> will simply hide (collapsing) or show
-   * (expanding) its content area.
-   *
-   * @param animated
-   * @javabean.property bound="true" preferred="true"
-   */
-  public void setAnimated(boolean animated)
-  {
-    if (animated != useAnimation)
-    {
-      useAnimation = animated;
-
-      if (!animated)
-      {
-        if (animateTimer.isRunning())
-        {
-          // TODO should we listen for animation state change?
-          // yes, but we're best off creating a UI delegate for these changes
-          SwingUtilities.invokeLater(new Runnable()
-          {
-            @Override
-            public void run()
-            {
-              currentDimension = -1;
-            }
-          });
-        }
-        else
-        {
-          currentDimension = -1;
-        }
-      }
-      firePropertyChange("animated", !useAnimation, useAnimation);
-    }
-  }
-  
-  public WrapperContainer getWrapper()
-  {
-    return wrapper;
-  }
-
-  /**
-   * @return true if the pane is animated, false otherwise
-   * @see #setAnimated(boolean)
-   */
-  public boolean isAnimated()
-  {
-    return useAnimation;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void setComponentOrientation(ComponentOrientation o)
-  {
-    if (animateTimer.isRunning())
-    {
-      throw new IllegalStateException(
-          "cannot be change component orientation while collapsing.");
-    }
-
-    super.setComponentOrientation(o);
-  }
-
-  /**
-   * Changes the direction of this collapsible pane. Doing so changes the layout of the underlying
-   * content pane. If the chosen direction is vertical, a vertical layout with a gap of 2 pixels is
-   * chosen. Otherwise, a horizontal layout with a gap of 2 pixels is chosen.
-   *
-   * @see #getDirection()
-   * @param direction
-   *          the new {@link Direction} for this collapsible pane
-   * @throws IllegalStateException
-   *           when this method is called while a collapsing/restore operation is running
-   * @javabean.property bound="true" preferred="true"
-   */
-  public void setDirection(Direction direction)
-  {
-    if (animateTimer.isRunning())
-    {
-      throw new IllegalStateException(
-          "cannot be change direction while collapsing.");
-    }
-
-    Direction oldValue = getDirection();
-    this.direction = direction;
-
-    if (direction.isVertical())
-    {
-      getContentPane().setLayout(new VerticalLayout(2));
-    }
-    else
-    {
-      getContentPane().setLayout(new HorizontalLayout(2));
-    }
-
-    firePropertyChange("direction", oldValue, getDirection());
-  }
-
-  /**
-   * @return the current {@link Direction}.
-   * @see #setDirection(Direction)
-   */
-  public Direction getDirection()
-  {
-    return direction;
-  }
-
-  /**
-   * @return true if the pane is collapsed, false if expanded
-   */
-  public boolean isCollapsed()
-  {
-    return collapsed;
-  }
-
-  /**
-   * Expands or collapses this <code>JXCollapsiblePane</code>.
-   *
-   * <p>
-   * If the component is collapsed and <code>val</code> is false, then this call expands the
-   * JXCollapsiblePane, such that the entire JXCollapsiblePane will be visible. If
-   * {@link #isAnimated()} returns true, the expansion will be accompanied by an animation.
-   *
-   * <p>
-   * However, if the component is expanded and <code>val</code> is true, then this call collapses
-   * the JXCollapsiblePane, such that the entire JXCollapsiblePane will be invisible. If
-   * {@link #isAnimated()} returns true, the collapse will be accompanied by an animation.
-   * 
-   * <p>
-   * As of SwingX 1.6.3, JXCollapsiblePane only fires property change events when the component's
-   * state is accurate. This means that animated collapsible pane's only fire events once the
-   * animation is complete.
-   *
-   * @see #isAnimated()
-   * @see #setAnimated(boolean)
-   * @javabean.property bound="true" preferred="true"
-   */
-  public void setCollapsed(boolean val)
-  {
-    boolean oldValue = isCollapsed();
-    this.collapsed = val;
-
-    if (isAnimated())
-    {
-      if (oldValue == isCollapsed())
-      {
-        return;
-      }
-
-      // this ensures that if the user reverses the animation
-      // before completion that no property change is fired
-      if (!animateTimer.isRunning())
-      {
-        collapseFiringState = oldValue;
-      }
-
-      if (oldValue)
-      {
-        int dimension = direction.isVertical() ? wrapper.getHeight() : wrapper
-            .getWidth();
-        int preferredDimension = direction.isVertical() ? getContentPane()
-            .getPreferredSize().height : getContentPane()
-                .getPreferredSize().width;
-        int delta = Math.max(8, preferredDimension / 10);
-
-        setAnimationParams(new AnimationParams(30, delta, 0.01f, 1.0f));
-        animator.reinit(dimension, preferredDimension);
-        wrapper.getView().setVisible(true);
-      }
-      else
-      {
-        int dimension = direction.isVertical() ? wrapper.getHeight() : wrapper
-            .getWidth();
-        setAnimationParams(new AnimationParams(30, Math.max(8, dimension / 10),
-            1.0f, 0.01f));
-        animator.reinit(dimension, minimunAnimationSize);
-      }
-
-      animateTimer.start();
-    }
-    else
-    {
-      wrapper.collapsedState = isCollapsed();
-      wrapper.getView().setVisible(!isCollapsed());
-      revalidate();
-      repaint();
-
-      firePropertyChange("collapsed", oldValue, isCollapsed());
-    }
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Border getBorder()
-  {
-    if (getContentPane() instanceof JComponent)
-    {
-      return ((JComponent) getContentPane()).getBorder();
-    }
-
-    return null;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void setBorder(Border border)
-  {
-    if (getContentPane() instanceof JComponent)
-    {
-      ((JComponent) getContentPane()).setBorder(border);
-    }
-  }
-
-  /**
-   * {@inheritDoc}
-   * <p>
-   * Internals of JXCollasiplePane are designed to be opaque because some Look and Feel
-   * implementations having painting issues otherwise. JXCollapsiblePane and its internals will
-   * respect {@code setOpaque}, calling this method will not only update the collapsible pane, but
-   * also all internals. This method does not modify the {@link #getContentPane() content pane}, as
-   * it is not considered an internal.
-   */
-  @Override
-  public void setOpaque(boolean opaque)
-  {
-    super.setOpaque(opaque);
-
-    if (wrapper != null)
-    {
-      wrapper.setOpaque(opaque);
-    }
-  }
-
-  /**
-   * A collapsible pane always returns its preferred size for the minimum size to ensure that the
-   * collapsing happens correctly.
-   * <p>
-   * To query the minimum size of the contents user {@code
-   * getContentPane().getMinimumSize()}.
-   * 
-   * @return the preferred size of the component
-   */
-  @Override
-  public Dimension getMinimumSize()
-  {
-    return getPreferredSize();
-  }
-  
-  /**
-   * Returns the minimum size for the pane when it is collapsed
-   * @return
-   */
-  public Integer getMinimunAnimationSize()
-  {
-    return minimunAnimationSize;
-  }
-
-  /**
-   * Forwards to the content pane.
-   * 
-   * @param minimumSize
-   *          the size to set on the content pane
-   */
-  @Override
-  public void setMinimumSize(Dimension minimumSize)
-  {
-    getContentPane().setMinimumSize(minimumSize);
-  }
-
-  /**
-   * The critical part of the animation of this <code>JXCollapsiblePane</code> relies on the
-   * calculation of its preferred size. During the animation, its preferred size (specially its
-   * height) will change, when expanding, from 0 to the preferred size of the content pane, and the
-   * reverse when collapsing.
-   *
-   * @return this component preferred size
-   */
-  @Override
-  public Dimension getPreferredSize()
-  {
-    /*
-     * The preferred size is calculated based on the current position of the component in its
-     * animation sequence. If the Component is expanded, then the preferred size will be the
-     * preferred size of the top component plus the preferred size of the embedded content
-     * container. <p>However, if the scroll up is in any state of animation, the height component of
-     * the preferred size will be the current height of the component (as contained in the
-     * currentDimension variable and when orientation is VERTICAL, otherwise the same applies to the
-     * width)
-     */
-    Dimension dim = getContentPane().getPreferredSize();
-    if (currentDimension != -1)
-    {
-      if (direction.isVertical())
-      {
-        dim.height = currentDimension;
-      }
-      else
-      {
-        dim.width = currentDimension;
-      }
-    }
-    else if (wrapper.collapsedState)
-    {
-      if (direction.isVertical())
-      {
-        dim.height = 0;
-      }
-      else
-      {
-        dim.width = 0;
-      }
-    }
-    return dim;
-  }
-
-  @Override
-  public void setPreferredSize(Dimension preferredSize)
-  {
-    getContentPane().setPreferredSize(preferredSize);
-  }
-
-  /**
-   * Sets the parameters controlling the animation
-   *
-   * @param params
-   * @throws IllegalArgumentException
-   *           if params is null
-   */
-  private void setAnimationParams(AnimationParams params)
-  {
-    if (params == null)
-    {
-      throw new IllegalArgumentException("params can't be null");
-    }
-    if (animateTimer != null)
-    {
-      animateTimer.stop();
-    }
-    animationParams = params;
-    animateTimer = new Timer(animationParams.waitTime, animator);
-    animateTimer.setInitialDelay(0);
-  }
-
-  /**
-   * Tagging interface for containers in a JXCollapsiblePane hierarchy who needs to be revalidated
-   * (invalidate/validate/repaint) when the pane is expanding or collapsing. Usually validating only
-   * the parent of the JXCollapsiblePane is enough but there might be cases where the parent's
-   * parent must be validated.
-   */
-  public static interface CollapsiblePaneContainer
-  {
-    Container getValidatingContainer();
-  }
-
-  /**
-   * Parameters controlling the animations
-   */
-  private static class AnimationParams
-  {
-    final int waitTime;
-    final int delta;
-    final float alphaStart;
-    final float alphaEnd;
-
-    /**
-     * @param waitTime
-     *          the amount of time in milliseconds to wait between calls to the animation thread
-     * @param delta
-     *          the delta, in the direction as specified by the orientation, to inc/dec the size of
-     *          the scroll up by
-     * @param alphaStart
-     *          the starting alpha transparency level
-     * @param alphaEnd
-     *          the ending alpha transparency level
-     */
-    public AnimationParams(int waitTime, int delta, float alphaStart,
-        float alphaEnd)
-    {
-      this.waitTime = waitTime;
-      this.delta = delta;
-      this.alphaStart = alphaStart;
-      this.alphaEnd = alphaEnd;
-    }
-  }
-
-  /**
    * This class actual provides the animation support for scrolling up/down this component. This
    * listener is called whenever the animateTimer fires off. It fires off in response to scroll
    * up/down requests. This listener is responsible for modifying the size of the content container
@@ -961,13 +203,14 @@ public class JXCollapsiblePane extends JXPanel
      * finished.
      */
     private int finalDimension = 0;
+
     /**
      * The current alpha setting used during "animation" (fade-in/fade-out)
      */
     private float animateAlpha = 1.0f;
 
     @Override
-    public void actionPerformed(ActionEvent e)
+    public void actionPerformed(final ActionEvent e)
     {
       /*
        * Pre-1) If startDimension == finalDimension, then we're done so stop the timer 1) Calculate
@@ -980,8 +223,8 @@ public class JXCollapsiblePane extends JXPanel
         if (startDimension == finalDimension)
         {
           animateTimer.stop();
-          
-          if ( useTransparency )
+
+          if (useTransparency)
           {
             animateAlpha = animationParams.alphaEnd;
           }
@@ -1040,7 +283,7 @@ public class JXCollapsiblePane extends JXPanel
         {
           dimension = wrapper.getView().getPreferredSize().width;
         }
-        if ( useTransparency )
+        if (useTransparency)
         {
           animateAlpha = (float) newDimension / (float) dimension;
         }
@@ -1049,7 +292,7 @@ public class JXCollapsiblePane extends JXPanel
 
         if (direction.isVertical())
         {
-          int oldHeight = bounds.height;
+          final int oldHeight = bounds.height;
           bounds.height = newDimension;
           wrapper.setBounds(bounds);
 
@@ -1070,7 +313,7 @@ public class JXCollapsiblePane extends JXPanel
         }
         else
         {
-          int oldWidth = bounds.width;
+          final int oldWidth = bounds.width;
           bounds.width = newDimension;
           wrapper.setBounds(bounds);
 
@@ -1130,6 +373,28 @@ public class JXCollapsiblePane extends JXPanel
       }
     }
 
+    /**
+     * Reinitializes the timer for scrolling up/down the component. This method is properly
+     * synchronized, so you may make this call regardless of whether the timer is currently
+     * executing or not.
+     *
+     * @param startDimension
+     * @param stopDimension
+     */
+    public void reinit(final int startDimension, final int stopDimension)
+    {
+      synchronized (ANIMATION_MUTEX)
+      {
+        this.startDimension = startDimension;
+        this.finalDimension = stopDimension;
+        if (useTransparency)
+        {
+          animateAlpha = animationParams.alphaStart;
+        }
+        currentDimension = -1;
+      }
+    }
+
     void validate()
     {
       Container parent = SwingUtilities.getAncestorOfClass(
@@ -1157,26 +422,206 @@ public class JXCollapsiblePane extends JXPanel
         parent.repaint();
       }
     }
+  }
+
+  /**
+   * Parameters controlling the animations
+   */
+  private static class AnimationParams
+  {
+    final int waitTime;
+    final int delta;
+    final float alphaStart;
+    final float alphaEnd;
 
     /**
-     * Reinitializes the timer for scrolling up/down the component. This method is properly
-     * synchronized, so you may make this call regardless of whether the timer is currently
-     * executing or not.
-     *
-     * @param startDimension
-     * @param stopDimension
+     * @param waitTime
+     *          the amount of time in milliseconds to wait between calls to the animation thread
+     * @param delta
+     *          the delta, in the direction as specified by the orientation, to inc/dec the size of
+     *          the scroll up by
+     * @param alphaStart
+     *          the starting alpha transparency level
+     * @param alphaEnd
+     *          the ending alpha transparency level
      */
-    public void reinit(int startDimension, int stopDimension)
+    public AnimationParams(final int waitTime, final int delta,
+        final float alphaStart, final float alphaEnd)
     {
-      synchronized (ANIMATION_MUTEX)
+      this.waitTime = waitTime;
+      this.delta = delta;
+      this.alphaStart = alphaStart;
+      this.alphaEnd = alphaEnd;
+    }
+  }
+
+  /**
+   * Tagging interface for containers in a JXCollapsiblePane hierarchy who needs to be revalidated
+   * (invalidate/validate/repaint) when the pane is expanding or collapsing. Usually validating only
+   * the parent of the JXCollapsiblePane is enough but there might be cases where the parent's
+   * parent must be validated.
+   */
+  public static interface CollapsiblePaneContainer
+  {
+    Container getValidatingContainer();
+  }
+
+  /**
+   * The direction defines how the collapsible pane will collapse. The constant names were designed
+   * by choosing a fixed point and then determining the collapsing direction from that fixed point.
+   * This means {@code RIGHT} expands to the right and this is probably the best expansion for a
+   * component in {@link BorderLayout#EAST}.
+   */
+  public enum Direction
+  {
+    /**
+     * Collapses left. Suitable for {@link BorderLayout#WEST}.
+     */
+    LEFT(false),
+
+    /**
+     * Collapses right. Suitable for {@link BorderLayout#EAST}.
+     */
+    RIGHT(false),
+
+    /**
+     * Collapses up. Suitable for {@link BorderLayout#NORTH}.
+     */
+    UP(true),
+
+    /**
+     * Collapses down. Suitable for {@link BorderLayout#SOUTH}.
+     */
+    DOWN(true),
+
+    /**
+     * Collapses toward the leading edge. Suitable for {@link BorderLayout#LINE_START}.
+     */
+    LEADING(false)
+    {
+      @Override
+      Direction getFixedDirection(final ComponentOrientation co)
       {
-        this.startDimension = startDimension;
-        this.finalDimension = stopDimension;
-        if ( useTransparency )
-        {
-          animateAlpha = animationParams.alphaStart;
-        }
-        currentDimension = -1;
+        return co.isLeftToRight() ? LEFT : RIGHT;
+      }
+    },
+
+    /**
+     * Collapses toward the trailing edge. Suitable for {@link BorderLayout#LINE_END}.
+     */
+    TRAILING(false)
+    {
+      @Override
+      Direction getFixedDirection(final ComponentOrientation co)
+      {
+        return co.isLeftToRight() ? RIGHT : LEFT;
+      }
+    },
+
+    /**
+     * Collapses toward the starting edge. Suitable for {@link BorderLayout#PAGE_START}.
+     */
+    START(true)
+    {
+      @Override
+      Direction getFixedDirection(final ComponentOrientation co)
+      {
+        return UP;
+      }
+    },
+
+    /**
+     * Collapses toward the ending edge. Suitable for {@link BorderLayout#PAGE_END}.
+     */
+    END(true)
+    {
+      @Override
+      Direction getFixedDirection(final ComponentOrientation co)
+      {
+        return DOWN;
+      }
+    },;
+
+    private final boolean vertical;
+
+    private Direction(final boolean vertical)
+    {
+      this.vertical = vertical;
+    }
+
+    /**
+     * Gets the fixed direction equivalent to this direction for the specified orientation.
+     *
+     * @param co
+     *          the component's orientation
+     * @return the fixed direction corresponding to the component's orietnation
+     */
+    Direction getFixedDirection(final ComponentOrientation co)
+    {
+      return this;
+    }
+
+    /**
+     * Gets the orientation for this direction.
+     *
+     * @return {@code true} if the direction is vertical, {@code false} otherwise
+     */
+    public boolean isVertical()
+    {
+      return vertical;
+    }
+  }
+
+  /**
+   * Toggles the JXCollapsiblePane state and updates its icon based on the JXCollapsiblePane
+   * "collapsed" status.
+   */
+  private class ToggleAction extends AbstractAction implements
+      PropertyChangeListener
+  {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
+    public ToggleAction()
+    {
+      super(TOGGLE_ACTION);
+      // the action must track the collapsed status of the pane to update its icon
+      JXCollapsiblePane.this.addPropertyChangeListener("collapsed", this);
+    }
+
+    @Override
+    public void actionPerformed(final ActionEvent e)
+    {
+      setCollapsed(!isCollapsed());
+    }
+
+    @Override
+    public void propertyChange(final PropertyChangeEvent evt)
+    {
+      updateIcon();
+    }
+
+    @Override
+    public void putValue(final String key, final Object newValue)
+    {
+      super.putValue(key, newValue);
+      if (EXPAND_ICON.equals(key) || COLLAPSE_ICON.equals(key))
+      {
+        updateIcon();
+      }
+    }
+
+    void updateIcon()
+    {
+      if (isCollapsed())
+      {
+        putValue(SMALL_ICON, getValue(EXPAND_ICON));
+      }
+      else
+      {
+        putValue(SMALL_ICON, getValue(COLLAPSE_ICON));
       }
     }
   }
@@ -1185,15 +630,15 @@ public class JXCollapsiblePane extends JXPanel
       AlphaPaintable
   {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     boolean collapsedState;
     private volatile float alpha;
     private boolean oldOpaque;
 
-    public WrapperContainer(Container c)
-    {  
+    public WrapperContainer(final Container c)
+    {
       alpha = 1.0f;
       collapsedState = false;
       setView(c);
@@ -1207,72 +652,10 @@ public class JXCollapsiblePane extends JXPanel
       }
     }
 
-    /**
-     * {@inheritDoc}
-     * <p>
-     * 
-     * Overridden to not have JViewPort behaviour (that is scroll the view) but delegate to parent
-     * scrollRectToVisible just a JComponent does.
-     * <p>
-     */
-    @Override
-    public void scrollRectToVisible(Rectangle aRect)
-    {
-      // avoids JViewport's implementation
-      // by using JXCollapsiblePane's it will delegate upward
-      // getting any core fixes, by avoiding c&p
-      JXCollapsiblePane.this.scrollRectToVisible(aRect);
-    }
-
     @Override
     public float getAlpha()
     {
       return alpha;
-    }
-
-    @Override
-    public void setAlpha(float alpha)
-    {
-      if (alpha < 0f || alpha > 1f)
-      {
-        throw new IllegalArgumentException("invalid alpha value " + alpha);
-      }
-
-      float oldValue = getAlpha();
-      this.alpha = alpha;
-
-      if (getAlpha() < 1f)
-      {
-        if (oldValue == 1)
-        {
-          // it used to be 1, but now is not. Save the oldOpaque
-          oldOpaque = isOpaque();
-          setOpaque(false);
-        }
-      }
-      else
-      {
-        // restore the oldOpaque if it was true (since opaque is false now)
-        if (oldOpaque)
-        {
-          setOpaque(true);
-        }
-      }
-
-      firePropertyChange("alpha", oldValue, getAlpha());
-      repaint();
-    }
-
-    @Override
-    public boolean isInheritAlpha()
-    {
-      return false;
-    }
-
-    @Override
-    public void setInheritAlpha(boolean inheritAlpha)
-    {
-      // does nothing; always false;
     }
 
     @Override
@@ -1281,7 +664,14 @@ public class JXCollapsiblePane extends JXPanel
       return getAlpha();
     }
 
+    @Override
+    public boolean isInheritAlpha()
+    {
+      return false;
+    }
+
     // support for Java 7 painting improvements
+    @Override
     protected boolean isPaintingOrigin()
     {
       return getAlpha() < 1f;
@@ -1289,12 +679,12 @@ public class JXCollapsiblePane extends JXPanel
 
     /**
      * Overridden paint method to take into account the alpha setting.
-     * 
+     *
      * @param g
      *          the <code>Graphics</code> context in which to paint
      */
     @Override
-    public void paint(Graphics g)
+    public void paint(final Graphics g)
     {
       // short circuit painting if no transparency
       if (getAlpha() == 1f)
@@ -1306,9 +696,9 @@ public class JXCollapsiblePane extends JXPanel
         // the component is translucent, so we need to render to
         // an intermediate image before painting
         // TODO should we cache this image? repaint to same image unless size changes?
-        BufferedImage img = GraphicsUtilities.createCompatibleTranslucentImage(
-            getWidth(), getHeight());
-        Graphics2D gfx = img.createGraphics();
+        final BufferedImage img = GraphicsUtilities
+            .createCompatibleTranslucentImage(getWidth(), getHeight());
+        final Graphics2D gfx = img.createGraphics();
 
         try
         {
@@ -1319,12 +709,12 @@ public class JXCollapsiblePane extends JXPanel
           gfx.dispose();
         }
 
-        Graphics2D g2d = (Graphics2D) g;
-        Composite oldComp = g2d.getComposite();
+        final Graphics2D g2d = (Graphics2D) g;
+        final Composite oldComp = g2d.getComposite();
 
         try
         {
-          Composite alphaComp = AlphaComposite.getInstance(
+          final Composite alphaComp = AlphaComposite.getInstance(
               AlphaComposite.SRC_OVER, getEffectiveAlpha());
           g2d.setComposite(alphaComp);
           // TODO should we cache the image?
@@ -1336,6 +726,640 @@ public class JXCollapsiblePane extends JXPanel
         }
       }
     }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     *
+     * Overridden to not have JViewPort behaviour (that is scroll the view) but delegate to parent
+     * scrollRectToVisible just a JComponent does.
+     * <p>
+     */
+    @Override
+    public void scrollRectToVisible(final Rectangle aRect)
+    {
+      // avoids JViewport's implementation
+      // by using JXCollapsiblePane's it will delegate upward
+      // getting any core fixes, by avoiding c&p
+      JXCollapsiblePane.this.scrollRectToVisible(aRect);
+    }
+
+    @Override
+    public void setAlpha(final float alpha)
+    {
+      if (alpha < 0f || alpha > 1f)
+      {
+        throw new IllegalArgumentException("invalid alpha value " + alpha);
+      }
+
+      final float oldValue = getAlpha();
+      this.alpha = alpha;
+
+      if (getAlpha() < 1f)
+      {
+        if (oldValue == 1)
+        {
+          // it used to be 1, but now is not. Save the oldOpaque
+          oldOpaque = isOpaque();
+          this.setOpaque(false);
+        }
+      }
+      else
+      {
+        // restore the oldOpaque if it was true (since opaque is false now)
+        if (oldOpaque)
+        {
+          this.setOpaque(true);
+        }
+      }
+
+      firePropertyChange("alpha", oldValue, getAlpha());
+      repaint();
+    }
+
+    @Override
+    public void setInheritAlpha(final boolean inheritAlpha)
+    {
+      // does nothing; always false;
+    }
+  }
+
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
+
+  /**
+   * JXCollapsible has a built-in toggle action which can be bound to buttons. Accesses the action
+   * through <code>collapsiblePane.getActionMap().get(JXCollapsiblePane.TOGGLE_ACTION)</code>.
+   */
+  public final static String TOGGLE_ACTION = "toggle";
+
+  /**
+   * The icon used by the "toggle" action when the JXCollapsiblePane is expanded, i.e the icon which
+   * indicates the pane can be collapsed.
+   */
+  public final static String COLLAPSE_ICON = "collapseIcon";
+
+  /**
+   * The icon used by the "toggle" action when the JXCollapsiblePane is collapsed, i.e the icon
+   * which indicates the pane can be expanded.
+   */
+  public final static String EXPAND_ICON = "expandIcon";
+
+  /**
+   * Indicates whether the component is collapsed or expanded
+   */
+  protected boolean collapsed = false;
+  /**
+   * Defines the orientation of the component.
+   */
+  private Direction direction = Direction.UP;
+  /**
+   * Minimum size after being collapsed.
+   */
+  private Integer minimunAnimationSize = 0;
+  /**
+   * False for disabling the transparency effect.
+   */
+  private boolean useTransparency = true;
+  /**
+   * Timer used for doing the transparency animation (fade-in)
+   */
+  private Timer animateTimer;
+  private final AnimationListener animator;
+  protected int currentDimension = -1;
+
+  protected WrapperContainer wrapper;
+
+  private boolean useAnimation = true;
+
+  private AnimationParams animationParams;
+
+  private boolean collapseFiringState;
+
+  /**
+   * Value used for a default animation size.
+   */
+  private final int DEFAULT_ANIMATION_SIZE = 300;
+
+  /**
+   * delta to consider the animation too small.
+   */
+  private final float ANIMATION_MIN_MULTIPLIER = 2.5f;
+
+  /**
+   * Constructs a new JXCollapsiblePane with a {@link JXPanel} as content pane and a vertical
+   * {@link VerticalLayout} with a gap of 2 pixels as layout manager and a vertical orientation.
+   */
+  public JXCollapsiblePane()
+  {
+    this(Direction.UP, 0, true);
+  }
+
+  /**
+   * Constructs a new JXCollapsiblePane with a {@link JXPanel} as content pane and the specified
+   * direction.
+   *
+   * @param direction
+   *          the direction to collapse the container
+   */
+  public JXCollapsiblePane(final Direction direction,
+      final Integer minAnimationSize, final boolean useTransparency)
+  {
+    super.setLayout(new BorderLayout());
+    this.direction = direction;
+    this.minimunAnimationSize = minAnimationSize;
+    this.useTransparency = useTransparency;
+    animator = new AnimationListener();
+    setAnimationParams(new AnimationParams(30, 8, 0.01f, 1.0f));
+
+    setContentPane(createContentPane());
+    setDirection(direction);
+
+    // add an action to automatically toggle the state of the pane
+    getActionMap().put(TOGGLE_ACTION, new ToggleAction());
+  }
+
+  /**
+   * Overridden to redirect call to the content pane.
+   */
+  @Override
+  protected void addImpl(final Component comp, final Object constraints,
+      final int index)
+  {
+    getContentPane().add(comp, constraints, index);
+  }
+
+  /**
+   * Creates the content pane used by this collapsible pane.
+   *
+   * @return the content pane
+   */
+  protected Container createContentPane()
+  {
+    return new JXPanel();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Border getBorder()
+  {
+    if (getContentPane() instanceof JComponent)
+    {
+      return ((JComponent) getContentPane()).getBorder();
+    }
+
+    return null;
+  }
+
+  /**
+   * @return the content pane
+   */
+  public Container getContentPane()
+  {
+    if (wrapper == null)
+    {
+      return null;
+    }
+
+    return (Container) wrapper.getView();
+  }
+
+  /**
+   * @return the current {@link Direction}.
+   * @see #setDirection(Direction)
+   */
+  public Direction getDirection()
+  {
+    return direction;
+  }
+
+  /**
+   * A collapsible pane always returns its preferred size for the minimum size to ensure that the
+   * collapsing happens correctly.
+   * <p>
+   * To query the minimum size of the contents user {@code
+   * getContentPane().getMinimumSize()}.
+   *
+   * @return the preferred size of the component
+   */
+  @Override
+  public Dimension getMinimumSize()
+  {
+    return getPreferredSize();
+  }
+
+  /**
+   * Returns the minimum size for the pane when it is collapsed
+   * 
+   * @return
+   */
+  public Integer getMinimunAnimationSize()
+  {
+    return minimunAnimationSize;
+  }
+
+  /**
+   * The critical part of the animation of this <code>JXCollapsiblePane</code> relies on the
+   * calculation of its preferred size. During the animation, its preferred size (specially its
+   * height) will change, when expanding, from 0 to the preferred size of the content pane, and the
+   * reverse when collapsing.
+   *
+   * @return this component preferred size
+   */
+  @Override
+  public Dimension getPreferredSize()
+  {
+    /*
+     * The preferred size is calculated based on the current position of the component in its
+     * animation sequence. If the Component is expanded, then the preferred size will be the
+     * preferred size of the top component plus the preferred size of the embedded content
+     * container. <p>However, if the scroll up is in any state of animation, the height component of
+     * the preferred size will be the current height of the component (as contained in the
+     * currentDimension variable and when orientation is VERTICAL, otherwise the same applies to the
+     * width)
+     */
+    final Dimension dim = getContentPane().getPreferredSize();
+    if (currentDimension != -1)
+    {
+      if (direction.isVertical())
+      {
+        dim.height = currentDimension;
+      }
+      else
+      {
+        dim.width = currentDimension;
+      }
+    }
+    else if (wrapper.collapsedState)
+    {
+      if (direction.isVertical())
+      {
+        dim.height = 0;
+      }
+      else
+      {
+        dim.width = 0;
+      }
+    }
+    return dim;
+  }
+
+  public WrapperContainer getWrapper()
+  {
+    return wrapper;
+  }
+
+  /**
+   * @return true if the pane is animated, false otherwise
+   * @see #setAnimated(boolean)
+   */
+  public boolean isAnimated()
+  {
+    return useAnimation;
+  }
+
+  /**
+   * @return true if the pane is collapsed, false if expanded
+   */
+  public boolean isCollapsed()
+  {
+    return collapsed;
+  }
+
+  /**
+   * Overridden to redirect call to the content pane
+   */
+  @Override
+  public void remove(final Component comp)
+  {
+    getContentPane().remove(comp);
+  }
+
+  /**
+   * Overridden to redirect call to the content pane.
+   */
+  @Override
+  public void remove(final int index)
+  {
+    getContentPane().remove(index);
+  }
+
+  /**
+   * Overridden to redirect call to the content pane.
+   */
+  @Override
+  public void removeAll()
+  {
+    getContentPane().removeAll();
+  }
+
+  /**
+   * If true, enables the animation when pane is collapsed/expanded. If false, animation is turned
+   * off.
+   *
+   * <p>
+   * When animated, the <code>JXCollapsiblePane</code> will progressively reduce (when collapsing)
+   * or enlarge (when expanding) the height of its content area until it becomes 0 or until it
+   * reaches the preferred height of the components it contains. The transparency of the content
+   * area will also change during the animation.
+   *
+   * <p>
+   * If not animated, the <code>JXCollapsiblePane</code> will simply hide (collapsing) or show
+   * (expanding) its content area.
+   *
+   * @param animated
+   * @javabean.property bound="true" preferred="true"
+   */
+  public void setAnimated(final boolean animated)
+  {
+    if (animated != useAnimation)
+    {
+      useAnimation = animated;
+
+      if (!animated)
+      {
+        if (animateTimer.isRunning())
+        {
+          // TODO should we listen for animation state change?
+          // yes, but we're best off creating a UI delegate for these changes
+          SwingUtilities.invokeLater(new Runnable()
+          {
+            @Override
+            public void run()
+            {
+              currentDimension = -1;
+            }
+          });
+        }
+        else
+        {
+          currentDimension = -1;
+        }
+      }
+      firePropertyChange("animated", !useAnimation, useAnimation);
+    }
+  }
+
+  /**
+   * Sets the parameters controlling the animation
+   *
+   * @param params
+   * @throws IllegalArgumentException
+   *           if params is null
+   */
+  private void setAnimationParams(final AnimationParams params)
+  {
+    if (params == null)
+    {
+      throw new IllegalArgumentException("params can't be null");
+    }
+    if (animateTimer != null)
+    {
+      animateTimer.stop();
+    }
+    animationParams = params;
+    animateTimer = new Timer(animationParams.waitTime, animator);
+    animateTimer.setInitialDelay(0);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void setBorder(final Border border)
+  {
+    if (getContentPane() instanceof JComponent)
+    {
+      ((JComponent) getContentPane()).setBorder(border);
+    }
+  }
+
+  /**
+   * Expands or collapses this <code>JXCollapsiblePane</code>.
+   *
+   * <p>
+   * If the component is collapsed and <code>val</code> is false, then this call expands the
+   * JXCollapsiblePane, such that the entire JXCollapsiblePane will be visible. If
+   * {@link #isAnimated()} returns true, the expansion will be accompanied by an animation.
+   *
+   * <p>
+   * However, if the component is expanded and <code>val</code> is true, then this call collapses
+   * the JXCollapsiblePane, such that the entire JXCollapsiblePane will be invisible. If
+   * {@link #isAnimated()} returns true, the collapse will be accompanied by an animation.
+   *
+   * <p>
+   * As of SwingX 1.6.3, JXCollapsiblePane only fires property change events when the component's
+   * state is accurate. This means that animated collapsible pane's only fire events once the
+   * animation is complete.
+   *
+   * @see #isAnimated()
+   * @see #setAnimated(boolean)
+   * @javabean.property bound="true" preferred="true"
+   */
+  public void setCollapsed(final boolean val)
+  {
+    final boolean oldValue = isCollapsed();
+    this.collapsed = val;
+
+    if (isAnimated())
+    {
+      if (oldValue == isCollapsed())
+      {
+        return;
+      }
+
+      // this ensures that if the user reverses the animation
+      // before completion that no property change is fired
+      if (!animateTimer.isRunning())
+      {
+        collapseFiringState = oldValue;
+      }
+
+      if (oldValue)
+      {
+        final int dimension = direction.isVertical() ? wrapper.getHeight()
+            : wrapper.getWidth();
+        final int nextPreferredDimension = direction.isVertical()
+            ? getContentPane().getPreferredSize().height : getContentPane()
+                .getPreferredSize().width;
+
+        if (nextPreferredDimension < ANIMATION_MIN_MULTIPLIER
+            * getMinimunAnimationSize())
+        {
+          getContentPane().setPreferredSize(new Dimension(
+              DEFAULT_ANIMATION_SIZE, DEFAULT_ANIMATION_SIZE));
+        }
+        final int preferredDimension = direction.isVertical() ? getContentPane()
+            .getPreferredSize().height : getContentPane()
+                .getPreferredSize().width;
+        final int delta = Math.max(8, preferredDimension / 10);
+
+        setAnimationParams(new AnimationParams(30, delta, 0.01f, 1.0f));
+        animator.reinit(dimension, preferredDimension);
+        wrapper.getView().setVisible(true);
+      }
+      else
+      {
+        final int dimension = direction.isVertical() ? wrapper.getHeight()
+            : wrapper.getWidth();
+        setAnimationParams(new AnimationParams(30, Math.max(8, dimension / 10),
+            1.0f, 0.01f));
+        animator.reinit(dimension, minimunAnimationSize);
+      }
+
+      animateTimer.start();
+    }
+    else
+    {
+      wrapper.collapsedState = isCollapsed();
+      wrapper.getView().setVisible(!isCollapsed());
+      revalidate();
+      repaint();
+
+      firePropertyChange("collapsed", oldValue, isCollapsed());
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void setComponentOrientation(final ComponentOrientation o)
+  {
+    if (animateTimer.isRunning())
+    {
+      throw new IllegalStateException(
+          "cannot be change component orientation while collapsing.");
+    }
+
+    super.setComponentOrientation(o);
+  }
+
+  /**
+   * Sets the content pane of this JXCollapsiblePane. The {@code contentPanel} <i>should</i>
+   * implement {@code Scrollable} and return {@code true} from
+   * {@link Scrollable#getScrollableTracksViewportHeight()} and
+   * {@link Scrollable#getScrollableTracksViewportWidth()}. If the content pane fails to do so and a
+   * {@code JScrollPane} is added as a child, it is likely that the scroll pane will never correctly
+   * size. While it is not strictly necessary to implement {@code Scrollable} in this way, the
+   * default content pane does so.
+   *
+   * @param contentPanel
+   *          the container delegate used to hold all of the contents for this collapsible pane
+   * @throws IllegalArgumentException
+   *           if contentPanel is null
+   */
+  public void setContentPane(final Container contentPanel)
+  {
+    if (contentPanel == null)
+    {
+      throw new IllegalArgumentException("Content pane can't be null");
+    }
+
+    if (wrapper != null)
+    {
+      // these next two lines are as they are because if I try to remove
+      // the "wrapper" component directly, then super.remove(comp) ends up
+      // calling remove(int), which is overridden in this class, leading to
+      // improper behavior.
+      assert super.getComponent(0) == wrapper;
+      super.remove(0);
+    }
+
+    wrapper = new WrapperContainer(contentPanel);
+    wrapper.collapsedState = isCollapsed();
+    wrapper.getView().setVisible(!wrapper.collapsedState);
+    super.addImpl(wrapper, BorderLayout.CENTER, -1);
+  }
+
+  /**
+   * Changes the direction of this collapsible pane. Doing so changes the layout of the underlying
+   * content pane. If the chosen direction is vertical, a vertical layout with a gap of 2 pixels is
+   * chosen. Otherwise, a horizontal layout with a gap of 2 pixels is chosen.
+   *
+   * @see #getDirection()
+   * @param direction
+   *          the new {@link Direction} for this collapsible pane
+   * @throws IllegalStateException
+   *           when this method is called while a collapsing/restore operation is running
+   * @javabean.property bound="true" preferred="true"
+   */
+  public void setDirection(final Direction direction)
+  {
+    if (animateTimer.isRunning())
+    {
+      throw new IllegalStateException(
+          "cannot be change direction while collapsing.");
+    }
+
+    final Direction oldValue = getDirection();
+    this.direction = direction;
+
+    if (direction.isVertical())
+    {
+      getContentPane().setLayout(new VerticalLayout(2));
+    }
+    else
+    {
+      getContentPane().setLayout(new HorizontalLayout(2));
+    }
+
+    firePropertyChange("direction", oldValue, getDirection());
+  }
+
+  /**
+   * Overridden to redirect call to the content pane.
+   */
+  @Override
+  public void setLayout(final LayoutManager mgr)
+  {
+    // wrapper can be null when setLayout is called by "super()" constructor
+    if (wrapper != null)
+    {
+      getContentPane().setLayout(mgr);
+    }
+  }
+
+  /**
+   * Forwards to the content pane.
+   *
+   * @param minimumSize
+   *          the size to set on the content pane
+   */
+  @Override
+  public void setMinimumSize(final Dimension minimumSize)
+  {
+    getContentPane().setMinimumSize(minimumSize);
+  }
+
+  /**
+   * {@inheritDoc}
+   * <p>
+   * Internals of JXCollasiplePane are designed to be opaque because some Look and Feel
+   * implementations having painting issues otherwise. JXCollapsiblePane and its internals will
+   * respect {@code setOpaque}, calling this method will not only update the collapsible pane, but
+   * also all internals. This method does not modify the {@link #getContentPane() content pane}, as
+   * it is not considered an internal.
+   */
+  @Override
+  public void setOpaque(final boolean opaque)
+  {
+    super.setOpaque(opaque);
+
+    if (wrapper != null)
+    {
+      wrapper.setOpaque(opaque);
+    }
+  }
+
+  @Override
+  public void setPreferredSize(final Dimension preferredSize)
+  {
+    getContentPane().setPreferredSize(preferredSize);
   }
 
   // TEST CASE

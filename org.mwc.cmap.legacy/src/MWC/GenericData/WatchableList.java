@@ -152,24 +152,30 @@ public interface WatchableList extends ColoredWatchable, Editable
 	 */
 	public HiResDate getEndDTG();
 
-	/**
-	 * find out if this object is visible
-	 * 
-	 * @return yes/no for visible
-	 */
-	public boolean getVisible();
+  /**
+   * find out if this object is visible
+   * 
+   * @return yes/no for visible
+   */
+  public boolean getVisible();
 
-	/**
-	 * get the watchable in this list nearest to the specified DTG. If the
-	 * watchable list has start/finish times, only return a fix if the DTG
-	 * supplied is during the "live" period of the watchables. If not DTG is
-	 * present, or an invalid DTG is requested ,return all valid points
-	 * 
-	 * @param DTG
-	 *          to search for
-	 * @return the nearest Watchable
-	 */
-	public Watchable[] getNearestTo(HiResDate DTG);
+  /**
+   * get the watchable in this list nearest to the specified DTG. If the watchable list has
+   * start/finish times, only return a fix if the DTG supplied is during the "live" period of the
+   * watchables. If not DTG is present, or an invalid DTG is requested ,return all valid points
+   * 
+   * @param DTG
+   *          to search for
+   * @return the nearest Watchable, or EMPTY_WATCHABLE_LIST if empty
+   */
+  public Watchable[] getNearestTo(HiResDate DTG);
+
+  /**
+   * static instance of "null return" for getNearestTo(), when no items found
+   * 
+   */
+  public static final Watchable[] EMPTY_WATCHABLE_LIST = new Watchable[]
+  {};
 
 	/**
 	 * filter the list to the specified time period

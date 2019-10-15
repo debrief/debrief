@@ -76,7 +76,8 @@ import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
-import MWC.GenericData.WatchableList;
+import MWC.TacticalData.NarrativeEntry;
+import MWC.TacticalData.NarrativeWrapper;
 import MWC.TacticalData.SliderConverter;
 import MWC.TacticalData.temporal.ControllablePeriod;
 import MWC.TacticalData.temporal.PlotOperations;
@@ -364,7 +365,7 @@ public class DebriefRibbonTimeController
 
     topButtonsPanel = new JPanel();
     topButtonsPanel.setLayout(new BoxLayout(topButtonsPanel, BoxLayout.X_AXIS));
-
+    topButtonsPanel.setName("topbuttonspanel");
     final JCommandButton behindCommandButton = MenuUtils.addCommandButton(
         "Behind", "icons/24/media_beginning.png", new AbstractAction()
         {
@@ -381,7 +382,7 @@ public class DebriefRibbonTimeController
                 .getStartDTG(), timeManager.getPeriod().getStartDTG()), true);
           }
         }, CommandButtonDisplayState.SMALL, "Move to start time");
-
+    behindCommandButton.setName("starttime");
     final JCommandButton rewindCommandButton = MenuUtils.addCommandButton(
         "Rewind", "icons/24/media_rewind.png", new AbstractAction()
         {
@@ -397,7 +398,7 @@ public class DebriefRibbonTimeController
             stepControl.doStep(false, true);
           }
         }, CommandButtonDisplayState.SMALL, "Large step backwards");
-
+    rewindCommandButton.setName("rewind");
     final JCommandButton backCommandButton = MenuUtils.addCommandButton("Back",
         "icons/24/media_back.png", new AbstractAction()
         {
@@ -413,7 +414,7 @@ public class DebriefRibbonTimeController
             stepControl.doStep(false, false);
           }
         }, CommandButtonDisplayState.SMALL, "Small step backwards");
-
+    backCommandButton.setName("back");
     final JCommandButton playCommandButton = MenuUtils.addCommandButton("Play",
         PLAY_IMAGE, new AbstractAction()
         {
@@ -429,6 +430,7 @@ public class DebriefRibbonTimeController
             // ignore, we define the action once we've finished creating the button
           }
         }, CommandButtonDisplayState.SMALL, START_TEXT);
+    playCommandButton.setName("play");
 
     playCommandButton.addActionListener(new ActionListener()
     {
@@ -465,7 +467,7 @@ public class DebriefRibbonTimeController
 
           }
         }, CommandButtonDisplayState.SMALL, "Start recording");
-
+    recordCommandButton.setName("record");
     final JCommandButton forwardCommandButton = MenuUtils.addCommandButton(
         "Forward", "icons/24/media_forward.png", new AbstractAction()
         {
@@ -481,7 +483,7 @@ public class DebriefRibbonTimeController
             stepControl.doStep(true, false);
           }
         }, CommandButtonDisplayState.SMALL, "Small step forwards");
-
+    forwardCommandButton.setName("forward");
     final JCommandButton fastForwardCommandButton = MenuUtils.addCommandButton(
         "Fast Forward", "icons/24/media_fast_forward.png", new AbstractAction()
         {
@@ -497,7 +499,7 @@ public class DebriefRibbonTimeController
             stepControl.doStep(true, true);
           }
         }, CommandButtonDisplayState.SMALL, "Large step forwards");
-
+    fastForwardCommandButton.setName("fastforward");
     final JCommandButton endCommandButton = MenuUtils.addCommandButton("End",
         "icons/24/media_end.png", new AbstractAction()
         {
@@ -513,7 +515,7 @@ public class DebriefRibbonTimeController
                 .getEndDTG(), timeManager.getPeriod().getEndDTG()), true);
           }
         }, CommandButtonDisplayState.SMALL, "Move to end time");
-
+    endCommandButton.setName("endtime");
     final JCommandButton propertiesCommandButton = MenuUtils.addCommandButton(
         "Properties", "icons/16/properties.png", new AbstractAction()
         {
@@ -547,7 +549,7 @@ public class DebriefRibbonTimeController
             dialog.setVisible(true);
           }
         }, CommandButtonDisplayState.SMALL, "Edit time-step properties");
-
+    propertiesCommandButton.setName("timeprops");
     // we need to give the menu to the command popup
     final JPopupMenu menu = new JPopupMenu();
 
@@ -570,6 +572,7 @@ public class DebriefRibbonTimeController
         super.paintComponent(g);
       }
     };
+    timeLabel.setName("timeformatlabel");
     timeLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 16));
 
     timeLabel.setForeground(new Color(0, 255, 0));
@@ -618,7 +621,7 @@ public class DebriefRibbonTimeController
     timeSlider.setBackground(Color.DARK_GRAY);
     timeSlider.setPreferredSize(new Dimension(420, 30));
     timeSlider.setEnabled(false);
-
+    timeSlider.setName("timeslider");
     label = new TimeLabel()
     {
 
@@ -638,7 +641,7 @@ public class DebriefRibbonTimeController
         timeSlider.setEnabled(true);
 
         // and we can use the buttons
-        //DebriefLiteApp.setState(DebriefLiteApp.ACTIVE_STATE);
+        // DebriefLiteApp.setState(DebriefLiteApp.ACTIVE_STATE);
 
         converter.init(start, end);
         timeSlider.setMinimum(converter.getStart());
@@ -719,6 +722,7 @@ public class DebriefRibbonTimeController
       {
         stepControl.startStepping(false);
         boolean hasItems = false;
+        boolean hasNarratives = false;
 
         final Enumeration<Editable> lIter = stepControl.getLayers().elements();
         while (lIter.hasMoreElements())
@@ -737,24 +741,33 @@ public class DebriefRibbonTimeController
             while (ele.hasMoreElements() && !hasItems)
             {
               final Editable nextE = ele.nextElement();
-              if (nextE instanceof WatchableList)
-              {
-                final WatchableList wat = (WatchableList) nextE;
-                hasItems |= wat instanceof LightweightTrackWrapper
-                    || wat instanceof TrackWrapper
-                    || wat instanceof DynamicTrackShapeSetWrapper;
-              }
-
+              hasItems |= nextE instanceof LightweightTrackWrapper
+                  || nextE instanceof DynamicTrackShapeSetWrapper;
+            }
+          }
+          else if (next instanceof NarrativeWrapper)
+          {
+            // check if we have any narrative item inside.
+            final NarrativeWrapper narrativeWrapper = (NarrativeWrapper) next;
+            final Enumeration<Editable> elements = narrativeWrapper.elements();
+            while (elements.hasMoreElements() && !hasNarratives)
+            {
+              final Editable nextE = elements.nextElement();
+              hasNarratives |= nextE instanceof NarrativeEntry;
             }
           }
         }
 
+        DebriefLiteApp.setDirty(hasItems || hasNarratives);
         if (hasItems)
         {
-          DebriefLiteApp.setDirty(true);
           DebriefLiteApp.setState(DebriefLiteApp.ACTIVE_STATE);
           timeSlider.setEnabled(true);
-        }else
+          final TimePeriod period = stepControl.getLayers().getTimePeriod();
+          // _myOperations.setPeriod(period);
+          timeManager.setPeriod(this, period);
+        }
+        else
         {
           doSoftReset(timeSlider, timeManager);
         }
@@ -774,6 +787,7 @@ public class DebriefRibbonTimeController
 
     stepControl.getLayers().addDataExtendedListener(updateTimeController);
     stepControl.getLayers().addDataModifiedListener(updateTimeController);
+    stepControl.getLayers().addDataReformattedListener(updateTimeController);
 
     control.addRibbonComponent(new JRibbonComponent(topButtonsPanel));
     control.addRibbonComponent(new JRibbonComponent(timeSlider));
@@ -843,7 +857,7 @@ public class DebriefRibbonTimeController
     formatBinder.timeManager = timeManager;
 
     formatBinder.updateFilterDateFormat();
-    slider.addChangeListener(new SliderListener(operations, timeManager, 
+    slider.addChangeListener(new SliderListener(operations, timeManager,
         stepControl));
     slider.setEnabled(false);
     slider.setPreferredSize(new Dimension(250, 200));

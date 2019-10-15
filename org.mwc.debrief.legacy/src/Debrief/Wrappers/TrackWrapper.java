@@ -517,7 +517,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
   /**
    * put the other objects into this one as children
    *
-   * @param wrapper
+   * @param target
    *          whose going to receive it
    * @param theLayers
    *          the top level layers object
@@ -614,15 +614,13 @@ public class TrackWrapper extends LightweightTrackWrapper implements
   /**
    * perform a merge of the supplied tracks.
    *
-   * @param recipient
+   * @param newTrack
    *          the final recipient of the other items
    * @param theLayers
-   * @param parents
-   *          the parent tracks for the supplied items
    * @param subjects
    *          the actual selected items
-   * @param _newName
-   *          name to give to the merged object
+   * @param infillShade
+   *          color for any infills
    * @return sufficient information to undo the merge
    */
   public static int mergeTracks(final TrackWrapper newTrack,
@@ -1889,8 +1887,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements
   /**
    * one of our fixes has moved. better tell any bits that rely on the locations of our bits
    *
-   * @param theFix
-   *          the fix that moved
    */
   public void fixMoved()
   {
@@ -2406,7 +2402,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
   /**
    * find the fix nearest to this time (or the first fix for an invalid time)
    *
-   * @param DTG
+   * @param srchDTG
    *          the time of interest
    * @return the nearest fix
    */
@@ -2419,7 +2415,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
   /**
    * find the fix nearest to this time (or the first fix for an invalid time)
    *
-   * @param DTG
+   * @param srchDTG
    *          the time of interest
    * @param onlyVisible
    *          only consider visible fixes
@@ -2436,8 +2432,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     // check that we do actually contain some data
     if (_theSegments.isEmpty())
     {
-      return new Watchable[]
-      {};
+      return EMPTY_WATCHABLE_LIST;
     }
     else if (isSinglePointTrack())
     {
@@ -2527,7 +2522,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
 
           // yes it's inside our data range, find the first fix
           // after the indicated point
-          if (res == null)
+          if (res == null && pIter != null)
           {
             while (pIter.hasMoreElements())
             {
@@ -2604,8 +2599,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     }
     else
     {
-      return new MWC.GenericData.Watchable[]
-      {};
+      return EMPTY_WATCHABLE_LIST;
     }
 
   }
@@ -2841,7 +2835,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
    *          the destination
    */
   @Override
-  public final void paint(final CanvasType dest)
+  public synchronized final void paint(final CanvasType dest)
   {
     // check we are visible and have some track data, else we won't work
     if (!getVisible() || this.getStartDTG() == null)

@@ -2180,7 +2180,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       body.setSize(24, 24);
       final ToolBar toolBar = new ToolBar(body, SWT.None);
       final ToolItem item = new ToolItem(toolBar, SWT.DROP_DOWN);
-      item.setToolTipText("Drag Track Segment");
+      item.setToolTipText("Mouse Drag Mode");
       item.setImage(CorePlugin.getImageFromRegistry(CorePlugin
           .getImageDescriptor("icons/24/SelectSegment.png")));
       item.addListener(SWT.Selection, new Listener()
@@ -2326,7 +2326,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   abstract protected ZoneSlicer getOwnshipZoneSlicer(
       final ColorProvider blueProv);
 
-  private static double getPrecision(final Precision slicePrecision)
+  public static double getPrecision(final Precision slicePrecision)
   {
     final double RMS_ZIG_RATIO;
     switch (slicePrecision)

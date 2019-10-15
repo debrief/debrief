@@ -19,9 +19,9 @@
         <editor class="org.mwc.debrief.core.editors.PlotEditor"
             contributorClass="org.mwc.debrief.core.editors.PlotEditorActionBarContributor"
             icon="icons/16/plot_file.png" id="org.mwc.debrief.PlotEditor" name="Debrief Plot Editor">
-            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.DebriefPlot"> </contentTypeBinding>
-            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.DebriefPlotGPX"
-            > </contentTypeBinding>
+            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.DebriefPlot"/>
+            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.DebriefPlotGPX"/>
+            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.OTH_G_Log"/>
         </editor>
     </extension>
 
@@ -79,6 +79,10 @@
             name="KMZ Track Archive" priority="normal"> </content-type>
         <content-type id="org.mwc.debrief.contenttype.KMZTrackFile" file-extensions="kml"
             name="KMZ Track File" priority="normal"> </content-type>
+        <content-type id="org.mwc.debrief.contenttype.OTH_G_Log" file-extensions="txt"
+            name="OTH-Gold log file" priority="high"> 
+            <describer class="org.mwc.debrief.core.contenttype.OTH_G_ContentDescriber"/>
+        </content-type>
         <content-type id="org.mwc.debrief.contenttype.LogTrackFile" file-extensions="csv"
             name="S2087 Context Track File (Log)" priority="normal"> </content-type>
         <content-type id="org.mwc.debrief.contenttype.AISTrackFile"
@@ -143,6 +147,10 @@
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
         <loader class="org.mwc.debrief.core.loaders.NMEALoader" extensions="log" first_line="$POSL" name="NMEA Log File"        
+        />
+    </extension>
+    <extension point="org.mwc.debrief.core.DebriefPlotLoader">
+        <loader class="org.mwc.debrief.core.loaders.OTH_Gold_Loader" extensions="txt" name="OTH-Gold Log File"        
         />
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">

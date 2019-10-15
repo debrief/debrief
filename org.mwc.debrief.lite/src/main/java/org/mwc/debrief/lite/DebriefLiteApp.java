@@ -25,6 +25,9 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
@@ -33,6 +36,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -276,6 +280,7 @@ public class DebriefLiteApp implements FileDropListener
 
   public static DebriefLiteApp getInstance()
   {
+    System.out.println("using:"+_instance);
     return _instance;
   }
 
@@ -299,16 +304,25 @@ public class DebriefLiteApp implements FileDropListener
 
   public static void main(final String[] args)
   {
-    SwingUtilities.invokeLater(new Runnable()
+    launchApp();
+  }
+  
+  public static void launchApp() {
+    try
     {
-      @Override
-      public void run()
+      SwingUtilities.invokeAndWait(new Runnable()
       {
-        _instance = new DebriefLiteApp();
-
-      }
-    });
-
+        @Override
+        public void run()
+        {
+          _instance = new DebriefLiteApp();
+        }
+      });
+    }
+    catch (InvocationTargetException | InterruptedException e)
+    {
+      e.printStackTrace();
+    }
   }
 
   private static void notifyListenersStateChanged(final Object source,
@@ -403,6 +417,7 @@ public class DebriefLiteApp implements FileDropListener
   {
     try
     {
+      System.out.println("Using instance:"+_instance);
       _instance.handleImportRep(new File[]
       {file});
     }
@@ -688,7 +703,7 @@ public class DebriefLiteApp implements FileDropListener
   private final ToteSetter _normalSetter;
   private final ToteSetter _snailSetter;
 
-  public DebriefLiteApp()
+  private DebriefLiteApp()
   {
     // set the substance look and feel
     System.setProperty(SupportedApps.APP_NAME_SYSTEM_PROPERTY,
@@ -698,7 +713,10 @@ public class DebriefLiteApp implements FileDropListener
     System.setProperty("com.sun.media.jai.disableMediaLib", "true");
 
     JFrame.setDefaultLookAndFeelDecorated(true);
-    SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
+    if(SubstanceCortex.GlobalScope.getCurrentSkin()==null)
+    {
+      SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
+    }
     final DisplaySplash splashScreen = new DisplaySplash(5);
     final Thread t = new Thread(splashScreen);
     t.start();
@@ -886,7 +904,7 @@ public class DebriefLiteApp implements FileDropListener
     // lastly give us some backdrop data
     loadBackdropdata(_theLayers);
 
-    theFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+    theFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     theFrame.setVisible(true);
     theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
   }
@@ -973,15 +991,19 @@ public class DebriefLiteApp implements FileDropListener
   {
     final JPanel centerPanel = new JPanel();
     centerPanel.setLayout(new BorderLayout());
+    centerPanel.setName("Center Panel");
     mapPane.addComponentListener(new ComponentAdapter()
     {
       @Override
       public void componentResized(final ComponentEvent e)
       {
         // TODO . This must be change once we update geotools.
-        // mapPane.setVisible(false);
-        // mapPane.setVisible(true);
-        mapPane.repaint();
+        // Reverted ec7262026be4cbe07c7c521687703ddfa1acfb97
+        // I _think_ it is causing the behavior described here.
+        // here https://github.com/debrief/debrief/issues/4051#issuecomment-511193288
+        mapPane.setVisible(false);
+        mapPane.setVisible(true);
+        //mapPane.repaint();
       }
     });
 
@@ -1091,6 +1113,16 @@ public class DebriefLiteApp implements FileDropListener
     dest.endDraw(gc);
   }
 
+  public static void disposeForTest()
+  {
+    System.out.println("Disposed:"+_instance);
+    _instance.theFrame.dispose();
+    currentFileName = null;
+    state = null;
+    collapsedState =false;
+    stateListeners.clear();
+    _instance = null;
+  }
   public void exit()
   {
     if (DebriefLiteApp.isDirty())
@@ -1156,7 +1188,7 @@ public class DebriefLiteApp implements FileDropListener
   {
     session.close();
     theFrame.dispose();
-    System.exit(0);
+    //System.exit(0);
   }
 
   @Override
@@ -1527,6 +1559,28 @@ public class DebriefLiteApp implements FileDropListener
       DebriefRibbonFile.closeButton.setEnabled(true);
     }
   }
+  private void resetUndoBuffer()
+  {
+    session.getUndoBuffer().resetBuffer();
+    resetClipboard();
+    
+  }
+  private void resetClipboard()
+  {
+    Clipboard theClipboard = session.getClipboard();
+    theClipboard.setContents(new Transferable() {
+      public DataFlavor[] getTransferDataFlavors() {
+        return new DataFlavor[0];
+      }
+
+      public boolean isDataFlavorSupported(DataFlavor flavor) {
+        return false;
+      }
+
+      public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
+        throw new UnsupportedFlavorException(flavor);
+      }},layerManager);
+  }
 
   public void resetPlot()
   {
@@ -1583,7 +1637,7 @@ public class DebriefLiteApp implements FileDropListener
 
     // put some backdrop data back in
     loadBackdropdata(_theLayers);
-
+    resetUndoBuffer();
     graphPanelView.reset();
     graphPanel.setCollapsed(true);
   }
@@ -1607,6 +1661,17 @@ public class DebriefLiteApp implements FileDropListener
       final HasEditables theLayer)
   {
     getLayerManager().updateData((Layer) theLayer, newItem);
+  }
+  
+  public TimeManager getTimeManager()
+  {
+    return _instance.timeManager;
+  }
+
+  public JRibbonFrame getApplicationFrame()
+  {
+    return _instance.theFrame;
+    
   }
 
 }

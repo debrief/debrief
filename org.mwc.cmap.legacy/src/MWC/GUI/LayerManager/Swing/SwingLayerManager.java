@@ -217,10 +217,6 @@ public class SwingLayerManager extends SwingCustomEditor implements
    */
   protected class ChangeVis implements MWC.GUI.Tools.Action
   {
-    // ////////////////////////////////////////////////
-    // member objects
-    // ////////////////////////////////////////////////
-
     /**
      * the thing we're operating on
      */
@@ -233,9 +229,6 @@ public class SwingLayerManager extends SwingCustomEditor implements
 
     private final Layer _parent;
 
-    // ////////////////////////////////////////////////
-    // constructor
-    // ////////////////////////////////////////////////
     public ChangeVis(final Plottable myPlottable, final boolean isVis,
         final Layer parentLayer)
     {
@@ -243,10 +236,6 @@ public class SwingLayerManager extends SwingCustomEditor implements
       _myPlottable = myPlottable;
       _parent = parentLayer;
     }
-
-    // ////////////////////////////////////////////////
-    // member methods
-    // ////////////////////////////////////////////////
 
     /**
      * this method calls the 'do' event in the parent tool, passing the necessary data to it
@@ -576,10 +565,6 @@ public class SwingLayerManager extends SwingCustomEditor implements
    */
   static private final String ROOT_OBJECT = new String("Data");
 
-  // ///////////////////////////////////////////////////////////
-  // constructor
-  // //////////////////////////////////////////////////////////
-
   /*
    * thread-safe way of updating UI
    *
@@ -614,9 +599,6 @@ public class SwingLayerManager extends SwingCustomEditor implements
     }
   }
 
-  // ///////////////////////////////////////////////////////////
-  // member variables
-  // //////////////////////////////////////////////////////////
   /**
    * the data we are plotting
    */
@@ -657,9 +639,10 @@ public class SwingLayerManager extends SwingCustomEditor implements
     if (s != null && !s.isEmpty())
     {
       // check it's not the narratives layer
-      if(NarrativeEntry.NARRATIVE_LAYER.equalsIgnoreCase(s))
+      if (NarrativeEntry.NARRATIVE_LAYER.equalsIgnoreCase(s))
       {
-        SwingUtilities.invokeLater(new Runnable() {
+        SwingUtilities.invokeLater(new Runnable()
+        {
 
           @Override
           public void run()
@@ -669,7 +652,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
                 + "` is reserved for narratives.\nPlease choose another layer name",
                 "Add layer", JOptionPane.WARNING_MESSAGE);
           }
-          
+
         });
         ly = null;
       }
@@ -891,9 +874,6 @@ public class SwingLayerManager extends SwingCustomEditor implements
     }
   }
 
-  // ///////////////////////////////////////////////////////////
-  // member functions
-  // //////////////////////////////////////////////////////////
   /**
    * return the updated data object - not really used.
    */
@@ -1112,6 +1092,21 @@ public class SwingLayerManager extends SwingCustomEditor implements
     return thisL;
   }
 
+  private void myUpdateInThread(final Layer changedLayer)
+  {
+    // in case only the narratives have changed refresh only those.
+    final Runnable runner;
+    runner = new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        updateThisLayer(changedLayer);
+      }
+    };
+    updateInThread(runner);
+  }
+
   public void resetTree()
   {
     _myData.clear();
@@ -1147,10 +1142,6 @@ public class SwingLayerManager extends SwingCustomEditor implements
     createAndInitializeTree();
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // ///////////////////////////////////////////////////////////////////////////
-  // ///////////////////////////////////////////////////////////////////////////
-
   /**
    * here's the data
    *
@@ -1162,10 +1153,6 @@ public class SwingLayerManager extends SwingCustomEditor implements
   {
     _myParent = theParent;
   }
-
-  // ////////////////////////////////////////////////
-  //
-  // ////////////////////////////////////////////////
 
   public void showButtonPanel(final boolean show)
   {
@@ -1382,21 +1369,6 @@ public class SwingLayerManager extends SwingCustomEditor implements
 
   }
 
-  private void myUpdateInThread(final Layer changedLayer)
-  {
-    // in case only the narratives have changed refresh only those.
-    final Runnable runner;
-    runner = new Runnable()
-    {
-      @Override
-      public void run()
-      {
-        updateThisLayer(changedLayer);
-      }
-    };
-    updateInThread(runner);
-  }
-
   protected DefaultMutableTreeNode updateLayer(
       final DefaultMutableTreeNode root, final Layer thisLayer,
       final Layer theTopLayer)
@@ -1455,7 +1427,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
           else
           {
             // reload just that node that was modified
-            ((DefaultTreeModel) _myTree.getModel()).reload(nodeL.getParent());
+            ((DefaultTreeModel) _myTree.getModel()).reload(nodeL);
 
             // ok, we've used this one
             children.remove(nodeL);
