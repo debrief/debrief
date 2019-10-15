@@ -20,8 +20,7 @@ Require-Bundle: org.mwc.cmap.jfreechart,
  org.eclipse.core.resources,
  org.eclipse.jface.text,
  org.eclipse.ui.editors,
- org.eclipse.ui.workbench.texteditor,
- javax.xml.bind
+ org.eclipse.ui.workbench.texteditor
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
 Export-Package: org.mwc.debrief.dis,
@@ -30,5 +29,7 @@ Export-Package: org.mwc.debrief.dis,
 Bundle-ClassPath: libs/dis-enums_1.1.jar,
  libs/srm_4.4.0.jar,
  .
-Import-Package: org.eclipse.ui,
+Import-Package: javax.xml.bind,
+ javax.xml.bind.annotation,
+ org.eclipse.ui,
  org.eclipse.ui.part
