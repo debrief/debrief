@@ -14,10 +14,9 @@
  */
 package ASSET.Util.XML.Tools;
 
-import MWC.GUI.Tools.*;
-import MWC.GUI.*;
-import java.io.*;
 import ASSET.ScenarioType;
+import MWC.GUI.ToolParent;
+import MWC.GUI.Tools.Action;
 
 public class SaveScenarioAsXML extends MWC.GUI.Tools.Operations.Save
 {
@@ -63,9 +62,6 @@ public class SaveScenarioAsXML extends MWC.GUI.Tools.Operations.Save
     Action res = null;
 
     // now save ScenarioType to this file
-    try
-    {
-
       // check if the file ends in XML
       final int idx = filename.toLowerCase().indexOf("." + mySuffix);
 //      final int CLASS_EXTENSION_LENGTH = 4;
@@ -75,25 +71,16 @@ public class SaveScenarioAsXML extends MWC.GUI.Tools.Operations.Save
       }
 
       // open the file
-      final OutputStream os = new FileOutputStream(filename);
 
-      // inform the ScenarioType of it's filename
-      // _theScenario.setFileName(filename); /** @todo store filename in scenario */
+      throw new UnsupportedOperationException();
+//      final OutputStream os = new FileOutputStream(filename);
+//      // pass all of this to the XML exporter
+//      ASSET.Util.XML.ASSETReaderWriter.exportThis(_theScenario, null, os);
+//      os.close();
 
-      // pass all of this to the XML exporter
-      ASSET.Util.XML.ASSETReaderWriter.exportThis(_theScenario, null, os);
+    //  res =  new SaveScenarioAction("the scenario"); /** create names for scenarios */
 
-      os.close();
-
-      res =  new SaveScenarioAction("the scenario"); /** create names for scenarios */
-
-    }
-    catch(IOException e)
-    {
-      MWC.Utilities.Errors.Trace.trace(e);
-    }
-
-    return res;
+   // return res;
   }
 
 
