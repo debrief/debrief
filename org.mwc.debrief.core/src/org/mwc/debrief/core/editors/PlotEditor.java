@@ -150,7 +150,7 @@ import org.mwc.debrief.core.operations.ExportToFlatFile2;
 import org.mwc.debrief.core.preferences.PrefsPage;
 import org.osgi.framework.Bundle;
 
-import Debrief.GUI.Tote.Painters.SnailPainter;
+import Debrief.GUI.Tote.Painters.TotePainter;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
@@ -203,17 +203,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
   public static class TestMe extends TestCase
   {
 
-    public void testBounds()
-    {
-      final Layers la = new Layers();
-      final TimePeriod bounds = getPeriodFor(la);
-      assertNull("should not have found any", bounds);
-
-      final Layers la2 = null;
-      final TimePeriod bounds2 = getPeriodFor(la2);
-      assertNull("should not have found any", bounds2);
-    }
-
     public void testAmbig()
     {
       final SensorWrapper sensor = new SensorWrapper("Some name");
@@ -243,6 +232,17 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
           null, 122d, 222d, null, null, Color.RED, "label", 1, "Some name"));
 
       assertTrue("Should find ambig data", isAmbiguousData(sensor));
+    }
+
+    public void testBounds()
+    {
+      final Layers la = new Layers();
+      final TimePeriod bounds = getPeriodFor(la);
+      assertNull("should not have found any", bounds);
+
+      final Layers la2 = null;
+      final TimePeriod bounds2 = getPeriodFor(la2);
+      assertNull("should not have found any", bounds2);
     }
 
     public void testFreq()
@@ -296,6 +296,44 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
   private static final String PLUGIN_ID = "org.mwc.debrief.core";
 
   private static boolean _updatingPlot = false;
+
+  /**
+   * lastly, assign the primary, if there's only one track if we've only got one layer, and we like
+   * the look of it then make it the primary layer
+   */
+  private static void assignPrimaryIfApplicable(final Layers myLayers,
+      final TrackDataProvider trackDataProvider)
+  {
+    if (myLayers.size() == 1)
+    {
+      // see if that single layer is a track
+      final Layer firstL = myLayers.elementAt(0);
+
+      if (firstL instanceof LightweightTrackWrapper)
+      {
+        final TrackManager mgr = (TrackManager) trackDataProvider;
+
+        // do we already have a primary?
+        if (mgr.getPrimaryTrack() == null)
+        {
+          final Display display = Display.getDefault();
+          if (display != null)
+          {
+            final LightweightTrackWrapper track =
+                (LightweightTrackWrapper) firstL;
+            display.syncExec(new Runnable()
+            {
+              @Override
+              public void run()
+              {
+                mgr.setPrimary(track);
+              }
+            });
+          }
+        }
+      }
+    }
+  }
 
   private static String getAbsoluteName(final IFile iff) throws CoreException
   {
@@ -406,7 +444,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
   private PlotPropertySheetPage _propertySheetPage;
 
   private final IPropertyChangeListener _sensorTransparencyListener;
-  
+
   /**
    * constructor - quite simple really.
    */
@@ -812,7 +850,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
   @Override
   protected SWTChart createTheChart(final Composite parent)
   {
-    final SWTChart res = new SWTChart(_myLayers, parent,(PlainProjection) _myGeoHandler)
+    final SWTChart res = new SWTChart(_myLayers, parent,
+        (PlainProjection) _myGeoHandler)
     {
 
       /**
@@ -895,7 +934,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
             // ok, now sort out the highlight
 
             // right, what are the watchables
-            final Vector<Plottable> watchables = SnailPainter.getWatchables(
+            final Vector<Plottable> watchables = TotePainter.getWatchables(
                 thisLayer);
 
             // cycle through them
@@ -903,7 +942,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
             while (watches.hasMoreElements())
             {
               final WatchableList list = (WatchableList) watches.nextElement();
-              
+
               if (list.getVisible())
               {
                 // is the primary an instance of layer (with it's
@@ -1028,8 +1067,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
               }
               if (currentState != null)
               {
-                final ICommandService service = (ICommandService) getSite()
-                    .getService(ICommandService.class);
+                final ICommandService service = getSite().getService(
+                    ICommandService.class);
                 final Command command = service.getCommand(RadioHandler.ID);
                 HandlerUtil.updateRadioState(command, currentState);
               }
@@ -1085,6 +1124,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       _outlinePage.dispose();
       _outlinePage = null;
     }
+  }
+
+  public void disposePlotPropertySheetPage()
+  {
+    _propertySheetPage = null;
+
   }
 
   /**
@@ -1554,58 +1599,20 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     return "";
   }
 
-  /**
-   * utility function to extract filename extension
-   * 
-   * @param fileName
-   *          full file path
-   * @return extension of file
-   */
-  private String getFileNameExtension(final String fileName)
-  {
-    if (fileName == null)
-    {
-      throw new IllegalArgumentException("file name == null");
-    }
-    int pos = fileName.lastIndexOf(".");
-    if (pos > 0 && pos < fileName.length())
-    {
-      return fileName.substring(pos+1, fileName.length());
-    }
-    return "";
-
-  }
-
-  private boolean isVideoFile(final String fileName)
-  {
-    // NOTE: this is a copy of the formats listed in VideoPlayerView.
-    String[] supportedVideoFormats = CorePlugin.SUPPORTED_MEDIA_FORMATS;
-    for(String format:supportedVideoFormats) {
-      // trim the file wildcard
-      final String formatExtension = getFileNameExtension(format);
-      
-      final String fileNameExtension = getFileNameExtension(fileName);
-      if(formatExtension.equalsIgnoreCase(fileNameExtension)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-
   @Override
   protected void filesDropped(final String[] fileNames)
   {
     super.filesDropped(fileNames);
 
     // ok, iterate through the files
-    if(fileNames.length==1 && isVideoFile(fileNames[0]))
+    if (fileNames.length == 1 && isVideoFile(fileNames[0]))
     {
       // get the current plot start-time
-      Date startTime = _timeManager.getTime().getDate();
+      final Date startTime = _timeManager.getTime().getDate();
       OpenVideoPlayerUtil.openVideoPlayer(fileNames[0], startTime);
     }
-    else {
+    else
+    {
       for (int i = 0; i < fileNames.length; i++)
       {
         final String thisFilename = fileNames[i];
@@ -1784,7 +1791,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       }
       res = _propertySheetPage;
     }
-    else if(PlotEditor.class.equals(adapter))
+    else if (PlotEditor.class.equals(adapter))
     {
       return this;
     }
@@ -1817,6 +1824,28 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       }
     }
     return file;
+  }
+
+  /**
+   * utility function to extract filename extension
+   *
+   * @param fileName
+   *          full file path
+   * @return extension of file
+   */
+  private String getFileNameExtension(final String fileName)
+  {
+    if (fileName == null)
+    {
+      throw new IllegalArgumentException("file name == null");
+    }
+    final int pos = fileName.lastIndexOf(".");
+    if (pos > 0 && pos < fileName.length())
+    {
+      return fileName.substring(pos + 1, fileName.length());
+    }
+    return "";
+
   }
 
   private SensorImportHelper getSensorImportHelperFor(final String sensorName,
@@ -1928,6 +1957,24 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     return alreadyLoaded;
   }
 
+  private boolean isVideoFile(final String fileName)
+  {
+    // NOTE: this is a copy of the formats listed in VideoPlayerView.
+    final String[] supportedVideoFormats = CorePlugin.SUPPORTED_MEDIA_FORMATS;
+    for (final String format : supportedVideoFormats)
+    {
+      // trim the file wildcard
+      final String formatExtension = getFileNameExtension(format);
+
+      final String fileNameExtension = getFileNameExtension(fileName);
+      if (formatExtension.equalsIgnoreCase(fileNameExtension))
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /**
    * layers have been added/removed
    *
@@ -1972,49 +2019,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
         _timeManager.setTime(this, timePeriod.getStartDTG(), false);
       }
     }
-    
+
     // see if we can automatically assign a primary track
     assignPrimaryIfApplicable(_myLayers, _trackDataProvider);
 
     // done - now we can process dirty calls again
     stopIgnoringDirtyCalls();
-  }
-
-  /** lastly, assign the primary, if there's only one track
-   * if we've only got one layer, and we like the look of it
-   * then make it the primary layer
-   */
-  private static void assignPrimaryIfApplicable(final Layers myLayers, 
-      final TrackDataProvider trackDataProvider)
-  {
-    if (myLayers.size() == 1)
-    {
-      // see if that single layer is a track
-      final Layer firstL = myLayers.elementAt(0);
-
-      if (firstL instanceof LightweightTrackWrapper)
-      {
-        final TrackManager mgr = (TrackManager) trackDataProvider;
-
-        // do we already have a primary?
-        if (mgr.getPrimaryTrack() == null)
-        {
-          final Display display = Display.getDefault();
-          if (display != null)
-          {
-            final LightweightTrackWrapper track = (LightweightTrackWrapper) firstL;
-            display.syncExec(new Runnable()
-            {
-              @Override
-              public void run()
-              {
-                mgr.setPrimary((WatchableList) track);
-              }
-            });
-          }
-        }
-      }
-    }
   }
 
   /**
@@ -2126,7 +2136,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
   private void loadThisStream(final InputStream is, final String fileName)
   {
-    final CompleteListener listener = new CompleteListener() 
+    final CompleteListener listener = new CompleteListener()
     {
       @Override
       public void complete(final IPlotLoader loader)
@@ -2134,7 +2144,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
         loadingComplete(loader);
       }
     };
-    
+
     // right, see if any of them will do our edit
     final IPlotLoader[] loaders = _loader.findLoadersFor(fileName);
     // did we find any?
@@ -2146,7 +2156,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
         for (int i = 0; i < loaders.length; i++)
         {
           final IPlotLoader thisLoader = loaders[i];
-          
+
           // get it to load. Just in case it's an asychronous load
           // operation, we
           // rely on it calling us back (loadingComplete)
@@ -2319,7 +2329,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       {
         // and the base frequency
         final String freqStr = importHelper.getBaseFrequency();
-        if(freqStr != null)
+        if (freqStr != null)
         {
           try
           {
@@ -2555,12 +2565,5 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     final EditableWrapper fixW = new EditableWrapper(item, segmentW, layers);
     final ISelection selected = new StructuredSelection(fixW);
     return selected;
-  }
-
-  public void disposePlotPropertySheetPage()
-  {
-    _propertySheetPage = null;
-   
-    
   }
 }
