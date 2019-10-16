@@ -2409,6 +2409,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
   @Override
   public void reload(final IFile file)
   {
+    final IWorkbenchPage page = getSite().getPage();
     closeEditor(false);
     Display.getDefault().asyncExec(new Runnable()
     {
@@ -2416,7 +2417,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       @Override
       public void run()
       {
-        final IWorkbenchPage page = getSite().getPage();
         final IEditorDescriptor desc = PlatformUI.getWorkbench()
             .getEditorRegistry().getDefaultEditor(file.getName());
         try

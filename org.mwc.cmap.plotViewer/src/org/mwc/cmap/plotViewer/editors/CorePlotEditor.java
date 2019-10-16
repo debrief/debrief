@@ -68,6 +68,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchCommandConstants;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.SubActionBars2;
 import org.eclipse.ui.actions.ActionFactory;
@@ -652,13 +653,14 @@ public abstract class CorePlotEditor extends EditorPart implements
 
   protected void closeEditor(final boolean save)
   {
+    final IWorkbenchPage page = getSite().getPage();
     Display.getDefault().asyncExec(new Runnable()
     {
 
       @Override
       public void run()
       {
-        getSite().getPage().closeEditor(CorePlotEditor.this, save);
+        page.closeEditor(CorePlotEditor.this, save);
       }
     });
   }
