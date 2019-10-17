@@ -156,7 +156,7 @@ public class RangeBearingTool extends AbstractZoomTool
     }
     
     // Now we draw the line
-    dragLine.mouseDragged(ev);
+    dragLine.mouseDragged(ev, msg);
   }
 
   /**

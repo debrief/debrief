@@ -25,6 +25,9 @@ public class MouseDragLine extends MouseInputAdapter
   private boolean dragged;
   private boolean dragging;
   private Graphics2D graphics;
+  private final int MEASURE_X_OFFSET = 30;
+  private final int MEASURE_Y_OFFSET = 30;
+  private String previousMeasure = null;
 
   /**
    * Creates a new instance to work with the given component.
@@ -63,15 +66,29 @@ public class MouseDragLine extends MouseInputAdapter
   @Override
   public void mouseDragged(final MouseEvent ev)
   {
+    mouseDragged(ev, null);
+  }
+  
+  public void mouseDragged(final MouseEvent ev, final String measure)
+  {
     if (dragging)
     {
       ensureGraphics();
       if (dragged)
       {
         graphics.drawLine(startPos.x, startPos.y, endPos.x, endPos.y);
+        if ( previousMeasure != null )
+        {
+          graphics.drawString(previousMeasure, endPos.x + MEASURE_X_OFFSET, endPos.y + MEASURE_Y_OFFSET);
+        }
       }
+      previousMeasure = measure;
       endPos = ev.getPoint();
       graphics.drawLine(startPos.x, startPos.y, endPos.x, endPos.y);
+      if ( measure != null )
+      {
+        graphics.drawString(measure, endPos.x + MEASURE_X_OFFSET, endPos.y + MEASURE_Y_OFFSET);
+      }
       dragged = true;
     }
   }
