@@ -32,6 +32,50 @@ import MWC.GenericData.WorldVector;
 public class RangeBearingTool extends AbstractZoomTool
 {
 
+  public static class RangeBearingMeasure
+  {
+    private WorldDistance distance;
+    private double bearing;
+    private static final String DEGREE_SYMBOL = "\u00b0";
+    
+    public RangeBearingMeasure(WorldDistance distance, double bearing)
+    {
+      this.distance = distance;
+      this.bearing = bearing;
+    }
+    
+    public void normalizeBearing()
+    {
+      if (bearing < 0)
+      {
+        bearing += 360d;
+      }
+    }
+    
+    public String getLongFormat()
+    {
+      return "Range:" + (int) distance.getValueIn(
+          WorldDistance.YARDS) + "yd Brg:" + (int) bearing + DEGREE_SYMBOL;
+    }
+    
+    public String getShortFormat()
+    {
+      return (int) distance.getValueIn(
+          WorldDistance.YARDS) + "yd " + (int) bearing + DEGREE_SYMBOL;
+    }
+    
+    public int getIntBearing()
+    {
+      return (int)bearing;
+    }
+    
+    public int getPrintBearing()
+    {
+      // +360 just in case... :)
+      return (getIntBearing() + 360) % 180 - 90;
+    }
+  }
+  
   /** Tool name */
   public static final String TOOL_NAME = "Rng/Brg";
 
@@ -144,19 +188,17 @@ public class RangeBearingTool extends AbstractZoomTool
     final WorldDistance distance = new WorldDistance(delta.getRange(),
         WorldDistance.DEGS);
     double bearing = Conversions.Rads2Degs(delta.getBearing());
-    if (bearing < 0)
-    {
-      bearing += 360d;
-    }
-    final String msg = "Range:" + (int) distance.getValueIn(
-        WorldDistance.YARDS) + "yd Brg:" + (int) bearing + "\u00b0";
+    
+    final RangeBearingMeasure rangeBearing = new RangeBearingMeasure(distance, bearing);
+    rangeBearing.normalizeBearing();
+    final String msg = rangeBearing.getLongFormat();
     if (_statusBar != null)
     {
       _statusBar.setText(msg);
     }
     
     // Now we draw the line
-    dragLine.mouseDragged(ev, msg);
+    dragLine.mouseDragged(ev, rangeBearing);
   }
 
   /**

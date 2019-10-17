@@ -3,12 +3,18 @@ package org.mwc.debrief.lite.map;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 
 import javax.swing.JComponent;
 import javax.swing.event.MouseInputAdapter;
+
+import org.mwc.debrief.lite.map.RangeBearingTool.RangeBearingMeasure;
 
 /**
  * Draws a line on the parent component (e.g. JMapPane) as the mouse is dragged.
@@ -27,7 +33,9 @@ public class MouseDragLine extends MouseInputAdapter
   private Graphics2D graphics;
   private final int MEASURE_X_OFFSET = 30;
   private final int MEASURE_Y_OFFSET = 30;
-  private String previousMeasure = null;
+  private final int MEASURE_X_CENTRE_OFFSET = 0;
+  private final int MEASURE_Y_CENTRE_OFFSET = -30;
+  private RangeBearingMeasure previousMeasure = null;
 
   /**
    * Creates a new instance to work with the given component.
@@ -69,7 +77,7 @@ public class MouseDragLine extends MouseInputAdapter
     mouseDragged(ev, null);
   }
   
-  public void mouseDragged(final MouseEvent ev, final String measure)
+  public void mouseDragged(final MouseEvent ev, final RangeBearingMeasure rangeBearing)
   {
     if (dragging)
     {
@@ -79,15 +87,15 @@ public class MouseDragLine extends MouseInputAdapter
         graphics.drawLine(startPos.x, startPos.y, endPos.x, endPos.y);
         if ( previousMeasure != null )
         {
-          graphics.drawString(previousMeasure, endPos.x + MEASURE_X_OFFSET, endPos.y + MEASURE_Y_OFFSET);
+          graphics.drawString(previousMeasure.getShortFormat(), endPos.x + MEASURE_X_OFFSET, endPos.y + MEASURE_Y_OFFSET);
         }
       }
-      previousMeasure = measure;
+      previousMeasure = rangeBearing;
       endPos = ev.getPoint();
       graphics.drawLine(startPos.x, startPos.y, endPos.x, endPos.y);
-      if ( measure != null )
+      if ( rangeBearing != null )
       {
-        graphics.drawString(measure, endPos.x + MEASURE_X_OFFSET, endPos.y + MEASURE_Y_OFFSET);
+        graphics.drawString(rangeBearing.getShortFormat(), endPos.x + MEASURE_X_OFFSET, endPos.y + MEASURE_Y_OFFSET);
       }
       dragged = true;
     }
@@ -124,7 +132,26 @@ public class MouseDragLine extends MouseInputAdapter
     if (dragged)
     {
       ensureGraphics();
-      graphics.drawLine(startPos.x, startPos.y, endPos.x, endPos.y);
+      
+      if ( previousMeasure != null )
+      {
+        // Ok , we erase the previous text, to move it to the center.
+        graphics.drawString(previousMeasure.getShortFormat(), endPos.x + MEASURE_X_OFFSET, endPos.y + MEASURE_Y_OFFSET);
+        
+        // Now we put the measure along the line.
+        final Font currentFont = graphics.getFont();
+        final FontRenderContext renderContext = 
+            new FontRenderContext(null, true, true);
+        
+        final Rectangle2D fontRectangle = currentFont.getStringBounds(previousMeasure.getShortFormat(), renderContext);
+        final int x = (endPos.x + startPos.x) / 2;
+        final int y = (endPos.y + startPos.y) / 2;
+        
+        graphics.setTransform(AffineTransform.getRotateInstance(Math.toRadians(previousMeasure.getPrintBearing()), x, y));
+        graphics.drawString(previousMeasure.getShortFormat(), (int)(x - fontRectangle.getWidth() / 2 - fontRectangle.getX() + MEASURE_X_CENTRE_OFFSET),
+            (int)(y - fontRectangle.getHeight() / 2 - fontRectangle.getY() + MEASURE_Y_CENTRE_OFFSET));
+      }
+      
       dragged = false;
       graphics.dispose();
       graphics = null;
