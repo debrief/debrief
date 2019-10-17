@@ -113,9 +113,23 @@ public class MouseDragLine extends MouseInputAdapter
   {
     if (!dragging)
     {
+      ensureGraphics();
+      eraseOldDrawing();
+      
       dragging = true;
       startPos = new Point(ev.getPoint());
       endPos = new Point(startPos);
+    }
+  }
+
+  public void eraseOldDrawing()
+  {
+    if ( previousMeasure != null )
+    {
+      ensureGraphics();
+      drawRangeBearingCentred();
+      graphics.drawLine(startPos.x, startPos.y, endPos.x, endPos.y);
+      previousMeasure = null;
     }
   }
 
@@ -138,23 +152,30 @@ public class MouseDragLine extends MouseInputAdapter
         // Ok , we erase the previous text, to move it to the center.
         graphics.drawString(previousMeasure.getShortFormat(), endPos.x + MEASURE_X_OFFSET, endPos.y + MEASURE_Y_OFFSET);
         
-        // Now we put the measure along the line.
-        final Font currentFont = graphics.getFont();
-        final FontRenderContext renderContext = 
-            new FontRenderContext(null, true, true);
-        
-        final Rectangle2D fontRectangle = currentFont.getStringBounds(previousMeasure.getShortFormat(), renderContext);
-        final int x = (endPos.x + startPos.x) / 2;
-        final int y = (endPos.y + startPos.y) / 2;
-        
-        graphics.setTransform(AffineTransform.getRotateInstance(Math.toRadians(previousMeasure.getPrintBearing()), x, y));
-        graphics.drawString(previousMeasure.getShortFormat(), (int)(x - fontRectangle.getWidth() / 2 - fontRectangle.getX() + MEASURE_X_CENTRE_OFFSET),
-            (int)(y - fontRectangle.getHeight() / 2 - fontRectangle.getY() + MEASURE_Y_CENTRE_OFFSET));
+        drawRangeBearingCentred();
       }
       
       dragged = false;
       graphics.dispose();
       graphics = null;
     }
+  }
+
+  private void drawRangeBearingCentred()
+  {
+    // Now we put the measure along the line.
+    final Font currentFont = graphics.getFont();
+    final FontRenderContext renderContext = 
+        new FontRenderContext(null, true, true);
+    
+    final Rectangle2D fontRectangle = currentFont.getStringBounds(previousMeasure.getShortFormat(), renderContext);
+    final int x = (endPos.x + startPos.x) / 2;
+    final int y = (endPos.y + startPos.y) / 2;
+    
+    final AffineTransform oldTransform = graphics.getTransform();
+    graphics.setTransform(AffineTransform.getRotateInstance(Math.toRadians(previousMeasure.getPrintBearing()), x, y));
+    graphics.drawString(previousMeasure.getShortFormat(), (int)(x - fontRectangle.getWidth() / 2 - fontRectangle.getX() + MEASURE_X_CENTRE_OFFSET),
+        (int)(y - fontRectangle.getHeight() / 2 - fontRectangle.getY() + MEASURE_Y_CENTRE_OFFSET));
+    graphics.setTransform(oldTransform);
   }
 }

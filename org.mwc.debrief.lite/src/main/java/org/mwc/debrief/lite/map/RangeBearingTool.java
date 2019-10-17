@@ -256,4 +256,9 @@ public class RangeBearingTool extends AbstractZoomTool
       dragLine.mouseReleased(ev);
     }
   }
+  
+  public void eraseOldDrawing()
+  {
+    dragLine.eraseOldDrawing();
+  }
 }

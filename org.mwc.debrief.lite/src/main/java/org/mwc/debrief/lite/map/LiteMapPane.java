@@ -209,6 +209,10 @@ public class LiteMapPane extends JMapPane
       if (currentCursorTool != null)
       {
         mouseEventDispatcher.removeMouseListener(currentCursorTool);
+        if ( currentCursorTool instanceof RangeBearingTool )
+        {
+          ((RangeBearingTool) currentCursorTool).eraseOldDrawing();
+        }
       }
 
       currentCursorTool = tool;
