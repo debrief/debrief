@@ -52,10 +52,11 @@ public class LiteMapPane extends JMapPane
 
   private final MathTransform data_transform;
 
-  public LiteMapPane(final GeoToolMapRenderer geoToolMapRenderer, final float alpha)
+  public LiteMapPane(final GeoToolMapRenderer geoToolMapRenderer,
+      final float alpha)
   {
     super();
-    
+
     mapTransparency = alpha;
 
     // Would be better to pass in a GeoToolMapProjection or GTProjection here?
@@ -83,11 +84,6 @@ public class LiteMapPane extends JMapPane
 
     // try to set background color
     super.setBackground(new Color(135, 172, 215));
-  }
-  
-  public MathTransform getTransform()
-  {
-    return data_transform;
   }
 
   public MapMouseAdapter getMouseListener(final MathTransform transform)
@@ -156,17 +152,22 @@ public class LiteMapPane extends JMapPane
 
   }
 
+  public MathTransform getTransform()
+  {
+    return data_transform;
+  }
+
   @Override
   protected void paintComponent(final Graphics g)
   {
     // don't ask the parent to paint, since we're doing it, instead
-    //super.paintComponent(g);
+    // super.paintComponent(g);
 
     // draw in background
-    Dimension dim = this.getSize();
+    final Dimension dim = this.getSize();
     g.setColor(Color.white);
     g.fillRect(0, 0, dim.width, dim.height);
-    
+
     if (drawingLock.tryLock())
     {
       try
@@ -209,7 +210,7 @@ public class LiteMapPane extends JMapPane
       if (currentCursorTool != null)
       {
         mouseEventDispatcher.removeMouseListener(currentCursorTool);
-        if ( currentCursorTool instanceof RangeBearingTool )
+        if (currentCursorTool instanceof RangeBearingTool)
         {
           ((RangeBearingTool) currentCursorTool).eraseOldDrawing();
         }

@@ -39,7 +39,7 @@ public class MouseDragLine extends MouseInputAdapter
 
   /**
    * Creates a new instance to work with the given component.
-   * 
+   *
    * @param component
    *          the component on which the box will be drawn
    */
@@ -48,6 +48,28 @@ public class MouseDragLine extends MouseInputAdapter
     parentComponent = component;
     dragged = false;
     dragging = false;
+  }
+
+  private void drawRangeBearingCentred()
+  {
+    // Now we put the measure along the line.
+    final Font currentFont = graphics.getFont();
+    final FontRenderContext renderContext = new FontRenderContext(null, true,
+        true);
+
+    final Rectangle2D fontRectangle = currentFont.getStringBounds(
+        previousMeasure.getShortFormat(), renderContext);
+    final int x = (endPos.x + startPos.x) / 2;
+    final int y = (endPos.y + startPos.y) / 2;
+
+    final AffineTransform oldTransform = graphics.getTransform();
+    graphics.setTransform(AffineTransform.getRotateInstance(Math.toRadians(
+        previousMeasure.getPrintBearing()), x, y));
+    graphics.drawString(previousMeasure.getShortFormat(), (int) (x
+        - fontRectangle.getWidth() / 2 - fontRectangle.getX()
+        + MEASURE_X_CENTRE_OFFSET), (int) (y - fontRectangle.getHeight() / 2
+            - fontRectangle.getY() + MEASURE_Y_CENTRE_OFFSET));
+    graphics.setTransform(oldTransform);
   }
 
   /**
@@ -64,10 +86,21 @@ public class MouseDragLine extends MouseInputAdapter
     }
   }
 
+  public void eraseOldDrawing()
+  {
+    if (previousMeasure != null)
+    {
+      ensureGraphics();
+      drawRangeBearingCentred();
+      graphics.drawLine(startPos.x, startPos.y, endPos.x, endPos.y);
+      previousMeasure = null;
+    }
+  }
+
   /**
    * If the line is enabled, draws the line running from the start position to the current mouse
    * position.
-   * 
+   *
    * @param ev
    *          input mouse event
    */
@@ -76,8 +109,9 @@ public class MouseDragLine extends MouseInputAdapter
   {
     mouseDragged(ev, null);
   }
-  
-  public void mouseDragged(final MouseEvent ev, final RangeBearingMeasure rangeBearing)
+
+  public void mouseDragged(final MouseEvent ev,
+      final RangeBearingMeasure rangeBearing)
   {
     if (dragging)
     {
@@ -85,17 +119,19 @@ public class MouseDragLine extends MouseInputAdapter
       if (dragged)
       {
         graphics.drawLine(startPos.x, startPos.y, endPos.x, endPos.y);
-        if ( previousMeasure != null )
+        if (previousMeasure != null)
         {
-          graphics.drawString(previousMeasure.getShortFormat(), endPos.x + MEASURE_X_OFFSET, endPos.y + MEASURE_Y_OFFSET);
+          graphics.drawString(previousMeasure.getShortFormat(), endPos.x
+              + MEASURE_X_OFFSET, endPos.y + MEASURE_Y_OFFSET);
         }
       }
       previousMeasure = rangeBearing;
       endPos = ev.getPoint();
       graphics.drawLine(startPos.x, startPos.y, endPos.x, endPos.y);
-      if ( rangeBearing != null )
+      if (rangeBearing != null)
       {
-        graphics.drawString(rangeBearing.getShortFormat(), endPos.x + MEASURE_X_OFFSET, endPos.y + MEASURE_Y_OFFSET);
+        graphics.drawString(rangeBearing.getShortFormat(), endPos.x
+            + MEASURE_X_OFFSET, endPos.y + MEASURE_Y_OFFSET);
       }
       dragged = true;
     }
@@ -104,7 +140,7 @@ public class MouseDragLine extends MouseInputAdapter
   /**
    * If the line is enabled, records the start position for subsequent drawing as the mouse is
    * dragged.
-   * 
+   *
    * @param ev
    *          input mouse event
    */
@@ -115,27 +151,16 @@ public class MouseDragLine extends MouseInputAdapter
     {
       ensureGraphics();
       eraseOldDrawing();
-      
+
       dragging = true;
       startPos = new Point(ev.getPoint());
       endPos = new Point(startPos);
     }
   }
 
-  public void eraseOldDrawing()
-  {
-    if ( previousMeasure != null )
-    {
-      ensureGraphics();
-      drawRangeBearingCentred();
-      graphics.drawLine(startPos.x, startPos.y, endPos.x, endPos.y);
-      previousMeasure = null;
-    }
-  }
-
   /**
    * If the line is enabled, removes the final line.
-   * 
+   *
    * @param ev
    *          the input mouse event
    */
@@ -146,36 +171,19 @@ public class MouseDragLine extends MouseInputAdapter
     if (dragged)
     {
       ensureGraphics();
-      
-      if ( previousMeasure != null )
+
+      if (previousMeasure != null)
       {
         // Ok , we erase the previous text, to move it to the center.
-        graphics.drawString(previousMeasure.getShortFormat(), endPos.x + MEASURE_X_OFFSET, endPos.y + MEASURE_Y_OFFSET);
-        
+        graphics.drawString(previousMeasure.getShortFormat(), endPos.x
+            + MEASURE_X_OFFSET, endPos.y + MEASURE_Y_OFFSET);
+
         drawRangeBearingCentred();
       }
-      
+
       dragged = false;
       graphics.dispose();
       graphics = null;
     }
-  }
-
-  private void drawRangeBearingCentred()
-  {
-    // Now we put the measure along the line.
-    final Font currentFont = graphics.getFont();
-    final FontRenderContext renderContext = 
-        new FontRenderContext(null, true, true);
-    
-    final Rectangle2D fontRectangle = currentFont.getStringBounds(previousMeasure.getShortFormat(), renderContext);
-    final int x = (endPos.x + startPos.x) / 2;
-    final int y = (endPos.y + startPos.y) / 2;
-    
-    final AffineTransform oldTransform = graphics.getTransform();
-    graphics.setTransform(AffineTransform.getRotateInstance(Math.toRadians(previousMeasure.getPrintBearing()), x, y));
-    graphics.drawString(previousMeasure.getShortFormat(), (int)(x - fontRectangle.getWidth() / 2 - fontRectangle.getX() + MEASURE_X_CENTRE_OFFSET),
-        (int)(y - fontRectangle.getHeight() / 2 - fontRectangle.getY() + MEASURE_Y_CENTRE_OFFSET));
-    graphics.setTransform(oldTransform);
   }
 }
