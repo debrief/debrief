@@ -47,7 +47,6 @@ public class LiteMapPane extends JMapPane
    *
    */
   private float mapTransparency;
-  private final MouseDragLine dragLine;
 
   private final GeoToolMapRenderer _renderer;
 
@@ -79,10 +78,7 @@ public class LiteMapPane extends JMapPane
 
     data_transform = theTransform;
     _renderer = geoToolMapRenderer;
-    dragLine = new MouseDragLine(this);
 
-    addMouseListener(dragLine);
-    addMouseMotionListener(dragLine);
     addMouseListener(getMouseListener(data_transform));
 
     // try to set background color
@@ -221,12 +217,10 @@ public class LiteMapPane extends JMapPane
       {
         setCursor(Cursor.getDefaultCursor());
         dragBox.setEnabled(false);
-        dragLine.setEnabled(false);
       }
       else
       {
         setCursor(currentCursorTool.getCursor());
-        dragLine.setEnabled(currentCursorTool instanceof RangeBearingTool);
         dragBox.setEnabled(currentCursorTool.drawDragBox());
         currentCursorTool.setMapPane(this);
         mouseEventDispatcher.addMouseListener(currentCursorTool);

@@ -24,9 +24,7 @@ public class MouseDragLine extends MouseInputAdapter
   private Point endPos;
   private boolean dragged;
   private boolean dragging;
-  private boolean enabled;
   private Graphics2D graphics;
-  private int buttonPressed = -1;
 
   /**
    * Creates a new instance to work with the given component.
@@ -38,7 +36,6 @@ public class MouseDragLine extends MouseInputAdapter
   {
     parentComponent = component;
     dragged = false;
-    enabled = false;
     dragging = false;
   }
 
@@ -66,7 +63,7 @@ public class MouseDragLine extends MouseInputAdapter
   @Override
   public void mouseDragged(final MouseEvent ev)
   {
-    if (enabled && dragging)
+    if (dragging)
     {
       ensureGraphics();
       if (dragged)
@@ -89,10 +86,9 @@ public class MouseDragLine extends MouseInputAdapter
   @Override
   public void mousePressed(final MouseEvent ev)
   {
-    if (enabled && !dragging)
+    if (!dragging)
     {
       dragging = true;
-      buttonPressed = ev.getButton();
       startPos = new Point(ev.getPoint());
       endPos = new Point(startPos);
     }
@@ -107,30 +103,14 @@ public class MouseDragLine extends MouseInputAdapter
   @Override
   public void mouseReleased(final MouseEvent ev)
   {
-    if (buttonPressed == ev.getButton())
+    dragging = false;
+    if (dragged)
     {
-      dragging = false;
-      if (dragged)
-      {
-        ensureGraphics();
-        graphics.drawLine(startPos.x, startPos.y, endPos.x, endPos.y);
-        dragged = false;
-        graphics.dispose();
-        graphics = null;
-      }
+      ensureGraphics();
+      graphics.drawLine(startPos.x, startPos.y, endPos.x, endPos.y);
+      dragged = false;
+      graphics.dispose();
+      graphics = null;
     }
-
   }
-
-  /**
-   * Enables or disables the drag box. When enabled, the box is drawn on mouse dragging.
-   * 
-   * @param state
-   *          {@code true} to enable; {@code false} to disable
-   */
-  public void setEnabled(final boolean state)
-  {
-    enabled = state;
-  }
-
 }

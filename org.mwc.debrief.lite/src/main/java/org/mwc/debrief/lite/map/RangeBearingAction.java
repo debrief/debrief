@@ -7,6 +7,7 @@ import javax.swing.JLabel;
 import org.geotools.swing.MapPane;
 import org.geotools.swing.action.MapAction;
 import org.geotools.swing.tool.ZoomInTool;
+import org.geotools.swing.AbstractMapPane;
 import org.opengis.referencing.operation.MathTransform;
 
 /**
@@ -55,7 +56,8 @@ public class RangeBearingAction extends MapAction
   @Override
   public void actionPerformed(final ActionEvent ev)
   {
-    getMapPane().setCursorTool(new RangeBearingTool(_statusBar, _transform));
+    // Not an amazing cast, but it is ok since AbstractMapPane is the only implementation of MapPane
+    getMapPane().setCursorTool(new RangeBearingTool(_statusBar, _transform, (AbstractMapPane)getMapPane()));
   }
 
 }

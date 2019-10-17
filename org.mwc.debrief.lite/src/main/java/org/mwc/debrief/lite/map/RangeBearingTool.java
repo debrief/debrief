@@ -10,6 +10,7 @@ import javax.swing.JLabel;
 
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.swing.AbstractMapPane;
 import org.geotools.swing.event.MapMouseEvent;
 import org.geotools.swing.tool.AbstractZoomTool;
 import org.opengis.geometry.MismatchedDimensionException;
@@ -68,12 +69,14 @@ public class RangeBearingTool extends AbstractZoomTool
    */
   private boolean dragging = false;
   
+  private final MouseDragLine dragLine;
+  
   /**
    * Constructor
    *
    * @param statusBar
    */
-  public RangeBearingTool(final JLabel statusBar, final MathTransform transform)
+  public RangeBearingTool(final JLabel statusBar, final MathTransform transform, final AbstractMapPane abstractMapPane)
   {
     final Toolkit tk = Toolkit.getDefaultToolkit();
     final ImageIcon imgIcon = new ImageIcon(getClass().getResource(
@@ -82,6 +85,9 @@ public class RangeBearingTool extends AbstractZoomTool
         TOOL_NAME);
     _statusBar = statusBar;
     _transform = transform;
+
+    
+    dragLine = new MouseDragLine(abstractMapPane);
   }
 
   /**
@@ -148,6 +154,9 @@ public class RangeBearingTool extends AbstractZoomTool
     {
       _statusBar.setText(msg);
     }
+    
+    // Now we draw the line
+    dragLine.mouseDragged(ev);
   }
 
   /**
@@ -181,6 +190,8 @@ public class RangeBearingTool extends AbstractZoomTool
       startPos = new WorldLocation(startPosWorld.getY(), startPosWorld.getX(), 0);
       buttonPressed = ev.getButton();
       dragging = true;
+      
+      dragLine.mousePressed(ev);
     }
   }
 
@@ -199,6 +210,8 @@ public class RangeBearingTool extends AbstractZoomTool
       dragging = false;
       buttonPressed = -1;
       startPos = null;
+      
+      dragLine.mouseReleased(ev);
     }
   }
 }
