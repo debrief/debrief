@@ -6,6 +6,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
@@ -38,6 +40,8 @@ public class MouseDragLine extends MouseInputAdapter
   private final int MEASURE_X_CENTRE_OFFSET = 0;
   private final int MEASURE_Y_CENTRE_OFFSET = -30;
   private RangeBearingMeasure previousMeasure = null;
+  
+  private boolean mapRepainted = false;
 
   /**
    * Creates a new instance to work with the given component.
@@ -50,6 +54,20 @@ public class MouseDragLine extends MouseInputAdapter
     parentComponent = component;
     dragged = false;
     dragging = false;
+    if ( parentComponent instanceof LiteMapPane )
+    {
+      ((LiteMapPane) parentComponent).addRepaintListener(
+          new ActionListener()
+          {
+            
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+              mapRepainted = true;
+            }
+          }
+      );
+    }
   }
 
   private void drawRangeBearingCentred()
@@ -93,7 +111,7 @@ public class MouseDragLine extends MouseInputAdapter
 
   public void eraseOldDrawing()
   {
-    if (previousMeasure != null)
+    if (previousMeasure != null && !mapRepainted)
     {
       ensureGraphics();
       drawRangeBearingCentred();
@@ -145,6 +163,7 @@ public class MouseDragLine extends MouseInputAdapter
 
       graphics.setFont(oldFont);
       dragged = true;
+      mapRepainted = false;
     }
   }
 
@@ -166,6 +185,7 @@ public class MouseDragLine extends MouseInputAdapter
       dragging = true;
       startPos = new Point(ev.getPoint());
       endPos = new Point(startPos);
+      mapRepainted = false;
     }
   }
 
@@ -199,6 +219,7 @@ public class MouseDragLine extends MouseInputAdapter
       dragged = false;
       graphics.dispose();
       graphics = null;
+      mapRepainted = false;
     }
   }
 }

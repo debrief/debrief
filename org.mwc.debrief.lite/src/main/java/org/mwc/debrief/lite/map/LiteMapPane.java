@@ -8,7 +8,9 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.event.ActionListener;
 import java.awt.image.RenderedImage;
+import java.util.ArrayList;
 
 import org.geotools.factory.Hints;
 import org.geotools.geometry.DirectPosition2D;
@@ -51,6 +53,8 @@ public class LiteMapPane extends JMapPane
   private final GeoToolMapRenderer _renderer;
 
   private final MathTransform data_transform;
+  
+  private ArrayList<ActionListener> repaintListeners = new ArrayList<>();
 
   public LiteMapPane(final GeoToolMapRenderer geoToolMapRenderer,
       final float alpha)
@@ -248,4 +252,38 @@ public class LiteMapPane extends JMapPane
   {
     mapTransparency = transparency;
   }
+  
+  public void addRepaintListener(final ActionListener actionListener)
+  {
+    repaintListeners.add(actionListener);
+  }
+
+  /**
+   * There are some classes (for example MouseDragLine), which
+   * need to know when the map has been repainted. Simply add
+   * an ActionEvent to the repaintListeners list and it will be
+   * notified :)
+   * 
+   * Don't forget to call the notifier...
+   * Saul Hidalgo
+   */
+  private void notifyRepaintListeners()
+  {
+    if ( repaintListeners != null )
+    {
+      for ( ActionListener action : repaintListeners )
+      {
+        action.actionPerformed(null);
+      }
+    }
+  }
+
+  @Override
+  public void paint(Graphics g)
+  {
+    super.paint(g);
+    notifyRepaintListeners();
+  }
+  
+  
 }
