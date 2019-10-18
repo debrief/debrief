@@ -53,8 +53,8 @@ public class LiteMapPane extends JMapPane
   private final GeoToolMapRenderer _renderer;
 
   private final MathTransform data_transform;
-  
-  private ArrayList<ActionListener> repaintListeners = new ArrayList<>();
+
+  private final ArrayList<ActionListener> repaintListeners = new ArrayList<>();
 
   public LiteMapPane(final GeoToolMapRenderer geoToolMapRenderer,
       final float alpha)
@@ -88,6 +88,11 @@ public class LiteMapPane extends JMapPane
 
     // try to set background color
     super.setBackground(new Color(135, 172, 215));
+  }
+
+  public void addRepaintListener(final ActionListener actionListener)
+  {
+    repaintListeners.add(actionListener);
   }
 
   public MapMouseAdapter getMouseListener(final MathTransform transform)
@@ -159,6 +164,36 @@ public class LiteMapPane extends JMapPane
   public MathTransform getTransform()
   {
     return data_transform;
+  }
+
+  /**
+   * There are some classes (for example MouseDragLine), which need to know when the map has been
+   * repainted. Simply add an ActionEvent to the repaintListeners list and it will be notified :)
+   *
+   * Don't forget to call the notifier... Saul Hidalgo
+   */
+  private void notifyRepaintListeners()
+  {
+    if (repaintListeners != null)
+    {
+      for (final ActionListener action : repaintListeners)
+      {
+        action.actionPerformed(null);
+      }
+    }
+  }
+
+  // @Override
+  // protected void paintComponent(final Graphics arg0)
+  // {
+  // super.paintComponent(arg0);
+  // }
+
+  @Override
+  public void paint(final Graphics g)
+  {
+    super.paint(g);
+    notifyRepaintListeners();
   }
 
   @Override
@@ -242,48 +277,9 @@ public class LiteMapPane extends JMapPane
     }
   }
 
-  // @Override
-  // protected void paintComponent(final Graphics arg0)
-  // {
-  // super.paintComponent(arg0);
-  // }
-
   public void setTransparency(final float transparency)
   {
     mapTransparency = transparency;
   }
-  
-  public void addRepaintListener(final ActionListener actionListener)
-  {
-    repaintListeners.add(actionListener);
-  }
 
-  /**
-   * There are some classes (for example MouseDragLine), which
-   * need to know when the map has been repainted. Simply add
-   * an ActionEvent to the repaintListeners list and it will be
-   * notified :)
-   * 
-   * Don't forget to call the notifier...
-   * Saul Hidalgo
-   */
-  private void notifyRepaintListeners()
-  {
-    if ( repaintListeners != null )
-    {
-      for ( ActionListener action : repaintListeners )
-      {
-        action.actionPerformed(null);
-      }
-    }
-  }
-
-  @Override
-  public void paint(Graphics g)
-  {
-    super.paint(g);
-    notifyRepaintListeners();
-  }
-  
-  
 }

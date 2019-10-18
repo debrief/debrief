@@ -40,7 +40,7 @@ public class MouseDragLine extends MouseInputAdapter
   private final int MEASURE_X_CENTRE_OFFSET = 0;
   private final int MEASURE_Y_CENTRE_OFFSET = -30;
   private RangeBearingMeasure previousMeasure = null;
-  
+
   private boolean mapRepainted = false;
 
   /**
@@ -54,19 +54,17 @@ public class MouseDragLine extends MouseInputAdapter
     parentComponent = component;
     dragged = false;
     dragging = false;
-    if ( parentComponent instanceof LiteMapPane )
+    if (parentComponent instanceof LiteMapPane)
     {
-      ((LiteMapPane) parentComponent).addRepaintListener(
-          new ActionListener()
-          {
-            
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-              mapRepainted = true;
-            }
-          }
-      );
+      ((LiteMapPane) parentComponent).addRepaintListener(new ActionListener()
+      {
+
+        @Override
+        public void actionPerformed(final ActionEvent e)
+        {
+          mapRepainted = true;
+        }
+      });
     }
   }
 
