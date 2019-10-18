@@ -37,12 +37,15 @@ public class RangeBearingTool extends AbstractZoomTool
     private static final String DEGREE_SYMBOL = "\u00b0";
     private final WorldDistance distance;
     private double bearing;
+    // used to get the unit selected by the user
+    private final RangeBearingTool rangeBearingtool;
 
     public RangeBearingMeasure(final WorldDistance distance,
-        final double bearing)
+        final double bearing, final RangeBearingTool _rangeBearingTool)
     {
       this.distance = distance;
       this.bearing = bearing;
+      this.rangeBearingtool = _rangeBearingTool;
     }
 
     public int getIntBearing()
@@ -52,8 +55,9 @@ public class RangeBearingTool extends AbstractZoomTool
 
     public String getLongFormat()
     {
-      return "Range:" + (int) distance.getValueIn(WorldDistance.YARDS)
-          + "yd Brg:" + (int) bearing + DEGREE_SYMBOL;
+      return "Range:" + (int) distance.getValueIn(RangeBearingTool.bearingUnit)
+          + WorldDistance.getLabelFor(RangeBearingTool.bearingUnit) + " Brg:"
+          + (int) bearing + DEGREE_SYMBOL;
     }
 
     public int getPrintBearing()
@@ -64,7 +68,8 @@ public class RangeBearingTool extends AbstractZoomTool
 
     public String getShortFormat()
     {
-      return (int) distance.getValueIn(WorldDistance.YARDS) + "yd "
+      return (int) distance.getValueIn(RangeBearingTool.bearingUnit)
+          + WorldDistance.getLabelFor(RangeBearingTool.bearingUnit) + " "
           + (int) bearing + DEGREE_SYMBOL;
     }
 
@@ -94,6 +99,14 @@ public class RangeBearingTool extends AbstractZoomTool
   /** Icon for the control */
   public static final String ICON_IMAGE =
       "/org/geotools/swing/icons/mActionPan.png";
+
+  // Unit which is getting displayed now.
+  private static int bearingUnit = WorldDistance.YARDS;
+
+  public static int getBearingUnit()
+  {
+    return bearingUnit;
+  }
 
   private final Cursor cursor;
 
@@ -195,7 +208,7 @@ public class RangeBearingTool extends AbstractZoomTool
     final double bearing = Conversions.Rads2Degs(delta.getBearing());
 
     final RangeBearingMeasure rangeBearing = new RangeBearingMeasure(distance,
-        bearing);
+        bearing, this);
     rangeBearing.normalizeBearing();
     final String msg = rangeBearing.getLongFormat();
     if (_statusBar != null)
@@ -262,5 +275,10 @@ public class RangeBearingTool extends AbstractZoomTool
 
       dragLine.mouseReleased(ev);
     }
+  }
+
+  public void setBearingUnit(final int bearingUnit)
+  {
+    RangeBearingTool.bearingUnit = bearingUnit;
   }
 }
