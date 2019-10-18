@@ -25,6 +25,8 @@ import org.mwc.debrief.lite.map.RangeBearingTool.RangeBearingMeasure;
 public class MouseDragLine extends MouseInputAdapter
 {
 
+  private static final int FONT_SIZE = 17;
+  private static final int FONT_STYLE = Font.BOLD;
   private final JComponent parentComponent;
   private Point startPos;
   private Point endPos;
@@ -52,24 +54,27 @@ public class MouseDragLine extends MouseInputAdapter
 
   private void drawRangeBearingCentred()
   {
+    final Font oldFont = graphics.getFont();
+    final Font newFont = new Font(oldFont.getName(), FONT_STYLE, FONT_SIZE);
     // Now we put the measure along the line.
-    final Font currentFont = graphics.getFont();
     final FontRenderContext renderContext = new FontRenderContext(null, true,
         true);
 
-    final Rectangle2D fontRectangle = currentFont.getStringBounds(
-        previousMeasure.getShortFormat(), renderContext);
+    final Rectangle2D fontRectangle = newFont.getStringBounds(previousMeasure
+        .getShortFormat(), renderContext);
     final int x = (endPos.x + startPos.x) / 2;
     final int y = (endPos.y + startPos.y) / 2;
 
     final AffineTransform oldTransform = graphics.getTransform();
     graphics.setTransform(AffineTransform.getRotateInstance(Math.toRadians(
         previousMeasure.getPrintBearing()), x, y));
+    graphics.setFont(newFont);
     graphics.drawString(previousMeasure.getShortFormat(), (int) (x
         - fontRectangle.getWidth() / 2 - fontRectangle.getX()
         + MEASURE_X_CENTRE_OFFSET), (int) (y - fontRectangle.getHeight() / 2
             - fontRectangle.getY() + MEASURE_Y_CENTRE_OFFSET));
     graphics.setTransform(oldTransform);
+    graphics.setFont(oldFont);
   }
 
   /**
@@ -116,6 +121,10 @@ public class MouseDragLine extends MouseInputAdapter
     if (dragging)
     {
       ensureGraphics();
+
+      final Font oldFont = graphics.getFont();
+      final Font newFont = new Font(oldFont.getName(), FONT_STYLE, FONT_SIZE);
+      graphics.setFont(newFont);
       if (dragged)
       {
         graphics.drawLine(startPos.x, startPos.y, endPos.x, endPos.y);
@@ -133,6 +142,8 @@ public class MouseDragLine extends MouseInputAdapter
         graphics.drawString(rangeBearing.getShortFormat(), endPos.x
             + MEASURE_X_OFFSET, endPos.y + MEASURE_Y_OFFSET);
       }
+
+      graphics.setFont(oldFont);
       dragged = true;
     }
   }
@@ -172,6 +183,9 @@ public class MouseDragLine extends MouseInputAdapter
     {
       ensureGraphics();
 
+      final Font oldFont = graphics.getFont();
+      final Font newFont = new Font(oldFont.getName(), FONT_STYLE, FONT_SIZE);
+      graphics.setFont(newFont);
       if (previousMeasure != null)
       {
         // Ok , we erase the previous text, to move it to the center.
@@ -181,6 +195,7 @@ public class MouseDragLine extends MouseInputAdapter
         drawRangeBearingCentred();
       }
 
+      graphics.setFont(oldFont);
       dragged = false;
       graphics.dispose();
       graphics = null;
