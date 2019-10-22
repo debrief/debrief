@@ -298,9 +298,12 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
         final PropertyDescriptor[] res =
         {expertProp("Visible", "whether this layer is visible", FORMAT),
             displayExpertProp("LineStyle", "Line style",
-                "how to plot this line", FORMAT), expertProp("Name",
+                "how to plot this line", FORMAT), 
+            expertProp("Name",
                     "Name of this track segment", FORMAT),
-            displayExpertLongProp("ResampleDataAt", "Resample data at",
+            displayReadOnlyProp("PlotRelative", "Plot Relative",
+                "Whether this treated as a DR track (construct using speed/course from origin, read-only)",
+                SPATIAL),            displayExpertLongProp("ResampleDataAt", "Resample data at",
                 "the data sample rate", TEMPORAL,
                 MWC.GUI.Properties.TimeFrequencyPropertyEditor.class)};
         res[1].setPropertyEditorClass(LineStylePropertyEditor.class);
