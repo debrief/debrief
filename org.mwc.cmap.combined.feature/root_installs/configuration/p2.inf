@@ -1,4 +1,0 @@
-instructions.configure=\
-  addRepository(type:0,location:http${#58}//uwg-repo/debrief/P2_Repository.zip!/);\
-  addRepository(type:1,location:http${#58}//uwg-repo/debrief/P2_Repository.zip!/);
-  
