@@ -141,7 +141,6 @@ public class SimulationRunner
     }
   }
 
-  @SuppressWarnings("deprecation")
   public void stop()
   {
     if (_process != null)
@@ -151,7 +150,10 @@ public class SimulationRunner
     }
     if (oThread != null)
     {
-     // oThread.destroy();
+      // thread.destroy() was never implemented:
+      // https://docs.oracle.com/javase/8/docs/technotes/guides/concurrency/threadPrimitiveDeprecation.html#targetText=Thread.destroy%20was%20never%20implemented,a%20subsequent%20Thread.resume%20.)
+
+      // oThread.destroy();
       oThread = null;
     }
   }
