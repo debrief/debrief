@@ -786,7 +786,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
   /**
    * following a time step, this method draws a highlight around the "current" points on the primary
    * and secondary tracks.
-   * 
+   *
    * @param oldDTG
    *          last time value
    * @param newDTG

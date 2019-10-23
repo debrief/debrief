@@ -748,8 +748,8 @@ public class DebriefRibbonTimeController
                   || nextE instanceof DynamicTrackShapeSetWrapper;
               if (!hasItems && nextE instanceof WatchableList)
               {
-                hasStart |= ((WatchableList)nextE).getStartDTG() != null;
-                hasEnd |= ((WatchableList)nextE).getEndDTG() != null;
+                hasStart |= ((WatchableList) nextE).getStartDTG() != null;
+                hasEnd |= ((WatchableList) nextE).getEndDTG() != null;
               }
             }
           }
@@ -776,7 +776,7 @@ public class DebriefRibbonTimeController
             hasEnd |= endDTG != null;
           }
         }
-        
+
         hasItems |= hasStart && hasEnd;
         DebriefLiteApp.setDirty(hasItems || hasNarratives);
         if (hasItems)
