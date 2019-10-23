@@ -34,6 +34,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/gt-xml-21.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/guava-27.0-jre.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/hsqldb-2.2.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/h2-1.4.200.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/imageio-ext-geocore-1.2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/imageio-ext-streams-1.2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/imageio-ext-tiff-1.2.2.jar"/>
