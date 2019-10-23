@@ -910,28 +910,30 @@ public final class BuoyPatternWrapper extends PlainWrapper implements
 
 	public MWC.GenericData.Watchable[] getNearestTo(final HiResDate DTG)
 	{
-		Watchable res = null;
-
-		// in a buoyfield, all if the buoys share a common time period.
-		// see if our time-period contains this DTG
-		if (_thePeriod.contains(DTG))
-		{
-			// we've got to create a dummy watchable which will draw a circle around
-			// the whole field
-			res = new BuoyPatternAdaptor(getBounds(), DTG, getColor(), getName(), this);
-		}
-
-		// special case, have we been asked for an invalid time period?
-		if (DTG == TimePeriod.INVALID_DATE)
-		{
-			return new Watchable[] { res };
-		}
-
-		// back to normal processing
-		if (res == null)
-			return new Watchable[] {};
-		else
-			return new Watchable[] { res };
+	  final BuoyPatternAdaptor ans = new BuoyPatternAdaptor(getBounds(),
+	      DTG, getColor(), getName(), this);
+	  // special case, have we been asked for an invalid time period?
+    if (DTG == TimePeriod.INVALID_DATE)
+    {
+      // yes, just return ourselves
+      return new Watchable[] { ans };
+    }
+    
+    // Let's assume It is inside, then we validate it.
+    boolean itIsInside = true;
+    // We check the start date.
+    itIsInside &= getStartDTG() == null || getStartDTG().lessThanOrEqualTo(DTG);
+    itIsInside &= getEndDTG() == null || getEndDTG().greaterThan(DTG);
+    
+    if ( itIsInside )
+    {
+      // We know it is inside.
+      return new MWC.GenericData.Watchable[] { ans };
+    }
+    else
+    {
+      return EMPTY_WATCHABLE_LIST;
+    }
 	}
 
 	// ////////////////////////////////////////////////////

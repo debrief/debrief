@@ -313,9 +313,10 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
           // look at the date date
           final WatchableList wl = (WatchableList) p;
           final HiResDate startDTG = wl.getStartDTG();
+          final HiResDate endDTG = wl.getEndDTG();
 
           // is it a real date?
-          if (startDTG != null)
+          if (startDTG != null || endDTG != null)
           {
             // yup, add to list
             res.addElement(p);

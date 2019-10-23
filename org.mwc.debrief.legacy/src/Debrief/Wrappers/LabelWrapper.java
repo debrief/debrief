@@ -222,6 +222,7 @@ import MWC.GUI.Shapes.RectangleShape;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
@@ -634,53 +635,28 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements
 
   public final MWC.GenericData.Watchable[] getNearestTo(final HiResDate DTG)
   {
-    boolean res = false;
-
-    // special case, have we been asked for an invalid time period?
+   // special case, have we been asked for an invalid time period?
     if (DTG == TimePeriod.INVALID_DATE)
     {
-      res = true;
+      // yes, just return ourselves
+      return new Watchable[] { this };
+    }
+    
+    // Let's assume It is inside, then we validate it.
+    boolean itIsInside = true;
+    // We check the start date.
+    itIsInside &= getStartDTG() == null || getStartDTG().lessThanOrEqualTo(DTG);
+    itIsInside &= getEndDTG() == null || getEndDTG().greaterThan(DTG);
+    
+    if ( itIsInside )
+    {
+      // We know it is inside.
+      return new MWC.GenericData.Watchable[] { this };
     }
     else
     {
-
-      // see if we are within the threshold of plotting
-      final HiResDate myStart = getStartDTG();
-      final HiResDate myEnd = getEndDTG();
-
-      // do we have an end point?
-      if (getEndDTG() != null)
-      {
-        // check if we are in the range
-        if ((DTG.greaterThanOrEqualTo(myStart)) && (DTG.lessThanOrEqualTo(
-            myEnd)))
-          res = true;
-      }
-      else
-      {
-        // see if there is just a start (centre) time
-        if (myStart != null)
-        {
-          final long sep = Math.abs(DTG.getMicros() - myStart.getMicros());
-          if (sep <= getThreshold())
-            res = true;
-        }
-        else
-        {
-          // start and end must equal -1
-          res = true;
-        }
-      }
-    }
-    if (res == true)
-    {
-      // produce a new LabelWrapper, with the indicated time
-      return new MWC.GenericData.Watchable[]
-      {this};
-    }
-    else
       return EMPTY_WATCHABLE_LIST;
-
+    }
   }
 
   /**

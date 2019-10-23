@@ -680,64 +680,28 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	@Override
 	public final MWC.GenericData.Watchable[] getNearestTo(final HiResDate DTG)
 	{
-
-		MWC.GenericData.Watchable[] res = new MWC.GenericData.Watchable[] {};
-
-		// special case, have we been asked for an invalid time period?
-		if (DTG == TimePeriod.INVALID_DATE)
-		{
-			// yes, just return ourselves
-			return new Watchable[] { this };
-		}
-		else
-		{
-			// do we know about time?
-			if (this.getStartDTG() != null)
-			{
-				// do we have a finish time
-				if (getEndDTG() != null)
-				{
-					if ((getStartDTG().lessThan(DTG)) && (getEndDTG().greaterThan(DTG)))
-					{
-						// yes, it's within our time period
-						res = new MWC.GenericData.Watchable[] { this };
-					}
-					else
-					{
-						// no, it's outside our time period
-						// - just return our default res
-					}
-				}
-				else
-				{
-					// no end value, see if we are within time threshold of
-					// supplied time
-
-					// find how far we are from the DTG
-					final long diff = Math.abs(DTG.getMicros()
-							- this.getStartDTG().getMicros());
-
-					// is this within our threshold?
-					if (diff <= getThreshold())
-						res = new MWC.GenericData.Watchable[] { this };
-					else
-						res = EMPTY_WATCHABLE_LIST;
-				}
-			}
-			else
-			{
-				// so, we don't have a start time.
-				// are we also missing the end time?
-				if (_theEndDTG == null)
-				{
-					// yup, say we were nearest
-					res = new MWC.GenericData.Watchable[] { this };
-				}
-			}// this whole object is a watchable
-
-		}
-
-		return res;
+    // special case, have we been asked for an invalid time period?
+    if (DTG == TimePeriod.INVALID_DATE)
+    {
+      // yes, just return ourselves
+      return new Watchable[] { this };
+    }
+    
+	  // Let's assume It is inside, then we validate it.
+	  boolean itIsInside = true;
+	  // We check the start date.
+	  itIsInside &= getStartDTG() == null || getStartDTG().lessThanOrEqualTo(DTG);
+	  itIsInside &= getEndDTG() == null || getEndDTG().greaterThan(DTG);
+	  
+	  if ( itIsInside )
+	  {
+	    // We know it is inside.
+	    return new MWC.GenericData.Watchable[] { this };
+	  }
+	  else
+	  {
+	    return EMPTY_WATCHABLE_LIST;
+	  }
 	}
 
 	/**
