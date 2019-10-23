@@ -466,8 +466,8 @@ public class DebriefLiteApp implements FileDropListener
       Application.logError2(ToolParent.ERROR,
           "Failure in setting initial viewport coverage", e);
     }
-    //TODO:geo tools update ???
-    //mapPane.getMapContent().getViewport().setFixedBoundsOnResize(true);
+    
+    mapPane.getMapContent().getViewport().setFixedBoundsOnResize(true);
   }
 
   /**
