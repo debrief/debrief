@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="libs/systems-ucum-java8-0.7.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/animal-sniffer-annotations-1.17.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/bigint-0.7.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/checker-qual-2.5.2.jar"/>
