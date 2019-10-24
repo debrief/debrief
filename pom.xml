@@ -31,7 +31,9 @@
 
 
     <module>org.freehep</module>
+    <!--
     <module>info.limpet</module>
+    -->
     <module>info.limpet.libs</module>
     <module>info.limpet.stackedcharts.model</module>
     <module>info.limpet.stackedcharts.ui</module>
