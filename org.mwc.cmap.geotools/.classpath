@@ -30,7 +30,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/gt-render-21.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-shapefile-21.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-swing-21.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/gt-swt-21-20181024.070710-48.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/gt-swt-23-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-xml-21.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/guava-27.0-jre.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/hsqldb-2.2.8.jar"/>
