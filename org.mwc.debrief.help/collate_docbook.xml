@@ -301,14 +301,17 @@
 	<target name="javadoc" depends="quiet, ease_javadoc, debrief_javadoc" />
 
 	<target name="quiet">
-	
+	<!--
+	COMMENTED OUT, SINCE ANT FAILS ON THIS LINE ON Java > 9
 		<script language="javascript">
 		        var logger = project.getBuildListeners( ).firstElement( );
 		        logger.setMessageOutputLevel( 0 );
 		    </script>
+		    -->
 	</target>
 	
 	<target name="ease_javadoc">
+		<!--
 		<delete dir="../org.mwc.debrief.scripting/help" />
         <exec executable="javadoc">
             <arg value="-d"/>
@@ -330,13 +333,16 @@
             <arg value="-subpackages"/>
             <arg value="."/>
         </exec>
+        -->
 	</target>
 
 	<target name="debrief_javadoc">
+		<!--
 		<delete dir="javadoc"/>
 		<javadoc destdir="javadoc"  sourcepath="../org.mwc.cmap.legacy/src:../org.mwc.debrief.legacy/src" >
 			<arg value="-notimestamp" />
 		</javadoc>
+		-->
 	</target>
 
 </project>
