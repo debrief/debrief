@@ -307,12 +307,13 @@ public class SnailPainter extends TotePainter
         // see if has a valid DTG -- IS IT TIME-RELATED?
         final ShapeWrapper swp = (ShapeWrapper) thisPlottable;
         final HiResDate dat = swp.getStartDTG();
-        if (dat == null)
+        final HiResDate endDat = swp.getEndDTG();
+        if (dat == null && endDat == null)
         {
           // let's use it
           res.addElement(thisPlottable);
         }
-        else
+        else if (dat != null)
         {
           // so it's got a date, check if the date represents our null
           // value
@@ -326,8 +327,9 @@ public class SnailPainter extends TotePainter
         // see if has a valid DTG -- IS IT TIME-RELATED?
         final LabelWrapper lwp = (LabelWrapper) thisPlottable;
         final HiResDate dat = lwp.getStartDTG();
+        final HiResDate endDat = lwp.getEndDTG();
         // check if it is using our "null" date value
-        if (dat == null)
+        if (dat == null && endDat == null)
         {
           // let's use it
           res.addElement(thisPlottable);
