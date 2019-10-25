@@ -50,11 +50,11 @@ def updateChildren(contentFile, newFile):
     tree = ET.parse(contentFile)
 
     # check root
-    root = tree.getroot() 
+    root = tree.getroot()
     root_tag = root.tag
     if root_tag != "repository":
         print("# Invalid root tag in " + contentFile + " Quitting")
-        sys.exit
+        sys.exit()
 
     children = root.find("./children")
 
@@ -91,7 +91,7 @@ def unpackZip(filename, dtg, folder):
 allOk = checkFolder()
 
 if allOk:
-    
+
     print( "Valid folder, doing update")
 
     # retrieve zip file, we've already established that it's present
@@ -103,7 +103,7 @@ if allOk:
     print("Renaming zip file with DTG")
 
     # rename file
-    os.rename(zipFile,  newName)  
+    os.rename(zipFile,  newName)
 
     print("Updating XML metadata")
 
