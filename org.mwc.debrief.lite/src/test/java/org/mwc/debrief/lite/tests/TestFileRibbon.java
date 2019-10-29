@@ -34,9 +34,9 @@ import org.mwc.debrief.lite.menu.DebriefRibbonFile;
 import org.mwc.debrief.lite.utils.TestUtils;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandMenuButton;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.flamingo.internal.ui.ribbon.JBandControlPanel;
+import org.pushingpixels.flamingo.internal.ui.ribbon.JRibbonComponent;
 
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Plottable;

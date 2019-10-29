@@ -17,7 +17,6 @@ package org.mwc.debrief.lite.menu;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,20 +24,25 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 
-import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
-import org.pushingpixels.flamingo.api.common.FlamingoCommand;
-import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandBuilder;
-import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandToggleGroup;
+import org.mwc.debrief.lite.util.ResizableIconFactory;
+import org.pushingpixels.flamingo.api.common.CommandAction;
+import org.pushingpixels.flamingo.api.common.CommandButtonPresentationState;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandToggleButton;
 import org.pushingpixels.flamingo.api.common.RichTooltip;
-import org.pushingpixels.flamingo.api.common.RichTooltip.RichTooltipBuilder;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
+import org.pushingpixels.flamingo.api.common.model.Command;
+import org.pushingpixels.flamingo.api.common.model.CommandButtonPresentationModel;
+import org.pushingpixels.flamingo.api.common.model.CommandToggleGroupModel;
 import org.pushingpixels.flamingo.api.common.popup.PopupPanelCallback;
+import org.pushingpixels.flamingo.api.common.popup.model.CommandPopupMenuPresentationModel;
+import org.pushingpixels.flamingo.api.common.projection.CommandButtonProjection;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
-import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
+import org.pushingpixels.flamingo.api.ribbon.JRibbonBand.PresentationPriority;
 import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies;
 import org.pushingpixels.flamingo.api.ribbon.resize.RibbonBandResizePolicy;
+
+
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
@@ -66,30 +70,25 @@ public class MenuUtils
   public static final Dimension ICON_SIZE_32 = new Dimension(32, 32);
   public static final Dimension ICON_SIZE_48 = new Dimension(48, 48);
 
-  public static FlamingoCommand addCommand(final String commandName,
-      final String imagePath, final ActionListener actionToAdd,
-      final JRibbonBand mapBand, final RibbonElementPriority priority)
+  public static CommandButtonProjection<Command> addCommand(final String commandName,
+      final String imagePath, final CommandAction actionToAdd,
+      final JRibbonBand mapBand, final PresentationPriority priority)
   {
     return addCommand(commandName, imagePath, actionToAdd, mapBand, priority,
         null);
   }
-
-  public static FlamingoCommand addCommand(final String commandName,
-      final String imagePath, final ActionListener actionToAdd,
-      final JRibbonBand mapBand, final RibbonElementPriority priority,
-      final PopupPanelCallback popupCallback)
-  {
-    final FlamingoCommand command = createCommand(commandName, imagePath,
-        actionToAdd, priority, popupCallback);
-
-    mapBand.addRibbonCommand(command, priority == null
-        ? RibbonElementPriority.TOP : priority);
-    return command;
-  }
-
-  public static JCommandButton addCommandButton(final String commandName,
-      final String imagePath, final ActionListener actionToAdd,
-      final CommandButtonDisplayState priority, final String description)
+  
+  /**
+   * 
+   * @param commandName
+   * @param imagePath
+   * @param actionToAdd
+   * @param priority
+   * @returns the command object, without adding it to a band.
+   */
+  public static Command createCommandObject(final String commandName,
+      final String imagePath, final CommandAction actionToAdd,
+      final PresentationPriority priority,String description)
   {
     ImageWrapperResizableIcon imageIcon = null;
     if (imagePath != null)
@@ -98,9 +97,52 @@ public class MenuUtils
       imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, new Dimension(
           16, 16));
     }
-    final JCommandButton commandButton = new JCommandButton(commandName,
-        imageIcon);
-    final RichTooltipBuilder builder = new RichTooltipBuilder();
+    
+    final Command.Builder builder = Command.builder()
+        .setText(commandName).setIconFactory(ResizableIconFactory.factory(imageIcon))
+        .setActionRichTooltip(RichTooltip.builder().setTitle(description).build())
+        .setAction(actionToAdd);
+        /*;*/
+
+    final Command command = builder.build();
+    return command;
+  }
+
+  /**
+   * 
+   * @param commandName
+   * @param imagePath
+   * @param actionToAdd
+   * @param mapBand
+   * @param priority
+   * @param popupCallback
+   * @return CommandButtonProjection the projected command button
+   */
+  public static CommandButtonProjection<Command> addCommand(final String commandName,
+      final String imagePath, final CommandAction actionToAdd,
+      final JRibbonBand mapBand, final PresentationPriority priority,
+      final PopupPanelCallback popupCallback)
+  {
+    final CommandButtonProjection<Command> command = createCommand(commandName, imagePath,
+        actionToAdd, priority, popupCallback);
+
+    mapBand.addRibbonCommand(command, priority == null
+        ? PresentationPriority.TOP : priority);
+    return command;
+  }
+
+  public static CommandButtonProjection<Command> addCommandButton(final String commandName,
+      final String imagePath, final CommandAction actionToAdd,
+      final CommandButtonPresentationState priority, final String description)
+  {
+    /*
+     * ImageWrapperResizableIcon imageIcon = null; if (imagePath != null) { final Image zoominImage
+     * = createImage(imagePath); imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, new
+     * Dimension( 16, 16)); }
+     */
+    CommandButtonProjection<Command> projectionModel = createCommand(commandName,imagePath,actionToAdd,PresentationPriority.MEDIUM,null);
+    JCommandButton commandButton = new JCommandButton(projectionModel);
+    final RichTooltip.Builder builder = RichTooltip.builder();
 
     final String desc = description != null ? description
         : "Description pending";
@@ -109,37 +151,32 @@ public class MenuUtils
         .addDescriptionSection(desc).build();
     commandButton.setActionRichTooltip(richTooltip);
     commandButton.setName(commandName);
-    commandButton.addActionListener(actionToAdd);
+    commandButton.addCommandListener(actionToAdd);
     if (priority != null)
     {
-      commandButton.setDisplayState(priority);
+      commandButton.setPresentationState(priority);
     }
-    return commandButton;
+    return projectionModel;
   }
 
   public static JCommandToggleButton addCommandToggleButton(
       final String commandName, final String imagePath,
-      final ActionListener actionToAdd,
-      final CommandButtonDisplayState priority)
+      final CommandAction actionToAdd,
+      final CommandButtonPresentationState priority)
   {
-    ImageWrapperResizableIcon imageIcon = null;
-    if (imagePath != null)
-    {
-      final Image zoominImage = createImage(imagePath);
-      imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, ICON_SIZE_16);
-    }
+    CommandButtonProjection<Command> projectionModel = createCommand(commandName,imagePath,actionToAdd,PresentationPriority.MEDIUM,null);
+    
     final JCommandToggleButton commandButton = new JCommandToggleButton(
-        commandName, imageIcon);
+        projectionModel);
     commandButton.setName(commandName);
-    commandButton.addActionListener(actionToAdd);
-    commandButton.setDisplayState(priority);
+    commandButton.setPresentationState(priority);
     return commandButton;
   }
 
-  public static FlamingoCommand addCommandToggleButton(final String commandName,
-      final String imagePath, final ActionListener actionToAdd,
-      final JRibbonBand mapBand, final RibbonElementPriority priority,
-      final boolean isToggle, final FlamingoCommandToggleGroup group,
+  public static Command addCommandToggleButton(final String commandName,
+      final String imagePath, final CommandAction actionToAdd,
+      final JRibbonBand mapBand, final PresentationPriority priority,
+      final boolean isToggle, final CommandToggleGroupModel group,
       final boolean toggleSelected)
   {
     ImageWrapperResizableIcon imageIcon = null;
@@ -148,9 +185,9 @@ public class MenuUtils
       final Image zoominImage = createImage(imagePath);
       imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, ICON_SIZE_16);
     }
-    final FlamingoCommandBuilder builder = new FlamingoCommandBuilder()
-        .setTitle(commandName).setIcon(imageIcon).setAction(actionToAdd)
-        .setTitleClickAction();
+    final Command.Builder builder = Command.builder()
+        .setText(commandName).setIconFactory(ResizableIconFactory.factory(imageIcon)).setAction(actionToAdd);
+        //.setTitleClickAction();
 
     if (isToggle)
     {
@@ -161,16 +198,22 @@ public class MenuUtils
         builder.inToggleGroup(group);
       }
     }
-    final FlamingoCommand command = builder.build();
-
-    mapBand.addRibbonCommand(command, priority == null
-        ? RibbonElementPriority.TOP : priority);
+    final Command command = builder.build();
+    CommandButtonProjection<Command> projectionModel =  command.project(CommandButtonPresentationModel.builder()
+        .setActionKeyTip("NA")
+        //.setPopupCallback(popupCallback)
+        .setPopupMenuPresentationModel(CommandPopupMenuPresentationModel.builder()
+            .setMaxVisibleMenuCommands(4)
+            .build())
+        .build());
+    mapBand.addRibbonCommand(projectionModel, priority == null
+        ? PresentationPriority.TOP : priority);
     return command;
   }
 
-  public static FlamingoCommand createCommand(final String commandName,
-      final String imagePath, final ActionListener actionToAdd,
-      final RibbonElementPriority priority,
+  public static CommandButtonProjection<Command> createCommand(final String commandName,
+      final String imagePath, final CommandAction actionToAdd,
+      final PresentationPriority priority,
       final PopupPanelCallback popupCallback)
   {
     ImageWrapperResizableIcon imageIcon = null;
@@ -180,15 +223,25 @@ public class MenuUtils
       imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, new Dimension(
           16, 16));
     }
-    final FlamingoCommandBuilder builder = new FlamingoCommandBuilder()
-        .setTitle(commandName).setIcon(imageIcon).setAction(actionToAdd)
-        .setTitleClickAction();
+    
+    final Command.Builder builder = Command.builder()
+        .setText(commandName).setIconFactory(ResizableIconFactory.factory(imageIcon))
+        .setAction(actionToAdd);
+        /*;*/
+
     if (popupCallback != null)
     {
-      builder.setPopupCallback(popupCallback);
+      //builder.setPopupCallback(popupCallback);
     }
-    final FlamingoCommand command = builder.build();
-    return command;
+    final Command command = builder.build();
+    return command.project(CommandButtonPresentationModel.builder()
+        .setActionKeyTip("NA")
+        //.setPopupCallback(popupCallback)
+        .setPopupMenuPresentationModel(CommandPopupMenuPresentationModel.builder()
+            .setMaxVisibleMenuCommands(4)
+            .build())
+        .build());
+   
   }
 
   public static Image createImage(final String imageName)

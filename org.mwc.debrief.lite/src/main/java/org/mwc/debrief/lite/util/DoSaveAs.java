@@ -12,10 +12,12 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.menu.DebriefRibbonFile;
+import org.pushingpixels.flamingo.api.common.CommandAction;
+import org.pushingpixels.flamingo.api.common.CommandActionEvent;
 
 import Debrief.GUI.Frames.Session;
 
-public class DoSaveAs extends AbstractAction
+public class DoSaveAs extends AbstractAction implements CommandAction
 {
 
   protected static final String DEFAULT_FILENAME = "Debrief_Plot";
@@ -127,6 +129,13 @@ public class DoSaveAs extends AbstractAction
       outputFileName = null;
     }
     return outputFileName;
+  }
+
+  @Override
+  public void commandActivated(CommandActionEvent e)
+  {
+    actionPerformed(e);
+    
   }
 
 }

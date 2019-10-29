@@ -18,20 +18,19 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.TimeZone;
 
-import javax.swing.AbstractAction;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JLabel;
@@ -39,27 +38,50 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSlider;
+import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.mwc.debrief.lite.DebriefLiteApp;
+import org.mwc.debrief.lite.custom.JRibbonLabel;
+import org.mwc.debrief.lite.custom.JRibbonRangeSlider;
+import org.mwc.debrief.lite.custom.JRibbonSlider;
+import org.mwc.debrief.lite.custom.LabelComponentContentModel;
+import org.mwc.debrief.lite.custom.RibbonLabelProjection;
+import org.mwc.debrief.lite.custom.RibbonRangeSliderProjection;
+import org.mwc.debrief.lite.custom.RibbonSliderProjection;
+import org.mwc.debrief.lite.custom.SliderComponentContentModel;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.gui.LiteStepControl.SliderControls;
 import org.mwc.debrief.lite.gui.LiteStepControl.TimeLabel;
+import org.mwc.debrief.lite.gui.custom.LabelledRangeSlider;
 import org.mwc.debrief.lite.gui.custom.RangeSlider;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.properties.PropertiesDialog;
-import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
-import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandToggleGroup;
+import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
+import org.pushingpixels.flamingo.api.common.CommandAction;
+import org.pushingpixels.flamingo.api.common.CommandActionEvent;
+import org.pushingpixels.flamingo.api.common.CommandButtonPresentationState;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.RichTooltip;
-import org.pushingpixels.flamingo.api.common.RichTooltip.RichTooltipBuilder;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
+import org.pushingpixels.flamingo.api.common.model.Command;
+import org.pushingpixels.flamingo.api.common.model.CommandGroup;
+import org.pushingpixels.flamingo.api.common.model.CommandStripPresentationModel;
+import org.pushingpixels.flamingo.api.common.model.CommandToggleGroupModel;
+import org.pushingpixels.flamingo.api.common.projection.CommandButtonProjection;
+import org.pushingpixels.flamingo.api.common.projection.CommandStripProjection;
+import org.pushingpixels.flamingo.api.common.projection.Projection;
+import org.pushingpixels.flamingo.api.common.projection.Projection.ComponentSupplier;
+import org.pushingpixels.flamingo.api.ribbon.JFlowRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
-import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
+import org.pushingpixels.flamingo.api.ribbon.JRibbonBand.PresentationPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
+import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies;
+import org.pushingpixels.flamingo.api.ribbon.resize.RibbonBandResizePolicy;
+import org.pushingpixels.flamingo.api.ribbon.synapse.model.ComponentPresentationModel;
+import org.pushingpixels.flamingo.api.ribbon.synapse.projection.ComponentProjection;
 
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
@@ -187,9 +209,9 @@ public class DebriefRibbonTimeController
 
   private static abstract class LiteStepperListener implements StepperListener
   {
-    private final JCommandButton _playBtn;
+    private final AbstractCommandButton _playBtn;
 
-    private LiteStepperListener(final JCommandButton playCommandButton)
+    private LiteStepperListener(final AbstractCommandButton playCommandButton)
     {
       _playBtn = playCommandButton;
     }
@@ -211,12 +233,8 @@ public class DebriefRibbonTimeController
     }
   }
 
-  protected static class ShowFormatAction extends AbstractAction
+  protected static class ShowFormatAction implements CommandAction
   {
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
     private final JPopupMenu menu;
 
     private ShowFormatAction(final JPopupMenu theMenu)
@@ -225,7 +243,7 @@ public class DebriefRibbonTimeController
     }
 
     @Override
-    public void actionPerformed(final ActionEvent e)
+    public void commandActivated(CommandActionEvent e)
     {
       // Get the event source
       final Component component = (Component) e.getSource();
@@ -328,11 +346,11 @@ public class DebriefRibbonTimeController
     final JRibbonBand filterToTime = createFilterToTime(stepControl, operations,
         timeManager);
 
-    final JRibbonBand control = createControl(stepControl, timeManager, layers,
+    final JFlowRibbonBand control = createControl(stepControl, timeManager, layers,
         undoBuffer, operations);
-
-    final RibbonTask timeTask = new RibbonTask("Time", displayMode, control,
-        filterToTime);
+//
+    final RibbonTask timeTask = new RibbonTask("Time", displayMode,
+        control,filterToTime);
     ribbon.addTask(timeTask);
   }
 
@@ -353,11 +371,11 @@ public class DebriefRibbonTimeController
     }
   }
 
-  private static JRibbonBand createControl(final LiteStepControl stepControl,
+  private static JFlowRibbonBand createControl(final LiteStepControl stepControl,
       final TimeManager timeManager, final Layers layers,
       final UndoBuffer undoBuffer, final PlotOperations operations)
   {
-    final JRibbonBand control = new JRibbonBand("Control", null);
+    final JFlowRibbonBand control = new JFlowRibbonBand("Control", null);
 
     final JPanel controlPanel = new JPanel();
     controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
@@ -366,166 +384,127 @@ public class DebriefRibbonTimeController
     topButtonsPanel = new JPanel();
     topButtonsPanel.setLayout(new BoxLayout(topButtonsPanel, BoxLayout.X_AXIS));
     topButtonsPanel.setName("topbuttonspanel");
-    final JCommandButton behindCommandButton = MenuUtils.addCommandButton(
-        "Behind", "icons/24/media_beginning.png", new AbstractAction()
+    final Command behindCommand = MenuUtils.createCommandObject(
+        "Behind", "icons/24/media_beginning.png", new CommandAction()
         {
 
-          /**
-           *
-           */
-          private static final long serialVersionUID = 1L;
 
           @Override
-          public void actionPerformed(final ActionEvent e)
+          public void commandActivated(CommandActionEvent e)
           {
             timeManager.setTime(control, HiResDate.min(operations.getPeriod()
                 .getStartDTG(), timeManager.getPeriod().getStartDTG()), true);
+            
           }
-        }, CommandButtonDisplayState.SMALL, "Move to start time");
-    behindCommandButton.setName("starttime");
-    final JCommandButton rewindCommandButton = MenuUtils.addCommandButton(
-        "Rewind", "icons/24/media_rewind.png", new AbstractAction()
+        }, PresentationPriority.LOW,"starttime");
+    behindCommand.setActionEnabled(false);
+    behindCommand.project().buildComponent().setName("behind");
+    final Command rewindCommand = MenuUtils.createCommandObject(
+        "Rewind", "icons/24/media_rewind.png", new CommandAction()
         {
-
-          /**
-           *
-           */
-          private static final long serialVersionUID = 1L;
-
           @Override
-          public void actionPerformed(final ActionEvent e)
+          public void commandActivated(CommandActionEvent e)
           {
             stepControl.doStep(false, true);
           }
-        }, CommandButtonDisplayState.SMALL, "Large step backwards");
-    rewindCommandButton.setName("rewind");
-    final JCommandButton backCommandButton = MenuUtils.addCommandButton("Back",
-        "icons/24/media_back.png", new AbstractAction()
+        }, PresentationPriority.LOW, "Large step backwards");
+    rewindCommand.project().buildComponent().setName("rewind");
+    rewindCommand.setActionEnabled(false);
+    final Command backCommand = MenuUtils.createCommandObject("Back",
+        "icons/24/media_back.png", new CommandAction()
         {
 
-          /**
-           *
-           */
-          private static final long serialVersionUID = 1L;
 
           @Override
-          public void actionPerformed(final ActionEvent e)
+          public void commandActivated(CommandActionEvent e)
           {
             stepControl.doStep(false, false);
           }
-        }, CommandButtonDisplayState.SMALL, "Small step backwards");
-    backCommandButton.setName("back");
-    final JCommandButton playCommandButton = MenuUtils.addCommandButton("Play",
-        PLAY_IMAGE, new AbstractAction()
+        }, PresentationPriority.LOW, "Small step backwards");
+    backCommand.project().buildComponent().setName("back");
+    backCommand.setActionEnabled(false);
+    final Command playCommand = MenuUtils.createCommandObject("Play",
+        PLAY_IMAGE, new CommandAction()
         {
 
-          /**
-           *
-           */
-          private static final long serialVersionUID = 1L;
 
           @Override
-          public void actionPerformed(final ActionEvent e)
+          public void commandActivated(CommandActionEvent e)
           {
-            // ignore, we define the action once we've finished creating the button
+            final AbstractCommandButton playCommandButton = e.getButtonSource();
+            final boolean isPlaying = stepControl.isPlaying();
+
+            stepControl.startStepping(!isPlaying);
+
+            // now update the play button UI
+            updatePlayBtnUI(playCommandButton, isPlaying);
           }
-        }, CommandButtonDisplayState.SMALL, START_TEXT);
-    playCommandButton.setName("play");
-
-    playCommandButton.addActionListener(new ActionListener()
-    {
-
-      @Override
-      public void actionPerformed(final ActionEvent e)
-      {
-        // what state are we in?
-        final boolean isPlaying = stepControl.isPlaying();
-
-        stepControl.startStepping(!isPlaying);
-
-        // now update the play button UI
-        updatePlayBtnUI(playCommandButton, isPlaying);
-      }
-
-    });
-
+        }, PresentationPriority.LOW, START_TEXT);
+    playCommand.setActionEnabled(false);
+    playCommand.project().buildComponent().setName("play");;
     @SuppressWarnings("unused")
-    final JCommandButton recordCommandButton = MenuUtils.addCommandButton(
-        "Record", "icons/24/media_record.png", new AbstractAction()
+    final Command recordCommandButton = MenuUtils.createCommandObject(
+        "Record", "icons/24/media_record.png", new CommandAction()
         {
 
-          /**
-           *
-           */
-          private static final long serialVersionUID = 1L;
 
           @Override
-          public void actionPerformed(final ActionEvent e)
+          public void commandActivated(CommandActionEvent e)
           {
             JOptionPane.showMessageDialog(null,
                 "Record to PPT not yet implemented.");
 
           }
-        }, CommandButtonDisplayState.SMALL, "Start recording");
-    recordCommandButton.setName("record");
-    final JCommandButton forwardCommandButton = MenuUtils.addCommandButton(
-        "Forward", "icons/24/media_forward.png", new AbstractAction()
+        }, PresentationPriority.LOW, "Start recording");
+    recordCommandButton.setActionEnabled(false);
+    recordCommandButton.project().buildComponent().setName("record");
+    final Command forwardCommand = MenuUtils.createCommandObject(
+        "Forward", "icons/24/media_forward.png", new CommandAction()
         {
 
-          /**
-           *
-           */
-          private static final long serialVersionUID = 1L;
-
+          
           @Override
-          public void actionPerformed(final ActionEvent e)
+          public void commandActivated(CommandActionEvent e)
           {
             stepControl.doStep(true, false);
           }
-        }, CommandButtonDisplayState.SMALL, "Small step forwards");
-    forwardCommandButton.setName("forward");
-    final JCommandButton fastForwardCommandButton = MenuUtils.addCommandButton(
-        "Fast Forward", "icons/24/media_fast_forward.png", new AbstractAction()
+        }, PresentationPriority.LOW, "Small step forwards");
+    forwardCommand.project().buildComponent().setName("forward");
+    forwardCommand.setActionEnabled(false);
+    
+    final Command fastForwardCommand = MenuUtils.createCommandObject(
+        "Fast Forward", "icons/24/media_fast_forward.png", new CommandAction()
         {
 
-          /**
-           *
-           */
-          private static final long serialVersionUID = 1L;
 
           @Override
-          public void actionPerformed(final ActionEvent e)
+          public void commandActivated(CommandActionEvent e)
           {
             stepControl.doStep(true, true);
           }
-        }, CommandButtonDisplayState.SMALL, "Large step forwards");
-    fastForwardCommandButton.setName("fastforward");
-    final JCommandButton endCommandButton = MenuUtils.addCommandButton("End",
-        "icons/24/media_end.png", new AbstractAction()
+        }, PresentationPriority.LOW, "Large step forwards");
+    fastForwardCommand.setActionEnabled(false);
+    fastForwardCommand.project().buildComponent().setName("fastforward");
+    final Command endCommand = MenuUtils.createCommandObject("End",
+        "icons/24/media_end.png", new CommandAction()
         {
-          /**
-           *
-           */
-          private static final long serialVersionUID = 1L;
-
+          
           @Override
-          public void actionPerformed(final ActionEvent e)
+          public void commandActivated(CommandActionEvent e)
           {
             timeManager.setTime(control, HiResDate.max(operations.getPeriod()
                 .getEndDTG(), timeManager.getPeriod().getEndDTG()), true);
           }
-        }, CommandButtonDisplayState.SMALL, "Move to end time");
-    endCommandButton.setName("endtime");
-    final JCommandButton propertiesCommandButton = MenuUtils.addCommandButton(
-        "Properties", "icons/16/properties.png", new AbstractAction()
+        }, PresentationPriority.LOW, "Move to end time");
+    endCommand.project().buildComponent().setName("endtime");
+    endCommand.setActionEnabled(false);
+    
+    final Command propertiesCommand = MenuUtils.createCommandObject(
+        "Properties", "icons/16/properties.png", new CommandAction()
         {
-          /**
-           *
-           */
-          private static final long serialVersionUID = 1973993003498667463L;
-
+         
           @Override
-          public void actionPerformed(final ActionEvent arg0)
+          public void commandActivated(CommandActionEvent e)
           {
             ToolbarOwner owner = null;
             final ToolParent parent = stepControl.getParent();
@@ -548,42 +527,38 @@ public class DebriefRibbonTimeController
             dialog.setLocationRelativeTo(null);
             dialog.setVisible(true);
           }
-        }, CommandButtonDisplayState.SMALL, "Edit time-step properties");
-    propertiesCommandButton.setName("timeprops");
+        }, PresentationPriority.LOW, "Edit time-step properties");
+    propertiesCommand.setActionEnabled(false);
+    propertiesCommand.project().buildComponent().setName("timeprops");
     // we need to give the menu to the command popup
-    final JPopupMenu menu = new JPopupMenu();
-
-    final JCommandButton formatCommandButton = MenuUtils.addCommandButton(
-        "Format", "icons/24/gears_view.png", new ShowFormatAction(menu),
-        CommandButtonDisplayState.SMALL, "Format time control");
-
-    final JLabel timeLabel = new JLabel(LiteStepControl.timeFormat)
-    {
-      /**
-       *
-       */
-      private static final long serialVersionUID = 1L;
-
-      @Override
-      protected void paintComponent(final Graphics g)
-      {
-        g.setColor(Color.BLACK);
-        g.fillRect(0, 0, getWidth(), getHeight());
-        super.paintComponent(g);
-      }
-    };
+    
+    LabelComponentContentModel timeLabelModel = LabelComponentContentModel.builder().
+        setText(LiteStepControl.timeFormat).build();
+    final ComponentSupplier<JRibbonLabel,
+    LabelComponentContentModel, ComponentPresentationModel> jTimeLabel =
+    (Projection<JRibbonLabel, LabelComponentContentModel,
+        ComponentPresentationModel> projection) -> JRibbonLabel::new;
+    RibbonLabelProjection timeLabelProjection = new RibbonLabelProjection(timeLabelModel,ComponentPresentationModel.withDefaults() , jTimeLabel);
+    final JLabel timeLabel = timeLabelProjection.buildComponent();
+    timeLabel.setBorder(new LineBorder(Color.black, 5));
     timeLabel.setName("timeformatlabel");
     timeLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 16));
-
     timeLabel.setForeground(new Color(0, 255, 0));
+    timeLabel.setPreferredSize(new Dimension(50,20));
+    
+    final JPopupMenu menu = new JPopupMenu();
 
+    final CommandButtonProjection<Command> formatCommandButton = MenuUtils.addCommandButton(
+        "Format", "icons/24/gears_view.png", new ShowFormatAction(menu),
+        CommandButtonPresentationState.SMALL, "Format time control");
+    
     _menuItem = new JCheckBoxMenuItem[timeFormats.length];
     for (int i = 0; i < timeFormats.length; i++)
     {
       _menuItem[i] = new JCheckBoxMenuItem(timeFormats[i]);
     }
 
-    resetDateFormat();
+//    resetDateFormat();
 
     final ActionListener selfAssignFormat = new ActionListener()
     {
@@ -600,28 +575,55 @@ public class DebriefRibbonTimeController
       _menuItem[i].addActionListener(selfAssignFormat);
       menu.add(_menuItem[i]);
     }
-
-    topButtonsPanel.add(behindCommandButton);
-    topButtonsPanel.add(rewindCommandButton);
-    topButtonsPanel.add(backCommandButton);
-    topButtonsPanel.add(playCommandButton);
-    // don't add record button, yet.
-    // topButtonsPanel.add(recordCommandButton);
-
-    topButtonsPanel.add(forwardCommandButton);
-    topButtonsPanel.add(fastForwardCommandButton);
-    topButtonsPanel.add(endCommandButton);
-    topButtonsPanel.add(new JLabel(" | "));
-    topButtonsPanel.add(propertiesCommandButton);
-    topButtonsPanel.add(timeLabel);
-    topButtonsPanel.add(formatCommandButton);
-
-    controlPanel.add(topButtonsPanel);
-    final JSlider timeSlider = new JSlider();
+  
+    CommandStripProjection commandStripProjection = new CommandStripProjection(
+        new CommandGroup(behindCommand, rewindCommand,
+            backCommand, playCommand,forwardCommand,fastForwardCommand,endCommand,propertiesCommand),
+        CommandStripPresentationModel.builder()
+                .setOrientation(CommandStripPresentationModel.StripOrientation.HORIZONTAL)
+                .setHorizontalGapScaleFactor(0.8)
+                .setVerticalGapScaleFactor(1.4)
+                .build());
+    
+    
+    
+    control.addFlowComponent(commandStripProjection);
+    control.addFlowComponent(timeLabelProjection);
+    control.addFlowComponent(formatCommandButton);
+    
+    final SliderComponentContentModel sliderModel = SliderComponentContentModel.builder().
+        setEnabled(true).
+        setChangeListener(new ChangeListener()
+        {
+          @Override
+          public void stateChanged(final ChangeEvent e)
+          {
+            if(e.getSource() instanceof JSlider) {
+              final JSlider slider = (JSlider)e.getSource();
+              final int pos = slider.getValue();
+              final long time = converter.getTimeAt(pos);
+              if (timeManager.getTime() == null || timeManager.getTime().getDate()
+                  .getTime() != time)
+              {
+                timeManager.setTime(slider, new HiResDate(time), true);
+              }
+            }
+          }
+        }).
+        build();
+    //set the values for the slider here.
+    final ComponentSupplier<JRibbonSlider,
+    SliderComponentContentModel, ComponentPresentationModel> jribbonSlider =
+    (Projection<JRibbonSlider, SliderComponentContentModel,
+        ComponentPresentationModel> projection) -> JRibbonSlider::new;
+    final ComponentProjection<JRibbonSlider,SliderComponentContentModel> projection = 
+            new RibbonSliderProjection(sliderModel, ComponentPresentationModel.withDefaults(), jribbonSlider);
+        JSlider timeSlider = projection.buildComponent();
     timeSlider.setBackground(Color.DARK_GRAY);
     timeSlider.setPreferredSize(new Dimension(420, 30));
     timeSlider.setEnabled(false);
     timeSlider.setName("timeslider");
+    control.addFlowComponent(projection);
     label = new TimeLabel()
     {
 
@@ -678,23 +680,7 @@ public class DebriefRibbonTimeController
     stepControl.setTimeLabel(label);
 
     // we also need to listen to the slider
-    timeSlider.addChangeListener(new ChangeListener()
-    {
-      @Override
-      public void stateChanged(final ChangeEvent e)
-      {
-        final int pos = timeSlider.getValue();
-        final long time = converter.getTimeAt(pos);
-        if (timeManager.getTime() == null || timeManager.getTime().getDate()
-            .getTime() != time)
-        {
-          timeManager.setTime(timeSlider, new HiResDate(time), true);
-        }
-      }
-    });
-
-    // ok, start off with the buttons disabled
-    setButtonsEnabled(topButtonsPanel, false);
+    
 
     final DataListener updateTimeController = new DataListener()
     {
@@ -775,7 +761,7 @@ public class DebriefRibbonTimeController
     };
 
     // we also need to listen out for the stepper control mode changing
-    stepControl.addStepperListener(new LiteStepperListener(playCommandButton)
+    stepControl.addStepperListener(new LiteStepperListener(playCommand.project().buildComponent())
     {
 
       @Override
@@ -789,11 +775,9 @@ public class DebriefRibbonTimeController
     stepControl.getLayers().addDataModifiedListener(updateTimeController);
     stepControl.getLayers().addDataReformattedListener(updateTimeController);
 
-    control.addRibbonComponent(new JRibbonComponent(topButtonsPanel));
-    control.addRibbonComponent(new JRibbonComponent(timeSlider));
-
-    control.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
-        control));
+    final List<RibbonBandResizePolicy> policies = new ArrayList<>();
+    policies.add(new CoreRibbonResizePolicies.FlowTwoRows(control));
+    control.setResizePolicies(policies);
     return control;
   }
 
@@ -801,33 +785,30 @@ public class DebriefRibbonTimeController
       final Runnable snailPainter)
   {
     final JRibbonBand displayMode = new JRibbonBand("Display Mode", null);
-    final FlamingoCommandToggleGroup displayModeGroup =
-        new FlamingoCommandToggleGroup();
+    final CommandToggleGroupModel displayModeGroup =
+        new CommandToggleGroupModel();
     MenuUtils.addCommandToggleButton("Normal", "icons/48/normal.png",
-        new AbstractAction()
+        new CommandAction()
         {
-          private static final long serialVersionUID = 1L;
 
           @Override
-          public void actionPerformed(final ActionEvent e)
-          {
+          public void commandActivated(CommandActionEvent e) {
             normalPainter.run();
             _isNormal = true;
           }
-        }, displayMode, RibbonElementPriority.TOP, true, displayModeGroup,
+        }, displayMode, PresentationPriority.TOP, true, displayModeGroup,
         true);
     MenuUtils.addCommandToggleButton("Snail", "icons/48/snail.png",
-        new AbstractAction()
+        new CommandAction()
         {
-          private static final long serialVersionUID = 1L;
 
           @Override
-          public void actionPerformed(final ActionEvent e)
+          public void commandActivated(CommandActionEvent e)
           {
             snailPainter.run();
             _isNormal = false;
           }
-        }, displayMode, RibbonElementPriority.TOP, true, displayModeGroup,
+        }, displayMode, PresentationPriority.TOP, true, displayModeGroup,
         false);
 
     displayMode.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
@@ -845,38 +826,51 @@ public class DebriefRibbonTimeController
     final Calendar start = new GregorianCalendar(1995, 11, 12);
     final Calendar end = new GregorianCalendar(1995, 11, 12);
     // Now we create the components for the sliders
-    final JLabel minimumValue = new JLabel();
-    final JLabel maximumValue = new JLabel();
-    final RangeSlider slider = new RangeSlider(start, end);
+//    final JLabel lblMinimumValue = new JLabel();
+//    final JLabel lblMaximumValue = new JLabel();
+    final SliderComponentContentModel sliderModel = SliderComponentContentModel.builder().
+                                              setEnabled(true).
+                                              setMinimum(start).
+                                              setMaximum(end).
+                                              setChangeListener(new SliderListener(operations,timeManager,stepControl)).
+                                              build();
+    //set the values for the slider here.
+    final ComponentSupplier<JRibbonRangeSlider,
+    SliderComponentContentModel, ComponentPresentationModel> jribbonSlider =
+    (Projection<JRibbonRangeSlider, SliderComponentContentModel,
+            ComponentPresentationModel> projection) -> JRibbonRangeSlider::new;
+    final ComponentProjection<JRibbonRangeSlider,SliderComponentContentModel> projection = 
+        new RibbonRangeSliderProjection(sliderModel, ComponentPresentationModel.withDefaults(), jribbonSlider);
+    LabelledRangeSlider sliderObj = projection.buildComponent();
+    final RangeSlider slider = sliderObj.getRangeSlider();
     slider.setBackground(Color.DARK_GRAY);
 
     formatBinder.stepControl = stepControl;
-    formatBinder.maximumValue = maximumValue;
-    formatBinder.minimumValue = minimumValue;
+    formatBinder.maximumValue = sliderObj.getLblMaximumValue();
+    formatBinder.minimumValue = sliderObj.getLblMinimumValue();
     formatBinder.slider = slider;
     formatBinder.timeManager = timeManager;
-
     formatBinder.updateFilterDateFormat();
-    slider.addChangeListener(new SliderListener(operations, timeManager,
-        stepControl));
+//    slider.addChangeListener(new SliderListener(operations, timeManager,
+//        stepControl));
     slider.setEnabled(false);
     slider.setPreferredSize(new Dimension(250, 200));
 
-    final JPanel sliderPanel = new JPanel();
-    sliderPanel.setLayout(new BoxLayout(sliderPanel, BoxLayout.Y_AXIS));
-    sliderPanel.setPreferredSize(new Dimension(250, 200));
+//    final JPanel sliderPanel = new JPanel();
+//    sliderPanel.setLayout(new BoxLayout(sliderPanel, BoxLayout.Y_AXIS));
+//    sliderPanel.setPreferredSize(new Dimension(250, 200));
 
     // Label's panel
-    final JPanel valuePanel = new JPanel();
-    valuePanel.setLayout(new BoxLayout(valuePanel, BoxLayout.X_AXIS));
+//    final JPanel valuePanel = new JPanel();
+//    valuePanel.setLayout(new BoxLayout(valuePanel, BoxLayout.X_AXIS));
+//
+//    valuePanel.add(lblMinimumValue);
+//    valuePanel.add(Box.createGlue());
+//    valuePanel.add(lblMaximumValue);
+//    valuePanel.setPreferredSize(new Dimension(250, 200));
 
-    valuePanel.add(minimumValue);
-    valuePanel.add(Box.createGlue());
-    valuePanel.add(maximumValue);
-    valuePanel.setPreferredSize(new Dimension(250, 200));
-
-    timePeriod.addRibbonComponent(new JRibbonComponent(slider));
-    timePeriod.addRibbonComponent(new JRibbonComponent(valuePanel));
+    timePeriod.addRibbonComponent(projection);
+    //timePeriod.addRibbonComponent(new JRibbonComponent(valuePanel));
 
     // tie in to the stepper
     final SliderControls iSlider = new LiteSliderControls(slider);
@@ -890,11 +884,10 @@ public class DebriefRibbonTimeController
       @Override
       public void reset()
       {
-        minimumValue.setText(" ");
-        maximumValue.setText(" ");
+        formatBinder.minimumValue.setText(" ");
+        formatBinder.maximumValue.setText(" ");
       }
     });
-
     return timePeriod;
   }
 
@@ -961,7 +954,7 @@ public class DebriefRibbonTimeController
     }
   }
 
-  public static void updatePlayBtnUI(final JCommandButton playCommandButton,
+  public static void updatePlayBtnUI(final AbstractCommandButton playCommandButton,
       final boolean isPlaying)
   {
     final String image;
@@ -972,7 +965,7 @@ public class DebriefRibbonTimeController
 
     final String tooltip = isPlaying ? STOP_TEXT : START_TEXT;
 
-    final RichTooltipBuilder builder = new RichTooltipBuilder();
+    final RichTooltip.Builder builder = RichTooltip.builder();
     final RichTooltip richTooltip = builder.setTitle("Timer")
         .addDescriptionSection(tooltip).build();
     playCommandButton.setActionRichTooltip(richTooltip);

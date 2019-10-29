@@ -1,58 +1,57 @@
 package org.mwc.debrief.lite.menu;
 
-import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Image;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
+import org.mwc.debrief.lite.shapes.actions.ArcShapeCommandAction;
+import org.mwc.debrief.lite.shapes.actions.CircleShapeCommandAction;
+import org.mwc.debrief.lite.shapes.actions.CoastCommandAction;
+import org.mwc.debrief.lite.shapes.actions.CreateGridCommandAction;
+import org.mwc.debrief.lite.shapes.actions.CreateScaleCommandAction;
+import org.mwc.debrief.lite.shapes.actions.EllipseShapeCommandAction;
+import org.mwc.debrief.lite.shapes.actions.LabelShapeCommandAction;
+import org.mwc.debrief.lite.shapes.actions.LineShapeCommandAction;
+import org.mwc.debrief.lite.shapes.actions.RectangularShapeCommandAction;
+import org.mwc.debrief.lite.util.ResizableIconFactory;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.operation.TransformException;
-import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
-import org.pushingpixels.flamingo.api.common.FlamingoCommand;
+import org.pushingpixels.flamingo.api.common.CommandButtonPresentationState;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
+import org.pushingpixels.flamingo.api.common.RichTooltip;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
+import org.pushingpixels.flamingo.api.common.model.Command;
+import org.pushingpixels.flamingo.api.common.projection.CommandButtonProjection;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
-import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
+import org.pushingpixels.flamingo.api.ribbon.JRibbonBand.PresentationPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
+import org.pushingpixels.flamingo.api.ribbon.synapse.model.ComponentPresentationModel;
+import org.pushingpixels.flamingo.api.ribbon.synapse.model.RibbonComboBoxContentModel;
+import org.pushingpixels.flamingo.api.ribbon.synapse.model.RibbonDefaultComboBoxContentModel;
+import org.pushingpixels.flamingo.api.ribbon.synapse.projection.RibbonComboBoxProjection;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.Tools.Palette.CoreCreateShape;
-import Debrief.Tools.Palette.CreateLabel;
-import Debrief.Tools.Palette.CreateShape;
-import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
-import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Properties.PropertiesPanel;
-import MWC.GUI.Shapes.ArcShape;
-import MWC.GUI.Shapes.CircleShape;
-import MWC.GUI.Shapes.EllipseShape;
-import MWC.GUI.Shapes.LineShape;
-import MWC.GUI.Shapes.RectangleShape;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.PlainTool.BoundsProvider;
-import MWC.GUI.Tools.Palette.CreateCoast;
-import MWC.GUI.Tools.Palette.CreateGrid;
-import MWC.GUI.Tools.Palette.CreateScale;
 import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
-import MWC.GenericData.WorldVector;
 
 public class DebriefRibbonInsert
 {
@@ -136,16 +135,14 @@ public class DebriefRibbonInsert
   {
     final JRibbonBand referenceDataMenu = new JRibbonBand("Reference Data",
         null);
-    @SuppressWarnings("unused")
-    final FlamingoCommand coastlineCmd = MenuUtils.addCommand("Coastline",
-        "icons/24/coast_add.png", new CreateCoast(toolParent, theProperties,
+    MenuUtils.addCommand("Coastline",
+        "icons/24/coast_add.png", new CoastCommandAction(toolParent, theProperties,
              theLayers, bounds), referenceDataMenu,
-        RibbonElementPriority.TOP);
-    @SuppressWarnings("unused")
-    final FlamingoCommand naturalEarthCmd = MenuUtils.addCommand(
-        "Natural Earth", "icons/24/NaturalEarth.png", new CreateCoast(toolParent,
+        PresentationPriority.TOP);
+    MenuUtils.addCommand(
+        "Natural Earth", "icons/24/NaturalEarth.png", new CoastCommandAction(toolParent,
             theProperties, theLayers, bounds), referenceDataMenu,
-        RibbonElementPriority.TOP);
+        PresentationPriority.TOP);
     referenceDataMenu.setResizePolicies(MenuUtils
         .getStandardRestrictivePolicies(referenceDataMenu));
     return referenceDataMenu;
@@ -153,7 +150,8 @@ public class DebriefRibbonInsert
   
   private static JRibbonBand createLayerMenu(final Layers _theLayers) {
     final JRibbonBand layersMenu = new JRibbonBand("Active Layer", null);
-    addDropDown(selectLayerItemListener,layersMenu,RibbonElementPriority.TOP,_theLayers);
+    RibbonComboBoxProjection projection = new RibbonComboBoxProjection(addDropDown(selectLayerItemListener,layersMenu,PresentationPriority.TOP,_theLayers),ComponentPresentationModel.withDefaults());
+    layersMenu.addRibbonComponent(projection);
     return layersMenu;
   }
 
@@ -162,20 +160,14 @@ public class DebriefRibbonInsert
       final ToolParent toolParent, final BoundsProvider bounds)
   {
     final JRibbonBand drawingMenu = new JRibbonBand("Shapes", null);
-    final CreateShape ellipseShape = new CreateShape(toolParent, theProperties,
-        theLayers, "Ellipse", "icons/ellipse_add.png", bounds)
-    {
-      @Override
-      protected ShapeWrapper getShape(final WorldLocation centre)
-      {
-        return new ShapeWrapper("new ellipse", new EllipseShape(centre, 30,
-            new WorldDistance(5, WorldDistance.KM), new WorldDistance(3,
-                WorldDistance.KM)), DebriefColors.RED, null);
-      }
-    };
+    final EllipseShapeCommandAction ellipseShape = new EllipseShapeCommandAction(toolParent, theProperties,
+        theLayers, "Ellipse", "icons/ellipse_add.png", bounds);
+    
     ellipseShape.setSelectedLayerSource(selectLayerCombo);
-    final JCommandButton ellipseShapeCmd = MenuUtils.addCommandButton("Ellipse",
-        "icons/16/ellipse.png", ellipseShape, CommandButtonDisplayState.MEDIUM, null);
+   // final JCommandButton ellipseShapeCmd = MenuUtils.addCommandButton("Ellipse",
+   //     "icons/16/ellipse.png", ellipseShape, CommandButtonPresentationState.MEDIUM, null);
+    
+    
     /**
      * to be added later on
      */
@@ -214,67 +206,39 @@ public class DebriefRibbonInsert
 //    final JCommandButton polygonCmd = MenuUtils.addCommandButton("Polygon",
 //        "icons/16/polygon.png", polygonShape, CommandButtonDisplayState.MEDIUM, null);
     */
-    final CreateShape rectShape = new CreateShape(toolParent, theProperties,
-        theLayers, "Rectangle", "icons/rectangle_add.png", bounds)
-    {
-      @Override
-      protected ShapeWrapper getShape(final WorldLocation centre)
-      {
-        return new ShapeWrapper("new rectangle", new RectangleShape(centre,
-            centre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(
-                45), 0.05, 0))), DebriefColors.RED, null);
-      }
-    };
+    final RectangularShapeCommandAction rectShape = new RectangularShapeCommandAction(toolParent, theProperties,
+        theLayers, "Rectangle", "icons/rectangle_add.png", bounds);
     rectShape.setSelectedLayerSource(selectLayerCombo);
-    final JCommandButton rectCmd = MenuUtils.addCommandButton("Rectangle",
-        "icons/16/rectangle.png", rectShape, CommandButtonDisplayState.MEDIUM, null);
-    
-    
-    final CreateShape circleShape = new CreateShape(toolParent, theProperties,
-        theLayers, "Circle", "icons/circle_add.png", bounds)
-    {
-      @Override
-      protected ShapeWrapper getShape(final WorldLocation centre)
-      {
-        return new ShapeWrapper("new circle", new CircleShape(centre, 4000),
-            DebriefColors.RED, null);
-      }
-    };
+//    final JCommandButton rectCmd = MenuUtils.addCommandButton("Rectangle",
+//        "icons/16/rectangle.png", rectShape, CommandButtonPresentationState.MEDIUM, null);
+//    
+//    
+    final CircleShapeCommandAction circleShape = new CircleShapeCommandAction(toolParent, theProperties,
+        theLayers, "Circle", "icons/circle_add.png", bounds);
     circleShape.setSelectedLayerSource(selectLayerCombo);
-    final JCommandButton circleCmd = MenuUtils.addCommandButton("Circle",
-        "icons/16/circle.png", circleShape, CommandButtonDisplayState.MEDIUM, null);
+//    final JCommandButton circleCmd = MenuUtils.addCommandButton("Circle",
+//        "icons/16/circle.png", circleShape, CommandButtonPresentationState.MEDIUM, null);
+//    
+    final ArcShapeCommandAction arcShape =  new ArcShapeCommandAction(toolParent, theProperties,
+        theLayers, "Arc", "icons/16/circle.png", bounds);
     
-    final CreateShape arcShape =  new CreateShape(toolParent, theProperties,
-        theLayers, "Arc", "icons/16/circle.png", bounds)
-    {
-      @Override
-      protected ShapeWrapper getShape(final WorldLocation centre)
-      {
-        return new ShapeWrapper("new arc", new ArcShape(centre,
-            new WorldDistance(4000, WorldDistance.YARDS), 135, 90, true,
-            false), DebriefColors.RED, null);
-      }
-    };
     arcShape.setSelectedLayerSource(selectLayerCombo);
-    
-    final JCommandButton arcCmd = MenuUtils.addCommandButton("Arc",
-        "icons/16/arc_add.png",arcShape, CommandButtonDisplayState.MEDIUM, null);
-
-    final CreateShape lineShape = new CreateShape(toolParent, theProperties,
-        theLayers, "Line", "icons/16/line_add.png", bounds)
-    {
-      @Override
-      protected ShapeWrapper getShape(final WorldLocation centre)
-      {
-        return new ShapeWrapper("new line", new LineShape(centre, centre
-            .add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(45.0),
-                0.05, 0))), DebriefColors.RED, null);
-      }
-    };
+//    
+//    final JCommandButton arcCmd = MenuUtils.addCommandButton("Arc",
+//        "icons/16/arc_add.png",arcShape, CommandButtonPresentationState.MEDIUM, null);
+//
+    final LineShapeCommandAction lineShape = new LineShapeCommandAction(toolParent, theProperties,
+        theLayers, "Line", "icons/16/line_add.png", bounds);
     lineShape.setSelectedLayerSource(selectLayerCombo);
+//    
+//    final JCommandButton lineCmd = MenuUtils.addCommandButton("Line",
+//        "icons/16/line.png", lineShape, CommandButtonPresentationState.MEDIUM, null);
     
-    final JCommandButton lineCmd = MenuUtils.addCommandButton("Line",
-        "icons/16/line.png", lineShape, CommandButtonDisplayState.MEDIUM, null);
+    MenuUtils.addCommand("Ellipse","icons/16/ellipse.png",ellipseShape,drawingMenu,PresentationPriority.MEDIUM);
+    MenuUtils.addCommand("Rectangle","icons/16/rectangle.png",rectShape,drawingMenu,PresentationPriority.MEDIUM);
+    MenuUtils.addCommand("Circle","icons/16/circle.png",circleShape,drawingMenu,PresentationPriority.MEDIUM);
+    MenuUtils.addCommand("Arc","icons/16/arc_add.png",arcShape,drawingMenu,PresentationPriority.MEDIUM);
+    MenuUtils.addCommand("Line","icons/16/line.png",lineShape,drawingMenu,PresentationPriority.MEDIUM);
     
     selectLayerItemListener = new ItemListener()
     {
@@ -306,104 +270,76 @@ public class DebriefRibbonInsert
       }
     };
     drawingMenu.startGroup();
-    final CreateLabel createLabelShape =  new CreateLabel(toolParent, theProperties,
+    final LabelShapeCommandAction createLabelShape =  new LabelShapeCommandAction(toolParent, theProperties,
         theLayers, bounds, "New Label", "icons/24/label_add.png") ;
     createLabelShape.setSelectedLayerSource(selectLayerCombo);
     MenuUtils.addCommand(
         "Label",
         "icons/24/label_add.png",createLabelShape,
-            drawingMenu,RibbonElementPriority.TOP);
+            drawingMenu,PresentationPriority.TOP);
     drawingMenu.startGroup();
     
-    drawingMenu.addRibbonComponent(new JRibbonComponent(ellipseShapeCmd));
-    drawingMenu.addRibbonComponent(new JRibbonComponent(rectCmd));
-    drawingMenu.addRibbonComponent(new JRibbonComponent(circleCmd));
-    drawingMenu.addRibbonComponent(new JRibbonComponent(lineCmd));
-    drawingMenu.addRibbonComponent(new JRibbonComponent(arcCmd));
-    //#4201, dont add polygon shape.
-    //drawingMenu.addRibbonComponent(new JRibbonComponent(polygonCmd));
+    //drawingMenu.addRibbonCommand(ellipseShapeCmd.getContentModel());
+//    drawingMenu.addRibbonComponent(new JRibbonComponent(rectCmd));
+//    drawingMenu.addRibbonComponent(new JRibbonComponent(circleCmd));
+//    drawingMenu.addRibbonComponent(new JRibbonComponent(lineCmd));
+//    drawingMenu.addRibbonComponent(new JRibbonComponent(arcCmd));
+//    #4201, dont add polygon shape.
+//    drawingMenu.addRibbonComponent(new JRibbonComponent(polygonCmd));
     
     drawingMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         drawingMenu));
     return drawingMenu;
   }
   
-  private static JRibbonComponent addDropDown(final ItemListener actionToAdd,
-      final JRibbonBand mapBand, final RibbonElementPriority priority,final Layers theLayers)
+  private static RibbonComboBoxContentModel<String> addDropDown(final ItemListener actionToAdd,
+      final JRibbonBand mapBand, final PresentationPriority priority,final Layers theLayers)
   {
-    JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-   
     
-    final DefaultComboBoxModel<String>  selectLayerModel = new DefaultComboBoxModel<String>();
-    selectLayerModel.addElement(CoreCreateShape.USER_SELECTED_LAYER_COMMAND);
-    selectLayerCombo = new JComboBox<String>(selectLayerModel);
-    selectLayerCombo.addItemListener(actionToAdd);
-   
-    selectLayerCombo.addFocusListener(new FocusAdapter()
-    {
-      @Override
-      public void focusLost(FocusEvent e)
-      {
-       //do nothing, or the previous selections will be lost.
-      }
-      @Override
-      public void focusGained(FocusEvent e)
-      {
-        if(e.getSource() instanceof JComboBox) {
-          
-          EventQueue.invokeLater(new Runnable()
-          {
-            
-            @Override
-            public void run()
-            {
-              String[] layers = theLayers.trimmedLayers();         
-              
-              String selectedItem = (String)selectLayerCombo.getSelectedItem();
-              selectLayerModel.removeAllElements();
+    RibbonComboBoxContentModel<String> selectLayerModel;
 
-              // start off with our custom layer modes
-              selectLayerModel.addElement(CoreCreateShape.USER_SELECTED_LAYER_COMMAND);
-              
-              // now the list of trimmed layers (which includes `Add layer`)
-              for(String layer:layers) {
-                selectLayerModel.addElement(layer);
-              }
-              
-              boolean popupVisible = selectLayerCombo.isPopupVisible();
-              selectLayerCombo.updateUI();
-              if(popupVisible && !selectLayerCombo.isPopupVisible()) {
-                selectLayerCombo.showPopup();
-              }
-              
-              //remove listener - so it doesn't get triggered when
-              // we set default value
-              selectLayerCombo.removeItemListener(selectLayerItemListener);
-              
-              // if we know selection, assign it
-              if(selectedItem!=null) {
-                selectLayerCombo.setSelectedItem(selectedItem);
-              }
-             
-              // reinstate listener
-              selectLayerCombo.addItemListener(selectLayerItemListener);
-              
-            }
-          });
-          
-        }
-      }
-    });
-    selectLayerCombo.setName("select-layer-combo");
-    
-    panel.add(selectLayerCombo);
+    JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
     final Image activeLayerImg = MenuUtils.createImage("icons/24/auto_layer.png");
     ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon.getIcon(activeLayerImg, MenuUtils.ICON_SIZE_24);
-    JRibbonComponent component = new JRibbonComponent(imageIcon,"",panel);
-    component.setDisplayPriority(priority);
-    mapBand.addRibbonComponent(component);
-    return component;
-
+    
+    selectLayerModel = RibbonDefaultComboBoxContentModel.<String>builder()
+        
+        .setRichTooltip(RichTooltip.builder().setTitle("Select Layer")
+                        .build())
+        .setIconFactory(ResizableIconFactory.factory(imageIcon))
+        .setItems(new String[] {CoreCreateShape.USER_SELECTED_LAYER_COMMAND})
+        .build();
+    selectLayerModel.addListDataListener(new ListDataListener() {
+      Object selected = selectLayerModel.getSelectedItem();
+      @Override
+      public void contentsChanged(ListDataEvent e) {
+          Object newSelection = selectLayerModel.getSelectedItem();
+          if (this.selected != newSelection) {
+              System.out.println("New font selection -> " + newSelection);
+              this.selected = newSelection;
+          }
+      }
+      @Override
+      public void intervalAdded(ListDataEvent e)
+      {
+      }
+      @Override
+      public void intervalRemoved(ListDataEvent e)
+      {
+      }
+    });
+    
+    //selectLayerCombo.setName("select-layer-combo");
+    
+//    panel.add(selectLayerCombo);
+//    final Image activeLayerImg = MenuUtils.createImage("icons/24/auto_layer.png");
+//    ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon.getIcon(activeLayerImg, MenuUtils.ICON_SIZE_24);
+//    JRibbonComponent component = new JRibbonComponent(imageIcon,"",panel);
+//    component.setPresentationPriority(priority);
+//    mapBand.addRibbonComponent(component);
+//    return component;
+    //return null;
+    return selectLayerModel;
   }
 
   private static class AddLayerAction implements Action
@@ -487,13 +423,11 @@ public class DebriefRibbonInsert
       final ToolParent toolParent, final BoundsProvider bounds)
   {
     final JRibbonBand chartfeaturesMenu = new JRibbonBand("Decorations", null);
-    @SuppressWarnings("unused")
-    final FlamingoCommand scaleCmd = MenuUtils.addCommand("Scale",
-        "icons/24/scale_add.png", new CreateScale(toolParent, theProperties,
+    MenuUtils.addCommand("Scale",
+        "icons/24/scale_add.png", new CreateScaleCommandAction(toolParent, theProperties,
             theLayers, bounds), chartfeaturesMenu, null);
-    @SuppressWarnings("unused")
-    final FlamingoCommand gridCmd = MenuUtils.addCommand("Grid",
-        "icons/24/grid_add.png", new CreateGrid(toolParent, theProperties,
+    MenuUtils.addCommand("Grid",
+        "icons/24/grid_add.png", new CreateGridCommandAction(toolParent, theProperties,
             theLayers, bounds), chartfeaturesMenu, null);
     
     chartfeaturesMenu.setResizePolicies(MenuUtils

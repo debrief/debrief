@@ -28,8 +28,6 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -72,7 +70,6 @@ import org.mwc.debrief.lite.gui.custom.narratives.NarrativeConfigurationModel;
 import org.mwc.debrief.lite.gui.custom.narratives.NarrativePanelToolbar;
 import org.mwc.debrief.lite.gui.custom.narratives.NarrativePanelView;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
-import org.mwc.debrief.lite.map.GeoToolMapRenderer.MapRenderer;
 import org.mwc.debrief.lite.map.LiteMapPane;
 import org.mwc.debrief.lite.menu.DebriefRibbon;
 import org.mwc.debrief.lite.menu.DebriefRibbonFile;
@@ -80,6 +77,7 @@ import org.mwc.debrief.lite.menu.DebriefRibbonTimeController;
 import org.mwc.debrief.lite.menu.MenuUtils;
 import org.mwc.debrief.lite.outline.OutlinePanelView;
 import org.mwc.debrief.lite.util.DoSaveAs;
+import org.mwc.debrief.lite.util.ResizableIconFactory;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
@@ -113,9 +111,7 @@ import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.Layers.DataListener;
 import MWC.GUI.Layers.DataListener2;
-import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
 import MWC.GUI.StepperListener;
 import MWC.GUI.SupportedApps;
@@ -644,11 +640,11 @@ public class DebriefLiteApp implements FileDropListener
     }
   };
 
-  private final GeoToolMapProjection projection;
+  private GeoToolMapProjection projection;
 
   private final LiteSession session;
 
-  private final LiteMapPane mapPane;
+  private LiteMapPane mapPane;
 
   private final PlotOperations _myOperations = new PlotOperations()
   {
@@ -689,7 +685,7 @@ public class DebriefLiteApp implements FileDropListener
 
   private final TimeManager timeManager = new TimeManager();
 
-  private final GeoToolMapRenderer geoMapRenderer;
+ // private GeoToolMapRenderer geoMapRenderer;
 
   private final PainterManager painterManager;
 
@@ -700,8 +696,8 @@ public class DebriefLiteApp implements FileDropListener
   private final Layer safeChartFeatures;
   private HiResDate _pendingNewTime;
   private HiResDate _pendingOldTime;
-  private final ToteSetter _normalSetter;
-  private final ToteSetter _snailSetter;
+//  private final ToteSetter _normalSetter;
+//  private final ToteSetter _snailSetter;
 
   private DebriefLiteApp()
   {
@@ -737,13 +733,13 @@ public class DebriefLiteApp implements FileDropListener
 
     theFrame = new JRibbonFrame(defaultTitle);
 
-    theFrame.setApplicationIcon(ImageWrapperResizableIcon.getIcon(MenuUtils
-        .createImage("icons/d_lite.png"), MenuUtils.ICON_SIZE_32));
+    theFrame.setApplicationIcon(ResizableIconFactory.factory(ImageWrapperResizableIcon.getIcon(MenuUtils
+        .createImage("icons/d_lite.png"), MenuUtils.ICON_SIZE_32)));
 
-    geoMapRenderer = new GeoToolMapRenderer();
+    //geoMapRenderer = new GeoToolMapRenderer();
 
-    final MapContent mapComponent = geoMapRenderer.getMapComponent();
-    projection = new GeoToolMapProjection(mapComponent, _theLayers);
+    //final MapContent mapComponent = geoMapRenderer.getMapComponent();
+   // projection = new GeoToolMapProjection(mapComponent, _theLayers);
 
     final FileDropSupport dropSupport = new FileDropSupport();
     dropSupport.setFileDropListener(this,
@@ -771,85 +767,85 @@ public class DebriefLiteApp implements FileDropListener
 
     final float initialAlpha = 0.7f;
 
-    mapPane = geoMapRenderer.createMapLayout(initialAlpha);
+    //mapPane = geoMapRenderer.createMapLayout(initialAlpha);
 
-    dropSupport.addComponent(mapPane);
+    //dropSupport.addComponent(mapPane);
 
-    setInitialArea(mapPane, geoMapRenderer.getTransform());
+    //setInitialArea(mapPane, geoMapRenderer.getTransform());
 
     // ok, ready to load map content
-    initializeMapContent();
-    final CanvasAdaptor theCanvas = new CanvasAdaptor(projection, mapPane
-        .getGraphics());
+  //  initializeMapContent();
+//    final CanvasAdaptor theCanvas = new CanvasAdaptor(projection, mapPane
+//        .getGraphics());
 
     timeManager.addListener(_stepControl,
         TimeProvider.PERIOD_CHANGED_PROPERTY_NAME);
     timeManager.addListener(_stepControl,
         TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-    timeManager.addListener(new PropertyChangeListener()
-    {
-
-      @Override
-      public void propertyChange(final PropertyChangeEvent evt)
-      {
-        timeUpdate(theCanvas, evt);
-      }
-    }, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-
-    final DataListener dListener = new DataListener()
-    {
-      @Override
-      public void dataExtended(final Layers theData)
-      {
-        mapPane.repaint();
-      }
-
-      @Override
-      public void dataModified(final Layers theData, final Layer changedLayer)
-      {
-        mapPane.repaint();
-      }
-
-      @Override
-      public void dataReformatted(final Layers theData,
-          final Layer changedLayer)
-      {
-        mapPane.repaint();
-      }
-    };
-
-    _theLayers.addDataReformattedListener(dListener);
-    _theLayers.addDataExtendedListener(dListener);
-    _theLayers.addDataModifiedListener(dListener);
+//    timeManager.addListener(new PropertyChangeListener()
+//    {
+//
+//      @Override
+//      public void propertyChange(final PropertyChangeEvent evt)
+//      {
+//        timeUpdate(theCanvas, evt);
+//      }
+//    }, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+//
+//    final DataListener dListener = new DataListener()
+//    {
+//      @Override
+//      public void dataExtended(final Layers theData)
+//      {
+//        mapPane.repaint();
+//      }
+//
+//      @Override
+//      public void dataModified(final Layers theData, final Layer changedLayer)
+//      {
+//        mapPane.repaint();
+//      }
+//
+//      @Override
+//      public void dataReformatted(final Layers theData,
+//          final Layer changedLayer)
+//      {
+//        mapPane.repaint();
+//      }
+//    };
+//
+//    _theLayers.addDataReformattedListener(dListener);
+//    _theLayers.addDataExtendedListener(dListener);
+//    _theLayers.addDataModifiedListener(dListener);
 
     painterManager = new PainterManager(_stepControl);
-    final PlainChart theChart = new LiteChart(_theLayers, theCanvas, mapPane);
+   // final PlainChart theChart = new LiteChart(_theLayers, theCanvas, mapPane);
     theTote = new LiteTote(_theLayers, _stepControl);
-    final TotePainter tp = new TotePainter(theChart, _theLayers, theTote,
-        false);
-    tp.setColor(Color.white);
-    final TotePainter sp = new SnailPainter2(theChart, _theLayers, theTote);
+   // final TotePainter tp = new TotePainter(theChart, _theLayers, theTote,
+   //     false);
+  //  tp.setColor(Color.white);
+ //   final TotePainter sp = new SnailPainter2(theChart, _theLayers, theTote);
 
-    final ToteSetter.RefreshStepper refresher = new ToteSetter.RefreshStepper()
-    {
-
-      @Override
-      public void refresh(StepperListener listener)
-      {
-
-        // and the time marker
-        final Graphics graphics = mapPane.getGraphics();
-
-        final CanvasAdaptor adapter = new CanvasAdaptor(projection, graphics,
-            Color.blue);
-
-        listener.newTime(null, timeManager.getTime(), adapter);
-      }
-    };
-
-    _normalSetter = new ToteSetter(painterManager, tp, refresher);
-    _snailSetter = new ToteSetter(painterManager, sp, refresher);
-    _normalSetter.run();
+//    final ToteSetter.RefreshStepper refresher = new ToteSetter.RefreshStepper()
+//    {
+//
+//      @Override
+//      public void refresh(StepperListener listener)
+//      {
+//
+//        // and the time marker
+//        final Graphics graphics = mapPane.getGraphics();
+//
+//        final CanvasAdaptor adapter = new CanvasAdaptor(projection, graphics,
+//            Color.blue);
+//
+//        listener.newTime(null, timeManager.getTime(), adapter);
+//      }
+//    };
+//
+//    _normalSetter = new ToteSetter(painterManager, tp, refresher);
+//    _snailSetter = new ToteSetter(painterManager, sp, refresher);
+//    _normalSetter.run();
 
     final Runnable collapseAction = new Runnable()
     {
@@ -877,11 +873,16 @@ public class DebriefLiteApp implements FileDropListener
 
     // create the components
     initForm();
-    final MathTransform screenTransform = geoMapRenderer.getTransform();
-    createAppPanels(geoMapRenderer, session.getUndoBuffer(), dropSupport,
-        mapPane, _stepControl, timeManager, _myOperations, _normalSetter,
-        _snailSetter, statusBar, screenTransform, collapseAction, alphaListener,
+   // final MathTransform screenTransform = geoMapRenderer.getTransform();
+//    createAppPanels(geoMapRenderer, session.getUndoBuffer(), dropSupport,
+//        mapPane, _stepControl, timeManager, _myOperations, _normalSetter,
+//        _snailSetter, statusBar, screenTransform, collapseAction, alphaListener,
+//        initialAlpha, path);
+    createAppPanels(null, session.getUndoBuffer(), dropSupport,
+        mapPane, _stepControl, timeManager, _myOperations, null,
+        null, statusBar, null, collapseAction, alphaListener,
         initialAlpha, path);
+    
     _listenForMods = new DataListenerAdaptor()
     {
       @Override
@@ -902,7 +903,7 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataReformattedListener(_listenForMods);
 
     // lastly give us some backdrop data
-    loadBackdropdata(_theLayers);
+    //loadBackdropdata(_theLayers);
 
     theFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     theFrame.setVisible(true);
@@ -992,25 +993,25 @@ public class DebriefLiteApp implements FileDropListener
     final JPanel centerPanel = new JPanel();
     centerPanel.setLayout(new BorderLayout());
     centerPanel.setName("Center Panel");
-    mapPane.addComponentListener(new ComponentAdapter()
-    {
-      @Override
-      public void componentResized(final ComponentEvent e)
-      {
-        // TODO . This must be change once we update geotools.
-        // Reverted ec7262026be4cbe07c7c521687703ddfa1acfb97
-        // I _think_ it is causing the behavior described here.
-        // here https://github.com/debrief/debrief/issues/4051#issuecomment-511193288
-        mapPane.setVisible(false);
-        mapPane.setVisible(true);
-        //mapPane.repaint();
-      }
-    });
+//    mapPane.addComponentListener(new ComponentAdapter()
+//    {
+//      @Override
+//      public void componentResized(final ComponentEvent e)
+//      {
+//        // TODO . This must be change once we update geotools.
+//        // Reverted ec7262026be4cbe07c7c521687703ddfa1acfb97
+//        // I _think_ it is causing the behavior described here.
+//        // here https://github.com/debrief/debrief/issues/4051#issuecomment-511193288
+//        mapPane.setVisible(false);
+//        mapPane.setVisible(true);
+//        //mapPane.repaint();
+//      }
+//    });
 
-    centerPanel.add(mapPane, BorderLayout.CENTER);
-    centerPanel.add(graphPanel, BorderLayout.PAGE_END);
-
-    theFrame.add(centerPanel, BorderLayout.CENTER);
+//    centerPanel.add(mapPane, BorderLayout.CENTER);
+//    centerPanel.add(graphPanel, BorderLayout.PAGE_END);
+//
+//    theFrame.add(centerPanel, BorderLayout.CENTER);
 
     theFrame.add(outlinePanel, BorderLayout.WEST);
 
@@ -1308,9 +1309,9 @@ public class DebriefLiteApp implements FileDropListener
     // ok, the plot may have loaded with a stepping mode (snail mode).
     // we can't see how to change the button in the Ribbon bar, so, instead
     // we'll change the listener to what the ribbon is showing
-    final ToteSetter listener = DebriefRibbonTimeController
-        .isNormalDisplayMode() ? _normalSetter : _snailSetter;
-    listener.run();
+//    final ToteSetter listener = DebriefRibbonTimeController
+//        .isNormalDisplayMode() ? _normalSetter : _snailSetter;
+//    listener.run();
 
     if (success)
     {
@@ -1466,17 +1467,17 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.doLayout();
   }
 
-  private void initializeMapContent()
-  {
-    geoMapRenderer.addRenderer(new MapRenderer()
-    {
-      @Override
-      public void paint(final Graphics gc)
-      {
-        doPaint(gc);
-      }
-    });
-  }
+//  private void initializeMapContent()
+//  {
+//    geoMapRenderer.addRenderer(new MapRenderer()
+//    {
+//      @Override
+//      public void paint(final Graphics gc)
+//      {
+//        doPaint(gc);
+//      }
+//    });
+//  }
 
   private void paintDynamicLayers(final CanvasType dest)
   {
@@ -1556,7 +1557,7 @@ public class DebriefLiteApp implements FileDropListener
       DebriefLiteApp.currentFileName = file.getAbsolutePath();
       DebriefLiteApp.setTitle(file.getName());
       // setState(ACTIVE_STATE);
-      DebriefRibbonFile.closeButton.setEnabled(true);
+      DebriefRibbonFile.closeButton.getContentModel().setActionEnabled(true);
     }
   }
   private void resetUndoBuffer()
@@ -1609,7 +1610,7 @@ public class DebriefLiteApp implements FileDropListener
     // continue with reset processing
     _plotDirty = false;
     setState(INACTIVE_STATE);
-    DebriefRibbonFile.closeButton.setEnabled(false);
+    DebriefRibbonFile.closeButton.getContentModel().setActionEnabled(false);
     currentFileName = null;
     setTitle(defaultTitle);
 
