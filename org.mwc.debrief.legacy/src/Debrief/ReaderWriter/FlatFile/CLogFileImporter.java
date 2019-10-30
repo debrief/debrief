@@ -482,6 +482,12 @@ public class CLogFileImporter
     // ok, tokenize the line
     final String[] tokens = line.split("\\s+");
 
+    if (tokens.length != 17)
+    {
+      logger.logError(ErrorLogger.ERROR,
+          "Expecting 17 tokens in CLog format. Found:" + tokens.length, null);
+    }
+
     final WorldLocation loc = locationFrom(tokens[11], tokens[12], tokens[13],
         logger);
     final HiResDate date = dateFor(tokens[16], logger);
@@ -508,14 +514,23 @@ public class CLogFileImporter
     while ((line = reader.readLine()) != null)
     {
       // ok, generate a position
-      final FixWrapper wrapped = produceFix(logger, line);
-      if (wrapped != null)
+      try
       {
-        if (res == null)
+
+        final FixWrapper wrapped = produceFix(logger, line);
+        if (wrapped != null)
         {
-          res = new ArrayList<FixWrapper>();
+          if (res == null)
+          {
+            res = new ArrayList<FixWrapper>();
+          }
+          res.add(wrapped);
         }
-        res.add(wrapped);
+      }
+      catch (final Exception e)
+      {
+        logger.logError(ErrorLogger.ERROR, "Exception while reading CLog data",
+            e);
       }
     }
     return res;
