@@ -140,6 +140,10 @@ final class SnailDrawTrack2
         final LightweightTrackWrapper track = (LightweightTrackWrapper) trk;
         dotPoints = track.getUnfilteredItems(new HiResDate(0, dtg.getMicros()
             - _trailLength), new HiResDate(0, dtg.getMicros() + 2000));
+        if (dotPoints.size() > 1)
+        {
+          dotPoints.add(theFix);
+        }
       }
       else
       {
@@ -189,7 +193,7 @@ final class SnailDrawTrack2
 
           // get the screen location
           final Point scrPos = proj.toScreen(loc);
-          
+
           final Point screenP = new Point(scrPos);
 
           // initialise the area, if we have to
