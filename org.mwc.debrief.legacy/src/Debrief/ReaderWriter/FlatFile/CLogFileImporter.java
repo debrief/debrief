@@ -44,6 +44,10 @@ import junit.framework.TestCase;
 public class CLogFileImporter
 {
 
+  public interface CLog_Helper
+  {
+    String getTrackName();
+  }
   /**
    * package up the action that adds the data to the layers target
    *
@@ -280,7 +284,13 @@ public class CLogFileImporter
       final CLogFileImporter importer = new CLogFileImporter();
       final Layers layers = new Layers();
 
-      final OTH_Helper brtHelper = new OTH_Helper_Headless(true);
+      final CLog_Helper brtHelper = new CLog_Helper() {
+
+        @Override
+        public String getTrackName()
+        {
+          return "Dave";
+        }};
       
 
       assertTrue("input file exists", new File(ownship_track).exists());
@@ -316,8 +326,15 @@ public class CLogFileImporter
     {
       final CLogFileImporter importer = new CLogFileImporter();
       final Layers layers = new Layers();
+      final String trackName = "Dumbo";
 
-      final OTH_Helper brtHelper = new OTH_Helper_Headless(true);
+      final CLog_Helper brtHelper = new CLog_Helper() {
+
+        @Override
+        public String getTrackName()
+        {
+          return trackName;
+        }};
       
       final String ownship_track =
           "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/CLog_Trial.txt";
@@ -325,7 +342,7 @@ public class CLogFileImporter
       assertTrue("input file exists", new File(ownship_track).exists());
 
       TrackWrapper tw = new TrackWrapper();
-      tw.setName("Pending");
+      tw.setName(trackName);
       tw.add(createF(10000000L));
       tw.add(createF(20000000L));
       tw.add(createF(30000000L));
@@ -354,7 +371,7 @@ public class CLogFileImporter
 
   private static final String HEADER_STR = "Unknown";
 
-  private static boolean canLoad(final ErrorLogger logger,
+  public static boolean canLoad(final ErrorLogger logger,
       final BufferedReader r) throws IOException
   {
     // try this first line
@@ -506,12 +523,12 @@ public class CLogFileImporter
         WorldSpeed.ft_sec) / 3;
   }
 
-  public ImportCLogFileAction importThis(final OTH_Helper brtHelper,
+  public ImportCLogFileAction importThis(final CLog_Helper helper,
       final InputStream is, final Layers layers, final ErrorLogger logger)
       throws Exception
   {
     final List<FixWrapper> brtData = readCLogData(is, logger);
-    final String trackName = "Pending";
+    final String trackName = helper.getTrackName();
     return createImportAction(brtData, layers, trackName);
   }
 }
