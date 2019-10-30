@@ -20,15 +20,16 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.DebriefPlugin;
+import org.osgi.service.prefs.BackingStoreException;
 
 import Debrief.ReaderWriter.FlatFile.CLogFileImporter;
 import Debrief.ReaderWriter.FlatFile.CLogFileImporter.CLog_Helper;
@@ -74,12 +75,17 @@ public class CLog_Loader extends CoreLoader
       {
         final CLogFileImporter importer = new CLogFileImporter();
         
+        // get the last filename used
+        final String prefKey = "Last_Track_Name";
+        final IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(CorePlugin.PLUGIN_ID + ".New_CLog_File");
+        final String defaultName = prefs.get(prefKey, "<Pending>");
+        
         CLog_Helper helper = new CLog_Helper() {
 
           @Override
           public String getTrackName()
           {
-            AtomicReference<String> res = new AtomicReference<String>("Unnamed");
+            AtomicReference<String> res = new AtomicReference<String>(CLog_Helper.CANCEL_STRING);
             Display.getDefault().syncExec(new Runnable()
             {
               @Override
@@ -87,7 +93,7 @@ public class CLog_Loader extends CoreLoader
               {
                 final Shell sw = Display.getCurrent().getActiveShell();
                 final InputDialog id = new InputDialog(sw, "Load new CLog track", 
-                    "Please enter the name for this new track.", "<Pending>", new IInputValidator() {
+                    "Please enter the name for this new track.", defaultName, new IInputValidator() {
                   public String isValid(String newText) {
                     if (newText.length() < 3) {
                       return "Please provide a longer name";
@@ -100,6 +106,19 @@ public class CLog_Loader extends CoreLoader
                 if(answer == InputDialog.OK)
                 {
                   res.set(id.getValue());
+                  // and store it
+                  prefs.put(prefKey, id.getValue());
+                  
+                  try
+                  {
+                    // forces the application to save the preferences
+                    prefs.flush();
+                  }
+                  catch (BackingStoreException e)
+                  {
+                    e.printStackTrace();
+                  }
+                  
                 }
               }
             });

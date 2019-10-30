@@ -46,8 +46,11 @@ public class CLogFileImporter
 
   public interface CLog_Helper
   {
+    final String CANCEL_STRING = "<Pending>";
+
     String getTrackName();
   }
+
   /**
    * package up the action that adds the data to the layers target
    *
@@ -98,7 +101,7 @@ public class CLogFileImporter
       }
       if (track != null)
       {
-        for(FixWrapper fix : _track)
+        for (FixWrapper fix : _track)
         {
           track.addFix(fix);
         }
@@ -127,12 +130,12 @@ public class CLogFileImporter
         if (layer instanceof TrackWrapper)
         {
           TrackWrapper track = (TrackWrapper) layer;
-          for(FixWrapper fix: _track)
+          for (FixWrapper fix : _track)
           {
             track.removeFix(fix);
           }
           // also remove the track, if necessary
-          if(_trackCreated)
+          if (_trackCreated)
           {
             _layers.removeThisLayer(track);
           }
@@ -142,7 +145,7 @@ public class CLogFileImporter
           DialogFactory.showMessage("Undo Import Log File",
               "Can't find track containing new fixes");
         }
-        
+
       }
     }
   }
@@ -203,7 +206,7 @@ public class CLogFileImporter
     {
       _logger.clear();
     }
-    
+
     public void NOTtestExport() throws IOException
     {
       final String ownship_track =
@@ -221,17 +224,17 @@ public class CLogFileImporter
       trackImporter.importThis(ownship_track, bs, tLayers);
 
       assertEquals("read in track", 1, tLayers.size());
-      
+
       // ok, now export in the new format
-      FileWriter fw=new FileWriter("CLog_Trial.txt");    
-      fw.write("Unknown blah blah blah\n");    
-      fw.write("Blah blah blah blah\n");    
-      
+      FileWriter fw = new FileWriter("CLog_Trial.txt");
+      fw.write("Unknown blah blah blah\n");
+      fw.write("Blah blah blah blah\n");
+
       // and now the positions
       int ctr = 0;
       TrackWrapper track = (TrackWrapper) tLayers.findLayer("Nelson");
       Enumeration<Editable> posits = track.getPositionIterator();
-      while(ctr < 10 && posits.hasMoreElements())
+      while (ctr < 10 && posits.hasMoreElements())
       {
         FixWrapper fix = (FixWrapper) posits.nextElement();
         String asLog = toLogFile(fix);
@@ -246,7 +249,7 @@ public class CLogFileImporter
       final String blah = "blah";
       final String separator = " ";
       final String nl = System.lineSeparator();
-      
+
       res += (blah + separator); // 1
       res += (blah + separator); // 2
       res += (blah + separator); // 3
@@ -257,26 +260,29 @@ public class CLogFileImporter
       res += (blah + separator); // 8
       res += (blah + separator); // 9
 
-      res += (fix.getCourse() + separator);  // 10 - Course in radians      
-      res +=  (new WorldSpeed(fix.getSpeed(), WorldSpeed.Kts).getValueIn(WorldSpeed.M_sec) + separator); // 11 - Speed in metres/second
-      res += (Math.toRadians(fix.getLocation().getLat()) + separator);  //      12 - Latitude in Radians
-      res += (Math.toRadians(fix.getLocation().getLong()) + separator);  //      13 - Longitude in Radians
-      res += (fix.getLocation().getDepth() + separator );  //      14 - Depth in metres
+      res += (fix.getCourse() + separator); // 10 - Course in radians
+      res += (new WorldSpeed(fix.getSpeed(), WorldSpeed.Kts).getValueIn(
+          WorldSpeed.M_sec) + separator); // 11 - Speed in metres/second
+      res += (Math.toRadians(fix.getLocation().getLat()) + separator); // 12 - Latitude in Radians
+      res += (Math.toRadians(fix.getLocation().getLong()) + separator); // 13 - Longitude in Radians
+      res += (fix.getLocation().getDepth() + separator); // 14 - Depth in metres
       res += (blah + separator); // 15
       res += (blah + separator); // 16
-      res += (timeStampFor(fix.getDateTimeGroup()) + separator); //    17 - timestamp in Nanos since epoch (19 digits!)
-      
+      res += (timeStampFor(fix.getDateTimeGroup()) + separator); // 17 - timestamp in Nanos since
+                                                                 // epoch (19 digits!)
+
       // and newline
       res += nl;
-      
+
       return res;
-      }
-    
+    }
+
     private long timeStampFor(HiResDate date)
     {
       final long millis = date.getDate().getTime();
       return millis * 1000000;
     }
+
     private final String ownship_track =
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/CLog_Trial.txt";
 
@@ -285,22 +291,22 @@ public class CLogFileImporter
       final CLogFileImporter importer = new CLogFileImporter();
       final Layers layers = new Layers();
 
-      final CLog_Helper brtHelper = new CLog_Helper() {
+      final CLog_Helper brtHelper = new CLog_Helper()
+      {
 
         @Override
         public String getTrackName()
         {
           return "Dave";
-        }};
-      
+        }
+      };
 
       assertTrue("input file exists", new File(ownship_track).exists());
 
       assertEquals("empty before", 0, layers.size());
 
       final InputStream is = new FileInputStream(ownship_track);
-      final ImportCLogFileAction action = importer.importThis(brtHelper, is,
-          layers, _logger);
+      final Action action = importer.importThis(brtHelper, is, layers, _logger);
       action.execute();
 
       assertEquals("has data", 1, layers.size());
@@ -314,7 +320,7 @@ public class CLogFileImporter
 
       assertEquals("has data", 0, layers.size());
     }
-    
+
     private FixWrapper createF(long time)
     {
       WorldLocation loc = new WorldLocation(2, 2, 2);
@@ -322,21 +328,23 @@ public class CLogFileImporter
       FixWrapper fw = new FixWrapper(newF);
       return fw;
     }
-    
+
     public void testGoodLoadOnExisting() throws Exception
     {
       final CLogFileImporter importer = new CLogFileImporter();
       final Layers layers = new Layers();
       final String trackName = "Dumbo";
 
-      final CLog_Helper brtHelper = new CLog_Helper() {
+      final CLog_Helper brtHelper = new CLog_Helper()
+      {
 
         @Override
         public String getTrackName()
         {
           return trackName;
-        }};
-      
+        }
+      };
+
       final String ownship_track =
           "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/CLog_Trial.txt";
 
@@ -348,13 +356,12 @@ public class CLogFileImporter
       tw.add(createF(20000000L));
       tw.add(createF(30000000L));
       layers.addThisLayer(tw);
-      
+
       assertEquals("not empty before", 1, layers.size());
       assertEquals("only 3 items before", 3, tw.numFixes());
 
       final InputStream is = new FileInputStream(ownship_track);
-      final ImportCLogFileAction action = importer.importThis(brtHelper, is,
-          layers, _logger);
+      final Action action = importer.importThis(brtHelper, is, layers, _logger);
       action.execute();
 
       assertEquals("has data", 1, layers.size());
@@ -383,7 +390,7 @@ public class CLogFileImporter
     if (!res)
     {
       logger.logError(ErrorLogger.INFO, "CLog Import rejecting file, Header:"
-          + res , null);
+          + res, null);
     }
     return res;
   }
@@ -422,18 +429,14 @@ public class CLogFileImporter
     return res;
   }
 
-  private static double courseFor(final String courseRadsStr, final ErrorLogger logger)
+  private static double courseFor(final String courseRadsStr,
+      final ErrorLogger logger)
   {
     return Double.parseDouble(courseRadsStr);
   }
 
-  private static ImportCLogFileAction createImportAction(
-      final List<FixWrapper> track, final Layers layers, final String trackName)
-  {
-    return new ImportCLogFileAction(track, trackName, layers);
-  }
-
-  private static HiResDate dateFor(final String timeStr, final ErrorLogger logger)
+  private static HiResDate dateFor(final String timeStr,
+      final ErrorLogger logger)
   {
     final long nanos = Long.parseLong(timeStr);
     final long millis = nanos / 1000000;
@@ -463,8 +466,8 @@ public class CLogFileImporter
     return null;
   }
 
-  private static WorldLocation locationFrom(final String latStr,
-      String longStr, final String depthStr, final ErrorLogger logger)
+  private static WorldLocation locationFrom(final String latStr, String longStr,
+      final String depthStr, final ErrorLogger logger)
   {
     final double latRads = Double.parseDouble(latStr);
     final double longRads = Double.parseDouble(longStr);
@@ -478,8 +481,9 @@ public class CLogFileImporter
   {
     // ok, tokenize the line
     String[] tokens = line.split("\\s+");
-    
-    final WorldLocation loc = locationFrom(tokens[11], tokens[12], tokens[13], logger);
+
+    final WorldLocation loc = locationFrom(tokens[11], tokens[12], tokens[13],
+        logger);
     final HiResDate date = dateFor(tokens[16], logger);
     final double courseRads = courseFor(tokens[9], logger);
     final double speedYps = speedFor(tokens[10], logger);
@@ -524,12 +528,16 @@ public class CLogFileImporter
         WorldSpeed.ft_sec) / 3;
   }
 
-  public ImportCLogFileAction importThis(final CLog_Helper helper,
-      final InputStream is, final Layers layers, final ErrorLogger logger)
-      throws Exception
+  public Action importThis(final CLog_Helper helper, final InputStream is,
+      final Layers layers, final ErrorLogger logger) throws Exception
   {
     final List<FixWrapper> brtData = readCLogData(is, logger);
     final String trackName = helper.getTrackName();
-    return createImportAction(brtData, layers, trackName);
+    if (CLog_Helper.CANCEL_STRING.equals(trackName))
+    {
+      // clear the fixes, to cancel the import
+      brtData.clear();
+    }
+    return new ImportCLogFileAction(brtData, trackName, layers);
   }
 }
