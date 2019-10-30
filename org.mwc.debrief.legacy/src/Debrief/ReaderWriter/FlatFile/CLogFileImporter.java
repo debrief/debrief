@@ -92,6 +92,7 @@ public class CLogFileImporter
       {
         track = new TrackWrapper();
         track.setName(_name);
+        track.setColor(DebriefColors.BLUE);
         _trackCreated = true;
         _layers.addThisLayer(track);
       }
@@ -400,7 +401,7 @@ public class CLogFileImporter
     }
     catch (final Exception e)
     {
-      logger.logError(ErrorLogger.ERROR, "Trouble whilst checking valid OTH",
+      logger.logError(ErrorLogger.ERROR, "Trouble whilst checking valid CLog",
           e);
     }
     finally
