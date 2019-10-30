@@ -159,7 +159,7 @@
         />
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
-        <loader class="org.mwc.debrief.core.loaders.CLog_Loader" extensions="txt" name="CLog File"        
+        <loader class="org.mwc.debrief.core.loaders.CLog_Loader" extensions="txt" first_line="Unknown" name="CLog File"        
         />
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
