@@ -15,11 +15,18 @@
 package org.mwc.debrief.core.loaders;
 
 import java.io.InputStream;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.dialogs.IInputValidator;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.DebriefPlugin;
 
@@ -66,12 +73,37 @@ public class CLog_Loader extends CoreLoader
       public void run(final IProgressMonitor pm)
       {
         final CLogFileImporter importer = new CLogFileImporter();
+        
         CLog_Helper helper = new CLog_Helper() {
 
           @Override
           public String getTrackName()
           {
-            return "Unnamed";
+            AtomicReference<String> res = new AtomicReference<String>("Unnamed");
+            Display.getDefault().syncExec(new Runnable()
+            {
+              @Override
+              public void run()
+              {
+                final Shell sw = Display.getCurrent().getActiveShell();
+                final InputDialog id = new InputDialog(sw, "Load new CLog track", 
+                    "Please enter the name for this new track.", "<Pending>", new IInputValidator() {
+                  public String isValid(String newText) {
+                    if (newText.length() < 3) {
+                      return "Please provide a longer name";
+                    }
+                    return null;
+                  }
+                });
+                
+                int answer = id.open();
+                if(answer == InputDialog.OK)
+                {
+                  res.set(id.getValue());
+                }
+              }
+            });
+            return res.get();
           }};
 
         try
