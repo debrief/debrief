@@ -38,7 +38,7 @@ public class CLog_ContentDescriber extends TextContentDescriber
 		}
 		catch (Exception e)
 		{
-			CorePlugin.logError(Status.ERROR, "OTH-G content type error", e);
+			CorePlugin.logError(Status.ERROR, "C-Log content type error", e);
 		}
 		finally
 		{
