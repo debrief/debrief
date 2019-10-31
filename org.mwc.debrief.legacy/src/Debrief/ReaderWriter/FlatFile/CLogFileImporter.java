@@ -15,6 +15,7 @@
 package Debrief.ReaderWriter.FlatFile;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -96,6 +97,11 @@ public class CLogFileImporter
           }
         }
       }
+
+      public boolean isEmpty()
+      {
+        return messages.isEmpty();
+      }
     }
 
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
@@ -153,6 +159,106 @@ public class CLogFileImporter
     public void setUp()
     {
       _logger.clear();
+    }
+    
+    public void testMangledText() throws Exception 
+    {
+      
+      String initialString = "Unknown blah blah blah\n" + 
+          "Blah blah blah blah\n" + 
+          "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 BANANA -0.37869945639890085 0.0 blah blah 818744400000000000 \n" + 
+          "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 0.38722349902153685 -0.37875089513046656 0.0 blah blah 818744460000000000 \n" + 
+          "blah blah blah blah blah blah blah blah blah 4.710643651132695  1.028888888888889 0.38722315965196 -0.3788082485889418 0.0 blah blah 818744520000000000 \n" ;
+      final CLogFileImporter importer = new CLogFileImporter();
+      final Layers layers = new Layers();
+      final CLog_Helper brtHelper = new CLog_Helper()
+      {
+
+        @Override
+        public String getTrackName()
+        {
+          return "Dave";
+        }
+      };
+      
+      assertTrue("logger empty",  _logger.isEmpty());
+          
+      InputStream is = new ByteArrayInputStream(initialString.getBytes());
+      final Action action = importer.importThis(brtHelper, is, layers, _logger);
+      action.execute();
+
+      assertEquals("has data", 1, layers.size());
+      assertFalse("logger not empty", _logger.isEmpty());
+      
+      assertEquals("correct logging message", "Exception while reading CLog data", _logger.messages.get(0));
+      
+      // check other data still got loaded
+      TrackWrapper track = (TrackWrapper) layers.findLayer("Dave");
+      assertEquals("loaded other posits", 2, track.numFixes());
+    }
+
+    public void testTooFewTokens() throws Exception 
+    {
+      
+      String initialString = "Unknown blah blah blah\n" + 
+          "Blah blah blah blah\n" + 
+          "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 0.3872237414283774 -0.37869945639890085 0.0 blah blah 818744400000000000 \n" + 
+          "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 0.38722349902153685 -0.37875089513046656 0.0 818744460000000000 \n" + 
+          "blah blah blah blah blah blah blah blah blah 4.710643651132695  1.028888888888889 0.38722315965196 -0.3788082485889418 0.0 blah blah 818744520000000000 \n" ;
+      final CLogFileImporter importer = new CLogFileImporter();
+      final Layers layers = new Layers();
+      final CLog_Helper brtHelper = new CLog_Helper()
+      {
+
+        @Override
+        public String getTrackName()
+        {
+          return "Dave";
+        }
+      };
+      
+      assertTrue("logger empty",  _logger.isEmpty());
+          
+      InputStream is = new ByteArrayInputStream(initialString.getBytes());
+      final Action action = importer.importThis(brtHelper, is, layers, _logger);
+      action.execute();
+
+      assertEquals("has data", 1, layers.size());
+      assertFalse("logger not empty", _logger.isEmpty());
+      
+      assertEquals("correct logging message", "Expecting 17 tokens in CLog format. Found:15", _logger.messages.get(0));
+    }
+
+    public void testTooManyTokens() throws Exception 
+    {
+      
+      String initialString = "Unknown blah blah blah\n" + 
+          "Blah blah blah blah\n" + 
+          "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 0.3872237414283774 -0.37869945639890085 0.0 blah blah 818744400000000000 EXTRA\n" + 
+          "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 0.38722349902153685 -0.37875089513046656 0.0 blah blah 818744460000000000 \n" + 
+          "blah blah blah blah blah blah blah blah blah 4.710643651132695  1.028888888888889 0.38722315965196 -0.3788082485889418 0.0 blah blah 818744520000000000 \n" ;
+      final CLogFileImporter importer = new CLogFileImporter();
+      final Layers layers = new Layers();
+      final CLog_Helper brtHelper = new CLog_Helper()
+      {
+
+        @Override
+        public String getTrackName()
+        {
+          return "Dave";
+        }
+      };
+      
+      assertTrue("logger empty",  _logger.isEmpty());
+          
+      InputStream is = new ByteArrayInputStream(initialString.getBytes());
+      final Action action = importer.importThis(brtHelper, is, layers, _logger);
+      action.execute();
+
+      assertEquals("has data", 1, layers.size());
+      assertFalse("logger not empty", _logger.isEmpty());
+      
+      assertEquals("correct logging message", "Expecting 17 tokens in CLog format. Found:18", _logger.messages.get(0));
     }
 
     public void testGoodLoad() throws Exception
