@@ -55,9 +55,8 @@ public interface IPlotLoader extends INamedItem
 	 *          the file source
 	 * @param fileName
 	 *          file suffix that must match
-	 * @param listener TODO
-	 * @param firstLine
-	 *           String that the first line of text must start with
+	 * @param listener 
+	 *         tell someone we're complete
 	 */
 	public void loadFile(final IAdaptable target, final InputStream inputStream,
 			final String fileName, final CompleteListener listener);
@@ -198,7 +197,6 @@ public interface IPlotLoader extends INamedItem
 		 * @param icon
 		 * @param fileTypes
 		 * @param firstLine 
-		 * @param regexp
 		 */
 		public DeferredPlotLoader(final IConfigurationElement configElement,
 				final String name, final String icon, final String fileTypes, String firstLine)
@@ -236,11 +234,15 @@ public interface IPlotLoader extends INamedItem
 				}
 			}
 
-			if (_myLoader != null)
-			{
-				// we either had it already, or we're trying to load it now. go for it
-				_myLoader.loadFile(target, inputStream, fileName, listener);
-			}
+      if (_myLoader != null)
+      {
+        // just do a final canLoad operation
+        if (_myLoader.canLoad(fileName))
+        {
+          // we either had it already, or we're trying to load it now. go for it
+          _myLoader.loadFile(target, inputStream, fileName, listener);
+        }
+      }
 			else
 			{
 				DebriefPlugin.logError(Status.ERROR,

@@ -22,6 +22,7 @@
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.DebriefPlot"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.DebriefPlotGPX"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.OTH_G_Log"/>
+            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.CLog"/>
         </editor>
     </extension>
 
@@ -82,6 +83,10 @@
         <content-type id="org.mwc.debrief.contenttype.OTH_G_Log" file-extensions="txt"
             name="OTH-Gold log file" priority="high"> 
             <describer class="org.mwc.debrief.core.contenttype.OTH_G_ContentDescriber"/>
+        </content-type>
+        <content-type id="org.mwc.debrief.contenttype.CLog" file-extensions="txt"
+            name="CLog file" priority="high"> 
+            <describer class="org.mwc.debrief.core.contenttype.CLog_ContentDescriber"/>
         </content-type>
         <content-type id="org.mwc.debrief.contenttype.LogTrackFile" file-extensions="csv"
             name="S2087 Context Track File (Log)" priority="normal"> </content-type>
@@ -151,6 +156,10 @@
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
         <loader class="org.mwc.debrief.core.loaders.OTH_Gold_Loader" extensions="txt" name="OTH-Gold Log File"        
+        />
+    </extension>
+    <extension point="org.mwc.debrief.core.DebriefPlotLoader">
+        <loader class="org.mwc.debrief.core.loaders.CLog_Loader" extensions="txt" first_line="Unknown" name="CLog File"        
         />
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
