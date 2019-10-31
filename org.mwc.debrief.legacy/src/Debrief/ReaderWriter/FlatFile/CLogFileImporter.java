@@ -22,6 +22,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -161,6 +163,36 @@ public class CLogFileImporter
       _logger.clear();
     }
     
+    public void testCannotLoad() throws Exception 
+    {
+      
+      String initialString = "Unkbenown blah blah blah\n" + 
+          "Blah blah blah blah\n" + 
+          "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 BANANA -0.37869945639890085 0.0 blah blah 818744400000000000 \n" + 
+          "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 0.38722349902153685 -0.37875089513046656 0.0 blah blah 818744460000000000 \n" + 
+          "blah blah blah blah blah blah blah blah blah 4.710643651132695  1.028888888888889 0.38722315965196 -0.3788082485889418 0.0 blah blah 818744520000000000 \n" ;
+      
+      Reader inputString = new StringReader(initialString);
+      BufferedReader reader = new BufferedReader(inputString);
+      
+      assertFalse(canLoad(_logger, reader));
+    }
+
+    public void testCanLoad() throws Exception 
+    {
+      
+      String initialString = "Unknown blah blah blah\n" + 
+          "Blah blah blah blah\n" + 
+          "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 BANANA -0.37869945639890085 0.0 blah blah 818744400000000000 \n" + 
+          "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 0.38722349902153685 -0.37875089513046656 0.0 blah blah 818744460000000000 \n" + 
+          "blah blah blah blah blah blah blah blah blah 4.710643651132695  1.028888888888889 0.38722315965196 -0.3788082485889418 0.0 blah blah 818744520000000000 \n" ;
+      
+      Reader inputString = new StringReader(initialString);
+      BufferedReader reader = new BufferedReader(inputString);
+      
+      assertTrue(canLoad(_logger, reader));
+    }
+
     public void testMangledText() throws Exception 
     {
       
