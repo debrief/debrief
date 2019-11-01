@@ -89,36 +89,60 @@ public class LiteMapPane extends JMapPane
     _renderer = geoToolMapRenderer;
 
     addMouseListener(getMouseListener(data_transform));
-    
+
     disableBoxDrawRightClick();
 
     // try to set background color
     super.setBackground(new Color(135, 172, 215));
   }
 
+  public void addRepaintListener(final ActionListener actionListener)
+  {
+    repaintListeners.add(actionListener);
+  }
+
   private void disableBoxDrawRightClick()
   {
     addMouseListener(new MapMouseListener()
     {
-      
+
       @Override
-      public void onMouseWheelMoved(MapMouseEvent paramMapMouseEvent)
+      public void onMouseClicked(final MapMouseEvent paramMapMouseEvent)
       {
-        
+
       }
-      
+
       @Override
-      public void onMouseReleased(MapMouseEvent paramMapMouseEvent)
+      public void onMouseDragged(final MapMouseEvent paramMapMouseEvent)
       {
-        
+
       }
-      
+
       @Override
-      public void onMousePressed(MapMouseEvent paramMapMouseEvent)
+      public void onMouseEntered(final MapMouseEvent paramMapMouseEvent)
       {
-        final boolean isRightClick = paramMapMouseEvent.getButton() == MouseEvent.BUTTON3;
+
+      }
+
+      @Override
+      public void onMouseExited(final MapMouseEvent paramMapMouseEvent)
+      {
+
+      }
+
+      @Override
+      public void onMouseMoved(final MapMouseEvent paramMapMouseEvent)
+      {
+
+      }
+
+      @Override
+      public void onMousePressed(final MapMouseEvent paramMapMouseEvent)
+      {
+        final boolean isRightClick = paramMapMouseEvent
+            .getButton() == MouseEvent.BUTTON3;
         final MouseListener[] listeners = getMouseListeners();
-        for (MouseListener l : listeners)
+        for (final MouseListener l : listeners)
         {
           if (l instanceof MouseDragBox)
           {
@@ -126,42 +150,19 @@ public class LiteMapPane extends JMapPane
           }
         }
       }
-      
+
       @Override
-      public void onMouseMoved(MapMouseEvent paramMapMouseEvent)
+      public void onMouseReleased(final MapMouseEvent paramMapMouseEvent)
       {
-        
+
       }
-      
+
       @Override
-      public void onMouseExited(MapMouseEvent paramMapMouseEvent)
+      public void onMouseWheelMoved(final MapMouseEvent paramMapMouseEvent)
       {
-        
-      }
-      
-      @Override
-      public void onMouseEntered(MapMouseEvent paramMapMouseEvent)
-      {
-        
-      }
-      
-      @Override
-      public void onMouseDragged(MapMouseEvent paramMapMouseEvent)
-      {
-        
-      }
-      
-      @Override
-      public void onMouseClicked(MapMouseEvent paramMapMouseEvent)
-      {
-        
+
       }
     });
-  }
-
-  public void addRepaintListener(final ActionListener actionListener)
-  {
-    repaintListeners.add(actionListener);
   }
 
   public MapMouseAdapter getMouseListener(final MathTransform transform)
