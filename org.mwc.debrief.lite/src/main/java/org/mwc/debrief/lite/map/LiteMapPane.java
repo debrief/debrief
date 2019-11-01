@@ -9,6 +9,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.RenderedImage;
 import java.util.ArrayList;
 
@@ -17,8 +19,10 @@ import org.geotools.geometry.DirectPosition2D;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.swing.JMapPane;
+import org.geotools.swing.MouseDragBox;
 import org.geotools.swing.event.MapMouseAdapter;
 import org.geotools.swing.event.MapMouseEvent;
+import org.geotools.swing.event.MapMouseListener;
 import org.geotools.swing.tool.CursorTool;
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.opengis.geometry.MismatchedDimensionException;
@@ -85,9 +89,74 @@ public class LiteMapPane extends JMapPane
     _renderer = geoToolMapRenderer;
 
     addMouseListener(getMouseListener(data_transform));
+    
+    disableBoxDrawRightClick();
 
     // try to set background color
     super.setBackground(new Color(135, 172, 215));
+  }
+
+  private void disableBoxDrawRightClick()
+  {
+    addMouseListener(new MapMouseListener()
+    {
+      
+      @Override
+      public void onMouseWheelMoved(MapMouseEvent paramMapMouseEvent)
+      {
+        
+      }
+      
+      @Override
+      public void onMouseReleased(MapMouseEvent paramMapMouseEvent)
+      {
+        
+      }
+      
+      @Override
+      public void onMousePressed(MapMouseEvent paramMapMouseEvent)
+      {
+        final boolean isRightClick = paramMapMouseEvent.getButton() == MouseEvent.BUTTON3;
+        final MouseListener[] listeners = getMouseListeners();
+        for (MouseListener l : listeners)
+        {
+          if (l instanceof MouseDragBox)
+          {
+            ((MouseDragBox) l).setEnabled(!isRightClick);
+          }
+        }
+      }
+      
+      @Override
+      public void onMouseMoved(MapMouseEvent paramMapMouseEvent)
+      {
+        
+      }
+      
+      @Override
+      public void onMouseExited(MapMouseEvent paramMapMouseEvent)
+      {
+        
+      }
+      
+      @Override
+      public void onMouseEntered(MapMouseEvent paramMapMouseEvent)
+      {
+        
+      }
+      
+      @Override
+      public void onMouseDragged(MapMouseEvent paramMapMouseEvent)
+      {
+        
+      }
+      
+      @Override
+      public void onMouseClicked(MapMouseEvent paramMapMouseEvent)
+      {
+        
+      }
+    });
   }
 
   public void addRepaintListener(final ActionListener actionListener)
