@@ -47,6 +47,11 @@ import junit.framework.TestCase;
 public class CLogFileImporter
 {
 
+  /** whether the data-file should be resampled to 1Hz on import
+   * 
+   */
+  private boolean _resample = true;
+
   public interface CLog_Helper
   {
     final String CANCEL_STRING = "<Pending>";
@@ -121,7 +126,7 @@ public class CLogFileImporter
       return fw;
     }
 
-    public void NOTtestExport() throws IOException
+    public void doNottestExport() throws IOException
     {
       final String ownship_track =
           "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
@@ -147,6 +152,10 @@ public class CLogFileImporter
       // and now the positions
       final int ctr = 0;
       final TrackWrapper track = (TrackWrapper) tLayers.findLayer("Nelson");
+      
+      // ok, resample the track to sub-second
+      track.setResampleDataAt(new HiResDate(100));
+      
       final Enumeration<Editable> posits = track.getPositionIterator();
       while (ctr < 10 && posits.hasMoreElements())
       {
@@ -292,10 +301,51 @@ public class CLogFileImporter
       
       assertEquals("correct logging message", "Expecting 17 tokens in CLog format. Found:18", _logger.messages.get(0));
     }
+    
+    public void testGoodLoadResample() throws Exception
+    {
+      final Layers layers = new Layers();
+
+      final CLog_Helper brtHelper = new CLog_Helper()
+      {
+
+        @Override
+        public String getTrackName()
+        {
+          return "Dave";
+        }
+      };
+
+      assertTrue("input file exists", new File(ownship_track).exists());
+
+      assertEquals("empty before", 0, layers.size());
+
+      final InputStream is = new FileInputStream(ownship_track);
+      
+      final CLogFileImporter importer = new CLogFileImporter();
+      importer.setResampleOnImport(true);
+      
+      final Action action = importer.importThis(brtHelper, is, layers, _logger);
+      action.execute();
+
+      assertEquals("has data", 1, layers.size());
+
+      final TrackWrapper track = (TrackWrapper) layers.elementAt(0);
+
+      assertEquals("correct fixes", 623, track.numFixes());
+
+      // and undo it
+      action.undo();
+
+      assertEquals("has data", 0, layers.size());
+    }
+
 
     public void testGoodLoad() throws Exception
     {
       final CLogFileImporter importer = new CLogFileImporter();
+      importer.setResampleOnImport(false);
+      
       final Layers layers = new Layers();
 
       final CLog_Helper brtHelper = new CLog_Helper()
@@ -320,7 +370,7 @@ public class CLogFileImporter
 
       final TrackWrapper track = (TrackWrapper) layers.elementAt(0);
 
-      assertEquals("correct fixes", 402, track.numFixes());
+      assertEquals("correct fixes", 6227, track.numFixes());
 
       // and undo it
       action.undo();
@@ -331,6 +381,7 @@ public class CLogFileImporter
     public void testGoodLoadOnExisting() throws Exception
     {
       final CLogFileImporter importer = new CLogFileImporter();
+      importer.setResampleOnImport(false);
       final Layers layers = new Layers();
       final String trackName = "Dumbo";
 
@@ -367,7 +418,7 @@ public class CLogFileImporter
 
       final TrackWrapper track = (TrackWrapper) layers.elementAt(0);
 
-      assertEquals("correct fixes", 405, track.numFixes());
+      assertEquals("correct fixes", 6230, track.numFixes());
 
       // and undo it
       action.undo();
@@ -573,12 +624,11 @@ public class CLogFileImporter
     return Double.parseDouble(courseRadsStr);
   }
 
-  private static HiResDate dateFor(final String timeStr,
+  private static long dateFor(final String timeStr,
       final ErrorLogger logger)
   {
     final long nanos = Long.parseLong(timeStr);
-    final long millis = nanos / 1000000;
-    return new HiResDate(millis);
+    return nanos / 1000000;
   }
 
   public static TrackWrapper findTrack(final TrackWrapper[] allTracks)
@@ -614,8 +664,15 @@ public class CLogFileImporter
         depthM);
   }
 
-  public static FixWrapper produceFix(final ErrorLogger logger,
-      final String line)
+  /**
+   * 
+   * @param logger error logger
+   * @param line line of text to process
+   * @param nextTimeDue time the next item is due
+   * @return
+   */
+  private static FixWrapper produceFix(final ErrorLogger logger,
+      final String line, final Long nextTimeDue)
   {
     // ok, tokenize the line
     final String[] tokens = line.split("\\s+");
@@ -625,18 +682,28 @@ public class CLogFileImporter
       logger.logError(ErrorLogger.ERROR,
           "Expecting 17 tokens in CLog format. Found:" + tokens.length, null);
     }
-
-    final WorldLocation loc = locationFrom(tokens[11], tokens[12], tokens[13],
-        logger);
-    final HiResDate date = dateFor(tokens[16], logger);
-    final double courseRads = courseFor(tokens[9], logger);
-    final double speedYps = speedFor(tokens[10], logger);
-    final Fix fix = new Fix(date, loc, courseRads, speedYps);
-    final FixWrapper wrapped = new FixWrapper(fix);
-    return wrapped;
+    
+    // sort out the date first
+    final long timeStamp = dateFor(tokens[16], logger);
+    final FixWrapper res;
+    if(nextTimeDue == null || timeStamp >= nextTimeDue)
+    {
+      final WorldLocation loc = locationFrom(tokens[11], tokens[12], tokens[13],
+          logger);
+      final double courseRads = courseFor(tokens[9], logger);
+      final double speedYps = speedFor(tokens[10], logger);
+      HiResDate date = new HiResDate(timeStamp);
+      final Fix fix = new Fix(date, loc, courseRads, speedYps);
+      res = new FixWrapper(fix);
+    }
+    else
+    {
+      res = null;
+    }
+    return res;
   }
 
-  private static List<FixWrapper> readCLogData(final InputStream is,
+  private List<FixWrapper> readCLogData(final InputStream is,
       final ErrorLogger logger) throws IOException
   {
     final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -649,19 +716,31 @@ public class CLogFileImporter
     reader.readLine();
     reader.readLine();
 
+    Long nextTimeDue = null;
+    final long timeDelta = 1000; // 1 second
+    
     while ((line = reader.readLine()) != null)
     {
       // ok, generate a position
       try
       {
-
-        final FixWrapper wrapped = produceFix(logger, line);
+        final FixWrapper wrapped = produceFix(logger, line, nextTimeDue);
         if (wrapped != null)
         {
           if (res == null)
           {
             res = new ArrayList<FixWrapper>();
           }
+          
+          final long thisT = wrapped.getDTG().getDate().getTime();
+          
+          // are we resample?
+          if(_resample)
+          {
+            nextTimeDue = thisT + timeDelta;
+          }
+          
+          // do we want to add this one?
           res.add(wrapped);
         }
       }
@@ -672,6 +751,11 @@ public class CLogFileImporter
       }
     }
     return res;
+  }
+  
+  protected void setResampleOnImport(final boolean doResample)
+  {
+    _resample = doResample;
   }
 
   private static double speedFor(final String line, final ErrorLogger logger)
