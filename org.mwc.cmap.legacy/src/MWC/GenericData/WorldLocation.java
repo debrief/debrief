@@ -885,4 +885,11 @@ public class WorldLocation implements Serializable, Cloneable
 		lt.testPerpDistanceFrom();
 	}
 
+  public void setValues(WorldLocation worldLocation)
+  {
+    setLat(worldLocation.getLat());
+    setDepth(worldLocation.getDepth());
+    setLong(worldLocation.getLong());
+  }
+
 }

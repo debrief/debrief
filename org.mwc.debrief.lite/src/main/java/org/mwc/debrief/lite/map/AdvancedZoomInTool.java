@@ -1,6 +1,7 @@
 package org.mwc.debrief.lite.map;
 
 import java.awt.Point;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 
 import org.geotools.geometry.DirectPosition2D;
@@ -41,17 +42,30 @@ public class AdvancedZoomInTool extends ZoomInTool
   }
 
   @Override
+  public void onMouseClicked(MapMouseEvent e)
+  {
+    if (e.getButton() != MouseEvent.BUTTON3)
+    {
+      super.onMouseClicked(e); 
+    }
+  }
+
+  @Override
   public void onMousePressed(final MapMouseEvent ev)
   {
-    startPosDevice.setLocation(ev.getPoint());
-    startPosWorld.setLocation(ev.getWorldPos());
-    super.onMousePressed(ev);
+    if (ev.getButton() != MouseEvent.BUTTON3)
+    {
+      startPosDevice.setLocation(ev.getPoint());
+      startPosWorld.setLocation(ev.getWorldPos());
+      super.onMousePressed(ev);
+    }
   }
 
   @Override
   public void onMouseReleased(final MapMouseEvent ev)
   {
-    if (dragged && !ev.getPoint().equals(startPosDevice))
+    if (dragged && !ev.getPoint().equals(startPosDevice) &&
+        ev.getButton() != MouseEvent.BUTTON3)
     {
       final int overallX = ev.getX() - startPosDevice.x;
       final int overallY = ev.getY() - startPosDevice.y;

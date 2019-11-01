@@ -1,6 +1,8 @@
 package org.mwc.debrief.lite.menu;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.JLabel;
@@ -10,6 +12,8 @@ import javax.swing.event.ChangeListener;
 import org.geotools.swing.JMapPane;
 import org.geotools.swing.action.PanAction;
 import org.geotools.swing.action.ZoomInAction;
+import org.geotools.swing.event.MapMouseEvent;
+import org.geotools.swing.tool.PanTool;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.gui.ZoomOut;
@@ -96,7 +100,42 @@ public class DebriefRibbonView
 
     viewBand.startGroup();
     MenuUtils.addCommandToggleButton("Pan", "icons/24/hand.png", new PanAction(
-        mapPane), viewBand, RibbonElementPriority.TOP, true, mouseModeGroup,
+        mapPane)
+        {
+
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1072919666918011233L;
+
+          @Override
+          public void actionPerformed(ActionEvent ev)
+          {
+            getMapPane().setCursorTool(new PanTool()
+                {
+
+                  @Override
+                  public void onMouseDragged(MapMouseEvent ev)
+                  {
+                    if (ev.getButton() != MouseEvent.BUTTON3)
+                    {
+                      super.onMouseDragged(ev);
+                    }
+                  }
+
+                  @Override
+                  public void onMousePressed(MapMouseEvent ev)
+                  {
+
+                    if (ev.getButton() != MouseEvent.BUTTON3)
+                    {
+                      super.onMousePressed(ev);
+                    }
+                  }
+                });
+          }
+          
+        }, viewBand, RibbonElementPriority.TOP, true, mouseModeGroup,
         false);
     final ZoomInAction zoomInAction = new AdvancedZoomInAction(mapPane);
     MenuUtils.addCommandToggleButton("Zoom In", "icons/24/zoomin.png",

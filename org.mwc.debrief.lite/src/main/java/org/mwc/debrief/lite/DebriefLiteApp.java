@@ -57,8 +57,11 @@ import javax.swing.event.ChangeListener;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.Envelope2D;
 import org.geotools.map.MapContent;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.swing.JMapPane;
 import org.geotools.swing.action.ResetAction;
+import org.geotools.swing.event.MapMouseAdapter;
+import org.geotools.swing.event.MapMouseEvent;
 import org.mwc.cmap.geotools.gt2plot.GeoToolsLayer;
 import org.mwc.cmap.geotools.gt2plot.ShapeFileLayer;
 import org.mwc.cmap.geotools.gt2plot.WorldImageLayer;
@@ -71,6 +74,7 @@ import org.mwc.debrief.lite.gui.custom.graph.GraphPanelView;
 import org.mwc.debrief.lite.gui.custom.narratives.NarrativeConfigurationModel;
 import org.mwc.debrief.lite.gui.custom.narratives.NarrativePanelToolbar;
 import org.mwc.debrief.lite.gui.custom.narratives.NarrativePanelView;
+import org.mwc.debrief.lite.map.ContextMenu;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer.MapRenderer;
 import org.mwc.debrief.lite.map.LiteMapPane;
@@ -129,6 +133,7 @@ import MWC.GUI.Shapes.ChartBoundsWrapper;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.temporal.PlotOperations;
 import MWC.TacticalData.temporal.TimeManager;
 import MWC.TacticalData.temporal.TimeProvider;
@@ -772,6 +777,7 @@ public class DebriefLiteApp implements FileDropListener
     final float initialAlpha = 0.7f;
 
     mapPane = geoMapRenderer.createMapLayout(initialAlpha);
+    createContextMenu(mapPane, geoMapRenderer.getTransform());
 
     dropSupport.addComponent(mapPane);
 
@@ -909,6 +915,45 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
   }
 
+  /**
+   * Add the context menu to the LiteMapPane
+   * @param _myMapPane MapPane to add the menu
+   * @param transform Transform to use.
+   */
+  private void createContextMenu(LiteMapPane _myMapPane, 
+      final MathTransform transform)
+  {
+    final WorldLocation clickPosition = new WorldLocation(0, 0, 0);
+    final ContextMenu menu = new ContextMenu(clickPosition, _theLayers);
+    _myMapPane.addMouseListener(new MapMouseAdapter()
+        {
+
+          @Override
+          public void onMouseExited(MapMouseEvent ev)
+          {
+            final DirectPosition2D curPos = ev.getWorldPos();
+
+            if (ev.getWorldPos()
+                .getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84)
+            {
+              try
+              {
+                transform.transform(curPos, curPos);
+              }
+              catch (MismatchedDimensionException | TransformException e)
+              {
+                Application.logError2(ToolParent.ERROR,
+                    "Failure in projection transform", e);
+              }
+            }
+
+            clickPosition.setValues(new WorldLocation(curPos.getY(), curPos
+                .getX(), 0));
+          }
+        });
+    _myMapPane.setContextMenu(menu);
+  }
+
   private boolean _plotUpdating = false;
 
   protected void timeUpdate(final CanvasAdaptor theCanvas,
@@ -997,7 +1042,7 @@ public class DebriefLiteApp implements FileDropListener
       @Override
       public void componentResized(final ComponentEvent e)
       {
-        // TODO . This must be change once we update geotools.
+        // TODO . This must be changed once we update geotools.
         // Reverted ec7262026be4cbe07c7c521687703ddfa1acfb97
         // I _think_ it is causing the behavior described here.
         // here https://github.com/debrief/debrief/issues/4051#issuecomment-511193288
