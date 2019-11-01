@@ -150,8 +150,6 @@ import MWC.Utilities.ReaderWriter.PlainImporter;
 public class DebriefLiteApp implements FileDropListener
 {
 
-  private static final String BACKGROUND_NAME = "Background coastline";
-
   /**
    * introduce a preferences helper, particularly to give default font sizes
    *
@@ -197,14 +195,15 @@ public class DebriefLiteApp implements FileDropListener
    */
   private static class ToteSetter implements Runnable
   {
-    final private PainterManager _manager;
-    final private StepperListener _painter;
-    final private RefreshStepper _refresher;
-
     public static interface RefreshStepper
     {
       void refresh(StepperListener listener);
     }
+
+    final private PainterManager _manager;
+    final private StepperListener _painter;
+
+    final private RefreshStepper _refresher;
 
     public ToteSetter(final PainterManager manager,
         final StepperListener painter, final RefreshStepper refresher)
@@ -222,6 +221,8 @@ public class DebriefLiteApp implements FileDropListener
       _refresher.refresh(_painter);
     }
   }
+
+  private static final String BACKGROUND_NAME = "Background coastline";
 
   private static DebriefLiteApp _instance;
   public static final String DEBRIEF_LITE_APP = "Debrief Lite";
@@ -278,6 +279,17 @@ public class DebriefLiteApp implements FileDropListener
     return res;
   }
 
+  public static void disposeForTest()
+  {
+    System.out.println("Disposed:" + _instance);
+    _instance.theFrame.dispose();
+    currentFileName = null;
+    state = null;
+    collapsedState = false;
+    stateListeners.clear();
+    _instance = null;
+  }
+
   public static ToolParent getDefault()
   {
     return app;
@@ -285,7 +297,7 @@ public class DebriefLiteApp implements FileDropListener
 
   public static DebriefLiteApp getInstance()
   {
-    System.out.println("using:"+_instance);
+    System.out.println("using:" + _instance);
     return _instance;
   }
 
@@ -307,12 +319,8 @@ public class DebriefLiteApp implements FileDropListener
     return _plotDirty;
   }
 
-  public static void main(final String[] args)
+  public static void launchApp()
   {
-    launchApp();
-  }
-  
-  public static void launchApp() {
     try
     {
       SwingUtilities.invokeAndWait(new Runnable()
@@ -328,6 +336,20 @@ public class DebriefLiteApp implements FileDropListener
     {
       e.printStackTrace();
     }
+  }
+
+  private static void loadBackdropdata(final Layers layers)
+  {
+    // ok, do the shapefile
+    final String shape_path = "data/coastline/ne_10M_admin0_countries_89S.shp";
+    final ExternallyManagedDataLayer extFile = new ExternallyManagedDataLayer(
+        ChartBoundsWrapper.SHAPEFILE_TYPE, BACKGROUND_NAME, shape_path);
+    layers.addThisLayer(extFile);
+  }
+
+  public static void main(final String[] args)
+  {
+    launchApp();
   }
 
   private static void notifyListenersStateChanged(final Object source,
@@ -422,7 +444,7 @@ public class DebriefLiteApp implements FileDropListener
   {
     try
     {
-      System.out.println("Using instance:"+_instance);
+      System.out.println("Using instance:" + _instance);
       _instance.handleImportRep(new File[]
       {file});
     }
@@ -523,16 +545,18 @@ public class DebriefLiteApp implements FileDropListener
   protected DataListener2 _listenForMods;
   private OutlinePanelView layerManager;
   private GraphPanelView graphPanelView;
+
   private final JXCollapsiblePaneWithTitle outlinePanel =
       new JXCollapsiblePaneWithTitle(Direction.LEFT, "Outline", 400);
   private final JXCollapsiblePaneWithTitle graphPanel =
       new JXCollapsiblePaneWithTitle(Direction.DOWN, "Graph", 150);
-
   private final JXCollapsiblePaneWithTitle narrativePanel =
       new JXCollapsiblePaneWithTitle(Direction.RIGHT, "Narratives", 350);
   private final List<JXCollapsiblePaneWithTitle> openPanels =
       new ArrayList<JXCollapsiblePaneWithTitle>();
+
   private final JRibbonFrame theFrame;
+
   private final Layers _theLayers = new Layers()
   {
 
@@ -580,9 +604,9 @@ public class DebriefLiteApp implements FileDropListener
             if (BACKGROUND_NAME.equals(layerName))
             {
               // hmm, see of we've already got background data
-              List<org.geotools.map.Layer> layers = mapPane.getMapContent()
-                  .layers();
-              for (org.geotools.map.Layer layer : layers)
+              final List<org.geotools.map.Layer> layers = mapPane
+                  .getMapContent().layers();
+              for (final org.geotools.map.Layer layer : layers)
               {
                 if (layer.getTitle().equals(BACKGROUND_NAME))
                 {
@@ -699,14 +723,16 @@ public class DebriefLiteApp implements FileDropListener
   private final PainterManager painterManager;
 
   private final LiteTote theTote;
-
   private final LiteStepControl _stepControl;
-
   private final Layer safeChartFeatures;
   private HiResDate _pendingNewTime;
   private HiResDate _pendingOldTime;
+
   private final ToteSetter _normalSetter;
+
   private final ToteSetter _snailSetter;
+
+  private boolean _plotUpdating = false;
 
   private DebriefLiteApp()
   {
@@ -718,7 +744,7 @@ public class DebriefLiteApp implements FileDropListener
     System.setProperty("com.sun.media.jai.disableMediaLib", "true");
 
     JFrame.setDefaultLookAndFeelDecorated(true);
-    if(SubstanceCortex.GlobalScope.getCurrentSkin()==null)
+    if (SubstanceCortex.GlobalScope.getCurrentSkin() == null)
     {
       SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
     }
@@ -840,7 +866,7 @@ public class DebriefLiteApp implements FileDropListener
     {
 
       @Override
-      public void refresh(StepperListener listener)
+      public void refresh(final StepperListener listener)
       {
 
         // and the time marker
@@ -872,10 +898,10 @@ public class DebriefLiteApp implements FileDropListener
     {
 
       @Override
-      public void stateChanged(ChangeEvent e)
+      public void stateChanged(final ChangeEvent e)
       {
-        JSlider source = (JSlider) e.getSource();
-        int alpha = source.getValue();
+        final JSlider source = (JSlider) e.getSource();
+        final int alpha = source.getValue();
         mapPane.setTransparency(alpha / 100f);
         mapPane.repaint();
       }
@@ -913,89 +939,6 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     theFrame.setVisible(true);
     theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
-  }
-
-  /**
-   * Add the context menu to the LiteMapPane
-   * @param _myMapPane MapPane to add the menu
-   * @param transform Transform to use.
-   */
-  private void createContextMenu(LiteMapPane _myMapPane, 
-      final MathTransform transform)
-  {
-    final WorldLocation clickPosition = new WorldLocation(0, 0, 0);
-    final ContextMenu menu = new ContextMenu(clickPosition, _theLayers);
-    _myMapPane.addMouseListener(new MapMouseAdapter()
-        {
-
-          @Override
-          public void onMouseExited(MapMouseEvent ev)
-          {
-            final DirectPosition2D curPos = ev.getWorldPos();
-
-            if (ev.getWorldPos()
-                .getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84)
-            {
-              try
-              {
-                transform.transform(curPos, curPos);
-              }
-              catch (MismatchedDimensionException | TransformException e)
-              {
-                Application.logError2(ToolParent.ERROR,
-                    "Failure in projection transform", e);
-              }
-            }
-
-            clickPosition.setValues(new WorldLocation(curPos.getY(), curPos
-                .getX(), 0));
-          }
-        });
-    _myMapPane.setContextMenu(menu);
-  }
-
-  private boolean _plotUpdating = false;
-
-  protected void timeUpdate(final CanvasAdaptor theCanvas,
-      final PropertyChangeEvent evt)
-  {
-    // are we already plotting?
-    if (!_plotUpdating)
-    {
-      // no - capture the fact that we are
-      _plotUpdating = true;
-
-      // trigger screen update to happen on UI thread
-      SwingUtilities.invokeLater(new Runnable()
-      {
-        @Override
-        public void run()
-        {
-          try
-          {
-            // ok, redraw the whole map
-            mapPane.repaint();
-            _pendingNewTime = (HiResDate) evt.getNewValue();
-            _pendingOldTime = (HiResDate) evt.getOldValue();
-            redoTimePainter(false, theCanvas, (HiResDate) evt.getOldValue(),
-                (HiResDate) evt.getNewValue());
-          }
-          finally
-          {
-            _plotUpdating = false;
-          }
-        }
-      });
-    }
-  }
-
-  private static void loadBackdropdata(final Layers layers)
-  {
-    // ok, do the shapefile
-    final String shape_path = "data/coastline/ne_10M_admin0_countries_89S.shp";
-    ExternallyManagedDataLayer extFile = new ExternallyManagedDataLayer(
-        ChartBoundsWrapper.SHAPEFILE_TYPE, BACKGROUND_NAME, shape_path);
-    layers.addThisLayer(extFile);
   }
 
   private void addGraphView()
@@ -1048,7 +991,7 @@ public class DebriefLiteApp implements FileDropListener
         // here https://github.com/debrief/debrief/issues/4051#issuecomment-511193288
         mapPane.setVisible(false);
         mapPane.setVisible(true);
-        //mapPane.repaint();
+        // mapPane.repaint();
       }
     });
 
@@ -1086,6 +1029,48 @@ public class DebriefLiteApp implements FileDropListener
         stepControl, timeManager, operation, session, resetAction, normalT,
         snailT, statusBar, exitAction, projection, transform, collapseAction,
         alphaListener, alpha, path);
+  }
+
+  /**
+   * Add the context menu to the LiteMapPane
+   * 
+   * @param _myMapPane
+   *          MapPane to add the menu
+   * @param transform
+   *          Transform to use.
+   */
+  private void createContextMenu(final LiteMapPane _myMapPane,
+      final MathTransform transform)
+  {
+    final WorldLocation clickPosition = new WorldLocation(0, 0, 0);
+    final ContextMenu menu = new ContextMenu(clickPosition, _theLayers);
+    _myMapPane.addMouseListener(new MapMouseAdapter()
+    {
+
+      @Override
+      public void onMouseExited(final MapMouseEvent ev)
+      {
+        final DirectPosition2D curPos = ev.getWorldPos();
+
+        if (ev.getWorldPos()
+            .getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84)
+        {
+          try
+          {
+            transform.transform(curPos, curPos);
+          }
+          catch (MismatchedDimensionException | TransformException e)
+          {
+            Application.logError2(ToolParent.ERROR,
+                "Failure in projection transform", e);
+          }
+        }
+
+        clickPosition.setValues(new WorldLocation(curPos.getY(), curPos.getX(),
+            0));
+      }
+    });
+    _myMapPane.setContextMenu(menu);
   }
 
   protected void doExpandCollapse()
@@ -1158,16 +1143,6 @@ public class DebriefLiteApp implements FileDropListener
     dest.endDraw(gc);
   }
 
-  public static void disposeForTest()
-  {
-    System.out.println("Disposed:"+_instance);
-    _instance.theFrame.dispose();
-    currentFileName = null;
-    state = null;
-    collapsedState =false;
-    stateListeners.clear();
-    _instance = null;
-  }
   public void exit()
   {
     if (DebriefLiteApp.isDirty())
@@ -1233,7 +1208,7 @@ public class DebriefLiteApp implements FileDropListener
   {
     session.close();
     theFrame.dispose();
-    //System.exit(0);
+    // System.exit(0);
   }
 
   @Override
@@ -1302,9 +1277,20 @@ public class DebriefLiteApp implements FileDropListener
     restoreCursor();
   }
 
+  public JRibbonFrame getApplicationFrame()
+  {
+    return _instance.theFrame;
+
+  }
+
   public OutlinePanelView getLayerManager()
   {
     return layerManager;
+  }
+
+  public TimeManager getTimeManager()
+  {
+    return _instance.timeManager;
   }
 
   private void handleImportDPF(final File file)
@@ -1556,7 +1542,7 @@ public class DebriefLiteApp implements FileDropListener
 
     if (graphics instanceof Graphics2D)
     {
-      Graphics2D g2 = (Graphics2D) graphics;
+      final Graphics2D g2 = (Graphics2D) graphics;
       g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
           RenderingHints.VALUE_ANTIALIAS_ON);
     }
@@ -1594,6 +1580,32 @@ public class DebriefLiteApp implements FileDropListener
     }
   }
 
+  private void resetClipboard()
+  {
+    final Clipboard theClipboard = session.getClipboard();
+    theClipboard.setContents(new Transferable()
+    {
+      @Override
+      public Object getTransferData(final DataFlavor flavor)
+          throws UnsupportedFlavorException
+      {
+        throw new UnsupportedFlavorException(flavor);
+      }
+
+      @Override
+      public DataFlavor[] getTransferDataFlavors()
+      {
+        return new DataFlavor[0];
+      }
+
+      @Override
+      public boolean isDataFlavorSupported(final DataFlavor flavor)
+      {
+        return false;
+      }
+    }, layerManager);
+  }
+
   private void resetFileName(final File file)
   {
     if (DebriefLiteApp.currentFileName == null)
@@ -1603,28 +1615,6 @@ public class DebriefLiteApp implements FileDropListener
       // setState(ACTIVE_STATE);
       DebriefRibbonFile.closeButton.setEnabled(true);
     }
-  }
-  private void resetUndoBuffer()
-  {
-    session.getUndoBuffer().resetBuffer();
-    resetClipboard();
-    
-  }
-  private void resetClipboard()
-  {
-    Clipboard theClipboard = session.getClipboard();
-    theClipboard.setContents(new Transferable() {
-      public DataFlavor[] getTransferDataFlavors() {
-        return new DataFlavor[0];
-      }
-
-      public boolean isDataFlavorSupported(DataFlavor flavor) {
-        return false;
-      }
-
-      public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
-        throw new UnsupportedFlavorException(flavor);
-      }},layerManager);
   }
 
   public void resetPlot()
@@ -1687,6 +1677,13 @@ public class DebriefLiteApp implements FileDropListener
     graphPanel.setCollapsed(true);
   }
 
+  private void resetUndoBuffer()
+  {
+    session.getUndoBuffer().resetBuffer();
+    resetClipboard();
+
+  }
+
   public final void restoreCursor()
   {
     theFrame.getContentPane().setCursor(null);
@@ -1702,21 +1699,43 @@ public class DebriefLiteApp implements FileDropListener
     statusBar.setText(message);
   }
 
+  protected void timeUpdate(final CanvasAdaptor theCanvas,
+      final PropertyChangeEvent evt)
+  {
+    // are we already plotting?
+    if (!_plotUpdating)
+    {
+      // no - capture the fact that we are
+      _plotUpdating = true;
+
+      // trigger screen update to happen on UI thread
+      SwingUtilities.invokeLater(new Runnable()
+      {
+        @Override
+        public void run()
+        {
+          try
+          {
+            // ok, redraw the whole map
+            mapPane.repaint();
+            _pendingNewTime = (HiResDate) evt.getNewValue();
+            _pendingOldTime = (HiResDate) evt.getOldValue();
+            redoTimePainter(false, theCanvas, (HiResDate) evt.getOldValue(),
+                (HiResDate) evt.getNewValue());
+          }
+          finally
+          {
+            _plotUpdating = false;
+          }
+        }
+      });
+    }
+  }
+
   protected void update(final Layers theData, final Plottable newItem,
       final HasEditables theLayer)
   {
     getLayerManager().updateData((Layer) theLayer, newItem);
-  }
-  
-  public TimeManager getTimeManager()
-  {
-    return _instance.timeManager;
-  }
-
-  public JRibbonFrame getApplicationFrame()
-  {
-    return _instance.theFrame;
-    
   }
 
 }

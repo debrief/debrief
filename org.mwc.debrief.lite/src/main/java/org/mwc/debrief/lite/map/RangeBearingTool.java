@@ -258,8 +258,8 @@ public class RangeBearingTool extends AbstractZoomTool
   @Override
   public void onMouseReleased(final MapMouseEvent ev)
   {
-    if (dragging && ev != null && ev.getButton() == buttonPressed
-        && ev.getButton() != MouseEvent.BUTTON3)
+    if (dragging && ev != null && ev.getButton() == buttonPressed && ev
+        .getButton() != MouseEvent.BUTTON3)
     {
       dragging = false;
       buttonPressed = -1;

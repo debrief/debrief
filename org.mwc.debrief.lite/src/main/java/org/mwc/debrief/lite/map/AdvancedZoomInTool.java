@@ -28,6 +28,15 @@ public class AdvancedZoomInTool extends ZoomInTool
     dragged = false;
   }
 
+  @Override
+  public void onMouseClicked(final MapMouseEvent e)
+  {
+    if (e.getButton() != MouseEvent.BUTTON3)
+    {
+      super.onMouseClicked(e);
+    }
+  }
+
   /**
    * Records that the mouse is being dragged
    *
@@ -39,15 +48,6 @@ public class AdvancedZoomInTool extends ZoomInTool
   {
     dragged = true;
     super.onMouseDragged(ev);
-  }
-
-  @Override
-  public void onMouseClicked(MapMouseEvent e)
-  {
-    if (e.getButton() != MouseEvent.BUTTON3)
-    {
-      super.onMouseClicked(e); 
-    }
   }
 
   @Override
@@ -64,8 +64,8 @@ public class AdvancedZoomInTool extends ZoomInTool
   @Override
   public void onMouseReleased(final MapMouseEvent ev)
   {
-    if (dragged && !ev.getPoint().equals(startPosDevice) &&
-        ev.getButton() != MouseEvent.BUTTON3)
+    if (dragged && !ev.getPoint().equals(startPosDevice) && ev
+        .getButton() != MouseEvent.BUTTON3)
     {
       final int overallX = ev.getX() - startPosDevice.x;
       final int overallY = ev.getY() - startPosDevice.y;
@@ -84,11 +84,11 @@ public class AdvancedZoomInTool extends ZoomInTool
 
   public void performZoomOut(final MapMouseEvent ev)
   {
-    /** note - there's quite a bit of code commented out in this method. 
-     * The commented out code is a partial implementation of the zoom out
-     * behaviour in Full Debrief.
+    /**
+     * note - there's quite a bit of code commented out in this method. The commented out code is a
+     * partial implementation of the zoom out behaviour in Full Debrief.
      */
-    
+
     final MapViewport view = ev.getSource().getMapContent().getViewport();
     final ReferencedEnvelope existingArea = view.getBounds();
     final DirectPosition2D startWorld = new DirectPosition2D(startPosWorld);
@@ -111,7 +111,7 @@ public class AdvancedZoomInTool extends ZoomInTool
 
     final double scaleVal = Math.sqrt((existingArea.getHeight() * existingArea
         .getWidth()) / (selectedArea.height * selectedArea.width));
-    
+
     // only allow zoom out if we're not already too far our
     if (existingArea.getArea() < 2.0E15)
     {

@@ -83,7 +83,7 @@ public class LiteMapPane extends JMapPane
 
     data_transform = theTransform;
     _renderer = geoToolMapRenderer;
-    
+
     addMouseListener(getMouseListener(data_transform));
 
     // try to set background color
@@ -240,6 +240,11 @@ public class LiteMapPane extends JMapPane
     _renderer.paintEvent(g);
   }
 
+  public void setContextMenu(final ContextMenu menu)
+  {
+    setComponentPopupMenu(menu);
+  }
+
   @Override
   public void setCursorTool(final CursorTool tool)
   {
@@ -280,11 +285,6 @@ public class LiteMapPane extends JMapPane
   public void setTransparency(final float transparency)
   {
     mapTransparency = transparency;
-  }
-  
-  public void setContextMenu(final ContextMenu menu)
-  {
-    setComponentPopupMenu(menu);
   }
 
 }
