@@ -59,7 +59,13 @@ public class AdvancedZoomInTool extends ZoomInTool
       // if the drag was from TL to BR
       if (overallX >= 0 || overallY >= 0)
       {
-        super.onMouseReleased(ev);
+        final MapViewport view = ev.getSource().getMapContent().getViewport();
+        final ReferencedEnvelope existingArea = view.getBounds();
+        // If we are not too zoomed in
+        if (existingArea.getArea() > 1e-10)
+        {
+          super.onMouseReleased(ev);
+        }
       }
       else
       {
@@ -70,11 +76,11 @@ public class AdvancedZoomInTool extends ZoomInTool
 
   public void performZoomOut(final MapMouseEvent ev)
   {
-    /** note - there's quite a bit of code commented out in this method. 
-     * The commented out code is a partial implementation of the zoom out
-     * behaviour in Full Debrief.
+    /**
+     * note - there's quite a bit of code commented out in this method. The commented out code is a
+     * partial implementation of the zoom out behaviour in Full Debrief.
      */
-    
+
     final MapViewport view = ev.getSource().getMapContent().getViewport();
     final ReferencedEnvelope existingArea = view.getBounds();
     final DirectPosition2D startWorld = new DirectPosition2D(startPosWorld);
@@ -97,7 +103,7 @@ public class AdvancedZoomInTool extends ZoomInTool
 
     final double scaleVal = Math.sqrt((existingArea.getHeight() * existingArea
         .getWidth()) / (selectedArea.height * selectedArea.width));
-    
+
     // only allow zoom out if we're not already too far our
     if (existingArea.getArea() < 2.0E15)
     {
