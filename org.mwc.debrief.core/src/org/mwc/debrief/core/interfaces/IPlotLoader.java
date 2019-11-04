@@ -205,7 +205,56 @@ public interface IPlotLoader extends INamedItem
 			init(name, icon, fileTypes, firstLine);
 		}
 
-		public BaseLoader getLoader()
+		
+		
+		@Override
+    public boolean canLoad(String fileName)
+    {
+		  // check with the parent first
+		  final boolean canLoad = super.canLoad(fileName);
+		  
+      // see if we match this file, and it's a text file, and we don't have a
+      // first line to test
+      if (canLoad && fileName.toUpperCase().endsWith("TXT") && this._firstLine == null)
+      {
+        // there are lots of loaders that could match this
+        // we should do a deeper test
+        if (_myLoader == null)
+        {
+          try
+          {
+            System.out.println("About to load new loader for:" + getName());
+
+            // and create the loader
+            _myLoader = (BaseLoader) _config.createExecutableExtension("class");
+
+            // hey, stick the data in
+            _myLoader.init(_myName, _icon, _fileTypes, _firstLine);
+          }
+          catch (final CoreException e)
+          {
+            DebriefPlugin.logError(Status.ERROR,
+                "Failed to create instance of loader:" + _config, e);
+
+          }
+        }
+
+        if (_myLoader != null)
+        {
+          return _myLoader.canLoad(fileName);
+        }
+        else
+        {
+          DebriefPlugin.logError(Status.ERROR,
+              "Unable to load file. Loader unavailable for:" + _config, null);
+        }
+      }
+
+      // ok, just let the parent do it
+      return canLoad;
+    }
+
+    public BaseLoader getLoader()
 		{
 			return _myLoader;
 		}
