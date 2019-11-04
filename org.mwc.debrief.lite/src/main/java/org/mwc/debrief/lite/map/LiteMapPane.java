@@ -104,7 +104,7 @@ public class LiteMapPane extends JMapPane
   private void disableBoxDrawRightClick()
   {
     final MouseListener[] listeners = getMouseListeners();
-    MouseDragBox dragbox = null; 
+    MouseDragBox dragbox = null;
     for (final MouseListener l : listeners)
     {
       if (l instanceof MouseDragBox)
@@ -113,7 +113,7 @@ public class LiteMapPane extends JMapPane
       }
     }
     final MouseDragBox finalDragbox = dragbox;
-    
+
     addMouseListener(new MapMouseListener()
     {
 
@@ -132,7 +132,7 @@ public class LiteMapPane extends JMapPane
       @Override
       public void onMouseEntered(final MapMouseEvent paramMapMouseEvent)
       {
-        
+
       }
 
       @Override
@@ -154,8 +154,8 @@ public class LiteMapPane extends JMapPane
         {
           final boolean isRightClick = paramMapMouseEvent
               .getButton() == MouseEvent.BUTTON3;
-          finalDragbox.setEnabled(!isRightClick 
-              && currentCursorTool != null && currentCursorTool.drawDragBox());
+          finalDragbox.setEnabled(!isRightClick && currentCursorTool != null
+              && currentCursorTool.drawDragBox());
         }
       }
 
