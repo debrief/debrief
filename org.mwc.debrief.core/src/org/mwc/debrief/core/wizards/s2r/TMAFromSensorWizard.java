@@ -78,7 +78,7 @@ public class TMAFromSensorWizard extends Wizard
     }
 
     enterSolutionPage = new EnterSolutionPage(null, PAGE_TITLE,
-        "Specify the Course and Speed initial values", imagePath, helpContext,
+        "Specify the initial Course and Speed values", imagePath, helpContext,
         _initialSpeed, _initialCourse);
 
     addPage(enterSolutionPage);
