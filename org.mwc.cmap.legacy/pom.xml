@@ -11,4 +11,25 @@
   <artifactId>org.mwc.cmap.legacy</artifactId>
   <version>1.0.284</version>
   <packaging>eclipse-plugin</packaging>
-</project>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.7</version>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <configuration>
+                <target>
+                  <ant dir="${basedir}" antfile="build.xml" />
+                </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+  </plugins>
+  </build></project>
