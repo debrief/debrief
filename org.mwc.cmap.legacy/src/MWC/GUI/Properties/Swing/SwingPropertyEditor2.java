@@ -912,9 +912,6 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
    */
   private MultiLineLabel _reportWindow;
 
-  // ///////////////////////////////////////////////////////////
-  // constructor
-  // //////////////////////////////////////////////////////////
   /**
    * @param info the object we are going to edit
    * @param parent the panel we are contained in

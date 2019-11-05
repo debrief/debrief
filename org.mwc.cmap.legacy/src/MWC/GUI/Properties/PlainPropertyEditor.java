@@ -375,13 +375,13 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
         p1 = params[0];
 
         // do we have to do our special 'double' handling?
-        if (p1.equals(double.class))
+        if (p1 != null && p1.equals(double.class))
         {
           // is the value we are going to set currently
           // a string?
           if (val.getClass().equals(String.class))
           {
-            final Double d = MWCXMLReader.readThisDouble((String) val);
+            final double d = MWCXMLReader.readThisDouble((String) val);
             final Object args2[] =
             {d};
             setter.invoke(data, args2);
