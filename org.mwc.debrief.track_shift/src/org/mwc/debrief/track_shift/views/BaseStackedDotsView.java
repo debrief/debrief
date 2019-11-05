@@ -1026,11 +1026,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    * {@link ValueAxis#setStandardTickUnits(TickUnitSource)} method inherited from the
    * {@link ValueAxis} class).
    *
-   * @param zone
-   *          the time zone (<code>null</code> not permitted).
-   * @param locale
-   *          the locale (<code>null</code> not permitted).
-   *
    * @return A collection of standard date tick units.
    *
    * @since 1.0.11
@@ -1308,7 +1303,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     setZoneChartsVisible(_showZones.isChecked());
   }
 
-  @SuppressWarnings("static-method")
   protected Runnable getDeleteAmbiguousCutsOperation()
   {
     // ditch, let the child class(es) override it
@@ -2280,7 +2274,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   /**
    * format the value in a suitable way for marking the current value of the cursor
    *
-   * @param current
+   * @param value
    *          data value at cursor
    * @return suitably formatted version
    */
@@ -2317,7 +2311,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    *
    * @return
    */
-  @SuppressWarnings("static-method")
   protected Runnable getDeleteCutsOperation()
   {
     return null;
@@ -2349,7 +2342,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    *
    * @return
    */
-  @SuppressWarnings("static-method")
   protected Runnable getResolveAmbiguityOperation()
   {
     return null;
@@ -2612,9 +2604,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
       else
       {
-        // create a leg from the previous end to this start
-        legs.add(new Zone(lastZig.getEnd(), zig.getStart(), randomProv
-            .getZoneColor()));
+        // technically we don't need this null check, the logic
+        // _should_ ensure it's non-null. But, this will stop the 
+        // complainer moaning
+        if(lastZig != null)
+        {
+          // create a leg from the previous end to this start
+          legs.add(new Zone(lastZig.getEnd(), zig.getStart(), randomProv
+              .getZoneColor()));
+        }
       }
 
       // remember the zig
@@ -3258,11 +3256,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    * slice the target bearings according to these zones
    *
    * @param ownshipZones
+   * @param cuts
    * @param randomProv
+   * @param tgtTrack
    * @param slicePrecision
-   * @param secondaryTrack
-   * @param targetBearingSeries2
-   * @return
+   * @return list of zones
    */
   protected List<Zone> sliceTarget(final List<Zone> ownshipZones,
       final List<SensorContactWrapper> cuts, final ColorProvider randomProv,
@@ -3552,13 +3550,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       // clear the zone charts, but maybe not the primary
       clearZoneCharts(false, true, false);
 
-      // do we have a target zone chart?
-      if (targetZoneChart != null)
-      {
-        // initialise the zones
-        final List<Zone> zones = getTargetZones();
-        targetZoneChart.setZones(zones);
-      }
+      // initialise the zones
+      final List<Zone> zones = getTargetZones();
+      targetZoneChart.setZones(zones);
     }
   }
 
