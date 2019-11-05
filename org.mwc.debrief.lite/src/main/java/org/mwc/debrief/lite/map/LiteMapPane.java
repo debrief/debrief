@@ -9,6 +9,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.RenderedImage;
 import java.util.ArrayList;
 
@@ -17,8 +19,10 @@ import org.geotools.geometry.DirectPosition2D;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.swing.JMapPane;
+import org.geotools.swing.MouseDragBox;
 import org.geotools.swing.event.MapMouseAdapter;
 import org.geotools.swing.event.MapMouseEvent;
+import org.geotools.swing.event.MapMouseListener;
 import org.geotools.swing.tool.CursorTool;
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.opengis.geometry.MismatchedDimensionException;
@@ -86,6 +90,8 @@ public class LiteMapPane extends JMapPane
 
     addMouseListener(getMouseListener(data_transform));
 
+    disableBoxDrawRightClick();
+
     // try to set background color
     super.setBackground(new Color(135, 172, 215));
   }
@@ -93,6 +99,78 @@ public class LiteMapPane extends JMapPane
   public void addRepaintListener(final ActionListener actionListener)
   {
     repaintListeners.add(actionListener);
+  }
+
+  private void disableBoxDrawRightClick()
+  {
+    final MouseListener[] listeners = getMouseListeners();
+    MouseDragBox dragbox = null;
+    for (final MouseListener l : listeners)
+    {
+      if (l instanceof MouseDragBox)
+      {
+        dragbox = ((MouseDragBox) l);
+      }
+    }
+    final MouseDragBox finalDragbox = dragbox;
+
+    addMouseListener(new MapMouseListener()
+    {
+
+      @Override
+      public void onMouseClicked(final MapMouseEvent paramMapMouseEvent)
+      {
+
+      }
+
+      @Override
+      public void onMouseDragged(final MapMouseEvent paramMapMouseEvent)
+      {
+
+      }
+
+      @Override
+      public void onMouseEntered(final MapMouseEvent paramMapMouseEvent)
+      {
+
+      }
+
+      @Override
+      public void onMouseExited(final MapMouseEvent paramMapMouseEvent)
+      {
+
+      }
+
+      @Override
+      public void onMouseMoved(final MapMouseEvent paramMapMouseEvent)
+      {
+
+      }
+
+      @Override
+      public void onMousePressed(final MapMouseEvent paramMapMouseEvent)
+      {
+        if (finalDragbox != null)
+        {
+          final boolean isRightClick = paramMapMouseEvent
+              .getButton() == MouseEvent.BUTTON3;
+          finalDragbox.setEnabled(!isRightClick && currentCursorTool != null
+              && currentCursorTool.drawDragBox());
+        }
+      }
+
+      @Override
+      public void onMouseReleased(final MapMouseEvent paramMapMouseEvent)
+      {
+
+      }
+
+      @Override
+      public void onMouseWheelMoved(final MapMouseEvent paramMapMouseEvent)
+      {
+
+      }
+    });
   }
 
   public MapMouseAdapter getMouseListener(final MathTransform transform)
@@ -238,6 +316,11 @@ public class LiteMapPane extends JMapPane
       }
     }
     _renderer.paintEvent(g);
+  }
+
+  public void setContextMenu(final ContextMenu menu)
+  {
+    setComponentPopupMenu(menu);
   }
 
   @Override
