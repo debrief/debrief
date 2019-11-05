@@ -20,9 +20,11 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Vector;
 
 import Debrief.GUI.Tote.Painters.SnailPainter2.ColorFadeCalculator;
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Canvas.CanvasAdaptor;
@@ -138,12 +140,26 @@ final class SnailDrawTrack2
       if (trk instanceof LightweightTrackWrapper)
       {
         final LightweightTrackWrapper track = (LightweightTrackWrapper) trk;
-        dotPoints = track.getUnfilteredItems(new HiResDate(0, dtg.getMicros()
-            - _trailLength), new HiResDate(0, dtg.getMicros() + 2000));
-        if (dotPoints.size() > 1)
+        final HiResDate trailTime = new HiResDate(0, dtg.getMicros()
+            - _trailLength);
+
+        // Let's add at the beginning the tail if we are interpolating.
+        dotPoints = new Vector<Editable>(0, 1);
+
+        if (track instanceof TrackWrapper && ((TrackWrapper) track)
+            .getInterpolatePoints())
         {
-          dotPoints.add(theFix);
+          // Are we interpolating? Then create the snail tail
+          // from the interpolation
+          final Watchable[] nearest = track.getNearestTo(trailTime);
+          if (nearest != null && nearest.length > 0)
+          {
+            dotPoints.add((Editable) nearest[0]);
+          }
         }
+        dotPoints.addAll(track.getUnfilteredItems(trailTime, new HiResDate(0,
+            dtg.getMicros() + 2000)));
+        dotPoints.add(theFix);
       }
       else
       {
