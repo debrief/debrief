@@ -174,6 +174,16 @@ final class SnailDrawTrack2
       }
     }
 
+    thisR = drawTrailFromPoints(proj, dest, fader, thisR, trk, dotPoints);
+
+    return thisR;
+  }
+
+  private java.awt.Rectangle drawTrailFromPoints(
+      final MWC.Algorithms.PlainProjection proj, final java.awt.Graphics dest,
+      final ColorFadeCalculator fader, java.awt.Rectangle thisR,
+      final WatchableList trk, final Collection<Editable> dotPoints)
+  {
     // see if there are any points
     if (dotPoints != null)
     {
@@ -273,7 +283,6 @@ final class SnailDrawTrack2
         }
       }
     }
-
     return thisR;
   }
 
