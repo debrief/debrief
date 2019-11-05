@@ -265,7 +265,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
      */
     public TotePainterInfo(final TotePainter data)
     {
-      super(data, NORMAL_NAME, "");
+      super(data, NORMAL_NAME, "Display Mode");
     }
 
     /**
