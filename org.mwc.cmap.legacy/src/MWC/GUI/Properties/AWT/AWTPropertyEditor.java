@@ -649,7 +649,7 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements
    * method to indicate to user that no editors were found
    */
   @Override
-  protected void showZeroEditorsFound()
+  protected void showZeroEditorsFound(final String name)
   {
     // hey, lets do this another day@@@
   }

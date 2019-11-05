@@ -831,7 +831,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     if ((_theEditors.size() == 0) && (_theCustomEditor == null))
     {
       // inform the user that this object has no editable properties
-      showZeroEditorsFound();
+      showZeroEditorsFound(theInfo.getDisplayName());
     }
 
   }
@@ -1128,7 +1128,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
 
   abstract protected void showMethods();
 
-  abstract protected void showZeroEditorsFound();
+  abstract protected void showZeroEditorsFound(final String objectName);
 
   /**
    * return this item as a string
