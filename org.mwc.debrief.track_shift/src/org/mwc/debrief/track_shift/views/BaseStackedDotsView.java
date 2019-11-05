@@ -2476,54 +2476,59 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           .getSecondaryTracks();
       if (secTracks != null && secTracks.length == 1)
       {
-        final ISecondaryTrack sw = (ISecondaryTrack) secTracks[0];
-        Enumeration<Editable> iter = sw.segments();
-
-        // have a peak, to check if we've actually got a segment list
-        if (iter.hasMoreElements())
+        // check it's a secondary track
+        WatchableList nextT = secTracks[0];
+        if (nextT instanceof ISecondaryTrack)
         {
-          final Editable first = iter.nextElement();
-          if (first instanceof SegmentList)
-          {
-            final SegmentList segs = (SegmentList) first;
-            iter = segs.elements();
-          }
-        }
+          final ISecondaryTrack sw = (ISecondaryTrack) nextT;
+          Enumeration<Editable> iter = sw.segments();
 
-        while (iter.hasMoreElements())
-        {
-          final TrackSegment thisSeg = (TrackSegment) iter.nextElement();
-          if (thisSeg instanceof RelativeTMASegment)
+          // have a peak, to check if we've actually got a segment list
+          if (iter.hasMoreElements())
           {
-            // do we have a first color?
-            final Editable firstElement = thisSeg.elements().nextElement();
-            final Color color;
-            if (firstElement != null)
+            final Editable first = iter.nextElement();
+            if (first instanceof SegmentList)
             {
-              final FixWrapper fix = (FixWrapper) firstElement;
-              color = fix.getColor();
+              final SegmentList segs = (SegmentList) first;
+              iter = segs.elements();
             }
-            else
-            {
-              color = Color.RED;
-            }
-
-            final RelativeTMASegment rel = (RelativeTMASegment) thisSeg;
-            final Zone newZ = new Zone(rel.getDTG_Start().getDate().getTime(),
-                rel.getDTG_End().getDate().getTime(), color);
-            zones.add(newZ);
           }
-          else if (thisSeg instanceof TrackSegment)
+
+          while (iter.hasMoreElements())
           {
-            final TrackSegment seg = thisSeg;
-            if (!thisSeg.isEmpty())
+            final TrackSegment thisSeg = (TrackSegment) iter.nextElement();
+            if (thisSeg instanceof RelativeTMASegment)
             {
-              final FixWrapper firstE = (FixWrapper) thisSeg.elements()
-                  .nextElement();
-              final Color color = firstE.getColor();
-              final Zone newZ = new Zone(seg.startDTG().getDate().getTime(), seg
-                  .endDTG().getDate().getTime(), color);
+              // do we have a first color?
+              final Editable firstElement = thisSeg.elements().nextElement();
+              final Color color;
+              if (firstElement != null)
+              {
+                final FixWrapper fix = (FixWrapper) firstElement;
+                color = fix.getColor();
+              }
+              else
+              {
+                color = Color.RED;
+              }
+
+              final RelativeTMASegment rel = (RelativeTMASegment) thisSeg;
+              final Zone newZ = new Zone(rel.getDTG_Start().getDate().getTime(),
+                  rel.getDTG_End().getDate().getTime(), color);
               zones.add(newZ);
+            }
+            else if (thisSeg instanceof TrackSegment)
+            {
+              final TrackSegment seg = thisSeg;
+              if (!thisSeg.isEmpty())
+              {
+                final FixWrapper firstE = (FixWrapper) thisSeg.elements()
+                    .nextElement();
+                final Color color = firstE.getColor();
+                final Zone newZ = new Zone(seg.startDTG().getDate().getTime(),
+                    seg.endDTG().getDate().getTime(), color);
+                zones.add(newZ);
+              }
             }
           }
         }
