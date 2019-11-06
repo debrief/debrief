@@ -40,7 +40,7 @@ public class DebriefRibbon
       final LiteStepControl stepControl, final TimeManager timeManager,
       final PlotOperations operations, final Session session,
       final Runnable resetAction, final Runnable normalPainter,
-      final Runnable snailPainter, final JLabel statusBar,
+      final Runnable snailPainter, final Runnable refresh, final JLabel statusBar,
       final Runnable exitAction, final GeoToolMapProjection projection,
       final MathTransform transform, final Runnable collapseAction,
       final ChangeListener alphaListener, final float alpha, final String path)
@@ -55,6 +55,6 @@ public class DebriefRibbon
         parent);
     DebriefRibbonTimeController.addTimeControllerTab(ribbon, geoMapRenderer,
         stepControl, timeManager, operations, layers, session.getUndoBuffer(),
-        normalPainter, snailPainter);
+        normalPainter, snailPainter, refresh);
   }
 }

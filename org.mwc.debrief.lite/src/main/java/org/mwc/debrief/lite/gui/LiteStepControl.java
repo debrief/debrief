@@ -23,6 +23,7 @@ import org.mwc.debrief.lite.properties.PropertiesDialog;
 
 import Debrief.GUI.Frames.Session;
 import Debrief.GUI.Tote.StepControl;
+import Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.StepperListener;
@@ -269,6 +270,30 @@ public class LiteStepControl extends StepControl
       l.steppingModeChanged(go);
     }
   }
+  
+  public PlotHighlighter getRectangleHighlighter()
+  {
+    for ( PlotHighlighter current : _myHighlighters )
+    {
+      if ( current instanceof Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter.RectangleHighlight )
+      {
+        return current;
+      }
+    }
+    return null;
+  }
+  
+  public PlotHighlighter getSymbolHighlighter()
+  {
+    for ( PlotHighlighter current : _myHighlighters )
+    {
+      if ( current instanceof Debrief.GUI.Tote.Painters.Highlighters.SymbolHighlighter )
+      {
+        return current;
+      }
+    }
+    return null;
+  }
 
   @Override
   protected void updateForm(final HiResDate DTG)
@@ -278,5 +303,10 @@ public class LiteStepControl extends StepControl
     _timeLabel.setValue(DTG.getDate().getTime());
     DebriefRibbonTimeController.assignThisTimeFormat(_dateFormatter.toPattern(),
         false, true);
+  }
+  
+  public Debrief.GUI.Tote.Painters.PainterManager getPainterManager()
+  {
+    return _thePainterManager;
   }
 }
