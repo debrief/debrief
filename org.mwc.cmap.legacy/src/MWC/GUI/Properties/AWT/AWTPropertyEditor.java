@@ -279,24 +279,13 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements
    * the label to show the descriptions in
    */
   Label _info;
-
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
+  
   /**
-   * the constructor,
-   *
-   * @param info
-   *          the thing we're going to edit
-   * @param parent
-   *          the properties panel we're contained in
-   * @param theChart
-   *          the chart we're looking at
-   * @param theParent
-   *          the application we're contained in
-   * @param parentLayer
-   *          the layer above us, to be updated on completion
-   * @param theLayers
+   * @param info the object we are going to edit
+   * @param parent the panel we are contained in
+   * @param theLayers where the data is
+   * @param toolParent the parent we can report to
+   * @param parentLayer the layer that contains this data
    */
   public AWTPropertyEditor(final MWC.GUI.Editable.EditorType info,
       final AWTPropertiesPanel parent, final Layers theLayers,
@@ -649,7 +638,7 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements
    * method to indicate to user that no editors were found
    */
   @Override
-  protected void showZeroEditorsFound()
+  protected void showZeroEditorsFound(final String name)
   {
     // hey, lets do this another day@@@
   }
