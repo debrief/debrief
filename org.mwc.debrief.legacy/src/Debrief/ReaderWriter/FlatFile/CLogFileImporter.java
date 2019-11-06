@@ -669,10 +669,11 @@ public class CLogFileImporter
    * @param logger error logger
    * @param line line of text to process
    * @param nextTimeDue time the next item is due
+   * @param ctr 
    * @return
    */
   private static FixWrapper produceFix(final ErrorLogger logger,
-      final String line, final Long nextTimeDue)
+      final String line, final Long nextTimeDue, final int lineCtr)
   {
     // ok, tokenize the line
     final String[] tokens = line.split("\\s+");
@@ -680,7 +681,7 @@ public class CLogFileImporter
     if (tokens.length != 17)
     {
       logger.logError(ErrorLogger.ERROR,
-          "Expecting 17 tokens in CLog format. Found:" + tokens.length, null);
+          "Expecting 17 tokens in CLog format at line:" + lineCtr + ". Found:" + tokens.length, null);
     }
     
     // sort out the date first
@@ -695,6 +696,7 @@ public class CLogFileImporter
       HiResDate date = new HiResDate(timeStamp);
       final Fix fix = new Fix(date, loc, courseRads, speedYps);
       res = new FixWrapper(fix);
+      res.resetName();
     }
     else
     {
@@ -718,13 +720,14 @@ public class CLogFileImporter
 
     Long nextTimeDue = null;
     final long timeDelta = 1000; // 1 second
+    int ctr = 2;
     
     while ((line = reader.readLine()) != null)
     {
       // ok, generate a position
       try
       {
-        final FixWrapper wrapped = produceFix(logger, line, nextTimeDue);
+        final FixWrapper wrapped = produceFix(logger, line, nextTimeDue, ctr);
         if (wrapped != null)
         {
           if (res == null)
@@ -746,9 +749,10 @@ public class CLogFileImporter
       }
       catch (final Exception e)
       {
-        logger.logError(ErrorLogger.ERROR, "Exception while reading CLog data",
+        logger.logError(ErrorLogger.ERROR, "Exception while reading CLog data at line:" + ctr,
             e);
       }
+      ctr++;
     }
     return res;
   }
