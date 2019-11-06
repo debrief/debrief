@@ -176,7 +176,7 @@ public class PlainHighlighter implements TemporalLayerPainter
  */
     public PlainHighlighterInfo(final PlainHighlighter data)
     {
-      super(data, "Normal", "");
+      super(data, "Normal", "Normal Highlighter");
     }
 
 /** the set of descriptions for this object

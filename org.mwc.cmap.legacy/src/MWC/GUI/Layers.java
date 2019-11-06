@@ -1190,17 +1190,16 @@ public class Layers implements Serializable, Plottable, PlottablesType
             if (dtg != null)
             {
               res = extend(res, dtg);
-
-              // also see if it this data type an end time
-              if (wrapped instanceof WatchableList)
+            }
+            // also see if it this data type an end time
+            if (wrapped instanceof WatchableList)
+            {
+              // ok, make sure we also handle the end time
+              final WatchableList wl = (WatchableList) wrapped;
+              final HiResDate endD = wl.getEndDTG();
+              if (endD != null)
               {
-                // ok, make sure we also handle the end time
-                final WatchableList wl = (WatchableList) wrapped;
-                final HiResDate endD = wl.getEndDTG();
-                if (endD != null)
-                {
-                  res = extend(res, endD);
-                }
+                res = extend(res, endD);
               }
             }
           }
