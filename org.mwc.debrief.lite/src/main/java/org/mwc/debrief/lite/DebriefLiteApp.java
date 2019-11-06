@@ -1029,20 +1029,19 @@ public class DebriefLiteApp implements FileDropListener
         stepControl, timeManager, operation, session, resetAction, normalT,
         snailT, new Runnable()
         {
-          
+
           @Override
           public void run()
           {
             mapPane.repaint();
           }
-        }
-        , statusBar, exitAction, projection, transform, collapseAction,
+        }, statusBar, exitAction, projection, transform, collapseAction,
         alphaListener, alpha, path);
   }
 
   /**
    * Add the context menu to the LiteMapPane
-   * 
+   *
    * @param _myMapPane
    *          MapPane to add the menu
    * @param transform
