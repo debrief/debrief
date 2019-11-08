@@ -1031,6 +1031,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
 
     // don't forget to indicate it's interpolated
     res.setLabel(INTERPOLATED_FIX);
+    res.setInterpolation(true);
 
     return res;
   }
@@ -1086,6 +1087,18 @@ public class FixWrapper extends PlainWrapper implements Watchable,
 
     return res;
   }
+  
+  public void setInterpolation(final boolean _newValue)
+  {
+    _isInterpolation = _newValue;
+  }
+  
+  public boolean isInterpolation()
+  {
+    return _isInterpolation;
+  }
+  
+  private boolean _isInterpolation = false;
 
   /**
    * the tactical data item we are storing
