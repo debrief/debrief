@@ -972,15 +972,17 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
               // / get the colour
               Color thisColor = thisSecondary.getColor();
-              
+
               // when we have an interpolated point, we would have to use the previous
               // color
               if (thisSecondary instanceof FixWrapper)
               {
-                final FixWrapper secondaryAsFixWrapper = ((FixWrapper) thisSecondary);
+                final FixWrapper secondaryAsFixWrapper =
+                    ((FixWrapper) thisSecondary);
                 if (secondaryAsFixWrapper.isInterpolation())
                 {
-                  Color actualColor = secondaryAsFixWrapper.getActualColor();
+                  final Color actualColor = secondaryAsFixWrapper
+                      .getActualColor();
                   if (actualColor == null && previousColor != null)
                   {
                     thisColor = previousColor;

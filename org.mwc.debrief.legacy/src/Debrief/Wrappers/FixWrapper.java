@@ -575,7 +575,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -1087,17 +1087,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
 
     return res;
   }
-  
-  public void setInterpolation(final boolean _newValue)
-  {
-    _isInterpolation = _newValue;
-  }
-  
-  public boolean isInterpolation()
-  {
-    return _isInterpolation;
-  }
-  
+
   private boolean _isInterpolation = false;
 
   /**
@@ -1135,28 +1125,24 @@ public class FixWrapper extends PlainWrapper implements Watchable,
    * the font to draw this track in.
    */
   private Font _theFont;
+
   /**
    * whether the location symbol is drawn
    */
   private boolean _showSymbol = false;
+
   /**
    * whether the arrow symbol is drawn
    */
   private boolean _showArrow = false;
-
   /**
    * the area covered by this fix
    */
   private transient WorldArea _myArea;
-
   /**
    * a single instance of our editor type - which can be listened to by multiple listeners
    */
   transient private Editable.EditorType _myEditor = null;
-
-  // //////////////////////////////////////
-  // member functions
-  // //////////////////////////////////////
 
   /**
    * the current format we're using
@@ -1169,6 +1155,10 @@ public class FixWrapper extends PlainWrapper implements Watchable,
    *
    */
   private boolean _lineShowing = true;
+
+  // //////////////////////////////////////
+  // member functions
+  // //////////////////////////////////////
 
   /**
    * whether a user label was supplied. if it wasn't, we allow the reset labels to run
@@ -1549,6 +1539,11 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     return true;
   }
 
+  public boolean isInterpolation()
+  {
+    return _isInterpolation;
+  }
+
   @Override
   public final void paint(final CanvasType dest)
   {
@@ -1855,6 +1850,11 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     {
       _theLabel.setFont(getFont());
     }
+  }
+
+  public void setInterpolation(final boolean _newValue)
+  {
+    _isInterpolation = _newValue;
   }
 
   @FireReformatted
