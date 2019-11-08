@@ -8,16 +8,22 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.RenderedImage;
+import java.util.ArrayList;
 
-import org.geotools.factory.Hints;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.swing.JMapPane;
+import org.geotools.swing.MouseDragBox;
 import org.geotools.swing.event.MapMouseAdapter;
 import org.geotools.swing.event.MapMouseEvent;
+import org.geotools.swing.event.MapMouseListener;
 import org.geotools.swing.tool.CursorTool;
+import org.geotools.util.factory.Hints;
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
@@ -47,16 +53,18 @@ public class LiteMapPane extends JMapPane
    *
    */
   private float mapTransparency;
-  private final MouseDragLine dragLine;
 
   private final GeoToolMapRenderer _renderer;
 
   private final MathTransform data_transform;
 
-  public LiteMapPane(final GeoToolMapRenderer geoToolMapRenderer, final float alpha)
+  private final ArrayList<ActionListener> repaintListeners = new ArrayList<>();
+
+  public LiteMapPane(final GeoToolMapRenderer geoToolMapRenderer,
+      final float alpha)
   {
     super();
-    
+
     mapTransparency = alpha;
 
     // Would be better to pass in a GeoToolMapProjection or GTProjection here?
@@ -79,19 +87,90 @@ public class LiteMapPane extends JMapPane
 
     data_transform = theTransform;
     _renderer = geoToolMapRenderer;
-    dragLine = new MouseDragLine(this);
 
-    addMouseListener(dragLine);
-    addMouseMotionListener(dragLine);
     addMouseListener(getMouseListener(data_transform));
+
+    disableBoxDrawRightClick();
 
     // try to set background color
     super.setBackground(new Color(135, 172, 215));
   }
-  
-  public MathTransform getTransform()
+
+  public void addRepaintListener(final ActionListener actionListener)
   {
-    return data_transform;
+    repaintListeners.add(actionListener);
+  }
+
+  private void disableBoxDrawRightClick()
+  {
+    final MouseListener[] listeners = getMouseListeners();
+    MouseDragBox dragbox = null;
+    for (final MouseListener l : listeners)
+    {
+      if (l instanceof MouseDragBox)
+      {
+        dragbox = ((MouseDragBox) l);
+      }
+    }
+    final MouseDragBox finalDragbox = dragbox;
+
+    addMouseListener(new MapMouseListener()
+    {
+
+      @Override
+      public void onMouseClicked(final MapMouseEvent paramMapMouseEvent)
+      {
+
+      }
+
+      @Override
+      public void onMouseDragged(final MapMouseEvent paramMapMouseEvent)
+      {
+
+      }
+
+      @Override
+      public void onMouseEntered(final MapMouseEvent paramMapMouseEvent)
+      {
+
+      }
+
+      @Override
+      public void onMouseExited(final MapMouseEvent paramMapMouseEvent)
+      {
+
+      }
+
+      @Override
+      public void onMouseMoved(final MapMouseEvent paramMapMouseEvent)
+      {
+
+      }
+
+      @Override
+      public void onMousePressed(final MapMouseEvent paramMapMouseEvent)
+      {
+        if (finalDragbox != null)
+        {
+          final boolean isRightClick = paramMapMouseEvent
+              .getButton() == MouseEvent.BUTTON3;
+          finalDragbox.setEnabled(!isRightClick && currentCursorTool != null
+              && currentCursorTool.drawDragBox());
+        }
+      }
+
+      @Override
+      public void onMouseReleased(final MapMouseEvent paramMapMouseEvent)
+      {
+
+      }
+
+      @Override
+      public void onMouseWheelMoved(final MapMouseEvent paramMapMouseEvent)
+      {
+
+      }
+    });
   }
 
   public MapMouseAdapter getMouseListener(final MathTransform transform)
@@ -160,17 +239,52 @@ public class LiteMapPane extends JMapPane
 
   }
 
+  public MathTransform getTransform()
+  {
+    return data_transform;
+  }
+
+  /**
+   * There are some classes (for example MouseDragLine), which need to know when the map has been
+   * repainted. Simply add an ActionEvent to the repaintListeners list and it will be notified :)
+   *
+   * Don't forget to call the notifier... Saul Hidalgo
+   */
+  private void notifyRepaintListeners()
+  {
+    if (repaintListeners != null)
+    {
+      for (final ActionListener action : repaintListeners)
+      {
+        action.actionPerformed(null);
+      }
+    }
+  }
+
+  // @Override
+  // protected void paintComponent(final Graphics arg0)
+  // {
+  // super.paintComponent(arg0);
+  // }
+
+  @Override
+  public void paint(final Graphics g)
+  {
+    super.paint(g);
+    notifyRepaintListeners();
+  }
+
   @Override
   protected void paintComponent(final Graphics g)
   {
     // don't ask the parent to paint, since we're doing it, instead
-    //super.paintComponent(g);
+    // super.paintComponent(g);
 
     // draw in background
-    Dimension dim = this.getSize();
+    final Dimension dim = this.getSize();
     g.setColor(Color.white);
     g.fillRect(0, 0, dim.width, dim.height);
-    
+
     if (drawingLock.tryLock())
     {
       try
@@ -204,6 +318,11 @@ public class LiteMapPane extends JMapPane
     _renderer.paintEvent(g);
   }
 
+  public void setContextMenu(final ContextMenu menu)
+  {
+    setComponentPopupMenu(menu);
+  }
+
   @Override
   public void setCursorTool(final CursorTool tool)
   {
@@ -213,6 +332,10 @@ public class LiteMapPane extends JMapPane
       if (currentCursorTool != null)
       {
         mouseEventDispatcher.removeMouseListener(currentCursorTool);
+        if (currentCursorTool instanceof RangeBearingTool)
+        {
+          ((RangeBearingTool) currentCursorTool).eraseOldDrawing();
+        }
       }
 
       currentCursorTool = tool;
@@ -221,12 +344,10 @@ public class LiteMapPane extends JMapPane
       {
         setCursor(Cursor.getDefaultCursor());
         dragBox.setEnabled(false);
-        dragLine.setEnabled(false);
       }
       else
       {
         setCursor(currentCursorTool.getCursor());
-        dragLine.setEnabled(currentCursorTool instanceof RangeBearingTool);
         dragBox.setEnabled(currentCursorTool.drawDragBox());
         currentCursorTool.setMapPane(this);
         mouseEventDispatcher.addMouseListener(currentCursorTool);
@@ -239,14 +360,9 @@ public class LiteMapPane extends JMapPane
     }
   }
 
-  // @Override
-  // protected void paintComponent(final Graphics arg0)
-  // {
-  // super.paintComponent(arg0);
-  // }
-
   public void setTransparency(final float transparency)
   {
     mapTransparency = transparency;
   }
+
 }

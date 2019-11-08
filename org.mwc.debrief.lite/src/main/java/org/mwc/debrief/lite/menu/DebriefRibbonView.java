@@ -1,3 +1,17 @@
+/*
+ *    Debrief - the Open Source Maritime Analysis Application
+ *    http://debrief.info
+ *
+ *    (C) 2000-2018, Deep Blue C Technology Ltd
+ *
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the Eclipse Public License v1.0
+ *    (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ */
 package org.mwc.debrief.lite.menu;
 
 import java.awt.Color;
@@ -9,7 +23,6 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeListener;
 
 import org.geotools.swing.JMapPane;
-import org.geotools.swing.action.ZoomInAction;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.gui.ZoomOut;
@@ -28,6 +41,7 @@ import org.pushingpixels.flamingo.api.common.model.CommandGroup;
 import org.pushingpixels.flamingo.api.common.model.CommandPanelContentModel;
 import org.pushingpixels.flamingo.api.common.model.CommandPanelPresentationModel;
 import org.pushingpixels.flamingo.api.common.model.CommandToggleGroupModel;
+import org.pushingpixels.flamingo.api.common.projection.CommandPanelProjection;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand.PresentationPriority;
@@ -38,7 +52,7 @@ import MWC.GUI.Layers;
 
 public class DebriefRibbonView
 {
-  private static JRibbonComponent addAlphaSlider(
+  private static CommandPanelProjection addAlphaSlider(
       final ChangeListener alphaListener, final float alpha)
   {
     final JSlider slider = new JSlider(0, 100);
@@ -49,7 +63,7 @@ public class DebriefRibbonView
     slider.setValue((int)(alpha * 100f));
     
    
-    CommandPanelPresentationModel panelPresentationModel;
+   
     List<CommandGroup> commandGroups = new ArrayList<>();
     Command command = Command.builder()
         .setIconFactory(EmptyResizableIcon.factory())
@@ -63,32 +77,35 @@ public class DebriefRibbonView
     
     CommandPanelContentModel panelContentModel = new CommandPanelContentModel(commandGroups);
     panelContentModel.setSingleSelectionMode(true);
-    CommandPanelPresentationModel.builder()
+    CommandPanelPresentationModel panelPresentationModel = CommandPanelPresentationModel.builder()
     .setToShowGroupLabels(false)
     .setCommandPresentationState(CommandButtonPresentationState.FIT_TO_ICON)
     .setCommandIconDimension(48)
     .build();
-//    final JRibbonComponent component = new JRibbonComponent(null,
-//        "Transparency:", slider);
-//    return component;
-    return null;
+    CommandPanelProjection projection = new CommandPanelProjection(panelContentModel, panelPresentationModel);
+    /*
+     * final JRibbonComponent component = new JRibbonComponent(projection, "Transparency:", slider);
+     * return component;
+     */
+    return projection;
   }
 
   protected static void addViewTab(final JRibbon ribbon,
       final GeoToolMapRenderer geoMapRenderer, final Layers layers,
       final JLabel statusBar, final GeoToolMapProjection projection,
-      final MathTransform transform, final ChangeListener alphaListener, final float alpha)
+      final MathTransform transform, final ChangeListener alphaListener,
+      final float alpha)
   {
 //    final JRibbonBand mouseMode = createMouseModes(geoMapRenderer, statusBar,
 //        layers, projection, transform);
 //    final JRibbonBand mapCommands = createMapCommands(geoMapRenderer, layers);
 //    
-    // and the slider
+//    // and the slider
 //    final JRibbonBand layersMenu = new JRibbonBand("Background", null);
-//    final JRibbonComponent slider = addAlphaSlider(alphaListener, alpha);
+//    final CommandPanelProjection slider = addAlphaSlider(alphaListener, alpha);
 //    slider.setPresentationPriority(PresentationPriority.TOP);
-//    layersMenu.addRibbonComponent(slider);
-
+//    layersMenu.addRibbon(slider);
+//
 //    final RibbonTask viewTask = new RibbonTask("View", mouseMode, mapCommands,
 //        layersMenu);
 //    final RibbonTask viewTask = new RibbonTask("View", mouseMode, mapCommands);

@@ -62,7 +62,6 @@ import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
 import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
 import org.pushingpixels.flamingo.api.common.CommandButtonPresentationState;
-import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.RichTooltip;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.common.model.Command;
@@ -98,6 +97,7 @@ import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WatchableList;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
 import MWC.TacticalData.SliderConverter;
@@ -538,7 +538,9 @@ public class DebriefRibbonTimeController
     LabelComponentContentModel, ComponentPresentationModel> jTimeLabel =
     (Projection<JRibbonLabel, LabelComponentContentModel,
         ComponentPresentationModel> projection) -> JRibbonLabel::new;
-    RibbonLabelProjection timeLabelProjection = new RibbonLabelProjection(timeLabelModel,ComponentPresentationModel.withDefaults() , jTimeLabel);
+    RibbonLabelProjection timeLabelProjection = new RibbonLabelProjection(timeLabelModel,
+        ComponentPresentationModel.withDefaults() , 
+        jTimeLabel);
     final JLabel timeLabel = timeLabelProjection.buildComponent();
     timeLabel.setBorder(new LineBorder(Color.black, 5));
     timeLabel.setName("timeformatlabel");
@@ -709,6 +711,8 @@ public class DebriefRibbonTimeController
         stepControl.startStepping(false);
         boolean hasItems = false;
         boolean hasNarratives = false;
+        boolean hasStart = false;
+        boolean hasEnd = false;
 
         final Enumeration<Editable> lIter = stepControl.getLayers().elements();
         while (lIter.hasMoreElements())
@@ -729,6 +733,11 @@ public class DebriefRibbonTimeController
               final Editable nextE = ele.nextElement();
               hasItems |= nextE instanceof LightweightTrackWrapper
                   || nextE instanceof DynamicTrackShapeSetWrapper;
+              if (!hasItems && nextE instanceof WatchableList)
+              {
+                hasStart |= ((WatchableList) nextE).getStartDTG() != null;
+                hasEnd |= ((WatchableList) nextE).getEndDTG() != null;
+              }
             }
           }
           else if (next instanceof NarrativeWrapper)
@@ -742,8 +751,20 @@ public class DebriefRibbonTimeController
               hasNarratives |= nextE instanceof NarrativeEntry;
             }
           }
+          else if (next instanceof WatchableList)
+          {
+            // look at the date
+            final WatchableList wl = (WatchableList) next;
+            final HiResDate startDTG = wl.getStartDTG();
+            final HiResDate endDTG = wl.getEndDTG();
+
+            // is it a real date?
+            hasStart |= startDTG != null;
+            hasEnd |= endDTG != null;
+          }
         }
 
+        hasItems |= hasStart && hasEnd;
         DebriefLiteApp.setDirty(hasItems || hasNarratives);
         if (hasItems)
         {

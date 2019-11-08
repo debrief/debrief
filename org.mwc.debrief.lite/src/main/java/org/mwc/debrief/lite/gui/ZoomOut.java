@@ -10,10 +10,9 @@ import javax.swing.JComponent;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.Envelope2D;
 import org.geotools.swing.JMapPane;
+import org.locationtech.jts.geom.Coordinate;
 import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
-
-import com.vividsolutions.jts.geom.Coordinate;
 
 public class ZoomOut extends AbstractAction implements CommandAction
 {

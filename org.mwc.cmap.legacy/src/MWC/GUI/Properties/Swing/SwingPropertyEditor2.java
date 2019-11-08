@@ -912,20 +912,13 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
    */
   private MultiLineLabel _reportWindow;
 
-  // ///////////////////////////////////////////////////////////
-  // constructor
-  // //////////////////////////////////////////////////////////
   /**
-   * the constructor for our Swing property editor
-   *
-   * @param info
-   *          the object we are going to edit
-   * @param parent
-   *          the panel we are contained in
-   * @param propsPanel
-   *          JTabbedPane
-   * @param theChart
-   *          the chart we will send updates to
+   * @param info the object we are going to edit
+   * @param parent the panel we are contained in
+   * @param theLayers where the data is
+   * @param toolParent the parent we can report to
+   * @param parentLayer the layer that contains this data
+   * @param propsPanel the parent properties panel
    */
   public SwingPropertyEditor2(final MWC.GUI.Editable.EditorType info,
       final SwingPropertiesPanel parent, final Layers theLayers,
@@ -1618,9 +1611,9 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
    * method to indicate to user that no editors were found
    */
   @Override
-  protected void showZeroEditorsFound()
+  protected void showZeroEditorsFound(final String name)
   {
-    _main.add("Center", new JLabel("This object has no editable properties"));
+    _main.add("Center", new JLabel("No editable properties found for:" + name));
   }
 
   @Override

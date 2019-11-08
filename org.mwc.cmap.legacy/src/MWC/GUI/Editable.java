@@ -221,6 +221,27 @@ public interface Editable
 
       _myCategory = category;
     }
+    
+    /**
+     * @param category - the grouping for this property
+     * @param propertyName The programmatic name of the property.
+     * @param beanClass The Class object for the target bean.  For
+     *          example sun.beans.OurButton.class.
+     * @param readMethodName The name of the method used for reading the property
+     *           value.  May be null if the property is write-only.
+     * @param writeMethodName The name of the method used for writing the property
+     *           value.  May be null if the property is read-only.
+     * @exception IntrospectionException if an exception occurs during
+     *              introspection.
+     */
+    public CategorisedPropertyDescriptor(final String category,
+        final String propertyName, final Class<?> beanClass, final String readMethod, 
+        final String writeMethod)
+        throws IntrospectionException
+    {
+      super(propertyName, beanClass, readMethod, writeMethod);
+      _myCategory = category;
+    }
 
     /**
      * the category to assign to this property
@@ -856,7 +877,7 @@ public interface Editable
     }
 
     /**
-     * convenience class to create a property
+     * convenience class to create a read-only property
      *
      * @param name
      *          name of this property
@@ -877,6 +898,31 @@ public interface Editable
       p.setShortDescription(description);
       p.setDisplayName(displayName);
 
+      return p;
+    }
+    /**
+     * convenience class to create a categorised read-only property
+     *
+     * @param name
+     *          name of this property
+     * @param description
+     *          description of this property
+     * @param displayName
+     *          display name
+     * @param description tooltip
+     * @param category grouping to use for this property
+     * @return property description
+     * @throws IntrospectionException
+     *           if the methods can't be found
+     */
+    protected final PropertyDescriptor displayReadOnlyProp(final String name,
+        final String displayName, final String description, final String category)
+        throws IntrospectionException
+    {
+      final PropertyDescriptor p = new CategorisedPropertyDescriptor(category,
+          name, _class, "get" + name, null);
+      p.setShortDescription(description);
+      p.setDisplayName(displayName);
       return p;
     }
 

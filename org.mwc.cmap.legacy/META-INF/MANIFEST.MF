@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: CMap Legacy Algorithms Plug-in
 Bundle-SymbolicName: org.mwc.cmap.legacy;singleton:=true
-Bundle-Version: 1.0.283
+Bundle-Version: 1.0.285
 Bundle-ClassPath: cmap_legacy.jar,
  libs/openmap.jar,
  libs/jmf.jar,
@@ -1088,4 +1088,4 @@ Export-Package:
  vrml.node;uses:="vrml,com.sun.j3d.loaders.vrml97.impl"
 Require-Bundle: org.junit;visibility:=reexport,
  org.mwc.cmap.jfreechart;bundle-version="1.0.16";visibility:=reexport
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-11
