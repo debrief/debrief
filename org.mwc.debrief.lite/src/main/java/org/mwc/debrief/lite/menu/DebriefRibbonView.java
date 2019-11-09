@@ -46,7 +46,6 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand.PresentationPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
-import org.pushingpixels.flamingo.internal.ui.ribbon.JRibbonComponent;
 
 import MWC.GUI.Layers;
 
@@ -96,20 +95,19 @@ public class DebriefRibbonView
       final MathTransform transform, final ChangeListener alphaListener,
       final float alpha)
   {
-//    final JRibbonBand mouseMode = createMouseModes(geoMapRenderer, statusBar,
-//        layers, projection, transform);
-//    final JRibbonBand mapCommands = createMapCommands(geoMapRenderer, layers);
-//    
-//    // and the slider
-//    final JRibbonBand layersMenu = new JRibbonBand("Background", null);
-//    final CommandPanelProjection slider = addAlphaSlider(alphaListener, alpha);
-//    slider.setPresentationPriority(PresentationPriority.TOP);
-//    layersMenu.addRibbon(slider);
-//
-//    final RibbonTask viewTask = new RibbonTask("View", mouseMode, mapCommands,
-//        layersMenu);
-//    final RibbonTask viewTask = new RibbonTask("View", mouseMode, mapCommands);
-//    ribbon.addTask(viewTask);
+    final JRibbonBand mouseMode = createMouseModes(geoMapRenderer, statusBar,
+        layers, projection, transform);
+    final JRibbonBand mapCommands = createMapCommands(geoMapRenderer, layers);
+    
+    // and the slider
+    final JRibbonBand layersMenu = new JRibbonBand("Background", null);
+    final CommandPanelProjection slider = addAlphaSlider(alphaListener, alpha);
+    //slider.setPresentationPriority(PresentationPriority.TOP);
+    layersMenu.add(slider.buildComponent());
+
+    final RibbonTask viewTask = new RibbonTask("View", mouseMode, mapCommands);
+        //,layersMenu);
+    ribbon.addTask(viewTask);
   }
 
   private static JRibbonBand createMapCommands(
