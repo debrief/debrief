@@ -61,6 +61,7 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
+import Debrief.GUI.Tote.Painters.TotePainter;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
@@ -321,10 +322,13 @@ public class DebriefRibbonTimeController
       final LiteStepControl stepControl, final TimeManager timeManager,
       final PlotOperations operations, final Layers layers,
       final UndoBuffer undoBuffer, final Runnable normalPainter,
-      final Runnable snailPainter)
+      final Runnable snailPainter, final Runnable refresh)
   {
     final JRibbonBand displayMode = createDisplayMode(normalPainter,
-        snailPainter);
+        snailPainter, stepControl, layers, undoBuffer);
+
+    final JRibbonBand highlighter = createHighlighter(stepControl, refresh,
+        layers, undoBuffer);
 
     final JRibbonBand filterToTime = createFilterToTime(stepControl, operations,
         timeManager);
@@ -332,8 +336,8 @@ public class DebriefRibbonTimeController
     final JRibbonBand control = createControl(stepControl, timeManager, layers,
         undoBuffer, operations);
 
-    final RibbonTask timeTask = new RibbonTask("Time", displayMode, control,
-        filterToTime);
+    final RibbonTask timeTask = new RibbonTask("Time", displayMode, highlighter,
+        control, filterToTime);
     ribbon.addTask(timeTask);
   }
 
@@ -818,7 +822,8 @@ public class DebriefRibbonTimeController
   }
 
   private static JRibbonBand createDisplayMode(final Runnable normalPainter,
-      final Runnable snailPainter)
+      final Runnable snailPainter, final LiteStepControl stepcontrol,
+      final Layers layers, final UndoBuffer undoBuffer)
   {
     final JRibbonBand displayMode = new JRibbonBand("Display Mode", null);
     final FlamingoCommandToggleGroup displayModeGroup =
@@ -849,6 +854,44 @@ public class DebriefRibbonTimeController
           }
         }, displayMode, RibbonElementPriority.TOP, true, displayModeGroup,
         false);
+
+    MenuUtils.addCommand("Properties", "icons/16/properties.png",
+        new ActionListener()
+        {
+
+          @Override
+          public void actionPerformed(final ActionEvent e)
+          {
+            if (stepcontrol instanceof LiteStepControl)
+            {
+              ToolbarOwner owner = null;
+              final ToolParent parent = (stepcontrol).getParent();
+              if (parent instanceof ToolbarOwner)
+              {
+                owner = (ToolbarOwner) parent;
+              }
+              final Layer parentLayer;
+              if (parent instanceof Layer)
+              {
+                parentLayer = (Layer) parent;
+              }
+              else
+              {
+                parentLayer = null;
+              }
+              final StepperListener stepper = stepcontrol.getCurrentPainter();
+              if (stepper instanceof TotePainter)
+              {
+                final PropertiesDialog dialog = new PropertiesDialog(
+                    ((TotePainter) stepper).getInfo(), layers, undoBuffer,
+                    parent, owner, parentLayer);
+                dialog.setSize(400, 500);
+                dialog.setLocationRelativeTo(null);
+                dialog.setVisible(true);
+              }
+            }
+          }
+        }, displayMode, RibbonElementPriority.LOW);
 
     displayMode.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         displayMode));
@@ -916,6 +959,90 @@ public class DebriefRibbonTimeController
     });
 
     return timePeriod;
+  }
+
+  private static JRibbonBand createHighlighter(
+      final LiteStepControl stepcontrol, final Runnable refresh,
+      final Layers layers, final UndoBuffer undoBuffer)
+  {
+    final JRibbonBand highlighter = new JRibbonBand("Highlighter", null);
+
+    final FlamingoCommandToggleGroup highlighterGroup =
+        new FlamingoCommandToggleGroup();
+    MenuUtils.addCommandToggleButton("Square", "icons/48/square.png",
+        new AbstractAction()
+        {
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void actionPerformed(final ActionEvent e)
+          {
+            if (stepcontrol instanceof LiteStepControl)
+            {
+              stepcontrol.setHighlighter((stepcontrol).getRectangleHighlighter()
+                  .toString());
+              refresh.run();
+            }
+          }
+        }, highlighter, RibbonElementPriority.TOP, true, highlighterGroup,
+        true);
+    MenuUtils.addCommandToggleButton("Symbol", "icons/48/shape.png",
+        new AbstractAction()
+        {
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void actionPerformed(final ActionEvent e)
+          {
+            if (stepcontrol instanceof LiteStepControl)
+            {
+              stepcontrol.setHighlighter(stepcontrol.getSymbolHighlighter()
+                  .toString());
+              refresh.run();
+            }
+          }
+        }, highlighter, RibbonElementPriority.TOP, true, highlighterGroup,
+        false);
+
+    MenuUtils.addCommand("Properties", "icons/16/properties.png",
+        new ActionListener()
+        {
+
+          @Override
+          public void actionPerformed(final ActionEvent e)
+          {
+            if (stepcontrol instanceof LiteStepControl)
+            {
+              ToolbarOwner owner = null;
+              final ToolParent parent = stepcontrol.getParent();
+
+              if (parent instanceof ToolbarOwner)
+              {
+                owner = (ToolbarOwner) parent;
+              }
+              final Layer parentLayer;
+              if (parent instanceof Layer)
+              {
+                parentLayer = (Layer) parent;
+              }
+              else
+              {
+                parentLayer = null;
+              }
+              final PropertiesDialog dialog = new PropertiesDialog(stepcontrol
+                  .getCurrentHighlighter().getInfo(), layers, undoBuffer,
+                  parent, owner, parentLayer);
+              dialog.setSize(400, 500);
+              dialog.setLocationRelativeTo(null);
+              dialog.setVisible(true);
+            }
+          }
+        }, highlighter, RibbonElementPriority.LOW);
+
+    highlighter.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
+        highlighter));
+
+    return highlighter;
   }
 
   public static void doSoftReset(final JSlider timeSlider,
