@@ -297,7 +297,6 @@ public class DebriefLiteApp implements FileDropListener
 
   public static DebriefLiteApp getInstance()
   {
-    System.out.println("using:" + _instance);
     return _instance;
   }
 
