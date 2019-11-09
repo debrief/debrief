@@ -36,6 +36,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -366,7 +367,21 @@ public class DebriefLiteApp implements FileDropListener
   {
     final ImportReplay rep = new ImportReplay();
     rep.setLayers(_instance._theLayers);
-    rep.importThis(file.getAbsolutePath(), new FileInputStream(file));
+    final FileInputStream fis = new FileInputStream(file);
+    try {
+      rep.importThis(file.getAbsolutePath(), fis);
+    }
+    finally
+    {
+      try
+      {
+        fis.close();
+      }
+      catch (IOException e)
+      {
+        getDefault().logError(ToolParent.ERROR, "Failed to close DSF file", e);
+      }
+    }
     final Vector<SensorWrapper> sensors = rep.getPendingSensors();
 
     boolean isAllCorrect = true;
@@ -1308,8 +1323,22 @@ public class DebriefLiteApp implements FileDropListener
     final DebriefXMLReaderWriter reader = new DebriefXMLReaderWriter(app);
     try
     {
-      reader.importThis(file.getName(), new FileInputStream(file), session);
-
+      FileInputStream is = new FileInputStream(file);
+      try
+      {
+        reader.importThis(file.getName(), is, session);
+      }
+      finally
+      {
+        try
+        {
+          is.close();
+        }
+        catch (IOException e)
+        {
+          getDefault().logError(ToolParent.ERROR, "Failed to close DPF file", e);
+        }
+      }
       // update the time panel
       final TimePeriod period = _theLayers.getTimePeriod();
       _myOperations.setPeriod(period);
@@ -1358,32 +1387,41 @@ public class DebriefLiteApp implements FileDropListener
   }
 
   private void handleImportNMEAFile(final File file)
+      throws FileNotFoundException
   {
     // show the dialog first, then import the file
 
     final ImportNMEA importer = new ImportNMEA(_theLayers);
-    FileInputStream fs;
+
+    final FileInputStream fis = new FileInputStream(file);
     try
     {
-      fs = new FileInputStream(file);
-      importer.importThis(file.getName(), fs, 60000, 60000, false);
-      final TimePeriod period = _theLayers.getTimePeriod();
-      _myOperations.setPeriod(period);
-      timeManager.setPeriod(this, period);
-      if (period != null)
+      importer.importThis(file.getName(), fis, 60000, 60000, false);
+    }
+    finally
+    {
+      try
       {
-        timeManager.setTime(this, period.getStartDTG(), true);
+        fis.close();
+      }
+      catch (IOException e)
+      {
+        getDefault().logError(ToolParent.ERROR, "Failed to close NMEA file", e);
       }
     }
-    catch (final FileNotFoundException e)
+
+    final TimePeriod period = _theLayers.getTimePeriod();
+    _myOperations.setPeriod(period);
+    timeManager.setPeriod(this, period);
+    if (period != null)
     {
-      JOptionPane.showMessageDialog(null, "File :" + file + " was not found",
-          "File error", JOptionPane.ERROR_MESSAGE);
+      timeManager.setTime(this, period.getStartDTG(), true);
     }
-    catch (final Exception e)
-    {
-      Trace.trace(e);
-    }
+    
+    _theLayers.fireModified(null);
+
+    // also tell the layers they've been reformatted
+    _theLayers.fireReformatted(null);
   }
 
   private void handleImportRep(final File[] fList)
@@ -1472,8 +1510,6 @@ public class DebriefLiteApp implements FileDropListener
 
   /**
    * fill in the UI details
-   *
-   * @param theToolbar
    */
   private void initForm()
   {
