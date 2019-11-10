@@ -133,8 +133,8 @@ public class GeoToolMapProjection extends PlainProjection implements
   @Override
   public Point toScreen(final WorldLocation val)
   {
-    DirectPosition2D workDegs = new DirectPosition2D();
-    DirectPosition2D workScreen = new DirectPosition2D();
+    final DirectPosition2D workDegs = new DirectPosition2D();
+    final DirectPosition2D workScreen = new DirectPosition2D();
 
     Point res = null;
     // and now for the actual projection bit
@@ -162,8 +162,8 @@ public class GeoToolMapProjection extends PlainProjection implements
   @Override
   public WorldLocation toWorld(final Point val)
   {
-    DirectPosition2D workDegs = new DirectPosition2D();
-    DirectPosition2D workScreen = new DirectPosition2D();
+    final DirectPosition2D workDegs = new DirectPosition2D();
+    final DirectPosition2D workScreen = new DirectPosition2D();
 
     WorldLocation res = null;
     workScreen.setLocation(val.x, val.y);

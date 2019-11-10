@@ -86,6 +86,7 @@ import org.mwc.debrief.lite.outline.OutlinePanelView;
 import org.mwc.debrief.lite.util.DoSaveAs;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.NoninvertibleTransformException;
 import org.opengis.referencing.operation.TransformException;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
@@ -328,7 +329,15 @@ public class DebriefLiteApp implements FileDropListener
         @Override
         public void run()
         {
-          _instance = new DebriefLiteApp();
+          try
+          {
+            _instance = new DebriefLiteApp();
+          }
+          catch (final NoninvertibleTransformException e)
+          {
+            Application.logError2(ToolParent.ERROR,
+                "Error invsersing the Transform", e);
+          }
         }
       });
     }
@@ -734,7 +743,10 @@ public class DebriefLiteApp implements FileDropListener
 
   private boolean _plotUpdating = false;
 
-  private DebriefLiteApp()
+  // Maybe this should go inside GeoToolMapRenderer
+  final float initialAlpha = 0.7f;
+
+  private DebriefLiteApp() throws NoninvertibleTransformException
   {
     // set the substance look and feel
     System.setProperty(SupportedApps.APP_NAME_SYSTEM_PROPERTY,
@@ -771,10 +783,10 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.setApplicationIcon(ImageWrapperResizableIcon.getIcon(MenuUtils
         .createImage("icons/d_lite.png"), MenuUtils.ICON_SIZE_32));
 
-    geoMapRenderer = new GeoToolMapRenderer();
-
-    final MapContent mapComponent = geoMapRenderer.getMapComponent();
+    final MapContent mapComponent = new MapContent();
     projection = new GeoToolMapProjection(mapComponent, _theLayers);
+    geoMapRenderer = new GeoToolMapRenderer(initialAlpha, mapComponent,
+        projection.getDataTransform().inverse());
 
     final FileDropSupport dropSupport = new FileDropSupport();
     dropSupport.setFileDropListener(this,
@@ -800,9 +812,7 @@ public class DebriefLiteApp implements FileDropListener
 
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));
 
-    final float initialAlpha = 0.7f;
-
-    mapPane = geoMapRenderer.createMapLayout(initialAlpha);
+    mapPane = (LiteMapPane) geoMapRenderer.getMap();
     createContextMenu(mapPane, geoMapRenderer.getTransform());
 
     dropSupport.addComponent(mapPane);
@@ -1033,7 +1043,7 @@ public class DebriefLiteApp implements FileDropListener
 
   /**
    * Add the context menu to the LiteMapPane
-   * 
+   *
    * @param _myMapPane
    *          MapPane to add the menu
    * @param transform
