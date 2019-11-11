@@ -67,7 +67,6 @@ public class RangeBearingAction extends MapAction implements CommandAction
   public void commandActivated(CommandActionEvent e)
   {
     actionPerformed(e);
-    
   }
 
 }

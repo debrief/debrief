@@ -23,6 +23,11 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeListener;
 
 import org.geotools.swing.JMapPane;
+import org.geotools.swing.action.PanAction;
+import org.geotools.swing.action.ZoomInAction;
+import org.geotools.swing.action.ZoomOutAction;
+import org.geotools.swing.event.MapMouseEvent;
+import org.geotools.swing.tool.PanTool;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.gui.ZoomOut;
@@ -98,7 +103,7 @@ public class DebriefRibbonView
     final JRibbonBand mouseMode = createMouseModes(geoMapRenderer, statusBar,
         layers, projection, transform);
     final JRibbonBand mapCommands = createMapCommands(geoMapRenderer, layers);
-    
+
     // and the slider
     final JRibbonBand layersMenu = new JRibbonBand("Background", null);
     final CommandPanelProjection slider = addAlphaSlider(alphaListener, alpha);
@@ -143,6 +148,44 @@ public class DebriefRibbonView
         mapPane), viewBand, PresentationPriority.TOP, true, mouseModeGroup,
         false);
     final AdvancedZoomInAction zoomInAction = new AdvancedZoomInAction(mapPane);
+//    MenuUtils.addCommandToggleButton("Pan", "icons/24/hand.png", new PanAction(
+//        mapPane)
+//    {
+//
+//      /**
+//       * 
+//       */
+//      private static final long serialVersionUID = 1072919666918011233L;
+//
+//      @Override
+//      public void actionPerformed(final ActionEvent ev)
+//      {
+//        getMapPane().setCursorTool(new PanTool()
+//        {
+//
+//          @Override
+//          public void onMouseDragged(final MapMouseEvent ev)
+//          {
+//            if (ev.getButton() != MouseEvent.BUTTON3)
+//            {
+//              super.onMouseDragged(ev);
+//            }
+//          }
+//
+//          @Override
+//          public void onMousePressed(final MapMouseEvent ev)
+//          {
+//
+//            if (ev.getButton() != MouseEvent.BUTTON3)
+//            {
+//              super.onMousePressed(ev);
+//            }
+//          }
+//        });
+//      }
+//
+//    }, viewBand, RibbonElementPriority.TOP, true, mouseModeGroup, false);
+//    final ZoomInAction zoomInAction = new AdvancedZoomInAction(mapPane);
     MenuUtils.addCommandToggleButton("Zoom In", "icons/24/zoomin.png",
         zoomInAction, viewBand, PresentationPriority.TOP, true, mouseModeGroup,
         true);

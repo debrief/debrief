@@ -543,6 +543,7 @@ public class DebriefRibbonTimeController
         jTimeLabel);
     final JLabel timeLabel = timeLabelProjection.buildComponent();
     timeLabel.setBorder(new LineBorder(Color.black, 5));
+
     timeLabel.setName("timeformatlabel");
     timeLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 16));
     timeLabel.setForeground(new Color(0, 255, 0));

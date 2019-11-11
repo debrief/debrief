@@ -15,6 +15,7 @@ import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
 
 public class ZoomOut extends AbstractAction implements CommandAction
+
 {
   /**
    *

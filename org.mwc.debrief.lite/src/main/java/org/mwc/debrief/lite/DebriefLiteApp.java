@@ -196,14 +196,15 @@ public class DebriefLiteApp implements FileDropListener
    */
   private static class ToteSetter implements Runnable
   {
-    final private PainterManager _manager;
-    final private StepperListener _painter;
-    final private RefreshStepper _refresher;
-
     public static interface RefreshStepper
     {
       void refresh(StepperListener listener);
     }
+
+    final private PainterManager _manager;
+    final private StepperListener _painter;
+
+    final private RefreshStepper _refresher;
 
     public ToteSetter(final PainterManager manager,
         final StepperListener painter, final RefreshStepper refresher)
