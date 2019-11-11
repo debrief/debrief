@@ -9,11 +9,7 @@
 	<classpathentry kind="lib" path="libs/postgis_1.3.5.jar"/>
 	<classpathentry kind="lib" path="libs/postgresql-8.3-604.jdbc4.jar"/>
 	<classpathentry kind="lib" path="libs/jaxen-1.1.3.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11">
-		<attributes>
-			<attribute name="module" value="true"/>
-			<attribute name="limit-modules" value="jdk.compiler,jdk.httpserver,jdk.internal.ed,jdk.internal.le,jdk.internal.opt,jdk.jartool,jdk.jdi,jdk.management.agent,jdk.management.jfr,jdk.net,jdk.scripting.nashorn,jdk.sctp,jdk.security.auth,jdk.security.jgss,jdk.unsupported,java.smartcardio,java.se"/>
-		</attributes>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
 		<accessrules>
 			<accessrule kind="accessible" pattern="**"/>
 		</accessrules>
