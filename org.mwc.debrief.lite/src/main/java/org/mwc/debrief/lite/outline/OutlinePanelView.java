@@ -309,7 +309,6 @@ public class OutlinePanelView extends SwingLayerManager implements
           DebriefLiteApp.getInstance().getTimeManager().setTime(this, period
               .getStartDTG(), true);
         }
-        System.out.println("Updated time");
       }
     }
 
@@ -1189,11 +1188,29 @@ public class OutlinePanelView extends SwingLayerManager implements
         "icons/24/add.png");
     // _enablers.add(new ButtonEnabler(addLayerButton, new Or(isEmpty,notEmpty)));
     commandBar.add(addLayerButton);
-
+    
+    final ActionListener deleteAction = new DoDelete(false);
     final JButton deleteButton = createCommandButton("Delete",
         "icons/24/remove.png");
     deleteButton.setToolTipText("Delete");
     deleteButton.setMnemonic(KeyEvent.VK_DELETE);
+    deleteButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
+        .getKeyStroke(KeyEvent.VK_DELETE, Toolkit.getDefaultToolkit()
+            .getMenuShortcutKeyMask()), "delete");
+    deleteButton.getActionMap().put("delete", new AbstractAction()
+    {
+
+      /**
+       *
+       */
+      private static final long serialVersionUID = 6778825469050187755L;
+
+      @Override
+      public void actionPerformed(final ActionEvent e)
+      {
+        deleteAction.actionPerformed(e);
+      }
+    });
     _enablers.add(new ButtonEnabler(deleteButton, notEmpty));
     deleteButton.setEnabled(false);
     commandBar.add(deleteButton);
@@ -1395,7 +1412,6 @@ public class OutlinePanelView extends SwingLayerManager implements
             .getMenuShortcutKeyMask()), "copy");
     copyButton.getActionMap().put("copy", copyAction);
     copyButton.addActionListener(copyAction);
-    final ActionListener deleteAction = new DoDelete(false);
     copyButton.setEnabled(false);
     deleteButton.setEnabled(false);
     pasteButton.setEnabled(false);
