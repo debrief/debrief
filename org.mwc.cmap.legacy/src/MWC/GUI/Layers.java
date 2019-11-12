@@ -211,6 +211,7 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
+import MWC.TacticalData.NarrativeWrapper;
 
 /**
  * Plain implementation of layer manager. In addition to managing a set of layers this class
@@ -1210,6 +1211,13 @@ public class Layers implements Serializable, Plottable, PlottablesType
             res = extend(res, wl.getEndDTG());
           }
         }
+      }
+      else if (thisLayer instanceof NarrativeWrapper)
+      {
+        // check if we have any narrative item inside.
+        final NarrativeWrapper narrativeWrapper = (NarrativeWrapper) thisLayer;
+        res = extend(res, narrativeWrapper.getTimePeriod().getStartDTG());
+        res = extend(res, narrativeWrapper.getTimePeriod().getEndDTG());
       }
     }
 
