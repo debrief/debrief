@@ -1535,9 +1535,10 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   {
     return true;
   }
-  
-  /** whether this fix has been interpolated
-   * 
+
+  /**
+   * whether this fix has been interpolated
+   *
    * @return
    */
   public boolean isInterpolated()
