@@ -570,7 +570,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   // //////////////////////////////////////////////////////////////
   // and a class representing interpolated fixes
   // //////////////////////////////////////////////////////////////
-  public static class InterpolatedFixWrapper extends FixWrapper implements
+  private static class InterpolatedFixWrapper extends FixWrapper implements
       PlainWrapper.InterpolatedData
   {
 
@@ -1031,7 +1031,6 @@ public class FixWrapper extends PlainWrapper implements Watchable,
 
     // don't forget to indicate it's interpolated
     res.setLabel(INTERPOLATED_FIX);
-    res.setInterpolation(true);
 
     return res;
   }
@@ -1087,8 +1086,6 @@ public class FixWrapper extends PlainWrapper implements Watchable,
 
     return res;
   }
-
-  private boolean _isInterpolation = false;
 
   /**
    * the tactical data item we are storing
@@ -1538,10 +1535,14 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   {
     return true;
   }
-
-  public boolean isInterpolation()
+  
+  /** whether this fix has been interpolated
+   * 
+   * @return
+   */
+  public boolean isInterpolated()
   {
-    return _isInterpolation;
+    return this instanceof FixWrapper.InterpolatedFixWrapper;
   }
 
   @Override
@@ -1850,11 +1851,6 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     {
       _theLabel.setFont(getFont());
     }
-  }
-
-  public void setInterpolation(final boolean _newValue)
-  {
-    _isInterpolation = _newValue;
   }
 
   @FireReformatted

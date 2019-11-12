@@ -979,7 +979,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
               {
                 final FixWrapper secondaryAsFixWrapper =
                     ((FixWrapper) thisSecondary);
-                if (secondaryAsFixWrapper.isInterpolation())
+                if(secondaryAsFixWrapper.isInterpolated())
                 {
                   final Color actualColor = secondaryAsFixWrapper
                       .getActualColor();

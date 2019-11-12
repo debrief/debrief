@@ -1047,8 +1047,11 @@ public class ToteView extends ViewPart
 							Watchable pw = null;
 							if (list.length > 0)
 								pw = list[0];
-							if (pw instanceof FixWrapper.InterpolatedFixWrapper)
-								isInterpolated = true;
+							if (pw instanceof FixWrapper)
+							{
+							  FixWrapper fix = (FixWrapper) pw;
+                isInterpolated = fix.isInterpolated();
+							}
 						}
 					}
 					else

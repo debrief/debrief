@@ -172,7 +172,6 @@ abstract public class PlainWrapper implements Plottable, Serializable,
 
   public static interface InterpolatedData
   {
-
   }
 
   /**

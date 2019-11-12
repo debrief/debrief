@@ -531,10 +531,25 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
       setText(val);
       
       // just sort out if this is an interpolated fix
-      if(secondary instanceof FixWrapper.InterpolatedFixWrapper)
-      	this.setFont(this.getFont().deriveFont(Font.ITALIC));
+      final boolean isItalic;
+      if(secondary instanceof FixWrapper)
+      {
+        FixWrapper fix = (FixWrapper) secondary;
+        isItalic = fix.isInterpolated();
+      }
       else
-      	this.setFont(this.getFont().deriveFont(Font.PLAIN));
+      {
+        isItalic = false;
+      }
+      
+      if(isItalic)
+      {
+        this.setFont(this.getFont().deriveFont(Font.ITALIC));
+      }
+      else
+      {
+        this.setFont(this.getFont().deriveFont(Font.PLAIN));
+      }
       
       return val;
     }
