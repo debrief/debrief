@@ -125,7 +125,7 @@ public class CLogFileImporter
       return fw;
     }
 
-    public void nottestExport() throws IOException
+    public void noTtestExport() throws IOException
     {
       final String ownship_track =
           "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
@@ -155,10 +155,11 @@ public class CLogFileImporter
       
       long milli_Step = 2;
       long micro_Step = milli_Step * 1000;
-      for(long tNow = track.getStartDTG().getMicros(); tNow < 818745300000000L; tNow += micro_Step)
+      for(long tNow = track.getStartDTG().getMicros(); tNow < 818746200000000L; tNow += micro_Step)
       {
         Watchable[] newF = track.getNearestTo(new HiResDate(0, tNow));
-        final String asLog = toLogFile((FixWrapper) newF[0]);
+        FixWrapper fix = (FixWrapper) newF[0];
+        final String asLog = toLogFile(fix);
         fw.write(asLog);       
         perfLog(ctr++);
       }
