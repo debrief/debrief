@@ -309,7 +309,6 @@ public class OutlinePanelView extends SwingLayerManager implements
           DebriefLiteApp.getInstance().getTimeManager().setTime(this, period
               .getStartDTG(), true);
         }
-        System.out.println("Updated time");
       }
     }
 
@@ -1244,6 +1243,20 @@ public class OutlinePanelView extends SwingLayerManager implements
     pasteButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
         .getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit()
             .getMenuShortcutKeyMask()), "paste");
+    pasteButton.getActionMap().put("paste", new AbstractAction()
+    {
+
+      /**
+       *
+       */
+      private static final long serialVersionUID = 6778825469050187755L;
+
+      @Override
+      public void actionPerformed(final ActionEvent e)
+      {
+        pasteAction.actionPerformed(e);
+      }
+    });
     pasteButton.addActionListener(pasteAction);
 
     final Action collapseAction = new AbstractAction()
@@ -1336,10 +1349,25 @@ public class OutlinePanelView extends SwingLayerManager implements
     editButton.addActionListener(editAction);
     final ActionListener addLayerAction = new DoAddLayer();
     addLayerButton.addActionListener(addLayerAction);
+
     final DoDelete cutAction = new DoDelete(true);
     cutButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
         .getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit()
             .getMenuShortcutKeyMask()), "cut");
+    cutButton.getActionMap().put("cut", new AbstractAction()
+    {
+
+      /**
+       *
+       */
+      private static final long serialVersionUID = 6778825469050187755L;
+
+      @Override
+      public void actionPerformed(final ActionEvent e)
+      {
+        cutAction.actionPerformed(e);
+      }
+    });
     cutButton.addActionListener(cutAction);
     final Action copyAction = new AbstractAction()
     {

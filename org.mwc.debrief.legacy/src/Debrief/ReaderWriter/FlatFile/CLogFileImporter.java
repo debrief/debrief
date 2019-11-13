@@ -25,13 +25,11 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -39,6 +37,7 @@ import MWC.GUI.Dialogs.DialogFactory;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Tools.Action;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
@@ -126,7 +125,7 @@ public class CLogFileImporter
       return fw;
     }
 
-    public void doNottestExport() throws IOException
+    public void noTtestExport() throws IOException
     {
       final String ownship_track =
           "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
@@ -150,21 +149,33 @@ public class CLogFileImporter
       fw.write("Blah blah blah blah\n");
 
       // and now the positions
-      final int ctr = 0;
+      int ctr = 0;
       final TrackWrapper track = (TrackWrapper) tLayers.findLayer("Nelson");
+      track.setInterpolatePoints(true);
       
-      // ok, resample the track to sub-second
-      track.setResampleDataAt(new HiResDate(100));
-      
-      final Enumeration<Editable> posits = track.getPositionIterator();
-      while (ctr < 10 && posits.hasMoreElements())
+      long milli_Step = 2;
+      long micro_Step = milli_Step * 1000;
+      for(long tNow = track.getStartDTG().getMicros(); tNow < 818746200000000L; tNow += micro_Step)
       {
-        final FixWrapper fix = (FixWrapper) posits.nextElement();
+        Watchable[] newF = track.getNearestTo(new HiResDate(0, tNow));
+        FixWrapper fix = (FixWrapper) newF[0];
         final String asLog = toLogFile(fix);
-        fw.write(asLog);
+        fw.write(asLog);       
+        perfLog(ctr++);
       }
+
       fw.close();
     }
+    
+    private static void perfLog(long ctr)
+    {
+      double log10 = Math.log10(ctr);
+      if(log10 == (int)log10)
+      {
+        System.out.println(ctr);
+      }
+    }
+    
 
     @Override
     public void setUp()
@@ -428,8 +439,8 @@ public class CLogFileImporter
 
     private long timeStampFor(final HiResDate date)
     {
-      final long millis = date.getDate().getTime();
-      return millis * 1000000;
+      final long millis = date.getMicros();
+      return millis * 1000;
     }
 
     private String toLogFile(final FixWrapper fix)
@@ -457,7 +468,7 @@ public class CLogFileImporter
       res += (fix.getLocation().getDepth() + separator); // 14 - Depth in metres
       res += (blah + separator); // 15
       res += (blah + separator); // 16
-      res += (timeStampFor(fix.getDateTimeGroup()) + separator); // 17 - timestamp in Nanos since
+      res += (timeStampFor(fix.getDTG()) + separator); // 17 - timestamp in Nanos since
                                                                  // epoch (19 digits!)
 
       // and newline
@@ -669,10 +680,11 @@ public class CLogFileImporter
    * @param logger error logger
    * @param line line of text to process
    * @param nextTimeDue time the next item is due
+   * @param ctr 
    * @return
    */
   private static FixWrapper produceFix(final ErrorLogger logger,
-      final String line, final Long nextTimeDue)
+      final String line, final Long nextTimeDue, final int lineCtr)
   {
     // ok, tokenize the line
     final String[] tokens = line.split("\\s+");
@@ -680,7 +692,7 @@ public class CLogFileImporter
     if (tokens.length != 17)
     {
       logger.logError(ErrorLogger.ERROR,
-          "Expecting 17 tokens in CLog format. Found:" + tokens.length, null);
+          "Expecting 17 tokens in CLog format at line:" + lineCtr + ". Found:" + tokens.length, null);
     }
     
     // sort out the date first
@@ -695,6 +707,7 @@ public class CLogFileImporter
       HiResDate date = new HiResDate(timeStamp);
       final Fix fix = new Fix(date, loc, courseRads, speedYps);
       res = new FixWrapper(fix);
+      res.resetName();
     }
     else
     {
@@ -718,13 +731,14 @@ public class CLogFileImporter
 
     Long nextTimeDue = null;
     final long timeDelta = 1000; // 1 second
+    int ctr = 2;
     
     while ((line = reader.readLine()) != null)
     {
       // ok, generate a position
       try
       {
-        final FixWrapper wrapped = produceFix(logger, line, nextTimeDue);
+        final FixWrapper wrapped = produceFix(logger, line, nextTimeDue, ctr);
         if (wrapped != null)
         {
           if (res == null)
@@ -746,9 +760,10 @@ public class CLogFileImporter
       }
       catch (final Exception e)
       {
-        logger.logError(ErrorLogger.ERROR, "Exception while reading CLog data",
+        logger.logError(ErrorLogger.ERROR, "Exception while reading CLog data at line:" + ctr,
             e);
       }
+      ctr++;
     }
     return res;
   }

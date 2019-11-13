@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 // $RCSfile: SwingTote.java,v $
 // @author $Author: Ian.Mayo $
@@ -184,13 +184,19 @@
 
 package Debrief.GUI.Tote.Swing;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.BorderLayout;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Enumeration;
+import java.util.Vector;
 
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
-import Debrief.Tools.Tote.*;
+import Debrief.Tools.Tote.toteCalculation;
 import Debrief.Wrappers.FixWrapper;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.DebriefColors;
@@ -205,305 +211,16 @@ import MWC.GenericData.WatchableList;
  */
 public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
 {
-  private JPanel _thePanel;
-  private SwingPropertiesPanel _theParent;
-
-  // private JPanel _theStatus;
-  private JPanel _theTote;
-  private JPanel _toteHolder;
-
-  private final JButton _autoGenerate;
-  private final JButton _autoGenerateTracks;
-
-  ImageIcon _crossIcon;
-  ImageIcon _copyIcon;
-
-  private final int _fontSize = 10;
-
-  private final MyMetalToolBarUI.ToolbarOwner _owner;
-
-  private final ToolParent _myParent;
-
-  /**
-   * the set of labels we are showing.  We remember these so that we can update them after each step - just in case the
-   * units have changed
-   */
-  private Vector<UnitLabel> _theLabels = new Vector<UnitLabel>();
-
-
-  public SwingTote(final SwingPropertiesPanel theTabPanel,
-                   final MWC.GUI.Layers theData,
-                   final MWC.GUI.PlainChart theChart,
-                   final MWC.GUI.Undo.UndoBuffer theUndoBuffer,
-                   final MyMetalToolBarUI.ToolbarOwner owner,
-                   final ToolParent theParent)
-  {
-    super(theData);
-
-    _myParent = theParent;
-
-    _owner = owner;
-
-    final java.lang.ClassLoader loader = getClass().getClassLoader();
-
-    if (loader != null)
-    {
-
-      final java.net.URL crossURL = loader.getResource("images/cut.gif");
-      final java.net.URL copyURL = loader.getResource("images/copy.gif");
-
-      if ((crossURL != null) && (copyURL != null))
-      {
-        _crossIcon = new ImageIcon(getClass().getClassLoader().getResource("images/cut.gif"));
-        _copyIcon = new ImageIcon(getClass().getClassLoader().getResource("images/copy.gif"));
-      }
-    }
-
-    // store the parent
-    _theParent = theTabPanel;
-
-    // create the panel we represent
-    _thePanel = new JPanel();
-    _thePanel.setName("Tote");
-    _thePanel.setLayout(new java.awt.BorderLayout());
-
-    // create the central tote portion, putting it into a toolbar
-    _toteHolder = new JPanel();
-    _toteHolder.setName("Calculated data");
-    _toteHolder.setLayout(new java.awt.BorderLayout());
-    _theTote = new JPanel();
-    _toteHolder.add("North", _theTote);
-    _thePanel.add("Center", _toteHolder);
-
-    // create the stepping control
-    final SwingStepControl aw = new SwingStepControl(theTabPanel, theData, theChart, theUndoBuffer, _owner, _myParent);
-    _thePanel.add("North", aw.getPanel());
-    setStepper(aw);
-
-
-    final JPanel gennyHolder = new JPanel();
-    gennyHolder.setLayout(new BorderLayout());
-
-    _autoGenerate = new JButton("Auto Generate");
-    _autoGenerate.setName(_autoGenerate.getText());
-    _autoGenerate.setToolTipText("Add all applicable items onto the Tote");
-    _autoGenerate.addActionListener(new ActionListener()
-    {
-      public void actionPerformed(final ActionEvent e)
-      {
-        assignWatchables(false);
-      }
-    });
-
-
-    _autoGenerateTracks = new JButton("Auto Generate (tracks)");
-    _autoGenerateTracks.setName(_autoGenerateTracks.getText());
-    _autoGenerateTracks.setToolTipText("Add all Tracks onto the Tote");
-    _autoGenerateTracks.addActionListener(new ActionListener()
-    {
-      public void actionPerformed(final ActionEvent e)
-      {
-        assignWatchables(true);
-      }
-    });
-
-
-    gennyHolder.add("East", _autoGenerate);
-    gennyHolder.add("West", _autoGenerateTracks);
-
-    _thePanel.add("South", gennyHolder);
-
-  }
-
-  public final java.awt.Container getPanel()
-  {
-    return _thePanel;
-  }
-
-  /**
-   * method to clear up local properties
-   */
-  public final void closeMe()
-  {
-    // get the parent to close
-    super.closeMe();
-
-    // and clear our references
-    _thePanel = null;
-    _theParent = null;
-    _theTote = null;
-    _toteHolder = null;
-
-    // and our lists
-    _theLabels.removeAllElements();
-    _theLabels = null;
-
-  }
-
-  private static java.awt.Color getLabelColor(final WatchableList theList)
-  {
-    java.awt.Color res = null;
-    res = theList.getColor();
-    return res;
-  }
-
-
-  protected final void updateToteMembers()
-  {
-    // clear the current list of members
-    super._theCalculations.removeAllElements();
-
-    // clear the list of labels
-    _theLabels.removeAllElements();
-
-    // and delete them from our panels
-    _theTote.removeAll();
-
-    // check we can do it properly
-    if (_thePrimary == null)
-      return;
-
-    // we must now build up our grid of information
-
-    // calculate the size that we need
-    final int wid = 1 + // label
-      1 + // primary
-      super._theSecondary.size() + // secondaries
-      1;   // units
-
-    // now do our grid
-    _theTote.setLayout(new java.awt.GridLayout(0, wid));
-
-    // decide if we are going to trim the track names (when we have
-    // more than 4 tracks
-    final boolean trimLabels = (_theSecondary.size() > 3);
-
-    // and now add the members (going across first)
-    _theTote.add(new sizeableJLabel("  "));
-    final JLabel lh = new sizeableJLabel(_thePrimary.getName(),
-                                         false,
-                                         trimLabels);
-    _theTote.add(lh);
-
-    final Enumeration<WatchableList> iter2 = _theSecondary.elements();
-    while (iter2.hasMoreElements())
-    {
-      final WatchableList w = (WatchableList) iter2.nextElement();
-      final JLabel jl = new sizeableJLabel(w.getName(), false, trimLabels);
-      _theTote.add(jl);
-    }
-    _theTote.add(new sizeableJLabel("  "));
-
-    // and now the data for each row
-    final Enumeration<Class<?>> iter = _theCalculationTypes.elements();
-    while (iter.hasMoreElements())
-    {
-      final Class<?> cl = (Class<?>) iter.nextElement();
-      try
-      {
-        final toteCalculation tc = (toteCalculation) cl.newInstance();
-
-        // title
-        final JLabel secL = new sizeableJLabel(tc.getTitle(), true, false);
-        _theTote.add(secL);
-
-        // primary
-        final calcHolder cp = new calcHolder(tc, _thePrimary.getName());
-        cp.setColor(getLabelColor(_thePrimary));
-        _theCalculations.addElement(cp);
-        _theTote.add(cp);
-
-        // secondaries
-        final Enumeration<WatchableList> secs = _theSecondary.elements();
-        while (secs.hasMoreElements())
-        {
-          final WatchableList wl = (WatchableList) secs.nextElement();
-          final toteCalculation ts = (toteCalculation) cl.newInstance();
-          final calcHolder ch = new calcHolder(ts, wl.getName());
-          ch.setColor(getLabelColor(wl));
-          _theCalculations.addElement(ch);
-          _theTote.add(ch);
-        }
-
-        // create the text label to show the calculation units
-        final UnitLabel thisLabel = new UnitLabel(tc, true, false);
-
-        // add it to the tote
-        _theTote.add(thisLabel);
-
-        // and remember it, so we can update it later
-        _theLabels.add(thisLabel);
-      }
-      catch (final Exception e)
-      {
-        MWC.Utilities.Errors.Trace.trace(e);
-      }
-
-    }
-
-    // put on the list of remove and copy buttons
-    _theTote.add(new sizeableJLabel("  "));
-    _theTote.add(new sizeableJLabel("  "));
-    final Enumeration<WatchableList> secs2 = _theSecondary.elements();
-    while (secs2.hasMoreElements())
-    {
-      final WatchableList l = (WatchableList) secs2.nextElement();
-
-      // create a holder for the two buttons
-      final JPanel holder = new JPanel();
-      holder.setLayout(new java.awt.GridLayout(0, 2));
-      holder.add(new removeMe(l));
-      holder.add(new copyMe(l, _thePrimary, _theCalculationTypes));
-
-      // now add the holder
-      _theTote.add(holder);
-    }
-
-    // and the figures
-    updateToteInformation();
-
-    _theParent.doLayout();
-
-  }
-
-  /**
-   * over-ride the parent method so that we can update the units on the tote.
-   */
-  protected void updateToteInformation()
-  {
-    try
-    {
-      // let the parent do it's business
-      super.updateToteInformation();
-    }
-    catch (final java.util.NoSuchElementException er)
-    {
-      // don't worry about this error -
-      // - I suspect it's to do with synchronisation, adding new tracks while still trying
-      // to update the tote.
-    }
-
-    // now work through the tote updating the labels
-    for (int i = 0; i < _theLabels.size(); i++)
-    {
-      // get the next label
-      final UnitLabel label = (UnitLabel) _theLabels.elementAt(i);
-
-      // and update the units its showing
-      label.updateUnits();
-    }
-  }
-
   ////////////////////////////////////////////////////////////
   // nested class to put a calculation into a label
   ////////////////////////////////////////////////////////////
   final class calcHolder extends sizeableJLabel implements toteCalculation
   {
     /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		final toteCalculation _myCalc;
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    final toteCalculation _myCalc;
     final String _myName;
     java.awt.Color _myColor = null;
 
@@ -515,40 +232,20 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
       setText("---");
     }
 
-    public final void setColor(final java.awt.Color theCol)
-    {
-      _myColor = theCol;
-    }
-
-    public final double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime)
+    @Override
+    public final double calculate(final Watchable primary,
+        final Watchable secondary, final HiResDate thisTime)
     {
       return _myCalc.calculate(secondary, primary, thisTime);
     }
 
-    public final String update(final Watchable primary, final Watchable secondary, final HiResDate thisTime)
-    {
-      final String val = " " + _myCalc.update(primary, secondary, thisTime);
-      setText(val);
-      
-      // just sort out if this is an interpolated fix
-      if(secondary instanceof FixWrapper.InterpolatedFixWrapper)
-      	this.setFont(this.getFont().deriveFont(Font.ITALIC));
-      else
-      	this.setFont(this.getFont().deriveFont(Font.PLAIN));
-      
-      return val;
-    }
-
-    public final void setPattern(final java.text.NumberFormat format)
-    {
-      _myCalc.setPattern(format);
-    }
-
+    @Override
     public final String getTitle()
     {
       return _myCalc.getTitle();
     }
 
+    @Override
     public final String getUnits()
     {
       return _myCalc.getUnits();
@@ -557,11 +254,13 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
     /**
      * does this calculation require special bearing handling (prevent wrapping through 360 degs)
      */
+    @Override
     public final boolean isWrappableData()
     {
       return false;
     }
 
+    @Override
     public final void paint(final java.awt.Graphics p1)
     {
       // paint the text
@@ -585,32 +284,48 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
       }
 
     }
-  }
 
-  ////////////////////////////////////////////////////
-  // nested class for button to remove a tote participant
-  ////////////////////////////////////////////////////
-  final class removeMe extends sizeableJButton implements ActionListener
-  {
-    /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		final WatchableList _thisL;
-
-    public removeMe(final WatchableList theList)
+    public final void setColor(final java.awt.Color theCol)
     {
-      super("Remove this track");
-      _thisL = theList;
-      this.addActionListener(this);
-      super.setIcon(_crossIcon);
+      _myColor = theCol;
     }
 
-    public final void actionPerformed(final ActionEvent e)
+    @Override
+    public final void setPattern(final java.text.NumberFormat format)
     {
-      removeParticipant(_thisL);
+      _myCalc.setPattern(format);
     }
 
+    @Override
+    public final String update(final Watchable primary,
+        final Watchable secondary, final HiResDate thisTime)
+    {
+      final String val = " " + _myCalc.update(primary, secondary, thisTime);
+      setText(val);
+
+      // just sort out if this is an interpolated fix
+      final boolean isItalic;
+      if (secondary instanceof FixWrapper)
+      {
+        final FixWrapper fix = (FixWrapper) secondary;
+        isItalic = fix.isInterpolated();
+      }
+      else
+      {
+        isItalic = false;
+      }
+
+      if (isItalic)
+      {
+        this.setFont(this.getFont().deriveFont(Font.ITALIC));
+      }
+      else
+      {
+        this.setFont(this.getFont().deriveFont(Font.PLAIN));
+      }
+
+      return val;
+    }
   }
 
   ////////////////////////////////////////////////////
@@ -619,16 +334,15 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
   final class copyMe extends sizeableJButton implements ActionListener
   {
     /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		final WatchableList _thisL;
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    final WatchableList _thisL;
     final WatchableList _thePrimary1;
     final Vector<Class<?>> _theCalculationTypes1;
 
-    public copyMe(final WatchableList theList,
-                  final WatchableList thePrimary,
-                  final Vector<Class<?>> theCalculationTypes)
+    public copyMe(final WatchableList theList, final WatchableList thePrimary,
+        final Vector<Class<?>> theCalculationTypes)
     {
       super("copy details to clipboard");
       super.setName("Copy Details");
@@ -639,6 +353,7 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
       this.addActionListener(this);
     }
 
+    @Override
     public final void actionPerformed(final ActionEvent e)
     {
 
@@ -665,7 +380,7 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
         try
         {
 
-          final Class<?> cl = (Class<?>) enumT.nextElement();
+          final Class<?> cl = enumT.nextElement();
           final toteCalculation ts = (toteCalculation) cl.newInstance();
           res += ts.getTitle() + ", ";
         }
@@ -674,7 +389,6 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
           t.printStackTrace();
         }
       }
-
 
       // add a new-line
       res += System.getProperties().getProperty("line.separator");
@@ -685,7 +399,7 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
       {
         try
         {
-          final Class<?> cl = (Class<?>) enum1.nextElement();
+          final Class<?> cl = enum1.nextElement();
           final toteCalculation ts = (toteCalculation) cl.newInstance();
           final String thisV = ts.update(priW, secW, theCurrentTime);
 
@@ -700,14 +414,42 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
       }
 
       // put the result on the clipboard
-      final java.awt.datatransfer.Clipboard cl = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
-      final java.awt.datatransfer.StringSelection ss = new java.awt.datatransfer.StringSelection(res);
+      final java.awt.datatransfer.Clipboard cl = java.awt.Toolkit
+          .getDefaultToolkit().getSystemClipboard();
+      final java.awt.datatransfer.StringSelection ss =
+          new java.awt.datatransfer.StringSelection(res);
       cl.setContents(ss, ss);
 
     }
 
   }
 
+  ////////////////////////////////////////////////////
+  // nested class for button to remove a tote participant
+  ////////////////////////////////////////////////////
+  final class removeMe extends sizeableJButton implements ActionListener
+  {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    final WatchableList _thisL;
+
+    public removeMe(final WatchableList theList)
+    {
+      super("Remove this track");
+      _thisL = theList;
+      this.addActionListener(this);
+      super.setIcon(_crossIcon);
+    }
+
+    @Override
+    public final void actionPerformed(final ActionEvent e)
+    {
+      removeParticipant(_thisL);
+    }
+
+  }
 
   //////////////////////////////////////////////
   // nested class, a JLabel class which uses
@@ -716,17 +458,17 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
   protected class sizeableJButton extends JButton
   {
     /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
-		public sizeableJButton(final String val)
+    public sizeableJButton(final String val)
     {
       super(val);
       // and set the font data
       final java.awt.Font myFont = getFont();
-      final java.awt.Font newFont = new java.awt.Font("Sans Serif", myFont.getStyle(),
-                                                      _fontSize);
+      final java.awt.Font newFont = new java.awt.Font("Sans Serif", myFont
+          .getStyle(), _fontSize);
       setFont(newFont);
     }
 
@@ -756,10 +498,10 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
   protected class sizeableJLabel extends JLabel
   {
     /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		private final static int _trimmedLength = 7;
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    private final static int _trimmedLength = 7;
 
     //////////////////////////////////////////////
     // constructors
@@ -774,7 +516,8 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
       this(val, false, false);
     }
 
-    public sizeableJLabel(final String val, final boolean smallLabel, final boolean trimLabels)
+    public sizeableJLabel(final String val, final boolean smallLabel,
+        final boolean trimLabels)
     {
       String lblText = val;
 
@@ -793,9 +536,8 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
 
       // and set the font data
       final java.awt.Font myFont = getFont();
-      java.awt.Font newFont = new java.awt.Font("Sans Serif",
-                                                myFont.getStyle(),
-                                                _fontSize);
+      java.awt.Font newFont = new java.awt.Font("Sans Serif", myFont.getStyle(),
+          _fontSize);
 
       // do we shrink it?
       if (smallLabel)
@@ -808,15 +550,16 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
   }
 
   /**
-   * embedded class to represent an updateable text label which shows the units of a tote calculation.
+   * embedded class to represent an updateable text label which shows the units of a tote
+   * calculation.
    */
   private class UnitLabel extends sizeableJLabel
   {
     /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		/**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    /**
      * the calculation we show.
      */
     private final toteCalculation _myCalc;
@@ -824,11 +567,15 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
     /**
      * constructor to setup our label.
      *
-     * @param calc       the calculation we show
-     * @param smallLabel whether the font should be small
-     * @param trimLabels whether to trim the text
+     * @param calc
+     *          the calculation we show
+     * @param smallLabel
+     *          whether the font should be small
+     * @param trimLabels
+     *          whether to trim the text
      */
-    public UnitLabel(final toteCalculation calc, final boolean smallLabel, final boolean trimLabels)
+    public UnitLabel(final toteCalculation calc, final boolean smallLabel,
+        final boolean trimLabels)
     {
       super(calc.getUnits(), smallLabel, trimLabels);
       _myCalc = calc;
@@ -841,5 +588,299 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
     {
       super.setText(_myCalc.getUnits());
     }
+  }
+
+  private static java.awt.Color getLabelColor(final WatchableList theList)
+  {
+    java.awt.Color res = null;
+    res = theList.getColor();
+    return res;
+  }
+
+  private JPanel _thePanel;
+
+  private SwingPropertiesPanel _theParent;
+
+  // private JPanel _theStatus;
+  private JPanel _theTote;
+
+  private JPanel _toteHolder;
+
+  private final JButton _autoGenerate;
+
+  private final JButton _autoGenerateTracks;
+
+  ImageIcon _crossIcon;
+
+  ImageIcon _copyIcon;
+
+  private final int _fontSize = 10;
+
+  private final MyMetalToolBarUI.ToolbarOwner _owner;
+
+  private final ToolParent _myParent;
+
+  /**
+   * the set of labels we are showing. We remember these so that we can update them after each step
+   * - just in case the units have changed
+   */
+  private Vector<UnitLabel> _theLabels = new Vector<UnitLabel>();
+
+  public SwingTote(final SwingPropertiesPanel theTabPanel,
+      final MWC.GUI.Layers theData, final MWC.GUI.PlainChart theChart,
+      final MWC.GUI.Undo.UndoBuffer theUndoBuffer,
+      final MyMetalToolBarUI.ToolbarOwner owner, final ToolParent theParent)
+  {
+    super(theData);
+
+    _myParent = theParent;
+
+    _owner = owner;
+
+    final java.lang.ClassLoader loader = getClass().getClassLoader();
+
+    if (loader != null)
+    {
+
+      final java.net.URL crossURL = loader.getResource("images/cut.gif");
+      final java.net.URL copyURL = loader.getResource("images/copy.gif");
+
+      if ((crossURL != null) && (copyURL != null))
+      {
+        _crossIcon = new ImageIcon(getClass().getClassLoader().getResource(
+            "images/cut.gif"));
+        _copyIcon = new ImageIcon(getClass().getClassLoader().getResource(
+            "images/copy.gif"));
+      }
+    }
+
+    // store the parent
+    _theParent = theTabPanel;
+
+    // create the panel we represent
+    _thePanel = new JPanel();
+    _thePanel.setName("Tote");
+    _thePanel.setLayout(new java.awt.BorderLayout());
+
+    // create the central tote portion, putting it into a toolbar
+    _toteHolder = new JPanel();
+    _toteHolder.setName("Calculated data");
+    _toteHolder.setLayout(new java.awt.BorderLayout());
+    _theTote = new JPanel();
+    _toteHolder.add("North", _theTote);
+    _thePanel.add("Center", _toteHolder);
+
+    // create the stepping control
+    final SwingStepControl aw = new SwingStepControl(theTabPanel, theData,
+        theChart, theUndoBuffer, _owner, _myParent);
+    _thePanel.add("North", aw.getPanel());
+    setStepper(aw);
+
+    final JPanel gennyHolder = new JPanel();
+    gennyHolder.setLayout(new BorderLayout());
+
+    _autoGenerate = new JButton("Auto Generate");
+    _autoGenerate.setName(_autoGenerate.getText());
+    _autoGenerate.setToolTipText("Add all applicable items onto the Tote");
+    _autoGenerate.addActionListener(new ActionListener()
+    {
+      @Override
+      public void actionPerformed(final ActionEvent e)
+      {
+        assignWatchables(false);
+      }
+    });
+
+    _autoGenerateTracks = new JButton("Auto Generate (tracks)");
+    _autoGenerateTracks.setName(_autoGenerateTracks.getText());
+    _autoGenerateTracks.setToolTipText("Add all Tracks onto the Tote");
+    _autoGenerateTracks.addActionListener(new ActionListener()
+    {
+      @Override
+      public void actionPerformed(final ActionEvent e)
+      {
+        assignWatchables(true);
+      }
+    });
+
+    gennyHolder.add("East", _autoGenerate);
+    gennyHolder.add("West", _autoGenerateTracks);
+
+    _thePanel.add("South", gennyHolder);
+
+  }
+
+  /**
+   * method to clear up local properties
+   */
+  @Override
+  public final void closeMe()
+  {
+    // get the parent to close
+    super.closeMe();
+
+    // and clear our references
+    _thePanel = null;
+    _theParent = null;
+    _theTote = null;
+    _toteHolder = null;
+
+    // and our lists
+    _theLabels.removeAllElements();
+    _theLabels = null;
+
+  }
+
+  @Override
+  public final java.awt.Container getPanel()
+  {
+    return _thePanel;
+  }
+
+  /**
+   * over-ride the parent method so that we can update the units on the tote.
+   */
+  @Override
+  protected void updateToteInformation()
+  {
+    try
+    {
+      // let the parent do it's business
+      super.updateToteInformation();
+    }
+    catch (final java.util.NoSuchElementException er)
+    {
+      // don't worry about this error -
+      // - I suspect it's to do with synchronisation, adding new tracks while still trying
+      // to update the tote.
+    }
+
+    // now work through the tote updating the labels
+    for (int i = 0; i < _theLabels.size(); i++)
+    {
+      // get the next label
+      final UnitLabel label = _theLabels.elementAt(i);
+
+      // and update the units its showing
+      label.updateUnits();
+    }
+  }
+
+  @Override
+  protected final void updateToteMembers()
+  {
+    // clear the current list of members
+    super._theCalculations.removeAllElements();
+
+    // clear the list of labels
+    _theLabels.removeAllElements();
+
+    // and delete them from our panels
+    _theTote.removeAll();
+
+    // check we can do it properly
+    if (_thePrimary == null)
+      return;
+
+    // we must now build up our grid of information
+
+    // calculate the size that we need
+    final int wid = 1 + // label
+        1 + // primary
+        super._theSecondary.size() + // secondaries
+        1; // units
+
+    // now do our grid
+    _theTote.setLayout(new java.awt.GridLayout(0, wid));
+
+    // decide if we are going to trim the track names (when we have
+    // more than 4 tracks
+    final boolean trimLabels = (_theSecondary.size() > 3);
+
+    // and now add the members (going across first)
+    _theTote.add(new sizeableJLabel("  "));
+    final JLabel lh = new sizeableJLabel(_thePrimary.getName(), false,
+        trimLabels);
+    _theTote.add(lh);
+
+    final Enumeration<WatchableList> iter2 = _theSecondary.elements();
+    while (iter2.hasMoreElements())
+    {
+      final WatchableList w = iter2.nextElement();
+      final JLabel jl = new sizeableJLabel(w.getName(), false, trimLabels);
+      _theTote.add(jl);
+    }
+    _theTote.add(new sizeableJLabel("  "));
+
+    // and now the data for each row
+    final Enumeration<Class<?>> iter = _theCalculationTypes.elements();
+    while (iter.hasMoreElements())
+    {
+      final Class<?> cl = iter.nextElement();
+      try
+      {
+        final toteCalculation tc = (toteCalculation) cl.newInstance();
+
+        // title
+        final JLabel secL = new sizeableJLabel(tc.getTitle(), true, false);
+        _theTote.add(secL);
+
+        // primary
+        final calcHolder cp = new calcHolder(tc, _thePrimary.getName());
+        cp.setColor(getLabelColor(_thePrimary));
+        _theCalculations.addElement(cp);
+        _theTote.add(cp);
+
+        // secondaries
+        final Enumeration<WatchableList> secs = _theSecondary.elements();
+        while (secs.hasMoreElements())
+        {
+          final WatchableList wl = secs.nextElement();
+          final toteCalculation ts = (toteCalculation) cl.newInstance();
+          final calcHolder ch = new calcHolder(ts, wl.getName());
+          ch.setColor(getLabelColor(wl));
+          _theCalculations.addElement(ch);
+          _theTote.add(ch);
+        }
+
+        // create the text label to show the calculation units
+        final UnitLabel thisLabel = new UnitLabel(tc, true, false);
+
+        // add it to the tote
+        _theTote.add(thisLabel);
+
+        // and remember it, so we can update it later
+        _theLabels.add(thisLabel);
+      }
+      catch (final Exception e)
+      {
+        MWC.Utilities.Errors.Trace.trace(e);
+      }
+
+    }
+
+    // put on the list of remove and copy buttons
+    _theTote.add(new sizeableJLabel("  "));
+    _theTote.add(new sizeableJLabel("  "));
+    final Enumeration<WatchableList> secs2 = _theSecondary.elements();
+    while (secs2.hasMoreElements())
+    {
+      final WatchableList l = secs2.nextElement();
+
+      // create a holder for the two buttons
+      final JPanel holder = new JPanel();
+      holder.setLayout(new java.awt.GridLayout(0, 2));
+      holder.add(new removeMe(l));
+      holder.add(new copyMe(l, _thePrimary, _theCalculationTypes));
+
+      // now add the holder
+      _theTote.add(holder);
+    }
+
+    // and the figures
+    updateToteInformation();
+
+    _theParent.doLayout();
+
   }
 }
