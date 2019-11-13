@@ -1216,8 +1216,12 @@ public class Layers implements Serializable, Plottable, PlottablesType
       {
         // check if we have any narrative item inside.
         final NarrativeWrapper narrativeWrapper = (NarrativeWrapper) thisLayer;
-        res = extend(res, narrativeWrapper.getTimePeriod().getStartDTG());
-        res = extend(res, narrativeWrapper.getTimePeriod().getEndDTG());
+        final TimePeriod nPeriod = narrativeWrapper.getTimePeriod();
+        if(nPeriod != null)
+        {
+          res = extend(res, nPeriod.getStartDTG());
+          res = extend(res, nPeriod.getEndDTG());
+        }
       }
     }
 

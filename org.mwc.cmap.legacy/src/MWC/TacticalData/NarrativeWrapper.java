@@ -690,13 +690,18 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
    */
   public TimePeriod getTimePeriod()
   {
-    TimePeriod res = null;
+    final TimePeriod res;
 
-    final HiResDate start = ((NarrativeEntry) _myEntries.first()).getDTG();
-    final HiResDate end = ((NarrativeEntry) _myEntries.last()).getDTG();
-
-    res = new TimePeriod.BaseTimePeriod(start, end);
-
+    if (_myEntries.isEmpty())
+    {
+      res = null;
+    }
+    else
+    {
+      final HiResDate start = ((NarrativeEntry) _myEntries.first()).getDTG();
+      final HiResDate end = ((NarrativeEntry) _myEntries.last()).getDTG();
+      res = new TimePeriod.BaseTimePeriod(start, end);
+    }
     return res;
   }
 
