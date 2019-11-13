@@ -144,10 +144,13 @@ public class GeoToolMapProjection extends PlainProjection implements
       try
       {
         data_transform.transform(workDegs, workDegs);
-        _view.getWorldToScreen().transform(workDegs, workScreen);
-        // output the results
-        res = new Point((int) workScreen.getCoordinate()[0], (int) workScreen
-            .getCoordinate()[1]);
+        if (_view.getWorldToScreen() != null)
+        {
+          _view.getWorldToScreen().transform(workDegs, workScreen);
+          // output the results
+          res = new Point((int) workScreen.getCoordinate()[0], (int) workScreen
+              .getCoordinate()[1]);
+        }
       }
       catch (MismatchedDimensionException | TransformException e)
       {

@@ -469,9 +469,9 @@ public class OTH_Importer
     
     boolean res = false;
 
-    final int MAX_LINES = 100;
-    final int ctr = 0;
-    while (ctr < MAX_LINES && !(hasHeader && hasPosition && hasTrack))
+    final int MAX_LINES = 200;
+    int ctr = 0;
+    while (ctr++ < MAX_LINES && !(hasHeader && hasPosition && hasTrack))
     {
       // try this line
       final String line = r.readLine();
