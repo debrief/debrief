@@ -309,7 +309,6 @@ public class OutlinePanelView extends SwingLayerManager implements
           DebriefLiteApp.getInstance().getTimeManager().setTime(this, period
               .getStartDTG(), true);
         }
-        System.out.println("Updated time");
       }
     }
 
