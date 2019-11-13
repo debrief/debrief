@@ -1,13 +1,12 @@
 package org.mwc.debrief.lite.menu;
 
-import java.awt.FlowLayout;
 import java.awt.Image;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.util.Arrays;
+import java.util.List;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
@@ -26,12 +25,8 @@ import org.mwc.debrief.lite.shapes.actions.RectangularShapeCommandAction;
 import org.mwc.debrief.lite.util.ResizableIconFactory;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.operation.TransformException;
-import org.pushingpixels.flamingo.api.common.CommandButtonPresentationState;
-import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.RichTooltip;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
-import org.pushingpixels.flamingo.api.common.model.Command;
-import org.pushingpixels.flamingo.api.common.projection.CommandButtonProjection;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand.PresentationPriority;
@@ -44,8 +39,12 @@ import org.pushingpixels.flamingo.api.ribbon.synapse.projection.RibbonComboBoxPr
 import Debrief.GUI.Frames.Application;
 import Debrief.Tools.Palette.CoreCreateShape;
 import MWC.GUI.BaseLayer;
+import MWC.GUI.DataListenerAdaptor;
+import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Layers.DataListener;
+import MWC.GUI.Plottable;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Action;
@@ -57,13 +56,27 @@ public class DebriefRibbonInsert
 {
   
   private static String selectedLayer;
-  private static ItemListener selectLayerItemListener;
   private static JComboBox<String> selectLayerCombo;
+  private static final DataListener _listenForMods = new DataListenerAdaptor()
+  {
+    @Override
+    public void dataExtended(final Layers theData, final Plottable newItem,
+        final HasEditables parent)
+    {
+      //layer was added
+      if(newItem == null)
+      {
+        updateLayers(theData,parent);
+      }
+      
+    }
+  };
   protected static void addInsertTab(final JRibbon ribbon,
       final GeoToolMapRenderer geoMapRenderer, final Layers theLayers,
       final PropertiesPanel theProperties,
       final ToolParent toolParent)
   {
+    theLayers.addDataExtendedListener(_listenForMods);
     /**
      * some of our tools are interested in the visible data area. But, we can't determine it when
      * they're generated. Instead of providing a world area, we provide an object that is capable of
@@ -114,7 +127,7 @@ public class DebriefRibbonInsert
     final JRibbonBand referenceDataMenu = createReferenceData(theLayers,
         theProperties, toolParent, bounds);
 
-    final JRibbonBand layersMenu = createLayerMenu(theLayers);
+    final JRibbonBand layersMenu = createLayerMenu(theLayers,toolParent);
     
     final JRibbonBand drawingMenu = createShapes(theLayers, theProperties,
         toolParent, bounds);
@@ -125,8 +138,32 @@ public class DebriefRibbonInsert
 //    final RibbonTask drawingTask = new RibbonTask("Insert", chartfeaturesMenu,
 //        referenceDataMenu, layersMenu, drawingMenu);
     final RibbonTask drawingTask = new RibbonTask("Insert", chartfeaturesMenu,
-         layersMenu, drawingMenu);
+         layersMenu,referenceDataMenu, drawingMenu);
     ribbon.addTask(drawingTask);
+  }
+
+  protected static void updateLayers(Layers theData, HasEditables parent)
+  {
+    if(selectLayerCombo!=null) {
+      List<String> items = Arrays.asList(theData.trimmedLayers());
+      DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>)selectLayerCombo.getModel();
+      selectedLayer = model.getSize()>1?(String)model.getSelectedItem():null;
+      model.removeAllElements();
+      model.addElement(CoreCreateShape.USER_SELECTED_LAYER_COMMAND);
+      items.forEach(item->model.addElement(item));
+      if(selectedLayer!=null&&!Layers.NEW_LAYER_COMMAND.equalsIgnoreCase(selectedLayer))
+      {
+        model.setSelectedItem(selectedLayer);
+      }
+      
+      boolean popupVisible = selectLayerCombo.isPopupVisible();
+      selectLayerCombo.updateUI();
+      if(popupVisible && !selectLayerCombo.isPopupVisible()) {
+        selectLayerCombo.showPopup();
+      }
+      
+    }
+    
   }
 
   private static JRibbonBand createReferenceData(final Layers theLayers,
@@ -148,10 +185,41 @@ public class DebriefRibbonInsert
     return referenceDataMenu;
   }
   
-  private static JRibbonBand createLayerMenu(final Layers _theLayers) {
+  private static JRibbonBand createLayerMenu(final Layers _theLayers,final ToolParent toolParent) {
+//    selectLayerItemListener = new ItemListener()
+//    {
+//      
+//      @Override
+//      public void itemStateChanged(ItemEvent e)
+//      {
+//        if(e.getStateChange() == ItemEvent.SELECTED)  
+//        {
+//          @SuppressWarnings("unchecked")
+//          JComboBox<String> jcombo = (JComboBox<String>)e.getSource();
+//          if(jcombo.getSelectedItem().equals(Layers.NEW_LAYER_COMMAND)) {
+//            //popup list layers dialog
+//            final String layerName = getLayerName(_theLayers);
+//
+//            // sort out the action
+//            final AddLayerAction addLayerAction = new AddLayerAction(_theLayers,
+//                layerName);
+//            addLayerAction.execute();
+//
+//            // remember it
+//            toolParent.addActionToBuffer(addLayerAction);
+//          }
+//          else
+//          {
+//            selectedLayer = (String)jcombo.getSelectedItem();
+//          }
+//        }
+//      }
+//    };
     final JRibbonBand layersMenu = new JRibbonBand("Active Layer", null);
-    RibbonComboBoxProjection projection = new RibbonComboBoxProjection(addDropDown(selectLayerItemListener,layersMenu,PresentationPriority.TOP,_theLayers),ComponentPresentationModel.withDefaults());
+    RibbonComboBoxProjection projection = new RibbonComboBoxProjection(addDropDown(layersMenu,PresentationPriority.TOP,_theLayers,toolParent),ComponentPresentationModel.withDefaults());
     layersMenu.addRibbonComponent(projection);
+    selectLayerCombo = projection.buildComponent();
+    selectLayerCombo.setName("select-layer-combo");
     return layersMenu;
   }
 
@@ -164,8 +232,6 @@ public class DebriefRibbonInsert
         theLayers, "Ellipse", "icons/ellipse_add.png", bounds);
     
     ellipseShape.setSelectedLayerSource(selectLayerCombo);
-   // final JCommandButton ellipseShapeCmd = MenuUtils.addCommandButton("Ellipse",
-   //     "icons/16/ellipse.png", ellipseShape, CommandButtonPresentationState.MEDIUM, null);
     
     
     /**
@@ -209,66 +275,25 @@ public class DebriefRibbonInsert
     final RectangularShapeCommandAction rectShape = new RectangularShapeCommandAction(toolParent, theProperties,
         theLayers, "Rectangle", "icons/rectangle_add.png", bounds);
     rectShape.setSelectedLayerSource(selectLayerCombo);
-//    final JCommandButton rectCmd = MenuUtils.addCommandButton("Rectangle",
-//        "icons/16/rectangle.png", rectShape, CommandButtonPresentationState.MEDIUM, null);
-//    
-//    
     final CircleShapeCommandAction circleShape = new CircleShapeCommandAction(toolParent, theProperties,
         theLayers, "Circle", "icons/circle_add.png", bounds);
     circleShape.setSelectedLayerSource(selectLayerCombo);
-//    final JCommandButton circleCmd = MenuUtils.addCommandButton("Circle",
-//        "icons/16/circle.png", circleShape, CommandButtonPresentationState.MEDIUM, null);
-//    
     final ArcShapeCommandAction arcShape =  new ArcShapeCommandAction(toolParent, theProperties,
         theLayers, "Arc", "icons/16/circle.png", bounds);
     
     arcShape.setSelectedLayerSource(selectLayerCombo);
-//    
-//    final JCommandButton arcCmd = MenuUtils.addCommandButton("Arc",
-//        "icons/16/arc_add.png",arcShape, CommandButtonPresentationState.MEDIUM, null);
-//
+
     final LineShapeCommandAction lineShape = new LineShapeCommandAction(toolParent, theProperties,
         theLayers, "Line", "icons/16/line_add.png", bounds);
     lineShape.setSelectedLayerSource(selectLayerCombo);
-//    
-//    final JCommandButton lineCmd = MenuUtils.addCommandButton("Line",
-//        "icons/16/line.png", lineShape, CommandButtonPresentationState.MEDIUM, null);
-    
+   
     MenuUtils.addCommand("Ellipse","icons/16/ellipse.png",ellipseShape,drawingMenu,PresentationPriority.MEDIUM);
     MenuUtils.addCommand("Rectangle","icons/16/rectangle.png",rectShape,drawingMenu,PresentationPriority.MEDIUM);
     MenuUtils.addCommand("Circle","icons/16/circle.png",circleShape,drawingMenu,PresentationPriority.MEDIUM);
     MenuUtils.addCommand("Arc","icons/16/arc_add.png",arcShape,drawingMenu,PresentationPriority.MEDIUM);
     MenuUtils.addCommand("Line","icons/16/line.png",lineShape,drawingMenu,PresentationPriority.MEDIUM);
     
-    selectLayerItemListener = new ItemListener()
-    {
-      
-      @Override
-      public void itemStateChanged(ItemEvent e)
-      {
-        if(e.getStateChange() == ItemEvent.SELECTED)  
-        {
-          @SuppressWarnings("unchecked")
-          JComboBox<String> jcombo = (JComboBox<String>)e.getSource();
-          if(jcombo.getSelectedItem().equals(Layers.NEW_LAYER_COMMAND)) {
-            //popup list layers dialog
-            final String layerName = getLayerName(theLayers);
-
-            // sort out the action
-            final AddLayerAction addLayerAction = new AddLayerAction(theLayers,
-                layerName);
-            addLayerAction.execute();
-
-            // remember it
-            toolParent.addActionToBuffer(addLayerAction);
-          }
-          else
-          {
-            selectedLayer = (String)jcombo.getSelectedItem();
-          }
-        }
-      }
-    };
+    
     drawingMenu.startGroup();
     final LabelShapeCommandAction createLabelShape =  new LabelShapeCommandAction(toolParent, theProperties,
         theLayers, bounds, "New Label", "icons/24/label_add.png") ;
@@ -279,11 +304,6 @@ public class DebriefRibbonInsert
             drawingMenu,PresentationPriority.TOP);
     drawingMenu.startGroup();
     
-    //drawingMenu.addRibbonCommand(ellipseShapeCmd.getContentModel());
-//    drawingMenu.addRibbonComponent(new JRibbonComponent(rectCmd));
-//    drawingMenu.addRibbonComponent(new JRibbonComponent(circleCmd));
-//    drawingMenu.addRibbonComponent(new JRibbonComponent(lineCmd));
-//    drawingMenu.addRibbonComponent(new JRibbonComponent(arcCmd));
 //    #4201, dont add polygon shape.
 //    drawingMenu.addRibbonComponent(new JRibbonComponent(polygonCmd));
     
@@ -292,13 +312,12 @@ public class DebriefRibbonInsert
     return drawingMenu;
   }
   
-  private static RibbonComboBoxContentModel<String> addDropDown(final ItemListener actionToAdd,
-      final JRibbonBand mapBand, final PresentationPriority priority,final Layers theLayers)
+  private static RibbonComboBoxContentModel<String> addDropDown(
+      final JRibbonBand mapBand, final PresentationPriority priority,final Layers theLayers,ToolParent toolParent)
   {
     
     RibbonComboBoxContentModel<String> selectLayerModel;
 
-    JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
     final Image activeLayerImg = MenuUtils.createImage("icons/24/auto_layer.png");
     ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon.getIcon(activeLayerImg, MenuUtils.ICON_SIZE_24);
     
@@ -307,7 +326,7 @@ public class DebriefRibbonInsert
         .setRichTooltip(RichTooltip.builder().setTitle("Select Layer")
                         .build())
         .setIconFactory(ResizableIconFactory.factory(imageIcon))
-        .setItems(new String[] {CoreCreateShape.USER_SELECTED_LAYER_COMMAND})
+        .setItems(new String[] {CoreCreateShape.USER_SELECTED_LAYER_COMMAND,"test"})
         .build();
     selectLayerModel.addListDataListener(new ListDataListener() {
       Object selected = selectLayerModel.getSelectedItem();
@@ -315,8 +334,24 @@ public class DebriefRibbonInsert
       public void contentsChanged(ListDataEvent e) {
           Object newSelection = selectLayerModel.getSelectedItem();
           if (this.selected != newSelection) {
-              System.out.println("New font selection -> " + newSelection);
               this.selected = newSelection;
+              RibbonDefaultComboBoxContentModel<String> jcombo = (RibbonDefaultComboBoxContentModel<String>)e.getSource();
+              if(jcombo.getSelectedItem().equals(Layers.NEW_LAYER_COMMAND)) {
+                //popup list layers dialog
+                final String layerName = getLayerName(theLayers);
+
+                // sort out the action
+                final AddLayerAction addLayerAction = new AddLayerAction(theLayers,
+                    layerName);
+                addLayerAction.execute();
+
+                // remember it
+                toolParent.addActionToBuffer(addLayerAction);
+              }
+              else
+              {
+                selectedLayer = (String)jcombo.getSelectedItem();
+              }
           }
       }
       @Override
@@ -329,7 +364,8 @@ public class DebriefRibbonInsert
       }
     });
     
-    //selectLayerCombo.setName("select-layer-combo");
+    
+    
     
 //    panel.add(selectLayerCombo);
 //    final Image activeLayerImg = MenuUtils.createImage("icons/24/auto_layer.png");
@@ -375,11 +411,14 @@ public class DebriefRibbonInsert
     @Override
     public void execute()
     {
+      
       if(_theLayer == null) {
       _theLayer = new BaseLayer();
       _theLayer.setName(_layerName);
       }
+      _theLayers.removeDataExtendedListener(_listenForMods);
       _theLayers.addThisLayer(_theLayer);
+      _theLayers.addDataExtendedListener(_listenForMods);
     }
   }
   
@@ -402,7 +441,6 @@ public class DebriefRibbonInsert
       theLayers.addThisLayer(newLayer);
       selectedLayer = res;
       selectLayerCombo.setEditable(true);
-      selectLayerCombo.insertItemAt(selectedLayer, selectLayerCombo.getItemCount()-1);
       selectLayerCombo.setSelectedItem(selectedLayer);
       selectLayerCombo.setEditable(false);
     }
