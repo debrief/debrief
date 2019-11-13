@@ -1070,8 +1070,11 @@ public class ToteView extends ViewPart
 									if (list.length > 0)
 									{
 										nearest = list[0];
-										if (nearest instanceof FixWrapper.InterpolatedFixWrapper)
-											isInterpolated = true;
+										if(nearest instanceof FixWrapper)
+										{
+										  final FixWrapper fix = (FixWrapper) nearest;
+										  isInterpolated = fix.isInterpolated();
+										}
 									}
 								}
 							}
