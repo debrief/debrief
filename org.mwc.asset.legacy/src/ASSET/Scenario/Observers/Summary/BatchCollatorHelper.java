@@ -337,7 +337,7 @@ public class BatchCollatorHelper
 		/**
 		 * my data
 		 */
-		protected TreeMap<String, Object> _myData;
+		protected final TreeMap<String, Object> _myData = new TreeMap<String, Object>();
 
 		/**
 		 * whether we do stats overall, or no a per-case basis
@@ -424,10 +424,6 @@ public class BatchCollatorHelper
 
 		private Object getThisCase(String caseIdentifier)
 		{
-			// initialse, if we have to
-			if (_myData == null)
-				_myData = new TreeMap<String, Object>();
-
 			// find the matching counter
 			Object thisCase = _myData.get(caseIdentifier);
 
