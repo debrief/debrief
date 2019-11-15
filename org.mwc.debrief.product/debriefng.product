@@ -253,7 +253,7 @@ Library.
    </configurations>
 
    <repositories>
-      <repository location="http://debrief" enabled="true" />
+      <repository location="http://debrief/" enabled="true" />
    </repositories>
 
    <preferencesInfo>
