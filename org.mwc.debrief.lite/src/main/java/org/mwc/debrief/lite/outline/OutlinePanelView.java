@@ -241,7 +241,8 @@ public class OutlinePanelView extends SwingLayerManager implements
           parent.removeElement(plottable);
           if(parent instanceof TrackSegment)
           {
-            // actually fire modified on the whole track
+            // special case. We wish to update the top-level
+            // entity, not the track segment
             TrackSegment segment = (TrackSegment) parent;
             LightweightTrackWrapper tParent = segment.getWrapper();
             _myData.fireModified(tParent);
