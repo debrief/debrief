@@ -16,7 +16,7 @@ Class-Path: . lib/cmap_legacy.jar lib/debrief_legacy.jar lib/jt-zonals
  gt-main-21.2.jar lib/gt-coverage-21.2.jar lib/gt-cql-21.2.jar lib/gt-
  render-21.2.jar lib/gt-swing-21.2.jar lib/hsqldb-2.2.8.jar lib/gt-eps
  g-hsql-21.2.jar lib/json-simple-1.1.jar lib/gt-geojson-21.2.jar lib/g
- t-image-21.2.jar lib/gt-geotiff-21.2.jar lib/gt-swt-21.2.jar lib/gt-d
+ t-image-21.2.jar lib/gt-geotiff-21.2.jar lib/gt-swt-23-SNAPSHOT.jar lib/gt-d
  ata-21.2.jar lib/gt-shapefile-21.2.jar lib/javax.inject_1.0.0.v200910
  30.jar lib/jcommon-1.0.23.jar lib/jfreechart-1.0.19-experimental.jar 
  lib/jfreechart-1.0.19-swt.jar lib/jfreechart-1.0.19.jar lib/junit.jar
