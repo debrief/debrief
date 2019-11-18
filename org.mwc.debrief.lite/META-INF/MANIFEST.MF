@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Debrief Lite
 Bundle-SymbolicName: org.mwc.debrief.lite;singleton:=true
-Bundle-Version: 1.0.416
+Bundle-Version: 1.0.417
 Export-Package: org.jdesktop.beans,
  org.jdesktop.swingx,
  org.jdesktop.swingx.auth,
