@@ -172,30 +172,29 @@ abstract public class PlainWrapper implements Plottable, Serializable,
 
   public static interface InterpolatedData
   {
-
   }
 
   /**
    * property name to indicate that the text in the label has changed
-   * 
+   *
    */
   public static final String TEXT_CHANGED = "TEXT_CHANGE";
 
   /**
    * the name of the property change event to fire should this object get moved
-   * 
+   *
    */
   public static final String LOCATION_CHANGED = "LOCATION_CHANGED";
 
   /**
    * the name of the property change event to fire should this object have its colour changed
-   * 
+   *
    */
   public static final String COLOR_CHANGED = "COLOR_CHANGED";
 
   /**
    * the name of the property change event to fire should this object change its visibility
-   * 
+   *
    */
   public static final String VISIBILITY_CHANGED = "VISIBILITY_CHANGED";
 
@@ -204,7 +203,7 @@ abstract public class PlainWrapper implements Plottable, Serializable,
 
   /**
    * convenience function, for determining if object has fire extended annotation
-   * 
+   *
    * @param ann
    *          set of annotations for an object
    * @return yes/no
@@ -226,7 +225,7 @@ abstract public class PlainWrapper implements Plottable, Serializable,
 
   /**
    * convenience function, for determining if object has fire reformatted annotation
-   * 
+   *
    * @param ann
    *          set of annotations for an object
    * @return yes/no
@@ -250,13 +249,13 @@ abstract public class PlainWrapper implements Plottable, Serializable,
 
   /**
    * (optional) comment field
-   * 
+   *
    */
   private String _theComment;
 
   /**
    * whether this shape is visible
-   * 
+   *
    */
   private boolean _visible;
 
@@ -266,7 +265,7 @@ abstract public class PlainWrapper implements Plottable, Serializable,
 
   /**
    * provide support for property changes, should we require it
-   * 
+   *
    */
   private transient java.beans.PropertyChangeSupport _pSupport = null;
 
@@ -280,7 +279,7 @@ abstract public class PlainWrapper implements Plottable, Serializable,
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * MWC.GUI.SupportsPropertyListeners#addPropertyChangeListener(java.beans.PropertyChangeListener)
    */
@@ -294,7 +293,7 @@ abstract public class PlainWrapper implements Plottable, Serializable,
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see MWC.GUI.SupportsPropertyListeners#addPropertyChangeListener(java.lang.String,
    * java.beans.PropertyChangeListener)
    */
@@ -308,7 +307,7 @@ abstract public class PlainWrapper implements Plottable, Serializable,
 
   /**
    * instruct this object to clear itself out, ready for ditching
-   * 
+   *
    */
   public void closeMe()
   {
@@ -384,7 +383,7 @@ abstract public class PlainWrapper implements Plottable, Serializable,
 
   /**
    * get the name of this object
-   * 
+   *
    */
   @Override
   abstract public String getName();
@@ -409,7 +408,7 @@ abstract public class PlainWrapper implements Plottable, Serializable,
   /**
    * whether there is any edit information for this item this is a convenience function to save
    * creating the EditorType data first
-   * 
+   *
    * @return yes/no
    */
   @Override
@@ -420,7 +419,7 @@ abstract public class PlainWrapper implements Plottable, Serializable,
 
   /**
    * Determine how far away we are from this point or return INVALID_RANGE if it can't be calculated
-   * 
+   *
    * @return distance in floating point degrees
    */
   @Override
@@ -431,7 +430,7 @@ abstract public class PlainWrapper implements Plottable, Serializable,
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see MWC.GUI.SupportsPropertyListeners#removePropertyChangeListener(java.beans.
    * PropertyChangeListener)
    */
@@ -444,7 +443,7 @@ abstract public class PlainWrapper implements Plottable, Serializable,
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see MWC.GUI.SupportsPropertyListeners#removePropertyChangeListener(java.lang.String,
    * java.beans.PropertyChangeListener)
    */
@@ -457,7 +456,7 @@ abstract public class PlainWrapper implements Plottable, Serializable,
 
   /**
    * update the color for this item
-   * 
+   *
    * @param theColor
    */
   @FireReformatted

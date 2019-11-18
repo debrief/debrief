@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.asset.core.feature"
       label="Feature Feature"
-      version="1.0.96">
+      version="1.0.97">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]
@@ -418,12 +418,6 @@
          version="0.0.0"
          unpack="false"/>
 
-   <plugin
-         id="javax.xml"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
 
    <plugin
          id="org.apache.xml.resolver"

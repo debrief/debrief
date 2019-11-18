@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.debrief.combined.feature"
       label="%featureName"
-      version="1.0.458"
+      version="1.1.1"
       provider-name="MWC"
       plugin="org.mwc.debrief.core">
 
@@ -400,12 +400,7 @@ Library.
          version="0.0.0"
          unpack="false"/>
 
-   <plugin
-         id="javax.xml"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+
 
    <plugin
          id="org.apache.xml.resolver"
@@ -769,5 +764,16 @@ Library.
          download-size="0"
          install-size="0"
          version="0.0.0"/>
+
+
+
+   <plugin
+         id="javax.activation"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+
 
 </feature>

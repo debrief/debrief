@@ -25,9 +25,6 @@ import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
-import com.sun.org.apache.xml.internal.serialize.OutputFormat;
-import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
-
 import ASSET.NetworkParticipant;
 import ASSET.ScenarioType;
 import ASSET.Models.SensorType;
@@ -60,15 +57,28 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 	static public NetworkParticipant readThis(final java.io.File file)
 	{
 		NetworkParticipant res = null;
+	  java.io.FileInputStream str = null;
 		try
 		{
-			final java.io.FileInputStream str = new java.io.FileInputStream(file);
+			str = new java.io.FileInputStream(file);
 
 			res = importParticipant("Scrap", str);
 		}
 		catch (java.io.IOException e)
 		{
 			e.printStackTrace();
+		}
+		finally
+		{
+		  if(str != null)
+        try
+        {
+          str.close();
+        }
+        catch (IOException e)
+        {
+          e.printStackTrace();
+        }
 		}
 
 		return res;
@@ -546,46 +556,35 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 			// and now export it.
 			// this way of exporting the dom came from sample code in the Xerces 2.6.2
 			// download
-			try
-			{
-				final OutputFormat format = new OutputFormat(doc, "UTF-8", true); // Serialize
-																																					// DOM
-				format.setLineSeparator(System.getProperty("line.separator")); // use
-																																				// windows
-																																				// line
-																																				// separator
-				format.setLineWidth(0); // don't wrap any lines
-				format.setIndent(2); // only use a small indentation for pretty-printing
-				final XMLSerializer serial = new XMLSerializer(os, format);
-				serial.asDOMSerializer(); // As a DOM Serializer
-				serial.serialize(doc.getDocumentElement());
-			}
-			catch (IOException e)
-			{
-				MWC.Utilities.Errors.Trace.trace("Debrief failed to save this file correctly.  Please investigate the trace file", true);
-				e.printStackTrace(); // To change body of catch statement use File |
-															// Settings | File Templates.
-			}
+			
+			throw new UnsupportedOperationException("Xerces DOM export deprecated");
+			
+//			try
+//			{
+//				final OutputFormat format = new OutputFormat(doc, "UTF-8", true); // Serialize
+//																																					// DOM
+//				format.setLineSeparator(System.getProperty("line.separator")); // use
+//																																				// windows
+//																																				// line
+//																																				// separator
+//				format.setLineWidth(0); // don't wrap any lines
+//				format.setIndent(2); // only use a small indentation for pretty-printing
+//				final XMLSerializer serial = new XMLSerializer(os, format);
+//				serial.asDOMSerializer(); // As a DOM Serializer
+//				serial.serialize(doc.getDocumentElement());
+//			}
+//			catch (IOException e)
+//			{
+//				MWC.Utilities.Errors.Trace.trace("Debrief failed to save this file correctly.  Please investigate the trace file", true);
+//				e.printStackTrace(); // To change body of catch statement use File |
+//															// Settings | File Templates.
+//			}
 
 		}
 		catch (ParserConfigurationException e1)
 		{
 			e1.printStackTrace();
 		}
-
-		//
-		// doc.changeNodeOwner(plot);
-		// doc.setSystemId("ASSET XML Version 1.0");
-		//
-		// // ok, we should be done now
-		// try
-		// {
-		// doc.write(os);
-		// }
-		// catch (java.io.IOException e)
-		// {
-		// e.printStackTrace();
-		// }
 	}
 
 	/**

@@ -179,62 +179,74 @@ public interface PlotHighlighter extends Editable
       // we can't, so we will just have to trap any exceptions it raises
       try
       {
-        // set the highlight colour
-        /*
-         * dest.setColor(new Color(255 - _myColor.getRed(), 255 - _myColor.getGreen(), 255 -
-         * _myColor.getBlue()));
-         */
-        dest.setColor(_myColor);
-        // dest.setColor(new Color(0,255,0));
-        // get the current area of the watchable
-        final WorldArea wa = watch.getBounds();
-        // convert to screen coordinates
-        final Point tl = proj.toScreen(wa.getTopLeft());
-
-        final int tlx = tl.x;
-        final int tly = tl.y;
-
-        final Point br = proj.toScreen(wa.getBottomRight());
-        // get the width
-        final int x = tlx - _mySize;
-        final int y = tly - _mySize;
-        final int wid = (br.x - tlx) + _mySize * 2;
-        final int ht = (br.y - tly) + _mySize * 2;
-
-        // hmm - implemented plotting the cursor differently if we're
-        // looking at interpolated data
-        Stroke oldStroke = null;
-
-        // right, lets have a look
-        if (watch instanceof InterpolatedData)
+        if (dest != null && watch != null && proj != null)
         {
-          final java.awt.Graphics2D g2 = (java.awt.Graphics2D) dest;
-          // right, remember what the previous cursor was
-          oldStroke = g2.getStroke();
+          // set the highlight colour
+          /*
+           * dest.setColor(new Color(255 - _myColor.getRed(), 255 - _myColor.getGreen(), 255 -
+           * _myColor.getBlue()));
+           */
+          dest.setColor(_myColor);
+          // dest.setColor(new Color(0,255,0));
+          // get the current area of the watchable
+          final WorldArea wa = watch.getBounds();
 
-          // set the new one
-          final java.awt.BasicStroke stk = SwingCanvas.getStrokeFor(
-              CanvasType.DOTTED);
-          g2.setStroke(stk);
+          if (wa != null)
+          {
+            // convert to screen coordinates
+            final Point tl = proj.toScreen(wa.getTopLeft());
+
+            if (tl != null)
+            {
+              final int tlx = tl.x;
+              final int tly = tl.y;
+
+              final Point br = proj.toScreen(wa.getBottomRight());
+
+              if (br != null)
+              {
+                // get the width
+                final int x = tlx - _mySize;
+                final int y = tly - _mySize;
+                final int wid = (br.x - tlx) + _mySize * 2;
+                final int ht = (br.y - tly) + _mySize * 2;
+
+                // hmm - implemented plotting the cursor differently if we're
+                // looking at interpolated data
+                Stroke oldStroke = null;
+
+                // right, lets have a look
+                if (watch instanceof InterpolatedData)
+                {
+                  final java.awt.Graphics2D g2 = (java.awt.Graphics2D) dest;
+                  // right, remember what the previous cursor was
+                  oldStroke = g2.getStroke();
+
+                  // set the new one
+                  final java.awt.BasicStroke stk = SwingCanvas.getStrokeFor(
+                      CanvasType.DOTTED);
+                  g2.setStroke(stk);
+                }
+
+                // plot the rectangle
+                dest.drawRect(x, y, wid, ht);
+
+                // and restore the old cursor if we have to
+                if (oldStroke != null)
+                {
+                  final java.awt.Graphics2D g2 = (java.awt.Graphics2D) dest;
+                  g2.setStroke(oldStroke);
+                  oldStroke = null;
+                }
+              }
+            }
+          }
         }
-
-        // plot the rectangle
-        dest.drawRect(x, y, wid, ht);
-
-        // and restore the old cursor if we have to
-        if (oldStroke != null)
-        {
-          final java.awt.Graphics2D g2 = (java.awt.Graphics2D) dest;
-          g2.setStroke(oldStroke);
-          oldStroke = null;
-        }
-
       }
       catch (final IllegalStateException e)
       {
         MWC.Utilities.Errors.Trace.trace(e);
       }
-
     }
 
     /**

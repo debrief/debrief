@@ -10,8 +10,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.MapViewport;
 import org.geotools.swing.event.MapMouseEvent;
 import org.geotools.swing.tool.ZoomInTool;
-
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 
 public class AdvancedZoomInTool extends ZoomInTool
 {
@@ -73,7 +72,13 @@ public class AdvancedZoomInTool extends ZoomInTool
       // if the drag was from TL to BR
       if (overallX >= 0 || overallY >= 0)
       {
-        super.onMouseReleased(ev);
+        final MapViewport view = ev.getSource().getMapContent().getViewport();
+        final ReferencedEnvelope existingArea = view.getBounds();
+        // If we are not too zoomed in
+        if (existingArea.getArea() > 1e-10)
+        {
+          super.onMouseReleased(ev);
+        }
       }
       else
       {

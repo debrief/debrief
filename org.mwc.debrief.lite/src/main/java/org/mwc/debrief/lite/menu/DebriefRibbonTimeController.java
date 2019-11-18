@@ -23,7 +23,10 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
@@ -50,6 +53,7 @@ import org.mwc.debrief.lite.gui.custom.RangeSlider;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.properties.PropertiesDialog;
 import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
+import org.pushingpixels.flamingo.api.common.FlamingoCommand;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandToggleGroup;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.RichTooltip;
@@ -61,6 +65,7 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
+import Debrief.GUI.Tote.Painters.TotePainter;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
@@ -298,6 +303,7 @@ public class DebriefRibbonTimeController
   private static final String PLAY_IMAGE = "icons/24/media_play.png";
 
   public static JPanel topButtonsPanel;
+
   private static final String[] timeFormats = new String[]
   {"mm:ss.SSS", "HHmm.ss", "HHmm", "ddHHmm", "ddHHmm:ss", "yy/MM/dd HH:mm",
       "yy/MM/dd HH:mm:ss"};
@@ -321,10 +327,13 @@ public class DebriefRibbonTimeController
       final LiteStepControl stepControl, final TimeManager timeManager,
       final PlotOperations operations, final Layers layers,
       final UndoBuffer undoBuffer, final Runnable normalPainter,
-      final Runnable snailPainter)
+      final Runnable snailPainter, final Runnable refresh)
   {
     final JRibbonBand displayMode = createDisplayMode(normalPainter,
-        snailPainter);
+        snailPainter, stepControl, layers, undoBuffer);
+
+    final JRibbonBand highlighter = createHighlighter(stepControl, refresh,
+        layers, undoBuffer);
 
     final JRibbonBand filterToTime = createFilterToTime(stepControl, operations,
         timeManager);
@@ -332,8 +341,8 @@ public class DebriefRibbonTimeController
     final JRibbonBand control = createControl(stepControl, timeManager, layers,
         undoBuffer, operations);
 
-    final RibbonTask timeTask = new RibbonTask("Time", displayMode, control,
-        filterToTime);
+    final RibbonTask timeTask = new RibbonTask("Time", displayMode, highlighter,
+        control, filterToTime);
     ribbon.addTask(timeTask);
   }
 
@@ -551,6 +560,25 @@ public class DebriefRibbonTimeController
           }
         }, CommandButtonDisplayState.SMALL, "Edit time-step properties");
     propertiesCommandButton.setName("timeprops");
+
+    // Add the state listener to the main application.
+    DebriefLiteApp.getInstance().addStateListener(new PropertyChangeListener()
+    {
+
+      @Override
+      public void propertyChange(final PropertyChangeEvent evt)
+      {
+        if (DebriefLiteApp.STATE.equals(evt.getPropertyName()))
+        {
+          final boolean isActive = DebriefLiteApp.ACTIVE_STATE.equals(evt
+              .getNewValue()) || DebriefLiteApp.TIME_ENABLED_STATE.equals(evt
+                  .getNewValue());
+          DebriefRibbonTimeController.setButtonsEnabled(topButtonsPanel,
+              isActive);
+        }
+      }
+    });
+
     // we need to give the menu to the command popup
     final JPopupMenu menu = new JPopupMenu();
 
@@ -697,6 +725,38 @@ public class DebriefRibbonTimeController
     // ok, start off with the buttons disabled
     setButtonsEnabled(topButtonsPanel, false);
 
+    // Disable listener
+    DebriefLiteApp.getInstance().addStateListener(new PropertyChangeListener()
+    {
+
+      @Override
+      public void propertyChange(final PropertyChangeEvent evt)
+      {
+        if (DebriefLiteApp.STATE.equals(evt.getPropertyName()))
+        {
+          if (DebriefLiteApp.INACTIVE_STATE.equals(evt.getNewValue()))
+          {
+            // move the slider to the start
+            timeSlider.setValue(0);
+            label.setValue(LiteStepControl.timeFormat);
+
+            // ok, do some disabling
+            timeSlider.setEnabled(false);
+            timeManager.setPeriod(null, null);
+            formatBinder.reset();
+          }
+          else if (DebriefLiteApp.ACTIVE_STATE.equals(evt.getNewValue())
+              || DebriefLiteApp.TIME_ENABLED_STATE.equals(evt.getNewValue()))
+          {
+            timeSlider.setEnabled(true);
+            final TimePeriod period = stepControl.getLayers().getTimePeriod();
+            // _myOperations.setPeriod(period);
+            timeManager.setPeriod(this, period);
+          }
+        }
+      }
+    });
+
     final DataListener updateTimeController = new DataListener()
     {
 
@@ -722,7 +782,7 @@ public class DebriefRibbonTimeController
       private void updateTimeController()
       {
         stepControl.startStepping(false);
-        boolean hasItems = false;
+        boolean hasTracks = false;
         boolean hasNarratives = false;
         boolean hasStart = false;
         boolean hasEnd = false;
@@ -733,7 +793,7 @@ public class DebriefRibbonTimeController
           final Editable next = lIter.nextElement();
           if (next instanceof TrackWrapper)
           {
-            hasItems = true;
+            hasTracks = true;
             break;
           }
           else if (next instanceof BaseLayer)
@@ -741,12 +801,12 @@ public class DebriefRibbonTimeController
             // check the children, to see if they're like a track
             final BaseLayer baseL = (BaseLayer) next;
             final Enumeration<Editable> ele = baseL.elements();
-            while (ele.hasMoreElements() && !hasItems)
+            while (ele.hasMoreElements() && !hasTracks)
             {
               final Editable nextE = ele.nextElement();
-              hasItems |= nextE instanceof LightweightTrackWrapper
+              hasTracks |= nextE instanceof LightweightTrackWrapper
                   || nextE instanceof DynamicTrackShapeSetWrapper;
-              if (!hasItems && nextE instanceof WatchableList)
+              if (!hasTracks && nextE instanceof WatchableList)
               {
                 hasStart |= ((WatchableList) nextE).getStartDTG() != null;
                 hasEnd |= ((WatchableList) nextE).getEndDTG() != null;
@@ -777,20 +837,17 @@ public class DebriefRibbonTimeController
           }
         }
 
-        hasItems |= hasStart && hasEnd;
-        DebriefLiteApp.setDirty(hasItems || hasNarratives);
-        if (hasItems)
+        DebriefLiteApp.setDirty(hasTracks || hasNarratives);
+        String newState = DebriefLiteApp.INACTIVE_STATE;
+        if (hasTracks)
         {
-          DebriefLiteApp.setState(DebriefLiteApp.ACTIVE_STATE);
-          timeSlider.setEnabled(true);
-          final TimePeriod period = stepControl.getLayers().getTimePeriod();
-          // _myOperations.setPeriod(period);
-          timeManager.setPeriod(this, period);
+          newState = DebriefLiteApp.ACTIVE_STATE;
         }
-        else
+        else if (hasNarratives || (hasEnd && hasStart))
         {
-          doSoftReset(timeSlider, timeManager);
+          newState = DebriefLiteApp.TIME_ENABLED_STATE;
         }
+        DebriefLiteApp.setState(newState);
       }
     };
 
@@ -801,7 +858,7 @@ public class DebriefRibbonTimeController
       @Override
       public void reset()
       {
-        doSoftReset(timeSlider, timeManager);
+        DebriefLiteApp.setState(DebriefLiteApp.INACTIVE_STATE);
       }
     });
 
@@ -818,13 +875,17 @@ public class DebriefRibbonTimeController
   }
 
   private static JRibbonBand createDisplayMode(final Runnable normalPainter,
-      final Runnable snailPainter)
+      final Runnable snailPainter, final LiteStepControl stepcontrol,
+      final Layers layers, final UndoBuffer undoBuffer)
   {
     final JRibbonBand displayMode = new JRibbonBand("Display Mode", null);
+
+    final ArrayList<FlamingoCommand> commands = new ArrayList<>();
+
     final FlamingoCommandToggleGroup displayModeGroup =
         new FlamingoCommandToggleGroup();
-    MenuUtils.addCommandToggleButton("Normal", "icons/48/normal.png",
-        new AbstractAction()
+    final FlamingoCommand normal = MenuUtils.addCommandToggleButton("Normal",
+        "icons/48/normal.png", new AbstractAction()
         {
           private static final long serialVersionUID = 1L;
 
@@ -836,8 +897,8 @@ public class DebriefRibbonTimeController
           }
         }, displayMode, RibbonElementPriority.TOP, true, displayModeGroup,
         true);
-    MenuUtils.addCommandToggleButton("Snail", "icons/48/snail.png",
-        new AbstractAction()
+    final FlamingoCommand snail = MenuUtils.addCommandToggleButton("Snail",
+        "icons/48/snail.png", new AbstractAction()
         {
           private static final long serialVersionUID = 1L;
 
@@ -850,8 +911,64 @@ public class DebriefRibbonTimeController
         }, displayMode, RibbonElementPriority.TOP, true, displayModeGroup,
         false);
 
+    final FlamingoCommand properties = MenuUtils.addCommand("Properties",
+        "icons/16/properties.png", new ActionListener()
+        {
+
+          @Override
+          public void actionPerformed(final ActionEvent e)
+          {
+            if (stepcontrol instanceof LiteStepControl)
+            {
+              ToolbarOwner owner = null;
+              final ToolParent parent = (stepcontrol).getParent();
+              if (parent instanceof ToolbarOwner)
+              {
+                owner = (ToolbarOwner) parent;
+              }
+              final Layer parentLayer;
+              if (parent instanceof Layer)
+              {
+                parentLayer = (Layer) parent;
+              }
+              else
+              {
+                parentLayer = null;
+              }
+              final StepperListener stepper = stepcontrol.getCurrentPainter();
+              if (stepper instanceof TotePainter)
+              {
+                final PropertiesDialog dialog = new PropertiesDialog(
+                    ((TotePainter) stepper).getInfo(), layers, undoBuffer,
+                    parent, owner, parentLayer);
+                dialog.setSize(400, 500);
+                dialog.setLocationRelativeTo(null);
+                dialog.setVisible(true);
+              }
+            }
+          }
+        }, displayMode, RibbonElementPriority.LOW);
+
+    commands.add(normal);
+    commands.add(snail);
+    commands.add(properties);
+
     displayMode.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         displayMode));
+
+    DebriefLiteApp.getInstance().addStateListener(new PropertyChangeListener()
+    {
+      @Override
+      public void propertyChange(final PropertyChangeEvent evt)
+      {
+        if (DebriefLiteApp.STATE.equals(evt.getPropertyName()))
+        {
+          final boolean enabled = DebriefLiteApp.ACTIVE_STATE.equals(evt
+              .getNewValue());
+          enableDisableCommandList(commands, enabled);
+        }
+      }
+    });
 
     return displayMode;
   }
@@ -918,18 +1035,116 @@ public class DebriefRibbonTimeController
     return timePeriod;
   }
 
-  public static void doSoftReset(final JSlider timeSlider,
-      final TimeManager timeManager)
+  private static JRibbonBand createHighlighter(
+      final LiteStepControl stepcontrol, final Runnable refresh,
+      final Layers layers, final UndoBuffer undoBuffer)
   {
-    // move the slider to the start
-    timeSlider.setValue(0);
-    label.setValue(LiteStepControl.timeFormat);
+    final JRibbonBand highlighter = new JRibbonBand("Highlighter", null);
 
-    // ok, do some disabling
-    DebriefLiteApp.setState(DebriefLiteApp.INACTIVE_STATE);
-    timeSlider.setEnabled(false);
-    timeManager.setPeriod(null, null);
-    formatBinder.reset();
+    final ArrayList<FlamingoCommand> commands = new ArrayList<>();
+
+    final FlamingoCommandToggleGroup highlighterGroup =
+        new FlamingoCommandToggleGroup();
+    final FlamingoCommand square = MenuUtils.addCommandToggleButton("Square",
+        "icons/48/square.png", new AbstractAction()
+        {
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void actionPerformed(final ActionEvent e)
+          {
+            if (stepcontrol instanceof LiteStepControl)
+            {
+              stepcontrol.setHighlighter((stepcontrol).getRectangleHighlighter()
+                  .toString());
+              refresh.run();
+            }
+          }
+        }, highlighter, RibbonElementPriority.TOP, true, highlighterGroup,
+        true);
+    commands.add(square);
+    final FlamingoCommand symbol = MenuUtils.addCommandToggleButton("Symbol",
+        "icons/48/shape.png", new AbstractAction()
+        {
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void actionPerformed(final ActionEvent e)
+          {
+            if (stepcontrol instanceof LiteStepControl)
+            {
+              stepcontrol.setHighlighter(stepcontrol.getSymbolHighlighter()
+                  .toString());
+              refresh.run();
+            }
+          }
+        }, highlighter, RibbonElementPriority.TOP, true, highlighterGroup,
+        false);
+    commands.add(symbol);
+
+    final FlamingoCommand properties = MenuUtils.addCommand("Properties",
+        "icons/16/properties.png", new ActionListener()
+        {
+
+          @Override
+          public void actionPerformed(final ActionEvent e)
+          {
+            if (stepcontrol instanceof LiteStepControl)
+            {
+              ToolbarOwner owner = null;
+              final ToolParent parent = stepcontrol.getParent();
+
+              if (parent instanceof ToolbarOwner)
+              {
+                owner = (ToolbarOwner) parent;
+              }
+              final Layer parentLayer;
+              if (parent instanceof Layer)
+              {
+                parentLayer = (Layer) parent;
+              }
+              else
+              {
+                parentLayer = null;
+              }
+              final PropertiesDialog dialog = new PropertiesDialog(stepcontrol
+                  .getCurrentHighlighter().getInfo(), layers, undoBuffer,
+                  parent, owner, parentLayer);
+              dialog.setSize(400, 500);
+              dialog.setLocationRelativeTo(null);
+              dialog.setVisible(true);
+            }
+          }
+        }, highlighter, RibbonElementPriority.LOW);
+    commands.add(properties);
+
+    highlighter.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
+        highlighter));
+
+    DebriefLiteApp.getInstance().addStateListener(new PropertyChangeListener()
+    {
+      @Override
+      public void propertyChange(final PropertyChangeEvent evt)
+      {
+        if (DebriefLiteApp.STATE.equals(evt.getPropertyName()))
+        {
+          final boolean enabled = DebriefLiteApp.ACTIVE_STATE.equals(evt
+              .getNewValue());
+          enableDisableCommandList(commands, enabled);
+        }
+      }
+    });
+
+    return highlighter;
+  }
+
+  private static void enableDisableCommandList(
+      final ArrayList<FlamingoCommand> commands, final boolean newState)
+  {
+    for (final FlamingoCommand command : commands)
+    {
+      command.setEnabled(newState);
+    }
   }
 
   /**

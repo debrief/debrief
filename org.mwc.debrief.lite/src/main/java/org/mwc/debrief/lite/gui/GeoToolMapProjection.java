@@ -5,12 +5,12 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 
-import org.geotools.factory.Hints;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.MapContent;
 import org.geotools.map.MapViewport;
 import org.geotools.referencing.CRS;
+import org.geotools.util.factory.Hints;
 import org.mwc.cmap.geotools.gt2plot.GeoToolsLayer;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
@@ -133,8 +133,8 @@ public class GeoToolMapProjection extends PlainProjection implements
   @Override
   public Point toScreen(final WorldLocation val)
   {
-    DirectPosition2D workDegs = new DirectPosition2D();
-    DirectPosition2D workScreen = new DirectPosition2D();
+    final DirectPosition2D workDegs = new DirectPosition2D();
+    final DirectPosition2D workScreen = new DirectPosition2D();
 
     Point res = null;
     // and now for the actual projection bit
@@ -144,10 +144,13 @@ public class GeoToolMapProjection extends PlainProjection implements
       try
       {
         data_transform.transform(workDegs, workDegs);
-        _view.getWorldToScreen().transform(workDegs, workScreen);
-        // output the results
-        res = new Point((int) workScreen.getCoordinate()[0], (int) workScreen
-            .getCoordinate()[1]);
+        if (_view.getWorldToScreen() != null)
+        {
+          _view.getWorldToScreen().transform(workDegs, workScreen);
+          // output the results
+          res = new Point((int) workScreen.getCoordinate()[0], (int) workScreen
+              .getCoordinate()[1]);
+        }
       }
       catch (MismatchedDimensionException | TransformException e)
       {
@@ -162,8 +165,8 @@ public class GeoToolMapProjection extends PlainProjection implements
   @Override
   public WorldLocation toWorld(final Point val)
   {
-    DirectPosition2D workDegs = new DirectPosition2D();
-    DirectPosition2D workScreen = new DirectPosition2D();
+    final DirectPosition2D workDegs = new DirectPosition2D();
+    final DirectPosition2D workScreen = new DirectPosition2D();
 
     WorldLocation res = null;
     workScreen.setLocation(val.x, val.y);
