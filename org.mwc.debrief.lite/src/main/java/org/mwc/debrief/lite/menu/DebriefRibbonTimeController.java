@@ -33,6 +33,7 @@ import java.util.TimeZone;
 
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -62,6 +63,7 @@ import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
 import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
 import org.pushingpixels.flamingo.api.common.CommandButtonPresentationState;
+import org.pushingpixels.flamingo.api.common.JCommandButtonStrip;
 import org.pushingpixels.flamingo.api.common.RichTooltip;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.common.model.Command;
@@ -274,16 +276,20 @@ public class DebriefRibbonTimeController
     @Override
     public void stateChanged(final ChangeEvent e)
     {
+      System.out.println("Slide change listener");
       final RangeSlider slider = (RangeSlider) e.getSource();
 
       final Date low = RangeSlider.toDate(slider.getValue()).getTime();
+      System.out.println("lowdate:"+low);
       final Date high = RangeSlider.toDate(slider.getUpperValue()).getTime();
       formatBinder.updateFilterDateFormat();
+      System.out.println("highdate:"+high);
 
       operations.setPeriod(new TimePeriod.BaseTimePeriod(new HiResDate(low),
           new HiResDate(high)));
 
       final HiResDate currentTime = timeManager.getTime();
+      System.out.println("Current time:"+currentTime);
       if (currentTime != null)
       {
         Date oldTime = currentTime.getDate();
@@ -314,7 +320,6 @@ public class DebriefRibbonTimeController
 
   private static final String PLAY_IMAGE = "icons/24/media_play.png";
 
-  public static JPanel topButtonsPanel;
   private static final String[] timeFormats = new String[]
   {"mm:ss.SSS", "HHmm.ss", "HHmm", "ddHHmm", "ddHHmm:ss", "yy/MM/dd HH:mm",
       "yy/MM/dd HH:mm:ss"};
@@ -332,6 +337,9 @@ public class DebriefRibbonTimeController
    *
    */
   private static boolean _isNormal = true;
+
+  public static List<Command> topButtonCommands;
+
 
   protected static void addTimeControllerTab(final JRibbon ribbon,
       final GeoToolMapRenderer _geoMapRenderer,
@@ -381,9 +389,6 @@ public class DebriefRibbonTimeController
     controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
     controlPanel.setPreferredSize(new Dimension(500, 80));
 
-    topButtonsPanel = new JPanel();
-    topButtonsPanel.setLayout(new BoxLayout(topButtonsPanel, BoxLayout.X_AXIS));
-    topButtonsPanel.setName("topbuttonspanel");
     final Command behindCommand = MenuUtils.createCommandObject(
         "Behind", "icons/24/media_beginning.png", new CommandAction()
         {
@@ -397,7 +402,6 @@ public class DebriefRibbonTimeController
             
           }
         }, PresentationPriority.LOW,"starttime");
-    behindCommand.setActionEnabled(false);
     behindCommand.project().buildComponent().setName("behind");
     final Command rewindCommand = MenuUtils.createCommandObject(
         "Rewind", "icons/24/media_rewind.png", new CommandAction()
@@ -409,7 +413,6 @@ public class DebriefRibbonTimeController
           }
         }, PresentationPriority.LOW, "Large step backwards");
     rewindCommand.project().buildComponent().setName("rewind");
-    rewindCommand.setActionEnabled(false);
     final Command backCommand = MenuUtils.createCommandObject("Back",
         "icons/24/media_back.png", new CommandAction()
         {
@@ -422,7 +425,6 @@ public class DebriefRibbonTimeController
           }
         }, PresentationPriority.LOW, "Small step backwards");
     backCommand.project().buildComponent().setName("back");
-    backCommand.setActionEnabled(false);
     final Command playCommand = MenuUtils.createCommandObject("Play",
         PLAY_IMAGE, new CommandAction()
         {
@@ -440,7 +442,6 @@ public class DebriefRibbonTimeController
             updatePlayBtnUI(playCommandButton, isPlaying);
           }
         }, PresentationPriority.LOW, START_TEXT);
-    playCommand.setActionEnabled(false);
     playCommand.project().buildComponent().setName("play");;
     @SuppressWarnings("unused")
     final Command recordCommandButton = MenuUtils.createCommandObject(
@@ -456,7 +457,6 @@ public class DebriefRibbonTimeController
 
           }
         }, PresentationPriority.LOW, "Start recording");
-    recordCommandButton.setActionEnabled(false);
     recordCommandButton.project().buildComponent().setName("record");
     final Command forwardCommand = MenuUtils.createCommandObject(
         "Forward", "icons/24/media_forward.png", new CommandAction()
@@ -470,7 +470,6 @@ public class DebriefRibbonTimeController
           }
         }, PresentationPriority.LOW, "Small step forwards");
     forwardCommand.project().buildComponent().setName("forward");
-    forwardCommand.setActionEnabled(false);
     
     final Command fastForwardCommand = MenuUtils.createCommandObject(
         "Fast Forward", "icons/24/media_fast_forward.png", new CommandAction()
@@ -483,7 +482,6 @@ public class DebriefRibbonTimeController
             stepControl.doStep(true, true);
           }
         }, PresentationPriority.LOW, "Large step forwards");
-    fastForwardCommand.setActionEnabled(false);
     fastForwardCommand.project().buildComponent().setName("fastforward");
     final Command endCommand = MenuUtils.createCommandObject("End",
         "icons/24/media_end.png", new CommandAction()
@@ -497,7 +495,6 @@ public class DebriefRibbonTimeController
           }
         }, PresentationPriority.LOW, "Move to end time");
     endCommand.project().buildComponent().setName("endtime");
-    endCommand.setActionEnabled(false);
     
     final Command propertiesCommand = MenuUtils.createCommandObject(
         "Properties", "icons/16/properties.png", new CommandAction()
@@ -528,7 +525,6 @@ public class DebriefRibbonTimeController
             dialog.setVisible(true);
           }
         }, PresentationPriority.LOW, "Edit time-step properties");
-    propertiesCommand.setActionEnabled(false);
     propertiesCommand.project().buildComponent().setName("timeprops");
     // we need to give the menu to the command popup
     
@@ -587,13 +583,11 @@ public class DebriefRibbonTimeController
                 .setHorizontalGapScaleFactor(0.8)
                 .setVerticalGapScaleFactor(1.4)
                 .build());
-    
-    
-    
+    topButtonCommands = commandStripProjection.getContentModel().getCommands();
+    setButtonsEnabled(topButtonCommands, false);
     control.addFlowComponent(commandStripProjection);
     control.addFlowComponent(timeLabelProjection);
     control.addFlowComponent(formatCommandButton);
-    
     final SliderComponentContentModel sliderModel = SliderComponentContentModel.builder().
         setEnabled(true).
         setChangeListener(new ChangeListener()
@@ -602,8 +596,10 @@ public class DebriefRibbonTimeController
           public void stateChanged(final ChangeEvent e)
           {
             if(e.getSource() instanceof JSlider) {
+              System.out.println("time filter listener");
               final JSlider slider = (JSlider)e.getSource();
               final int pos = slider.getValue();
+              System.out.println("slider pos"+pos);
               final long time = converter.getTimeAt(pos);
               if (timeManager.getTime() == null || timeManager.getTime().getDate()
                   .getTime() != time)
@@ -621,7 +617,7 @@ public class DebriefRibbonTimeController
         ComponentPresentationModel> projection) -> JRibbonSlider::new;
     final ComponentProjection<JRibbonSlider,SliderComponentContentModel> projection = 
             new RibbonSliderProjection(sliderModel, ComponentPresentationModel.withDefaults(), jribbonSlider);
-        JSlider timeSlider = projection.buildComponent();
+    JSlider timeSlider = projection.buildComponent();
     timeSlider.setBackground(Color.DARK_GRAY);
     timeSlider.setPreferredSize(new Dimension(420, 30));
     timeSlider.setEnabled(false);
@@ -646,7 +642,7 @@ public class DebriefRibbonTimeController
         timeSlider.setEnabled(true);
 
         // and we can use the buttons
-        // DebriefLiteApp.setState(DebriefLiteApp.ACTIVE_STATE);
+        //DebriefLiteApp.setState(DebriefLiteApp.ACTIVE_STATE);
 
         converter.init(start, end);
         timeSlider.setMinimum(converter.getStart());
@@ -850,7 +846,7 @@ public class DebriefRibbonTimeController
     // Now we create the components for the sliders
 //    final JLabel lblMinimumValue = new JLabel();
 //    final JLabel lblMaximumValue = new JLabel();
-    final SliderComponentContentModel sliderModel = SliderComponentContentModel.builder().
+    final SliderComponentContentModel timeFilterRangeModel = SliderComponentContentModel.builder().
                                               setEnabled(true).
                                               setMinimum(start).
                                               setMaximum(end).
@@ -858,11 +854,11 @@ public class DebriefRibbonTimeController
                                               build();
     //set the values for the slider here.
     final ComponentSupplier<JRibbonRangeSlider,
-    SliderComponentContentModel, ComponentPresentationModel> jribbonSlider =
+    SliderComponentContentModel, ComponentPresentationModel> timeRangeSlider =
     (Projection<JRibbonRangeSlider, SliderComponentContentModel,
             ComponentPresentationModel> projection) -> JRibbonRangeSlider::new;
     final ComponentProjection<JRibbonRangeSlider,SliderComponentContentModel> projection = 
-        new RibbonRangeSliderProjection(sliderModel, ComponentPresentationModel.withDefaults(), jribbonSlider);
+        new RibbonRangeSliderProjection(timeFilterRangeModel, ComponentPresentationModel.withDefaults(), timeRangeSlider);
     LabelledRangeSlider sliderObj = projection.buildComponent();
     final RangeSlider slider = sliderObj.getRangeSlider();
     slider.setBackground(Color.DARK_GRAY);
@@ -962,18 +958,10 @@ public class DebriefRibbonTimeController
    * @param panel
    * @param enabled
    */
-  public static void setButtonsEnabled(final JPanel panel,
+  public static void setButtonsEnabled(List<Command> commands,
       final boolean enabled)
   {
-    final Component[] items = panel.getComponents();
-    for (final Component item : items)
-    {
-      final boolean state = item.isEnabled();
-      if (state != enabled)
-      {
-        item.setEnabled(enabled);
-      }
-    }
+    commands.forEach(command->command.setActionEnabled(enabled));
   }
 
   public static void updatePlayBtnUI(final AbstractCommandButton playCommandButton,

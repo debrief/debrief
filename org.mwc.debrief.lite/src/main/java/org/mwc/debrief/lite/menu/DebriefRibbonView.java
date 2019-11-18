@@ -15,11 +15,13 @@
 package org.mwc.debrief.lite.menu;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.geotools.swing.JMapPane;
@@ -28,6 +30,9 @@ import org.geotools.swing.action.ZoomInAction;
 import org.geotools.swing.action.ZoomOutAction;
 import org.geotools.swing.event.MapMouseEvent;
 import org.geotools.swing.tool.PanTool;
+import org.mwc.debrief.lite.custom.JRibbonSlider;
+import org.mwc.debrief.lite.custom.RibbonSliderProjection;
+import org.mwc.debrief.lite.custom.SliderComponentContentModel;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.gui.ZoomOut;
@@ -47,50 +52,42 @@ import org.pushingpixels.flamingo.api.common.model.CommandPanelContentModel;
 import org.pushingpixels.flamingo.api.common.model.CommandPanelPresentationModel;
 import org.pushingpixels.flamingo.api.common.model.CommandToggleGroupModel;
 import org.pushingpixels.flamingo.api.common.projection.CommandPanelProjection;
+import org.pushingpixels.flamingo.api.common.projection.Projection;
+import org.pushingpixels.flamingo.api.common.projection.Projection.ComponentSupplier;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand.PresentationPriority;
+import org.pushingpixels.flamingo.api.ribbon.synapse.model.ComponentPresentationModel;
+import org.pushingpixels.flamingo.api.ribbon.synapse.projection.ComponentProjection;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
 import MWC.GUI.Layers;
+import MWC.GenericData.HiResDate;
 
 public class DebriefRibbonView
 {
-  private static CommandPanelProjection addAlphaSlider(
+  private static ComponentProjection addAlphaSlider(
       final ChangeListener alphaListener, final float alpha)
   {
-    final JSlider slider = new JSlider(0, 100);
+    
+    final SliderComponentContentModel sliderModel = SliderComponentContentModel.builder().
+        setEnabled(true).
+        setChangeListener(alphaListener).
+        build();
+    //set the values for the slider here.
+    final ComponentSupplier<JRibbonSlider,
+    SliderComponentContentModel, ComponentPresentationModel> jribbonSlider =
+    (Projection<JRibbonSlider, SliderComponentContentModel,
+        ComponentPresentationModel> projection) -> JRibbonSlider::new;
+    final ComponentProjection<JRibbonSlider,SliderComponentContentModel> projection = 
+            new RibbonSliderProjection(sliderModel, ComponentPresentationModel.withDefaults(), jribbonSlider);
+    JSlider slider = projection.buildComponent();
     slider.setMajorTickSpacing(20);
     slider.setPaintTicks(true);
+    slider.setToolTipText("Modify transparency");
     slider.setBackground(Color.DARK_GRAY);
-    //slider.addChangeListener(alphaListener);
+    slider.setName("transparencyslider");
     slider.setValue((int)(alpha * 100f));
-    
-   
-   
-    List<CommandGroup> commandGroups = new ArrayList<>();
-    Command command = Command.builder()
-        .setIconFactory(EmptyResizableIcon.factory())
-        .setToggle()
-        
-        .build();
-    command.addChangeListener(alphaListener);
-    List<Command> commands = new ArrayList<>();
-    commands.add(command);
-    commandGroups.add(new CommandGroup("Alpha", commands));
-    
-    CommandPanelContentModel panelContentModel = new CommandPanelContentModel(commandGroups);
-    panelContentModel.setSingleSelectionMode(true);
-    CommandPanelPresentationModel panelPresentationModel = CommandPanelPresentationModel.builder()
-    .setToShowGroupLabels(false)
-    .setCommandPresentationState(CommandButtonPresentationState.FIT_TO_ICON)
-    .setCommandIconDimension(48)
-    .build();
-    CommandPanelProjection projection = new CommandPanelProjection(panelContentModel, panelPresentationModel);
-    /*
-     * final JRibbonComponent component = new JRibbonComponent(projection, "Transparency:", slider);
-     * return component;
-     */
     return projection;
   }
 
@@ -106,12 +103,12 @@ public class DebriefRibbonView
 
     // and the slider
     final JRibbonBand layersMenu = new JRibbonBand("Background", null);
-    final CommandPanelProjection slider = addAlphaSlider(alphaListener, alpha);
+    final ComponentProjection slider = addAlphaSlider(alphaListener, alpha);
     //slider.setPresentationPriority(PresentationPriority.TOP);
-    layersMenu.add(slider.buildComponent());
+    layersMenu.addRibbonComponent(slider);
 
-    final RibbonTask viewTask = new RibbonTask("View", mouseMode, mapCommands);
-        //,layersMenu);
+    final RibbonTask viewTask = new RibbonTask("View", mouseMode, mapCommands
+        ,layersMenu);
     ribbon.addTask(viewTask);
   }
 

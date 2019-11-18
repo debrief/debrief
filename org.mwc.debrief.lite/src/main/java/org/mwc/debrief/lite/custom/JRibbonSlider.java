@@ -40,7 +40,6 @@ public class JRibbonSlider extends JSlider
       setEnabled(contentModel.isEnabled());
 
       addChangeListener((ChangeEvent ae) -> {
-        //TODO is this correct logic here?
         contentModel.setValue(((JSlider)ae.getSource()).getValue());
         if (contentModel.getChangeListener() != null) {
           contentModel.getChangeListener().stateChanged(ae);

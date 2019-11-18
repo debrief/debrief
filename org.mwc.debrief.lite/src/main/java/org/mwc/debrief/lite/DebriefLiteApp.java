@@ -246,7 +246,7 @@ public class DebriefLiteApp implements FileDropListener
         {
           final boolean isActive = ACTIVE_STATE.equals(evt.getNewValue());
           DebriefRibbonTimeController.setButtonsEnabled(
-              DebriefRibbonTimeController.topButtonsPanel, isActive);
+              DebriefRibbonTimeController.topButtonCommands, isActive);
         }
       };
 
@@ -675,11 +675,11 @@ public class DebriefLiteApp implements FileDropListener
     }
   };
 
-  private GeoToolMapProjection projection;
+  private final GeoToolMapProjection projection;
 
   private final LiteSession session;
 
-  private LiteMapPane mapPane;
+  private final LiteMapPane mapPane;
 
   private final PlotOperations _myOperations = new PlotOperations()
   {
@@ -720,7 +720,7 @@ public class DebriefLiteApp implements FileDropListener
 
   private final TimeManager timeManager = new TimeManager();
 
-  private GeoToolMapRenderer geoMapRenderer;
+  private final GeoToolMapRenderer geoMapRenderer;
 
   private final PainterManager painterManager;
 
@@ -769,9 +769,6 @@ public class DebriefLiteApp implements FileDropListener
     Trace.initialise(app);
 
     theFrame = new JRibbonFrame(defaultTitle);
-
-    theFrame.setApplicationIcon(ResizableIconFactory.factory(ImageWrapperResizableIcon.getIcon(MenuUtils
-        .createImage("icons/d_lite.png"), MenuUtils.ICON_SIZE_32)));
 
     geoMapRenderer = new GeoToolMapRenderer();
 
@@ -861,7 +858,7 @@ public class DebriefLiteApp implements FileDropListener
     theTote = new LiteTote(_theLayers, _stepControl);
     final TotePainter tp = new TotePainter(theChart, _theLayers, theTote,
         false);
-//    tp.setColor(Color.white);
+    tp.setColor(Color.white);
     final TotePainter sp = new SnailPainter2(theChart, _theLayers, theTote);
  
     final ToteSetter.RefreshStepper refresher = new ToteSetter.RefreshStepper()
@@ -916,11 +913,6 @@ public class DebriefLiteApp implements FileDropListener
         mapPane, _stepControl, timeManager, _myOperations, _normalSetter,
         _snailSetter, statusBar, screenTransform, collapseAction, alphaListener,
         initialAlpha, path);
-//    createAppPanels(geoMapRenderer, session.getUndoBuffer(), dropSupport,
-//        mapPane, _stepControl, timeManager, _myOperations, null,
-//        null, statusBar, null, collapseAction, alphaListener,
-//        initialAlpha, path);
-    
     _listenForMods = new DataListenerAdaptor()
     {
       @Override
@@ -942,7 +934,8 @@ public class DebriefLiteApp implements FileDropListener
 
     // lastly give us some backdrop data
     loadBackdropdata(_theLayers);
-
+    theFrame.setApplicationIcon(ResizableIconFactory.factory(ImageWrapperResizableIcon.getIcon(MenuUtils
+        .createImage("icons/d_lite.png"), MenuUtils.ICON_SIZE_32)));
     theFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     theFrame.setVisible(true);
     theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());

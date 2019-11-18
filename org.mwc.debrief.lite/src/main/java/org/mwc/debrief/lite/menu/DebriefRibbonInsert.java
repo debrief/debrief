@@ -138,7 +138,7 @@ public class DebriefRibbonInsert
 //    final RibbonTask drawingTask = new RibbonTask("Insert", chartfeaturesMenu,
 //        referenceDataMenu, layersMenu, drawingMenu);
     final RibbonTask drawingTask = new RibbonTask("Insert", chartfeaturesMenu,
-         layersMenu,referenceDataMenu, drawingMenu);
+         layersMenu, drawingMenu);
     ribbon.addTask(drawingTask);
   }
 
@@ -186,35 +186,6 @@ public class DebriefRibbonInsert
   }
   
   private static JRibbonBand createLayerMenu(final Layers _theLayers,final ToolParent toolParent) {
-//    selectLayerItemListener = new ItemListener()
-//    {
-//      
-//      @Override
-//      public void itemStateChanged(ItemEvent e)
-//      {
-//        if(e.getStateChange() == ItemEvent.SELECTED)  
-//        {
-//          @SuppressWarnings("unchecked")
-//          JComboBox<String> jcombo = (JComboBox<String>)e.getSource();
-//          if(jcombo.getSelectedItem().equals(Layers.NEW_LAYER_COMMAND)) {
-//            //popup list layers dialog
-//            final String layerName = getLayerName(_theLayers);
-//
-//            // sort out the action
-//            final AddLayerAction addLayerAction = new AddLayerAction(_theLayers,
-//                layerName);
-//            addLayerAction.execute();
-//
-//            // remember it
-//            toolParent.addActionToBuffer(addLayerAction);
-//          }
-//          else
-//          {
-//            selectedLayer = (String)jcombo.getSelectedItem();
-//          }
-//        }
-//      }
-//    };
     final JRibbonBand layersMenu = new JRibbonBand("Active Layer", null);
     RibbonComboBoxProjection projection = new RibbonComboBoxProjection(addDropDown(layersMenu,PresentationPriority.TOP,_theLayers,toolParent),ComponentPresentationModel.withDefaults());
     layersMenu.addRibbonComponent(projection);

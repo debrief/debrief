@@ -50,11 +50,11 @@ public class JRibbonLabel extends JLabel
 //      }
 //    });
 //
-//    contentModel.addPropertyChangeListener((PropertyChangeEvent event) -> {
-//      if ("value".equals(event.getPropertyName())) {
-//        setValue(contentModel.getValue());
-//      }
-//    });
+    contentModel.addPropertyChangeListener((PropertyChangeEvent event) -> {
+      if ("text".equals(event.getPropertyName())) {
+        setText(contentModel.getText());
+      }
+    });
   }
   
   protected void paintComponent(final Graphics g)

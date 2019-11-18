@@ -68,7 +68,7 @@ public class MenuUtils
   public static final Dimension ICON_SIZE_16 = new Dimension(16, 16);
   public static final Dimension ICON_SIZE_24 = new Dimension(24, 24);
   public static final Dimension ICON_SIZE_32 = new Dimension(32, 32);
-  public static final Dimension ICON_SIZE_48 = new Dimension(48, 48);
+  public static final Dimension ICON_SIZE_64 = new Dimension(64, 64);
 
   public static CommandButtonProjection<Command> addCommand(final String commandName,
       final String imagePath, final CommandAction actionToAdd,

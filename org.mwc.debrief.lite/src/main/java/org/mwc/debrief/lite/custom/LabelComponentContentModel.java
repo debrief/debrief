@@ -76,6 +76,11 @@ public class LabelComponentContentModel implements ComponentContentModel
   {
     this.text = text;
   }
+  
+  public String getText()
+  {
+    return text;
+  }
 
   @Override
   public void addPropertyChangeListener(PropertyChangeListener pcl)
