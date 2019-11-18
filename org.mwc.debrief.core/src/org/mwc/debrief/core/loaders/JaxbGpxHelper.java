@@ -69,10 +69,10 @@ public class JaxbGpxHelper implements GpxHelper
 	{
 		try
 		{
-			GPX_1_1_JAXB_CTX = JAXBContext.newInstance("com.topografix.gpx.v11");
-			GPX_1_0_JAXB_CTX = JAXBContext.newInstance("com.topografix.gpx.v10");
+			GPX_1_1_JAXB_CTX = JAXBContext.newInstance("com.topografix.gpx.v11",com.topografix.gpx.v11.ObjectFactory.class.getClassLoader());
+			GPX_1_0_JAXB_CTX = JAXBContext.newInstance("com.topografix.gpx.v10",com.topografix.gpx.v10.ObjectFactory.class.getClassLoader());
 			DEBRIEF_EXTENSIONS_JAXB_CTX = JAXBContext
-					.newInstance("org.mwc.debrief.core.gpx");
+					.newInstance("org.mwc.debrief.core.gpx",org.mwc.debrief.core.gpx.ObjectFactory.class.getClassLoader());
 		}
 		catch (final JAXBException e)
 		{

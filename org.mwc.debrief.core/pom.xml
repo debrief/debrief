@@ -11,4 +11,6 @@
   <artifactId>org.mwc.debrief.core</artifactId>
   <version>1.0.371</version>
   <packaging>eclipse-plugin</packaging>
+  
+ 
 </project>

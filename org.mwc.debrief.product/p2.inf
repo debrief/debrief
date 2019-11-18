@@ -1,4 +1,2 @@
-instructions.configure=\
-  addRepository(type:0,location:http${#58}//debrief/);\
-  addRepository(type:1,location:http${#58}//debrief/);
+
   
