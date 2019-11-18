@@ -33,8 +33,10 @@ before_script:
 # rename and move it
 - mv *-jre jre
 - mkdir ../org.mwc.debrief.combined.feature/win-64
-- mv jre ../org.mwc.debrief.combined.feature/win-64/jre
 # move it to the target folder
+- mv jre ../org.mwc.debrief.combined.feature/win-64/jre
+# move back to top level
+- cd ../
 script: mvn clean verify -U -B -fae
 after_failure:
 - ls org.mwc.debrief.ui_test
