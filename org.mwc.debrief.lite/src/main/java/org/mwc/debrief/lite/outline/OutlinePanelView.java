@@ -84,6 +84,8 @@ import Debrief.GUI.Views.LogicHelpers.Helper;
 import Debrief.GUI.Views.LogicHelpers.Or;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
+import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanEnumerate;
 import MWC.GUI.Editable;
@@ -237,7 +239,18 @@ public class OutlinePanelView extends SwingLayerManager implements
         if (parent != null)
         {
           parent.removeElement(plottable);
-          _myData.fireModified(parent);
+          if(parent instanceof TrackSegment)
+          {
+            // special case. We wish to update the top-level
+            // entity, not the track segment
+            TrackSegment segment = (TrackSegment) parent;
+            LightweightTrackWrapper tParent = segment.getWrapper();
+            _myData.fireModified(tParent);
+          }
+          else
+          {
+            _myData.fireModified(parent);
+          }
         }
         else
         {
