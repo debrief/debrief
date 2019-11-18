@@ -191,42 +191,45 @@ public interface PlotHighlighter extends Editable
         // convert to screen coordinates
         final Point tl = proj.toScreen(wa.getTopLeft());
 
-        final int tlx = tl.x;
-        final int tly = tl.y;
-
-        final Point br = proj.toScreen(wa.getBottomRight());
-        // get the width
-        final int x = tlx - _mySize;
-        final int y = tly - _mySize;
-        final int wid = (br.x - tlx) + _mySize * 2;
-        final int ht = (br.y - tly) + _mySize * 2;
-
-        // hmm - implemented plotting the cursor differently if we're
-        // looking at interpolated data
-        Stroke oldStroke = null;
-
-        // right, lets have a look
-        if (watch instanceof InterpolatedData)
+        if (tl != null)
         {
-          final java.awt.Graphics2D g2 = (java.awt.Graphics2D) dest;
-          // right, remember what the previous cursor was
-          oldStroke = g2.getStroke();
+          final int tlx = tl.x;
+          final int tly = tl.y;
 
-          // set the new one
-          final java.awt.BasicStroke stk = SwingCanvas.getStrokeFor(
-              CanvasType.DOTTED);
-          g2.setStroke(stk);
-        }
+          final Point br = proj.toScreen(wa.getBottomRight());
+          // get the width
+          final int x = tlx - _mySize;
+          final int y = tly - _mySize;
+          final int wid = (br.x - tlx) + _mySize * 2;
+          final int ht = (br.y - tly) + _mySize * 2;
 
-        // plot the rectangle
-        dest.drawRect(x, y, wid, ht);
+          // hmm - implemented plotting the cursor differently if we're
+          // looking at interpolated data
+          Stroke oldStroke = null;
 
-        // and restore the old cursor if we have to
-        if (oldStroke != null)
-        {
-          final java.awt.Graphics2D g2 = (java.awt.Graphics2D) dest;
-          g2.setStroke(oldStroke);
-          oldStroke = null;
+          // right, lets have a look
+          if (watch instanceof InterpolatedData)
+          {
+            final java.awt.Graphics2D g2 = (java.awt.Graphics2D) dest;
+            // right, remember what the previous cursor was
+            oldStroke = g2.getStroke();
+
+            // set the new one
+            final java.awt.BasicStroke stk = SwingCanvas.getStrokeFor(
+                CanvasType.DOTTED);
+            g2.setStroke(stk);
+          }
+
+          // plot the rectangle
+          dest.drawRect(x, y, wid, ht);
+
+          // and restore the old cursor if we have to
+          if (oldStroke != null)
+          {
+            final java.awt.Graphics2D g2 = (java.awt.Graphics2D) dest;
+            g2.setStroke(oldStroke);
+            oldStroke = null;
+          }
         }
 
       }
