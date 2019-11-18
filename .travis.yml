@@ -16,6 +16,7 @@ addons:
     - libglib2.0-dev
     - libxml2-dev
     - pdftk
+    - unzip
 notifications:
   slack: debrief-devs:GF1nQSqn2eozH3wQtyuPLAlG
 before_script:
@@ -28,7 +29,7 @@ before_script:
 - wget -P dest https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.5%2B10/OpenJDK11U-jre_x64_windows_hotspot_11.0.5_10.zip
 # unpack it
 - cd dest
-- tar xf OpenJD*.zip
+- unzip OpenJD*.zip
 # rename and move it
 - mv *-jre jre
 - mkdir ../org.mwc.debrief.combined.feature/win-64
