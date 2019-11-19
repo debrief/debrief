@@ -103,10 +103,36 @@ public class TrackWrapper_Test extends TestCase
         new Fix(new HiResDate(dtg), new WorldLocation(2, 2, 2), course,
             Conversions.Kts2Yps(speed));
     FixWrapper res = new FixWrapper(theFix);
-
     return res;
   }
 
+  public void testSplitTrackIntoLegs()
+  {
+     TrackWrapper gw = new TrackWrapper();
+     gw.setName("the track");
+     
+     gw.addFix(getFix(1000, 22, 33));
+     gw.addFix(getFix(2000, 22, 33));
+     gw.addFix(getFix(2100, 22, 33));
+     gw.addFix(getFix(4000, 22, 33));
+     gw.addFix(getFix(5000, 22, 33));
+     gw.addFix(getFix(6000, 22, 33));
+     gw.addFix(getFix(7000, 22, 33));
+     gw.addFix(getFix(8000, 22, 33));
+     gw.addFix(getFix(9000, 22, 33));
+     gw.addFix(getFix(10000, 22, 33));
+     gw.addFix(getFix(11100, 22, 33));
+     gw.addFix(getFix(12000, 22, 33));
+     gw.addFix(getFix(13000, 22, 33));
+     gw.addFix(getFix(14000, 22, 33));
+     
+     assertEquals("just one leg", 1, gw.getSegments().size());
+     
+     boolean doSplit = TrackWrapper_Support.splitTrackAtJumps(gw, 1000);
+     assertTrue("found some", doSplit);
+     assertEquals("In 3 legs", 3, gw.getSegments().size());
+  }
+  
   public void testCacheIterators()
   {
     TrackWrapper track = new TrackWrapper();
