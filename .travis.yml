@@ -50,18 +50,8 @@ before_deploy:
 deploy:
   provider: releases
   api_key:
-    secure: KCCJkP6ELz9pIGkBmSRbazRzhKZPq7T58tEIZbthtVv+KoM/JWdN10h3IK/N5Oqdeb2/P5u+93ml1wlU9PkbuwxQ4mpUbaAW41G/9mbEF7U2JLEtS9xSxeIfEBIEtuHxdlECjsgMCLm2lh3CVxbu3S2y9jDnpt35rbh6AN3B44w=
-  skip_cleanup: true
-  file_glob: true
-  file:
-    - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Linux64Bit.zip
-    - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-MacOSX64Bit.zip
-    - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows32Bit.zip
-    - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.zip
-    - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/P2_Repository.zip
-    - /home/travis/build/debrief/debrief/org.mwc.debrief.legacy/dist/DebriefLegacy*.jar
-    - /home/travis/build/debrief/debrief/org.mwc.debrief.lite/dist/debrief-lite*.zip
-    - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.msi
+    secure: Oqy+moovC3HQ0dbvWHHNOVCsqzq7vpTjlvtFVqqTiMJaCa4OUiCXOuUKr8PXtANCx6yZxrtgYKUxIDX5gpAtTWq3ylPaoedmkx2jSlkf5e4AgT4wLJcstWrwKYyK3NQjc45g3WqRCmsqsrnVQCREwD/Vq09vCt4+nZYGB5FPBmU=
+  file: /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/P2_Repository.zip
   on:
      tags: true
      all_branches: true
