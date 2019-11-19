@@ -122,11 +122,7 @@ final class ImportTrackSplitter extends AbstractPlainLineImporter
       }
     }
 
-    String[] names = trackNames.toArray(new String[]
-    {});
-
-
-    INewItemListener cif = new SliceTrackFormatListener(formatName, period);
+    INewItemListener cif = new SliceTrackFormatListener(formatName, period, trackNames);
 
     return cif;
   }
@@ -180,10 +176,10 @@ final class ImportTrackSplitter extends AbstractPlainLineImporter
       assertEquals("correct period", 3600000, res.getInterval());
 
       res = (SliceTrackFormatListener) iff
-          .readThisLine(";SPLIT_TRACK: One_Hour 3600000");
+          .readThisLine(";SPLIT_TRACK: One_Second 1000");
       assertNotNull(res);
-      assertNotNull("has name", res.getName());
-      assertEquals("correct period", 3600000, res.getInterval());
+      assertEquals("One_Second", res.getName());
+      assertEquals("correct period", 1000, res.getInterval());
 
 
     }
