@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 // $RCSfile: ImportTimeText.java,v $
 // @author $Author: Ian.Mayo $
@@ -83,81 +83,9 @@ final class ImportTrackSplitFormatter extends AbstractPlainLineImporter
 {
 
   /*
-   * example: ;SPLIT_TRACK: One_Hour 3600000 TRACK_NAME TRACK_TWO ...
-   * example: ;SPLIT_TRACK: One_Hour 3600000 
+   * example: ;SPLIT_TRACK: One_Hour 3600000 TRACK_NAME TRACK_TWO ... example: ;SPLIT_TRACK:
+   * One_Hour 3600000
    */
-
-  /**
-   * the type for this string
-   */
-  private final String _myType = ";SPLIT_TRACK:";
-
-  /**
-   * read in this string and return a Label
-   */
-  public final Object readThisLine(final String theLine)
-  {
-
-    // get a stream from the string
-    final StringTokenizer st = new StringTokenizer(theLine);
-
-    // declare local variables
-    String formatName;
-    String periodToken;
-    List<String> trackNames = new ArrayList<String>();
-
-    // skip the comment identifier
-    st.nextToken();
-
-    formatName = checkForQuotedName(st).trim();
-    periodToken = st.nextToken();
-    final long period = Long.parseLong(periodToken);
-    
-    while (st.hasMoreElements())
-    {
-      String nextItem = checkForQuotedName(st).trim();
-      if (nextItem != null && nextItem.length() > 0)
-      {
-        trackNames.add(nextItem);
-      }
-    }
-
-    INewItemListener cif = new SliceTrackFormatListener(formatName, period, trackNames);
-
-    return cif;
-  }
-
-  /**
-   * determine the identifier returning this type of annotation
-   */
-  public final String getYourType()
-  {
-    return _myType;
-  }
-
-  /**
-   * export the specified shape as a string
-   * 
-   * @return the shape in String form
-   * @param theWrapper
-   *          the Shape we are exporting
-   */
-  public final String exportThis(final MWC.GUI.Plottable theWrapper)
-  {
-    throw new NotImplementedException("We don't export these to REP format");
-  }
-
-  /**
-   * indicate if you can export this type of object
-   * 
-   * @param val
-   *          the object to test
-   * @return boolean saying whether you can do it
-   */
-  public final boolean canExportThis(final Object val)
-  {
-    return false;
-  }
 
   public static class TestMe extends TestCase
   {
@@ -168,21 +96,97 @@ final class ImportTrackSplitFormatter extends AbstractPlainLineImporter
        * example:
        */
 
-      ImportTrackSplitFormatter iff = new ImportTrackSplitFormatter();
+      final ImportTrackSplitFormatter iff = new ImportTrackSplitFormatter();
       SliceTrackFormatListener res = (SliceTrackFormatListener) iff
           .readThisLine(";SPLIT_TRACK: One_Hour 3600000");
       assertNotNull(res);
       assertEquals("correct name", "One_Hour", res.getName());
       assertEquals("correct period", 3600000, res.getInterval());
 
-      res = (SliceTrackFormatListener) iff
-          .readThisLine(";SPLIT_TRACK: One_Second 1000");
+      res = (SliceTrackFormatListener) iff.readThisLine(
+          ";SPLIT_TRACK: One_Second 1000");
       assertNotNull(res);
       assertEquals("One_Second", res.getName());
       assertEquals("correct period", 1000, res.getInterval());
 
-
     }
+  }
+
+  /**
+   * the type for this string
+   */
+  private final String _myType = ";SPLIT_TRACK:";
+
+  /**
+   * indicate if you can export this type of object
+   *
+   * @param val
+   *          the object to test
+   * @return boolean saying whether you can do it
+   */
+  @Override
+  public final boolean canExportThis(final Object val)
+  {
+    return false;
+  }
+
+  /**
+   * export the specified shape as a string
+   *
+   * @return the shape in String form
+   * @param theWrapper
+   *          the Shape we are exporting
+   */
+  @Override
+  public final String exportThis(final MWC.GUI.Plottable theWrapper)
+  {
+    throw new NotImplementedException("We don't export these to REP format");
+  }
+
+  /**
+   * determine the identifier returning this type of annotation
+   */
+  @Override
+  public final String getYourType()
+  {
+    return _myType;
+  }
+
+  /**
+   * read in this string and return a Label
+   */
+  @Override
+  public final Object readThisLine(final String theLine)
+  {
+
+    // get a stream from the string
+    final StringTokenizer st = new StringTokenizer(theLine);
+
+    // declare local variables
+    String formatName;
+    String periodToken;
+    final List<String> trackNames = new ArrayList<String>();
+
+    // skip the comment identifier
+    st.nextToken();
+
+    formatName = checkForQuotedName(st).trim();
+    periodToken = st.nextToken();
+    final long period = Long.parseLong(periodToken);
+
+    while (st.hasMoreElements())
+    {
+      final String nextItem = checkForQuotedName(st).trim();
+      if (nextItem != null && nextItem.length() > 0)
+      {
+        trackNames.add(nextItem);
+      }
+    }
+
+    final INewItemListener cif = new SliceTrackFormatListener(formatName,
+        period, trackNames);
+
+    return cif;
   }
 
 }

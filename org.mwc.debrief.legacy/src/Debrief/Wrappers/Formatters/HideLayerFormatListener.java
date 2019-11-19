@@ -4,7 +4,6 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 
-import junit.framework.TestCase;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.CanvasType;
@@ -16,6 +15,7 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
+import junit.framework.TestCase;
 
 public class HideLayerFormatListener extends PlainWrapper implements
     INewItemListener
@@ -29,7 +29,7 @@ public class HideLayerFormatListener extends PlainWrapper implements
   {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -38,15 +38,14 @@ public class HideLayerFormatListener extends PlainWrapper implements
       super(data, data.getName(), "");
     }
 
+    @Override
     final public PropertyDescriptor[] getPropertyDescriptors()
     {
       try
       {
         final PropertyDescriptor[] res =
-            {
-                displayProp("Name", "Name", "Name for this formatter"),
-                displayProp("Visible", "Active",
-                    "Whether this formatter is active")};
+        {displayProp("Name", "Name", "Name for this formatter"), displayProp(
+            "Visible", "Active", "Whether this formatter is active")};
 
         return res;
       }
@@ -59,12 +58,21 @@ public class HideLayerFormatListener extends PlainWrapper implements
 
   public static class TestMe extends TestCase
   {
+    private FixWrapper createFix(final int time)
+    {
+      final Fix newF = new Fix(new HiResDate(time), new WorldLocation(2, 2, 0),
+          22, 33);
+      final FixWrapper fw = new FixWrapper(newF);
+      return fw;
+
+    }
+
     public void testNameMatch()
     {
-      HideLayerFormatListener cf =
-          new HideLayerFormatListener("Test", new String[]
+      final HideLayerFormatListener cf = new HideLayerFormatListener("Test",
+          new String[]
           {"Name4"});
-      TrackWrapper tw = new TrackWrapper();
+      final TrackWrapper tw = new TrackWrapper();
       tw.setName("Name4");
 
       cf.newItem(tw, null, null);
@@ -75,16 +83,16 @@ public class HideLayerFormatListener extends PlainWrapper implements
 
     public void testNameNotMatch()
     {
-      HideLayerFormatListener cf =
-          new HideLayerFormatListener("Test", new String[]
+      final HideLayerFormatListener cf = new HideLayerFormatListener("Test",
+          new String[]
           {"Name"});
-      TrackWrapper tw = new TrackWrapper();
+      final TrackWrapper tw = new TrackWrapper();
       tw.setName("JamJar");
-      FixWrapper f1 = createFix(4000);
-      FixWrapper f2 = createFix(5000);
-      FixWrapper f3 = createFix(9000);
-      FixWrapper f4 = createFix(10000);
-      FixWrapper f5 = createFix(14100);
+      final FixWrapper f1 = createFix(4000);
+      final FixWrapper f2 = createFix(5000);
+      final FixWrapper f3 = createFix(9000);
+      final FixWrapper f4 = createFix(10000);
+      final FixWrapper f5 = createFix(14100);
 
       cf.newItem(tw, f1, null);
       cf.newItem(tw, f2, null);
@@ -98,14 +106,15 @@ public class HideLayerFormatListener extends PlainWrapper implements
 
     public void testNoNames()
     {
-      HideLayerFormatListener cf = new HideLayerFormatListener("Test", null);
-      TrackWrapper tw = new TrackWrapper();
+      final HideLayerFormatListener cf = new HideLayerFormatListener("Test",
+          null);
+      final TrackWrapper tw = new TrackWrapper();
       tw.setName("Name");
-      FixWrapper f1 = createFix(4000);
-      FixWrapper f2 = createFix(5000);
-      FixWrapper f3 = createFix(9000);
-      FixWrapper f4 = createFix(10000);
-      FixWrapper f5 = createFix(14100);
+      final FixWrapper f1 = createFix(4000);
+      final FixWrapper f2 = createFix(5000);
+      final FixWrapper f3 = createFix(9000);
+      final FixWrapper f4 = createFix(10000);
+      final FixWrapper f5 = createFix(14100);
 
       cf.newItem(tw, f1, null);
       cf.newItem(tw, f2, null);
@@ -115,65 +124,32 @@ public class HideLayerFormatListener extends PlainWrapper implements
 
       assertTrue("is visible", tw.getVisible());
     }
-
-    private FixWrapper createFix(int time)
-    {
-      Fix newF =
-          new Fix(new HiResDate(time), new WorldLocation(2, 2, 0), 22, 33);
-      FixWrapper fw = new FixWrapper(newF);
-      return fw;
-
-    }
   }
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
 
   private String _formatName;
   private EditorType _myEditor;
-  private String[] _layers;
+  private final String[] _layers;
 
-  public HideLayerFormatListener(String name, String[] layers)
+  public HideLayerFormatListener(final String name, final String[] layers)
   {
     _formatName = name;
     _layers = layers;
   }
 
   @Override
-  public void paint(CanvasType dest)
+  public void fileComplete()
   {
-    // don't bother, it can't be plotted
-  }
-
-  @Override
-  public String getName()
-  {
-    return _formatName;
-  }
-
-  public void setName(final String name)
-  {
-    _formatName = name;
-  }
-
-  @Override
-  public String toString()
-  {
-    return getName();
   }
 
   @Override
   public WorldArea getBounds()
   {
     return null;
-  }
-
-  @Override
-  public boolean hasEditor()
-  {
-    return true;
   }
 
   @Override
@@ -184,6 +160,23 @@ public class HideLayerFormatListener extends PlainWrapper implements
       _myEditor = new HideLayerInfo(this);
     }
     return _myEditor;
+  }
+
+  public String[] getLayers()
+  {
+    return _layers;
+  }
+
+  @Override
+  public String getName()
+  {
+    return _formatName;
+  }
+
+  @Override
+  public boolean hasEditor()
+  {
+    return true;
   }
 
   @Override
@@ -210,7 +203,7 @@ public class HideLayerFormatListener extends PlainWrapper implements
         // check if this is one of our tracks
         for (int i = 0; i < _layers.length; i++)
         {
-          String thisT = _layers[i];
+          final String thisT = _layers[i];
           if (thisT.equals(parent.getName()))
           {
             parent.setVisible(false);
@@ -221,18 +214,26 @@ public class HideLayerFormatListener extends PlainWrapper implements
   }
 
   @Override
+  public void paint(final CanvasType dest)
+  {
+    // don't bother, it can't be plotted
+  }
+
+  @Override
   public void reset()
   {
     // ignore
   }
 
-  public String[] getLayers()
+  @Override
+  public void setName(final String name)
   {
-    return _layers;
+    _formatName = name;
   }
 
   @Override
-  public void fileComplete()
+  public String toString()
   {
+    return getName();
   }
 }

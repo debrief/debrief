@@ -287,6 +287,12 @@ public class Layers implements Serializable, Plottable, PlottablesType
   public interface INewItemListener extends ExcludeFromRightClickEdit
   {
     /**
+     * the import of this file is complete
+     *
+     */
+    void fileComplete();
+
+    /**
      * a new layer, or a new item has been added
      *
      * @param parent
@@ -302,11 +308,6 @@ public class Layers implements Serializable, Plottable, PlottablesType
      *
      */
     void reset();
-
-    /** the import of this file is complete
-     * 
-     */
-    void fileComplete();
   }
 
   // //////////////////////////////////////////////////////////////////////////

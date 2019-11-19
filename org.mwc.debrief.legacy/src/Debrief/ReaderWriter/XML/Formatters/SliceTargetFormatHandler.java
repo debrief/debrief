@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package Debrief.ReaderWriter.XML.Formatters;
 
@@ -39,15 +39,42 @@ public abstract class SliceTargetFormatHandler extends
 
   /**
    * and define the strings used to describe the shape
-   * 
+   *
    */
   private static final String NAME = "Name";
   private static final String ACTIVE = "Active";
   private static final String T_NAMES = "Track_Names";
   private static final String INTERVAL = "Interval";
 
+  static public void exportThisPlottable(final MWC.GUI.Plottable plottable,
+      final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
+  {
+
+    final Element theFormatter = doc.createElement(MY_TYPE);
+    parent.appendChild(theFormatter);
+
+    final SliceTrackFormatListener theShape =
+        (SliceTrackFormatListener) plottable;
+
+    // put the parameters into the parent
+    theFormatter.setAttribute(NAME, theShape.getName());
+    final StringBuffer layerNames = new StringBuffer();
+    final List<String> tracks = theShape.getTrackNames();
+    for (final String name : tracks)
+    {
+      layerNames.append(name);
+      layerNames.append(" ");
+    }
+
+    theFormatter.setAttribute(NAME, theShape.getName());
+    theFormatter.setAttribute(ACTIVE, writeThis(theShape.getVisible()));
+    theFormatter.setAttribute(T_NAMES, layerNames.toString());
+    theFormatter.setAttribute(INTERVAL, writeThis(theShape.getInterval()));
+  }
+
   private String fName;
   private List<String> track_names;
+
   private long interval;
 
   protected boolean active;
@@ -58,6 +85,7 @@ public abstract class SliceTargetFormatHandler extends
 
     addAttributeHandler(new HandleAttribute(NAME)
     {
+      @Override
       public void setValue(final String name, final String value)
       {
         fName = value;
@@ -65,6 +93,7 @@ public abstract class SliceTargetFormatHandler extends
     });
     addAttributeHandler(new HandleAttribute(INTERVAL)
     {
+      @Override
       public void setValue(final String name, final String value)
       {
         interval = Long.parseLong(value);
@@ -72,6 +101,7 @@ public abstract class SliceTargetFormatHandler extends
     });
     addAttributeHandler(new HandleAttribute(T_NAMES)
     {
+      @Override
       public void setValue(final String name, final String value)
       {
         // check it's non-empty
@@ -85,8 +115,8 @@ public abstract class SliceTargetFormatHandler extends
 
           while (st.hasMoreElements())
           {
-            String nextItem =
-                AbstractPlainLineImporter.checkForQuotedName(st).trim();
+            final String nextItem = AbstractPlainLineImporter
+                .checkForQuotedName(st).trim();
             if (nextItem != null && nextItem.length() > 0)
             {
               track_names.add(nextItem);
@@ -98,6 +128,7 @@ public abstract class SliceTargetFormatHandler extends
     });
     addAttributeHandler(new HandleBooleanAttribute(ACTIVE)
     {
+      @Override
       public void setValue(final String name, final boolean value)
       {
         active = value;
@@ -106,11 +137,14 @@ public abstract class SliceTargetFormatHandler extends
 
   }
 
+  abstract public void addFormatter(MWC.GUI.Editable editable);
+
+  @Override
   public void elementClosed()
   {
     // create the object
-    SliceTrackFormatListener listener =
-        new SliceTrackFormatListener(fName, interval,  track_names);
+    final SliceTrackFormatListener listener = new SliceTrackFormatListener(
+        fName, interval, track_names);
 
     addFormatter(listener);
 
@@ -118,34 +152,6 @@ public abstract class SliceTargetFormatHandler extends
     fName = null;
     track_names = null;
     active = true;
-  }
-
-  abstract public void addFormatter(MWC.GUI.Editable editable);
-
-  static public void exportThisPlottable(final MWC.GUI.Plottable plottable,
-      final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
-  {
-
-    Element theFormatter = doc.createElement(MY_TYPE);
-    parent.appendChild(theFormatter);
-
-    final SliceTrackFormatListener theShape =
-        (SliceTrackFormatListener) plottable;
-
-    // put the parameters into the parent
-    theFormatter.setAttribute(NAME, theShape.getName());
-    StringBuffer layerNames = new StringBuffer();
-    List<String> tracks = theShape.getTrackNames();
-    for(String name: tracks)
-    {
-      layerNames.append(name);
-      layerNames.append(" ");
-    }
-
-    theFormatter.setAttribute(NAME, theShape.getName());
-    theFormatter.setAttribute(ACTIVE, writeThis(theShape.getVisible()));
-    theFormatter.setAttribute(T_NAMES, layerNames.toString());
-    theFormatter.setAttribute(INTERVAL, writeThis(theShape.getInterval()));
   }
 
 }

@@ -1158,7 +1158,7 @@ public class ImportReplay extends PlainImporterBase
 
     try
     {
-      res =  Integer.parseInt(theThicknes);
+      res = Integer.parseInt(theThicknes);
     }
     catch (final NumberFormatException e)
     {
@@ -1673,7 +1673,7 @@ public class ImportReplay extends PlainImporterBase
         {
           _myFormatters[k].formatLayers(_newLayers);
         }
-        
+
         // see if there is any formatting to be done
         // lastly - see if the layers object has some formatters
         final Iterator<INewItemListener> newIiter = getLayers()
