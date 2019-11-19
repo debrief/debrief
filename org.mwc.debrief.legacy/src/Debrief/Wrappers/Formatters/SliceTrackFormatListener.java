@@ -6,9 +6,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.TrackWrapper_Support;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -18,6 +18,7 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
+import junit.framework.TestCase;
 
 public class SliceTrackFormatListener extends PlainWrapper implements
     INewItemListener
@@ -70,27 +71,108 @@ public class SliceTrackFormatListener extends PlainWrapper implements
           new Fix(new HiResDate(time), new WorldLocation(2, 2, 0), 22, 33);
       FixWrapper fw = new FixWrapper(newF);
       return fw;
-
     }
-    public void testNameMatch()
+    
+    public void testTwoNames()
     {
       List<String> names = new ArrayList<String>();
-      names.add("Hangar");
-      SliceTrackFormatListener cf =
-          new SliceTrackFormatListener("Test", 3600000L, names);
-      TrackWrapper tw = new TrackWrapper();
-      tw.setName("Dobbin");
-      FixWrapper f1 = createFix(4000);
-      FixWrapper f2 = createFix(5000);
-      FixWrapper f3 = createFix(6000);
-      FixWrapper f4 = createFix(10000);
-      FixWrapper f5 = createFix(12000);
-      cf.newItem(tw, f1, null);
-      cf.newItem(tw, f2, null);
-      cf.newItem(tw, f3, null);
-      cf.newItem(tw, f4, null);
-      cf.newItem(tw, f5, null);
-      assertTrue("not at end", tw.getNameAtStart());
+      names.add("Dobbin");
+      names.add("T-One");
+      names.add("Rover");
+      
+      INewItemListener cf =
+          new SliceTrackFormatListener("Test", 1000L, names);
+      
+      TrackWrapper tOne = getTrackOne(cf);
+      
+      // and another track
+      TrackWrapper tTwo = getTrackTwo(cf);
+      
+      // and the end of file processing
+      cf.fileComplete();
+      
+      // check the tracks got split
+      assertEquals("two segments", 2, tOne.getSegments().size());
+      assertEquals("three segments", 3, tTwo.getSegments().size());
+    }
+    
+    public void testNoNames()
+    {
+      List<String> names = new ArrayList<String>();
+      INewItemListener cf =
+          new SliceTrackFormatListener("Test", 1000L, names);
+      
+      TrackWrapper tOne = getTrackOne(cf);
+      
+      // and another track
+      TrackWrapper tTwo = getTrackTwo(cf);
+      
+      // and the end of file processing
+      cf.fileComplete();
+      
+      // check the tracks got split
+      assertEquals("two segments", 2, tOne.getSegments().size());
+      assertEquals("three segments", 3, tTwo.getSegments().size());
+    }
+    
+    public void testOneNames()
+    {
+      List<String> names = new ArrayList<String>();
+      names.add("Dobbin");
+      INewItemListener cf =
+          new SliceTrackFormatListener("Test", 1000L, names);
+      
+      TrackWrapper tOne = getTrackOne(cf);
+      
+      // and another track
+      TrackWrapper tTwo = getTrackTwo(cf);
+      
+      // and the end of file processing
+      cf.fileComplete();
+      
+      // check the tracks got split
+      assertEquals("still just one segment", 1, tOne.getSegments().size());
+      assertEquals("three segments", 3, tTwo.getSegments().size());
+    }
+    
+    
+    public TrackWrapper getTrackTwo(INewItemListener cf)
+    {
+      TrackWrapper tTwo = new TrackWrapper();
+      tTwo.setName("Dobbin");
+      
+      processFix(cf, tTwo, 2000);
+      processFix(cf, tTwo, 2500);
+      processFix(cf, tTwo, 5000);
+      processFix(cf, tTwo, 5500);
+      processFix(cf, tTwo, 6000);
+      processFix(cf, tTwo, 6500);
+      processFix(cf, tTwo, 8000);
+      processFix(cf, tTwo, 8500);
+      return tTwo;
+    }
+    public TrackWrapper getTrackOne(INewItemListener cf)
+    {
+      TrackWrapper tOne = new TrackWrapper();
+      tOne.setName("T-One");
+      processFix(cf, tOne, 4000);
+      processFix(cf, tOne, 4500);
+      processFix(cf, tOne, 5000);
+      processFix(cf, tOne, 5500);
+      processFix(cf, tOne, 6000);
+      processFix(cf, tOne, 6500);
+      processFix(cf, tOne, 8000);
+      processFix(cf, tOne, 8500);
+      return tOne;
+    }
+    
+    
+    
+    private void processFix(INewItemListener cf, TrackWrapper tw, int time)
+    {
+      FixWrapper fix = createFix(time);
+      tw.addFix(fix);
+      cf.newItem(tw, fix, null);
     }
   }
 
@@ -188,12 +270,13 @@ public class SliceTrackFormatListener extends PlainWrapper implements
     // just check if this is actually a new layer call
     if (parent instanceof TrackWrapper)
     {
+      boolean addIt = false;
       final TrackWrapper track = (TrackWrapper) parent;
       // do we have any track names?
       if(_trackNames == null || _trackNames.isEmpty())
       {
         // ok, we cam just use it
-        _tracksToProcess.add(track);
+        addIt = true;
       }
       else
       {
@@ -202,8 +285,17 @@ public class SliceTrackFormatListener extends PlainWrapper implements
         {
           if(name.equals(track.getName()))
           {
-            _tracksToProcess.add(track);
+            addIt = true;
+            break;
           }
+        }
+      }
+      
+      if(addIt)
+      {
+        if(!_tracksToProcess.contains(track))
+        {
+          _tracksToProcess.add(track);
         }
       }
     }
@@ -218,8 +310,9 @@ public class SliceTrackFormatListener extends PlainWrapper implements
   @Override
   public void fileComplete()
   {
-    // TODO Auto-generated method stub
-    asdf
-    
+    for(TrackWrapper track : _tracksToProcess)
+    {
+      TrackWrapper_Support.splitTrackAtJumps(track, _interval);
+    }
   }
 }
