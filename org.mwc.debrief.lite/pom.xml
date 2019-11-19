@@ -8,7 +8,7 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
   <artifactId>org.mwc.debrief.lite</artifactId>
-  <version>1.0.418</version>
+  <version>1.0.419</version>
   <packaging>eclipse-plugin</packaging>
   <build>
     <plugins>
