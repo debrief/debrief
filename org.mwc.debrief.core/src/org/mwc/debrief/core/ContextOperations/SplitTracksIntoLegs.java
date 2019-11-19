@@ -157,7 +157,7 @@ public class SplitTracksIntoLegs implements RightClickContextItemGenerator
 
       final String msg = tracks.size() > 1 ? "tracks" : "track";
 
-      final String fullMsg = "Split " + msg + " into segment on gaps over...";
+      final String fullMsg = "Split " + msg + " into segments on gaps over...";
 
       final MenuManager listing = new MenuManager(fullMsg);
 
