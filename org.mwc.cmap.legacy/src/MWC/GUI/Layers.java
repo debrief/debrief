@@ -302,6 +302,11 @@ public class Layers implements Serializable, Plottable, PlottablesType
      *
      */
     void reset();
+
+    /** the import of this file is complete
+     * 
+     */
+    void fileComplete();
   }
 
   // //////////////////////////////////////////////////////////////////////////

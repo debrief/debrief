@@ -1672,6 +1672,17 @@ public class ImportReplay extends PlainImporterBase
         {
           _myFormatters[k].formatLayers(_newLayers);
         }
+        
+        // see if there is any formatting to be done
+        // lastly - see if the layers object has some formatters
+        final Iterator<INewItemListener> newIiter = getLayers()
+            .getNewItemListeners().iterator();
+        while (newIiter.hasNext())
+        {
+          final INewItemListener newI = newIiter.next();
+          newI.fileComplete();
+        }
+
 
         // see if we've modified any existing tracks
         final Iterator<TrackWrapper> tIter = _existingTracksThatMoved

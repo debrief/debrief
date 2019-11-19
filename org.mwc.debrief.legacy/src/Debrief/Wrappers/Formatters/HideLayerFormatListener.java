@@ -230,4 +230,9 @@ public class HideLayerFormatListener extends PlainWrapper implements
   {
     return _layers;
   }
+
+  @Override
+  public void fileComplete()
+  {
+  }
 }

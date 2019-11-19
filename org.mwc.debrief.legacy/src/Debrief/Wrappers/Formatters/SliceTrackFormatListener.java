@@ -3,6 +3,7 @@ package Debrief.Wrappers.Formatters;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -73,10 +74,12 @@ public class SliceTrackFormatListener extends PlainWrapper implements
     }
     public void testNameMatch()
     {
+      List<String> names = new ArrayList<String>();
+      names.add("Hangar");
       SliceTrackFormatListener cf =
-          new SliceTrackFormatListener("Test", 3600000L);
+          new SliceTrackFormatListener("Test", 3600000L, names);
       TrackWrapper tw = new TrackWrapper();
-      tw.setName("Name");
+      tw.setName("Dobbin");
       FixWrapper f1 = createFix(4000);
       FixWrapper f2 = createFix(5000);
       FixWrapper f3 = createFix(6000);
@@ -98,13 +101,18 @@ public class SliceTrackFormatListener extends PlainWrapper implements
 
   private String _formatName;
   private EditorType _myEditor;
-  private String[] _tracks;
   private long _interval;
 
-  public SliceTrackFormatListener(final String name,final long interval, final List<String> trackNames)
+  private final List<String> _trackNames;
+  private final List<TrackWrapper> _tracksToProcess;
+
+  public SliceTrackFormatListener(final String name,final long interval, 
+      final List<String> trackNames)
   {
     _formatName = name;
     _interval = interval;
+    _trackNames = trackNames;
+    _tracksToProcess = new ArrayList<TrackWrapper>();
   }
 
   @Override
@@ -119,7 +127,10 @@ public class SliceTrackFormatListener extends PlainWrapper implements
     return _formatName;
   }
 
-  
+  public List<String> getTrackNames()
+  {
+    return _trackNames;
+  }
   
   public long getInterval()
   {
@@ -177,23 +188,21 @@ public class SliceTrackFormatListener extends PlainWrapper implements
     // just check if this is actually a new layer call
     if (parent instanceof TrackWrapper)
     {
-      TrackWrapper track = (TrackWrapper) parent;
-
-      // ok, do we have a set of track names?
-      if (_tracks == null || _tracks.length == 0)
+      final TrackWrapper track = (TrackWrapper) parent;
+      // do we have any track names?
+      if(_trackNames == null || _trackNames.isEmpty())
       {
-        // nope, just set it
-        track.setNameAtStart(false);
+        // ok, we cam just use it
+        _tracksToProcess.add(track);
       }
       else
       {
-        // check if this is one of our tracks
-        for (int i = 0; i < _tracks.length; i++)
+        // check if it's one of our names
+        for(String name: _trackNames)
         {
-          String thisT = _tracks[i];
-          if (thisT.equals(track.getName()))
+          if(name.equals(track.getName()))
           {
-            track.setNameAtStart(false);
+            _tracksToProcess.add(track);
           }
         }
       }
@@ -206,8 +215,11 @@ public class SliceTrackFormatListener extends PlainWrapper implements
     // ignore
   }
 
-  public String[] getTracks()
+  @Override
+  public void fileComplete()
   {
-    return _tracks;
+    // TODO Auto-generated method stub
+    asdf
+    
   }
 }

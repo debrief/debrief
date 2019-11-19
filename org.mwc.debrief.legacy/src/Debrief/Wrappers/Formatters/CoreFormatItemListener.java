@@ -418,4 +418,9 @@ public class CoreFormatItemListener extends PlainWrapper implements
   {
     _lastTimes.clear();
   }
+
+  @Override
+  public void fileComplete()
+  {
+  }
 }
