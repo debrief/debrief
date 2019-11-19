@@ -89,7 +89,7 @@ public class TrackWrapper_Support
     public final static String WRAPPER_CHANGED = "WrapperChanged";
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -310,7 +310,7 @@ public class TrackWrapper_Support
     }
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -502,22 +502,22 @@ public class TrackWrapper_Support
   public static boolean splitTrackAtJumps(final TrackWrapper track,
       final long interval)
   {
-    Enumeration<Editable> segs = track.getSegments().elements();
-    List<FixWrapper> jumps = new ArrayList<FixWrapper>();
+    final Enumeration<Editable> segs = track.getSegments().elements();
+    final List<FixWrapper> jumps = new ArrayList<FixWrapper>();
 
     // find the jumps
     while (segs.hasMoreElements())
     {
-      TrackSegment segment = (TrackSegment) segs.nextElement();
-      Enumeration<Editable> posits = segment.elements();
+      final TrackSegment segment = (TrackSegment) segs.nextElement();
+      final Enumeration<Editable> posits = segment.elements();
       Long lastT = null;
       while (posits.hasMoreElements())
       {
-        FixWrapper next = (FixWrapper) posits.nextElement();
-        long thisT = next.getDTG().getDate().getTime();
+        final FixWrapper next = (FixWrapper) posits.nextElement();
+        final long thisT = next.getDTG().getDate().getTime();
         if (lastT != null)
         {
-          long delta = thisT - lastT;
+          final long delta = thisT - lastT;
           if (delta > interval)
           {
             jumps.add(next);
@@ -528,7 +528,7 @@ public class TrackWrapper_Support
     }
 
     // now split on the jumps
-    for (FixWrapper jump : jumps)
+    for (final FixWrapper jump : jumps)
     {
       track.splitTrack(jump, true);
     }

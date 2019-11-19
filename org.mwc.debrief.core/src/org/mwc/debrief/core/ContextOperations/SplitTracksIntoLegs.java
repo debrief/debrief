@@ -88,7 +88,7 @@ public class SplitTracksIntoLegs implements RightClickContextItemGenerator
             _period);
         modified = modified || didSplit;
       }
-      
+
       // did anything get changed
       if (modified)
       {
@@ -170,7 +170,7 @@ public class SplitTracksIntoLegs implements RightClickContextItemGenerator
       for (final Long period : choices.keySet())
       {
         // get the time period
-        String label = choices.get(period);
+        final String label = choices.get(period);
 
         // create this operation
         final Action doMerge = new Action(label)
