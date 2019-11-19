@@ -1110,20 +1110,20 @@ public class TrackWrapper_Test extends TestCase
     final SensorWrapper sw = new SensorWrapper("dummy sensor");
     final SensorContactWrapper scw1 =
         new SensorContactWrapper("the track", new HiResDate(1 * 60000),
-            new WorldDistance(2, WorldDistance.NM), 12d, new Double(12),
-            new Double(44), null, Color.red, "aa", 1, "dummy sensor");
+            new WorldDistance(2, WorldDistance.NM), 12d, 12d,
+            44d, null, Color.red, "aa", 1, "dummy sensor");
     final SensorContactWrapper scw2 =
         new SensorContactWrapper("the track", new HiResDate(3 * 60000),
-            new WorldDistance(4, WorldDistance.NM), 15d, new Double(15),
-            new Double(46), null, Color.red, "aa", 1, "dummy sensor");
+            new WorldDistance(4, WorldDistance.NM), 15d, 15d,
+            46d, null, Color.red, "aa", 1, "dummy sensor");
     final SensorContactWrapper scw3 =
         new SensorContactWrapper("the track", new HiResDate(7 * 60000),
-            new WorldDistance(12, WorldDistance.NM), 18d, new Double(12),
-            new Double(12), null, Color.red, "aa", 1, "dummy sensor");
+            new WorldDistance(12, WorldDistance.NM), 18d, 12d,
+            12d, null, Color.red, "aa", 1, "dummy sensor");
     final SensorContactWrapper scw4 =
         new SensorContactWrapper("the track", new HiResDate(8 * 60000),
-            new WorldDistance(7, WorldDistance.NM), 35d, new Double(12),
-            new Double(312), null, Color.red, "aa", 1, "dummy sensor");
+            new WorldDistance(7, WorldDistance.NM), 35d, 12d,
+            312d, null, Color.red, "aa", 1, "dummy sensor");
     sw.add(scw1);
     sw.add(scw2);
     sw.add(scw3);
