@@ -49,6 +49,7 @@ before_deploy:
 - ./contribs/msi/make_x64msi.sh
 deploy:
   provider: releases
+  edge: true
   api_key:
     secure: Oqy+moovC3HQ0dbvWHHNOVCsqzq7vpTjlvtFVqqTiMJaCa4OUiCXOuUKr8PXtANCx6yZxrtgYKUxIDX5gpAtTWq3ylPaoedmkx2jSlkf5e4AgT4wLJcstWrwKYyK3NQjc45g3WqRCmsqsrnVQCREwD/Vq09vCt4+nZYGB5FPBmU=
   file: /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/P2_Repository.zip
