@@ -4,20 +4,20 @@ Created-By: 1.8.0_211-b12 (Oracle Corporation)
 Main-Class: org.mwc.debrief.lite.DebriefLiteApp
 SplashScreen-Image: images/splash.gif
 Implementation-Title: Debrief Lite
-Implementation-Version: 1.0.407
+Implementation-Version: 1.0.418
 Implementation-Vendor: DeepBlue C Ltd
 Class-Path: . lib/cmap_legacy.jar lib/debrief_legacy.jar lib/jt-zonals
  tats-1.3.1.jar lib/imageio-ext-tiff-1.1.10.jar lib/imageio-ext-utilit
  ies-1.1.10.jar lib/jai_codec-1.1.3.jar lib/jai_imageio-1.1.jar lib/jt
  -utils-1.3.1.jar lib/jts-1.13.jar lib/vecmath-1.3.2.jar lib/commons-p
  ool-1.5.4.jar lib/jsr-275-1.0-beta-2.jar lib/jai_core-1.1.3.jar lib/g
- t-opengis-12.1.jar lib/gt-metadata-12.1.jar lib/jgridshift-1.0.jar li
- b/gt-referencing-12.1.jar lib/gt-api-12.1.jar lib/jdom-1.1.3.jar lib/
- gt-main-12.1.jar lib/gt-coverage-12.1.jar lib/gt-cql-12.1.jar lib/gt-
- render-12.1.jar lib/gt-swing-12.1.jar lib/hsqldb-2.2.8.jar lib/gt-eps
- g-hsql-12.1.jar lib/json-simple-1.1.jar lib/gt-geojson-12.1.jar lib/g
- t-image-12.1.jar lib/gt-geotiff-12.1.jar lib/gt-swt-12.1.jar lib/gt-d
- ata-12.1.jar lib/gt-shapefile-12.1.jar lib/javax.inject_1.0.0.v200910
+ t-opengis-21.2.jar lib/gt-metadata-21.2.jar lib/jgridshift-1.0.jar li
+ b/gt-referencing-21.2.jar lib/gt-api-21.2.jar lib/jdom-1.1.3.jar lib/
+ gt-main-21.2.jar lib/gt-coverage-21.2.jar lib/gt-cql-21.2.jar lib/gt-
+ render-21.2.jar lib/gt-swing-21.2.jar lib/hsqldb-2.2.8.jar lib/gt-eps
+ g-hsql-21.2.jar lib/json-simple-1.1.jar lib/gt-geojson-21.2.jar lib/g
+ t-image-21.2.jar lib/gt-geotiff-21.2.jar lib/gt-swt-23-SNAPSHOT.jar lib/gt-d
+ ata-21.2.jar lib/gt-shapefile-21.2.jar lib/javax.inject_1.0.0.v200910
  30.jar lib/jcommon-1.0.23.jar lib/jfreechart-1.0.19-experimental.jar 
  lib/jfreechart-1.0.19-swt.jar lib/jfreechart-1.0.19.jar lib/junit.jar
   lib/org.hamcrest.core_1.3.0.v201303031735.jar lib/openmap.jar lib/jm
