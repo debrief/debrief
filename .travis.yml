@@ -49,9 +49,19 @@ before_deploy:
 - ./contribs/msi/make_x64msi.sh
 deploy:
   provider: releases
+  skip_cleanup: true
+  edge: true
   api_key:
     secure: Oqy+moovC3HQ0dbvWHHNOVCsqzq7vpTjlvtFVqqTiMJaCa4OUiCXOuUKr8PXtANCx6yZxrtgYKUxIDX5gpAtTWq3ylPaoedmkx2jSlkf5e4AgT4wLJcstWrwKYyK3NQjc45g3WqRCmsqsrnVQCREwD/Vq09vCt4+nZYGB5FPBmU=
-  file: /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/P2_Repository.zip
+  file:
+    - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Linux64Bit.zip
+    - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-MacOSX64Bit.zip
+    - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows32Bit.zip
+    - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.zip
+    - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/P2_Repository.zip
+    - /home/travis/build/debrief/debrief/org.mwc.debrief.legacy/dist/DebriefLegacy*.jar
+    - /home/travis/build/debrief/debrief/org.mwc.debrief.lite/dist/debrief-lite*.zip
+    - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.msi
   on:
      tags: true
      all_branches: true
