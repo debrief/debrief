@@ -809,6 +809,7 @@ public class ImportReplay extends PlainImporterBase
       _coreImporters.addElement(new ImportFixFormatter());
       _coreImporters.addElement(new ImportNameAtEndFormatter());
       _coreImporters.addElement(new ImportHideLayerFormatter());
+      _coreImporters.addElement(new ImportTrackSplitFormatter());
       _coreImporters.addElement(new ImportLabel());
       _coreImporters.addElement(new ImportWheel());
       _coreImporters.addElement(new ImportBearing());
@@ -1157,7 +1158,7 @@ public class ImportReplay extends PlainImporterBase
 
     try
     {
-      res = new Integer(theThicknes);
+      res =  Integer.parseInt(theThicknes);
     }
     catch (final NumberFormatException e)
     {
@@ -1682,7 +1683,6 @@ public class ImportReplay extends PlainImporterBase
           final INewItemListener newI = newIiter.next();
           newI.fileComplete();
         }
-
 
         // see if we've modified any existing tracks
         final Iterator<TrackWrapper> tIter = _existingTracksThatMoved

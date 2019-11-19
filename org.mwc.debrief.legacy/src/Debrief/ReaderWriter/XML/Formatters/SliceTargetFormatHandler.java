@@ -29,13 +29,13 @@ import java.util.StringTokenizer;
 
 import org.w3c.dom.Element;
 
-import Debrief.Wrappers.Formatters.HideLayerFormatListener;
+import Debrief.Wrappers.Formatters.SliceTrackFormatListener;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 
-public abstract class HideLayerFormatHandler extends
+public abstract class SliceTargetFormatHandler extends
     MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
-  private static final String MY_TYPE = "HideLayerFormatter";
+  private static final String MY_TYPE = "SplitTrackFormatter";
 
   /**
    * and define the strings used to describe the shape
@@ -43,14 +43,16 @@ public abstract class HideLayerFormatHandler extends
    */
   private static final String NAME = "Name";
   private static final String ACTIVE = "Active";
-  private static final String LAYERS = "Layers";
+  private static final String T_NAMES = "Track_Names";
+  private static final String INTERVAL = "Interval";
 
   private String fName;
-  private List<String> layerNames;
+  private List<String> track_names;
+  private long interval;
 
   protected boolean active;
 
-  public HideLayerFormatHandler()
+  public SliceTargetFormatHandler()
   {
     super(MY_TYPE);
 
@@ -61,14 +63,21 @@ public abstract class HideLayerFormatHandler extends
         fName = value;
       }
     });
-    addAttributeHandler(new HandleAttribute(LAYERS)
+    addAttributeHandler(new HandleAttribute(INTERVAL)
+    {
+      public void setValue(final String name, final String value)
+      {
+        interval = Long.parseLong(value);
+      }
+    });
+    addAttributeHandler(new HandleAttribute(T_NAMES)
     {
       public void setValue(final String name, final String value)
       {
         // check it's non-empty
         if (value.length() > 0)
         {
-          layerNames = new ArrayList<String>();
+          track_names = new ArrayList<String>();
 
           // ok, parse the tracks
           // get a stream from the string
@@ -80,7 +89,7 @@ public abstract class HideLayerFormatHandler extends
                 AbstractPlainLineImporter.checkForQuotedName(st).trim();
             if (nextItem != null && nextItem.length() > 0)
             {
-              layerNames.add(nextItem);
+              track_names.add(nextItem);
             }
           }
         }
@@ -99,22 +108,15 @@ public abstract class HideLayerFormatHandler extends
 
   public void elementClosed()
   {
-    String[] names = null;
-    if (layerNames != null)
-    {
-      names = layerNames.toArray(new String[]
-      {});
-    }
-
     // create the object
-    HideLayerFormatListener listener =
-        new HideLayerFormatListener(fName, names);
+    SliceTrackFormatListener listener =
+        new SliceTrackFormatListener(fName, interval,  track_names);
 
     addFormatter(listener);
 
     // reset the local parameters
     fName = null;
-    layerNames = null;
+    track_names = null;
     active = true;
   }
 
@@ -127,23 +129,23 @@ public abstract class HideLayerFormatHandler extends
     Element theFormatter = doc.createElement(MY_TYPE);
     parent.appendChild(theFormatter);
 
-    final HideLayerFormatListener theShape =
-        (HideLayerFormatListener) plottable;
+    final SliceTrackFormatListener theShape =
+        (SliceTrackFormatListener) plottable;
 
     // put the parameters into the parent
     theFormatter.setAttribute(NAME, theShape.getName());
     StringBuffer layerNames = new StringBuffer();
-    String[] tracks = theShape.getLayers();
-    for (int i = 0; i < tracks.length; i++)
+    List<String> tracks = theShape.getTrackNames();
+    for(String name: tracks)
     {
-      String string = tracks[i];
-      layerNames.append(string);
+      layerNames.append(name);
       layerNames.append(" ");
     }
 
     theFormatter.setAttribute(NAME, theShape.getName());
-    theFormatter.setAttribute(LAYERS, layerNames.toString());
     theFormatter.setAttribute(ACTIVE, writeThis(theShape.getVisible()));
+    theFormatter.setAttribute(T_NAMES, layerNames.toString());
+    theFormatter.setAttribute(INTERVAL, writeThis(theShape.getInterval()));
   }
 
 }

@@ -79,7 +79,7 @@ import junit.framework.TestCase;
 /**
  * class to parse a label from a line of text
  */
-final class ImportTrackSplitter extends AbstractPlainLineImporter
+final class ImportTrackSplitFormatter extends AbstractPlainLineImporter
 {
 
   /*
@@ -168,7 +168,7 @@ final class ImportTrackSplitter extends AbstractPlainLineImporter
        * example:
        */
 
-      ImportTrackSplitter iff = new ImportTrackSplitter();
+      ImportTrackSplitFormatter iff = new ImportTrackSplitFormatter();
       SliceTrackFormatListener res = (SliceTrackFormatListener) iff
           .readThisLine(";SPLIT_TRACK: One_Hour 3600000");
       assertNotNull(res);
