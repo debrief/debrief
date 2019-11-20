@@ -15,6 +15,7 @@
 package org.mwc.debrief.core.ContextOperations;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 
@@ -32,11 +33,18 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 
+import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support;
+import MWC.Algorithms.Conversions;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldLocation;
+import MWC.TacticalData.Fix;
+import junit.framework.TestCase;
 
 /**
  * @author ian.mayo
@@ -44,6 +52,98 @@ import MWC.GUI.Layers;
 public class SplitTracksIntoLegs implements RightClickContextItemGenerator
 {
 
+  public static class TestSplittingTracks extends TestCase
+  {
+    public void testSplitOperation() throws ExecutionException
+    {
+      
+      final TrackWrapper tOne = getOne();
+      
+      final TrackWrapper tTwo = getTwo();
+      
+      Layers layers = new Layers();
+      layers.addThisLayer(tOne);
+      layers.addThisLayer(tTwo);
+
+      List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
+      tracks.add(tOne);
+      tracks.add(tTwo);
+      SplitTracksOperation oper = new SplitTracksOperation("Split tracks", layers, tracks, 1000L);
+
+      assertEquals("just one leg", 1, tOne.getSegments().size());
+      assertEquals("just one leg", 1, tTwo.getSegments().size());
+      assertEquals("correct positions", 14, tOne.numFixes());
+      assertEquals("correct positions", 12, tTwo.numFixes());
+
+      oper.execute(null,  null);
+      
+      // check the contents of the operation
+      HashMap<TrackWrapper, List<TrackSegment>> map = oper._trackChanges;
+      assertEquals("two tracks", 2, map.keySet().size());
+      
+      assertEquals("more leg", 3, tOne.getSegments().size());
+      assertEquals("more legs", 4, tTwo.getSegments().size());
+      assertEquals("correct positions", 14, tOne.numFixes());
+      assertEquals("correct positions", 12, tTwo.numFixes());
+      
+      oper.undo(null,  null);
+
+      assertEquals("just one leg", 1, tOne.getSegments().size());
+      assertEquals("just one leg", 1, tTwo.getSegments().size());     
+      assertEquals("correct positions", 14, tOne.numFixes());
+      assertEquals("correct positions", 12, tTwo.numFixes());
+    }
+
+    private static TrackWrapper getTwo()
+    {
+      final TrackWrapper tTwo = new TrackWrapper();
+      tTwo.setName("t-2");
+      tTwo.addFix(getFix(1000, 22, 33));
+      tTwo.addFix(getFix(2000, 22, 33));
+      tTwo.addFix(getFix(2100, 22, 33));
+      tTwo.addFix(getFix(4000, 22, 33));
+      tTwo.addFix(getFix(5000, 22, 33));
+      tTwo.addFix(getFix(8000, 22, 33));
+      tTwo.addFix(getFix(9000, 22, 33));
+      tTwo.addFix(getFix(10000, 22, 33));
+      tTwo.addFix(getFix(11100, 22, 33));
+      tTwo.addFix(getFix(12000, 22, 33));
+      tTwo.addFix(getFix(13000, 22, 33));
+      tTwo.addFix(getFix(14000, 22, 33));
+      return tTwo;
+    }
+
+    private static TrackWrapper getOne()
+    {
+      final TrackWrapper tOne = new TrackWrapper();
+      tOne.setName("t-1");
+      tOne.addFix(getFix(1000, 22, 33));
+      tOne.addFix(getFix(2000, 22, 33));
+      tOne.addFix(getFix(2100, 22, 33));
+      tOne.addFix(getFix(4000, 22, 33));
+      tOne.addFix(getFix(5000, 22, 33));
+      tOne.addFix(getFix(6000, 22, 33));
+      tOne.addFix(getFix(7000, 22, 33));
+      tOne.addFix(getFix(8000, 22, 33));
+      tOne.addFix(getFix(9000, 22, 33));
+      tOne.addFix(getFix(10000, 22, 33));
+      tOne.addFix(getFix(11100, 22, 33));
+      tOne.addFix(getFix(12000, 22, 33));
+      tOne.addFix(getFix(13000, 22, 33));
+      tOne.addFix(getFix(14000, 22, 33));
+      return tOne;
+    }
+
+    private static FixWrapper getFix(final long dtg, final double course,
+        final double speed)
+    {
+      final Fix theFix = new Fix(new HiResDate(dtg), new WorldLocation(2, 2, 2),
+          course, Conversions.Kts2Yps(speed));
+      final FixWrapper res = new FixWrapper(theFix);
+      return res;
+    }
+  }
+  
   private static class SplitTracksOperation extends CMAPOperation
   {
 
@@ -53,6 +153,7 @@ public class SplitTracksIntoLegs implements RightClickContextItemGenerator
     private final Layers _layers;
     private final List<TrackWrapper> _tracks;
     private final Long _period;
+    private final HashMap<TrackWrapper, List<TrackSegment>> _trackChanges;
 
     public SplitTracksOperation(final String title, final Layers theLayers,
         final List<TrackWrapper> tracks, final Long period)
@@ -61,18 +162,19 @@ public class SplitTracksIntoLegs implements RightClickContextItemGenerator
       _layers = theLayers;
       _tracks = tracks;
       _period = period;
+      _trackChanges  = new HashMap<TrackWrapper, List<TrackSegment>>();
     }
 
     @Override
     public boolean canRedo()
     {
-      return false;
+      return true;
     }
 
     @Override
     public boolean canUndo()
     {
-      return false;
+      return true;
     }
 
     @Override
@@ -80,13 +182,15 @@ public class SplitTracksIntoLegs implements RightClickContextItemGenerator
         final IAdaptable info) throws ExecutionException
     {
       boolean modified = false;
+      _trackChanges.clear();
 
       // loop through the tracks
       for (final TrackWrapper track : _tracks)
       {
-        final boolean didSplit = TrackWrapper_Support.splitTrackAtJumps(track,
-            _period);
-        modified = modified || didSplit;
+        List<TrackSegment> newSegments = TrackWrapper_Support.splitTrackAtJumps(
+            track, _period);
+        modified = modified || !newSegments.isEmpty();
+        _trackChanges.put(track, newSegments);
       }
 
       // did anything get changed
@@ -106,9 +210,44 @@ public class SplitTracksIntoLegs implements RightClickContextItemGenerator
     public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
         throws ExecutionException
     {
-      CorePlugin.logError(IStatus.INFO,
-          "Undo not permitted for merge operation", null);
-      return null;
+      int numChanges = 0;
+
+      // ok, merge the segments
+      for (TrackWrapper track : _trackChanges.keySet())
+      {
+        List<TrackSegment> splits = _trackChanges.get(track);
+
+        TrackSegment target = splits.get(0);
+        
+        int ctr = 0;
+        for (TrackSegment segment : splits)
+        {
+          if(segment != target)
+          {
+            // remove the segment
+            track.removeElement(segment);
+            
+            Enumeration<Editable> fixes = segment.elements();
+            while(fixes.hasMoreElements())
+            {
+              FixWrapper fix = (FixWrapper) fixes.nextElement();
+              target.addFix(fix);
+            }
+            ctr++;
+          }
+        }
+
+        numChanges += ctr;
+      }
+
+      final boolean modified = numChanges > 0;
+
+      // did anything get changed
+      if (modified)
+      {
+        fireModified();
+      }
+      return Status.OK_STATUS;
     }
   }
 

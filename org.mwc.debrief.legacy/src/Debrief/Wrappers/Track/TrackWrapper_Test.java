@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import org.junit.After;
@@ -2442,8 +2443,8 @@ public class TrackWrapper_Test extends TestCase
 
     assertEquals("just one leg", 1, gw.getSegments().size());
 
-    final boolean doSplit = TrackWrapper_Support.splitTrackAtJumps(gw, 1000);
-    assertTrue("found some", doSplit);
+    List<TrackSegment> splits = TrackWrapper_Support.splitTrackAtJumps(gw, 1000);
+    assertTrue("found some", splits != null);
     assertEquals("In 3 legs", 3, gw.getSegments().size());
   }
 
