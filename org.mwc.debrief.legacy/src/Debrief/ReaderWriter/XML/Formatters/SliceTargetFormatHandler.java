@@ -31,6 +31,7 @@ import org.w3c.dom.Element;
 
 import Debrief.Wrappers.Formatters.SliceTrackFormatListener;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
+import MWC.Utilities.ReaderWriter.XML.Util.DurationHandler;
 
 public abstract class SliceTargetFormatHandler extends
     MWC.Utilities.ReaderWriter.XML.MWCXMLReader
@@ -68,8 +69,8 @@ public abstract class SliceTargetFormatHandler extends
 
     theFormatter.setAttribute(NAME, theShape.getName());
     theFormatter.setAttribute(ACTIVE, writeThis(theShape.getVisible()));
-    theFormatter.setAttribute(T_NAMES, layerNames.toString());
-    theFormatter.setAttribute(INTERVAL, writeThis(theShape.getInterval()));
+    theFormatter.setAttribute(T_NAMES, layerNames.toString());    
+    DurationHandler.exportDuration(INTERVAL, theShape.getInterval(), theFormatter, doc);
   }
 
   private String fName;

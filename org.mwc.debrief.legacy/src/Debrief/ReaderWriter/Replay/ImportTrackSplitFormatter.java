@@ -101,13 +101,13 @@ final class ImportTrackSplitFormatter extends AbstractPlainLineImporter
           .readThisLine(";SPLIT_TRACK: One_Hour 3600000");
       assertNotNull(res);
       assertEquals("correct name", "One_Hour", res.getName());
-      assertEquals("correct period", 3600000, res.getInterval());
+      assertEquals("correct period", 3600000, res.getIntervalMillis());
 
       res = (SliceTrackFormatListener) iff.readThisLine(
           ";SPLIT_TRACK: One_Second 1000");
       assertNotNull(res);
       assertEquals("One_Second", res.getName());
-      assertEquals("correct period", 1000, res.getInterval());
+      assertEquals("correct period", 1000, res.getIntervalMillis());
 
     }
   }

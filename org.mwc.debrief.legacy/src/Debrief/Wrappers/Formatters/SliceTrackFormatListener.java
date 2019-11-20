@@ -14,6 +14,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers.INewItemListener;
 import MWC.GUI.PlainWrapper;
+import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
@@ -180,7 +181,7 @@ public class SliceTrackFormatListener extends PlainWrapper implements
 
   private String _formatName;
   private EditorType _myEditor;
-  private long _interval;
+  private Duration _interval;
 
   private final List<String> _trackNames;
   private final List<TrackWrapper> _tracksToProcess;
@@ -189,7 +190,7 @@ public class SliceTrackFormatListener extends PlainWrapper implements
       final List<String> trackNames)
   {
     _formatName = name;
-    _interval = interval;
+    _interval = new Duration(interval, Duration.MILLISECONDS);
     _trackNames = trackNames;
     _tracksToProcess = new ArrayList<TrackWrapper>();
   }
@@ -199,7 +200,7 @@ public class SliceTrackFormatListener extends PlainWrapper implements
   {
     for (final TrackWrapper track : _tracksToProcess)
     {
-      TrackWrapper_Support.splitTrackAtJumps(track, _interval);
+      TrackWrapper_Support.splitTrackAtJumps(track, _interval.getMillis());
     }
   }
 
@@ -219,9 +220,9 @@ public class SliceTrackFormatListener extends PlainWrapper implements
     return _myEditor;
   }
 
-  public long getInterval()
+  public long getIntervalMillis()
   {
-    return _interval;
+    return _interval.getMillis();
   }
 
   @Override
@@ -297,7 +298,12 @@ public class SliceTrackFormatListener extends PlainWrapper implements
     // ignore
   }
 
-  public void setInterval(final long interval)
+  public Duration getInterval()
+  {
+    return _interval;
+  }
+  
+  public void setInterval(final Duration interval)
   {
     this._interval = interval;
   }
