@@ -25,6 +25,7 @@ package Debrief.ReaderWriter.XML;
 
 import Debrief.ReaderWriter.XML.Formatters.CoreFormatHandler;
 import Debrief.ReaderWriter.XML.Formatters.HideLayerFormatHandler;
+import Debrief.ReaderWriter.XML.Formatters.SliceTargetFormatHandler;
 import Debrief.ReaderWriter.XML.Formatters.TrackNameAtEndFormatHandler;
 import Debrief.ReaderWriter.XML.Shapes.ArcHandler;
 import Debrief.ReaderWriter.XML.Shapes.CircleHandler;
@@ -41,6 +42,7 @@ import Debrief.ReaderWriter.XML.Tactical.LightweightTrackHandler;
 import Debrief.Wrappers.ShapeWrapper;
 import Debrief.Wrappers.Formatters.CoreFormatItemListener;
 import Debrief.Wrappers.Formatters.HideLayerFormatListener;
+import Debrief.Wrappers.Formatters.SliceTrackFormatListener;
 import Debrief.Wrappers.Formatters.TrackNameAtEndFormatListener;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.GUI.Editable;
@@ -180,6 +182,13 @@ public class DebriefLayerHandler extends
         addThis(editable);
       }
     });
+    addHandler(new SliceTargetFormatHandler()
+    {
+      public void addFormatter(Editable editable)
+      {
+        addThis(editable);
+      }
+    });
 
   }
 
@@ -228,6 +237,11 @@ public class DebriefLayerHandler extends
         else if (nextPlottable instanceof HideLayerFormatListener)
         {
           HideLayerFormatHandler
+              .exportThisPlottable(nextPlottable, eLayer, doc);
+        }
+        else if (nextPlottable instanceof SliceTrackFormatListener)
+        {
+          SliceTargetFormatHandler
               .exportThisPlottable(nextPlottable, eLayer, doc);
         }
       }

@@ -19,9 +19,11 @@ import java.beans.MethodDescriptor;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -87,7 +89,7 @@ public class TrackWrapper_Support
     public final static String WRAPPER_CHANGED = "WrapperChanged";
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -268,8 +270,8 @@ public class TrackWrapper_Support
         // just add the reset color field first
         final Class<SegmentList> c = SegmentList.class;
         MethodDescriptor[] mds =
-        {method(c, "mergeAllSegments", null, "Merge all track segments"), method(c,
-            "revealAllPositions", null, "Reveal All Positions")};
+        {method(c, "mergeAllSegments", null, "Merge all track segments"),
+            method(c, "revealAllPositions", null, "Reveal All Positions")};
 
         final MethodDescriptor[] oldMeds = super.getMethodDescriptors();
         // we now need to combine the two sets
@@ -308,7 +310,7 @@ public class TrackWrapper_Support
     }
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -495,6 +497,43 @@ public class TrackWrapper_Support
         seg.setWrapper(_myTrack);
       }
     }
+  }
+
+  public static boolean splitTrackAtJumps(final TrackWrapper track,
+      final long interval)
+  {
+    final Enumeration<Editable> segs = track.getSegments().elements();
+    final List<FixWrapper> jumps = new ArrayList<FixWrapper>();
+
+    // find the jumps
+    while (segs.hasMoreElements())
+    {
+      final TrackSegment segment = (TrackSegment) segs.nextElement();
+      final Enumeration<Editable> posits = segment.elements();
+      Long lastT = null;
+      while (posits.hasMoreElements())
+      {
+        final FixWrapper next = (FixWrapper) posits.nextElement();
+        final long thisT = next.getDTG().getDate().getTime();
+        if (lastT != null)
+        {
+          final long delta = thisT - lastT;
+          if (delta > interval)
+          {
+            jumps.add(next);
+          }
+        }
+        lastT = thisT;
+      }
+    }
+
+    // now split on the jumps
+    for (final FixWrapper jump : jumps)
+    {
+      track.splitTrack(jump, true);
+    }
+
+    return !jumps.isEmpty();
   }
 
 }
