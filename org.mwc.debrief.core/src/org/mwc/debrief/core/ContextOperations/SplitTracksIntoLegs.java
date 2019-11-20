@@ -52,98 +52,6 @@ import junit.framework.TestCase;
 public class SplitTracksIntoLegs implements RightClickContextItemGenerator
 {
 
-  public static class TestSplittingTracks extends TestCase
-  {
-    public void testSplitOperation() throws ExecutionException
-    {
-      
-      final TrackWrapper tOne = getOne();
-      
-      final TrackWrapper tTwo = getTwo();
-      
-      Layers layers = new Layers();
-      layers.addThisLayer(tOne);
-      layers.addThisLayer(tTwo);
-
-      List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
-      tracks.add(tOne);
-      tracks.add(tTwo);
-      SplitTracksOperation oper = new SplitTracksOperation("Split tracks", layers, tracks, 1000L);
-
-      assertEquals("just one leg", 1, tOne.getSegments().size());
-      assertEquals("just one leg", 1, tTwo.getSegments().size());
-      assertEquals("correct positions", 14, tOne.numFixes());
-      assertEquals("correct positions", 12, tTwo.numFixes());
-
-      oper.execute(null,  null);
-      
-      // check the contents of the operation
-      HashMap<TrackWrapper, List<TrackSegment>> map = oper._trackChanges;
-      assertEquals("two tracks", 2, map.keySet().size());
-      
-      assertEquals("more leg", 3, tOne.getSegments().size());
-      assertEquals("more legs", 4, tTwo.getSegments().size());
-      assertEquals("correct positions", 14, tOne.numFixes());
-      assertEquals("correct positions", 12, tTwo.numFixes());
-      
-      oper.undo(null,  null);
-
-      assertEquals("just one leg", 1, tOne.getSegments().size());
-      assertEquals("just one leg", 1, tTwo.getSegments().size());     
-      assertEquals("correct positions", 14, tOne.numFixes());
-      assertEquals("correct positions", 12, tTwo.numFixes());
-    }
-
-    private static TrackWrapper getTwo()
-    {
-      final TrackWrapper tTwo = new TrackWrapper();
-      tTwo.setName("t-2");
-      tTwo.addFix(getFix(1000, 22, 33));
-      tTwo.addFix(getFix(2000, 22, 33));
-      tTwo.addFix(getFix(2100, 22, 33));
-      tTwo.addFix(getFix(4000, 22, 33));
-      tTwo.addFix(getFix(5000, 22, 33));
-      tTwo.addFix(getFix(8000, 22, 33));
-      tTwo.addFix(getFix(9000, 22, 33));
-      tTwo.addFix(getFix(10000, 22, 33));
-      tTwo.addFix(getFix(11100, 22, 33));
-      tTwo.addFix(getFix(12000, 22, 33));
-      tTwo.addFix(getFix(13000, 22, 33));
-      tTwo.addFix(getFix(14000, 22, 33));
-      return tTwo;
-    }
-
-    private static TrackWrapper getOne()
-    {
-      final TrackWrapper tOne = new TrackWrapper();
-      tOne.setName("t-1");
-      tOne.addFix(getFix(1000, 22, 33));
-      tOne.addFix(getFix(2000, 22, 33));
-      tOne.addFix(getFix(2100, 22, 33));
-      tOne.addFix(getFix(4000, 22, 33));
-      tOne.addFix(getFix(5000, 22, 33));
-      tOne.addFix(getFix(6000, 22, 33));
-      tOne.addFix(getFix(7000, 22, 33));
-      tOne.addFix(getFix(8000, 22, 33));
-      tOne.addFix(getFix(9000, 22, 33));
-      tOne.addFix(getFix(10000, 22, 33));
-      tOne.addFix(getFix(11100, 22, 33));
-      tOne.addFix(getFix(12000, 22, 33));
-      tOne.addFix(getFix(13000, 22, 33));
-      tOne.addFix(getFix(14000, 22, 33));
-      return tOne;
-    }
-
-    private static FixWrapper getFix(final long dtg, final double course,
-        final double speed)
-    {
-      final Fix theFix = new Fix(new HiResDate(dtg), new WorldLocation(2, 2, 2),
-          course, Conversions.Kts2Yps(speed));
-      final FixWrapper res = new FixWrapper(theFix);
-      return res;
-    }
-  }
-  
   private static class SplitTracksOperation extends CMAPOperation
   {
 
@@ -162,7 +70,7 @@ public class SplitTracksIntoLegs implements RightClickContextItemGenerator
       _layers = theLayers;
       _tracks = tracks;
       _period = period;
-      _trackChanges  = new HashMap<TrackWrapper, List<TrackSegment>>();
+      _trackChanges = new HashMap<TrackWrapper, List<TrackSegment>>();
     }
 
     @Override
@@ -187,8 +95,8 @@ public class SplitTracksIntoLegs implements RightClickContextItemGenerator
       // loop through the tracks
       for (final TrackWrapper track : _tracks)
       {
-        List<TrackSegment> newSegments = TrackWrapper_Support.splitTrackAtJumps(
-            track, _period);
+        final List<TrackSegment> newSegments = TrackWrapper_Support
+            .splitTrackAtJumps(track, _period);
         modified = modified || !newSegments.isEmpty();
         _trackChanges.put(track, newSegments);
       }
@@ -213,24 +121,24 @@ public class SplitTracksIntoLegs implements RightClickContextItemGenerator
       int numChanges = 0;
 
       // ok, merge the segments
-      for (TrackWrapper track : _trackChanges.keySet())
+      for (final TrackWrapper track : _trackChanges.keySet())
       {
-        List<TrackSegment> splits = _trackChanges.get(track);
+        final List<TrackSegment> splits = _trackChanges.get(track);
 
-        TrackSegment target = splits.get(0);
-        
+        final TrackSegment target = splits.get(0);
+
         int ctr = 0;
-        for (TrackSegment segment : splits)
+        for (final TrackSegment segment : splits)
         {
-          if(segment != target)
+          if (segment != target)
           {
             // remove the segment
             track.removeElement(segment);
-            
-            Enumeration<Editable> fixes = segment.elements();
-            while(fixes.hasMoreElements())
+
+            final Enumeration<Editable> fixes = segment.elements();
+            while (fixes.hasMoreElements())
             {
-              FixWrapper fix = (FixWrapper) fixes.nextElement();
+              final FixWrapper fix = (FixWrapper) fixes.nextElement();
               target.addFix(fix);
             }
             ctr++;
@@ -251,12 +159,99 @@ public class SplitTracksIntoLegs implements RightClickContextItemGenerator
     }
   }
 
-  /**
-   * @param parent
-   * @param theLayers
-   * @param parentLayers
-   * @param subjects
-   */
+  public static class TestSplittingTracks extends TestCase
+  {
+    private static FixWrapper getFix(final long dtg, final double course,
+        final double speed)
+    {
+      final Fix theFix = new Fix(new HiResDate(dtg), new WorldLocation(2, 2, 2),
+          course, Conversions.Kts2Yps(speed));
+      final FixWrapper res = new FixWrapper(theFix);
+      return res;
+    }
+
+    private static TrackWrapper getOne()
+    {
+      final TrackWrapper tOne = new TrackWrapper();
+      tOne.setName("t-1");
+      tOne.addFix(getFix(1000, 22, 33));
+      tOne.addFix(getFix(2000, 22, 33));
+      tOne.addFix(getFix(2100, 22, 33));
+      tOne.addFix(getFix(4000, 22, 33));
+      tOne.addFix(getFix(5000, 22, 33));
+      tOne.addFix(getFix(6000, 22, 33));
+      tOne.addFix(getFix(7000, 22, 33));
+      tOne.addFix(getFix(8000, 22, 33));
+      tOne.addFix(getFix(9000, 22, 33));
+      tOne.addFix(getFix(10000, 22, 33));
+      tOne.addFix(getFix(11100, 22, 33));
+      tOne.addFix(getFix(12000, 22, 33));
+      tOne.addFix(getFix(13000, 22, 33));
+      tOne.addFix(getFix(14000, 22, 33));
+      return tOne;
+    }
+
+    private static TrackWrapper getTwo()
+    {
+      final TrackWrapper tTwo = new TrackWrapper();
+      tTwo.setName("t-2");
+      tTwo.addFix(getFix(1000, 22, 33));
+      tTwo.addFix(getFix(2000, 22, 33));
+      tTwo.addFix(getFix(2100, 22, 33));
+      tTwo.addFix(getFix(4000, 22, 33));
+      tTwo.addFix(getFix(5000, 22, 33));
+      tTwo.addFix(getFix(8000, 22, 33));
+      tTwo.addFix(getFix(9000, 22, 33));
+      tTwo.addFix(getFix(10000, 22, 33));
+      tTwo.addFix(getFix(11100, 22, 33));
+      tTwo.addFix(getFix(12000, 22, 33));
+      tTwo.addFix(getFix(13000, 22, 33));
+      tTwo.addFix(getFix(14000, 22, 33));
+      return tTwo;
+    }
+
+    public void testSplitOperation() throws ExecutionException
+    {
+
+      final TrackWrapper tOne = getOne();
+
+      final TrackWrapper tTwo = getTwo();
+
+      final Layers layers = new Layers();
+      layers.addThisLayer(tOne);
+      layers.addThisLayer(tTwo);
+
+      final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
+      tracks.add(tOne);
+      tracks.add(tTwo);
+      final SplitTracksOperation oper = new SplitTracksOperation("Split tracks",
+          layers, tracks, 1000L);
+
+      assertEquals("just one leg", 1, tOne.getSegments().size());
+      assertEquals("just one leg", 1, tTwo.getSegments().size());
+      assertEquals("correct positions", 14, tOne.numFixes());
+      assertEquals("correct positions", 12, tTwo.numFixes());
+
+      oper.execute(null, null);
+
+      // check the contents of the operation
+      final HashMap<TrackWrapper, List<TrackSegment>> map = oper._trackChanges;
+      assertEquals("two tracks", 2, map.keySet().size());
+
+      assertEquals("more leg", 3, tOne.getSegments().size());
+      assertEquals("more legs", 4, tTwo.getSegments().size());
+      assertEquals("correct positions", 14, tOne.numFixes());
+      assertEquals("correct positions", 12, tTwo.numFixes());
+
+      oper.undo(null, null);
+
+      assertEquals("just one leg", 1, tOne.getSegments().size());
+      assertEquals("just one leg", 1, tTwo.getSegments().size());
+      assertEquals("correct positions", 14, tOne.numFixes());
+      assertEquals("correct positions", 12, tTwo.numFixes());
+    }
+  }
+
   @Override
   public void generate(final IMenuManager parent, final Layers theLayers,
       final Layer[] parentLayers, final Editable[] subjects)

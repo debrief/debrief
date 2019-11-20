@@ -535,14 +535,14 @@ public class TrackWrapper_Support
       // what's the old segment for this fix
       final TrackSegment oldSegment = jump.getSegment();
       final Vector<TrackSegment> newSegs = track.splitTrack(jump, true);
-      
+
       // the old segment has been replaced by two new ones, so delete it
       newSegments.remove(oldSegment);
 
       // now put in the two new segments
-      for(TrackSegment seg: newSegs)
+      for (final TrackSegment seg : newSegs)
       {
-        if(!newSegments.contains(seg))
+        if (!newSegments.contains(seg))
         {
           newSegments.add(seg);
         }

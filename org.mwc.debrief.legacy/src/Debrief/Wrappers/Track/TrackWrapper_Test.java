@@ -2443,7 +2443,8 @@ public class TrackWrapper_Test extends TestCase
 
     assertEquals("just one leg", 1, gw.getSegments().size());
 
-    List<TrackSegment> splits = TrackWrapper_Support.splitTrackAtJumps(gw, 1000);
+    final List<TrackSegment> splits = TrackWrapper_Support.splitTrackAtJumps(gw,
+        1000);
     assertTrue("found some", splits != null);
     assertEquals("In 3 legs", 3, gw.getSegments().size());
   }
@@ -3212,7 +3213,7 @@ public class TrackWrapper_Test extends TestCase
 
   /**
    * .
-   * 
+   *
    * @throws IOException
    * @throws UnsupportedFlavorException
    */
