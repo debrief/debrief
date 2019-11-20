@@ -242,4 +242,9 @@ public class TrackNameAtEndFormatListener extends PlainWrapper implements
   {
     return _tracks;
   }
+
+  @Override
+  public void fileComplete()
+  {
+  }
 }

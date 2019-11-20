@@ -57,6 +57,7 @@ import org.junit.runners.Suite;
     Debrief.Tools.Palette.BuoyPatterns.CircleBuilder.testMe.class,
     Debrief.Tools.Palette.BuoyPatterns.FieldBuilder.TestMe.class,
     Debrief.Tools.Palette.BuoyPatterns.WedgeBuilder.testMe.class,
+    Debrief.Wrappers.Formatters.SliceTrackFormatListener.TestMe.class,
     Debrief.Wrappers.BuoyPatternWrapper.testMe.class,
     Debrief.Wrappers.FixWrapper.testMe.class,
     MWC.TacticalData.NarrativeWrapper.TestMe.class,
