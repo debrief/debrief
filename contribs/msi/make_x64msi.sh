@@ -10,7 +10,7 @@ RESOURCESDIR=contribs/msi/resources/
 #Path to the wixl working folder
 WORKDIR=contribs/msi/
 #URL of the jre to use
-JRE_URL=https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u212-b03/OpenJDK8U-jre_x64_windows_hotspot_8u212b03.zip
+JRE_URL=https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.5%2B10/OpenJDK11U-jre_x64_windows_hotspot_11.0.5_10.zip
 
 echo "Updating version"
 version=$(grep "product.*version"  org.mwc.debrief.product/debriefng.product  | sed 's/^.*version="\([^"]*\)".*$/\1/')
