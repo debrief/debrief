@@ -74,8 +74,9 @@ public class LabelComponentContentModel implements ComponentContentModel
   }
   public void setText(String text)
   {
+    String oldText = this.text;
     this.text = text;
-    this.pcs.firePropertyChange("enabled", !this.isEnabled, this.isEnabled);
+    this.pcs.firePropertyChange("text", oldText, this.text);
   }
   
   public String getText()

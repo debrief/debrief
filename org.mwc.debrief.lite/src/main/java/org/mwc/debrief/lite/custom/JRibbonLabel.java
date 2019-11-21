@@ -42,7 +42,7 @@ public class JRibbonLabel extends JLabel
   {
     LabelComponentContentModel contentModel = projection.getContentModel();
     setEnabled(contentModel.isEnabled());
-
+    setText(contentModel.getText());
 //    addActionListener((ActionEvent ae) -> {
 //      //TODO is this correct logic here?
 //      if (contentModel.getChangeListener() != null) {

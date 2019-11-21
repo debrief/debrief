@@ -33,7 +33,6 @@ import java.util.TimeZone;
 
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -63,7 +62,6 @@ import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
 import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
 import org.pushingpixels.flamingo.api.common.CommandButtonPresentationState;
-import org.pushingpixels.flamingo.api.common.JCommandButtonStrip;
 import org.pushingpixels.flamingo.api.common.RichTooltip;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.common.model.Command;
@@ -667,6 +665,7 @@ public class DebriefRibbonTimeController
         {
           newText = newText + " ";
         }
+        timeLabelModel.setText(newText);
         timeLabel.setText(newText);
       }
     };
