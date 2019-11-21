@@ -27,8 +27,10 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -39,6 +41,7 @@ import org.apache.commons.csv.CSVRecord;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.LoggingService;
@@ -55,18 +58,18 @@ import junit.framework.TestCase;
 public class Import_CSV_GZ
 {
 
-  private TrackWrapper trackFor(Layers layers, String trackName)
+  private static TrackWrapper trackFor(Layers layers, String trackName)
   {
     final TrackWrapper track;
     Layer layer = layers.findLayer(trackName);
-    if(layer != null && layer instanceof TrackWrapper)
+    if (layer != null && layer instanceof TrackWrapper)
     {
       track = (TrackWrapper) layer;
     }
     else
     {
       final boolean needsRename;
-      if(layer == null)
+      if (layer == null)
       {
         needsRename = false;
       }
@@ -74,56 +77,170 @@ public class Import_CSV_GZ
       {
         needsRename = true;
       }
-    
+
       final String nameToUse;
-      if(needsRename)
+      if (needsRename)
       {
-        String suffix = "-" + (int)Math.random()*1000;
+        String suffix = "-" + (int) Math.random() * 1000;
         nameToUse = trackName + suffix;
       }
       else
       {
         nameToUse = trackName;
       }
-      
+
       track = new TrackWrapper();
       track.setName(nameToUse);
 
       // sort out a color
       // sort out a color
-      final Color theCol =
-          DebriefColors.RandomColorProvider.getRandomColor(colorCounter++);
+      final Color theCol = DebriefColors.RandomColorProvider.getRandomColor(
+          colorCounter++);
       track.setColor(theCol);
 
       layers.addThisLayer(track);
     }
     return track;
-  
   }
-  
+
   private static final String CSV_DATE_FORMAT = "dd MMM yyyy - HH:mm:ss.SSS";
 
   public static class TestCSV_GZ_Import extends TestCase
   {
+    static class Logger implements ErrorLogger
+    {
+      private final List<String> messages = new ArrayList<String>();
+
+      private final boolean console = true;
+
+      private void clear()
+      {
+        messages.clear();
+      }
+
+      @Override
+      public void logError(final int status, final String text,
+          final Exception e)
+      {
+        output(text, e);
+      }
+
+      @Override
+      public void logError(final int status, final String text,
+          final Exception e, final boolean revealLog)
+      {
+        output(text, e);
+      }
+
+      @Override
+      public void logStack(final int status, final String text)
+      {
+        output(text, null);
+      }
+
+      public void output(final String text, final Exception e)
+      {
+        messages.add(text);
+        if (console)
+        {
+          System.out.println(text);
+          if (e != null)
+          {
+            e.printStackTrace();
+          }
+        }
+      }
+
+      public boolean isEmpty()
+      {
+        return messages.isEmpty();
+      }
+    }
+
     public void testDateParse() throws ParseException
     {
-      Import_CSV_GZ importer = new Import_CSV_GZ();
+      OSD_Importer importer = new OSD_Importer();
       final String test_date = "20 Nov 2019 - 11:22:33.000";
       Date date = importer.getDate(test_date);
 
       DateFormat df = new GMTDateFormat(CSV_DATE_FORMAT);
       assertEquals("matching date", test_date, df.format(date));
     }
+
+    public void testOSD_Short() throws ParseException
+    {
+      Logger logger = new Logger();
+      List<String> tokens = new ArrayList<String>();
+      tokens.add("20 Nov 2019 - 11:22:33.000");
+      tokens.add("blah");
+      tokens.add("rhah");
+      tokens.add("attr_courseOverTheGround");
+      tokens.add("" + Math.PI);
+      tokens.add("attr_depth");
+      tokens.add("" + 22d);
+      tokens.add("attr_speedOverTheGround");
+      tokens.add("1.5");
+      tokens.add("bahh");
+
+      OSD_Importer importer = new OSD_Importer();
+      FixWrapper res = importer.process(tokens.iterator(), logger);
+      assertNull("should not have created fix", res);
+      assertFalse("should have thrown warning", logger.isEmpty());
+      assertEquals("valid message",
+          "Missing fields:attr_longitude, attr_latitude", logger.messages.get(
+              0));
+    }
+    
+
+    public void testSystem() throws ParseException
+    {
+      
+//      5th col = id (trim to last 10 chars. Append country apprev, if provided)
+//          attr_bearing - rads
+//          attr_countryAbbreviation - three-chars
+//          attr_course -rads
+//          attr_latitude rads
+//          attr_longitude - rads
+//          attr_speed - m/s
+//          attr_trackNumber - number ( value of 1 = ownship)
+      
+      ErrorLogger logger = new Logger();
+      List<String> tokens = new ArrayList<String>();
+      tokens.add("20 Nov 2019 - 11:22:33.000");
+      tokens.add("blah");
+      tokens.add("rhah");
+      tokens.add("attr_bearing");
+      tokens.add("" + Math.PI);
+      tokens.add("attr_longitude");
+      tokens.add("" + Math.PI / 2);
+      tokens.add("attr_latitude");
+      tokens.add("" + Math.PI / 4);
+      tokens.add("attr_countryAbbreviation");
+      tokens.add("" + 22d);
+      tokens.add("attr_speedOverTheGround");
+      tokens.add("1.5");
+      tokens.add("bahh");
+      tokens.add("attr_course");
+      tokens.add("" + Math.PI / 8);
+      tokens.add("attr_speed");
+      tokens.add("33");
+      tokens.add("attr_trackNumber");
+      tokens.add("110000");
+//
+//      OSD_Importer importer = new OSD_Importer();
+//      FixWrapper res = importer.process(tokens.iterator(), logger);
+//      assertNotNull("should have fix", res);
+//      assertEquals("lat", 45d, res.getFixLocation().getLat());
+//      assertEquals("long", 90d, res.getFixLocation().getLong());
+//      assertEquals("dep", 22d, res.getFixLocation().getDepth());
+//      assertEquals("crse", 180d, res.getCourseDegs());
+//      assertEquals("speed", 1.5d, new WorldSpeed(res.getSpeed(), WorldSpeed.Kts)
+//          .getValueIn(WorldSpeed.M_sec), 0.0001);
+    }
     
     public void testOSD() throws ParseException
     {
-      
-//      attr_courseOverTheGround - rads
-//      attr_depth - m
-//      attr_latitude - rads
-//      attr_longitude - rads
-//      attr_speedOverTheGround - m/s
-      
+      ErrorLogger logger = new Logger();
       List<String> tokens = new ArrayList<String>();
       tokens.add("20 Nov 2019 - 11:22:33.000");
       tokens.add("blah");
@@ -131,41 +248,26 @@ public class Import_CSV_GZ
       tokens.add("attr_courseOverTheGround");
       tokens.add("" + Math.PI);
       tokens.add("attr_longitude");
-      tokens.add("" + Math.PI/2);
+      tokens.add("" + Math.PI / 2);
       tokens.add("attr_latitude");
-      tokens.add("" + Math.PI/4);
+      tokens.add("" + Math.PI / 4);
       tokens.add("attr_depth");
       tokens.add("" + 22d);
       tokens.add("attr_speedOverTheGround");
       tokens.add("1.5");
       tokens.add("bahh");
-      
+
       OSD_Importer importer = new OSD_Importer();
-      FixWrapper res = importer.process(tokens.iterator());
+      FixWrapper res = importer.process(tokens.iterator(), logger);
       assertNotNull("should have fix", res);
-      
+      assertEquals("lat", 45d, res.getFixLocation().getLat());
+      assertEquals("long", 90d, res.getFixLocation().getLong());
+      assertEquals("dep", 22d, res.getFixLocation().getDepth());
+      assertEquals("crse", 180d, res.getCourseDegs());
+      assertEquals("speed", 1.5d, new WorldSpeed(res.getSpeed(), WorldSpeed.Kts)
+          .getValueIn(WorldSpeed.M_sec), 0.0001);
     }
   }
-
-  private final GMTDateFormat _formatter;
-  
-  private Date getDate(final String dateStr) throws ParseException
-  {
-    // 20 Nov 2019 - 11:22:33.000
-    Date date = _formatter.parse(dateStr);
-    return date;
-  }
-  
-  protected HiResDate getHiResDate(final String dateStr) throws ParseException
-  {
-    return new HiResDate(getDate(dateStr).getTime());
-  }
-  
-  protected Import_CSV_GZ()
-  {
-    _formatter = new GMTDateFormat(CSV_DATE_FORMAT);
-  }
-  
 
   /**
    * keep track of how many tracks we've created, so we can generate unique colors
@@ -174,152 +276,213 @@ public class Import_CSV_GZ
 
   private static TrackWrapper lastTrack = null;
 
-  /**
-   * create a fix using the supplied data
-   * 
-   * @param target
-   * @param trackName
-   * @param theDate
-   * @param theLoc
-   */
-//  private static void addFix(final Layers target, final String trackName,
-//      final HiResDate theDate, final WorldLocation theLoc,
-//      final double courseDegs, final double speedKts)
-//  {
-//    // is this our current layer?
-//    if (lastTrack  != null)
-//    {
-//      if (lastTrack.getName().equals(trackName))
-//      {
-//        // sorted
-//      }
-//      else
-//      {
-//        lastTrack = null;
-//      }
-//    }
-//
-//    if (lastTrack == null)
-//    {
-//      lastTrack = (TrackWrapper) target.findLayer(trackName);
-//      if (lastTrack == null)
-//      {
-//        createTrack(target, trackName);
-//      }
-//    }
-//
-//    final double courseRads = MWC.Algorithms.Conversions.Degs2Rads(courseDegs);
-//    final double speedYPS =
-//        new WorldSpeed(speedKts, WorldSpeed.Kts).getValueIn(WorldSpeed.ft_sec) / 3d;
-//
-//    final FixWrapper newFix =
-//        new FixWrapper(new Fix(theDate, theLoc, courseRads, speedYPS));
-//
-//    // and reset the time value
-//    newFix.resetName();
-//
-//    lastTrack.addFix(newFix);
-//  }
-
-//  /**
-//   * extract the course element from the supplied string
-//   * 
-//   * @param descriptionTxt
-//   * @return
-//   * @throws ParseException
-//   */
-//  private static double courseFrom(final String descriptionTxt)
-//      throws ParseException
-//  {
-//    double res = 0;
-//    // STRING LOOKS LIKE
-//    // <![CDATA[<b>RADAR PLOT 20:01:12 (GMT)</b><br><hr>Lat:
-//    // 05.9696<br>Lon: 07.9633<br>Course: 253.0<br>Speed: 7.1
-//    // knots<br>Date: September 12, 2009]]>
-//    final int startI = descriptionTxt.indexOf("Course");
-//    final int endI = descriptionTxt.indexOf("<br>Speed");
-//    if ((startI > 0) && (endI > 0))
-//    {
-//      final String subStr = descriptionTxt.substring(startI + 7, endI - 1);
-//      res = MWCXMLReader.readThisDouble(subStr.trim());
-//    }
-//    return res;
-//  }
-
-
-
+ 
   protected static interface CSV_Importer
   {
-    void doImport(Layers theLayers, List<CSVRecord> records);
+    void doImport(Layers theLayers, List<CSVRecord> records,
+        final String hostName);
   }
   
-  private static class OSD_Importer extends Import_CSV_GZ implements CSV_Importer
+  private abstract static class ImporterType implements CSV_Importer
   {
 
+    private final GMTDateFormat _formatter = new GMTDateFormat(CSV_DATE_FORMAT);
+    
+    protected Date getDate(final String dateStr) throws ParseException
+    {
+      // 20 Nov 2019 - 11:22:33.000
+      Date date = _formatter.parse(dateStr);
+      return date;
+    }
 
-    public FixWrapper process(Iterator<String> tokens) throws ParseException
+    protected HiResDate getHiResDate(final String dateStr) throws ParseException
+    {
+      return new HiResDate(getDate(dateStr).getTime());
+    }
+    
+    abstract public List<String> getMyFields();
+
+
+    protected Map<String, String> getTokens(Iterator<String> tokens,
+        List<String> myFields)
+    {
+      Map<String, String> map = new HashMap<String, String>();
+
+      String pendingToken = null;
+
+      while (tokens.hasNext())
+      {
+        final String token = tokens.next().trim();
+        if (pendingToken != null)
+        {
+          // ok, extract the next value
+          map.put(pendingToken, token);
+          pendingToken = null;
+        }
+        else
+        {
+          // is this one of ours?
+          for (String thisT : myFields)
+          {
+            if (thisT.equals(token))
+            {
+              pendingToken = thisT;
+              break;
+            }
+          }
+        }
+      }
+      return map;
+    }
+    
+
+    protected Double parseThis(String value)
+    {
+      final double res;
+      if (value == null || value.length() == 0)
+      {
+        res = 0d;
+      }
+      else
+      {
+        res = Double.parseDouble(value);
+      }
+      return res;
+    }
+  }
+
+  private static class OSD_Importer extends ImporterType implements
+      CSV_Importer
+  {
+    private static final String SPEED = "attr_speedOverTheGround";
+    private static final String DEPTH = "attr_depth";
+    private static final String LAT = "attr_latitude";
+    private static final String LONG = "attr_longitude";
+    private static final String COURSE = "attr_courseOverTheGround";
+
+    public FixWrapper process(Iterator<String> tokens, ErrorLogger logger)
+        throws ParseException
     {
       String dateStr = tokens.next();
       HiResDate date = getHiResDate(dateStr);
-      System.out.println(date);
-      return null;
+      final List<String> myFields = getMyFields();
+
+      Map<String, String> map = getTokens(tokens, myFields);
+
+      final FixWrapper res;
+      if (map.size() == myFields.size())
+      {
+        // create fix
+        WorldLocation loc = new WorldLocation(Math.toDegrees(parseThis(map.get(
+            LAT))), Math.toDegrees(parseThis(map.get(LONG))), parseThis(map.get(
+                DEPTH)));
+        double speed = new WorldSpeed(parseThis(map.get(SPEED)),
+            WorldSpeed.M_sec).getValueIn(WorldSpeed.ft_sec) / 3d;
+        Fix fix = new Fix(date, loc, parseThis(map.get(COURSE)), speed);
+        res = new FixWrapper(fix);
+      }
+      else
+      {
+        String missingFields = "";
+        for (String field : myFields)
+        {
+          if (!map.keySet().contains(field))
+          {
+            if (missingFields.length() == 0)
+              missingFields += field;
+            else
+              missingFields += ", " + field;
+          }
+        }
+
+        // ok, insufficient tokens, throw wobbly?
+        logger.logStack(ErrorLogger.WARNING, "Missing fields:" + missingFields);
+        res = null;
+      }
+
+      return res;
     }
-    
-    @Override
-    public void doImport(Layers theLayers, List<CSVRecord> records)
+
+
+    public List<String> getMyFields()
     {
-      for(CSVRecord record : records)
+      final List<String> myTokens = new ArrayList<String>();
+      myTokens.add(COURSE);
+      myTokens.add(LONG);
+      myTokens.add(LAT);
+      myTokens.add(DEPTH);
+      myTokens.add(SPEED);
+      return myTokens;
+    }
+
+    @Override
+    public void doImport(Layers theLayers, List<CSVRecord> records,
+        final String hostName)
+    {
+      ErrorLogger logger = new LoggingService();
+      TrackWrapper track = null;
+      for (CSVRecord record : records)
       {
         // ok, get the date
         try
         {
-          FixWrapper nextFix = process(record.iterator());
-          
-          // now the other fields
-          System.out.println(record);
+          FixWrapper nextFix = process(record.iterator(), logger);
+
+          if (nextFix != null)
+          {
+            if (track == null)
+            {
+              track = trackFor(theLayers, hostName);
+            }
+            track.addFix(nextFix);
+          }
         }
         catch (ParseException e)
         {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+          logger.logError(ErrorLogger.ERROR,
+              "Failed to import OSD data from C-Log CSV", e);
         }
-        
       }
-      
     }
-
-
-    
   }
-  
+
   private static CSV_Importer importerFor(final String filename)
   {
     return new OSD_Importer();
   }
-  
+
+  private static String trackFor(final String fileName)
+  {
+    int index = fileName.indexOf("_");
+    return fileName.substring(0, index);
+  }
+
   private static void doImport(final Layers theLayers,
       final InputStream inputStream, final String fileName)
   {
-      // find out which type it is
-      CSV_Importer importer = importerFor(fileName);
-      
-      try
-      {
-        // get the file as a string
-        final String contents = inputStreamAsString(inputStream);
-        
-        // pass it through the parser
-        final List<CSVRecord> records = CSVParser.parse(contents, CSVFormat.EXCEL).getRecords();
-        
-        // go for it
-        importer.doImport(theLayers, records);
-      }
+    final String trackName = trackFor(fileName);
+
+    // find out which type it is
+    CSV_Importer importer = importerFor(fileName);
+
+    try
+    {
+      // get the file as a string
+      final String contents = inputStreamAsString(inputStream);
+
+      // pass it through the parser
+      final List<CSVRecord> records = CSVParser.parse(contents, CSVFormat.EXCEL)
+          .getRecords();
+
+      // go for it
+      importer.doImport(theLayers, records, trackName);
+    }
     catch (IOException e)
     {
       LoggingService.INSTANCE().logError(LoggingService.ERROR,
           "Failed while importing CSV file:" + fileName, e);
     }
-      
+
   }
 
   public static void doZipImport(final Layers theLayers,
@@ -351,8 +514,8 @@ public class Import_CSV_GZ
           bos.close();
 
           // now create a byte input stream from the byte output stream
-          final ByteArrayInputStream bis =
-              new ByteArrayInputStream(bos.toByteArray());
+          final ByteArrayInputStream bis = new ByteArrayInputStream(bos
+              .toByteArray());
 
           // and create it
           doImport(theLayers, bis, theName);
@@ -382,54 +545,4 @@ public class Import_CSV_GZ
     br.close();
     return sb.toString();
   }
-
-//  /**
-//   * extract the course element from the supplied string
-//   * 
-//   * @param descriptionTxt
-//   * @return
-//   * @throws ParseException
-//   */
-//  private static double speedFrom(final String descriptionTxt)
-//      throws ParseException
-//  {
-//    double res = 0;
-//    // STRING LOOKS LIKE
-//    // <![CDATA[<b>RADAR PLOT 20:01:12 (GMT)</b><br><hr>Lat:
-//    // 05.9696<br>Lon: 07.9633<br>Course: 253.0<br>Speed: 7.1
-//    // knots<br>Date: September 12, 2009]]>
-//    final int startI = descriptionTxt.indexOf("Speed");
-//    final int endI = descriptionTxt.indexOf("knots");
-//    if ((startI > 0) && (endI > 0))
-//    {
-//      final String subStr = descriptionTxt.substring(startI + 6, endI - 1);
-//      res = MWCXMLReader.readThisDouble(subStr.trim());
-//    }
-//    return res;
-//  }
-
- 
-
-  // private static String readFileAsString(String filePath)
-  // throws java.io.IOException
-  // {
-  // StringBuffer fileData = new StringBuffer(1000);
-  // BufferedReader reader = new BufferedReader(new FileReader(filePath));
-  // char[] buf = new char[1024];
-  // int numRead = 0;
-  // while ((numRead = reader.read(buf)) != -1)
-  // {
-  // String readData = String.valueOf(buf, 0, numRead);
-  // fileData.append(readData);
-  // buf = new char[1024];
-  // }
-  // reader.close();
-  // return fileData.toString();
-  // }
-  //
-  // public static void main(String[] args)
-  // {
-  // doImport(null, null, null);
-  // }
-
 }
