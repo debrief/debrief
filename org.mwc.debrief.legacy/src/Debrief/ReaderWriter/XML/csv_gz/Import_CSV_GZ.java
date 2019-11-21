@@ -40,6 +40,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layer;
@@ -47,7 +48,9 @@ import MWC.GUI.Layers;
 import MWC.GUI.LoggingService;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Properties.DebriefColors;
+import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
@@ -112,11 +115,6 @@ public class Import_CSV_GZ
       private final List<String> messages = new ArrayList<String>();
 
       private final boolean console = true;
-
-      private void clear()
-      {
-        messages.clear();
-      }
 
       @Override
       public void logError(final int status, final String text,
@@ -190,20 +188,9 @@ public class Import_CSV_GZ
           "Missing fields:attr_longitude, attr_latitude", logger.messages.get(
               0));
     }
-    
 
     public void testSystem() throws ParseException
     {
-      
-//      5th col = id (trim to last 10 chars. Append country apprev, if provided)
-//          attr_bearing - rads
-//          attr_countryAbbreviation - three-chars
-//          attr_course -rads
-//          attr_latitude rads
-//          attr_longitude - rads
-//          attr_speed - m/s
-//          attr_trackNumber - number ( value of 1 = ownship)
-      
       ErrorLogger logger = new Logger();
       List<String> tokens = new ArrayList<String>();
       tokens.add("20 Nov 2019 - 11:22:33.000");
@@ -216,7 +203,7 @@ public class Import_CSV_GZ
       tokens.add("attr_latitude");
       tokens.add("" + Math.PI / 4);
       tokens.add("attr_countryAbbreviation");
-      tokens.add("" + 22d);
+      tokens.add("GBR");
       tokens.add("attr_speedOverTheGround");
       tokens.add("1.5");
       tokens.add("bahh");
@@ -225,19 +212,111 @@ public class Import_CSV_GZ
       tokens.add("attr_speed");
       tokens.add("33");
       tokens.add("attr_trackNumber");
-      tokens.add("110000");
-//
-//      OSD_Importer importer = new OSD_Importer();
-//      FixWrapper res = importer.process(tokens.iterator(), logger);
-//      assertNotNull("should have fix", res);
-//      assertEquals("lat", 45d, res.getFixLocation().getLat());
-//      assertEquals("long", 90d, res.getFixLocation().getLong());
-//      assertEquals("dep", 22d, res.getFixLocation().getDepth());
-//      assertEquals("crse", 180d, res.getCourseDegs());
-//      assertEquals("speed", 1.5d, new WorldSpeed(res.getSpeed(), WorldSpeed.Kts)
-//          .getValueIn(WorldSpeed.M_sec), 0.0001);
+      tokens.add("11000323223550");
+
+      State_Importer importer = new State_Importer();
+      FixWrapper res = importer.process(tokens.iterator(), logger);
+      assertNotNull("should have fix", res);
+      assertEquals("lat", 45d, res.getFixLocation().getLat());
+      assertEquals("long", 90d, res.getFixLocation().getLong());
+      assertEquals("dep", 0d, res.getFixLocation().getDepth());
+      assertEquals("crse", 22.5d, res.getCourseDegs());
+      assertEquals("speed", 33d, new WorldSpeed(res.getSpeed(), WorldSpeed.Kts)
+          .getValueIn(WorldSpeed.M_sec), 0.0001);
+      assertEquals("country", "23223550_GBR", res.getComment());
     }
-    
+
+    public void testSystem_no_country() throws ParseException
+    {
+      ErrorLogger logger = new Logger();
+      List<String> tokens = new ArrayList<String>();
+      tokens.add("20 Nov 2019 - 11:22:33.000");
+      tokens.add("blah");
+      tokens.add("rhah");
+      tokens.add("attr_bearing");
+      tokens.add("" + Math.PI);
+      tokens.add("attr_longitude");
+      tokens.add("" + Math.PI / 2);
+      tokens.add("attr_latitude");
+      tokens.add("" + Math.PI / 4);
+      tokens.add("attr_speedOverTheGround");
+      tokens.add("1.5");
+      tokens.add("bahh");
+      tokens.add("attr_course");
+      tokens.add("" + Math.PI / 8);
+      tokens.add("attr_speed");
+      tokens.add("33");
+      tokens.add("attr_trackNumber");
+      tokens.add("11000323223550");
+
+      State_Importer importer = new State_Importer();
+      FixWrapper res = importer.process(tokens.iterator(), logger);
+      assertNotNull("should have fix", res);
+      assertEquals("lat", 45d, res.getFixLocation().getLat());
+      assertEquals("long", 90d, res.getFixLocation().getLong());
+      assertEquals("dep", 0d, res.getFixLocation().getDepth());
+      assertEquals("crse", 22.5d, res.getCourseDegs());
+      assertEquals("speed", 33d, new WorldSpeed(res.getSpeed(), WorldSpeed.Kts)
+          .getValueIn(WorldSpeed.M_sec), 0.0001);
+      assertEquals("country", "23223550", res.getComment());
+    }
+
+    public void testSystem_short() throws ParseException
+    {
+      Logger logger = new Logger();
+      List<String> tokens = new ArrayList<String>();
+      tokens.add("20 Nov 2019 - 11:22:33.000");
+      tokens.add("blah");
+      tokens.add("rhah");
+      tokens.add("attr_speedOverTheGround");
+      tokens.add("1.5");
+      tokens.add("bahh");
+      tokens.add("attr_course");
+      tokens.add("" + Math.PI / 8);
+      tokens.add("attr_speed");
+      tokens.add("33");
+      tokens.add("attr_trackNumber");
+      tokens.add("11000323223550");
+
+      State_Importer importer = new State_Importer();
+      FixWrapper res = importer.process(tokens.iterator(), logger);
+      assertNull("should not have created fix", res);
+      assertFalse("should have thrown warning", logger.isEmpty());
+      assertEquals("valid message",
+          "Missing fields:attr_bearing, attr_countryAbbreviation, attr_latitude, attr_longitude",
+          logger.messages.get(0));
+    }
+
+    public void testSensor() throws ParseException
+    {
+      ErrorLogger logger = new Logger();
+      List<String> tokens = new ArrayList<String>();
+      tokens.add("20 Nov 2019 - 11:22:33.000");
+      tokens.add("blah");
+      tokens.add("rhah");
+      tokens.add("attr_courseOverTheGround");
+      tokens.add("" + Math.PI);
+      tokens.add("attr_longitude");
+      tokens.add("" + Math.PI / 2);
+      tokens.add("attr_latitude");
+      tokens.add("" + Math.PI / 4);
+      tokens.add("attr_depth");
+      tokens.add("" + 22d);
+      tokens.add("attr_speedOverTheGround");
+      tokens.add("1.5");
+      tokens.add("bahh");
+
+      OSD_Importer importer = new OSD_Importer();
+      FixWrapper res = importer.process(tokens.iterator(), logger);
+      assertNotNull("should have fix", res);
+      assertEquals("lat", 45d, res.getFixLocation().getLat());
+      assertEquals("long", 90d, res.getFixLocation().getLong());
+      assertEquals("dep", 22d, res.getFixLocation().getDepth());
+      assertEquals("crse", 180d, res.getCourseDegs());
+      assertEquals("speed", 1.5d, new WorldSpeed(res.getSpeed(), WorldSpeed.Kts)
+          .getValueIn(WorldSpeed.M_sec), 0.0001);
+    }
+
     public void testOSD() throws ParseException
     {
       ErrorLogger logger = new Logger();
@@ -276,18 +355,23 @@ public class Import_CSV_GZ
 
   private static TrackWrapper lastTrack = null;
 
- 
   protected static interface CSV_Importer
   {
     void doImport(Layers theLayers, List<CSVRecord> records,
         final String hostName);
   }
-  
+
   private abstract static class ImporterType implements CSV_Importer
   {
 
     private final GMTDateFormat _formatter = new GMTDateFormat(CSV_DATE_FORMAT);
-    
+
+    /**
+     * map marker for the contents of the 5th column (when relevant)
+     * 
+     */
+    protected static final String SYSTEM_ID = "SYSTEM_ID";
+
     protected Date getDate(final String dateStr) throws ParseException
     {
       // 20 Nov 2019 - 11:22:33.000
@@ -295,17 +379,24 @@ public class Import_CSV_GZ
       return date;
     }
 
+    protected String trimmedTrackNum(String trackStr)
+    {
+      return trackStr.substring(6);
+    }
+
     protected HiResDate getHiResDate(final String dateStr) throws ParseException
     {
       return new HiResDate(getDate(dateStr).getTime());
     }
-    
-    abstract public List<String> getMyFields();
 
+    abstract public List<String> getMyFields();
 
     protected Map<String, String> getTokens(Iterator<String> tokens,
         List<String> myFields)
     {
+      // we know each importer has already run once
+      int ctr = 1;
+
       Map<String, String> map = new HashMap<String, String>();
 
       String pendingToken = null;
@@ -313,6 +404,13 @@ public class Import_CSV_GZ
       while (tokens.hasNext())
       {
         final String token = tokens.next().trim();
+
+        // is this the fifth column?
+        if (ctr++ == 5)
+        {
+          map.put(SYSTEM_ID, token);
+        }
+
         if (pendingToken != null)
         {
           // ok, extract the next value
@@ -334,7 +432,6 @@ public class Import_CSV_GZ
       }
       return map;
     }
-    
 
     protected Double parseThis(String value)
     {
@@ -351,8 +448,7 @@ public class Import_CSV_GZ
     }
   }
 
-  private static class OSD_Importer extends ImporterType implements
-      CSV_Importer
+  private static class OSD_Importer extends ImporterType implements CSV_Importer
   {
     private static final String SPEED = "attr_speedOverTheGround";
     private static final String DEPTH = "attr_depth";
@@ -403,7 +499,6 @@ public class Import_CSV_GZ
       return res;
     }
 
-
     public List<String> getMyFields()
     {
       final List<String> myTokens = new ArrayList<String>();
@@ -434,6 +529,236 @@ public class Import_CSV_GZ
             {
               track = trackFor(theLayers, hostName);
             }
+            track.addFix(nextFix);
+          }
+        }
+        catch (ParseException e)
+        {
+          logger.logError(ErrorLogger.ERROR,
+              "Failed to import OSD data from C-Log CSV", e);
+        }
+      }
+    }
+  }
+
+  private static class Sensor_Importer extends ImporterType implements
+      CSV_Importer
+  {
+
+    private static final String BEARING = "attr_bearing";
+    private static final String TRACK_ID = "attr_trackNumber";
+
+    public SensorContactWrapper process(Iterator<String> tokens,
+        ErrorLogger logger) throws ParseException
+    {
+      String dateStr = tokens.next();
+      HiResDate date = getHiResDate(dateStr);
+      final List<String> myFields = getMyFields();
+
+      Map<String, String> map = getTokens(tokens, myFields);
+
+      final SensorContactWrapper res;
+      if (map.size() == myFields.size())
+      {
+        Double bearingDegs = Math.toDegrees(parseThis(map.get(BEARING)));
+        // create sensor
+        res = new SensorContactWrapper("PENDING", date, null, bearingDegs, null,
+            null, null, LineStylePropertyEditor.SOLID, map.get(TRACK_ID));
+      }
+      else
+      {
+        String missingFields = "";
+        for (String field : myFields)
+        {
+          if (!map.keySet().contains(field))
+          {
+            if (missingFields.length() == 0)
+              missingFields += field;
+            else
+              missingFields += ", " + field;
+          }
+        }
+
+        // ok, insufficient tokens, throw wobbly?
+        logger.logStack(ErrorLogger.WARNING, "Missing fields:" + missingFields);
+        res = null;
+      }
+
+      return res;
+    }
+
+    public List<String> getMyFields()
+    {
+      final List<String> myTokens = new ArrayList<String>();
+      myTokens.add(BEARING);
+      myTokens.add(TRACK_ID);
+      return myTokens;
+    }
+
+    @Override
+    public void doImport(Layers theLayers, List<CSVRecord> records,
+        final String hostName)
+    {
+      ErrorLogger logger = new LoggingService();
+
+      // get the host track
+      Layer host = theLayers.findLayer(hostName);
+      if (host == null || !(host instanceof TrackWrapper))
+      {
+        LoggingService.INSTANCE().logStack(LoggingService.ERROR,
+            "Can't find host track:" + hostName);
+      }
+      else
+      {
+
+        TrackWrapper track = (TrackWrapper) host;
+        for (CSVRecord record : records)
+        {
+          // ok, get the date
+          try
+          {
+            SensorContactWrapper nextFix = process(record.iterator(), logger);
+
+            String sensorId = nextFix.getSensorName();
+
+            // SensorWrapper sensor = track.getSensors().
+            //
+            // if (nextFix != null)
+            // {
+            // if (track == null)
+            // {
+            // track = trackFor(theLayers, hostName);
+            // }
+            // track.addFix(nextFix);
+            // }
+          }
+          catch (ParseException e)
+          {
+            logger.logError(ErrorLogger.ERROR,
+                "Failed to import OSD data from C-Log CSV", e);
+          }
+        }
+      }
+    }
+  }
+
+  private static class State_Importer extends ImporterType implements
+      CSV_Importer
+  {
+    private static final String bearing = "attr_bearing";
+    private static final String country = "attr_countryAbbreviation";
+    private static final String course = "attr_course";
+    private static final String latitude = "attr_latitude";
+    private static final String longitude = "attr_longitude";
+    private static final String speed = "attr_speed";
+    private static final String trackNum = "attr_trackNumber";
+
+    private static final String MY_TRACK_ID = "1";
+
+    public List<String> getMyFields()
+    {
+      final List<String> myTokens = new ArrayList<String>();
+      myTokens.add(bearing);
+      myTokens.add(country);
+      myTokens.add(course);
+      myTokens.add(latitude);
+      myTokens.add(longitude);
+      myTokens.add(speed);
+      myTokens.add(trackNum);
+      return myTokens;
+    }
+
+    public FixWrapper process(Iterator<String> tokens, ErrorLogger logger)
+        throws ParseException
+    {
+
+      String dateStr = tokens.next();
+      HiResDate date = getHiResDate(dateStr);
+      final List<String> myFields = getMyFields();
+
+      Map<String, String> map = getTokens(tokens, myFields);
+
+      final FixWrapper res;
+      // note: we allow for missing country field
+      if (map.size() >= myFields.size() - 1)
+      {
+        // create fix
+        WorldLocation loc = new WorldLocation(Math.toDegrees(parseThis(map.get(
+            latitude))), Math.toDegrees(parseThis(map.get(longitude))), 0d);
+        double speedVal = new WorldSpeed(parseThis(map.get(speed)),
+            WorldSpeed.M_sec).getValueIn(WorldSpeed.ft_sec) / 3d;
+        Fix fix = new Fix(date, loc, parseThis(map.get(course)), speedVal);
+        res = new FixWrapper(fix);
+
+        // store the track name
+        final String trackName;
+        final String trackStr = map.get(trackNum);
+        if (trackStr != null && trackStr == MY_TRACK_ID)
+        {
+          trackName = MY_TRACK_ID;
+        }
+        else
+        {
+          final String systemID = map.get(SYSTEM_ID);
+          final String countryStr = map.get(country);
+          final String trimmedTrackStr = trimmedTrackNum(systemID);
+          String workingName = trimmedTrackStr + "_" + trackStr;
+          if (countryStr != null)
+          {
+            workingName += "_" + countryStr;
+          }
+          trackName = workingName;
+        }
+
+        res.setComment(trackName);
+      }
+      else
+      {
+        String missingFields = "";
+        for (String field : myFields)
+        {
+          if (!map.keySet().contains(field))
+          {
+            if (missingFields.length() == 0)
+              missingFields += field;
+            else
+              missingFields += ", " + field;
+          }
+        }
+
+        // ok, insufficient tokens, throw wobbly?
+        logger.logStack(ErrorLogger.WARNING, "Missing fields:" + missingFields);
+        res = null;
+      }
+
+      return res;
+    }
+
+    @Override
+    public void doImport(Layers theLayers, List<CSVRecord> records,
+        final String hostName)
+    {
+      ErrorLogger logger = new LoggingService();
+      for (CSVRecord record : records)
+      {
+        // ok, get the date
+        try
+        {
+          FixWrapper nextFix = process(record.iterator(), logger);
+
+          if (nextFix != null)
+          {
+            String trackId = nextFix.getComment();
+            final String trackName;
+            if (trackId.equals(MY_TRACK_ID))
+            {
+              trackName = hostName;
+            }
+            else
+            {
+              trackName = trackId;
+            }
+            TrackWrapper track = trackFor(theLayers, trackName);
             track.addFix(nextFix);
           }
         }
