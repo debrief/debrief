@@ -38,9 +38,12 @@ public class JRibbonSlider extends JSlider
       final SliderComponentContentModel contentModel = projection.getContentModel();
       setValue(contentModel.getValue());
       setEnabled(contentModel.isEnabled());
-
+      setMaximum(contentModel.getMaximum());
+      setMinimum(contentModel.getMinimum());
       addChangeListener((ChangeEvent ae) -> {
         contentModel.setValue(((JSlider)ae.getSource()).getValue());
+        contentModel.setMinimum(((JSlider)ae.getSource()).getMinimum());
+        contentModel.setMaximum(((JSlider)ae.getSource()).getMaximum());
         if (contentModel.getChangeListener() != null) {
           contentModel.getChangeListener().stateChanged(ae);
         }
@@ -50,6 +53,13 @@ public class JRibbonSlider extends JSlider
         if ("value".equals(event.getPropertyName())) {
           setValue(contentModel.getValue());
         }
+        if ("maximum".equals(event.getPropertyName())) {
+          setMaximum(contentModel.getMaximum());
+        }
+        if ("minimum".equals(event.getPropertyName())) {
+          setMinimum(contentModel.getMinimum());
+        }
+        
       });
   }
 }

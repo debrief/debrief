@@ -14,7 +14,6 @@
  */
 package org.mwc.debrief.lite.custom;
 
-import org.pushingpixels.flamingo.api.common.projection.Projection;
 import org.pushingpixels.flamingo.api.ribbon.synapse.model.ComponentPresentationModel;
 import org.pushingpixels.flamingo.api.ribbon.synapse.projection.ComponentProjection;
 
@@ -35,7 +34,10 @@ public class RibbonRangeSliderProjection extends ComponentProjection<JRibbonRang
   @Override
   protected void configureComponent(JRibbonRangeSlider component)
   {
-    // TODO Auto-generated method stub
+    component.setMaximum(getContentModel().getMaximum());
+    component.setMinimum(getContentModel().getMinimum());
+    //component.getLblMaximumValue().setText(RangeSlider.toDate(getContentModel().getMaximum()));
+   // component.getLblMinimumValue().setText(RangeSlider.toDate(getContentModel().getMinimum())+"");
     
   }
 

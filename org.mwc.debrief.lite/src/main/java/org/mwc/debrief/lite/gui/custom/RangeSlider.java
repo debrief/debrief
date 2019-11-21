@@ -44,8 +44,6 @@ public class RangeSlider extends JSlider
   
   public RangeSlider()
   {
-    //TODO review this
-    super(0,100);
     initSlider();
   }
 

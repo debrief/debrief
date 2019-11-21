@@ -276,20 +276,16 @@ public class DebriefRibbonTimeController
     @Override
     public void stateChanged(final ChangeEvent e)
     {
-      System.out.println("Slide change listener");
       final RangeSlider slider = (RangeSlider) e.getSource();
 
       final Date low = RangeSlider.toDate(slider.getValue()).getTime();
-      System.out.println("lowdate:"+low);
       final Date high = RangeSlider.toDate(slider.getUpperValue()).getTime();
       formatBinder.updateFilterDateFormat();
-      System.out.println("highdate:"+high);
 
       operations.setPeriod(new TimePeriod.BaseTimePeriod(new HiResDate(low),
           new HiResDate(high)));
 
       final HiResDate currentTime = timeManager.getTime();
-      System.out.println("Current time:"+currentTime);
       if (currentTime != null)
       {
         Date oldTime = currentTime.getDate();
@@ -542,7 +538,7 @@ public class DebriefRibbonTimeController
 
     timeLabel.setName("timeformatlabel");
     timeLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 16));
-    timeLabel.setForeground(new Color(0, 255, 0));
+    timeLabel.setForeground(new Color(255, 255, 255));
     timeLabel.setPreferredSize(new Dimension(50,20));
     
     final JPopupMenu menu = new JPopupMenu();
@@ -557,7 +553,7 @@ public class DebriefRibbonTimeController
       _menuItem[i] = new JCheckBoxMenuItem(timeFormats[i]);
     }
 
-//    resetDateFormat();
+    resetDateFormat();
 
     final ActionListener selfAssignFormat = new ActionListener()
     {
@@ -596,10 +592,8 @@ public class DebriefRibbonTimeController
           public void stateChanged(final ChangeEvent e)
           {
             if(e.getSource() instanceof JSlider) {
-              System.out.println("time filter listener");
               final JSlider slider = (JSlider)e.getSource();
               final int pos = slider.getValue();
-              System.out.println("slider pos"+pos);
               final long time = converter.getTimeAt(pos);
               if (timeManager.getTime() == null || timeManager.getTime().getDate()
                   .getTime() != time)
@@ -643,7 +637,7 @@ public class DebriefRibbonTimeController
 
         // and we can use the buttons
         //DebriefLiteApp.setState(DebriefLiteApp.ACTIVE_STATE);
-
+        
         converter.init(start, end);
         timeSlider.setMinimum(converter.getStart());
         timeSlider.setMaximum(converter.getEnd());

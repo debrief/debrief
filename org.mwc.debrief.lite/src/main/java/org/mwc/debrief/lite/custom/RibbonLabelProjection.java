@@ -34,7 +34,7 @@ public class RibbonLabelProjection extends ComponentProjection<JRibbonLabel, Lab
   @Override
   protected void configureComponent(JRibbonLabel component)
   {
-    // TODO Auto-generated method stub
+    component.setText(getContentModel().getText());
     
   }
 

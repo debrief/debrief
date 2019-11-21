@@ -12,15 +12,28 @@ import org.pushingpixels.flamingo.api.ribbon.synapse.model.ComponentPresentation
 public class JRibbonRangeSlider extends LabelledRangeSlider 
 {
   
+  Projection<JRibbonRangeSlider,SliderComponentContentModel,ComponentPresentationModel> projection;
   /**
    * 
    */
   private static final long serialVersionUID = 1L;
   public JRibbonRangeSlider(Projection<JRibbonRangeSlider,
       SliderComponentContentModel, ComponentPresentationModel> projection) {
+    this.projection=projection;
     initialize(projection);
   }
   
+  public void setMaximum(int maximum)
+  {
+    projection.getContentModel().setMaximum(maximum);
+    getRangeSlider().setMaximum(maximum);
+  }
+  
+  public void setMinimum(int min)
+  {
+    projection.getContentModel().setMinimum(min);
+    getRangeSlider().setMinimum(min);
+  }
   
   
   public void initialize(Projection<JRibbonRangeSlider,
@@ -29,10 +42,13 @@ public class JRibbonRangeSlider extends LabelledRangeSlider
     final SliderComponentContentModel contentModel = projection.getContentModel();
     this.getRangeSlider().setValue(contentModel.getValue());
     this.getRangeSlider().setEnabled(contentModel.isEnabled());
+    this.getRangeSlider().setMaximum(contentModel.getMaximum());
+    this.getRangeSlider().setMinimum(contentModel.getMinimum());
 
     this.getRangeSlider().addChangeListener((ChangeEvent ae) -> {
-      //TODO is this correct logic here?
       contentModel.setValue(((JSlider)ae.getSource()).getValue());
+      contentModel.setMinimum(((JSlider)ae.getSource()).getMinimum());
+      contentModel.setMaximum(((JSlider)ae.getSource()).getMaximum());
       if (contentModel.getChangeListener() != null) {
         contentModel.getChangeListener().stateChanged(ae);
       }
@@ -41,6 +57,12 @@ public class JRibbonRangeSlider extends LabelledRangeSlider
     contentModel.addPropertyChangeListener((PropertyChangeEvent event) -> {
       if ("value".equals(event.getPropertyName())) {
         this.getRangeSlider().setValue(contentModel.getValue());
+      }
+      if ("maximum".equals(event.getPropertyName())) {
+        this.getRangeSlider().setMaximum(contentModel.getMaximum());
+      }
+      if ("minimum".equals(event.getPropertyName())) {
+        this.getRangeSlider().setMinimum(contentModel.getMinimum());
       }
     });
   }

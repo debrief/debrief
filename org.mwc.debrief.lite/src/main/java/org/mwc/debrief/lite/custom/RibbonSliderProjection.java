@@ -34,7 +34,12 @@ public class RibbonSliderProjection extends ComponentProjection<JRibbonSlider, S
   @Override
   protected void configureComponent(JRibbonSlider component)
   {
-    
+    component.setMaximum(getContentModel().getMaximum());
+    component.setMinimum(getContentModel().getMinimum());
+    component.setMajorTickSpacing(getContentModel().getMajorTickSpacing());
+    component.setMinorTickSpacing(getContentModel().getMinorTickSpacing());
+    component.setPaintLabels(getContentModel().isPaintLabels());
+    component.setPaintTicks(getContentModel().isPaintTickSpacing());
   }
 
 }

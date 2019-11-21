@@ -18,7 +18,6 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Calendar;
 
-import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.event.ChangeListener;
 
 import org.pushingpixels.flamingo.api.common.RichTooltip;
@@ -30,7 +29,7 @@ import org.pushingpixels.neon.icon.ResizableIcon.Factory;
  * @author Ayesha
  *
  */
-public class SliderComponentContentModel extends DefaultBoundedRangeModel implements ComponentContentModel
+public class SliderComponentContentModel implements ComponentContentModel
 {
   /**
    * 
@@ -42,11 +41,57 @@ public class SliderComponentContentModel extends DefaultBoundedRangeModel implem
   private String text;
   private RichTooltip richTooltip;
   private ChangeListener changeListener;
-
+  
   private int majorTickSpacing;
   private int minorTickSpacing;
   private boolean paintTickSpacing;
   private boolean paintLabels;
+  private int minimum;
+  public int getMinimum()
+  {
+    return minimum;
+  }
+
+  public void setMinimum(int minimum)
+  {
+    if (this.minimum != minimum) {
+      int oldValue = this.minimum;
+      this.minimum = minimum;
+      this.pcs.firePropertyChange("minimum", oldValue, minimum);
+    }
+  }
+
+  public int getMaximum()
+  {
+    return maximum;
+  }
+
+  public void setMaximum(int maximum)
+  {
+    if (this.maximum != maximum) {
+      int oldValue = this.maximum;
+      this.maximum = maximum;
+      this.pcs.firePropertyChange("maximum", oldValue, maximum);
+    }
+  }
+
+  public int getValue()
+  {
+    return value;
+  }
+
+  public void setValue(int value)
+  {
+    if (this.value != value) {
+      int oldValue = this.value;
+      this.value = value;
+      this.pcs.firePropertyChange("value", oldValue, value);
+    }
+  }
+
+
+  private int maximum;
+  private int value;
   
   private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
   
@@ -216,7 +261,6 @@ public class SliderComponentContentModel extends DefaultBoundedRangeModel implem
     return new Builder();
   }
   
-  
 
   public static class Builder {
     private boolean isEnabled = true;
@@ -365,12 +409,15 @@ public class SliderComponentContentModel extends DefaultBoundedRangeModel implem
         model.richTooltip = this.richTooltip;
         model.majorTickSpacing=this.majorTickSpacing;
         model.minorTickSpacing=this.minorTickSpacing;
-        setValue(this.value);
-        setMinimum(this.minimum);
-        setMaximum(this.maximum);
+        model.setValue(this.value);
+        model.setMinimum(this.minimum);
+        model.setMaximum(this.maximum);
         model.paintLabels=this.paintLabels;
         model.paintTickSpacing=this.paintTickSpacing;
         return model;
     }
 }
+
+
+ 
 }

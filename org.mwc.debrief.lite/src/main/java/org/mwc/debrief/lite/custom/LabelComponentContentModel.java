@@ -75,6 +75,7 @@ public class LabelComponentContentModel implements ComponentContentModel
   public void setText(String text)
   {
     this.text = text;
+    this.pcs.firePropertyChange("enabled", !this.isEnabled, this.isEnabled);
   }
   
   public String getText()
@@ -125,6 +126,16 @@ public class LabelComponentContentModel implements ComponentContentModel
     public Builder setText(String text)
     {
       this.text=text;
+      return this;
+    }
+    public Builder setRichTooltip(RichTooltip richtooltip)
+    {
+      this.richTooltip=richtooltip;
+      return this;
+    }
+    public Builder setCaption(String caption)
+    {
+      this.caption=caption;
       return this;
     }
   }
