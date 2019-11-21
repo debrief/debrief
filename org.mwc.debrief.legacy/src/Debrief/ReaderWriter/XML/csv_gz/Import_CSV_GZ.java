@@ -227,6 +227,47 @@ public class Import_CSV_GZ
       assertEquals("country", "789012345_1234_GBR", res.getComment());
     }
 
+
+    public void testSystemOwnship() throws ParseException
+    {
+      ErrorLogger logger = new Logger();
+      List<String> tokens = new ArrayList<String>();
+      tokens.add("20 Nov 2019 - 11:22:33.000");
+      tokens.add("blah");
+      tokens.add("rhah");
+      tokens.add("blah");
+      tokens.add("123456789012345");
+
+      tokens.add("attr_bearing");
+      tokens.add("" + Math.PI);
+      tokens.add("attr_longitude");
+      tokens.add("" + Math.PI / 2);
+      tokens.add("attr_latitude");
+      tokens.add("" + Math.PI / 4);
+      tokens.add("attr_countryAbbreviation");
+      tokens.add("GBR");
+      tokens.add("attr_speedOverTheGround");
+      tokens.add("1.5");
+      tokens.add("bahh");
+      tokens.add("attr_course");
+      tokens.add("" + Math.PI / 8);
+      tokens.add("attr_speed");
+      tokens.add("33");
+      tokens.add("attr_trackNumber");
+      tokens.add("1");
+
+      State_Importer importer = new State_Importer();
+      FixWrapper res = importer.process(tokens.iterator(), logger);
+      assertNotNull("should have fix", res);
+      assertEquals("lat", 45d, res.getFixLocation().getLat());
+      assertEquals("long", 90d, res.getFixLocation().getLong());
+      assertEquals("dep", 0d, res.getFixLocation().getDepth());
+      assertEquals("crse", 22.5d, res.getCourseDegs());
+      assertEquals("speed", 33d, new WorldSpeed(res.getSpeed(), WorldSpeed.Kts)
+          .getValueIn(WorldSpeed.M_sec), 0.0001);
+      assertEquals("country", "1", res.getComment());
+    }
+    
     public void testSystem_no_country() throws ParseException
     {
       ErrorLogger logger = new Logger();
