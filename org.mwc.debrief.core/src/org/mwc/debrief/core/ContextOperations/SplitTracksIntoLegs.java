@@ -37,6 +37,7 @@ import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support;
+import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.Algorithms.Conversions;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -127,21 +128,29 @@ public class SplitTracksIntoLegs implements RightClickContextItemGenerator
 
         final TrackSegment target = splits.get(0);
 
+        final SegmentList existingSegments = track.getSegments();
+
         int ctr = 0;
         for (final TrackSegment segment : splits)
         {
           if (segment != target)
           {
-            // remove the segment
-            track.removeElement(segment);
-
-            final Enumeration<Editable> fixes = segment.elements();
-            while (fixes.hasMoreElements())
+            // check this is an existing segment for this track
+            // if we've performed several split/merge operations
+            // the list may now be out of sync
+            if (existingSegments.contains(segment))
             {
-              final FixWrapper fix = (FixWrapper) fixes.nextElement();
-              target.addFix(fix);
+              // remove the segment
+              track.removeElement(segment);
+
+              final Enumeration<Editable> fixes = segment.elements();
+              while (fixes.hasMoreElements())
+              {
+                final FixWrapper fix = (FixWrapper) fixes.nextElement();
+                target.addFix(fix);
+              }
+              ctr++;
             }
-            ctr++;
           }
         }
 
