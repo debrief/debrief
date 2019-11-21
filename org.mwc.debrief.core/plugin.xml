@@ -135,6 +135,10 @@
             name="KML Track File"/>
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
+        <loader class="org.mwc.debrief.core.loaders.CSV_GZ_Loader" extensions="gz"
+            name="Compressed C-Log data"/>
+    </extension>
+    <extension point="org.mwc.debrief.core.DebriefPlotLoader">
         <loader class="org.mwc.debrief.core.loaders.KMLLoader" extensions="kmz"
             name="KML Track Archive"/>
     </extension>

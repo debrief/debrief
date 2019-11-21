@@ -20,18 +20,18 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 
-import Debrief.ReaderWriter.XML.KML.ImportKML;
+import Debrief.ReaderWriter.XML.csv_gz.Import_CSV_GZ;
 import MWC.GUI.Layers;
 
 /**
  * @author ian.mayo
  */
-public class KMLLoader extends CoreLoader
+public class CSV_GZ_Loader extends CoreLoader
 {
 
-  public KMLLoader()
+  public CSV_GZ_Loader()
   {
-    super("KML", null);
+    super("Compressed C-Log", ".gz");
   }
 
   @Override
@@ -43,16 +43,10 @@ public class KMLLoader extends CoreLoader
       public void run(final IProgressMonitor pm)
       {
         // quick check, is this a KMZ
-        if (fileName.toLowerCase().endsWith(".kmz"))
+        if (fileName.toLowerCase().endsWith("csv.gz"))
         {
           // ok - get loading going
-          ImportKML.doZipImport(layers, inputStream, fileName);
-
-        }
-        else if (fileName.toLowerCase().endsWith(".kml"))
-        {
-          // ok - get loading going
-          ImportKML.doImport(layers, inputStream, fileName);
+          Import_CSV_GZ.doZipImport(layers, inputStream, fileName);
         }
       }
     };
