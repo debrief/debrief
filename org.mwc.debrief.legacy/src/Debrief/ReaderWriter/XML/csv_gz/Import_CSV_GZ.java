@@ -19,7 +19,6 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -27,11 +26,11 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -41,20 +40,19 @@ import org.apache.commons.csv.CSVRecord;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.LoggingService;
-import MWC.GUI.PlainWrapper;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GenericData.HiResDate;
-import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
-import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 import junit.framework.TestCase;
 
@@ -196,6 +194,9 @@ public class Import_CSV_GZ
       tokens.add("20 Nov 2019 - 11:22:33.000");
       tokens.add("blah");
       tokens.add("rhah");
+      tokens.add("blah");
+      tokens.add("123456789012345");
+
       tokens.add("attr_bearing");
       tokens.add("" + Math.PI);
       tokens.add("attr_longitude");
@@ -212,7 +213,7 @@ public class Import_CSV_GZ
       tokens.add("attr_speed");
       tokens.add("33");
       tokens.add("attr_trackNumber");
-      tokens.add("11000323223550");
+      tokens.add("1234");
 
       State_Importer importer = new State_Importer();
       FixWrapper res = importer.process(tokens.iterator(), logger);
@@ -223,7 +224,7 @@ public class Import_CSV_GZ
       assertEquals("crse", 22.5d, res.getCourseDegs());
       assertEquals("speed", 33d, new WorldSpeed(res.getSpeed(), WorldSpeed.Kts)
           .getValueIn(WorldSpeed.M_sec), 0.0001);
-      assertEquals("country", "23223550_GBR", res.getComment());
+      assertEquals("country", "789012345_1234_GBR", res.getComment());
     }
 
     public void testSystem_no_country() throws ParseException
@@ -233,6 +234,8 @@ public class Import_CSV_GZ
       tokens.add("20 Nov 2019 - 11:22:33.000");
       tokens.add("blah");
       tokens.add("rhah");
+      tokens.add("blah");
+      tokens.add("123456789012345");
       tokens.add("attr_bearing");
       tokens.add("" + Math.PI);
       tokens.add("attr_longitude");
@@ -247,7 +250,7 @@ public class Import_CSV_GZ
       tokens.add("attr_speed");
       tokens.add("33");
       tokens.add("attr_trackNumber");
-      tokens.add("11000323223550");
+      tokens.add("3550");
 
       State_Importer importer = new State_Importer();
       FixWrapper res = importer.process(tokens.iterator(), logger);
@@ -258,7 +261,7 @@ public class Import_CSV_GZ
       assertEquals("crse", 22.5d, res.getCourseDegs());
       assertEquals("speed", 33d, new WorldSpeed(res.getSpeed(), WorldSpeed.Kts)
           .getValueIn(WorldSpeed.M_sec), 0.0001);
-      assertEquals("country", "23223550", res.getComment());
+      assertEquals("country", "789012345_3550", res.getComment());
     }
 
     public void testSystem_short() throws ParseException
@@ -287,6 +290,34 @@ public class Import_CSV_GZ
           logger.messages.get(0));
     }
 
+    public void testSensor_Short() throws ParseException
+    {
+      Logger logger = new Logger();
+      List<String> tokens = new ArrayList<String>();
+      tokens.add("20 Nov 2019 - 11:22:33.000");
+      tokens.add("blah");
+      tokens.add("rhah");
+      tokens.add("blah");
+      tokens.add("123456789012345");
+      tokens.add("attr_longitude");
+      tokens.add("" + Math.PI / 2);
+      tokens.add("attr_trackNumber");
+      tokens.add("2000");
+      tokens.add("attr_depth");
+      tokens.add("" + 22d);
+      tokens.add("attr_speedOverTheGround");
+      tokens.add("1.5");
+      tokens.add("bahh");
+
+      Sensor_Importer importer = new Sensor_Importer();
+      SensorContactWrapper res = importer.process(tokens.iterator(), logger);
+      assertNull("should not have created fix", res);
+      assertFalse("should have thrown warning", logger.isEmpty());
+      assertEquals("valid message",
+          "Missing fields:attr_bearing",
+          logger.messages.get(0));
+    }
+    
     public void testSensor() throws ParseException
     {
       ErrorLogger logger = new Logger();
@@ -294,27 +325,26 @@ public class Import_CSV_GZ
       tokens.add("20 Nov 2019 - 11:22:33.000");
       tokens.add("blah");
       tokens.add("rhah");
-      tokens.add("attr_courseOverTheGround");
+      tokens.add("blah");
+      tokens.add("123456789012345");
+      tokens.add("attr_bearing");
       tokens.add("" + Math.PI);
       tokens.add("attr_longitude");
       tokens.add("" + Math.PI / 2);
-      tokens.add("attr_latitude");
-      tokens.add("" + Math.PI / 4);
+      tokens.add("attr_trackNumber");
+      tokens.add("2000");
       tokens.add("attr_depth");
       tokens.add("" + 22d);
       tokens.add("attr_speedOverTheGround");
       tokens.add("1.5");
       tokens.add("bahh");
 
-      OSD_Importer importer = new OSD_Importer();
-      FixWrapper res = importer.process(tokens.iterator(), logger);
+      Sensor_Importer importer = new Sensor_Importer();
+      SensorContactWrapper res = importer.process(tokens.iterator(), logger);
       assertNotNull("should have fix", res);
-      assertEquals("lat", 45d, res.getFixLocation().getLat());
-      assertEquals("long", 90d, res.getFixLocation().getLong());
-      assertEquals("dep", 22d, res.getFixLocation().getDepth());
-      assertEquals("crse", 180d, res.getCourseDegs());
-      assertEquals("speed", 1.5d, new WorldSpeed(res.getSpeed(), WorldSpeed.Kts)
-          .getValueIn(WorldSpeed.M_sec), 0.0001);
+      assertEquals("DTG", "Wed Nov 20 11:22:33 GMT 2019", res.getDTG().getDate().toString());
+      assertEquals("bearing", 180d, res.getBearing());
+      assertEquals("sensor", "789012345_2000", res.getSensorName());
     }
 
     public void testOSD() throws ParseException
@@ -352,8 +382,6 @@ public class Import_CSV_GZ
    * keep track of how many tracks we've created, so we can generate unique colors
    */
   private static int colorCounter = 0;
-
-  private static TrackWrapper lastTrack = null;
 
   protected static interface CSV_Importer
   {
@@ -406,7 +434,7 @@ public class Import_CSV_GZ
         final String token = tokens.next().trim();
 
         // is this the fifth column?
-        if (ctr++ == 5)
+        if (++ctr == 5)
         {
           map.put(SYSTEM_ID, token);
         }
@@ -466,7 +494,7 @@ public class Import_CSV_GZ
       Map<String, String> map = getTokens(tokens, myFields);
 
       final FixWrapper res;
-      if (map.size() == myFields.size())
+      if (map.size() >= myFields.size())
       {
         // create fix
         WorldLocation loc = new WorldLocation(Math.toDegrees(parseThis(map.get(
@@ -558,12 +586,16 @@ public class Import_CSV_GZ
       Map<String, String> map = getTokens(tokens, myFields);
 
       final SensorContactWrapper res;
-      if (map.size() == myFields.size())
+      if (map.size() >= myFields.size() + 1)
       {
         Double bearingDegs = Math.toDegrees(parseThis(map.get(BEARING)));
+
+        final String TRACK_NAME = trimmedTrackNum(map.get(SYSTEM_ID)) + "_"
+            + map.get(TRACK_ID);
+
         // create sensor
         res = new SensorContactWrapper("PENDING", date, null, bearingDegs, null,
-            null, null, LineStylePropertyEditor.SOLID, map.get(TRACK_ID));
+            null, null, LineStylePropertyEditor.SOLID, TRACK_NAME);
       }
       else
       {
@@ -595,6 +627,18 @@ public class Import_CSV_GZ
       return myTokens;
     }
 
+    private Map<String, SensorWrapper> getSensors(TrackWrapper parent)
+    {
+      Enumeration<Editable> sensors = parent.getSensors().elements();
+      Map<String, SensorWrapper> res = new HashMap<String, SensorWrapper>();
+      while (sensors.hasMoreElements())
+      {
+        SensorWrapper next = (SensorWrapper) sensors.nextElement();
+        res.put(next.getName(), next);
+      }
+      return res;
+    }
+
     @Override
     public void doImport(Layers theLayers, List<CSVRecord> records,
         final String hostName)
@@ -612,6 +656,7 @@ public class Import_CSV_GZ
       {
 
         TrackWrapper track = (TrackWrapper) host;
+        Map<String, SensorWrapper> map = getSensors(track);
         for (CSVRecord record : records)
         {
           // ok, get the date
@@ -621,16 +666,15 @@ public class Import_CSV_GZ
 
             String sensorId = nextFix.getSensorName();
 
-            // SensorWrapper sensor = track.getSensors().
-            //
-            // if (nextFix != null)
-            // {
-            // if (track == null)
-            // {
-            // track = trackFor(theLayers, hostName);
-            // }
-            // track.addFix(nextFix);
-            // }
+            SensorWrapper sensor = map.get(sensorId);
+            if (sensor == null)
+            {
+              sensor = new SensorWrapper(sensorId);
+              track.add(sensor);
+              map.put(sensorId, sensor);
+            }
+
+            sensor.add(nextFix);
           }
           catch (ParseException e)
           {
