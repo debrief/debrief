@@ -25,7 +25,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.zip.ZipEntry;
@@ -37,8 +39,10 @@ import org.apache.commons.csv.CSVRecord;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.LoggingService;
+import MWC.GUI.PlainWrapper;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
@@ -51,6 +55,52 @@ import junit.framework.TestCase;
 public class Import_CSV_GZ
 {
 
+  private TrackWrapper trackFor(Layers layers, String trackName)
+  {
+    final TrackWrapper track;
+    Layer layer = layers.findLayer(trackName);
+    if(layer != null && layer instanceof TrackWrapper)
+    {
+      track = (TrackWrapper) layer;
+    }
+    else
+    {
+      final boolean needsRename;
+      if(layer == null)
+      {
+        needsRename = false;
+      }
+      else
+      {
+        needsRename = true;
+      }
+    
+      final String nameToUse;
+      if(needsRename)
+      {
+        String suffix = "-" + (int)Math.random()*1000;
+        nameToUse = trackName + suffix;
+      }
+      else
+      {
+        nameToUse = trackName;
+      }
+      
+      track = new TrackWrapper();
+      track.setName(nameToUse);
+
+      // sort out a color
+      // sort out a color
+      final Color theCol =
+          DebriefColors.RandomColorProvider.getRandomColor(colorCounter++);
+      track.setColor(theCol);
+
+      layers.addThisLayer(track);
+    }
+    return track;
+  
+  }
+  
   private static final String CSV_DATE_FORMAT = "dd MMM yyyy - HH:mm:ss.SSS";
 
   public static class TestCSV_GZ_Import extends TestCase
@@ -63,6 +113,37 @@ public class Import_CSV_GZ
 
       DateFormat df = new GMTDateFormat(CSV_DATE_FORMAT);
       assertEquals("matching date", test_date, df.format(date));
+    }
+    
+    public void testOSD() throws ParseException
+    {
+      
+//      attr_courseOverTheGround - rads
+//      attr_depth - m
+//      attr_latitude - rads
+//      attr_longitude - rads
+//      attr_speedOverTheGround - m/s
+      
+      List<String> tokens = new ArrayList<String>();
+      tokens.add("20 Nov 2019 - 11:22:33.000");
+      tokens.add("blah");
+      tokens.add("rhah");
+      tokens.add("attr_courseOverTheGround");
+      tokens.add("" + Math.PI);
+      tokens.add("attr_longitude");
+      tokens.add("" + Math.PI/2);
+      tokens.add("attr_latitude");
+      tokens.add("" + Math.PI/4);
+      tokens.add("attr_depth");
+      tokens.add("" + 22d);
+      tokens.add("attr_speedOverTheGround");
+      tokens.add("1.5");
+      tokens.add("bahh");
+      
+      OSD_Importer importer = new OSD_Importer();
+      FixWrapper res = importer.process(tokens.iterator());
+      assertNotNull("should have fix", res);
+      
     }
   }
 
@@ -91,12 +172,6 @@ public class Import_CSV_GZ
    */
   private static int colorCounter = 0;
 
-  /**
-   * the time-stamp presumed for LineString data that may not contain time data
-   * 
-   */
-  private static int DEFAULT_TIME_STEP = 1000;
-
   private static TrackWrapper lastTrack = null;
 
   /**
@@ -107,100 +182,89 @@ public class Import_CSV_GZ
    * @param theDate
    * @param theLoc
    */
-  private static void addFix(final Layers target, final String trackName,
-      final HiResDate theDate, final WorldLocation theLoc,
-      final double courseDegs, final double speedKts)
-  {
-    // is this our current layer?
-    if (lastTrack  != null)
-    {
-      if (lastTrack.getName().equals(trackName))
-      {
-        // sorted
-      }
-      else
-      {
-        lastTrack = null;
-      }
-    }
+//  private static void addFix(final Layers target, final String trackName,
+//      final HiResDate theDate, final WorldLocation theLoc,
+//      final double courseDegs, final double speedKts)
+//  {
+//    // is this our current layer?
+//    if (lastTrack  != null)
+//    {
+//      if (lastTrack.getName().equals(trackName))
+//      {
+//        // sorted
+//      }
+//      else
+//      {
+//        lastTrack = null;
+//      }
+//    }
+//
+//    if (lastTrack == null)
+//    {
+//      lastTrack = (TrackWrapper) target.findLayer(trackName);
+//      if (lastTrack == null)
+//      {
+//        createTrack(target, trackName);
+//      }
+//    }
+//
+//    final double courseRads = MWC.Algorithms.Conversions.Degs2Rads(courseDegs);
+//    final double speedYPS =
+//        new WorldSpeed(speedKts, WorldSpeed.Kts).getValueIn(WorldSpeed.ft_sec) / 3d;
+//
+//    final FixWrapper newFix =
+//        new FixWrapper(new Fix(theDate, theLoc, courseRads, speedYPS));
+//
+//    // and reset the time value
+//    newFix.resetName();
+//
+//    lastTrack.addFix(newFix);
+//  }
 
-    if (lastTrack == null)
-    {
-      lastTrack = (TrackWrapper) target.findLayer(trackName);
-      if (lastTrack == null)
-      {
-        createTrack(target, trackName);
-      }
-    }
+//  /**
+//   * extract the course element from the supplied string
+//   * 
+//   * @param descriptionTxt
+//   * @return
+//   * @throws ParseException
+//   */
+//  private static double courseFrom(final String descriptionTxt)
+//      throws ParseException
+//  {
+//    double res = 0;
+//    // STRING LOOKS LIKE
+//    // <![CDATA[<b>RADAR PLOT 20:01:12 (GMT)</b><br><hr>Lat:
+//    // 05.9696<br>Lon: 07.9633<br>Course: 253.0<br>Speed: 7.1
+//    // knots<br>Date: September 12, 2009]]>
+//    final int startI = descriptionTxt.indexOf("Course");
+//    final int endI = descriptionTxt.indexOf("<br>Speed");
+//    if ((startI > 0) && (endI > 0))
+//    {
+//      final String subStr = descriptionTxt.substring(startI + 7, endI - 1);
+//      res = MWCXMLReader.readThisDouble(subStr.trim());
+//    }
+//    return res;
+//  }
 
-    final double courseRads = MWC.Algorithms.Conversions.Degs2Rads(courseDegs);
-    final double speedYPS =
-        new WorldSpeed(speedKts, WorldSpeed.Kts).getValueIn(WorldSpeed.ft_sec) / 3d;
 
-    final FixWrapper newFix =
-        new FixWrapper(new Fix(theDate, theLoc, courseRads, speedYPS));
-
-    // and reset the time value
-    newFix.resetName();
-
-    lastTrack.addFix(newFix);
-  }
-
-  /**
-   * extract the course element from the supplied string
-   * 
-   * @param descriptionTxt
-   * @return
-   * @throws ParseException
-   */
-  private static double courseFrom(final String descriptionTxt)
-      throws ParseException
-  {
-    double res = 0;
-    // STRING LOOKS LIKE
-    // <![CDATA[<b>RADAR PLOT 20:01:12 (GMT)</b><br><hr>Lat:
-    // 05.9696<br>Lon: 07.9633<br>Course: 253.0<br>Speed: 7.1
-    // knots<br>Date: September 12, 2009]]>
-    final int startI = descriptionTxt.indexOf("Course");
-    final int endI = descriptionTxt.indexOf("<br>Speed");
-    if ((startI > 0) && (endI > 0))
-    {
-      final String subStr = descriptionTxt.substring(startI + 7, endI - 1);
-      res = MWCXMLReader.readThisDouble(subStr.trim());
-    }
-    return res;
-  }
-
-  /**
-   * create a track using the supplied name
-   * 
-   * @param target
-   * @param trackName
-   */
-  private static void createTrack(final Layers target, final String trackName)
-  {
-    lastTrack = new TrackWrapper();
-    lastTrack.setName(trackName);
-
-    // sort out a color
-    // sort out a color
-    final Color theCol =
-        DebriefColors.RandomColorProvider.getRandomColor(colorCounter++);
-    lastTrack.setColor(theCol);
-
-    target.addThisLayer(lastTrack);
-  }
 
   protected static interface CSV_Importer
   {
-
     void doImport(Layers theLayers, List<CSVRecord> records);
-    
   }
   
   private static class OSD_Importer extends Import_CSV_GZ implements CSV_Importer
   {
 
+
+    public FixWrapper process(Iterator<String> tokens) throws ParseException
+    {
+      String dateStr = tokens.next();
+      HiResDate date = getHiResDate(dateStr);
+      System.out.println(date);
+      return null;
+    }
+    
     @Override
     public void doImport(Layers theLayers, List<CSVRecord> records)
     {
@@ -209,7 +273,7 @@ public class Import_CSV_GZ
         // ok, get the date
         try
         {
-          HiResDate date = getHiResDate(record.get(0));
+          FixWrapper nextFix = process(record.iterator());
           
           // now the other fields
           System.out.println(record);
@@ -223,6 +287,8 @@ public class Import_CSV_GZ
       }
       
     }
+
+
     
   }
   
@@ -317,137 +383,32 @@ public class Import_CSV_GZ
     return sb.toString();
   }
 
-  /**
-   * utility to run through the contents of a LineString item - presuming the presence of altitude
-   * data
-   * 
-   * @param contents
-   *          the inside of the linestring construct
-   * @param theLayers
-   *          where we're going to stick the data
-   * @param startDate
-   *          the start date for the track
-   * @throws ParseException
-   */
-  private static void parseTheseCoords(final String contents,
-      final Layers theLayers, final Date startDate) throws ParseException
-  {
-    final StringTokenizer token = new StringTokenizer(contents, ",\n", false);
+//  /**
+//   * extract the course element from the supplied string
+//   * 
+//   * @param descriptionTxt
+//   * @return
+//   * @throws ParseException
+//   */
+//  private static double speedFrom(final String descriptionTxt)
+//      throws ParseException
+//  {
+//    double res = 0;
+//    // STRING LOOKS LIKE
+//    // <![CDATA[<b>RADAR PLOT 20:01:12 (GMT)</b><br><hr>Lat:
+//    // 05.9696<br>Lon: 07.9633<br>Course: 253.0<br>Speed: 7.1
+//    // knots<br>Date: September 12, 2009]]>
+//    final int startI = descriptionTxt.indexOf("Speed");
+//    final int endI = descriptionTxt.indexOf("knots");
+//    if ((startI > 0) && (endI > 0))
+//    {
+//      final String subStr = descriptionTxt.substring(startI + 6, endI - 1);
+//      res = MWCXMLReader.readThisDouble(subStr.trim());
+//    }
+//    return res;
+//  }
 
-    Date newDate = new Date(startDate.getTime());
-
-    while (token.hasMoreElements())
-    {
-      final String longV = token.nextToken();
-      final String latV = token.nextToken();
-      final String altitude = token.nextToken();
-
-      // just check that we have altitude data
-      double theAlt = 0;
-      if (altitude.length() > 0)
-      {
-        theAlt = MWCXMLReader.readThisDouble(altitude);
-      }
-
-      addFix(theLayers, startDate.toString(), new HiResDate(newDate.getTime()),
-          new WorldLocation(MWCXMLReader.readThisDouble(latV), MWCXMLReader
-              .readThisDouble(longV), -theAlt), 0, 0);
-
-      // add a second incremenet to the date, to create the new date
-      newDate = new Date(newDate.getTime() + DEFAULT_TIME_STEP);
-    }
-
-  }
-
-  /**
-   * extract the course element from the supplied string
-   * 
-   * @param descriptionTxt
-   * @return
-   * @throws ParseException
-   */
-  private static double speedFrom(final String descriptionTxt)
-      throws ParseException
-  {
-    double res = 0;
-    // STRING LOOKS LIKE
-    // <![CDATA[<b>RADAR PLOT 20:01:12 (GMT)</b><br><hr>Lat:
-    // 05.9696<br>Lon: 07.9633<br>Course: 253.0<br>Speed: 7.1
-    // knots<br>Date: September 12, 2009]]>
-    final int startI = descriptionTxt.indexOf("Speed");
-    final int endI = descriptionTxt.indexOf("knots");
-    if ((startI > 0) && (endI > 0))
-    {
-      final String subStr = descriptionTxt.substring(startI + 6, endI - 1);
-      res = MWCXMLReader.readThisDouble(subStr.trim());
-    }
-    return res;
-  }
-
-  /**
-   * This method ensures that the output String has only valid XML unicode characters as specified
-   * by the XML 1.0 standard. For reference, please see <a
-   * href="http://www.w3.org/TR/2000/REC-xml-20001006#NT-Char">the standard</a>. This method will
-   * return an empty String if the input is null or empty.
-   * 
-   * @param in
-   *          The String whose non-valid characters we want to remove.
-   * @return The in String, stripped of non-valid characters.
-   */
-  private static String stripNonValidXMLCharacters(final String in)
-  {
-    final StringBuffer out = new StringBuffer(); // Used to hold the output.
-    char current; // Used to reference the current character.
-
-    if (in == null || ("".equals(in)))
-    {
-      return ""; // vacancy test.
-    }
-    for (int i = 0; i < in.length(); i++)
-    {
-      current = in.charAt(i); // NOTE: No IndexOutOfBoundsException caught here;
-      // it should not happen.
-      if ((current == 0x9) || (current == 0xA) || (current == 0xD)
-          || ((current >= 0x20) && (current <= 0xD7FF))
-          || ((current >= 0xE000) && (current <= 0xFFFD))
-          || ((current >= 0x10000) && (current <= 0x10FFFF)))
-      {
-        out.append(current);
-      }
-    }
-    return out.toString();
-  }
-
-  /**
-   * Remove the suffix from the passed file name, together with any leading path.
-   * 
-   * @param fileName
-   *          File name to remove suffix from.
-   * 
-   * @return <TT>fileName</TT> without a suffix.
-   * 
-   * @throws IllegalArgumentException
-   *           if <TT>null</TT> file name passed.
-   */
-  private static String tidyFileName(final String fileName)
-  {
-    if (fileName == null)
-    {
-      throw new IllegalArgumentException("file name == null");
-    }
-
-    // start off by ditching the path
-    final File holder = new File(fileName);
-    String res = holder.getName();
-
-    // now ditch the file suffix
-    final int pos = res.lastIndexOf('.');
-    if (pos > 0 && pos < res.length() - 1)
-    {
-      res = res.substring(0, pos);
-    }
-    return res;
-  }
+ 
 
   // private static String readFileAsString(String filePath)
   // throws java.io.IOException
