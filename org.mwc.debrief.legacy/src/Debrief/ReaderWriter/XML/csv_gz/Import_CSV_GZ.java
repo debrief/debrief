@@ -743,7 +743,7 @@ public class Import_CSV_GZ
       final SimpleDateFormat dfDate = new GMTDateFormat("dd/MMM/yyyy HH:mm:ss");
       assertEquals("correct date", "12/Nov/2019 12:47:00", dfDate.format(dtg));
       final WorldLocation loc = fix5.getLocation();
-      assertEquals(1.61478387101419, Math.toRadians(loc.getLat()), 0.000001);
+      assertEquals(-0.789600782, Math.toRadians(loc.getLat()), 0.000001);
       assertEquals(0.765952588191503, Math.toRadians(loc.getLong()), 0.000001);
       assertEquals(37d, loc.getDepth(), 0.000001);
       assertEquals(0.523598776, fix5.getCourse());
@@ -904,7 +904,7 @@ public class Import_CSV_GZ
       final SimpleDateFormat dfDate = new GMTDateFormat("dd/MMM/yyyy HH:mm:ss");
       assertEquals("correct date", "12/Nov/2019 12:47:40", dfDate.format(dtg));
       final WorldLocation loc = fix5.getLocation();
-      assertEquals(1.56521127318851, Math.toRadians(loc.getLat()), 0.000001);
+      assertEquals(-0.8071912410000001, Math.toRadians(loc.getLat()), 0.000001);
       assertEquals(0.788539756051038, Math.toRadians(loc.getLong()), 0.000001);
       assertEquals(0d, loc.getDepth(), 0.000001);
       assertEquals(0.847944870877505, fix5.getCourse(), 0.0001);
