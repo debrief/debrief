@@ -50,7 +50,15 @@ public class CSV_GZ_Loader extends CoreLoader
           // get a logger
           ErrorLogger logger = CorePlugin.getToolParent();
           // ok - get loading going
-          new Import_CSV_GZ().doZipImport(layers, inputStream, fileName, logger);
+          try
+          {
+            new Import_CSV_GZ().doZipImport(layers, inputStream, fileName, logger);
+          }
+          catch(RuntimeException re)
+          {
+            CorePlugin.showMessage("Import CSV.GZ", "Failed to load file:" + re
+                .getMessage());
+          }
         }
       }
     };
