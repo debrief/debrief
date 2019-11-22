@@ -37,6 +37,7 @@
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.KMZTrackArchive"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.AISTrackFile"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.NMEALogFile"/>
+            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.CSV_GZ_LogFile"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.SATCTrackFile"/>
             <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.SATCSampleTrackFile"/>
         </editor>
@@ -100,6 +101,11 @@
             name="NMEA Log file" priority="high">
             <describer class="org.mwc.debrief.core.contenttype.NMEAContentDescriber"/>
         </content-type>
+        <content-type id="org.mwc.debrief.contenttype.CSV_GZ_LogFile"
+            file-extensions="gz"
+            name="Compressed CSV C-Log file" priority="high">
+            <describer class="org.mwc.debrief.core.contenttype.CSV_GZ_ContentDescriber"/>
+        </content-type>
         <content-type id="org.mwc.debrief.contenttype.SATCTrackFile"
             file-extensions="txt"
             name="SATC export file" priority="high">
@@ -135,10 +141,6 @@
             name="KML Track File"/>
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
-        <loader class="org.mwc.debrief.core.loaders.CSV_GZ_Loader" extensions="gz"
-            name="Compressed C-Log data"/>
-    </extension>
-    <extension point="org.mwc.debrief.core.DebriefPlotLoader">
         <loader class="org.mwc.debrief.core.loaders.KMLLoader" extensions="kmz"
             name="KML Track Archive"/>
     </extension>
@@ -164,6 +166,10 @@
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
         <loader class="org.mwc.debrief.core.loaders.CLog_Loader" extensions="txt" first_line="Unknown" name="CLog File"        
+        />
+    </extension>
+    <extension point="org.mwc.debrief.core.DebriefPlotLoader">
+        <loader class="org.mwc.debrief.core.loaders.CSV_GZ_Loader" extensions="gz"  name="Compressed CLog File"        
         />
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
