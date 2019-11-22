@@ -50,6 +50,7 @@ import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.LoggingService;
+import MWC.GUI.Dialogs.DialogFactory;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GenericData.HiResDate;
@@ -62,7 +63,7 @@ import junit.framework.TestCase;
 public class Import_CSV_GZ
 {
 
-  protected abstract static class Core_Importer
+  protected abstract class Core_Importer
   {
     /**
      * map marker for the contents of the 5th column (when relevant)
@@ -70,32 +71,50 @@ public class Import_CSV_GZ
      */
     protected static final String SYSTEM_ID = "SYSTEM_ID";
 
+    /**
+     * keep a central date formatter
+     *
+     */
     private final GMTDateFormat _formatter = new GMTDateFormat(CSV_DATE_FORMAT);
 
+    /**
+     * process the lines
+     *
+     * @param theLayers
+     *          destination for the data
+     * @param records
+     *          the rows in the file
+     * @param hostName
+     *          the recording platform
+     */
     public final void doImport(final Layers theLayers,
         final List<CSVRecord> records, final String hostName)
     {
       prepareForImport(theLayers, hostName);
-      final ErrorLogger logger = new LoggingService();
       int ctr = 0;
       for (final CSVRecord record : records)
       {
         ctr++;
         try
         {
-          processThis(theLayers, hostName, logger, record);
+          processThis(theLayers, hostName, _logger, record);
         }
-        catch (final NumberFormatException ne)
+        catch (final NumberFormatException | ParseException ne)
         {
-          logger.logError(ErrorLogger.ERROR, "Problem at line:" + ctr, ne);
-        }
-        catch (final ParseException e)
-        {
-          logger.logError(ErrorLogger.ERROR, "Problem at line:" + ctr, e);
+          _logger.logError(ErrorLogger.ERROR, "Problem at line:" + ctr, ne);
+          DialogFactory.showMessage("Import CSV.GZ File", "Problem at line:"
+              + ctr + " " + ne.getMessage());
         }
       }
     }
 
+    /**
+     * parse the date
+     *
+     * @param dateStr
+     * @return
+     * @throws ParseException
+     */
     protected Date getDate(final String dateStr) throws ParseException
     {
       // 20 Nov 2019 - 11:22:33.000
@@ -103,13 +122,32 @@ public class Import_CSV_GZ
       return date;
     }
 
+    /**
+     * wrap the date
+     *
+     * @param dateStr
+     * @return
+     * @throws ParseException
+     */
     protected HiResDate getHiResDate(final String dateStr) throws ParseException
     {
       return new HiResDate(getDate(dateStr).getTime());
     }
 
+    /**
+     * retrieve the field titles for this processor
+     *
+     * @return
+     */
     abstract public List<String> getMyFields();
 
+    /**
+     * parse the tokens on this line
+     *
+     * @param tokens
+     * @param myFields
+     * @return
+     */
     protected Map<String, String> getTokens(final Iterator<String> tokens,
         final List<String> myFields)
     {
@@ -122,14 +160,21 @@ public class Import_CSV_GZ
 
       while (tokens.hasNext())
       {
+        // get a trimmed token
         final String token = tokens.next().trim();
 
         // is this the fifth column?
         if (++ctr == 5)
         {
+          // quietly store it. Some formats rely on the
+          // data in the 5th column
           map.put(SYSTEM_ID, token);
         }
 
+        /**
+         * are we waiting for a value?
+         *
+         */
         if (pendingToken != null)
         {
           // ok, extract the next value
@@ -138,7 +183,7 @@ public class Import_CSV_GZ
         }
         else
         {
-          // is this one of ours?
+          // is this a token we're looking for?
           for (final String thisT : myFields)
           {
             if (thisT.equals(token))
@@ -152,12 +197,19 @@ public class Import_CSV_GZ
       return map;
     }
 
-    protected Double parseThis(final String value)
+    /**
+     * parse this number
+     *
+     * @param value
+     * @return
+     * @throws ParseException
+     */
+    protected Double parseThis(final String value) throws ParseException
     {
       final double res;
       if (value == null || value.length() == 0)
       {
-        res = 0d;
+        throw new ParseException("Missing token", 0);
       }
       else
       {
@@ -166,18 +218,39 @@ public class Import_CSV_GZ
       return res;
     }
 
+    /**
+     * do any necessary preparation
+     *
+     * @param theLayers
+     * @param hostName
+     */
     protected abstract void prepareForImport(Layers theLayers, String hostName);
 
+    /**
+     * handle this row
+     *
+     * @param theLayers
+     * @param hostName
+     * @param logger
+     * @param record
+     * @throws ParseException
+     */
     protected abstract void processThis(Layers theLayers, String hostName,
         ErrorLogger logger, CSVRecord record) throws ParseException;
 
+    /**
+     * trim this track number
+     *
+     * @param trackStr
+     * @return
+     */
     protected String trimmedTrackNum(final String trackStr)
     {
       return trackStr.substring(6);
     }
   }
 
-  private static class OSD_Importer extends Core_Importer
+  private class OSD_Importer extends Core_Importer
   {
     private static final String SPEED = "attr_speedOverTheGround";
     private static final String DEPTH = "attr_depth";
@@ -265,9 +338,8 @@ public class Import_CSV_GZ
     }
   }
 
-  private static class Sensor_Importer extends Core_Importer
+  private class Sensor_Importer extends Core_Importer
   {
-
     private static final String BEARING = "attr_bearing";
     private static final String TRACK_ID = "attr_trackNumber";
 
@@ -378,7 +450,7 @@ public class Import_CSV_GZ
 
   }
 
-  private static class State_Importer extends Core_Importer
+  private class State_Importer extends Core_Importer
   {
     private static final String bearing = "attr_bearing";
     private static final String country = "attr_countryAbbreviation";
@@ -552,6 +624,11 @@ public class Import_CSV_GZ
       }
     }
 
+    public void setup()
+    {
+      DialogFactory.setRunHeadless(true);
+    }
+
     public void test_parse_bad_OSD_File() throws IOException
     {
       final String root = "../org.mwc.debrief.legacy/test_data/CSV_GZ_Import/";
@@ -572,7 +649,11 @@ public class Import_CSV_GZ
       // check empty
       assertEquals("empty", 0, theLayers.size());
 
-      doZipImport(theLayers, bs, filename);
+      final Import_CSV_GZ importer = new Import_CSV_GZ();
+      importer.doZipImport(theLayers, bs, filename);
+
+      // check 3 errors thrown
+
     }
 
     public void test_parse_OSD_File() throws IOException
@@ -596,7 +677,7 @@ public class Import_CSV_GZ
       // check empty
       assertEquals("empty", 0, theLayers.size());
 
-      doZipImport(theLayers, bs, filename);
+      new Import_CSV_GZ().doZipImport(theLayers, bs, filename);
 
       // check empty
       assertEquals("has track", 1, theLayers.size());
@@ -626,7 +707,8 @@ public class Import_CSV_GZ
 
     public void testDateParse() throws ParseException
     {
-      final OSD_Importer importer = new OSD_Importer();
+      final Import_CSV_GZ pImporter = new Import_CSV_GZ();
+      final OSD_Importer importer = pImporter.new OSD_Importer();
       final String test_date = "20 Nov 2019 - 11:22:33.000";
       final Date date = importer.getDate(test_date);
 
@@ -653,7 +735,8 @@ public class Import_CSV_GZ
       tokens.add("1.5");
       tokens.add("bahh");
 
-      final OSD_Importer importer = new OSD_Importer();
+      final Import_CSV_GZ pImporter = new Import_CSV_GZ();
+      final OSD_Importer importer = pImporter.new OSD_Importer();
       final FixWrapper res = importer.process(tokens.iterator(), logger);
       assertNotNull("should have fix", res);
       assertEquals("lat", 45d, res.getFixLocation().getLat());
@@ -683,7 +766,8 @@ public class Import_CSV_GZ
       tokens.add("1.5");
       tokens.add("bahh");
 
-      final OSD_Importer importer = new OSD_Importer();
+      final Import_CSV_GZ pImporter = new Import_CSV_GZ();
+      final OSD_Importer importer = pImporter.new OSD_Importer();
       try
       {
         importer.process(tokens.iterator(), logger);
@@ -710,7 +794,8 @@ public class Import_CSV_GZ
       tokens.add("1.5");
       tokens.add("bahh");
 
-      final OSD_Importer importer = new OSD_Importer();
+      final Import_CSV_GZ pImporter = new Import_CSV_GZ();
+      final OSD_Importer importer = pImporter.new OSD_Importer();
       final FixWrapper res = importer.process(tokens.iterator(), logger);
       assertNull("should not have created fix", res);
       assertFalse("should have thrown warning", logger.isEmpty());
@@ -740,7 +825,9 @@ public class Import_CSV_GZ
       tokens.add("1.5");
       tokens.add("bahh");
 
-      final Sensor_Importer importer = new Sensor_Importer();
+      final Import_CSV_GZ pImporter = new Import_CSV_GZ();
+      final Sensor_Importer importer = pImporter.new Sensor_Importer();
+
       final SensorContactWrapper res = importer.process(tokens.iterator(),
           logger);
       assertNotNull("should have fix", res);
@@ -769,7 +856,8 @@ public class Import_CSV_GZ
       tokens.add("1.5");
       tokens.add("bahh");
 
-      final Sensor_Importer importer = new Sensor_Importer();
+      final Import_CSV_GZ pImporter = new Import_CSV_GZ();
+      final Sensor_Importer importer = pImporter.new Sensor_Importer();
       final SensorContactWrapper res = importer.process(tokens.iterator(),
           logger);
       assertNull("should not have created fix", res);
@@ -806,7 +894,8 @@ public class Import_CSV_GZ
       tokens.add("attr_trackNumber");
       tokens.add("1234");
 
-      final State_Importer importer = new State_Importer();
+      final Import_CSV_GZ pImporter = new Import_CSV_GZ();
+      final State_Importer importer = pImporter.new State_Importer();
       final FixWrapper res = importer.process(tokens.iterator(), logger);
       assertNotNull("should have fix", res);
       assertEquals("lat", 45d, res.getFixLocation().getLat());
@@ -843,7 +932,8 @@ public class Import_CSV_GZ
       tokens.add("attr_trackNumber");
       tokens.add("3550");
 
-      final State_Importer importer = new State_Importer();
+      final Import_CSV_GZ pImporter = new Import_CSV_GZ();
+      final State_Importer importer = pImporter.new State_Importer();
       final FixWrapper res = importer.process(tokens.iterator(), logger);
       assertNotNull("should have fix", res);
       assertEquals("lat", 45d, res.getFixLocation().getLat());
@@ -872,7 +962,8 @@ public class Import_CSV_GZ
       tokens.add("attr_trackNumber");
       tokens.add("11000323223550");
 
-      final State_Importer importer = new State_Importer();
+      final Import_CSV_GZ pImporter = new Import_CSV_GZ();
+      final State_Importer importer = pImporter.new State_Importer();
       final FixWrapper res = importer.process(tokens.iterator(), logger);
       assertNull("should not have created fix", res);
       assertFalse("should have thrown warning", logger.isEmpty());
@@ -909,7 +1000,8 @@ public class Import_CSV_GZ
       tokens.add("attr_trackNumber");
       tokens.add("1");
 
-      final State_Importer importer = new State_Importer();
+      final Import_CSV_GZ pImporter = new Import_CSV_GZ();
+      final State_Importer importer = pImporter.new State_Importer();
       final FixWrapper res = importer.process(tokens.iterator(), logger);
       assertNotNull("should have fix", res);
       assertEquals("lat", 45d, res.getFixLocation().getLat());
@@ -924,13 +1016,43 @@ public class Import_CSV_GZ
 
   private static final String CSV_DATE_FORMAT = "dd MMM yyyy - HH:mm:ss.SSS";
 
+  private static String inputStreamAsString(final InputStream stream)
+      throws IOException
+  {
+    final InputStreamReader isr = new InputStreamReader(stream);
+    final BufferedReader br = new BufferedReader(isr);
+    final StringBuilder sb = new StringBuilder();
+    String line = null;
+
+    while ((line = br.readLine()) != null)
+    {
+      sb.append(line + "\n");
+    }
+
+    br.close();
+    return sb.toString();
+  }
+
+  private static String trackFor(final String fileName)
+  {
+    final int index = fileName.indexOf("_");
+    return fileName.substring(0, index);
+  }
+
   /**
    * keep track of how many tracks we've created, so we can generate unique colors
    */
-  private static int colorCounter = 0;
+  private int colorCounter = 0;
 
-  private static void doImport(final Layers theLayers,
-      final InputStream inputStream, final String fileName)
+  protected LoggingService _logger;
+
+  public Import_CSV_GZ()
+  {
+    _logger = new LoggingService();
+  }
+
+  private void doImport(final Layers theLayers, final InputStream inputStream,
+      final String fileName)
   {
     final String trackName = trackFor(fileName);
 
@@ -957,8 +1079,8 @@ public class Import_CSV_GZ
 
   }
 
-  public static void doZipImport(final Layers theLayers,
-      final InputStream inputStream, final String fileName)
+  public void doZipImport(final Layers theLayers, final InputStream inputStream,
+      final String fileName)
   {
     try
     {
@@ -987,30 +1109,12 @@ public class Import_CSV_GZ
 
   }
 
-  private static Core_Importer importerFor(final String filename)
+  private Core_Importer importerFor(final String filename)
   {
     return new OSD_Importer();
   }
 
-  private static String inputStreamAsString(final InputStream stream)
-      throws IOException
-  {
-    final InputStreamReader isr = new InputStreamReader(stream);
-    final BufferedReader br = new BufferedReader(isr);
-    final StringBuilder sb = new StringBuilder();
-    String line = null;
-
-    while ((line = br.readLine()) != null)
-    {
-      sb.append(line + "\n");
-    }
-
-    br.close();
-    return sb.toString();
-  }
-
-  private static TrackWrapper trackFor(final Layers layers,
-      final String trackName)
+  private TrackWrapper trackFor(final Layers layers, final String trackName)
   {
     final TrackWrapper track;
     final Layer layer = layers.findLayer(trackName);
@@ -1053,11 +1157,5 @@ public class Import_CSV_GZ
       layers.addThisLayer(track);
     }
     return track;
-  }
-
-  private static String trackFor(final String fileName)
-  {
-    final int index = fileName.indexOf("_");
-    return fileName.substring(0, index);
   }
 }

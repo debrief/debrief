@@ -46,7 +46,7 @@ public class CSV_GZ_Loader extends CoreLoader
         if (fileName.toLowerCase().endsWith("csv.gz"))
         {
           // ok - get loading going
-          Import_CSV_GZ.doZipImport(layers, inputStream, fileName);
+          new Import_CSV_GZ().doZipImport(layers, inputStream, fileName);
         }
       }
     };
