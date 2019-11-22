@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -155,6 +156,29 @@ public class Import_CSV_GZ
       }
     }
 
+    public void test_parse_bad_OSD_File() throws IOException
+    {
+      final String root = "../org.mwc.debrief.legacy/test_data/CSV_GZ_Import/";
+      final String filename = "BARTON_xxxx_OSD_xxxx.csv.gz";
+
+      // start off with the ownship track
+      final File zipFile = new File(root + filename);
+      assertTrue(zipFile.exists());
+
+      assertTrue("is gzip", GzipUtils.isCompressedFilename(root + filename));
+      assertEquals("name", "BARTON_xxxx_OSD_xxxx.csv", GzipUtils
+          .getUncompressedFilename(filename));
+
+      final InputStream bs = new FileInputStream(zipFile);
+
+      Layers theLayers = new Layers();
+
+      // check empty
+      assertEquals("empty", 0, theLayers.size());
+
+      doZipImport(theLayers, bs, filename);
+    }
+
     public void test_parse_OSD_File() throws IOException
     {
       final String root =
@@ -164,31 +188,13 @@ public class Import_CSV_GZ
       // start off with the ownship track
       final File zipFile = new File(root + filename);
       assertTrue(zipFile.exists());
-      
+
       assertTrue("is gzip", GzipUtils.isCompressedFilename(root + filename));
-      assertEquals("name", "BARTON_xxxx_OSD_xxxx.csv", GzipUtils.getUncompressedFilename(filename));
-      
+      assertEquals("name", "BARTON_xxxx_OSD_xxxx.csv", GzipUtils
+          .getUncompressedFilename(filename));
+
       final InputStream bs = new FileInputStream(zipFile);
-      
-      GZIPInputStream in = new GZIPInputStream(bs);
-      final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-      final BufferedOutputStream fout = new BufferedOutputStream(bos);
-      for (int c = in.read(); c != -1; c = in.read())
-      {
-        fout.write(c);
-      }
-      in.close();
-      fout.close();
-      bos.close();
 
-      // now create a byte input stream from the byte output stream
-      final ByteArrayInputStream bis = new ByteArrayInputStream(bos
-          .toByteArray());
-
-      // get the file as a string
-      final String contents = inputStreamAsString(bis);
-      System.out.println(contents);
-      
       Layers theLayers = new Layers();
 
       // check empty
@@ -198,6 +204,27 @@ public class Import_CSV_GZ
 
       // check empty
       assertEquals("has track", 1, theLayers.size());
+      Layer bTrack = theLayers.findLayer("BARTON");
+      assertNotNull("found track", bTrack);
+      TrackWrapper track = (TrackWrapper) bTrack;
+      assertEquals("has fixes", 27, track.numFixes());
+      Enumeration<Editable> pIter = track.getPositionIterator();
+      // move along a bit
+      pIter.nextElement();
+      pIter.nextElement();
+      pIter.nextElement();
+      pIter.nextElement();
+      FixWrapper fix5 = (FixWrapper) pIter.nextElement();
+      Date dtg = fix5.getDTG().getDate();
+      SimpleDateFormat dfDate = new GMTDateFormat("dd/MMM/yyyy HH:mm:ss");
+      assertEquals("correct date", "12/Nov/2019 12:47:00", dfDate.format(dtg));
+      WorldLocation loc = fix5.getLocation();
+      assertEquals(1.61478387101419, Math.toRadians(loc.getLat()), 0.000001);
+      assertEquals(0.765952588191503, Math.toRadians(loc.getLong()), 0.000001);
+      assertEquals(37d, loc.getDepth(), 0.000001);
+      assertEquals(0.523598776, fix5.getCourse());
+      assertEquals(9d, new WorldSpeed(fix5.getSpeed(), WorldSpeed.Kts)
+          .getValueIn(WorldSpeed.M_sec));
 
     }
 
@@ -435,6 +462,37 @@ public class Import_CSV_GZ
       assertEquals("sensor", "789012345_2000", res.getSensorName());
     }
 
+    public void testOSD_bad_parse() throws ParseException
+    {
+      ErrorLogger logger = new Logger();
+      List<String> tokens = new ArrayList<String>();
+      tokens.add("20 Nov 2019 - 11:22:33.000");
+      tokens.add("blah");
+      tokens.add("rhah");
+      tokens.add("attr_courseOverTheGround");
+      tokens.add("" + Math.PI);
+      tokens.add("attr_longitude");
+      tokens.add("a" + Math.PI / 2);
+      tokens.add("attr_latitude");
+      tokens.add("" + Math.PI / 4);
+      tokens.add("attr_depth");
+      tokens.add("" + 22d);
+      tokens.add("attr_speedOverTheGround");
+      tokens.add("1.5");
+      tokens.add("bahh");
+
+      OSD_Importer importer = new OSD_Importer();
+      try
+      {
+        importer.process(tokens.iterator(), logger);
+        fail("should have thrown exception");
+      }
+      catch (NumberFormatException nf)
+      {
+
+      }
+    }
+
     public void testOSD() throws ParseException
     {
       ErrorLogger logger = new Logger();
@@ -471,14 +529,36 @@ public class Import_CSV_GZ
    */
   private static int colorCounter = 0;
 
-  protected static interface CSV_Importer
+  protected abstract static class Core_Importer
   {
-    void doImport(Layers theLayers, List<CSVRecord> records,
-        final String hostName);
-  }
+    public final void doImport(Layers theLayers, List<CSVRecord> records,
+        final String hostName)
+    {
+      prepareForImport(theLayers, hostName);
+      ErrorLogger logger = new LoggingService();
+      int ctr = 0;
+      for (CSVRecord record : records)
+      {
+        ctr++;
+        try
+        {
+          processThis(theLayers, hostName, logger, record);
+        }
+        catch (NumberFormatException ne)
+        {
+          logger.logError(ErrorLogger.ERROR, "Problem at line:" + ctr, ne);
+        }
+        catch (ParseException e)
+        {
+          logger.logError(ErrorLogger.ERROR, "Problem at line:" + ctr, e);
+        }
+      }
+    }
 
-  private abstract static class ImporterType implements CSV_Importer
-  {
+    protected abstract void processThis(Layers theLayers, String hostName,
+        ErrorLogger logger, CSVRecord record) throws ParseException;
+
+    protected abstract void prepareForImport(Layers theLayers, String hostName);
 
     private final GMTDateFormat _formatter = new GMTDateFormat(CSV_DATE_FORMAT);
 
@@ -564,13 +644,14 @@ public class Import_CSV_GZ
     }
   }
 
-  private static class OSD_Importer extends ImporterType implements CSV_Importer
+  private static class OSD_Importer extends Core_Importer
   {
     private static final String SPEED = "attr_speedOverTheGround";
     private static final String DEPTH = "attr_depth";
     private static final String LAT = "attr_latitude";
     private static final String LONG = "attr_longitude";
     private static final String COURSE = "attr_courseOverTheGround";
+    private TrackWrapper _track;
 
     public FixWrapper process(Iterator<String> tokens, ErrorLogger logger)
         throws ParseException
@@ -626,43 +707,72 @@ public class Import_CSV_GZ
       return myTokens;
     }
 
-    @Override
-    public void doImport(Layers theLayers, List<CSVRecord> records,
-        final String hostName)
+    public void processThis(Layers theLayers, final String hostName,
+        ErrorLogger logger, CSVRecord record) throws ParseException
     {
-      ErrorLogger logger = new LoggingService();
-      TrackWrapper track = null;
-      for (CSVRecord record : records)
-      {
-        // ok, get the date
-        try
-        {
-          FixWrapper nextFix = process(record.iterator(), logger);
+      FixWrapper nextFix = process(record.iterator(), logger);
 
-          if (nextFix != null)
-          {
-            if (track == null)
-            {
-              track = trackFor(theLayers, hostName);
-            }
-            track.addFix(nextFix);
-          }
-        }
-        catch (ParseException e)
+      if (nextFix != null)
+      {
+        if (_track == null)
         {
-          logger.logError(ErrorLogger.ERROR,
-              "Failed to import OSD data from C-Log CSV", e);
+          _track = trackFor(theLayers, hostName);
         }
+        _track.addFix(nextFix);
       }
+    }
+
+    @Override
+    protected void prepareForImport(Layers theLayers, String hostName)
+    {
+      _track = null;
     }
   }
 
-  private static class Sensor_Importer extends ImporterType implements
-      CSV_Importer
+  private static class Sensor_Importer extends Core_Importer
   {
 
     private static final String BEARING = "attr_bearing";
     private static final String TRACK_ID = "attr_trackNumber";
+
+    private TrackWrapper track;
+    private Map<String, SensorWrapper> map;
+
+    @Override
+    protected void processThis(Layers theLayers, String hostName,
+        ErrorLogger logger, CSVRecord record) throws ParseException
+    {
+      SensorContactWrapper nextFix = process(record.iterator(), logger);
+
+      String sensorId = nextFix.getSensorName();
+
+      SensorWrapper sensor = map.get(sensorId);
+      if (sensor == null)
+      {
+        sensor = new SensorWrapper(sensorId);
+        track.add(sensor);
+        map.put(sensorId, sensor);
+      }
+
+      sensor.add(nextFix);
+
+    }
+
+    @Override
+    protected void prepareForImport(Layers theLayers, String hostName)
+    {
+      // get the host track
+      Layer host = theLayers.findLayer(hostName);
+      if (host == null || !(host instanceof TrackWrapper))
+      {
+        LoggingService.INSTANCE().logStack(LoggingService.ERROR,
+            "Can't find host track:" + hostName);
+      }
+
+      track = (TrackWrapper) host;
+      map = getSensors(track);
+
+    }
 
     public SensorContactWrapper process(Iterator<String> tokens,
         ErrorLogger logger) throws ParseException
@@ -727,55 +837,9 @@ public class Import_CSV_GZ
       return res;
     }
 
-    @Override
-    public void doImport(Layers theLayers, List<CSVRecord> records,
-        final String hostName)
-    {
-      ErrorLogger logger = new LoggingService();
-
-      // get the host track
-      Layer host = theLayers.findLayer(hostName);
-      if (host == null || !(host instanceof TrackWrapper))
-      {
-        LoggingService.INSTANCE().logStack(LoggingService.ERROR,
-            "Can't find host track:" + hostName);
-      }
-      else
-      {
-
-        TrackWrapper track = (TrackWrapper) host;
-        Map<String, SensorWrapper> map = getSensors(track);
-        for (CSVRecord record : records)
-        {
-          // ok, get the date
-          try
-          {
-            SensorContactWrapper nextFix = process(record.iterator(), logger);
-
-            String sensorId = nextFix.getSensorName();
-
-            SensorWrapper sensor = map.get(sensorId);
-            if (sensor == null)
-            {
-              sensor = new SensorWrapper(sensorId);
-              track.add(sensor);
-              map.put(sensorId, sensor);
-            }
-
-            sensor.add(nextFix);
-          }
-          catch (ParseException e)
-          {
-            logger.logError(ErrorLogger.ERROR,
-                "Failed to import OSD data from C-Log CSV", e);
-          }
-        }
-      }
-    }
   }
 
-  private static class State_Importer extends ImporterType implements
-      CSV_Importer
+  private static class State_Importer extends Core_Importer
   {
     private static final String bearing = "attr_bearing";
     private static final String country = "attr_countryAbbreviation";
@@ -867,43 +931,38 @@ public class Import_CSV_GZ
     }
 
     @Override
-    public void doImport(Layers theLayers, List<CSVRecord> records,
-        final String hostName)
+    protected void processThis(Layers theLayers, String hostName,
+        ErrorLogger logger, CSVRecord record) throws ParseException
     {
-      ErrorLogger logger = new LoggingService();
-      for (CSVRecord record : records)
-      {
-        // ok, get the date
-        try
-        {
-          FixWrapper nextFix = process(record.iterator(), logger);
+      FixWrapper nextFix = process(record.iterator(), logger);
 
-          if (nextFix != null)
-          {
-            String trackId = nextFix.getComment();
-            final String trackName;
-            if (trackId.equals(MY_TRACK_ID))
-            {
-              trackName = hostName;
-            }
-            else
-            {
-              trackName = trackId;
-            }
-            TrackWrapper track = trackFor(theLayers, trackName);
-            track.addFix(nextFix);
-          }
-        }
-        catch (ParseException e)
+      if (nextFix != null)
+      {
+        String trackId = nextFix.getComment();
+        final String trackName;
+        if (trackId.equals(MY_TRACK_ID))
         {
-          logger.logError(ErrorLogger.ERROR,
-              "Failed to import OSD data from C-Log CSV", e);
+          trackName = hostName;
         }
+        else
+        {
+          trackName = trackId;
+        }
+        TrackWrapper track = trackFor(theLayers, trackName);
+        track.addFix(nextFix);
       }
+
     }
+
+    @Override
+    protected void prepareForImport(Layers theLayers, String hostName)
+    {
+
+    }
+
   }
 
-  private static CSV_Importer importerFor(final String filename)
+  private static Core_Importer importerFor(final String filename)
   {
     return new OSD_Importer();
   }
@@ -920,7 +979,7 @@ public class Import_CSV_GZ
     final String trackName = trackFor(fileName);
 
     // find out which type it is
-    CSV_Importer importer = importerFor(fileName);
+    Core_Importer importer = importerFor(fileName);
 
     try
     {
@@ -945,16 +1004,16 @@ public class Import_CSV_GZ
   public static void doZipImport(final Layers theLayers,
       final InputStream inputStream, final String fileName)
   {
-    try (GZIPInputStream zis = new GZIPInputStream(inputStream))
+    try
     {
-
+      GZIPInputStream in = new GZIPInputStream(inputStream);
       final ByteArrayOutputStream bos = new ByteArrayOutputStream();
       final BufferedOutputStream fout = new BufferedOutputStream(bos);
-      for (int c = zis.read(); c != -1; c = zis.read())
+      for (int c = in.read(); c != -1; c = in.read())
       {
         fout.write(c);
       }
-      zis.close();
+      in.close();
       fout.close();
       bos.close();
 
