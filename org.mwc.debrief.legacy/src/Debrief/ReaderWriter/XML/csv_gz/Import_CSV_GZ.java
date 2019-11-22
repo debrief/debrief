@@ -66,7 +66,7 @@ import junit.framework.TestCase;
 public class Import_CSV_GZ
 {
 
-  protected abstract class Core_Importer
+  private abstract class Core_Importer
   {
     /**
      * map marker for the contents of the 5th column (when relevant)
@@ -1280,23 +1280,25 @@ public class Import_CSV_GZ
     {
       logger.logStack(ErrorLogger.ERROR, "Cant find importer for " + fileName);
     }
-
-    try
+    else
     {
-      // get the file as a string
-      final String contents = inputStreamAsString(inputStream);
+      try
+      {
+        // get the file as a string
+        final String contents = inputStreamAsString(inputStream);
 
-      // pass it through the parser
-      final List<CSVRecord> records = CSVParser.parse(contents, CSVFormat.EXCEL)
-          .getRecords();
+        // pass it through the parser
+        final List<CSVRecord> records = CSVParser.parse(contents,
+            CSVFormat.EXCEL).getRecords();
 
-      // go for it
-      importer.doImport(theLayers, records, trackName, logger);
-    }
-    catch (final IOException e)
-    {
-      LoggingService.INSTANCE().logError(ErrorLogger.ERROR,
-          "Failed while importing CSV file:" + fileName, e);
+        // go for it
+        importer.doImport(theLayers, records, trackName, logger);
+      }
+      catch (final IOException e)
+      {
+        LoggingService.INSTANCE().logError(ErrorLogger.ERROR,
+            "Failed while importing CSV file:" + fileName, e);
+      }
     }
 
   }
