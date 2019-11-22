@@ -982,7 +982,7 @@ public class Import_CSV_GZ
       }
       catch (final NumberFormatException nf)
       {
-
+        assertNotNull(nf);
       }
     }
 
@@ -1251,7 +1251,7 @@ public class Import_CSV_GZ
     return sb.toString();
   }
 
-  private static String trackFor(final String fullPath)
+  private static String getTrackPrefix(final String fullPath)
   {
     // create object of Path
     final Path path = Paths.get(fullPath);
@@ -1271,7 +1271,7 @@ public class Import_CSV_GZ
   private void doImport(final Layers theLayers, final InputStream inputStream,
       final String fileName, final ErrorLogger logger)
   {
-    final String trackName = trackFor(fileName);
+    final String trackName = getTrackPrefix(fileName);
 
     // find out which type it is
     final Core_Importer importer = importerFor(fileName);
