@@ -24,6 +24,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -91,7 +93,7 @@ public class Import_CSV_GZ
      */
     public final void doImport(final Layers theLayers,
         final List<CSVRecord> records, final String hostName,
-        ErrorLogger logger)
+        final ErrorLogger logger)
     {
       prepareForImport(theLayers, hostName, logger);
       int ctr = 0;
@@ -222,7 +224,7 @@ public class Import_CSV_GZ
         {
           res = Double.parseDouble(value);
         }
-        catch (NumberFormatException ne)
+        catch (final NumberFormatException ne)
         {
           throw new NumberFormatException("While parsing " + name + "_" + ne
               .getMessage());
@@ -236,9 +238,10 @@ public class Import_CSV_GZ
      *
      * @param theLayers
      * @param hostName
-     * @param logger 
+     * @param logger
      */
-    protected abstract void prepareForImport(Layers theLayers, String hostName, ErrorLogger logger);
+    protected abstract void prepareForImport(Layers theLayers, String hostName,
+        ErrorLogger logger);
 
     /**
      * handle this row
@@ -287,7 +290,7 @@ public class Import_CSV_GZ
 
     @Override
     protected void prepareForImport(final Layers theLayers,
-        final String hostName, ErrorLogger logger)
+        final String hostName, final ErrorLogger logger)
     {
       _track = null;
     }
@@ -347,6 +350,8 @@ public class Import_CSV_GZ
         if (_track == null)
         {
           _track = trackFor(theLayers, hostName);
+          // check it's Debrief blue
+          _track.setColor(DebriefColors.BLUE);
         }
         _track.addFix(nextFix);
       }
@@ -390,14 +395,13 @@ public class Import_CSV_GZ
 
     @Override
     protected void prepareForImport(final Layers theLayers,
-        final String hostName, ErrorLogger logger)
+        final String hostName, final ErrorLogger logger)
     {
       // get the host track
       final Layer host = theLayers.findLayer(hostName);
       if (host == null || !(host instanceof TrackWrapper))
       {
-        logger.logStack(ErrorLogger.ERROR,
-            "Can't find host track:" + hostName);
+        logger.logStack(ErrorLogger.ERROR, "Can't find host track:" + hostName);
         throw new RuntimeException("Host track not found:" + hostName);
       }
 
@@ -462,14 +466,16 @@ public class Import_CSV_GZ
       if (sensor == null)
       {
         sensor = new SensorWrapper(sensorId);
+
+        final Color theCol = DebriefColors.RandomColorProvider.getRandomColor(
+            colorCounter++);
+        sensor.setColor(theCol);
+
         track.add(sensor);
         map.put(sensorId, sensor);
       }
-
       sensor.add(nextFix);
-
     }
-
   }
 
   private class State_Importer extends Core_Importer
@@ -500,7 +506,7 @@ public class Import_CSV_GZ
 
     @Override
     protected void prepareForImport(final Layers theLayers,
-        final String hostName, ErrorLogger logger)
+        final String hostName, final ErrorLogger logger)
     {
 
     }
@@ -592,6 +598,10 @@ public class Import_CSV_GZ
           trackName = trackId;
         }
         final TrackWrapper track = trackFor(theLayers, trackName);
+
+        // reset name
+        nextFix.resetName();
+
         track.addFix(nextFix);
       }
 
@@ -651,6 +661,7 @@ public class Import_CSV_GZ
       }
     }
 
+    @Override
     public void setUp()
     {
       DialogFactory.setRunHeadless(true);
@@ -677,12 +688,12 @@ public class Import_CSV_GZ
       assertEquals("empty", 0, theLayers.size());
 
       final Import_CSV_GZ importer = new Import_CSV_GZ();
-      Logger logger = new Logger();
+      final Logger logger = new Logger();
       importer.doZipImport(theLayers, bs, filename, logger);
 
       // check 3 errors thrown
       assertEquals("3 messages", 3, logger.getMessages().size());
-      List<String> strings = logger.getMessages();
+      final List<String> strings = logger.getMessages();
       assertTrue(strings.contains(
           "Problem at line:3 While parsing attr_latitude_For input string: \"a1.585351162\""));
       assertTrue(strings.contains(
@@ -711,7 +722,7 @@ public class Import_CSV_GZ
 
       // check empty
       assertEquals("empty", 0, theLayers.size());
-      Logger logger = new Logger();
+      final Logger logger = new Logger();
 
       new Import_CSV_GZ().doZipImport(theLayers, bs, filename, logger);
 
@@ -741,6 +752,117 @@ public class Import_CSV_GZ
 
     }
 
+    public void test_parse_Sensor_File() throws IOException
+    {
+
+      final String root1 =
+          "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/csv_gz/";
+      final String filename1 = "BARTON_xxxx_OSD_xxxx.csv.gz";
+
+      // start off with the ownship track
+      final File zipFile1 = new File(root1 + filename1);
+      assertTrue(zipFile1.exists());
+
+      assertTrue("is gzip", GzipUtils.isCompressedFilename(root1 + filename1));
+      assertEquals("name", "BARTON_xxxx_OSD_xxxx.csv", GzipUtils
+          .getUncompressedFilename(filename1));
+
+      final InputStream bs1 = new FileInputStream(zipFile1);
+
+      final Layers theLayers = new Layers();
+
+      // check empty
+      assertEquals("empty", 0, theLayers.size());
+      final Logger logger = new Logger();
+
+      new Import_CSV_GZ().doZipImport(theLayers, bs1, filename1, logger);
+
+      final String root =
+          "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/csv_gz/";
+      final String filename = "BARTON_Tracks_xxxx_BSensor_Track_xxxx.csv.gz";
+
+      // start off with the ownship track
+      final File zipFile = new File(root + filename);
+      assertTrue(zipFile.exists());
+
+      assertTrue("is gzip", GzipUtils.isCompressedFilename(root + filename));
+      assertEquals("name", "BARTON_Tracks_xxxx_BSensor_Track_xxxx.csv",
+          GzipUtils.getUncompressedFilename(filename));
+
+      final InputStream bs = new FileInputStream(zipFile);
+
+      // check empty
+      assertEquals("has ownship", 1, theLayers.size());
+
+      new Import_CSV_GZ().doZipImport(theLayers, bs, filename, logger);
+
+      // check empty
+      assertEquals("has track", 1, theLayers.size());
+      final Layer bTrack = theLayers.findLayer("BARTON");
+      assertNotNull("found track", bTrack);
+      final TrackWrapper track = (TrackWrapper) bTrack;
+      assertEquals("has fixes", 27, track.numFixes());
+
+      // get that sensor data
+      final BaseLayer sensors = track.getSensors();
+      assertEquals(3, sensors.size());
+
+      final SensorWrapper sensor = (SensorWrapper) sensors.elements()
+          .nextElement();
+      assertEquals("correct cuts", 10, sensor.size());
+
+      final Enumeration<Editable> pIter = sensor.elements();
+      // move along a bit
+      pIter.nextElement();
+      pIter.nextElement();
+      pIter.nextElement();
+      pIter.nextElement();
+      final SensorContactWrapper fix5 = (SensorContactWrapper) pIter
+          .nextElement();
+      final Date dtg = fix5.getDTG().getDate();
+      final SimpleDateFormat dfDate = new GMTDateFormat("dd/MMM/yyyy HH:mm:ss");
+      assertEquals("correct date", "12/Nov/2019 12:47:55", dfDate.format(dtg));
+      assertEquals("correct bearing", Math.toDegrees(1.056688125), fix5
+          .getBearing());
+      assertEquals("correct sensor name", "78902_3000", fix5.getSensorName());
+
+    }
+
+    public void test_parse_Sensor_File_Host_Missing() throws IOException
+    {
+      final String root =
+          "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/csv_gz/";
+      final String filename = "BARTON_Tracks_xxxx_BSensor_Track_xxxx.csv.gz";
+
+      // start off with the ownship track
+      final File zipFile = new File(root + filename);
+      assertTrue(zipFile.exists());
+
+      assertTrue("is gzip", GzipUtils.isCompressedFilename(root + filename));
+      assertEquals("name", "BARTON_Tracks_xxxx_BSensor_Track_xxxx.csv",
+          GzipUtils.getUncompressedFilename(filename));
+
+      final InputStream bs = new FileInputStream(zipFile);
+
+      final Layers theLayers = new Layers();
+
+      // check empty
+      assertEquals("empty", 0, theLayers.size());
+      final Logger logger = new Logger();
+
+      try
+      {
+        new Import_CSV_GZ().doZipImport(theLayers, bs, filename, logger);
+        fail("Should not get here");
+      }
+      catch (final RuntimeException re)
+      {
+        assertEquals("correct error message", "Host track not found:BARTON", re
+            .getMessage());
+      }
+
+    }
+
     public void test_parse_Tracks_File() throws IOException
     {
       final String root =
@@ -761,7 +883,7 @@ public class Import_CSV_GZ
 
       // check empty
       assertEquals("empty", 0, theLayers.size());
-      Logger logger = new Logger();
+      final Logger logger = new Logger();
 
       new Import_CSV_GZ().doZipImport(theLayers, bs, filename, logger);
 
@@ -788,114 +910,6 @@ public class Import_CSV_GZ
       assertEquals(0.847944870877505, fix5.getCourse(), 0.0001);
       assertEquals(6.8, new WorldSpeed(fix5.getSpeed(), WorldSpeed.Kts)
           .getValueIn(WorldSpeed.M_sec), 0.0001);
-    }
-
-    public void test_parse_Sensor_File() throws IOException
-    {
-      
-      final String root1 =
-          "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/csv_gz/";
-      final String filename1 = "BARTON_xxxx_OSD_xxxx.csv.gz";
-
-      // start off with the ownship track
-      final File zipFile1 = new File(root1 + filename1);
-      assertTrue(zipFile1.exists());
-
-      assertTrue("is gzip", GzipUtils.isCompressedFilename(root1 + filename1));
-      assertEquals("name", "BARTON_xxxx_OSD_xxxx.csv", GzipUtils
-          .getUncompressedFilename(filename1));
-
-      final InputStream bs1 = new FileInputStream(zipFile1);
-
-      final Layers theLayers = new Layers();
-
-      // check empty
-      assertEquals("empty", 0, theLayers.size());
-      Logger logger = new Logger();
-
-      new Import_CSV_GZ().doZipImport(theLayers, bs1, filename1, logger);
-      
-      final String root =
-          "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/csv_gz/";
-      final String filename = "BARTON_Tracks_xxxx_BSensor_Track_xxxx.csv.gz";
-
-      // start off with the ownship track
-      final File zipFile = new File(root + filename);
-      assertTrue(zipFile.exists());
-
-      assertTrue("is gzip", GzipUtils.isCompressedFilename(root + filename));
-      assertEquals("name", "BARTON_Tracks_xxxx_BSensor_Track_xxxx.csv",
-          GzipUtils.getUncompressedFilename(filename));
-
-      final InputStream bs = new FileInputStream(zipFile);
-
-      // check empty
-      assertEquals("has ownship", 1, theLayers.size());
-
-      new Import_CSV_GZ().doZipImport(theLayers, bs, filename, logger);
-
-      // check empty
-      assertEquals("has track", 1, theLayers.size());
-      final Layer bTrack = theLayers.findLayer("BARTON");
-      assertNotNull("found track", bTrack);
-      final TrackWrapper track = (TrackWrapper) bTrack;
-      assertEquals("has fixes", 27, track.numFixes());
-      
-      // get that sensor data
-      BaseLayer sensors = track.getSensors();
-      assertEquals(3, sensors.size());
-      
-      SensorWrapper sensor = (SensorWrapper) sensors.elements().nextElement();
-      assertEquals("correct cuts", 10, sensor.size());
-      
-      
-      final Enumeration<Editable> pIter = sensor.elements();
-      // move along a bit
-      pIter.nextElement();
-      pIter.nextElement();
-      pIter.nextElement();
-      pIter.nextElement();
-      final SensorContactWrapper fix5 = (SensorContactWrapper) pIter.nextElement();
-      final Date dtg = fix5.getDTG().getDate();
-      final SimpleDateFormat dfDate = new GMTDateFormat("dd/MMM/yyyy HH:mm:ss");
-      assertEquals("correct date", "12/Nov/2019 12:47:55", dfDate.format(dtg));
-      assertEquals("correct bearing", Math.toDegrees(1.056688125), fix5.getBearing());
-      assertEquals("correct sensor name", "78902_3000", fix5.getSensorName());
-      
-    }
-    
-    public void test_parse_Sensor_File_Host_Missing() throws IOException
-    {
-      final String root =
-          "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/csv_gz/";
-      final String filename = "BARTON_Tracks_xxxx_BSensor_Track_xxxx.csv.gz";
-
-      // start off with the ownship track
-      final File zipFile = new File(root + filename);
-      assertTrue(zipFile.exists());
-
-      assertTrue("is gzip", GzipUtils.isCompressedFilename(root + filename));
-      assertEquals("name", "BARTON_Tracks_xxxx_BSensor_Track_xxxx.csv",
-          GzipUtils.getUncompressedFilename(filename));
-
-      final InputStream bs = new FileInputStream(zipFile);
-
-      final Layers theLayers = new Layers();
-
-      // check empty
-      assertEquals("empty", 0, theLayers.size());
-      Logger logger = new Logger();
-
-      try
-      {
-        new Import_CSV_GZ().doZipImport(theLayers, bs, filename, logger);
-        fail("Should not get here");
-      }
-      catch(RuntimeException re)
-      {
-        assertEquals("correct error message", "Host track not found:BARTON", re.getMessage());
-      }
-
     }
 
     public void testDateParse() throws ParseException
@@ -1237,10 +1251,16 @@ public class Import_CSV_GZ
     return sb.toString();
   }
 
-  private static String trackFor(final String fileName)
+  private static String trackFor(final String fullPath)
   {
-    final int index = fileName.indexOf("_");
-    return fileName.substring(0, index);
+    // create object of Path
+    final Path path = Paths.get(fullPath);
+
+    // call getFileName() and get FileName path object
+    final Path fileName = path.getFileName();
+    final String gName = fileName.toString();
+    final int index = gName.indexOf("_");
+    return gName.substring(0, index);
   }
 
   /**
@@ -1249,7 +1269,7 @@ public class Import_CSV_GZ
   private int colorCounter = 0;
 
   private void doImport(final Layers theLayers, final InputStream inputStream,
-      final String fileName, ErrorLogger logger)
+      final String fileName, final ErrorLogger logger)
   {
     final String trackName = trackFor(fileName);
 
@@ -1282,7 +1302,7 @@ public class Import_CSV_GZ
   }
 
   public void doZipImport(final Layers theLayers, final InputStream inputStream,
-      final String fileName, ErrorLogger logger)
+      final String fileName, final ErrorLogger logger)
   {
     try
     {
@@ -1308,7 +1328,6 @@ public class Import_CSV_GZ
     {
       e.printStackTrace();
     }
-
   }
 
   private Core_Importer importerFor(final String filename)
@@ -1364,11 +1383,9 @@ public class Import_CSV_GZ
       track.setName(nameToUse);
 
       // sort out a color
-      // sort out a color
       final Color theCol = DebriefColors.RandomColorProvider.getRandomColor(
           colorCounter++);
       track.setColor(theCol);
-
       layers.addThisLayer(track);
     }
     return track;
