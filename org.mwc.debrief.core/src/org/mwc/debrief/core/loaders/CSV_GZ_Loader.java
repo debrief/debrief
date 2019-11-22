@@ -19,8 +19,10 @@ import java.io.InputStream;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.mwc.cmap.core.CorePlugin;
 
 import Debrief.ReaderWriter.XML.csv_gz.Import_CSV_GZ;
+import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layers;
 
 /**
@@ -45,8 +47,10 @@ public class CSV_GZ_Loader extends CoreLoader
         // quick check, is this a KMZ
         if (fileName.toLowerCase().endsWith("csv.gz"))
         {
+          // get a logger
+          ErrorLogger logger = CorePlugin.getToolParent();
           // ok - get loading going
-          new Import_CSV_GZ().doZipImport(layers, inputStream, fileName);
+          new Import_CSV_GZ().doZipImport(layers, inputStream, fileName, logger);
         }
       }
     };

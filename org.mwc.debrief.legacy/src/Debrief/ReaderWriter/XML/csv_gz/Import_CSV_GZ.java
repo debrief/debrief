@@ -86,9 +86,10 @@ public class Import_CSV_GZ
      *          the rows in the file
      * @param hostName
      *          the recording platform
+     * @param logger 
      */
     public final void doImport(final Layers theLayers,
-        final List<CSVRecord> records, final String hostName)
+        final List<CSVRecord> records, final String hostName, ErrorLogger logger)
     {
       prepareForImport(theLayers, hostName);
       int ctr = 0;
@@ -97,11 +98,11 @@ public class Import_CSV_GZ
         ctr++;
         try
         {
-          processThis(theLayers, hostName, _logger, record);
+          processThis(theLayers, hostName, logger, record);
         }
         catch (final NumberFormatException | ParseException ne)
         {
-          _logger.logError(ErrorLogger.ERROR, "Problem at line:" + ctr, ne);
+          logger.logError(ErrorLogger.ERROR, "Problem at line:" + ctr + " " + ne.getMessage(), ne);
           DialogFactory.showMessage("Import CSV.GZ File", "Problem at line:"
               + ctr + " " + ne.getMessage());
         }
@@ -204,16 +205,23 @@ public class Import_CSV_GZ
      * @return
      * @throws ParseException
      */
-    protected Double parseThis(final String value) throws ParseException
+    protected Double parseThis(final String value, final String name) throws ParseException
     {
       final double res;
       if (value == null || value.length() == 0)
       {
-        throw new ParseException("Missing token", 0);
+        throw new ParseException("Missing token for " + name, 0);
       }
       else
       {
+        try
+        {
         res = Double.parseDouble(value);
+        }
+        catch(NumberFormatException ne)
+        {
+          throw new NumberFormatException("While parsing " + name + "_" + ne.getMessage());
+        }
       }
       return res;
     }
@@ -292,11 +300,11 @@ public class Import_CSV_GZ
       {
         // create fix
         final WorldLocation loc = new WorldLocation(Math.toDegrees(parseThis(map
-            .get(LAT))), Math.toDegrees(parseThis(map.get(LONG))), parseThis(map
-                .get(DEPTH)));
-        final double speed = new WorldSpeed(parseThis(map.get(SPEED)),
+            .get(LAT), LAT)), Math.toDegrees(parseThis(map.get(LONG), LONG)), parseThis(map
+                .get(DEPTH), DEPTH));
+        final double speed = new WorldSpeed(parseThis(map.get(SPEED), SPEED),
             WorldSpeed.M_sec).getValueIn(WorldSpeed.ft_sec) / 3d;
-        final Fix fix = new Fix(date, loc, parseThis(map.get(COURSE)), speed);
+        final Fix fix = new Fix(date, loc, parseThis(map.get(COURSE), COURSE), speed);
         res = new FixWrapper(fix);
       }
       else
@@ -397,7 +405,7 @@ public class Import_CSV_GZ
       final SensorContactWrapper res;
       if (map.size() >= myFields.size() + 1)
       {
-        final Double bearingDegs = Math.toDegrees(parseThis(map.get(BEARING)));
+        final Double bearingDegs = Math.toDegrees(parseThis(map.get(BEARING), BEARING));
 
         final String TRACK_NAME = trimmedTrackNum(map.get(SYSTEM_ID)) + "_"
             + map.get(TRACK_ID);
@@ -499,11 +507,11 @@ public class Import_CSV_GZ
       {
         // create fix
         final WorldLocation loc = new WorldLocation(Math.toDegrees(parseThis(map
-            .get(latitude))), Math.toDegrees(parseThis(map.get(longitude))),
+            .get(latitude), latitude)), Math.toDegrees(parseThis(map.get(longitude), longitude)),
             0d);
-        final double speedVal = new WorldSpeed(parseThis(map.get(speed)),
+        final double speedVal = new WorldSpeed(parseThis(map.get(speed),speed),
             WorldSpeed.M_sec).getValueIn(WorldSpeed.ft_sec) / 3d;
-        final Fix fix = new Fix(date, loc, parseThis(map.get(course)),
+        final Fix fix = new Fix(date, loc, parseThis(map.get(course), course),
             speedVal);
         res = new FixWrapper(fix);
 
@@ -581,10 +589,15 @@ public class Import_CSV_GZ
   {
     static class Logger implements ErrorLogger
     {
-      private final List<String> messages = new ArrayList<String>();
+      protected final List<String> messages = new ArrayList<String>();
 
       private final boolean console = true;
 
+      public List<String> getMessages()
+      {
+        return messages;
+      }
+      
       public boolean isEmpty()
       {
         return messages.isEmpty();
@@ -624,7 +637,7 @@ public class Import_CSV_GZ
       }
     }
 
-    public void setup()
+    public void setUp()
     {
       DialogFactory.setRunHeadless(true);
     }
@@ -650,10 +663,15 @@ public class Import_CSV_GZ
       assertEquals("empty", 0, theLayers.size());
 
       final Import_CSV_GZ importer = new Import_CSV_GZ();
-      importer.doZipImport(theLayers, bs, filename);
+      Logger logger = new Logger();
+      importer.doZipImport(theLayers, bs, filename, logger);
 
       // check 3 errors thrown
-
+      assertEquals("3 messages", 3, logger.getMessages().size());
+      List<String> strings = logger.getMessages();
+      assertTrue(strings.contains("Problem at line:3 While parsing attr_latitude_For input string: \"a1.585351162\""));
+      assertTrue(strings.contains("Problem at line:5 Missing token for attr_latitude"));
+      assertTrue(strings.contains("Problem at line:11 Missing token for attr_longitude"));
     }
 
     public void test_parse_OSD_File() throws IOException
@@ -676,8 +694,9 @@ public class Import_CSV_GZ
 
       // check empty
       assertEquals("empty", 0, theLayers.size());
+      Logger logger = new Logger();
 
-      new Import_CSV_GZ().doZipImport(theLayers, bs, filename);
+      new Import_CSV_GZ().doZipImport(theLayers, bs, filename, logger);
 
       // check empty
       assertEquals("has track", 1, theLayers.size());
@@ -1044,15 +1063,8 @@ public class Import_CSV_GZ
    */
   private int colorCounter = 0;
 
-  protected LoggingService _logger;
-
-  public Import_CSV_GZ()
-  {
-    _logger = new LoggingService();
-  }
-
   private void doImport(final Layers theLayers, final InputStream inputStream,
-      final String fileName)
+      final String fileName, ErrorLogger logger)
   {
     final String trackName = trackFor(fileName);
 
@@ -1069,7 +1081,7 @@ public class Import_CSV_GZ
           .getRecords();
 
       // go for it
-      importer.doImport(theLayers, records, trackName);
+      importer.doImport(theLayers, records, trackName, logger);
     }
     catch (final IOException e)
     {
@@ -1080,7 +1092,7 @@ public class Import_CSV_GZ
   }
 
   public void doZipImport(final Layers theLayers, final InputStream inputStream,
-      final String fileName)
+      final String fileName, ErrorLogger logger)
   {
     try
     {
@@ -1100,7 +1112,7 @@ public class Import_CSV_GZ
           .toByteArray());
 
       // and create it
-      doImport(theLayers, bis, fileName);
+      doImport(theLayers, bis, fileName, logger);
     }
     catch (final IOException e)
     {
