@@ -19,6 +19,8 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,9 +33,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import java.util.zip.GZIPInputStream;
 
+import org.apache.commons.compress.compressors.gzip.GzipUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -153,6 +155,52 @@ public class Import_CSV_GZ
       }
     }
 
+    public void test_parse_OSD_File() throws IOException
+    {
+      final String root =
+          "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/csv_gz/";
+      final String filename = "BARTON_xxxx_OSD_xxxx.csv.gz";
+
+      // start off with the ownship track
+      final File zipFile = new File(root + filename);
+      assertTrue(zipFile.exists());
+      
+      assertTrue("is gzip", GzipUtils.isCompressedFilename(root + filename));
+      assertEquals("name", "BARTON_xxxx_OSD_xxxx.csv", GzipUtils.getUncompressedFilename(filename));
+      
+      final InputStream bs = new FileInputStream(zipFile);
+      
+      GZIPInputStream in = new GZIPInputStream(bs);
+      final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+      final BufferedOutputStream fout = new BufferedOutputStream(bos);
+      for (int c = in.read(); c != -1; c = in.read())
+      {
+        fout.write(c);
+      }
+      in.close();
+      fout.close();
+      bos.close();
+
+      // now create a byte input stream from the byte output stream
+      final ByteArrayInputStream bis = new ByteArrayInputStream(bos
+          .toByteArray());
+
+      // get the file as a string
+      final String contents = inputStreamAsString(bis);
+      System.out.println(contents);
+      
+      Layers theLayers = new Layers();
+
+      // check empty
+      assertEquals("empty", 0, theLayers.size());
+
+      doZipImport(theLayers, bs, filename);
+
+      // check empty
+      assertEquals("has track", 1, theLayers.size());
+
+    }
+
     public void testDateParse() throws ParseException
     {
       OSD_Importer importer = new OSD_Importer();
@@ -227,7 +275,6 @@ public class Import_CSV_GZ
       assertEquals("country", "789012345_1234_GBR", res.getComment());
     }
 
-
     public void testSystemOwnship() throws ParseException
     {
       ErrorLogger logger = new Logger();
@@ -267,7 +314,7 @@ public class Import_CSV_GZ
           .getValueIn(WorldSpeed.M_sec), 0.0001);
       assertEquals("country", "1", res.getComment());
     }
-    
+
     public void testSystem_no_country() throws ParseException
     {
       ErrorLogger logger = new Logger();
@@ -354,11 +401,10 @@ public class Import_CSV_GZ
       SensorContactWrapper res = importer.process(tokens.iterator(), logger);
       assertNull("should not have created fix", res);
       assertFalse("should have thrown warning", logger.isEmpty());
-      assertEquals("valid message",
-          "Missing fields:attr_bearing",
+      assertEquals("valid message", "Missing fields:attr_bearing",
           logger.messages.get(0));
     }
-    
+
     public void testSensor() throws ParseException
     {
       ErrorLogger logger = new Logger();
@@ -383,7 +429,8 @@ public class Import_CSV_GZ
       Sensor_Importer importer = new Sensor_Importer();
       SensorContactWrapper res = importer.process(tokens.iterator(), logger);
       assertNotNull("should have fix", res);
-      assertEquals("DTG", "Wed Nov 20 11:22:33 GMT 2019", res.getDTG().getDate().toString());
+      assertEquals("DTG", "Wed Nov 20 11:22:33 GMT 2019", res.getDTG().getDate()
+          .toString());
       assertEquals("bearing", 180d, res.getBearing());
       assertEquals("sensor", "789012345_2000", res.getSensorName());
     }
@@ -898,39 +945,25 @@ public class Import_CSV_GZ
   public static void doZipImport(final Layers theLayers,
       final InputStream inputStream, final String fileName)
   {
-    final ZipInputStream zis = new ZipInputStream(inputStream);
-
-    ZipEntry entry;
-    try
+    try (GZIPInputStream zis = new GZIPInputStream(inputStream))
     {
-      while ((entry = zis.getNextEntry()) != null)
+
+      final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+      final BufferedOutputStream fout = new BufferedOutputStream(bos);
+      for (int c = zis.read(); c != -1; c = zis.read())
       {
-        // is this one of ours?
-        final String theName = entry.getName();
-
-        if (theName.endsWith(".csv"))
-        {
-          // cool, here it is - process it
-
-          // extract the data into a stream
-          final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-          final BufferedOutputStream fout = new BufferedOutputStream(bos);
-          for (int c = zis.read(); c != -1; c = zis.read())
-          {
-            fout.write(c);
-          }
-          zis.closeEntry();
-          fout.close();
-          bos.close();
-
-          // now create a byte input stream from the byte output stream
-          final ByteArrayInputStream bis = new ByteArrayInputStream(bos
-              .toByteArray());
-
-          // and create it
-          doImport(theLayers, bis, theName);
-        }
+        fout.write(c);
       }
+      zis.close();
+      fout.close();
+      bos.close();
+
+      // now create a byte input stream from the byte output stream
+      final ByteArrayInputStream bis = new ByteArrayInputStream(bos
+          .toByteArray());
+
+      // and create it
+      doImport(theLayers, bis, fileName);
     }
     catch (final IOException e)
     {
