@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -499,11 +500,12 @@ public class TrackWrapper_Support
     }
   }
 
-  public static boolean splitTrackAtJumps(final TrackWrapper track,
+  public static List<TrackSegment> splitTrackAtJumps(final TrackWrapper track,
       final long interval)
   {
     final Enumeration<Editable> segs = track.getSegments().elements();
     final List<FixWrapper> jumps = new ArrayList<FixWrapper>();
+    final List<TrackSegment> newSegments = new ArrayList<TrackSegment>();
 
     // find the jumps
     while (segs.hasMoreElements())
@@ -530,10 +532,24 @@ public class TrackWrapper_Support
     // now split on the jumps
     for (final FixWrapper jump : jumps)
     {
-      track.splitTrack(jump, true);
+      // what's the old segment for this fix
+      final TrackSegment oldSegment = jump.getSegment();
+      final Vector<TrackSegment> newSegs = track.splitTrack(jump, true);
+
+      // the old segment has been replaced by two new ones, so delete it
+      newSegments.remove(oldSegment);
+
+      // now put in the two new segments
+      for (final TrackSegment seg : newSegs)
+      {
+        if (!newSegments.contains(seg))
+        {
+          newSegments.add(seg);
+        }
+      }
     }
 
-    return !jumps.isEmpty();
+    return newSegments;
   }
 
 }
