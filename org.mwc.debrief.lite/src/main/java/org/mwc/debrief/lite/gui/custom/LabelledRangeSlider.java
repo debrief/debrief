@@ -15,14 +15,13 @@
 package org.mwc.debrief.lite.gui.custom;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import org.pushingpixels.flamingo.api.ribbon.synapse.JRibbonCheckBox;
 
 /**
  * @author Ayesha
@@ -41,16 +40,28 @@ public class LabelledRangeSlider extends JPanel
   
   public LabelledRangeSlider()
   {
-    setLayout(new BorderLayout());
     rangeSlider = new RangeSlider();
-    add(rangeSlider,BorderLayout.CENTER);
-    final JPanel valuePanel = new JPanel();
-    valuePanel.setLayout(new BorderLayout());
+    rangeSlider.setBackground(new Color(180,180,220));
     lblMinimumValue = new JLabel();
     lblMaximumValue = new JLabel();
-    valuePanel.add(lblMinimumValue,BorderLayout.WEST);
-    valuePanel.add(lblMaximumValue,BorderLayout.EAST);
-    add(valuePanel,BorderLayout.SOUTH);
+    
+    final JPanel sliderPanel = new JPanel();
+    sliderPanel.setLayout(new BoxLayout(sliderPanel, BoxLayout.Y_AXIS));
+    sliderPanel.setSize(new Dimension(250,30));
+    sliderPanel.add(rangeSlider);
+    
+
+    // Label's panel
+    final JPanel valuePanel = new JPanel();
+    valuePanel.setLayout(new BoxLayout(valuePanel, BoxLayout.X_AXIS));
+    valuePanel.add(lblMinimumValue);
+    valuePanel.add(Box.createGlue());
+    valuePanel.add(lblMaximumValue);
+    valuePanel.setSize(new Dimension(250,30));
+    setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
+    add(sliderPanel);
+    this.add(Box.createHorizontalGlue());
+    add(valuePanel);
   }
 
   public JLabel getLblMaximumValue()

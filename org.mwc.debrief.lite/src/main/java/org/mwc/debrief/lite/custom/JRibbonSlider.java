@@ -14,6 +14,7 @@
  */
 package org.mwc.debrief.lite.custom;
 
+import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 
 import javax.swing.JSlider;
@@ -40,6 +41,7 @@ public class JRibbonSlider extends JSlider
       setEnabled(contentModel.isEnabled());
       setMaximum(contentModel.getMaximum());
       setMinimum(contentModel.getMinimum());
+      setPreferredSize(new Dimension(400,20));
       addChangeListener((ChangeEvent ae) -> {
         contentModel.setValue(((JSlider)ae.getSource()).getValue());
         contentModel.setMinimum(((JSlider)ae.getSource()).getMinimum());

@@ -1,5 +1,7 @@
 package org.mwc.debrief.lite.custom;
 
+import java.awt.Color;
+import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 
 import javax.swing.JSlider;
@@ -20,6 +22,8 @@ public class JRibbonRangeSlider extends LabelledRangeSlider
   public JRibbonRangeSlider(Projection<JRibbonRangeSlider,
       SliderComponentContentModel, ComponentPresentationModel> projection) {
     this.projection=projection;
+    setSize(new Dimension(250,40));
+    setBackground(new Color(180,180,230));
     initialize(projection);
   }
   

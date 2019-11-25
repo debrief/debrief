@@ -38,7 +38,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSlider;
-import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -347,6 +346,7 @@ public class DebriefRibbonTimeController
 
     final JRibbonBand filterToTime = createFilterToTime(stepControl, operations,
         timeManager);
+    
 
     final JFlowRibbonBand control = createControl(stepControl, timeManager, layers,
         undoBuffer, operations);
@@ -381,8 +381,9 @@ public class DebriefRibbonTimeController
 
     final JPanel controlPanel = new JPanel();
     controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
-    controlPanel.setPreferredSize(new Dimension(500, 80));
+  //  controlPanel.setPreferredSize(new Dimension(500, 80));
 
+    
     final Command behindCommand = MenuUtils.createCommandObject(
         "Behind", "icons/24/media_beginning.png", new CommandAction()
         {
@@ -532,12 +533,7 @@ public class DebriefRibbonTimeController
         ComponentPresentationModel.withDefaults() , 
         jTimeLabel);
     final JLabel timeLabel = timeLabelProjection.buildComponent();
-    timeLabel.setBorder(new LineBorder(Color.black, 5));
-
-    timeLabel.setName("timeformatlabel");
-    timeLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 16));
-    timeLabel.setForeground(new Color(255, 255, 255));
-    timeLabel.setPreferredSize(new Dimension(50,20));
+    timeLabel.setPreferredSize(new Dimension(40,18));
     
     final JPopupMenu menu = new JPopupMenu();
 
@@ -611,7 +607,7 @@ public class DebriefRibbonTimeController
             new RibbonSliderProjection(sliderModel, ComponentPresentationModel.withDefaults(), jribbonSlider);
     JSlider timeSlider = projection.buildComponent();
     timeSlider.setBackground(Color.DARK_GRAY);
-    timeSlider.setPreferredSize(new Dimension(420, 30));
+    //timeSlider.setPreferredSize(new Dimension(820, 30));
     timeSlider.setEnabled(false);
     timeSlider.setName("timeslider");
     control.addFlowComponent(projection);
@@ -666,7 +662,6 @@ public class DebriefRibbonTimeController
           newText = newText + " ";
         }
         timeLabelModel.setText(newText);
-        timeLabel.setText(newText);
       }
     };
     stepControl.setTimeLabel(label);
@@ -837,15 +832,13 @@ public class DebriefRibbonTimeController
     final Calendar start = new GregorianCalendar(1995, 11, 12);
     final Calendar end = new GregorianCalendar(1995, 11, 12);
     // Now we create the components for the sliders
-//    final JLabel lblMinimumValue = new JLabel();
-//    final JLabel lblMaximumValue = new JLabel();
     final SliderComponentContentModel timeFilterRangeModel = SliderComponentContentModel.builder().
                                               setEnabled(true).
                                               setMinimum(start).
                                               setMaximum(end).
                                               setChangeListener(new SliderListener(operations,timeManager,stepControl)).
                                               build();
-    //set the values for the slider here.
+   
     final ComponentSupplier<JRibbonRangeSlider,
     SliderComponentContentModel, ComponentPresentationModel> timeRangeSlider =
     (Projection<JRibbonRangeSlider, SliderComponentContentModel,
@@ -854,34 +847,17 @@ public class DebriefRibbonTimeController
         new RibbonRangeSliderProjection(timeFilterRangeModel, ComponentPresentationModel.withDefaults(), timeRangeSlider);
     LabelledRangeSlider sliderObj = projection.buildComponent();
     final RangeSlider slider = sliderObj.getRangeSlider();
-    slider.setBackground(Color.DARK_GRAY);
-
+    //set the values for the slider here.
     formatBinder.stepControl = stepControl;
     formatBinder.maximumValue = sliderObj.getLblMaximumValue();
     formatBinder.minimumValue = sliderObj.getLblMinimumValue();
     formatBinder.slider = slider;
     formatBinder.timeManager = timeManager;
     formatBinder.updateFilterDateFormat();
-//    slider.addChangeListener(new SliderListener(operations, timeManager,
-//        stepControl));
     slider.setEnabled(false);
-    slider.setPreferredSize(new Dimension(250, 200));
 
-//    final JPanel sliderPanel = new JPanel();
-//    sliderPanel.setLayout(new BoxLayout(sliderPanel, BoxLayout.Y_AXIS));
-//    sliderPanel.setPreferredSize(new Dimension(250, 200));
-
-    // Label's panel
-//    final JPanel valuePanel = new JPanel();
-//    valuePanel.setLayout(new BoxLayout(valuePanel, BoxLayout.X_AXIS));
-//
-//    valuePanel.add(lblMinimumValue);
-//    valuePanel.add(Box.createGlue());
-//    valuePanel.add(lblMaximumValue);
-//    valuePanel.setPreferredSize(new Dimension(250, 200));
 
     timePeriod.addRibbonComponent(projection);
-    //timePeriod.addRibbonComponent(new JRibbonComponent(valuePanel));
 
     // tie in to the stepper
     final SliderControls iSlider = new LiteSliderControls(slider);
