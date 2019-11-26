@@ -666,6 +666,13 @@ public class Import_CSV_GZ
     {
       DialogFactory.setRunHeadless(true);
     }
+    
+    public void testParseFilename()
+    {
+      assertEquals("my1", getTrackPrefix("/C:/users/ronaldo/my1_ball1.csv"));
+      assertEquals("my2", getTrackPrefix("//users/ronaldo/my2_ball2.csv"));
+      assertEquals("my3", getTrackPrefix("my3_ball3.csv"));
+    }
 
     public void test_parse_bad_OSD_File() throws IOException
     {
@@ -1253,8 +1260,13 @@ public class Import_CSV_GZ
 
   private static String getTrackPrefix(final String fullPath)
   {
-    // create object of Path
-    final Path path = Paths.get(fullPath);
+    // note: we have to create a fictional file
+    // in order to convert the above path to a URI
+    // On MS-Windows machines we get a file path,
+    // not a URI, and the `Paths.get()` method throws
+    // a wobbly
+    final File dummy = new File(fullPath);
+    final Path path = Paths.get(dummy.toURI());
 
     // call getFileName() and get FileName path object
     final Path fileName = path.getFileName();
