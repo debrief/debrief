@@ -50,7 +50,7 @@ public class ArcShapeCommandAction extends CreateShape implements CommandAction
   @Override
   public void commandActivated(CommandActionEvent e)
   {
-    // TODO Auto-generated method stub
+    actionPerformed(e);
     
   }
 

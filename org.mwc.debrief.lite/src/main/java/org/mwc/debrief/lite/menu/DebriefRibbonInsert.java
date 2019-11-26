@@ -259,7 +259,7 @@ public class DebriefRibbonInsert
         theLayers, "Circle", "icons/circle_add.png", bounds);
     circleShape.setSelectedLayerSource(selectLayerCombo);
     final ArcShapeCommandAction arcShape =  new ArcShapeCommandAction(toolParent, theProperties,
-        theLayers, "Arc", "icons/16/circle.png", bounds);
+        theLayers, "Arc", "icons/16/arc_add.png", bounds);
     
     arcShape.setSelectedLayerSource(selectLayerCombo);
 
