@@ -199,6 +199,15 @@ public class DebriefRibbonInsert
       final ToolParent toolParent, final BoundsProvider bounds)
   {
     final JRibbonBand drawingMenu = new JRibbonBand("Shapes", null);
+    
+    final LabelShapeCommandAction createLabelShape =  new LabelShapeCommandAction(toolParent, theProperties,
+        theLayers, bounds, "New Label", "icons/24/label_add.png") ;
+    createLabelShape.setSelectedLayerSource(selectLayerCombo);
+    MenuUtils.addCommand(
+        "Label",
+        "icons/24/label_add.png",createLabelShape,
+            drawingMenu,PresentationPriority.TOP);
+    drawingMenu.startGroup();
     final EllipseShapeCommandAction ellipseShape = new EllipseShapeCommandAction(toolParent, theProperties,
         theLayers, "Ellipse", "icons/ellipse_add.png", bounds);
     
@@ -264,16 +273,6 @@ public class DebriefRibbonInsert
     MenuUtils.addCommand("Arc","icons/16/arc_add.png",arcShape,drawingMenu,PresentationPriority.MEDIUM);
     MenuUtils.addCommand("Line","icons/16/line.png",lineShape,drawingMenu,PresentationPriority.MEDIUM);
     
-    
-    drawingMenu.startGroup();
-    final LabelShapeCommandAction createLabelShape =  new LabelShapeCommandAction(toolParent, theProperties,
-        theLayers, bounds, "New Label", "icons/24/label_add.png") ;
-    createLabelShape.setSelectedLayerSource(selectLayerCombo);
-    MenuUtils.addCommand(
-        "Label",
-        "icons/24/label_add.png",createLabelShape,
-            drawingMenu,PresentationPriority.TOP);
-    drawingMenu.startGroup();
     
 //    #4201, dont add polygon shape.
 //    drawingMenu.addRibbonComponent(new JRibbonComponent(polygonCmd));
