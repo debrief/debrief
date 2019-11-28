@@ -46,11 +46,6 @@ import junit.framework.TestCase;
 public class CLogFileImporter
 {
 
-  /** whether the data-file should be resampled to 1Hz on import
-   * 
-   */
-  private boolean _resample = true;
-
   public interface CLog_Helper
   {
     final String CANCEL_STRING = "<Pending>";
@@ -69,6 +64,11 @@ public class CLogFileImporter
       private void clear()
       {
         messages.clear();
+      }
+
+      public boolean isEmpty()
+      {
+        return messages.isEmpty();
       }
 
       @Override
@@ -104,13 +104,22 @@ public class CLogFileImporter
         }
       }
 
-      public boolean isEmpty()
+      public void setUp()
       {
-        return messages.isEmpty();
+        _logErrors = true;
       }
     }
 
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+    private static void perfLog(final long ctr)
+    {
+      final double log10 = Math.log10(ctr);
+      if (log10 == (int) log10)
+      {
+        System.out.println(ctr);
+      }
+    }
 
     private final Logger _logger = new Logger();
 
@@ -152,211 +161,63 @@ public class CLogFileImporter
       int ctr = 0;
       final TrackWrapper track = (TrackWrapper) tLayers.findLayer("Nelson");
       track.setInterpolatePoints(true);
-      
-      long milli_Step = 2;
-      long micro_Step = milli_Step * 1000;
-      for(long tNow = track.getStartDTG().getMicros(); tNow < 818746200000000L; tNow += micro_Step)
+
+      final long milli_Step = 2;
+      final long micro_Step = milli_Step * 1000;
+      for (long tNow = track.getStartDTG()
+          .getMicros(); tNow < 818746200000000L; tNow += micro_Step)
       {
-        Watchable[] newF = track.getNearestTo(new HiResDate(0, tNow));
-        FixWrapper fix = (FixWrapper) newF[0];
+        final Watchable[] newF = track.getNearestTo(new HiResDate(0, tNow));
+        final FixWrapper fix = (FixWrapper) newF[0];
         final String asLog = toLogFile(fix);
-        fw.write(asLog);       
+        fw.write(asLog);
         perfLog(ctr++);
       }
 
       fw.close();
     }
-    
-    private static void perfLog(long ctr)
-    {
-      double log10 = Math.log10(ctr);
-      if(log10 == (int)log10)
-      {
-        System.out.println(ctr);
-      }
-    }
-    
 
     @Override
     public void setUp()
     {
       _logger.clear();
     }
-    
-    public void testCannotLoad() throws Exception 
-    {
-      
-      String initialString = "Unkbenown blah blah blah\n" + 
-          "Blah blah blah blah\n" + 
-          "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 BANANA -0.37869945639890085 0.0 blah blah 818744400000000000 \n" + 
-          "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 0.38722349902153685 -0.37875089513046656 0.0 blah blah 818744460000000000 \n" + 
-          "blah blah blah blah blah blah blah blah blah 4.710643651132695  1.028888888888889 0.38722315965196 -0.3788082485889418 0.0 blah blah 818744520000000000 \n" ;
-      
-      Reader inputString = new StringReader(initialString);
-      BufferedReader reader = new BufferedReader(inputString);
-      
-      assertFalse(canLoad(_logger, reader));
-    }
 
-    public void testCanLoad() throws Exception 
+    public void testCanLoad() throws Exception
     {
-      
-      String initialString = "Unknown blah blah blah\n" + 
-          "Blah blah blah blah\n" + 
-          "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 BANANA -0.37869945639890085 0.0 blah blah 818744400000000000 \n" + 
-          "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 0.38722349902153685 -0.37875089513046656 0.0 blah blah 818744460000000000 \n" + 
-          "blah blah blah blah blah blah blah blah blah 4.710643651132695  1.028888888888889 0.38722315965196 -0.3788082485889418 0.0 blah blah 818744520000000000 \n" ;
-      
-      Reader inputString = new StringReader(initialString);
-      BufferedReader reader = new BufferedReader(inputString);
-      
+
+      final String initialString = "Unknown blah blah blah\n"
+          + "Blah blah blah blah\n"
+          + "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 BANANA -0.37869945639890085 0.0 blah blah 818744400000000000 \n"
+          + "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 0.38722349902153685 -0.37875089513046656 0.0 blah blah 818744460000000000 \n"
+          + "blah blah blah blah blah blah blah blah blah 4.710643651132695  1.028888888888889 0.38722315965196 -0.3788082485889418 0.0 blah blah 818744520000000000 \n";
+
+      final Reader inputString = new StringReader(initialString);
+      final BufferedReader reader = new BufferedReader(inputString);
+
       assertTrue(canLoad(_logger, reader));
     }
 
-    public void testMangledText() throws Exception 
+    public void testCannotLoad() throws Exception
     {
-      
-      String initialString = "Unknown blah blah blah\n" + 
-          "Blah blah blah blah\n" + 
-          "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 BANANA -0.37869945639890085 0.0 blah blah 818744400000000000 \n" + 
-          "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 0.38722349902153685 -0.37875089513046656 0.0 blah blah 818744460000000000 \n" + 
-          "blah blah blah blah blah blah blah blah blah 4.710643651132695  1.028888888888889 0.38722315965196 -0.3788082485889418 0.0 blah blah 818744520000000000 \n" ;
-      final CLogFileImporter importer = new CLogFileImporter();
-      final Layers layers = new Layers();
-      final CLog_Helper brtHelper = new CLog_Helper()
-      {
 
-        @Override
-        public String getTrackName()
-        {
-          return "Dave";
-        }
-      };
-      
-      assertTrue("logger empty",  _logger.isEmpty());
-          
-      InputStream is = new ByteArrayInputStream(initialString.getBytes());
-      final Action action = importer.importThis(brtHelper, is, layers, _logger);
-      action.execute();
+      final String initialString = "Unkbenown blah blah blah\n"
+          + "Blah blah blah blah\n"
+          + "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 BANANA -0.37869945639890085 0.0 blah blah 818744400000000000 \n"
+          + "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 0.38722349902153685 -0.37875089513046656 0.0 blah blah 818744460000000000 \n"
+          + "blah blah blah blah blah blah blah blah blah 4.710643651132695  1.028888888888889 0.38722315965196 -0.3788082485889418 0.0 blah blah 818744520000000000 \n";
 
-      assertEquals("has data", 1, layers.size());
-      assertFalse("logger not empty", _logger.isEmpty());
-      
-      assertEquals("correct logging message", "Exception while reading CLog data", _logger.messages.get(0));
-      
-      // check other data still got loaded
-      TrackWrapper track = (TrackWrapper) layers.findLayer("Dave");
-      assertEquals("loaded other posits", 2, track.numFixes());
+      final Reader inputString = new StringReader(initialString);
+      final BufferedReader reader = new BufferedReader(inputString);
+
+      assertFalse(canLoad(_logger, reader));
     }
-
-    public void testTooFewTokens() throws Exception 
-    {
-      
-      String initialString = "Unknown blah blah blah\n" + 
-          "Blah blah blah blah\n" + 
-          "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 0.3872237414283774 -0.37869945639890085 0.0 blah blah 818744400000000000 \n" + 
-          "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 0.38722349902153685 -0.37875089513046656 0.0 818744460000000000 \n" + 
-          "blah blah blah blah blah blah blah blah blah 4.710643651132695  1.028888888888889 0.38722315965196 -0.3788082485889418 0.0 blah blah 818744520000000000 \n" ;
-      final CLogFileImporter importer = new CLogFileImporter();
-      final Layers layers = new Layers();
-      final CLog_Helper brtHelper = new CLog_Helper()
-      {
-
-        @Override
-        public String getTrackName()
-        {
-          return "Dave";
-        }
-      };
-      
-      assertTrue("logger empty",  _logger.isEmpty());
-          
-      InputStream is = new ByteArrayInputStream(initialString.getBytes());
-      final Action action = importer.importThis(brtHelper, is, layers, _logger);
-      action.execute();
-
-      assertEquals("has data", 1, layers.size());
-      assertFalse("logger not empty", _logger.isEmpty());
-      
-      assertEquals("correct logging message", "Expecting 17 tokens in CLog format. Found:15", _logger.messages.get(0));
-    }
-
-    public void testTooManyTokens() throws Exception 
-    {
-      
-      String initialString = "Unknown blah blah blah\n" + 
-          "Blah blah blah blah\n" + 
-          "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 0.3872237414283774 -0.37869945639890085 0.0 blah blah 818744400000000000 EXTRA\n" + 
-          "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 0.38722349902153685 -0.37875089513046656 0.0 blah blah 818744460000000000 \n" + 
-          "blah blah blah blah blah blah blah blah blah 4.710643651132695  1.028888888888889 0.38722315965196 -0.3788082485889418 0.0 blah blah 818744520000000000 \n" ;
-      final CLogFileImporter importer = new CLogFileImporter();
-      final Layers layers = new Layers();
-      final CLog_Helper brtHelper = new CLog_Helper()
-      {
-
-        @Override
-        public String getTrackName()
-        {
-          return "Dave";
-        }
-      };
-      
-      assertTrue("logger empty",  _logger.isEmpty());
-          
-      InputStream is = new ByteArrayInputStream(initialString.getBytes());
-      final Action action = importer.importThis(brtHelper, is, layers, _logger);
-      action.execute();
-
-      assertEquals("has data", 1, layers.size());
-      assertFalse("logger not empty", _logger.isEmpty());
-      
-      assertEquals("correct logging message", "Expecting 17 tokens in CLog format. Found:18", _logger.messages.get(0));
-    }
-    
-    public void testGoodLoadResample() throws Exception
-    {
-      final Layers layers = new Layers();
-
-      final CLog_Helper brtHelper = new CLog_Helper()
-      {
-
-        @Override
-        public String getTrackName()
-        {
-          return "Dave";
-        }
-      };
-
-      assertTrue("input file exists", new File(ownship_track).exists());
-
-      assertEquals("empty before", 0, layers.size());
-
-      final InputStream is = new FileInputStream(ownship_track);
-      
-      final CLogFileImporter importer = new CLogFileImporter();
-      importer.setResampleOnImport(true);
-      
-      final Action action = importer.importThis(brtHelper, is, layers, _logger);
-      action.execute();
-
-      assertEquals("has data", 1, layers.size());
-
-      final TrackWrapper track = (TrackWrapper) layers.elementAt(0);
-
-      assertEquals("correct fixes", 623, track.numFixes());
-
-      // and undo it
-      action.undo();
-
-      assertEquals("has data", 0, layers.size());
-    }
-
 
     public void testGoodLoad() throws Exception
     {
       final CLogFileImporter importer = new CLogFileImporter();
       importer.setResampleOnImport(false);
-      
+
       final Layers layers = new Layers();
 
       final CLog_Helper brtHelper = new CLog_Helper()
@@ -437,6 +298,150 @@ public class CLogFileImporter
       assertEquals("has data", 3, track.numFixes());
     }
 
+    public void testGoodLoadResample() throws Exception
+    {
+      final Layers layers = new Layers();
+
+      final CLog_Helper brtHelper = new CLog_Helper()
+      {
+
+        @Override
+        public String getTrackName()
+        {
+          return "Dave";
+        }
+      };
+
+      assertTrue("input file exists", new File(ownship_track).exists());
+
+      assertEquals("empty before", 0, layers.size());
+
+      final InputStream is = new FileInputStream(ownship_track);
+
+      final CLogFileImporter importer = new CLogFileImporter();
+      importer.setResampleOnImport(true);
+
+      final Action action = importer.importThis(brtHelper, is, layers, _logger);
+      action.execute();
+
+      assertEquals("has data", 1, layers.size());
+
+      final TrackWrapper track = (TrackWrapper) layers.elementAt(0);
+
+      assertEquals("correct fixes", 623, track.numFixes());
+
+      // and undo it
+      action.undo();
+
+      assertEquals("has data", 0, layers.size());
+    }
+
+    public void testMangledText() throws Exception
+    {
+
+      final String initialString = "Unknown blah blah blah\n"
+          + "Blah blah blah blah\n"
+          + "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 BANANA -0.37869945639890085 0.0 blah blah 818744400000000000 \n"
+          + "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 0.38722349902153685 -0.37875089513046656 0.0 blah blah 818744460000000000 \n"
+          + "blah blah blah blah blah blah blah blah blah 4.710643651132695  1.028888888888889 0.38722315965196 -0.3788082485889418 0.0 blah blah 818744520000000000 \n";
+      final CLogFileImporter importer = new CLogFileImporter();
+      final Layers layers = new Layers();
+      final CLog_Helper brtHelper = new CLog_Helper()
+      {
+
+        @Override
+        public String getTrackName()
+        {
+          return "Dave";
+        }
+      };
+
+      assertTrue("logger empty", _logger.isEmpty());
+
+      final InputStream is = new ByteArrayInputStream(initialString.getBytes());
+      final Action action = importer.importThis(brtHelper, is, layers, _logger);
+      action.execute();
+
+      assertEquals("has data", 1, layers.size());
+      assertFalse("logger not empty", _logger.isEmpty());
+
+      assertEquals("correct logging message",
+          "Exception while reading CLog data at line:2", _logger.messages.get(
+              0));
+
+      // check other data still got loaded
+      final TrackWrapper track = (TrackWrapper) layers.findLayer("Dave");
+      assertEquals("loaded other posits", 2, track.numFixes());
+    }
+
+    public void testTooFewTokens() throws Exception
+    {
+
+      final String initialString = "Unknown blah blah blah\n"
+          + "Blah blah blah blah\n"
+          + "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 0.3872237414283774 -0.37869945639890085 0.0 blah blah 818744400000000000 \n"
+          + "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 0.38722349902153685 -0.37875089513046656 0.0 818744460000000000 \n"
+          + "blah blah blah blah blah blah blah blah blah 4.710643651132695  1.028888888888889 0.38722315965196 -0.3788082485889418 0.0 blah blah 818744520000000000 \n";
+      final CLogFileImporter importer = new CLogFileImporter();
+      final Layers layers = new Layers();
+      final CLog_Helper brtHelper = new CLog_Helper()
+      {
+
+        @Override
+        public String getTrackName()
+        {
+          return "Dave";
+        }
+      };
+
+      assertTrue("logger empty", _logger.isEmpty());
+
+      final InputStream is = new ByteArrayInputStream(initialString.getBytes());
+      final Action action = importer.importThis(brtHelper, is, layers, _logger);
+      action.execute();
+
+      assertEquals("has data", 1, layers.size());
+      assertFalse("logger not empty", _logger.isEmpty());
+
+      assertEquals("correct logging message",
+          "Expecting 17 tokens in CLog format at line:3. Found:15",
+          _logger.messages.get(0));
+    }
+
+    public void testTooManyTokens() throws Exception
+    {
+
+      final String initialString = "Unknown blah blah blah\n"
+          + "Blah blah blah blah\n"
+          + "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 0.3872237414283774 -0.37869945639890085 0.0 blah blah 818744400000000000 EXTRA\n"
+          + "blah blah blah blah blah blah blah blah blah 4.707152992628706 1.028888888888889 0.38722349902153685 -0.37875089513046656 0.0 blah blah 818744460000000000 \n"
+          + "blah blah blah blah blah blah blah blah blah 4.710643651132695  1.028888888888889 0.38722315965196 -0.3788082485889418 0.0 blah blah 818744520000000000 \n";
+      final CLogFileImporter importer = new CLogFileImporter();
+      final Layers layers = new Layers();
+      final CLog_Helper brtHelper = new CLog_Helper()
+      {
+
+        @Override
+        public String getTrackName()
+        {
+          return "Dave";
+        }
+      };
+
+      assertTrue("logger empty", _logger.isEmpty());
+
+      final InputStream is = new ByteArrayInputStream(initialString.getBytes());
+      final Action action = importer.importThis(brtHelper, is, layers, _logger);
+      action.execute();
+
+      assertEquals("has data", 1, layers.size());
+      assertFalse("logger not empty", _logger.isEmpty());
+
+      assertEquals("correct logging message",
+          "Expecting 17 tokens in CLog format at line:2. Found:18",
+          _logger.messages.get(0));
+    }
+
     private long timeStampFor(final HiResDate date)
     {
       final long millis = date.getMicros();
@@ -469,7 +474,7 @@ public class CLogFileImporter
       res += (blah + separator); // 15
       res += (blah + separator); // 16
       res += (timeStampFor(fix.getDTG()) + separator); // 17 - timestamp in Nanos since
-                                                                 // epoch (19 digits!)
+                                                       // epoch (19 digits!)
 
       // and newline
       res += nl;
@@ -579,6 +584,8 @@ public class CLogFileImporter
 
   private static final String HEADER_STR = "Unknown";
 
+  private static boolean _logErrors = false;
+
   public static boolean canLoad(final ErrorLogger logger,
       final BufferedReader r) throws IOException
   {
@@ -589,8 +596,11 @@ public class CLogFileImporter
 
     if (!res)
     {
-      logger.logError(ErrorLogger.INFO, "CLog Import rejecting file, Header:"
-          + res, null);
+      if (_logErrors)
+      {
+        logger.logError(ErrorLogger.INFO, "CLog Import rejecting file, Header:"
+            + res, null);
+      }
     }
     return res;
   }
@@ -635,8 +645,7 @@ public class CLogFileImporter
     return Double.parseDouble(courseRadsStr);
   }
 
-  private static long dateFor(final String timeStr,
-      final ErrorLogger logger)
+  private static long dateFor(final String timeStr, final ErrorLogger logger)
   {
     final long nanos = Long.parseLong(timeStr);
     return nanos / 1000000;
@@ -676,11 +685,14 @@ public class CLogFileImporter
   }
 
   /**
-   * 
-   * @param logger error logger
-   * @param line line of text to process
-   * @param nextTimeDue time the next item is due
-   * @param ctr 
+   *
+   * @param logger
+   *          error logger
+   * @param line
+   *          line of text to process
+   * @param nextTimeDue
+   *          time the next item is due
+   * @param ctr
    * @return
    */
   private static FixWrapper produceFix(final ErrorLogger logger,
@@ -692,19 +704,20 @@ public class CLogFileImporter
     if (tokens.length != 17)
     {
       logger.logError(ErrorLogger.ERROR,
-          "Expecting 17 tokens in CLog format at line:" + lineCtr + ". Found:" + tokens.length, null);
+          "Expecting 17 tokens in CLog format at line:" + lineCtr + ". Found:"
+              + tokens.length, null);
     }
-    
+
     // sort out the date first
     final long timeStamp = dateFor(tokens[16], logger);
     final FixWrapper res;
-    if(nextTimeDue == null || timeStamp >= nextTimeDue)
+    if (nextTimeDue == null || timeStamp >= nextTimeDue)
     {
       final WorldLocation loc = locationFrom(tokens[11], tokens[12], tokens[13],
           logger);
       final double courseRads = courseFor(tokens[9], logger);
       final double speedYps = speedFor(tokens[10], logger);
-      HiResDate date = new HiResDate(timeStamp);
+      final HiResDate date = new HiResDate(timeStamp);
       final Fix fix = new Fix(date, loc, courseRads, speedYps);
       res = new FixWrapper(fix);
       res.resetName();
@@ -714,6 +727,32 @@ public class CLogFileImporter
       res = null;
     }
     return res;
+  }
+
+  private static double speedFor(final String line, final ErrorLogger logger)
+  {
+    final Double speedMs = Double.parseDouble(line);
+    return new WorldSpeed(speedMs, WorldSpeed.M_sec).getValueIn(
+        WorldSpeed.ft_sec) / 3;
+  }
+
+  /**
+   * whether the data-file should be resampled to 1Hz on import
+   *
+   */
+  private boolean _resample = true;
+
+  public Action importThis(final CLog_Helper helper, final InputStream is,
+      final Layers layers, final ErrorLogger logger) throws Exception
+  {
+    final List<FixWrapper> brtData = readCLogData(is, logger);
+    final String trackName = helper.getTrackName();
+    if (CLog_Helper.CANCEL_STRING.equals(trackName))
+    {
+      // clear the fixes, to cancel the import
+      brtData.clear();
+    }
+    return new ImportCLogFileAction(brtData, trackName, layers);
   }
 
   private List<FixWrapper> readCLogData(final InputStream is,
@@ -732,7 +771,7 @@ public class CLogFileImporter
     Long nextTimeDue = null;
     final long timeDelta = 1000; // 1 second
     int ctr = 2;
-    
+
     while ((line = reader.readLine()) != null)
     {
       // ok, generate a position
@@ -745,51 +784,31 @@ public class CLogFileImporter
           {
             res = new ArrayList<FixWrapper>();
           }
-          
+
           final long thisT = wrapped.getDTG().getDate().getTime();
-          
+
           // are we resample?
-          if(_resample)
+          if (_resample)
           {
             nextTimeDue = thisT + timeDelta;
           }
-          
+
           // do we want to add this one?
           res.add(wrapped);
         }
       }
       catch (final Exception e)
       {
-        logger.logError(ErrorLogger.ERROR, "Exception while reading CLog data at line:" + ctr,
-            e);
+        logger.logError(ErrorLogger.ERROR,
+            "Exception while reading CLog data at line:" + ctr, e);
       }
       ctr++;
     }
     return res;
   }
-  
+
   protected void setResampleOnImport(final boolean doResample)
   {
     _resample = doResample;
-  }
-
-  private static double speedFor(final String line, final ErrorLogger logger)
-  {
-    final Double speedMs = Double.parseDouble(line);
-    return new WorldSpeed(speedMs, WorldSpeed.M_sec).getValueIn(
-        WorldSpeed.ft_sec) / 3;
-  }
-
-  public Action importThis(final CLog_Helper helper, final InputStream is,
-      final Layers layers, final ErrorLogger logger) throws Exception
-  {
-    final List<FixWrapper> brtData = readCLogData(is, logger);
-    final String trackName = helper.getTrackName();
-    if (CLog_Helper.CANCEL_STRING.equals(trackName))
-    {
-      // clear the fixes, to cancel the import
-      brtData.clear();
-    }
-    return new ImportCLogFileAction(brtData, trackName, layers);
   }
 }
