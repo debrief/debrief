@@ -56,37 +56,9 @@ public class OTH_Importer
   {
     T extract(String txt);
   }
-  
-  /** collect together data read in from OTH file
-   * 
-   * @author ian
-   *
-   */
-  private static class OTH_Data
-  {
-    private final List<TrackWrapper> _tracks;
-    private final List<BaseLayer> _ellipseShapes;
 
-    public OTH_Data(final List<TrackWrapper> tracks, final List<BaseLayer> ellipseShapes)
-    {
-      _tracks = tracks;
-      _ellipseShapes = ellipseShapes;
-    }
-
-    public List<TrackWrapper> getTracks()
-    {
-      return _tracks;
-    }
-    
-    public List<BaseLayer> getEllipseLayers()
-    {
-      return _ellipseShapes;
-    }
-  }
-
-
-  /** package up the action that adds the data
-   * to the layers target
+  /**
+   * package up the action that adds the data to the layers target
    *
    */
   private static class ImportOTHAction implements Action
@@ -213,6 +185,35 @@ public class OTH_Importer
 
   }
 
+  /**
+   * collect together data read in from OTH file
+   *
+   * @author ian
+   *
+   */
+  private static class OTH_Data
+  {
+    private final List<TrackWrapper> _tracks;
+    private final List<BaseLayer> _ellipseShapes;
+
+    public OTH_Data(final List<TrackWrapper> tracks,
+        final List<BaseLayer> ellipseShapes)
+    {
+      _tracks = tracks;
+      _ellipseShapes = ellipseShapes;
+    }
+
+    public List<BaseLayer> getEllipseLayers()
+    {
+      return _ellipseShapes;
+    }
+
+    public List<TrackWrapper> getTracks()
+    {
+      return _tracks;
+    }
+  }
+
   public static class OTH_ImporterTest extends TestCase
   {
     static class Logger implements ErrorLogger
@@ -281,6 +282,7 @@ public class OTH_Importer
     public void setUp()
     {
       _logger.clear();
+      setLogFeedback(true);
     }
 
     public void testBadlyFormattedFields()
@@ -351,7 +353,7 @@ public class OTH_Importer
               "POS/112313Z1/AUG/4612N34/02122W7//170T/11NM/13NM/200T/2K/",
               _logger));
     }
- 
+
     public void testGoodLoad() throws Exception
     {
       final OTH_Importer importer = new OTH_Importer();
@@ -461,12 +463,15 @@ public class OTH_Importer
 
   private static final String POS_STR = "POS";
 
-  public static boolean canLoad(final ErrorLogger logger, final BufferedReader r) throws IOException
+  protected static boolean _logFeedback = false;
+
+  public static boolean canLoad(final ErrorLogger logger,
+      final BufferedReader r) throws IOException
   {
     boolean hasHeader = false;
     boolean hasPosition = false;
     boolean hasTrack = false;
-    
+
     boolean res = false;
 
     final int MAX_LINES = 200;
@@ -504,8 +509,11 @@ public class OTH_Importer
 
     if (!res)
     {
-      logger.logError(ErrorLogger.INFO, "OTH Import rejecting file, Header:"
-          + hasHeader + " Track:" + hasTrack + " Pos:" + hasPosition, null);
+      if (_logFeedback)
+      {
+        logger.logError(ErrorLogger.INFO, "OTH Import rejecting file, Header:"
+            + hasHeader + " Track:" + hasTrack + " Pos:" + hasPosition, null);
+      }
     }
     return res;
   }
@@ -959,6 +967,11 @@ public class OTH_Importer
     final OTH_Data brtData = new OTH_Data(tracks, ellipseLayers);
 
     return brtData;
+  }
+
+  private static void setLogFeedback(final boolean logFeedback)
+  {
+    _logFeedback = logFeedback;
   }
 
   private static double speedFor(final String line, final ErrorLogger logger)
