@@ -786,14 +786,14 @@ public class Import_CSV_GZ
 
       final String root =
           "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/csv_gz/";
-      final String filename = "BARTON_Tracks_xxxx_BSensor_Track_xxxx.csv.gz";
+      final String filename = "BARTON_Tracks_xxxx_BSensorTrack_xxxx.csv.gz";
 
       // start off with the ownship track
       final File zipFile = new File(root + filename);
       assertTrue(zipFile.exists());
 
       assertTrue("is gzip", GzipUtils.isCompressedFilename(root + filename));
-      assertEquals("name", "BARTON_Tracks_xxxx_BSensor_Track_xxxx.csv",
+      assertEquals("name", "BARTON_Tracks_xxxx_BSensorTrack_xxxx.csv",
           GzipUtils.getUncompressedFilename(filename));
 
       final InputStream bs = new FileInputStream(zipFile);
@@ -839,14 +839,14 @@ public class Import_CSV_GZ
     {
       final String root =
           "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/csv_gz/";
-      final String filename = "BARTON_Tracks_xxxx_BSensor_Track_xxxx.csv.gz";
+      final String filename = "BARTON_Tracks_xxxx_BSensorTrack_xxxx.csv.gz";
 
       // start off with the ownship track
       final File zipFile = new File(root + filename);
       assertTrue(zipFile.exists());
 
       assertTrue("is gzip", GzipUtils.isCompressedFilename(root + filename));
-      assertEquals("name", "BARTON_Tracks_xxxx_BSensor_Track_xxxx.csv",
+      assertEquals("name", "BARTON_Tracks_xxxx_BSensorTrack_xxxx.csv",
           GzipUtils.getUncompressedFilename(filename));
 
       final InputStream bs = new FileInputStream(zipFile);
@@ -874,14 +874,14 @@ public class Import_CSV_GZ
     {
       final String root =
           "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/csv_gz/";
-      final String filename = "BARTON_xxxx_System_Track_xxxx.csv.gz";
+      final String filename = "BARTON_xxxx_SystemTrack_xxxx.csv.gz";
 
       // start off with the ownship track
       final File zipFile = new File(root + filename);
       assertTrue(zipFile.exists());
 
       assertTrue("is gzip", GzipUtils.isCompressedFilename(root + filename));
-      assertEquals("name", "BARTON_xxxx_System_Track_xxxx.csv", GzipUtils
+      assertEquals("name", "BARTON_xxxx_SystemTrack_xxxx.csv", GzipUtils
           .getUncompressedFilename(filename));
 
       final InputStream bs = new FileInputStream(zipFile);
@@ -1322,7 +1322,7 @@ public class Import_CSV_GZ
     {
       final GZIPInputStream in = new GZIPInputStream(inputStream);
       final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-      final BufferedOutputStream fout = new BufferedOutputStream(bos);
+      final BufferedOutputStream fout = new BufferedOutputStream(bos, 4096);
       for (int c = in.read(); c != -1; c = in.read())
       {
         fout.write(c);
@@ -1350,11 +1350,11 @@ public class Import_CSV_GZ
     {
       return new OSD_Importer();
     }
-    else if (filename.contains("_System_Track"))
+    else if (filename.contains("_SystemTrack"))
     {
       return new State_Importer();
     }
-    else if (filename.contains("Sensor_Track"))
+    else if (filename.contains("SensorTrack"))
     {
       return new Sensor_Importer();
     }
