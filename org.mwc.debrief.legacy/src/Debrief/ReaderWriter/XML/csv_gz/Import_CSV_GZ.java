@@ -99,23 +99,26 @@ public class Import_CSV_GZ
 
       final InputStreamReader isr = new InputStreamReader(inputStream);
       final BufferedReader br = new BufferedReader(isr);
-      int ctr = 0;
 
       try (BufferedReader reader = new BufferedReader(br, 1048576 * 10))
       {
+        int ctr = 1;
         Iterable<CSVRecord> tRecords = CSVFormat.RFC4180.parse(reader);
         for (CSVRecord line : tRecords)
         {
-          processThis(theLayers, hostName, logger, line);
+          try
+          {
+            processThis(theLayers, hostName, logger, line);
+          }
+          catch (final NumberFormatException | ParseException ne)
+          {
+            logger.logError(ErrorLogger.ERROR, "Problem at line:" + ctr + " "
+                + ne.getMessage(), ne);
+            DialogFactory.showMessage("Import CSV.GZ File", "Problem at line:"
+                + ctr + " " + ne.getMessage());
+          }
           ctr++;
         }
-      }
-      catch (final NumberFormatException | ParseException ne)
-      {
-        logger.logError(ErrorLogger.ERROR, "Problem at line:" + ctr + " " + ne
-            .getMessage(), ne);
-        DialogFactory.showMessage("Import CSV.GZ File", "Problem at line:" + ctr
-            + " " + ne.getMessage());
       }
       catch (final IOException e)
       {
@@ -1253,14 +1256,14 @@ public class Import_CSV_GZ
     {
       final String root =
           "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/csv_gz/";
-      final String filename = "8_9M_SPARTA_xxxx_SystemTrack_xxxx.csv.gz";
+      final String filename = "BARTON_xxxx_SystemTrack_xxxx.csv.gz";
     
       // start off with the ownship track
       final File zipFile = new File(root + filename);
       assertTrue(zipFile.exists());
     
       assertTrue("is gzip", GzipUtils.isCompressedFilename(root + filename));
-      assertEquals("name", "36M_SPARTA_xxxx_SystemTrack_xxxx.csv", GzipUtils
+      assertEquals("name", "BARTON_xxxx_SystemTrack_xxxx.csv", GzipUtils
           .getUncompressedFilename(filename));
     
       final InputStream bs = new FileInputStream(zipFile);
