@@ -40,7 +40,6 @@ import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.compress.compressors.gzip.GzipUtils;
 import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 import Debrief.Wrappers.FixWrapper;
@@ -82,36 +81,48 @@ public class Import_CSV_GZ
 
     /**
      * process the lines
+     * 
+     * @param inputStream
      *
      * @param theLayers
      *          destination for the data
-     * @param records
-     *          the rows in the file
      * @param hostName
      *          the recording platform
      * @param logger
+     * @param fileName 
      */
-    public final void doImport(final Layers theLayers,
-        final List<CSVRecord> records, final String hostName,
-        final ErrorLogger logger)
+    public final void doImport(final InputStream inputStream,
+        final Layers theLayers, final String hostName, final ErrorLogger logger,
+        final String fileName)
     {
       prepareForImport(theLayers, hostName, logger);
+
+      final InputStreamReader isr = new InputStreamReader(inputStream);
+      final BufferedReader br = new BufferedReader(isr);
       int ctr = 0;
-      for (final CSVRecord record : records)
+
+      try (BufferedReader reader = new BufferedReader(br, 1048576 * 10))
       {
-        ctr++;
-        try
+        Iterable<CSVRecord> tRecords = CSVFormat.RFC4180.parse(reader);
+        for (CSVRecord line : tRecords)
         {
-          processThis(theLayers, hostName, logger, record);
-        }
-        catch (final NumberFormatException | ParseException ne)
-        {
-          logger.logError(ErrorLogger.ERROR, "Problem at line:" + ctr + " " + ne
-              .getMessage(), ne);
-          DialogFactory.showMessage("Import CSV.GZ File", "Problem at line:"
-              + ctr + " " + ne.getMessage());
+          processThis(theLayers, hostName, logger, line);
+          ctr++;
         }
       }
+      catch (final NumberFormatException | ParseException ne)
+      {
+        logger.logError(ErrorLogger.ERROR, "Problem at line:" + ctr + " " + ne
+            .getMessage(), ne);
+        DialogFactory.showMessage("Import CSV.GZ File", "Problem at line:" + ctr
+            + " " + ne.getMessage());
+      }
+      catch (final IOException e)
+      {
+        LoggingService.INSTANCE().logError(ErrorLogger.ERROR,
+            "Failed while importing CSV file:" + fileName, e);
+      }
+
     }
 
     /**
@@ -666,7 +677,7 @@ public class Import_CSV_GZ
     {
       DialogFactory.setRunHeadless(true);
     }
-    
+
     public void testParseFilename()
     {
       assertEquals("my1", getTrackPrefix("/C:/users/ronaldo/my1_ball1.csv"));
@@ -793,8 +804,8 @@ public class Import_CSV_GZ
       assertTrue(zipFile.exists());
 
       assertTrue("is gzip", GzipUtils.isCompressedFilename(root + filename));
-      assertEquals("name", "BARTON_Tracks_xxxx_BSensorTrack_xxxx.csv",
-          GzipUtils.getUncompressedFilename(filename));
+      assertEquals("name", "BARTON_Tracks_xxxx_BSensorTrack_xxxx.csv", GzipUtils
+          .getUncompressedFilename(filename));
 
       final InputStream bs = new FileInputStream(zipFile);
 
@@ -846,8 +857,8 @@ public class Import_CSV_GZ
       assertTrue(zipFile.exists());
 
       assertTrue("is gzip", GzipUtils.isCompressedFilename(root + filename));
-      assertEquals("name", "BARTON_Tracks_xxxx_BSensorTrack_xxxx.csv",
-          GzipUtils.getUncompressedFilename(filename));
+      assertEquals("name", "BARTON_Tracks_xxxx_BSensorTrack_xxxx.csv", GzipUtils
+          .getUncompressedFilename(filename));
 
       final InputStream bs = new FileInputStream(zipFile);
 
@@ -1237,26 +1248,58 @@ public class Import_CSV_GZ
           .getValueIn(WorldSpeed.M_sec), 0.0001);
       assertEquals("country", hostName, res.getComment());
     }
+
+    public void test_parse_Big_Tracks_File() throws IOException
+    {
+      final String root =
+          "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/csv_gz/";
+      final String filename = "8_9M_SPARTA_xxxx_SystemTrack_xxxx.csv.gz";
+    
+      // start off with the ownship track
+      final File zipFile = new File(root + filename);
+      assertTrue(zipFile.exists());
+    
+      assertTrue("is gzip", GzipUtils.isCompressedFilename(root + filename));
+      assertEquals("name", "36M_SPARTA_xxxx_SystemTrack_xxxx.csv", GzipUtils
+          .getUncompressedFilename(filename));
+    
+      final InputStream bs = new FileInputStream(zipFile);
+    
+      final Layers theLayers = new Layers();
+    
+      // check empty
+      assertEquals("empty", 0, theLayers.size());
+      final Logger logger = new Logger();
+    
+      new Import_CSV_GZ().doZipImport(theLayers, bs, filename, logger);
+    
+      // check empty
+      assertEquals("has track", 4, theLayers.size());
+      final Layer bTrack = theLayers.findLayer("BARTON");
+      assertNotNull("found track", bTrack);
+      final TrackWrapper track = (TrackWrapper) bTrack;
+      assertEquals("has fixes", 10, track.numFixes());
+      final Enumeration<Editable> pIter = track.getPositionIterator();
+      // move along a bit
+      pIter.nextElement();
+      pIter.nextElement();
+      pIter.nextElement();
+      pIter.nextElement();
+      final FixWrapper fix5 = (FixWrapper) pIter.nextElement();
+      final Date dtg = fix5.getDTG().getDate();
+      final SimpleDateFormat dfDate = new GMTDateFormat("dd/MMM/yyyy HH:mm:ss");
+      assertEquals("correct date", "12/Nov/2019 12:47:40", dfDate.format(dtg));
+      final WorldLocation loc = fix5.getLocation();
+      assertEquals(-0.8071912410000001, Math.toRadians(loc.getLat()), 0.000001);
+      assertEquals(0.788539756051038, Math.toRadians(loc.getLong()), 0.000001);
+      assertEquals(0d, loc.getDepth(), 0.000001);
+      assertEquals(0.847944870877505, fix5.getCourse(), 0.0001);
+      assertEquals(6.8, new WorldSpeed(fix5.getSpeed(), WorldSpeed.Kts)
+          .getValueIn(WorldSpeed.M_sec), 0.0001);
+    }
   }
 
   private static final String CSV_DATE_FORMAT = "dd MMM yyyy - HH:mm:ss.SSS";
-
-  private static String inputStreamAsString(final InputStream stream)
-      throws IOException
-  {
-    final InputStreamReader isr = new InputStreamReader(stream);
-    final BufferedReader br = new BufferedReader(isr);
-    final StringBuilder sb = new StringBuilder();
-    String line = null;
-
-    while ((line = br.readLine()) != null)
-    {
-      sb.append(line + "\n");
-    }
-
-    br.close();
-    return sb.toString();
-  }
 
   private static String getTrackPrefix(final String fullPath)
   {
@@ -1294,25 +1337,9 @@ public class Import_CSV_GZ
     }
     else
     {
-      try
-      {
-        // get the file as a string
-        final String contents = inputStreamAsString(inputStream);
-
-        // pass it through the parser
-        final List<CSVRecord> records = CSVParser.parse(contents,
-            CSVFormat.EXCEL).getRecords();
-
-        // go for it
-        importer.doImport(theLayers, records, trackName, logger);
-      }
-      catch (final IOException e)
-      {
-        LoggingService.INSTANCE().logError(ErrorLogger.ERROR,
-            "Failed while importing CSV file:" + fileName, e);
-      }
+      // go for it
+      importer.doImport(inputStream, theLayers, trackName, logger, fileName);
     }
-
   }
 
   public void doZipImport(final Layers theLayers, final InputStream inputStream,
