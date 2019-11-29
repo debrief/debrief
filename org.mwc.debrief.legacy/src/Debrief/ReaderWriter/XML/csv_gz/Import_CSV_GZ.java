@@ -1390,8 +1390,6 @@ public class Import_CSV_GZ
     }
   }
 
-  private List<TrackWrapper> _newTracks = new ArrayList<TrackWrapper>();
-
   private static final String CSV_DATE_FORMAT = "dd MMM yyyy - HH:mm:ss.SSS";
 
   private static String getTrackPrefix(final String fullPath)
@@ -1432,12 +1430,6 @@ public class Import_CSV_GZ
     {
       // go for it
       importer.doImport(inputStream, theLayers, trackName, logger, fileName);
-
-      // and add the tracks
-      for (TrackWrapper track : _newTracks)
-      {
-        theLayers.addThisLayer(track);
-      }
     }
   }
 
@@ -1488,62 +1480,48 @@ public class Import_CSV_GZ
       return null;
   }
 
-  private TrackWrapper getTrack(final String trackName)
-  {
-    for (TrackWrapper track : _newTracks)
-    {
-      if (track.getName().equals(trackName))
-      {
-        return track;
-      }
-    }
-    return null;
-  }
-
   private TrackWrapper trackFor(final Layers layers, final String trackName)
   {
-    TrackWrapper track = getTrack(trackName);
-    if (track == null)
+    final TrackWrapper track;
+    final Layer layer = layers.findLayer(trackName);
+    if (layer != null && layer instanceof TrackWrapper)
     {
-      final Layer layer = layers.findLayer(trackName);
-      if (layer != null && layer instanceof TrackWrapper)
+      track = (TrackWrapper) layer;
+    }
+    else
+    {
+      final boolean needsRename;
+      if (layer == null)
       {
-        track = (TrackWrapper) layer;
+        needsRename = false;
       }
       else
       {
-        final boolean needsRename;
-        if (layer == null)
-        {
-          needsRename = false;
-        }
-        else
-        {
-          needsRename = true;
-        }
-
-        final String nameToUse;
-        if (needsRename)
-        {
-          final String suffix = "-" + (int) Math.random() * 1000;
-          nameToUse = trackName + suffix;
-        }
-        else
-        {
-          nameToUse = trackName;
-        }
-
-        track = new TrackWrapper();
-        track.setName(nameToUse);
-
-        // sort out a color
-        final Color theCol = DebriefColors.RandomColorProvider.getRandomColor(
-            colorCounter++);
-        track.setColor(theCol);
-
-        _newTracks.add(track);
+        needsRename = true;
       }
+
+      final String nameToUse;
+      if (needsRename)
+      {
+        final String suffix = "-" + (int) Math.random() * 1000;
+        nameToUse = trackName + suffix;
+      }
+      else
+      {
+        nameToUse = trackName;
+      }
+
+      track = new TrackWrapper();
+      track.setName(nameToUse);
+
+      // sort out a color
+      final Color theCol = DebriefColors.RandomColorProvider.getRandomColor(
+          colorCounter++);
+      track.setColor(theCol);
+
+      layers.addThisLayer(track);
     }
+
     return track;
   }
 }
