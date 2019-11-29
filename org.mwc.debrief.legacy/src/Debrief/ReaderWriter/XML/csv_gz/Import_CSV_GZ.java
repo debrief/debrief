@@ -79,6 +79,29 @@ public class Import_CSV_GZ
      */
     private final GMTDateFormat _formatter = new GMTDateFormat(CSV_DATE_FORMAT);
 
+    Long perfStep = null;
+    
+    protected void perfLog(long ctr)
+    {
+      if (ctr != 0)
+      {
+        double log10 = Math.log10(ctr);
+        if (log10 == (int) log10)
+        {
+          perfStep = ctr;
+          System.out.println(ctr);
+        }
+        else
+        {
+          double steps = ((double)ctr) / perfStep;
+          if (steps == (int) steps)
+          {
+            System.out.println(" " + ctr);
+          }
+        }
+      }
+    }
+
     /**
      * process the lines
      * 
@@ -89,7 +112,7 @@ public class Import_CSV_GZ
      * @param hostName
      *          the recording platform
      * @param logger
-     * @param fileName 
+     * @param fileName
      */
     public final void doImport(final InputStream inputStream,
         final Layers theLayers, final String hostName, final ErrorLogger logger,
@@ -108,6 +131,7 @@ public class Import_CSV_GZ
         {
           try
           {
+            perfLog(ctr);
             processThis(theLayers, hostName, logger, line);
           }
           catch (final NumberFormatException | ParseException ne)
@@ -119,6 +143,9 @@ public class Import_CSV_GZ
           }
           ctr++;
         }
+        
+        // ok, finished processing
+        finalise(theLayers);
       }
       catch (final IOException e)
       {
@@ -126,6 +153,11 @@ public class Import_CSV_GZ
             "Failed while importing CSV file:" + fileName, e);
       }
 
+    }
+
+    protected void finalise(final Layers theLayers)
+    {
+      
     }
 
     /**
@@ -504,6 +536,8 @@ public class Import_CSV_GZ
 
     private static final String MY_TRACK_ID = "1";
 
+    private HashMap<String, List<FixWrapper>> _fixStore = new HashMap<String, List<FixWrapper>>();
+    
     @Override
     public List<String> getMyFields()
     {
@@ -611,16 +645,61 @@ public class Import_CSV_GZ
         {
           trackName = trackId;
         }
-        final TrackWrapper track = trackFor(theLayers, trackName);
-
         // reset name
         nextFix.resetName();
-
-        track.addFix(nextFix);
+        
+        // store it
+        List<FixWrapper> thisTrack = _fixStore.get(trackName);
+        if(thisTrack == null)
+        {
+          thisTrack = new ArrayList<FixWrapper>();
+          _fixStore.put(trackName, thisTrack);
+        }
+        
+        thisTrack.add(nextFix);
       }
-
     }
 
+    @Override
+    protected void finalise(final Layers theLayers)
+    {
+      // let parent tidy up
+      super.finalise(theLayers);
+
+      for(String trackName: _fixStore.keySet())
+      {
+        List<FixWrapper> list = _fixStore.get(trackName);
+
+        // does it exist already 
+        final boolean newTrack;
+        final TrackWrapper track;
+        Layer existing = theLayers.findLayer(trackName);
+        if(existing != null)
+        {
+          track = (TrackWrapper) existing;
+          newTrack = false;
+        }
+        else
+        {
+          track = new TrackWrapper();
+          track.setName(trackName);
+          newTrack = true;
+        }
+        
+        for(FixWrapper fix: list)
+        {
+          track.add(fix);
+        }
+        
+        if(newTrack)
+        {
+          theLayers.addThisLayer(track);
+        }
+        
+      }
+    }
+    
+    
   }
 
   public static class TestCSV_GZ_Import extends TestCase
@@ -686,6 +765,15 @@ public class Import_CSV_GZ
       assertEquals("my1", getTrackPrefix("/C:/users/ronaldo/my1_ball1.csv"));
       assertEquals("my2", getTrackPrefix("//users/ronaldo/my2_ball2.csv"));
       assertEquals("my3", getTrackPrefix("my3_ball3.csv"));
+    }
+    
+    public void unTest_Logger()
+    {
+      State_Importer importer = new Import_CSV_GZ().new State_Importer();
+      for(int i=0;i<2000;i++)
+      {
+        importer.perfLog(i);
+      }
     }
 
     public void test_parse_bad_OSD_File() throws IOException
@@ -1257,25 +1345,25 @@ public class Import_CSV_GZ
       final String root =
           "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/csv_gz/";
       final String filename = "BARTON_xxxx_SystemTrack_xxxx.csv.gz";
-    
+
       // start off with the ownship track
       final File zipFile = new File(root + filename);
       assertTrue(zipFile.exists());
-    
+
       assertTrue("is gzip", GzipUtils.isCompressedFilename(root + filename));
       assertEquals("name", "BARTON_xxxx_SystemTrack_xxxx.csv", GzipUtils
           .getUncompressedFilename(filename));
-    
+
       final InputStream bs = new FileInputStream(zipFile);
-    
+
       final Layers theLayers = new Layers();
-    
+
       // check empty
       assertEquals("empty", 0, theLayers.size());
       final Logger logger = new Logger();
-    
+
       new Import_CSV_GZ().doZipImport(theLayers, bs, filename, logger);
-    
+
       // check empty
       assertEquals("has track", 4, theLayers.size());
       final Layer bTrack = theLayers.findLayer("BARTON");
@@ -1301,6 +1389,8 @@ public class Import_CSV_GZ
           .getValueIn(WorldSpeed.M_sec), 0.0001);
     }
   }
+
+  private List<TrackWrapper> _newTracks = new ArrayList<TrackWrapper>();
 
   private static final String CSV_DATE_FORMAT = "dd MMM yyyy - HH:mm:ss.SSS";
 
@@ -1342,6 +1432,12 @@ public class Import_CSV_GZ
     {
       // go for it
       importer.doImport(inputStream, theLayers, trackName, logger, fileName);
+
+      // and add the tracks
+      for (TrackWrapper track : _newTracks)
+      {
+        theLayers.addThisLayer(track);
+      }
     }
   }
 
@@ -1364,7 +1460,7 @@ public class Import_CSV_GZ
       // now create a byte input stream from the byte output stream
       final ByteArrayInputStream bis = new ByteArrayInputStream(bos
           .toByteArray());
-
+      
       // and create it
       doImport(theLayers, bis, fileName, logger);
     }
@@ -1392,45 +1488,61 @@ public class Import_CSV_GZ
       return null;
   }
 
+  private TrackWrapper getTrack(final String trackName)
+  {
+    for (TrackWrapper track : _newTracks)
+    {
+      if (track.getName().equals(trackName))
+      {
+        return track;
+      }
+    }
+    return null;
+  }
+
   private TrackWrapper trackFor(final Layers layers, final String trackName)
   {
-    final TrackWrapper track;
-    final Layer layer = layers.findLayer(trackName);
-    if (layer != null && layer instanceof TrackWrapper)
+    TrackWrapper track = getTrack(trackName);
+    if (track == null)
     {
-      track = (TrackWrapper) layer;
-    }
-    else
-    {
-      final boolean needsRename;
-      if (layer == null)
+      final Layer layer = layers.findLayer(trackName);
+      if (layer != null && layer instanceof TrackWrapper)
       {
-        needsRename = false;
+        track = (TrackWrapper) layer;
       }
       else
       {
-        needsRename = true;
-      }
+        final boolean needsRename;
+        if (layer == null)
+        {
+          needsRename = false;
+        }
+        else
+        {
+          needsRename = true;
+        }
 
-      final String nameToUse;
-      if (needsRename)
-      {
-        final String suffix = "-" + (int) Math.random() * 1000;
-        nameToUse = trackName + suffix;
-      }
-      else
-      {
-        nameToUse = trackName;
-      }
+        final String nameToUse;
+        if (needsRename)
+        {
+          final String suffix = "-" + (int) Math.random() * 1000;
+          nameToUse = trackName + suffix;
+        }
+        else
+        {
+          nameToUse = trackName;
+        }
 
-      track = new TrackWrapper();
-      track.setName(nameToUse);
+        track = new TrackWrapper();
+        track.setName(nameToUse);
 
-      // sort out a color
-      final Color theCol = DebriefColors.RandomColorProvider.getRandomColor(
-          colorCounter++);
-      track.setColor(theCol);
-      layers.addThisLayer(track);
+        // sort out a color
+        final Color theCol = DebriefColors.RandomColorProvider.getRandomColor(
+            colorCounter++);
+        track.setColor(theCol);
+
+        _newTracks.add(track);
+      }
     }
     return track;
   }
