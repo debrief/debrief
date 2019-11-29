@@ -80,7 +80,7 @@ public class Import_CSV_GZ
     private final GMTDateFormat _formatter = new GMTDateFormat(CSV_DATE_FORMAT);
 
     Long perfStep = null;
-    
+
     protected void perfLog(long ctr)
     {
       if (ctr != 0)
@@ -93,7 +93,7 @@ public class Import_CSV_GZ
         }
         else
         {
-          double steps = ((double)ctr) / perfStep;
+          double steps = ((double) ctr) / perfStep;
           if (steps == (int) steps)
           {
             System.out.println(" " + ctr);
@@ -143,7 +143,7 @@ public class Import_CSV_GZ
           }
           ctr++;
         }
-        
+
         // ok, finished processing
         finalise(theLayers);
       }
@@ -157,7 +157,7 @@ public class Import_CSV_GZ
 
     protected void finalise(final Layers theLayers)
     {
-      
+
     }
 
     /**
@@ -536,8 +536,6 @@ public class Import_CSV_GZ
 
     private static final String MY_TRACK_ID = "1";
 
-    private HashMap<String, List<FixWrapper>> _fixStore = new HashMap<String, List<FixWrapper>>();
-    
     @Override
     public List<String> getMyFields()
     {
@@ -574,36 +572,45 @@ public class Import_CSV_GZ
       if (map.size() >= myFields.size() - 1)
       {
         // create fix
-        final WorldLocation loc = new WorldLocation(Math.toDegrees(parseThis(map
-            .get(latitude), latitude)), Math.toDegrees(parseThis(map.get(
-                longitude), longitude)), 0d);
-        final double speedVal = new WorldSpeed(parseThis(map.get(speed), speed),
-            WorldSpeed.M_sec).getValueIn(WorldSpeed.ft_sec) / 3d;
-        final Fix fix = new Fix(date, loc, parseThis(map.get(course), course),
-            speedVal);
-        res = new FixWrapper(fix);
-
-        // store the track name
-        final String trackName;
-        final String trackStr = map.get(trackNum);
-        if (trackStr != null && trackStr.equals(MY_TRACK_ID))
+        final Double latVal = parseThis(map.get(latitude), latitude);
+        final Double longVal = parseThis(map.get(longitude), longitude);
+        if (latVal != 0d && longVal != 0d)
         {
-          trackName = hostname;
+
+          final WorldLocation loc = new WorldLocation(Math.toDegrees(latVal),
+              Math.toDegrees(longVal), 0d);
+          final double speedVal = new WorldSpeed(parseThis(map.get(speed),
+              speed), WorldSpeed.M_sec).getValueIn(WorldSpeed.ft_sec) / 3d;
+          final Fix fix = new Fix(date, loc, parseThis(map.get(course), course),
+              speedVal);
+          res = new FixWrapper(fix);
+
+          // store the track name
+          final String trackName;
+          final String trackStr = map.get(trackNum);
+          if (trackStr != null && trackStr.equals(MY_TRACK_ID))
+          {
+            trackName = hostname;
+          }
+          else
+          {
+            final String systemID = map.get(SYSTEM_ID);
+            final String countryStr = map.get(country);
+            final String trimmedTrackStr = trimmedTrackNum(systemID);
+            String workingName = trimmedTrackStr + "_" + trackStr;
+            if (countryStr != null)
+            {
+              workingName += "_" + countryStr;
+            }
+            trackName = workingName;
+          }
+
+          res.setComment(trackName);
         }
         else
         {
-          final String systemID = map.get(SYSTEM_ID);
-          final String countryStr = map.get(country);
-          final String trimmedTrackStr = trimmedTrackNum(systemID);
-          String workingName = trimmedTrackStr + "_" + trackStr;
-          if (countryStr != null)
-          {
-            workingName += "_" + countryStr;
-          }
-          trackName = workingName;
+          res = null;
         }
-
-        res.setComment(trackName);
       }
       else
       {
@@ -647,15 +654,16 @@ public class Import_CSV_GZ
         }
         // reset name
         nextFix.resetName();
-        
+
         // store it
-        List<FixWrapper> thisTrack = _fixStore.get(trackName);
-        if(thisTrack == null)
+        TrackWrapper thisTrack = (TrackWrapper) theLayers.findLayer(trackName);
+        if (thisTrack == null)
         {
-          thisTrack = new ArrayList<FixWrapper>();
-          _fixStore.put(trackName, thisTrack);
+          thisTrack = new TrackWrapper();
+          thisTrack.setName(trackName);
+          theLayers.addThisLayer(thisTrack);
         }
-        
+
         thisTrack.add(nextFix);
       }
     }
@@ -665,41 +673,7 @@ public class Import_CSV_GZ
     {
       // let parent tidy up
       super.finalise(theLayers);
-
-      for(String trackName: _fixStore.keySet())
-      {
-        List<FixWrapper> list = _fixStore.get(trackName);
-
-        // does it exist already 
-        final boolean newTrack;
-        final TrackWrapper track;
-        Layer existing = theLayers.findLayer(trackName);
-        if(existing != null)
-        {
-          track = (TrackWrapper) existing;
-          newTrack = false;
-        }
-        else
-        {
-          track = new TrackWrapper();
-          track.setName(trackName);
-          newTrack = true;
-        }
-        
-        for(FixWrapper fix: list)
-        {
-          track.add(fix);
-        }
-        
-        if(newTrack)
-        {
-          theLayers.addThisLayer(track);
-        }
-        
-      }
     }
-    
-    
   }
 
   public static class TestCSV_GZ_Import extends TestCase
@@ -766,11 +740,11 @@ public class Import_CSV_GZ
       assertEquals("my2", getTrackPrefix("//users/ronaldo/my2_ball2.csv"));
       assertEquals("my3", getTrackPrefix("my3_ball3.csv"));
     }
-    
+
     public void unTest_Logger()
     {
       State_Importer importer = new Import_CSV_GZ().new State_Importer();
-      for(int i=0;i<2000;i++)
+      for (int i = 0; i < 2000; i++)
       {
         importer.perfLog(i);
       }
@@ -1452,7 +1426,7 @@ public class Import_CSV_GZ
       // now create a byte input stream from the byte output stream
       final ByteArrayInputStream bis = new ByteArrayInputStream(bos
           .toByteArray());
-      
+
       // and create it
       doImport(theLayers, bis, fileName, logger);
     }
