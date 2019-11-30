@@ -15,12 +15,9 @@
 package org.mwc.debrief.lite.custom;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-
-import javax.swing.border.Border;
 
 import org.pushingpixels.flamingo.api.common.RichTooltip;
 import org.pushingpixels.flamingo.api.ribbon.synapse.model.ComponentContentModel;
@@ -31,42 +28,20 @@ import org.pushingpixels.neon.icon.ResizableIcon.Factory;
  * @author Ayesha
  *
  */
-public class LabelComponentContentModel implements ComponentContentModel
+public class RangeDisplayComponentContentModel implements ComponentContentModel
 {
 
   private boolean isEnabled;
   private ResizableIcon.Factory iconFactory;
   private String caption;
-  private String text;
+  private String minValueText;
+  private String maxValueText;
+  private Color backgroundColor;
+  private Color foregroundColor;
   private RichTooltip richTooltip;
   private ActionListener actionListener;
   
   private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
-  public void setBorder(Border border)
-  {
-    this.border = border;
-  }
-
-  public void setBackground(Color background)
-  {
-    this.background = background;
-  }
-
-  public void setForeground(Color foreground)
-  {
-    this.foreground = foreground;
-  }
-
-  public void setName(String name)
-  {
-    this.name = name;
-  }
-
-  private Border border;
-  private Color background;
-  private Color foreground;
-  private String name;
-  private Font font;
   
   @Override
   public boolean isEnabled()
@@ -80,8 +55,27 @@ public class LabelComponentContentModel implements ComponentContentModel
     if (this.isEnabled != enabled) {
       this.isEnabled = enabled;
       this.pcs.firePropertyChange("enabled", !this.isEnabled, this.isEnabled);
+    }
   }
-    
+  
+  public void setMinValueText(String minValueText)
+  {
+    String oldValue = this.minValueText;
+    if(minValueText!=null && !minValueText.equals(oldValue))
+    {
+      this.minValueText=minValueText;
+      this.pcs.firePropertyChange("minValueText", oldValue, minValueText);
+    }
+  }
+  
+  public void setMaxValueText(String maxValueText)
+  {
+    String oldValue = this.maxValueText;
+    if(maxValueText !=null && !maxValueText.equals(oldValue))
+    {
+      this.maxValueText=maxValueText;
+      this.pcs.firePropertyChange("maxValueText", oldValue, maxValueText);
+    }
   }
 
   @Override
@@ -101,47 +95,18 @@ public class LabelComponentContentModel implements ComponentContentModel
   {
     return richTooltip;
   }
-  public void setText(String text)
+  
+  
+  public String getMinValueText()
   {
-    String oldText = this.text;
-    this.text = text;
-    this.pcs.firePropertyChange("text", oldText, this.text);
+    return minValueText;
+  }
+
+  public String getMaxValueText()
+  {
+    return maxValueText;
   }
   
-  public String getText()
-  {
-    return text;
-  }
-  
-  public Border getBorder()
-  {
-    return border;
-  }
-
-  public void setFont(Font font)
-  {
-    this.font = font;
-    
-  }
-  
-  public Font getFont() {
-    return font;
-  }
-
-  public Color getBackground()
-  {
-    return background;
-  }
-  public Color getForeground()
-  {
-    return foreground;
-  }
-
-  public String getName()
-  {
-    return name;
-  }
-
   @Override
   public void addPropertyChangeListener(PropertyChangeListener pcl)
   {
@@ -162,40 +127,94 @@ public class LabelComponentContentModel implements ComponentContentModel
   }
   
   
+  /**
+   * @return the foregroundColor
+   */
+  public Color getForegroundColor()
+  {
+    return foregroundColor;
+  }
+
+  /**
+   * @param foregroundColor the foregroundColor to set
+   */
+  public void setForegroundColor(Color foregroundColor)
+  {
+    Color oldValue = this.foregroundColor;
+    if(foregroundColor !=null && !foregroundColor.equals(oldValue))
+    {
+      this.foregroundColor=foregroundColor;
+      this.pcs.firePropertyChange("foreground", oldValue, foregroundColor);
+    }
+  }
+
+
+  /**
+   * @return the backgroundColor
+   */
+  public Color getBackgroundColor()
+  {
+    return backgroundColor;
+  }
+
+  /**
+   * @param backgroundColor the backgroundColor to set
+   */
+  public void setBackgroundColor(Color backgroundColor)
+  {
+    Color oldValue = this.backgroundColor;
+    if(backgroundColor !=null && !backgroundColor.equals(oldValue))
+    {
+      this.backgroundColor=backgroundColor;
+      this.pcs.firePropertyChange("background", oldValue, backgroundColor);
+    }
+  }
+
+
   public static class Builder
   {
     private boolean isEnabled = true;
     private ResizableIcon.Factory iconFactory;
     private String caption;
     private RichTooltip richTooltip;
-    private String text;
-    private ActionListener actionListener;
-
-    private Border border;
+    private String minValueText;
+    private String maxValueText;
     private Color background;
     private Color foreground;
-    private String name;
-    private Font font;
+    private ActionListener actionListener;
     
     
-    public LabelComponentContentModel build() {
-      LabelComponentContentModel model = new LabelComponentContentModel();
-      model.setText(this.text);
+    public RangeDisplayComponentContentModel build() {
+      RangeDisplayComponentContentModel model = new RangeDisplayComponentContentModel();
+      model.setMinValueText(this.minValueText);
+      model.setMaxValueText(this.maxValueText);
       model.actionListener = this.actionListener;
       model.isEnabled = this.isEnabled;
       model.iconFactory = this.iconFactory;
       model.caption = this.caption;
       model.richTooltip = this.richTooltip;
-      model.setBackground(this.background);
-      model.setForeground(this.foreground);
-      model.setName(this.name);
-      model.setBorder(this.border);
-      model.setFont(this.font);
+      model.setBackgroundColor(this.background);
+      model.setForegroundColor(this.foreground);
       return model;
     }
-    public Builder setText(String text)
+    public Builder setMinValueText(String text)
     {
-      this.text=text;
+      this.minValueText=text;
+      return this;
+    }
+    public Builder setMaxValueText(String text)
+    {
+      this.maxValueText=text;
+      return this;
+    }
+    public Builder setForeground(Color foreground)
+    {
+      this.foreground = foreground;
+      return this;
+    }
+    public Builder setBackground(Color background)
+    {
+      this.background = background;
       return this;
     }
     public Builder setRichTooltip(RichTooltip richtooltip)
@@ -208,35 +227,8 @@ public class LabelComponentContentModel implements ComponentContentModel
       this.caption=caption;
       return this;
     }
-    public Builder setBorder(Border border)
-    {
-      this.border = border;
-      return this;
-    }
-
-    public Builder setBackground(Color background)
-    {
-      this.background = background;
-      return this;
-    }
-
-    public Builder setForeground(Color foreground)
-    {
-      this.foreground = foreground;
-      return this;
-    }
-
-    public Builder setName(String name)
-    {
-      this.name = name;
-      return this;
-    }
-    public Builder setFont(Font font)
-    {
-      this.font = font;
-      return this;
-    }
   }
+  
   
 
 }

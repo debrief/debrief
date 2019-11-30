@@ -38,22 +38,25 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSlider;
+import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.custom.JRibbonLabel;
+import org.mwc.debrief.lite.custom.JRibbonRangeDisplayPanel;
 import org.mwc.debrief.lite.custom.JRibbonRangeSlider;
 import org.mwc.debrief.lite.custom.JRibbonSlider;
 import org.mwc.debrief.lite.custom.LabelComponentContentModel;
+import org.mwc.debrief.lite.custom.RangeDisplayComponentContentModel;
 import org.mwc.debrief.lite.custom.RibbonLabelProjection;
+import org.mwc.debrief.lite.custom.RibbonRangeDisplayPanelProjection;
 import org.mwc.debrief.lite.custom.RibbonRangeSliderProjection;
 import org.mwc.debrief.lite.custom.RibbonSliderProjection;
 import org.mwc.debrief.lite.custom.SliderComponentContentModel;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.gui.LiteStepControl.SliderControls;
 import org.mwc.debrief.lite.gui.LiteStepControl.TimeLabel;
-import org.mwc.debrief.lite.gui.custom.LabelledRangeSlider;
 import org.mwc.debrief.lite.gui.custom.RangeSlider;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.properties.PropertiesDialog;
@@ -114,8 +117,9 @@ public class DebriefRibbonTimeController
   protected static class DateFormatBinder
   {
     protected LiteStepControl stepControl;
-    protected JLabel minimumValue;
-    protected JLabel maximumValue;
+//    protected JLabel minimumValue;
+//    protected JLabel maximumValue;
+    protected RangeDisplayComponentContentModel rangeDisplayModel;
     protected RangeSlider slider;
     protected TimeManager timeManager;
 
@@ -126,8 +130,8 @@ public class DebriefRibbonTimeController
 
     public void reset()
     {
-      minimumValue.setText(" ");
-      maximumValue.setText(" ");
+      rangeDisplayModel.setMinValueText(" ");
+      rangeDisplayModel.setMaxValueText(" ");
       slider.setMinimum(0);
       slider.setMaximum(0);
     }
@@ -140,8 +144,8 @@ public class DebriefRibbonTimeController
       final SimpleDateFormat formatter = new SimpleDateFormat(stepControl
           .getDateFormat());
       formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-      minimumValue.setText(formatter.format(low));
-      maximumValue.setText(formatter.format(high));
+      rangeDisplayModel.setMinValueText(formatter.format(low));
+      rangeDisplayModel.setMaxValueText(formatter.format(high));
     }
 
     public void updateTimeDateFormat(final String format,
@@ -277,6 +281,7 @@ public class DebriefRibbonTimeController
 
       final Date low = RangeSlider.toDate(slider.getValue()).getTime();
       final Date high = RangeSlider.toDate(slider.getUpperValue()).getTime();
+      formatBinder.slider = slider;
       formatBinder.updateFilterDateFormat();
 
       operations.setPeriod(new TimePeriod.BaseTimePeriod(new HiResDate(low),
@@ -524,7 +529,12 @@ public class DebriefRibbonTimeController
     // we need to give the menu to the command popup
     
     LabelComponentContentModel timeLabelModel = LabelComponentContentModel.builder().
-        setText(LiteStepControl.timeFormat).build();
+        setText(LiteStepControl.timeFormat).
+        setBorder(new LineBorder(Color.black, 5)).
+        setForeground(new Color(0, 255, 0)).
+        setBackground(Color.black).
+        setFont(new Font(Font.MONOSPACED, Font.PLAIN, 16)).
+        setName("timeformatlabel").build();
     final ComponentSupplier<JRibbonLabel,
     LabelComponentContentModel, ComponentPresentationModel> jTimeLabel =
     (Projection<JRibbonLabel, LabelComponentContentModel,
@@ -534,6 +544,7 @@ public class DebriefRibbonTimeController
         jTimeLabel);
     final JLabel timeLabel = timeLabelProjection.buildComponent();
     timeLabel.setPreferredSize(new Dimension(40,18));
+    
     
     final JPopupMenu menu = new JPopupMenu();
 
@@ -845,20 +856,30 @@ public class DebriefRibbonTimeController
             ComponentPresentationModel> projection) -> JRibbonRangeSlider::new;
     final ComponentProjection<JRibbonRangeSlider,SliderComponentContentModel> projection = 
         new RibbonRangeSliderProjection(timeFilterRangeModel, ComponentPresentationModel.withDefaults(), timeRangeSlider);
-    LabelledRangeSlider sliderObj = projection.buildComponent();
-    final RangeSlider slider = sliderObj.getRangeSlider();
+    RangeSlider slider = projection.buildComponent();
+    //final RangeSlider slider = sliderObj.getRangeSlider();
     //set the values for the slider here.
+    RangeDisplayComponentContentModel rangeDisplayModel = RangeDisplayComponentContentModel.builder().
+        setMinValueText("xxx"+LiteStepControl.timeFormat).build();
+    final ComponentSupplier<JRibbonRangeDisplayPanel,
+    RangeDisplayComponentContentModel, ComponentPresentationModel> rangeLabel =
+    (Projection<JRibbonRangeDisplayPanel,
+        RangeDisplayComponentContentModel, ComponentPresentationModel> mxvProjection) -> JRibbonRangeDisplayPanel::new;
+    RibbonRangeDisplayPanelProjection rangeDisplayProjection = new RibbonRangeDisplayPanelProjection(rangeDisplayModel,
+        ComponentPresentationModel.withDefaults() , 
+        rangeLabel);
+    JRibbonRangeDisplayPanel panel = rangeDisplayProjection.buildComponent();
     formatBinder.stepControl = stepControl;
-    formatBinder.maximumValue = sliderObj.getLblMaximumValue();
-    formatBinder.minimumValue = sliderObj.getLblMinimumValue();
+    formatBinder.rangeDisplayModel = rangeDisplayModel;
     formatBinder.slider = slider;
     formatBinder.timeManager = timeManager;
     formatBinder.updateFilterDateFormat();
     slider.setEnabled(false);
 
-
+    
     timePeriod.addRibbonComponent(projection);
-
+    timePeriod.addRibbonComponent(rangeDisplayProjection);
+   // rangeDisplayModel.setBackgroundColor(Color.white);
     // tie in to the stepper
     final SliderControls iSlider = new LiteSliderControls(slider);
     stepControl.setSliderControls(iSlider);
@@ -871,8 +892,9 @@ public class DebriefRibbonTimeController
       @Override
       public void reset()
       {
-        formatBinder.minimumValue.setText(" ");
-        formatBinder.maximumValue.setText(" ");
+        rangeDisplayModel.setMaxValueText(" ");
+        rangeDisplayModel.setMinValueText(" ");
+        
       }
     });
     return timePeriod;

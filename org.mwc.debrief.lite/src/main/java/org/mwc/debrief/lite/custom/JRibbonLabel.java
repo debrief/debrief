@@ -36,20 +36,16 @@ public class JRibbonLabel extends JLabel
    * 
    */
   private static final long serialVersionUID = 1L;
+  
+  private LabelComponentContentModel contentModel ;
 
   public JRibbonLabel(Projection<JRibbonLabel,
   LabelComponentContentModel, ComponentPresentationModel> projection)
   {
-    LabelComponentContentModel contentModel = projection.getContentModel();
+   
+    this.contentModel = projection.getContentModel();
     setEnabled(contentModel.isEnabled());
     setText(contentModel.getText());
-//    addActionListener((ActionEvent ae) -> {
-//      //TODO is this correct logic here?
-//      if (contentModel.getChangeListener() != null) {
-//        contentModel.getChangeListener().stateChanged(ae);
-//      }
-//    });
-//
     contentModel.addPropertyChangeListener((PropertyChangeEvent event) -> {
       if ("text".equals(event.getPropertyName())) {
         setText(contentModel.getText());
@@ -59,8 +55,11 @@ public class JRibbonLabel extends JLabel
   
   protected void paintComponent(final Graphics g)
   {
-    g.setColor(Color.BLACK);
-    g.fillRect(0, 0, getWidth(), getHeight());
+    if(contentModel.getBackground()!=null) 
+    {
+      g.setColor(Color.BLACK);
+      g.fillRect(0, 0, getWidth(), getHeight());
+    }
     super.paintComponent(g);
   }
 }

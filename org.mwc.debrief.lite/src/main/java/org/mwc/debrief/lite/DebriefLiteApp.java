@@ -44,6 +44,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -936,6 +937,8 @@ public class DebriefLiteApp implements FileDropListener
     loadBackdropdata(_theLayers);
     theFrame.setApplicationIcon(ResizableIconFactory.factory(ImageWrapperResizableIcon.getIcon(MenuUtils
         .createImage("icons/d_lite.png"), MenuUtils.ICON_SIZE_32)));
+    theFrame.setIconImage(new ImageIcon(ClassLoader.getSystemResource(
+        "icons/d_lite.png")).getImage());
     theFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     theFrame.setVisible(true);
     theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());

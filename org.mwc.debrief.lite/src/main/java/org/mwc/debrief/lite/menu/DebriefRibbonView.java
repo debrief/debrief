@@ -16,25 +16,21 @@ package org.mwc.debrief.lite.menu;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JSlider;
-import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.geotools.swing.JMapPane;
-import org.geotools.swing.action.PanAction;
-import org.geotools.swing.action.ZoomInAction;
-import org.geotools.swing.action.ZoomOutAction;
-import org.geotools.swing.event.MapMouseEvent;
-import org.geotools.swing.tool.PanTool;
+import org.mwc.debrief.lite.custom.JRibbonLabel;
 import org.mwc.debrief.lite.custom.JRibbonSlider;
+import org.mwc.debrief.lite.custom.LabelComponentContentModel;
+import org.mwc.debrief.lite.custom.RibbonLabelProjection;
 import org.mwc.debrief.lite.custom.RibbonSliderProjection;
 import org.mwc.debrief.lite.custom.SliderComponentContentModel;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
+import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.gui.ZoomOut;
 import org.mwc.debrief.lite.map.AdvancedZoomInAction;
 import org.mwc.debrief.lite.map.DragElementAction;
@@ -44,34 +40,31 @@ import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.map.RangeBearingAction;
 import org.mwc.debrief.lite.view.actions.PanCommandAction;
 import org.opengis.referencing.operation.MathTransform;
-import org.pushingpixels.flamingo.api.common.CommandButtonPresentationState;
-import org.pushingpixels.flamingo.api.common.icon.EmptyResizableIcon;
-import org.pushingpixels.flamingo.api.common.model.Command;
-import org.pushingpixels.flamingo.api.common.model.CommandGroup;
-import org.pushingpixels.flamingo.api.common.model.CommandPanelContentModel;
-import org.pushingpixels.flamingo.api.common.model.CommandPanelPresentationModel;
 import org.pushingpixels.flamingo.api.common.model.CommandToggleGroupModel;
-import org.pushingpixels.flamingo.api.common.projection.CommandPanelProjection;
 import org.pushingpixels.flamingo.api.common.projection.Projection;
 import org.pushingpixels.flamingo.api.common.projection.Projection.ComponentSupplier;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand.PresentationPriority;
+import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 import org.pushingpixels.flamingo.api.ribbon.synapse.model.ComponentPresentationModel;
 import org.pushingpixels.flamingo.api.ribbon.synapse.projection.ComponentProjection;
-import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
 import MWC.GUI.Layers;
-import MWC.GenericData.HiResDate;
 
 public class DebriefRibbonView
 {
-  private static ComponentProjection addAlphaSlider(
+  private static ComponentProjection<JRibbonSlider, SliderComponentContentModel> addAlphaSlider(
       final ChangeListener alphaListener, final float alpha)
   {
     
     final SliderComponentContentModel sliderModel = SliderComponentContentModel.builder().
         setEnabled(true).
+        setMinimum(0).
+        setMaximum(100).
+        setMajorTickSpacing(20).
+        setPaintTickSpacing(true).
+        setPaintLabels(false).
         setChangeListener(alphaListener).
         build();
     //set the values for the slider here.
@@ -82,8 +75,6 @@ public class DebriefRibbonView
     final ComponentProjection<JRibbonSlider,SliderComponentContentModel> projection = 
             new RibbonSliderProjection(sliderModel, ComponentPresentationModel.withDefaults(), jribbonSlider);
     JSlider slider = projection.buildComponent();
-    slider.setMajorTickSpacing(20);
-    slider.setPaintTicks(true);
     slider.setToolTipText("Modify transparency");
     slider.setBackground(Color.DARK_GRAY);
     slider.setName("transparencyslider");
@@ -103,10 +94,21 @@ public class DebriefRibbonView
 
     // and the slider
     final JRibbonBand layersMenu = new JRibbonBand("Background", null);
-    final ComponentProjection slider = addAlphaSlider(alphaListener, alpha);
-    //slider.setPresentationPriority(PresentationPriority.TOP);
+    final ComponentProjection<JRibbonSlider, SliderComponentContentModel> slider = addAlphaSlider(alphaListener, alpha);
     layersMenu.addRibbonComponent(slider);
-
+     
+    LabelComponentContentModel timeLabelModel = LabelComponentContentModel.builder().
+        setText("Transparency").build();
+    final ComponentSupplier<JRibbonLabel,
+    LabelComponentContentModel, ComponentPresentationModel> jTimeLabel =
+    (Projection<JRibbonLabel, LabelComponentContentModel,
+        ComponentPresentationModel> projection2) -> JRibbonLabel::new;
+        RibbonLabelProjection timeLabelProjection = new RibbonLabelProjection(timeLabelModel,
+            ComponentPresentationModel.withDefaults() , 
+        jTimeLabel);
+    //final JLabel timeLabel = timeLabelProjection.buildComponent();
+    //timeLabel.setPreferredSize(new Dimension(40,18));
+    layersMenu.addRibbonComponent(timeLabelProjection);
     final RibbonTask viewTask = new RibbonTask("View", mouseMode, mapCommands
         ,layersMenu);
     ribbon.addTask(viewTask);

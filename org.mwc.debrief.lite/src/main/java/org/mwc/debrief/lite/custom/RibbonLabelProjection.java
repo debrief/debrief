@@ -14,10 +14,7 @@
  */
 package org.mwc.debrief.lite.custom;
 
-import java.awt.Color;
 import java.awt.Font;
-
-import javax.swing.border.LineBorder;
 
 import org.pushingpixels.flamingo.api.ribbon.synapse.model.ComponentPresentationModel;
 import org.pushingpixels.flamingo.api.ribbon.synapse.projection.ComponentProjection;
@@ -40,11 +37,28 @@ public class RibbonLabelProjection extends ComponentProjection<JRibbonLabel, Lab
   protected void configureComponent(JRibbonLabel component)
   {
     component.setText(getContentModel().getText());
-    component.setBorder(new LineBorder(Color.black, 5));
-    component.setBackground(Color.black);
-    component.setName("timeformatlabel");
-    component.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 16));
-    component.setForeground(new Color(0, 255, 0));
+    if(getContentModel().getBorder()!=null) {
+      
+      component.setBorder(getContentModel().getBorder());
+    }
+    if(getContentModel().getBackground()!=null)
+    {
+      component.setBackground(getContentModel().getBackground());
+    }
+    if(getContentModel().getName()!=null)
+    {
+      
+      component.setName(getContentModel().getName());
+    }
+    if(component.getFont()!=null)
+    {
+      component.setFont(getContentModel().getFont());
+     
+    }
+    if(getContentModel().getForeground()!=null)
+    {
+      component.setForeground(getContentModel().getForeground());
+    }
     
   }
 

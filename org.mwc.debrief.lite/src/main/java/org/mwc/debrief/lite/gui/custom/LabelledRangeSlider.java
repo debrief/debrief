@@ -14,7 +14,6 @@
  */
 package org.mwc.debrief.lite.gui.custom;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 
@@ -41,13 +40,15 @@ public class LabelledRangeSlider extends JPanel
   public LabelledRangeSlider()
   {
     rangeSlider = new RangeSlider();
+    setBackground(new Color(180,180,220));
     rangeSlider.setBackground(new Color(180,180,220));
     lblMinimumValue = new JLabel();
+    
     lblMaximumValue = new JLabel();
+    
     
     final JPanel sliderPanel = new JPanel();
     sliderPanel.setLayout(new BoxLayout(sliderPanel, BoxLayout.Y_AXIS));
-    sliderPanel.setSize(new Dimension(250,30));
     sliderPanel.add(rangeSlider);
     
 
@@ -57,11 +58,11 @@ public class LabelledRangeSlider extends JPanel
     valuePanel.add(lblMinimumValue);
     valuePanel.add(Box.createGlue());
     valuePanel.add(lblMaximumValue);
-    valuePanel.setSize(new Dimension(250,30));
     setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
     add(sliderPanel);
-    this.add(Box.createHorizontalGlue());
+    add(Box.createHorizontalGlue());
     add(valuePanel);
+    setSize(new Dimension(250,70));
   }
 
   public JLabel getLblMaximumValue()
