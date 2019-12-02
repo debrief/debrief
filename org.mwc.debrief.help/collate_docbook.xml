@@ -339,6 +339,7 @@
 		<delete dir="javadoc"/>
 		<javadoc destdir="javadoc"  sourcepath="../org.mwc.cmap.legacy/src:../org.mwc.debrief.legacy/src" >
 			<arg value="-notimestamp" />
+			<arg value="--ignore-source-errors"/>
 		</javadoc>
 	</target>
 
