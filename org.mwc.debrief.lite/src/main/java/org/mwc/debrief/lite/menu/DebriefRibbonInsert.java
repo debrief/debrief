@@ -147,13 +147,13 @@ public class DebriefRibbonInsert
     if(selectLayerCombo!=null) {
       List<String> items = Arrays.asList(theData.trimmedLayers());
       DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>)selectLayerCombo.getModel();
-      selectedLayer = model.getSize()>1?(String)model.getSelectedItem():null;
+      String selectedItem = model.getSize()>1?(String)model.getSelectedItem():null;
       model.removeAllElements();
       model.addElement(CoreCreateShape.USER_SELECTED_LAYER_COMMAND);
       items.forEach(item->model.addElement(item));
-      if(selectedLayer!=null&&!Layers.NEW_LAYER_COMMAND.equalsIgnoreCase(selectedLayer))
+      if(selectedItem!=null&&!Layers.NEW_LAYER_COMMAND.equalsIgnoreCase(selectedItem))
       {
-        model.setSelectedItem(selectedLayer);
+        model.setSelectedItem(selectedItem);
       }
       
       boolean popupVisible = selectLayerCombo.isPopupVisible();
@@ -161,6 +161,7 @@ public class DebriefRibbonInsert
       if(popupVisible && !selectLayerCombo.isPopupVisible()) {
         selectLayerCombo.showPopup();
       }
+      selectedLayer = selectedItem;
       
     }
     
@@ -302,9 +303,10 @@ public class DebriefRibbonInsert
       Object selected = selectLayerModel.getSelectedItem();
       @Override
       public void contentsChanged(ListDataEvent e) {
-          Object newSelection = selectLayerModel.getSelectedItem();
-          if (this.selected != newSelection) {
-              this.selected = newSelection;
+          //Object newSelection = selectLayerModel.getSelectedItem();
+          //if (this.selected != newSelection) {
+              //this.selected = newSelection;
+              @SuppressWarnings("unchecked")
               RibbonDefaultComboBoxContentModel<String> jcombo = (RibbonDefaultComboBoxContentModel<String>)e.getSource();
               if(jcombo.getSelectedItem().equals(Layers.NEW_LAYER_COMMAND)) {
                 //popup list layers dialog
@@ -320,9 +322,9 @@ public class DebriefRibbonInsert
               }
               else
               {
-                selectedLayer = (String)jcombo.getSelectedItem();
+                selectedLayer = (String)selected;
               }
-          }
+          //}
       }
       @Override
       public void intervalAdded(ListDataEvent e)
@@ -381,14 +383,16 @@ public class DebriefRibbonInsert
     @Override
     public void execute()
     {
-      
-      if(_theLayer == null) {
-      _theLayer = new BaseLayer();
-      _theLayer.setName(_layerName);
+      if(_layerName!=null)
+      {
+        if(_theLayer == null) {
+          _theLayer = new BaseLayer();
+          _theLayer.setName(_layerName);
+        }
+        _theLayers.removeDataExtendedListener(_listenForMods);
+        _theLayers.addThisLayer(_theLayer);
+        _theLayers.addDataExtendedListener(_listenForMods);
       }
-      _theLayers.removeDataExtendedListener(_listenForMods);
-      _theLayers.addThisLayer(_theLayer);
-      _theLayers.addDataExtendedListener(_listenForMods);
     }
   }
   
