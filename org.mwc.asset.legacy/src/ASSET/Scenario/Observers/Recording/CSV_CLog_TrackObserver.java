@@ -111,8 +111,38 @@ public class CSV_CLog_TrackObserver
     buff.append(",attr_speed,");
     buff.append(df.format(stat.getSpeed().getValueIn(WorldSpeed.M_sec)));
     buff.append(",attr_trackNumber,");
-    buff.append(""+ (3000 + pt.getId()));
+    
+    
+    final String trackId;
+    if(pt.getCategory().getForce().equals(Category.Force.BLUE))
+    {
+      trackId = "1";
+    }
+    else
+    {
+      final String tmpId = "" + pt.getId();
+      if(tmpId.length() > 4)
+      {
+        final int len = tmpId.length();
+        trackId = tmpId.substring(len - 4);
+      }
+      else
+      {
+        trackId = tmpId;
+      }
+    }
+    
+    buff.append(trackId);
     buff.append(",");
+    buff.append(",attr_countryAbbreviation,");
+    if(pt.getCategory().getForce().equals(Category.Force.GREEN))
+    {
+    }
+    else
+    {
+      buff.append(pt.getCategory().getForce());
+    }
+    
 
     // do we have simple dem stat?
     if (demStat instanceof SimpleDemandedStatus)
