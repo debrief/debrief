@@ -329,8 +329,9 @@
             <arg value="false"/>
             <arg value="-subpackages"/>
             <arg value="org.mwc.debrief.scripting.wrappers"/>
-            <arg value="-link"/>
-        	<arg value="https://docs.oracle.com/javase/8/docs/api"/>
+            <arg value="-linkoffline"/>
+        	<arg value="https://docs.oracle.com/en/java/javase/11/docs/api"/>
+        	<arg value="package-list"/>
            	<arg value="--ignore-source-errors"/>
         </exec>
 	</target>
