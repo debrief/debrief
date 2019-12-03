@@ -46,6 +46,7 @@ import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
@@ -64,6 +65,8 @@ import junit.framework.TestCase;
 
 public class Import_CSV_GZ
 {
+
+  private static final String BULK_TRACKS = "Bulk Tracks";
 
   private abstract class Core_Importer
   {
@@ -535,6 +538,7 @@ public class Import_CSV_GZ
     private static final String trackNum = "attr_trackNumber";
 
     private static final String MY_TRACK_ID = "1";
+    private final HashMap<String, LightweightTrackWrapper> _lightTracks;
 
     @Override
     public List<String> getMyFields()
@@ -549,6 +553,11 @@ public class Import_CSV_GZ
       myTokens.add(trackNum);
       return myTokens;
     }
+    
+    public State_Importer()
+    {
+      _lightTracks = new HashMap<String, LightweightTrackWrapper>();
+    }
 
     @Override
     protected void prepareForImport(final Layers theLayers,
@@ -560,7 +569,6 @@ public class Import_CSV_GZ
     public FixWrapper process(final Iterator<String> tokens,
         final ErrorLogger logger, final String hostname) throws ParseException
     {
-
       final String dateStr = tokens.next();
       final HiResDate date = getHiResDate(dateStr);
       final List<String> myFields = getMyFields();
@@ -594,18 +602,17 @@ public class Import_CSV_GZ
           }
           else
           {
-            final String systemID = map.get(SYSTEM_ID);
             final String countryStr = map.get(country);
-            final String trimmedTrackStr = trimmedTrackNum(systemID);
-            String workingName = trimmedTrackStr + "_" + trackStr;
-            if (countryStr != null)
+            String workingName = trackStr;
+            if (countryStr != null && countryStr.length() > 0)
             {
               workingName += "_" + countryStr;
             }
             trackName = workingName;
           }
-
+          
           res.setComment(trackName);
+
         }
         else
         {
@@ -642,28 +649,42 @@ public class Import_CSV_GZ
 
       if (nextFix != null)
       {
+        // reset name
+        nextFix.resetName();
+
         final String trackId = nextFix.getComment();
         final String trackName;
-        if (trackId.equals(MY_TRACK_ID))
+        final boolean isOwnship = trackId.equals(hostName);
+        final boolean isOfInterest = trackId.contains("_");
+        
+        LightweightTrackWrapper thisTrack;
+        if (isOwnship || isOfInterest)
         {
-          trackName = hostName;
+          trackName = isOwnship ? hostName : trackId;
+          thisTrack = (LightweightTrackWrapper) theLayers.findLayer(trackName);
+          if(thisTrack == null)
+          {
+            Color trackColor = isOwnship ? DebriefColors.BLUE : DebriefColors.RED;
+            thisTrack = new TrackWrapper();
+            thisTrack.setName(trackName);
+            theLayers.addThisLayer(thisTrack);
+            thisTrack.setColor(trackColor);
+          }
         }
         else
         {
           trackName = trackId;
-        }
-        // reset name
-        nextFix.resetName();
 
-        // store it
-        TrackWrapper thisTrack = (TrackWrapper) theLayers.findLayer(trackName);
-        if (thisTrack == null)
-        {
-          thisTrack = new TrackWrapper();
-          thisTrack.setName(trackName);
-          theLayers.addThisLayer(thisTrack);
+          // see if we have it already
+          thisTrack = _lightTracks.get(trackName);
+          if(thisTrack == null)
+          {
+            thisTrack = new LightweightTrackWrapper(trackName, true, true,DebriefColors.RED, LineStylePropertyEditor.SOLID);
+            thisTrack.setColor(DebriefColors.GREEN);
+            _lightTracks.put(trackName, thisTrack);
+          }
         }
-
+        
         thisTrack.add(nextFix);
       }
     }
@@ -673,6 +694,17 @@ public class Import_CSV_GZ
     {
       // let parent tidy up
       super.finalise(theLayers);
+      
+      Layer newBase = new BaseLayer();
+      newBase.setName(BULK_TRACKS);
+      
+      // store the new lgithweight tracks
+      for(LightweightTrackWrapper track: _lightTracks.values())
+      {
+        newBase.add(track);
+      }
+      
+      theLayers.addThisLayer(newBase);
     }
   }
 
@@ -971,7 +1003,7 @@ public class Import_CSV_GZ
       new Import_CSV_GZ().doZipImport(theLayers, bs, filename, logger);
 
       // check empty
-      assertEquals("has track", 4, theLayers.size());
+      assertEquals("has track", 3, theLayers.size());
       final Layer bTrack = theLayers.findLayer("BARTON");
       assertNotNull("found track", bTrack);
       final TrackWrapper track = (TrackWrapper) bTrack;
@@ -1197,7 +1229,7 @@ public class Import_CSV_GZ
       assertEquals("crse", 22.5d, res.getCourseDegs());
       assertEquals("speed", 33d, new WorldSpeed(res.getSpeed(), WorldSpeed.Kts)
           .getValueIn(WorldSpeed.M_sec), 0.0001);
-      assertEquals("country", "789012345_1234_GBR", res.getComment());
+      assertEquals("country", "1234_GBR", res.getComment());
     }
 
     public void testSystem_no_country() throws ParseException
@@ -1238,7 +1270,7 @@ public class Import_CSV_GZ
       assertEquals("crse", 22.5d, res.getCourseDegs());
       assertEquals("speed", 33d, new WorldSpeed(res.getSpeed(), WorldSpeed.Kts)
           .getValueIn(WorldSpeed.M_sec), 0.0001);
-      assertEquals("country", "789012345_3550", res.getComment());
+      assertEquals("country", "3550", res.getComment());
     }
 
     public void testSystem_short() throws ParseException
@@ -1339,10 +1371,11 @@ public class Import_CSV_GZ
       new Import_CSV_GZ().doZipImport(theLayers, bs, filename, logger);
 
       // check empty
-      assertEquals("has track", 4, theLayers.size());
+      assertEquals("has track", 3, theLayers.size());
       final Layer bTrack = theLayers.findLayer("BARTON");
       assertNotNull("found track", bTrack);
       final TrackWrapper track = (TrackWrapper) bTrack;
+      
       assertEquals("has fixes", 10, track.numFixes());
       final Enumeration<Editable> pIter = track.getPositionIterator();
       // move along a bit
@@ -1361,6 +1394,11 @@ public class Import_CSV_GZ
       assertEquals(0.847944870877505, fix5.getCourse(), 0.0001);
       assertEquals(6.8, new WorldSpeed(fix5.getSpeed(), WorldSpeed.Kts)
           .getValueIn(WorldSpeed.M_sec), 0.0001);
+      
+      // also check out the bulk trcks
+      BaseLayer bulk = (BaseLayer) theLayers.findLayer(BULK_TRACKS);
+      assertNotNull(bulk);
+      assertEquals("2 tracks", 2, bulk.size());
     }
   }
 
