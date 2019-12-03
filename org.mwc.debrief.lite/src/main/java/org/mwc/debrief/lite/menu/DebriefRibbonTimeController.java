@@ -339,6 +339,13 @@ public class DebriefRibbonTimeController
   public static List<Command> topButtonCommands;
 
 
+  private static CommandButtonProjection<Command> formatCommandButton;
+
+  private static SliderComponentContentModel timeFilterRangeModel;
+  
+  private static SliderComponentContentModel timeModel;
+
+
   protected static void addTimeControllerTab(final JRibbon ribbon,
       final GeoToolMapRenderer _geoMapRenderer,
       final LiteStepControl stepControl, final TimeManager timeManager,
@@ -548,10 +555,10 @@ public class DebriefRibbonTimeController
     
     final JPopupMenu menu = new JPopupMenu();
 
-    final CommandButtonProjection<Command> formatCommandButton = MenuUtils.addCommandButton(
+    formatCommandButton = MenuUtils.addCommandButton(
         "Format", "icons/24/gears_view.png", new ShowFormatAction(menu),
         CommandButtonPresentationState.SMALL, "Format time control");
-    
+    formatCommandButton.getContentModel().setActionEnabled(false);
     _menuItem = new JCheckBoxMenuItem[timeFormats.length];
     for (int i = 0; i < timeFormats.length; i++)
     {
@@ -585,12 +592,12 @@ public class DebriefRibbonTimeController
                 .setVerticalGapScaleFactor(1.4)
                 .build());
     topButtonCommands = commandStripProjection.getContentModel().getCommands();
-    setButtonsEnabled(topButtonCommands, false);
+    setTopCommandsEnabled(topButtonCommands, false);
     control.addFlowComponent(commandStripProjection);
     control.addFlowComponent(timeLabelProjection);
     control.addFlowComponent(formatCommandButton);
-    final SliderComponentContentModel sliderModel = SliderComponentContentModel.builder().
-        setEnabled(true).
+    timeModel = SliderComponentContentModel.builder().
+        setEnabled(false).
         setChangeListener(new ChangeListener()
         {
           @Override
@@ -615,11 +622,10 @@ public class DebriefRibbonTimeController
     (Projection<JRibbonSlider, SliderComponentContentModel,
         ComponentPresentationModel> projection) -> JRibbonSlider::new;
     final ComponentProjection<JRibbonSlider,SliderComponentContentModel> projection = 
-            new RibbonSliderProjection(sliderModel, ComponentPresentationModel.withDefaults(), jribbonSlider);
+            new RibbonSliderProjection(timeModel, ComponentPresentationModel.withDefaults(), jribbonSlider);
     JSlider timeSlider = projection.buildComponent();
     timeSlider.setBackground(Color.DARK_GRAY);
     //timeSlider.setPreferredSize(new Dimension(820, 30));
-    timeSlider.setEnabled(false);
     timeSlider.setName("timeslider");
     control.addFlowComponent(projection);
     label = new TimeLabel()
@@ -843,8 +849,8 @@ public class DebriefRibbonTimeController
     final Calendar start = new GregorianCalendar(1995, 11, 12);
     final Calendar end = new GregorianCalendar(1995, 11, 12);
     // Now we create the components for the sliders
-    final SliderComponentContentModel timeFilterRangeModel = SliderComponentContentModel.builder().
-                                              setEnabled(true).
+    timeFilterRangeModel = SliderComponentContentModel.builder().
+                                              setEnabled(false).
                                               setMinimum(start).
                                               setMaximum(end).
                                               setChangeListener(new SliderListener(operations,timeManager,stepControl)).
@@ -856,8 +862,7 @@ public class DebriefRibbonTimeController
             ComponentPresentationModel> projection) -> JRibbonRangeSlider::new;
     final ComponentProjection<JRibbonRangeSlider,SliderComponentContentModel> projection = 
         new RibbonRangeSliderProjection(timeFilterRangeModel, ComponentPresentationModel.withDefaults(), timeRangeSlider);
-    RangeSlider slider = projection.buildComponent();
-    //final RangeSlider slider = sliderObj.getRangeSlider();
+    RangeSlider filterTimeRangeSlider = projection.buildComponent();
     //set the values for the slider here.
     RangeDisplayComponentContentModel rangeDisplayModel = RangeDisplayComponentContentModel.builder().
         setMinValueText("xxx"+LiteStepControl.timeFormat).build();
@@ -871,17 +876,17 @@ public class DebriefRibbonTimeController
     JRibbonRangeDisplayPanel panel = rangeDisplayProjection.buildComponent();
     formatBinder.stepControl = stepControl;
     formatBinder.rangeDisplayModel = rangeDisplayModel;
-    formatBinder.slider = slider;
+    formatBinder.slider = filterTimeRangeSlider;
     formatBinder.timeManager = timeManager;
     formatBinder.updateFilterDateFormat();
-    slider.setEnabled(false);
+    filterTimeRangeSlider.setEnabled(false);
 
     
     timePeriod.addRibbonComponent(projection);
     timePeriod.addRibbonComponent(rangeDisplayProjection);
    // rangeDisplayModel.setBackgroundColor(Color.white);
     // tie in to the stepper
-    final SliderControls iSlider = new LiteSliderControls(slider);
+    final SliderControls iSlider = new LiteSliderControls(filterTimeRangeSlider);
     stepControl.setSliderControls(iSlider);
 
     // listen out for time being reset
@@ -942,6 +947,12 @@ public class DebriefRibbonTimeController
     }
 
   }
+  
+  private static void setTopCommandsEnabled(List<Command> commands,
+      final boolean enabled)
+  {
+    commands.forEach(command->command.setActionEnabled(enabled));
+  }
 
   /**
    * convenience class to bulk enable/disable controls in a panel
@@ -953,6 +964,10 @@ public class DebriefRibbonTimeController
       final boolean enabled)
   {
     commands.forEach(command->command.setActionEnabled(enabled));
+    timeModel.setEnabled(enabled);
+    timeFilterRangeModel.setEnabled(enabled);
+    formatCommandButton.getContentModel().setActionEnabled(enabled);
+    
   }
 
   public static void updatePlayBtnUI(final AbstractCommandButton playCommandButton,
