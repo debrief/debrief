@@ -418,7 +418,6 @@
          version="0.0.0"
          unpack="false"/>
 
-
    <plugin
          id="org.apache.xml.resolver"
          download-size="0"
@@ -470,6 +469,20 @@
 
    <plugin
          id="org.eclipse.wst.common.uriresolver"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="javax.xml"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.wst.server.discovery"
          download-size="0"
          install-size="0"
          version="0.0.0"
