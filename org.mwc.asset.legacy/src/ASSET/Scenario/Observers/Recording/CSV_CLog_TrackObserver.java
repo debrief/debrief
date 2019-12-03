@@ -135,10 +135,7 @@ public class CSV_CLog_TrackObserver
     buff.append(trackId);
     buff.append(",");
     buff.append(",attr_countryAbbreviation,");
-    if(pt.getCategory().getForce().equals(Category.Force.GREEN))
-    {
-    }
-    else
+    if(!pt.getCategory().getForce().equals(Category.Force.GREEN))
     {
       buff.append(pt.getCategory().getForce());
     }
@@ -169,11 +166,6 @@ public class CSV_CLog_TrackObserver
         {
           buff.append(df.format(demSpeed.getValueIn(WorldSpeed.M_sec)));
         }
-        else
-        {
-
-        }
-
       }
     }
     buff.append(",");
