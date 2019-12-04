@@ -29,7 +29,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.FontMetrics;
-import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
@@ -139,6 +138,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     }
   }
 
+  @SuppressWarnings("serial")
   final class DoAddLayer extends PlainTool implements ActionListener
   {
     final class AddLayerAction implements MWC.GUI.Tools.Action
@@ -205,6 +205,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     }
   }
 
+  @SuppressWarnings("serial")
   final class DoDelete extends PlainTool
   {
     final class DeleteAction implements MWC.GUI.Tools.Action, ClipboardOwner
@@ -389,6 +390,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     }
   }
 
+  @SuppressWarnings("serial")
   final class DoPaste extends PlainTool
   {
 
