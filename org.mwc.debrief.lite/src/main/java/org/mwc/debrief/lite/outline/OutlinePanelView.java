@@ -1242,8 +1242,8 @@ public class OutlinePanelView extends SwingLayerManager implements
     });
     final DoPaste pasteAction = new DoPaste();
     pasteButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
-        .getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit()
-            .getMenuShortcutKeyMask()), "paste");
+        .getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK), "paste");
+    pasteButton.getActionMap().put("paste", pasteAction);
     pasteButton.addActionListener(pasteAction);
 
     final Action collapseAction = new AbstractAction()
@@ -1297,8 +1297,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     };
 
     collapseAllButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-        KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, Toolkit.getDefaultToolkit()
-            .getMenuShortcutKeyMask()), "collapseall");
+        KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, KeyEvent.CTRL_DOWN_MASK), "collapseall");
     collapseAllButton.getActionMap().put("collapseall", collapseAction);
     collapseAllButton.addActionListener(collapseAction);
 
@@ -1330,16 +1329,15 @@ public class OutlinePanelView extends SwingLayerManager implements
       }
     };
     editButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
-        .getKeyStroke(KeyEvent.VK_ENTER, Toolkit.getDefaultToolkit()
-            .getMenuShortcutKeyMask()), "edit");
+        .getKeyStroke(KeyEvent.VK_ENTER, 0), "edit");
     editButton.getActionMap().put("edit", editAction);
     editButton.addActionListener(editAction);
     final ActionListener addLayerAction = new DoAddLayer();
     addLayerButton.addActionListener(addLayerAction);
     final DoDelete cutAction = new DoDelete(true);
     cutButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
-        .getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit()
-            .getMenuShortcutKeyMask()), "cut");
+        .getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK), "cut");
+    cutButton.getActionMap().put("cut", cutAction);
     cutButton.addActionListener(cutAction);
     final Action copyAction = new AbstractAction()
     {
@@ -1362,19 +1360,18 @@ public class OutlinePanelView extends SwingLayerManager implements
       }
     };
     copyButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
-        .getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit()
-            .getMenuShortcutKeyMask()), "copy");
+        .getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK), "copy");
     copyButton.getActionMap().put("copy", copyAction);
     copyButton.addActionListener(copyAction);
-    final ActionListener deleteAction = new DoDelete(false);
+    final Action deleteAction = new DoDelete(false);
     copyButton.setEnabled(false);
     deleteButton.setEnabled(false);
     pasteButton.setEnabled(false);
     editButton.setEnabled(false);
     cutButton.setEnabled(false);
     deleteButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
-        .getKeyStroke("DELETE"), "delete");
-    // deleteButton.getActionMap().put("delete", deleteAction);
+        .getKeyStroke(KeyEvent.VK_DELETE, 0), "delete");
+    deleteButton.getActionMap().put("delete", deleteAction);
     deleteButton.addActionListener(deleteAction);
     add(commandBar, BorderLayout.NORTH);
     setCellRenderer(new OutlineRenderer());
