@@ -108,6 +108,7 @@ import MWC.GenericData.WorldArea;
  * which are 'operations', ie do a single GUI-independent process
  * immediately the button is pressed
  */
+@SuppressWarnings("serial")
 abstract public class PlainTool extends AbstractAction implements Tool {
   
   public static interface BoundsProvider
