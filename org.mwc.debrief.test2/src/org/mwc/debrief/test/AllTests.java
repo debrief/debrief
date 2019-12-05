@@ -146,6 +146,7 @@ import org.junit.runners.Suite;
     Debrief.ReaderWriter.powerPoint.test.PlotTracksTest.class,
     Debrief.ReaderWriter.powerPoint.test.TrackParserTest.class,
     Debrief.ReaderWriter.powerPoint.test.UnpackFunctionTest.class,
+    Debrief.ReaderWriter.XML.csv_gz.Import_CSV_GZ.TestCSV_GZ_Import.class,
     org.mwc.debrief.core.ContextOperations.ConvertLightweightTrackToTrack.testMe.class,
     org.mwc.debrief.core.ContextOperations.ConvertTrackToLightweightTrack.testMe.class,
     org.mwc.cmap.TimeController.recorders.CoordinateRecorder.CoordinateRecorderTest.class,
