@@ -1199,8 +1199,10 @@ public class Import_CSV_GZ
       final SensorContactWrapper res = importer.process(tokens.iterator(),
           logger);
       assertNotNull("should have fix", res);
-      assertEquals("DTG", "Wed Nov 20 11:22:33 GMT 2019", res.getDTG().getDate()
-          .toString());
+      // note: note including timezone in test, since Travis server
+      // was running UTC not GMT
+      assertTrue("DTG", res.getDTG().getDate()
+          .toString().startsWith("Wed Nov 20 11:22:33"));
       assertEquals("bearing", 180d, res.getBearing());
       assertEquals("sensor", "789012345_2000", res.getSensorName());
     }
