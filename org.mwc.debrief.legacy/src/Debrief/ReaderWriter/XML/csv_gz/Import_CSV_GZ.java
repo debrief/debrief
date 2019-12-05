@@ -271,10 +271,17 @@ public class Import_CSV_GZ
         }
         else
         {
-          final double steps = ((double) ctr) / perfStep;
-          if (steps == (int) steps)
+          if (perfStep != null)
           {
-            System.out.println(" " + ctr);
+            final double steps = ((double) ctr) / perfStep;
+            if (steps == (int) steps)
+            {
+              System.out.println(" " + ctr);
+            }
+          }
+          else
+          {
+            System.err.println("Null perfStep encountered in Import_CSV_GZ");
           }
         }
       }
