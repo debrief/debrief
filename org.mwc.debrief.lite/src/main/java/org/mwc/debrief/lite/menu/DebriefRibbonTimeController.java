@@ -20,8 +20,11 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -33,6 +36,7 @@ import java.util.TimeZone;
 
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -60,6 +64,7 @@ import org.mwc.debrief.lite.gui.LiteStepControl.TimeLabel;
 import org.mwc.debrief.lite.gui.custom.RangeSlider;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.properties.PropertiesDialog;
+import org.mwc.debrief.lite.util.ResizableIconFactory;
 import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
 import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
@@ -109,7 +114,6 @@ import MWC.TacticalData.temporal.TimeManager;
 
 public class DebriefRibbonTimeController
 {
-
   /**
    * Class that binds the Time Filter and Time Label. It is used to update the date formatting.
    *
@@ -345,6 +349,8 @@ public class DebriefRibbonTimeController
   
   private static SliderComponentContentModel timeModel;
 
+  private static Command playCommand;
+
 
   protected static void addTimeControllerTab(final JRibbon ribbon,
       final GeoToolMapRenderer _geoMapRenderer,
@@ -432,7 +438,7 @@ public class DebriefRibbonTimeController
           }
         }, PresentationPriority.LOW, "Small step backwards");
     backCommand.project().buildComponent().setName("back");
-    final Command playCommand = MenuUtils.createCommandObject("Play",
+    playCommand = MenuUtils.createCommandObject("Play",
         PLAY_IMAGE, new CommandAction()
         {
 
@@ -449,7 +455,8 @@ public class DebriefRibbonTimeController
             updatePlayBtnUI(playCommandButton, isPlaying);
           }
         }, PresentationPriority.LOW, START_TEXT);
-    playCommand.project().buildComponent().setName("play");;
+    final AbstractCommandButton playButton = playCommand.project().buildComponent();
+    playButton.setName("play");;
     @SuppressWarnings("unused")
     final Command recordCommandButton = MenuUtils.createCommandObject(
         "Record", "icons/24/media_record.png", new CommandAction()
@@ -992,7 +999,8 @@ public class DebriefRibbonTimeController
         .getIcon(playStopinImage, MenuUtils.ICON_SIZE_16);
 
     playCommandButton.setExtraText(tooltip);
-
-    playCommandButton.setIcon(imageIcon);
+    playCommand.setIconFactory(ResizableIconFactory.factory(imageIcon));
+    playCommandButton.repaint();
+    
   }
 }
