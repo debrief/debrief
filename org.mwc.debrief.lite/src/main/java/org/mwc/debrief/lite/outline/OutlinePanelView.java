@@ -29,6 +29,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.FontMetrics;
+import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
@@ -1191,15 +1192,19 @@ public class OutlinePanelView extends SwingLayerManager implements
         "icons/24/add.png");
     // _enablers.add(new ButtonEnabler(addLayerButton, new Or(isEmpty,notEmpty)));
     commandBar.add(addLayerButton);
-
+    final Action deleteAction = new DoDelete(false);
     final JButton deleteButton = createCommandButton("Delete",
         "icons/24/remove.png");
     deleteButton.setToolTipText("Delete");
     deleteButton.setMnemonic(KeyEvent.VK_DELETE);
+    deleteButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
+        .getKeyStroke(KeyEvent.VK_DELETE, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "delete");
+    deleteButton.getActionMap().put("delete", deleteAction);
+    deleteButton.addActionListener(deleteAction);
     _enablers.add(new ButtonEnabler(deleteButton, notEmpty));
     deleteButton.setEnabled(false);
     commandBar.add(deleteButton);
-
+    
     final JButton refreshViewButton = createCommandButton("Update View",
         "icons/24/repaint.png");
     refreshViewButton.setToolTipText("Update View");
@@ -1365,15 +1370,14 @@ public class OutlinePanelView extends SwingLayerManager implements
         .getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK), "copy");
     copyButton.getActionMap().put("copy", copyAction);
     copyButton.addActionListener(copyAction);
-    final Action deleteAction = new DoDelete(false);
     copyButton.setEnabled(false);
     deleteButton.setEnabled(false);
     pasteButton.setEnabled(false);
     editButton.setEnabled(false);
     cutButton.setEnabled(false);
     deleteButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
-        .getKeyStroke(KeyEvent.VK_DELETE, 0), "delete");
-    deleteButton.getActionMap().put("delete", deleteAction);
+        .getKeyStroke("DELETE"), "delete");
+    // deleteButton.getActionMap().put("delete", deleteAction);
     deleteButton.addActionListener(deleteAction);
     add(commandBar, BorderLayout.NORTH);
     setCellRenderer(new OutlineRenderer());
