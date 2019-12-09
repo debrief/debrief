@@ -25,8 +25,10 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 
+import Debrief.GUI.Frames.Application;
 import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.Layers;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Shapes.ChartBoundsWrapper;
 import it.geosolutions.imageio.stream.input.spi.URLImageInputStreamSpi;
 
@@ -69,7 +71,8 @@ public class TifLoader extends CoreLoader
     }
     catch (IllegalArgumentException e)
     {
-
+      Application.logError2(ToolParent.WARNING,
+          "Failure in service registration", e);
     }
   }
 
