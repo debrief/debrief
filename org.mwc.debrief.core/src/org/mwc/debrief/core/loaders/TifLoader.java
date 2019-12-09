@@ -16,6 +16,10 @@ package org.mwc.debrief.core.loaders;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Iterator;
+
+import javax.imageio.spi.IIORegistry;
+import javax.imageio.spi.ImageInputStreamSpi;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -24,6 +28,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.Layers;
 import MWC.GUI.Shapes.ChartBoundsWrapper;
+import it.geosolutions.imageio.stream.input.spi.URLImageInputStreamSpi;
 
 /**
  * @author ian.mayo
@@ -34,6 +39,38 @@ public class TifLoader extends CoreLoader
   public TifLoader()
   {
     super(".tif", ".tif");
+
+    registerUrlServiceProvider();
+  }
+
+  private void registerUrlServiceProvider()
+  {
+    boolean isRegistered = false;
+    // Ensure that the provider is present
+    try
+    {
+      Iterator<ImageInputStreamSpi> iter = IIORegistry.getDefaultInstance()
+          .getServiceProviders(ImageInputStreamSpi.class, true);
+
+      while (iter.hasNext() && !isRegistered)
+      {
+        ImageInputStreamSpi stream = iter.next();
+        if (URLImageInputStreamSpi.class.equals(stream.getClass()))
+        {
+          isRegistered = true;
+        }
+      }
+
+      if (!isRegistered)
+      {
+        IIORegistry.getDefaultInstance().registerServiceProvider(
+            new URLImageInputStreamSpi(), ImageInputStreamSpi.class);
+      }
+    }
+    catch (IllegalArgumentException e)
+    {
+
+    }
   }
 
   @Override
