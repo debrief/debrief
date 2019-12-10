@@ -70,7 +70,7 @@ public class CSVExportPage2 extends CustomWizardPage
     setDescription(CSVExportWizard.DEC);
     this.provider = provider;
 
-    readFormPref();
+    readFromPref();
 
     super.setImageDescriptor(CSVExportWizard.WIZ_IMG);
 
@@ -156,7 +156,7 @@ public class CSVExportPage2 extends CustomWizardPage
     return suppliedBy;
   }
 
-  public void readFormPref()
+  public void readFromPref()
   {
     classification = getPrefValue(CSV_EXPORT_CLASSIFICATION, classification);
     likelihood = getPrefValue(CSV_EXPORT_LIKELIHOOD, likelihood);

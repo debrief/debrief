@@ -66,7 +66,7 @@ public class CSVExportPage3 extends CustomWizardPage
     setTitle(CSVExportWizard.TITLE);
     setDescription(CSVExportWizard.DEC);
     this.provider = provider;
-    readFormPref();
+    readFromPref();
     super.setImageDescriptor(CSVExportWizard.WIZ_IMG);
 
   }
@@ -187,7 +187,7 @@ public class CSVExportPage3 extends CustomWizardPage
     return (contents);
   }
 
-  public void readFormPref()
+  public void readFromPref()
   {
     exportFolder = getPrefValue(CSV_EXPORT_EXPORT_FOLDER, exportFolder);
     purpose = getPrefValue(CSV_EXPORT_PURPOSE, purpose);
