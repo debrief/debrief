@@ -36,12 +36,13 @@ public class CSVExportPage3 extends CustomWizardPage
 
   private static final String CSV_EXPORT_PURPOSE = "CSV_EXPORT_purpose";
 
-  private static final String CSV_EXPORT_EXPORT_FOLDER = "CSV_EXPORT_exportFolder";
-  
+  private static final String CSV_EXPORT_EXPORT_FOLDER =
+      "CSV_EXPORT_exportFolder";
+
   private static final String PURPOSE = "PURPOSE";
-  
+
   private static final String DISTRIBUTION = "DISTRIBUTION";
-  
+
   public static final String PAGE_ID = "3. Release";
 
   private final DropdownProvider provider;
@@ -69,12 +70,6 @@ public class CSVExportPage3 extends CustomWizardPage
     readFromPref();
     super.setImageDescriptor(CSVExportWizard.WIZ_IMG);
 
-  }
-
-  @Override
-  protected List<String> getPageNames()
-  {
-    return CSVExportWizard.PAGE_NAMES;
   }
 
   private void addFolderField(final Composite contents)
@@ -116,19 +111,10 @@ public class CSVExportPage3 extends CustomWizardPage
 
   }
 
-  private String getValueFor(final String field) {
-    List<String> values = provider.getValuesFor(field);
-    if(values!=null && !values.isEmpty()) {
-      return values.get(0);
-    }
-    setErrorMessage("No "+field.toLowerCase()+" has been specified, may be an invalid file");
-    setPageComplete(false);
-
-    return null;
-  }
   private void addPurposeField(final Composite contents)
   {
-    if (purpose == null) {
+    if (purpose == null)
+    {
       purpose = getValueFor(PURPOSE);
     }
 
@@ -152,7 +138,8 @@ public class CSVExportPage3 extends CustomWizardPage
   private void addStatementField(final Composite contents)
   {
 
-    if (statement == null) {
+    if (statement == null)
+    {
       statement = getValueFor(DISTRIBUTION);
     }
 
@@ -175,7 +162,7 @@ public class CSVExportPage3 extends CustomWizardPage
   }
 
   @Override
-  protected Composite createDataSection(Composite parent)
+  protected Composite createDataSection(final Composite parent)
   {
     final Composite contents = new Composite(parent, SWT.NONE);
     contents.setLayout(new GridLayout(3, false));
@@ -187,23 +174,15 @@ public class CSVExportPage3 extends CustomWizardPage
     return (contents);
   }
 
-  public void readFromPref()
-  {
-    exportFolder = getPrefValue(CSV_EXPORT_EXPORT_FOLDER, exportFolder);
-    purpose = getPrefValue(CSV_EXPORT_PURPOSE, purpose);
-    statement = getPrefValue(CSV_EXPORT_STATEMENT, statement);
-  }
-
-  public void writeToPref()
-  {
-    exportFolder = setPrefValue(CSV_EXPORT_EXPORT_FOLDER, exportFolder);
-    purpose = setPrefValue(CSV_EXPORT_PURPOSE, purpose);
-    statement = setPrefValue(CSV_EXPORT_STATEMENT, statement);
-  }
-
   public String getExportFolder()
   {
     return exportFolder;
+  }
+
+  @Override
+  protected List<String> getPageNames()
+  {
+    return CSVExportWizard.PAGE_NAMES;
   }
 
   public String getPurpose()
@@ -214,6 +193,27 @@ public class CSVExportPage3 extends CustomWizardPage
   public String getStatement()
   {
     return statement;
+  }
+
+  private String getValueFor(final String field)
+  {
+    final List<String> values = provider.getValuesFor(field);
+    if (values != null && !values.isEmpty())
+    {
+      return values.get(0);
+    }
+    setErrorMessage("No " + field.toLowerCase()
+        + " has been specified, may be an invalid file");
+    setPageComplete(false);
+
+    return null;
+  }
+
+  public void readFromPref()
+  {
+    exportFolder = getPrefValue(CSV_EXPORT_EXPORT_FOLDER, exportFolder);
+    purpose = getPrefValue(CSV_EXPORT_PURPOSE, purpose);
+    statement = getPrefValue(CSV_EXPORT_STATEMENT, statement);
   }
 
   public void readValues()
@@ -259,6 +259,13 @@ public class CSVExportPage3 extends CustomWizardPage
     writeToPref();
     setErrorMessage(null);
     setPageComplete(true);
+  }
+
+  public void writeToPref()
+  {
+    exportFolder = setPrefValue(CSV_EXPORT_EXPORT_FOLDER, exportFolder);
+    purpose = setPrefValue(CSV_EXPORT_PURPOSE, purpose);
+    statement = setPrefValue(CSV_EXPORT_STATEMENT, statement);
   }
 
 }
