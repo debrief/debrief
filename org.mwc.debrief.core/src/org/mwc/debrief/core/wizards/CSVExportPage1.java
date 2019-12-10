@@ -71,7 +71,7 @@ public class CSVExportPage1 extends CustomWizardPage
 
     this.provenance = provenance;
     unitName = unit;
-    readFormPref();
+    readFromPref();
 
     super.setImageDescriptor(CSVExportWizard.WIZ_IMG);
 
@@ -142,7 +142,7 @@ public class CSVExportPage1 extends CustomWizardPage
     return semiMinorAxis;
   }
 
-  public void readFormPref()
+  public void readFromPref()
   {
 
     if (provenance == null || provenance.isEmpty())
