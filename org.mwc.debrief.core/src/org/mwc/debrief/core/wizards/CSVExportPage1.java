@@ -33,25 +33,20 @@ public class CSVExportPage1 extends CustomWizardPage
   private static final String CSV_EXPORT_UNIT = "CSV_EXPORT_unit";
   private static final String CSV_EXPORT_PROVENANCE = "CSV_EXPORT_provenance";
 
-  @Override
-  protected List<String> getPageNames()
-  {
-    return CSVExportWizard.PAGE_NAMES;
-  }
-
   private final DropdownProvider provider;
   // Data Fields ---- TODO: change default values
 
   private String type;
+
   private String sensor;
   private String flag;
   private String unitName;
   private String semiMajorAxis = "0.5";
   private String semiMinorAxis = "0.5";
+  private String provenance;
 
   // UI- Fields -------
 
-  private String provenance;
   // --------
   private Text provenanceTxt;
   private Text typeTxt;
@@ -71,16 +66,14 @@ public class CSVExportPage1 extends CustomWizardPage
 
     this.provenance = provenance;
     unitName = unit;
-    readFormPref();
+    readFromPref();
 
     super.setImageDescriptor(CSVExportWizard.WIZ_IMG);
 
   }
 
-
- 
   @Override
-  protected Composite createDataSection(Composite parent)
+  protected Composite createDataSection(final Composite parent)
   {
     final Composite contents = new Composite(parent, SWT.NONE);
     contents.setLayout(new GridLayout(2, false));
@@ -111,9 +104,25 @@ public class CSVExportPage1 extends CustomWizardPage
     return flag;
   }
 
+  @Override
+  protected List<String> getPageNames()
+  {
+    return CSVExportWizard.PAGE_NAMES;
+  }
+
   public String getProvenance()
   {
     return provenance;
+  }
+
+  public String getSemiMajorAxis()
+  {
+    return semiMajorAxis;
+  }
+
+  public String getSemiMinorAxis()
+  {
+    return semiMinorAxis;
   }
 
   public String getSensor()
@@ -132,17 +141,7 @@ public class CSVExportPage1 extends CustomWizardPage
     return unitName;
   }
 
-  public String getSemiMajorAxis()
-  {
-    return semiMajorAxis;
-  }
-
-  public String getSemiMinorAxis()
-  {
-    return semiMinorAxis;
-  }
-
-  public void readFormPref()
+  public void readFromPref()
   {
 
     if (provenance == null || provenance.isEmpty())
@@ -159,6 +158,20 @@ public class CSVExportPage1 extends CustomWizardPage
 
   }
 
+  public void readValues()
+  {
+
+    type = getTxtVal(typeTxt, type);
+    flag = getCmbVal(flagCmb, flag);
+    sensor = getCmbVal(sensorCmb, sensor);
+
+    provenance = getTxtVal(provenanceTxt, provenance);
+    unitName = getTxtVal(unitNameTxt, unitName);
+
+    writeToPref();
+
+  }
+
   public void writeToPref()
   {
 
@@ -171,20 +184,6 @@ public class CSVExportPage1 extends CustomWizardPage
     sensor = setPrefValue(CSV_EXPORT_SENSOR, sensor);
     semiMajorAxis = getTxtVal(semiMajorAxisTxt, semiMajorAxis);
     semiMinorAxis = getTxtVal(semiMinorAxisTxt, semiMinorAxis);
-
-  }
-
-  public void readValues()
-  {
-
-    type = getTxtVal(typeTxt, type);
-    flag = getCmbVal(flagCmb, flag);
-    sensor = getCmbVal(sensorCmb, sensor);
-
-    provenance = getTxtVal(provenanceTxt, provenance);
-    unitName = getTxtVal(unitNameTxt, unitName);
-
-    writeToPref();
 
   }
 }
