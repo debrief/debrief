@@ -71,8 +71,7 @@ public class TestInsertRibbon extends BaseTestCase
     final JBandControlPanel liteBand = (JBandControlPanel) TestUtils
         .getRibbonBand(3, 2).getComponent(0);
     final JCommandButton ellipseButton =
-        (JCommandButton) ((JRibbonComponent) liteBand.getComponent(2))
-            .getComponent(1);
+        (JCommandButton) liteBand.getComponent(2);
     SwingUtilities.invokeAndWait(new Runnable()
     {
 
@@ -128,8 +127,7 @@ public class TestInsertRibbon extends BaseTestCase
     final JBandControlPanel liteBand = (JBandControlPanel) TestUtils
         .getRibbonBand(3, 2).getComponent(0);
     final JCommandButton rectButton =
-        (JCommandButton) ((JRibbonComponent) liteBand.getComponent(3))
-            .getComponent(1);
+        (JCommandButton) liteBand.getComponent(3);
     SwingUtilities.invokeAndWait(new Runnable()
     {
 
@@ -187,8 +185,7 @@ public class TestInsertRibbon extends BaseTestCase
     final JBandControlPanel liteBand = (JBandControlPanel) TestUtils
         .getRibbonBand(3, 2).getComponent(0);
     final JCommandButton rectButton =
-        (JCommandButton) ((JRibbonComponent) liteBand.getComponent(4))
-            .getComponent(1);
+        (JCommandButton) liteBand.getComponent(4);
     SwingUtilities.invokeAndWait(new Runnable()
     {
 
@@ -244,8 +241,7 @@ public class TestInsertRibbon extends BaseTestCase
     final JBandControlPanel liteBand = (JBandControlPanel) TestUtils
         .getRibbonBand(3, 2).getComponent(0);
     final JCommandButton rectButton =
-        (JCommandButton) ((JRibbonComponent) liteBand.getComponent(5))
-            .getComponent(1);
+        (JCommandButton) liteBand.getComponent(6);
     SwingUtilities.invokeAndWait(new Runnable()
     {
 
@@ -302,8 +298,7 @@ public class TestInsertRibbon extends BaseTestCase
     final JBandControlPanel liteBand = (JBandControlPanel) TestUtils
         .getRibbonBand(3, 2).getComponent(0);
     final JCommandButton rectButton =
-        (JCommandButton) ((JRibbonComponent) liteBand.getComponent(6))
-            .getComponent(1);
+        (JCommandButton)liteBand.getComponent(5);
     SwingUtilities.invokeAndWait(new Runnable()
     {
 
@@ -362,8 +357,7 @@ public class TestInsertRibbon extends BaseTestCase
     final JBandControlPanel liteBand = (JBandControlPanel) TestUtils
         .getRibbonBand(3, 2).getComponent(0);
     final JCommandButton rectButton =
-        (JCommandButton) ((JRibbonComponent) liteBand.getComponent(6))
-            .getComponent(1);
+        (JCommandButton) liteBand.getComponent(5);
     SwingUtilities.invokeAndWait(new Runnable()
     {
 
