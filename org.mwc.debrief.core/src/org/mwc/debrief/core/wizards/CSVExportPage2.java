@@ -33,51 +33,12 @@ public class CSVExportPage2 extends CustomWizardPage
   private static final String CSV_EXPORT_SUPPLIED_BY = "CSV_EXPORT_suppliedBy";
   private static final String CSV_EXPORT_CONFIDENCE = "CSV_EXPORT_confidence";
   private static final String CSV_EXPORT_LIKELIHOOD = "CSV_EXPORT_likelihood";
-  private static final String CSV_EXPORT_CLASSIFICATION = "CSV_EXPORT_classification";
+  private static final String CSV_EXPORT_CLASSIFICATION =
+      "CSV_EXPORT_classification";
   public static final String PAGE_ID = "2. Background";
-  
-  @Override
-  protected List<String> getPageNames()
-  {
-    return CSVExportWizard.PAGE_NAMES;
-  }
-  
-  private final DropdownProvider provider;
-  // Data Fields ---- TODO: change default values
-  private String caseNumber = "D-112/12";
 
-  private String classification;
-  private String likelihood;
-  private String confidence;
-  private Date infoCutoffDate = new Date();
-  private String suppliedBy;
- 
-  // UI- Fields -------
-
-  // --------
-  private ComboViewer classificationCmb;
-  private ComboViewer likelihoodCmb;
-  private ComboViewer confidenceCmb;
-  private ComboViewer suppliedByCmb;
-  private Text caseNumbertxt;
-
-
-
-  public CSVExportPage2(final DropdownProvider provider)
-  {
-    super(PAGE_ID);
-    setTitle(CSVExportWizard.TITLE);
-    setDescription(CSVExportWizard.DEC);
-    this.provider = provider;
-
-    readFormPref();
-
-    super.setImageDescriptor(CSVExportWizard.WIZ_IMG);
-
-  }
-
-  private static Text addCaseNumberField(final Composite contents, final String label, String tooltip,
-      final String initialValue)
+  private static Text addCaseNumberField(final Composite contents,
+      final String label, final String tooltip, final String initialValue)
   {
 
     final Label lbl = new Label(contents, SWT.NONE);
@@ -96,9 +57,41 @@ public class CSVExportPage2 extends CustomWizardPage
     return textControl;
 
   }
-  
+
+  private final DropdownProvider provider;
+  // Data Fields ---- TODO: change default values
+  private String caseNumber = "D-112/12";
+
+  private String classification;
+  private String likelihood;
+  private String confidence;
+  private final Date infoCutoffDate = new Date();
+  private String suppliedBy;
+
+  // UI- Fields -------
+
+  // --------
+  private ComboViewer classificationCmb;
+  private ComboViewer likelihoodCmb;
+  private ComboViewer confidenceCmb;
+  private ComboViewer suppliedByCmb;
+  private Text caseNumbertxt;
+
+  public CSVExportPage2(final DropdownProvider provider)
+  {
+    super(PAGE_ID);
+    setTitle(CSVExportWizard.TITLE);
+    setDescription(CSVExportWizard.DEC);
+    this.provider = provider;
+
+    readFromPref();
+
+    super.setImageDescriptor(CSVExportWizard.WIZ_IMG);
+
+  }
+
   @Override
-  protected Composite createDataSection(Composite parent)
+  protected Composite createDataSection(final Composite parent)
   {
     final Composite contents = new Composite(parent, SWT.NONE);
     contents.setLayout(new GridLayout(2, false));
@@ -110,17 +103,15 @@ public class CSVExportPage2 extends CustomWizardPage
         "Classification:", "Protective marking for this data", true,
         classification, this, provider);
 
-    suppliedByCmb = addCmbField(contents, "SUPPLIED_BY",
-        "Supplied by:", "Supplier organisation", false, suppliedBy, this,
+    suppliedByCmb = addCmbField(contents, "SUPPLIED_BY", "Supplied by:",
+        "Supplier organisation", false, suppliedBy, this, provider);
+
+    likelihoodCmb = addCmbField(contents, "LIKELIHOOD", "Likelihood:",
+        "Likelihood of subject identification", false, likelihood, this,
         provider);
 
-    likelihoodCmb = addCmbField(contents, "LIKELIHOOD",
-        "Likelihood:", "Likelihood of subject identification", false,
-        likelihood, this, provider);
-
-    confidenceCmb = addCmbField(contents, "CONFIDENCE",
-        "Confidence:", "Confidence in subject track", false, confidence, this,
-        provider);
+    confidenceCmb = addCmbField(contents, "CONFIDENCE", "Confidence:",
+        "Confidence in subject track", false, confidence, this, provider);
 
     return contents;
   }
@@ -151,27 +142,24 @@ public class CSVExportPage2 extends CustomWizardPage
     return likelihood;
   }
 
+  @Override
+  protected List<String> getPageNames()
+  {
+    return CSVExportWizard.PAGE_NAMES;
+  }
+
   public String getSuppliedBy()
   {
     return suppliedBy;
   }
 
-  public void readFormPref()
+  public void readFromPref()
   {
     classification = getPrefValue(CSV_EXPORT_CLASSIFICATION, classification);
     likelihood = getPrefValue(CSV_EXPORT_LIKELIHOOD, likelihood);
     confidence = getPrefValue(CSV_EXPORT_CONFIDENCE, confidence);
     suppliedBy = getPrefValue(CSV_EXPORT_SUPPLIED_BY, suppliedBy);
     caseNumber = getPrefValue(CSV_EXPORT_CASE_NUMBER, caseNumber);
-  }
-
-  public void writeToPref()
-  {
-    classification = setPrefValue(CSV_EXPORT_CLASSIFICATION, classification);
-    likelihood = setPrefValue(CSV_EXPORT_LIKELIHOOD, likelihood);
-    confidence = setPrefValue(CSV_EXPORT_CONFIDENCE, confidence);
-    suppliedBy = setPrefValue(CSV_EXPORT_SUPPLIED_BY, suppliedBy);
-    caseNumber = setPrefValue(CSV_EXPORT_CASE_NUMBER, caseNumber);
   }
 
   public void readValues()
@@ -181,8 +169,17 @@ public class CSVExportPage2 extends CustomWizardPage
     confidence = getCmbVal(confidenceCmb, confidence);
     suppliedBy = getCmbVal(suppliedByCmb, suppliedBy);
     caseNumber = getTxtVal(caseNumbertxt, caseNumber);
-    
+
     writeToPref();
 
+  }
+
+  public void writeToPref()
+  {
+    classification = setPrefValue(CSV_EXPORT_CLASSIFICATION, classification);
+    likelihood = setPrefValue(CSV_EXPORT_LIKELIHOOD, likelihood);
+    confidence = setPrefValue(CSV_EXPORT_CONFIDENCE, confidence);
+    suppliedBy = setPrefValue(CSV_EXPORT_SUPPLIED_BY, suppliedBy);
+    caseNumber = setPrefValue(CSV_EXPORT_CASE_NUMBER, caseNumber);
   }
 }

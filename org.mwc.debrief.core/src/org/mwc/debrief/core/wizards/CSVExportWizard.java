@@ -35,22 +35,22 @@ import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.DropdownProvider;
 public class CSVExportWizard extends Wizard implements INewWizard,
     ExportTrackAsCSV.CSVAttributeProvider
 {
-  private CSVExportPage1 page1;
-  private CSVExportPage2 page2;
-  private CSVExportPage3 page3;
-
   public static final String TITLE = "UK Track Exchange Format - Track Export";
-
   public static final String DEC =
       "This wizard is used to provide the extra metadata\r\n"
           + "necessary for exporting tracks to other UK agencies.";
-
   public static final ImageDescriptor WIZ_IMG = AbstractUIPlugin
       .imageDescriptorFromPlugin("org.mwc.debrief.core",
           "images/csvexport_wizard.png");
 
   public static final List<String> PAGE_NAMES = Arrays.asList(
       CSVExportPage1.PAGE_ID, CSVExportPage2.PAGE_ID, CSVExportPage3.PAGE_ID);
+
+  private CSVExportPage1 page1;
+
+  private CSVExportPage2 page2;
+
+  private CSVExportPage3 page3;
 
   private final DropdownProvider _dropdowns;
   private final String _unit;
@@ -195,13 +195,11 @@ public class CSVExportWizard extends Wizard implements INewWizard,
   public void init(final IWorkbench workbench,
       final IStructuredSelection selection1)
   {
-    // this.selection = selection1;
   }
 
   @Override
   public boolean performFinish()
   {
-
     page1.readValues();
     page2.readValues();
     page3.readValues();
@@ -209,6 +207,5 @@ public class CSVExportWizard extends Wizard implements INewWizard,
     return page1.isPageComplete() && page2.isPageComplete() && page3
         .isPageComplete();
   }
-  
 
 }
