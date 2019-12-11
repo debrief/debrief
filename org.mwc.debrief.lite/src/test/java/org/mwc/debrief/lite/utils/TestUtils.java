@@ -32,6 +32,7 @@ import org.pushingpixels.flamingo.api.common.JCommandMenuButton;
 import org.pushingpixels.flamingo.api.common.popup.JPopupPanel;
 import org.pushingpixels.flamingo.api.ribbon.AbstractRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
+import org.pushingpixels.flamingo.api.ribbon.synapse.JRibbonComboBox;
 import org.pushingpixels.flamingo.internal.ui.ribbon.JBandControlPanel;
 import org.pushingpixels.flamingo.internal.ui.ribbon.JRibbonComponent;
 
@@ -159,7 +160,8 @@ public class TestUtils
     JBandControlPanel liteBand = (JBandControlPanel)getRibbonBand(3,1).getComponent(0);
     JRibbonComponent newButton = ((JRibbonComponent)liteBand.getComponent(0));
     @SuppressWarnings("unchecked")
-    JComboBox<String> combo = (JComboBox<String>)getChildNamed(newButton, "select-layer-combo");
+    JRibbonComboBox<String> combo =(JRibbonComboBox<String>) newButton.getComponent(1);
+    // getChildNamed(newButton, "select-layer-combo");
     return combo;
   }
   
