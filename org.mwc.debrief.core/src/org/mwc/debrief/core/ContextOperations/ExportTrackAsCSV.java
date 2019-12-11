@@ -225,7 +225,6 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
       assertEquals("Correct heading 21","DistributionStatement",header.get(21).trim());
       
       // and the content
-      System.out.println(strings.get(2));
       CSVRecord rowOne = iter.next();
       assertEquals("correct entries",22, rowOne.size());
       assertEquals("correct val 0", 2d, Double.valueOf(rowOne.get(0)));
@@ -381,6 +380,9 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
       {
         final StringBuffer lineOut = new StringBuffer();
 
+        // note: in this export process we either wrap text in quotes, or clean it, to remove
+        // commas.
+
         final FixWrapper next = (FixWrapper) iter.nextElement();
         lineOut.append(write(next.getLocation()));
         lineOut.append(",");
@@ -388,19 +390,19 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
         lineOut.append(",");
         lineOut.append(write(unitName));
         lineOut.append(",");
-        lineOut.append(caseNumber);
+        lineOut.append(clean(caseNumber));
         lineOut.append(",");
         lineOut.append(write(type));
         lineOut.append(",");
-        lineOut.append(flag);
+        lineOut.append(clean(flag));
         lineOut.append(",");
         lineOut.append(write(sensor));
         lineOut.append(",");
-        lineOut.append(majorAxis);
+        lineOut.append(clean(majorAxis));
         lineOut.append(",");
-        lineOut.append(semiMajorAxis);
+        lineOut.append(clean(semiMajorAxis));
         lineOut.append(",");
-        lineOut.append(semiMinorAxis);
+        lineOut.append(clean(semiMinorAxis));
         lineOut.append(",");
         lineOut.append(numF.format(MWC.Algorithms.Conversions.Rads2Degs(next
             .getCourse())));
@@ -409,9 +411,9 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
         lineOut.append(",");
         lineOut.append(next.getLocation().getDepth());
         lineOut.append(",");
-        lineOut.append(likelihood);
+        lineOut.append(clean(likelihood));
         lineOut.append(",");
-        lineOut.append(confidence);
+        lineOut.append(clean(confidence));
         lineOut.append(",");
         lineOut.append(write(suppliedBy));
         lineOut.append(",");
@@ -421,7 +423,7 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
         lineOut.append(",");
         lineOut.append(write(purpose));
         lineOut.append(",");
-        lineOut.append(classification);
+        lineOut.append(clean(classification));
         lineOut.append(",");
         lineOut.append(write(distributionStatement));
 
@@ -484,6 +486,7 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
 
     protected static String tidyMe(final String input)
     {
+      // replace any chars that are not a alphanumeric with an underscore
       return input.replaceAll("[^\\p{IsAlphabetic}^\\p{IsDigit}]", "_");
     }
 
@@ -493,6 +496,11 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
       return dateFormat.format(dtg.getDate());
     }
 
+
+    private static String clean(final String freeText)
+    {
+      return freeText.replace(",", "_COMMA_");
+    }
 
     private static String write(final String freeText)
     {
