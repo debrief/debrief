@@ -72,196 +72,6 @@ import junit.framework.TestCase;
  */
 public class ExportTrackAsCSV implements RightClickContextItemGenerator
 {
-  public static class TestExport extends TestCase
-  {
-    
-    private static class DummyAttributes implements CSVAttributeProvider
-    {
-      @Override
-      public String getUnitName()
-      {
-        return "OWNSHIP_NAME, PART 2";
-      }
-      
-      @Override
-      public String getType()
-      {
-        return "OILER";
-      }
-      
-      @Override
-      public String getSuppliedBy()
-      {
-        return "DeepBlue";
-      }
-      
-      @Override
-      public String getSensor()
-      {
-        return "SensorName";
-      }
-      
-      @Override
-      public String getSemiMinorAxis()
-      {
-        return "1000";
-      }
-      
-      @Override
-      public String getSemiMajorAxis()
-      {
-        return "2000";
-      }
-      
-      @Override
-      public String getPurpose()
-      {
-        return "Purpose String";
-      }
-      
-      @Override
-      public String getProvenance()
-      {
-        return "Provenance";
-      }
-      
-      @Override
-      public String getLikelihood()
-      {
-        return "UNLIKELY";
-      }
-      
-      @Override
-      public String getFlag()
-      {
-        return "MAURETANIA";
-      }
-      
-      @Override
-      public String getFilePath()
-      {
-        return "UNKNOWN";
-      }
-      
-      @Override
-      public String getDistributionStatement()
-      {
-        return "Distribution, Statement";
-      }
-      
-      @Override
-      public String getConfidence()
-      {
-        return "Hopefully";
-      }
-      
-      @Override
-      public String getClassification()
-      {
-        return "Public";
-      }
-      
-      @Override
-      public String getCaseNumber()
-      {
-        return "21B";
-      }
-    }
-    public void testClean()
-    {
-      assertEquals("A_12", ExportTrackToCSV.tidyMe("A:12"));
-    }
-    public void testExport() throws IOException
-    {
-      TrackWrapper track = new TrackWrapper();
-      track.setName("OWNSHIP");
-      track.addFix(new FixWrapper(new Fix(new HiResDate(1000000), new WorldLocation(2d,4d,0d), Math.PI, 10d)));
-      track.addFix(new FixWrapper(new Fix(new HiResDate(1200000), new WorldLocation(3d,6d,0d), Math.PI / 2d, 20d)));
-      
-      CSVAttributeProvider provider = new DummyAttributes();
-      List<String> strings = ExportTrackToCSV.outputStrings(track, provider);
-      StringBuffer bugger = new StringBuffer();
-      for(String s: strings)
-      {
-        bugger.append(s);
-      }
-      
-      assertEquals("correct num of lines", 4, strings.size());
-      
-      Reader targetReader = new StringReader(bugger.toString());
-      
-      final Iterable<CSVRecord> tRecords = CSVFormat.DEFAULT.withQuote('\"').parse(targetReader);
-      Iterator<CSVRecord> iter = tRecords.iterator();
-      CSVRecord titleRow = iter.next();
-      assertEquals("correct num headings", 2, titleRow.size());
-      
-      CSVRecord header = iter.next();
-
-      // and the headings
-      assertEquals("correct num headings", 22, header.size());
-      
-      // and some checking
-      assertEquals("Correct heading 0","# Lat",header.get(0));
-      assertEquals("Correct heading 1","Long",header.get(1));
-      assertEquals("Correct heading 2","DTG",header.get(2));
-      assertEquals("Correct heading 3","UnitName",header.get(3));
-      assertEquals("Correct heading 4","CaseNumber",header.get(4));
-      assertEquals("Correct heading 5","Type",header.get(5));
-      assertEquals("Correct heading 6","Flag",header.get(6));
-      assertEquals("Correct heading 7","Sensor",header.get(7));
-      assertEquals("Correct heading 8","MajorAxis",header.get(8));
-      assertEquals("Correct heading 9","SemiMajorAxis",header.get(9));
-      assertEquals("Correct heading 10","SemiMinorAxis",header.get(10));
-      assertEquals("Correct heading 11","Course",header.get(11));
-      assertEquals("Correct heading 12","Speed",header.get(12));
-      assertEquals("Correct heading 13","Depth",header.get(13));
-      assertEquals("Correct heading 14","Likelihood",header.get(14));
-      assertEquals("Correct heading 15","Confidence",header.get(15));
-      assertEquals("Correct heading 16","SuppliedBy",header.get(16));
-      assertEquals("Correct heading 17","Provenance",header.get(17));
-      assertEquals("Correct heading 18","InfoCutoffDate",header.get(18));
-      assertEquals("Correct heading 19","Purpose",header.get(19));
-      assertEquals("Correct heading 20","Classification",header.get(20));
-      assertEquals("Correct heading 21","DistributionStatement",header.get(21).trim());
-      
-      // and the content
-      CSVRecord rowOne = iter.next();
-      assertEquals("correct entries",22, rowOne.size());
-      assertEquals("correct val 0", 2d, Double.valueOf(rowOne.get(0)));
-      assertEquals("correct val 1", 4d, Double.valueOf(rowOne.get(1)));
-      assertEquals("correct val 2", "19700101T001640Z", rowOne.get(2));
-      assertEquals("correct val 3", "OWNSHIP_NAME, PART 2", rowOne.get(3));
-      assertEquals("correct val 4", "21B", rowOne.get(4));
-      assertEquals("correct val 5", "OILER", rowOne.get(5));
-      assertEquals("correct val 6", "MAURETANIA", rowOne.get(6));
-      assertEquals("correct val 7", "SensorName", rowOne.get(7));
-      assertEquals("correct val 8", 4000d, Double.valueOf(rowOne.get(8)));
-      assertEquals("correct val 9", 2000d, Double.valueOf(rowOne.get(9)));
-      assertEquals("correct val 10", 1000d, Double.valueOf(rowOne.get(10)));
-      assertEquals("correct val 11", 180d, Double.valueOf(rowOne.get(11)));
-      assertEquals("correct val 12", 17.7745d, Double.valueOf(rowOne.get(12)));
-      assertEquals("correct val 13", 0d, Double.valueOf(rowOne.get(13)));
-      assertEquals("correct val 14", "UNLIKELY", rowOne.get(14));
-      assertEquals("correct val 15", "Hopefully", rowOne.get(15));
-      assertEquals("correct val 16", "DeepBlue", rowOne.get(16));
-      assertEquals("correct val 17", "Provenance", rowOne.get(17));
-      assertEquals("correct val 18", "19700101", rowOne.get(18));
-      assertEquals("correct val 19", "Purpose String", rowOne.get(19));
-      assertEquals("correct val 20", "Public", rowOne.get(20));
-      assertEquals("correct val 21", "Distribution, Statement", rowOne.get(21));
-      
-      // quick look at next row
-      CSVRecord rowTwo = iter.next();
-      assertEquals("correct entries",22, rowTwo.size());
-      assertEquals("correct val 0", 3d, Double.valueOf(rowTwo.get(0)));
-      assertEquals("correct val 1", 6d, Double.valueOf(rowTwo.get(1)));
-      assertEquals("correct val 2", "19700101T002000Z", rowTwo.get(2));
-      
-      targetReader.close();
-
-     }
-  }
-  
   public static interface CSVAttributeProvider
   {
     String getCaseNumber();
@@ -299,8 +109,13 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
   private static class ExportTrackToCSV extends CMAPOperation
   {
 
-    public static String getFileName(LightweightTrackWrapper subject,
-        CSVAttributeProvider provider)
+    private static String clean(final String freeText)
+    {
+      return freeText.replace(",", "_COMMA_");
+    }
+
+    public static String getFileName(final LightweightTrackWrapper subject,
+        final CSVAttributeProvider provider)
     {
       final DateFormat fileDateFormat = new GMTDateFormat("yyyyMMdd_HHmmss",
           Locale.ENGLISH);
@@ -319,12 +134,14 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
       return fileName.toString();
     }
 
-    private static List<String> outputStrings(final LightweightTrackWrapper subject, final CSVAttributeProvider provider)
+    private static List<String> outputStrings(
+        final LightweightTrackWrapper subject,
+        final CSVAttributeProvider provider)
     {
-      List<String> res = new ArrayList<String>();
-      
-      final DateFormat dateFormatter = new GMTDateFormat(
-          "yyyyMMdd'T'HHmmss'Z'", Locale.ENGLISH);
+      final List<String> res = new ArrayList<String>();
+
+      final DateFormat dateFormatter = new GMTDateFormat("yyyyMMdd'T'HHmmss'Z'",
+          Locale.ENGLISH);
       final DateFormat cutOffFormatter = new GMTDateFormat("yyyyMMdd",
           Locale.ENGLISH);
 
@@ -333,7 +150,7 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
       final String lineBreak = System.getProperty("line.separator");
 
       // find the last time on the track
-      Date lastDTG = subject.getEndDTG().getDate();
+      final Date lastDTG = subject.getEndDTG().getDate();
       final String infoCutoffDate = cutOffFormatter.format(lastDTG);
 
       // capture the constants
@@ -368,10 +185,10 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
 
       // now the fields
       fields.append(
-          "# Lat,Long,DTG,UnitName,CaseNumber,Type,Flag,Sensor,MajorAxis," + 
-          "SemiMajorAxis,SemiMinorAxis,Course,Speed,Depth,Likelihood," + 
-          "Confidence,SuppliedBy,Provenance,InfoCutoffDate,Purpose," + 
-          "Classification,DistributionStatement");
+          "# Lat,Long,DTG,UnitName,CaseNumber,Type,Flag,Sensor,MajorAxis,"
+              + "SemiMajorAxis,SemiMinorAxis,Course,Speed,Depth,Likelihood,"
+              + "Confidence,SuppliedBy,Provenance,InfoCutoffDate,Purpose,"
+              + "Classification,DistributionStatement");
       fields.append(lineBreak);
       res.add(fields.toString());
 
@@ -429,13 +246,13 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
 
         // and the newline
         lineOut.append(lineBreak);
-        
+
         res.add(lineOut.toString());
       }
-      
+
       return res;
     }
-    
+
     private static void performExport(final LightweightTrackWrapper subject,
         final CSVAttributeProvider provider)
     {
@@ -447,11 +264,11 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
             subject, provider));
         System.out.println("Writing data to:" + outFile.getAbsolutePath());
         fos = new FileWriter(outFile);
-        
-        List<String> strings = outputStrings(subject, provider);
+
+        final List<String> strings = outputStrings(subject, provider);
 
         // done.
-        for(String line: strings)
+        for (final String line : strings)
         {
           fos.write(line);
         }
@@ -496,12 +313,6 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
       return dateFormat.format(dtg.getDate());
     }
 
-
-    private static String clean(final String freeText)
-    {
-      return freeText.replace(",", "_COMMA_");
-    }
-
     private static String write(final String freeText)
     {
       return "\"" + freeText + "\"";
@@ -542,12 +353,12 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
     {
       // get the set of fields we need
       final DropdownProvider reg = CSVExportDropdownRegistry.getRegistry();
-      
-      if(reg == null)
+
+      if (reg == null)
       {
         return Status.CANCEL_STATUS;
       }
-      
+
       // the wizard needs some other data
       final String unit = _subject.getName();
 
@@ -560,8 +371,7 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
             "Export to CSV couldn't find current editor", null);
         return Status.CANCEL_STATUS;
       }
-      final TrackManager trackManager = (TrackManager) editor.getAdapter(
-          TrackManager.class);
+      final TrackManager trackManager = editor.getAdapter(TrackManager.class);
       final String provenance;
       if (trackManager != null)
       {
@@ -609,6 +419,215 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
           "Undo not relevant to export Track to CSV", null);
       return null;
     }
+  }
+
+  public static class TestExport extends TestCase
+  {
+
+    private static class DummyAttributes implements CSVAttributeProvider
+    {
+      @Override
+      public String getCaseNumber()
+      {
+        return "21B";
+      }
+
+      @Override
+      public String getClassification()
+      {
+        return "Public";
+      }
+
+      @Override
+      public String getConfidence()
+      {
+        return "Hopefully";
+      }
+
+      @Override
+      public String getDistributionStatement()
+      {
+        return "Distribution, Statement";
+      }
+
+      @Override
+      public String getFilePath()
+      {
+        return "UNKNOWN";
+      }
+
+      @Override
+      public String getFlag()
+      {
+        return "MAURETANIA";
+      }
+
+      @Override
+      public String getLikelihood()
+      {
+        return "UNLIKELY";
+      }
+
+      @Override
+      public String getProvenance()
+      {
+        return "Provenance";
+      }
+
+      @Override
+      public String getPurpose()
+      {
+        return "Purpose String";
+      }
+
+      @Override
+      public String getSemiMajorAxis()
+      {
+        return "2000";
+      }
+
+      @Override
+      public String getSemiMinorAxis()
+      {
+        return "1000";
+      }
+
+      @Override
+      public String getSensor()
+      {
+        return "SensorName";
+      }
+
+      @Override
+      public String getSuppliedBy()
+      {
+        return "DeepBlue";
+      }
+
+      @Override
+      public String getType()
+      {
+        return "OILER";
+      }
+
+      @Override
+      public String getUnitName()
+      {
+        return "OWNSHIP_NAME, PART 2";
+      }
+    }
+
+    public void testClean()
+    {
+      assertEquals("A_12", ExportTrackToCSV.tidyMe("A:12"));
+    }
+
+    public void testExport() throws IOException
+    {
+      final TrackWrapper track = new TrackWrapper();
+      track.setName("OWNSHIP");
+      track.addFix(new FixWrapper(new Fix(new HiResDate(1000000),
+          new WorldLocation(2d, 4d, 0d), Math.PI, 10d)));
+      track.addFix(new FixWrapper(new Fix(new HiResDate(1200000),
+          new WorldLocation(3d, 6d, 0d), Math.PI / 2d, 20d)));
+
+      final CSVAttributeProvider provider = new DummyAttributes();
+      final List<String> strings = ExportTrackToCSV.outputStrings(track,
+          provider);
+      final StringBuffer bugger = new StringBuffer();
+      for (final String s : strings)
+      {
+        bugger.append(s);
+      }
+
+      assertEquals("correct num of lines", 4, strings.size());
+
+      final Reader targetReader = new StringReader(bugger.toString());
+
+      final Iterable<CSVRecord> tRecords = CSVFormat.DEFAULT.withQuote('\"')
+          .parse(targetReader);
+      final Iterator<CSVRecord> iter = tRecords.iterator();
+      final CSVRecord titleRow = iter.next();
+      assertEquals("correct num headings", 2, titleRow.size());
+
+      final CSVRecord header = iter.next();
+
+      // and the headings
+      assertEquals("correct num headings", 22, header.size());
+
+      // and some checking
+      assertEquals("Correct heading 0", "# Lat", header.get(0));
+      assertEquals("Correct heading 1", "Long", header.get(1));
+      assertEquals("Correct heading 2", "DTG", header.get(2));
+      assertEquals("Correct heading 3", "UnitName", header.get(3));
+      assertEquals("Correct heading 4", "CaseNumber", header.get(4));
+      assertEquals("Correct heading 5", "Type", header.get(5));
+      assertEquals("Correct heading 6", "Flag", header.get(6));
+      assertEquals("Correct heading 7", "Sensor", header.get(7));
+      assertEquals("Correct heading 8", "MajorAxis", header.get(8));
+      assertEquals("Correct heading 9", "SemiMajorAxis", header.get(9));
+      assertEquals("Correct heading 10", "SemiMinorAxis", header.get(10));
+      assertEquals("Correct heading 11", "Course", header.get(11));
+      assertEquals("Correct heading 12", "Speed", header.get(12));
+      assertEquals("Correct heading 13", "Depth", header.get(13));
+      assertEquals("Correct heading 14", "Likelihood", header.get(14));
+      assertEquals("Correct heading 15", "Confidence", header.get(15));
+      assertEquals("Correct heading 16", "SuppliedBy", header.get(16));
+      assertEquals("Correct heading 17", "Provenance", header.get(17));
+      assertEquals("Correct heading 18", "InfoCutoffDate", header.get(18));
+      assertEquals("Correct heading 19", "Purpose", header.get(19));
+      assertEquals("Correct heading 20", "Classification", header.get(20));
+      assertEquals("Correct heading 21", "DistributionStatement", header.get(21)
+          .trim());
+
+      // and the content
+      final CSVRecord rowOne = iter.next();
+      assertEquals("correct entries", 22, rowOne.size());
+      assertEquals("correct val 0", 2d, Double.valueOf(rowOne.get(0)));
+      assertEquals("correct val 1", 4d, Double.valueOf(rowOne.get(1)));
+      assertEquals("correct val 2", "19700101T001640Z", rowOne.get(2));
+      assertEquals("correct val 3", "OWNSHIP_NAME, PART 2", rowOne.get(3));
+      assertEquals("correct val 4", "21B", rowOne.get(4));
+      assertEquals("correct val 5", "OILER", rowOne.get(5));
+      assertEquals("correct val 6", "MAURETANIA", rowOne.get(6));
+      assertEquals("correct val 7", "SensorName", rowOne.get(7));
+      assertEquals("correct val 8", 4000d, Double.valueOf(rowOne.get(8)));
+      assertEquals("correct val 9", 2000d, Double.valueOf(rowOne.get(9)));
+      assertEquals("correct val 10", 1000d, Double.valueOf(rowOne.get(10)));
+      assertEquals("correct val 11", 180d, Double.valueOf(rowOne.get(11)));
+      assertEquals("correct val 12", 17.7745d, Double.valueOf(rowOne.get(12)));
+      assertEquals("correct val 13", 0d, Double.valueOf(rowOne.get(13)));
+      assertEquals("correct val 14", "UNLIKELY", rowOne.get(14));
+      assertEquals("correct val 15", "Hopefully", rowOne.get(15));
+      assertEquals("correct val 16", "DeepBlue", rowOne.get(16));
+      assertEquals("correct val 17", "Provenance", rowOne.get(17));
+      assertEquals("correct val 18", "19700101", rowOne.get(18));
+      assertEquals("correct val 19", "Purpose String", rowOne.get(19));
+      assertEquals("correct val 20", "Public", rowOne.get(20));
+      assertEquals("correct val 21", "Distribution, Statement", rowOne.get(21));
+
+      // quick look at next row
+      final CSVRecord rowTwo = iter.next();
+      assertEquals("correct entries", 22, rowTwo.size());
+      assertEquals("correct val 0", 3d, Double.valueOf(rowTwo.get(0)));
+      assertEquals("correct val 1", 6d, Double.valueOf(rowTwo.get(1)));
+      assertEquals("correct val 2", "19700101T002000Z", rowTwo.get(2));
+
+      targetReader.close();
+
+    }
+  }
+
+  private static String cleanPhrase(final String statement)
+  {
+    final String res = statement; // no - allow commas statement.replace(",", "");
+    return res;
+  }
+
+  private static String cleanPlatform(final String provenance)
+  {
+    final String res = provenance.replace(".", "_");
+    return res;
   }
 
   /**
@@ -663,21 +682,10 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
           CorePlugin.run(theAction);
         }
       };
-      doExport.setImageDescriptor(CorePlugin.getImageDescriptor("icons/16/export-csv.png"));
+      doExport.setImageDescriptor(CorePlugin.getImageDescriptor(
+          "icons/16/export-csv.png"));
       parent.add(doExport);
     }
-  }
-
-  private static String cleanPhrase(String statement)
-  {
-    final String res = statement; // no - allow commas statement.replace(",", "");
-    return res;
-  }
-
-  private static String cleanPlatform(String provenance)
-  {
-    final String res = provenance.replace(".", "_");
-    return res;
   }
 
 }
