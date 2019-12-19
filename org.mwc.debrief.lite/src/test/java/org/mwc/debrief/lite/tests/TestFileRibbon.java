@@ -33,10 +33,8 @@ import org.mwc.debrief.lite.gui.custom.JXCollapsiblePaneWithTitle;
 import org.mwc.debrief.lite.menu.DebriefRibbonFile;
 import org.mwc.debrief.lite.utils.TestUtils;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
-import org.pushingpixels.flamingo.api.common.JCommandMenuButton;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.flamingo.internal.ui.ribbon.JBandControlPanel;
-import org.pushingpixels.flamingo.internal.ui.ribbon.JRibbonComponent;
 
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Plottable;
@@ -74,14 +72,15 @@ public class TestFileRibbon extends BaseTestCase
     assertTrue(DebriefLiteApp.getInstance().getApplicationFrame().getTitle().contains("boat1.rep"));
     final JBandControlPanel fileBand = (JBandControlPanel) TestUtils
         .getRibbonBand(1, 0).getComponent(0);
-    final JCommandButton closeButton = (JCommandButton) fileBand.getComponent(
-        3);
-    assertTrue(closeButton.isEnabled());
+    
     SwingUtilities.invokeLater(new Runnable()
     {
       @Override
       public void run()
       {
+        final JCommandButton closeButton = (JCommandButton) fileBand.getComponent(
+            3);
+        assertTrue(closeButton.isEnabled());
         closeButton.doActionClick();
       }
     });
@@ -106,9 +105,18 @@ public class TestFileRibbon extends BaseTestCase
       }
     });
 
-    // wait for reset to be over.
-    Thread.sleep(200);
-    assertFalse(closeButton.isEnabled());
+ // wait for reset to be over.
+    Thread.sleep(500);
+    SwingUtilities.invokeLater(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        final JCommandButton closeButton = (JCommandButton) fileBand.getComponent(
+            3);
+        assertFalse(closeButton.isEnabled());
+      }
+    });
     System.out.println("Done test close");
   }
 
@@ -256,8 +264,7 @@ public class TestFileRibbon extends BaseTestCase
     final JBandControlPanel liteBand = (JBandControlPanel) TestUtils
         .getRibbonBand(3, 2).getComponent(0);
     final JCommandButton ellipseButton =
-        (JCommandButton) ((JRibbonComponent) liteBand.getComponent(2))
-            .getComponent(1);
+        (JCommandButton)liteBand.getComponent(2);
     SwingUtilities.invokeAndWait(new Runnable()
     {
 
@@ -268,7 +275,7 @@ public class TestFileRibbon extends BaseTestCase
       }
     });
     Thread.sleep(200);
-    final JCommandMenuButton saveDDButton = TestUtils.getSaveButton();
+    
 
     /**
      * note: the following call appears to require invokeLater() rather than invokeAndWait. This is
@@ -279,16 +286,20 @@ public class TestFileRibbon extends BaseTestCase
       @Override
       public void run()
       {
+        final JCommandButton saveDDButton = TestUtils.getSaveButton();
+        System.out.println("Save ddbutton:"+saveDDButton);
         saveDDButton.doActionClick();
+        System.out.println("Clicked save");
       }
     });
+    Thread.sleep(3000);
     JFileChooser saveWindow=null;
     for(int i=0;saveWindow == null;++i) {
 
     // wait for window to open and confirm it is open
         saveWindow = (JFileChooser) TestUtils.getChildIndexed(
         ribbonFrame, "JFileChooser", 0, false);
-        Thread.sleep(200);
+        Thread.sleep(500);
         assertTrue(i<10);
     }
     Thread.sleep(200);
@@ -319,13 +330,14 @@ public class TestFileRibbon extends BaseTestCase
 
     final JBandControlPanel saveBand = (JBandControlPanel) TestUtils
         .getRibbonBand(1, 0).getComponent(0);
-    final JCommandButton closeButton = (JCommandButton) saveBand.getComponent(
-        3);
+    
     SwingUtilities.invokeLater(new Runnable()
     {
       @Override
       public void run()
       {
+        final JCommandButton closeButton = (JCommandButton) saveBand.getComponent(
+            3);
         closeButton.doActionClick();
       }
     });
@@ -500,7 +512,7 @@ public class TestFileRibbon extends BaseTestCase
         Thread.sleep(200);
         assertTrue(i<10);
     }
-    Thread.sleep(200);
+    Thread.sleep(2000);
     final JFileChooser saveWindow = fc;
     //we have the window, set the path on the filechooser dialog to open the file
     SwingUtilities.invokeAndWait(new Runnable()
@@ -528,17 +540,18 @@ public class TestFileRibbon extends BaseTestCase
       }
     });
 
-    Thread.sleep(2000);
+    Thread.sleep(3000);
     assertTrue(ribbonFrame.getTitle().contains("sample.dpf"));
     //verify the file got opened
     //do save and close
-    final JCommandButton saveButton = TestUtils.getSaveButton();
+    
     SwingUtilities.invokeAndWait(new Runnable()
     {
       
       @Override
       public void run()
       {
+        final JCommandButton saveButton = TestUtils.getSaveButton();
         saveButton.doActionClick();
       }
     });
@@ -562,7 +575,7 @@ public class TestFileRibbon extends BaseTestCase
   
   public void testSaveAs() throws Exception
   {
-    System.out.println("Start testing save");
+    System.out.println("Start testing saveas");
     // open a rep file, insert some shape into it and save it, verify the shape is still there after
     // reopening.
     openRepFile(
@@ -601,8 +614,7 @@ public class TestFileRibbon extends BaseTestCase
     final JBandControlPanel liteBand = (JBandControlPanel) TestUtils
         .getRibbonBand(3, 2).getComponent(0);
     final JCommandButton ellipseButton =
-        (JCommandButton) ((JRibbonComponent) liteBand.getComponent(2))
-            .getComponent(1);
+        (JCommandButton)liteBand.getComponent(2);
     SwingUtilities.invokeAndWait(new Runnable()
     {
 
@@ -613,7 +625,7 @@ public class TestFileRibbon extends BaseTestCase
       }
     });
     Thread.sleep(200);
-    final JCommandMenuButton saveDDButton = TestUtils.getSaveASButton();
+    
 
     /**
      * note: the following call appears to require invokeLater() rather than invokeAndWait. This is
@@ -624,9 +636,13 @@ public class TestFileRibbon extends BaseTestCase
       @Override
       public void run()
       {
+        final JCommandButton saveDDButton = TestUtils.getSaveASButton();
+        saveDDButton.doPopupClick();
         saveDDButton.doActionClick();
+        
       }
     });
+    Thread.sleep(2000);
     JFileChooser saveWindow=null;
     for(int i=0;saveWindow == null;++i) {
 
@@ -636,7 +652,7 @@ public class TestFileRibbon extends BaseTestCase
         Thread.sleep(200);
         assertTrue(i<10);
     }
-    Thread.sleep(200);
+    Thread.sleep(2000);
     // now actually push the save button
     System.out.println("Save button:");
     final JFileChooser saveasWindow = saveWindow;
@@ -666,7 +682,8 @@ public class TestFileRibbon extends BaseTestCase
       }
     });
 
-    Thread.sleep(1000);
+    Thread.sleep(2000);
+    System.out.println("FrameTitle:"+ribbonFrame.getTitle());
     assertTrue(ribbonFrame.getTitle().contains("savedas.dpf"));
     final JBandControlPanel saveBand = (JBandControlPanel) TestUtils
         .getRibbonBand(1, 0).getComponent(0);
