@@ -15,6 +15,8 @@ import org.geotools.swing.MapPane;
 import org.geotools.swing.action.MapAction;
 import org.geotools.swing.tool.ZoomInTool;
 import org.opengis.referencing.operation.MathTransform;
+import org.pushingpixels.flamingo.api.common.CommandAction;
+import org.pushingpixels.flamingo.api.common.CommandActionEvent;
 
 import MWC.GenericData.WorldDistance;
 
@@ -25,7 +27,7 @@ import MWC.GenericData.WorldDistance;
  * @author Ian Mayo, from Michael Bedward's Zoom In Action
  * @since 2.6
  */
-public class RangeBearingAction extends MapAction
+public class RangeBearingAction extends MapAction implements CommandAction
 {
 
   /**
@@ -103,6 +105,12 @@ public class RangeBearingAction extends MapAction
     final Point p = component.getLocationOnScreen();
 
     menu.setLocation(p.x, p.y + component.getHeight());
+  }
+
+  @Override
+  public void commandActivated(CommandActionEvent e)
+  {
+    actionPerformed(e);
   }
 
 }

@@ -5,8 +5,10 @@ import java.awt.event.ActionEvent;
 import org.geotools.swing.MapPane;
 import org.geotools.swing.action.MapAction;
 import org.geotools.swing.tool.CursorTool;
+import org.pushingpixels.flamingo.api.common.CommandAction;
+import org.pushingpixels.flamingo.api.common.CommandActionEvent;
 
-public class DragElementAction extends MapAction
+public class DragElementAction extends MapAction implements CommandAction
 {
 
   /**
@@ -27,6 +29,13 @@ public class DragElementAction extends MapAction
   public void actionPerformed(final ActionEvent e)
   {
     getMapPane().setCursorTool(cursorTool);
+  }
+
+  @Override
+  public void commandActivated(CommandActionEvent e)
+  {
+    actionPerformed(e);
+    
   }
 
 }
