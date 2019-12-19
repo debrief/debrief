@@ -209,6 +209,7 @@
 			<xs:element name="ElapsedTimeObserver" type="ElapsedTimeObserverType" />
 			<xs:element name="FinalStateObserver" type="FinalStateObserverType" />
 			<xs:element name="CSVTrackObserver" type="CSVTrackObserverType" />
+			<xs:element name="CSV_CLog_TrackObserver" type="CSV_CLog_TrackObserverType" />
 			<xs:element name="TowedArrayLocationObserver" type="TowedArrayLocationObserverType" />
 			<xs:element name="TimeObserver" type="TimeObserverType" />
 			<xs:element name="ProximityObserver" type="ProximityObserverType" />
@@ -4008,6 +4009,19 @@
 	<xs:complexType name="CSVTrackObserverType">
 		<xs:annotation>
 			<xs:documentation>Record tracks as CSV file</xs:documentation>
+			<xs:documentation source="http://asset.info/ui">Visible: inherited .
+				Editable:
+				inherited
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CoreFileObserverType">
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+    <xs:complexType name="CSV_CLog_TrackObserverType">
+		<xs:annotation>
+			<xs:documentation>Record tracks as CSV file in C-Log format</xs:documentation>
 			<xs:documentation source="http://asset.info/ui">Visible: inherited .
 				Editable:
 				inherited

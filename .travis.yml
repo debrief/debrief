@@ -1,6 +1,6 @@
 language: java
 dist: trusty
-jdk: oraclejdk8
+jdk: openjdk11
 sudo: required
 cache:
   directories:
@@ -16,13 +16,28 @@ addons:
     - libglib2.0-dev
     - libxml2-dev
     - pdftk
+    - unzip
 notifications:
   slack: debrief-devs:GF1nQSqn2eozH3wQtyuPLAlG
 before_script:
 - export DISPLAY=:99
 - sh -e /etc/init.d/xvfb start
 - sleep 3
-script: mvn clean verify -U -B -fae -q
+# modify Debrief feature to include win-64 subdirectory
+- echo "root.win32.win32.x86_64 = win-64" >> org.mwc.debrief.combined.feature/build.properties
+# get a 64-bit windows JRE
+- wget -P dest https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.5%2B10/OpenJDK11U-jre_x64_windows_hotspot_11.0.5_10.zip
+# unpack it
+- cd dest
+- unzip OpenJD*.zip
+# rename and move it
+- mv *-jre jre
+- mkdir ../org.mwc.debrief.combined.feature/win-64
+# move it to the target folder
+- mv jre ../org.mwc.debrief.combined.feature/win-64/jre
+# move back to top level
+- cd ../
+script: mvn clean verify -U -B -fae
 after_failure:
 - ls org.mwc.debrief.ui_test
 - ls org.mwc.debrief.ui_test/target
@@ -35,9 +50,9 @@ before_deploy:
 deploy:
   provider: releases
   skip_cleanup: true
-  file_glob: true
+  edge: true
   api_key:
-    secure: KCCJkP6ELz9pIGkBmSRbazRzhKZPq7T58tEIZbthtVv+KoM/JWdN10h3IK/N5Oqdeb2/P5u+93ml1wlU9PkbuwxQ4mpUbaAW41G/9mbEF7U2JLEtS9xSxeIfEBIEtuHxdlECjsgMCLm2lh3CVxbu3S2y9jDnpt35rbh6AN3B44w=
+    secure: Oqy+moovC3HQ0dbvWHHNOVCsqzq7vpTjlvtFVqqTiMJaCa4OUiCXOuUKr8PXtANCx6yZxrtgYKUxIDX5gpAtTWq3ylPaoedmkx2jSlkf5e4AgT4wLJcstWrwKYyK3NQjc45g3WqRCmsqsrnVQCREwD/Vq09vCt4+nZYGB5FPBmU=
   file:
     - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Linux64Bit.zip
     - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-MacOSX64Bit.zip
@@ -46,7 +61,6 @@ deploy:
     - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/P2_Repository.zip
     - /home/travis/build/debrief/debrief/org.mwc.debrief.legacy/dist/DebriefLegacy*.jar
     - /home/travis/build/debrief/debrief/org.mwc.debrief.lite/dist/debrief-lite*.zip
-# - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows32Bit.msi
     - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.msi
   on:
      tags: true

@@ -183,6 +183,17 @@ public class DialogFactory
 
   static public void showMessage(final String title, final String msg)
   {
+    showMessage(title, msg, MessageProvider.ERROR);
+  }
+
+  /**
+   * 
+   * @param title message panel title
+   * @param msg message to show
+   * @param status type of icon to show
+   */
+  static public void showMessage(final String title, final String msg, final int status)
+  {
     if (!_runHeadless)
     {
       // create duff frame, that message dialog can appear
@@ -194,7 +205,7 @@ public class DialogFactory
 
       MessageProvider.Base.show(title,
           msg,
-          MessageProvider.ERROR);
+          status);
     }
   }
 

@@ -9,8 +9,8 @@
   <packaging>pom</packaging>
 
   <properties>
-    <tycho.version>1.4.0</tycho.version>
-    <tycho-extras.version>1.4.0</tycho-extras.version>
+    <tycho.version>1.5.0</tycho.version>
+    <tycho-extras.version>1.5.0</tycho-extras.version>
 
     <tycho-repo.url>https://oss.sonatype.org/content/groups/public/</tycho-repo.url>
 
@@ -23,6 +23,7 @@
     <debrief.keystore.alias>business</debrief.keystore.alias>
     <debrief.keystore.store.password>store123</debrief.keystore.store.password>
     <debrief.keystore.key.password>key123</debrief.keystore.key.password>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
   </properties>
 
@@ -30,7 +31,9 @@
 
 
     <module>org.freehep</module>
+    <!--
     <module>info.limpet</module>
+    -->
     <module>info.limpet.libs</module>
     <module>info.limpet.stackedcharts.model</module>
     <module>info.limpet.stackedcharts.ui</module>
@@ -97,9 +100,9 @@
     <module>org.mwc.debrief.satc.core</module>
     <module>org.mwc.debrief.satc.integration</module>
     <module>org.mwc.debrief.limpet_integration</module>
-
+<!--
     <module>org.mwc.debrief.ui_test</module>
-
+-->
   </modules>
 
   <build>
@@ -199,8 +202,8 @@
 		<version>${tycho.version}</version>
 		<configuration>
 			<encoding>UTF-8</encoding>
-			<source>1.8</source>
-			<target>1.8</target>
+			<source>11</source>
+			<target>11</target>
 			<compilerArgument>-warn:+discouraged,forbidden</compilerArgument>
 		</configuration>
 	</plugin>

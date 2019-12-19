@@ -190,6 +190,13 @@ for path in paths:
 		if("org.mwc.debrief" in path):
 			features.add("org.mwc.debrief.combined.feature")
 
+
+# also force the inclusion of debrief.core
+# we need it to update in order to load the updated
+# about.mappings file
+if not "org.mwc.debrief.core" in plugins:
+	plugins.add("org.mwc.debrief.core")
+
 # print plugins
 # print features
 

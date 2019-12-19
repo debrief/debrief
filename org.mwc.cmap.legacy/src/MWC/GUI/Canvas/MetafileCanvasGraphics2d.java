@@ -87,6 +87,7 @@ import java.util.Map;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
+import MWC.GUI.MessageProvider;
 import MWC.GUI.Canvas.Metafile.WMF;
 import MWC.GUI.Canvas.Metafile.WMFGraphics;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
@@ -189,7 +190,10 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 
       MWC.GUI.Dialogs.DialogFactory.showMessage("WMF Export successful",
           "WMF Export has been successful in the following directory: "
-              + _directory);
+              + _directory, MessageProvider.OK);
+      
+      System.out.println("message shown");
+      
     }
     catch (final FileNotFoundException f)
     {

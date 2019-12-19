@@ -38,7 +38,7 @@ public class MouseDragLine extends MouseInputAdapter
   private final int MEASURE_X_OFFSET = 30;
   private final int MEASURE_Y_OFFSET = 30;
   private final int MEASURE_X_CENTRE_OFFSET = 0;
-  private final int MEASURE_Y_CENTRE_OFFSET = -30;
+  private final int MEASURE_Y_CENTRE_OFFSET = -15;
   private RangeBearingMeasure previousMeasure = null;
 
   private boolean mapRepainted = false;

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ScenarioPlotter Plug-in
 Bundle-SymbolicName: org.mwc.asset.ScenarioPlotter; singleton:=true
-Bundle-Version: 1.0.18
+Bundle-Version: 1.0.19
 Bundle-Activator: org.mwc.asset.scenarioplotter.Activator
 Require-Bundle: org.mwc.asset.core,
  org.mwc.cmap.core,
@@ -18,4 +18,4 @@ Require-Bundle: org.mwc.asset.core,
  org.eclipse.ui.ide,
  org.eclipse.ui,
  org.mwc.cmap.geotools;bundle-version="1.0.7"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-11
