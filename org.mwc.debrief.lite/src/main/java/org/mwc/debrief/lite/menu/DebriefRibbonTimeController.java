@@ -20,7 +20,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -36,7 +35,6 @@ import java.util.TimeZone;
 
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -357,10 +355,13 @@ public class DebriefRibbonTimeController
       final LiteStepControl stepControl, final TimeManager timeManager,
       final PlotOperations operations, final Layers layers,
       final UndoBuffer undoBuffer, final Runnable normalPainter,
-      final Runnable snailPainter)
+      final Runnable snailPainter, final Runnable refresh)
   {
     final JRibbonBand displayMode = createDisplayMode(normalPainter,
-        snailPainter);
+        snailPainter, stepControl, layers, undoBuffer);
+
+    final JRibbonBand highlighter = createHighlighter(stepControl, refresh,
+        layers, undoBuffer);
 
     final JRibbonBand filterToTime = createFilterToTime(stepControl, operations,
         timeManager);
@@ -368,9 +369,9 @@ public class DebriefRibbonTimeController
 
     final JFlowRibbonBand control = createControl(stepControl, timeManager, layers,
         undoBuffer, operations);
-//
-    final RibbonTask timeTask = new RibbonTask("Time", displayMode,
-        control,filterToTime);
+
+    final RibbonTask timeTask = new RibbonTask("Time", displayMode, highlighter,
+        control, filterToTime);
     ribbon.addTask(timeTask);
   }
 
@@ -718,7 +719,7 @@ public class DebriefRibbonTimeController
       private void updateTimeController()
       {
         stepControl.startStepping(false);
-        boolean hasItems = false;
+        boolean hasTracks = false;
         boolean hasNarratives = false;
         boolean hasStart = false;
         boolean hasEnd = false;
@@ -729,7 +730,7 @@ public class DebriefRibbonTimeController
           final Editable next = lIter.nextElement();
           if (next instanceof TrackWrapper)
           {
-            hasItems = true;
+            hasTracks = true;
             break;
           }
           else if (next instanceof BaseLayer)
@@ -737,12 +738,12 @@ public class DebriefRibbonTimeController
             // check the children, to see if they're like a track
             final BaseLayer baseL = (BaseLayer) next;
             final Enumeration<Editable> ele = baseL.elements();
-            while (ele.hasMoreElements() && !hasItems)
+            while (ele.hasMoreElements() && !hasTracks)
             {
               final Editable nextE = ele.nextElement();
-              hasItems |= nextE instanceof LightweightTrackWrapper
+              hasTracks |= nextE instanceof LightweightTrackWrapper
                   || nextE instanceof DynamicTrackShapeSetWrapper;
-              if (!hasItems && nextE instanceof WatchableList)
+              if (!hasTracks && nextE instanceof WatchableList)
               {
                 hasStart |= ((WatchableList) nextE).getStartDTG() != null;
                 hasEnd |= ((WatchableList) nextE).getEndDTG() != null;
@@ -773,20 +774,17 @@ public class DebriefRibbonTimeController
           }
         }
 
-        hasItems |= hasStart && hasEnd;
-        DebriefLiteApp.setDirty(hasItems || hasNarratives);
-        if (hasItems)
+        DebriefLiteApp.setDirty(hasTracks || hasNarratives);
+        String newState = DebriefLiteApp.INACTIVE_STATE;
+        if (hasTracks)
         {
-          DebriefLiteApp.setState(DebriefLiteApp.ACTIVE_STATE);
-          timeSlider.setEnabled(true);
-          final TimePeriod period = stepControl.getLayers().getTimePeriod();
-          // _myOperations.setPeriod(period);
-          timeManager.setPeriod(this, period);
+          newState = DebriefLiteApp.ACTIVE_STATE;
         }
-        else
+        else if (hasNarratives || (hasEnd && hasStart))
         {
-          doSoftReset(timeSlider, timeManager);
+          newState = DebriefLiteApp.TIME_ENABLED_STATE;
         }
+        DebriefLiteApp.setState(newState);
       }
     };
 
@@ -797,7 +795,7 @@ public class DebriefRibbonTimeController
       @Override
       public void reset()
       {
-        doSoftReset(timeSlider, timeManager);
+        DebriefLiteApp.setState(DebriefLiteApp.INACTIVE_STATE);
       }
     });
 
@@ -812,12 +810,14 @@ public class DebriefRibbonTimeController
   }
 
   private static JRibbonBand createDisplayMode(final Runnable normalPainter,
-      final Runnable snailPainter)
+      final Runnable snailPainter, final LiteStepControl stepcontrol,
+      final Layers layers, final UndoBuffer undoBuffer)
   {
     final JRibbonBand displayMode = new JRibbonBand("Display Mode", null);
+    final ArrayList<Command> commands = new ArrayList<>();
     final CommandToggleGroupModel displayModeGroup =
         new CommandToggleGroupModel();
-    MenuUtils.addCommandToggleButton("Normal", "icons/48/normal.png",
+    Command normalToggle = MenuUtils.addCommandToggleButton("Normal", "icons/48/normal.png",
         new CommandAction()
         {
 
@@ -828,7 +828,8 @@ public class DebriefRibbonTimeController
           }
         }, displayMode, PresentationPriority.TOP, true, displayModeGroup,
         true);
-    MenuUtils.addCommandToggleButton("Snail", "icons/48/snail.png",
+    commands.add(normalToggle);
+    Command snailToggle = MenuUtils.addCommandToggleButton("Snail", "icons/48/snail.png",
         new CommandAction()
         {
 
@@ -840,11 +841,134 @@ public class DebriefRibbonTimeController
           }
         }, displayMode, PresentationPriority.TOP, true, displayModeGroup,
         false);
-
+    commands.add(snailToggle);
     displayMode.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         displayMode));
 
+    DebriefLiteApp.getInstance().addStateListener(new PropertyChangeListener()
+    {
+      @Override
+      public void propertyChange(final PropertyChangeEvent evt)
+      {
+        if (DebriefLiteApp.STATE.equals(evt.getPropertyName()))
+        {
+          final boolean enabled = DebriefLiteApp.ACTIVE_STATE.equals(evt
+              .getNewValue());
+          enableDisableCommandList(commands, enabled);
+        }
+      }
+    });
+
     return displayMode;
+  }
+  
+  protected static void enableDisableCommandList(ArrayList<Command> commands,
+      boolean enabled)
+  {
+    commands.forEach(command->command.setActionEnabled(enabled));
+  }
+
+  private static JRibbonBand createHighlighter(
+      final LiteStepControl stepcontrol, final Runnable refresh,
+      final Layers layers, final UndoBuffer undoBuffer)
+  {
+    final JRibbonBand highlighter = new JRibbonBand("Highlighter", null);
+
+    final ArrayList<Command> commands = new ArrayList<>();
+    final CommandToggleGroupModel highlighterGroup =
+        new CommandToggleGroupModel();
+   
+    final Command square = MenuUtils.addCommandToggleButton("Square",
+        "icons/48/square.png", new CommandAction()
+        {
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void commandActivated(final CommandActionEvent e)
+          {
+            if (stepcontrol instanceof LiteStepControl)
+            {
+              stepcontrol.setHighlighter((stepcontrol).getRectangleHighlighter()
+                  .toString());
+              refresh.run();
+            }
+          }
+        }, highlighter, PresentationPriority.TOP, true, highlighterGroup,
+        true);
+    commands.add(square);
+    final Command symbol = MenuUtils.addCommandToggleButton("Symbol",
+        "icons/48/shape.png", new CommandAction()
+        {
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void commandActivated(final CommandActionEvent e)
+          {
+            if (stepcontrol instanceof LiteStepControl)
+            {
+              stepcontrol.setHighlighter(stepcontrol.getSymbolHighlighter()
+                  .toString());
+              refresh.run();
+            }
+          }
+        }, highlighter, PresentationPriority.TOP, true, highlighterGroup,
+        false);
+    commands.add(symbol);
+
+    final CommandButtonProjection<Command> properties = MenuUtils.addCommand("Properties",
+        "icons/16/properties.png", new CommandAction()
+        {
+
+          @Override
+          public void commandActivated(final CommandActionEvent e)
+          {
+            if (stepcontrol instanceof LiteStepControl)
+            {
+              ToolbarOwner owner = null;
+              final ToolParent parent = stepcontrol.getParent();
+
+              if (parent instanceof ToolbarOwner)
+              {
+                owner = (ToolbarOwner) parent;
+              }
+              final Layer parentLayer;
+              if (parent instanceof Layer)
+              {
+                parentLayer = (Layer) parent;
+              }
+              else
+              {
+                parentLayer = null;
+              }
+              final PropertiesDialog dialog = new PropertiesDialog(stepcontrol
+                  .getCurrentHighlighter().getInfo(), layers, undoBuffer,
+                  parent, owner, parentLayer);
+              dialog.setSize(400, 500);
+              dialog.setLocationRelativeTo(null);
+              dialog.setVisible(true);
+            }
+          }
+        }, highlighter, PresentationPriority.LOW);
+    commands.add(properties.getContentModel());
+
+    highlighter.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
+        highlighter));
+
+    DebriefLiteApp.getInstance().addStateListener(new PropertyChangeListener()
+    {
+      @Override
+      public void propertyChange(final PropertyChangeEvent evt)
+      {
+        if (DebriefLiteApp.STATE.equals(evt.getPropertyName()))
+        {
+          final boolean enabled = DebriefLiteApp.ACTIVE_STATE.equals(evt
+              .getNewValue());
+          enableDisableCommandList(commands, enabled);
+        }
+      }
+    });
+
+    return highlighter;
   }
 
   private static JRibbonBand createFilterToTime(

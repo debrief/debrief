@@ -23,6 +23,7 @@ import org.mwc.debrief.lite.properties.PropertiesDialog;
 
 import Debrief.GUI.Frames.Session;
 import Debrief.GUI.Tote.StepControl;
+import Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.StepperListener;
@@ -93,7 +94,7 @@ public class LiteStepControl extends StepControl
       }
 
       final PropertiesDialog dialog = new PropertiesDialog(((Editable) painter)
-          .getInfo(), _layers, _undoBuffer, parent, owner,null);
+          .getInfo(), _layers, _undoBuffer, parent, owner, null);
       dialog.setSize(400, 500);
       dialog.setLocationRelativeTo(null);
       dialog.setVisible(true);
@@ -116,6 +117,11 @@ public class LiteStepControl extends StepControl
     return this._layers;
   }
 
+  public Debrief.GUI.Tote.Painters.PainterManager getPainterManager()
+  {
+    return _thePainterManager;
+  }
+
   public ToolParent getParent()
   {
     return parent;
@@ -132,11 +138,35 @@ public class LiteStepControl extends StepControl
     }
 
     final PropertiesDialog dialog = new PropertiesDialog(this
-        .getDefaultHighlighter().getInfo(), _layers, _undoBuffer, parent,
-        owner,null);
+        .getDefaultHighlighter().getInfo(), _layers, _undoBuffer, parent, owner,
+        null);
     dialog.setSize(400, 500);
     dialog.setLocationRelativeTo(null);
     dialog.setVisible(true);
+    return null;
+  }
+
+  public PlotHighlighter getRectangleHighlighter()
+  {
+    for (final PlotHighlighter current : _myHighlighters)
+    {
+      if (current instanceof Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter.RectangleHighlight)
+      {
+        return current;
+      }
+    }
+    return null;
+  }
+
+  public PlotHighlighter getSymbolHighlighter()
+  {
+    for (final PlotHighlighter current : _myHighlighters)
+    {
+      if (current instanceof Debrief.GUI.Tote.Painters.Highlighters.SymbolHighlighter)
+      {
+        return current;
+      }
+    }
     return null;
   }
 

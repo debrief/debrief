@@ -943,6 +943,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
             HiResDate lastTime = null;
 
             Watchable prevFix = null;
+            Color previousColor = null;
 
             while (it.hasNext())
             {
@@ -966,11 +967,29 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
                 }
               }
 
+              // what's the time of this data point?
+              final HiResDate currentTime = thisSecondary.getTime();
+
               // / get the colour
               Color thisColor = thisSecondary.getColor();
 
-              // what's the time of this data point?
-              final HiResDate currentTime = thisSecondary.getTime();
+              // when we have an interpolated point, we would have to use the previous
+              // color
+              if (thisSecondary instanceof FixWrapper)
+              {
+                final FixWrapper secondaryAsFixWrapper =
+                    ((FixWrapper) thisSecondary);
+                if (secondaryAsFixWrapper.isInterpolated())
+                {
+                  final Color actualColor = secondaryAsFixWrapper
+                      .getActualColor();
+                  if (actualColor == null && previousColor != null)
+                  {
+                    thisColor = previousColor;
+                  }
+                }
+              }
+              previousColor = thisColor;
 
               // produce the new calculated value
               final double thisVal = theCalculation.calculate(thisSecondary,

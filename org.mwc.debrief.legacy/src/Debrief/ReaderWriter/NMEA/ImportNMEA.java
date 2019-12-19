@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -837,7 +838,6 @@ public class ImportNMEA
 
   public void importThis(final String fName, final InputStream is,
       final long osFreq, final long aisFreq, final boolean splitOwnshipJumps)
-      throws Exception
   {
     String myName = null;
     double myDepth = 0d;
@@ -870,170 +870,178 @@ public class ImportNMEA
     // int ctr = 0;
 
     // loop through the lines
-    while ((nmea_sentence = br.readLine()) != null)
+    try
     {
-
-      final MsgType msg = parseType(nmea_sentence);
-
-      // ctr++;
-      //
-      // if (ctr % 10000 == 0)
-      // {
-      // System.out.print(".");
-      // }
-      // if (ctr % 50000 == 0)
-      // {
-      // System.out.println("");
-      // System.out.print(ctr);
-      // }
-
-      switch (msg)
+      while ((nmea_sentence = br.readLine()) != null)
       {
-        case TIMESTAMP:
-          // ok, extract the rest of the body
-          date = parseMyDate(nmea_sentence);
 
-          // and remember the name
-          break;
-        case VESSEL_NAME:
-          // ok, extract the rest of the body
-          myName = parseMyName(nmea_sentence);
-          break;
-        case OS_DEPTH:
-          if (importOS)
-          {
-            // ok, extract the rest of the body
-            myDepth = parseMyDepth(nmea_sentence);
-          }
-          break;
-        case OS_COURSE:
-          if (importOS)
-          {
-            // ok, extract the rest of the body
-            drCourse = parseMyCourse(coursePatternHDG, nmea_sentence);
-          }
-          break;
-        case OS_SPEED:
-          if (importOS)
-          {
-            // ok, extract the rest of the body
-            final double drSpeedDegs = parseMySpeed(speedPatternLOG,
-                nmea_sentence);
+        final MsgType msg = parseType(nmea_sentence);
 
-            // are we taking DR from GPS?
-            if (DRfromGPS)
+        // ctr++;
+        //
+        // if (ctr % 10000 == 0)
+        // {
+        // System.out.print(".");
+        // }
+        // if (ctr % 50000 == 0)
+        // {
+        // System.out.println("");
+        // System.out.print(ctr);
+        // }
+
+        switch (msg)
+        {
+          case TIMESTAMP:
+            // ok, extract the rest of the body
+            date = parseMyDate(nmea_sentence);
+
+            // and remember the name
+            break;
+          case VESSEL_NAME:
+            // ok, extract the rest of the body
+            myName = parseMyName(nmea_sentence);
+            break;
+          case OS_DEPTH:
+            if (importOS)
             {
-              // ok, skip creating the DR - do it in the other message
+              // ok, extract the rest of the body
+              myDepth = parseMyDepth(nmea_sentence);
             }
-            else
+            break;
+          case OS_COURSE:
+            if (importOS)
             {
-              // do we know our origin?
-              if (origin != null && drCourse != null)
+              // ok, extract the rest of the body
+              drCourse = parseMyCourse(coursePatternHDG, nmea_sentence);
+            }
+            break;
+          case OS_SPEED:
+            if (importOS)
+            {
+              // ok, extract the rest of the body
+              final double drSpeedDegs = parseMySpeed(speedPatternLOG,
+                  nmea_sentence);
+
+              // are we taking DR from GPS?
+              if (DRfromGPS)
               {
-                // ok, grow the DR track
-                storeDRFix(origin, drCourse, drSpeedDegs, date, myName, myDepth,
-                    DebriefColors.BLUE);
+                // ok, skip creating the DR - do it in the other message
+              }
+              else
+              {
+                // do we know our origin?
+                if (origin != null && drCourse != null)
+                {
+                  // ok, grow the DR track
+                  storeDRFix(origin, drCourse, drSpeedDegs, date, myName, myDepth,
+                      DebriefColors.BLUE);
+                }
               }
             }
-          }
-          break;
-        case OS_COURSE_SPEED:
-          if (importOS)
-          {
-            // ok, extract the rest of the body
-            final double myCourseDegs = parseMyCourse(coursePatternGPS,
-                nmea_sentence);
-            final double mySpeedKts = parseMySpeed(speedPatternGPS,
-                nmea_sentence);
-
-            // are we taking DR from GPS?
-            if (DRfromGPS)
+            break;
+          case OS_COURSE_SPEED:
+            if (importOS)
             {
-              // do we know our origin?
-              if (origin != null)
+              // ok, extract the rest of the body
+              final double myCourseDegs = parseMyCourse(coursePatternGPS,
+                  nmea_sentence);
+              final double mySpeedKts = parseMySpeed(speedPatternGPS,
+                  nmea_sentence);
+
+              // are we taking DR from GPS?
+              if (DRfromGPS)
               {
-                // ok, grow the DR track
-                storeDRFix(origin, myCourseDegs, mySpeedKts, date, myName,
-                    myDepth, DebriefColors.BLUE);
+                // do we know our origin?
+                if (origin != null)
+                {
+                  // ok, grow the DR track
+                  storeDRFix(origin, myCourseDegs, mySpeedKts, date, myName,
+                      myDepth, DebriefColors.BLUE);
+                }
+              }
+              else
+              {
+                // ok, skip creating the DR using GPS deltas - do it from the organic sensors
               }
             }
-            else
+            break;
+          case OS_POS:
+            if (importOS)
             {
-              // ok, skip creating the DR using GPS deltas - do it from the organic sensors
-            }
-          }
-          break;
-        case OS_POS:
-          if (importOS)
-          {
-            // note: if we don't know ownship name yet,
-            // let's make one up
-            if (myName == null)
-            {
-              myName = WECDIS_OWNSHIP_PREFIX;
-            }
+              // note: if we don't know ownship name yet,
+              // let's make one up
+              if (myName == null)
+              {
+                myName = WECDIS_OWNSHIP_PREFIX;
+              }
 
-            // extract the location
-            final State state = parseOwnship(nmea_sentence, myName);
+              // extract the location
+              final State state = parseOwnship(nmea_sentence, myName);
 
-            // do we need an origin?
-            if (origin == null)
-            {
-              origin = new WorldLocation(state.location);
-            }
+              // do we need an origin?
+              if (origin == null)
+              {
+                origin = new WorldLocation(state.location);
+              }
 
-            // do we know our name yet?
-            if (state != null && date != null)
-            {
-              // now store the ownship location
-              storeLocation(date, state, osFreq, DebriefColors.PURPLE, myDepth,
-                  tracks, colors);
-            }
-          }
-
-          break;
-        case CONTACT:
-          if (importContacts)
-          {
-            // extract the location
-            final State hisState = parseContact(nmea_sentence);
-
-            if (hisState == null)
-            {
-              System.out.println("INVALID CONTACT");
-            }
-            else
-            {
-              // now store the ownship location
-              storeLocation(hisState.date, hisState, aisFreq,
-                  DebriefColors.GREEN, null, contacts, colors);
-            }
-          }
-          break;
-        case AIS:
-          if (importAIS)
-          {
-            // extract the location
-            final State hisState = parseAIS(nmea_sentence);
-
-            if (hisState == null)
-            {
-              // ok, it was prob the "other" AIS receiver
-            }
-            else
-            {
-              if (date != null)
+              // do we know our name yet?
+              if (state != null && date != null)
               {
                 // now store the ownship location
-                storeLocation(date, hisState, aisFreq, DebriefColors.YELLOW,
-                    null, contacts, colors);
+                storeLocation(date, state, osFreq, DebriefColors.PURPLE, myDepth,
+                    tracks, colors);
               }
             }
-          }
-          break;
-        case UNKNOWN:
-          break;
+
+            break;
+          case CONTACT:
+            if (importContacts)
+            {
+              // extract the location
+              final State hisState = parseContact(nmea_sentence);
+
+              if (hisState == null)
+              {
+                System.out.println("INVALID CONTACT");
+              }
+              else
+              {
+                // now store the ownship location
+                storeLocation(hisState.date, hisState, aisFreq,
+                    DebriefColors.GREEN, null, contacts, colors);
+              }
+            }
+            break;
+          case AIS:
+            if (importAIS)
+            {
+              // extract the location
+              final State hisState = parseAIS(nmea_sentence);
+
+              if (hisState == null)
+              {
+                // ok, it was prob the "other" AIS receiver
+              }
+              else
+              {
+                if (date != null)
+                {
+                  // now store the ownship location
+                  storeLocation(date, hisState, aisFreq, DebriefColors.YELLOW,
+                      null, contacts, colors);
+                }
+              }
+            }
+            break;
+          case UNKNOWN:
+            break;
+        }
       }
+    }
+    catch (IOException e)
+    {
+      // produce the error message
+      MWC.Utilities.Errors.Trace.trace(e, "Problem reading NMEA File");
     }
 
     final long JUMP_DELTA_MILLIS = 8 * 60 * 1000;

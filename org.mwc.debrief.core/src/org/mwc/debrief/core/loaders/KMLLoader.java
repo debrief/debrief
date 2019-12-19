@@ -18,9 +18,7 @@ import java.io.InputStream;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.ReaderWriter.XML.KML.ImportKML;
 import MWC.GUI.Layers;

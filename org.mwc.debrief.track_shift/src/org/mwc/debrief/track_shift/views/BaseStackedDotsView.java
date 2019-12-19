@@ -1026,11 +1026,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    * {@link ValueAxis#setStandardTickUnits(TickUnitSource)} method inherited from the
    * {@link ValueAxis} class).
    *
-   * @param zone
-   *          the time zone (<code>null</code> not permitted).
-   * @param locale
-   *          the locale (<code>null</code> not permitted).
-   *
    * @return A collection of standard date tick units.
    *
    * @since 1.0.11
@@ -1308,7 +1303,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     setZoneChartsVisible(_showZones.isChecked());
   }
 
-  @SuppressWarnings("static-method")
   protected Runnable getDeleteAmbiguousCutsOperation()
   {
     // ditch, let the child class(es) override it
@@ -2280,7 +2274,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   /**
    * format the value in a suitable way for marking the current value of the cursor
    *
-   * @param current
+   * @param value
    *          data value at cursor
    * @return suitably formatted version
    */
@@ -2317,7 +2311,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    *
    * @return
    */
-  @SuppressWarnings("static-method")
   protected Runnable getDeleteCutsOperation()
   {
     return null;
@@ -2349,7 +2342,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    *
    * @return
    */
-  @SuppressWarnings("static-method")
   protected Runnable getResolveAmbiguityOperation()
   {
     return null;
@@ -2476,54 +2468,59 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           .getSecondaryTracks();
       if (secTracks != null && secTracks.length == 1)
       {
-        final ISecondaryTrack sw = (ISecondaryTrack) secTracks[0];
-        Enumeration<Editable> iter = sw.segments();
-
-        // have a peak, to check if we've actually got a segment list
-        if (iter.hasMoreElements())
+        // check it's a secondary track
+        WatchableList nextT = secTracks[0];
+        if (nextT instanceof ISecondaryTrack)
         {
-          final Editable first = iter.nextElement();
-          if (first instanceof SegmentList)
-          {
-            final SegmentList segs = (SegmentList) first;
-            iter = segs.elements();
-          }
-        }
+          final ISecondaryTrack sw = (ISecondaryTrack) nextT;
+          Enumeration<Editable> iter = sw.segments();
 
-        while (iter.hasMoreElements())
-        {
-          final TrackSegment thisSeg = (TrackSegment) iter.nextElement();
-          if (thisSeg instanceof RelativeTMASegment)
+          // have a peak, to check if we've actually got a segment list
+          if (iter.hasMoreElements())
           {
-            // do we have a first color?
-            final Editable firstElement = thisSeg.elements().nextElement();
-            final Color color;
-            if (firstElement != null)
+            final Editable first = iter.nextElement();
+            if (first instanceof SegmentList)
             {
-              final FixWrapper fix = (FixWrapper) firstElement;
-              color = fix.getColor();
+              final SegmentList segs = (SegmentList) first;
+              iter = segs.elements();
             }
-            else
-            {
-              color = Color.RED;
-            }
-
-            final RelativeTMASegment rel = (RelativeTMASegment) thisSeg;
-            final Zone newZ = new Zone(rel.getDTG_Start().getDate().getTime(),
-                rel.getDTG_End().getDate().getTime(), color);
-            zones.add(newZ);
           }
-          else if (thisSeg instanceof TrackSegment)
+
+          while (iter.hasMoreElements())
           {
-            final TrackSegment seg = thisSeg;
-            if (!thisSeg.isEmpty())
+            final TrackSegment thisSeg = (TrackSegment) iter.nextElement();
+            if (thisSeg instanceof RelativeTMASegment)
             {
-              final FixWrapper firstE = (FixWrapper) thisSeg.elements()
-                  .nextElement();
-              final Color color = firstE.getColor();
-              final Zone newZ = new Zone(seg.startDTG().getDate().getTime(), seg
-                  .endDTG().getDate().getTime(), color);
+              // do we have a first color?
+              final Editable firstElement = thisSeg.elements().nextElement();
+              final Color color;
+              if (firstElement != null)
+              {
+                final FixWrapper fix = (FixWrapper) firstElement;
+                color = fix.getColor();
+              }
+              else
+              {
+                color = Color.RED;
+              }
+
+              final RelativeTMASegment rel = (RelativeTMASegment) thisSeg;
+              final Zone newZ = new Zone(rel.getDTG_Start().getDate().getTime(),
+                  rel.getDTG_End().getDate().getTime(), color);
               zones.add(newZ);
+            }
+            else if (thisSeg instanceof TrackSegment)
+            {
+              final TrackSegment seg = thisSeg;
+              if (!thisSeg.isEmpty())
+              {
+                final FixWrapper firstE = (FixWrapper) thisSeg.elements()
+                    .nextElement();
+                final Color color = firstE.getColor();
+                final Zone newZ = new Zone(seg.startDTG().getDate().getTime(),
+                    seg.endDTG().getDate().getTime(), color);
+                zones.add(newZ);
+              }
             }
           }
         }
@@ -2607,9 +2604,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
       else
       {
-        // create a leg from the previous end to this start
-        legs.add(new Zone(lastZig.getEnd(), zig.getStart(), randomProv
-            .getZoneColor()));
+        // technically we don't need this null check, the logic
+        // _should_ ensure it's non-null. But, this will stop the 
+        // complainer moaning
+        if(lastZig != null)
+        {
+          // create a leg from the previous end to this start
+          legs.add(new Zone(lastZig.getEnd(), zig.getStart(), randomProv
+              .getZoneColor()));
+        }
       }
 
       // remember the zig
@@ -3253,11 +3256,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    * slice the target bearings according to these zones
    *
    * @param ownshipZones
+   * @param cuts
    * @param randomProv
+   * @param tgtTrack
    * @param slicePrecision
-   * @param secondaryTrack
-   * @param targetBearingSeries2
-   * @return
+   * @return list of zones
    */
   protected List<Zone> sliceTarget(final List<Zone> ownshipZones,
       final List<SensorContactWrapper> cuts, final ColorProvider randomProv,
@@ -3547,13 +3550,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       // clear the zone charts, but maybe not the primary
       clearZoneCharts(false, true, false);
 
-      // do we have a target zone chart?
-      if (targetZoneChart != null)
-      {
-        // initialise the zones
-        final List<Zone> zones = getTargetZones();
-        targetZoneChart.setZones(zones);
-      }
+      // initialise the zones
+      final List<Zone> zones = getTargetZones();
+      targetZoneChart.setZones(zones);
     }
   }
 

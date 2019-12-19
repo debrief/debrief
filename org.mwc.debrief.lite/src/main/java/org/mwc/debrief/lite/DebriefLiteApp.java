@@ -36,6 +36,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -233,9 +234,12 @@ public class DebriefLiteApp implements FileDropListener
 
   public static String currentFileName = null;
   public static final String ACTIVE_STATE = "ACTIVE";
+  public static final String TIME_ENABLED_STATE = "TIMED_STATE";
   public static final String INACTIVE_STATE = "INACTIVE";
 
-  public static String state = INACTIVE_STATE;
+  public static final String STATE = "STATE";
+
+  public static String state = null;
   public static boolean collapsedState = false;
 
   public static PropertyChangeListener enableDisableButtons =
@@ -251,8 +255,9 @@ public class DebriefLiteApp implements FileDropListener
         }
       };
 
-  private static ArrayList<PropertyChangeListener> stateListeners =
-      new ArrayList<>(Arrays.asList(enableDisableButtons));
+      private static ArrayList<PropertyChangeListener> stateListeners =
+          new ArrayList<>(Arrays.asList(enableDisableButtons));
+
 
   protected static boolean _plotDirty;
 
@@ -299,7 +304,6 @@ public class DebriefLiteApp implements FileDropListener
 
   public static DebriefLiteApp getInstance()
   {
-    System.out.println("using:" + _instance);
     return _instance;
   }
 
@@ -330,7 +334,7 @@ public class DebriefLiteApp implements FileDropListener
         @Override
         public void run()
         {
-          _instance = new DebriefLiteApp();
+          new DebriefLiteApp();
         }
       });
     }
@@ -368,7 +372,22 @@ public class DebriefLiteApp implements FileDropListener
   {
     final ImportReplay rep = new ImportReplay();
     rep.setLayers(_instance._theLayers);
-    rep.importThis(file.getAbsolutePath(), new FileInputStream(file));
+    final FileInputStream fis = new FileInputStream(file);
+    try
+    {
+      rep.importThis(file.getAbsolutePath(), fis);
+    }
+    finally
+    {
+      try
+      {
+        fis.close();
+      }
+      catch (final IOException e)
+      {
+        getDefault().logError(ToolParent.ERROR, "Failed to close DSF file", e);
+      }
+    }
     final Vector<SensorWrapper> sensors = rep.getPendingSensors();
 
     boolean isAllCorrect = true;
@@ -446,7 +465,6 @@ public class DebriefLiteApp implements FileDropListener
   {
     try
     {
-      System.out.println("Using instance:" + _instance);
       _instance.handleImportRep(new File[]
       {file});
     }
@@ -509,9 +527,10 @@ public class DebriefLiteApp implements FileDropListener
     final String oldState = state;
     state = newState;
 
-    if (newState != null && !newState.equals(oldState) && _instance != null)
+    // if (newState != null && !newState.equals(oldState) && _instance != null)
+    if (newState != null && _instance != null)
     {
-      notifyListenersStateChanged(_instance, "STATE", oldState, newState);
+      notifyListenersStateChanged(_instance, STATE, oldState, newState);
     }
   }
 
@@ -546,11 +565,13 @@ public class DebriefLiteApp implements FileDropListener
   }
 
   protected DataListener2 _listenForMods;
+
   private OutlinePanelView layerManager;
   private GraphPanelView graphPanelView;
 
   private final JXCollapsiblePaneWithTitle outlinePanel =
       new JXCollapsiblePaneWithTitle(Direction.LEFT, "Outline", 400);
+
   private final JXCollapsiblePaneWithTitle graphPanel =
       new JXCollapsiblePaneWithTitle(Direction.DOWN, "Graph", 150);
   private final JXCollapsiblePaneWithTitle narrativePanel =
@@ -739,6 +760,8 @@ public class DebriefLiteApp implements FileDropListener
 
   private DebriefLiteApp()
   {
+    _instance = this;
+
     // set the substance look and feel
     System.setProperty(SupportedApps.APP_NAME_SYSTEM_PROPERTY,
         SupportedApps.DEBRIEF_LITE_APP);
@@ -942,6 +965,8 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     theFrame.setVisible(true);
     theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
+
+    setState(INACTIVE_STATE);
   }
 
   private void addGraphView()
@@ -970,6 +995,11 @@ public class DebriefLiteApp implements FileDropListener
     layerManager.setObject(_theLayers);
     layerManager.setParent(toolParent);
     outlinePanel.add(layerManager, BorderLayout.CENTER);
+  }
+
+  public void addStateListener(final PropertyChangeListener newListener)
+  {
+    stateListeners.add(newListener);
   }
 
   private void createAppPanels(final GeoToolMapRenderer geoMapRenderer,
@@ -1031,7 +1061,15 @@ public class DebriefLiteApp implements FileDropListener
     };
     new DebriefRibbon(theFrame.getRibbon(), _theLayers, app, geoMapRenderer,
         stepControl, timeManager, operation, session, resetAction, normalT,
-        snailT, statusBar, exitAction, projection, transform, collapseAction,
+        snailT, new Runnable()
+        {
+
+          @Override
+          public void run()
+          {
+            mapPane.repaint();
+          }
+        }, statusBar, exitAction, projection, transform, collapseAction,
         alphaListener, alpha, path);
   }
 
@@ -1304,8 +1342,23 @@ public class DebriefLiteApp implements FileDropListener
     final DebriefXMLReaderWriter reader = new DebriefXMLReaderWriter(app);
     try
     {
-      reader.importThis(file.getName(), new FileInputStream(file), session);
-
+      final FileInputStream is = new FileInputStream(file);
+      try
+      {
+        reader.importThis(file.getName(), is, session);
+      }
+      finally
+      {
+        try
+        {
+          is.close();
+        }
+        catch (final IOException e)
+        {
+          getDefault().logError(ToolParent.ERROR, "Failed to close DPF file",
+              e);
+        }
+      }
       // update the time panel
       final TimePeriod period = _theLayers.getTimePeriod();
       _myOperations.setPeriod(period);
@@ -1354,32 +1407,41 @@ public class DebriefLiteApp implements FileDropListener
   }
 
   private void handleImportNMEAFile(final File file)
+      throws FileNotFoundException
   {
     // show the dialog first, then import the file
 
     final ImportNMEA importer = new ImportNMEA(_theLayers);
-    FileInputStream fs;
+
+    final FileInputStream fis = new FileInputStream(file);
     try
     {
-      fs = new FileInputStream(file);
-      importer.importThis(file.getName(), fs, 60000, 60000, false);
-      final TimePeriod period = _theLayers.getTimePeriod();
-      _myOperations.setPeriod(period);
-      timeManager.setPeriod(this, period);
-      if (period != null)
+      importer.importThis(file.getName(), fis, 60000, 60000, false);
+    }
+    finally
+    {
+      try
       {
-        timeManager.setTime(this, period.getStartDTG(), true);
+        fis.close();
+      }
+      catch (final IOException e)
+      {
+        getDefault().logError(ToolParent.ERROR, "Failed to close NMEA file", e);
       }
     }
-    catch (final FileNotFoundException e)
+
+    final TimePeriod period = _theLayers.getTimePeriod();
+    _myOperations.setPeriod(period);
+    timeManager.setPeriod(this, period);
+    if (period != null)
     {
-      JOptionPane.showMessageDialog(null, "File :" + file + " was not found",
-          "File error", JOptionPane.ERROR_MESSAGE);
+      timeManager.setTime(this, period.getStartDTG(), true);
     }
-    catch (final Exception e)
-    {
-      Trace.trace(e);
-    }
+
+    _theLayers.fireModified(null);
+
+    // also tell the layers they've been reformatted
+    _theLayers.fireReformatted(null);
   }
 
   private void handleImportRep(final File[] fList)
@@ -1468,8 +1530,6 @@ public class DebriefLiteApp implements FileDropListener
 
   /**
    * fill in the UI details
-   *
-   * @param theToolbar
    */
   private void initForm()
   {

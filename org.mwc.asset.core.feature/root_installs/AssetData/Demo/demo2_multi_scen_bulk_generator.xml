@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ScenarioController OutputDirectory="results" xmlns="http://www.mwc.org/asset">
+<ScenarioController OutputDirectory="results2" xmlns="http://www.mwc.org/asset">
 	<ScenarioGenerator>
-		<MultiScenarioGenerator Number="10" NameTemplate="ForceProt_">
+		<MultiScenarioGenerator Number="50" NameTemplate="ForceProt_3_">
 			<VarianceList>
 				<Variance name="Vary the search speed" id="//Wander[@Name='Count fishing vessels']/Speed">
 					<Attribute name="Value">
@@ -13,17 +13,51 @@
 						
 					</Attribute>
 					
+				</Variance>
+				<Variance name="Vary the vessel name" id="//Surface[@Name='T23']">
+					<Attribute name="Name">
+						<Choice>
+							<Value value="CAME2_UK" />
+							<Value value="BUTE2_UK" />
+							<Value value="CAPT2_UK" />
+							<Value value="PAME2_FR" />
+							<Value value="AUTO2_FR" />
+							<Value value="LESA2_GR" />
+							<Value value="GYRO2_GR" />
+							<Value value="BOEU2_FR" />
+						</Choice>
+						
+					</Attribute>
+					
+				</Variance>
+				<Variance name="Varying start date" id="//Scenario">
+					<Attribute name="StartTime">
+						<Choice>
+							<Value value="2010-04-02T12:13:14Z" />
+							<Value value="2011-05-03T12:13:14Z" />
+							<Value value="2012-06-04T12:13:14Z" />
+							<Value value="2013-07-05T12:13:14Z" />
+							<Value value="2014-08-06T12:13:14Z" />
+							<Value value="2015-09-07T12:13:14Z" />
+							<Value value="2016-10-08T12:13:14Z" />
+							<Value value="2017-11-09T12:13:14Z" />
+							<Value value="2018-12-10T12:13:14Z" />
+							<Value value="2019-01-11T12:13:14Z" />
+						</Choice>
+						
+					</Attribute>
+					
 				</Variance></VarianceList>
 		</MultiScenarioGenerator>
 		<MultiParticipantGenerator>
-			<ParticipantVariance name="Fisher One" number="100">
+			<ParticipantVariance name="Fisher One" number="4">
 				<ParticipantLocation>
 					<WorldArea>
 							<TopLeft>
-								<shortLocation Lat="51" Long="-9"></shortLocation>
+								<shortLocation Lat="42" Long="-6"></shortLocation>
 							</TopLeft>
 							<BottomRight>
-								<shortLocation Lat="50" Long="-8"></shortLocation>
+								<shortLocation Lat="40" Long="-4"></shortLocation>
 							</BottomRight>
 					</WorldArea>
 				</ParticipantLocation>
@@ -31,9 +65,9 @@
 		</MultiParticipantGenerator></ScenarioGenerator>
 	<ObserverList>
 		<TimeObserver Name="Domesday Timer" Active="true">
-			<Duration Value="24" Units="hours" />
+			<Duration Value="48" Units="hours" />
 		</TimeObserver>
-		<TrackPlotObserver Active="true" Name="TrackPlot" show_positions="true">
+		<TrackPlotObserver Active="false" Name="TrackPlot" show_positions="true">
 			<GridDelta Value="4" Units="nm" ></GridDelta>
 		</TrackPlotObserver>
 		<DebriefReplayObserver Name="Debrief tracks" record_detections="true"

@@ -30,7 +30,6 @@ import java.util.StringTokenizer;
 import org.w3c.dom.Element;
 
 import Debrief.Wrappers.Formatters.HideLayerFormatListener;
-import Debrief.Wrappers.Formatters.TrackNameAtEndFormatListener;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 
 public abstract class HideLayerFormatHandler extends
@@ -108,8 +107,8 @@ public abstract class HideLayerFormatHandler extends
     }
 
     // create the object
-    TrackNameAtEndFormatListener listener =
-        new TrackNameAtEndFormatListener(fName, names);
+    HideLayerFormatListener listener =
+        new HideLayerFormatListener(fName, names);
 
     addFormatter(listener);
 

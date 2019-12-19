@@ -20,9 +20,11 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Vector;
 
 import Debrief.GUI.Tote.Painters.SnailPainter2.ColorFadeCalculator;
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Canvas.CanvasAdaptor;
@@ -138,8 +140,26 @@ final class SnailDrawTrack2
       if (trk instanceof LightweightTrackWrapper)
       {
         final LightweightTrackWrapper track = (LightweightTrackWrapper) trk;
-        dotPoints = track.getUnfilteredItems(new HiResDate(0, dtg.getMicros()
-            - _trailLength), new HiResDate(0, dtg.getMicros() + 2000));
+        final HiResDate trailTime = new HiResDate(0, dtg.getMicros()
+            - _trailLength);
+
+        // Let's add at the beginning the tail if we are interpolating.
+        dotPoints = new Vector<Editable>(0, 1);
+
+        if (track instanceof TrackWrapper && ((TrackWrapper) track)
+            .getInterpolatePoints())
+        {
+          // Are we interpolating? Then create the snail tail
+          // from the interpolation
+          final Watchable[] nearest = track.getNearestTo(trailTime);
+          if (nearest != null && nearest.length > 0)
+          {
+            dotPoints.add((Editable) nearest[0]);
+          }
+        }
+        dotPoints.addAll(track.getUnfilteredItems(trailTime, new HiResDate(0,
+            dtg.getMicros() + 2000)));
+        dotPoints.add(theFix);
       }
       else
       {
@@ -154,6 +174,16 @@ final class SnailDrawTrack2
       }
     }
 
+    thisR = drawTrailFromPoints(proj, dest, fader, thisR, trk, dotPoints);
+
+    return thisR;
+  }
+
+  private java.awt.Rectangle drawTrailFromPoints(
+      final MWC.Algorithms.PlainProjection proj, final java.awt.Graphics dest,
+      final ColorFadeCalculator fader, java.awt.Rectangle thisR,
+      final WatchableList trk, final Collection<Editable> dotPoints)
+  {
     // see if there are any points
     if (dotPoints != null)
     {
@@ -189,7 +219,7 @@ final class SnailDrawTrack2
 
           // get the screen location
           final Point scrPos = proj.toScreen(loc);
-          
+
           final Point screenP = new Point(scrPos);
 
           // initialise the area, if we have to
@@ -253,7 +283,6 @@ final class SnailDrawTrack2
         }
       }
     }
-
     return thisR;
   }
 
