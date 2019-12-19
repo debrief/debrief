@@ -87,6 +87,9 @@ import org.pushingpixels.flamingo.api.ribbon.resize.RibbonBandResizePolicy;
 import org.pushingpixels.flamingo.api.ribbon.synapse.model.ComponentPresentationModel;
 import org.pushingpixels.flamingo.api.ribbon.synapse.projection.ComponentProjection;
 
+import Debrief.GUI.Tote.StepControl;
+import Debrief.GUI.Tote.Painters.SnailPainter;
+import Debrief.GUI.Tote.Painters.SnailPainter2;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
@@ -331,12 +334,6 @@ public class DebriefRibbonTimeController
   private static TimeLabel label;
 
   private static JCheckBoxMenuItem[] _menuItem;
-
-  /**
-   * track snail mode
-   *
-   */
-  private static boolean _isNormal = true;
 
   public static List<Command> topButtonCommands;
 
@@ -824,11 +821,11 @@ public class DebriefRibbonTimeController
           @Override
           public void commandActivated(CommandActionEvent e) {
             normalPainter.run();
-            _isNormal = true;
           }
         }, displayMode, PresentationPriority.TOP, true, displayModeGroup,
         true);
     commands.add(normalToggle);
+    
     Command snailToggle = MenuUtils.addCommandToggleButton("Snail", "icons/48/snail.png",
         new CommandAction()
         {
@@ -837,11 +834,32 @@ public class DebriefRibbonTimeController
           public void commandActivated(CommandActionEvent e)
           {
             snailPainter.run();
-            _isNormal = false;
           }
         }, displayMode, PresentationPriority.TOP, true, displayModeGroup,
         false);
     commands.add(snailToggle);
+    
+    stepcontrol.getPainterManager().getInfo().addPropertyChangeListener(
+        new PropertyChangeListener()
+        {
+          
+          @Override
+          public void propertyChange(PropertyChangeEvent event)
+          {
+            if (StepControl.PROPERTY_PAINTER.equals(event.getPropertyName()))
+            {
+              final StepperListener stepper = stepcontrol.getPainterManager().getCurrentPainterObject();
+              if (stepper instanceof SnailPainter2)
+              {
+                snailToggle.setToggleSelected(true);
+              }else
+              {
+                normalToggle.setToggleSelected(true);
+              }
+            }
+          }
+        }
+      );
     displayMode.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         displayMode));
 
@@ -1048,16 +1066,6 @@ public class DebriefRibbonTimeController
     timeSlider.setEnabled(false);
     timeManager.setPeriod(null, null);
     formatBinder.reset();
-  }
-
-  /**
-   * track if we're in normal mode, or in snail mode
-   *
-   * @return
-   */
-  public static boolean isNormalDisplayMode()
-  {
-    return _isNormal;
   }
 
   public static void resetDateFormat()

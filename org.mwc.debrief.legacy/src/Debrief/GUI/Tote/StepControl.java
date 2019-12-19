@@ -1411,6 +1411,8 @@ abstract public class StepControl implements Editable,
       }
     }
   }
+  
+  public static String PROPERTY_PAINTER = "Painter";
 
   /**
    * event handler for new selection of painter
@@ -1424,7 +1426,7 @@ abstract public class StepControl implements Editable,
         _thePainterManager.setDisplay(val);
 
         // and fire the event in the painter manager
-        _thePainterManager.getInfo().fireChanged(this, "Painter", null, val);
+        _thePainterManager.getInfo().fireChanged(this, PROPERTY_PAINTER, null, val);
       }
     }
   }
