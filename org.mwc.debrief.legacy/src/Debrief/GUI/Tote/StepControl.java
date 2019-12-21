@@ -1396,7 +1396,6 @@ abstract public class StepControl implements Editable,
     _fontSize = val.getCurrent();
     formatTimeText();
   }
-  
 
   public static String PROPERTY_HIGHLIGHTER = "Highlighter";
 
@@ -1412,12 +1411,13 @@ abstract public class StepControl implements Editable,
             (Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter) l;
 
         // and fire the event in the painter manager
-        _thePainterManager.getInfo().fireChanged(this, PROPERTY_HIGHLIGHTER, null, val);
+        _thePainterManager.getInfo().fireChanged(this, PROPERTY_HIGHLIGHTER,
+            null, val);
         break;
       }
     }
   }
-  
+
   public static String PROPERTY_PAINTER = "Painter";
 
   /**
@@ -1432,7 +1432,8 @@ abstract public class StepControl implements Editable,
         _thePainterManager.setDisplay(val);
 
         // and fire the event in the painter manager
-        _thePainterManager.getInfo().fireChanged(this, PROPERTY_PAINTER, null, val);
+        _thePainterManager.getInfo().fireChanged(this, PROPERTY_PAINTER, null,
+            val);
       }
     }
   }
