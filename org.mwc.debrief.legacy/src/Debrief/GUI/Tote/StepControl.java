@@ -1396,6 +1396,9 @@ abstract public class StepControl implements Editable,
     _fontSize = val.getCurrent();
     formatTimeText();
   }
+  
+
+  public static String PROPERTY_HIGHLIGHTER = "Highlighter";
 
   public final void setHighlighter(final String val)
   {
@@ -1407,6 +1410,9 @@ abstract public class StepControl implements Editable,
       {
         _currentHighlighter =
             (Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter) l;
+
+        // and fire the event in the painter manager
+        _thePainterManager.getInfo().fireChanged(this, PROPERTY_HIGHLIGHTER, null, val);
         break;
       }
     }
