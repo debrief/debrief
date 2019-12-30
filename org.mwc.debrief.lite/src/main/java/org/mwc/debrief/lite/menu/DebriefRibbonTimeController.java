@@ -1123,6 +1123,7 @@ public class DebriefRibbonTimeController
         .getIcon(playStopinImage, MenuUtils.ICON_SIZE_16);
 
     playCommandButton.setExtraText(tooltip);
+//    playCommandButton.setIcon(imageIcon);
     playCommand.setIconFactory(ResizableIconFactory.factory(imageIcon));
     playCommandButton.repaint();
     
