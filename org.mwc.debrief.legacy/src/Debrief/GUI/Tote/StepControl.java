@@ -1397,6 +1397,8 @@ abstract public class StepControl implements Editable,
     formatTimeText();
   }
 
+  public static String PROPERTY_HIGHLIGHTER = "Highlighter";
+
   public final void setHighlighter(final String val)
   {
     final Enumeration<PlotHighlighter> iter = _myHighlighters.elements();
@@ -1407,10 +1409,19 @@ abstract public class StepControl implements Editable,
       {
         _currentHighlighter =
             (Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter) l;
+
+        // and fire the event in the painter manager
+        if (_thePainterManager != null)
+        {
+          _thePainterManager.getInfo().fireChanged(this, PROPERTY_HIGHLIGHTER,
+              null, val);
+        }
         break;
       }
     }
   }
+
+  public static String PROPERTY_PAINTER = "Painter";
 
   /**
    * event handler for new selection of painter
@@ -1424,7 +1435,8 @@ abstract public class StepControl implements Editable,
         _thePainterManager.setDisplay(val);
 
         // and fire the event in the painter manager
-        _thePainterManager.getInfo().fireChanged(this, "Painter", null, val);
+        _thePainterManager.getInfo().fireChanged(this, PROPERTY_PAINTER, null,
+            val);
       }
     }
   }

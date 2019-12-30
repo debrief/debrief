@@ -1393,13 +1393,6 @@ public class DebriefLiteApp implements FileDropListener
       success = false;
     }
 
-    // ok, the plot may have loaded with a stepping mode (snail mode).
-    // we can't see how to change the button in the Ribbon bar, so, instead
-    // we'll change the listener to what the ribbon is showing
-    final ToteSetter listener = DebriefRibbonTimeController
-        .isNormalDisplayMode() ? _normalSetter : _snailSetter;
-    listener.run();
-
     if (success)
     {
       resetFileName(file);
