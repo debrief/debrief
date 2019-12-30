@@ -40,6 +40,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSlider;
+import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -62,7 +63,6 @@ import org.mwc.debrief.lite.gui.LiteStepControl.TimeLabel;
 import org.mwc.debrief.lite.gui.custom.RangeSlider;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.properties.PropertiesDialog;
-import org.mwc.debrief.lite.util.ResizableIconFactory;
 import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
 import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
@@ -347,6 +347,10 @@ public class DebriefRibbonTimeController
 
   private static Command playCommand;
 
+  private static JFlowRibbonBand control;
+
+  private static AbstractCommandButton playButton;
+
   protected static void addTimeControllerTab(final JRibbon ribbon,
       final GeoToolMapRenderer _geoMapRenderer,
       final LiteStepControl stepControl, final TimeManager timeManager,
@@ -363,7 +367,7 @@ public class DebriefRibbonTimeController
     final JRibbonBand filterToTime = createFilterToTime(stepControl, operations,
         timeManager);
 
-    final JFlowRibbonBand control = createControl(stepControl, timeManager,
+    control = createControl(stepControl, timeManager,
         layers, undoBuffer, operations);
 
     final RibbonTask timeTask = new RibbonTask("Time", displayMode, highlighter,
@@ -440,16 +444,16 @@ public class DebriefRibbonTimeController
           @Override
           public void commandActivated(CommandActionEvent e)
           {
-            final AbstractCommandButton playCommandButton = e.getButtonSource();
+            playButton = e.getButtonSource();
             final boolean isPlaying = stepControl.isPlaying();
 
             stepControl.startStepping(!isPlaying);
 
             // now update the play button UI
-            updatePlayBtnUI(playCommandButton, isPlaying);
+            updatePlayBtnUI(playButton, isPlaying);
           }
         }, PresentationPriority.LOW, START_TEXT);
-    final AbstractCommandButton playButton = playCommand.project()
+     playButton = playCommand.project()
         .buildComponent();
     playButton.setName("play");
     final Command recordCommandButton = MenuUtils.createCommandObject("Record",
@@ -1114,28 +1118,35 @@ public class DebriefRibbonTimeController
   public static void updatePlayBtnUI(
       final AbstractCommandButton playCommandButton, final boolean isPlaying)
   {
-    final String image;
-    if (isPlaying)
-      image = PLAY_IMAGE;
-    else
-      image = STOP_IMAGE;
+    
+      final String image;
+      if (isPlaying)
+        image = PLAY_IMAGE;
+      else
+        image = STOP_IMAGE;
 
-    final String tooltip = isPlaying ? STOP_TEXT : START_TEXT;
+      final String tooltip = isPlaying ? STOP_TEXT : START_TEXT;
 
-    final RichTooltip.Builder builder = RichTooltip.builder();
-    final RichTooltip richTooltip = builder.setTitle("Timer")
-        .addDescriptionSection(tooltip).build();
-    playCommandButton.setActionRichTooltip(richTooltip);
-
-    // switch the icon
-    final Image playStopinImage = MenuUtils.createImage(image);
-    final ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon
-        .getIcon(playStopinImage, MenuUtils.ICON_SIZE_16);
-
-    playCommandButton.setExtraText(tooltip);
-//    playCommandButton.setIcon(imageIcon);
-    playCommand.setIconFactory(ResizableIconFactory.factory(imageIcon));
-    playCommandButton.repaint();
+      final RichTooltip.Builder builder = RichTooltip.builder();
+      final RichTooltip richTooltip = builder.setTitle("Timer")
+          .addDescriptionSection(tooltip).build();
+      playCommandButton.setActionRichTooltip(richTooltip);
+      SwingUtilities.invokeLater(()-> {
+        // switch the icon
+        final Image playStopinImage = MenuUtils.createImage(image);
+        final ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon
+            .getIcon(playStopinImage, MenuUtils.ICON_SIZE_16);
+  
+        playCommandButton.setExtraText(tooltip);
+       // playCommand.setIconFactory(ResizableIconFactory.factory(imageIcon));
+        
+        playCommandButton.setIcon(imageIcon);
+        if(playButton!=playCommandButton)
+          playButton.setIcon(imageIcon);
+      });
+      
+    
+    
 
   }
 }
