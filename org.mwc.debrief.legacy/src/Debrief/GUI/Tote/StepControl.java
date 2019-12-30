@@ -1411,8 +1411,11 @@ abstract public class StepControl implements Editable,
             (Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter) l;
 
         // and fire the event in the painter manager
-        _thePainterManager.getInfo().fireChanged(this, PROPERTY_HIGHLIGHTER,
-            null, val);
+        if (_thePainterManager != null)
+        {
+          _thePainterManager.getInfo().fireChanged(this, PROPERTY_HIGHLIGHTER,
+              null, val);
+        }
         break;
       }
     }
