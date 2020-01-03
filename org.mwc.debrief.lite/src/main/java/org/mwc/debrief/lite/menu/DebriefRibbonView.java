@@ -16,6 +16,7 @@ package org.mwc.debrief.lite.menu;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Image;
 
 import javax.swing.JLabel;
 import javax.swing.JSlider;
@@ -38,9 +39,16 @@ import org.mwc.debrief.lite.map.DragElementTool;
 import org.mwc.debrief.lite.map.DragWholeFeatureElementTool;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.map.RangeBearingAction;
+import org.mwc.debrief.lite.util.ResizableIconFactory;
 import org.mwc.debrief.lite.view.actions.PanCommandAction;
 import org.opengis.referencing.operation.MathTransform;
+import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
+import org.pushingpixels.flamingo.api.common.model.Command;
+import org.pushingpixels.flamingo.api.common.model.Command.Builder;
+import org.pushingpixels.flamingo.api.common.model.CommandButtonPresentationModel;
 import org.pushingpixels.flamingo.api.common.model.CommandToggleGroupModel;
+import org.pushingpixels.flamingo.api.common.popup.model.CommandPopupMenuPresentationModel;
+import org.pushingpixels.flamingo.api.common.projection.CommandButtonProjection;
 import org.pushingpixels.flamingo.api.common.projection.Projection;
 import org.pushingpixels.flamingo.api.common.projection.Projection.ComponentSupplier;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
@@ -129,6 +137,33 @@ public class DebriefRibbonView
         commandBand));
     return commandBand;
   }
+  
+  public static class CustomCommand extends Command
+  {
+    public CustomCommand()
+    {
+      
+    }
+  }
+  
+  public static class CustomBuilder extends Builder
+  {
+    public CustomBuilder()
+    {
+      
+    }
+
+    @Override
+    public Command build()
+    {
+      Command command = new CustomCommand();
+      configureBaseCommand(command);
+             
+      return command;
+    }
+    
+    
+  }
 
   private static JRibbonBand createMouseModes(
       final GeoToolMapRenderer geoMapRenderer, final JLabel statusBar,
@@ -193,6 +228,43 @@ public class DebriefRibbonView
     MenuUtils.addCommandToggleButton("Rng/Brg", "icons/24/rng_brg.png",
         rangeAction, viewBand, PresentationPriority.TOP, true, mouseModeGroup,
         false);
+    
+    
+    
+    
+    
+    
+    
+    ImageWrapperResizableIcon imageIcon = null;
+    final String imagePath = "icons/24/rng_brg.png";
+    if (imagePath != null)
+    {
+      final Image zoominImage = MenuUtils.createImage(imagePath);
+      imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, MenuUtils.ICON_SIZE_16);
+    }
+    //final Command.Builder builder = Command.builder()
+    final CustomBuilder builder = new CustomBuilder();
+    builder
+        .setText("Rng/Brg").setIconFactory(ResizableIconFactory.factory(imageIcon)).setAction(rangeAction);
+        //.setTitleClickAction();
+
+    builder.setToggle();
+    builder.setToggleSelected(false);
+    builder.setSecondaryContentModel(DebriefRibbonFile.getSavePopupContentModel(null, null));
+    builder.inToggleGroup(mouseModeGroup);
+    final Command command = builder.build();
+    CommandButtonProjection<Command> projectionModel =  command.project(CommandButtonPresentationModel.builder()
+        .setActionKeyTip("NA")
+        //.setPopupCallback(popupCallback)
+        .setPopupMenuPresentationModel(CommandPopupMenuPresentationModel.builder()
+            .setMaxVisibleMenuCommands(4)
+            .build())
+        .build());
+    viewBand.addRibbonCommand(projectionModel, PresentationPriority.TOP);
+    
+    
+    
+    
     final DragElementAction dragWholeFeatureInAction = new DragElementAction(
         mapPane, new DragWholeFeatureElementTool(layers, projection, mapPane));
     MenuUtils.addCommandToggleButton("Drag Whole Feature",

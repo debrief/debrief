@@ -446,7 +446,7 @@ public class DebriefRibbonFile
     ribbon.addTask(fileTask);
   }
 
-  private static CommandMenuContentModel getSavePopupContentModel(
+  public static CommandMenuContentModel getSavePopupContentModel(
       Session session, JRibbonFrame theFrame)
   {
     final Image saveImage = MenuUtils.createImage("icons/16/save.png");
