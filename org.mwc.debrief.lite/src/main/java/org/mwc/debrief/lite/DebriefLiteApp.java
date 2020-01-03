@@ -1705,7 +1705,7 @@ public class DebriefLiteApp implements FileDropListener
     DebriefRibbonFile.closeButton.getContentModel().setActionEnabled(false);
     currentFileName = null;
     setTitle(defaultTitle);
-    DebriefRibbonInsert.resetLayers(_theLayers);
+    
     // also clear the tote
     theTote.clear();
 
@@ -1727,7 +1727,7 @@ public class DebriefLiteApp implements FileDropListener
     // reset the map
     final ResetAction resetMap = new ResetAction(mapPane);
     resetMap.actionPerformed(null);
-
+    DebriefRibbonInsert.resetLayers(_theLayers);
     // put some backdrop data back in
     loadBackdropdata(_theLayers);
     resetUndoBuffer();
