@@ -15,6 +15,7 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
@@ -316,28 +317,34 @@ public class NarrativePanelToolbar extends JPanel
         if (NarrativeConfigurationModel.NARRATIVE_HIGHLIGHT.equals(evt
             .getPropertyName()))
         {
+          final int currentlySelectedItemIndex = _narrativeList
+              .getSelectedRow();
           final NarrativeEntryItem itemToCompare = new NarrativeEntryItem(
               (NarrativeEntry) evt.getNewValue(), _model);
           for (int i = 0; i < _narrativeList.getRowCount(); i++)
           {
-            final int finalCtr = i;
-            final NarrativeEntry actualEntry =
-                ((NarrativeEntryItem) (_narrativeList.getValueAt(i, 0)))
-                    .getEntry();
-            if (actualEntry.equals(itemToCompare.getEntry()))
+            if (currentlySelectedItemIndex != i)
             {
-              SwingUtilities.invokeLater(new Runnable()
+
+              final int finalCtr = i;
+              final NarrativeEntry actualEntry =
+                  ((NarrativeEntryItem) (_narrativeList.getValueAt(i, 0)))
+                      .getEntry();
+              if (actualEntry.equals(itemToCompare.getEntry()))
               {
-                @Override
-                public void run()
+                SwingUtilities.invokeLater(new Runnable()
                 {
-                  _narrativeList.getSelectionModel().setSelectionInterval(
-                      finalCtr, finalCtr);
-                  _narrativeList.scrollRectToVisible(new Rectangle(
-                      _narrativeList.getCellRect(finalCtr, 0, true)));
-                }
-              });
-              break;
+                  @Override
+                  public void run()
+                  {
+                    _narrativeList.getSelectionModel().setSelectionInterval(
+                        finalCtr, finalCtr);
+                    _narrativeList.scrollRectToVisible(new Rectangle(
+                        _narrativeList.getCellRect(finalCtr, 0, true)));
+                  }
+                });
+                break;
+              }
             }
           }
           // _model.repaintView();
@@ -354,6 +361,7 @@ public class NarrativePanelToolbar extends JPanel
         final NarrativeEntryItem entryItem = (NarrativeEntryItem) _narrativeList
             .getValueAt(selectedRow, 0);
         _stepControl.changeTime(entryItem.getEntry().getDTG());
+        _narrativeList.repaint();
       }
     });
     setState(INACTIVE_STATE);
