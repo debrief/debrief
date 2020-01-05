@@ -1511,6 +1511,16 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
     return cp;
   }
 
+  @Override
+  public void notifyDateInconsistency(final String startDescription,
+      final String endDescription)
+  {
+    JOptionPane.showMessageDialog(getPanel(),
+        "Start Date must be before End Date. Please, check the following values "
+            + startDescription + " " + endDescription, "Date inconsistency",
+        JOptionPane.ERROR_MESSAGE);
+  }
+
   void reset()
   {
     // process the RESET event
@@ -1667,15 +1677,5 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
       ((SwingDatePropertyEditor) pe).resetData();
       c.invalidate();
     }
-  }
-
-  @Override
-  public void notifyDateInconsistency(String startDescription,
-      String endDescription)
-  {
-    JOptionPane.showMessageDialog(getPanel(),
-        "Start Date must be before End Date. Please, check the following values "
-            + startDescription + " " + endDescription, "Date inconsistency",
-        JOptionPane.ERROR_MESSAGE);
   }
 }

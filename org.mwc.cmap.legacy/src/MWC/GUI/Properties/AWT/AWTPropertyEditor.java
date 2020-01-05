@@ -144,18 +144,12 @@ import java.beans.PropertyDescriptor;
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
 import java.util.Enumeration;
-import java.util.HashMap;
-
-import javax.swing.JOptionPane;
 
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Dialogs.AWT.MessageDialog;
-import MWC.GUI.Dialogs.AWT.Util;
 import MWC.GUI.Properties.PlainPropertyEditor;
 import MWC.GUI.Properties.PropertiesPanel;
-import MWC.GenericData.HiResDate;
-import MWC.GUI.Properties.PlainPropertyEditor.PropertyEditorItem;
 
 public class AWTPropertyEditor extends PlainPropertyEditor implements
     KeyListener
@@ -163,7 +157,7 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements
   protected class paintLabel extends Panel
   {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     protected PropertyEditor _myEditor;
@@ -175,7 +169,7 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements
       _myLabel = new Label("  ")
       {
         /**
-         * 
+         *
          */
         private static final long serialVersionUID = 1L;
 
@@ -286,13 +280,18 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements
    * the label to show the descriptions in
    */
   Label _info;
-  
+
   /**
-   * @param info the object we are going to edit
-   * @param parent the panel we are contained in
-   * @param theLayers where the data is
-   * @param toolParent the parent we can report to
-   * @param parentLayer the layer that contains this data
+   * @param info
+   *          the object we are going to edit
+   * @param parent
+   *          the panel we are contained in
+   * @param theLayers
+   *          where the data is
+   * @param toolParent
+   *          the parent we can report to
+   * @param parentLayer
+   *          the layer that contains this data
    */
   public AWTPropertyEditor(final MWC.GUI.Editable.EditorType info,
       final AWTPropertiesPanel parent, final Layers theLayers,
@@ -583,6 +582,18 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements
   // support classes - label containing edit button
   ///////////////////////////////////////////////////
 
+  @Override
+  public void notifyDateInconsistency(final String startDescription,
+      final String endDescription)
+  {
+    final MessageDialog messageDialog = new MessageDialog(null, null,
+        "Date inconsistency",
+        "Start Date must be before End Date. Please, check the following values "
+            + startDescription + " " + endDescription, null, true);
+    messageDialog.setModal(true);
+    messageDialog.setVisible(true);
+  }
+
   void reset()
   {
     // get all of the parameters from their parent, again
@@ -659,19 +670,6 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements
       final TextField t = (TextField) c;
       t.setText(pe.getAsText());
     }
-  }
-
-  @Override
-  public void notifyDateInconsistency(String startDescription,
-      String endDescription)
-  {
-    MessageDialog messageDialog = new MessageDialog(null, null,
-        "Date inconsistency",
-        "Start Date must be before End Date. Please, check the following values "
-            + startDescription + " " + endDescription,
-        null, true);
-    messageDialog.setModal(true);
-    messageDialog.setVisible(true);
   }
 
 }
