@@ -26,9 +26,14 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.property_support.DTGHelper.DTGPropertySource;
 
 import MWC.GUI.Editable;
 import MWC.GUI.Editable.DeprecatedPropertyDescriptor;
@@ -42,12 +47,18 @@ import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainWrapper;
+import MWC.GenericData.HiResDate;
 
 /**
  * embedded class which wraps a plottable object alongside some useful other bits
  */
 public class EditableWrapper implements IPropertySource
 {
+
+  public static final String _START = "Start";
+
+  public static final String _END = "End";
+
   public static class OrderedEditableWrapper extends EditableWrapper implements
       Comparable<OrderedEditableWrapper>
   {
@@ -150,10 +161,10 @@ public class EditableWrapper implements IPropertySource
 
       final Object newValue = _property.getValue();
 
-      // there's a chance that some operations arent' commutative, that when we 
-      // assign a value, then retrieve it, they're different.  The answer to it
+      // there's a chance that some operations arent' commutative, that when we
+      // assign a value, then retrieve it, they're different. The answer to it
       // is to compare the getValue() from before and after the operation.
-      // Note: we also check if it's now null, but wasn't before.  This is necessary
+      // Note: we also check if it's now null, but wasn't before. This is necessary
       // in case the value is being set to null.
       if ((newValue == null && oldValue != null) || !newValue.equals(oldValue))
       {
@@ -203,8 +214,8 @@ public class EditableWrapper implements IPropertySource
       _property.setValue(_oldValue);
 
       // ok, and tell any listeners that want to know...
-      _property._subject.getInfo().fireChanged(_property.getValue(),
-          _property.getDisplayName(), _newValue, _oldValue);
+      _property._subject.getInfo().fireChanged(_property.getValue(), _property
+          .getDisplayName(), _newValue, _oldValue);
 
       // right, we can fire a change if we like. have a look
       final Annotation[] ann = _property.getAnnotationsForSetter();
@@ -302,8 +313,8 @@ public class EditableWrapper implements IPropertySource
    * @param plottable
    * @param theLayers
    */
-  public EditableWrapper(final Editable plottable,
-      final EditableWrapper parent, final Layers theLayers)
+  public EditableWrapper(final Editable plottable, final EditableWrapper parent,
+      final Layers theLayers)
   {
     _editable = plottable;
     _theLayers = theLayers;
@@ -393,8 +404,8 @@ public class EditableWrapper implements IPropertySource
     _myGridDescriptors = null;
     if (_myGridDescriptors == null)
     {
-      final Vector<IPropertyDescriptor> list =
-          new Vector<IPropertyDescriptor>(0, 1);
+      final Vector<IPropertyDescriptor> list = new Vector<IPropertyDescriptor>(
+          0, 1);
       final IPropertyDescriptor[] res = new IPropertyDescriptor[]
       {null};
       if (_editable != null)
@@ -414,8 +425,8 @@ public class EditableWrapper implements IPropertySource
 
           final Griddable grid = (Griddable) sample.getInfo();
 
-          final PropertyDescriptor[] properties =
-              grid.getGriddablePropertyDescriptors();
+          final PropertyDescriptor[] properties = grid
+              .getGriddablePropertyDescriptors();
 
           if (properties != null)
           {
@@ -431,23 +442,23 @@ public class EditableWrapper implements IPropertySource
               else
               {
                 // ok, wrap it, and add it to our list.
-                final IPropertyDescriptor newProp =
-                    new DebriefProperty(thisProp, sample, null);
+                final IPropertyDescriptor newProp = new DebriefProperty(
+                    thisProp, sample, null);
                 list.add(newProp);
               }
             }
           }
           else
           {
-            final NonBeanPropertyDescriptor[] nonBean =
-                grid.getNonBeanGriddableDescriptors();
+            final NonBeanPropertyDescriptor[] nonBean = grid
+                .getNonBeanGriddableDescriptors();
             if (nonBean != null)
             {
               for (int i = 0; i < nonBean.length; i++)
               {
                 final NonBeanPropertyDescriptor nb = nonBean[i];
-                final IPropertyDescriptor newP =
-                    new DebriefNonBeanProperty(nb, null);
+                final IPropertyDescriptor newP = new DebriefNonBeanProperty(nb,
+                    null);
                 list.add(newP);
               }
             }
@@ -483,8 +494,8 @@ public class EditableWrapper implements IPropertySource
                       else
                       {
                         // ok, add this editor
-                        final IPropertyDescriptor newProp =
-                            new DebriefProperty(pd, obj, null);
+                        final IPropertyDescriptor newProp = new DebriefProperty(
+                            pd, obj, null);
 
                         list.add(newProp);
                       }
@@ -535,8 +546,8 @@ public class EditableWrapper implements IPropertySource
 
     if (_myDescriptors == null)
     {
-      final Vector<IPropertyDescriptor> list =
-          new Vector<IPropertyDescriptor>(0, 1);
+      final Vector<IPropertyDescriptor> list = new Vector<IPropertyDescriptor>(
+          0, 1);
       final IPropertyDescriptor[] res = new IPropertyDescriptor[]
       {null};
       final Editable.EditorType editor = info;
@@ -584,16 +595,16 @@ public class EditableWrapper implements IPropertySource
         else if (thisProp != null)
         {
           // ok, wrap it, and add it to our list.
-          final IPropertyDescriptor newProp =
-              new DebriefProperty(thisProp, (Editable) editor.getData(),
-                  null);
+          final IPropertyDescriptor newProp = new DebriefProperty(thisProp,
+              (Editable) editor.getData(), null);
           list.add(newProp);
         }
       }
     }
   }
 
-  private static void addAdditionalPropertyEditors(final Vector<IPropertyDescriptor> list, final BeanInfo editor)
+  private static void addAdditionalPropertyEditors(
+      final Vector<IPropertyDescriptor> list, final BeanInfo editor)
   {
     final BeanInfo[] others = editor.getAdditionalBeanInfo();
     if (others != null)
@@ -622,8 +633,8 @@ public class EditableWrapper implements IPropertySource
               else
               {
                 // ok, add this editor
-                final IPropertyDescriptor newProp =
-                    new DebriefProperty(pd, obj, null);
+                final IPropertyDescriptor newProp = new DebriefProperty(pd, obj,
+                    null);
 
                 list.add(newProp);
               }
@@ -631,7 +642,7 @@ public class EditableWrapper implements IPropertySource
           }
         }
       }
-    }    
+    }
   }
 
   /*
@@ -696,7 +707,8 @@ public class EditableWrapper implements IPropertySource
 
   final public boolean hasChildren()
   {
-    return ((_editable instanceof HasEditables) && (!(_editable instanceof Editable.DoNoInspectChildren)));
+    return ((_editable instanceof HasEditables)
+        && (!(_editable instanceof Editable.DoNoInspectChildren)));
   }
 
   @Override
@@ -716,7 +728,7 @@ public class EditableWrapper implements IPropertySource
   {
 
   }
-  
+
   /*
    * (non-Javadoc)
    * 
@@ -743,14 +755,36 @@ public class EditableWrapper implements IPropertySource
     {
       // see if the helpers can help
       EditorHelper helper = thisProp.getHelper();
-      
+
       // do a round trip of the new value, to ensure they're of the
       // correct type
       Object newVal = helper.translateFromSWT(value);
+
       Object toSWT = helper.translateToSWT(newVal);
       if (toSWT != null && !toSWT.equals(oldVal))
       {
         valueChanged = true;
+
+        final boolean integral = checkIntegrity(id, newVal);
+        if (!integral)
+        {
+          Display.getDefault().asyncExec(new Runnable()
+          {
+            @Override
+            public void run()
+            {
+
+              MessageBox dialog = new MessageBox(PlatformUI.getWorkbench()
+                  .getActiveWorkbenchWindow().getShell(), SWT.ICON_INFORMATION
+                      | SWT.OK);
+              dialog.setText("Date inconsistency");
+              dialog.setMessage(
+                  "Start Date must be before End Date. Please, check the value of the following field: "
+                      + thisName);
+              dialog.open();
+            }
+          });
+        }
       }
       else
       {
@@ -771,5 +805,77 @@ public class EditableWrapper implements IPropertySource
       // and sort it out with the history
       CorePlugin.run(pca);
     }
+  }
+
+  private boolean checkIntegrity(Object name, Object newVal)
+  {
+    final String nameString = name.toString();
+
+    DebriefProperty editor = getDescriptorFor(nameString);
+    if (editor != null && editor.getValue() instanceof DTGPropertySource)
+    {
+
+      final HiResDate myValueHiResDate = (HiResDate) newVal;
+
+      final String idString = editor.getName();
+      final String opposite, me;
+      if (idString.contains(_START))
+      {
+        me = _START;
+        opposite = _END;
+      }
+      else if (idString.contains(_END))
+      {
+        me = _END;
+        opposite = _START;
+      }
+      else
+      {
+        me = null;
+        opposite = null;
+      }
+
+      if (opposite != null)
+      {
+        final String innerName = idString.replaceAll(me, "");
+
+        for (int i = 0; i < _myDescriptors.length; i++)
+        {
+          final IPropertyDescriptor descriptor = _myDescriptors[i];
+          if (descriptor instanceof DebriefProperty)
+          {
+
+            final DebriefProperty descriptorProperty =
+                (DebriefProperty) descriptor;
+            if (descriptorProperty.getName().contains(opposite)
+                && descriptorProperty.getName().contains(innerName))
+            {
+              final DTGPropertySource oppositeValueObject =
+                  (DTGPropertySource) descriptorProperty.getValue();
+
+              final HiResDate oppositeValue = oppositeValueObject.getValue();
+              if (HiResDate.NULL_DATE.equals(myValueHiResDate)
+                  || HiResDate.NULL_DATE.equals(oppositeValue)
+                  || myValueHiResDate.getMicros() == -1000000L || oppositeValue
+                      .getMicros() == -1000000L)
+              {
+                return true;
+              }
+              if (_END.equals(opposite))
+              {
+                return myValueHiResDate.getMicros() <= oppositeValue
+                    .getMicros();
+              }
+              else if (_START.equals(opposite))
+              {
+                return oppositeValue.getMicros() <= myValueHiResDate
+                    .getMicros();
+              }
+            }
+          }
+        }
+      }
+    }
+    return true;
   }
 }

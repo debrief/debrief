@@ -144,11 +144,18 @@ import java.beans.PropertyDescriptor;
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
 import java.util.Enumeration;
+import java.util.HashMap;
+
+import javax.swing.JOptionPane;
 
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Dialogs.AWT.MessageDialog;
+import MWC.GUI.Dialogs.AWT.Util;
 import MWC.GUI.Properties.PlainPropertyEditor;
 import MWC.GUI.Properties.PropertiesPanel;
+import MWC.GenericData.HiResDate;
+import MWC.GUI.Properties.PlainPropertyEditor.PropertyEditorItem;
 
 public class AWTPropertyEditor extends PlainPropertyEditor implements
     KeyListener
@@ -652,6 +659,19 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements
       final TextField t = (TextField) c;
       t.setText(pe.getAsText());
     }
+  }
+
+  @Override
+  public void notifyDateInconsistency(String startDescription,
+      String endDescription)
+  {
+    MessageDialog messageDialog = new MessageDialog(null, null,
+        "Date inconsistency",
+        "Start Date must be before End Date. Please, check the following values "
+            + startDescription + " " + endDescription,
+        null, true);
+    messageDialog.setModal(true);
+    messageDialog.setVisible(true);
   }
 
 }

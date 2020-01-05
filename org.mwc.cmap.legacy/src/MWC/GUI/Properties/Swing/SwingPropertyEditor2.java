@@ -291,6 +291,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -913,12 +914,18 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
   private MultiLineLabel _reportWindow;
 
   /**
-   * @param info the object we are going to edit
-   * @param parent the panel we are contained in
-   * @param theLayers where the data is
-   * @param toolParent the parent we can report to
-   * @param parentLayer the layer that contains this data
-   * @param propsPanel the parent properties panel
+   * @param info
+   *          the object we are going to edit
+   * @param parent
+   *          the panel we are contained in
+   * @param theLayers
+   *          where the data is
+   * @param toolParent
+   *          the parent we can report to
+   * @param parentLayer
+   *          the layer that contains this data
+   * @param propsPanel
+   *          the parent properties panel
    */
   public SwingPropertyEditor2(final MWC.GUI.Editable.EditorType info,
       final SwingPropertiesPanel parent, final Layers theLayers,
@@ -1660,5 +1667,15 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
       ((SwingDatePropertyEditor) pe).resetData();
       c.invalidate();
     }
+  }
+
+  @Override
+  public void notifyDateInconsistency(String startDescription,
+      String endDescription)
+  {
+    JOptionPane.showMessageDialog(getPanel(),
+        "Start Date must be before End Date. Please, check the following values "
+            + startDescription + " " + endDescription, "Date inconsistency",
+        JOptionPane.ERROR_MESSAGE);
   }
 }

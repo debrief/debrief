@@ -238,6 +238,7 @@ import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
 import java.lang.reflect.Method;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -249,6 +250,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
 import MWC.GUI.hasPropertyListeners;
+import MWC.GUI.Properties.PlainPropertyEditor.PropertyEditorItem;
 import MWC.GUI.Properties.Swing.SwingPropertiesPanel;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Undo.UndoBuffer;
@@ -726,6 +728,10 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
    */
   private final SwingPropertiesPanel _propsPanel;
 
+  public static final String _START = "Start";
+
+  public static final String _END = "End";
+
   protected final Layers _theLayers;
 
   /////////////////////////////////////////////////////////////
@@ -1042,6 +1048,59 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
 
   }
 
+  protected void checkIntegrity()
+  {
+    // Let's iterate all the editors, and lets get anything with the word
+    // Start or End.
+    final Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
+    final HashMap<String, Object> startItems = new HashMap<>();
+    final HashMap<String, Object> endItems = new HashMap<>();
+    final HashMap<String, String> startDescription = new HashMap<>();
+    final HashMap<String, String> endDescription = new HashMap<>();
+    
+    while (enumer.hasMoreElements())
+    {
+      final PropertyEditorItem pei = enumer.nextElement();
+      final PropertyDescriptor pd = pei.theDescriptor;
+
+      if (pd.getName().contains(_START))
+      {
+        final String innerName = pd.getName().replaceAll(_START, "");
+        startItems.put(innerName, pei.getCurrentVal());
+        startDescription.put(innerName, pd.getDisplayName());
+      }
+      if (pd.getName().contains(_END))
+      {
+        final String innerName = pd.getName().replaceAll(_END, "");
+        endItems.put(innerName, pei.getCurrentVal());
+        endDescription.put(innerName, pd.getDisplayName());
+      }
+    }
+
+    // then we compare them with each other, matching them
+    for (String key : startItems.keySet())
+    {
+      if (endItems.containsKey(key))
+      {
+        final Object startObject = startItems.get(key);
+        final Object endObject = endItems.get(key);
+
+        if (startObject instanceof HiResDate && endObject instanceof HiResDate)
+        {
+          final HiResDate startDate = (HiResDate) startObject;
+          final HiResDate endDate = (HiResDate) endObject;
+
+          if (startDate.getMicros() > endDate.getMicros())
+          {
+            notifyDateInconsistency(startDescription.get(key), endDescription.get(key));
+          }
+        }
+      }
+    }
+  }
+
+  public abstract void notifyDateInconsistency(String startDescription, String endDescription);
+
   public void doUpdate()
   {
 
@@ -1090,6 +1149,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
       // finally inform the item being edited that we are finished
       _theInfo.updatesComplete();
 
+      checkIntegrity();
     }
   }
 
