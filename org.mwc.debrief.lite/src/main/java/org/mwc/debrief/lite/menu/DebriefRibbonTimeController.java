@@ -89,6 +89,7 @@ import org.pushingpixels.flamingo.api.ribbon.synapse.projection.ComponentProject
 
 import Debrief.GUI.Tote.StepControl;
 import Debrief.GUI.Tote.Painters.SnailPainter2;
+import Debrief.GUI.Tote.Painters.TotePainter;
 import Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter;
 import Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter.RectangleHighlight;
 import Debrief.GUI.Tote.Painters.Highlighters.SymbolHighlighter;
@@ -850,6 +851,46 @@ public class DebriefRibbonTimeController
             }
           }
         });
+    final CommandButtonProjection<Command> properties = MenuUtils.addCommand(
+        "Properties", "icons/16/properties.png", new CommandAction()
+        {
+
+          @Override
+          public void commandActivated(final CommandActionEvent e)
+          {
+            if (stepcontrol instanceof LiteStepControl)
+            {
+              ToolbarOwner owner = null;
+              final ToolParent parent = (stepcontrol).getParent();
+              if (parent instanceof ToolbarOwner)
+              {
+                owner = (ToolbarOwner) parent;
+              }
+              final Layer parentLayer;
+              if (parent instanceof Layer)
+              {
+                parentLayer = (Layer) parent;
+              }
+              else
+              {
+                parentLayer = null;
+              }
+              final StepperListener stepper = stepcontrol.getCurrentPainter();
+              if (stepper instanceof TotePainter)
+              {
+                final PropertiesDialog dialog = new PropertiesDialog(
+                    ((TotePainter) stepper).getInfo(), layers, undoBuffer,
+                    parent, owner, parentLayer);
+                dialog.setSize(400, 500);
+                dialog.setLocationRelativeTo(null);
+                dialog.setVisible(true);
+              }
+            }
+          }
+        }, displayMode, PresentationPriority.LOW);
+
+    commands.add(properties.getContentModel());
+
     displayMode.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         displayMode));
 
