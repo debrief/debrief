@@ -146,16 +146,22 @@ public class ImportASWDataDocument
       final String d4 = "012345ZAPR";
       final String d5 = "292258ZNOV";
 
-      assertEquals("aaa", "190426 120000", DebriefFormatDateTime.toString(
-          dateFor(d1, 0).getDate().getTime()));
-      assertEquals("aaa", "190426 232700", DebriefFormatDateTime.toString(
-          dateFor(d2, 0).getDate().getTime()));
-      assertEquals("aaa", "190122 030000", DebriefFormatDateTime.toString(
-          dateFor(d3, 0).getDate().getTime()));
-      assertEquals("aaa", "190401 234500", DebriefFormatDateTime.toString(
-          dateFor(d4, 0).getDate().getTime()));
-      assertEquals("aaa", "191129 225800", DebriefFormatDateTime.toString(
-          dateFor(d5, 0).getDate().getTime()));
+      // special test handling. In the absence of a year value, we use the
+      // current year. This will change as time moves forward.
+
+      // So, we don't compare the first two chars. The string used for the
+      // first test result _was_ "190426 120000"
+
+      assertEquals("aaa", "0426 120000", DebriefFormatDateTime.toString(
+          dateFor(d1, 0).getDate().getTime()).substring(2));
+      assertEquals("aaa", "0426 232700", DebriefFormatDateTime.toString(
+          dateFor(d2, 0).getDate().getTime()).substring(2));
+      assertEquals("aaa", "0122 030000", DebriefFormatDateTime.toString(
+          dateFor(d3, 0).getDate().getTime()).substring(2));
+      assertEquals("aaa", "0401 234500", DebriefFormatDateTime.toString(
+          dateFor(d4, 0).getDate().getTime()).substring(2));
+      assertEquals("aaa", "1129 225800", DebriefFormatDateTime.toString(
+          dateFor(d5, 0).getDate().getTime()).substring(2));
     }
 
     public void testFewFailures()
