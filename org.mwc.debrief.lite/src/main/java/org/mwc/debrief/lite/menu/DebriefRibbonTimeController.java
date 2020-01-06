@@ -552,7 +552,7 @@ public class DebriefRibbonTimeController
     final JPopupMenu menu = new JPopupMenu();
 
     formatCommandButton = MenuUtils.addCommandButton("Format",
-        "icons/24/gears_view.png", new ShowFormatAction(menu),
+        "icons/24/time_config.png", new ShowFormatAction(menu),
         CommandButtonPresentationState.SMALL, "Format time control");
     formatCommandButton.getContentModel().setActionEnabled(false);
     _menuItem = new JCheckBoxMenuItem[timeFormats.length];
