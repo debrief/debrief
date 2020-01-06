@@ -19,6 +19,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -147,21 +148,22 @@ public class ImportASWDataDocument
       final String d5 = "292258ZNOV";
 
       // special test handling. In the absence of a year value, we use the
-      // current year. This will change as time moves forward.
+      // current year. This will change as time moves forward.  So,
+      // we need to calculate the year value
+      
+      final int year = LocalDateTime.now().getYear();
+      final String yearStr = "" + (year - 2000);
 
-      // So, we don't compare the first two chars. The string used for the
-      // first test result _was_ "190426 120000"
-
-      assertEquals("aaa", "0426 120000", DebriefFormatDateTime.toString(
-          dateFor(d1, 0).getDate().getTime()).substring(2));
-      assertEquals("aaa", "0426 232700", DebriefFormatDateTime.toString(
-          dateFor(d2, 0).getDate().getTime()).substring(2));
-      assertEquals("aaa", "0122 030000", DebriefFormatDateTime.toString(
-          dateFor(d3, 0).getDate().getTime()).substring(2));
-      assertEquals("aaa", "0401 234500", DebriefFormatDateTime.toString(
-          dateFor(d4, 0).getDate().getTime()).substring(2));
-      assertEquals("aaa", "1129 225800", DebriefFormatDateTime.toString(
-          dateFor(d5, 0).getDate().getTime()).substring(2));
+      assertEquals("aaa", yearStr + "0426 120000", DebriefFormatDateTime.toString(
+          dateFor(d1, 0).getDate().getTime()));
+      assertEquals("aaa", yearStr + "0426 232700", DebriefFormatDateTime.toString(
+          dateFor(d2, 0).getDate().getTime()));
+      assertEquals("aaa", yearStr + "0122 030000", DebriefFormatDateTime.toString(
+          dateFor(d3, 0).getDate().getTime()));
+      assertEquals("aaa", yearStr + "0401 234500", DebriefFormatDateTime.toString(
+          dateFor(d4, 0).getDate().getTime()));
+      assertEquals("aaa", yearStr + "1129 225800", DebriefFormatDateTime.toString(
+          dateFor(d5, 0).getDate().getTime()));
     }
 
     public void testFewFailures()
