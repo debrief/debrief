@@ -298,122 +298,122 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
     }
 
     final Point screenPos = proj.toScreen(fix.getLocation());
-    
+
     // handle instance where screen layout means plot isn't actually visible,
     // and we don't get a screen position
-    if(screenPos != null)
+    if (screenPos != null)
     {
 
-    // produce the centre point
-    final Point p = new Point(screenPos);
+      // produce the centre point
+      final Point p = new Point(screenPos);
 
-    // see if we are in symbol plotting mode
-    final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter thisHighlighter =
-        parent.getCurrentPrimaryHighlighter();
-    if (thisHighlighter instanceof Debrief.GUI.Tote.Painters.Highlighters.SymbolHighlighter)
-    {
-      // just plot away!
-      thisHighlighter.highlightIt(proj, dest, list, watch, true);
+      // see if we are in symbol plotting mode
+      final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter thisHighlighter =
+          parent.getCurrentPrimaryHighlighter();
+      if (thisHighlighter instanceof Debrief.GUI.Tote.Painters.Highlighters.SymbolHighlighter)
+      {
+        // just plot away!
+        thisHighlighter.highlightIt(proj, dest, list, watch, true);
 
-      // work out the area covered
-      final WorldArea wa = watch.getBounds();
-      final WorldLocation tl = wa.getTopLeft();
-      final WorldLocation br = wa.getBottomRight();
-      final Point pTL = new Point(proj.toScreen(tl));
-      final Point pBR = new Point(proj.toScreen(br));
-      final Rectangle thisArea = new java.awt.Rectangle(pTL);
-      thisArea.add(pBR);
-      thisR = thisArea;
-    }
-    else
-    {
-      // plot the pointy vector thingy
+        // work out the area covered
+        final WorldArea wa = watch.getBounds();
+        final WorldLocation tl = wa.getTopLeft();
+        final WorldLocation br = wa.getBottomRight();
+        final Point pTL = new Point(proj.toScreen(tl));
+        final Point pBR = new Point(proj.toScreen(br));
+        final Rectangle thisArea = new java.awt.Rectangle(pTL);
+        thisArea.add(pBR);
+        thisR = thisArea;
+      }
+      else
+      {
+        // plot the pointy vector thingy
 
-      // get the current area of the watchable
-      final WorldArea wa = watch.getBounds();
-      // convert to screen coordinates
-      Point tlPos = proj.toScreen(wa.getTopLeft());
-      Point brPos = proj.toScreen(wa.getBottomRight());
+        // get the current area of the watchable
+        final WorldArea wa = watch.getBounds();
+        // convert to screen coordinates
+        Point tlPos = proj.toScreen(wa.getTopLeft());
+        Point brPos = proj.toScreen(wa.getBottomRight());
 
-      final Point tl = new Point(tlPos);
-      final Point br = new Point(brPos);
+        final Point tl = new Point(tlPos);
+        final Point br = new Point(brPos);
 
-      final int mySize = selectedSize;
+        final int mySize = selectedSize;
 
-      // get the width
-      final int x = tl.x - mySize;
-      final int y = tl.y - mySize;
-      final int wid = (br.x - tl.x) + mySize * 2;
-      final int ht = (br.y - tl.y) + mySize * 2;
+        // get the width
+        final int x = tl.x - mySize;
+        final int y = tl.y - mySize;
+        final int wid = (br.x - tl.x) + mySize * 2;
+        final int ht = (br.y - tl.y) + mySize * 2;
 
-      // represent this area as a rectangle
-      thisR = new Rectangle(x, y, wid, ht);
+        // represent this area as a rectangle
+        thisR = new Rectangle(x, y, wid, ht);
 
-      dest.setColor(selectedColor);
-      // plot the rectangle anyway
-      dest.drawOval(x, y, wid, ht);
+        dest.setColor(selectedColor);
+        // plot the rectangle anyway
+        dest.drawOval(x, y, wid, ht);
 
-      dest.setColor(snailColor);
-      // and now plot the vector
-      final double crse = watch.getCourse();
-      final double spd = watch.getSpeed();
+        dest.setColor(snailColor);
+        // and now plot the vector
+        final double crse = watch.getCourse();
+        final double spd = watch.getSpeed();
 
-      //
-      final int dx = (int) (Math.sin(crse) * mySize * spd * _vectorStretch);
-      final int dy = (int) (Math.cos(crse) * mySize * spd * _vectorStretch);
+        //
+        final int dx = (int) (Math.sin(crse) * mySize * spd * _vectorStretch);
+        final int dy = (int) (Math.cos(crse) * mySize * spd * _vectorStretch);
 
-      // produce the end of the stick (just to establish the length in data units)
-      final Point p2 = new Point(p.x + dx, p.y - dy);
+        // produce the end of the stick (just to establish the length in data units)
+        final Point p2 = new Point(p.x + dx, p.y - dy);
 
-      // how long is the stalk in data units?
-      final WorldLocation w3 = proj.toWorld(p2);
-      final double len = w3.rangeFrom(fix.getLocation());
+        // how long is the stalk in data units?
+        final WorldLocation w3 = proj.toWorld(p2);
+        final double len = w3.rangeFrom(fix.getLocation());
 
-      // now sort out the real end of this stalk
-      final WorldLocation stalkEnd = fix.getLocation().add(new WorldVector(crse,
-          len, 0));
-      // and get this in screen coordinates
-      final Point pStalkEnd = proj.toScreen(stalkEnd);
+        // now sort out the real end of this stalk
+        final WorldLocation stalkEnd = fix.getLocation().add(new WorldVector(
+            crse, len, 0));
+        // and get this in screen coordinates
+        final Point pStalkEnd = proj.toScreen(stalkEnd);
 
-      // and plot the stalk itself
-      dest.drawLine(p.x, p.y, pStalkEnd.x, pStalkEnd.y);
+        // and plot the stalk itself
+        dest.drawLine(p.x, p.y, pStalkEnd.x, pStalkEnd.y);
 
-      // extend the area covered to include the stick
-      thisR.add(p2);
-    }
+        // extend the area covered to include the stick
+        thisR.add(p2);
+      }
 
-    // draw the trailing dots
-    final java.awt.Rectangle dotsArea = _trackPlotter.drawMe(proj, dest, watch,
-        parent, watch.getTime(), fader);
+      // draw the trailing dots
+      final java.awt.Rectangle dotsArea = _trackPlotter.drawMe(proj, dest,
+          watch, parent, watch.getTime(), fader);
 
-    // extend the rectangle, if necesary
-    if (dotsArea != null)
-    {
-      thisR.add(dotsArea);
-    }
+      // extend the rectangle, if necesary
+      if (dotsArea != null)
+      {
+        thisR.add(dotsArea);
+      }
 
-    // plot the track name
-    if (_plotName)
-    {
-      final String msg = fix.getTrackWrapper().getName();
+      // plot the track name
+      if (_plotName)
+      {
+        final String msg = fix.getTrackWrapper().getName();
 
-      // shift the centre point across a bit
-      p.translate(5, 0);
+        // shift the centre point across a bit
+        p.translate(5, 0);
 
-      // and draw the text
-      dest.drawString(msg, p.x, p.y);
+        // and draw the text
+        dest.drawString(msg, p.x, p.y);
 
-      // somehow we need to include this extended area
-      final FontMetrics fm = dest.getFontMetrics();
+        // somehow we need to include this extended area
+        final FontMetrics fm = dest.getFontMetrics();
 
-      final int sWid = fm.stringWidth(msg);
+        final int sWid = fm.stringWidth(msg);
 
-      // shift from the start of the string
-      p.translate(sWid, 0);
+        // shift from the start of the string
+        p.translate(sWid, 0);
 
-      // and add to the limits rectangle
-      thisR.add(p);
-    }
+        // and add to the limits rectangle
+        thisR.add(p);
+      }
     }
 
     return thisR;
