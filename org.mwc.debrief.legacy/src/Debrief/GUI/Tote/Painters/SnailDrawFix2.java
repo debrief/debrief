@@ -298,6 +298,11 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
     }
 
     final Point screenPos = proj.toScreen(fix.getLocation());
+    
+    // handle instance where screen layout means plot isn't actually visible,
+    // and we don't get a screen position
+    if(screenPos != null)
+    {
 
     // produce the centre point
     final Point p = new Point(screenPos);
@@ -408,6 +413,7 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
 
       // and add to the limits rectangle
       thisR.add(p);
+    }
     }
 
     return thisR;
