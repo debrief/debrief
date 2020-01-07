@@ -117,10 +117,10 @@ import java.awt.Rectangle;
 import java.beans.PropertyDescriptor;
 
 import Debrief.GUI.Tote.AnalysisTote;
+import Debrief.GUI.Tote.Painters.SnailPainter2.ColorFadeCalculator;
 import Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter;
 import Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter.RectangleHighlight;
 import Debrief.GUI.Tote.Painters.Highlighters.SymbolHighlighter;
-import Debrief.GUI.Tote.Painters.SnailPainter2.ColorFadeCalculator;
 import Debrief.Wrappers.FixWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Properties.BoundedInteger;
@@ -228,10 +228,9 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
    * the name we display when shown in an editor (which may initially be Snail or Relative)
    */
   private final String _myName;
-  
+
   /*
-   * We are storing the tote to retrieve the properties of the highlighter
-   * specified by the user.
+   * We are storing the tote to retrieve the properties of the highlighter specified by the user.
    */
   private final AnalysisTote _theTote;
 
@@ -274,23 +273,25 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
     final Color snailColor = fix.getColor();
     Color selectedColor = fix.getColor();
     int selectedSize = _pointSize;
-    
-    if ( _theTote != null )
+
+    if (_theTote != null)
     {
       final PlotHighlighter highlighter = _theTote.getCurrentHighlighter();
-      if ( highlighter instanceof RectangleHighlight )
+      if (highlighter instanceof RectangleHighlight)
       {
         selectedColor = ((RectangleHighlight) highlighter).getColor();
-        selectedSize = ((RectangleHighlight) highlighter).getSize().getCurrent();
-      }else if ( highlighter instanceof SymbolHighlighter )
+        selectedSize = ((RectangleHighlight) highlighter).getSize()
+            .getCurrent();
+      }
+      else if (highlighter instanceof SymbolHighlighter)
       {
-        // Are we using the symbol highlighter?? I think not, let's add this just in case. Saul 
+        // Are we using the symbol highlighter?? I think not, let's add this just in case. Saul
         selectedColor = ((SymbolHighlighter) highlighter).getColor();
         selectedSize = (int) ((SymbolHighlighter) highlighter).getScale();
       }
     }
     dest.setColor(snailColor);
-    
+
     // is this item even visible?
     if (!watch.getVisible())
     {
@@ -332,8 +333,8 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
         // get the current area of the watchable
         final WorldArea wa = watch.getBounds();
         // convert to screen coordinates
-        Point tlPos = proj.toScreen(wa.getTopLeft());
-        Point brPos = proj.toScreen(wa.getBottomRight());
+        final Point tlPos = proj.toScreen(wa.getTopLeft());
+        final Point brPos = proj.toScreen(wa.getBottomRight());
 
         final Point tl = new Point(tlPos);
         final Point br = new Point(brPos);
