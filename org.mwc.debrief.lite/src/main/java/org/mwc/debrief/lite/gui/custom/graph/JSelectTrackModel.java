@@ -131,7 +131,7 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
   @Override
   public void setPrimaryTrack(final TrackWrapper newPrimary)
   {
-    
+
     final TrackWrapper oldPrimary = getPrimaryTrack();
     // Do we have it?
     for (final AbstractSelection<TrackWrapper> currentTrack : _tracks)
@@ -163,10 +163,10 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
   public boolean setTracks(final List<TrackWrapper> tracks)
   {
     boolean isDifferent = false;
-    
+
     final List<AbstractSelection<TrackWrapper>> deltaPlus = new ArrayList<>();
     final List<AbstractSelection<TrackWrapper>> deltaMinus = new ArrayList<>();
-    
+
     final HashSet<TrackWrapper> oldTracksSet = new HashSet<>();
     for (final AbstractSelection<TrackWrapper> oldTrack : _tracks)
     {
@@ -174,7 +174,7 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
     }
     for (final TrackWrapper track : tracks)
     {
-      if ( !oldTracksSet.contains(track) )
+      if (!oldTracksSet.contains(track))
       {
         isDifferent = true;
         deltaPlus.add(new AbstractSelection<TrackWrapper>(track, false));
@@ -182,17 +182,18 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
     }
     for (final TrackWrapper oldTrackItem : oldTracksSet)
     {
-      if ( !tracks.contains(oldTrackItem) )
+      if (!tracks.contains(oldTrackItem))
       {
         isDifferent = true;
-        deltaMinus.add(new AbstractSelection<TrackWrapper>(oldTrackItem, false));
+        deltaMinus.add(new AbstractSelection<TrackWrapper>(oldTrackItem,
+            false));
       }
     }
     if (isDifferent)
     {
       this._tracks.removeAll(deltaMinus);
       this._tracks.addAll(deltaPlus);
-      
+
       if (_primaryTrack != null && !tracks.contains(_primaryTrack))
       {
         setPrimaryTrack(null);

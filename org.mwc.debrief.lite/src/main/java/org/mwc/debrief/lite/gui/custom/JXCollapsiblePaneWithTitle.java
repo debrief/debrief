@@ -211,7 +211,8 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
             currentDimension = bounds.width;
           }
 
-          collapsiblePaneInstance.collapsed = newDimension == MIN_ANIMATION_SIZE;
+          collapsiblePaneInstance.collapsed =
+              newDimension == MIN_ANIMATION_SIZE;
           collapsiblePaneInstance.setPreferredSize(new Dimension(bounds.width,
               bounds.height));
           setBounds(bounds);
