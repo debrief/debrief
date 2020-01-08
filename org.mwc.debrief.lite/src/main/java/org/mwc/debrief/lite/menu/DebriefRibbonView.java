@@ -15,13 +15,15 @@
 package org.mwc.debrief.lite.menu;
 
 import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JLabel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeListener;
 
 import org.geotools.swing.JMapPane;
+import org.geotools.swing.event.MapMouseEvent;
+import org.geotools.swing.tool.PanTool;
 import org.mwc.debrief.lite.custom.JRibbonLabel;
 import org.mwc.debrief.lite.custom.JRibbonSlider;
 import org.mwc.debrief.lite.custom.LabelComponentContentModel;
@@ -30,7 +32,6 @@ import org.mwc.debrief.lite.custom.RibbonSliderProjection;
 import org.mwc.debrief.lite.custom.SliderComponentContentModel;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
-import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.gui.ZoomOut;
 import org.mwc.debrief.lite.map.AdvancedZoomInAction;
 import org.mwc.debrief.lite.map.DragElementAction;
@@ -40,6 +41,7 @@ import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.map.RangeBearingAction;
 import org.mwc.debrief.lite.view.actions.PanCommandAction;
 import org.opengis.referencing.operation.MathTransform;
+import org.pushingpixels.flamingo.api.common.CommandActionEvent;
 import org.pushingpixels.flamingo.api.common.model.CommandToggleGroupModel;
 import org.pushingpixels.flamingo.api.common.projection.Projection;
 import org.pushingpixels.flamingo.api.common.projection.Projection.ComponentSupplier;
@@ -106,8 +108,6 @@ public class DebriefRibbonView
         RibbonLabelProjection timeLabelProjection = new RibbonLabelProjection(timeLabelModel,
             ComponentPresentationModel.withDefaults() , 
         jTimeLabel);
-    //final JLabel timeLabel = timeLabelProjection.buildComponent();
-    //timeLabel.setPreferredSize(new Dimension(40,18));
     layersMenu.addRibbonComponent(timeLabelProjection);
     final RibbonTask viewTask = new RibbonTask("View", mouseMode, mapCommands
         ,layersMenu);
@@ -130,6 +130,7 @@ public class DebriefRibbonView
     return commandBand;
   }
 
+  @SuppressWarnings("serial")
   private static JRibbonBand createMouseModes(
       final GeoToolMapRenderer geoMapRenderer, final JLabel statusBar,
       final Layers layers, final GeoToolMapProjection projection,
@@ -144,47 +145,37 @@ public class DebriefRibbonView
 
     viewBand.startGroup();
     MenuUtils.addCommandToggleButton("Pan", "icons/24/hand.png", new PanCommandAction(
-        mapPane), viewBand, PresentationPriority.TOP, true, mouseModeGroup,
+        mapPane) {
+      @Override
+      public void commandActivated(CommandActionEvent e)
+      {
+        getMapPane().setCursorTool(new PanTool()
+        {
+
+          @Override
+          public void onMouseDragged(final MapMouseEvent ev)
+          {
+            if (ev.getButton() != MouseEvent.BUTTON3)
+            {
+              super.onMouseDragged(ev);
+            }
+          }
+
+          @Override
+          public void onMousePressed(final MapMouseEvent ev)
+          {
+
+            if (ev.getButton() != MouseEvent.BUTTON3)
+            {
+              super.onMousePressed(ev);
+            }
+          }
+        });
+
+      }
+    }, viewBand, PresentationPriority.TOP, true, mouseModeGroup,
         false);
     final AdvancedZoomInAction zoomInAction = new AdvancedZoomInAction(mapPane);
-//    MenuUtils.addCommandToggleButton("Pan", "icons/24/hand.png", new PanAction(
-//        mapPane)
-//    {
-//
-//      /**
-//       * 
-//       */
-//      private static final long serialVersionUID = 1072919666918011233L;
-//
-//      @Override
-//      public void actionPerformed(final ActionEvent ev)
-//      {
-//        getMapPane().setCursorTool(new PanTool()
-//        {
-//
-//          @Override
-//          public void onMouseDragged(final MapMouseEvent ev)
-//          {
-//            if (ev.getButton() != MouseEvent.BUTTON3)
-//            {
-//              super.onMouseDragged(ev);
-//            }
-//          }
-//
-//          @Override
-//          public void onMousePressed(final MapMouseEvent ev)
-//          {
-//
-//            if (ev.getButton() != MouseEvent.BUTTON3)
-//            {
-//              super.onMousePressed(ev);
-//            }
-//          }
-//        });
-//      }
-//
-//    }, viewBand, RibbonElementPriority.TOP, true, mouseModeGroup, false);
-//    final ZoomInAction zoomInAction = new AdvancedZoomInAction(mapPane);
     MenuUtils.addCommandToggleButton("Zoom In", "icons/24/zoomin.png",
         zoomInAction, viewBand, PresentationPriority.TOP, true, mouseModeGroup,
         true);

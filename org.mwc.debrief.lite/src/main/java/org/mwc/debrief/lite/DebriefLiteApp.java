@@ -289,7 +289,6 @@ public class DebriefLiteApp implements FileDropListener
 
   public static void disposeForTest()
   {
-    System.out.println("Disposed:" + _instance);
     _instance.theFrame.dispose();
     currentFileName = null;
     state = null;
