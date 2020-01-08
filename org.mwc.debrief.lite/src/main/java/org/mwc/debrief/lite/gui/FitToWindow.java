@@ -14,6 +14,8 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
+import org.pushingpixels.flamingo.api.common.CommandAction;
+import org.pushingpixels.flamingo.api.common.CommandActionEvent;
 
 import Debrief.GUI.Frames.Application;
 import MWC.GUI.Layers;
@@ -21,7 +23,7 @@ import MWC.GUI.ToolParent;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
-public class FitToWindow extends AbstractAction
+public class FitToWindow extends AbstractAction implements CommandAction
 {
   /**
    *
@@ -103,6 +105,12 @@ public class FitToWindow extends AbstractAction
   public void actionPerformed(final ActionEvent e)
   {
     fitToWindow(_layers, _map);
+  }
+
+  @Override
+  public void commandActivated(CommandActionEvent e)
+  {
+    actionPerformed(e);
   }
 
 }

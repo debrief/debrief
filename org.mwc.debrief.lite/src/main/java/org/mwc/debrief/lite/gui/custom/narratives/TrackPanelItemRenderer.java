@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.lite.gui.custom.narratives;
 
@@ -28,20 +28,20 @@ public class TrackPanelItemRenderer extends JPanel implements
 {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1963635319483966831L;
 
   @Override
   public Component getListCellRendererComponent(
-      JList<? extends TrackNameColor> list, TrackNameColor value, int index,
-      boolean isSelected, boolean cellHasFocus)
+      final JList<? extends TrackNameColor> list, final TrackNameColor value,
+      final int index, final boolean isSelected, final boolean cellHasFocus)
   {
     final Box mainBox = Box.createHorizontalBox();
     final JPanel coloredPane = new JPanel();
     coloredPane.setBackground(value.getColor());
     coloredPane.setPreferredSize(new Dimension(12, 12));
-    
+
     mainBox.add(new JCheckBox(value.getTrackName()));
     mainBox.add(coloredPane);
     return mainBox;

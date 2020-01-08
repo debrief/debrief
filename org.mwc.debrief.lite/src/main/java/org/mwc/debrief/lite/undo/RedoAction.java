@@ -20,7 +20,9 @@ import java.util.Observer;
 
 import javax.swing.AbstractAction;
 
-import org.pushingpixels.flamingo.api.common.FlamingoCommand;
+import org.pushingpixels.flamingo.api.common.CommandAction;
+import org.pushingpixels.flamingo.api.common.CommandActionEvent;
+import org.pushingpixels.flamingo.api.common.model.Command;
 
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Undo.UndoBuffer;
@@ -29,13 +31,13 @@ import MWC.GUI.Undo.UndoBuffer;
  * @author Ayesha <ayesha.ma@gmail.com>
  *
  */
-public class RedoAction extends AbstractAction implements Action, Observer
+public class RedoAction extends AbstractAction implements Action, Observer,CommandAction
 {
   /**
    *
    */
   private static final long serialVersionUID = 1L;
-  private FlamingoCommand actionCommand;
+  private Command actionCommand;
   private final UndoBuffer _buffer;
 
   public RedoAction(final UndoBuffer undoBuffer)
@@ -72,7 +74,7 @@ public class RedoAction extends AbstractAction implements Action, Observer
     return false;
   }
 
-  public void setActionCommand(final FlamingoCommand command)
+  public void setActionCommand(final Command command)
   {
     actionCommand = command;
   }
@@ -91,14 +93,21 @@ public class RedoAction extends AbstractAction implements Action, Observer
       final UndoBuffer undoBuff = (UndoBuffer) o;
       if (undoBuff.canRedo())
       {
-        actionCommand.setEnabled(true);
+        actionCommand.setActionEnabled(true);
       }
       else
       {
-        actionCommand.setEnabled(false);
+        actionCommand.setActionEnabled(false);
       }
     }
 
+  }
+
+  @Override
+  public void commandActivated(CommandActionEvent e)
+  {
+    actionPerformed(e);
+    
   }
 
 }

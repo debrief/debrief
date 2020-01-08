@@ -9,6 +9,8 @@ import org.geotools.swing.MapPane;
 import org.geotools.swing.action.MapAction;
 import org.geotools.swing.tool.ZoomInTool;
 import org.opengis.referencing.operation.MathTransform;
+import org.pushingpixels.flamingo.api.common.CommandAction;
+import org.pushingpixels.flamingo.api.common.CommandActionEvent;
 
 /**
  * An action for connect a control (probably a JButton) to the Range Bearing tool - for measuring
@@ -17,7 +19,7 @@ import org.opengis.referencing.operation.MathTransform;
  * @author Ian Mayo, from Michael Bedward's Zoom In Action
  * @since 2.6
  */
-public class RangeBearingAction extends MapAction
+public class RangeBearingAction extends MapAction implements CommandAction
 {
 
   /**
@@ -59,6 +61,12 @@ public class RangeBearingAction extends MapAction
     // Not an amazing cast, but it is ok since AbstractMapPane is the only implementation of MapPane
     getMapPane().setCursorTool(new RangeBearingTool(_statusBar, _transform,
         (AbstractMapPane) getMapPane()));
+  }
+
+  @Override
+  public void commandActivated(CommandActionEvent e)
+  {
+    actionPerformed(e);
   }
 
 }

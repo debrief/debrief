@@ -109,7 +109,7 @@ public class JSelectTrack extends JPopupMenu
           }
           if (!newOperation.isARelativeCalculation())
           {
-            TrackWrapper primary = model.getPrimaryTrack();
+            final TrackWrapper primary = model.getPrimaryTrack();
             if (primary != null)
             {
               _displayComponents.get(primary).setEnabled(true);
@@ -125,7 +125,7 @@ public class JSelectTrack extends JPopupMenu
           }
           else
           {
-            TrackWrapper primary = model.getPrimaryTrack();
+            final TrackWrapper primary = model.getPrimaryTrack();
             if (primary != null)
             {
               _displayComponents.get(primary).setEnabled(false);
@@ -153,7 +153,8 @@ public class JSelectTrack extends JPopupMenu
 
     for (final AbstractSelection<TrackWrapper> track : _model.getTracks())
     {
-      final JCheckBox displayCheckBox = new JCheckBox(track.getItem().getName(), track.isSelected());
+      final JCheckBox displayCheckBox = new JCheckBox(track.getItem().getName(),
+          track.isSelected());
       displayCheckBox.addItemListener(new ItemListener()
       {
 
@@ -174,8 +175,8 @@ public class JSelectTrack extends JPopupMenu
       final ButtonGroup relativeToGroup = new ButtonGroup();
       for (final AbstractSelection<TrackWrapper> track : _model.getTracks())
       {
-        final JRadioButton relativeToradioButton = new JRadioButton(track.getItem()
-            .getName());
+        final JRadioButton relativeToradioButton = new JRadioButton(track
+            .getItem().getName());
         relativeToradioButton.addItemListener(new ItemListener()
         {
 

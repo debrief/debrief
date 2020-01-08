@@ -82,7 +82,7 @@ import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Action;
 import MWC.GenericData.WorldLocation;
 
-public final class CreateLabel extends CoreCreateShape
+public class CreateLabel extends CoreCreateShape
 {
 
   /////////////////////////////////////////////////////////////

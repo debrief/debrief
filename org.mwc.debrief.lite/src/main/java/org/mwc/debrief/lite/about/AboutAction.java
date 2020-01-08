@@ -19,11 +19,14 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 
+import org.pushingpixels.flamingo.api.common.CommandAction;
+import org.pushingpixels.flamingo.api.common.CommandActionEvent;
+
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
  *
  */
-public class AboutAction extends AbstractAction
+public class AboutAction extends AbstractAction implements CommandAction
 {
   /**
    * 
@@ -43,6 +46,13 @@ public class AboutAction extends AbstractAction
   {
     Debrief.GUI.Frames.Swing.AboutDialog.showIt(parent, "About", "Debrief Lite v1.0. \nDeveloped by Deep Blue C Ltd.");
 
+  }
+
+  @Override
+  public void commandActivated(CommandActionEvent e)
+  {
+    actionPerformed(e);
+    
   }
 
 }
