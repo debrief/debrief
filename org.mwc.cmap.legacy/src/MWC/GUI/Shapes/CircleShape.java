@@ -260,15 +260,12 @@ public class CircleShape extends PlainShape implements Editable,
 		{
 			final WorldLocation nextPos = iter.next();
 			final Point pt = dest.toScreen(nextPos);
-			if(pt != null)
+			if(pt == null)
 			{
-				xP[ctr] = pt.x;
-				yP[ctr++] = pt.y;
+			  return;
 			}
-			else
-			{
-				System.err.println("no coords for:" + nextPos);
-			}
+      xP[ctr] = pt.x;
+      yP[ctr++] = pt.y;
 		}
 
 		// and plot the polygon
