@@ -115,6 +115,10 @@ public abstract class ScreenScaledSym extends PlainSymbol
 
 		// get the origin in screen coordinates
 		final Point centre = dest.toScreen(theLocation);
+    
+    // handle unable to gen screen coords (if off visible area)
+    if(centre == null)
+      return;
 
 		final AffineTransform thisRotation = AffineTransform.getRotateInstance(
 				direction, 0, 0);

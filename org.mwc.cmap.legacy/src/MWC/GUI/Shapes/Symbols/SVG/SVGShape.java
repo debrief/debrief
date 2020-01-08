@@ -139,6 +139,11 @@ public class SVGShape extends PlainSymbol
 
       // create our centre point
       final Point centre = dest.toScreen(center);
+      
+      // handle unable to gen screen coords (if off visible area)
+      if(centre == null)
+        return;
+
       for (SVGElement element : _elements)
       {
         element.render(dest, getScaleVal() / 2d, centre, directionToUse, _origin,

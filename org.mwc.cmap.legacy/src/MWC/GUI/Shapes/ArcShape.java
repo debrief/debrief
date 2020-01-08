@@ -264,6 +264,8 @@ public class ArcShape extends CircleShape
 
 		// get the origin
 		final Point tl = dest.toScreen(topLeft);
+		if(tl == null)
+		  return;
 
 		final int tlx = tl.x;
 		final int tly = tl.y;

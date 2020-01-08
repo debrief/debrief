@@ -143,7 +143,11 @@ public abstract class WorldScaledSym extends PlainSymbol
 		// set the colour
 		dest.setColor(getColor());
 
-		final java.awt.Point origin = dest.toScreen(theLocation);		
+		final java.awt.Point origin = dest.toScreen(theLocation);	
+		
+    // handle unable to gen screen coords (if off visible area)
+    if(origin == null)
+      return;
 
 		// create centre rotation
 		final AffineTransform thisRotation = AffineTransform.getRotateInstance(

@@ -82,6 +82,10 @@ public class HelicopterSym extends PlainSymbol {
 
     // create our centre point
     final java.awt.Point centre = dest.toScreen(theLocation);
+    
+    // handle unable to gen screen coords (if off visible area)
+    if(centre == null)
+      return;
 
     final int wid = (int)(4 * getScaleVal());
 

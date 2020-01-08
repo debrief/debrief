@@ -1036,6 +1036,11 @@ public class LightweightTrackWrapper extends PlainWrapper implements
           firstLoc = thisLoc;
         }
         final Point loc = dest.toScreen(thisLoc);
+        
+        // handle unable to gen screen coords (if off visible area)
+        if(loc == null)
+          return;
+
         xPoints[ctr] = (int) loc.getX();
         yPoints[ctr] = (int) loc.getY();
         ctr++;

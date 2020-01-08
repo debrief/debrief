@@ -71,6 +71,11 @@ public class PointFeature extends S57Feature
 		{
 			final WorldLocation loc = (WorldLocation) iter.next();
 			final Point pt =  dest.toScreen(loc);
+			
+	    // handle unable to gen screen coords (if off visible area)
+	    if(pt == null)
+	      return;
+
 			if(_myPainter != null)
 				_myPainter.paintSymbol(dest, loc, pt);
 		}

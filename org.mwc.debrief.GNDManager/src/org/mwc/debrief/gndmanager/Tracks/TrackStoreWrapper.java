@@ -513,6 +513,10 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 
 			// and convert a screen point
 			Point lastLoc = dest.toScreen(thisL);
+			    
+	    // handle unable to gen screen coords (if off visible area)
+	    if(lastLoc == null)
+	      return;
 
 			// is this the first location?
 			if (_parent._showTrackName)

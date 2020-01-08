@@ -132,6 +132,10 @@ public class DatumSym extends PlainSymbol {
 
     // create our centre point
     final java.awt.Point centre = dest.toScreen(theLocation);
+    
+    // handle unable to gen screen coords (if off visible area)
+    if(centre == null)
+      return;
 
     final int wid = (int)(6 * getScaleVal());
     final int wid_2 = (int)(wid/2d);

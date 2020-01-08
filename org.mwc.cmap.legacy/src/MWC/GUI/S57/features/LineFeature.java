@@ -72,7 +72,13 @@ public class LineFeature extends S57Feature
 				// loc.getLong());
 				// }
 
-				final Point pt = new Point(dest.toScreen(loc));
+				final Point screen = dest.toScreen(loc);
+				
+		    // handle unable to gen screen coords (if off visible area)
+		    if(screen == null)
+		      return;
+
+        final Point pt = new Point(screen);
 				if (startPt == null)
 					startPt = new Point(pt);
 				if (last != null)

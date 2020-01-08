@@ -264,6 +264,10 @@ public class EllipseShape extends PlainShape implements Editable
       final WorldLocation location = (WorldLocation) _theDataPoints.elementAt(i);
 
       final Point p2 = dest.toScreen(location);
+      
+      // handle unable to gen screen coords (if off visible area)
+      if(p2 == null)
+        return;
 
       xPoints[i] = p2.x;
       yPoints[i] = p2.y;

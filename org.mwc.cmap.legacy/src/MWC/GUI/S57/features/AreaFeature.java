@@ -47,7 +47,14 @@ public class AreaFeature extends LineFeature
 			{
 				final WorldLocation loc = (WorldLocation) iter.next();
 
-				final Point pt = new Point(dest.toScreen(loc));
+				final Point screen = dest.toScreen(loc);
+				
+		    // handle unable to gen screen coords (if off visible area)
+		    if(screen == null)
+		      return;
+
+
+        final Point pt = new Point(screen);
 				xpts[ctr] = pt.x;
 				ypts[ctr] = pt.y;
 				ctr++;

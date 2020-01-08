@@ -119,6 +119,10 @@ public class WreckSym extends PlainSymbol
 
     // create our centre point
     final java.awt.Point centre = dest.toScreen(theLocation);
+    
+    // handle unable to gen screen coords (if off visible area)
+    if(centre == null)
+      return;
 
     // calculate the dimensions
     final double unit = (15d * getScaleVal()) / 11d;

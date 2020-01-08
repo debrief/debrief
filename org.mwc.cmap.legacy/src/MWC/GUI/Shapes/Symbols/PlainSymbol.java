@@ -213,6 +213,11 @@ abstract public class PlainSymbol implements java.io.Serializable, MWC.GUI.Edita
     dest.setColor(_theCol);
 
     final java.awt.Point centre = dest.toScreen(theCentre);
+    
+    // handle unable to gen screen coords (if off visible area)
+    if(centre == null)
+      return;
+
     dest.drawRect(centre.x -2, centre.y - 2, 4, 4);
   }
 

@@ -85,6 +85,10 @@ public class KingpinSym extends BuoySym {
 
     // create our centre point
     final java.awt.Point centre = dest.toScreen(theLocation);
+    
+    // handle unable to gen screen coords (if off visible area)
+    if(centre == null)
+      return;
 
     final int wid = (int)(6 * getScaleVal() * 1.5);
     final int tinyWid = (int) (getScaleVal() * 1.5);

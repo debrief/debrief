@@ -964,8 +964,20 @@ abstract public class SpatialRasterPainter extends BaseLayer implements
   {
     final WorldLocation wa = new WorldLocation(startY, startX, 0);
     final WorldLocation wb = new WorldLocation(endY, endX, 0);
-    final Point pa = new Point(dest.toScreen(wa));
-    final Point pb = new Point(dest.toScreen(wb));
+    final Point screenA = dest.toScreen(wa);
+    
+    // handle unable to gen screen coords (if off visible area)
+    if(screenA == null)
+      return;
+
+    final Point screenB = dest.toScreen(wb);
+
+    // handle unable to gen screen coords (if off visible area)
+    if(screenB == null)
+      return;
+
+    final Point pa = new Point(screenA);
+    final Point pb = new Point(screenB);
     dest.setColor(getContourColourFor(contourIndex));
     dest.drawLine(pa.x, pa.y, pb.x, pb.y);
   }
