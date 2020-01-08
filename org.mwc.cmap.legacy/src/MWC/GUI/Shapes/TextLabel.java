@@ -401,7 +401,7 @@ public class TextLabel extends PlainShape implements Editable
 
   public Integer getRelativeLocation()
   {
-    return new Integer(_theRelativeLocation);
+    return _theRelativeLocation;
   }
 
   public String getString()

@@ -132,7 +132,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements
       {
         final String thisStr = getTags()[i];
         if (thisStr.equals(val))
-          _myLineLocation = new Integer(i);
+          _myLineLocation = i;
       }
     }
 
@@ -849,7 +849,8 @@ abstract public class SpatialRasterPainter extends BaseLayer implements
   /**
    * where to plot the key
    */
-  Integer _keyLocation = new Integer(KeyLocationPropertyEditor.LEFT);
+  Integer _keyLocation = KeyLocationPropertyEditor.LEFT;
+  
   /**
    * whether to use NE shading
    *
@@ -1277,8 +1278,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements
           }
           // inform the user what we're doing
           if (_myEditor != null)
-            _myEditor.fireChanged(this, "GridInterval", null, new Integer(
-                _gridInterval));
+            _myEditor.fireChanged(this, "GridInterval", null, _gridInterval);
         }
 
         // ok, do our extra paint now
@@ -1318,7 +1318,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements
       try
       {
         final double d = MWCXMLReader.readThisDouble(token.nextToken());
-        sortedDepths.add(new Double(d));
+        sortedDepths.add(d);
       }
       catch (final ParseException e)
       {

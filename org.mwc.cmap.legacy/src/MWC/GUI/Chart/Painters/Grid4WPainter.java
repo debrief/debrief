@@ -449,6 +449,11 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 			int ctr = 0;
 
 			Point thisP = g.toScreen(calcLocationFor(_xMin, _yMin));
+			
+      // handle unable to gen screen coords (if off visible area)
+      if(thisP == null)
+        return;
+
 			xPoints[ctr] = thisP.x;
 			yPoints[ctr++] = thisP.y;
 
