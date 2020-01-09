@@ -1,14 +1,8 @@
 package org.mwc.debrief.lite.map;
 
-import java.awt.Component;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
-import javax.swing.JPopupMenu;
-import javax.swing.JRadioButtonMenuItem;
 
 import org.geotools.swing.AbstractMapPane;
 import org.geotools.swing.MapPane;
@@ -17,8 +11,6 @@ import org.geotools.swing.tool.ZoomInTool;
 import org.opengis.referencing.operation.MathTransform;
 import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
-
-import MWC.GenericData.WorldDistance;
 
 /**
  * An action for connect a control (probably a JButton) to the Range Bearing tool - for measuring
@@ -73,7 +65,7 @@ public class RangeBearingAction extends MapAction implements CommandAction
   }
 
   @Override
-  public void commandActivated(CommandActionEvent e)
+  public void commandActivated(final CommandActionEvent e)
   {
     actionPerformed(e);
   }

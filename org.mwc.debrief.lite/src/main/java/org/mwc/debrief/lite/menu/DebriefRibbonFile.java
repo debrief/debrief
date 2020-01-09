@@ -40,7 +40,6 @@ import org.mwc.debrief.lite.util.ResizableIconFactory;
 import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
 import org.pushingpixels.flamingo.api.common.CommandButtonPresentationState;
-import org.pushingpixels.flamingo.api.common.icon.EmptyResizableIcon;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.common.model.Command;
 import org.pushingpixels.flamingo.api.common.model.CommandButtonPresentationModel;
@@ -51,7 +50,6 @@ import org.pushingpixels.flamingo.api.common.model.CommandPanelPresentationModel
 import org.pushingpixels.flamingo.api.common.popup.JCommandPopupMenu;
 import org.pushingpixels.flamingo.api.common.popup.model.CommandPopupMenuPresentationModel;
 import org.pushingpixels.flamingo.api.common.projection.CommandButtonProjection;
-import org.pushingpixels.flamingo.api.common.projection.CommandPopupMenuProjection;
 import org.pushingpixels.flamingo.api.common.projection.Projection;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
@@ -90,7 +88,7 @@ public class DebriefRibbonFile
     }
 
     @Override
-    public void commandActivated(CommandActionEvent e)
+    public void commandActivated(final CommandActionEvent e)
     {
       actionPerformed(e);
 
@@ -108,17 +106,17 @@ public class DebriefRibbonFile
     private static final String TYPE_NMEA = "log";
     private static final String TYPE_TIF = "tif";
 
-    private String importFileType;
-
-    protected ImportFileAction(String type)
-    {
-      importFileType = type;
-    }
-
     /**
      *
      */
     private static final long serialVersionUID = -804226120198968206L;
+
+    private final String importFileType;
+
+    protected ImportFileAction(final String type)
+    {
+      importFileType = type;
+    }
 
     @Override
     public void actionPerformed(final ActionEvent e)
@@ -170,7 +168,7 @@ public class DebriefRibbonFile
     }
 
     @Override
-    public void commandActivated(CommandActionEvent e)
+    public void commandActivated(final CommandActionEvent e)
     {
       actionPerformed(e);
 
@@ -257,7 +255,7 @@ public class DebriefRibbonFile
     }
 
     @Override
-    public void commandActivated(CommandActionEvent e)
+    public void commandActivated(final CommandActionEvent e)
     {
       actionPerformed(e);
 
@@ -347,7 +345,7 @@ public class DebriefRibbonFile
     }
 
     @Override
-    public void commandActivated(CommandActionEvent e)
+    public void commandActivated(final CommandActionEvent e)
     {
       actionPerformed(e);
 
@@ -363,7 +361,7 @@ public class DebriefRibbonFile
     private static final long serialVersionUID = 1L;
 
     public SavePopupMenu(
-        Projection<JCommandPopupMenu, CommandMenuContentModel, CommandPopupMenuPresentationModel> projection)
+        final Projection<JCommandPopupMenu, CommandMenuContentModel, CommandPopupMenuPresentationModel> projection)
     {
       super(projection);
 
@@ -389,29 +387,25 @@ public class DebriefRibbonFile
     MenuUtils.addCommand("Open", "icons/24/open.png", new OpenPlotAction(ribbon
         .getRibbonFrame(), session, resetAction, false), fileMenu,
         PresentationPriority.TOP);
-    
-    CommandPopupMenuPresentationModel popupMenuPresentationModel = CommandPopupMenuPresentationModel.builder()
-        .setPanelPresentationModel(CommandPanelPresentationModel.builder()
-              .setToShowGroupLabels(false)
-              .setCommandPresentationState(CommandButtonPresentationState.FIT_TO_ICON)
-              .setCommandIconDimension(48)
-              .setMaxColumns(5)
-              .setMaxRows(3)
-              .build())
-        .build();
+
+    final CommandPopupMenuPresentationModel popupMenuPresentationModel =
+        CommandPopupMenuPresentationModel.builder().setPanelPresentationModel(
+            CommandPanelPresentationModel.builder().setToShowGroupLabels(false)
+                .setCommandPresentationState(
+                    CommandButtonPresentationState.FIT_TO_ICON)
+                .setCommandIconDimension(48).setMaxColumns(5).setMaxRows(3)
+                .build()).build();
 
     final Image saveImage = MenuUtils.createImage("icons/16/save.png");
     final ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon
         .getIcon(saveImage, new Dimension(16, 16));
-   fileMenu.addRibbonCommand(Command.builder()
-       .setText("Save")
-       .setIconFactory(ResizableIconFactory.factory(imageIcon))
-       .setSecondaryContentModel(getSavePopupContentModel(session, ribbon.getRibbonFrame()))
-       .build()
-       .project(CommandButtonPresentationModel.builder()
-           .setPopupMenuPresentationModel(popupMenuPresentationModel)
-           .build()),PresentationPriority.TOP);
-   
+    fileMenu.addRibbonCommand(Command.builder().setText("Save").setIconFactory(
+        ResizableIconFactory.factory(imageIcon)).setSecondaryContentModel(
+            getSavePopupContentModel(session, ribbon.getRibbonFrame())).build()
+        .project(CommandButtonPresentationModel.builder()
+            .setPopupMenuPresentationModel(popupMenuPresentationModel).build()),
+        PresentationPriority.TOP);
+
     closeButton = MenuUtils.addCommand("Close", "icons/24/close.png",
         new NewFileAction(ribbon.getRibbonFrame(), session, resetAction, true),
         fileMenu, PresentationPriority.TOP);
@@ -446,42 +440,6 @@ public class DebriefRibbonFile
     ribbon.addTask(fileTask);
   }
 
-  public static CommandMenuContentModel getSavePopupContentModel(
-      Session session, JRibbonFrame theFrame)
-  {
-    final Image saveImage = MenuUtils.createImage("icons/16/save.png");
-    final ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon
-        .getIcon(saveImage, new Dimension(16, 16));
-    List<CommandGroup> commandGroups = new ArrayList<>();
-    List<Command> commands = new ArrayList<>();
-    Command saveCommand = Command.builder().setText("Save").setIconFactory(
-        ResizableIconFactory.factory(imageIcon)).setAction(
-            new DoSave(session, theFrame)).build();
-    commands.add(saveCommand);
-    /*
-     * final JCommandMenuButton saveButton = new JCommandMenuButton("Save", imageIcon);
-     * saveButton.setName("save"); saveButton.getActionModel().addActionListener(new DoSave(session,
-     * theFrame)); addMenuButton(saveButton);
-     */
-
-    final Image saveAsImage = MenuUtils.createImage("icons/16/save-as.png");
-    final ImageWrapperResizableIcon imageIcon2 = ImageWrapperResizableIcon
-        .getIcon(saveAsImage, new Dimension(16, 16));
-    Command saveAsCommand = Command.builder().setText("SaveAs").setIconFactory(
-        ResizableIconFactory.factory(imageIcon2)).setAction(
-            new DoSaveAs(session, theFrame)).build();
-    commands.add(saveAsCommand);
-    commandGroups.add(new CommandGroup("Save", commands));
-    CommandPanelContentModel commandPanelContentModel =
-        new CommandPanelContentModel(commandGroups);
-    commandPanelContentModel.setSingleSelectionMode(true);
-    CommandMenuContentModel commandMenuContentModel =
-        new CommandMenuContentModel(
-            commandGroups);
-    return commandMenuContentModel;
-
-  }
-
   public static void doFileOpen(final String[] fileTypes, final String descr,
       final boolean isRepFile, final Runnable doReset)
   {
@@ -510,6 +468,41 @@ public class DebriefRibbonFile
   public static RibbonTask getFileTask()
   {
     return fileTask;
+  }
+
+  private static CommandMenuContentModel getSavePopupContentModel(
+      final Session session, final JRibbonFrame theFrame)
+  {
+    final Image saveImage = MenuUtils.createImage("icons/16/save.png");
+    final ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon
+        .getIcon(saveImage, new Dimension(16, 16));
+    final List<CommandGroup> commandGroups = new ArrayList<>();
+    final List<Command> commands = new ArrayList<>();
+    final Command saveCommand = Command.builder().setText("Save")
+        .setIconFactory(ResizableIconFactory.factory(imageIcon)).setAction(
+            new DoSave(session, theFrame)).build();
+    commands.add(saveCommand);
+    /*
+     * final JCommandMenuButton saveButton = new JCommandMenuButton("Save", imageIcon);
+     * saveButton.setName("save"); saveButton.getActionModel().addActionListener(new DoSave(session,
+     * theFrame)); addMenuButton(saveButton);
+     */
+
+    final Image saveAsImage = MenuUtils.createImage("icons/16/save-as.png");
+    final ImageWrapperResizableIcon imageIcon2 = ImageWrapperResizableIcon
+        .getIcon(saveAsImage, new Dimension(16, 16));
+    final Command saveAsCommand = Command.builder().setText("SaveAs")
+        .setIconFactory(ResizableIconFactory.factory(imageIcon2)).setAction(
+            new DoSaveAs(session, theFrame)).build();
+    commands.add(saveAsCommand);
+    commandGroups.add(new CommandGroup("Save", commands));
+    final CommandPanelContentModel commandPanelContentModel =
+        new CommandPanelContentModel(commandGroups);
+    commandPanelContentModel.setSingleSelectionMode(true);
+    final CommandMenuContentModel commandMenuContentModel =
+        new CommandMenuContentModel(commandGroups);
+    return commandMenuContentModel;
+
   }
 
   public static void saveChanges(final String currentFileName,

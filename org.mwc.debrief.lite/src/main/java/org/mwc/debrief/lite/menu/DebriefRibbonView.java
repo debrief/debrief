@@ -16,14 +16,12 @@ package org.mwc.debrief.lite.menu;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
@@ -41,7 +39,6 @@ import org.mwc.debrief.lite.custom.RibbonSliderProjection;
 import org.mwc.debrief.lite.custom.SliderComponentContentModel;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
-import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.gui.ZoomOut;
 import org.mwc.debrief.lite.gui.custom.SubstanceCommandToggleWithMenuButtonUI;
 import org.mwc.debrief.lite.map.AdvancedZoomInAction;
@@ -55,43 +52,183 @@ import org.mwc.debrief.lite.util.ResizableIconFactory;
 import org.mwc.debrief.lite.view.actions.PanCommandAction;
 import org.opengis.referencing.operation.MathTransform;
 import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
-import org.pushingpixels.flamingo.api.common.CommandButtonPresentationState;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandMenuButton;
 import org.pushingpixels.flamingo.api.common.JCommandToggleButton;
 import org.pushingpixels.flamingo.api.common.JCommandToggleMenuButton;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
-import org.pushingpixels.flamingo.api.common.model.ActionButtonModel;
-import org.pushingpixels.flamingo.api.common.model.ActionToggleButtonModel;
 import org.pushingpixels.flamingo.api.common.model.Command;
 import org.pushingpixels.flamingo.api.common.model.Command.Builder;
 import org.pushingpixels.flamingo.api.common.model.CommandButtonPresentationModel;
-import org.pushingpixels.flamingo.api.common.model.CommandMenuContentModel;
 import org.pushingpixels.flamingo.api.common.model.CommandToggleGroupModel;
-import org.pushingpixels.flamingo.api.common.popup.JCommandPopupMenu;
-import org.pushingpixels.flamingo.api.common.popup.model.AbstractPopupMenuPresentationModel;
 import org.pushingpixels.flamingo.api.common.popup.model.CommandPopupMenuPresentationModel;
 import org.pushingpixels.flamingo.api.common.projection.CommandButtonProjection;
-import org.pushingpixels.flamingo.api.common.projection.CommandPopupMenuProjection;
 import org.pushingpixels.flamingo.api.common.projection.Projection;
 import org.pushingpixels.flamingo.api.common.projection.Projection.ComponentSupplier;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand.PresentationPriority;
-import org.pushingpixels.flamingo.api.ribbon.RibbonApplicationMenu;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
-import org.pushingpixels.flamingo.api.ribbon.projection.RibbonApplicationMenuCommandButtonProjection;
 import org.pushingpixels.flamingo.api.ribbon.synapse.model.ComponentPresentationModel;
 import org.pushingpixels.flamingo.api.ribbon.synapse.projection.ComponentProjection;
-import org.pushingpixels.flamingo.internal.substance.common.ui.SubstanceCommandToggleButtonUI;
-import org.pushingpixels.flamingo.internal.ui.common.CommandButtonUI;
-import org.pushingpixels.flamingo.internal.ui.ribbon.appmenu.RibbonApplicationMenuPanelProjection;
 
 import MWC.GUI.Layers;
 import MWC.GenericData.WorldDistance;
 
 public class DebriefRibbonView
 {
+  public static class CustomBuilder extends Builder
+  {
+    private JPopupMenu popMenu;
+
+    public CustomBuilder()
+    {
+
+    }
+
+    @Override
+    public Command build()
+    {
+      final Command command = new CustomCommand();
+      configureBaseCommand(command);
+
+      return command;
+    }
+
+    @Override
+    protected void configureBaseCommand(final Command command)
+    {
+      super.configureBaseCommand(command);
+      if (command instanceof CustomCommand)
+      {
+        ((CustomCommand) command).setPopMenu(this.popMenu);
+      }
+    }
+
+    public Builder setPopMenu(final JPopupMenu popMenu)
+    {
+      this.popMenu = popMenu;
+      return this;
+    }
+
+  }
+
+  public static class CustomCommand extends Command
+  {
+    private JPopupMenu popMenu;
+
+    public CustomCommand()
+    {
+
+    }
+
+    public JPopupMenu getPopMenu()
+    {
+      return popMenu;
+    }
+
+    @Override
+    public CommandButtonProjection<Command> project(
+        final CommandButtonPresentationModel commandPresentation)
+    {
+      return new CustomCommandButtonProjection(this, commandPresentation);
+    }
+
+    public void setPopMenu(final JPopupMenu popMenu)
+    {
+      this.popMenu = popMenu;
+    }
+  }
+
+  public static class CustomCommandButtonProjection extends
+      CommandButtonProjection
+  {
+
+    private static <M extends Command>
+        ComponentSupplier<AbstractCommandButton, M, CommandButtonPresentationModel>
+        getDefaultSupplier()
+    {
+      return (
+          final Projection<AbstractCommandButton, M, CommandButtonPresentationModel> projection) -> {
+        if (projection.getPresentationModel().isMenu())
+        {
+          return projection.getContentModel().isToggle()
+              ? JCommandToggleMenuButton::new : JCommandMenuButton::new;
+        }
+        else
+        {
+          return projection.getContentModel().isToggle()
+              ? JCommandToggleWithMenuButton::new : JCommandButton::new;
+        }
+      };
+    }
+
+    public CustomCommandButtonProjection(final Command command,
+        final CommandButtonPresentationModel commandPresentation)
+    {
+      super(command, commandPresentation, getDefaultSupplier());
+    }
+  }
+
+  public static class JCommandToggleWithMenuButton extends JCommandToggleButton
+  {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = -4029977054020995335L;
+
+    public JCommandToggleWithMenuButton(
+        final Projection<AbstractCommandButton, ? extends Command, CommandButtonPresentationModel> projection)
+    {
+      super(projection);
+
+      addMouseListener(new MouseAdapter()
+      {
+
+        @Override
+        public void mouseClicked(final MouseEvent e)
+        {
+          if (!SubstanceCommandToggleWithMenuButtonUI.MENU_INDICATOR_POLYGON
+              .contains(e.getPoint()))
+          {
+            super.mouseClicked(e);
+          }
+          else
+          {
+            final JPopupMenu popMenu = getPopupMenu();
+
+            if (popMenu != null)
+            {
+              final Component component = (Component) e.getSource();
+              popMenu.show(component, 0, 0);
+
+              final Point p = component.getLocationOnScreen();
+              popMenu.setLocation(p.x, p.y + component.getHeight());
+            }
+          }
+        }
+
+      });
+    }
+
+    public JPopupMenu getPopupMenu()
+    {
+      if (command instanceof CustomCommand)
+      {
+        return ((CustomCommand) command).getPopMenu();
+      }
+      return null;
+    }
+
+    @Override
+    public void updateUI()
+    {
+      this.setUI(SubstanceCommandToggleWithMenuButtonUI.createUI(this));
+    }
+
+  }
+
   private static ComponentProjection<JRibbonSlider, SliderComponentContentModel>
       addAlphaSlider(final ChangeListener alphaListener, final float alpha)
   {
@@ -102,11 +239,11 @@ public class DebriefRibbonView
         .setChangeListener(alphaListener).build();
     // set the values for the slider here.
     final ComponentSupplier<JRibbonSlider, SliderComponentContentModel, ComponentPresentationModel> jribbonSlider =
-        (Projection<JRibbonSlider, SliderComponentContentModel, ComponentPresentationModel> projection) -> JRibbonSlider::new;
+        (final Projection<JRibbonSlider, SliderComponentContentModel, ComponentPresentationModel> projection) -> JRibbonSlider::new;
     final ComponentProjection<JRibbonSlider, SliderComponentContentModel> projection =
         new RibbonSliderProjection(sliderModel, ComponentPresentationModel
             .withDefaults(), jribbonSlider);
-    JSlider slider = projection.buildComponent();
+    final JSlider slider = projection.buildComponent();
     slider.setToolTipText("Modify transparency");
     slider.setBackground(Color.DARK_GRAY);
     slider.setName("transparencyslider");
@@ -130,11 +267,11 @@ public class DebriefRibbonView
         addAlphaSlider(alphaListener, alpha);
     layersMenu.addRibbonComponent(slider);
 
-    LabelComponentContentModel timeLabelModel = LabelComponentContentModel
+    final LabelComponentContentModel timeLabelModel = LabelComponentContentModel
         .builder().setText("Transparency").build();
     final ComponentSupplier<JRibbonLabel, LabelComponentContentModel, ComponentPresentationModel> jTimeLabel =
-        (Projection<JRibbonLabel, LabelComponentContentModel, ComponentPresentationModel> projection2) -> JRibbonLabel::new;
-    RibbonLabelProjection timeLabelProjection = new RibbonLabelProjection(
+        (final Projection<JRibbonLabel, LabelComponentContentModel, ComponentPresentationModel> projection2) -> JRibbonLabel::new;
+    final RibbonLabelProjection timeLabelProjection = new RibbonLabelProjection(
         timeLabelModel, ComponentPresentationModel.withDefaults(), jTimeLabel);
     // final JLabel timeLabel = timeLabelProjection.buildComponent();
     // timeLabel.setPreferredSize(new Dimension(40,18));
@@ -158,157 +295,6 @@ public class DebriefRibbonView
     commandBand.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         commandBand));
     return commandBand;
-  }
-
-  public static class CustomCommand extends Command
-  {
-    private JPopupMenu popMenu;
-
-    public CustomCommand()
-    {
-
-    }
-
-    @Override
-    public CommandButtonProjection<Command> project(
-        CommandButtonPresentationModel commandPresentation)
-    {
-      return new CustomCommandButtonProjection(this, commandPresentation);
-    }
-
-    public void setPopMenu(JPopupMenu popMenu)
-    {
-      this.popMenu = popMenu;
-    }
-
-    public JPopupMenu getPopMenu()
-    {
-      return popMenu;
-    }
-  }
-
-  public static class CustomBuilder extends Builder
-  {
-    private JPopupMenu popMenu;
-
-    public CustomBuilder()
-    {
-
-    }
-
-    @Override
-    public Command build()
-    {
-      Command command = new CustomCommand();
-      configureBaseCommand(command);
-
-      return command;
-    }
-
-    public Builder setPopMenu(JPopupMenu popMenu)
-    {
-      this.popMenu = popMenu;
-      return this;
-    }
-
-    @Override
-    protected void configureBaseCommand(Command command)
-    {
-      super.configureBaseCommand(command);
-      if (command instanceof CustomCommand)
-      {
-        ((CustomCommand) command).setPopMenu(this.popMenu);
-      }
-    }
-
-  }
-
-  public static class JCommandToggleWithMenuButton extends JCommandToggleButton
-  {
-
-    public JCommandToggleWithMenuButton(
-        Projection<AbstractCommandButton, ? extends Command, CommandButtonPresentationModel> projection)
-    {
-      super(projection);
-
-      addMouseListener(new MouseAdapter()
-      {
-
-        @Override
-        public void mouseClicked(MouseEvent e)
-        {
-          if (!SubstanceCommandToggleWithMenuButtonUI.MENU_INDICATOR_POLYGON.contains(e.getPoint()))
-          {
-            super.mouseClicked(e);
-          }
-          else
-          {
-            final JPopupMenu popMenu = getPopupMenu();
-
-            if (popMenu != null)
-            {
-              final Component component = (Component) e.getSource();
-              popMenu.show(component, 0, 0);
-
-              final Point p = component.getLocationOnScreen();
-              popMenu.setLocation(p.x, p.y + component.getHeight());
-            }
-          }
-        }
-
-      });
-    }
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -4029977054020995335L;
-
-    @Override
-    public void updateUI()
-    {
-      this.setUI(SubstanceCommandToggleWithMenuButtonUI.createUI(this));
-    }
-
-    public JPopupMenu getPopupMenu()
-    {
-      if (command instanceof CustomCommand)
-      {
-        return ((CustomCommand) command).getPopMenu();
-      }
-      return null;
-    }
-
-  }
-
-  public static class CustomCommandButtonProjection extends
-      CommandButtonProjection
-  {
-
-    public CustomCommandButtonProjection(Command command,
-        CommandButtonPresentationModel commandPresentation)
-    {
-      super(command, commandPresentation, getDefaultSupplier());
-    }
-
-    private static <M extends Command>
-        ComponentSupplier<AbstractCommandButton, M, CommandButtonPresentationModel>
-        getDefaultSupplier()
-    {
-      return (
-          Projection<AbstractCommandButton, M, CommandButtonPresentationModel> projection) -> {
-        if (projection.getPresentationModel().isMenu())
-        {
-          return projection.getContentModel().isToggle()
-              ? JCommandToggleMenuButton::new : JCommandMenuButton::new;
-        }
-        else
-        {
-          return projection.getContentModel().isToggle()
-              ? JCommandToggleWithMenuButton::new : JCommandButton::new;
-        }
-      };
-    }
   }
 
   private static JRibbonBand createMouseModes(
@@ -408,8 +394,8 @@ public class DebriefRibbonView
     }
     // final Command.Builder builder = Command.builder()
     final CustomBuilder builder = new CustomBuilder();
-    builder.setPopMenu(menu).setText("Rng/Brg").setIconFactory(ResizableIconFactory
-        .factory(imageIcon)).setAction(rangeAction);
+    builder.setPopMenu(menu).setText("Rng/Brg").setIconFactory(
+        ResizableIconFactory.factory(imageIcon)).setAction(rangeAction);
     // .setTitleClickAction();
 
     builder.setToggle();
@@ -418,7 +404,7 @@ public class DebriefRibbonView
         null, null));
     builder.inToggleGroup(mouseModeGroup);
     final Command command = builder.build();
-    CommandButtonProjection<Command> projectionModel = command.project(
+    final CommandButtonProjection<Command> projectionModel = command.project(
         CommandButtonPresentationModel.builder().setActionKeyTip("NA")
             // .setPopupCallback(popupCallback)
             .setPopupMenuPresentationModel(CommandPopupMenuPresentationModel
