@@ -400,8 +400,6 @@ public class DebriefRibbonView
 
     builder.setToggle();
     builder.setToggleSelected(false);
-    builder.setSecondaryContentModel(DebriefRibbonFile.getSavePopupContentModel(
-        null, null));
     builder.inToggleGroup(mouseModeGroup);
     final Command command = builder.build();
     final CommandButtonProjection<Command> projectionModel = command.project(
