@@ -870,8 +870,8 @@ public class EditableWrapper implements IPropertySource
                       | SWT.OK);
               dialog.setText("Date inconsistency");
               dialog.setMessage(
-                  "Start Date must be before End Date. Please, check the value of the following field: "
-                      + thisName);
+                  "Start Date must be before End Date. Please, check the value of the following field: ["
+                      + thisName + "]");
               dialog.open();
             }
           });
