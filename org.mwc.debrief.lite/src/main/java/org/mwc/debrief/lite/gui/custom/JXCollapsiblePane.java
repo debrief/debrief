@@ -954,7 +954,7 @@ public class JXCollapsiblePane extends JXPanel
 
   /**
    * Returns the minimum size for the pane when it is collapsed
-   * 
+   *
    * @return
    */
   public Integer getMinimunAnimationSize()

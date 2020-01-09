@@ -171,6 +171,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.EventObject;
+import java.util.HashSet;
 import java.util.Hashtable;
 
 import javax.swing.AbstractCellEditor;
@@ -1391,6 +1392,8 @@ public class SwingLayerManager extends SwingCustomEditor implements
     // we're doing too many layer updates. Keep track of if we need to do it
     boolean needToReloadThisLayer = false;
 
+    final HashSet<TreeNode> reloadedNodes = new HashSet<TreeNode>();
+
     // and work through the elements of this layer
     final Enumeration<Editable> enumer = thisLayer.elements();
     if (enumer != null)
@@ -1427,7 +1430,14 @@ public class SwingLayerManager extends SwingCustomEditor implements
           else
           {
             // reload just that node that was modified
-            ((DefaultTreeModel) _myTree.getModel()).reload(nodeL);
+            final TreeNode parent = nodeL.getParent();
+
+            // Lets reload it only once
+            if (!reloadedNodes.contains(parent))
+            {
+              ((DefaultTreeModel) _myTree.getModel()).reload(parent);
+              reloadedNodes.add(parent);
+            }
 
             // ok, we've used this one
             children.remove(nodeL);

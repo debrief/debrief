@@ -85,9 +85,11 @@ public class PropertiesDialog extends JDialog
 
   private final UndoBuffer _undoBuffer;
   private final Layer _parentLayer;
+
   public PropertiesDialog(final EditorType editableProperty,
       final Layers layers, final UndoBuffer undoBuffer,
-      final ToolParent toolParent, final ToolbarOwner owner,final Layer parentLayer)
+      final ToolParent toolParent, final ToolbarOwner owner,
+      final Layer parentLayer)
   {
     _editableProperty = editableProperty;
     _theLayers = layers;

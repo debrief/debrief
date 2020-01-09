@@ -64,6 +64,8 @@ public class JRibbonRangeSlider extends RangeSlider
       }
       if ("maximum".equals(event.getPropertyName())) {
         setMaximum(contentModel.getMaximum());
+        setUpperValue(contentModel.getMaximum());
+        
       }
       if ("minimum".equals(event.getPropertyName())) {
         setMinimum(contentModel.getMinimum());

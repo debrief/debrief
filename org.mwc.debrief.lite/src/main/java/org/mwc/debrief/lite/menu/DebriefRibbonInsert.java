@@ -166,6 +166,17 @@ public class DebriefRibbonInsert
     }
     
   }
+  
+  public static void resetLayers(Layers layers)
+  {
+    if(selectLayerCombo!=null) {
+      List<String> items = Arrays.asList(layers.trimmedLayers());
+      DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>)selectLayerCombo.getModel();
+      model.removeAllElements();
+      model.addElement(CoreCreateShape.USER_SELECTED_LAYER_COMMAND);
+      items.forEach(item->model.addElement(item));
+    }
+  }
 
   private static JRibbonBand createReferenceData(final Layers theLayers,
       final PropertiesPanel theProperties,

@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.lite.gui.custom.narratives;
 
@@ -21,17 +21,18 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
 public class TypeItemRenderer extends JCheckBox implements
-ListCellRenderer<String>
+    ListCellRenderer<String>
 {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = -2797827350350391146L;
 
   @Override
-  public Component getListCellRendererComponent(JList<? extends String> list,
-      String value, int index, boolean isSelected, boolean cellHasFocus)
+  public Component getListCellRendererComponent(
+      final JList<? extends String> list, final String value, final int index,
+      final boolean isSelected, final boolean cellHasFocus)
   {
     setName(value);
     return this;
