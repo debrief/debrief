@@ -50,6 +50,7 @@ import org.mwc.debrief.lite.map.DragElementTool;
 import org.mwc.debrief.lite.map.DragWholeFeatureElementTool;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.map.RangeBearingAction;
+import org.mwc.debrief.lite.map.RangeBearingTool;
 import org.mwc.debrief.lite.util.ResizableIconFactory;
 import org.mwc.debrief.lite.view.actions.PanCommandAction;
 import org.opengis.referencing.operation.MathTransform;
@@ -385,8 +386,8 @@ public class DebriefRibbonView
       public void actionPerformed(final ActionEvent e)
       {
         final String unit = e.getActionCommand();
-        // rangeBearingTool.setBearingUnit(WorldDistance.getUnitIndexFor(unit));
-        // ((AbstractMapPane) getMapPane()).repaint();
+        RangeBearingTool.setBearingUnit(WorldDistance.getUnitIndexFor(unit));
+        geoMapRenderer.getMap().repaint();
       }
     };
 
@@ -394,7 +395,7 @@ public class DebriefRibbonView
     {
       final JRadioButtonMenuItem unitRadioButton = new JRadioButtonMenuItem(
           WorldDistance.UnitLabels[i]);
-      // unitRadioButton.setSelected(RangeBearingTool.getBearingUnit() == i);
+      unitRadioButton.setSelected(RangeBearingTool.getBearingUnit() == i);
       unitRadioButton.addActionListener(changeUnits);
       menu.add(unitRadioButton);
       unitsGroup.add(unitRadioButton);
