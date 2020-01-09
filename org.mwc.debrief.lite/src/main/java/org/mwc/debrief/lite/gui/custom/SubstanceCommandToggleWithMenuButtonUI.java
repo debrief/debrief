@@ -29,6 +29,8 @@
  */
 package org.mwc.debrief.lite.gui.custom;
 
+import org.mwc.debrief.lite.menu.DebriefRibbonView.CustomCommand;
+import org.mwc.debrief.lite.menu.DebriefRibbonView.JCommandToggleWithMenuButton;
 import org.pushingpixels.flamingo.api.common.*;
 import org.pushingpixels.flamingo.api.ribbon.AbstractRibbonBand;
 import org.pushingpixels.flamingo.internal.substance.common.GlowingResizableIcon;
@@ -294,9 +296,23 @@ public class SubstanceCommandToggleWithMenuButtonUI extends BasicCommandToggleBu
         SubstanceCoreUtilities.paintFocus(g2d, this.commandButton, this.commandButton, this,
                 focusArea, layoutInfo.actionClickArea, 1.0f, 0);
 
-        g2d.dispose();
+        drawMenuIndicator(g2d);
         
-        System.out.println("Pintado personalizado");
+        g2d.dispose();
+    }
+
+    public final static Polygon MENU_INDICATOR_POLYGON = new Polygon(new int[] {25, 38, 38}, new int[] {65, 50, 65}, 3);
+    
+    protected void drawMenuIndicator(final Graphics2D graphic)
+    {
+      if ( this.commandButton instanceof JCommandToggleWithMenuButton )
+      {
+        final JCommandToggleWithMenuButton commandWithMenu = (JCommandToggleWithMenuButton)this.commandButton;
+        if ( commandWithMenu.getPopupMenu() != null )
+        {
+          graphic.fillPolygon(MENU_INDICATOR_POLYGON);
+        }
+      }
     }
 
     protected Color getForegroundColor(ModelStateInfo modelStateInfo) {
