@@ -70,41 +70,6 @@ public class RangeBearingAction extends MapAction implements CommandAction
     final RangeBearingTool rangeBearingTool = new RangeBearingTool(_statusBar,
         _transform, (AbstractMapPane) getMapPane());
     getMapPane().setCursorTool(rangeBearingTool);
-    
-    final JPopupMenu menu = new JPopupMenu();
-    // ButtonGroup for radio buttons
-    final ButtonGroup unitsGroup = new ButtonGroup();
-
-    final ActionListener changeUnits = new ActionListener()
-    {
-
-      @Override
-      public void actionPerformed(final ActionEvent e)
-      {
-        final String unit = e.getActionCommand();
-        rangeBearingTool.setBearingUnit(WorldDistance.getUnitIndexFor(unit));
-        ((AbstractMapPane) getMapPane()).repaint();
-      }
-    };
-
-    for (int i = 0; i < WorldDistance.UnitLabels.length; i++)
-    {
-      final JRadioButtonMenuItem unitRadioButton = new JRadioButtonMenuItem(
-          WorldDistance.UnitLabels[i]);
-      unitRadioButton.setSelected(RangeBearingTool.getBearingUnit() == i);
-      unitRadioButton.addActionListener(changeUnits);
-      menu.add(unitRadioButton);
-      unitsGroup.add(unitRadioButton);
-    }
-
-    final Component component = (Component) ev.getSource();
-
-    menu.show(component, 0, 0);
-
-    // Get the location of the point 'on the screen'
-    final Point p = component.getLocationOnScreen();
-
-    menu.setLocation(p.x, p.y + component.getHeight());
   }
 
   @Override

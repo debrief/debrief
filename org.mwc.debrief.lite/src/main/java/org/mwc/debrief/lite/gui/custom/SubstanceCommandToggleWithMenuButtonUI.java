@@ -301,7 +301,7 @@ public class SubstanceCommandToggleWithMenuButtonUI extends BasicCommandToggleBu
         g2d.dispose();
     }
 
-    public final static Polygon MENU_INDICATOR_POLYGON = new Polygon(new int[] {25, 38, 38}, new int[] {65, 50, 65}, 3);
+    public final static Polygon MENU_INDICATOR_POLYGON = new Polygon(new int[] {38, 51, 51}, new int[] {65, 50, 65}, 3);
     
     protected void drawMenuIndicator(final Graphics2D graphic)
     {

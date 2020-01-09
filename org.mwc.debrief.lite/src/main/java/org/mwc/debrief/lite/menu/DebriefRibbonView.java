@@ -371,9 +371,6 @@ public class DebriefRibbonView
         true);
     final RangeBearingAction rangeAction = new RangeBearingAction(mapPane,
         false, statusBar, transform);
-    MenuUtils.addCommandToggleButton("Rng/Brg", "icons/24/rng_brg.png",
-        rangeAction, viewBand, PresentationPriority.TOP, true, mouseModeGroup,
-        false);
 
     final JPopupMenu menu = new JPopupMenu();
     // ButtonGroup for radio buttons
@@ -411,7 +408,7 @@ public class DebriefRibbonView
     }
     // final Command.Builder builder = Command.builder()
     final CustomBuilder builder = new CustomBuilder();
-    builder.setPopMenu(menu).setText("Rng").setIconFactory(ResizableIconFactory
+    builder.setPopMenu(menu).setText("Rng/Brg").setIconFactory(ResizableIconFactory
         .factory(imageIcon)).setAction(rangeAction);
     // .setTitleClickAction();
 
