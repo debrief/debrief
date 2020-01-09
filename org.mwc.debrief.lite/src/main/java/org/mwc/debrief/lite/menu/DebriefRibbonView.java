@@ -385,13 +385,10 @@ public class DebriefRibbonView
     }
 
     ImageWrapperResizableIcon imageIcon = null;
-    final String imagePath = "icons/24/rng_brg.png";
-    if (imagePath != null)
-    {
-      final Image zoominImage = MenuUtils.createImage(imagePath);
-      imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage,
-          MenuUtils.ICON_SIZE_16);
-    }
+    final Image zoominImage = MenuUtils.createImage("icons/24/rng_brg.png");
+    imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage,
+        MenuUtils.ICON_SIZE_16);
+    
     // final Command.Builder builder = Command.builder()
     final CustomBuilder builder = new CustomBuilder();
     builder.setPopMenu(menu).setText("Rng/Brg").setIconFactory(
