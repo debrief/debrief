@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.lite.gui.custom.narratives;
 
@@ -20,22 +20,12 @@ public class TrackNameColor
 {
   private String _trackName;
   private Color _color;
-  
-  public TrackNameColor(String _trackName, Color _color)
+
+  public TrackNameColor(final String _trackName, final Color _color)
   {
     super();
     this._trackName = _trackName;
     this._color = _color;
-  }
-
-  public String getTrackName()
-  {
-    return _trackName;
-  }
-
-  public void setTrackName(String _trackName)
-  {
-    this._trackName = _trackName;
   }
 
   public Color getColor()
@@ -43,10 +33,19 @@ public class TrackNameColor
     return _color;
   }
 
-  public void setColor(Color _color)
+  public String getTrackName()
+  {
+    return _trackName;
+  }
+
+  public void setColor(final Color _color)
   {
     this._color = _color;
   }
-  
-  
+
+  public void setTrackName(final String _trackName)
+  {
+    this._trackName = _trackName;
+  }
+
 }

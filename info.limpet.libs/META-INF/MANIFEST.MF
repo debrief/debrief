@@ -112,3 +112,4 @@ Export-Package: org.apache.commons.csv,
  tec.units.ri.internal.format
 Require-Bundle: org.eclipse.draw2d,
  org.eclipse.jface
+Automatic-Module-Name: info.limpet.libs

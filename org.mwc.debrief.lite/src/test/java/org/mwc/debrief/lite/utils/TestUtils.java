@@ -29,11 +29,13 @@ import javax.swing.JMenu;
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandMenuButton;
+import org.pushingpixels.flamingo.api.common.JScrollablePanel;
 import org.pushingpixels.flamingo.api.common.popup.JPopupPanel;
 import org.pushingpixels.flamingo.api.ribbon.AbstractRibbonBand;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
+import org.pushingpixels.flamingo.api.ribbon.synapse.JRibbonComboBox;
 import org.pushingpixels.flamingo.internal.ui.ribbon.JBandControlPanel;
+import org.pushingpixels.flamingo.internal.ui.ribbon.JRibbonComponent;
 
 public class TestUtils
 {
@@ -159,25 +161,28 @@ public class TestUtils
     JBandControlPanel liteBand = (JBandControlPanel)getRibbonBand(3,1).getComponent(0);
     JRibbonComponent newButton = ((JRibbonComponent)liteBand.getComponent(0));
     @SuppressWarnings("unchecked")
-    JComboBox<String> combo = (JComboBox<String>)getChildNamed(newButton, "select-layer-combo");
+    JRibbonComboBox<String> combo =(JRibbonComboBox<String>) newButton.getComponent(1);
+    // getChildNamed(newButton, "select-layer-combo");
     return combo;
   }
   
-  public static JCommandMenuButton getSaveButton()
+  public static JCommandButton getSaveButton()
   {
     JBandControlPanel liteBand = (JBandControlPanel)getRibbonBand(1,0).getComponent(0);
     JCommandButton saveButton = ((JCommandButton)liteBand.getComponent(2));
     JPopupPanel panel = (JPopupPanel)saveButton.getPopupCallback().getPopupPanel(saveButton);
-    JCommandMenuButton saveDDButton = (JCommandMenuButton)TestUtils.getChildNamed(panel, "save");
+    JCommandButton saveDDButton = (JCommandButton)((JScrollablePanel)panel.getComponent(0)).getComponent(1);
+    saveDDButton.setFireActionOnRollover(true);
+    System.out.println("Save Button:"+saveDDButton);
     return saveDDButton;
   }
   
-  public static JCommandMenuButton getSaveASButton()
+  public static JCommandButton getSaveASButton()
   {
     JBandControlPanel liteBand = (JBandControlPanel)getRibbonBand(1,0).getComponent(0);
     JCommandButton saveButton = ((JCommandButton)liteBand.getComponent(2));
     JPopupPanel panel = (JPopupPanel)saveButton.getPopupCallback().getPopupPanel(saveButton);
-    JCommandMenuButton saveDDButton = (JCommandMenuButton)TestUtils.getChildNamed(panel, "saveas");
+    JCommandButton saveDDButton = (JCommandButton)((JScrollablePanel<JPopupPanel>)panel.getComponent(0)).getComponent(2);
     return saveDDButton;
   }
   public static JCommandMenuButton getSaveAsButton()

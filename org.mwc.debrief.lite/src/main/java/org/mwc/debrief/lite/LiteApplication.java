@@ -27,12 +27,13 @@ import MWC.GUI.Tool;
 
 class LiteApplication extends Application implements ProvidesModeSelector
 {
-  
-  /** store preferences for import mode, and import frequency
-   * 
+
+  /**
+   * store preferences for import mode, and import frequency
+   *
    */
   private final ImportSettings settings;
-  
+
   private final Long freq;
 
   private Session _session;
@@ -44,24 +45,7 @@ class LiteApplication extends Application implements ProvidesModeSelector
     settings = new ImportSettings(mode, freq);
     this.freq = freq;
   }
-  
-  @Override
-  public String getProperty(final String name)
-  {
-    if (name.equals(ImportReplay.TRACK_IMPORT_MODE))
-    {
-      return settings.importMode;
-    }
-    else if (name.equals(ImportReplay.RESAMPLE_FREQUENCY))
-    {
-      return "" + settings.sampleFrequency;
-    }
-    else
-    {
-      return super.getProperty(name);
-    }
-  }
-  
+
   @Override
   protected void addMenuItem(final String theMenu, final String theLabel,
       final Tool theTool, final MenuShortcut theShortCut)
@@ -94,6 +78,35 @@ class LiteApplication extends Application implements ProvidesModeSelector
   }
 
   @Override
+  public String getProperty(final String name)
+  {
+    if (name.equals(ImportReplay.TRACK_IMPORT_MODE))
+    {
+      return settings.importMode;
+    }
+    else if (name.equals(ImportReplay.RESAMPLE_FREQUENCY))
+    {
+      return "" + settings.sampleFrequency;
+    }
+    else
+    {
+      return super.getProperty(name);
+    }
+  }
+
+  @Override
+  public Long getSelectedImportFrequency(final String trackName)
+  {
+    return this.freq;
+  }
+
+  @Override
+  public ImportSettings getSelectedImportMode(final String trackName)
+  {
+    return settings;
+  }
+
+  @Override
   public void logStack(final int status, final String text)
   {
     throw new IllegalArgumentException("Not implemented");
@@ -111,6 +124,16 @@ class LiteApplication extends Application implements ProvidesModeSelector
     _theFrame.getContentPane().setCursor(new Cursor(theCursor));
   }
 
+  public void setFrame(final JFrame theFrame)
+  {
+    _theFrame = theFrame;
+  }
+
+  public void setSession(final Session sessio)
+  {
+    _session = sessio;
+  }
+
   @Override
   protected void setTitleName(final String theStr)
   {
@@ -121,28 +144,5 @@ class LiteApplication extends Application implements ProvidesModeSelector
   protected void showSession(final Session theSession)
   {
     throw new IllegalArgumentException("Not implemented");
-  }
-
-
-  @Override
-  public Long getSelectedImportFrequency(final String trackName)
-  {
-    return this.freq;
-  }
-
-  @Override
-  public ImportSettings getSelectedImportMode(final String trackName)
-  {
-    return settings;
-  }
-
-  public void setSession(Session sessio)
-  {
-    _session = sessio;
-  }
-
-  public void setFrame(JFrame theFrame)
-  {
-    _theFrame = theFrame;
   }
 }

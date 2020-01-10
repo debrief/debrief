@@ -32,6 +32,8 @@ public interface AbstractTrackConfiguration
 
   public List<AbstractSelection<TrackWrapper>> getTracks();
 
+  public boolean isRelativeEnabled();
+
   public void setActiveTrack(final TrackWrapper track, final boolean check);
 
   public void setOperation(final CalculationHolder calculation);
@@ -39,12 +41,10 @@ public interface AbstractTrackConfiguration
   public void setPrimaryTrack(final TrackWrapper track);
 
   /**
-   * 
+   *
    * @param tracks
    *          Tracks to assign
    * @return true if it was actually assigned. If they are the same, they are not assigned.
    */
   public boolean setTracks(final List<TrackWrapper> tracks);
-  
-  public boolean isRelativeEnabled();
 }

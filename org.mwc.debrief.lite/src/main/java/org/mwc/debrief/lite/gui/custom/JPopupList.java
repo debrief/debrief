@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.lite.gui.custom;
 
@@ -24,7 +24,7 @@ import javax.swing.ListCellRenderer;
 public class JPopupList<T> extends JPopupMenu
 {
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = -431721677208908941L;
 
@@ -40,16 +40,16 @@ public class JPopupList<T> extends JPopupMenu
   }
 
   public JPopupList(final ListCellRenderer<T> _cellRenderer,
-      List<AbstractSelection<T>> items)
+      final List<AbstractSelection<T>> items)
   {
     super();
-    Vector<T> list = new Vector<T>();
-    for ( AbstractSelection<T> abstractItem : items )
+    final Vector<T> list = new Vector<T>();
+    for (final AbstractSelection<T> abstractItem : items)
     {
       list.add(abstractItem.getItem());
     }
     this._items = new JList<T>(list);
-    
+
     initializeComponents();
   }
 

@@ -14,21 +14,17 @@ public class JSelectTrackFilter extends JPopupList<TrackNameColor>
 {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 7136974124331608166L;
-
-  public JSelectTrackFilter(final AbstractNarrativeConfiguration model)
-  {
-    super(new TrackPanelItemRenderer(), createTrackFilters(model));
-  }
 
   public static JList<TrackNameColor> createTrackFilters(
       final AbstractNarrativeConfiguration model)
   {
     final ArrayList<TrackNameColor> differentTrackNames = new ArrayList<>();
     final HashSet<String> addedTracknames = new HashSet<>();
-    for (AbstractSelection<NarrativeEntry> narrative : model.getNarratives())
+    for (final AbstractSelection<NarrativeEntry> narrative : model
+        .getNarratives())
     {
       if (!addedTracknames.contains(narrative.getItem().getTrackName()))
       {
@@ -40,5 +36,10 @@ public class JSelectTrackFilter extends JPopupList<TrackNameColor>
 
     return new JList<>(differentTrackNames.toArray(new TrackNameColor[]
     {}));
+  }
+
+  public JSelectTrackFilter(final AbstractNarrativeConfiguration model)
+  {
+    super(new TrackPanelItemRenderer(), createTrackFilters(model));
   }
 }

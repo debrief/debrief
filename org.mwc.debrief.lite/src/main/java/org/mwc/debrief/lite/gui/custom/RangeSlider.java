@@ -41,6 +41,11 @@ public class RangeSlider extends JSlider
    * 
    */
   private static final long serialVersionUID = 1L;
+  
+  public RangeSlider()
+  {
+    initSlider();
+  }
 
   /**
    * Constructs a RangeSlider with using a Calendar, storing the values divided by 1000

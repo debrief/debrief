@@ -11,8 +11,10 @@ import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.Envelope2D;
 import org.geotools.swing.JMapPane;
 import org.locationtech.jts.geom.Coordinate;
+import org.pushingpixels.flamingo.api.common.CommandAction;
+import org.pushingpixels.flamingo.api.common.CommandActionEvent;
 
-public class ZoomOut extends AbstractAction
+public class ZoomOut extends AbstractAction implements CommandAction
 {
   /**
    *
@@ -50,6 +52,13 @@ public class ZoomOut extends AbstractAction
       newMapArea.setFrameFromCenter(mapPos, corner);
       _map.setDisplayArea(newMapArea);
     }
+  }
+
+  @Override
+  public void commandActivated(CommandActionEvent e)
+  {
+    actionPerformed(e);
+    
   }
 
 }
