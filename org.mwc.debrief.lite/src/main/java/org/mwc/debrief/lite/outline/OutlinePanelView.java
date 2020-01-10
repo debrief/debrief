@@ -84,6 +84,8 @@ import Debrief.GUI.Views.LogicHelpers.Helper;
 import Debrief.GUI.Views.LogicHelpers.Or;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
+import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanEnumerate;
 import MWC.GUI.Editable;
@@ -139,6 +141,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     }
   }
 
+  @SuppressWarnings("serial")
   final class DoAddLayer extends PlainTool implements ActionListener
   {
     final class AddLayerAction implements MWC.GUI.Tools.Action
@@ -205,6 +208,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     }
   }
 
+  @SuppressWarnings("serial")
   final class DoDelete extends PlainTool
   {
     final class DeleteAction implements MWC.GUI.Tools.Action, ClipboardOwner
@@ -237,7 +241,18 @@ public class OutlinePanelView extends SwingLayerManager implements
         if (parent != null)
         {
           parent.removeElement(plottable);
-          _myData.fireModified(parent);
+          if(parent instanceof TrackSegment)
+          {
+            // special case. We wish to update the top-level
+            // entity, not the track segment
+            TrackSegment segment = (TrackSegment) parent;
+            LightweightTrackWrapper tParent = segment.getWrapper();
+            _myData.fireModified(tParent);
+          }
+          else    
+          {
+            _myData.fireModified(parent);
+          }
         }
         else
         {
@@ -388,6 +403,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     }
   }
 
+  @SuppressWarnings("serial")
   final class DoPaste extends PlainTool
   {
 
@@ -1188,15 +1204,19 @@ public class OutlinePanelView extends SwingLayerManager implements
         "icons/24/add.png");
     // _enablers.add(new ButtonEnabler(addLayerButton, new Or(isEmpty,notEmpty)));
     commandBar.add(addLayerButton);
-
+    final Action deleteAction = new DoDelete(false);
     final JButton deleteButton = createCommandButton("Delete",
         "icons/24/remove.png");
     deleteButton.setToolTipText("Delete");
     deleteButton.setMnemonic(KeyEvent.VK_DELETE);
+    deleteButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
+        .getKeyStroke(KeyEvent.VK_DELETE, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "delete");
+    deleteButton.getActionMap().put("delete", deleteAction);
+    deleteButton.addActionListener(deleteAction);
     _enablers.add(new ButtonEnabler(deleteButton, notEmpty));
     deleteButton.setEnabled(false);
     commandBar.add(deleteButton);
-
+    
     final JButton refreshViewButton = createCommandButton("Update View",
         "icons/24/repaint.png");
     refreshViewButton.setToolTipText("Update View");
@@ -1241,22 +1261,8 @@ public class OutlinePanelView extends SwingLayerManager implements
     });
     final DoPaste pasteAction = new DoPaste();
     pasteButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
-        .getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit()
-            .getMenuShortcutKeyMask()), "paste");
-    pasteButton.getActionMap().put("paste", new AbstractAction()
-    {
-
-      /**
-       *
-       */
-      private static final long serialVersionUID = 6778825469050187755L;
-
-      @Override
-      public void actionPerformed(final ActionEvent e)
-      {
-        pasteAction.actionPerformed(e);
-      }
-    });
+        .getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK), "paste");
+    pasteButton.getActionMap().put("paste", pasteAction);
     pasteButton.addActionListener(pasteAction);
 
     final Action collapseAction = new AbstractAction()
@@ -1310,8 +1316,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     };
 
     collapseAllButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-        KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, Toolkit.getDefaultToolkit()
-            .getMenuShortcutKeyMask()), "collapseall");
+        KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, KeyEvent.CTRL_DOWN_MASK), "collapseall");
     collapseAllButton.getActionMap().put("collapseall", collapseAction);
     collapseAllButton.addActionListener(collapseAction);
 
@@ -1343,31 +1348,15 @@ public class OutlinePanelView extends SwingLayerManager implements
       }
     };
     editButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
-        .getKeyStroke(KeyEvent.VK_ENTER, Toolkit.getDefaultToolkit()
-            .getMenuShortcutKeyMask()), "edit");
+        .getKeyStroke(KeyEvent.VK_ENTER, 0), "edit");
     editButton.getActionMap().put("edit", editAction);
     editButton.addActionListener(editAction);
     final ActionListener addLayerAction = new DoAddLayer();
     addLayerButton.addActionListener(addLayerAction);
-
     final DoDelete cutAction = new DoDelete(true);
     cutButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
-        .getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit()
-            .getMenuShortcutKeyMask()), "cut");
-    cutButton.getActionMap().put("cut", new AbstractAction()
-    {
-
-      /**
-       *
-       */
-      private static final long serialVersionUID = 6778825469050187755L;
-
-      @Override
-      public void actionPerformed(final ActionEvent e)
-      {
-        cutAction.actionPerformed(e);
-      }
-    });
+        .getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK), "cut");
+    cutButton.getActionMap().put("cut", cutAction);
     cutButton.addActionListener(cutAction);
     final Action copyAction = new AbstractAction()
     {
@@ -1390,11 +1379,9 @@ public class OutlinePanelView extends SwingLayerManager implements
       }
     };
     copyButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
-        .getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit()
-            .getMenuShortcutKeyMask()), "copy");
+        .getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK), "copy");
     copyButton.getActionMap().put("copy", copyAction);
     copyButton.addActionListener(copyAction);
-    final ActionListener deleteAction = new DoDelete(false);
     copyButton.setEnabled(false);
     deleteButton.setEnabled(false);
     pasteButton.setEnabled(false);

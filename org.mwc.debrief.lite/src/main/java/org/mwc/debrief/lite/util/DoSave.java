@@ -12,19 +12,18 @@ import Debrief.GUI.Frames.Session;
 public class DoSave extends DoSaveAs
 {
 
-
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
 
-  public DoSave(Session session,JRibbonFrame theFrame)
+  public DoSave(final Session session, final JRibbonFrame theFrame)
   {
-    super(session,theFrame);
+    super(session, theFrame);
   }
 
   @Override
-  public void actionPerformed(ActionEvent e)
+  public void actionPerformed(final ActionEvent e)
   {
     // get the current file path,
     // check we have write permission to it before starting save
@@ -37,11 +36,12 @@ public class DoSave extends DoSaveAs
       final File location;
       final String lastFileLocation = DebriefLiteApp.getDefault().getProperty(
           DoSaveAs.LAST_FILE_LOCATION);
-      if(lastFileLocation!=null) 
+      if (lastFileLocation != null)
       {
         location = new File(lastFileLocation);
       }
-      else {
+      else
+      {
         location = null;
       }
       outputFileName = showSaveDialog(location, DEFAULT_FILENAME);
@@ -65,7 +65,7 @@ public class DoSave extends DoSaveAs
         // if the file is already loaded and
         // has a different extension than dpf,
         // then show the save dialog
-        File f = new File(fileName);
+        final File f = new File(fileName);
         fileName = getFileName(fileName);
         fileName = showSaveDialog(f.getParentFile(), fileName);
         if (fileName != null)

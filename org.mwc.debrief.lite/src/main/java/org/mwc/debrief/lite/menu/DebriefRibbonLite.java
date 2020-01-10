@@ -17,7 +17,6 @@ package org.mwc.debrief.lite.menu;
 import java.awt.Desktop;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.swing.AbstractAction;
@@ -26,12 +25,15 @@ import javax.swing.SwingUtilities;
 
 import org.mwc.debrief.lite.undo.RedoAction;
 import org.mwc.debrief.lite.undo.UndoAction;
-import org.pushingpixels.flamingo.api.common.FlamingoCommand;
-import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandBuilder;
+import org.mwc.debrief.lite.util.ResizableIconFactory;
+import org.pushingpixels.flamingo.api.common.CommandAction;
+import org.pushingpixels.flamingo.api.common.CommandActionEvent;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
+import org.pushingpixels.flamingo.api.common.model.Command;
+import org.pushingpixels.flamingo.api.common.projection.CommandButtonProjection;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
-import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
+import org.pushingpixels.flamingo.api.ribbon.JRibbonBand.PresentationPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
 import Debrief.GUI.Frames.Application;
@@ -44,7 +46,7 @@ import Debrief.GUI.Frames.Session;
 public class DebriefRibbonLite
 {
 
-  private static class ExitLiteApp extends AbstractAction
+  private static class ExitLiteApp extends AbstractAction implements CommandAction
   {
 
     /**
@@ -64,9 +66,16 @@ public class DebriefRibbonLite
       _action.run();
     }
 
+    @Override
+    public void commandActivated(CommandActionEvent e)
+    {
+      actionPerformed(e);
+      
+    }
+
   }
 
-  private static class HelpAction extends AbstractAction
+  private static class HelpAction extends AbstractAction implements CommandAction
   {
     /**
      *
@@ -108,6 +117,13 @@ public class DebriefRibbonLite
       }
     }
 
+    @Override
+    public void commandActivated(CommandActionEvent e)
+    {
+      actionPerformed(e);
+      
+    }
+
   }
 
   protected static void addLiteTab(final JRibbon ribbon, final Session session,
@@ -117,45 +133,46 @@ public class DebriefRibbonLite
     final JRibbonBand liteMenu = new JRibbonBand("Lite", null);
     liteMenu.startGroup();
     final UndoAction undoAction = new UndoAction(session.getUndoBuffer());
-    final FlamingoCommand undoCommand = MenuUtils.createCommand("Undo",
-        "icons/24/undo.png", undoAction, RibbonElementPriority.TOP, null);
+    final CommandButtonProjection<Command> undoCommand = MenuUtils.createCommand("Undo",
+        "icons/24/undo.png", undoAction, PresentationPriority.TOP, null);
     // so that action has the command it has to enable/disable
-    undoAction.setActionCommand(undoCommand);
-    undoCommand.setEnabled(false);
+    undoAction.setActionCommand(undoCommand.getContentModel());
+    undoCommand.getContentModel().setActionEnabled(false);
     // add the undoaction as observer for undobuffer
     session.getUndoBuffer().addObserver(undoAction);
-    ribbon.addTaskbarCommand(undoCommand);
+    ribbon.addTaskbarCommand(undoCommand.getContentModel());
     final RedoAction redoAction = new RedoAction(session.getUndoBuffer());
-    final FlamingoCommand redoCommand = MenuUtils.createCommand("Redo",
-        "icons/24/redo.png", redoAction, RibbonElementPriority.TOP, null);
+    final CommandButtonProjection<Command> redoCommand = MenuUtils.createCommand("Redo",
+        "icons/24/redo.png", redoAction, PresentationPriority.TOP, null);
     // so that action has the command it has to enable/disable
-    redoAction.setActionCommand(redoCommand);
-    redoCommand.setEnabled(false);
-    ribbon.addTaskbarCommand(redoCommand);
+    redoAction.setActionCommand(redoCommand.getContentModel());
+    redoCommand.getContentModel().setActionEnabled(false);
+    ribbon.addTaskbarCommand(redoCommand.getContentModel());
 
-    ActionListener collapsePopup = new ActionListener()
+    CommandAction collapsePopup = new CommandAction()
     {
 
       @Override
-      public void actionPerformed(ActionEvent e)
+      public void commandActivated(CommandActionEvent e)
       {
         collapseAction.run();
+        
       }
     };
     // and the expand/collapse button
     
-    final FlamingoCommand collapseCommand = addToggleCommand("Collapse",
+    final Command collapseCommand = addToggleCommand("Collapse",
         "icons/24/fit_to_win.png", collapsePopup);
     // so that action has the command it has to enable/disable
-    collapseCommand.setEnabled(true);
+    collapseCommand.setActionEnabled(true);
     ribbon.addTaskbarCommand(collapseCommand);
 
     // add the action as observer of undobuffer
     session.getUndoBuffer().addObserver(redoAction);
     MenuUtils.addCommand("Help", "icons/24/help.png", new HelpAction(path),
-        liteMenu, RibbonElementPriority.TOP);
+        liteMenu, PresentationPriority.TOP);
     MenuUtils.addCommand("Exit", "icons/24/exit.png", new ExitLiteApp(
-        exitAction), liteMenu, RibbonElementPriority.TOP);
+        exitAction), liteMenu, PresentationPriority.TOP);
 
     liteMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         liteMenu));
@@ -163,20 +180,20 @@ public class DebriefRibbonLite
     ribbon.addTask(liteTask);
   }
   
-  private static FlamingoCommand addToggleCommand(String commandName,String imagePath,ActionListener actionToAdd) {
+  private static Command addToggleCommand(String commandName,String imagePath,CommandAction actionToAdd) {
     ImageWrapperResizableIcon imageIcon = null;
     if (imagePath != null)
     {
       final Image zoominImage = MenuUtils.createImage(imagePath);
       imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, MenuUtils.ICON_SIZE_16);
     }
-    final FlamingoCommandBuilder builder = new FlamingoCommandBuilder()
-        .setTitle(commandName).setIcon(imageIcon).setAction(actionToAdd)
-        .setTitleClickAction();
+    final Command.Builder builder = Command.builder()
+        .setText(commandName).setIconFactory(ResizableIconFactory.factory(imageIcon)).setAction(actionToAdd);
+        //.setTitleClickAction();
 
       builder.setToggle();
       builder.setToggleSelected(false);
-      final FlamingoCommand command = builder.build();
+      final Command command = builder.build();
 
       return command;
   }

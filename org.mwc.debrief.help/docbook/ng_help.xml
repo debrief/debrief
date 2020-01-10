@@ -7487,6 +7487,11 @@ and entry type can be multi-word if surrounded by quotes (").
 ;FORMAT_TRACK_NAME_AT_END: format_name track_names
 ;; name for this formatter, list of track names for which the name 
 ;;     should be shown at the end, or empty to apply to all tracks
+
+;SPLIT_TRACK: One_Second 1000
+;SPLIT_TRACK: One_Hour 3600000 TRACK_NAME TRACK_TWO ...
+;; name for this formatter, interval in milliseconds that represents a 
+;; jump,  list of track names to apply to, or empty to apply to all tracks
             </markup>
             </screen>
             <note>

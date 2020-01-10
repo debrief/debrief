@@ -35,8 +35,6 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldSpeedHandler;
 
-import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
-
 public class ManoeuvreToLocationHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
@@ -218,17 +216,6 @@ public class ManoeuvreToLocationHandler extends MWC.Utilities.ReaderWriter.XML.M
 					doc.appendChild(scen);
 
 					// ok, we should be done now
-
-					// Write the DOM document to the file
-					XMLSerializer serializer = new XMLSerializer();
-					serializer.setOutputByteStream(os);
-					serializer.serialize(doc);
-
-					// ok, we should be done now
-				}
-				catch (java.io.IOException e)
-				{
-					e.printStackTrace();
 				}
 				catch (ParserConfigurationException e)
 				{

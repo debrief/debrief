@@ -809,6 +809,7 @@ public class ImportReplay extends PlainImporterBase
       _coreImporters.addElement(new ImportFixFormatter());
       _coreImporters.addElement(new ImportNameAtEndFormatter());
       _coreImporters.addElement(new ImportHideLayerFormatter());
+      _coreImporters.addElement(new ImportTrackSplitFormatter());
       _coreImporters.addElement(new ImportLabel());
       _coreImporters.addElement(new ImportWheel());
       _coreImporters.addElement(new ImportBearing());
@@ -1157,7 +1158,7 @@ public class ImportReplay extends PlainImporterBase
 
     try
     {
-      res = new Integer(theThicknes);
+      res = Integer.parseInt(theThicknes);
     }
     catch (final NumberFormatException e)
     {
@@ -1671,6 +1672,16 @@ public class ImportReplay extends PlainImporterBase
         for (int k = 0; k < _myFormatters.length; k++)
         {
           _myFormatters[k].formatLayers(_newLayers);
+        }
+
+        // see if there is any formatting to be done
+        // lastly - see if the layers object has some formatters
+        final Iterator<INewItemListener> newIiter = getLayers()
+            .getNewItemListeners().iterator();
+        while (newIiter.hasNext())
+        {
+          final INewItemListener newI = newIiter.next();
+          newI.fileComplete();
         }
 
         // see if we've modified any existing tracks

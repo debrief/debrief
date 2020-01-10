@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.core;
 
@@ -32,8 +32,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IEditorRegistry;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.GenerateNewNarrativeEntry;
@@ -65,6 +63,7 @@ import org.mwc.debrief.core.ContextOperations.MergeTracks;
 import org.mwc.debrief.core.ContextOperations.RainbowShadeSonarCuts;
 import org.mwc.debrief.core.ContextOperations.SelectCutsForThisTMASegment;
 import org.mwc.debrief.core.ContextOperations.ShowCutsForThisTMASegment;
+import org.mwc.debrief.core.ContextOperations.SplitTracksIntoLegs;
 import org.mwc.debrief.core.ContextOperations.TrimTrack;
 import org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment;
 import org.mwc.debrief.core.preferences.PrefsPage;
@@ -121,6 +120,19 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
   private static DebriefPlugin plugin;
 
   /**
+   * keep track of images we can't find. It's no use carrying on trying to find them
+   *
+   */
+  private static List<String> _cantFind = new ArrayList<String>();
+
+  /**
+   * keep track of images we've found - to save going through the bundles
+   *
+   */
+  private static Map<String, ImageDescriptor> _haveFound =
+      new HashMap<String, ImageDescriptor>();
+
+  /**
    * Returns the shared instance.
    */
   public static DebriefPlugin getDefault()
@@ -130,7 +142,7 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 
   /**
    * Returns an image descriptor for the image file at the given plug-in relative path.
-   * 
+   *
    * @param path
    *          the path
    * @return the image descriptor
@@ -174,8 +186,8 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
    */
   public static String getResourceString(final String key)
   {
-    final ResourceBundle bundle =
-        DebriefPlugin.getDefault().getResourceBundle();
+    final ResourceBundle bundle = DebriefPlugin.getDefault()
+        .getResourceBundle();
     try
     {
       return (bundle != null) ? bundle.getString(key) : key;
@@ -186,9 +198,21 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
     }
   }
 
+  public static Runner getSWTRunner()
+  {
+    return new ImportReplay.Runner()
+    {
+      @Override
+      public void run(final Runnable runnable)
+      {
+        Display.getDefault().asyncExec(runnable);
+      }
+    };
+  }
+
   /**
    * error logging utility
-   * 
+   *
    * @param severity
    *          the severity; one of <code>OK</code>, <code>ERROR</code>, <code>INFO</code>,
    *          <code>WARNING</code>, or <code>CANCEL</code>
@@ -200,8 +224,8 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
   public static void logError(final int severity, final String message,
       final Throwable exception)
   {
-    final Status stat =
-        new Status(severity, PLUGIN_NAME, IStatus.OK, message, exception);
+    final Status stat = new Status(severity, PLUGIN_NAME, IStatus.OK, message,
+        exception);
     getDefault().getLog().log(stat);
 
     // also throw it to the console
@@ -211,6 +235,7 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 
   // Resource bundle.
   private ResourceBundle resourceBundle;
+
   private DebriefImageHelper _myImageHelper;
 
   private ArrayList<ExtensibleLineImporter> _repFileExtensionLoaders;
@@ -218,19 +243,6 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
   private List<IDOMExporter> _exportHelpers;
 
   private ArrayList<ISAXImporter> _importHelpers;
-
-  /**
-   * keep track of images we can't find. It's no use carrying on trying to find them
-   * 
-   */
-  private static List<String> _cantFind = new ArrayList<String>();
-
-  /**
-   * keep track of images we've found - to save going through the bundles
-   * 
-   */
-  private static Map<String, ImageDescriptor> _haveFound =
-      new HashMap<String, ImageDescriptor>();
 
   /**
    * The constructor.
@@ -241,6 +253,69 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
     plugin = this;
   }
 
+  public boolean getCreateProject()
+  {
+    if (isRunningTests())
+    {
+      return false;
+    }
+    // check standard Debrief preference
+    String createProject = CorePlugin.getDefault().getPreferenceStore()
+        .getString(PrefsPage.PreferenceConstants.ASK_ABOUT_PROJECT);
+    if (createProject == null || createProject.isEmpty())
+    {
+      createProject = Boolean.TRUE.toString();
+    }
+    return (Boolean.TRUE.toString().equals(createProject));
+  }
+
+  private List<ExtensibleLineImporter> getRepImporterExtensions()
+  {
+    if (_repFileExtensionLoaders == null)
+    {
+      _repFileExtensionLoaders = new ArrayList<ExtensibleLineImporter>();
+
+      final IExtensionRegistry registry = Platform.getExtensionRegistry();
+
+      if (registry != null)
+      {
+
+        final IExtensionPoint point = Platform.getExtensionRegistry()
+            .getExtensionPoint(PLUGIN_NAME, REP_READER_EXTENSION_POINT_ID);
+
+        final IExtension[] extensions = point.getExtensions();
+        for (int i = 0; i < extensions.length; i++)
+        {
+          final IExtension iExtension = extensions[i];
+          final IConfigurationElement[] confE = iExtension
+              .getConfigurationElements();
+          for (int j = 0; j < confE.length; j++)
+          {
+            final IConfigurationElement iConfigurationElement = confE[j];
+            ExtensibleLineImporter newInstance;
+            try
+            {
+              newInstance = (ExtensibleLineImporter) iConfigurationElement
+                  .createExecutableExtension("class");
+              _repFileExtensionLoaders.add(newInstance);
+            }
+            catch (final CoreException e)
+            {
+              CorePlugin.logError(IStatus.ERROR,
+                  "Trouble whilst loading REP import extensions", e);
+            }
+          }
+        }
+      }
+    }
+    return _repFileExtensionLoaders;
+  }
+
+  public long getResetPerspectivePreference()
+  {
+    return getDefault().getPreferenceStore().getLong(RESET_PERSPECTIVE);
+  }
+
   /**
    * Returns the plugin's resource bundle,
    */
@@ -249,9 +324,8 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
     try
     {
       if (resourceBundle == null)
-        resourceBundle =
-            ResourceBundle
-                .getBundle("org.mwc.debrief.core.CorePluginResources");
+        resourceBundle = ResourceBundle.getBundle(
+            "org.mwc.debrief.core.CorePluginResources");
     }
     catch (final MissingResourceException x)
     {
@@ -260,9 +334,104 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
     return resourceBundle;
   }
 
+  private void initImportExportHelpers()
+  {
+    if (_exportHelpers == null)
+    {
+      _exportHelpers = new ArrayList<IDOMExporter>();
+      _importHelpers = new ArrayList<ISAXImporter>();
+
+      final IExtensionRegistry registry = Platform.getExtensionRegistry();
+      if (registry != null)
+      {
+
+        final IExtensionPoint point = Platform.getExtensionRegistry()
+            .getExtensionPoint(DebriefPlugin.PLUGIN_NAME,
+                EXPORT_HELPER_EXTENSION_POINT_ID);
+
+        final IExtension[] extensions = point.getExtensions();
+        for (int i = 0; i < extensions.length; i++)
+        {
+          final IExtension iExtension = extensions[i];
+          final IConfigurationElement[] confE = iExtension
+              .getConfigurationElements();
+          for (int j = 0; j < confE.length; j++)
+          {
+            final IConfigurationElement iConfigurationElement = confE[j];
+            try
+            {
+              final IDOMExporter newInstance =
+                  (IDOMExporter) iConfigurationElement
+                      .createExecutableExtension("writer");
+              _exportHelpers.add(newInstance);
+              final ISAXImporter newInstance2 =
+                  (ISAXImporter) iConfigurationElement
+                      .createExecutableExtension("reader");
+              _importHelpers.add(newInstance2);
+            }
+            catch (final CoreException e)
+            {
+              CorePlugin.logError(IStatus.ERROR,
+                  "Trouble whilst loading image helper", e);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  public boolean isRunningTests()
+  {
+    // check settings system property on command line
+    // for tycho/travis test we need add -DbuildMode=true
+    final String buildMode = System.getProperty(BUILD_MODE, "false");
+    if ("true".equals(buildMode))
+    {
+      return true;
+    }
+    return false;
+  }
+
+  private void loadContentProviderExtensions()
+  {
+    final IExtensionRegistry registry = Platform.getExtensionRegistry();
+    if (registry != null)
+    {
+
+      final IExtensionPoint point = Platform.getExtensionRegistry()
+          .getExtensionPoint(DebriefPlugin.PLUGIN_NAME,
+              CONTENT_PROVIDER_EXTENSION_POINT_ID);
+
+      final IExtension[] extensions = point.getExtensions();
+      for (int i = 0; i < extensions.length; i++)
+      {
+        final IExtension iExtension = extensions[i];
+        final IConfigurationElement[] confE = iExtension
+            .getConfigurationElements();
+        for (int j = 0; j < confE.length; j++)
+        {
+          final IConfigurationElement iConfigurationElement = confE[j];
+          ViewLabelImageHelper newInstance;
+          try
+          {
+            newInstance = (ViewLabelImageHelper) iConfigurationElement
+                .createExecutableExtension("imageProvider");
+            CoreViewLabelProvider.addImageHelper(newInstance);
+          }
+          catch (final CoreException e)
+          {
+            CorePlugin.logError(IStatus.ERROR,
+                "Trouble whilst loading image helper", e);
+          }
+        }
+      }
+    }
+  }
+
+  @Override
   public void show(final String title, final String message, final int status)
   {
-    Display display = Display.getCurrent();
+    final Display display = Display.getCurrent();
     final Display fDisplay;
 
     // if we have a current display, use it. else get the default display
@@ -273,6 +442,7 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 
     fDisplay.asyncExec(new Runnable()
     {
+      @Override
       public void run()
       {
         // sort out the status
@@ -286,6 +456,7 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
       }
     });
   }
+
   /**
    * This method is called upon plug-in activation
    */
@@ -295,23 +466,26 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
     super.start(context);
 
     // also provide someps extra functionality to the right-click editor
-    RightClickSupport.addRightClickGenerator(new ConvertTrackToLightweightTrack());
-    RightClickSupport.addRightClickGenerator(new ConvertLightweightTrackToTrack());
+    RightClickSupport.addRightClickGenerator(
+        new ConvertTrackToLightweightTrack());
+    RightClickSupport.addRightClickGenerator(
+        new ConvertLightweightTrackToTrack());
     RightClickSupport.addRightClickGenerator(new GenerateTrack());
     RightClickSupport.addRightClickGenerator(new GroupTracks());
+    RightClickSupport.addRightClickGenerator(new SplitTracksIntoLegs());
     RightClickSupport.addRightClickGenerator(new GroupLightweightTracks());
     RightClickSupport.addRightClickGenerator(new GenerateInfillSegment());
     RightClickSupport.addRightClickGenerator(new MergeTracks());
     RightClickSupport.addRightClickGenerator(new MergeContacts());
-    RightClickSupport
-        .addRightClickGenerator(new ConvertAbsoluteTmaToRelative());
+    RightClickSupport.addRightClickGenerator(
+        new ConvertAbsoluteTmaToRelative());
     RightClickSupport.addRightClickGenerator(new ShowCutsForThisTMASegment());
     RightClickSupport.addRightClickGenerator(new SelectCutsForThisTMASegment());
     RightClickSupport.addRightClickGenerator(new GenerateTMASegmentFromCuts());
-    RightClickSupport
-        .addRightClickGenerator(new GenerateTMASegmentFromOwnshipPositions());
-    RightClickSupport
-        .addRightClickGenerator(new GenerateTMASegmentFromInfillSegment());
+    RightClickSupport.addRightClickGenerator(
+        new GenerateTMASegmentFromOwnshipPositions());
+    RightClickSupport.addRightClickGenerator(
+        new GenerateTMASegmentFromInfillSegment());
     RightClickSupport.addRightClickGenerator(new GenerateTUASolution());
     RightClickSupport.addRightClickGenerator(new GenerateTrackFromActiveCuts());
     RightClickSupport.addRightClickGenerator(new GenerateSensorRangePlot());
@@ -324,31 +498,31 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
     RightClickSupport.addRightClickGenerator(new InterpolateTrack());
     RightClickSupport.addRightClickGenerator(new CopyBearingsToClipboard());
     RightClickSupport.addRightClickGenerator(new GeneratePasteRepClipboard());
-    RightClickSupport.addRightClickGenerator(new GenerateNewInsertSensorArcAction());
- 
+    RightClickSupport.addRightClickGenerator(
+        new GenerateNewInsertSensorArcAction());
 
     // and the Replay importer/exporter (used to export items from the
     // layer-manager)
     final Runner swtRunner = getSWTRunner();
-    ImportManager.addImporter(new Debrief.ReaderWriter.Replay.ImportReplay(swtRunner));
+    ImportManager.addImporter(new Debrief.ReaderWriter.Replay.ImportReplay(
+        swtRunner));
 
     // tell ImportReplay that we can provide more importers
-    List<ExtensibleLineImporter> importers = getRepImporterExtensions();
+    final List<ExtensibleLineImporter> importers = getRepImporterExtensions();
     ImportReplay.addExtraImporters(importers);
 
     // make Debrief the default editor for XML files
-//    Display.getDefault().asyncExec(new Runnable()
-//    {
-//      
-//      @Override
-//      public void run()
-//      {
-//        final IEditorRegistry editorRegistry =
-//            PlatformUI.getWorkbench().getEditorRegistry();
-//        editorRegistry.setDefaultEditor("*.xml", "org.mwc.debrief.PlotEditor");
-//      }
-//    });
-    
+    // Display.getDefault().asyncExec(new Runnable()
+    // {
+    //
+    // @Override
+    // public void run()
+    // {
+    // final IEditorRegistry editorRegistry =
+    // PlatformUI.getWorkbench().getEditorRegistry();
+    // editorRegistry.setDefaultEditor("*.xml", "org.mwc.debrief.PlotEditor");
+    // }
+    // });
 
     // tell the message provider where it can fire messages to
     MessageProvider.Base.setProvider(this);
@@ -379,7 +553,8 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
     final SWTEclipseHelper questionHelper = new SWTEclipseHelper();
     ImportNarrativeDocument.setQuestionHelper(questionHelper);
     ImportASWDataDocument.setQuestionHelper(questionHelper);
-    if(!isRunningTests()) {
+    if (!isRunningTests())
+    {
       ImportNarrativeDocument.setNarrativeHelper(new ImportNarrativeHelper());
     }
 
@@ -403,145 +578,6 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 
   }
 
-  public static Runner getSWTRunner()
-  {
-    return new ImportReplay.Runner()
-    {
-      @Override
-      public void run(Runnable runnable)
-      {
-        Display.getDefault().asyncExec(runnable);
-      }
-    };
-  }
-
-  private void initImportExportHelpers()
-  {
-    if (_exportHelpers == null)
-    {
-      _exportHelpers = new ArrayList<IDOMExporter>();
-      _importHelpers = new ArrayList<ISAXImporter>();
-
-      IExtensionRegistry registry = Platform.getExtensionRegistry();
-      if (registry != null)
-      {
-
-        final IExtensionPoint point =
-            Platform.getExtensionRegistry().getExtensionPoint(
-                DebriefPlugin.PLUGIN_NAME, EXPORT_HELPER_EXTENSION_POINT_ID);
-
-        final IExtension[] extensions = point.getExtensions();
-        for (int i = 0; i < extensions.length; i++)
-        {
-          final IExtension iExtension = extensions[i];
-          final IConfigurationElement[] confE =
-              iExtension.getConfigurationElements();
-          for (int j = 0; j < confE.length; j++)
-          {
-            final IConfigurationElement iConfigurationElement = confE[j];
-            try
-            {
-              final IDOMExporter newInstance =
-                  (IDOMExporter) iConfigurationElement
-                      .createExecutableExtension("writer");
-              _exportHelpers.add(newInstance);
-              final ISAXImporter newInstance2 =
-                  (ISAXImporter) iConfigurationElement
-                      .createExecutableExtension("reader");
-              _importHelpers.add(newInstance2);
-            }
-            catch (final CoreException e)
-            {
-              CorePlugin.logError(Status.ERROR,
-                  "Trouble whilst loading image helper", e);
-            }
-          }
-        }
-      }
-    }
-  }
-
-  private void loadContentProviderExtensions()
-  {
-    IExtensionRegistry registry = Platform.getExtensionRegistry();
-    if (registry != null)
-    {
-
-      final IExtensionPoint point =
-          Platform.getExtensionRegistry().getExtensionPoint(
-              DebriefPlugin.PLUGIN_NAME, CONTENT_PROVIDER_EXTENSION_POINT_ID);
-
-      final IExtension[] extensions = point.getExtensions();
-      for (int i = 0; i < extensions.length; i++)
-      {
-        final IExtension iExtension = extensions[i];
-        final IConfigurationElement[] confE =
-            iExtension.getConfigurationElements();
-        for (int j = 0; j < confE.length; j++)
-        {
-          final IConfigurationElement iConfigurationElement = confE[j];
-          ViewLabelImageHelper newInstance;
-          try
-          {
-            newInstance =
-                (ViewLabelImageHelper) iConfigurationElement
-                    .createExecutableExtension("imageProvider");
-            CoreViewLabelProvider.addImageHelper(newInstance);
-          }
-          catch (final CoreException e)
-          {
-            CorePlugin.logError(Status.ERROR,
-                "Trouble whilst loading image helper", e);
-          }
-        }
-      }
-    }
-  }
-
-  private List<ExtensibleLineImporter> getRepImporterExtensions()
-  {
-    if (_repFileExtensionLoaders == null)
-    {
-      _repFileExtensionLoaders = new ArrayList<ExtensibleLineImporter>();
-
-      IExtensionRegistry registry = Platform.getExtensionRegistry();
-
-      if (registry != null)
-      {
-
-        final IExtensionPoint point =
-            Platform.getExtensionRegistry().getExtensionPoint(PLUGIN_NAME,
-                REP_READER_EXTENSION_POINT_ID);
-
-        final IExtension[] extensions = point.getExtensions();
-        for (int i = 0; i < extensions.length; i++)
-        {
-          final IExtension iExtension = extensions[i];
-          final IConfigurationElement[] confE =
-              iExtension.getConfigurationElements();
-          for (int j = 0; j < confE.length; j++)
-          {
-            final IConfigurationElement iConfigurationElement = confE[j];
-            ExtensibleLineImporter newInstance;
-            try
-            {
-              newInstance =
-                  (ExtensibleLineImporter) iConfigurationElement
-                      .createExecutableExtension("class");
-              _repFileExtensionLoaders.add(newInstance);
-            }
-            catch (final CoreException e)
-            {
-              CorePlugin.logError(Status.ERROR,
-                  "Trouble whilst loading REP import extensions", e);
-            }
-          }
-        }
-      }
-    }
-    return _repFileExtensionLoaders;
-  }
-
   /**
    * This method is called when the plug-in is stopped
    */
@@ -551,39 +587,5 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
     super.stop(context);
     plugin = null;
     resourceBundle = null;
-  }
-
-  public long getResetPerspectivePreference()
-  {
-    return getDefault().getPreferenceStore().getLong(RESET_PERSPECTIVE);
-  }
-
-  public boolean getCreateProject()
-  {
-    if (isRunningTests())
-    {
-      return false;
-    }
-    // check standard Debrief preference
-    String createProject =
-        CorePlugin.getDefault().getPreferenceStore().getString(
-            PrefsPage.PreferenceConstants.ASK_ABOUT_PROJECT);
-    if (createProject == null || createProject.isEmpty())
-    {
-      createProject = Boolean.TRUE.toString();
-    }
-    return (Boolean.TRUE.toString().equals(createProject));
-  }
-
-  public boolean isRunningTests()
-  {
-    // check settings system property on command line
-    // for tycho/travis test we need add -DbuildMode=true
-    String buildMode = System.getProperty(BUILD_MODE, "false");
-    if ("true".equals(buildMode))
-    {
-      return true;
-    }
-    return false;
   }
 }

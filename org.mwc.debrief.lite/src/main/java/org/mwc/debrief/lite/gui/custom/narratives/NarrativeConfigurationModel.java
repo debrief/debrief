@@ -46,14 +46,14 @@ public class NarrativeConfigurationModel implements
   private NarrativeEntry _currentHighLight;
 
   private boolean _wrapping = true;
-  
+
   private int panelWidth = 0;
 
   private String _filterText;
 
   private Callable<Void> _repaintMethod;
 
-  private TimeManager _timeManager;
+  private final TimeManager _timeManager;
 
   private final ArrayList<PropertyChangeListener> _stateListeners =
       new ArrayList<>();
@@ -73,7 +73,7 @@ public class NarrativeConfigurationModel implements
         {
 
           @Override
-          public void propertyChange(PropertyChangeEvent evt)
+          public void propertyChange(final PropertyChangeEvent evt)
           {
             highlightNarrative((HiResDate) evt.getNewValue());
           }
@@ -96,6 +96,12 @@ public class NarrativeConfigurationModel implements
   }
 
   @Override
+  public NarrativeEntry getCurrentHighLight()
+  {
+    return _currentHighLight;
+  }
+
+  @Override
   public Set<NarrativeEntry> getCurrentNarrativeEntries(
       final NarrativeWrapper narrativeWrapper)
   {
@@ -115,9 +121,21 @@ public class NarrativeConfigurationModel implements
   }
 
   @Override
+  public int getPanelWidth()
+  {
+    return panelWidth;
+  }
+
+  @Override
   public Set<NarrativeWrapper> getRegisteredNarrativeWrapper()
   {
     return _narrativeWrappers.keySet();
+  }
+
+  @Override
+  public TimeManager getTimeManager()
+  {
+    return _timeManager;
   }
 
   @Override
@@ -125,9 +143,10 @@ public class NarrativeConfigurationModel implements
   {
     NarrativeEntry narrative = null;
     long closestDistance = Long.MAX_VALUE;
-    for (Set<NarrativeEntry> narrativeEntries : _narrativeWrappers.values())
+    for (final Set<NarrativeEntry> narrativeEntries : _narrativeWrappers
+        .values())
     {
-      for (NarrativeEntry narrativeEntry : narrativeEntries)
+      for (final NarrativeEntry narrativeEntry : narrativeEntries)
       {
         if (narrative == null || closestDistance > Math.abs(narrativeEntry
             .getDTG().getMicros() - object.getMicros()))
@@ -155,6 +174,12 @@ public class NarrativeConfigurationModel implements
     }
   }
 
+  @Override
+  public boolean isWrapping()
+  {
+    return _wrapping;
+  }
+
   private void notifyListenersStateChanged(final Object source,
       final String property, final Object oldValue, final Object newValue)
   {
@@ -180,6 +205,19 @@ public class NarrativeConfigurationModel implements
   public void removeNarrativeWrapper(final NarrativeWrapper narrativeWrapper)
   {
     _narrativeWrappers.remove(narrativeWrapper);
+  }
+
+  @Override
+  public void repaintView()
+  {
+    try
+    {
+      _repaintMethod.call();
+    }
+    catch (final Exception e)
+    {
+      // It should never happen
+    }
   }
 
   @Override
@@ -229,19 +267,15 @@ public class NarrativeConfigurationModel implements
   }
 
   @Override
-  public void unregisterNarrativeEntry(final NarrativeWrapper wrapper,
-      final NarrativeEntry entry)
+  public void setPanelWidth(final int width)
   {
-    if (_narrativeWrappers.containsKey(wrapper))
-    {
-      _narrativeWrappers.get(wrapper).remove(entry);
-    }
+    this.panelWidth = width;
   }
-  
+
   @Override
-  public boolean isWrapping()
+  public void setRepaintMethod(final Callable<Void> repaint)
   {
-    return _wrapping;
+    this._repaintMethod = repaint;
   }
 
   @Override
@@ -251,42 +285,12 @@ public class NarrativeConfigurationModel implements
   }
 
   @Override
-  public TimeManager getTimeManager()
+  public void unregisterNarrativeEntry(final NarrativeWrapper wrapper,
+      final NarrativeEntry entry)
   {
-    return _timeManager;
-  }
-
-  public void setRepaintMethod(final Callable<Void> repaint)
-  {
-    this._repaintMethod = repaint;
-  }
-
-  public NarrativeEntry getCurrentHighLight()
-  {
-    return _currentHighLight;
-  }
-
-  @Override
-  public void repaintView()
-  {
-    try
+    if (_narrativeWrappers.containsKey(wrapper))
     {
-      _repaintMethod.call();
+      _narrativeWrappers.get(wrapper).remove(entry);
     }
-    catch (Exception e)
-    {
-      // It should never happen
-    }
-  }
-
-  public int getPanelWidth()
-  {
-    return panelWidth;
-  }
-
-  @Override
-  public void setPanelWidth(int width)
-  {
-    this.panelWidth = width;
   }
 }

@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.lite.gui.custom.narratives;
 
@@ -28,22 +28,17 @@ public class JSelectTypeFilter extends JPopupList<String>
 {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 7136974124331608166L;
-
-  public JSelectTypeFilter(final AbstractNarrativeConfiguration model)
-  {
-    super(new TypeItemRenderer(), createTypeFilters(model));
-
-  }
 
   public static JList<String> createTypeFilters(
       final AbstractNarrativeConfiguration model)
   {
     final ArrayList<String> differentTypes = new ArrayList<>();
     final HashSet<String> addedTypes = new HashSet<>();
-    for (AbstractSelection<NarrativeEntry> narrative : model.getNarratives())
+    for (final AbstractSelection<NarrativeEntry> narrative : model
+        .getNarratives())
     {
       if (!addedTypes.contains(narrative.getItem().getType()))
       {
@@ -54,5 +49,11 @@ public class JSelectTypeFilter extends JPopupList<String>
 
     return new JList<>(differentTypes.toArray(new String[]
     {}));
+  }
+
+  public JSelectTypeFilter(final AbstractNarrativeConfiguration model)
+  {
+    super(new TypeItemRenderer(), createTypeFilters(model));
+
   }
 }

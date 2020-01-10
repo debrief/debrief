@@ -22,6 +22,7 @@ import org.geotools.swing.event.MapMouseAdapter;
 import org.geotools.swing.event.MapMouseEvent;
 import org.geotools.swing.event.MapMouseListener;
 import org.geotools.swing.tool.CursorTool;
+import org.geotools.util.factory.Hints;
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.operation.MathTransform;

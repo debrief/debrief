@@ -27,12 +27,11 @@ public class NarrativeEntryItemRenderer extends JPanel implements
   private static final ImageIcon EDIT_NARRATIVE_ICON = Utils.getIcon(
       "icons/16/edit_narrative.png");
 
-
-  private final int HEIGHT_FIXED_SIZE = 42;
   /**
    *
    */
   private static final long serialVersionUID = -2227870470228775898L;
+  private final int HEIGHT_FIXED_SIZE = 42;
 
   private final AbstractNarrativeConfiguration _model;
 
@@ -83,7 +82,8 @@ public class NarrativeEntryItemRenderer extends JPanel implements
       {
         emptySpace = 80;
       }
-      name.setText(String.format(html, _model.getPanelWidth() - emptySpace, text));
+      name.setText(String.format(html, _model.getPanelWidth() - emptySpace,
+          text));
     }
     else
     {
@@ -117,7 +117,8 @@ public class NarrativeEntryItemRenderer extends JPanel implements
       final JPanel mainPanel = new JPanel();
       mainPanel.setLayout(new BorderLayout());
 
-      final JLabel time = new JLabel(valueItem.getEntry().getDTGString().trim());
+      final JLabel time = new JLabel(valueItem.getEntry().getDTGString()
+          .trim());
       final Font originalFont = time.getFont();
 
       // the header bar, with the metadata

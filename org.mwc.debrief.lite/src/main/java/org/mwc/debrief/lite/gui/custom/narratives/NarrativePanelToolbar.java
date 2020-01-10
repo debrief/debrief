@@ -18,7 +18,6 @@ import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
 
@@ -95,9 +94,6 @@ public class NarrativePanelToolbar extends JPanel
 
   private final JTable _narrativeList = new JTable();
 
-  private final TreeMap<NarrativeEntry, NarrativeEntryItem> entry2Index =
-      new TreeMap<>();
-
   private final AbstractNarrativeConfiguration _model;
 
   private final PropertyChangeListener enableDisableButtonsListener =
@@ -153,17 +149,14 @@ public class NarrativePanelToolbar extends JPanel
           while (iteratorToRemove.hasMoreElements())
           {
             final Editable thisE = iteratorToRemove.nextElement();
-            if (entry2Index.containsKey(thisE))
+            for (int i = 0; i < _narrativeListModel.getRowCount(); i++)
             {
-              for (int i = 0; i < _narrativeListModel.getRowCount(); i++)
+              final NarrativeEntryItem currentItem =
+                  (NarrativeEntryItem) _narrativeListModel.getValueAt(i, 0);
+              if (currentItem.getEntry().equals(thisE))
               {
-                if (_narrativeListModel.getValueAt(i, 0) == entry2Index.get(
-                    thisE))
-                {
-                  _narrativeListModel.removeRow(i);
-                  entry2Index.remove(thisE);
-                  break;
-                }
+                _narrativeListModel.removeRow(i);
+                break;
               }
             }
           }
@@ -225,7 +218,6 @@ public class NarrativePanelToolbar extends JPanel
                   _model);
               _narrativeListModel.addRow(new NarrativeEntryItem[]
               {entryItem});
-              entry2Index.put(entry, entryItem);
               _model.registerNewNarrativeEntry(narrativeWrapper, entry);
 
             }
@@ -233,14 +225,14 @@ public class NarrativePanelToolbar extends JPanel
             {
               for (int i = 0; i < _narrativeListModel.getRowCount(); i++)
               {
-                if (_narrativeListModel.getValueAt(i, 0) == entry2Index.get(
-                    entry))
+                final NarrativeEntryItem currentItem =
+                    (NarrativeEntryItem) _narrativeListModel.getValueAt(i, 0);
+                if (currentItem.getEntry().equals(entry))
                 {
                   _narrativeListModel.removeRow(i);
                   break;
                 }
               }
-              entry2Index.remove(entry);
             }
             // Sort it.
 

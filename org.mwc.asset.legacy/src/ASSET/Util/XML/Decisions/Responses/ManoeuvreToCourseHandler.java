@@ -35,8 +35,6 @@ import MWC.GenericData.WorldSpeed;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldSpeedHandler;
 
-import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
-
 /**
  * class which reads in a man to course response
  * 
@@ -293,15 +291,6 @@ public class ManoeuvreToCourseHandler extends MWC.Utilities.ReaderWriter.XML.MWC
 
 					// ok, we should be done now
 
-					// Write the DOM document to the file
-					XMLSerializer serializer = new XMLSerializer();
-					serializer.setOutputByteStream(os);
-					serializer.serialize(doc);
-
-				}
-				catch (java.io.IOException e)
-				{
-					e.printStackTrace();
 				}
 				catch (ParserConfigurationException e)
 				{
