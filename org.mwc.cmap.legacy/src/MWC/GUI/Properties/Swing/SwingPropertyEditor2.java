@@ -1517,7 +1517,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
   {
     JOptionPane.showMessageDialog(getPanel(),
         "Start Date must be before End Date. Please, check the following values ["
-            + startDescription + "] and [" + endDescription + "]", "Date inconsistency",
+            + startDescription + "] and [" + endDescription + "]. Changes hasn't been changed.", "Date inconsistency",
         JOptionPane.ERROR_MESSAGE);
   }
 

@@ -937,7 +937,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     }
   }
 
-  protected void checkIntegrity()
+  protected boolean checkIntegrity()
   {
     // Let's iterate all the editors, and lets get anything with the word
     // Start or End.
@@ -955,13 +955,13 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
       if (pd.getName().contains(_START))
       {
         final String innerName = pd.getName().replaceAll(_START, "");
-        startItems.put(innerName, pei.getCurrentVal());
+        startItems.put(innerName, pei.theEditor.getValue());
         startDescription.put(innerName, pd.getDisplayName());
       }
       if (pd.getName().contains(_END))
       {
         final String innerName = pd.getName().replaceAll(_END, "");
-        endItems.put(innerName, pei.getCurrentVal());
+        endItems.put(innerName, pei.theEditor.getValue());
         endDescription.put(innerName, pd.getDisplayName());
       }
     }
@@ -983,10 +983,14 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
           {
             notifyDateInconsistency(startDescription.get(key), endDescription
                 .get(key));
+            
+            return false;
           }
         }
       }
     }
+    
+    return true;
   }
 
   protected void closing()
@@ -1109,45 +1113,49 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     }
     else
     {
-      // update the editors in turn
-      final Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
-      while (enumer.hasMoreElements())
-      {
-        final PropertyEditorItem pei = enumer.nextElement();
-        final PropertyDescriptor pd = pei.theDescriptor;
-        update(pd, pei.theData);
-      }
-
-      // check if there are any modifications to be made
-      if (_theModifications.size() > 0)
+      boolean integral = checkIntegrity();
+      
+      if (integral)
       {
 
-        /*
-         * we now have a list of properties to be changed (and their old values) in our vector we
-         * now have to do them
-         */
-        final PropertyChangeAction act = new PropertyChangeAction(
-            _theModifications, _theData);
+        // update the editors in turn
+        final Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
+        while (enumer.hasMoreElements())
+        {
+          final PropertyEditorItem pei = enumer.nextElement();
+          final PropertyDescriptor pd = pei.theDescriptor;
+          update(pd, pei.theData);
+        }
 
-        // check if the list actually contains any modifications
+        // check if there are any modifications to be made
+        if (_theModifications.size() > 0)
+        {
 
-        // and do it
-        act.execute();
+          /*
+           * we now have a list of properties to be changed (and their old values) in our vector we
+           * now have to do them
+           */
+          final PropertyChangeAction act = new PropertyChangeAction(
+              _theModifications, _theData);
 
-        // and put it on the undo buffer
-        final MWC.GUI.Undo.UndoBuffer buff = getBuffer();
-        if (buff != null)
-          buff.add(act);
+          // check if the list actually contains any modifications
 
-        // and now clear the list of modifications (we don't want to repeat them)
-        _theModifications.removeAllElements();
+          // and do it
+          act.execute();
 
+          // and put it on the undo buffer
+          final MWC.GUI.Undo.UndoBuffer buff = getBuffer();
+          if (buff != null)
+            buff.add(act);
+
+          // and now clear the list of modifications (we don't want to repeat them)
+          _theModifications.removeAllElements();
+
+        }
+
+        // finally inform the item being edited that we are finished
+        _theInfo.updatesComplete();
       }
-
-      // finally inform the item being edited that we are finished
-      _theInfo.updatesComplete();
-
-      checkIntegrity();
     }
   }
 

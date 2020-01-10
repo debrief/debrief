@@ -854,9 +854,9 @@ public class EditableWrapper implements IPropertySource
       final Object toSWT = helper.translateToSWT(newVal);
       if (toSWT != null && !toSWT.equals(oldVal))
       {
-        valueChanged = true;
-
         final boolean integral = checkIntegrity(id, newVal);
+        valueChanged = integral;
+
         if (!integral)
         {
           Display.getDefault().asyncExec(new Runnable()
