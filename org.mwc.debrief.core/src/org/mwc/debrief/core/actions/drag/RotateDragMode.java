@@ -44,6 +44,7 @@ public class RotateDragMode extends DragMode
   {
     final WorldLocation workingLoc;
     final double originalBearing;
+    double previousBearing;
     final WorldLocation _origin;
     // Double lastRotate = null;
     final protected TrackWrapper _parent;
@@ -57,6 +58,7 @@ public class RotateDragMode extends DragMode
       workingLoc = cursorLoc;
       _origin = origin;
       originalBearing = cursorLoc.subtract(_origin).getBearing();
+      previousBearing = originalBearing;
       _parent = parentTrack;
       _layers = theLayers;
     }
@@ -77,7 +79,7 @@ public class RotateDragMode extends DragMode
       final WorldVector thisVector = workingLoc.subtract(_origin);
 
       // work out the vector (bearing) from the start
-      final double brg = originalBearing - thisVector.getBearing();
+      final double brg = previousBearing - thisVector.getBearing();
 
       // undo the previous turn
       // NO: we don't need to undo the previous operation. we aren't doing an XOR
@@ -90,6 +92,7 @@ public class RotateDragMode extends DragMode
 
       _segment.rotate(brg, _origin);
 
+      previousBearing = thisVector.getBearing();
       // get the segment to recalc it's bounds
       // _segment.clearBounds();
 
