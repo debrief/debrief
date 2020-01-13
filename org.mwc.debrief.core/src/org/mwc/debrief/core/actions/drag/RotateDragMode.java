@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.core.actions.drag;
 
@@ -156,12 +156,12 @@ public class RotateDragMode extends DragMode
             final WorldDistance lastDist = calcDist(lastLoc, cursorLoc);
             final WorldDistance centreDist = calcDist(centreLoc, cursorLoc);
 
-            final DraggableItem dragCentre =
-                getCentreOperation(seg, track, theLayers);
-            final DraggableItem dragStart =
-                getEndOperation(cursorLoc, seg, last, track, theLayers);
-            final DraggableItem dragEnd =
-                getEndOperation(cursorLoc, seg, first, track, theLayers);
+            final DraggableItem dragCentre = getCentreOperation(seg, track,
+                theLayers);
+            final DraggableItem dragStart = getEndOperation(cursorLoc, seg,
+                last, track, theLayers);
+            final DraggableItem dragEnd = getEndOperation(cursorLoc, seg, first,
+                track, theLayers);
 
             currentNearest.checkMe(dragStart, firstDist, null, thisLayer);
             currentNearest.checkMe(dragEnd, lastDist, null, thisLayer);
@@ -174,7 +174,7 @@ public class RotateDragMode extends DragMode
 
   /**
    * generate an operation for when the centre of the line segment is dragged
-   * 
+   *
    * @param seg
    *          the segment being dragged
    * @param parent
@@ -191,7 +191,7 @@ public class RotateDragMode extends DragMode
 
   /**
    * generate an operation for when the end of the line segment is dragged
-   * 
+   *
    * @param cursorLoc
    *          where the cursor is
    * @param seg
@@ -211,7 +211,7 @@ public class RotateDragMode extends DragMode
 
   /**
    * whether this type of track is suitable for our operation
-   * 
+   *
    * @param seg
    * @return
    */
