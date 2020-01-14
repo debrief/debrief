@@ -589,7 +589,7 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements
     final MessageDialog messageDialog = new MessageDialog(null, null,
         "Date inconsistency",
         "Start Date must be before End Date. Please, check the following values ["
-            + startDescription + "] and [" + endDescription + "]. Changes hasn't been saved.", null, true);
+            + startDescription + "] and [" + endDescription + "]. Changes haven't been saved.", null, true);
     messageDialog.setModal(true);
     messageDialog.setVisible(true);
   }
