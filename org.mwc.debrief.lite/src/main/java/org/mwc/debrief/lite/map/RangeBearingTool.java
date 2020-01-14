@@ -279,7 +279,7 @@ public class RangeBearingTool extends AbstractZoomTool
     }
   }
 
-  public void setBearingUnit(final int bearingUnit)
+  public static void setBearingUnit(final int bearingUnit)
   {
     RangeBearingTool.bearingUnit = bearingUnit;
   }
