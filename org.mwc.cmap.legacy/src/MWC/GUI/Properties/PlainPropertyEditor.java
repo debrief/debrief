@@ -979,17 +979,22 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
           final HiResDate startDate = (HiResDate) startObject;
           final HiResDate endDate = (HiResDate) endObject;
 
+          if (HiResDate.isNotInitialized(startDate) || HiResDate
+              .isNotInitialized(endDate))
+          {
+            return true;
+          }
           if (startDate.getMicros() > endDate.getMicros())
           {
             notifyDateInconsistency(startDescription.get(key), endDescription
                 .get(key));
-            
+
             return false;
           }
         }
       }
     }
-    
+
     return true;
   }
 
@@ -1114,7 +1119,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     else
     {
       boolean integral = checkIntegrity();
-      
+
       if (integral)
       {
 

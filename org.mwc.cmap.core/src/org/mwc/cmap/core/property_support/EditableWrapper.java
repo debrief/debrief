@@ -447,7 +447,8 @@ public class EditableWrapper implements IPropertySource
                   (DTGPropertySource) descriptorProperty.getValue();
 
               final HiResDate oppositeValue = oppositeValueObject.getValue();
-              if (isAnyNotInitialized(myValueHiResDate, oppositeValue))
+              if (HiResDate.isNotInitialized(myValueHiResDate) || HiResDate
+                  .isNotInitialized(oppositeValue))
               {
                 return true;
               }
@@ -467,15 +468,6 @@ public class EditableWrapper implements IPropertySource
       }
     }
     return true;
-  }
-
-  public boolean isAnyNotInitialized(final HiResDate myValueHiResDate,
-      final HiResDate oppositeValue)
-  {
-    return HiResDate.NULL_DATE.equals(myValueHiResDate)
-        || HiResDate.NULL_DATE.equals(oppositeValue)
-        || myValueHiResDate.getMicros() == -1000000L || oppositeValue
-            .getMicros() == -1000000L;
   }
 
   @Override
@@ -609,8 +601,8 @@ public class EditableWrapper implements IPropertySource
         else
         {
           // ok, wrap it, and add it to our list.
-          final IPropertyDescriptor newProp = new DebriefProperty(
-              thisProp, sample, null);
+          final IPropertyDescriptor newProp = new DebriefProperty(thisProp,
+              sample, null);
           list.add(newProp);
         }
       }
@@ -624,8 +616,7 @@ public class EditableWrapper implements IPropertySource
         for (int i = 0; i < nonBean.length; i++)
         {
           final NonBeanPropertyDescriptor nb = nonBean[i];
-          final IPropertyDescriptor newP = new DebriefNonBeanProperty(nb,
-              null);
+          final IPropertyDescriptor newP = new DebriefNonBeanProperty(nb, null);
           list.add(newP);
         }
       }
@@ -664,8 +655,8 @@ public class EditableWrapper implements IPropertySource
                 else
                 {
                   // ok, add this editor
-                  final IPropertyDescriptor newProp = new DebriefProperty(
-                      pd, obj, null);
+                  final IPropertyDescriptor newProp = new DebriefProperty(pd,
+                      obj, null);
 
                   list.add(newProp);
                 }
