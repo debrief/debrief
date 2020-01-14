@@ -103,7 +103,7 @@ public class SubstanceCommandToggleWithMenuButtonUI extends
 
   public final static Polygon MENU_INDICATOR_POLYGON = new Polygon(new int[]
   {38, 51, 51}, new int[]
-  {65, 50, 65}, 3);
+  {35, 20, 35}, 3);
 
   public static ComponentUI createUI(final JComponent c)
   {
