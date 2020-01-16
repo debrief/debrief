@@ -31,7 +31,7 @@ public abstract class BaseTestCase extends TestCase
   {
     System.out.println("Setup");
     DebriefLiteApp.launchApp();
-    Thread.sleep(3000);
+    Thread.sleep(5000);
   }
   
 

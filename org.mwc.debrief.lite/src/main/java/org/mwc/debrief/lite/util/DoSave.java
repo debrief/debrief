@@ -28,6 +28,7 @@ public class DoSave extends DoSaveAs
     // get the current file path,
     // check we have write permission to it before starting save
     // get a new file path to use.
+    System.out.println("Do Save: clicked save action");
     String fileName = DebriefLiteApp.currentFileName;
     final File targetFile;
     String outputFileName = fileName;

@@ -349,8 +349,10 @@ public class DebriefLiteApp implements FileDropListener
   {
     // ok, do the shapefile
     final String shape_path = "data/coastline/ne_10M_admin0_countries_89S.shp";
+    System.out.println("ShapePath:"+new File(shape_path).getAbsolutePath());
     final ExternallyManagedDataLayer extFile = new ExternallyManagedDataLayer(
         ChartBoundsWrapper.SHAPEFILE_TYPE, BACKGROUND_NAME, shape_path);
+    System.out.println("Adding layer:"+extFile.getName());
     layers.addThisLayer(extFile);
   }
 

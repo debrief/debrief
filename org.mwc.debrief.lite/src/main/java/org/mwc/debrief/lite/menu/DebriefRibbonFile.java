@@ -405,6 +405,7 @@ public class DebriefRibbonFile
         .getIcon(saveImage, new Dimension(16, 16));
    fileMenu.addRibbonCommand(Command.builder()
        .setText("Save")
+       .setAction(new DoSave(session, ribbon.getRibbonFrame()))
        .setIconFactory(ResizableIconFactory.factory(imageIcon))
        .setSecondaryContentModel(getSavePopupContentModel(session, ribbon.getRibbonFrame()))
        .build()
