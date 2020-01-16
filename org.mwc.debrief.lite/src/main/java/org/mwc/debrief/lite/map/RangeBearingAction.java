@@ -1,14 +1,8 @@
 package org.mwc.debrief.lite.map;
 
-import java.awt.Component;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
-import javax.swing.JPopupMenu;
-import javax.swing.JRadioButtonMenuItem;
 
 import org.geotools.swing.AbstractMapPane;
 import org.geotools.swing.MapPane;
@@ -17,8 +11,6 @@ import org.geotools.swing.tool.ZoomInTool;
 import org.opengis.referencing.operation.MathTransform;
 import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
-
-import MWC.GenericData.WorldDistance;
 
 /**
  * An action for connect a control (probably a JButton) to the Range Bearing tool - for measuring
@@ -70,45 +62,10 @@ public class RangeBearingAction extends MapAction implements CommandAction
     final RangeBearingTool rangeBearingTool = new RangeBearingTool(_statusBar,
         _transform, (AbstractMapPane) getMapPane());
     getMapPane().setCursorTool(rangeBearingTool);
-    
-    final JPopupMenu menu = new JPopupMenu();
-    // ButtonGroup for radio buttons
-    final ButtonGroup unitsGroup = new ButtonGroup();
-
-    final ActionListener changeUnits = new ActionListener()
-    {
-
-      @Override
-      public void actionPerformed(final ActionEvent e)
-      {
-        final String unit = e.getActionCommand();
-        rangeBearingTool.setBearingUnit(WorldDistance.getUnitIndexFor(unit));
-        ((AbstractMapPane) getMapPane()).repaint();
-      }
-    };
-
-    for (int i = 0; i < WorldDistance.UnitLabels.length; i++)
-    {
-      final JRadioButtonMenuItem unitRadioButton = new JRadioButtonMenuItem(
-          WorldDistance.UnitLabels[i]);
-      unitRadioButton.setSelected(RangeBearingTool.getBearingUnit() == i);
-      unitRadioButton.addActionListener(changeUnits);
-      menu.add(unitRadioButton);
-      unitsGroup.add(unitRadioButton);
-    }
-
-    final Component component = (Component) ev.getSource();
-
-    menu.show(component, 0, 0);
-
-    // Get the location of the point 'on the screen'
-    final Point p = component.getLocationOnScreen();
-
-    menu.setLocation(p.x, p.y + component.getHeight());
   }
 
   @Override
-  public void commandActivated(CommandActionEvent e)
+  public void commandActivated(final CommandActionEvent e)
   {
     actionPerformed(e);
   }
