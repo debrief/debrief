@@ -282,7 +282,7 @@ public class LiteMapPane extends JMapPane
 
     // draw in background
     final Dimension dim = this.getSize();
-    g.setColor(Color.white);
+    g.setColor(new Color(135, 172, 215));
     g.fillRect(0, 0, dim.width, dim.height);
 
     if (drawingLock.tryLock())
