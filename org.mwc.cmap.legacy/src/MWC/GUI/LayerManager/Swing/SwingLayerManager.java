@@ -171,6 +171,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.EventObject;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 
@@ -1369,14 +1370,15 @@ public class SwingLayerManager extends SwingCustomEditor implements
     _myTree.invalidate();
 
   }
+  
+  final private HashMap<Object, Object > treeCache = new HashMap<Object, Object>();
 
   protected DefaultMutableTreeNode updateLayer(
       final DefaultMutableTreeNode root, final Layer thisLayer,
       final Layer theTopLayer)
   {
     // create the node
-    final DefaultMutableTreeNode thisL = getTreeNode(root, thisLayer.getName(),
-        thisLayer);
+    final DefaultMutableTreeNode thisL = (DefaultMutableTreeNode) getTreeNodeConstantTime(treeCache, thisLayer);
 
     // capture the children of this layer, since we'll remove any that
     // don't get used
@@ -1405,8 +1407,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
         {
           // hey, let's get recursive!
           final Layer otherLayer = (Layer) pl;
-          final DefaultMutableTreeNode otherL = getTreeNode(thisL, otherLayer
-              .getName(), otherLayer);
+          final DefaultMutableTreeNode otherL = (DefaultMutableTreeNode) getTreeNodeConstantTime(treeCache, otherLayer);
           if (otherL != null)
           {
             updateLayer(thisL, otherLayer, theTopLayer);
@@ -1420,8 +1421,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
         else
         {
           // hey, it's a leaf - just add it
-          final DefaultMutableTreeNode nodeL = getTreeNode(thisL, pl.getName(),
-              pl);
+          final DefaultMutableTreeNode nodeL = (DefaultMutableTreeNode) getTreeNodeConstantTime(treeCache, pl);
           if (nodeL == null)
           {
             thisL.add(new PlottableNode(pl, theTopLayer));
@@ -1466,12 +1466,38 @@ public class SwingLayerManager extends SwingCustomEditor implements
 
   private void updateThisLayer(final Layer changedLayer)
   {
-    final TreeNode treeNode = getTreeNode(null, changedLayer.getName(),
-        changedLayer);
+    loadTreeCache(treeCache);
+    final TreeNode treeNode = getTreeNodeConstantTime(treeCache, changedLayer);
     if (treeNode != null)
     {
       updateLayer((DefaultMutableTreeNode) _myTree.getModel().getRoot(),
           changedLayer, changedLayer);
+    }
+  }
+
+  private void loadTreeCache(HashMap<Object, Object> _treeCache)
+  {
+    final TreeModel model = _myTree.getModel();
+    
+    DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
+    
+    final int childrenCount = root.getChildCount();
+    for (int i = 0; i < childrenCount; i++)
+    {
+      final DefaultMutableTreeNode child = (DefaultMutableTreeNode) root.getChildAt(i);
+      
+      _treeCache.put(child.getUserObject(), child);
+    }
+  }
+  
+  private TreeNode getTreeNodeConstantTime(HashMap<Object, Object> _treeCache, Object node)
+  {
+    if ( _treeCache.containsKey(node) )
+    {
+      return (TreeNode) _treeCache.get(node);
+    }else
+    {
+      return getTreeNode(null, node.toString(), node);
     }
   }
 
