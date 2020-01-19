@@ -198,6 +198,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -699,6 +700,8 @@ public class Layers implements Serializable, Plottable, PlottablesType
       {
         current.append(thisL);
       }
+      
+      _name2layer.put(thisL.getName(), thisL);
     }
 
   }
@@ -737,7 +740,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
     }
 
     addThisLayerDoNotResize(layer);
-
+    
     // and fire the extended event
     fireExtended(null, layer);
   }
@@ -764,6 +767,9 @@ public class Layers implements Serializable, Plottable, PlottablesType
 
     // ok, now we can add it - we've changed the name if that's necessary.
     _theLayers.add(theLayer);
+    
+    // add it to the cache.
+    _name2layer.put(theLayer.getName(), theLayer);
 
     // and fire the extended event
     fireExtended();
@@ -794,6 +800,9 @@ public class Layers implements Serializable, Plottable, PlottablesType
       res.append(theLayer);
     }
 
+    // add it to the cache.
+    _name2layer.put(theLayer.getName(), theLayer);
+
     if (theLayer instanceof SupportsPropertyListeners)
     {
       final SupportsPropertyListeners pr = (SupportsPropertyListeners) theLayer;
@@ -823,6 +832,9 @@ public class Layers implements Serializable, Plottable, PlottablesType
   public void clear()
   {
     _theLayers.clear();
+    
+    // clear cache
+    _name2layer.clear();
 
     // and fire the extended event
     fireExtended(null, null);
@@ -848,6 +860,9 @@ public class Layers implements Serializable, Plottable, PlottablesType
 
     // and now empty the object itself
     _theLayers.removeAllElements();
+    
+    // clear the cache
+    _theLayers.clear();
 
     // also tidy up the listeners
     _dataExtendedListeners.clear();
@@ -930,6 +945,18 @@ public class Layers implements Serializable, Plottable, PlottablesType
    */
   public Layer findLayer(final String theLayerName)
   {
+    return _name2layer.get(theLayerName);
+  }
+  
+  /**
+   * see if we can find this layer
+   *
+   * @param theLayerName
+   *          the name of the layer to look for
+   * @return the layer
+   */
+  public Layer legacyFindLayer(final String theLayerName)
+  {
     Layer res = null;
     // step through our layers
     final Enumeration<Editable> enumer = _theLayers.elements();
@@ -947,8 +974,15 @@ public class Layers implements Serializable, Plottable, PlottablesType
     //
     return res;
   }
+  
+  private HashMap<String, Layer> _name2layer = new HashMap<String, Layer>();
 
   public Layer findLayer(final String theName, final boolean recursive)
+  {
+    return _name2layer.get(theName);
+  }
+  
+  public Layer legacyFindLayer(final String theName, final boolean recursive)
   {
     Layer res = null;
 
@@ -1418,6 +1452,9 @@ public class Layers implements Serializable, Plottable, PlottablesType
           (NeedsToBeInformedOfRemove) theLayer;
       rem.beingRemoved();
     }
+    
+    // Remove it from the cache
+    _name2layer.remove(theLayer.getName());
 
     // and fire the modified event
     fireExtended(null, null);
