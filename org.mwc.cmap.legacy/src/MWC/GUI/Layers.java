@@ -597,6 +597,9 @@ public class Layers implements Serializable, Plottable, PlottablesType
    */
   private final PropertyChangeListener _extendedListener;
 
+  private final HashMap<String, Layer> _name2layer =
+      new HashMap<String, Layer>();
+
   /**
    * a list of layers
    */
@@ -700,7 +703,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
       {
         current.append(thisL);
       }
-      
+
       _name2layer.put(thisL.getName(), thisL);
     }
 
@@ -740,7 +743,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
     }
 
     addThisLayerDoNotResize(layer);
-    
+
     // and fire the extended event
     fireExtended(null, layer);
   }
@@ -767,7 +770,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
 
     // ok, now we can add it - we've changed the name if that's necessary.
     _theLayers.add(theLayer);
-    
+
     // add it to the cache.
     _name2layer.put(theLayer.getName(), theLayer);
 
@@ -832,7 +835,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
   public void clear()
   {
     _theLayers.clear();
-    
+
     // clear cache
     _name2layer.clear();
 
@@ -860,7 +863,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
 
     // and now empty the object itself
     _theLayers.removeAllElements();
-    
+
     // clear the cache
     _theLayers.clear();
 
@@ -869,6 +872,10 @@ public class Layers implements Serializable, Plottable, PlottablesType
     _dataModifiedListeners.clear();
     _dataReformattedListeners.clear();
   }
+
+  // ////////////////////////////////////////////////////
+  // callback management
+  // ////////////////////////////////////////////////////
 
   @Override
   public int compareTo(final Plottable arg0)
@@ -885,10 +892,6 @@ public class Layers implements Serializable, Plottable, PlottablesType
       res = 0;
     return res;
   }
-
-  // ////////////////////////////////////////////////////
-  // callback management
-  // ////////////////////////////////////////////////////
 
   /**
    * create a version of the supplied layer name that doesn't exist, by appending a counter
@@ -947,73 +950,10 @@ public class Layers implements Serializable, Plottable, PlottablesType
   {
     return _name2layer.get(theLayerName);
   }
-  
-  /**
-   * see if we can find this layer
-   *
-   * @param theLayerName
-   *          the name of the layer to look for
-   * @return the layer
-   */
-  public Layer legacyFindLayer(final String theLayerName)
-  {
-    Layer res = null;
-    // step through our layers
-    final Enumeration<Editable> enumer = _theLayers.elements();
-    while (enumer.hasMoreElements())
-    {
-      final Layer thisL = (Layer) enumer.nextElement();
-      final String layerName = thisL.getName();
-      if (layerName != null)
-        if (layerName.equalsIgnoreCase(theLayerName))
-        {
-          res = thisL;
-          break;
-        }
-    }
-    //
-    return res;
-  }
-  
-  private HashMap<String, Layer> _name2layer = new HashMap<String, Layer>();
 
   public Layer findLayer(final String theName, final boolean recursive)
   {
     return _name2layer.get(theName);
-  }
-  
-  public Layer legacyFindLayer(final String theName, final boolean recursive)
-  {
-    Layer res = null;
-
-    if (recursive)
-    {
-      // step through our layers
-      final Enumeration<Editable> enumer = _theLayers.elements();
-      while (enumer.hasMoreElements() && res == null)
-      {
-        final Layer thisL = (Layer) enumer.nextElement();
-        final String layerName = thisL.getName();
-        if (layerName != null && layerName.equalsIgnoreCase(theName))
-        {
-          res = thisL;
-          break;
-        }
-        else
-        {
-          res = checkLayer(thisL, theName);
-        }
-      }
-      //
-      return res;
-
-    }
-    else
-    {
-      res = findLayer(theName);
-    }
-
-    return res;
   }
 
   /**
@@ -1286,6 +1226,67 @@ public class Layers implements Serializable, Plottable, PlottablesType
   }
 
   /**
+   * see if we can find this layer
+   *
+   * @param theLayerName
+   *          the name of the layer to look for
+   * @return the layer
+   */
+  public Layer legacyFindLayer(final String theLayerName)
+  {
+    Layer res = null;
+    // step through our layers
+    final Enumeration<Editable> enumer = _theLayers.elements();
+    while (enumer.hasMoreElements())
+    {
+      final Layer thisL = (Layer) enumer.nextElement();
+      final String layerName = thisL.getName();
+      if (layerName != null)
+        if (layerName.equalsIgnoreCase(theLayerName))
+        {
+          res = thisL;
+          break;
+        }
+    }
+    //
+    return res;
+  }
+
+  public Layer legacyFindLayer(final String theName, final boolean recursive)
+  {
+    Layer res = null;
+
+    if (recursive)
+    {
+      // step through our layers
+      final Enumeration<Editable> enumer = _theLayers.elements();
+      while (enumer.hasMoreElements() && res == null)
+      {
+        final Layer thisL = (Layer) enumer.nextElement();
+        final String layerName = thisL.getName();
+        if (layerName != null && layerName.equalsIgnoreCase(theName))
+        {
+          res = thisL;
+          break;
+        }
+        else
+        {
+          res = checkLayer(thisL, theName);
+        }
+      }
+      //
+      return res;
+
+    }
+    else
+    {
+      res = findLayer(theName);
+    }
+
+    return res;
+  }
+
+  /**
    * paint all of the layers in this canvas
    *
    * @param dest
@@ -1452,7 +1453,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
           (NeedsToBeInformedOfRemove) theLayer;
       rem.beingRemoved();
     }
-    
+
     // Remove it from the cache
     _name2layer.remove(theLayer.getName());
 
