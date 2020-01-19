@@ -38,6 +38,7 @@ import MWC.GUI.ErrorLogger;
 import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.GriddableSeriesMarker;
+import MWC.GUI.ICantContainLayers;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.NeedsWrappingInLayerManager;
@@ -66,7 +67,7 @@ import junit.framework.TestCase;
  *
  */
 public class TrackSegment extends BaseItemLayer implements DraggableItem,
-    GriddableSeriesMarker, NeedsWrappingInLayerManager
+    GriddableSeriesMarker, NeedsWrappingInLayerManager, ICantContainLayers
 {
 
   public static class testListMgt extends TestCase

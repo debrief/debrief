@@ -488,7 +488,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
         {
           return l;
         }
-        else
+        else if ( !(l instanceof ICantContainLayers) )
         {
           res = checkLayer(l, name);
         }
