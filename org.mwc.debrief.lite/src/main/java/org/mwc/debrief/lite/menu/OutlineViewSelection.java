@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 // $RCSfile: PlottableSelection.java,v $
 // @author $Author: Ian.Mayo $
@@ -74,28 +74,28 @@ public class OutlineViewSelection implements Transferable, ClipboardOwner
   // member variables
   ////////////////////////////////////////////////////////////
   public static DataFlavor PlottableFlavor;
-  private final DataFlavor[] _flavors = {PlottableFlavor};
-  private Plottable[] _thePlottables = null;
-  private final boolean _isCopy;
-
   static
   {
     try
     {
       PlottableFlavor = new DataFlavor(Class.forName("MWC.GUI.Plottable"),
-                                       "Plottable");
+          "Plottable");
     }
     catch (final Exception e)
     {
       MWC.Utilities.Errors.Trace.trace(e);
     }
   }
+  private final DataFlavor[] _flavors =
+  {PlottableFlavor};
+  private Plottable[] _thePlottables = null;
+
+  private final boolean _isCopy;
 
   ////////////////////////////////////////////////////////////
   // constructor, receives a plottable
   ////////////////////////////////////////////////////////////
-  public OutlineViewSelection(final Plottable[] val,
-                            final boolean isCopy)
+  public OutlineViewSelection(final Plottable[] val, final boolean isCopy)
   {
     _thePlottables = val;
     _isCopy = isCopy;
@@ -105,25 +105,10 @@ public class OutlineViewSelection implements Transferable, ClipboardOwner
   // member functions
   ////////////////////////////////////////////////////////////
 
-  public boolean isACopy()
-  {
-    return _isCopy;
-  }
-
-  // return the set of flavours supported by this selection
-  public DataFlavor[] getTransferDataFlavors()
-  {
-    return _flavors;
-  }
-
-  // check if this is supported
-  public boolean isDataFlavorSupported(final DataFlavor p1)
-  {
-    return p1.equals(PlottableFlavor);
-  }
-
   // retrieve the data
-  public Object getTransferData(final DataFlavor p1) throws UnsupportedFlavorException
+  @Override
+  public Object getTransferData(final DataFlavor p1)
+      throws UnsupportedFlavorException
   {
     if (p1.equals(PlottableFlavor))
     {
@@ -133,10 +118,28 @@ public class OutlineViewSelection implements Transferable, ClipboardOwner
       throw new UnsupportedFlavorException(p1);
   }
 
+  // return the set of flavours supported by this selection
+  @Override
+  public DataFlavor[] getTransferDataFlavors()
+  {
+    return _flavors;
+  }
+
+  public boolean isACopy()
+  {
+    return _isCopy;
+  }
+
+  // check if this is supported
+  @Override
+  public boolean isDataFlavorSupported(final DataFlavor p1)
+  {
+    return p1.equals(PlottableFlavor);
+  }
+
   // don't bother!
+  @Override
   public void lostOwnership(final Clipboard p1, final Transferable p2)
   {
   }
 }
-	
- 

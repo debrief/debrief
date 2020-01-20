@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Limpet library dependencies
 Bundle-SymbolicName: info.limpet.libs;singleton:=true
-Bundle-Version: 1.0.8
+Bundle-Version: 1.0.10
 Bundle-Vendor: MWC
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Bundle-ActivationPolicy: lazy
@@ -112,3 +112,4 @@ Export-Package: org.apache.commons.csv,
  tec.units.ri.internal.format
 Require-Bundle: org.eclipse.draw2d,
  org.eclipse.jface
+Automatic-Module-Name: info.limpet.libs

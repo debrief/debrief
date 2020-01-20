@@ -53,8 +53,9 @@ public class RangeBearingTool extends AbstractZoomTool
 
     public String getLongFormat()
     {
-      return "Range:" + (int) distance.getValueIn(WorldDistance.YARDS)
-          + "yd Brg:" + (int) bearing + DEGREE_SYMBOL;
+      return "Range:" + (int) distance.getValueIn(RangeBearingTool.bearingUnit)
+          + WorldDistance.getLabelFor(RangeBearingTool.bearingUnit) + " Brg:"
+          + (int) bearing + DEGREE_SYMBOL;
     }
 
     public int getPrintBearing()
@@ -65,7 +66,8 @@ public class RangeBearingTool extends AbstractZoomTool
 
     public String getShortFormat()
     {
-      return (int) distance.getValueIn(WorldDistance.YARDS) + "yd "
+      return (int) distance.getValueIn(RangeBearingTool.bearingUnit)
+          + WorldDistance.getLabelFor(RangeBearingTool.bearingUnit) + " "
           + (int) bearing + DEGREE_SYMBOL;
     }
 
@@ -95,6 +97,14 @@ public class RangeBearingTool extends AbstractZoomTool
   /** Icon for the control */
   public static final String ICON_IMAGE =
       "/org/geotools/swing/icons/mActionPan.png";
+
+  // Unit which is getting displayed now.
+  private static int bearingUnit = WorldDistance.YARDS;
+
+  public static int getBearingUnit()
+  {
+    return bearingUnit;
+  }
 
   private final Cursor cursor;
 
@@ -267,5 +277,10 @@ public class RangeBearingTool extends AbstractZoomTool
 
       dragLine.mouseReleased(ev);
     }
+  }
+
+  public static void setBearingUnit(final int bearingUnit)
+  {
+    RangeBearingTool.bearingUnit = bearingUnit;
   }
 }

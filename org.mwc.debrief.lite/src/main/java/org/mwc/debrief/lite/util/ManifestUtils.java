@@ -27,29 +27,40 @@ import org.mwc.debrief.lite.DebriefLiteApp;
 public class ManifestUtils
 {
 
-  public static String readManifestVersion() {
+  public static Manifest getJarManifest(final Class<?> clazz)
+  {
+    final String className = clazz.getSimpleName() + ".class";
+    final String classPath = clazz.getResource(className).toString();
+    // IJ.log("classPath = " + classPath);
+    if (!classPath.startsWith("jar"))
+    { // Class not from JAR
+      return null;
+    }
+    final String manifestPath = classPath.substring(0, classPath.lastIndexOf(
+        "!") + 1) + "/META-INF/MANIFEST.MF";
+    Manifest manifest = null;
+    try
+    {
+      manifest = new Manifest(new URL(manifestPath).openStream());
+    }
+    catch (final IOException ignore)
+    {
+    }
+    return manifest;
+  }
+
+  public static String readManifestVersion()
+  {
     String retVal = null;
 
-    Manifest manifest = getJarManifest(DebriefLiteApp.class);
+    final Manifest manifest = getJarManifest(DebriefLiteApp.class);
     // check that this is your manifest and do what you need or get the next one
-    if(manifest!=null && manifest.getMainAttributes()!=null &&
-        "Debrief Lite".equals(manifest.getMainAttributes().getValue("Implementation-Title"))) {
+    if (manifest != null && manifest.getMainAttributes() != null
+        && "Debrief Lite".equals(manifest.getMainAttributes().getValue(
+            "Implementation-Title")))
+    {
       retVal = manifest.getMainAttributes().getValue("Implementation-Version");
     }
     return retVal;
-  }
-  public static Manifest getJarManifest(Class<?> clazz) {
-    String className = clazz.getSimpleName() + ".class";    
-    String classPath = clazz.getResource(className).toString();
-    //IJ.log("classPath = " + classPath);
-    if (!classPath.startsWith("jar")) { // Class not from JAR
-      return null;
-    }
-    String manifestPath = classPath.substring(0, classPath.lastIndexOf("!") + 1) + "/META-INF/MANIFEST.MF";
-    Manifest manifest = null;
-    try {
-      manifest = new Manifest(new URL(manifestPath).openStream());
-    } catch (IOException ignore) { }
-    return manifest;
   }
 }

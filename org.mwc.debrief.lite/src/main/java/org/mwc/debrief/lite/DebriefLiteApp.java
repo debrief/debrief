@@ -39,11 +39,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -80,10 +82,12 @@ import org.mwc.debrief.lite.map.GeoToolMapRenderer.MapRenderer;
 import org.mwc.debrief.lite.map.LiteMapPane;
 import org.mwc.debrief.lite.menu.DebriefRibbon;
 import org.mwc.debrief.lite.menu.DebriefRibbonFile;
+import org.mwc.debrief.lite.menu.DebriefRibbonInsert;
 import org.mwc.debrief.lite.menu.DebriefRibbonTimeController;
 import org.mwc.debrief.lite.menu.MenuUtils;
 import org.mwc.debrief.lite.outline.OutlinePanelView;
 import org.mwc.debrief.lite.util.DoSaveAs;
+import org.mwc.debrief.lite.util.ResizableIconFactory;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
@@ -239,8 +243,22 @@ public class DebriefLiteApp implements FileDropListener
   public static String state = null;
   public static boolean collapsedState = false;
 
-  private static ArrayList<PropertyChangeListener> stateListeners =
-      new ArrayList<>();
+  public static PropertyChangeListener enableDisableButtons =
+      new PropertyChangeListener()
+      {
+
+        @Override
+        public void propertyChange(final PropertyChangeEvent evt)
+        {
+          final boolean isActive = ACTIVE_STATE.equals(evt.getNewValue());
+          DebriefRibbonTimeController.setButtonsEnabled(
+              DebriefRibbonTimeController.topButtonCommands, isActive);
+        }
+      };
+
+      private static ArrayList<PropertyChangeListener> stateListeners =
+          new ArrayList<>(Arrays.asList(enableDisableButtons));
+
 
   protected static boolean _plotDirty;
 
@@ -448,7 +466,6 @@ public class DebriefLiteApp implements FileDropListener
   {
     try
     {
-      System.out.println("Using instance:" + _instance);
       _instance.handleImportRep(new File[]
       {file});
     }
@@ -552,6 +569,7 @@ public class DebriefLiteApp implements FileDropListener
 
   private OutlinePanelView layerManager;
   private GraphPanelView graphPanelView;
+
   private final JXCollapsiblePaneWithTitle outlinePanel =
       new JXCollapsiblePaneWithTitle(Direction.LEFT, "Outline", 400);
 
@@ -561,6 +579,7 @@ public class DebriefLiteApp implements FileDropListener
       new JXCollapsiblePaneWithTitle(Direction.RIGHT, "Narratives", 350);
   private final List<JXCollapsiblePaneWithTitle> openPanels =
       new ArrayList<JXCollapsiblePaneWithTitle>();
+
   private final JRibbonFrame theFrame;
 
   private final Layers _theLayers = new Layers()
@@ -729,11 +748,11 @@ public class DebriefLiteApp implements FileDropListener
   private final PainterManager painterManager;
 
   private final LiteTote theTote;
-
   private final LiteStepControl _stepControl;
   private final Layer safeChartFeatures;
   private HiResDate _pendingNewTime;
   private HiResDate _pendingOldTime;
+
   private final ToteSetter _normalSetter;
 
   private final ToteSetter _snailSetter;
@@ -775,9 +794,6 @@ public class DebriefLiteApp implements FileDropListener
     Trace.initialise(app);
 
     theFrame = new JRibbonFrame(defaultTitle);
-
-    theFrame.setApplicationIcon(ImageWrapperResizableIcon.getIcon(MenuUtils
-        .createImage("icons/d_lite.png"), MenuUtils.ICON_SIZE_32));
 
     geoMapRenderer = new GeoToolMapRenderer();
 
@@ -869,7 +885,7 @@ public class DebriefLiteApp implements FileDropListener
         false);
     tp.setColor(Color.white);
     final TotePainter sp = new SnailPainter2(theChart, _theLayers, theTote);
-
+ 
     final ToteSetter.RefreshStepper refresher = new ToteSetter.RefreshStepper()
     {
 
@@ -943,7 +959,10 @@ public class DebriefLiteApp implements FileDropListener
 
     // lastly give us some backdrop data
     loadBackdropdata(_theLayers);
-
+    theFrame.setApplicationIcon(ResizableIconFactory.factory(ImageWrapperResizableIcon.getIcon(MenuUtils
+        .createImage("icons/d_lite.png"), MenuUtils.ICON_SIZE_32)));
+    theFrame.setIconImage(new ImageIcon(ClassLoader.getSystemResource(
+        "icons/d_lite.png")).getImage());
     theFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     theFrame.setVisible(true);
     theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
@@ -995,6 +1014,7 @@ public class DebriefLiteApp implements FileDropListener
     final JPanel centerPanel = new JPanel();
     centerPanel.setLayout(new BorderLayout());
     centerPanel.setName("Center Panel");
+
     mapPane.addComponentListener(new ComponentAdapter()
     {
       @Override
@@ -1056,7 +1076,7 @@ public class DebriefLiteApp implements FileDropListener
 
   /**
    * Add the context menu to the LiteMapPane
-   *
+   * 
    * @param _myMapPane
    *          MapPane to add the menu
    * @param transform
@@ -1374,13 +1394,6 @@ public class DebriefLiteApp implements FileDropListener
       success = false;
     }
 
-    // ok, the plot may have loaded with a stepping mode (snail mode).
-    // we can't see how to change the button in the Ribbon bar, so, instead
-    // we'll change the listener to what the ribbon is showing
-    final ToteSetter listener = DebriefRibbonTimeController
-        .isNormalDisplayMode() ? _normalSetter : _snailSetter;
-    listener.run();
-
     if (success)
     {
       resetFileName(file);
@@ -1658,7 +1671,7 @@ public class DebriefLiteApp implements FileDropListener
       DebriefLiteApp.currentFileName = file.getAbsolutePath();
       DebriefLiteApp.setTitle(file.getName());
       // setState(ACTIVE_STATE);
-      DebriefRibbonFile.closeButton.setEnabled(true);
+      DebriefRibbonFile.closeButton.getContentModel().setActionEnabled(true);
     }
   }
 
@@ -1689,10 +1702,10 @@ public class DebriefLiteApp implements FileDropListener
     // continue with reset processing
     _plotDirty = false;
     setState(INACTIVE_STATE);
-    DebriefRibbonFile.closeButton.setEnabled(false);
+    DebriefRibbonFile.closeButton.getContentModel().setActionEnabled(false);
     currentFileName = null;
     setTitle(defaultTitle);
-
+    
     // also clear the tote
     theTote.clear();
 
@@ -1714,7 +1727,7 @@ public class DebriefLiteApp implements FileDropListener
     // reset the map
     final ResetAction resetMap = new ResetAction(mapPane);
     resetMap.actionPerformed(null);
-
+    DebriefRibbonInsert.resetLayers(_theLayers);
     // put some backdrop data back in
     loadBackdropdata(_theLayers);
     resetUndoBuffer();

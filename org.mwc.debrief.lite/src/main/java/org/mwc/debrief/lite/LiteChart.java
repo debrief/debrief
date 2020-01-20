@@ -16,65 +16,22 @@ import MWC.GenericData.WorldArea;
 public class LiteChart extends PlainChart
 {
 
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
   private final CanvasType _myCanvas;
+
   private final JMapPane _map;
 
-  public LiteChart(Layers theLayers, CanvasType canvas, JMapPane mapPane)
+  public LiteChart(final Layers theLayers, final CanvasType canvas,
+      final JMapPane mapPane)
   {
     super(theLayers);
     _myCanvas = canvas;
     _map = mapPane;
   }
 
-  @Override
-  public WorldArea getProjectionArea()
-  {
-    WorldArea bounds = getLayers().getBounds();
-    return bounds;
-  }
-
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 1L;
-
-  @Override
-  public void rescale()
-  {
-    
-    FitToWindow.fitToWindow(_theLayers, _map);
-  }
-
-  @Override
-  public void update()
-  {
-    _map.repaint();
-  }
-
-  @Override
-  public void update(HasEditables changedLayer)
-  {
-    // don't bother, we don't need it
-  }
-
-  @Override
-  public void repaint()
-  {
-    // don't bother, we don't need it
-  }
-
-  @Override
-  public void repaintNow(Rectangle rect)
-  {
-    throw new IllegalArgumentException("Not implemented");
-  }
-
-  @Override
-  public Dimension getScreenSize()
-  {
-    throw new IllegalArgumentException("Not implemented");
-  }
-  
   @Override
   public CanvasType getCanvas()
   {
@@ -85,6 +42,50 @@ public class LiteChart extends PlainChart
   public Component getPanel()
   {
     throw new IllegalArgumentException("Not implemented");
+  }
+
+  @Override
+  public WorldArea getProjectionArea()
+  {
+    final WorldArea bounds = getLayers().getBounds();
+    return bounds;
+  }
+
+  @Override
+  public Dimension getScreenSize()
+  {
+    throw new IllegalArgumentException("Not implemented");
+  }
+
+  @Override
+  public void repaint()
+  {
+    // don't bother, we don't need it
+  }
+
+  @Override
+  public void repaintNow(final Rectangle rect)
+  {
+    throw new IllegalArgumentException("Not implemented");
+  }
+
+  @Override
+  public void rescale()
+  {
+
+    FitToWindow.fitToWindow(_theLayers, _map);
+  }
+
+  @Override
+  public void update()
+  {
+    _map.repaint();
+  }
+
+  @Override
+  public void update(final HasEditables changedLayer)
+  {
+    // don't bother, we don't need it
   }
 
 }

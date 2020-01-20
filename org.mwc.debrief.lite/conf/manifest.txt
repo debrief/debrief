@@ -33,8 +33,8 @@ Class-Path: . lib/cmap_legacy.jar lib/debrief_legacy.jar lib/jt-zonals
  3.jar lib/mockito-all-1.8.5.jar lib/imageio-ext-tiff-1.1.2.jar lib/im
  ageio-ext-utilities-1.1.2.jar lib/jai_codec-1.1.3.jar lib/jai_core-1.
  1.3.jar lib/jai_imageio-1.1.jar lib/openmap.jar lib/radiance-flamingo
- -1.0.2.jar lib/radiance-neon-1.0.2.jar lib/radiance-substance-1.0.2.j
- ar lib/radiance-substance-extras-1.0.2.jar lib/radiance-trident-1.0.2
+ -2.5.1.jar lib/radiance-neon-2.5.1.jar lib/radiance-substance-2.5.1.j
+ ar lib/radiance-substance-extras-2.5.1.jar lib/radiance-trident-2.5.1
  .jar lib/swingx-common-1.6.6-SNAPSHOT.jar lib/swingx-core-1.6.6-SNAPS
  HOT.jar lib/swingx-painters-1.6.6-SNAPSHOT.jar lib/cmap_geotools.jar
 

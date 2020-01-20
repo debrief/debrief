@@ -22,6 +22,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
@@ -34,17 +36,25 @@ import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.util.DoSave;
 import org.mwc.debrief.lite.util.DoSaveAs;
-import org.pushingpixels.flamingo.api.common.FlamingoCommand;
-import org.pushingpixels.flamingo.api.common.JCommandButton;
-import org.pushingpixels.flamingo.api.common.JCommandMenuButton;
+import org.mwc.debrief.lite.util.ResizableIconFactory;
+import org.pushingpixels.flamingo.api.common.CommandAction;
+import org.pushingpixels.flamingo.api.common.CommandActionEvent;
+import org.pushingpixels.flamingo.api.common.CommandButtonPresentationState;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
+import org.pushingpixels.flamingo.api.common.model.Command;
+import org.pushingpixels.flamingo.api.common.model.CommandButtonPresentationModel;
+import org.pushingpixels.flamingo.api.common.model.CommandGroup;
+import org.pushingpixels.flamingo.api.common.model.CommandMenuContentModel;
+import org.pushingpixels.flamingo.api.common.model.CommandPanelContentModel;
+import org.pushingpixels.flamingo.api.common.model.CommandPanelPresentationModel;
 import org.pushingpixels.flamingo.api.common.popup.JCommandPopupMenu;
-import org.pushingpixels.flamingo.api.common.popup.JPopupPanel;
-import org.pushingpixels.flamingo.api.common.popup.PopupPanelCallback;
+import org.pushingpixels.flamingo.api.common.popup.model.CommandPopupMenuPresentationModel;
+import org.pushingpixels.flamingo.api.common.projection.CommandButtonProjection;
+import org.pushingpixels.flamingo.api.common.projection.Projection;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
+import org.pushingpixels.flamingo.api.ribbon.JRibbonBand.PresentationPriority;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
-import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
 import Debrief.GUI.Frames.Application;
@@ -55,7 +65,8 @@ import MWC.GUI.ToolParent;
 public class DebriefRibbonFile
 {
 
-  private static class CopyPlotAsPNG extends AbstractAction
+  private static class CopyPlotAsPNG extends AbstractAction implements
+      CommandAction
   {
     /**
      *
@@ -75,45 +86,58 @@ public class DebriefRibbonFile
       final JMapPane map = (JMapPane) mapRenderer.getMap();
       org.mwc.debrief.lite.util.ClipboardUtils.copyToClipboard(map);
     }
+
+    @Override
+    public void commandActivated(final CommandActionEvent e)
+    {
+      actionPerformed(e);
+
+    }
+
   }
 
   @SuppressWarnings("unused")
-  private static class ImportFileAction extends AbstractAction
+  private static class ImportFileAction extends AbstractAction implements
+      CommandAction
   {
 
-    private static final String TYPE_REP="rep";
-    private static final String TYPE_DPF="dpf";
-    private static final String TYPE_NMEA="log";
-    private static final String TYPE_TIF="tif";
-    
-    private String importFileType;
-    protected ImportFileAction(String type) {
-      importFileType = type;
-    }
+    private static final String TYPE_REP = "rep";
+    private static final String TYPE_DPF = "dpf";
+    private static final String TYPE_NMEA = "log";
+    private static final String TYPE_TIF = "tif";
+
     /**
      *
      */
     private static final long serialVersionUID = -804226120198968206L;
+
+    private final String importFileType;
+
+    protected ImportFileAction(final String type)
+    {
+      importFileType = type;
+    }
 
     @Override
     public void actionPerformed(final ActionEvent e)
     {
       final String initialFileLocation = DebriefLiteApp.getDefault()
           .getProperty(LAST_FILE_OPEN_LOCATION);
-      final File fileToOpen ;
-      if(TYPE_REP.equals(importFileType)) {
-        fileToOpen = showOpenDialog(initialFileLocation, new String[]
-        {"rep","dsf","dtf"}, "Debrief replay file (*.rep, *.dsf, *.dtf)");
-      }
-      else if(TYPE_NMEA.equals(importFileType))
+      final File fileToOpen;
+      if (TYPE_REP.equals(importFileType))
       {
         fileToOpen = showOpenDialog(initialFileLocation, new String[]
-            {"log"}, "NMEA File (*.log)");
+        {"rep", "dsf", "dtf"}, "Debrief replay file (*.rep, *.dsf, *.dtf)");
       }
-      else if(TYPE_TIF.contentEquals(importFileType))
+      else if (TYPE_NMEA.equals(importFileType))
       {
         fileToOpen = showOpenDialog(initialFileLocation, new String[]
-            {"tif"}, "TIF file (*.tif)");
+        {"log"}, "NMEA File (*.log)");
+      }
+      else if (TYPE_TIF.contentEquals(importFileType))
+      {
+        fileToOpen = showOpenDialog(initialFileLocation, new String[]
+        {"tif"}, "TIF file (*.tif)");
       }
       else
       {
@@ -122,28 +146,37 @@ public class DebriefRibbonFile
       }
       if (fileToOpen != null)
       {
-        if(TYPE_REP.equalsIgnoreCase(importFileType))
+        if (TYPE_REP.equalsIgnoreCase(importFileType))
         {
           DebriefLiteApp.openRepFile(fileToOpen);
         }
-        else if(TYPE_NMEA.equalsIgnoreCase(importFileType))
+        else if (TYPE_NMEA.equalsIgnoreCase(importFileType))
         {
           DebriefLiteApp.openNMEAFile(fileToOpen);
         }
-        else if(TYPE_TIF.equalsIgnoreCase(importFileType))
+        else if (TYPE_TIF.equalsIgnoreCase(importFileType))
         {
           DebriefLiteApp.handleImportTIFFile(fileToOpen);
         }
-        else {
+        else
+        {
           DebriefLiteApp.openPlotFile(fileToOpen);
         }
         DebriefLiteApp.getDefault().setProperty(LAST_FILE_OPEN_LOCATION,
             fileToOpen.getParentFile().getAbsolutePath());
       }
     }
+
+    @Override
+    public void commandActivated(final CommandActionEvent e)
+    {
+      actionPerformed(e);
+
+    }
   }
 
-  private static class NewFileAction extends AbstractAction
+  private static class NewFileAction extends AbstractAction implements
+      CommandAction
   {
     /**
      *
@@ -220,9 +253,17 @@ public class DebriefRibbonFile
         _doReset.run();
       }
     }
+
+    @Override
+    public void commandActivated(final CommandActionEvent e)
+    {
+      actionPerformed(e);
+
+    }
   }
 
-  private static class OpenPlotAction extends AbstractAction
+  private static class OpenPlotAction extends AbstractAction implements
+      CommandAction
   {
 
     /**
@@ -303,6 +344,13 @@ public class DebriefRibbonFile
       }
     }
 
+    @Override
+    public void commandActivated(final CommandActionEvent e)
+    {
+      actionPerformed(e);
+
+    }
+
   }
 
   private static class SavePopupMenu extends JCommandPopupMenu
@@ -312,33 +360,18 @@ public class DebriefRibbonFile
      */
     private static final long serialVersionUID = 1L;
 
-    public SavePopupMenu(final Session session, final JRibbonFrame theFrame)
+    public SavePopupMenu(
+        final Projection<JCommandPopupMenu, CommandMenuContentModel, CommandPopupMenuPresentationModel> projection)
     {
-      final Image saveImage = MenuUtils.createImage("icons/16/save.png");
-      final ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon
-          .getIcon(saveImage, new Dimension(16, 16));
-      final JCommandMenuButton saveButton = new JCommandMenuButton("Save",
-          imageIcon);
-      saveButton.setName("save");
-      saveButton.getActionModel().addActionListener(new DoSave(session,
-          theFrame));
-      addMenuButton(saveButton);
-      final Image saveAsImage = MenuUtils.createImage("icons/16/save-as.png");
-      final ImageWrapperResizableIcon imageIcon2 = ImageWrapperResizableIcon
-          .getIcon(saveAsImage, new Dimension(16, 16));
-      final JCommandMenuButton saveAsButton = new JCommandMenuButton("Save As",
-          imageIcon2);
-      saveAsButton.setName("saveas");
-      saveAsButton.getActionModel().addActionListener(new DoSaveAs(session,
-          theFrame));
-      addMenuButton(saveAsButton);
+      super(projection);
+
     }
   }
 
   private static final String LAST_FILE_OPEN_LOCATION =
       "last_fileopen_location";
 
-  public static FlamingoCommand closeButton;
+  public static CommandButtonProjection<Command> closeButton;
 
   private static RibbonTask fileTask;
 
@@ -350,46 +383,54 @@ public class DebriefRibbonFile
     final JRibbonBand fileMenu = new JRibbonBand("File", null);
     MenuUtils.addCommand("New", "icons/24/new.png", new NewFileAction(ribbon
         .getRibbonFrame(), session, resetAction, false), fileMenu,
-        RibbonElementPriority.TOP);
+        PresentationPriority.TOP);
     MenuUtils.addCommand("Open", "icons/24/open.png", new OpenPlotAction(ribbon
         .getRibbonFrame(), session, resetAction, false), fileMenu,
-        RibbonElementPriority.TOP);
-    final SavePopupMenu savePopup = new SavePopupMenu(session, ribbon
-        .getRibbonFrame());
-    MenuUtils.addCommand("Save", "icons/24/save.png", new DoSave(session, ribbon
-        .getRibbonFrame()), fileMenu, RibbonElementPriority.TOP,
-        new PopupPanelCallback()
-        {
-          @Override
-          public JPopupPanel getPopupPanel(final JCommandButton commandButton)
-          {
-            return savePopup;
-          }
-        });
+        PresentationPriority.TOP);
+
+    final CommandPopupMenuPresentationModel popupMenuPresentationModel =
+        CommandPopupMenuPresentationModel.builder().setPanelPresentationModel(
+            CommandPanelPresentationModel.builder().setToShowGroupLabels(false)
+                .setCommandPresentationState(
+                    CommandButtonPresentationState.FIT_TO_ICON)
+                .setCommandIconDimension(48).setMaxColumns(5).setMaxRows(3)
+                .build()).build();
+
+    final Image saveImage = MenuUtils.createImage("icons/16/save.png");
+    final ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon
+        .getIcon(saveImage, new Dimension(16, 16));
+    fileMenu.addRibbonCommand(Command.builder().setText("Save").setIconFactory(
+        ResizableIconFactory.factory(imageIcon)).setSecondaryContentModel(
+            getSavePopupContentModel(session, ribbon.getRibbonFrame())).build()
+        .project(CommandButtonPresentationModel.builder()
+            .setPopupMenuPresentationModel(popupMenuPresentationModel).build()),
+        PresentationPriority.TOP);
+
     closeButton = MenuUtils.addCommand("Close", "icons/24/close.png",
         new NewFileAction(ribbon.getRibbonFrame(), session, resetAction, true),
-        fileMenu, RibbonElementPriority.TOP);
-    closeButton.setEnabled(false);
+        fileMenu, PresentationPriority.TOP);
+    closeButton.getContentModel().setActionEnabled(false);
     fileMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         fileMenu));
 
     final JRibbonBand importMenu = new JRibbonBand("Import", null);
-    MenuUtils.addCommand("Replay", "icons/24/import.png",
-        new ImportFileAction(ImportFileAction.TYPE_REP), importMenu, RibbonElementPriority.TOP);
-    MenuUtils.addCommand("Plot", "icons/24/plot_file.png",
-        new ImportFileAction(".dpf"), importMenu, RibbonElementPriority.TOP);
-    MenuUtils.addCommand("NMEA", "icons/24/pulse.png",
-        new ImportFileAction(ImportFileAction.TYPE_NMEA), importMenu, RibbonElementPriority.TOP);
-    MenuUtils.addCommand("TIF", "icons/24/map.png",
-        new ImportFileAction(ImportFileAction.TYPE_TIF), importMenu, RibbonElementPriority.TOP);
-    
+    MenuUtils.addCommand("Replay", "icons/24/import.png", new ImportFileAction(
+        ImportFileAction.TYPE_REP), importMenu, PresentationPriority.TOP);
+    MenuUtils.addCommand("Plot", "icons/24/plot_file.png", new ImportFileAction(
+        ".dpf"), importMenu, PresentationPriority.TOP);
+    MenuUtils.addCommand("NMEA", "icons/24/pulse.png", new ImportFileAction(
+        ImportFileAction.TYPE_NMEA), importMenu, PresentationPriority.TOP);
+    MenuUtils.addCommand("TIF", "icons/24/map.png", new ImportFileAction(
+        ImportFileAction.TYPE_TIF), importMenu, PresentationPriority.TOP);
+
     importMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         importMenu));
 
     final JRibbonBand exportMenu = new JRibbonBand("Export", null);
 
-    MenuUtils.addCommand("Clipboard", "icons/24/export_gpx.png", new CopyPlotAsPNG(
-        geoMapRenderer), exportMenu, RibbonElementPriority.TOP);
+    MenuUtils.addCommand("Clipboard", "icons/24/export_gpx.png",
+        new CopyPlotAsPNG(geoMapRenderer), exportMenu,
+        PresentationPriority.TOP);
     exportMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         exportMenu));
     fileMenu.setPreferredSize(new Dimension(150, 50));
@@ -416,7 +457,7 @@ public class DebriefRibbonFile
       }
       else
       {
-        
+
         DebriefLiteApp.openPlotFile(fileToOpen);
       }
       DebriefLiteApp.getDefault().setProperty(LAST_FILE_OPEN_LOCATION,
@@ -427,6 +468,41 @@ public class DebriefRibbonFile
   public static RibbonTask getFileTask()
   {
     return fileTask;
+  }
+
+  private static CommandMenuContentModel getSavePopupContentModel(
+      final Session session, final JRibbonFrame theFrame)
+  {
+    final Image saveImage = MenuUtils.createImage("icons/16/save.png");
+    final ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon
+        .getIcon(saveImage, new Dimension(16, 16));
+    final List<CommandGroup> commandGroups = new ArrayList<>();
+    final List<Command> commands = new ArrayList<>();
+    final Command saveCommand = Command.builder().setText("Save")
+        .setIconFactory(ResizableIconFactory.factory(imageIcon)).setAction(
+            new DoSave(session, theFrame)).build();
+    commands.add(saveCommand);
+    /*
+     * final JCommandMenuButton saveButton = new JCommandMenuButton("Save", imageIcon);
+     * saveButton.setName("save"); saveButton.getActionModel().addActionListener(new DoSave(session,
+     * theFrame)); addMenuButton(saveButton);
+     */
+
+    final Image saveAsImage = MenuUtils.createImage("icons/16/save-as.png");
+    final ImageWrapperResizableIcon imageIcon2 = ImageWrapperResizableIcon
+        .getIcon(saveAsImage, new Dimension(16, 16));
+    final Command saveAsCommand = Command.builder().setText("SaveAs")
+        .setIconFactory(ResizableIconFactory.factory(imageIcon2)).setAction(
+            new DoSaveAs(session, theFrame)).build();
+    commands.add(saveAsCommand);
+    commandGroups.add(new CommandGroup("Save", commands));
+    final CommandPanelContentModel commandPanelContentModel =
+        new CommandPanelContentModel(commandGroups);
+    commandPanelContentModel.setSingleSelectionMode(true);
+    final CommandMenuContentModel commandMenuContentModel =
+        new CommandMenuContentModel(commandGroups);
+    return commandMenuContentModel;
+
   }
 
   public static void saveChanges(final String currentFileName,
