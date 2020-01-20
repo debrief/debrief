@@ -990,11 +990,6 @@ public class RelativeTMASegment extends CoreTMASegment implements
 
     }
 
-    final Double courseVal = new Double(MWC.Algorithms.Conversions.Degs2Rads(
-        this._courseDegs));
-    final Double speedVal = null;
-    updateCourseSpeed(courseVal, speedVal);
-
     // tell the segment it's being stretched
     int newCourse = (int) getCourse();
     if (newCourse < 0)
@@ -1473,7 +1468,6 @@ public class RelativeTMASegment extends CoreTMASegment implements
     final Double newCourseRads = new Double(MWC.Algorithms.Conversions
         .Degs2Rads(newCourse));
     final Double newSpeedKts = new Double(newSpeed.getValueIn(WorldSpeed.Kts));
-    updateCourseSpeed(newCourseRads, newSpeedKts);
 
     final String spdTxt = MWC.Utilities.TextFormatting.GeneralFormat
         .formatOneDecimalPlace(newSpeed.getValueIn(WorldSpeed.Kts));
@@ -1564,7 +1558,6 @@ public class RelativeTMASegment extends CoreTMASegment implements
     final double spdKts = distMins / periodHours;
 
     final double newSpeedKts = new Double(spdKts);
-    updateCourseSpeed(null, newSpeedKts);
 
     final WorldSpeed newSpeed = new WorldSpeed(spdKts, WorldSpeed.Kts);
     this.setSpeed(newSpeed);
