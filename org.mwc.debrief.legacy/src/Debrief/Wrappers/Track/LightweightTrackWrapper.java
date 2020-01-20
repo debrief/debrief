@@ -31,6 +31,7 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
+import MWC.GUI.ICantContainLayers;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainWrapper;
@@ -57,7 +58,7 @@ import MWC.Utilities.Errors.Trace;
 import junit.framework.TestCase;
 
 public class LightweightTrackWrapper extends PlainWrapper implements
-    WatchableList, Plottable, Layer, IsTransientForChildren
+    WatchableList, Plottable, Layer, IsTransientForChildren, ICantContainLayers
 {
 
   public class LightweightTrackInfo extends Editable.EditorType

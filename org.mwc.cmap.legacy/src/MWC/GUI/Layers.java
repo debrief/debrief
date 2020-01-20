@@ -488,6 +488,11 @@ public class Layers implements Serializable, Plottable, PlottablesType
         {
           return l;
         }
+        else if (l instanceof ICantContainLayers)
+        {
+          // this is a object that can't contain layers (such as a track)
+          // we don't need to bother descending through it
+        }
         else
         {
           res = checkLayer(l, name);
