@@ -20,6 +20,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Window;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
@@ -27,8 +28,9 @@ import java.awt.event.MouseMotionListener;
 import javax.swing.SwingConstants;
 
 import org.jdesktop.swingx.JXLabel;
+import org.mwc.debrief.lite.DebriefLiteApp;
 
-public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
+public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane 
 {
   /**
    *
@@ -72,10 +74,12 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
     {
       add(titleLabel, BorderLayout.EAST);
       setMinimumSize(new Dimension(30, titleLabel.getHeight()));
+      
     }
     else if (direction == Direction.RIGHT)
     {
       add(titleLabel, BorderLayout.WEST);
+      
     }
     else if (direction == Direction.DOWN)
     {
@@ -85,8 +89,8 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
     else if (direction == Direction.UP)
     {
       add(titleLabel, BorderLayout.SOUTH);
-    }
 
+    }
     if (!direction.isVertical())
     {
       titleLabel.setTextRotation(3 * Math.PI / 2);
@@ -184,7 +188,15 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
             }
 
             bounds = getBounds();
-            bounds.height = (bounds.height - oldHeight) + newDimension;
+            final int maxheight = DebriefLiteApp.getInstance().getApplicationFrame().getHeight();
+            //165 is the height of ribbon
+            if(bounds.height<maxheight-165) {
+              bounds.height = (bounds.height - oldHeight) + newDimension;
+            }
+            else {
+              bounds.height = maxheight-167;
+            }
+            
             bounds.width = 0;
             currentDimension = bounds.height;
           }
@@ -206,7 +218,15 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
             }
 
             bounds = getBounds();
-            bounds.width = (bounds.width - oldWidth) + newDimension;
+            int maxwidth = DebriefLiteApp.getInstance().getApplicationFrame().getWidth();
+            //30 is the width of titlebar.
+            if(bounds.width<maxwidth-30) {
+              bounds.width = (bounds.width - oldWidth) + newDimension;
+            }
+            else
+            {
+              bounds.width = maxwidth-32;
+            }
             bounds.height = 0;
             currentDimension = bounds.width;
           }
