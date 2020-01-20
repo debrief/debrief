@@ -1489,8 +1489,8 @@ public class AmbiguityResolver
             if (!possLeg.isEmpty())
             {
               doLog(logger,
-              //    " Did have poss straight cuts. Drop them, we're in a turn",
-              //    time);
+                  " Did have poss straight cuts. Drop them, we're in a turn",
+                  time);
 
               // ok, we have a couple of cuts that look like they're straight.
               // well, they're not. they're actually in a turn
