@@ -980,7 +980,7 @@ public final class ReformatFixes implements FilterOperation
     public void testCollateProperties()
     {
 
-      System.out.println("test 1");
+      //System.out.println("test 1");
       // produce the objects to test
       final Vector<WatchableList> theObjects2 = getTestObjects(5);
 
@@ -998,7 +998,7 @@ public final class ReformatFixes implements FilterOperation
     // TODO FIX-TEST
     public void NtestGetProperties()
     {
-      System.out.println("test 2");
+      //System.out.println("test 2");
       final Debrief.Wrappers.TrackWrapper tw = new Debrief.Wrappers.TrackWrapper();
       tw.setColor(DebriefColors.RED);
       tw.setName("scrap track");
@@ -1079,7 +1079,7 @@ public final class ReformatFixes implements FilterOperation
 
     public void testIntersect()
     {
-      System.out.println("test 3");
+      //System.out.println("test 3");
       final TreeSet<String> t1 = new TreeSet<String>();
       t1.add("a");
       t1.add("b");
