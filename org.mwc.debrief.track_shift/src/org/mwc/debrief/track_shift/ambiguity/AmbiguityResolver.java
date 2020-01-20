@@ -1462,7 +1462,7 @@ public class AmbiguityResolver
                 + " lastBrg:" + (int) lastCut.getBearing() + " brg:"
                 + ((int) cut.getBearing()) + " brg delta:" + brgRate
                 + " gap rate:" + gapRate + " OS zig trip:" + TRIP_ZIG;
-            doLog(logger, stats, time);
+            //doLog(logger, stats, time);
           }
 
           // note: we ignore the gap rate if we know we've got missing cuts.
@@ -1474,7 +1474,7 @@ public class AmbiguityResolver
             {
               // close the leg
               thisLeg = null;
-              doLog(logger, " End leg.", time);
+              //doLog(logger, " End leg.", time);
             }
 
             // ok, were we're in a zig?
@@ -1482,15 +1482,15 @@ public class AmbiguityResolver
             {
               // not in a zig. Put us in a zig
               thisZig = new LegOfCuts();
-              doLog(logger, " New zig.", time);
+              //doLog(logger, " New zig.", time);
             }
 
             // do we have any pending cuts?
             if (!possLeg.isEmpty())
             {
-              doLog(logger,
-                  " Did have poss straight cuts. Drop them, we're in a turn",
-                  time);
+              //doLog(logger,
+              //    " Did have poss straight cuts. Drop them, we're in a turn",
+              //    time);
 
               // ok, we have a couple of cuts that look like they're straight.
               // well, they're not. they're actually in a turn
@@ -1524,7 +1524,7 @@ public class AmbiguityResolver
 
               if (stillCacheing(possLeg, thisTime, (long) minLegLength))
               {
-                doLog(logger, " Poss straight leg. Cache it.", time);
+                //doLog(logger, " Poss straight leg. Cache it.", time);
 
                 // ok, we'll add this to the list
                 possLeg.add(cut);
@@ -1537,7 +1537,7 @@ public class AmbiguityResolver
                 // finish the zig
                 zigs.addAll(thisZig);
 
-                doLog(logger, " Zig ended.", time);
+                //doLog(logger, " Zig ended.", time);
 
                 // close the leg
                 thisZig = null;
@@ -1549,7 +1549,7 @@ public class AmbiguityResolver
               // ok, we're in a leg
               if (thisLeg == null)
               {
-                doLog(logger, " New Leg.", time);
+                //doLog(logger, " New Leg.", time);
 
                 thisLeg = new LegOfCuts();
 
@@ -1558,7 +1558,7 @@ public class AmbiguityResolver
                 // cuts to the leg
                 if (!possLeg.isEmpty())
                 {
-                  doLog(logger, " Have poss straight leg cuts.", time);
+                  //doLog(logger, " Have poss straight leg cuts.", time);
                   thisLeg.addAll(possLeg);
                   possLeg.clear();
                 }
@@ -1590,7 +1590,7 @@ public class AmbiguityResolver
     // are we still in a zig?
     if (thisZig != null)
     {
-      doLog(logger, "Finishing zig.", null);
+      //doLog(logger, "Finishing zig.", null);
 
       // store the zig cuts
       zigs.addAll(thisZig);
@@ -1600,7 +1600,7 @@ public class AmbiguityResolver
     // do we have any possible straight leg cuts
     if (!possLeg.isEmpty())
     {
-      doLog(logger, "Append trailing straight cuts.", null);
+      //doLog(logger, "Append trailing straight cuts.", null);
       thisLeg = new LegOfCuts();
 
       thisLeg.addAll(possLeg);

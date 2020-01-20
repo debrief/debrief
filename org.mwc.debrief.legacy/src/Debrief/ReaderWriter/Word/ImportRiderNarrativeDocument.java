@@ -361,8 +361,7 @@ public class ImportRiderNarrativeDocument
     @Override
     public void setUp()
     {
-
-      System.out.println("setting up message provider ");
+      // System.out.println("setting up message provider ");
 
       // clear the message string
       messageStr = null;

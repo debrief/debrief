@@ -207,10 +207,10 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
       while (iter.hasNext())
       {
         final SensorContactWrapper sc = (SensorContactWrapper) iter.next();
-        System.out.println(sc.getDTG().getDate() + ", " + sc.getBearing());
+        //System.out.println(sc.getDTG().getDate() + ", " + sc.getBearing());
       }
 
-      System.out.println("=================");
+      //System.out.println("=================");
 
       assertEquals("correct number before", 7, sw._myContacts.size());
 
@@ -226,7 +226,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
       while (iter.hasNext())
       {
         final SensorContactWrapper sc = (SensorContactWrapper) iter.next();
-        System.out.println(sc.getDTG().getDate() + ", " + sc.getBearing());
+        //System.out.println(sc.getDTG().getDate() + ", " + sc.getBearing());
       }
     }
 

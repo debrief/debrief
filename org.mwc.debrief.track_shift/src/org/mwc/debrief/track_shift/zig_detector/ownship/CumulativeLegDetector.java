@@ -69,7 +69,7 @@ public class CumulativeLegDetector implements IOwnshipLegDetector
             // 1. the left turn is complete. does it count?
             if (Math.abs(leftArea) > areaUnderTurn)
             {
-              System.out.println("left turn end at" +  (thisTime - startTime)/1000);
+              //System.out.println("left turn end at" +  (thisTime - startTime)/1000);
             }
             else
             {
@@ -84,7 +84,7 @@ public class CumulativeLegDetector implements IOwnshipLegDetector
             // 1. the right turn is complete. does it count?
             if (Math.abs(rightArea) > areaUnderTurn)
             {
-              System.out.println("right turn end at" +  (thisTime - startTime)/1000);
+              //System.out.println("right turn end at" +  (thisTime - startTime)/1000);
             }
             else
             {
@@ -104,8 +104,8 @@ public class CumulativeLegDetector implements IOwnshipLegDetector
       final long soFar = (thisTime - startTime)/1000;
       if(soFar > 600 && soFar < 1000)
       {
-      System.out.println(soFar + "," + thisCourse + "," + lastSign + ","
-          + (int) leftArea + "," + (int) rightArea);
+      //System.out.println(soFar + "," + thisCourse + "," + lastSign + ","
+      //    + (int) leftArea + "," + (int) rightArea);
       }
       if(i % 450 == 0)
       {

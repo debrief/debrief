@@ -397,8 +397,8 @@ public interface Editable
           final int len = pd.length;
           if (len == 0)
           {
-            System.out.println("zero property editors found for " + toBeTested
-                + ", " + toBeTested.getClass());
+            //System.out.println("zero property editors found for " + toBeTested
+            //    + ", " + toBeTested.getClass());
             return;
           }
 
@@ -453,10 +453,10 @@ public interface Editable
                   Assert.fail("missing setter for " + p.getWriteMethod()
                       .getName() + ", " + toBeTested.getClass());
                 }
-                else
-                  System.out.println(
-                      "######## null value returned form getter for " + p
-                          .getReadMethod().getName());
+                //else
+                //  System.out.println(
+                //      "######## null value returned form getter for " + p
+                //          .getReadMethod().getName());
               }
               catch (final IllegalAccessException al)
               {
@@ -465,7 +465,7 @@ public interface Editable
 
               // check if we can get a property editor GUI component for this
               SwingPropertyEditor2.checkPropertyEditors();
-              final PropertyEditor editor = PlainPropertyEditor.findEditor(p);
+              /*final PropertyEditor editor = PlainPropertyEditor.findEditor(p);
 
               if (editor == null)
               {
@@ -473,7 +473,7 @@ public interface Editable
                 System.err.println(
                     "could not find Swing GUI editor component for:" + data
                         + " getter:" + p.getReadMethod().getName());
-              }
+              }*/
             }
 
           }

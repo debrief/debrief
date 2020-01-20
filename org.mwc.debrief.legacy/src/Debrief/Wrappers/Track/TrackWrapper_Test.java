@@ -134,7 +134,7 @@ public class TrackWrapper_Test extends TestCase
         // + " brg is:" + sc.getBearing());
       }
     }
-    System.out.println("===========");
+    //System.out.println("===========");
     return counter;
   }
 
@@ -183,7 +183,7 @@ public class TrackWrapper_Test extends TestCase
         // + " brg is:" + MWC.Algorithms.Conversions.Rads2Degs(sc.getCourse()));
       }
     }
-    System.out.println("===========");
+    //System.out.println("===========");
     return counter;
   }
 
@@ -1018,7 +1018,7 @@ public class TrackWrapper_Test extends TestCase
     // listTimes(ts);
 
     assertEquals("After len:", 4, ts.size());
-    System.out.println("test took:" + (System.currentTimeMillis() - startT));
+    //System.out.println("test took:" + (System.currentTimeMillis() - startT));
   }
 
   public void testDecimateAbsoluteUp()
@@ -1049,7 +1049,7 @@ public class TrackWrapper_Test extends TestCase
     listTimes(ts);
 
     assertEquals("After len:", 14, ts.size());
-    System.out.println("test took:" + (System.currentTimeMillis() - startT));
+    //System.out.println("test took:" + (System.currentTimeMillis() - startT));
   }
 
   public void testDecimatePositionsAndData() throws InterruptedException
@@ -1197,7 +1197,7 @@ public class TrackWrapper_Test extends TestCase
     while (pI.hasMoreElements())
     {
       final FixWrapper fix = (FixWrapper) pI.nextElement();
-      System.out.println(fix.getDTG().getDate() + " // " + fix.getLocation());
+      //System.out.println(fix.getDTG().getDate() + " // " + fix.getLocation());
     }
 
     // GO FOR ULTIMATE DECIMATION
@@ -1210,7 +1210,7 @@ public class TrackWrapper_Test extends TestCase
     while (pI.hasMoreElements())
     {
       final FixWrapper fix = (FixWrapper) pI.nextElement();
-      System.out.println(fix.getDTG().getDate() + " // " + fix.getLocation());
+      // System.out.println(fix.getDTG().getDate() + " // " + fix.getLocation());
     }
 
   }
@@ -1243,7 +1243,7 @@ public class TrackWrapper_Test extends TestCase
     // listTimes(ts);
 
     assertEquals("After len:", 4, ts.size());
-    System.out.println("test took:" + (System.currentTimeMillis() - startT));
+    //System.out.println("test took:" + (System.currentTimeMillis() - startT));
   }
 
   public void testDecimateRelativeUp()
@@ -1274,7 +1274,7 @@ public class TrackWrapper_Test extends TestCase
     listTimes(ts);
 
     assertEquals("After len:", 14, ts.size());
-    System.out.println("test took:" + (System.currentTimeMillis() - startT));
+    //System.out.println("test took:" + (System.currentTimeMillis() - startT));
   }
 
   public void testDuplicateDynamicSetShape()
@@ -1334,10 +1334,10 @@ public class TrackWrapper_Test extends TestCase
     {
       final Editable editable = pts.nextElement();
       final FixWrapper fix = (FixWrapper) editable;
-      System.out.println(fix.getLocation().getLat() + ", " + fix.getLocation()
-          .getLong() + " , " + fix.getDateTimeGroup().getDate().getTime());
+      //System.out.println(fix.getLocation().getLat() + ", " + fix.getLocation()
+      //.getLong() + " , " + fix.getDateTimeGroup().getDate().getTime());
     }
-    System.out.println("========");
+    //System.out.println("========");
 
     // cause the monster problem
     newFix6.setDateTimeGroup(new HiResDate(210000));
@@ -1769,17 +1769,17 @@ public class TrackWrapper_Test extends TestCase
     final CubicSpline latSpline = new CubicSpline(times, lats);
     final CubicSpline longSpline = new CubicSpline(times, longs);
 
-    for (int t = 0; t < 4; t++)
+    /*for (int t = 0; t < 4; t++)
     {
       System.out.println(longs[t] + ", " + lats[t] + "," + times[t]);
-    }
-
+    }*/
+    
     for (long t = 50; t < 80; t++)
     {
       final double tNow = t / 10d;
       final double thisLat = latSpline.interpolate(tNow);
       final double thisLong = longSpline.interpolate(tNow);
-      System.out.println(thisLong + ", " + thisLat + ", " + tNow);
+      //System.out.println(thisLong + ", " + thisLat + ", " + tNow);
     }
   }
 
@@ -2161,9 +2161,9 @@ public class TrackWrapper_Test extends TestCase
     // ok, now set freq. YES. WE'RE USING A VERY HIGH INTERVAL, as an edge case
     parent.setArrowFrequency(new HiResDate(50000000));
 
-    System.out.println("elapsed setting syms:" + (System.currentTimeMillis()
-        - startT));
-
+    //System.out.println("elapsed setting syms:" + (System.currentTimeMillis()
+    //    - startT));
+    
     // ok, check before freq
     assertEquals("with syms", 1, countDecorations(parent, false, true, false));
   }
@@ -2272,7 +2272,7 @@ public class TrackWrapper_Test extends TestCase
     // ok, check before freq
     assertEquals("with syms", 32, countDecorations(track, false, false, true));
 
-    pIter = track.getPositionIterator();
+    /*pIter = track.getPositionIterator();
     while (pIter.hasMoreElements())
     {
       final FixWrapper fix = (FixWrapper) pIter.nextElement();
@@ -2280,8 +2280,7 @@ public class TrackWrapper_Test extends TestCase
       {
         System.out.println(fix.getLabel());
       }
-    }
-
+    }*/
   }
 
   public void testSetSymbolFrequency()
@@ -2307,9 +2306,8 @@ public class TrackWrapper_Test extends TestCase
     // ok, now set freq
     parent.setSymbolFrequency(new HiResDate(50000));
 
-    System.out.println("elapsed setting syms:" + (System.currentTimeMillis()
-        - startT));
-
+    //System.out.println("elapsed setting syms:" + (System.currentTimeMillis()
+    //    - startT));
     // ok, check before freq
     assertEquals("with syms", 640, countDecorations(parent, true, false,
         false));

@@ -305,9 +305,9 @@ public class DebriefFormatDateTime
         }
         else
         {
-          System.err
-              .println("Debrief is only capable of reading data to microsecond resolution (dtg:"
-                  + theRawText + ")");
+          //System.err
+          //    .println("Debrief is only capable of reading data to microsecond resolution (dtg:"
+          //        + theRawText + ")");
           micros = -1;
         }
       }
