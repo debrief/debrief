@@ -1754,10 +1754,22 @@ public class FixWrapper extends PlainWrapper implements Watchable,
    */
   public void setCourse(final double val)
   {
-    _theFix.setCourse(val);
+    setCourseQuiet(val);
 
     // fire update, if necessary
     fireUpdateIfDR_Track();
+  }
+  
+
+  /**
+   * set the course for this observation
+   *
+   * @param val
+   *          the course (rads)
+   */
+  public void setCourseQuiet(final double val)
+  {
+    _theFix.setCourse(val);
   }
 
   /**
@@ -1981,10 +1993,21 @@ public class FixWrapper extends PlainWrapper implements Watchable,
    */
   public void setSpeed(final double val)
   {
-    _theFix.setSpeed(MWC.Algorithms.Conversions.Kts2Yps(val));
+    setSpeedQuiet(val);
 
     // fire update, if necessary
     fireUpdateIfDR_Track();
+  }
+  
+  /**
+   * set the speed of this participant (in knots)
+   *
+   * @param val
+   *          the speed (knots)
+   */
+  public void setSpeedQuiet(final double val)
+  {
+    _theFix.setSpeed(MWC.Algorithms.Conversions.Kts2Yps(val));
   }
 
   /**

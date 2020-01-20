@@ -1638,11 +1638,11 @@ public class RelativeTMASegment extends CoreTMASegment implements
       final FixWrapper thisS = (FixWrapper) obs.nextElement();
       if (courseValRads != null)
       {
-        thisS.setCourse(courseValRads.doubleValue());
+        thisS.setCourseQuiet(courseValRads.doubleValue());
       }
       if (speedValKts != null)
       {
-        thisS.setSpeed(speedValKts.doubleValue());
+        thisS.setSpeedQuiet(speedValKts.doubleValue());
       }
     }
   }
