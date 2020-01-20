@@ -261,19 +261,19 @@ public class DragFeature extends CoreDragAction
         // Erase existing track, if we have one
         if (_lastPoint != null)
         {
-          // drawHere(gc, null);
-          // slowing down redrawing on Linux makes dragging more smootly
-          if (Platform.getOS().equals(Platform.OS_LINUX))
-          {
-            try
-            {
-              Thread.sleep(150);
-            }
-            catch (final InterruptedException e)
-            {
-              // ignore
-            }
-          }
+          // No, don't got to sleep for linux. (in 2020)
+          // // slowing down redrawing on Linux makes dragging more smootly
+          // if (Platform.getOS().equals(Platform.OS_LINUX))
+          // {
+          // try
+          // {
+          // Thread.sleep(150);
+          // }
+          // catch (final InterruptedException e)
+          // {
+          // // ignore
+          // }
+          // }
           _myCanvas.getCanvas().redraw();
           Display.getCurrent().update();
         }
