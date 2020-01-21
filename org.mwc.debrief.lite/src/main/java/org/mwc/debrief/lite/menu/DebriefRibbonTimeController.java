@@ -887,7 +887,7 @@ public class DebriefRibbonTimeController
               }
             }
           }
-        }, displayMode, PresentationPriority.LOW);
+        }, displayMode, PresentationPriority.LOW,"Display properties");
 
     commands.add(properties.getContentModel());
 
@@ -1018,7 +1018,7 @@ public class DebriefRibbonTimeController
               dialog.setVisible(true);
             }
           }
-        }, highlighter, PresentationPriority.TOP);
+        }, highlighter, PresentationPriority.TOP,"Display Properties");
     commands.add(properties.getContentModel());
 
     highlighter.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(

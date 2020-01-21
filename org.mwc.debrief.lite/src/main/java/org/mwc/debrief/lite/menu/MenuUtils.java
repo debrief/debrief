@@ -72,10 +72,10 @@ public class MenuUtils
 
   public static CommandButtonProjection<Command> addCommand(final String commandName,
       final String imagePath, final CommandAction actionToAdd,
-      final JRibbonBand mapBand, final PresentationPriority priority)
+      final JRibbonBand mapBand, final PresentationPriority priority,String tooltip)
   {
     return addCommand(commandName, imagePath, actionToAdd, mapBand, priority,
-        null);
+        null,tooltip);
   }
   
   /**
@@ -121,10 +121,10 @@ public class MenuUtils
   public static CommandButtonProjection<Command> addCommand(final String commandName,
       final String imagePath, final CommandAction actionToAdd,
       final JRibbonBand mapBand, final PresentationPriority priority,
-      final PopupPanelCallback popupCallback)
+      final PopupPanelCallback popupCallback,String tooltip)
   {
     final CommandButtonProjection<Command> command = createCommand(commandName, imagePath,
-        actionToAdd, priority, popupCallback);
+        actionToAdd, priority, popupCallback,tooltip);
 
     mapBand.addRibbonCommand(command, priority == null
         ? PresentationPriority.TOP : priority);
@@ -140,7 +140,7 @@ public class MenuUtils
      * = createImage(imagePath); imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, new
      * Dimension( 16, 16)); }
      */
-    CommandButtonProjection<Command> projectionModel = createCommand(commandName,imagePath,actionToAdd,PresentationPriority.MEDIUM,null);
+    CommandButtonProjection<Command> projectionModel = createCommand(commandName,imagePath,actionToAdd,PresentationPriority.MEDIUM,null,description);
     JCommandButton commandButton = new JCommandButton(projectionModel);
     final RichTooltip.Builder builder = RichTooltip.builder();
 
@@ -162,9 +162,9 @@ public class MenuUtils
   public static JCommandToggleButton addCommandToggleButton(
       final String commandName, final String imagePath,
       final CommandAction actionToAdd,
-      final CommandButtonPresentationState priority)
+      final CommandButtonPresentationState priority,String tooltip)
   {
-    CommandButtonProjection<Command> projectionModel = createCommand(commandName,imagePath,actionToAdd,PresentationPriority.MEDIUM,null);
+    CommandButtonProjection<Command> projectionModel = createCommand(commandName,imagePath,actionToAdd,PresentationPriority.MEDIUM,null,tooltip);
     
     final JCommandToggleButton commandButton = new JCommandToggleButton(
         projectionModel);
@@ -186,7 +186,10 @@ public class MenuUtils
       imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, ICON_SIZE_16);
     }
     final Command.Builder builder = Command.builder()
-        .setText(commandName).setIconFactory(ResizableIconFactory.factory(imageIcon)).setAction(actionToAdd);
+        .setText(commandName)
+        .setIconFactory(ResizableIconFactory.factory(imageIcon))
+        .setAction(actionToAdd)
+        .setActionRichTooltip(RichTooltip.builder().setTitle(commandName).build());
         //.setTitleClickAction();
 
     if (isToggle)
@@ -214,7 +217,7 @@ public class MenuUtils
   public static CommandButtonProjection<Command> createCommand(final String commandName,
       final String imagePath, final CommandAction actionToAdd,
       final PresentationPriority priority,
-      final PopupPanelCallback popupCallback)
+      final PopupPanelCallback popupCallback,final String tooltip)
   {
     ImageWrapperResizableIcon imageIcon = null;
     if (imagePath != null)
@@ -226,7 +229,8 @@ public class MenuUtils
     
     final Command.Builder builder = Command.builder()
         .setText(commandName).setIconFactory(ResizableIconFactory.factory(imageIcon))
-        .setAction(actionToAdd).setActionRichTooltip(RichTooltip.builder().setTitle(commandName).build());
+        .setAction(actionToAdd).
+        setActionRichTooltip(RichTooltip.builder().setTitle(tooltip).build());
         /*;*/
 
     if (popupCallback != null)

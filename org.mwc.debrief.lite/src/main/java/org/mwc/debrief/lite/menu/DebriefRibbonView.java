@@ -288,10 +288,10 @@ public class DebriefRibbonView
     final JRibbonBand commandBand = new JRibbonBand("Map commands", null);
     commandBand.startGroup();
     MenuUtils.addCommand("Zoom Out", "icons/24/zoomout.png", new ZoomOut(
-        mapPane), commandBand, PresentationPriority.TOP);
+        mapPane), commandBand, PresentationPriority.TOP,"Zoom out to reduce size of plot");
     final FitToWindow doFit = new FitToWindow(layers, mapPane);
     MenuUtils.addCommand("Fit to Window", "icons/24/fit_to_win.png", doFit,
-        commandBand, null);
+        commandBand, null,"Fit the plot to available space");
     commandBand.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         commandBand));
     return commandBand;

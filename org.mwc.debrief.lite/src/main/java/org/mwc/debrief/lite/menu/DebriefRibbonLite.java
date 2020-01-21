@@ -137,7 +137,7 @@ public class DebriefRibbonLite
     liteMenu.startGroup();
     final UndoAction undoAction = new UndoAction(session.getUndoBuffer());
     final CommandButtonProjection<Command> undoCommand = MenuUtils.createCommand("Undo",
-        "icons/24/undo.png", undoAction, PresentationPriority.TOP, null);
+        "icons/24/undo.png", undoAction, PresentationPriority.TOP, null,"Undo");
     // so that action has the command it has to enable/disable
     undoAction.setActionCommand(undoCommand.getContentModel());
     undoCommand.getContentModel().setActionEnabled(false);
@@ -146,7 +146,7 @@ public class DebriefRibbonLite
     ribbon.addTaskbarCommand(undoCommand.getContentModel());
     final RedoAction redoAction = new RedoAction(session.getUndoBuffer());
     final CommandButtonProjection<Command> redoCommand = MenuUtils.createCommand("Redo",
-        "icons/24/redo.png", redoAction, PresentationPriority.TOP, null);
+        "icons/24/redo.png", redoAction, PresentationPriority.TOP, null,"Redo");
     
     // so that action has the command it has to enable/disable
     redoAction.setActionCommand(redoCommand.getContentModel());
@@ -174,9 +174,9 @@ public class DebriefRibbonLite
     // add the action as observer of undobuffer
     session.getUndoBuffer().addObserver(redoAction);
     MenuUtils.addCommand("Help", "icons/24/help.png", new HelpAction(path),
-        liteMenu, PresentationPriority.TOP);
+        liteMenu, PresentationPriority.TOP,"Display Help");
     MenuUtils.addCommand("Exit", "icons/24/exit.png", new ExitLiteApp(
-        exitAction), liteMenu, PresentationPriority.TOP);
+        exitAction), liteMenu, PresentationPriority.TOP,"Exit Debrief Lite");
 
     liteMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         liteMenu));

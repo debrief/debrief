@@ -187,11 +187,11 @@ public class DebriefRibbonInsert
     MenuUtils.addCommand("Coastline",
         "icons/24/coast_add.png", new CoastCommandAction(toolParent, theProperties,
              theLayers, bounds), referenceDataMenu,
-        PresentationPriority.TOP);
+        PresentationPriority.TOP,"Add coastline to the plot");
     MenuUtils.addCommand(
         "Natural Earth", "icons/24/NaturalEarth.png", new CoastCommandAction(toolParent,
             theProperties, theLayers, bounds), referenceDataMenu,
-        PresentationPriority.TOP);
+        PresentationPriority.TOP,"Add natural earth coastline to the plot");
     referenceDataMenu.setResizePolicies(MenuUtils
         .getStandardRestrictivePolicies(referenceDataMenu));
     return referenceDataMenu;
@@ -218,7 +218,7 @@ public class DebriefRibbonInsert
     MenuUtils.addCommand(
         "Label",
         "icons/24/label_add.png",createLabelShape,
-            drawingMenu,PresentationPriority.TOP);
+            drawingMenu,PresentationPriority.TOP,"Insert a new label to the selected layer");
     drawingMenu.startGroup();
     final EllipseShapeCommandAction ellipseShape = new EllipseShapeCommandAction(toolParent, theProperties,
         theLayers, "Ellipse", "icons/ellipse_add.png", bounds);
@@ -279,11 +279,11 @@ public class DebriefRibbonInsert
         theLayers, "Line", "icons/16/line_add.png", bounds);
     lineShape.setSelectedLayerSource(selectLayerCombo);
    
-    MenuUtils.addCommand("Ellipse","icons/16/ellipse.png",ellipseShape,drawingMenu,PresentationPriority.MEDIUM);
-    MenuUtils.addCommand("Rectangle","icons/16/rectangle.png",rectShape,drawingMenu,PresentationPriority.MEDIUM);
-    MenuUtils.addCommand("Circle","icons/16/circle.png",circleShape,drawingMenu,PresentationPriority.MEDIUM);
-    MenuUtils.addCommand("Arc","icons/16/arc_add.png",arcShape,drawingMenu,PresentationPriority.MEDIUM);
-    MenuUtils.addCommand("Line","icons/16/line.png",lineShape,drawingMenu,PresentationPriority.MEDIUM);
+    MenuUtils.addCommand("Ellipse","icons/16/ellipse.png",ellipseShape,drawingMenu,PresentationPriority.MEDIUM,"Insert an ellipse shape to the selected layer");
+    MenuUtils.addCommand("Rectangle","icons/16/rectangle.png",rectShape,drawingMenu,PresentationPriority.MEDIUM,"Insert a rectangular shape to the selected layer");
+    MenuUtils.addCommand("Circle","icons/16/circle.png",circleShape,drawingMenu,PresentationPriority.MEDIUM,"Insert a circle to the selected layer");
+    MenuUtils.addCommand("Arc","icons/16/arc_add.png",arcShape,drawingMenu,PresentationPriority.MEDIUM,"Insert an Arc to the selected layer");
+    MenuUtils.addCommand("Line","icons/16/line.png",lineShape,drawingMenu,PresentationPriority.MEDIUM,"Insert a line to the selected layer");
     
     
 //    #4201, dont add polygon shape.
@@ -448,10 +448,10 @@ public class DebriefRibbonInsert
     final JRibbonBand chartfeaturesMenu = new JRibbonBand("Decorations", null);
     MenuUtils.addCommand("Scale",
         "icons/24/scale_add.png", new CreateScaleCommandAction(toolParent, theProperties,
-            theLayers, bounds), chartfeaturesMenu, null);
+            theLayers, bounds), chartfeaturesMenu, null,"Add scale to the plot layout");
     MenuUtils.addCommand("Grid",
         "icons/24/grid_add.png", new CreateGridCommandAction(toolParent, theProperties,
-            theLayers, bounds), chartfeaturesMenu, null);
+            theLayers, bounds), chartfeaturesMenu, null,"Add grid to the plot layout");
     
     chartfeaturesMenu.setResizePolicies(MenuUtils
         .getStandardRestrictivePolicies(chartfeaturesMenu));
