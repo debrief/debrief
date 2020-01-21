@@ -39,7 +39,7 @@ public class PlotGpx
         final PlotTracks plotter = new PlotTracks();
         String answer = plotter.validateDonorFile(commandLine.getOptionValue(
             "check_donor"));
-        System.out.println(answer);
+        //System.out.println(answer);
         System.exit(0);
       }
       else if (commandLine.hasOption("retrieve_map_dimensions"))
@@ -47,7 +47,7 @@ public class PlotGpx
         final PlotTracks plotter = new PlotTracks();
         HashMap<String, String> answer = plotter.retrieveMapProperties(
             commandLine.getOptionValue("retrieve_map_dimensions"));
-        System.out.println(Arrays.toString(answer.entrySet().toArray()));
+        //System.out.println(Arrays.toString(answer.entrySet().toArray()));
         System.exit(0);
       }
       else if (!commandLine.hasOption("donor") || !commandLine.hasOption(

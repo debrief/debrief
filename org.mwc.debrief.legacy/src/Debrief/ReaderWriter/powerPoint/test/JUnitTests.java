@@ -45,8 +45,8 @@ public class JUnitTests
     {
       for (String track : trackFiles)
       {
-        System.out.println("Testing donor file " + donor + " with track file "
-            + trackFolder + "/" + track);
+        //System.out.println("Testing donor file " + donor + " with track file "
+        //    + trackFolder + "/" + track);
 
         final byte[] encoded = Files.readAllBytes(Paths.get(trackFolder
             + File.separator + track));
@@ -101,16 +101,16 @@ public class JUnitTests
         while (iter.hasNext())
         {
           String diff = iter.next().toString();
-          System.out.println(diff);
+          //System.out.println(diff);
           size++;
         }
-        System.out.println(size);
+        //System.out.println(size);
         assertFalse(delta.hasDifferences());
 
         FileUtils.deleteDirectory(generatedPptxTemporaryFolder);
         FileUtils.deleteDirectory(expectedPptxTemporaryFolder);
         new File(pptxGenerated).delete();
-        System.out.println("Success!!");
+        //System.out.println("Success!!");
       }
     }
   }

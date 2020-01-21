@@ -1060,12 +1060,12 @@ public class AmbiguityResolver
   private static void doLog(final Logger logger, final String msg,
       final HiResDate time)
   {
-    if (logger != null)
+    /*if (logger != null)
     {
       final String timeStr = time != null ? time.getDate().toString() : "";
 
       logger.log(Level.INFO, timeStr + " " + msg);
-    }
+    }*/
   }
 
   private static Comparator<ScoreList> getPermComparator()

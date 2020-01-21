@@ -409,7 +409,7 @@ public class ImportASWDataDocument
       assertEquals(NORWICH, track.getName());
       
       WorldArea area = track.getBounds();
-      System.out.println(area);
+      //System.out.println(area);
       assertEquals("correct area", " Area TL: 00\u00B010'40.00\"N 000\u00B035'00.00\"W  BR: 00\u00B001'00.00\"N 000\u00B021'00.00\"W ",area.toString());
     }
 
@@ -468,7 +468,7 @@ public class ImportASWDataDocument
       assertEquals(NORWICH, track.getName());
       
       WorldArea area = track.getBounds();
-      System.out.println(area);
+      //System.out.println(area);
       assertEquals("correct area", " Area TL: 00\u00B010'45.00\"N 000\u00B034'45.00\"W  BR: 00\u00B001'00.00\"N 000\u00B021'00.00\"W ",area.toString());
     }
     

@@ -1365,7 +1365,7 @@ public class ImportNarrativeDocument
 
       final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.elementAt(
           0);
-      System.out.println("processed:" + narrLayer.size());
+      // System.out.println("processed:" + narrLayer.size());
 
       // hey, let's have a look tthem
       final AbstractCollection<Editable> items = narrLayer.getData();
