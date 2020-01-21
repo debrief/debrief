@@ -226,7 +226,7 @@ public class MenuUtils
     
     final Command.Builder builder = Command.builder()
         .setText(commandName).setIconFactory(ResizableIconFactory.factory(imageIcon))
-        .setAction(actionToAdd);
+        .setAction(actionToAdd).setActionRichTooltip(RichTooltip.builder().setTitle(commandName).build());
         /*;*/
 
     if (popupCallback != null)

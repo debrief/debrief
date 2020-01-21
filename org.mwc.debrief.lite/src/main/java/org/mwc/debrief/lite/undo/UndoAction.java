@@ -22,6 +22,7 @@ import javax.swing.AbstractAction;
 
 import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
+import org.pushingpixels.flamingo.api.common.RichTooltip;
 import org.pushingpixels.flamingo.api.common.model.Command;
 
 import MWC.GUI.Tools.Action;
@@ -95,6 +96,7 @@ public class UndoAction extends AbstractAction implements Action, Observer,Comma
       if (undoBuff.canUndo())
       {
         actionCommand.setActionEnabled(true);
+        actionCommand.setActionRichTooltip(RichTooltip.builder().setTitle("Undo "+undoBuff.undoLabel()).build());
       }
       else
       {
