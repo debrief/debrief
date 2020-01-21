@@ -32,7 +32,7 @@ import MWC.Utilities.TextFormatting.GMTDateFormat;
 public class XYPlotUtilities 
 {
 	
-	final static DateFormat df = new GMTDateFormat("dd/MMM/yyyy HH:mm");
+	final static DateFormat df = new GMTDateFormat("dd/MMM/yyyy HH:mm:ss");
 	
 	public static void copyToClipboard(final String plotTitle,
 			final TimeSeriesCollection dataset)
