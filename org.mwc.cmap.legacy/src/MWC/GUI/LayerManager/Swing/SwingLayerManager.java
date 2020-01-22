@@ -1427,7 +1427,9 @@ public class SwingLayerManager extends SwingCustomEditor implements
           final DefaultMutableTreeNode nodeL = (DefaultMutableTreeNode) getTreeNodeConstantTime(treeCache, pl.getName());
           if (nodeL == null)
           {
-            thisL.add(new PlottableNode(pl, theTopLayer));
+            final PlottableNode node = new PlottableNode(pl, theTopLayer);
+            treeCache.put(pl.getName(), node);
+            thisL.add(node);
             needToReloadThisLayer = true;
           }
           else
