@@ -1088,12 +1088,12 @@ public class SwingLayerManager extends SwingCustomEditor implements
           // hey, it's a leaf - just add it
           final PlottableNode newNode = new PlottableNode(pl, theTopLayer);
           thisL.add(newNode);
-          _treeCache.put(pl.getName(), newNode);
+          _treeCache.put(pl, newNode);
         }
       }
     }
     ((DefaultTreeModel) _myTree.getModel()).reload(thisL);
-    _treeCache.put(thisLayer.getName(), thisL);
+    _treeCache.put(thisLayer, thisL);
     return thisL;
   }
 
@@ -1326,8 +1326,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
     // ok, capture the top level elements
     // capture the children of this layer, since we'll remove any that
     // don't get used
-    final HashSet<MutableTreeNode> children =
-        new HashSet<MutableTreeNode>();
+    final HashSet<MutableTreeNode> children = new HashSet<MutableTreeNode>();
     final int kids = root.getChildCount();
     for (int i = 0; i < kids; i++)
     {
@@ -1339,7 +1338,8 @@ public class SwingLayerManager extends SwingCustomEditor implements
     for (int i = 0; i < _myData.size(); i++)
     {
       final Layer thisL = _myData.elementAt(i);
-      final DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) getTreeNodeConstantTime(treeCache, thisL.getName());
+      final DefaultMutableTreeNode rootNode =
+          (DefaultMutableTreeNode) getTreeNodeConstantTime(treeCache, thisL);
       if (rootNode == null)
       {
         root.add(makeLayer(thisL, thisL, treeCache));
@@ -1372,15 +1372,17 @@ public class SwingLayerManager extends SwingCustomEditor implements
     _myTree.invalidate();
 
   }
-  
-  final private HashMap<Object, Object > treeCache = new HashMap<Object, Object>();
+
+  final private HashMap<Object, Object> treeCache =
+      new HashMap<Object, Object>();
 
   protected DefaultMutableTreeNode updateLayer(
       final DefaultMutableTreeNode root, final Layer thisLayer,
       final Layer theTopLayer)
   {
     // create the node
-    final DefaultMutableTreeNode thisL = (DefaultMutableTreeNode) getTreeNodeConstantTime(treeCache, thisLayer.getName());
+    final DefaultMutableTreeNode thisL =
+        (DefaultMutableTreeNode) getTreeNodeConstantTime(treeCache, thisLayer);
 
     // capture the children of this layer, since we'll remove any that
     // don't get used
@@ -1409,8 +1411,9 @@ public class SwingLayerManager extends SwingCustomEditor implements
         {
           // hey, let's get recursive!
           final Layer otherLayer = (Layer) pl;
-          final DefaultMutableTreeNode otherL = (DefaultMutableTreeNode) getTreeNodeConstantTime(treeCache, otherLayer
-              .getName());
+          final DefaultMutableTreeNode otherL =
+              (DefaultMutableTreeNode) getTreeNodeConstantTime(treeCache,
+                  otherLayer);
           if (otherL != null)
           {
             updateLayer(thisL, otherLayer, theTopLayer);
@@ -1424,11 +1427,12 @@ public class SwingLayerManager extends SwingCustomEditor implements
         else
         {
           // hey, it's a leaf - just add it
-          final DefaultMutableTreeNode nodeL = (DefaultMutableTreeNode) getTreeNodeConstantTime(treeCache, pl.getName());
+          final DefaultMutableTreeNode nodeL =
+              (DefaultMutableTreeNode) getTreeNodeConstantTime(treeCache, pl);
           if (nodeL == null)
           {
             final PlottableNode node = new PlottableNode(pl, theTopLayer);
-            treeCache.put(pl.getName(), node);
+            treeCache.put(pl, node);
             thisL.add(node);
             needToReloadThisLayer = true;
           }
@@ -1472,7 +1476,8 @@ public class SwingLayerManager extends SwingCustomEditor implements
   private void updateThisLayer(final Layer changedLayer)
   {
     loadTreeCache(treeCache);
-    final TreeNode treeNode = (DefaultMutableTreeNode) getTreeNodeConstantTime(treeCache, changedLayer.getName());
+    final TreeNode treeNode = (DefaultMutableTreeNode) getTreeNodeConstantTime(
+        treeCache, changedLayer);
     if (treeNode != null)
     {
       updateLayer((DefaultMutableTreeNode) _myTree.getModel().getRoot(),
@@ -1483,25 +1488,28 @@ public class SwingLayerManager extends SwingCustomEditor implements
   private void loadTreeCache(HashMap<Object, Object> _treeCache)
   {
     final TreeModel model = _myTree.getModel();
-    
+
     DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
-    
+
     loadThisTreeCache(treeCache, root);
   }
-  
-  private void loadThisTreeCache(HashMap<Object, Object> _treeCache, final DefaultMutableTreeNode layer)
+
+  private void loadThisTreeCache(HashMap<Object, Object> _treeCache,
+      final DefaultMutableTreeNode layer)
   {
     final int childrenCount = layer.getChildCount();
     for (int i = 0; i < childrenCount; i++)
     {
-      final DefaultMutableTreeNode child = (DefaultMutableTreeNode) layer.getChildAt(i);
-      
+      final DefaultMutableTreeNode child = (DefaultMutableTreeNode) layer
+          .getChildAt(i);
+
       _treeCache.put(child.getUserObject(), child);
       loadThisTreeCache(_treeCache, child);
     }
   }
-  
-  private TreeNode getTreeNodeConstantTime(HashMap<Object, Object> _treeCache, Object node)
+
+  private TreeNode getTreeNodeConstantTime(HashMap<Object, Object> _treeCache,
+      Object node)
   {
     return (TreeNode) _treeCache.get(node);
   }
