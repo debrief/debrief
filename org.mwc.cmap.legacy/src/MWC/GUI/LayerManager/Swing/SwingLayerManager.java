@@ -714,7 +714,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
     {
       final Layer thisL = _myData.elementAt(i);
 
-      root.add(makeLayer(thisL, thisL));
+      root.add(makeLayer(thisL, thisL, treeCache));
     }
 
     // create a new tree based on this data
@@ -1064,7 +1064,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
    * recursive method to pass through a layer, creating sub-layers for any layers we find
    */
   protected DefaultMutableTreeNode makeLayer(final Layer thisLayer,
-      final Layer theTopLayer)
+      final Layer theTopLayer, HashMap<Object, Object> _treeCache)
   {
     // create the node
     final DefaultMutableTreeNode thisL = new PlottableNode(thisLayer,
@@ -1081,16 +1081,19 @@ public class SwingLayerManager extends SwingCustomEditor implements
         {
           // hey, let's get recursive!
           final Layer otherLayer = (Layer) pl;
-          thisL.add(makeLayer(otherLayer, theTopLayer));
+          thisL.add(makeLayer(otherLayer, theTopLayer, _treeCache));
         }
         else
         {
           // hey, it's a leaf - just add it
-          thisL.add(new PlottableNode(pl, theTopLayer));
+          final PlottableNode newNode = new PlottableNode(pl, theTopLayer);
+          thisL.add(newNode);
+          _treeCache.put(pl.getName(), newNode);
         }
       }
     }
     ((DefaultTreeModel) _myTree.getModel()).reload(thisL);
+    _treeCache.put(thisLayer.getName(), thisL);
     return thisL;
   }
 
@@ -1323,8 +1326,8 @@ public class SwingLayerManager extends SwingCustomEditor implements
     // ok, capture the top level elements
     // capture the children of this layer, since we'll remove any that
     // don't get used
-    final ArrayList<MutableTreeNode> children =
-        new ArrayList<MutableTreeNode>();
+    final HashSet<MutableTreeNode> children =
+        new HashSet<MutableTreeNode>();
     final int kids = root.getChildCount();
     for (int i = 0; i < kids; i++)
     {
@@ -1339,7 +1342,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
       final DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) getTreeNodeConstantTime(treeCache, thisL.getName());
       if (rootNode == null)
       {
-        root.add(makeLayer(thisL, thisL));
+        root.add(makeLayer(thisL, thisL, treeCache));
         ((DefaultTreeModel) _myTree.getModel()).reload();
       }
       else
@@ -1415,7 +1418,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
           }
           else
           {
-            thisL.add(makeLayer(otherLayer, theTopLayer));
+            thisL.add(makeLayer(otherLayer, theTopLayer, treeCache));
           }
         }
         else
