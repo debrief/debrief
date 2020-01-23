@@ -65,7 +65,6 @@ import MWC.GUI.FireReformatted;
 import MWC.GUI.HasEditables.ProvidesContiguousElements;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.Layers.DataListener;
 import MWC.GUI.Layers.NeedsToKnowAboutLayers;
 import MWC.GUI.MessageProvider;
 import MWC.GUI.PlainWrapper;
@@ -953,6 +952,8 @@ public class TrackWrapper extends LightweightTrackWrapper implements
    */
   private transient WrappedIterators _lastPosIterator;
 
+  private WorldArea cachedBound = null;
+
   // //////////////////////////////////////
   // constructors
   // //////////////////////////////////////
@@ -994,7 +995,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
 
     // tracks are plotted bolder than lightweight tracks, give them some depth
     setLineThickness(3);
-    
+
     createCacheValidation();
   }
 
@@ -1627,6 +1628,19 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     };
   }
 
+  private void createCacheValidation()
+  {
+    addPropertyChangeListener(new PropertyChangeListener()
+    {
+
+      @Override
+      public void propertyChange(final PropertyChangeEvent arg0)
+      {
+        cachedBound = null;
+      }
+    });
+  }
+
   public PropertyChangeListener createLocationListener()
   {
     return new PropertyChangeListener()
@@ -1648,6 +1662,10 @@ public class TrackWrapper extends LightweightTrackWrapper implements
   {
     return _ptCtr;
   }
+
+  // //////////////////////////////////////
+  // editing parameters
+  // //////////////////////////////////////
 
   /**
    * this accessor is present for debug/testing purposes only. Do not use outside testing!
@@ -1699,10 +1717,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements
 
     return new TrackWrapper_Support.IteratorWrapper(res.iterator());
   }
-
-  // //////////////////////////////////////
-  // editing parameters
-  // //////////////////////////////////////
 
   /**
    * filter the list to the specified time period, then inform any listeners (such as the time
@@ -1993,21 +2007,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     return res;
   }
 
-  private WorldArea cachedBound = null;
-
-  private void createCacheValidation()
-  { 
-    addPropertyChangeListener(new PropertyChangeListener()
-    {
-      
-      @Override
-      public void propertyChange(PropertyChangeEvent arg0)
-      {
-        cachedBound = null;
-      }
-    });
-  }
-  
   /**
    * what geographic area is covered by this track?
    *
@@ -2139,7 +2138,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
       }
       cachedBound = res;
     }
-    
+
     return cachedBound;
   }
 
@@ -2215,6 +2214,19 @@ public class TrackWrapper extends LightweightTrackWrapper implements
   public boolean getEndTimeLabels()
   {
     return _endTimeLabels;
+  }
+
+  public FixWrapper[] getFixes()
+  {
+    final ArrayList<FixWrapper> fixes = new ArrayList<>();
+    final Enumeration<Editable> iterator = getPositionIterator(); // to loop through positions
+    while (iterator.hasMoreElements()) // while there are more elements
+    {
+      // @type Debrief.Wrappers.FixWrapper
+      final Editable fix = iterator.nextElement(); // get the next element
+      fixes.add((FixWrapper) fix);
+    }
+    return fixes.toArray(new FixWrapper[0]);
   }
 
   /**
@@ -2297,8 +2309,8 @@ public class TrackWrapper extends LightweightTrackWrapper implements
       final HiResDate startDTG = getStartDTG();
       final HiResDate endDTG = getEndDTG();
       // see if we have _any_ points in range
-      if ((startDTG == null || startDTG.greaterThan(end)) ||
-          (endDTG == null || endDTG.lessThan(start)))
+      if ((startDTG == null || startDTG.greaterThan(end)) || (endDTG == null
+          || endDTG.lessThan(start)))
       {
         // don't bother with it.
       }
@@ -2955,6 +2967,10 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     paintVectorLabels(dest);
   }
 
+  // ////////////////////////////////////////////////////
+  // LAYER support methods
+  // /////////////////////////////////////////////////////
+
   @Override
   public void paint(final CanvasType dest, final long time)
   {
@@ -2988,10 +3004,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     }
 
   }
-
-  // ////////////////////////////////////////////////////
-  // LAYER support methods
-  // /////////////////////////////////////////////////////
 
   /**
    * paint the fixes for this track
@@ -3486,6 +3498,14 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     fw.paintMe(dest, lastLocation, getTrackColorMode().colorFor(fw));
   }
 
+  // ////////////////////////////////////////////////////
+  // track-shifting operation
+  // /////////////////////////////////////////////////////
+
+  // /////////////////////////////////////////////////
+  // support for dragging the track around
+  // ////////////////////////////////////////////////
+
   /**
    * draw vector labels for any TMA tracks
    *
@@ -3549,14 +3569,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements
       }
     }
   }
-
-  // ////////////////////////////////////////////////////
-  // track-shifting operation
-  // /////////////////////////////////////////////////////
-
-  // /////////////////////////////////////////////////
-  // support for dragging the track around
-  // ////////////////////////////////////////////////
 
   /**
    * return the range from the nearest corner of the track
@@ -3786,6 +3798,11 @@ public class TrackWrapper extends LightweightTrackWrapper implements
       setRelativePending();
     }
 
+  }
+
+  public void removeFix(final FixWrapper fixToRemove)
+  {
+    removeElement(fixToRemove);
   }
 
   /**
@@ -4360,7 +4377,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
         final WorldLocation origin = matches[0].getLocation();
 
         // put the lists back into plottable layers
-        FixWrapper firstLegStart = (FixWrapper) relevantSegment.first();
+        final FixWrapper firstLegStart = (FixWrapper) relevantSegment.first();
         final AbsoluteTMASegment tr1 = new AbsoluteTMASegment(theTMA, p1,
             firstLegStart.getLocation(), null, null);
         final AbsoluteTMASegment tr2 = new AbsoluteTMASegment(theTMA, p2,
@@ -4438,7 +4455,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
 
       if (ts instanceof NeedsToKnowAboutLayers)
       {
-        NeedsToKnowAboutLayers nn = (NeedsToKnowAboutLayers) ts;
+        final NeedsToKnowAboutLayers nn = (NeedsToKnowAboutLayers) ts;
         nn.setLayers(layers);
       }
 
@@ -4641,25 +4658,5 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     }
 
     return visible;
-  }
-
-
-
-  public FixWrapper[] getFixes()
-  {
-    ArrayList<FixWrapper> fixes = new ArrayList<>();
-    Enumeration<Editable> iterator = getPositionIterator(); // to loop through positions
-    while (iterator.hasMoreElements()) // while there are more elements
-    {
-        // @type Debrief.Wrappers.FixWrapper
-        Editable fix = iterator.nextElement(); // get the next element
-        fixes.add((FixWrapper) fix);
-    }
-    return fixes.toArray(new FixWrapper[0]);
-  }
-  
-  public void removeFix(FixWrapper fixToRemove)
-  {
-    removeElement(fixToRemove);
   }
 }
