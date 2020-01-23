@@ -799,58 +799,10 @@ public class DebriefRibbonTimeController
       final Runnable snailPainter, final LiteStepControl stepcontrol,
       final Layers layers, final UndoBuffer undoBuffer)
   {
+    final String tooltip_edit_snailmode_props = "Edit Snail Display Mode Properties";
+    final String tooltip_edit_normalmode_props = "Edit Normal Display Mode Properties";
     final JRibbonBand displayMode = new JRibbonBand("Display Mode", null);
     final ArrayList<Command> commands = new ArrayList<>();
-    final CommandToggleGroupModel displayModeGroup =
-        new CommandToggleGroupModel();
-    Command normalToggle = MenuUtils.addCommandToggleButton("Normal",
-        "icons/48/normal.png", new CommandAction()
-        {
-
-          @Override
-          public void commandActivated(CommandActionEvent e)
-          {
-            normalPainter.run();
-          }
-        }, displayMode, PresentationPriority.TOP, true, displayModeGroup, true);
-    commands.add(normalToggle);
-
-    Command snailToggle = MenuUtils.addCommandToggleButton("Snail",
-        "icons/48/snail.png", new CommandAction()
-        {
-
-          @Override
-          public void commandActivated(CommandActionEvent e)
-          {
-            snailPainter.run();
-          }
-        }, displayMode, PresentationPriority.TOP, true, displayModeGroup,
-        false);
-    commands.add(snailToggle);
-
-    stepcontrol.getPainterManager().getInfo().addPropertyChangeListener(
-        new PropertyChangeListener()
-        {
-
-          @Override
-          public void propertyChange(PropertyChangeEvent event)
-          {
-            if (StepControl.PROPERTY_PAINTER.equals(event.getPropertyName()))
-            {
-              final StepperListener stepper = stepcontrol.getPainterManager()
-                  .getCurrentPainterObject();
-              if (stepper instanceof SnailPainter2 && !snailToggle
-                  .isToggleSelected())
-              {
-                snailToggle.setToggleSelected(true);
-              }
-              else if (normalToggle.isToggleSelected())
-              {
-                normalToggle.setToggleSelected(true);
-              }
-            }
-          }
-        });
     final CommandButtonProjection<Command> properties = MenuUtils.addCommand(
         "Properties", "icons/16/properties.png", new CommandAction()
         {
@@ -887,7 +839,61 @@ public class DebriefRibbonTimeController
               }
             }
           }
-        }, displayMode, PresentationPriority.LOW,"Display properties");
+        }, displayMode, PresentationPriority.LOW,tooltip_edit_normalmode_props);
+    final CommandToggleGroupModel displayModeGroup =
+        new CommandToggleGroupModel();
+    Command normalToggle = MenuUtils.addCommandToggleButton("Normal",
+        "icons/48/normal.png", new CommandAction()
+        {
+
+          @Override
+          public void commandActivated(CommandActionEvent e)
+          {
+            properties.getContentModel().setActionRichTooltip(RichTooltip.builder().setTitle(tooltip_edit_normalmode_props).build());
+            normalPainter.run();
+            
+          }
+        }, displayMode, PresentationPriority.TOP, true, displayModeGroup, true);
+    commands.add(normalToggle);
+
+    Command snailToggle = MenuUtils.addCommandToggleButton("Snail",
+        "icons/48/snail.png", new CommandAction()
+        {
+
+          @Override
+          public void commandActivated(CommandActionEvent e)
+          {
+            properties.getContentModel().setActionRichTooltip(RichTooltip.builder().setTitle(tooltip_edit_snailmode_props).build());
+            snailPainter.run();
+          }
+        }, displayMode, PresentationPriority.TOP, true, displayModeGroup,
+        false);
+    commands.add(snailToggle);
+
+    stepcontrol.getPainterManager().getInfo().addPropertyChangeListener(
+        new PropertyChangeListener()
+        {
+
+          @Override
+          public void propertyChange(PropertyChangeEvent event)
+          {
+            if (StepControl.PROPERTY_PAINTER.equals(event.getPropertyName()))
+            {
+              final StepperListener stepper = stepcontrol.getPainterManager()
+                  .getCurrentPainterObject();
+              if (stepper instanceof SnailPainter2 && !snailToggle
+                  .isToggleSelected())
+              {
+                snailToggle.setToggleSelected(true);
+              }
+              else if (normalToggle.isToggleSelected())
+              {
+                normalToggle.setToggleSelected(true);
+              }
+            }
+          }
+        });
+    
 
     commands.add(properties.getContentModel());
 
@@ -1018,7 +1024,7 @@ public class DebriefRibbonTimeController
               dialog.setVisible(true);
             }
           }
-        }, highlighter, PresentationPriority.TOP,"Display Properties");
+        }, highlighter, PresentationPriority.TOP,"Edit Properties");
     commands.add(properties.getContentModel());
 
     highlighter.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
