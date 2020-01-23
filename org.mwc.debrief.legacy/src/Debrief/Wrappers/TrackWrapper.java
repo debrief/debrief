@@ -65,6 +65,7 @@ import MWC.GUI.FireReformatted;
 import MWC.GUI.HasEditables.ProvidesContiguousElements;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Layers.DataListener;
 import MWC.GUI.Layers.NeedsToKnowAboutLayers;
 import MWC.GUI.MessageProvider;
 import MWC.GUI.PlainWrapper;
@@ -993,6 +994,8 @@ public class TrackWrapper extends LightweightTrackWrapper implements
 
     // tracks are plotted bolder than lightweight tracks, give them some depth
     setLineThickness(3);
+    
+    createCacheValidation();
   }
 
   /**
@@ -1990,6 +1993,21 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     return res;
   }
 
+  private WorldArea cachedBound = null;
+
+  private void createCacheValidation()
+  { 
+    addPropertyChangeListener(new PropertyChangeListener()
+    {
+      
+      @Override
+      public void propertyChange(PropertyChangeEvent arg0)
+      {
+        cachedBound = null;
+      }
+    });
+  }
+  
   /**
    * what geographic area is covered by this track?
    *
@@ -1998,127 +2016,131 @@ public class TrackWrapper extends LightweightTrackWrapper implements
   @Override
   public final WorldArea getBounds()
   {
-    // we no longer just return the bounds of the track, because a portion
-    // of the track may have been made invisible.
-
-    // instead, we will pass through the full dataset and find the outer
-    // bounds
-    // of the visible area
-    WorldArea res = null;
-
-    if (!getVisible())
+    if (cachedBound == null)
     {
-      // hey, we're invisible, return null
-    }
-    else
-    {
-      final Enumeration<Editable> it = getPositionIterator();
+      // we no longer just return the bounds of the track, because a portion
+      // of the track may have been made invisible.
 
-      while (it.hasMoreElements())
+      // instead, we will pass through the full dataset and find the outer
+      // bounds
+      // of the visible area
+      WorldArea res = null;
+
+      if (!getVisible())
       {
-        final FixWrapper fw = (FixWrapper) it.nextElement();
+        // hey, we're invisible, return null
+      }
+      else
+      {
+        final Enumeration<Editable> it = getPositionIterator();
 
-        // is this point visible?
-        if (fw.getVisible())
+        while (it.hasMoreElements())
         {
+          final FixWrapper fw = (FixWrapper) it.nextElement();
 
-          // has our data been initialised?
-          if (res == null)
+          // is this point visible?
+          if (fw.getVisible())
           {
-            // no, initialise it
-            res = new WorldArea(fw.getLocation(), fw.getLocation());
-          }
-          else
-          {
-            // yes, extend to include the new area
-            res.extend(fw.getLocation());
+
+            // has our data been initialised?
+            if (res == null)
+            {
+              // no, initialise it
+              res = new WorldArea(fw.getLocation(), fw.getLocation());
+            }
+            else
+            {
+              // yes, extend to include the new area
+              res.extend(fw.getLocation());
+            }
           }
         }
-      }
 
-      // also extend to include our sensor data
-      if (_mySensors != null)
-      {
-        final Enumeration<Editable> iter = _mySensors.elements();
-        while (iter.hasMoreElements())
+        // also extend to include our sensor data
+        if (_mySensors != null)
         {
-          final PlainWrapper sw = (PlainWrapper) iter.nextElement();
-          final WorldArea theseBounds = sw.getBounds();
-          if (theseBounds != null)
+          final Enumeration<Editable> iter = _mySensors.elements();
+          while (iter.hasMoreElements())
           {
-            if (res == null)
+            final PlainWrapper sw = (PlainWrapper) iter.nextElement();
+            final WorldArea theseBounds = sw.getBounds();
+            if (theseBounds != null)
             {
-              res = new WorldArea(theseBounds);
+              if (res == null)
+              {
+                res = new WorldArea(theseBounds);
+              }
+              else
+              {
+                res.extend(sw.getBounds());
+              }
             }
-            else
-            {
-              res.extend(sw.getBounds());
-            }
-          }
-        } // step through the sensors
-      } // whether we have any sensors
+          } // step through the sensors
+        } // whether we have any sensors
 
-      // also extend to include our sensor data
-      if (_myDynamicShapes != null)
-      {
-        final Enumeration<Editable> iter = _myDynamicShapes.elements();
-        while (iter.hasMoreElements())
+        // also extend to include our sensor data
+        if (_myDynamicShapes != null)
         {
-          final Plottable sw = (Plottable) iter.nextElement();
-          final WorldArea theseBounds = sw.getBounds();
-          if (theseBounds != null)
+          final Enumeration<Editable> iter = _myDynamicShapes.elements();
+          while (iter.hasMoreElements())
           {
-            if (res == null)
+            final Plottable sw = (Plottable) iter.nextElement();
+            final WorldArea theseBounds = sw.getBounds();
+            if (theseBounds != null)
             {
-              res = new WorldArea(theseBounds);
+              if (res == null)
+              {
+                res = new WorldArea(theseBounds);
+              }
+              else
+              {
+                res.extend(sw.getBounds());
+              }
             }
-            else
-            {
-              res.extend(sw.getBounds());
-            }
-          }
-        } // step through the sensors
-      }
-      // and our solution data
-      if (_mySolutions != null)
-      {
-        final Enumeration<Editable> iter = _mySolutions.elements();
-        while (iter.hasMoreElements())
+          } // step through the sensors
+        }
+        // and our solution data
+        if (_mySolutions != null)
         {
-          final PlainWrapper sw = (PlainWrapper) iter.nextElement();
-          final WorldArea theseBounds = sw.getBounds();
-          if (theseBounds != null)
+          final Enumeration<Editable> iter = _mySolutions.elements();
+          while (iter.hasMoreElements())
           {
-            if (res == null)
+            final PlainWrapper sw = (PlainWrapper) iter.nextElement();
+            final WorldArea theseBounds = sw.getBounds();
+            if (theseBounds != null)
             {
-              res = new WorldArea(theseBounds);
+              if (res == null)
+              {
+                res = new WorldArea(theseBounds);
+              }
+              else
+              {
+                res.extend(sw.getBounds());
+              }
             }
-            else
-            {
-              res.extend(sw.getBounds());
-            }
-          }
-        } // step through the sensors
-      } // whether we have any sensors
+          } // step through the sensors
+        } // whether we have any sensors
 
-    } // whether we're visible
+      } // whether we're visible
 
-    // SPECIAL CASE: if we're a DR track, the positions all
-    // have the same value
-    if (res != null)
-    {
-      // have we ended up with an empty area?
-      if (res.getHeight() == 0)
+      // SPECIAL CASE: if we're a DR track, the positions all
+      // have the same value
+      if (res != null)
       {
-        // ok - force a bounds update
-        sortOutRelativePositions();
+        // have we ended up with an empty area?
+        if (res.getHeight() == 0)
+        {
+          // ok - force a bounds update
+          sortOutRelativePositions();
 
-        // and retrieve the bounds of hte first segment
-        res = this.getSegments().first().getBounds();
+          // and retrieve the bounds of hte first segment
+          res = this.getSegments().first().getBounds();
+        }
       }
+      cachedBound = res;
     }
-
-    return res;
+    
+    return cachedBound;
   }
 
   /**
