@@ -185,6 +185,9 @@ public class OutlinePanelView extends SwingLayerManager implements
           _myData.removeThisLayer(_layer);
         }
       }
+      public String toString() {
+        return "Add Layer";
+      }
     }
 
     private Layer layerToAdd;
@@ -324,6 +327,13 @@ public class OutlinePanelView extends SwingLayerManager implements
           DebriefLiteApp.getInstance().getTimeManager().setTime(this, period
               .getStartDTG(), true);
         }
+      }
+      @Override
+      public String toString()
+      {
+        if(_isCut)
+          return "Cut";
+        return "Delete";
       }
     }
 
@@ -499,6 +509,11 @@ public class OutlinePanelView extends SwingLayerManager implements
           _destination.removeElement(item);
         }
         _myData.fireExtended(_lastPastedItems.get(0), _destination);
+      }
+      @Override
+      public String toString()
+      {
+        return "Paste";
       }
     }
 
