@@ -345,7 +345,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   private int _lineStyle;
 
   protected boolean _isBoundsEnabled = false;
-  
+
   protected WorldArea _bounds = null;
 
   private final Plottables _thePositions = new Plottables();
@@ -474,6 +474,11 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     }
   }
 
+  protected void calculateBoundCache()
+  {
+    setCachedBounds(getBounds());
+  }
+
   @Override
   public int compareTo(final Plottable o)
   {
@@ -543,7 +548,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   @Override
   public WorldArea getBounds()
   {
-    if ( _bounds == null )
+    if (_bounds == null)
     {
       WorldArea res = null;
       final Iterator<FixWrapper> itera = iterator();
@@ -560,7 +565,8 @@ public class LightweightTrackWrapper extends PlainWrapper implements
         }
       }
       return res;
-    }else
+    }
+    else
     {
       return _bounds;
     }
@@ -1013,7 +1019,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     try
     {
       calculateBoundCache();
-      
+
       if (!getVisible())
       {
         return;
@@ -1066,20 +1072,11 @@ public class LightweightTrackWrapper extends PlainWrapper implements
       }
 
       dest.setLineWidth(oldWid);
-    }finally
+    }
+    finally
     {
       setCachedBounds(null);
     }
-  }
-
-  protected void calculateBoundCache()
-  {
-    setCachedBounds(getBounds());
-  }
-
-  protected void setCachedBounds(final WorldArea _newBounds)
-  {
-    _bounds = _newBounds;
   }
 
   /**
@@ -1157,6 +1154,11 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     };
 
     setFixes(setSymbols, theVal);
+  }
+
+  protected void setCachedBounds(final WorldArea _newBounds)
+  {
+    _bounds = _newBounds;
   }
 
   /**

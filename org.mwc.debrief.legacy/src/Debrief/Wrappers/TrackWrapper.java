@@ -2008,7 +2008,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     if (_bounds == null)
     {
       WorldArea res = null;
-      
+
       // we no longer just return the bounds of the track, because a portion
       // of the track may have been made invisible.
 
@@ -2127,9 +2127,10 @@ public class TrackWrapper extends LightweightTrackWrapper implements
           res = this.getSegments().first().getBounds();
         }
       }
-      
+
       return res;
-    }else
+    }
+    else
     {
       return _bounds;
     }
@@ -2867,7 +2868,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     try
     {
       calculateBoundCache();
-      
+
       // check we are visible and have some track data, else we won't work
       if (!getVisible() || this.getStartDTG() == null)
       {
@@ -2962,7 +2963,8 @@ public class TrackWrapper extends LightweightTrackWrapper implements
 
       // lastly - paint any TMA or planning segment labels
       paintVectorLabels(dest);
-    }finally
+    }
+    finally
     {
       setCachedBounds(null);
     }
@@ -2978,7 +2980,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     try
     {
       calculateBoundCache();
-      
+
       if (!getVisible())
       {
         return;
