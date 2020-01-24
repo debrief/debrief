@@ -344,6 +344,8 @@ public class LightweightTrackWrapper extends PlainWrapper implements
 
   private int _lineStyle;
 
+  protected boolean _isBoundsEnabled = false;
+  
   protected WorldArea _bounds = null;
 
   private final Plottables _thePositions = new Plottables();
@@ -541,24 +543,27 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   @Override
   public WorldArea getBounds()
   {
-    if (_bounds == null)
+    if ( _bounds == null )
     {
+      WorldArea res = null;
       final Iterator<FixWrapper> itera = iterator();
       while (itera.hasNext())
       {
         final WorldLocation loc = itera.next().getLocation();
-        if (_bounds == null)
+        if (res == null)
         {
-          _bounds = new WorldArea(loc, loc);
+          res = new WorldArea(loc, loc);
         }
         else
         {
-          _bounds.extend(loc);
+          res.extend(loc);
         }
       }
+      return res;
+    }else
+    {
+      return _bounds;
     }
-
-    return _bounds;
   }
 
   @Override
@@ -1005,58 +1010,76 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   @Override
   public synchronized void paint(final CanvasType dest)
   {
-    if (!getVisible())
+    try
     {
-      return;
-    }
-
-    final Color myColor = getColor();
-
-    dest.setColor(myColor);
-
-    final float oldWid = dest.getLineWidth();
-    dest.setLineWidth(getLineThickness());
-
-    final int len = _thePositions.size();
-    final Iterator<FixWrapper> iter = iterator();
-    int ctr = 0;
-    final int[] xPoints = new int[len];
-    final int[] yPoints = new int[len];
-
-    WorldLocation firstLoc = null;
-
-    // build up polyline
-    while (iter.hasNext())
-    {
-      final FixWrapper fw = iter.next();
-      if (fw.getVisible())
+      calculateBoundCache();
+      
+      if (!getVisible())
       {
-        final WorldLocation thisLoc = fw.getLocation();
-        if (firstLoc == null)
-        {
-          firstLoc = thisLoc;
-        }
-        final Point loc = dest.toScreen(thisLoc);
-        xPoints[ctr] = (int) loc.getX();
-        yPoints[ctr] = (int) loc.getY();
-        ctr++;
-
-        // draw the fix (including symbols)
-        fw.paintMe(dest, thisLoc, myColor);
+        return;
       }
-    }
 
-    // draw the line
-    dest.drawPolyline(xPoints, yPoints, ctr);
+      final Color myColor = getColor();
 
-    // and the track name?
-    if (getNameVisible() && firstLoc != null)
+      dest.setColor(myColor);
+
+      final float oldWid = dest.getLineWidth();
+      dest.setLineWidth(getLineThickness());
+
+      final int len = _thePositions.size();
+      final Iterator<FixWrapper> iter = iterator();
+      int ctr = 0;
+      final int[] xPoints = new int[len];
+      final int[] yPoints = new int[len];
+
+      WorldLocation firstLoc = null;
+
+      // build up polyline
+      while (iter.hasNext())
+      {
+        final FixWrapper fw = iter.next();
+        if (fw.getVisible())
+        {
+          final WorldLocation thisLoc = fw.getLocation();
+          if (firstLoc == null)
+          {
+            firstLoc = thisLoc;
+          }
+          final Point loc = dest.toScreen(thisLoc);
+          xPoints[ctr] = (int) loc.getX();
+          yPoints[ctr] = (int) loc.getY();
+          ctr++;
+
+          // draw the fix (including symbols)
+          fw.paintMe(dest, thisLoc, myColor);
+        }
+      }
+
+      // draw the line
+      dest.drawPolyline(xPoints, yPoints, ctr);
+
+      // and the track name?
+      if (getNameVisible() && firstLoc != null)
+      {
+        final Point loc = dest.toScreen(firstLoc);
+        dest.drawText(getName(), loc.x + 5, loc.y);
+      }
+
+      dest.setLineWidth(oldWid);
+    }finally
     {
-      final Point loc = dest.toScreen(firstLoc);
-      dest.drawText(getName(), loc.x + 5, loc.y);
+      setCachedBounds(null);
     }
+  }
 
-    dest.setLineWidth(oldWid);
+  protected void calculateBoundCache()
+  {
+    setCachedBounds(getBounds());
+  }
+
+  protected void setCachedBounds(final WorldArea _newBounds)
+  {
+    _bounds = _newBounds;
   }
 
   /**
