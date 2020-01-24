@@ -1288,7 +1288,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     {
       setRelativePending();
     }
-    
+
     flushBounds();
   }
 
@@ -2005,7 +2005,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements
   @Override
   public final WorldArea getBounds()
   {
-    _bounds = null;
     if (_bounds == null)
     {
       // we no longer just return the bounds of the track, because a portion
