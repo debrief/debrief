@@ -952,8 +952,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements
    */
   private transient WrappedIterators _lastPosIterator;
 
-  private WorldArea cachedBound = null;
-
   // //////////////////////////////////////
   // constructors
   // //////////////////////////////////////
@@ -995,8 +993,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements
 
     // tracks are plotted bolder than lightweight tracks, give them some depth
     setLineThickness(3);
-
-    createCacheValidation();
   }
 
   /**
@@ -1008,6 +1004,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
   @Override
   public void add(final MWC.GUI.Editable point)
   {
+    flushBounds();
     // see what type of object this is
     if (point instanceof FixWrapper)
     {
@@ -1246,6 +1243,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     // flush any cached values for time period & lists of positions
     flushPeriodCache();
     flushPositionCache();
+    flushBounds();
   }
 
   /**
@@ -1290,6 +1288,8 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     {
       setRelativePending();
     }
+    
+    flushBounds();
   }
 
   /**
@@ -1385,6 +1385,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
   @Override
   public final void closeMe()
   {
+    flushBounds();
     // and my objects
     // first ask them to close themselves
     final Enumeration<Editable> it = getPositionIterator();
@@ -1628,19 +1629,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     };
   }
 
-  private void createCacheValidation()
-  {
-    addPropertyChangeListener(new PropertyChangeListener()
-    {
-
-      @Override
-      public void propertyChange(final PropertyChangeEvent arg0)
-      {
-        cachedBound = null;
-      }
-    });
-  }
-
   public PropertyChangeListener createLocationListener()
   {
     return new PropertyChangeListener()
@@ -1785,6 +1773,8 @@ public class TrackWrapper extends LightweightTrackWrapper implements
       getSupport().firePropertyChange(WatchableList.FILTERED_PROPERTY, null,
           newPeriod);
     }
+
+    flushBounds();
   }
 
   @Override
@@ -2015,7 +2005,8 @@ public class TrackWrapper extends LightweightTrackWrapper implements
   @Override
   public final WorldArea getBounds()
   {
-    if (cachedBound == null)
+    _bounds = null;
+    if (_bounds == null)
     {
       // we no longer just return the bounds of the track, because a portion
       // of the track may have been made invisible.
@@ -2023,7 +2014,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements
       // instead, we will pass through the full dataset and find the outer
       // bounds
       // of the visible area
-      WorldArea res = null;
 
       if (!getVisible())
       {
@@ -2042,15 +2032,15 @@ public class TrackWrapper extends LightweightTrackWrapper implements
           {
 
             // has our data been initialised?
-            if (res == null)
+            if (_bounds == null)
             {
               // no, initialise it
-              res = new WorldArea(fw.getLocation(), fw.getLocation());
+              _bounds = new WorldArea(fw.getLocation(), fw.getLocation());
             }
             else
             {
               // yes, extend to include the new area
-              res.extend(fw.getLocation());
+              _bounds.extend(fw.getLocation());
             }
           }
         }
@@ -2065,13 +2055,13 @@ public class TrackWrapper extends LightweightTrackWrapper implements
             final WorldArea theseBounds = sw.getBounds();
             if (theseBounds != null)
             {
-              if (res == null)
+              if (_bounds == null)
               {
-                res = new WorldArea(theseBounds);
+                _bounds = new WorldArea(theseBounds);
               }
               else
               {
-                res.extend(sw.getBounds());
+                _bounds.extend(sw.getBounds());
               }
             }
           } // step through the sensors
@@ -2087,13 +2077,13 @@ public class TrackWrapper extends LightweightTrackWrapper implements
             final WorldArea theseBounds = sw.getBounds();
             if (theseBounds != null)
             {
-              if (res == null)
+              if (_bounds == null)
               {
-                res = new WorldArea(theseBounds);
+                _bounds = new WorldArea(theseBounds);
               }
               else
               {
-                res.extend(sw.getBounds());
+                _bounds.extend(sw.getBounds());
               }
             }
           } // step through the sensors
@@ -2108,13 +2098,13 @@ public class TrackWrapper extends LightweightTrackWrapper implements
             final WorldArea theseBounds = sw.getBounds();
             if (theseBounds != null)
             {
-              if (res == null)
+              if (_bounds == null)
               {
-                res = new WorldArea(theseBounds);
+                _bounds = new WorldArea(theseBounds);
               }
               else
               {
-                res.extend(sw.getBounds());
+                _bounds.extend(sw.getBounds());
               }
             }
           } // step through the sensors
@@ -2124,22 +2114,21 @@ public class TrackWrapper extends LightweightTrackWrapper implements
 
       // SPECIAL CASE: if we're a DR track, the positions all
       // have the same value
-      if (res != null)
+      if (_bounds != null)
       {
         // have we ended up with an empty area?
-        if (res.getHeight() == 0)
+        if (_bounds.getHeight() == 0)
         {
           // ok - force a bounds update
           sortOutRelativePositions();
 
           // and retrieve the bounds of hte first segment
-          res = this.getSegments().first().getBounds();
+          _bounds = this.getSegments().first().getBounds();
         }
       }
-      cachedBound = res;
     }
 
-    return cachedBound;
+    return _bounds;
   }
 
   /**
@@ -3798,6 +3787,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
       setRelativePending();
     }
 
+    flushBounds();
   }
 
   public void removeFix(final FixWrapper fixToRemove)
@@ -4014,6 +4004,8 @@ public class TrackWrapper extends LightweightTrackWrapper implements
       // setRelativePending();
       sortOutRelativePositions();
     }
+
+    flushBounds();
   }
 
   // note we are putting a track-labelled wrapper around the colour

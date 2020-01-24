@@ -344,7 +344,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
 
   private int _lineStyle;
 
-  private WorldArea _bounds = null;
+  protected WorldArea _bounds = null;
 
   private final Plottables _thePositions = new Plottables();
 
@@ -513,7 +513,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     }
   }
 
-  private void flushBounds()
+  protected void flushBounds()
   {
     // forget the bounds
     _bounds = null;
