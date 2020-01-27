@@ -1998,127 +1998,135 @@ public class TrackWrapper extends LightweightTrackWrapper implements
   @Override
   public final WorldArea getBounds()
   {
-    // we no longer just return the bounds of the track, because a portion
-    // of the track may have been made invisible.
-
-    // instead, we will pass through the full dataset and find the outer
-    // bounds
-    // of the visible area
-    WorldArea res = null;
-
-    if (!getVisible())
+    if (_bounds == null)
     {
-      // hey, we're invisible, return null
-    }
-    else
-    {
-      final Enumeration<Editable> it = getPositionIterator();
+      WorldArea res = null;
 
-      while (it.hasMoreElements())
+      // we no longer just return the bounds of the track, because a portion
+      // of the track may have been made invisible.
+
+      // instead, we will pass through the full dataset and find the outer
+      // bounds
+      // of the visible area
+
+      if (!getVisible())
       {
-        final FixWrapper fw = (FixWrapper) it.nextElement();
+        // hey, we're invisible, return null
+      }
+      else
+      {
+        final Enumeration<Editable> it = getPositionIterator();
 
-        // is this point visible?
-        if (fw.getVisible())
+        while (it.hasMoreElements())
         {
+          final FixWrapper fw = (FixWrapper) it.nextElement();
 
-          // has our data been initialised?
-          if (res == null)
+          // is this point visible?
+          if (fw.getVisible())
           {
-            // no, initialise it
-            res = new WorldArea(fw.getLocation(), fw.getLocation());
+
+            // has our data been initialised?
+            if (res == null)
+            {
+              // no, initialise it
+              res = new WorldArea(fw.getLocation(), fw.getLocation());
+            }
+            else
+            {
+              // yes, extend to include the new area
+              res.extend(fw.getLocation());
+            }
           }
-          else
+        }
+
+        // also extend to include our sensor data
+        if (_mySensors != null)
+        {
+          final Enumeration<Editable> iter = _mySensors.elements();
+          while (iter.hasMoreElements())
           {
-            // yes, extend to include the new area
-            res.extend(fw.getLocation());
-          }
+            final PlainWrapper sw = (PlainWrapper) iter.nextElement();
+            final WorldArea theseBounds = sw.getBounds();
+            if (theseBounds != null)
+            {
+              if (res == null)
+              {
+                res = new WorldArea(theseBounds);
+              }
+              else
+              {
+                res.extend(sw.getBounds());
+              }
+            }
+          } // step through the sensors
+        } // whether we have any sensors
+
+        // also extend to include our sensor data
+        if (_myDynamicShapes != null)
+        {
+          final Enumeration<Editable> iter = _myDynamicShapes.elements();
+          while (iter.hasMoreElements())
+          {
+            final Plottable sw = (Plottable) iter.nextElement();
+            final WorldArea theseBounds = sw.getBounds();
+            if (theseBounds != null)
+            {
+              if (res == null)
+              {
+                res = new WorldArea(theseBounds);
+              }
+              else
+              {
+                res.extend(sw.getBounds());
+              }
+            }
+          } // step through the sensors
+        }
+        // and our solution data
+        if (_mySolutions != null)
+        {
+          final Enumeration<Editable> iter = _mySolutions.elements();
+          while (iter.hasMoreElements())
+          {
+            final PlainWrapper sw = (PlainWrapper) iter.nextElement();
+            final WorldArea theseBounds = sw.getBounds();
+            if (theseBounds != null)
+            {
+              if (res == null)
+              {
+                res = new WorldArea(theseBounds);
+              }
+              else
+              {
+                res.extend(sw.getBounds());
+              }
+            }
+          } // step through the sensors
+        } // whether we have any sensors
+
+      } // whether we're visible
+
+      // SPECIAL CASE: if we're a DR track, the positions all
+      // have the same value
+      if (res != null)
+      {
+        // have we ended up with an empty area?
+        if (res.getHeight() == 0)
+        {
+          // ok - force a bounds update
+          sortOutRelativePositions();
+
+          // and retrieve the bounds of hte first segment
+          res = this.getSegments().first().getBounds();
         }
       }
 
-      // also extend to include our sensor data
-      if (_mySensors != null)
-      {
-        final Enumeration<Editable> iter = _mySensors.elements();
-        while (iter.hasMoreElements())
-        {
-          final PlainWrapper sw = (PlainWrapper) iter.nextElement();
-          final WorldArea theseBounds = sw.getBounds();
-          if (theseBounds != null)
-          {
-            if (res == null)
-            {
-              res = new WorldArea(theseBounds);
-            }
-            else
-            {
-              res.extend(sw.getBounds());
-            }
-          }
-        } // step through the sensors
-      } // whether we have any sensors
-
-      // also extend to include our sensor data
-      if (_myDynamicShapes != null)
-      {
-        final Enumeration<Editable> iter = _myDynamicShapes.elements();
-        while (iter.hasMoreElements())
-        {
-          final Plottable sw = (Plottable) iter.nextElement();
-          final WorldArea theseBounds = sw.getBounds();
-          if (theseBounds != null)
-          {
-            if (res == null)
-            {
-              res = new WorldArea(theseBounds);
-            }
-            else
-            {
-              res.extend(sw.getBounds());
-            }
-          }
-        } // step through the sensors
-      }
-      // and our solution data
-      if (_mySolutions != null)
-      {
-        final Enumeration<Editable> iter = _mySolutions.elements();
-        while (iter.hasMoreElements())
-        {
-          final PlainWrapper sw = (PlainWrapper) iter.nextElement();
-          final WorldArea theseBounds = sw.getBounds();
-          if (theseBounds != null)
-          {
-            if (res == null)
-            {
-              res = new WorldArea(theseBounds);
-            }
-            else
-            {
-              res.extend(sw.getBounds());
-            }
-          }
-        } // step through the sensors
-      } // whether we have any sensors
-
-    } // whether we're visible
-
-    // SPECIAL CASE: if we're a DR track, the positions all
-    // have the same value
-    if (res != null)
-    {
-      // have we ended up with an empty area?
-      if (res.getHeight() == 0)
-      {
-        // ok - force a bounds update
-        sortOutRelativePositions();
-
-        // and retrieve the bounds of hte first segment
-        res = this.getSegments().first().getBounds();
-      }
+      return res;
     }
-
-    return res;
+    else
+    {
+      return _bounds;
+    }
   }
 
   /**
@@ -2837,134 +2845,151 @@ public class TrackWrapper extends LightweightTrackWrapper implements
   @Override
   public synchronized final void paint(final CanvasType dest)
   {
-    // check we are visible and have some track data, else we won't work
-    if (!getVisible() || this.getStartDTG() == null)
+    try
     {
-      return;
-    }
+      calculateBoundCache();
 
-    // set the thickness for this track
-    dest.setLineWidth(getLineThickness());
-
-    // and set the initial colour for this track
-    if (getColor() != null)
-    {
-      dest.setColor(getColor());
-    }
-
-    // /////////////////////////////////////////////
-    // firstly plot the solutions
-    // /////////////////////////////////////////////
-    if (_mySolutions.getVisible())
-    {
-      final Enumeration<Editable> iter = _mySolutions.elements();
-      while (iter.hasMoreElements())
+      // check we are visible and have some track data, else we won't work
+      if (!getVisible() || this.getStartDTG() == null)
       {
-        final TMAWrapper sw = (TMAWrapper) iter.nextElement();
-        // just check that the sensor knows we're it's parent
-        if (sw.getHost() == null)
-        {
-          sw.setHost(this);
-        }
-        // and do the paint
-        sw.paint(dest);
-
-      } // through the solutions
-    } // whether the solutions are visible
-
-    // /////////////////////////////////////////////
-    // now plot the sensors
-    // /////////////////////////////////////////////
-    if (_mySensors.getVisible())
-    {
-      final Enumeration<Editable> iter = _mySensors.elements();
-      while (iter.hasMoreElements())
-      {
-        final SensorWrapper sw = (SensorWrapper) iter.nextElement();
-        // just check that the sensor knows we're it's parent
-        if (sw.getHost() == null)
-        {
-          sw.setHost(this);
-        }
-
-        // and do the paint
-        sw.paint(dest);
-      } // through the sensors
-    } // whether the sensor layer is visible
-
-    // /////////////////////////////////////////////
-    // and now the track itself
-    // /////////////////////////////////////////////
-
-    // just check if we are drawing anything at all
-    if ((!getLinkPositions()
-        || getLineStyle() == LineStylePropertyEditor.UNCONNECTED)
-        && (!_showPositions))
-    {
-      return;
-    }
-
-    // ///////////////////////////////////////////
-    // let the fixes draw themselves in
-    // ///////////////////////////////////////////
-    final List<FixWrapper> endPoints = paintFixes(dest);
-    final boolean plotted_anything = !endPoints.isEmpty();
-
-    // and draw the track label
-    // still, we only plot the track label if we have plotted any
-    // points
-    if (getNameVisible() && plotted_anything)
-    {
-      // just see if we have multiple segments. if we do,
-      // name them individually
-      if (this._theSegments.size() <= 1)
-      {
-        paintSingleTrackLabel(dest, endPoints);
-      }
-      else
-      {
-        // we've got multiple segments, name them
-        paintMultipleSegmentLabel(dest);
+        return;
       }
 
-    } // if the label is visible
+      // set the thickness for this track
+      dest.setLineWidth(getLineThickness());
 
-    // lastly - paint any TMA or planning segment labels
-    paintVectorLabels(dest);
+      // and set the initial colour for this track
+      if (getColor() != null)
+      {
+        dest.setColor(getColor());
+      }
+
+      // /////////////////////////////////////////////
+      // firstly plot the solutions
+      // /////////////////////////////////////////////
+      if (_mySolutions.getVisible())
+      {
+        final Enumeration<Editable> iter = _mySolutions.elements();
+        while (iter.hasMoreElements())
+        {
+          final TMAWrapper sw = (TMAWrapper) iter.nextElement();
+          // just check that the sensor knows we're it's parent
+          if (sw.getHost() == null)
+          {
+            sw.setHost(this);
+          }
+          // and do the paint
+          sw.paint(dest);
+
+        } // through the solutions
+      } // whether the solutions are visible
+
+      // /////////////////////////////////////////////
+      // now plot the sensors
+      // /////////////////////////////////////////////
+      if (_mySensors.getVisible())
+      {
+        final Enumeration<Editable> iter = _mySensors.elements();
+        while (iter.hasMoreElements())
+        {
+          final SensorWrapper sw = (SensorWrapper) iter.nextElement();
+          // just check that the sensor knows we're it's parent
+          if (sw.getHost() == null)
+          {
+            sw.setHost(this);
+          }
+
+          // and do the paint
+          sw.paint(dest);
+        } // through the sensors
+      } // whether the sensor layer is visible
+
+      // /////////////////////////////////////////////
+      // and now the track itself
+      // /////////////////////////////////////////////
+
+      // just check if we are drawing anything at all
+      if ((!getLinkPositions()
+          || getLineStyle() == LineStylePropertyEditor.UNCONNECTED)
+          && (!_showPositions))
+      {
+        return;
+      }
+
+      // ///////////////////////////////////////////
+      // let the fixes draw themselves in
+      // ///////////////////////////////////////////
+      final List<FixWrapper> endPoints = paintFixes(dest);
+      final boolean plotted_anything = !endPoints.isEmpty();
+
+      // and draw the track label
+      // still, we only plot the track label if we have plotted any
+      // points
+      if (getNameVisible() && plotted_anything)
+      {
+        // just see if we have multiple segments. if we do,
+        // name them individually
+        if (this._theSegments.size() <= 1)
+        {
+          paintSingleTrackLabel(dest, endPoints);
+        }
+        else
+        {
+          // we've got multiple segments, name them
+          paintMultipleSegmentLabel(dest);
+        }
+
+      } // if the label is visible
+
+      // lastly - paint any TMA or planning segment labels
+      paintVectorLabels(dest);
+    }
+    finally
+    {
+      setCachedBounds(null);
+    }
   }
 
   @Override
   public void paint(final CanvasType dest, final long time)
   {
-    if (!getVisible())
+    try
     {
-      return;
-    }
+      calculateBoundCache();
 
-    // set the thickness for this track
-    dest.setLineWidth(getLineThickness());
-
-    // and set the initial colour for this track
-    if (getColor() != null)
-    {
-      dest.setColor(getColor());
-    }
-
-    // we plot only the dynamic arcs because they are MovingPlottable
-    if (_myDynamicShapes.getVisible())
-    {
-      final Enumeration<Editable> iter = _myDynamicShapes.elements();
-      while (iter.hasMoreElements())
+      if (!getVisible())
       {
-        final DynamicTrackShapeSetWrapper sw =
-            (DynamicTrackShapeSetWrapper) iter.nextElement();
+        return;
+      }
 
-        // and do the paint
-        sw.paint(dest, time);
+      // set the thickness for this track
+      dest.setLineWidth(getLineThickness());
 
+      // and set the initial colour for this track
+      if (getColor() != null)
+      {
+        dest.setColor(getColor());
+      }
+
+      // we plot only the dynamic arcs because they are MovingPlottable
+      if (_myDynamicShapes.getVisible())
+      {
+        final Enumeration<Editable> iter = _myDynamicShapes.elements();
+        while (iter.hasMoreElements())
+        {
+          final DynamicTrackShapeSetWrapper sw =
+              (DynamicTrackShapeSetWrapper) iter.nextElement();
+
+          // and do the paint
+          sw.paint(dest, time);
+
+        }
       }
     }
-
+    finally
+    {
+      setCachedBounds(null);
+    }
   }
 
   // ////////////////////////////////////////////////////

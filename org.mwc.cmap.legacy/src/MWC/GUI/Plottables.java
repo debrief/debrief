@@ -289,72 +289,91 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	 */
 	public synchronized void paint(final CanvasType dest)
 	{
-		// see if I am visible
-		if (!getVisible())
-			return;
-
-		// note, we used to only test it the subject was in the data area,
-		// but that left some items outside the user-dragged area not being visible.
-		// - instead we calculate the visible data-area from the current screen
-		// area, and
-		// compare against that
-		WorldArea wa = dest.getProjection().getVisibleDataArea();
-
-		// drop out if we don't have a data area for the projection
-		if (wa == null)
-		{
-			dest.getProjection().zoom(0.0);
-			wa = dest.getProjection().getVisibleDataArea();
-		}
-
-		synchronized (_thePlottables)
-		{
-			final Iterator<Editable> enumer = _thePlottables.iterator();
-
-			while (enumer.hasNext())
-			{
-				final Object next = enumer.next();
-				if (next instanceof Plottable)
-				{
-					final Plottable thisP = (Plottable) next;
-
-					// is this plottable visible
-					if (thisP.getVisible())
-					{
-
-						// see if this plottable is within the data area
-						final WorldArea wp = thisP.getBounds();
-
-						if (wp != null)
-						{
-							// it has an area, see if it is in view
-							if (wp.overlaps(wa))
-								thisP.paint(dest);
-						}
-						else
-						{
-							// it doesn't have an area, so plot it anyway
-							thisP.paint(dest);
-						}
-					}
-				}
-			}
-		}
+    try
+    {
+      calculateBoundCache();
+      
+  		// see if I am visible
+  		if (!getVisible())
+  			return;
+  
+  		// note, we used to only test it the subject was in the data area,
+  		// but that left some items outside the user-dragged area not being visible.
+  		// - instead we calculate the visible data-area from the current screen
+  		// area, and
+  		// compare against that
+  		WorldArea wa = dest.getProjection().getVisibleDataArea();
+  
+  		// drop out if we don't have a data area for the projection
+  		if (wa == null)
+  		{
+  			dest.getProjection().zoom(0.0);
+  			wa = dest.getProjection().getVisibleDataArea();
+  		}
+  
+  		synchronized (_thePlottables)
+  		{
+  			final Iterator<Editable> enumer = _thePlottables.iterator();
+  
+  			while (enumer.hasNext())
+  			{
+  				final Object next = enumer.next();
+  				if (next instanceof Plottable)
+  				{
+  					final Plottable thisP = (Plottable) next;
+  
+  					// is this plottable visible
+  					if (thisP.getVisible())
+  					{
+  
+  						// see if this plottable is within the data area
+  						final WorldArea wp = thisP.getBounds();
+  
+  						if (wp != null)
+  						{
+  							// it has an area, see if it is in view
+  							if (wp.overlaps(wa))
+  								thisP.paint(dest);
+  						}
+  						else
+  						{
+  							// it doesn't have an area, so plot it anyway
+  							thisP.paint(dest);
+  						}
+  					}
+  				}
+  			}
+  		}
+    }finally
+    {
+      setCachedBounds(null);
+    }
 	}
 
+  protected void calculateBoundCache()
+  {
+    setCachedBounds(getBounds());
+  }
+
+  protected void setCachedBounds(final WorldArea _newBounds)
+  {
+    _myArea = _newBounds;
+  }
+	
 	/**
 	 * get the area covered by this list
 	 */
 	public MWC.GenericData.WorldArea getBounds()
 	{
 		// do we need to recalculate?
-		if (_myArea == null)
-		{
-			// yup, get on with it...
-			_myArea = recalculateAreaCovered();
-		}
-
-		return _myArea;
+	  if (_myArea == null)
+    {
+      // yup, get on with it...
+      return recalculateAreaCovered();
+    }else
+    {
+      return _myArea;
+    }
 
 	}
 

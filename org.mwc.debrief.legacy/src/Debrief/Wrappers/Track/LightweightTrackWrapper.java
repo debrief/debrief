@@ -344,7 +344,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
 
   private int _lineStyle;
 
-  private WorldArea _bounds = null;
+  protected WorldArea _bounds = null;
 
   private final Plottables _thePositions = new Plottables();
 
@@ -543,22 +543,26 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   {
     if (_bounds == null)
     {
+      WorldArea res = null;
       final Iterator<FixWrapper> itera = iterator();
       while (itera.hasNext())
       {
         final WorldLocation loc = itera.next().getLocation();
-        if (_bounds == null)
+        if (res == null)
         {
-          _bounds = new WorldArea(loc, loc);
+          res = new WorldArea(loc, loc);
         }
         else
         {
-          _bounds.extend(loc);
+          res.extend(loc);
         }
       }
+      return res;
     }
-
-    return _bounds;
+    else
+    {
+      return _bounds;
+    }
   }
 
   @Override
@@ -1005,58 +1009,68 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   @Override
   public synchronized void paint(final CanvasType dest)
   {
-    if (!getVisible())
+
+    try
     {
-      return;
-    }
+      calculateBoundCache();
 
-    final Color myColor = getColor();
-
-    dest.setColor(myColor);
-
-    final float oldWid = dest.getLineWidth();
-    dest.setLineWidth(getLineThickness());
-
-    final int len = _thePositions.size();
-    final Iterator<FixWrapper> iter = iterator();
-    int ctr = 0;
-    final int[] xPoints = new int[len];
-    final int[] yPoints = new int[len];
-
-    WorldLocation firstLoc = null;
-
-    // build up polyline
-    while (iter.hasNext())
-    {
-      final FixWrapper fw = iter.next();
-      if (fw.getVisible())
+      if (!getVisible())
       {
-        final WorldLocation thisLoc = fw.getLocation();
-        if (firstLoc == null)
-        {
-          firstLoc = thisLoc;
-        }
-        final Point loc = dest.toScreen(thisLoc);
-        xPoints[ctr] = (int) loc.getX();
-        yPoints[ctr] = (int) loc.getY();
-        ctr++;
-
-        // draw the fix (including symbols)
-        fw.paintMe(dest, thisLoc, myColor);
+        return;
       }
+  
+      final Color myColor = getColor();
+  
+      dest.setColor(myColor);
+  
+      final float oldWid = dest.getLineWidth();
+      dest.setLineWidth(getLineThickness());
+  
+      final int len = _thePositions.size();
+      final Iterator<FixWrapper> iter = iterator();
+      int ctr = 0;
+      final int[] xPoints = new int[len];
+      final int[] yPoints = new int[len];
+  
+      WorldLocation firstLoc = null;
+  
+      // build up polyline
+      while (iter.hasNext())
+      {
+        final FixWrapper fw = iter.next();
+        if (fw.getVisible())
+        {
+          final WorldLocation thisLoc = fw.getLocation();
+          if (firstLoc == null)
+          {
+            firstLoc = thisLoc;
+          }
+          final Point loc = dest.toScreen(thisLoc);
+          xPoints[ctr] = (int) loc.getX();
+          yPoints[ctr] = (int) loc.getY();
+          ctr++;
+  
+          // draw the fix (including symbols)
+          fw.paintMe(dest, thisLoc, myColor);
+        }
+      }
+  
+      // draw the line
+      dest.drawPolyline(xPoints, yPoints, ctr);
+  
+      // and the track name?
+      if (getNameVisible() && firstLoc != null)
+      {
+        final Point loc = dest.toScreen(firstLoc);
+        dest.drawText(getName(), loc.x + 5, loc.y);
+      }
+  
+      dest.setLineWidth(oldWid);
     }
-
-    // draw the line
-    dest.drawPolyline(xPoints, yPoints, ctr);
-
-    // and the track name?
-    if (getNameVisible() && firstLoc != null)
+    finally
     {
-      final Point loc = dest.toScreen(firstLoc);
-      dest.drawText(getName(), loc.x + 5, loc.y);
+      setCachedBounds(null);
     }
-
-    dest.setLineWidth(oldWid);
   }
 
   /**
@@ -1505,5 +1519,15 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   public String toString()
   {
     return _thePositions.toString();
+  }
+  
+  protected void calculateBoundCache()
+  {
+    setCachedBounds(getBounds());
+  }
+
+  protected void setCachedBounds(final WorldArea _newBounds)
+  {
+    _bounds = _newBounds;
   }
 }
