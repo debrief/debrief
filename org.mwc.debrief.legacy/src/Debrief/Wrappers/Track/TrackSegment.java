@@ -276,7 +276,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
       // just add the reset color field first
       final Class<TrackSegment> c = TrackSegment.class;
       MethodDescriptor[] newMeds =
-      {method(c, "revealAllPositions", null, "Reveal All Positions")};
+      {method(c, "revealAllPositions", null, "Reveal All Positions"),
+          method(c, "deleteNonVisiblePositions", null, "Delete positions not currently visible")};
 
       final MethodDescriptor[] mds = super.getMethodDescriptors();
       // we now need to combine the two sets
@@ -803,6 +804,33 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
         // and change the track name
         rel._myTrack.setName(rel.getName());
+      }
+    }
+  }
+
+  /**
+   * utility method to reveal all positions in a track
+   *
+   */
+  @FireExtended
+  public void deleteNonVisiblePositions()
+  {
+    final Enumeration<Editable> theEnum = elements();
+    final ArrayList<Editable> toDelete = new ArrayList<Editable>();
+    while (theEnum.hasMoreElements())
+    {
+      final Editable editable = theEnum.nextElement();
+      final FixWrapper fix = (FixWrapper) editable;
+      if (!fix.getVisible())
+      {
+        toDelete.add(fix);
+      }
+    }
+    if (!toDelete.isEmpty())
+    {
+      for (Editable fix : toDelete)
+      {
+        removeElement(fix);
       }
     }
   }
