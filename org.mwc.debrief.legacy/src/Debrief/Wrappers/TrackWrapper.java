@@ -2052,7 +2052,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
             }
             else
             {
-              res.extend(sw.getBounds());
+              res.extend(theseBounds);
             }
           }
         } // step through the sensors
