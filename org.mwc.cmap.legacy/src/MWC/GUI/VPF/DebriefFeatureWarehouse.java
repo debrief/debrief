@@ -437,6 +437,10 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 				_workingLocation.setLat(y);
 				_workingLocation.setLong(x);
 				final java.awt.Point pt = _myCanvas.toScreen(_workingLocation);
+		    
+		    // handle unable to gen screen coords (if off visible area)
+		    if(pt == null)
+		      return;
 
 				// xpoints[i] = pt.x;
 				// ypoints[i] = pt.y;
@@ -522,6 +526,10 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 				_workingLocation.setLat(y);
 				_workingLocation.setLong(x);
 				final java.awt.Point pt = _myCanvas.toScreen(_workingLocation);
+		    
+		    // handle unable to gen screen coords (if off visible area)
+		    if(pt == null)
+		      return;
 
 				points[i * 2] = pt.x;
 				points[i * 2 + 1] = pt.y;
@@ -566,6 +574,10 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 
 		// convert to screen coordinates
 		final java.awt.Point pt = _myCanvas.toScreen(_workingLocation);
+    
+    // handle unable to gen screen coords (if off visible area)
+    if(pt == null)
+      return;
 
 		// and plot it
 		_myCanvas.drawText(text, pt.x, pt.y);
@@ -588,6 +600,10 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse
 		_workingLocation.setLat(latitude);
 		_workingLocation.setLong(longitude);
 		final java.awt.Point pt = _myCanvas.toScreen(_workingLocation);
+    
+    // handle unable to gen screen coords (if off visible area)
+    if(pt == null)
+      return;
 
 		// and plot it
 		_myCanvas.drawText(text, pt.x, pt.y);

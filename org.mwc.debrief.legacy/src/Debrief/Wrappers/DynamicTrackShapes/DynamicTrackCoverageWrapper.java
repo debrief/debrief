@@ -84,66 +84,6 @@ public class DynamicTrackCoverageWrapper extends DynamicTrackShapeWrapper
 
     final public int minYds, maxYds, minAngleDegs, maxAngleDegs;
 
-    /**
-     * calculate the shape as a series of WorldLocation points. Joined up, these form a
-     * representation of the shape
-     *
-     * @param trackCourseDegs
-     */
-    // private Vector<WorldLocation> calcDataPoints(final WorldLocation origin,
-    // final double orient)
-    // {
-    // // get ready to store the list
-    // final Vector<WorldLocation> res = new Vector<WorldLocation>(0, 1);
-    //
-    // final double minDegs = new WorldDistance(minYds, WorldDistance.YARDS)
-    // .getValueIn(WorldDistance.DEGS);
-    // final double maxDegs = new WorldDistance(maxYds, WorldDistance.YARDS)
-    // .getValueIn(WorldDistance.DEGS);
-    //
-    // // draw the outer ring
-    // createCircle(origin, orient, res, maxDegs);
-    //
-    // // and now the inner ring
-    // createCircle(origin, orient, res, minDegs);
-    //
-    // return res;
-    //
-    // }
-
-    // private void createCircle(final WorldLocation origin, final double orient,
-    // final Vector<WorldLocation> res, final double maxDegs)
-    // {
-    // for (int i = 0; i <= CircleShape.NUM_SEGMENTS; i++)
-    // {
-    // // produce the current bearing
-    // final double this_brg = (360.0 / CircleShape.NUM_SEGMENTS * i) / 180.0
-    // * Math.PI;
-    //
-    // // first produce a standard ellipse of the correct size
-    // final double x1 = Math.sin(this_brg) * maxDegs;
-    // double y1 = Math.cos(this_brg) * maxDegs;
-    //
-    // // now produce the range out to the edge of the ellipse at
-    // // this point
-    // final double r = Math.sqrt(Math.pow(x1, 2) + Math.pow(y1, 2));
-    //
-    // // to prevent div/0 error in atan, make y1 small if zero
-    // if (y1 == 0)
-    // y1 = 0.0000001;
-    //
-    // // and the new bearing to the correct point on the ellipse
-    // final double tr = Math.atan2(y1, x1) + (orient - Math.PI / 2);
-    //
-    // // use our "add" function to add a vector, rather than the
-    // // x-y components as we did, so that the ellipse stays correctly
-    // // shaped as it travels further from the equator.
-    // final WorldLocation wl = origin.add(new WorldVector(tr, r, 0));
-    //
-    // res.add(wl);
-    // }
-    // }
-
     public DynamicCoverageShape(final int MinAngleDegs, final int MaxAngleDegs,
         final int minYds, final int maxYds)
     {
@@ -163,6 +103,10 @@ public class DynamicTrackCoverageWrapper extends DynamicTrackShapeWrapper
 
       // get the host origin in screen coords
       final Point originPt = dest.toScreen(originWd);
+      
+      // handle unable to gen screen coords (if off visible area)
+      if(originPt == null)
+        return;
 
       final WorldDistance minDist = new WorldDistance(minYds,
           WorldDistance.YARDS);

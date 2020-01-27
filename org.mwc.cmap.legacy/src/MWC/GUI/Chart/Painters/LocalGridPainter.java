@@ -70,7 +70,13 @@ public class LocalGridPainter extends GridPainter
 			if (getPlotOrigin())
 			{
 				final Point originPoint = g.toScreen(getOrigin());
-				g.setColor(Color.white);
+				
+	      // handle unable to gen screen coords (if off visible area)
+	      if(originPoint == null)
+	        return;
+	      
+        g.setColor(Color.white);
+        
 				g.fillRect(originPoint.x - 1, originPoint.y - 1, 3, 3);
 				// done.
 			}

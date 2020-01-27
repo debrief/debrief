@@ -3096,7 +3096,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
         }
 
         final java.awt.Point thisP = dest.toScreen(fw.getLocation());
-
+        
         // just check that there's enough GUI to create the plot
         // (i.e. has a point been returned)
         if (thisP == null)

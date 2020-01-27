@@ -608,6 +608,10 @@ public class PolygonShape extends PlainShape implements Editable,
 
         // convert to screen
         final Point thisP = dest.toScreen(next);
+        
+        // handle unable to gen screen coords (if off visible area)
+        if(thisP == null)
+          return;
 
         if (thisP != null)
         {

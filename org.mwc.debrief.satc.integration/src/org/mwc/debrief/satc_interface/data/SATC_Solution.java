@@ -199,6 +199,10 @@ public class SATC_Solution extends BaseLayer implements
       final WorldLocation wLoc = conversions.toLocation(loc.getCoordinate());
 
       final Point screenPt = _dest.toScreen(wLoc);
+      
+      // handle unable to gen screen coords (if off visible area)
+      if(screenPt == null)
+        return;
 
       if (lastPt != null)
       {
@@ -777,8 +781,6 @@ public class SATC_Solution extends BaseLayer implements
   @Override
   protected void finalize() throws Throwable
   {
-    super.finalize();
-
     _mySolver.getSolutionGenerator().removeReadyListener(_gaStepListener);
     _mySolver.getContributions().removeContributionsChangedListener(
         _contributionsListener);
@@ -1379,6 +1381,11 @@ public class SATC_Solution extends BaseLayer implements
           final Coordinate thisC = pts[i];
           final WorldLocation thisLocation = conversions.toLocation(thisC);
           final Point pt = dest.toScreen(thisLocation);
+          
+          // handle unable to gen screen coords (if off visible area)
+          if(pt == null)
+            return;
+
           xPoints[i] = pt.x;
           yPoints[i] = pt.y;
         }

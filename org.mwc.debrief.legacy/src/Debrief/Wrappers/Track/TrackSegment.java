@@ -1012,6 +1012,10 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
       final FixWrapper thisF = (FixWrapper) iterator.next();
 
       final Point thisPoint = dest.toScreen(thisF.getFixLocation());
+      
+      // handle unable to gen screen coords (if off visible area)
+      if(thisPoint == null)
+        return;
 
       // do we have enough for a line?
       if (lastPoint != null)

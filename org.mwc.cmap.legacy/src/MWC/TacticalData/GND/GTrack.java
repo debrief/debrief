@@ -226,6 +226,10 @@ public class GTrack extends PlainWrapper implements WatchableList, Layer,
 		{
 			final WorldLocation thisLoc = new WorldLocation(lats[i], lons[i], 0);
 			final Point pt = dest.toScreen(thisLoc);
+	    
+	    // handle unable to gen screen coords (if off visible area)
+	    if(pt == null)
+	      return;
 
 			boolean plotIt = true;
 

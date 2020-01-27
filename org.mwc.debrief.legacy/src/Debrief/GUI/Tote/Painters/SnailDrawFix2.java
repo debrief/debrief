@@ -117,10 +117,10 @@ import java.awt.Rectangle;
 import java.beans.PropertyDescriptor;
 
 import Debrief.GUI.Tote.AnalysisTote;
+import Debrief.GUI.Tote.Painters.SnailPainter2.ColorFadeCalculator;
 import Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter;
 import Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter.RectangleHighlight;
 import Debrief.GUI.Tote.Painters.Highlighters.SymbolHighlighter;
-import Debrief.GUI.Tote.Painters.SnailPainter2.ColorFadeCalculator;
 import Debrief.Wrappers.FixWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Properties.BoundedInteger;
@@ -228,10 +228,9 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
    * the name we display when shown in an editor (which may initially be Snail or Relative)
    */
   private final String _myName;
-  
+
   /*
-   * We are storing the tote to retrieve the properties of the highlighter
-   * specified by the user.
+   * We are storing the tote to retrieve the properties of the highlighter specified by the user.
    */
   private final AnalysisTote _theTote;
 
@@ -274,23 +273,25 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
     final Color snailColor = fix.getColor();
     Color selectedColor = fix.getColor();
     int selectedSize = _pointSize;
-    
-    if ( _theTote != null )
+
+    if (_theTote != null)
     {
       final PlotHighlighter highlighter = _theTote.getCurrentHighlighter();
-      if ( highlighter instanceof RectangleHighlight )
+      if (highlighter instanceof RectangleHighlight)
       {
         selectedColor = ((RectangleHighlight) highlighter).getColor();
-        selectedSize = ((RectangleHighlight) highlighter).getSize().getCurrent();
-      }else if ( highlighter instanceof SymbolHighlighter )
+        selectedSize = ((RectangleHighlight) highlighter).getSize()
+            .getCurrent();
+      }
+      else if (highlighter instanceof SymbolHighlighter)
       {
-        // Are we using the symbol highlighter?? I think not, let's add this just in case. Saul 
+        // Are we using the symbol highlighter?? I think not, let's add this just in case. Saul
         selectedColor = ((SymbolHighlighter) highlighter).getColor();
         selectedSize = (int) ((SymbolHighlighter) highlighter).getScale();
       }
     }
     dest.setColor(snailColor);
-    
+
     // is this item even visible?
     if (!watch.getVisible())
     {
@@ -299,115 +300,121 @@ public final class SnailDrawFix2 implements SnailPainter2.drawHighLight2,
 
     final Point screenPos = proj.toScreen(fix.getLocation());
 
-    // produce the centre point
-    final Point p = new Point(screenPos);
-
-    // see if we are in symbol plotting mode
-    final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter thisHighlighter =
-        parent.getCurrentPrimaryHighlighter();
-    if (thisHighlighter instanceof Debrief.GUI.Tote.Painters.Highlighters.SymbolHighlighter)
+    // handle instance where screen layout means plot isn't actually visible,
+    // and we don't get a screen position
+    if (screenPos != null)
     {
-      // just plot away!
-      thisHighlighter.highlightIt(proj, dest, list, watch, true);
 
-      // work out the area covered
-      final WorldArea wa = watch.getBounds();
-      final WorldLocation tl = wa.getTopLeft();
-      final WorldLocation br = wa.getBottomRight();
-      final Point pTL = new Point(proj.toScreen(tl));
-      final Point pBR = new Point(proj.toScreen(br));
-      final Rectangle thisArea = new java.awt.Rectangle(pTL);
-      thisArea.add(pBR);
-      thisR = thisArea;
-    }
-    else
-    {
-      // plot the pointy vector thingy
+      // produce the centre point
+      final Point p = new Point(screenPos);
 
-      // get the current area of the watchable
-      final WorldArea wa = watch.getBounds();
-      // convert to screen coordinates
-      Point tlPos = proj.toScreen(wa.getTopLeft());
-      Point brPos = proj.toScreen(wa.getBottomRight());
+      // see if we are in symbol plotting mode
+      final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter thisHighlighter =
+          parent.getCurrentPrimaryHighlighter();
+      if (thisHighlighter instanceof Debrief.GUI.Tote.Painters.Highlighters.SymbolHighlighter)
+      {
+        // just plot away!
+        thisHighlighter.highlightIt(proj, dest, list, watch, true);
 
-      final Point tl = new Point(tlPos);
-      final Point br = new Point(brPos);
+        // work out the area covered
+        final WorldArea wa = watch.getBounds();
+        final WorldLocation tl = wa.getTopLeft();
+        final WorldLocation br = wa.getBottomRight();
+        final Point pTL = new Point(proj.toScreen(tl));
+        final Point pBR = new Point(proj.toScreen(br));
+        final Rectangle thisArea = new java.awt.Rectangle(pTL);
+        thisArea.add(pBR);
+        thisR = thisArea;
+      }
+      else
+      {
+        // plot the pointy vector thingy
 
-      final int mySize = selectedSize;
+        // get the current area of the watchable
+        final WorldArea wa = watch.getBounds();
+        // convert to screen coordinates
+        final Point tlPos = proj.toScreen(wa.getTopLeft());
+        final Point brPos = proj.toScreen(wa.getBottomRight());
 
-      // get the width
-      final int x = tl.x - mySize;
-      final int y = tl.y - mySize;
-      final int wid = (br.x - tl.x) + mySize * 2;
-      final int ht = (br.y - tl.y) + mySize * 2;
+        final Point tl = new Point(tlPos);
+        final Point br = new Point(brPos);
 
-      // represent this area as a rectangle
-      thisR = new Rectangle(x, y, wid, ht);
+        final int mySize = selectedSize;
 
-      dest.setColor(selectedColor);
-      // plot the rectangle anyway
-      dest.drawOval(x, y, wid, ht);
+        // get the width
+        final int x = tl.x - mySize;
+        final int y = tl.y - mySize;
+        final int wid = (br.x - tl.x) + mySize * 2;
+        final int ht = (br.y - tl.y) + mySize * 2;
 
-      dest.setColor(snailColor);
-      // and now plot the vector
-      final double crse = watch.getCourse();
-      final double spd = watch.getSpeed();
+        // represent this area as a rectangle
+        thisR = new Rectangle(x, y, wid, ht);
 
-      //
-      final int dx = (int) (Math.sin(crse) * mySize * spd * _vectorStretch);
-      final int dy = (int) (Math.cos(crse) * mySize * spd * _vectorStretch);
+        dest.setColor(selectedColor);
+        // plot the rectangle anyway
+        dest.drawOval(x, y, wid, ht);
 
-      // produce the end of the stick (just to establish the length in data units)
-      final Point p2 = new Point(p.x + dx, p.y - dy);
+        dest.setColor(snailColor);
+        // and now plot the vector
+        final double crse = watch.getCourse();
+        final double spd = watch.getSpeed();
 
-      // how long is the stalk in data units?
-      final WorldLocation w3 = proj.toWorld(p2);
-      final double len = w3.rangeFrom(fix.getLocation());
+        //
+        final int dx = (int) (Math.sin(crse) * mySize * spd * _vectorStretch);
+        final int dy = (int) (Math.cos(crse) * mySize * spd * _vectorStretch);
 
-      // now sort out the real end of this stalk
-      final WorldLocation stalkEnd = fix.getLocation().add(new WorldVector(crse,
-          len, 0));
-      // and get this in screen coordinates
-      final Point pStalkEnd = proj.toScreen(stalkEnd);
+        // produce the end of the stick (just to establish the length in data units)
+        final Point p2 = new Point(p.x + dx, p.y - dy);
 
-      // and plot the stalk itself
-      dest.drawLine(p.x, p.y, pStalkEnd.x, pStalkEnd.y);
+        // how long is the stalk in data units?
+        final WorldLocation w3 = proj.toWorld(p2);
+        final double len = w3.rangeFrom(fix.getLocation());
 
-      // extend the area covered to include the stick
-      thisR.add(p2);
-    }
+        // now sort out the real end of this stalk
+        final WorldLocation stalkEnd = fix.getLocation().add(new WorldVector(
+            crse, len, 0));
+        // and get this in screen coordinates
+        final Point pStalkEnd = proj.toScreen(stalkEnd);
 
-    // draw the trailing dots
-    final java.awt.Rectangle dotsArea = _trackPlotter.drawMe(proj, dest, watch,
-        parent, watch.getTime(), fader);
+        // and plot the stalk itself
+        dest.drawLine(p.x, p.y, pStalkEnd.x, pStalkEnd.y);
 
-    // extend the rectangle, if necesary
-    if (dotsArea != null)
-    {
-      thisR.add(dotsArea);
-    }
+        // extend the area covered to include the stick
+        thisR.add(p2);
+      }
 
-    // plot the track name
-    if (_plotName)
-    {
-      final String msg = fix.getTrackWrapper().getName();
+      // draw the trailing dots
+      final java.awt.Rectangle dotsArea = _trackPlotter.drawMe(proj, dest,
+          watch, parent, watch.getTime(), fader);
 
-      // shift the centre point across a bit
-      p.translate(5, 0);
+      // extend the rectangle, if necesary
+      if (dotsArea != null)
+      {
+        thisR.add(dotsArea);
+      }
 
-      // and draw the text
-      dest.drawString(msg, p.x, p.y);
+      // plot the track name
+      if (_plotName)
+      {
+        final String msg = fix.getTrackWrapper().getName();
 
-      // somehow we need to include this extended area
-      final FontMetrics fm = dest.getFontMetrics();
+        // shift the centre point across a bit
+        p.translate(5, 0);
 
-      final int sWid = fm.stringWidth(msg);
+        // and draw the text
+        dest.drawString(msg, p.x, p.y);
 
-      // shift from the start of the string
-      p.translate(sWid, 0);
+        // somehow we need to include this extended area
+        final FontMetrics fm = dest.getFontMetrics();
 
-      // and add to the limits rectangle
-      thisR.add(p);
+        final int sWid = fm.stringWidth(msg);
+
+        // shift from the start of the string
+        p.translate(sWid, 0);
+
+        // and add to the limits rectangle
+        thisR.add(p);
+      }
     }
 
     return thisR;

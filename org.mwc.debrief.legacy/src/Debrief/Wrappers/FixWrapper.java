@@ -1634,6 +1634,11 @@ public class FixWrapper extends PlainWrapper implements Watchable,
       // move the start point forward, so the centre of the triangle is over the
       // point
       final Point p0 = dest.toScreen(centre);
+      
+      // handle unable to gen screen coords (if off visible area)
+      if(p0 == null)
+        return;
+
       final Point p1 = new Point(p0);
       p1.translate(-(int) (len / 2d * Math.cos(direction)), -(int) (len / 2d
           * Math.sin(direction)));

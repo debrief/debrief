@@ -41,6 +41,11 @@ public class CanvasTypeUtilities
 	{
 		Point startPoint = dest.toScreen(firstLoc);
 		Point lastPoint = dest.toScreen(lastLoc);
+		
+    // handle unable to gen screen coords (if off visible area)
+    if(startPoint == null)
+      return;
+
 		double width = startPoint.distance(lastPoint);
 		
 		double stringWidth = dest.getStringWidth(font, textLabel);

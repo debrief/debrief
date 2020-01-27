@@ -409,7 +409,7 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
    */
   public final void setTrailLength(final Duration len)
   {
-    _trackPlotter.setTrailLength(new Long((long)len.getValueIn(Duration.MICROSECONDS)));
+    _trackPlotter.setTrailLength((long)len.getValueIn(Duration.MICROSECONDS));
   }
 
 	/** whether to plot in the name of the vessel

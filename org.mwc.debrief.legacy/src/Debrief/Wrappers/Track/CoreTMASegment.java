@@ -78,8 +78,6 @@ abstract public class CoreTMASegment extends TrackSegment implements
    * @param courseDegs
    * @param speed
    * @param plotRelative
-   * @param offset
-   * @param theLayers
    */
   public CoreTMASegment(final double courseDegs, final WorldSpeed speed,
       final boolean plotRelative)
@@ -210,6 +208,10 @@ abstract public class CoreTMASegment extends TrackSegment implements
       tmaLastDTG = thisTime;
 
       final Point thisPoint = dest.toScreen(thisF.getFixLocation());
+      
+      // handle unable to gen screen coords (if off visible area)
+      if(thisPoint == null)
+        return;
 
       // do we have enough for a line?
       if (lastPoint != null)
@@ -247,6 +249,10 @@ abstract public class CoreTMASegment extends TrackSegment implements
   private void writeMessage(final CanvasType dest, WorldLocation firstEnd)
   {
     final Point pt = dest.toScreen(firstEnd);
+    
+    // handle unable to gen screen coords (if off visible area)
+    if(pt == null)
+      return;
 
     // project this point out past the actual start point
     pt.translate((int) (30d * Math.cos(MWC.Algorithms.Conversions

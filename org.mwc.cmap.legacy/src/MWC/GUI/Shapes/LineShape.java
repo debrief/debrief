@@ -219,10 +219,19 @@ public class LineShape extends PlainShape implements Editable,
 			dest.setFont(getFont());
 
 		// get the origin
-		final Point start = new Point(dest.toScreen(_start));
-
-		// get the width and height
-		final Point end = new Point(dest.toScreen(_end));
+		final Point startP = dest.toScreen(_start);
+		
+		// drop out if we can't get screen coords
+		if(startP == null)
+		  return;
+		
+    final Point start = new Point(startP);
+		final Point endP = dest.toScreen(_end);
+    if(endP == null)
+      return;
+		
+    // get the width and height
+		final Point end = new Point(endP);
 
 		// and now draw it
 		dest.drawLine(start.x, start.y, end.x, end.y);

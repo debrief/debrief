@@ -132,7 +132,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements
       {
         final String thisStr = getTags()[i];
         if (thisStr.equals(val))
-          _myLineLocation = new Integer(i);
+          _myLineLocation = i;
       }
     }
 
@@ -849,7 +849,8 @@ abstract public class SpatialRasterPainter extends BaseLayer implements
   /**
    * where to plot the key
    */
-  Integer _keyLocation = new Integer(KeyLocationPropertyEditor.LEFT);
+  Integer _keyLocation = KeyLocationPropertyEditor.LEFT;
+  
   /**
    * whether to use NE shading
    *
@@ -964,8 +965,20 @@ abstract public class SpatialRasterPainter extends BaseLayer implements
   {
     final WorldLocation wa = new WorldLocation(startY, startX, 0);
     final WorldLocation wb = new WorldLocation(endY, endX, 0);
-    final Point pa = new Point(dest.toScreen(wa));
-    final Point pb = new Point(dest.toScreen(wb));
+    final Point screenA = dest.toScreen(wa);
+    
+    // handle unable to gen screen coords (if off visible area)
+    if(screenA == null)
+      return;
+
+    final Point screenB = dest.toScreen(wb);
+
+    // handle unable to gen screen coords (if off visible area)
+    if(screenB == null)
+      return;
+
+    final Point pa = new Point(screenA);
+    final Point pb = new Point(screenB);
     dest.setColor(getContourColourFor(contourIndex));
     dest.drawLine(pa.x, pa.y, pb.x, pb.y);
   }
@@ -1265,8 +1278,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements
           }
           // inform the user what we're doing
           if (_myEditor != null)
-            _myEditor.fireChanged(this, "GridInterval", null, new Integer(
-                _gridInterval));
+            _myEditor.fireChanged(this, "GridInterval", null, _gridInterval);
         }
 
         // ok, do our extra paint now
@@ -1306,7 +1318,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements
       try
       {
         final double d = MWCXMLReader.readThisDouble(token.nextToken());
-        sortedDepths.add(new Double(d));
+        sortedDepths.add(d);
       }
       catch (final ParseException e)
       {

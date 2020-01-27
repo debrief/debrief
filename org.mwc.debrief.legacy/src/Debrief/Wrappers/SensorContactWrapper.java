@@ -1155,7 +1155,7 @@ public final class SensorContactWrapper extends
    */
   public final Integer getLineStyle()
   {
-    return new Integer(_myLineStyle);
+    return _myLineStyle;
   }
 
   // ////////////////////////////////////////////////////////////
@@ -1207,7 +1207,7 @@ public final class SensorContactWrapper extends
    */
   public final Integer getPutLabelAt()
   {
-    return new Integer(_theLineLocation);
+    return _theLineLocation;
   }
 
   /**
@@ -1375,8 +1375,14 @@ public final class SensorContactWrapper extends
     {
 
       // ok, we have the start - convert it to a point
-      final Point pt = new Point(dest.toScreen(origin));
+      final Point screen = dest.toScreen(origin);
+      
+      // handle unable to gen screen coords (if off visible area)
+      if(screen == null)
+        return;
 
+      final Point pt = new Point(screen);
+      
       // check we have at least a bearing
       if (this.getHasBearing())
       {

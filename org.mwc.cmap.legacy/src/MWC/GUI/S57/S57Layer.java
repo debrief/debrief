@@ -156,7 +156,12 @@ public class S57Layer implements Layer
 
 		// give us the area aswell
 		final WorldArea area = _myDatabase.getArea();
-		final Point p1 = new Point(g.toScreen(area.getTopLeft()));
+		final Point s1 = g.toScreen(area.getTopLeft());
+    // handle unable to gen screen coords (if off visible area)
+    if(s1 == null)
+      return;
+
+    final Point p1 = new Point(s1);
 		final Point p2 = new Point(g.toScreen(area.getBottomRight()));
 		g.setColor(Color.white);
 		g.drawRect(p1.x, p1.y, p2.x - p1.x, p2.y - p1.y);

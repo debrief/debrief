@@ -551,7 +551,13 @@ public final class TMAContactWrapper extends
 		final WorldLocation centre = locateEllipseCentre(track);
 
 		// ok, we have the centre - convert it to a point
-		final Point centrePt = new Point(dest.toScreen(centre));
+		final Point screen = dest.toScreen(centre);
+
+		// handle unable to gen screen coords (if off visible area)
+    if(screen == null)
+      return;
+
+    final Point centrePt = new Point(screen);
 
 		// and convert to screen coords
 		final WorldLocation theFarEnd = getSensorEnd(track);

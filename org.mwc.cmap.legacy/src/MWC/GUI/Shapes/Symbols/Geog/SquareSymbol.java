@@ -190,6 +190,10 @@ public class SquareSymbol extends PlainSymbol
 
 		// create our centre point
 		final java.awt.Point centre = dest.toScreen(theLocation);
+    
+    // handle unable to gen screen coords (if off visible area)
+    if(centre == null)
+      return;
 
 		// calculate the scaled width
 		final int sWid = (int) (wid * getScaleVal());
