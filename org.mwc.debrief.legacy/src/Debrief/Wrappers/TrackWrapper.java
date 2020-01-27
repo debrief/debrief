@@ -2043,18 +2043,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
         while (iter.hasMoreElements())
         {
           final PlainWrapper sw = (PlainWrapper) iter.nextElement();
-          final WorldArea theseBounds = sw.getBounds();
-          if (theseBounds != null)
-          {
-            if (res == null)
-            {
-              res = new WorldArea(theseBounds);
-            }
-            else
-            {
-              res.extend(sw.getBounds());
-            }
-          }
+          res = WorldArea.extend(res, sw.getBounds());
         } // step through the sensors
       } // whether we have any sensors
 
@@ -2065,18 +2054,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
         while (iter.hasMoreElements())
         {
           final Plottable sw = (Plottable) iter.nextElement();
-          final WorldArea theseBounds = sw.getBounds();
-          if (theseBounds != null)
-          {
-            if (res == null)
-            {
-              res = new WorldArea(theseBounds);
-            }
-            else
-            {
-              res.extend(sw.getBounds());
-            }
-          }
+          res = WorldArea.extend(res, sw.getBounds());
         } // step through the sensors
       }
       // and our solution data
@@ -2086,18 +2064,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
         while (iter.hasMoreElements())
         {
           final PlainWrapper sw = (PlainWrapper) iter.nextElement();
-          final WorldArea theseBounds = sw.getBounds();
-          if (theseBounds != null)
-          {
-            if (res == null)
-            {
-              res = new WorldArea(theseBounds);
-            }
-            else
-            {
-              res.extend(sw.getBounds());
-            }
-          }
+          res = WorldArea.extend(res, sw.getBounds());
         } // step through the sensors
       } // whether we have any sensors
 

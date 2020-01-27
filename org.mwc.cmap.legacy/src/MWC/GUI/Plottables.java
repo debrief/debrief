@@ -386,16 +386,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 				// is this item visible?
 				if (thisOne.getVisible())
 				{
-					final WorldArea thisA = thisOne.getBounds();
-					if (thisA != null)
-						if (res == null)
-						{
-							res = new WorldArea(thisA);
-						}
-						else
-						{
-							res.extend(thisOne.getBounds());
-						}
+		      res = WorldArea.extend(res, thisOne.getBounds());
 				}
 			}
 		}

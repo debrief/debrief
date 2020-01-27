@@ -856,15 +856,7 @@ public class SATC_Solution extends BaseLayer implements
         final WorldLocation end = conversions.toLocation(thisRoute.getEndPoint()
             .getCoordinate());
 
-        // is this the first area?
-        if (res == null)
-        {
-          res = new WorldArea(start, end);
-        }
-        else
-        {
-          res.extend(new WorldArea(start, end));
-        }
+        res = WorldArea.extend(res, new WorldArea(start, end));
       }
     }
 

@@ -117,13 +117,7 @@ public class Coastline implements Serializable
 		while (enumer.hasMoreElements())
 		{
 			final CoastSegment seg = (CoastSegment) enumer.nextElement();
-			if (res == null)
-			{
-				res = seg.getBounds();
-			}
-			else
-				res.extend(seg.getBounds());
-
+      res = WorldArea.extend(res, seg.getBounds());
 		}
 		_myArea = res;
 	}

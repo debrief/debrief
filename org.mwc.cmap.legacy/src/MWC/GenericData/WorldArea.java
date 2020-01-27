@@ -403,6 +403,24 @@ public final class WorldArea implements Serializable
 		_bottomRight.setLong(_bottomRight.getLong() + border_degs);
 		_bottomRight.setDepth(_bottomRight.getDepth() - depth_metres);
 	}
+	
+	/**
+	 * Creates an area that contains both parameters
+	 * @param current Area a
+	 * @param newArea Area b
+	 * @return a + b
+	 */
+  public static WorldArea extend(WorldArea current, final WorldArea newArea)
+  {
+    if (newArea != null)
+    {
+      if (current == null)
+        current = new WorldArea(newArea);
+      else
+        current.extend(newArea);
+    }
+    return current;
+  }
 
 	/**
 	 * extend the area to include this new point. includes a normalise operation
@@ -769,6 +787,17 @@ public final class WorldArea implements Serializable
 			assertTrue("Extending using location", ww4.equals(wa3));
 			ww5.extend(wa3);
 			assertTrue("Extending using area", ww5.equals(wa3));
+		}
+		
+		public final void testExtend2()
+		{
+      final WorldArea ww4 = new WorldArea(wa1);
+      final WorldArea ww5 = new WorldArea(wa1);
+
+      assertNull("Null test OK for static extend", extend(null, null));
+      assertTrue("First Null for static extend.", ww4.equals(extend(null, ww4)));
+      assertTrue("Second Null for static extend.", ww4.equals(extend(ww4, null)));
+      assertTrue("Extending using area static extend", wa3.equals(extend(ww5, wa3)));
 		}
 
 		public final void testAreaCalcs()

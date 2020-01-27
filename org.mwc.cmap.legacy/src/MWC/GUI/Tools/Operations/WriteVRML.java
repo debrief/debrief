@@ -181,13 +181,8 @@ abstract public class WriteVRML extends MWC.GUI.Tools.PlainTool
 			for(int i=0;i<num; i++)
 			{
 				final Layer l = (Layer)_theData.elementAt(i);
-				final WorldArea thisA = l.getBounds();
-				if(bounds == null)
-				{
-					bounds = thisA;
-				}
-				else
-					bounds.extend(thisA);
+
+				bounds = WorldArea.extend(bounds, l.getBounds());
 
 			}
 
