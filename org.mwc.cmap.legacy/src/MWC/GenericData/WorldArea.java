@@ -403,6 +403,24 @@ public final class WorldArea implements Serializable
 		_bottomRight.setLong(_bottomRight.getLong() + border_degs);
 		_bottomRight.setDepth(_bottomRight.getDepth() - depth_metres);
 	}
+	
+	/**
+	 * Creates an area that contains both parameters
+	 * @param current Area a
+	 * @param newArea Area b
+	 * @return a + b
+	 */
+  public static WorldArea extend(WorldArea current, final WorldArea newArea)
+  {
+    if (newArea != null)
+    {
+      if (current == null)
+        current = new WorldArea(newArea);
+      else
+        current.extend(newArea);
+    }
+    return current;
+  }
 
 	/**
 	 * extend the area to include this new point. includes a normalise operation

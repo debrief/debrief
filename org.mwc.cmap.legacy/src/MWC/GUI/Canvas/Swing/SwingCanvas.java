@@ -431,14 +431,7 @@ public class SwingCanvas extends javax.swing.JComponent
     while (enumer.hasMoreElements())
     {
       final CanvasType.PaintListener thisP = (CanvasType.PaintListener) enumer.nextElement();
-      final WorldArea thisArea = thisP.getDataArea();
-      if (thisArea != null)
-      {
-        if (theArea == null)
-          theArea = new WorldArea(thisArea);
-        else
-          theArea.extend(thisArea);
-      }
+      theArea = WorldArea.extend(theArea, thisP.getDataArea());
     }
 
     // check we have found a valid area

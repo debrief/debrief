@@ -1197,21 +1197,7 @@ public final class BuoyPatternWrapper extends PlainWrapper implements
     {
       final Plottable thisOne = (Plottable) iter.nextElement();
 
-      final MWC.GenericData.WorldArea thisArea = thisOne.getBounds();
-
-      // ////////////////////////////
-      // first the area
-      // ////////////////////////////
-      // does this object have an area?
-      if (thisArea != null)
-      {
-        // do we have an area already?
-        if (res == null)
-          res = new WorldArea(thisArea);
-        else
-          res.extend(thisArea);
-      }
-
+      res = WorldArea.extend(res, thisOne.getBounds());
     }
 
     // store the result

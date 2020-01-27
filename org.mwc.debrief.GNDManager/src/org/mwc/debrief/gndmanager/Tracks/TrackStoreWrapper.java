@@ -1052,14 +1052,7 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 			{
 				final TrackStoreWrapper.CouchTrack thisT = (TrackStoreWrapper.CouchTrack) iter
 						.next();
-				final WorldArea thisB = thisT.getBounds();
-				if (thisB != null)
-				{
-					if (res == null)
-						res = new WorldArea(thisB);
-					else
-						res.extend(thisB);
-				}
+        res = WorldArea.extend(res, thisT.getBounds());
 			}
 		}
 
