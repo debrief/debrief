@@ -189,12 +189,14 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
 
             bounds = getBounds();
             final int maxheight = DebriefLiteApp.getInstance().getApplicationFrame().getHeight();
-            //165 is the height of ribbon
-            if(bounds.height<maxheight-165) {
+            //minor adjustments +5
+            final int ribbonHeight = DebriefLiteApp.getInstance().getApplicationFrame().getRibbon().getHeight()
+                +(titleLabel.getHeight()*2)+5;
+            if(bounds.height<maxheight-ribbonHeight) {
               bounds.height = (bounds.height - oldHeight) + newDimension;
             }
             else {
-              bounds.height = maxheight-167;
+              bounds.height = maxheight-ribbonHeight-2;
             }
             
             bounds.width = 0;
@@ -220,12 +222,12 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
             bounds = getBounds();
             int maxwidth = DebriefLiteApp.getInstance().getApplicationFrame().getWidth();
             //30 is the width of titlebar.
-            if(bounds.width<maxwidth-30) {
+            if(bounds.width<maxwidth-titleLabel.getWidth()) {
               bounds.width = (bounds.width - oldWidth) + newDimension;
             }
             else
             {
-              bounds.width = maxwidth-32;
+              bounds.width = maxwidth-titleLabel.getWidth()-2;
             }
             bounds.height = 0;
             currentDimension = bounds.width;
