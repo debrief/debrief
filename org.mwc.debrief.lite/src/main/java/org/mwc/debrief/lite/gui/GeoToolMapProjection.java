@@ -106,12 +106,6 @@ public class GeoToolMapProjection extends PlainProjection implements
     }
   }
 
-  @Override
-  public WorldArea getDataArea()
-  {
-    return _layers.getBounds();
-  }
-
   public MathTransform getDataTransform()
   {
     return data_transform;
