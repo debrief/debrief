@@ -173,6 +173,28 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
       return res;
     }
+    
+    public void testDeleteNotVisible() 
+    {
+      TrackSegment ts = getDummyList();
+      
+      // check everyone is at home
+      assertEquals("all present",  4, ts.size());
+      
+      // hide the first 
+      Enumeration<Editable> ele = ts.elements();
+      FixWrapper first = (FixWrapper) ele.nextElement();
+      FixWrapper second = (FixWrapper) ele.nextElement();
+      first.setVisible(false);
+      second.setVisible(false);
+      
+      ts.deleteNonVisiblePositions();
+      
+      // check everyone is at home
+      assertEquals("first two gone",  2, ts.size());
+      
+
+    }
 
     public void testResample()
     {
