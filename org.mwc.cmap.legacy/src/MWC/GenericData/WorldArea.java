@@ -788,6 +788,17 @@ public final class WorldArea implements Serializable
 			ww5.extend(wa3);
 			assertTrue("Extending using area", ww5.equals(wa3));
 		}
+		
+		public final void testExtend2()
+		{
+      final WorldArea ww4 = new WorldArea(wa1);
+      final WorldArea ww5 = new WorldArea(wa1);
+
+      assertNull("Null test OK for static extend", extend(null, null));
+      assertTrue("First Null for static extend.", ww4.equals(extend(null, ww4)));
+      assertTrue("Second Null for static extend.", ww4.equals(extend(ww4, null)));
+      assertTrue("Extending using area static extend", wa3.equals(extend(ww5, wa3)));
+		}
 
 		public final void testAreaCalcs()
 		{
