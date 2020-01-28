@@ -93,7 +93,16 @@ public class LiteMapPane extends JMapPane
     disableBoxDrawRightClick();
 
     // try to set background color
-    super.setBackground(new Color(135, 172, 215));
+    super.setBackground(getNewColor(mapTransparency));
+  }
+  
+  private static Color getNewColor(final double alpha)
+  {
+    return new Color(
+        (int)(255 - alpha * 171),
+        (int)(255 - alpha * 119),
+        (int)(255 - alpha * 57)
+        );
   }
 
   public void addRepaintListener(final ActionListener actionListener)
@@ -282,11 +291,11 @@ public class LiteMapPane extends JMapPane
 
     // draw in background
     final Dimension dim = this.getSize();
-    g.setColor(Color.white);
+    g.setColor(getNewColor(mapTransparency));
     g.fillRect(0, 0, dim.width, dim.height);
 
     if (drawingLock.tryLock())
-    {
+    { 
       try
       {
         final RenderedImage image = getBaseImage();
