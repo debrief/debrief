@@ -130,6 +130,8 @@ public class DebriefRibbonTimeController
     protected RangeDisplayComponentContentModel rangeDisplayModel;
     protected RangeSlider slider;
     protected TimeManager timeManager;
+    
+    
 
     public String getDateFormat()
     {
@@ -799,59 +801,14 @@ public class DebriefRibbonTimeController
       final Runnable snailPainter, final LiteStepControl stepcontrol,
       final Layers layers, final UndoBuffer undoBuffer)
   {
+    final String tooltip_edit_snailmode_props = "Edit Snail Display Mode Properties";
+    final String tooltip_edit_normalmode_props = "Edit Normal Display Mode Properties";
+    RichTooltip normalmode_tooltip = RichTooltip.builder().setTitle(tooltip_edit_normalmode_props).build();
+    RichTooltip snailmode_tooltip = RichTooltip.builder().setTitle(tooltip_edit_snailmode_props).build();
+        
     final JRibbonBand displayMode = new JRibbonBand("Display Mode", null);
     final ArrayList<Command> commands = new ArrayList<>();
-    final CommandToggleGroupModel displayModeGroup =
-        new CommandToggleGroupModel();
-    Command normalToggle = MenuUtils.addCommandToggleButton("Normal",
-        "icons/48/normal.png", new CommandAction()
-        {
-
-          @Override
-          public void commandActivated(CommandActionEvent e)
-          {
-            normalPainter.run();
-          }
-        }, displayMode, PresentationPriority.TOP, true, displayModeGroup, true);
-    commands.add(normalToggle);
-
-    Command snailToggle = MenuUtils.addCommandToggleButton("Snail",
-        "icons/48/snail.png", new CommandAction()
-        {
-
-          @Override
-          public void commandActivated(CommandActionEvent e)
-          {
-            snailPainter.run();
-          }
-        }, displayMode, PresentationPriority.TOP, true, displayModeGroup,
-        false);
-    commands.add(snailToggle);
-
-    stepcontrol.getPainterManager().getInfo().addPropertyChangeListener(
-        new PropertyChangeListener()
-        {
-
-          @Override
-          public void propertyChange(PropertyChangeEvent event)
-          {
-            if (StepControl.PROPERTY_PAINTER.equals(event.getPropertyName()))
-            {
-              final StepperListener stepper = stepcontrol.getPainterManager()
-                  .getCurrentPainterObject();
-              if (stepper instanceof SnailPainter2 && !snailToggle
-                  .isToggleSelected())
-              {
-                snailToggle.setToggleSelected(true);
-              }
-              else if (normalToggle.isToggleSelected())
-              {
-                normalToggle.setToggleSelected(true);
-              }
-            }
-          }
-        });
-    final CommandButtonProjection<Command> properties = MenuUtils.addCommand(
+    final CommandButtonProjection<Command> properties = MenuUtils.createCommand(
         "Properties", "icons/16/properties.png", new CommandAction()
         {
 
@@ -887,9 +844,70 @@ public class DebriefRibbonTimeController
               }
             }
           }
-        }, displayMode, PresentationPriority.LOW);
+        }, null,tooltip_edit_normalmode_props);
+    final CommandToggleGroupModel displayModeGroup =
+        new CommandToggleGroupModel();
+    Command normalToggle = MenuUtils.addCommandToggleButton("Normal",
+        "icons/48/normal.png", new CommandAction()
+        {
 
+          @Override
+          public void commandActivated(CommandActionEvent e)
+          {
+            normalPainter.run();
+            properties.getContentModel().setActionRichTooltip(normalmode_tooltip);
+          }
+        }, displayMode, PresentationPriority.TOP, true, displayModeGroup, true);
+    
+    Command snailToggle = MenuUtils.addCommandToggleButton("Snail",
+        "icons/48/snail.png", new CommandAction()
+        {
+
+          @Override
+          public void commandActivated(CommandActionEvent e)
+          {
+            properties.getContentModel().setActionRichTooltip(snailmode_tooltip);
+            snailPainter.run();
+          }
+        }, displayMode, PresentationPriority.TOP, true, displayModeGroup,
+        false);
+    commands.add(normalToggle);
+    
+    commands.add(snailToggle);
+
+    displayMode.addRibbonCommand(properties, PresentationPriority.TOP);
     commands.add(properties.getContentModel());
+    
+
+    stepcontrol.getPainterManager().getInfo().addPropertyChangeListener(
+        new PropertyChangeListener()
+        {
+
+          @Override
+          public void propertyChange(PropertyChangeEvent event)
+          {
+            if (StepControl.PROPERTY_PAINTER.equals(event.getPropertyName()))
+            {
+              final StepperListener stepper = stepcontrol.getPainterManager()
+                  .getCurrentPainterObject();
+              
+              if (stepper instanceof SnailPainter2 && !snailToggle
+                  .isToggleSelected())
+              {
+                snailToggle.setToggleSelected(true);
+                properties.getContentModel().setActionRichTooltip(snailmode_tooltip);
+              }
+              else if (normalToggle.isToggleSelected())
+              {
+                normalToggle.setToggleSelected(true);
+                properties.getContentModel().setActionRichTooltip(normalmode_tooltip);
+              }
+            }
+          }
+        });
+    
+
+    
 
     displayMode.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         displayMode));
@@ -922,70 +940,14 @@ public class DebriefRibbonTimeController
       final Layers layers, final UndoBuffer undoBuffer)
   {
     final JRibbonBand highlighter = new JRibbonBand("Highlighter", null);
-
+    final String props_square_highlighter = "Edit Square Highlighter Properties";
+    final String props_symbol_highlighter = "Edit Symbol Highlighter Properties";
+    final RichTooltip symbol_tooltip = RichTooltip.builder().setTitle(props_symbol_highlighter).build();
+    final RichTooltip square_tooltip = RichTooltip.builder().setTitle(props_square_highlighter).build();
     final ArrayList<Command> commands = new ArrayList<>();
     final CommandToggleGroupModel highlighterGroup =
         new CommandToggleGroupModel();
-
-    final Command square = MenuUtils.addCommandToggleButton("Square",
-        "icons/48/square.png", new CommandAction()
-        {
-
-          @Override
-          public void commandActivated(final CommandActionEvent e)
-          {
-            if (stepcontrol instanceof LiteStepControl)
-            {
-              stepcontrol.setHighlighter((stepcontrol).getRectangleHighlighter()
-                  .toString());
-              refresh.run();
-            }
-          }
-        }, highlighter, PresentationPriority.TOP, true, highlighterGroup, true);
-    commands.add(square);
-    final Command symbol = MenuUtils.addCommandToggleButton("Symbol",
-        "icons/48/shape.png", new CommandAction()
-        {
-          @Override
-          public void commandActivated(final CommandActionEvent e)
-          {
-            if (stepcontrol instanceof LiteStepControl)
-            {
-              stepcontrol.setHighlighter(stepcontrol.getSymbolHighlighter()
-                  .toString());
-              refresh.run();
-            }
-          }
-        }, highlighter, PresentationPriority.TOP, true, highlighterGroup,
-        false);
-    commands.add(symbol);
-    stepcontrol.getPainterManager().getInfo().addPropertyChangeListener(
-        new PropertyChangeListener()
-        {
-
-          @Override
-          public void propertyChange(PropertyChangeEvent event)
-          {
-            if (StepControl.PROPERTY_HIGHLIGHTER.equals(event
-                .getPropertyName()))
-            {
-              final PlotHighlighter highlighter = stepcontrol
-                  .getCurrentHighlighter();
-              if (highlighter instanceof SymbolHighlighter && !symbol
-                  .isToggleSelected())
-              {
-                symbol.setToggleSelected(true);
-              }
-              else if (highlighter instanceof RectangleHighlight && !square
-                  .isToggleSelected())
-              {
-                square.setToggleSelected(true);
-              }
-            }
-          }
-        });
-
-    final CommandButtonProjection<Command> properties = MenuUtils.addCommand(
+    final CommandButtonProjection<Command> properties = MenuUtils.createCommand(
         "Properties", "icons/16/properties.png", new CommandAction()
         {
 
@@ -1018,7 +980,70 @@ public class DebriefRibbonTimeController
               dialog.setVisible(true);
             }
           }
-        }, highlighter, PresentationPriority.TOP);
+        }, null, props_square_highlighter);
+    final Command square = MenuUtils.addCommandToggleButton("Square",
+        "icons/48/square.png", new CommandAction()
+        {
+
+          @Override
+          public void commandActivated(final CommandActionEvent e)
+          {
+            if (stepcontrol instanceof LiteStepControl)
+            {
+              stepcontrol.setHighlighter((stepcontrol).getRectangleHighlighter()
+                  .toString());
+              properties.getContentModel().setActionRichTooltip(square_tooltip);
+              refresh.run();
+            }
+          }
+        }, highlighter, PresentationPriority.TOP, true, highlighterGroup, true);
+    commands.add(square);
+    final Command symbol = MenuUtils.addCommandToggleButton("Symbol",
+        "icons/48/shape.png", new CommandAction()
+        {
+          @Override
+          public void commandActivated(final CommandActionEvent e)
+          {
+            if (stepcontrol instanceof LiteStepControl)
+            {
+              stepcontrol.setHighlighter(stepcontrol.getSymbolHighlighter()
+                  .toString());
+              properties.getContentModel().setActionRichTooltip(symbol_tooltip);
+              refresh.run();
+            }
+          }
+        }, highlighter, PresentationPriority.TOP, true, highlighterGroup,
+        false);
+    commands.add(symbol);
+    stepcontrol.getPainterManager().getInfo().addPropertyChangeListener(
+        new PropertyChangeListener()
+        {
+
+          @Override
+          public void propertyChange(PropertyChangeEvent event)
+          {
+            if (StepControl.PROPERTY_HIGHLIGHTER.equals(event
+                .getPropertyName()))
+            {
+              final PlotHighlighter highlighter = stepcontrol
+                  .getCurrentHighlighter();
+              if (highlighter instanceof SymbolHighlighter && !symbol
+                  .isToggleSelected())
+              {
+                symbol.setToggleSelected(true);
+                properties.getContentModel().setActionRichTooltip(symbol_tooltip);
+              }
+              else if (highlighter instanceof RectangleHighlight && !square
+                  .isToggleSelected())
+              {
+                square.setToggleSelected(true);
+                properties.getContentModel().setActionRichTooltip(square_tooltip);
+              }
+            }
+          }
+        });
+    
+    highlighter.addRibbonCommand(properties, PresentationPriority.TOP);
     commands.add(properties.getContentModel());
 
     highlighter.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(

@@ -201,8 +201,15 @@ public final class UndoBuffer extends Observable
    */
   public final String redoLabel()
   {
-    final String res = null;
-
+    final String res;
+    if(canRedo())
+    {
+      res = theActions.elementAt(presentAction + 1).toString();
+    }
+    else
+    {
+      res = "";
+    }
     return res;
   }
 
@@ -245,8 +252,13 @@ public final class UndoBuffer extends Observable
    */
   public final String undoLabel()
   {
-    final String res = null;
-
+    final String res;
+    if(canUndo()) {
+      res=theActions.elementAt(presentAction).toString();
+    }
+    else {
+      res="";
+    }
     return res;
   }
   public void resetBuffer() {

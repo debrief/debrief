@@ -22,6 +22,7 @@ import javax.swing.AbstractAction;
 
 import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
+import org.pushingpixels.flamingo.api.common.RichTooltip;
 import org.pushingpixels.flamingo.api.common.model.Command;
 
 import MWC.GUI.Tools.Action;
@@ -94,6 +95,7 @@ public class RedoAction extends AbstractAction implements Action, Observer,Comma
       if (undoBuff.canRedo())
       {
         actionCommand.setActionEnabled(true);
+        actionCommand.setActionRichTooltip(RichTooltip.builder().setTitle("Redo "+undoBuff.redoLabel()).build());
       }
       else
       {

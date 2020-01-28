@@ -23,11 +23,13 @@ import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.undo.RedoAction;
 import org.mwc.debrief.lite.undo.UndoAction;
 import org.mwc.debrief.lite.util.ResizableIconFactory;
 import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
+import org.pushingpixels.flamingo.api.common.RichTooltip;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.common.model.Command;
 import org.pushingpixels.flamingo.api.common.projection.CommandButtonProjection;
@@ -45,6 +47,7 @@ import Debrief.GUI.Frames.Session;
  */
 public class DebriefRibbonLite
 {
+  static Command collapseCommand;
 
   private static class ExitLiteApp extends AbstractAction implements CommandAction
   {
@@ -134,7 +137,7 @@ public class DebriefRibbonLite
     liteMenu.startGroup();
     final UndoAction undoAction = new UndoAction(session.getUndoBuffer());
     final CommandButtonProjection<Command> undoCommand = MenuUtils.createCommand("Undo",
-        "icons/24/undo.png", undoAction, PresentationPriority.TOP, null);
+        "icons/24/undo.png", undoAction,  null,"Undo");
     // so that action has the command it has to enable/disable
     undoAction.setActionCommand(undoCommand.getContentModel());
     undoCommand.getContentModel().setActionEnabled(false);
@@ -143,7 +146,8 @@ public class DebriefRibbonLite
     ribbon.addTaskbarCommand(undoCommand.getContentModel());
     final RedoAction redoAction = new RedoAction(session.getUndoBuffer());
     final CommandButtonProjection<Command> redoCommand = MenuUtils.createCommand("Redo",
-        "icons/24/redo.png", redoAction, PresentationPriority.TOP, null);
+        "icons/24/redo.png", redoAction, null,"Redo");
+    
     // so that action has the command it has to enable/disable
     redoAction.setActionCommand(redoCommand.getContentModel());
     redoCommand.getContentModel().setActionEnabled(false);
@@ -156,12 +160,12 @@ public class DebriefRibbonLite
       public void commandActivated(CommandActionEvent e)
       {
         collapseAction.run();
-        
+        updateCommandTooltip(DebriefLiteApp.collapsedState);
       }
     };
     // and the expand/collapse button
     
-    final Command collapseCommand = addToggleCommand("Collapse",
+    collapseCommand = addToggleCommand("Collapse",
         "icons/24/fit_to_win.png", collapsePopup);
     // so that action has the command it has to enable/disable
     collapseCommand.setActionEnabled(true);
@@ -170,9 +174,9 @@ public class DebriefRibbonLite
     // add the action as observer of undobuffer
     session.getUndoBuffer().addObserver(redoAction);
     MenuUtils.addCommand("Help", "icons/24/help.png", new HelpAction(path),
-        liteMenu, PresentationPriority.TOP);
+        liteMenu, PresentationPriority.TOP,"Display Help");
     MenuUtils.addCommand("Exit", "icons/24/exit.png", new ExitLiteApp(
-        exitAction), liteMenu, PresentationPriority.TOP);
+        exitAction), liteMenu, PresentationPriority.TOP,"Exit Debrief Lite");
 
     liteMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         liteMenu));
@@ -180,6 +184,20 @@ public class DebriefRibbonLite
     ribbon.addTask(liteTask);
   }
   
+  protected static void updateCommandTooltip(boolean state)
+  {
+    final String title;
+    if(state) {
+      title="Restore";
+    }
+    else
+    {
+      title="Collapse";
+    }
+    collapseCommand.setActionRichTooltip(RichTooltip.builder().setTitle(title).build());
+    
+  }
+
   private static Command addToggleCommand(String commandName,String imagePath,CommandAction actionToAdd) {
     ImageWrapperResizableIcon imageIcon = null;
     if (imagePath != null)
@@ -188,7 +206,10 @@ public class DebriefRibbonLite
       imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, MenuUtils.ICON_SIZE_16);
     }
     final Command.Builder builder = Command.builder()
-        .setText(commandName).setIconFactory(ResizableIconFactory.factory(imageIcon)).setAction(actionToAdd);
+        .setText(commandName).setIconFactory(ResizableIconFactory.factory(imageIcon))
+        .setAction(actionToAdd).
+        setActionRichTooltip(RichTooltip.builder().setTitle(commandName)
+            .build());
         //.setTitleClickAction();
 
       builder.setToggle();

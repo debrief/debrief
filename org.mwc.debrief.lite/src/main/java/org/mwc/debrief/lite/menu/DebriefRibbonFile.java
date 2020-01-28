@@ -383,10 +383,10 @@ public class DebriefRibbonFile
     final JRibbonBand fileMenu = new JRibbonBand("File", null);
     MenuUtils.addCommand("New", "icons/24/new.png", new NewFileAction(ribbon
         .getRibbonFrame(), session, resetAction, false), fileMenu,
-        PresentationPriority.TOP);
+        PresentationPriority.TOP,"Create a New plot");
     MenuUtils.addCommand("Open", "icons/24/open.png", new OpenPlotAction(ribbon
         .getRibbonFrame(), session, resetAction, false), fileMenu,
-        PresentationPriority.TOP);
+        PresentationPriority.TOP,"Open a new plot");
 
     final CommandPopupMenuPresentationModel popupMenuPresentationModel =
         CommandPopupMenuPresentationModel.builder().setPanelPresentationModel(
@@ -408,20 +408,20 @@ public class DebriefRibbonFile
 
     closeButton = MenuUtils.addCommand("Close", "icons/24/close.png",
         new NewFileAction(ribbon.getRibbonFrame(), session, resetAction, true),
-        fileMenu, PresentationPriority.TOP);
+        fileMenu, PresentationPriority.TOP,"Close: This will reset the current changes");
     closeButton.getContentModel().setActionEnabled(false);
     fileMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         fileMenu));
 
     final JRibbonBand importMenu = new JRibbonBand("Import", null);
     MenuUtils.addCommand("Replay", "icons/24/import.png", new ImportFileAction(
-        ImportFileAction.TYPE_REP), importMenu, PresentationPriority.TOP);
+        ImportFileAction.TYPE_REP), importMenu, PresentationPriority.TOP,"Import a replay file");
     MenuUtils.addCommand("Plot", "icons/24/plot_file.png", new ImportFileAction(
-        ".dpf"), importMenu, PresentationPriority.TOP);
+        ".dpf"), importMenu, PresentationPriority.TOP,"Import a plot file");
     MenuUtils.addCommand("NMEA", "icons/24/pulse.png", new ImportFileAction(
-        ImportFileAction.TYPE_NMEA), importMenu, PresentationPriority.TOP);
+        ImportFileAction.TYPE_NMEA), importMenu, PresentationPriority.TOP, "Import an NMEA file");
     MenuUtils.addCommand("TIF", "icons/24/map.png", new ImportFileAction(
-        ImportFileAction.TYPE_TIF), importMenu, PresentationPriority.TOP);
+        ImportFileAction.TYPE_TIF), importMenu, PresentationPriority.TOP,"Import a TIF file");
 
     importMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         importMenu));
@@ -430,7 +430,7 @@ public class DebriefRibbonFile
 
     MenuUtils.addCommand("Clipboard", "icons/24/export_gpx.png",
         new CopyPlotAsPNG(geoMapRenderer), exportMenu,
-        PresentationPriority.TOP);
+        PresentationPriority.TOP,"Export to clipboard, to copy to another document");
     exportMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         exportMenu));
     fileMenu.setPreferredSize(new Dimension(150, 50));
