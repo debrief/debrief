@@ -130,6 +130,8 @@ public class DebriefRibbonTimeController
     protected RangeDisplayComponentContentModel rangeDisplayModel;
     protected RangeSlider slider;
     protected TimeManager timeManager;
+    
+    
 
     public String getDateFormat()
     {
@@ -801,6 +803,9 @@ public class DebriefRibbonTimeController
   {
     final String tooltip_edit_snailmode_props = "Edit Snail Display Mode Properties";
     final String tooltip_edit_normalmode_props = "Edit Normal Display Mode Properties";
+    RichTooltip normalmode_tooltip = RichTooltip.builder().setTitle(tooltip_edit_normalmode_props).build();
+    RichTooltip snailmode_tooltip = RichTooltip.builder().setTitle(tooltip_edit_snailmode_props).build();
+        
     final JRibbonBand displayMode = new JRibbonBand("Display Mode", null);
     final ArrayList<Command> commands = new ArrayList<>();
     final CommandButtonProjection<Command> properties = MenuUtils.createCommand(
@@ -849,9 +854,8 @@ public class DebriefRibbonTimeController
           @Override
           public void commandActivated(CommandActionEvent e)
           {
-            properties.getContentModel().setActionRichTooltip(RichTooltip.builder().setTitle(tooltip_edit_normalmode_props).build());
             normalPainter.run();
-            
+            properties.getContentModel().setActionRichTooltip(normalmode_tooltip);
           }
         }, displayMode, PresentationPriority.TOP, true, displayModeGroup, true);
     
@@ -862,7 +866,7 @@ public class DebriefRibbonTimeController
           @Override
           public void commandActivated(CommandActionEvent e)
           {
-            properties.getContentModel().setActionRichTooltip(RichTooltip.builder().setTitle(tooltip_edit_snailmode_props).build());
+            properties.getContentModel().setActionRichTooltip(snailmode_tooltip);
             snailPainter.run();
           }
         }, displayMode, PresentationPriority.TOP, true, displayModeGroup,
@@ -886,14 +890,17 @@ public class DebriefRibbonTimeController
             {
               final StepperListener stepper = stepcontrol.getPainterManager()
                   .getCurrentPainterObject();
+              
               if (stepper instanceof SnailPainter2 && !snailToggle
                   .isToggleSelected())
               {
                 snailToggle.setToggleSelected(true);
+                properties.getContentModel().setActionRichTooltip(snailmode_tooltip);
               }
               else if (normalToggle.isToggleSelected())
               {
                 normalToggle.setToggleSelected(true);
+                properties.getContentModel().setActionRichTooltip(normalmode_tooltip);
               }
             }
           }
@@ -935,6 +942,8 @@ public class DebriefRibbonTimeController
     final JRibbonBand highlighter = new JRibbonBand("Highlighter", null);
     final String props_square_highlighter = "Edit Square Highlighter Properties";
     final String props_symbol_highlighter = "Edit Symbol Highlighter Properties";
+    final RichTooltip symbol_tooltip = RichTooltip.builder().setTitle(props_symbol_highlighter).build();
+    final RichTooltip square_tooltip = RichTooltip.builder().setTitle(props_square_highlighter).build();
     final ArrayList<Command> commands = new ArrayList<>();
     final CommandToggleGroupModel highlighterGroup =
         new CommandToggleGroupModel();
@@ -983,7 +992,7 @@ public class DebriefRibbonTimeController
             {
               stepcontrol.setHighlighter((stepcontrol).getRectangleHighlighter()
                   .toString());
-              properties.getContentModel().setActionRichTooltip(RichTooltip.builder().setTitle(props_square_highlighter).build());
+              properties.getContentModel().setActionRichTooltip(square_tooltip);
               refresh.run();
             }
           }
@@ -999,7 +1008,7 @@ public class DebriefRibbonTimeController
             {
               stepcontrol.setHighlighter(stepcontrol.getSymbolHighlighter()
                   .toString());
-              properties.getContentModel().setActionRichTooltip(RichTooltip.builder().setTitle(props_symbol_highlighter).build());
+              properties.getContentModel().setActionRichTooltip(symbol_tooltip);
               refresh.run();
             }
           }
@@ -1022,11 +1031,13 @@ public class DebriefRibbonTimeController
                   .isToggleSelected())
               {
                 symbol.setToggleSelected(true);
+                properties.getContentModel().setActionRichTooltip(symbol_tooltip);
               }
               else if (highlighter instanceof RectangleHighlight && !square
                   .isToggleSelected())
               {
                 square.setToggleSelected(true);
+                properties.getContentModel().setActionRichTooltip(square_tooltip);
               }
             }
           }
