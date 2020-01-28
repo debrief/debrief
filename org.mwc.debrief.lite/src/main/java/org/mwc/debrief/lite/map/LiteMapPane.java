@@ -15,7 +15,6 @@ import java.awt.image.RenderedImage;
 import java.util.ArrayList;
 
 import org.geotools.geometry.DirectPosition2D;
-import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.swing.JMapPane;
 import org.geotools.swing.MouseDragBox;
@@ -26,8 +25,6 @@ import org.geotools.swing.tool.CursorTool;
 import org.geotools.util.factory.Hints;
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.opengis.geometry.MismatchedDimensionException;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
@@ -56,8 +53,6 @@ public class LiteMapPane extends JMapPane
 
   private final GeoToolMapRenderer _renderer;
 
-  private final MathTransform data_transform;
-
   private final ArrayList<ActionListener> repaintListeners = new ArrayList<>();
 
   public LiteMapPane(final GeoToolMapRenderer geoToolMapRenderer,
@@ -67,28 +62,9 @@ public class LiteMapPane extends JMapPane
 
     mapTransparency = alpha;
 
-    // Would be better to pass in a GeoToolMapProjection or GTProjection here?
-    MathTransform theTransform = null;
-    try
-    {
-      final CoordinateReferenceSystem worldCoords = CRS.decode(
-          WORLD_PROJECTION);
-
-      Hints.putSystemDefault(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER,
-          Boolean.TRUE);
-      final CoordinateReferenceSystem worldDegs = CRS.decode(DATA_PROJECTION);
-      theTransform = CRS.findMathTransform(worldCoords, worldDegs);
-    }
-    catch (final FactoryException e)
-    {
-      Application.logError2(ToolParent.ERROR, "Failure in projection transform",
-          e);
-    }
-
-    data_transform = theTransform;
     _renderer = geoToolMapRenderer;
 
-    addMouseListener(getMouseListener(data_transform));
+    addMouseListener(getMouseListener(_renderer.getTransform()));
 
     disableBoxDrawRightClick();
 
@@ -246,11 +222,6 @@ public class LiteMapPane extends JMapPane
       }
     };
 
-  }
-
-  public MathTransform getTransform()
-  {
-    return data_transform;
   }
 
   /**

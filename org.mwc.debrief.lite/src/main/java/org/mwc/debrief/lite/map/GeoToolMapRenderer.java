@@ -44,7 +44,7 @@ public class GeoToolMapRenderer
     public void paint(final Graphics gc);
   }
 
-  private LiteMapPane mapPane;
+  private final LiteMapPane mapPane;
 
   private final MapContent mapContent;
 
@@ -52,29 +52,29 @@ public class GeoToolMapRenderer
 
   private SimpleFeatureSource featureSource;
 
+  private final MathTransform _transform;
+
   private final List<MapRenderer> _myRenderers = new ArrayList<MapRenderer>();
 
-  public GeoToolMapRenderer()
+  public GeoToolMapRenderer(final float alpha, final MapContent _mapContent,
+      final MathTransform transform)
   {
     super();
 
     // Create a map content and add our shape file to it
-    mapContent = new MapContent();
+    mapContent = _mapContent;
+    _transform = transform;
     mapContent.setTitle("Debrief Lite");
+
+    mapPane = new LiteMapPane(this, alpha);
+    final StreamingRenderer streamer = new StreamingRenderer();
+    mapPane.setRenderer(streamer);
+    mapPane.setMapContent(mapContent);
   }
 
   public void addRenderer(final MapRenderer renderer)
   {
     _myRenderers.add(renderer);
-  }
-
-  public LiteMapPane createMapLayout(final float alpha)
-  {
-    mapPane = new LiteMapPane(this, alpha);
-    final StreamingRenderer streamer = new StreamingRenderer();
-    mapPane.setRenderer(streamer);
-    mapPane.setMapContent(mapContent);
-    return mapPane;
   }
 
   /**
@@ -104,7 +104,7 @@ public class GeoToolMapRenderer
 
   public MathTransform getTransform()
   {
-    return mapPane.getTransform();
+    return _transform;
   }
 
   /**
