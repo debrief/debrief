@@ -197,11 +197,6 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	 */
 	private boolean _visible;
 
-	/**
-	 * remember the area covered by the plottables
-	 */
-	private WorldArea _myArea;
-
 	// //////////////////////////////////////////////////////////////
 	// constructor
 	// //////////////////////////////////////////////////////////////
@@ -352,15 +347,6 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	}
 
 	/**
-	 * reset the bounds of this object
-	 * 
-	 */
-	public void clearBounds()
-	{
-		_myArea = null;
-	}
-
-	/**
 	 * method to recalculate the area covered by the plottables
 	 */
 	private WorldArea recalculateAreaCovered()
@@ -492,25 +478,6 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 			thePlottable.getInfo().addPropertyChangeListener(
 					PlainWrapper.LOCATION_CHANGED, this);
 		}
-
-		// hmm, if it's got bounds, let's clear the world area - that's
-		// if we've got a world area... It may have already been cleared...
-		if (_myArea != null)
-		{
-			if (thePlottable instanceof Plottable)
-			{
-				final Plottable thePlot = (Plottable) thePlottable;
-				final WorldArea wa = thePlot.getBounds();
-				if (wa != null)
-				{
-					/*
-					 * don't just extend it, cause a recalculation if(_myArea == null)
-					 * _myArea = new WorldArea(wa); else _myArea.extend(wa);
-					 */
-					_myArea = null;
-				}
-			}
-		}
 	}
 
 	/**
@@ -553,10 +520,6 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 		{
 		  Trace.trace("Failed trying to remove " + p + " from " + this, false);
 		}
-
-		// don't recalculate the area just yet, defer it until
-		// we have removed all of the elements we intend to
-		_myArea = null;
 	}
 
 	/**
@@ -587,9 +550,6 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 		}
 
 		_thePlottables.clear();
-
-		// clear the area
-		_myArea = null;
 	}
 
 	/**
@@ -771,12 +731,11 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 
 	}
 
-	@Override
-	public void propertyChange(final PropertyChangeEvent arg0)
-	{
-		// just double check the argument
-		if (arg0.getPropertyName().equals(PlainWrapper.LOCATION_CHANGED))
-			_myArea = null;
-	}
+  @Override
+  public void propertyChange(PropertyChangeEvent arg0)
+  {
+    // TODO Auto-generated method stub
+    
+  }
 
 }
