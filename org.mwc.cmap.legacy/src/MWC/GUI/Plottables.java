@@ -347,15 +347,8 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 	 */
 	public MWC.GenericData.WorldArea getBounds()
 	{
-		// do we need to recalculate?
-		if (_myArea == null)
-		{
-			// yup, get on with it...
-			_myArea = recalculateAreaCovered();
-		}
-
-		return _myArea;
-
+		// yup, get on with it...
+		return recalculateAreaCovered();
 	}
 
 	/**

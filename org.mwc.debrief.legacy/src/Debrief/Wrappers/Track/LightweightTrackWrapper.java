@@ -541,24 +541,15 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   @Override
   public WorldArea getBounds()
   {
-    if (_bounds == null)
-    {
+    WorldArea res = null;
       final Iterator<FixWrapper> itera = iterator();
       while (itera.hasNext())
       {
         final WorldLocation loc = itera.next().getLocation();
-        if (_bounds == null)
-        {
-          _bounds = new WorldArea(loc, loc);
-        }
-        else
-        {
-          _bounds.extend(loc);
-        }
+        res = WorldArea.extend(res, new WorldArea(loc, loc));
       }
-    }
 
-    return _bounds;
+    return res;
   }
 
   @Override
