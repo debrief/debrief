@@ -734,7 +734,6 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
   @Override
   public void propertyChange(PropertyChangeEvent arg0)
   {
-    // TODO Auto-generated method stub
     
   }
 
