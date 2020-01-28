@@ -45,6 +45,7 @@ public class DoSaveAs extends AbstractAction implements CommandAction
   @Override
   public void actionPerformed(final ActionEvent e)
   {
+    System.out.println("Do Save As: clicked save as action");
     // get the current file path,
     // check we have write permission to it before starting save
     // get a new file path to use.

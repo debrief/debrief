@@ -399,12 +399,16 @@ public class DebriefRibbonFile
     final Image saveImage = MenuUtils.createImage("icons/16/save.png");
     final ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon
         .getIcon(saveImage, new Dimension(16, 16));
-    fileMenu.addRibbonCommand(Command.builder().setText("Save").setIconFactory(
-        ResizableIconFactory.factory(imageIcon)).setSecondaryContentModel(
-            getSavePopupContentModel(session, ribbon.getRibbonFrame())).build()
-        .project(CommandButtonPresentationModel.builder()
-            .setPopupMenuPresentationModel(popupMenuPresentationModel).build()),
-        PresentationPriority.TOP);
+   fileMenu.addRibbonCommand(Command.builder()
+       .setText("Save")
+       .setAction(new DoSave(session, ribbon.getRibbonFrame()))
+       .setIconFactory(ResizableIconFactory.factory(imageIcon))
+       .setSecondaryContentModel(getSavePopupContentModel(session, ribbon.getRibbonFrame()))
+       .build()
+       .project(CommandButtonPresentationModel.builder()
+           .setPopupMenuPresentationModel(popupMenuPresentationModel)
+           .build()),PresentationPriority.TOP);
+   
 
     closeButton = MenuUtils.addCommand("Close", "icons/24/close.png",
         new NewFileAction(ribbon.getRibbonFrame(), session, resetAction, true),
