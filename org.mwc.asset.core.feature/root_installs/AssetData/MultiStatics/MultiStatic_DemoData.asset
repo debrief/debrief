@@ -1,0 +1,681 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scenario Name="Multistatic Run Plans"
+	xmlns="http://www.mwc.org/asset" StartTime="2010-01-12T12:00:00Z"
+	Created="2010-01-19T12:13:14Z" ShowActivity="false" ShowStatus="true">
+	<StepTime Units="seconds" Value="10"></StepTime>
+	<Environment Name="token"
+		AtmosphericAttenuation="VERY_CLEAR" SeaState="1">
+		<VisualLookupEnvironment Name="Easy to see">
+			<VisualAttenuationDatum Haze="0.0000001"
+				Mist="0.0000001" LightHaze="0.0000001" VeryClear="0.0000001"
+				Fog="0.0000001" Clear="0.0000001"></VisualAttenuationDatum>
+			<TargetVisibilitySet>
+				<TargetVisibilityDatum Type="CARRIER"
+					Visibility="2" />
+				<TargetVisibilityDatum Type="FRIGATE"
+					Visibility="2"></TargetVisibilityDatum>
+			</TargetVisibilitySet>
+			<TargetSeaStateSet>
+				<TargetSeaStateDatum Type="CARRIER"
+					SeaState_5="1" SeaState_4="1" SeaState_3="1" SeaState_2="1"
+					SeaState_1="1" SeaState_0="1" SeaState_6="1" />
+				<TargetSeaStateDatum Type="FRIGATE"
+					SeaState_5="1" SeaState_4="1" SeaState_3="1" SeaState_2="1"
+					SeaState_1="1" SeaState_0="1" SeaState_6="1" />
+			</TargetSeaStateSet>
+			<LightLevelDatum Dusk="1" DarkNight="1"
+				MoonlitNight="1" Daylight="1" />
+		</VisualLookupEnvironment>
+	</Environment>
+	<Participants>
+		<Surface Name="SUBJECT">
+			<Category Type="FISHING_VESSEL" Force="RED"
+				Environment="SURFACE" />
+			<SensorFit></SensorFit>
+			<Status Course="270" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="500.0" Units="m" />
+						<East Value="5500.0" Units="m" />
+					</relativeLocation>
+				</Location>
+				<Speed Value="10" Units="kts" />
+			</Status>
+			<Waterfall Name="subject route">
+				<Move Name="leg one" Course="270">
+					<Vector Value="3500" Units="m" />
+				</Move>
+				<Move Name="leg two" Course="0">
+					<Vector Value="1500" Units="m" />
+				</Move>
+				<Move Name="leg three" Course="90">
+					<Vector Value="2500" Units="m" />
+				</Move>
+				<Move Name="leg four" Course="0">
+					<Vector Value="1500" Units="m" />
+				</Move>
+				<Move Name="leg give" Course="270">
+					<Vector Value="2500" Units="m" />
+				</Move>
+				<Move Name="leg six" Course="0">
+					<Vector Value="1500" Units="m" />
+				</Move>
+				<Move Name="leg seven" Course="90">
+					<Vector Value="3000" Units="m" />
+				</Move>
+			</Waterfall>
+			<SurfaceMovementCharacteristics
+				Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="90" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="Active">
+			<Category Type="FRIGATE" Force="BLUE" Environment="SURFACE" />
+			<SensorFit>
+			</SensorFit>
+			<Status Course="0" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="-3000.0" Units="m" />
+						<East Value="0.0" Units="m" />
+					</relativeLocation>
+				</Location>
+				<Speed Value="6" Units="kts" />
+			</Status>
+			<Waterfall Name="sensor route">
+				<Move Name="leg one" Course="0">
+					<Vector Value="6000" Units="m" />
+				</Move>
+			</Waterfall>
+			<RadiatedCharacteristics>
+				<Narrowband BaseNoiseLevel="80" Frequency="120" />
+			</RadiatedCharacteristics>
+			<SurfaceMovementCharacteristics
+				Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="2000" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="Buoy_1">
+			<Category Type="BUOY" Force="BLUE" Environment="SURFACE" />
+			<SensorFit>
+				<BistaticReceiver CanProduceRange="true"
+					Ambiguous="false" DetectionIntervalMillis="60000" Name="Sensor"
+					Working="true">
+				</BistaticReceiver>
+			</SensorFit>
+			<Status Course="220" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="0.0" Units="m" />
+						<East Value="5000" Units="m" />
+					</relativeLocation>
+				</Location>
+				<Speed Value="0" Units="kts" />
+			</Status>
+			<Waterfall Name="sensor route">
+			</Waterfall>
+			<SurfaceMovementCharacteristics
+				Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="Buoy_2">
+			<Category Type="BUOY" Force="BLUE" Environment="SURFACE" />
+			<SensorFit>
+				<BistaticReceiver CanProduceRange="true"
+					Ambiguous="false" DetectionIntervalMillis="60000" Name="Sensor"
+					Working="true">
+				</BistaticReceiver>
+			</SensorFit>
+			<Status Course="220" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="0.0" Units="m" />
+						<East Value="4000" Units="m" />
+					</relativeLocation>
+				</Location>
+				<Speed Value="0" Units="kts" />
+			</Status>
+			<Waterfall Name="sensor route">
+			</Waterfall>
+			<SurfaceMovementCharacteristics
+				Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="Buoy_3">
+			<Category Type="BUOY" Force="BLUE" Environment="SURFACE" />
+			<SensorFit>
+				<BistaticReceiver CanProduceRange="true"
+					Ambiguous="false" DetectionIntervalMillis="60000" Name="Sensor"
+					Working="true">
+				</BistaticReceiver>
+			</SensorFit>
+			<Status Course="220" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="0.0" Units="m" />
+						<East Value="3000" Units="m" />
+					</relativeLocation>
+				</Location>
+				<Speed Value="0" Units="kts" />
+			</Status>
+			<Waterfall Name="sensor route">
+			</Waterfall>
+			<SurfaceMovementCharacteristics
+				Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="Buoy_4">
+			<Category Type="BUOY" Force="BLUE" Environment="SURFACE" />
+			<SensorFit>
+				<BistaticReceiver CanProduceRange="true"
+					Ambiguous="false" DetectionIntervalMillis="60000" Name="Sensor"
+					Working="true">
+				</BistaticReceiver>
+			</SensorFit>
+			<Status Course="220" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="0.0" Units="m" />
+						<East Value="2000" Units="m" />
+					</relativeLocation>
+				</Location>
+				<Speed Value="0" Units="kts" />
+			</Status>
+			<Waterfall Name="sensor route">
+			</Waterfall>
+			<SurfaceMovementCharacteristics
+				Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		
+		<Surface Name="Buoy_5">
+			<Category Type="BUOY" Force="BLUE" Environment="SURFACE" />
+			<SensorFit>
+				<BistaticReceiver CanProduceRange="true"
+					Ambiguous="false" DetectionIntervalMillis="60000" Name="Sensor"
+					Working="true">
+				</BistaticReceiver>
+			</SensorFit>
+			<Status Course="220" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="1000.0" Units="m" />
+						<East Value="5000" Units="m" />
+					</relativeLocation>
+				</Location>
+				<Speed Value="0" Units="kts" />
+			</Status>
+			<Waterfall Name="sensor route">
+			</Waterfall>
+			<SurfaceMovementCharacteristics
+				Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="Buoy_6">
+			<Category Type="BUOY" Force="BLUE" Environment="SURFACE" />
+			<SensorFit>
+				<BistaticReceiver CanProduceRange="true"
+					Ambiguous="false" DetectionIntervalMillis="60000" Name="Sensor"
+					Working="true">
+				</BistaticReceiver>
+			</SensorFit>
+			<Status Course="220" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="1000.0" Units="m" />
+						<East Value="4000" Units="m" />
+					</relativeLocation>
+				</Location>
+				<Speed Value="0" Units="kts" />
+			</Status>
+			<Waterfall Name="sensor route">
+			</Waterfall>
+			<SurfaceMovementCharacteristics
+				Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="Buoy_7">
+			<Category Type="BUOY" Force="BLUE" Environment="SURFACE" />
+			<SensorFit>
+				<BistaticReceiver CanProduceRange="true"
+					Ambiguous="false" DetectionIntervalMillis="60000" Name="Sensor"
+					Working="true">
+				</BistaticReceiver>
+			</SensorFit>
+			<Status Course="220" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="1000.0" Units="m" />
+						<East Value="3000" Units="m" />
+					</relativeLocation>
+				</Location>
+				<Speed Value="0" Units="kts" />
+			</Status>
+			<Waterfall Name="sensor route">
+			</Waterfall>
+			<SurfaceMovementCharacteristics
+				Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="Buoy_8">
+			<Category Type="BUOY" Force="BLUE" Environment="SURFACE" />
+			<SensorFit>
+				<BistaticReceiver CanProduceRange="true"
+					Ambiguous="false" DetectionIntervalMillis="60000" Name="Sensor"
+					Working="true">
+				</BistaticReceiver>
+			</SensorFit>
+			<Status Course="220" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="1000.0" Units="m" />
+						<East Value="2000" Units="m" />
+					</relativeLocation>
+				</Location>
+				<Speed Value="0" Units="kts" />
+			</Status>
+			<Waterfall Name="sensor route">
+			</Waterfall>
+			<SurfaceMovementCharacteristics
+				Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+	
+		<Surface Name="Buoy_9">
+			<Category Type="BUOY" Force="BLUE" Environment="SURFACE" />
+			<SensorFit>
+				<BistaticReceiver CanProduceRange="true"
+					Ambiguous="false" DetectionIntervalMillis="60000" Name="Sensor"
+					Working="true">
+				</BistaticReceiver>
+			</SensorFit>
+			<Status Course="220" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="2000.0" Units="m" />
+						<East Value="5000" Units="m" />
+					</relativeLocation>
+				</Location>
+				<Speed Value="0" Units="kts" />
+			</Status>
+			<Waterfall Name="sensor route">
+			</Waterfall>
+			<SurfaceMovementCharacteristics
+				Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="Buoy_10">
+			<Category Type="BUOY" Force="BLUE" Environment="SURFACE" />
+			<SensorFit>
+				<BistaticReceiver CanProduceRange="true"
+					Ambiguous="false" DetectionIntervalMillis="60000" Name="Sensor"
+					Working="true">
+				</BistaticReceiver>
+			</SensorFit>
+			<Status Course="220" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="2000.0" Units="m" />
+						<East Value="4000" Units="m" />
+					</relativeLocation>
+				</Location>
+				<Speed Value="0" Units="kts" />
+			</Status>
+			<Waterfall Name="sensor route">
+			</Waterfall>
+			<SurfaceMovementCharacteristics
+				Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="Buoy_11">
+			<Category Type="BUOY" Force="BLUE" Environment="SURFACE" />
+			<SensorFit>
+				<BistaticReceiver CanProduceRange="true"
+					Ambiguous="false" DetectionIntervalMillis="60000" Name="Sensor"
+					Working="true">
+				</BistaticReceiver>
+			</SensorFit>
+			<Status Course="220" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="2000.0" Units="m" />
+						<East Value="3000" Units="m" />
+					</relativeLocation>
+				</Location>
+				<Speed Value="0" Units="kts" />
+			</Status>
+			<Waterfall Name="sensor route">
+			</Waterfall>
+			<SurfaceMovementCharacteristics
+				Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="Buoy_12">
+			<Category Type="BUOY" Force="BLUE" Environment="SURFACE" />
+			<SensorFit>
+				<BistaticReceiver CanProduceRange="true"
+					Ambiguous="false" DetectionIntervalMillis="60000" Name="Sensor"
+					Working="true">
+				</BistaticReceiver>
+			</SensorFit>
+			<Status Course="220" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="2000.0" Units="m" />
+						<East Value="2000" Units="m" />
+					</relativeLocation>
+				</Location>
+				<Speed Value="0" Units="kts" />
+			</Status>
+			<Waterfall Name="sensor route">
+			</Waterfall>
+			<SurfaceMovementCharacteristics
+				Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		
+				<Surface Name="Buoy_13">
+			<Category Type="BUOY" Force="BLUE" Environment="SURFACE" />
+			<SensorFit>
+				<BistaticReceiver CanProduceRange="true"
+					Ambiguous="false" DetectionIntervalMillis="60000" Name="Sensor"
+					Working="true">
+				</BistaticReceiver>
+			</SensorFit>
+			<Status Course="220" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="3000.0" Units="m" />
+						<East Value="5000" Units="m" />
+					</relativeLocation>
+				</Location>
+				<Speed Value="0" Units="kts" />
+			</Status>
+			<Waterfall Name="sensor route">
+			</Waterfall>
+			<SurfaceMovementCharacteristics
+				Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="Buoy_14">
+			<Category Type="BUOY" Force="BLUE" Environment="SURFACE" />
+			<SensorFit>
+				<BistaticReceiver CanProduceRange="true"
+					Ambiguous="false" DetectionIntervalMillis="60000" Name="Sensor"
+					Working="true">
+				</BistaticReceiver>
+			</SensorFit>
+			<Status Course="220" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="3000.0" Units="m" />
+						<East Value="4000" Units="m" />
+					</relativeLocation>
+				</Location>
+				<Speed Value="0" Units="kts" />
+			</Status>
+			<Waterfall Name="sensor route">
+			</Waterfall>
+			<SurfaceMovementCharacteristics
+				Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="Buoy_15">
+			<Category Type="BUOY" Force="BLUE" Environment="SURFACE" />
+			<SensorFit>
+				<BistaticReceiver CanProduceRange="true"
+					Ambiguous="false" DetectionIntervalMillis="60000" Name="Sensor"
+					Working="true">
+				</BistaticReceiver>
+			</SensorFit>
+			<Status Course="220" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="3000.0" Units="m" />
+						<East Value="3000" Units="m" />
+					</relativeLocation>
+				</Location>
+				<Speed Value="0" Units="kts" />
+			</Status>
+			<Waterfall Name="sensor route">
+			</Waterfall>
+			<SurfaceMovementCharacteristics
+				Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="Buoy_16">
+			<Category Type="BUOY" Force="BLUE" Environment="SURFACE" />
+			<SensorFit>
+				<BistaticReceiver CanProduceRange="true"
+					Ambiguous="false" DetectionIntervalMillis="60000" Name="Sensor"
+					Working="true">
+				</BistaticReceiver>
+			</SensorFit>
+			<Status Course="220" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="3000.0" Units="m" />
+						<East Value="2000" Units="m" />
+					</relativeLocation>
+				</Location>
+				<Speed Value="0" Units="kts" />
+			</Status>
+			<Waterfall Name="sensor route">
+			</Waterfall>
+			<SurfaceMovementCharacteristics
+				Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		
+				<Surface Name="Buoy_17">
+			<Category Type="BUOY" Force="BLUE" Environment="SURFACE" />
+			<SensorFit>
+				<BistaticReceiver CanProduceRange="true"
+					Ambiguous="false" DetectionIntervalMillis="60000" Name="Sensor"
+					Working="true">
+				</BistaticReceiver>
+			</SensorFit>
+			<Status Course="220" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="4000.0" Units="m" />
+						<East Value="5000" Units="m" />
+					</relativeLocation>
+				</Location>
+				<Speed Value="0" Units="kts" />
+			</Status>
+			<Waterfall Name="sensor route">
+			</Waterfall>
+			<SurfaceMovementCharacteristics
+				Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="Buoy_18">
+			<Category Type="BUOY" Force="BLUE" Environment="SURFACE" />
+			<SensorFit>
+				<BistaticReceiver CanProduceRange="true"
+					Ambiguous="false" DetectionIntervalMillis="60000" Name="Sensor"
+					Working="true">
+				</BistaticReceiver>
+			</SensorFit>
+			<Status Course="220" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="4000.0" Units="m" />
+						<East Value="4000" Units="m" />
+					</relativeLocation>
+				</Location>
+				<Speed Value="0" Units="kts" />
+			</Status>
+			<Waterfall Name="sensor route">
+			</Waterfall>
+			<SurfaceMovementCharacteristics
+				Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="Buoy_19">
+			<Category Type="BUOY" Force="BLUE" Environment="SURFACE" />
+			<SensorFit>
+				<BistaticReceiver CanProduceRange="true"
+					Ambiguous="false" DetectionIntervalMillis="60000" Name="Sensor"
+					Working="true">
+				</BistaticReceiver>
+			</SensorFit>
+			<Status Course="220" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="4000.0" Units="m" />
+						<East Value="3000" Units="m" />
+					</relativeLocation>
+				</Location>
+				<Speed Value="0" Units="kts" />
+			</Status>
+			<Waterfall Name="sensor route">
+			</Waterfall>
+			<SurfaceMovementCharacteristics
+				Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="Buoy_20">
+			<Category Type="BUOY" Force="BLUE" Environment="SURFACE" />
+			<SensorFit>
+				<BistaticReceiver CanProduceRange="true"
+					Ambiguous="false" DetectionIntervalMillis="60000" Name="Sensor"
+					Working="true">
+				</BistaticReceiver>
+			</SensorFit>
+			<Status Course="220" Fuel="100">
+				<Location>
+					<relativeLocation>
+						<North Value="4000.0" Units="m" />
+						<East Value="2000" Units="m" />
+					</relativeLocation>
+				</Location>
+				<Speed Value="0" Units="kts" />
+			</Status>
+			<Waterfall Name="sensor route">
+			</Waterfall>
+			<SurfaceMovementCharacteristics
+				Name="" FuelUsageRate="0.0">
+				<MinSpeed Value="0" Units="kts" />
+				<MaxSpeed Value="20" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="800" Units="m"></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+	</Participants>
+	<DebriefLayer>
+		<layer LineThickness="0" Name="Chart Features" Visible="true">
+			<grid PlotLabels="true" Units="degs" Visible="true">
+				<Delta Units="km" Value="1" />
+				<colour Value="DARK_GREY" />
+			</grid>
+
+		</layer>
+	</DebriefLayer>
+
+</Scenario>

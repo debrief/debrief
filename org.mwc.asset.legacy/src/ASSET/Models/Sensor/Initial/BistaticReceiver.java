@@ -71,12 +71,6 @@ public class BistaticReceiver extends CoreSensor
   }
 
   @Override
-  protected boolean canProduceRange()
-  {
-    return false;
-  }
-
-  @Override
   public int getMedium()
   {
     return EnvironmentType.NARROWBAND;
@@ -127,15 +121,11 @@ public class BistaticReceiver extends CoreSensor
       {
         ParticipantType thisP = (ParticipantType) iterator.next();
 
-        // see if this is a buoy
-        if (Category.Type.BUOY.equals(thisP.getCategory().getType()))
+        // is it active?
+        if (thisP.radiatesThisNoise(EnvironmentType.NARROWBAND))
         {
-          // is it active?
-          if (thisP.radiatesThisNoise(EnvironmentType.NARROWBAND))
-          {
-            // ok, remember it
-            transmitters.add(thisP);
-          }
+          // ok, remember it
+          transmitters.add(thisP);
         }
       }
 
@@ -174,6 +164,9 @@ public class BistaticReceiver extends CoreSensor
           final double total_sep = sep1 + sep2;
           // convert to yds
           final double rng_yds = MWC.Algorithms.Conversions.Degs2m(total_sep);
+          
+
+          final WorldDistance range = canProduceRange() ? new WorldDistance(sep2,  WorldDistance.DEGS) : null;
 
           // produce a transmission loss
           final float remainingNoise;
@@ -226,10 +219,10 @@ public class BistaticReceiver extends CoreSensor
 
             if (!obscured)
             {
-              res = new DetectionEvent(time, host.getId(), myLoc, this, null,
+              res = new DetectionEvent(time, host.getId(), myLoc, this, range,
                   null, bearing, null, remainingNoise, target.getCategory(),
                   null, null, target);
-
+              
               // start off by changing the freq from the tx to the target
               double SpeedOfSound = 1500;
               double osHeadingRads = MWC.Algorithms.Conversions.Degs2Rads(

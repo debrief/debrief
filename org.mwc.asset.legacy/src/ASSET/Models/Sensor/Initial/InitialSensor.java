@@ -64,11 +64,7 @@ abstract public class InitialSensor extends CoreSensor
    * 
    */
   private boolean _isAmbiguous = false;
-  
-  /** whether this sensor can produce a range value
-   * 
-   */
-  private boolean _canProduceRange = true;
+
 
 	/**
    * *************************************************
@@ -233,23 +229,6 @@ abstract public class InitialSensor extends CoreSensor
   boolean hasTgtCourse()
   {
     return false;
-  }
-  
-  
-
-  @Override
-	public boolean canProduceRange()
-	{
-  	return _canProduceRange;
-	}
-
-  /** specify is this sensor can produce a range value
-   * 
-   * @param canProduceRange
-   */
-  public void setCanProduceRange(boolean canProduceRange)
-  {
-  	_canProduceRange = canProduceRange;
   }
 
 	/**
