@@ -51,9 +51,6 @@ public class StretchFanOperation extends CoreDragOperation implements DraggableI
 			// tell it to do a fan stretch
 			seg.fanStretch(vector);
 
-			// tell the segment it's shifted
-			seg.clearBounds();
-
 			// and tell the props view to update itself
 			updatePropsView(seg, _parent, _layers);
 

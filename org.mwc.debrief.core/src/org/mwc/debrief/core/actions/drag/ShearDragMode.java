@@ -49,9 +49,6 @@ public class ShearDragMode extends RotateDragMode
 
 			// apply the operation
 			seg.shear(workingLoc, _origin);
-			
-			// tell the segment it's shifted
-			seg.clearBounds();
 
 			// and tell the props view to update itself
 			updatePropsView(seg, _parent, _layers);
