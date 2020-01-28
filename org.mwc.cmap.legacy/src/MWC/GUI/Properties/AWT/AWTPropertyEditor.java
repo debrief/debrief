@@ -147,6 +147,7 @@ import java.util.Enumeration;
 
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Dialogs.AWT.MessageDialog;
 import MWC.GUI.Properties.PlainPropertyEditor;
 import MWC.GUI.Properties.PropertiesPanel;
 
@@ -156,7 +157,7 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements
   protected class paintLabel extends Panel
   {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     protected PropertyEditor _myEditor;
@@ -168,7 +169,7 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements
       _myLabel = new Label("  ")
       {
         /**
-         * 
+         *
          */
         private static final long serialVersionUID = 1L;
 
@@ -279,13 +280,18 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements
    * the label to show the descriptions in
    */
   Label _info;
-  
+
   /**
-   * @param info the object we are going to edit
-   * @param parent the panel we are contained in
-   * @param theLayers where the data is
-   * @param toolParent the parent we can report to
-   * @param parentLayer the layer that contains this data
+   * @param info
+   *          the object we are going to edit
+   * @param parent
+   *          the panel we are contained in
+   * @param theLayers
+   *          where the data is
+   * @param toolParent
+   *          the parent we can report to
+   * @param parentLayer
+   *          the layer that contains this data
    */
   public AWTPropertyEditor(final MWC.GUI.Editable.EditorType info,
       final AWTPropertiesPanel parent, final Layers theLayers,
@@ -575,6 +581,18 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements
   /////////////////////////////////////////////////////
   // support classes - label containing edit button
   ///////////////////////////////////////////////////
+
+  @Override
+  public void notifyDateInconsistency(final String startDescription,
+      final String endDescription)
+  {
+    final MessageDialog messageDialog = new MessageDialog(null, null,
+        "Date inconsistency",
+        "Start Date must be before End Date. Please, check the following values ["
+            + startDescription + "] and [" + endDescription + "]. Changes haven't been saved.", null, true);
+    messageDialog.setModal(true);
+    messageDialog.setVisible(true);
+  }
 
   void reset()
   {

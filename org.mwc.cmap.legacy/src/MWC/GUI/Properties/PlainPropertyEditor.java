@@ -238,6 +238,7 @@ import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
 import java.lang.reflect.Method;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -583,6 +584,10 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
   // the property editor manager
   protected static PropertyEditorManager _myPropertyManager;
 
+  public static final String _START = "Start";
+
+  public static final String _END = "End";
+
   // method to create the property manager - called by the child classes to do the core stuff.
   protected static void createCorePropertyEditors()
   {
@@ -677,6 +682,10 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
    */
   protected Vector<PropertyChangeItem> _theModifications;
 
+  /////////////////////////////////////////////////////////////
+  // member functions
+  ////////////////////////////////////////////////////////////
+
   /**
    * the custom editor, if there is one
    */
@@ -686,10 +695,6 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
    * the panel which is holding us
    */
   protected PropertiesPanel _thePanel = null;
-
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
 
   /**
    * the additional editable items returned by this object
@@ -932,6 +937,67 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     }
   }
 
+  protected boolean checkIntegrity()
+  {
+    // Let's iterate all the editors, and lets get anything with the word
+    // Start or End.
+    final Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
+    final HashMap<String, Object> startItems = new HashMap<>();
+    final HashMap<String, Object> endItems = new HashMap<>();
+    final HashMap<String, String> startDescription = new HashMap<>();
+    final HashMap<String, String> endDescription = new HashMap<>();
+
+    while (enumer.hasMoreElements())
+    {
+      final PropertyEditorItem pei = enumer.nextElement();
+      final PropertyDescriptor pd = pei.theDescriptor;
+
+      if (pd.getName().contains(_START))
+      {
+        final String innerName = pd.getName().replaceAll(_START, "");
+        startItems.put(innerName, pei.theEditor.getValue());
+        startDescription.put(innerName, pd.getDisplayName());
+      }
+      if (pd.getName().contains(_END))
+      {
+        final String innerName = pd.getName().replaceAll(_END, "");
+        endItems.put(innerName, pei.theEditor.getValue());
+        endDescription.put(innerName, pd.getDisplayName());
+      }
+    }
+
+    // then we compare them with each other, matching them
+    for (final String key : startItems.keySet())
+    {
+      if (endItems.containsKey(key))
+      {
+        final Object startObject = startItems.get(key);
+        final Object endObject = endItems.get(key);
+
+        if (startObject instanceof HiResDate && endObject instanceof HiResDate)
+        {
+          final HiResDate startDate = (HiResDate) startObject;
+          final HiResDate endDate = (HiResDate) endObject;
+
+          if (HiResDate.isNotInitialized(startDate) || HiResDate
+              .isNotInitialized(endDate))
+          {
+            return true;
+          }
+          if (startDate.getMicros() > endDate.getMicros())
+          {
+            notifyDateInconsistency(startDescription.get(key), endDescription
+                .get(key));
+
+            return false;
+          }
+        }
+      }
+    }
+
+    return true;
+  }
+
   protected void closing()
   {
     // remove the normal property change listener
@@ -953,11 +1019,11 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     }
   }
 
-  abstract protected void declarePropertyEditors();
-
   //////////////////////////////////////////////////
   // the data for the action
   ///////////////////////////////////////////////////
+
+  abstract protected void declarePropertyEditors();
 
   public void doRefresh()
   {
@@ -1052,44 +1118,49 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     }
     else
     {
-      // update the editors in turn
-      final Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
-      while (enumer.hasMoreElements())
-      {
-        final PropertyEditorItem pei = enumer.nextElement();
-        final PropertyDescriptor pd = pei.theDescriptor;
-        update(pd, pei.theData);
-      }
+      boolean integral = checkIntegrity();
 
-      // check if there are any modifications to be made
-      if (_theModifications.size() > 0)
+      if (integral)
       {
 
-        /*
-         * we now have a list of properties to be changed (and their old values) in our vector we
-         * now have to do them
-         */
-        final PropertyChangeAction act = new PropertyChangeAction(
-            _theModifications, _theData);
+        // update the editors in turn
+        final Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
+        while (enumer.hasMoreElements())
+        {
+          final PropertyEditorItem pei = enumer.nextElement();
+          final PropertyDescriptor pd = pei.theDescriptor;
+          update(pd, pei.theData);
+        }
 
-        // check if the list actually contains any modifications
+        // check if there are any modifications to be made
+        if (_theModifications.size() > 0)
+        {
 
-        // and do it
-        act.execute();
+          /*
+           * we now have a list of properties to be changed (and their old values) in our vector we
+           * now have to do them
+           */
+          final PropertyChangeAction act = new PropertyChangeAction(
+              _theModifications, _theData);
 
-        // and put it on the undo buffer
-        final MWC.GUI.Undo.UndoBuffer buff = getBuffer();
-        if (buff != null)
-          buff.add(act);
+          // check if the list actually contains any modifications
 
-        // and now clear the list of modifications (we don't want to repeat them)
-        _theModifications.removeAllElements();
+          // and do it
+          act.execute();
 
+          // and put it on the undo buffer
+          final MWC.GUI.Undo.UndoBuffer buff = getBuffer();
+          if (buff != null)
+            buff.add(act);
+
+          // and now clear the list of modifications (we don't want to repeat them)
+          _theModifications.removeAllElements();
+
+        }
+
+        // finally inform the item being edited that we are finished
+        _theInfo.updatesComplete();
       }
-
-      // finally inform the item being edited that we are finished
-      _theInfo.updatesComplete();
-
     }
   }
 
@@ -1112,6 +1183,9 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
   // abstract methods
   ////////////////////////////////////////////////////
   abstract protected void initForm(PropertiesPanel thePanel);
+
+  public abstract void notifyDateInconsistency(String startDescription,
+      String endDescription);
 
   @Override
   public void propertyChange(final PropertyChangeEvent pce)

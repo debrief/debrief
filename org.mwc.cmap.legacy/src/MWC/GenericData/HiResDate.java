@@ -253,4 +253,10 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
     return MWC.Utilities.TextFormatting.FormatRNDateTime.toString(this.getDate()
         .getTime()) + ":" + super.toString();
   }
+
+  public static boolean isNotInitialized(final HiResDate myValueHiResDate)
+  {
+    return HiResDate.NULL_DATE.equals(myValueHiResDate) || myValueHiResDate
+        .getMicros() == -1000000L;
+  }
 }
