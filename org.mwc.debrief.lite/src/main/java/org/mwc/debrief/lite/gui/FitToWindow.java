@@ -18,6 +18,7 @@ import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
 
 import Debrief.GUI.Frames.Application;
+import MWC.Algorithms.PlainProjection;
 import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
 import MWC.GenericData.WorldArea;
@@ -30,7 +31,7 @@ public class FitToWindow extends AbstractAction implements CommandAction
    */
   private static final long serialVersionUID = 1L;
 
-  public static void fitToWindow(final Layers layers, final JMapPane map)
+  public static void fitToWindow(final Layers layers, final JMapPane map, final PlainProjection projection)
   {
     final WorldArea area = layers.getBounds();
     if (area != null)
@@ -87,6 +88,8 @@ public class FitToWindow extends AbstractAction implements CommandAction
         // force repaint
         final ReferencedEnvelope paneArea = map.getDisplayArea();
         map.setDisplayArea(paneArea);
+        
+        projection.setDataArea(area);
       }
     }
   }
@@ -94,17 +97,20 @@ public class FitToWindow extends AbstractAction implements CommandAction
   private final Layers _layers;
 
   private final JMapPane _map;
+  
+  private final PlainProjection _projection;
 
-  public FitToWindow(final Layers layers, final JMapPane map)
+  public FitToWindow(final Layers layers, final JMapPane map, final PlainProjection projection)
   {
     _layers = layers;
     _map = map;
+    _projection = projection;
   }
 
   @Override
   public void actionPerformed(final ActionEvent e)
   {
-    fitToWindow(_layers, _map);
+    fitToWindow(_layers, _map, _projection);
   }
 
   @Override

@@ -168,7 +168,7 @@ public class GeoToolMapProjection extends PlainProjection implements
     {
       // hmm, do we have an area?
       final WorldArea dArea = this.getDataArea();
-      if (dArea.getWidth() > 0 || dArea.getHeight() > 0)
+      if (dArea != null && (dArea.getWidth() > 0 || dArea.getHeight() > 0))
       {
         // now got to screen
         final AffineTransform currentTransform = _view.getScreenToWorld();
