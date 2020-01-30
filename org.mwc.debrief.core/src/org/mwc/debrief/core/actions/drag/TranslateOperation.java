@@ -34,9 +34,6 @@ public class TranslateOperation extends CoreDragOperation implements
 	{
 		//
 		_segment.shift(vector);
-
-		// tell the segment it's shifted
-		_segment.clearBounds();
 	}
 
 	public Cursor getHotspotCursor()
