@@ -154,6 +154,8 @@ import MWC.Utilities.ReaderWriter.PlainImporter;
 
 public class DebriefLiteApp implements FileDropListener
 {
+  
+  public static final String TEST_MODE="TEST_MODE";
 
   /**
    * introduce a preferences helper, particularly to give default font sizes
@@ -975,7 +977,7 @@ public class DebriefLiteApp implements FileDropListener
         .createImage("icons/d_lite.png"), MenuUtils.ICON_SIZE_32)));
     theFrame.setIconImage(new ImageIcon(ClassLoader.getSystemResource(
         "icons/d_lite.png")).getImage());
-    theFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    theFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     theFrame.setVisible(true);
     theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
 
@@ -1263,7 +1265,8 @@ public class DebriefLiteApp implements FileDropListener
   {
     session.close();
     theFrame.dispose();
-    // System.exit(0);
+    if(!("TRUE".equalsIgnoreCase(System.getProperty("TEST_MODE"))))
+        System.exit(0);
   }
 
   @Override
@@ -1546,8 +1549,9 @@ public class DebriefLiteApp implements FileDropListener
       {
         exit();
       }
+      
+      
     });
-
     // try to give the application an icon
     final Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 

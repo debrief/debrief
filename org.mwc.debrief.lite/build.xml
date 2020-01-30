@@ -105,8 +105,11 @@
 					<classpath location="src/test/java" />
 					<classpath location="${env.ANT_HOME}/lib"> </classpath>
 					<formatter type="xml" />
-						<formatter type="plain" />
+					<formatter type="plain" />
+					<sysproperty key="TEST_MODE" value="true"/>
 					<batchtest fork="true" todir="${report.dir}">
+						
+
 							<fileset dir="src/test/java">
 								<include name="**/*Test*.java" />
 								<exclude name="**/*Util*.java"/>
