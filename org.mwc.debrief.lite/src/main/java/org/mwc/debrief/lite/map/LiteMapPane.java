@@ -71,14 +71,11 @@ public class LiteMapPane extends JMapPane
     // try to set background color
     super.setBackground(getNewColor(mapTransparency));
   }
-  
+
   private static Color getNewColor(final double alpha)
   {
-    return new Color(
-        (int)(255 - alpha * 171),
-        (int)(255 - alpha * 119),
-        (int)(255 - alpha * 57)
-        );
+    return new Color((int) (255 - alpha * 171), (int) (255 - alpha * 119),
+        (int) (255 - alpha * 57));
   }
 
   public void addRepaintListener(final ActionListener actionListener)
@@ -168,8 +165,7 @@ public class LiteMapPane extends JMapPane
         // mouse pos in Map coordinates
         final DirectPosition2D curPos = ev.getWorldPos();
 
-        if (ev.getWorldPos()
-            .getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84)
+        if (curPos.getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84)
         {
           try
           {
@@ -266,7 +262,7 @@ public class LiteMapPane extends JMapPane
     g.fillRect(0, 0, dim.width, dim.height);
 
     if (drawingLock.tryLock())
-    { 
+    {
       try
       {
         final RenderedImage image = getBaseImage();

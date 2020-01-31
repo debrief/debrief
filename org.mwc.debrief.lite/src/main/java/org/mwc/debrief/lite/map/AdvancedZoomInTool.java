@@ -11,6 +11,7 @@ import org.geotools.map.MapViewport;
 import org.geotools.swing.event.MapMouseEvent;
 import org.geotools.swing.tool.ZoomInTool;
 import org.locationtech.jts.geom.Coordinate;
+import org.mwc.debrief.lite.DebriefLiteApp;
 
 public class AdvancedZoomInTool extends ZoomInTool
 {
@@ -84,6 +85,7 @@ public class AdvancedZoomInTool extends ZoomInTool
       {
         performZoomOut(ev);
       }
+      DebriefLiteApp.getInstance().updateProjectionArea();
     }
   }
 

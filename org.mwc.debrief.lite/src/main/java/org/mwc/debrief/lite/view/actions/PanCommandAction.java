@@ -14,8 +14,13 @@
  */
 package org.mwc.debrief.lite.view.actions;
 
+import java.awt.event.ActionEvent;
+
 import org.geotools.swing.MapPane;
 import org.geotools.swing.action.PanAction;
+import org.geotools.swing.event.MapMouseEvent;
+import org.geotools.swing.tool.PanTool;
+import org.mwc.debrief.lite.DebriefLiteApp;
 import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
 
@@ -40,8 +45,22 @@ public class PanCommandAction extends PanAction implements CommandAction
   @Override
   public void commandActivated(CommandActionEvent e)
   {
-   super.actionPerformed(e);
-
+    actionPerformed(e);
   }
 
+  @Override
+  public void actionPerformed(ActionEvent ev)
+  {
+    getMapPane().setCursorTool(new PanTool()
+    {
+
+      @Override
+      public void onMouseReleased(MapMouseEvent ev)
+      {
+        super.onMouseReleased(ev);
+        DebriefLiteApp.getInstance().updateProjectionArea();
+      }
+
+    });
+  }
 }

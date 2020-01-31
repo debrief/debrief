@@ -7,6 +7,7 @@ import java.awt.Rectangle;
 import org.geotools.swing.JMapPane;
 import org.mwc.debrief.lite.gui.FitToWindow;
 
+import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
 import MWC.GUI.HasEditables;
 import MWC.GUI.Layers;
@@ -23,13 +24,16 @@ public class LiteChart extends PlainChart
   private final CanvasType _myCanvas;
 
   private final JMapPane _map;
+  
+  final PlainProjection _projection;
 
   public LiteChart(final Layers theLayers, final CanvasType canvas,
-      final JMapPane mapPane)
+      final JMapPane mapPane, final PlainProjection projection)
   {
     super(theLayers);
     _myCanvas = canvas;
     _map = mapPane;
+    _projection = projection;
   }
 
   @Override
@@ -73,7 +77,7 @@ public class LiteChart extends PlainChart
   public void rescale()
   {
 
-    FitToWindow.fitToWindow(_theLayers, _map);
+    FitToWindow.fitToWindow(_theLayers, _map, _projection);
   }
 
   @Override

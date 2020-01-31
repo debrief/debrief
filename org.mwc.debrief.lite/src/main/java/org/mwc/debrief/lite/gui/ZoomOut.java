@@ -11,6 +11,7 @@ import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.Envelope2D;
 import org.geotools.swing.JMapPane;
 import org.locationtech.jts.geom.Coordinate;
+import org.mwc.debrief.lite.DebriefLiteApp;
 import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
 
@@ -52,6 +53,8 @@ public class ZoomOut extends AbstractAction implements CommandAction
       newMapArea.setFrameFromCenter(mapPos, corner);
       _map.setDisplayArea(newMapArea);
     }
+    
+    DebriefLiteApp.getInstance().updateProjectionArea();
   }
 
   @Override
