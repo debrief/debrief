@@ -64,9 +64,6 @@ public class StretchDragMode extends RotateDragMode
 			// now do the current one
 			seg.stretch(rng, _origin);
 			
-			// tell the segment it's shifted
-			seg.clearBounds();
-			
 			// and remember it
 	//		lastRange = new Double(rng);
 			

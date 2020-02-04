@@ -344,8 +344,6 @@ public class LightweightTrackWrapper extends PlainWrapper implements
 
   private int _lineStyle;
 
-  private WorldArea _bounds = null;
-
   private final Plottables _thePositions = new Plottables();
 
   /**
@@ -422,8 +420,6 @@ public class LightweightTrackWrapper extends PlainWrapper implements
 
   public void addFix(final FixWrapper e)
   {
-    flushBounds();
-
     // tell it who's the boss
     e.setTrackWrapper(this);
 
@@ -513,12 +509,6 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     }
   }
 
-  private void flushBounds()
-  {
-    // forget the bounds
-    _bounds = null;
-  }
-
   /**
    * ensure the cached set of raw positions gets cleared
    *
@@ -541,24 +531,15 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   @Override
   public WorldArea getBounds()
   {
-    if (_bounds == null)
-    {
+    WorldArea res = null;
       final Iterator<FixWrapper> itera = iterator();
       while (itera.hasNext())
       {
         final WorldLocation loc = itera.next().getLocation();
-        if (_bounds == null)
-        {
-          _bounds = new WorldArea(loc, loc);
-        }
-        else
-        {
-          _bounds.extend(loc);
-        }
+        res = WorldArea.extend(res, new WorldArea(loc, loc));
       }
-    }
 
-    return _bounds;
+    return res;
   }
 
   @Override
@@ -1395,8 +1376,6 @@ public class LightweightTrackWrapper extends PlainWrapper implements
       // now silently add them
       _thePositions.getData().addAll(newItems);
 
-      // ok, we have to clear the bounds
-      flushBounds();
     }
   }
 
