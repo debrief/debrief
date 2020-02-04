@@ -1444,7 +1444,6 @@ public class SwingLayerManager extends SwingCustomEditor implements
             // Lets reload it only once
             if (!reloadedNodes.contains(parent))
             {
-              ((DefaultTreeModel) _myTree.getModel()).reload(parent);
               reloadedNodes.add(parent);
             }
 
@@ -1455,6 +1454,13 @@ public class SwingLayerManager extends SwingCustomEditor implements
       }
     }
 
+    for (TreeNode node : reloadedNodes)
+    {
+      ((DefaultTreeModel) _myTree.getModel()).reload(node);
+      ((DefaultTreeModel) _myTree.getModel()).reload(node);
+    }
+    
+    
     if (needToReloadThisLayer)
     {
       ((DefaultTreeModel) _myTree.getModel()).reload(thisL);
