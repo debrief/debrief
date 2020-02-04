@@ -138,6 +138,7 @@ import MWC.GUI.Shapes.ChartBoundsWrapper;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.temporal.PlotOperations;
 import MWC.TacticalData.temporal.TimeManager;
@@ -571,6 +572,38 @@ public class DebriefLiteApp implements FileDropListener
     theSuffix = filename.substring(pos, filename.length());
     return theSuffix.toUpperCase();
   }
+  
+  public void updateProjectionArea()
+  {
+    final DirectPosition2D upperCorner = (DirectPosition2D) mapPane.getDisplayArea().getUpperCorner();
+    final DirectPosition2D bottomCorner = (DirectPosition2D) mapPane.getDisplayArea().getLowerCorner();
+    
+    if (bottomCorner
+        .getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84 && 
+            upperCorner
+        .getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84)
+    {
+      try
+      {
+        geoMapRenderer.getTransform().transform(upperCorner, upperCorner);
+        geoMapRenderer.getTransform().transform(bottomCorner, bottomCorner);
+      }
+      catch (MismatchedDimensionException | TransformException e)
+      {
+        Application.logError2(ToolParent.ERROR,
+            "Failure in projection transform", e);
+      }
+    }
+    
+    final WorldLocation topLocation = new WorldLocation(upperCorner.getY(), upperCorner
+        .getX(), 0);
+    final WorldLocation bottomLocation = new WorldLocation(bottomCorner.getY(), bottomCorner
+        .getX(), 0);
+    final WorldArea newArea = new WorldArea(topLocation, bottomLocation);
+    newArea.normalise();
+    
+    projection.setDataArea(newArea);
+  }
 
   public static void updateStatusMessage(final String string)
   {
@@ -893,7 +926,7 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataModifiedListener(dListener);
 
     painterManager = new PainterManager(_stepControl);
-    final PlainChart theChart = new LiteChart(_theLayers, theCanvas, mapPane);
+    final PlainChart theChart = new LiteChart(_theLayers, theCanvas, mapPane, projection);
     theTote = new LiteTote(_theLayers, _stepControl);
     final TotePainter tp = new TotePainter(theChart, _theLayers, theTote,
         false);
@@ -1041,6 +1074,7 @@ public class DebriefLiteApp implements FileDropListener
         mapPane.setVisible(false);
         mapPane.setVisible(true);
         // mapPane.repaint();
+        DebriefLiteApp.getInstance().updateProjectionArea();
       }
     });
 
@@ -1394,7 +1428,7 @@ public class DebriefLiteApp implements FileDropListener
       _theLayers.fireReformatted(null);
 
       // and the spatial bounds
-      new FitToWindow(_theLayers, mapPane).actionPerformed(null);
+      new FitToWindow(_theLayers, mapPane, projection).actionPerformed(null);
     }
     catch (final FileNotFoundException e)
     {
@@ -1513,7 +1547,7 @@ public class DebriefLiteApp implements FileDropListener
                 theTote.assignWatchables(true);
 
                 // and the spatial bounds
-                final FitToWindow fitMe = new FitToWindow(_theLayers, mapPane);
+                final FitToWindow fitMe = new FitToWindow(_theLayers, mapPane, projection);
                 fitMe.actionPerformed(null);
               }
             });

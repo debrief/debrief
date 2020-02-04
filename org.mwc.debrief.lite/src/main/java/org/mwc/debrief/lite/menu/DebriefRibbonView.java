@@ -72,6 +72,7 @@ import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 import org.pushingpixels.flamingo.api.ribbon.synapse.model.ComponentPresentationModel;
 import org.pushingpixels.flamingo.api.ribbon.synapse.projection.ComponentProjection;
 
+import MWC.Algorithms.PlainProjection;
 import MWC.GUI.Layers;
 import MWC.GenericData.WorldDistance;
 
@@ -259,7 +260,7 @@ public class DebriefRibbonView
   {
     final JRibbonBand mouseMode = createMouseModes(geoMapRenderer, statusBar,
         layers, projection, transform);
-    final JRibbonBand mapCommands = createMapCommands(geoMapRenderer, layers);
+    final JRibbonBand mapCommands = createMapCommands(geoMapRenderer, layers, projection);
 
     // and the slider
     final JRibbonBand layersMenu = new JRibbonBand("Background", null);
@@ -282,14 +283,14 @@ public class DebriefRibbonView
   }
 
   private static JRibbonBand createMapCommands(
-      final GeoToolMapRenderer geoMapRenderer, final Layers layers)
+      final GeoToolMapRenderer geoMapRenderer, final Layers layers, final PlainProjection projection)
   {
     final JMapPane mapPane = (JMapPane) geoMapRenderer.getMap();
     final JRibbonBand commandBand = new JRibbonBand("Map commands", null);
     commandBand.startGroup();
     MenuUtils.addCommand("Zoom Out", "icons/24/zoomout.png", new ZoomOut(
         mapPane), commandBand, PresentationPriority.TOP,"Zoom out to reduce size of plot");
-    final FitToWindow doFit = new FitToWindow(layers, mapPane);
+    final FitToWindow doFit = new FitToWindow(layers, mapPane,projection);
     MenuUtils.addCommand("Fit to Window", "icons/24/fit_to_win.png", doFit,
         commandBand, null,"Fit the plot to available space");
     commandBand.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
