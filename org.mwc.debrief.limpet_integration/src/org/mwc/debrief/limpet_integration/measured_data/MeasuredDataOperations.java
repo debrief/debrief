@@ -345,7 +345,7 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator {
 				final Operation2 doAdd = new Operation2() {
 					@Override
 					public DoubleDataset calc(final DoubleDataset val1, final DoubleDataset val2) {
-						final DoubleDataset res = (DoubleDataset) GeneratedMaths.add(val1, val2, null);
+						final DoubleDataset res = (DoubleDataset) Maths.add(val1, val2, null);
 						return res;
 					}
 
@@ -360,7 +360,7 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator {
 				final Operation2 doSubtract = new Operation2() {
 					@Override
 					public DoubleDataset calc(final DoubleDataset val1, final DoubleDataset val2) {
-						final DoubleDataset res = (DoubleDataset) GeneratedMaths.subtract(val1, val2, null);
+						final DoubleDataset res = (DoubleDataset) Maths.subtract(val1, val2, null);
 						return res;
 					}
 
@@ -376,7 +376,7 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator {
 				final Operation2 doMultiply = new Operation2() {
 					@Override
 					public DoubleDataset calc(final DoubleDataset val1, final DoubleDataset val2) {
-						final DoubleDataset res = (DoubleDataset) GeneratedMaths.multiply(val1, val2, null);
+						final DoubleDataset res = (DoubleDataset) Maths.multiply(val1, val2, null);
 						return res;
 					}
 
@@ -392,7 +392,7 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator {
 				final Operation2 doDivide = new Operation2() {
 					@Override
 					public DoubleDataset calc(final DoubleDataset val1, final DoubleDataset val2) {
-						final DoubleDataset res = (DoubleDataset) GeneratedMaths.divide(val1, val2, null);
+						final DoubleDataset res = (DoubleDataset) Maths.divide(val1, val2, null);
 						return res;
 					}
 
@@ -423,7 +423,7 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator {
 				final Operation1 doInverse = new Operation1() {
 					@Override
 					public DoubleDataset calc(final DoubleDataset val1) {
-						final DoubleDataset res = (DoubleDataset) GeneratedMaths.divide(1, val1, null);
+						final DoubleDataset res = (DoubleDataset) Maths.divide(1, val1, null);
 						res.setName("Inverse of " + val1.getName());
 						return res;
 					}
@@ -435,7 +435,7 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator {
 				final Operation1 doSqrt = new Operation1() {
 					@Override
 					public DoubleDataset calc(final DoubleDataset val1) {
-						final DoubleDataset res = (DoubleDataset) GeneratedMaths.sqrt(val1, null);
+						final DoubleDataset res = (DoubleDataset) Maths.sqrt(val1, null);
 						res.setName("Square root of " + val1.getName());
 						return res;
 					}
@@ -447,7 +447,7 @@ public class MeasuredDataOperations implements RightClickContextItemGenerator {
 				final Operation1 doCbrt = new Operation1() {
 					@Override
 					public DoubleDataset calc(final DoubleDataset val1) {
-						final DoubleDataset res = (DoubleDataset) GeneratedMaths.cbrt(val1, null);
+						final DoubleDataset res = (DoubleDataset) Maths.cbrt(val1, null);
 						res.setName("Cube Root of " + val1.getName());
 						return res;
 					}
