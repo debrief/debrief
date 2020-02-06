@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.asset.scenariocontroller2;
@@ -21,15 +21,14 @@ import java.io.IOException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.IStatus;
 import org.mwc.cmap.core.CorePlugin;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 import ASSET.Util.XML.ASSETReaderWriter.ResultsContainer;
 
-public abstract class CoreControllerPresenter
-{
+public abstract class CoreControllerPresenter {
 
 	/**
 	 * object that listens out for files being dropped
@@ -37,13 +36,11 @@ public abstract class CoreControllerPresenter
 	 * @author ian
 	 * 
 	 */
-	public static interface FilesDroppedListener
-	{
+	public static interface FilesDroppedListener {
 		void filesDropped(String[] files);
 	}
-	
-	public static interface ScenarioDisplay
-	{
+
+	public static interface ScenarioDisplay {
 		/**
 		 * make this view the selected view. We've just loaded some data, so tell
 		 * everybody we're alive
@@ -58,11 +55,10 @@ public abstract class CoreControllerPresenter
 		void addFileDropListener(FilesDroppedListener listener);
 
 		/**
-		 * this is a relative path, produce an absolute path to a relative location
-		 * in the project directory
+		 * this is a relative path, produce an absolute path to a relative location in
+		 * the project directory
 		 * 
-		 * @param tgtDir
-		 *          relative path
+		 * @param tgtDir relative path
 		 * @return absolute path
 		 */
 		File getProjectPathFor(File tgtDir);
@@ -88,54 +84,6 @@ public abstract class CoreControllerPresenter
 		void setScenarioName(String name);
 	}
 
-	protected String getFirstNodeName(final String SourceXMLFilePath) throws Exception
-	{
-		/* Check whether file is XML or not */
-		final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		factory.setValidating(false);
-		factory.setNamespaceAware(true);
-		try
-		{
-			final DocumentBuilder builder = factory.newDocumentBuilder();
-			final Document document = builder.parse(SourceXMLFilePath);
-
-			final NodeList nl = document.getElementsByTagName("*");
-			return nl.item(0).getNodeName();
-		}
-		catch (final IOException ioe)
-		{
-			CorePlugin.logError(Status.ERROR, "Whilst getting first node in " + SourceXMLFilePath, ioe);
-			return null;
-		}
-
-	}
-
-	protected boolean isRelativePath(final File tgtDir)
-	{
-		boolean res = true;
-
-		final String thePath = tgtDir.getPath();
-
-		// use series of tests to check whether this is a relative path
-		if (thePath.length() == 0)
-			res = true;
-		else
-		{
-			if (thePath.contains(":"))
-				res = false;
-			if (thePath.contains("\\\\"))
-				res = false;
-			if (thePath.charAt(0) == '\\')
-				res = false;
-			if (thePath.contains("//"))
-				res = false;
-			if (thePath.charAt(0) == '/')
-				res = false;
-		}
-
-		return res;
-	}
-
 	/**
 	 * filename for the scenario
 	 * 
@@ -156,42 +104,77 @@ public abstract class CoreControllerPresenter
 
 	protected final ScenarioDisplay _coreDisplay;
 
-	public CoreControllerPresenter(final ScenarioDisplay display)
-	{
+	public CoreControllerPresenter(final ScenarioDisplay display) {
 		_coreDisplay = display;
 
 		// ok, sort out the file drop handler
-		_coreDisplay.addFileDropListener(new FilesDroppedListener()
-		{
-			public void filesDropped(final String[] files)
-			{
+		_coreDisplay.addFileDropListener(new FilesDroppedListener() {
+			@Override
+			public void filesDropped(final String[] files) {
 				handleTheseFiles(files);
 			}
 		});
 
 	}
 
-	public String getControlName()
-	{
+	public String getControlName() {
 		return _controlFileName;
 	}
 
-	public String getScenarioName()
-	{
+	protected String getFirstNodeName(final String SourceXMLFilePath) throws Exception {
+		/* Check whether file is XML or not */
+		final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		factory.setValidating(false);
+		factory.setNamespaceAware(true);
+		try {
+			final DocumentBuilder builder = factory.newDocumentBuilder();
+			final Document document = builder.parse(SourceXMLFilePath);
+
+			final NodeList nl = document.getElementsByTagName("*");
+			return nl.item(0).getNodeName();
+		} catch (final IOException ioe) {
+			CorePlugin.logError(IStatus.ERROR, "Whilst getting first node in " + SourceXMLFilePath, ioe);
+			return null;
+		}
+
+	}
+
+	public String getScenarioName() {
 		return _scenarioFileName;
 	}
 
 	protected abstract void handleTheseFiles(String[] strings);
 
-	public void reloadDataFiles()
-	{
+	protected boolean isRelativePath(final File tgtDir) {
+		boolean res = true;
+
+		final String thePath = tgtDir.getPath();
+
+		// use series of tests to check whether this is a relative path
+		if (thePath.length() == 0)
+			res = true;
+		else {
+			if (thePath.contains(":"))
+				res = false;
+			if (thePath.contains("\\\\"))
+				res = false;
+			if (thePath.charAt(0) == '\\')
+				res = false;
+			if (thePath.contains("//"))
+				res = false;
+			if (thePath.charAt(0) == '/')
+				res = false;
+		}
+
+		return res;
+	}
+
+	public void reloadDataFiles() {
 		// ok, force the data-files to be reloaded
 		if (_scenarioFileName != null)
-			handleTheseFiles(new String[]
-			{ _scenarioFileName });
+			handleTheseFiles(new String[] { _scenarioFileName });
 		if (_controlFileName != null)
-			handleTheseFiles(new String[]
-			{ _controlFileName });
+			handleTheseFiles(new String[] { _controlFileName });
 	}
 
 }

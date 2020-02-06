@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package com.borlander.rac525791.dashboard.layout.data;
@@ -26,43 +26,40 @@ public class DashboardFontsImpl implements DashboardFonts {
 	private Font myValueFont;
 	private Font myUnitsFont;
 	private Font myTextFont;
-	
-	private final int myTextSize; 
+
+	private final int myTextSize;
 	private final int myValueSize;
 	private final int myUnitsSize;
-	private boolean myTextBold = true;
+	private final boolean myTextBold = true;
 
-	public DashboardFontsImpl(int text, int value, int units){
+	public DashboardFontsImpl(final int text, final int value, final int units) {
 		myTextSize = text;
 		myValueSize = value;
 		myUnitsSize = units;
 	}
-	
-	public Font getTextFont() {
-		if (myTextFont == null || myTextFont.isDisposed()){
-			myTextFont = new Font(getDisplay(), "Arial", myTextSize, myTextBold ? SWT.BOLD : SWT.NORMAL);
+
+	@Override
+	public void dispose() {
+		if (myTextFont != null) {
+			myTextFont.dispose();
+			myTextFont = null;
 		}
-		return myTextFont;
-	}
-	
-	public Font getValueFont() {
-		if (myValueFont == null || myValueFont.isDisposed()){
-			myValueFont = new Font(getDisplay(), "Arial", myValueSize, SWT.BOLD);
+		if (myValueFont != null) {
+			myValueFont.dispose();
+			myValueFont = null;
 		}
-		return myValueFont;
-	}
-	
-	public Font getUnitsFont() {
-		if (myUnitsFont == null || myUnitsFont.isDisposed()){
-			myUnitsFont = new Font(getDisplay(), "Arial", myUnitsSize, SWT.NORMAL);
+		if (myUnitsFont != null) {
+			myUnitsFont.dispose();
+			myUnitsFont = null;
 		}
-		return myUnitsFont;
+		myDisplay = null;
 	}
-	
-	private Display getDisplay(){
-		if (myDisplay == null || myDisplay.isDisposed()){
+
+	private Display getDisplay() {
+		if (myDisplay == null || myDisplay.isDisposed()) {
 			myDisplay = Display.getCurrent();
 			myDisplay.disposeExec(new Runnable() {
+				@Override
 				public void run() {
 					DashboardFontsImpl.this.dispose();
 				}
@@ -70,21 +67,29 @@ public class DashboardFontsImpl implements DashboardFonts {
 		}
 		return myDisplay;
 	}
-	
-	public void dispose(){
-		if (myTextFont != null){
-			myTextFont.dispose();
-			myTextFont = null;
+
+	@Override
+	public Font getTextFont() {
+		if (myTextFont == null || myTextFont.isDisposed()) {
+			myTextFont = new Font(getDisplay(), "Arial", myTextSize, myTextBold ? SWT.BOLD : SWT.NORMAL);
 		}
-		if (myValueFont != null){
-			myValueFont.dispose();
-			myValueFont = null;
+		return myTextFont;
+	}
+
+	@Override
+	public Font getUnitsFont() {
+		if (myUnitsFont == null || myUnitsFont.isDisposed()) {
+			myUnitsFont = new Font(getDisplay(), "Arial", myUnitsSize, SWT.NORMAL);
 		}
-		if (myUnitsFont != null){
-			myUnitsFont.dispose();
-			myUnitsFont = null;
+		return myUnitsFont;
+	}
+
+	@Override
+	public Font getValueFont() {
+		if (myValueFont == null || myValueFont.isDisposed()) {
+			myValueFont = new Font(getDisplay(), "Arial", myValueSize, SWT.BOLD);
 		}
-		myDisplay = null;
+		return myValueFont;
 	}
 
 }

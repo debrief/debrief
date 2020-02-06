@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package ASSET.Models.Movement;
@@ -22,7 +22,7 @@ import MWC.GenericData.WorldSpeed;
  * User: Ian.Mayo
  * Date: 11-Sep-2003
  * Time: 15:10:50
- * Log:  
+ * Log:
  *  $Log: ClimbRateCharacteristics.java,v $
  *  Revision 1.1  2006/08/08 14:21:46  Ian.Mayo
  *  Second import
@@ -45,32 +45,37 @@ import MWC.GenericData.WorldSpeed;
  *
  */
 
-/** interface describing sets of characteristics which provide climb and dive rates
+/**
+ * interface describing sets of characteristics which provide climb and dive
+ * rates
  *
  */
-public interface ClimbRateCharacteristics
-{
-  /** get the default speed at which this vehicle travels when climbing (m/sec)
-   *
-   * @return
-   */
-  WorldSpeed getDefaultClimbSpeed();
+public interface ClimbRateCharacteristics {
+	/**
+	 * get the default speed at which this vehicle travels when climbing (m/sec)
+	 *
+	 * @return
+	 */
+	WorldSpeed getDefaultClimbSpeed();
 
-  /** get the default speed at which this vehicle travels when climbing (m/sec)
-   *
-   * @param defaultClimbSpeed_m_sec climb speed (m/sec)
-   */
-  void setDefaultClimbSpeed(WorldSpeed defaultClimbSpeed_m_sec);
+	/**
+	 * get the default speed at which this vehicle travels when diving (m/sec)
+	 *
+	 * @return
+	 */
+	WorldSpeed getDefaultDiveSpeed();
 
-  /** get the default speed at which this vehicle travels when diving (m/sec)
-   *
-   * @return
-   */
-  WorldSpeed getDefaultDiveSpeed();
+	/**
+	 * get the default speed at which this vehicle travels when climbing (m/sec)
+	 *
+	 * @param defaultClimbSpeed_m_sec climb speed (m/sec)
+	 */
+	void setDefaultClimbSpeed(WorldSpeed defaultClimbSpeed_m_sec);
 
-  /** get the default speed at which this vehicle travels when diving (m/sec)
-   *
-   * @param defaultDiveSpeed_m_sec default dive speed (m/sec)
-   */
-  void setDefaultDiveSpeed(WorldSpeed defaultDiveSpeed_m_sec);
+	/**
+	 * get the default speed at which this vehicle travels when diving (m/sec)
+	 *
+	 * @param defaultDiveSpeed_m_sec default dive speed (m/sec)
+	 */
+	void setDefaultDiveSpeed(WorldSpeed defaultDiveSpeed_m_sec);
 }

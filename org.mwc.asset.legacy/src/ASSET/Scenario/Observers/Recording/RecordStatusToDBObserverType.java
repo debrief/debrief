@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package ASSET.Scenario.Observers.Recording;
@@ -50,9 +50,138 @@ import MWC.GenericData.WorldSpeed;
  * Created by IntelliJ IDEA. User: Ian Date: 28-Oct-2003 Time: 14:17:34 To
  * change this template use Options | File Templates.
  */
-public class RecordStatusToDBObserverType extends CoreObserver implements
-		ASSET.Scenario.ScenarioSteppedListener
-{
+public class RecordStatusToDBObserverType extends CoreObserver implements ASSET.Scenario.ScenarioSteppedListener {
+	static public class RecordToDbObserverInfo extends MWC.GUI.Editable.EditorType {
+
+		/**
+		 * constructor for editable details of a set of Layers
+		 *
+		 * @param obj the Layers themselves
+		 */
+		public RecordToDbObserverInfo(final RecordStatusToDBObserverType obj) {
+			super(obj, obj.getName(), "Edit");
+		}
+
+		/**
+		 * editable GUI properties for our participant
+		 *
+		 * @return property descriptions
+		 */
+		@Override
+		public java.beans.PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final java.beans.PropertyDescriptor[] res = { prop("Active", "Whether this observer is active"),
+						prop("Name", "The name of this observer"), };
+
+				return res;
+			} catch (final java.beans.IntrospectionException e) {
+				return super.getPropertyDescriptors();
+			}
+		}
+	}
+
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	public static final class recToDbTest extends ContinuousRecordToFileObserver.RecToFileTest {
+		String _buildDate;
+		String _headerDetails;
+		boolean _detectionDetailsWritten;
+		boolean _positionDetailsWritten;
+		boolean _decisionDetailsWritten;
+
+		public recToDbTest(final String val) {
+			super(val);
+		}
+
+		public void doThisTest(final boolean testPos, final boolean testDecs, final boolean testDets,
+				final TargetType target) {
+			final RecordStatusToDBObserverType observer = new RecordStatusToDBObserverType(testDets, testDecs, testPos,
+					target, "trial", true, "monster run");
+			assertNotNull("observer wasn't created", observer);
+
+			// and the scenario
+			final CoreScenario cs = new CoreScenario();
+			cs.setName("testing scenario output");
+
+			// add a participant
+			final SSN ssn = new SSN(12);
+			ssn.setName("SSN");
+			ssn.setCategory(
+					new Category(Category.Force.BLUE, Category.Environment.SUBSURFACE, Category.Type.SUBMARINE));
+			ssn.setDecisionModel(new ASSET.Models.Decision.Tactical.Wait(new Duration(12, Duration.HOURS), "do wait"));
+			final OpticSensor sampleSensor = new OpticSensor(12) {
+				private static final long serialVersionUID = 1L;
+
+				// what is the detection strength for this target?
+				@Override
+				protected DetectionEvent detectThis(final EnvironmentType environment, final ParticipantType host,
+						final ParticipantType target1, final long time, final ScenarioType scenario) {
+					final DetectionEvent de = new DetectionEvent(12l, 12, null, this, null, null, null, null, null,
+							null, null, null, ssn);
+					return de;
+				}
+				// public void detects(EnvironmentType environment, DetectionList
+				// existingDetections, ParticipantType ownship, ScenarioType scenario,
+				// long time)
+				// {
+				// DetectionEvent de = new DetectionEvent(12l, 12, null, this, null,
+				// null, null, null, null, null, null, null, ssn);
+				// existingDetections.add(de);
+				// }
+			};
+			ssn.addSensor(sampleSensor);
+			ssn.setMovementChars(HeloMovementCharacteristics.getSampleChars());
+			final Status theStat = new Status(12, 12);
+			theStat.setLocation(new WorldLocation(12, 12, 12));
+			theStat.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
+			ssn.setStatus(theStat);
+
+			cs.addParticipant(12, ssn);
+
+			// initialise results instances
+			_buildDate = null;
+			_headerDetails = null;
+			_detectionDetailsWritten = false;
+			_positionDetailsWritten = false;
+			_decisionDetailsWritten = false;
+
+			// and do the setup
+			observer.setup(cs);
+
+			// do a step
+			cs.step();
+
+			// do lots more steps
+			for (int i = 0; i < 3000; i++) {
+				// do a step
+				cs.step();
+			}
+
+			// and the close
+			observer.tearDown(cs);
+
+			System.out.println("complete");
+
+			// and close the file
+			// assertNull("stream wasn't closed", observer._conn);
+
+		}
+
+		public void testCombinations() {
+			// doThisTest(true, true, true, null);
+			// doThisTest(true, false, false, null);
+			// doThisTest(false, true, false, null);
+			// doThisTest(false, false, false, null);
+		}
+
+		// ////////////////////////////////////////////////
+		// utility method to create an observer - over-ridden in instantiated
+		// classes
+		// ////////////////////////////////////////////////
+
+	}
+
 	private static final String POSITION_FORMAT = "data.pos";
 
 	private static final String NARRATIVE_FORMAT = "data.narr";
@@ -83,42 +212,36 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 
 	private Connection _conn;
 
-	private HashMap<String, Integer> _participantIds;
-
-	private String _datasetPrefix;
-
-	private String _scenarioName;
+	private final HashMap<String, Integer> _participantIds;
 
 	// ////////////////////////////////////////////////
 	// constructor
 	// ////////////////////////////////////////////////
 
+	private final String _datasetPrefix;
+
+	// ////////////////////////////////////////////////
+	// member methods
+	// ////////////////////////////////////////////////
+
+	private String _scenarioName;
+
 	/**
 	 * an observer which wants to record it's data to file
-	 * 
-	 * @param directoryName
-	 *          the directory to output to
-	 * @param fileName
-	 *          the filename to output to
-	 * @param recordDetections
-	 *          whether to record detections
-	 * @param recordDecisions
-	 *          whether to record decisions
-	 * @param recordPositions
-	 *          whether to record positions
-	 * @param subjectToTrack
-	 *          the type of target to track (or null for all targets)
-	 * @param observerName
-	 *          what to call this narrative observer
-	 * @param isActive
-	 *          whether this observer is active
+	 *
+	 * @param directoryName    the directory to output to
+	 * @param fileName         the filename to output to
+	 * @param recordDetections whether to record detections
+	 * @param recordDecisions  whether to record decisions
+	 * @param recordPositions  whether to record positions
+	 * @param subjectToTrack   the type of target to track (or null for all targets)
+	 * @param observerName     what to call this narrative observer
+	 * @param isActive         whether this observer is active
 	 * @param datasetPrefix
 	 */
-	public RecordStatusToDBObserverType(final boolean recordDetections,
-			boolean recordDecisions, final boolean recordPositions,
-			final TargetType subjectToTrack, final String observerName,
-			boolean isActive, String datasetPrefix)
-	{
+	public RecordStatusToDBObserverType(final boolean recordDetections, final boolean recordDecisions,
+			final boolean recordPositions, final TargetType subjectToTrack, final String observerName,
+			final boolean isActive, final String datasetPrefix) {
 		super(observerName, isActive);
 
 		_recordDetections = recordDetections;
@@ -130,95 +253,41 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 		_participantIds = new HashMap<String, Integer>();
 	}
 
-	// ////////////////////////////////////////////////
-	// member methods
-	// ////////////////////////////////////////////////
-
 	/**
-	 * ok. ready to start writing. get on with it
-	 * 
-	 * @param title
-	 *          the title of this run
-	 * @param currentDTG
-	 *          the current time (not model time)
-	 * @throws IOException
+	 * add any applicable listeners
 	 */
-	protected void writeFileHeaderDetails(final String title, long currentDTG)
-	{
-
+	@Override
+	protected void addListeners(final ScenarioType scenario) {
+		_myScenario.addScenarioSteppedListener(this);
 	}
 
-	/**
-	 * write this set of details to file
-	 * 
-	 * @param loc
-	 *          the current location
-	 * @param stat
-	 *          the current status
-	 * @param pt
-	 *          the participant in question
-	 */
-	protected void writeThesePositionDetails(WorldLocation loc, Status stat,
-			NetworkParticipant pt, long newTime)
-	{
-		try
-		{
-			// see if we've loaded this participant
-			Integer theIndex = _participantIds.get(pt.getName() + POSITION_FORMAT);
-			PreparedStatement stP;
-
-			if (theIndex == null)
-			{
-				theIndex = getDatasetIndexFor(pt.getName(), POSITION_FORMAT);
-				_participantIds.put(pt.getName() + POSITION_FORMAT, theIndex);
-			}
-
-			stP = _conn
-					.prepareStatement("INSERT INTO dataItems(datasetid, dtg, location, contenttype, content) VALUES" + 
-							"(?, ?, ?,?,?)");
-			stP.setInt(1, theIndex.intValue());
-			stP.setTimestamp(2, new Timestamp(stat.getTime()));
-			stP.setObject(3, createGeometry(loc));
-			stP.setString(4, "application/vstatus+xml");
-			stP.setString(5, wrapStatus(stat.getCourse(), stat.getSpeed()));
-			stP.executeUpdate();
-			stP.close();
-		}
-		catch (SQLException e)
-		{
+	private void createConnection() {
+		try {
+			final String url = "jdbc:postgresql://86.134.91.5:5432/gnd";
+			_conn = DriverManager.getConnection(url, "dev", DEV_PASSWORD);
+		} catch (final SQLException e) {
+			System.err.println("failed to create connection");
 			e.printStackTrace();
 		}
 	}
 
-	private String wrapStatus(double course, WorldSpeed speed)
-	{
-		return "<status course=\"" + course + "\" speed=\"" + speed.toString() + "\" />";
+	private org.postgis.PGgeometry createGeometry(final WorldLocation loc) {
+		final org.postgis.Point theP = new org.postgis.Point(loc.getLong(), loc.getLat(), -loc.getDepth());
+		theP.setSrid(4326);
+		return new org.postgis.PGgeometry(theP);
 	}
 
-	private org.postgis.PGgeometry createGeometry(WorldLocation loc)
-	{
-		org.postgis.Point theP = new org.postgis.Point(loc.getLong(), loc.getLat(), -loc.getDepth());
-		theP.setSrid(4326);
-		return  new org.postgis.PGgeometry(theP);
-	}
-	
-	private Integer getDatasetIndexFor(String participantName, String dataFormat)
-			throws SQLException
-	{
+	private Integer getDatasetIndexFor(final String participantName, final String dataFormat) throws SQLException {
 		int thisParticipantIndex = 0;
 		ResultSet rs;
 		PreparedStatement stP;
-		Statement st = _conn.createStatement();
+		final Statement st = _conn.createStatement();
 
 		// does the participant exist in the database?
-		rs = st.executeQuery("SELECT platformid from platforms where platformname = '"
-				+ participantName + "';");
-		if (rs.next())
-		{
+		rs = st.executeQuery("SELECT platformid from platforms where platformname = '" + participantName + "';");
+		if (rs.next()) {
 			thisParticipantIndex = rs.getInt(1);
-		}
-		else
-		{
+		} else {
 			// nope, better create it
 			stP = _conn.prepareStatement("INSERT INTO platforms(platformname) VALUES (?)");
 			stP.setString(1, participantName);
@@ -226,22 +295,17 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 			stP.close();
 
 			// and get the id
-			rs = st
-					.executeQuery("SELECT Max(platformid) AS MaxOfID FROM platforms;");
+			rs = st.executeQuery("SELECT Max(platformid) AS MaxOfID FROM platforms;");
 			rs.next();
 			thisParticipantIndex = rs.getInt(1);
 		}
 
 		// does the data format in the database?
 		int thisExerciseIndex = 0;
-		rs = st.executeQuery("SELECT exerciseid from exercises where exercisename = '"
-				+ _scenarioName + "';");
-		if (rs.next())
-		{
+		rs = st.executeQuery("SELECT exerciseid from exercises where exercisename = '" + _scenarioName + "';");
+		if (rs.next()) {
 			thisExerciseIndex = rs.getInt(1);
-		}
-		else
-		{
+		} else {
 			// nope, better create it
 			stP = _conn.prepareStatement("INSERT INTO exercises(exercisename) VALUES (?)");
 			stP.setString(1, _scenarioName);
@@ -252,22 +316,18 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 			rs = st.executeQuery("SELECT Max(exerciseid) AS MaxOfID FROM exercises;");
 			rs.next();
 			thisExerciseIndex = rs.getInt(1);
-		}		
-		
+		}
+
 		// does the data format in the database?
 		int thisFormatIndex = 0;
-		rs = st.executeQuery("SELECT formatid from formats where formatname = '"
-				+ dataFormat + "';");
-		if (rs.next())
-		{
+		rs = st.executeQuery("SELECT formatid from formats where formatname = '" + dataFormat + "';");
+		if (rs.next()) {
 			thisFormatIndex = rs.getInt(1);
-		}
-		else
-		{
+		} else {
 			// nope, better create it
 			stP = _conn.prepareStatement("INSERT INTO formats(formatname, iconname) VALUES (?,?)");
 			stP.setString(1, dataFormat);
-			stP.setString(2, dataFormat  +".png");
+			stP.setString(2, dataFormat + ".png");
 			stP.executeUpdate();
 			stP.close();
 
@@ -278,8 +338,8 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 		}
 
 		// ok, now create the dataset
-		stP = _conn
-				.prepareStatement("INSERT INTO datasets(datasetname, platformid, formatId, exerciseid) VALUES (?,?,?,?)");
+		stP = _conn.prepareStatement(
+				"INSERT INTO datasets(datasetname, platformid, formatId, exerciseid) VALUES (?,?,?,?)");
 		stP.setString(1, _datasetPrefix + " dated:" + new Date().toString());
 		stP.setInt(2, thisParticipantIndex);
 		stP.setInt(3, thisFormatIndex);
@@ -290,7 +350,7 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 		// and get the id
 		rs = st.executeQuery("SELECT Max(datasetid) AS MaxOfID FROM datasets;");
 		rs.next();
-		int thisDatasetIndex = rs.getInt(1);
+		final int thisDatasetIndex = rs.getInt(1);
 
 		st.close();
 
@@ -298,137 +358,136 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 	}
 
 	/**
-	 * write these detections to file
-	 * 
-	 * @param pt
-	 *          the participant we're on about
-	 * @param detections
-	 *          the current set of detections
-	 * @param dtg
-	 *          the dtg at which the detections were observed
+	 * get the editor for this item
+	 *
+	 * @return the BeanInfo data for this editable object
 	 */
-	protected void writeTheseDetectionDetails(NetworkParticipant pt,
-			DetectionList detections, long dtg)
-	{
-		try
-		{
-			// check there are some decisions
-			if (detections.size() == 0)
-				return;
+	@Override
+	public MWC.GUI.Editable.EditorType getInfo() {
+		if (_myEditor == null)
+			_myEditor = new RecordToDbObserverInfo(this);
 
-			// see if we've loaded this participant
-			Integer theIndex = _participantIds.get(pt.getName() + DETECTION_FORMAT);
-			PreparedStatement stP;
+		return _myEditor;
+	}
 
-			if (theIndex == null)
-			{
-				theIndex = getDatasetIndexFor(pt.getName(), DETECTION_FORMAT);
-				_participantIds.put(pt.getName() + DETECTION_FORMAT, theIndex);
-			}
+	public boolean getRecordDecisions() {
+		return _recordDecisions;
+	}
 
-			stP = _conn
-					.prepareStatement("INSERT INTO dataItems(datasetid, dtg, summary) VALUES (?, ?, ?)");
-			stP.setInt(1, theIndex.intValue());
-			stP.setTimestamp(2, new Timestamp(dtg));
+	public boolean getRecordDetections() {
+		return _recordDetections;
+	}
 
-			Iterator<DetectionEvent> iter = detections.iterator();
-			while (iter.hasNext())
-			{
-				DetectionEvent de = iter.next();
-				String detStr = "";
-				Float brg = de.getBearing();
-				if (brg != null)
-					detStr += "Brg:" + brg.floatValue();
-				WorldDistance dist = de.getRange();
-				if (dist != null)
-					detStr += " Rng:" + dist.toString();
-				detStr += " " + de.getTargetType().toString();
-				stP.setString(3, detStr);
-				stP.executeUpdate();
-			}
+	public boolean getRecordPositions() {
+		return _recordPositions;
+	}
 
-			stP.close();
+	public TargetType getSubjectToTrack() {
+		return _subjectToTrack;
+	}
+
+	// ////////////////////////////////////////////////
+	// member getter/setters
+	// ////////////////////////////////////////////////
+
+	@Override
+	public boolean hasEditor() {
+		return true;
+	}
+
+	@Override
+	protected void performCloseProcessing(final ScenarioType scenario) {
+		try {
+			_conn.close();
+		} catch (final SQLException e) {
+			System.err.println("failed to close database connection");
+			e.printStackTrace();
 		}
-		catch (SQLException e)
-		{
+	}
+
+	@Override
+	protected void performSetupProcessing(final ScenarioType scenario) {
+		// check we have the driver
+		try {
+			Class.forName("org.postgresql.Driver");
+		} catch (final ClassNotFoundException e) {
+			System.err.println("Failed to load database driver");
+			e.printStackTrace();
+		}
+
+		// store the scenario name, so we can create our exercuse
+		_scenarioName = scenario.getName() + " ran on:"
+				+ MWC.Utilities.TextFormatting.DebriefFormatDateTime.toString(new Date().getTime());
+
+		try {
+			final String url = "jdbc:postgresql://86.134.91.5:5432/gnd";
+			_conn = DriverManager.getConnection(url, "dev", DEV_PASSWORD);
+
+			// also tell the connection about our new custom data types
+			((org.postgresql.PGConnection) _conn).addDataType("geometry", org.postgis.PGgeometry.class);
+			((org.postgresql.PGConnection) _conn).addDataType("box3d", org.postgis.PGbox3d.class);
+
+			// _conn = DriverManager.getConnection("//localhost:5432/GND", "postgres",
+			// "4pfonmr");
+
+		} catch (final SQLException e) {
+			System.err.println("failed to create connection");
 			e.printStackTrace();
 		}
 	}
 
 	/**
-	 * write the current decision description to file
-	 * 
-	 * @param pt
-	 *          the participant we're looking at
-	 * @param activity
-	 *          a description of the current activity
-	 * @param dtg
-	 *          the dtg at which the description was recorded
+	 * remove any listeners
 	 */
-	protected void writeThisDecisionDetail(NetworkParticipant pt, String activity,
-			long dtg)
-	{
-		try
-		{
-			// see if we've loaded this participant
-			Integer theIndex = _participantIds.get(pt.getName() + NARRATIVE_FORMAT);
-			PreparedStatement stP;
+	@Override
+	protected void removeListeners(final ScenarioType scenario) {
+		_myScenario.removeScenarioSteppedListener(this);
+	}
 
-			if (theIndex == null)
-			{
-				theIndex = getDatasetIndexFor(pt.getName(), NARRATIVE_FORMAT);
-				_participantIds.put(pt.getName() + NARRATIVE_FORMAT, theIndex);
-			}
+	public void setRecordDecisions(final boolean recordDecisions) {
+		this._recordDecisions = recordDecisions;
+	}
 
-			stP = _conn
-					.prepareStatement("INSERT INTO dataItems(datasetid, dtg, summary) VALUES (?, ?, ?)");
-			stP.setInt(1, theIndex.intValue());
-			stP.setTimestamp(2, new Timestamp(dtg));
-			stP.setString(3, activity);
-			stP.executeUpdate();
-			stP.close();
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-		}
+	public void setRecordDetections(final boolean recordDetections) {
+		this._recordDetections = recordDetections;
+	}
+
+	public void setRecordPositions(final boolean recordPositions) {
+		this._recordPositions = recordPositions;
+	}
+
+	public void setSubjectToTrack(final TargetType subjectToTrack) {
+		this._subjectToTrack = subjectToTrack;
 	}
 
 	/**
 	 * the scenario has stepped forward
 	 */
-	public void step(ScenarioType scenario, long newTime)
-	{
+	@Override
+	public void step(final ScenarioType scenario, final long newTime) {
 		if (!isActive())
 			return;
 
 		// just check that/if we have an output file
-		if (_conn == null)
-		{
+		if (_conn == null) {
 			// ok, better sort out the output files.
 			createConnection();
 		}
 
 		// still failing?
-		if(_conn == null)
+		if (_conn == null)
 			return;
-		
+
 		// get the positions of the participants
 		final Integer[] lst = _myScenario.getListOfParticipants();
-		for (int thisIndex = 0; thisIndex < lst.length; thisIndex++)
-		{
+		for (int thisIndex = 0; thisIndex < lst.length; thisIndex++) {
 			final Integer integer = lst[thisIndex];
-			if (integer != null)
-			{
-				final ASSET.ParticipantType pt = _myScenario.getThisParticipant(integer
-						.intValue());
+			if (integer != null) {
+				final ASSET.ParticipantType pt = _myScenario.getThisParticipant(integer.intValue());
 
 				// is this a target of interest?
-				if ((_subjectToTrack == null)
-						|| (_subjectToTrack.matches(pt.getCategory())))
-				{
-					if (getRecordPositions())
-					{
+				if ((_subjectToTrack == null) || (_subjectToTrack.matches(pt.getCategory()))) {
+					if (getRecordPositions()) {
 						final ASSET.Participants.Status stat = pt.getStatus();
 						final MWC.GenericData.WorldLocation loc = stat.getLocation();
 
@@ -436,17 +495,15 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 						writeThesePositionDetails(loc, stat, pt, newTime);
 					}
 
-					if (getRecordDetections())
-					{
+					if (getRecordDetections()) {
 						// get the list of detections
-						DetectionList list = pt.getNewDetections();
+						final DetectionList list = pt.getNewDetections();
 						writeTheseDetectionDetails(pt, list, newTime);
 					}
 
-					if (getRecordDecisions())
-					{
+					if (getRecordDecisions()) {
 						// get the current activity
-						String thisActivity = pt.getActivity();
+						final String thisActivity = pt.getActivity();
 						writeThisDecisionDetail(pt, thisActivity, newTime);
 					}
 
@@ -457,301 +514,132 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 
 	}
 
-	private void createConnection()
-	{
-		try
-		{
-			String url = "jdbc:postgresql://86.134.91.5:5432/gnd";
-			_conn = DriverManager.getConnection(url, "dev", DEV_PASSWORD);
-		}
-		catch (SQLException e)
-		{
-			System.err.println("failed to create connection");
-			e.printStackTrace();
-		}
+	private String wrapStatus(final double course, final WorldSpeed speed) {
+		return "<status course=\"" + course + "\" speed=\"" + speed.toString() + "\" />";
 	}
 
 	/**
-	 * add any applicable listeners
+	 * ok. ready to start writing. get on with it
+	 *
+	 * @param title      the title of this run
+	 * @param currentDTG the current time (not model time)
+	 * @throws IOException
 	 */
-	protected void addListeners(ScenarioType scenario)
-	{
-		_myScenario.addScenarioSteppedListener(this);
+	protected void writeFileHeaderDetails(final String title, final long currentDTG) {
+
 	}
 
 	/**
-	 * remove any listeners
+	 * write these detections to file
+	 *
+	 * @param pt         the participant we're on about
+	 * @param detections the current set of detections
+	 * @param dtg        the dtg at which the detections were observed
 	 */
-	protected void removeListeners(ScenarioType scenario)
-	{
-		_myScenario.removeScenarioSteppedListener(this);
-	}
+	protected void writeTheseDetectionDetails(final NetworkParticipant pt, final DetectionList detections,
+			final long dtg) {
+		try {
+			// check there are some decisions
+			if (detections.size() == 0)
+				return;
 
-	// ////////////////////////////////////////////////
-	// member getter/setters
-	// ////////////////////////////////////////////////
+			// see if we've loaded this participant
+			Integer theIndex = _participantIds.get(pt.getName() + DETECTION_FORMAT);
+			PreparedStatement stP;
 
-	public boolean getRecordDetections()
-	{
-		return _recordDetections;
-	}
-
-	public void setRecordDetections(boolean recordDetections)
-	{
-		this._recordDetections = recordDetections;
-	}
-
-	public boolean getRecordDecisions()
-	{
-		return _recordDecisions;
-	}
-
-	public void setRecordDecisions(boolean recordDecisions)
-	{
-		this._recordDecisions = recordDecisions;
-	}
-
-	public boolean getRecordPositions()
-	{
-		return _recordPositions;
-	}
-
-	public void setRecordPositions(boolean recordPositions)
-	{
-		this._recordPositions = recordPositions;
-	}
-
-	public TargetType getSubjectToTrack()
-	{
-		return _subjectToTrack;
-	}
-
-	public void setSubjectToTrack(TargetType subjectToTrack)
-	{
-		this._subjectToTrack = subjectToTrack;
-	}
-
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	public static final class recToDbTest extends
-			ContinuousRecordToFileObserver.RecToFileTest
-	{
-		String _buildDate;
-		String _headerDetails;
-		boolean _detectionDetailsWritten;
-		boolean _positionDetailsWritten;
-		boolean _decisionDetailsWritten;
-
-		public recToDbTest(final String val)
-		{
-			super(val);
-		}
-
-		public void testCombinations()
-		{
-//			doThisTest(true, true, true, null);
-	//		doThisTest(true, false, false, null);
-//			doThisTest(false, true, false, null);
-//			doThisTest(false, false, false, null);
-		}
-
-		public void doThisTest(boolean testPos, boolean testDecs, boolean testDets,
-				TargetType target)
-		{
-			RecordStatusToDBObserverType observer = new RecordStatusToDBObserverType(
-					testDets, testDecs, testPos, target, "trial", true, "monster run");
-			assertNotNull("observer wasn't created", observer);
-
-			// and the scenario
-			CoreScenario cs = new CoreScenario();
-			cs.setName("testing scenario output");
-
-			// add a participant
-			final SSN ssn = new SSN(12);
-			ssn.setName("SSN");
-			ssn.setCategory(new Category(Category.Force.BLUE,
-					Category.Environment.SUBSURFACE, Category.Type.SUBMARINE));
-			ssn.setDecisionModel(new ASSET.Models.Decision.Tactical.Wait(
-					new Duration(12, Duration.HOURS), "do wait"));
-			OpticSensor sampleSensor = new OpticSensor(12)
-			{
-				private static final long serialVersionUID = 1L;
-
-				// what is the detection strength for this target?
-				protected DetectionEvent detectThis(EnvironmentType environment,
-						ParticipantType host, ParticipantType target1, long time,
-						ScenarioType scenario)
-				{
-					DetectionEvent de = new DetectionEvent(12l, 12, null, this, null,
-							null, null, null, null, null, null, null, ssn);
-					return de;
-				}
-				// public void detects(EnvironmentType environment, DetectionList
-				// existingDetections, ParticipantType ownship, ScenarioType scenario,
-				// long time)
-				// {
-				// DetectionEvent de = new DetectionEvent(12l, 12, null, this, null,
-				// null, null, null, null, null, null, null, ssn);
-				// existingDetections.add(de);
-				// }
-			};
-			ssn.addSensor(sampleSensor);
-			ssn.setMovementChars(HeloMovementCharacteristics.getSampleChars());
-			Status theStat = new Status(12, 12);
-			theStat.setLocation(new WorldLocation(12, 12, 12));
-			theStat.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
-			ssn.setStatus(theStat);
-
-			cs.addParticipant(12, ssn);
-
-			// initialise results instances
-			_buildDate = null;
-			_headerDetails = null;
-			_detectionDetailsWritten = false;
-			_positionDetailsWritten = false;
-			_decisionDetailsWritten = false;
-
-			// and do the setup
-			observer.setup(cs);
-
-			// do a step
-			cs.step();
-
-			// do lots more steps
-			for (int i = 0; i < 3000; i++)
-			{
-				// do a step
-				cs.step();
+			if (theIndex == null) {
+				theIndex = getDatasetIndexFor(pt.getName(), DETECTION_FORMAT);
+				_participantIds.put(pt.getName() + DETECTION_FORMAT, theIndex);
 			}
 
-			// and the close
-			observer.tearDown(cs);
-			
-			System.out.println("complete");
-			
-			// and close the file
-		//	assertNull("stream wasn't closed", observer._conn);
+			stP = _conn.prepareStatement("INSERT INTO dataItems(datasetid, dtg, summary) VALUES (?, ?, ?)");
+			stP.setInt(1, theIndex.intValue());
+			stP.setTimestamp(2, new Timestamp(dtg));
 
-		}
+			final Iterator<DetectionEvent> iter = detections.iterator();
+			while (iter.hasNext()) {
+				final DetectionEvent de = iter.next();
+				String detStr = "";
+				final Float brg = de.getBearing();
+				if (brg != null)
+					detStr += "Brg:" + brg.floatValue();
+				final WorldDistance dist = de.getRange();
+				if (dist != null)
+					detStr += " Rng:" + dist.toString();
+				detStr += " " + de.getTargetType().toString();
+				stP.setString(3, detStr);
+				stP.executeUpdate();
+			}
 
-		// ////////////////////////////////////////////////
-		// utility method to create an observer - over-ridden in instantiated
-		// classes
-		// ////////////////////////////////////////////////
-
-	}
-
-	@Override
-	protected void performCloseProcessing(ScenarioType scenario)
-	{
-		try
-		{
-			_conn.close();
-		}
-		catch (SQLException e)
-		{
-			System.err.println("failed to close database connection");
+			stP.close();
+		} catch (final SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
-	@Override
-	protected void performSetupProcessing(ScenarioType scenario)
-	{
-		// check we have the driver
-		try
-		{
-			Class.forName("org.postgresql.Driver");
-		}
-		catch (ClassNotFoundException e)
-		{
-			System.err.println("Failed to load database driver");
-			e.printStackTrace();
-		}
+	/**
+	 * write this set of details to file
+	 *
+	 * @param loc  the current location
+	 * @param stat the current status
+	 * @param pt   the participant in question
+	 */
+	protected void writeThesePositionDetails(final WorldLocation loc, final Status stat, final NetworkParticipant pt,
+			final long newTime) {
+		try {
+			// see if we've loaded this participant
+			Integer theIndex = _participantIds.get(pt.getName() + POSITION_FORMAT);
+			PreparedStatement stP;
 
-		// store the scenario name, so we can create our exercuse
-		_scenarioName = scenario.getName() + " ran on:" + 
-		MWC.Utilities.TextFormatting.DebriefFormatDateTime.toString(new Date().getTime()); 
-		
-		try
-		{
-			String url = "jdbc:postgresql://86.134.91.5:5432/gnd";
-			_conn = DriverManager.getConnection(url, "dev", DEV_PASSWORD);
-			
-			// also tell the connection about our new custom data types
-	    ((org.postgresql.PGConnection)_conn).addDataType("geometry",org.postgis.PGgeometry.class);
-	    ((org.postgresql.PGConnection)_conn).addDataType("box3d",org.postgis.PGbox3d.class);
+			if (theIndex == null) {
+				theIndex = getDatasetIndexFor(pt.getName(), POSITION_FORMAT);
+				_participantIds.put(pt.getName() + POSITION_FORMAT, theIndex);
+			}
 
-	    
-			// _conn = DriverManager.getConnection("//localhost:5432/GND", "postgres",
-			// "4pfonmr");
-
-		}
-		catch (SQLException e)
-		{
-			System.err.println("failed to create connection");
+			stP = _conn.prepareStatement(
+					"INSERT INTO dataItems(datasetid, dtg, location, contenttype, content) VALUES" + "(?, ?, ?,?,?)");
+			stP.setInt(1, theIndex.intValue());
+			stP.setTimestamp(2, new Timestamp(stat.getTime()));
+			stP.setObject(3, createGeometry(loc));
+			stP.setString(4, "application/vstatus+xml");
+			stP.setString(5, wrapStatus(stat.getCourse(), stat.getSpeed()));
+			stP.executeUpdate();
+			stP.close();
+		} catch (final SQLException e) {
 			e.printStackTrace();
 		}
 	}
-	
-  /**
-   * get the editor for this item
-   *
-   * @return the BeanInfo data for this editable object
-   */
-  public MWC.GUI.Editable.EditorType getInfo()
-  {
-    if (_myEditor == null)
-      _myEditor =  new RecordToDbObserverInfo(this);
 
-    return _myEditor;
-  }
-	
+	//////////////////////////////////////////////////////////////////////
+	// editable properties
+	//////////////////////////////////////////////////////////////////////
 
-	public boolean hasEditor()
-	{
-		return true;
+	/**
+	 * write the current decision description to file
+	 *
+	 * @param pt       the participant we're looking at
+	 * @param activity a description of the current activity
+	 * @param dtg      the dtg at which the description was recorded
+	 */
+	protected void writeThisDecisionDetail(final NetworkParticipant pt, final String activity, final long dtg) {
+		try {
+			// see if we've loaded this participant
+			Integer theIndex = _participantIds.get(pt.getName() + NARRATIVE_FORMAT);
+			PreparedStatement stP;
+
+			if (theIndex == null) {
+				theIndex = getDatasetIndexFor(pt.getName(), NARRATIVE_FORMAT);
+				_participantIds.put(pt.getName() + NARRATIVE_FORMAT, theIndex);
+			}
+
+			stP = _conn.prepareStatement("INSERT INTO dataItems(datasetid, dtg, summary) VALUES (?, ?, ?)");
+			stP.setInt(1, theIndex.intValue());
+			stP.setTimestamp(2, new Timestamp(dtg));
+			stP.setString(3, activity);
+			stP.executeUpdate();
+			stP.close();
+		} catch (final SQLException e) {
+			e.printStackTrace();
+		}
 	}
-	
-	 //////////////////////////////////////////////////////////////////////
-  // editable properties
-  //////////////////////////////////////////////////////////////////////
-
-  static public class RecordToDbObserverInfo extends MWC.GUI.Editable.EditorType
-  {
-
-
-    /**
-     * constructor for editable details of a set of Layers
-     *
-     * @param obj the Layers themselves
-     */
-    public RecordToDbObserverInfo(final RecordStatusToDBObserverType obj)
-    {
-      super(obj, obj.getName(), "Edit");
-    }
-
-    /**
-     * editable GUI properties for our participant
-     *
-     * @return property descriptions
-     */
-    public java.beans.PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try
-      {
-        final java.beans.PropertyDescriptor[] res = {
-          prop("Active", "Whether this observer is active"),
-          prop("Name", "The name of this observer"),
-        };
-
-        return res;
-      }
-      catch (java.beans.IntrospectionException e)
-      {
-        return super.getPropertyDescriptors();
-      }
-    }
-  }
 }

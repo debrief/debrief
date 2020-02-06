@@ -1,20 +1,18 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 package info.limpet;
-
-import info.limpet.impl.UIProperty;
 
 import java.util.Iterator;
 import java.util.List;
@@ -24,62 +22,66 @@ import javax.measure.unit.Unit;
 
 import org.eclipse.january.dataset.DoubleDataset;
 
-public interface IDocument<T extends Object> extends IStoreItem
-{
+import info.limpet.impl.UIProperty;
 
-  Iterator<T> getIterator();
-  
+public interface IDocument<T extends Object> extends IStoreItem {
 
+	@Override
+	public void addChangeListener(IChangeListener listener);
 
-  @UIProperty(name = "Name", category = UIProperty.CATEGORY_LABEL)
-  public String getName();
+	public void addDependent(ICommand command);
 
-  public void setName(String name);
+	void clearQuiet();
 
-  public IStoreGroup getParent();
+	@Override
+	public void fireDataChanged();
 
-  public void setParent(IStoreGroup parent);
+	public void fireMetadataChanged();
 
-  public void addChangeListener(IChangeListener listener);
+	public List<ICommand> getDependents();
 
-  public void removeChangeListener(IChangeListener listener);
+	double getIndexAt(int i);
 
-  public void fireDataChanged();
+	public Iterator<Double> getIndexIterator();
 
-  public void fireMetadataChanged();
+	@UIProperty(name = "IndexUnits", category = UIProperty.CATEGORY_LABEL)
+	public Unit<?> getIndexUnits();
 
-  public UUID getUUID();
+	DoubleDataset getIndexValues();
 
-  @UIProperty(name = "Size", category = UIProperty.CATEGORY_LABEL)
-  public int size();
+	Iterator<T> getIterator();
 
-  @UIProperty(name = "Indexed", category = UIProperty.CATEGORY_LABEL)
-  public boolean isIndexed();
+	@Override
+	@UIProperty(name = "Name", category = UIProperty.CATEGORY_LABEL)
+	public String getName();
 
-  public Iterator<Double> getIndexIterator();
-  
-  @UIProperty(name = "IndexUnits", category = UIProperty.CATEGORY_LABEL)
-  public Unit<?> getIndexUnits();
+	@Override
+	public IStoreGroup getParent();
 
-  @UIProperty(name = "Quantity", category = UIProperty.CATEGORY_LABEL)
-  public boolean isQuantity();
+	public ICommand getPrecedent();
 
-  public ICommand getPrecedent();
+	@Override
+	public UUID getUUID();
 
-  public void addDependent(ICommand command);
+	@UIProperty(name = "Indexed", category = UIProperty.CATEGORY_LABEL)
+	public boolean isIndexed();
 
-  public void removeDependent(ICommand command);
+	@UIProperty(name = "Quantity", category = UIProperty.CATEGORY_LABEL)
+	public boolean isQuantity();
 
-  public List<ICommand> getDependents();
+	@Override
+	public void removeChangeListener(IChangeListener listener);
 
-  void clearQuiet();
-  
-  void setIndexUnits(Unit<?> units);
+	public void removeDependent(ICommand command);
 
-  double getIndexAt(int i);
+	void setIndexUnits(Unit<?> units);
 
+	public void setName(String name);
 
+	@Override
+	public void setParent(IStoreGroup parent);
 
-  DoubleDataset getIndexValues();
+	@UIProperty(name = "Size", category = UIProperty.CATEGORY_LABEL)
+	public int size();
 
 }

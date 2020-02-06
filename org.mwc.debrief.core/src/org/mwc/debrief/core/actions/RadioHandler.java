@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.debrief.core.actions;
@@ -24,8 +24,7 @@ import org.mwc.cmap.plotViewer.actions.Pan;
 import org.mwc.cmap.plotViewer.actions.RangeBearing;
 import org.mwc.cmap.plotViewer.actions.ZoomIn;
 
-public class RadioHandler extends AbstractHandler
-{
+public class RadioHandler extends AbstractHandler {
 
 	public static final String DRAG_SEGMENT = "DragSegment";
 	public static final String DRAG_COMPONENT = "DragComponent";
@@ -36,33 +35,26 @@ public class RadioHandler extends AbstractHandler
 	public static final String ID = "org.mwc.debrief.core.RadioHandler";
 
 	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException
-	{
+	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		if (HandlerUtil.matchesRadioState(event))
-			return null; 
+			return null;
 
-		String currentState = event.getParameter(RadioState.PARAMETER_ID);
+		final String currentState = event.getParameter(RadioState.PARAMETER_ID);
 
-		if (ZOOM_IN.equals(currentState))
-		{
+		if (ZOOM_IN.equals(currentState)) {
 			new ZoomIn().execute(event);
-		} else if (PAN.equals(currentState))
-		{
+		} else if (PAN.equals(currentState)) {
 			new Pan().execute(event);
-		} else if (RANGE_BEARING.equals(currentState))
-		{
+		} else if (RANGE_BEARING.equals(currentState)) {
 			new RangeBearing().execute(event);
-		} else if (DRAG_FEATURE.equals(currentState))
-		{
+		} else if (DRAG_FEATURE.equals(currentState)) {
 			new DragFeature().execute(event);
-		} else if (DRAG_COMPONENT.equals(currentState))
-		{
+		} else if (DRAG_COMPONENT.equals(currentState)) {
 			new DragComponent().execute(event);
-		} else if (DRAG_SEGMENT.equals(currentState))
-		{
+		} else if (DRAG_SEGMENT.equals(currentState)) {
 			new DragSegment().execute(event);
 		}
-		
+
 		HandlerUtil.updateRadioState(event.getCommand(), currentState);
 		return null;
 	}

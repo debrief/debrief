@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package ASSET.Util.MonteCarlo;
@@ -54,27 +54,317 @@ import ASSET.Util.XML.ScenarioHandler;
  * list of items in a particular file which may be changed
  */
 
-public final class ScenarioGenerator
-{
-	/**
-	 * the multi-scenario generator
-	 */
-	private MultiScenarioGenerator _scenarioGenny = null;
+public final class ScenarioGenerator {
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	public static final class ScenarioGennyTest extends SupportTesting {
+		public static final String VARIANCE_FILE = "test_variance1.xml";
+		public static final String SCENARIO_FILE = "test_variance_scenario.xml";
 
-	/**
-	 * the multi-participant generator
-	 */
-	private MultiParticipantGenerator _participantGenny = null;
+		public ScenarioGennyTest(final String val) {
+			super(val);
+		}
 
-	/**
-	 * our document
-	 */
-	private Document _targetScenario;
+		/**
+		 * Emulation of File.createNewFile for JDK 1.1.
+		 * <p/>
+		 * <p>
+		 * This method does <strong>not</strong> guarantee that the operation is atomic.
+		 * </p>
+		 *
+		 * @since 1.21, Ant 1.5
+		 */
+		private boolean createNewFile(final File f) throws IOException {
+			if (f != null) {
+				if (f.exists()) {
+					return false;
+				}
 
-	/**
-	 * our control file
-	 */
-	private Document _controlDocument;
+				FileOutputStream fos = null;
+				try {
+					// first create the parent directory(s) if needed
+					final File parentFile = f.getParentFile();
+					parentFile.mkdirs();
+
+					// and now the file itself
+					fos = new FileOutputStream(f);
+					fos.write(new byte[0]);
+				} finally {
+					if (fos != null) {
+						fos.close();
+					}
+				}
+
+				return true;
+			}
+			return false;
+		}
+
+		// TODO FIX-TEST
+		public final void NtestLoadVariances() throws XPathExpressionException {
+			String code_root = System.getProperty("CODE_ROOT");
+			if (code_root == null)
+				code_root = "src";
+
+			final String docPath = code_root + "/ASSET/Util/MonteCarlo/";
+
+			Document doc = null;
+			try {
+				final File var = new File(docPath + VARIANCE_FILE);
+				assertTrue("can find data-file", var.exists());
+				doc = ScenarioGenerator.readDocumentFrom(new FileInputStream(var));
+			} catch (final SAXException e) {
+				e.printStackTrace(); // To change body of catch statement use Options |
+				// File Templates.
+			} catch (final FileNotFoundException e) {
+				e.printStackTrace(); // To change body of catch statement use Options |
+				// File Templates.
+			}
+			final ScenarioGenerator genny = new ScenarioGenerator();
+			genny.setVariances(doc, null);
+
+			// check they got loaded
+			assertEquals("loaded template name", "test_reports/asset_test_output/test_variance1", genny.getDirectory());
+		}
+
+		// TODO FIX-TEST
+		public final void NtestPerformVariances() throws XPathExpressionException {
+			String code_root = System.getProperty("CODE_ROOT");
+			if (code_root == null)
+				code_root = "src";
+
+			final String docPath = code_root + "/ASSET/Util/MonteCarlo/";
+
+			final Vector<Document> list = new Vector<Document>(0, 1);
+
+			final ScenarioGenerator genny = new ScenarioGenerator();
+
+			Document var = null;
+			try {
+				final File iFile = new File(docPath + VARIANCE_FILE);
+				final FileInputStream fis = new FileInputStream(iFile);
+				var = ScenarioGenerator.readDocumentFrom(fis);
+			} catch (final SAXException e) {
+				e.printStackTrace(); // To change body of catch statement use Options |
+				// File Templates.
+			} catch (final FileNotFoundException e) {
+				e.printStackTrace(); // To change body of catch statement use Options |
+				// File Templates.
+			}
+
+			Document doc = null;
+			try {
+				doc = ScenarioGenerator.readDocumentFrom(new FileInputStream(docPath + SCENARIO_FILE));
+			} catch (final SAXException e) {
+				e.printStackTrace(); // To change body of catch statement use Options |
+				// File Templates.
+			} catch (final FileNotFoundException e) {
+				e.printStackTrace(); // To change body of catch statement use Options |
+				// File Templates.
+			}
+
+			final String res = genny.doScenarioGeneration(doc, var, list, null, null);
+
+			assertNull("success - no error", res);
+
+			// check there's stuff in the lst
+			assertEquals("got some scenarios", 3, list.size());
+		}
+
+		// TODO FIX-TEST
+		public final void NtestPerformVariancesFromFilenames() {
+			String code_root = System.getProperty("CODE_ROOT");
+			if (code_root == null)
+				code_root = "src";
+
+			final String docPath = code_root + "/ASSET/Util/MonteCarlo/";
+
+			final Vector<Document> list = new Vector<Document>(0, 1);
+
+			final ScenarioGenerator genny = new ScenarioGenerator();
+
+			String res = null;
+			try {
+				res = genny.createScenarios(docPath + SCENARIO_FILE, docPath + VARIANCE_FILE, list, null, null);
+			} catch (final XPathExpressionException e) {
+				e.printStackTrace();
+			}
+
+			assertNull("success - no error", res);
+
+			// check there's stuff in the lst
+			assertEquals("got some scenarios", 3, list.size());
+		}
+
+		// TODO FIX-TEST
+		public final void NtestPerformVariancesFromInvalidFilenames() {
+			String code_root = System.getProperty("CODE_ROOT");
+			if (code_root == null)
+				code_root = "src";
+
+			final String docPath = code_root + "/ASSET/Util/MonteCarlo/";
+
+			final Vector<Document> list = new Vector<Document>(0, 1);
+
+			final ScenarioGenerator genny = new ScenarioGenerator();
+
+			String res = null;
+			try {
+				res = genny.createScenarios(docPath + "test_variance_scnario.xml", docPath + SCENARIO_FILE, list, null,
+						null);
+			} catch (final XPathExpressionException e) {
+				e.printStackTrace();
+			}
+
+			assertNotNull("success - error returned", res);
+			assertTrue("correct error returned", res.indexOf(TEMPLATE_FILE_ERROR) > -1);
+
+			// check there's stuff in the lst
+			assertEquals("got no scenarios", 0, list.size());
+
+			try {
+				res = genny.createScenarios(docPath + SCENARIO_FILE, docPath + "test_varince1.xml", list, null, null);
+			} catch (final XPathExpressionException e) {
+				e.printStackTrace();
+			}
+
+			assertNotNull("success - error returned", res);
+			assertTrue("correct error returned", res.indexOf(CONTROL_FILE_ERROR) > -1);
+
+			// check there's stuff in the lst
+			assertEquals("got no scenarios", 0, list.size());
+
+		}
+
+		// TODO FIX-TEST
+		public void NtestValidation() {
+			// String str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+			// str +=
+			// "<Scenario xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+			// xsi:noNamespaceSchemaLocation=\"file:///E:/dev/Asset/src/schemas/ASSET.xsd/\"
+			// Created=\"2003-12-12T12:00:00\" Name=\"the name\"
+			// StartTime=\"2003-12-12T12:00:00\">";
+			// str += "<StepTime Units=\"seconds\" Value=\"45\"/>";
+			// str += "<Participants/>";
+			// str += "</Scenario>";
+
+			String res = null;
+
+			try {
+				final FileInputStream doc = new FileInputStream(
+						"../org.mwc.asset.legacy/src/ASSET/Util/MonteCarlo/small_test_scenario.xml");
+				assertNotNull("we found test document", doc);
+				res = ScenarioGenerator.validateThisDocument(doc);
+			} catch (final FileNotFoundException e1) {
+				e1.printStackTrace(); // To change body of catch statement use Options |
+				// File Templates.
+			}
+
+			// check if/why validation isn't working
+			assertNull("valid file didn't throw any errors", res);
+
+			try {
+				final FileInputStream doc = new FileInputStream(
+						"../org.mwc.asset.legacy/src/ASSET/Util/MonteCarlo/small_test_scenario_invalid.xml");
+				assertNotNull("we found test document", doc);
+				res = ScenarioGenerator.validateThisDocument(doc);
+			} catch (final FileNotFoundException e1) {
+				e1.printStackTrace(); // To change body of catch statement use Options |
+				// File Templates.
+			} catch (final Exception se) {
+				System.out.println("OTHER EXCEPTION THROWN");
+				se.printStackTrace();
+			}
+
+			// check if/why validation isn't working
+			assertNotNull("valid file didn't throw any errors", res);
+
+			// and check it's contents
+			// assertEquals("correct error message",
+			// "cvc-elt.1: Cannot find the declaration of element 'Scenaio'.", res);
+			assertEquals("correct error message",
+					"The element type \"Scenaio\" must be terminated by the matching end-tag \"</Scenaio>\".", res);
+		}
+
+		// TODO FIX-TEST
+		public void NtestWriteScenariosToFile() {
+			final String outputDir = "c:\\temp\\asset_test_output";
+
+			// check the output directory is clear
+			final File outputDirectory = new File(outputDir);
+
+			deleteThisDirectory(outputDirectory);
+
+			assertFalse("we should have deleted the output directory", outputDirectory.exists());
+			// ok, put dummy seed into the output directory to check that it's been
+			// deleted
+
+			String code_root = System.getProperty("CODE_ROOT");
+			if (code_root == null)
+				code_root = "src";
+
+			final String docPath = code_root + "/ASSET/Util/MonteCarlo/";
+
+			final Vector<Document> list = new Vector<Document>(0, 1);
+
+			final ScenarioGenerator genny = new ScenarioGenerator();
+
+			Document var = null;
+			try {
+				var = ScenarioGenerator.readDocumentFrom(new FileInputStream(docPath + VARIANCE_FILE));
+			} catch (final SAXException e) {
+				e.printStackTrace(); // To change body of catch statement use Options |
+				// File Templates.
+			} catch (final FileNotFoundException e) {
+				e.printStackTrace(); // To change body of catch statement use Options |
+				// File Templates.
+			}
+
+			Document doc = null;
+			try {
+				doc = ScenarioGenerator.readDocumentFrom(new FileInputStream(docPath + SCENARIO_FILE));
+			} catch (final SAXException e) {
+				e.printStackTrace(); // To change body of catch statement use Options |
+				// File Templates.
+			} catch (final FileNotFoundException e) {
+				e.printStackTrace(); // To change body of catch statement use Options |
+				// File Templates.
+			}
+
+			String res = null;
+			try {
+				res = genny.doScenarioGeneration(doc, var, list, null, null);
+			} catch (final XPathExpressionException e1) {
+				e1.printStackTrace();
+			}
+
+			assertNull("success - no error", res);
+
+			// check there's stuff in the lst
+			assertEquals("got some scenarios", 3, list.size());
+
+			// ok, we've read in the data - find out where the output directory is, so
+			// that we can seed it with an old file (to check that they get deleted)
+			final String theDir = genny.getDirectory();
+			final File touchFile = new File(theDir + "/" + "seed_file.txt");
+			try {
+				createNewFile(touchFile);
+			} catch (final IOException e) {
+				e.printStackTrace(); // To change body of catch statement use Options |
+				// File Templates.
+			}
+
+			assertTrue("check we created the touch file", touchFile.exists());
+
+			// and now write them out
+			genny.writeTheseToFile(list, true);
+
+			// and check that the touch file has been deleted
+			assertFalse("check that the touch file has been deleted", touchFile.exists());
+		}
+
+	}
 
 	/**
 	 * the directory to dump the scenarios into
@@ -86,18 +376,9 @@ public final class ScenarioGenerator
 	 */
 	private static final String RANDOM_SEED = "RandomSeed";
 
-	/**
-	 * the directory to place the new files
-	 */
-	private String _myDirectory;
-
-	/**
-	 * the seed to use for the random number generator
-	 */
-	private Integer _theSeed;
-
 	// phrases to indicate where error may have occured
 	public static final String CONTROL_FILE_ERROR = "Control file";
+
 	public static final String TEMPLATE_FILE_ERROR = "Template file";
 
 	/**
@@ -105,248 +386,17 @@ public final class ScenarioGenerator
 	 */
 	public static final String CONTROL_FILENAME = "control_file.xml";
 
-	/***************************************************************
-	 * constructor
-	 ***************************************************************/
-	/**
-	 * constructor, received a stream containing the list of variances we are
-	 * going to manage
-	 */
-	public ScenarioGenerator()
-	{
-	}
-
-	/**
-	 * load the two files, and generate the scenarios
-	 * 
-	 * @param templatePath
-	 * @param controlPath
-	 * @param results
-	 * @param mWrap
-	 * @param outputDirectory
-	 * @return
-	 * @throws XPathExpressionException
-	 */
-	public String createScenarios(String templatePath, String controlPath,
-			Vector<Document> results, ASSETProgressMonitor mWrap, File outputDirectory)
-			throws XPathExpressionException
-	{
-		Document theControlFile = null;
-		String res = null;
-
-		try
-		{
-			theControlFile = ScenarioGenerator.readDocumentFrom(new FileInputStream(
-					controlPath));
-		}
-		catch (SAXParseException e)
-		{
-			res = "Problem parsing " + CONTROL_FILE_ERROR + e.getMessage();
-		}
-		catch (SAXException e)
-		{
-			res = "Problem parsing " + CONTROL_FILE_ERROR + e.getMessage();
-		}
-		catch (FileNotFoundException e)
-		{
-			res = CONTROL_FILE_ERROR + " not found:" + e.getMessage();
-		}
-
-		// did it work?
-		if (res == null)
-		{
-
-			// now try to load the scenario
-			Document theScenarioTemplate = null;
-			try
-			{
-				theScenarioTemplate = ScenarioGenerator
-						.readDocumentFrom(new FileInputStream(templatePath));
-
-			}
-			catch (SAXException e)
-			{
-				res = "Problem parsing " + TEMPLATE_FILE_ERROR + e.getMessage();
-			}
-			catch (FileNotFoundException e)
-			{
-				res = TEMPLATE_FILE_ERROR + " file not found:" + e.getMessage();
-			}
-
-			// did that work?
-			if (res == null)
-			{
-				// yup, go for it.
-				res = doScenarioGeneration(theScenarioTemplate, theControlFile,
-						results, mWrap, outputDirectory);
-			}
-
-		}
-
-		return res;
-	}
-
-	/**
-	 * main loader/creator method. Takes input params and results holder, returns
-	 * populated holder together with status message
-	 * 
-	 * @param template
-	 *          scenario template
-	 * @param controlFile
-	 *          scenario control file (with builder information)
-	 * @param results
-	 *          vector containing the new scenarios
-	 * @param mWrap
-	 * @param outputDirectory
-	 * @return error message on failure, or null for success
-	 * @throws XPathExpressionException
-	 */
-	protected String doScenarioGeneration(Document template,
-			Document controlFile, Vector<Document> results,
-			ASSETProgressMonitor mWrap, File outputDirectory)
-			throws XPathExpressionException
-	{
-		String res = null;
-
-		// load the files
-		setVariances(controlFile, outputDirectory);
-
-		// create the scenario(s)
-		setTemplate(template);
-
-		// did we find a random seed?
-		if (_theSeed != null)
-		{
-			RandomGenerator.seed(_theSeed.intValue());
-		}
-
-		// and now the permutations
-		res = createNewRandomisedPermutations(results, mWrap);
-
-		return res;
-	}
-
-	/**
-	 * method to write a list of scenarios to file, each in their own directory
-	 * 
-	 * @param scenarios
-	 *          the list of scenarios to write to file
-	 * @return String indicating any problems, or void for success
-	 */
-	public String writeTheseToFile(Vector<Document> scenarios,
-			boolean deleteExisting)
-	{
-		String res = null;
-
-		// do we want to delete the existing files?
-		if (deleteExisting)
-		{
-			deleteThisDirectory(new File(getDirectory()));
-		}
-
-		// firstly output the control file to disk in the parent directory
-		// === which will also ensure the parent directory is present
-		String controlFileAsString = ScenarioGenerator
-				.writeToString(_controlDocument);
-
-		File controlOutput = new File(getDirectory() + "/" + CONTROL_FILENAME);
-		controlOutput.getAbsoluteFile().getParentFile().mkdirs();
-		try
-		{
-			FileWriter fw = new FileWriter(controlOutput);
-			fw.write(controlFileAsString);
-			fw.close();
-
-			if (!controlOutput.exists())
-			{
-				System.err.println("failed to create control file");
-			}
-		}
-		catch (IOException e)
-		{
-			res = e.getMessage();
-			e.printStackTrace(); // To change body of catch statement use Options |
-			// File Templates.
-		}
-
-		// did it work?
-		if (res == null)
-		{
-
-			// ok, now loop through the scenarios
-			for (int counter = 0; counter < scenarios.size(); counter++)
-			{
-				Document thisDoc = scenarios.elementAt(counter);
-
-				String asString = ScenarioGenerator.writeToString(thisDoc);
-
-				NodeList list = thisDoc.getElementsByTagName(ScenarioHandler.type);
-				Element scen = (Element) list.item(0);
-				String scen_name = scen
-						.getAttribute(MultiScenarioGenerator.SCENARIO_NAME_ATTRIBUTE);
-
-				// and output this string to file
-				int thisId = counter + 1;
-
-				// create the path to the new file
-				String theDir = getDirectory() + "/" + thisId + "/";
-
-				// declare it as a file
-				File outFile = new File(theDir);
-
-				// create any parent directories we need
-				outFile.mkdirs();
-
-				String theFile = theDir + scen_name + ".xml";
-
-				try
-				{
-					// put it into a writer
-					FileWriter fw = new FileWriter(theFile);
-
-					// write it out
-					fw.write(asString);
-
-					// and close it
-					fw.close();
-				}
-				catch (IOException e)
-				{
-					if (e instanceof FileNotFoundException)
-					{
-						res = "Is output file already open?";
-					}
-
-					// take a copy of the problem
-					res = res + e.getMessage();
-
-					// and print a stack trace
-					e.printStackTrace();
-
-					// and cut short the run
-					return res;
-
-				}
-
-			}
-		}
-
-		return res;
-	}
-
 	/**
 	 * convenience method to get a new document builder
-	 * 
+	 *
 	 * @return a new document builder
 	 */
-	public static DocumentBuilder createNewBuilder()
-	{
+	public static DocumentBuilder createNewBuilder() {
 		DocumentBuilder res = null;
 
-		try
-		{
+		try {
 
-			DocumentBuilderFactory _factory = DocumentBuilderFactory.newInstance();
+			final DocumentBuilderFactory _factory = DocumentBuilderFactory.newInstance();
 			_factory.setNamespaceAware(true); // set to false by default in
 			// DocumentBuilderFactory
 			_factory.setValidating(false);
@@ -366,29 +416,26 @@ public final class ScenarioGenerator
 
 			res = _factory.newDocumentBuilder();
 
-			res.setErrorHandler(new ErrorHandler()
-			{
-				public void warning(SAXParseException ex) throws SAXException
-				{
-					System.err.println("Throwing SAX Warner:" + ex.getMessage());
-					throw ex;
-				}
-
-				public void error(SAXParseException ex) throws SAXException
-				{
+			res.setErrorHandler(new ErrorHandler() {
+				@Override
+				public void error(final SAXParseException ex) throws SAXException {
 					System.err.println("Throwing SAX Error" + ex.getMessage());
 					throw ex;
 				}
 
-				public void fatalError(SAXParseException ex) throws SAXException
-				{
+				@Override
+				public void fatalError(final SAXParseException ex) throws SAXException {
 					System.err.println("Throwing new fatal error:" + ex.getMessage());
 					throw ex;
 				}
+
+				@Override
+				public void warning(final SAXParseException ex) throws SAXException {
+					System.err.println("Throwing SAX Warner:" + ex.getMessage());
+					throw ex;
+				}
 			});
-		}
-		catch (ParserConfigurationException e)
-		{
+		} catch (final ParserConfigurationException e) {
 			e.printStackTrace(); // To change body of catch statement use Options |
 			// File Templates.
 		}
@@ -396,19 +443,61 @@ public final class ScenarioGenerator
 	}
 
 	/**
+	 * Recursively deletes this file and if it is a directory all it contained
+	 * directories.
+	 */
+	public static boolean deleteThisDirectory(final File aFile) {
+		boolean deleted = true;
+		final File[] files = aFile.listFiles();
+		if (null != files) {
+			for (int i = 0; i < files.length; i++) {
+				deleted &= deleteThisDirectory(files[i]);
+			}
+		}
+		deleted &= aFile.delete();
+		return deleted;
+	}
+
+	/**
+	 * helper method to show progress to the command line
+	 *
+	 * @param counter how far we've got
+	 */
+	public static final void outputProgress(final int counter) {
+		if (counter % 100 == 0) {
+			System.out.println("-");
+		} else if (counter % 10 == 0) {
+			System.out.print("%");
+		}
+	}
+
+	/**
 	 * convenience method to load a document from a stream
 	 */
-	public static Document readDocumentFrom(InputStream stream)
-			throws SAXException, SAXParseException
-	{
-		DocumentBuilder builder = createNewBuilder();
+	public static Document readDocumentFrom(final InputSource stream) {
+		final DocumentBuilder builder = createNewBuilder();
 		Document document = null;
-		try
-		{
+		try {
 			document = builder.parse(stream);
+		} catch (final SAXException e) {
+			e.printStackTrace(); // To change body of catch statement use Options |
+			// File Templates.
+		} catch (final IOException e) {
+			e.printStackTrace(); // To change body of catch statement use Options |
+			// File Templates.
 		}
-		catch (IOException e)
-		{
+		return document;
+	}
+
+	/**
+	 * convenience method to load a document from a stream
+	 */
+	public static Document readDocumentFrom(final InputStream stream) throws SAXException, SAXParseException {
+		final DocumentBuilder builder = createNewBuilder();
+		Document document = null;
+		try {
+			document = builder.parse(stream);
+		} catch (final IOException e) {
 			writeOut("IO Exception occurred!");
 			e.printStackTrace(); // To change body of catch statement use Options |
 			// File Templates.
@@ -417,62 +506,105 @@ public final class ScenarioGenerator
 	}
 
 	/**
-	 * method to validate XML document (normally before saving a
-	 * computer-generated one)
-	 * 
-	 * @param doc
-	 *          the document to validate
+	 * method to validate XML document (normally before saving a computer-generated
+	 * one)
+	 *
+	 * @param doc the document to validate
 	 * @return a string containing errors, or null if document is valid
 	 */
-	public static String validateThisDocument(InputStream doc)
-	{
+	public static String validateThisDocument(final InputStream doc) {
 		Document getIt;
 		String res = null;
 
-		try
-		{
+		try {
 			getIt = ScenarioGenerator.readDocumentFrom(doc);
 
 			// just do some dummy rubbish to prevent compiler warning
 			// that getIt isn't used....
 			short scrapNodeType = getIt.getNodeType();
 			scrapNodeType = scrapNodeType++;
-		}
-		catch (SAXParseException e)
-		{
+		} catch (final SAXParseException e) {
 			res = e.getMessage();
-		}
-		catch (SAXException e)
-		{
+		} catch (final SAXException e) {
 			res = e.getMessage();
 		}
 
 		return res;
 	}
 
-	/**
-	 * convenience method to load a document from a stream
-	 */
-	public static Document readDocumentFrom(InputSource stream)
-	{
-		DocumentBuilder builder = createNewBuilder();
-		Document document = null;
-		try
-		{
-			document = builder.parse(stream);
-		}
-		catch (SAXException e)
-		{
-			e.printStackTrace(); // To change body of catch statement use Options |
-			// File Templates.
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace(); // To change body of catch statement use Options |
-			// File Templates.
-		}
-		return document;
+	private static void writeOut(final String string) {
+		System.out.println(string);
 	}
+
+	final public static String writeToString(final Document newDoc) {
+		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+		final TransformerFactory factory = TransformerFactory.newInstance();
+
+		try {
+			final javax.xml.transform.Transformer transformer = factory.newTransformer();
+
+			final StreamResult sr = new StreamResult(bos);
+
+			transformer.transform(new DOMSource(newDoc), sr);
+
+			bos.close();
+		} catch (final TransformerException e) {
+			e.printStackTrace(); // To change body of catch statement use Options |
+			// File Templates.
+		} catch (final IOException e) {
+			e.printStackTrace(); // To change body of catch statement use Options |
+			// File Templates.
+		}
+
+		final String res = bos.toString();
+		return res;
+	}
+
+	final public static String writeToString(final Element newElement) {
+		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+		final TransformerFactory factory = TransformerFactory.newInstance();
+
+		try {
+			final javax.xml.transform.Transformer transformer = factory.newTransformer();
+
+			final StreamResult sr = new StreamResult(bos);
+
+			transformer.transform(new DOMSource(newElement), sr);
+
+			bos.close();
+		} catch (final TransformerException e) {
+			e.printStackTrace(); // To change body of catch statement use Options |
+			// File Templates.
+		} catch (final IOException e) {
+			e.printStackTrace(); // To change body of catch statement use Options |
+			// File Templates.
+		}
+
+		final String res = bos.toString();
+		return res;
+	}
+
+	/**
+	 * the multi-scenario generator
+	 */
+	private MultiScenarioGenerator _scenarioGenny = null;
+
+	/**
+	 * the multi-participant generator
+	 */
+	private MultiParticipantGenerator _participantGenny = null;
+
+	/**
+	 * our document
+	 */
+	private Document _targetScenario;
+
+	/**
+	 * our control file
+	 */
+	private Document _controlDocument;
 
 	// /**
 	// * Simple search and replace:
@@ -505,134 +637,33 @@ public final class ScenarioGenerator
 	// return string;
 	// }
 
-	public boolean isMultiParticipant()
-	{
-		return _participantGenny != null;
-	}
-
-	public boolean isMultiScenario()
-	{
-		return _scenarioGenny != null;
-	}
-
-	public boolean isInitialised()
-	{
-		return _controlDocument != null;
-	}
+	/**
+	 * the directory to place the new files
+	 */
+	private String _myDirectory;
 
 	/**
-	 * read in the list of variances, and collate them into our list
-	 * 
-	 * @param outputDirectory
-	 *          where to put the generated files
-	 * @throws XPathExpressionException
+	 * the seed to use for the random number generator
 	 */
-	protected void setVariances(final Document document, File outputDirectory)
-			throws XPathExpressionException
-	{
-		// can we find a scenario generator?
-		XPathExpression xp2 = NamespaceContextProvider.createPath("//"
-				+ MultiScenarioGenerator.GENERATOR_TYPE);
-		Element el = (Element) xp2.evaluate(document, XPathConstants.NODE);
+	private Integer _theSeed;
 
-		if (el != null)
-		{
-			// just see if it's active. If there's an 'Active' attribute and it's set
-			// to true, or if there's no 'Active' attribute - do the genny
-			String isActive = el.getAttribute("Active");
-			if ((isActive == null) || (isActive.equals("")) || (isActive != null)
-					&& (Boolean.valueOf(isActive).booleanValue()))
-				this._scenarioGenny = new MultiScenarioGenerator(document);
-		}
-
-		// can we find a scenario generator?
-		xp2 = NamespaceContextProvider.createPath("//"
-				+ MultiParticipantGenerator.GENERATOR_TYPE);
-		el = (Element) xp2.evaluate(document, XPathConstants.NODE);
-		if (el != null)
-		{
-			this._participantGenny = new MultiParticipantGenerator(document);
-		}
-
-		xp2 = NamespaceContextProvider.createPath("//ScenarioGenerator");
-		el = (Element) xp2.evaluate(document, XPathConstants.NODE);
-
-		// retrieve our working values
-		xp2 = NamespaceContextProvider.createPath("//ScenarioController");
-		el = (Element) xp2.evaluate(document, XPathConstants.NODE);
-
-		if (el != null)
-		{
-			setDirectory(el.getAttribute(OUTPUT_DIRECTORY));
-			String theSeedStr = el.getAttribute(RANDOM_SEED);
-			if (theSeedStr != null)
-				if (theSeedStr.length() > 0)
-					_theSeed = Integer.valueOf(theSeedStr);
-		}
-
-		if (outputDirectory != null)
-			setDirectory(outputDirectory.getAbsolutePath());
-
-		_controlDocument = document;
-
-	}
-
+	/***************************************************************
+	 * constructor
+	 ***************************************************************/
 	/**
-	 * retrieve the control file
+	 * constructor, received a stream containing the list of variances we are going
+	 * to manage
 	 */
-	public Document getControlFile()
-	{
-		return _controlDocument;
+	public ScenarioGenerator() {
 	}
 
-	/**
-	 * set the document we are going to be changing
-	 */
-	public final void setTemplate(final Document rawDoc)
-	{
-		_targetScenario = rawDoc;
-	}
-
-	private void setDirectory(String dir)
-	{
-		_myDirectory = dir;
-	}
-
-	private String getDirectory()
-	{
-		return _myDirectory;
-	}
-
-	/**
-	 * set the document which we are going to be changing
-	 */
-	public final void setTemplate(final InputStream istream)
-	{
-		// get a document from the istream
-		Document thisDocument = null;
-		try
-		{
-			thisDocument = ScenarioGenerator.readDocumentFrom(istream);
-		}
-		catch (SAXException e)
-		{
-			e.printStackTrace(); // To change body of catch statement use Options |
-			// File Templates.
-		}
-
-		// and store it
-		setTemplate(thisDocument);
-	}
-
-	public final String createNewRandomisedPermutations(
-			Vector<Document> resultsContainer, ASSETProgressMonitor mWrap)
-	{
+	public final String createNewRandomisedPermutations(final Vector<Document> resultsContainer,
+			final ASSETProgressMonitor mWrap) {
 
 		String res = null;
 
 		// do we have a scenario generator?
-		if (_scenarioGenny != null)
-		{
+		if (_scenarioGenny != null) {
 			if (mWrap != null)
 				mWrap.beginTask("Generate permutations", _scenarioGenny.getNumPerms());
 			writeOut("Generating scenarios");
@@ -642,45 +673,35 @@ public final class ScenarioGenerator
 
 			// yup, get it to create it's list
 			Document[] list = new Document[0];
-			try
-			{
+			try {
 				list = _scenarioGenny.createNewRandomisedPermutations();
-			}
-			catch (XMLVariance.IllegalExpressionException e)
-			{
+			} catch (final XMLVariance.IllegalExpressionException e) {
 				res = e.getMessage();
 				return res;
-			}
-			catch (XMLVariance.MatchingException e)
-			{
+			} catch (final XMLVariance.MatchingException e) {
 				res = e.getMessage();
 				return res;
 			}
 
-			for (int i = 0; i < list.length; i++)
-			{
-				Document document = list[i];
+			for (int i = 0; i < list.length; i++) {
+				final Document document = list[i];
 				resultsContainer.add(document);
 			}
-		}
-		else
-		{
+		} else {
 			resultsContainer.add(_targetScenario);
 		}
 
 		// do we have a participant generator?
-		if (_participantGenny != null)
-		{
+		if (_participantGenny != null) {
 
 			System.out.println("Mutating participants");
 			System.out.println("=====================");
 
-			Vector<Document> newResults = new Vector<Document>(0, 1);
+			final Vector<Document> newResults = new Vector<Document>(0, 1);
 
 			// start off by creating our long list of scenario duplicates
 
-			for (int i = 0; i < resultsContainer.size(); i++)
-			{
+			for (int i = 0; i < resultsContainer.size(); i++) {
 				Document thisScenario = resultsContainer.elementAt(i);
 
 				// tell the participant about the scenario
@@ -699,17 +720,12 @@ public final class ScenarioGenerator
 				// }
 
 				// ok, create a new permutation
-				try
-				{
+				try {
 					thisScenario = _participantGenny.createNewRandomisedPermutation();
-				}
-				catch (XMLVariance.IllegalExpressionException e)
-				{
+				} catch (final XMLVariance.IllegalExpressionException e) {
 					res = e.getMessage();
 					return res;
-				}
-				catch (XMLVariance.MatchingException e)
-				{
+				} catch (final XMLVariance.MatchingException e) {
 					res = e.getMessage();
 					return res;
 				}
@@ -738,9 +754,112 @@ public final class ScenarioGenerator
 		return res;
 	}
 
-	private static void writeOut(String string)
-	{
-		System.out.println(string);
+	/**
+	 * load the two files, and generate the scenarios
+	 *
+	 * @param templatePath
+	 * @param controlPath
+	 * @param results
+	 * @param mWrap
+	 * @param outputDirectory
+	 * @return
+	 * @throws XPathExpressionException
+	 */
+	public String createScenarios(final String templatePath, final String controlPath, final Vector<Document> results,
+			final ASSETProgressMonitor mWrap, final File outputDirectory) throws XPathExpressionException {
+		Document theControlFile = null;
+		String res = null;
+
+		try {
+			theControlFile = ScenarioGenerator.readDocumentFrom(new FileInputStream(controlPath));
+		} catch (final SAXParseException e) {
+			res = "Problem parsing " + CONTROL_FILE_ERROR + e.getMessage();
+		} catch (final SAXException e) {
+			res = "Problem parsing " + CONTROL_FILE_ERROR + e.getMessage();
+		} catch (final FileNotFoundException e) {
+			res = CONTROL_FILE_ERROR + " not found:" + e.getMessage();
+		}
+
+		// did it work?
+		if (res == null) {
+
+			// now try to load the scenario
+			Document theScenarioTemplate = null;
+			try {
+				theScenarioTemplate = ScenarioGenerator.readDocumentFrom(new FileInputStream(templatePath));
+
+			} catch (final SAXException e) {
+				res = "Problem parsing " + TEMPLATE_FILE_ERROR + e.getMessage();
+			} catch (final FileNotFoundException e) {
+				res = TEMPLATE_FILE_ERROR + " file not found:" + e.getMessage();
+			}
+
+			// did that work?
+			if (res == null) {
+				// yup, go for it.
+				res = doScenarioGeneration(theScenarioTemplate, theControlFile, results, mWrap, outputDirectory);
+			}
+
+		}
+
+		return res;
+	}
+
+	/**
+	 * main loader/creator method. Takes input params and results holder, returns
+	 * populated holder together with status message
+	 *
+	 * @param template        scenario template
+	 * @param controlFile     scenario control file (with builder information)
+	 * @param results         vector containing the new scenarios
+	 * @param mWrap
+	 * @param outputDirectory
+	 * @return error message on failure, or null for success
+	 * @throws XPathExpressionException
+	 */
+	protected String doScenarioGeneration(final Document template, final Document controlFile,
+			final Vector<Document> results, final ASSETProgressMonitor mWrap, final File outputDirectory)
+			throws XPathExpressionException {
+		String res = null;
+
+		// load the files
+		setVariances(controlFile, outputDirectory);
+
+		// create the scenario(s)
+		setTemplate(template);
+
+		// did we find a random seed?
+		if (_theSeed != null) {
+			RandomGenerator.seed(_theSeed.intValue());
+		}
+
+		// and now the permutations
+		res = createNewRandomisedPermutations(results, mWrap);
+
+		return res;
+	}
+
+	/**
+	 * retrieve the control file
+	 */
+	public Document getControlFile() {
+		return _controlDocument;
+	}
+
+	private String getDirectory() {
+		return _myDirectory;
+	}
+
+	public boolean isInitialised() {
+		return _controlDocument != null;
+	}
+
+	public boolean isMultiParticipant() {
+		return _participantGenny != null;
+	}
+
+	public boolean isMultiScenario() {
+		return _scenarioGenny != null;
 	}
 
 	// /** validate a single document - convering the document
@@ -781,488 +900,173 @@ public final class ScenarioGenerator
 	// return res;
 	// }
 
-	final public static String writeToString(Element newElement)
-	{
-		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-		final TransformerFactory factory = TransformerFactory.newInstance();
-
-		try
-		{
-			final javax.xml.transform.Transformer transformer = factory
-					.newTransformer();
-
-			final StreamResult sr = new StreamResult(bos);
-
-			transformer.transform(new DOMSource(newElement), sr);
-
-			bos.close();
-		}
-		catch (TransformerException e)
-		{
-			e.printStackTrace(); // To change body of catch statement use Options |
-			// File Templates.
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace(); // To change body of catch statement use Options |
-			// File Templates.
-		}
-
-		String res = bos.toString();
-		return res;
-	}
-
-	final public static String writeToString(Document newDoc)
-	{
-		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-		final TransformerFactory factory = TransformerFactory.newInstance();
-
-		try
-		{
-			final javax.xml.transform.Transformer transformer = factory
-					.newTransformer();
-
-			final StreamResult sr = new StreamResult(bos);
-
-			transformer.transform(new DOMSource(newDoc), sr);
-
-			bos.close();
-		}
-		catch (TransformerException e)
-		{
-			e.printStackTrace(); // To change body of catch statement use Options |
-			// File Templates.
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace(); // To change body of catch statement use Options |
-			// File Templates.
-		}
-
-		String res = bos.toString();
-		return res;
+	private void setDirectory(final String dir) {
+		_myDirectory = dir;
 	}
 
 	/**
-	 * Recursively deletes this file and if it is a directory all it contained
-	 * directories.
+	 * set the document we are going to be changing
 	 */
-	public static boolean deleteThisDirectory(File aFile)
-	{
-		boolean deleted = true;
-		File[] files = aFile.listFiles();
-		if (null != files)
-		{
-			for (int i = 0; i < files.length; i++)
-			{
-				deleted &= deleteThisDirectory(files[i]);
-			}
-		}
-		deleted &= aFile.delete();
-		return deleted;
+	public final void setTemplate(final Document rawDoc) {
+		_targetScenario = rawDoc;
 	}
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	public static final class ScenarioGennyTest extends SupportTesting
-	{
-		public static final String VARIANCE_FILE = "test_variance1.xml";
-		public static final String SCENARIO_FILE = "test_variance_scenario.xml";
-
-		public ScenarioGennyTest(final String val)
-		{
-			super(val);
+	/**
+	 * set the document which we are going to be changing
+	 */
+	public final void setTemplate(final InputStream istream) {
+		// get a document from the istream
+		Document thisDocument = null;
+		try {
+			thisDocument = ScenarioGenerator.readDocumentFrom(istream);
+		} catch (final SAXException e) {
+			e.printStackTrace(); // To change body of catch statement use Options |
+			// File Templates.
 		}
 
-		// TODO FIX-TEST
-		public final void NtestLoadVariances() throws XPathExpressionException
-		{
-			String code_root = System.getProperty("CODE_ROOT");
-			if (code_root == null)
-				code_root = "src";
+		// and store it
+		setTemplate(thisDocument);
+	}
 
-			final String docPath = code_root + "/ASSET/Util/MonteCarlo/";
+	/**
+	 * read in the list of variances, and collate them into our list
+	 *
+	 * @param outputDirectory where to put the generated files
+	 * @throws XPathExpressionException
+	 */
+	protected void setVariances(final Document document, final File outputDirectory) throws XPathExpressionException {
+		// can we find a scenario generator?
+		XPathExpression xp2 = NamespaceContextProvider.createPath("//" + MultiScenarioGenerator.GENERATOR_TYPE);
+		Element el = (Element) xp2.evaluate(document, XPathConstants.NODE);
 
-			Document doc = null;
-			try
-			{
-				File var = new File(docPath + VARIANCE_FILE);
-				assertTrue("can find data-file", var.exists());
-				doc = ScenarioGenerator.readDocumentFrom(new FileInputStream(var));
-			}
-			catch (SAXException e)
-			{
-				e.printStackTrace(); // To change body of catch statement use Options |
-				// File Templates.
-			}
-			catch (FileNotFoundException e)
-			{
-				e.printStackTrace(); // To change body of catch statement use Options |
-				// File Templates.
-			}
-			ScenarioGenerator genny = new ScenarioGenerator();
-			genny.setVariances(doc, null);
-
-			// check they got loaded
-			assertEquals("loaded template name",
-					"test_reports/asset_test_output/test_variance1", genny.getDirectory());
+		if (el != null) {
+			// just see if it's active. If there's an 'Active' attribute and it's set
+			// to true, or if there's no 'Active' attribute - do the genny
+			final String isActive = el.getAttribute("Active");
+			if ((isActive == null) || (isActive.equals(""))
+					|| (isActive != null) && (Boolean.valueOf(isActive).booleanValue()))
+				this._scenarioGenny = new MultiScenarioGenerator(document);
 		}
 
-		// TODO FIX-TEST
-		public final void NtestPerformVariances() throws XPathExpressionException
-		{
-			String code_root = System.getProperty("CODE_ROOT");
-			if (code_root == null)
-				code_root = "src";
-
-			final String docPath = code_root + "/ASSET/Util/MonteCarlo/";
-
-			Vector<Document> list = new Vector<Document>(0, 1);
-
-			ScenarioGenerator genny = new ScenarioGenerator();
-
-			Document var = null;
-			try
-			{
-				File iFile = new File(docPath + VARIANCE_FILE);
-				FileInputStream fis = new FileInputStream(iFile);
-				var = ScenarioGenerator.readDocumentFrom(fis);
-			}
-			catch (SAXException e)
-			{
-				e.printStackTrace(); // To change body of catch statement use Options |
-				// File Templates.
-			}
-			catch (FileNotFoundException e)
-			{
-				e.printStackTrace(); // To change body of catch statement use Options |
-				// File Templates.
-			}
-
-			Document doc = null;
-			try
-			{
-				doc = ScenarioGenerator.readDocumentFrom(new FileInputStream(docPath
-						+ SCENARIO_FILE));
-			}
-			catch (SAXException e)
-			{
-				e.printStackTrace(); // To change body of catch statement use Options |
-				// File Templates.
-			}
-			catch (FileNotFoundException e)
-			{
-				e.printStackTrace(); // To change body of catch statement use Options |
-				// File Templates.
-			}
-
-			String res = genny.doScenarioGeneration(doc, var, list, null, null);
-
-			assertNull("success - no error", res);
-
-			// check there's stuff in the lst
-			assertEquals("got some scenarios", 3, list.size());
+		// can we find a scenario generator?
+		xp2 = NamespaceContextProvider.createPath("//" + MultiParticipantGenerator.GENERATOR_TYPE);
+		el = (Element) xp2.evaluate(document, XPathConstants.NODE);
+		if (el != null) {
+			this._participantGenny = new MultiParticipantGenerator(document);
 		}
 
-		// TODO FIX-TEST
-		public final void NtestPerformVariancesFromFilenames()
-		{
-			String code_root = System.getProperty("CODE_ROOT");
-			if (code_root == null)
-				code_root = "src";
+		xp2 = NamespaceContextProvider.createPath("//ScenarioGenerator");
+		el = (Element) xp2.evaluate(document, XPathConstants.NODE);
 
-			final String docPath = code_root + "/ASSET/Util/MonteCarlo/";
+		// retrieve our working values
+		xp2 = NamespaceContextProvider.createPath("//ScenarioController");
+		el = (Element) xp2.evaluate(document, XPathConstants.NODE);
 
-			Vector<Document> list = new Vector<Document>(0, 1);
-
-			ScenarioGenerator genny = new ScenarioGenerator();
-
-			String res = null;
-			try
-			{
-				res = genny.createScenarios(docPath + SCENARIO_FILE, docPath
-						+ VARIANCE_FILE, list, null, null);
-			}
-			catch (XPathExpressionException e)
-			{
-				e.printStackTrace();
-			}
-
-			assertNull("success - no error", res);
-
-			// check there's stuff in the lst
-			assertEquals("got some scenarios", 3, list.size());
+		if (el != null) {
+			setDirectory(el.getAttribute(OUTPUT_DIRECTORY));
+			final String theSeedStr = el.getAttribute(RANDOM_SEED);
+			if (theSeedStr != null)
+				if (theSeedStr.length() > 0)
+					_theSeed = Integer.valueOf(theSeedStr);
 		}
 
-		// TODO FIX-TEST
-		public final void NtestPerformVariancesFromInvalidFilenames()
-		{
-			String code_root = System.getProperty("CODE_ROOT");
-			if (code_root == null)
-				code_root = "src";
+		if (outputDirectory != null)
+			setDirectory(outputDirectory.getAbsolutePath());
 
-			final String docPath = code_root + "/ASSET/Util/MonteCarlo/";
+		_controlDocument = document;
 
-			Vector<Document> list = new Vector<Document>(0, 1);
+	}
 
-			ScenarioGenerator genny = new ScenarioGenerator();
+	/**
+	 * method to write a list of scenarios to file, each in their own directory
+	 *
+	 * @param scenarios the list of scenarios to write to file
+	 * @return String indicating any problems, or void for success
+	 */
+	public String writeTheseToFile(final Vector<Document> scenarios, final boolean deleteExisting) {
+		String res = null;
 
-			String res = null;
-			try
-			{
-				res = genny.createScenarios(docPath + "test_variance_scnario.xml",
-						docPath + SCENARIO_FILE, list, null, null);
-			}
-			catch (XPathExpressionException e)
-			{
-				e.printStackTrace();
-			}
-
-			assertNotNull("success - error returned", res);
-			assertTrue("correct error returned",
-					res.indexOf(TEMPLATE_FILE_ERROR) > -1);
-
-			// check there's stuff in the lst
-			assertEquals("got no scenarios", 0, list.size());
-
-			try
-			{
-				res = genny.createScenarios(docPath + SCENARIO_FILE, docPath
-						+ "test_varince1.xml", list, null, null);
-			}
-			catch (XPathExpressionException e)
-			{
-				e.printStackTrace();
-			}
-
-			assertNotNull("success - error returned", res);
-			assertTrue("correct error returned", res.indexOf(CONTROL_FILE_ERROR) > -1);
-
-			// check there's stuff in the lst
-			assertEquals("got no scenarios", 0, list.size());
-
+		// do we want to delete the existing files?
+		if (deleteExisting) {
+			deleteThisDirectory(new File(getDirectory()));
 		}
 
-		// TODO FIX-TEST
-		public void NtestWriteScenariosToFile()
-		{
-			String outputDir = "c:\\temp\\asset_test_output";
+		// firstly output the control file to disk in the parent directory
+		// === which will also ensure the parent directory is present
+		final String controlFileAsString = ScenarioGenerator.writeToString(_controlDocument);
 
-			// check the output directory is clear
-			File outputDirectory = new File(outputDir);
+		final File controlOutput = new File(getDirectory() + "/" + CONTROL_FILENAME);
+		controlOutput.getAbsoluteFile().getParentFile().mkdirs();
+		try {
+			final FileWriter fw = new FileWriter(controlOutput);
+			fw.write(controlFileAsString);
+			fw.close();
 
-			deleteThisDirectory(outputDirectory);
-
-			assertFalse("we should have deleted the output directory",
-					outputDirectory.exists());
-			// ok, put dummy seed into the output directory to check that it's been
-			// deleted
-
-			String code_root = System.getProperty("CODE_ROOT");
-			if (code_root == null)
-				code_root = "src";
-
-			final String docPath = code_root + "/ASSET/Util/MonteCarlo/";
-
-			Vector<Document> list = new Vector<Document>(0, 1);
-
-			ScenarioGenerator genny = new ScenarioGenerator();
-
-			Document var = null;
-			try
-			{
-				var = ScenarioGenerator.readDocumentFrom(new FileInputStream(docPath
-						+ VARIANCE_FILE));
+			if (!controlOutput.exists()) {
+				System.err.println("failed to create control file");
 			}
-			catch (SAXException e)
-			{
-				e.printStackTrace(); // To change body of catch statement use Options |
-				// File Templates.
-			}
-			catch (FileNotFoundException e)
-			{
-				e.printStackTrace(); // To change body of catch statement use Options |
-				// File Templates.
-			}
-
-			Document doc = null;
-			try
-			{
-				doc = ScenarioGenerator.readDocumentFrom(new FileInputStream(docPath
-						+ SCENARIO_FILE));
-			}
-			catch (SAXException e)
-			{
-				e.printStackTrace(); // To change body of catch statement use Options |
-				// File Templates.
-			}
-			catch (FileNotFoundException e)
-			{
-				e.printStackTrace(); // To change body of catch statement use Options |
-				// File Templates.
-			}
-
-			String res = null;
-			try
-			{
-				res = genny.doScenarioGeneration(doc, var, list, null, null);
-			}
-			catch (XPathExpressionException e1)
-			{
-				e1.printStackTrace();
-			}
-
-			assertNull("success - no error", res);
-
-			// check there's stuff in the lst
-			assertEquals("got some scenarios", 3, list.size());
-
-			// ok, we've read in the data - find out where the output directory is, so
-			// that we can seed it with an old file (to check that they get deleted)
-			String theDir = genny.getDirectory();
-			File touchFile = new File(theDir + "/" + "seed_file.txt");
-			try
-			{
-				createNewFile(touchFile);
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace(); // To change body of catch statement use Options |
-				// File Templates.
-			}
-
-			assertTrue("check we created the touch file", touchFile.exists());
-
-			// and now write them out
-			genny.writeTheseToFile(list, true);
-
-			// and check that the touch file has been deleted
-			assertFalse("check that the touch file has been deleted",
-					touchFile.exists());
+		} catch (final IOException e) {
+			res = e.getMessage();
+			e.printStackTrace(); // To change body of catch statement use Options |
+			// File Templates.
 		}
 
-		/**
-		 * Emulation of File.createNewFile for JDK 1.1.
-		 * <p/>
-		 * <p>
-		 * This method does <strong>not</strong> guarantee that the operation is
-		 * atomic.
-		 * </p>
-		 * 
-		 * @since 1.21, Ant 1.5
-		 */
-		private boolean createNewFile(File f) throws IOException
-		{
-			if (f != null)
-			{
-				if (f.exists())
-				{
-					return false;
-				}
+		// did it work?
+		if (res == null) {
 
-				FileOutputStream fos = null;
-				try
-				{
-					// first create the parent directory(s) if needed
-					File parentFile = f.getParentFile();
-					parentFile.mkdirs();
+			// ok, now loop through the scenarios
+			for (int counter = 0; counter < scenarios.size(); counter++) {
+				final Document thisDoc = scenarios.elementAt(counter);
 
-					// and now the file itself
-					fos = new FileOutputStream(f);
-					fos.write(new byte[0]);
-				}
-				finally
-				{
-					if (fos != null)
-					{
-						fos.close();
+				final String asString = ScenarioGenerator.writeToString(thisDoc);
+
+				final NodeList list = thisDoc.getElementsByTagName(ScenarioHandler.type);
+				final Element scen = (Element) list.item(0);
+				final String scen_name = scen.getAttribute(MultiScenarioGenerator.SCENARIO_NAME_ATTRIBUTE);
+
+				// and output this string to file
+				final int thisId = counter + 1;
+
+				// create the path to the new file
+				final String theDir = getDirectory() + "/" + thisId + "/";
+
+				// declare it as a file
+				final File outFile = new File(theDir);
+
+				// create any parent directories we need
+				outFile.mkdirs();
+
+				final String theFile = theDir + scen_name + ".xml";
+
+				try {
+					// put it into a writer
+					final FileWriter fw = new FileWriter(theFile);
+
+					// write it out
+					fw.write(asString);
+
+					// and close it
+					fw.close();
+				} catch (final IOException e) {
+					if (e instanceof FileNotFoundException) {
+						res = "Is output file already open?";
 					}
+
+					// take a copy of the problem
+					res = res + e.getMessage();
+
+					// and print a stack trace
+					e.printStackTrace();
+
+					// and cut short the run
+					return res;
+
 				}
 
-				return true;
 			}
-			return false;
 		}
 
-		// TODO FIX-TEST
-		public void NtestValidation()
-		{
-			// String str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-			// str +=
-			// "<Scenario xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:noNamespaceSchemaLocation=\"file:///E:/dev/Asset/src/schemas/ASSET.xsd/\" Created=\"2003-12-12T12:00:00\" Name=\"the name\" StartTime=\"2003-12-12T12:00:00\">";
-			// str += "<StepTime Units=\"seconds\" Value=\"45\"/>";
-			// str += "<Participants/>";
-			// str += "</Scenario>";
-
-			String res = null;
-
-			try
-			{
-				final FileInputStream doc = new FileInputStream(
-						"../org.mwc.asset.legacy/src/ASSET/Util/MonteCarlo/small_test_scenario.xml");
-				assertNotNull("we found test document", doc);
-				res = ScenarioGenerator.validateThisDocument(doc);
-			}
-			catch (FileNotFoundException e1)
-			{
-				e1.printStackTrace(); // To change body of catch statement use Options |
-				// File Templates.
-			}
-
-			// check if/why validation isn't working
-			assertNull("valid file didn't throw any errors", res);
-
-			try
-			{
-				final FileInputStream doc = new FileInputStream(
-						"../org.mwc.asset.legacy/src/ASSET/Util/MonteCarlo/small_test_scenario_invalid.xml");
-				assertNotNull("we found test document", doc);
-				res = ScenarioGenerator.validateThisDocument(doc);
-			}
-			catch (FileNotFoundException e1)
-			{
-				e1.printStackTrace(); // To change body of catch statement use Options |
-				// File Templates.
-			}
-			catch (Exception se)
-			{
-				System.out.println("OTHER EXCEPTION THROWN");
-				se.printStackTrace();
-			}
-
-			// check if/why validation isn't working
-			assertNotNull("valid file didn't throw any errors", res);
-
-			// and check it's contents
-			// assertEquals("correct error message",
-			// "cvc-elt.1: Cannot find the declaration of element 'Scenaio'.", res);
-			assertEquals(
-					"correct error message",
-					"The element type \"Scenaio\" must be terminated by the matching end-tag \"</Scenaio>\".",
-					res);
-		}
-
-	}
-
-	/**
-	 * helper method to show progress to the command line
-	 * 
-	 * @param counter
-	 *          how far we've got
-	 */
-	public static final void outputProgress(int counter)
-	{
-		if (counter % 100 == 0)
-		{
-			System.out.println("-");
-		}
-		else if (counter % 10 == 0)
-		{
-			System.out.print("%");
-		}
+		return res;
 	}
 
 }

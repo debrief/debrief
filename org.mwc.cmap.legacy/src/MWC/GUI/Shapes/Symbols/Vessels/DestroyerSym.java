@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: DestroyerSym.java,v $
@@ -51,46 +51,34 @@ import java.util.Vector;
 
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 
-public class DestroyerSym extends ScreenScaledSym
-{
+public class DestroyerSym extends ScreenScaledSym {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
-  @Override
-  public PlainSymbol create()
-  {
-    return new DestroyerSym();
-  }
-  
-	protected Vector<double[][]> getCoords()
-	{
+	@Override
+	public PlainSymbol create() {
+		return new DestroyerSym();
+	}
+
+	@Override
+	protected Vector<double[][]> getCoords() {
 		final Vector<double[][]> hullLines = new Vector<double[][]>();
 
 		// start off with the top
-		hullLines.add(new double[][]
-		{
-		{ 5.8, -1 },
-		{ 0, -9 },
-		{ -5.8, -1 } });
+		hullLines.add(new double[][] { { 5.8, -1 }, { 0, -9 }, { -5.8, -1 } });
 
 		// now the bottom
-		hullLines.add(new double[][]
-		{
-		{ 3.6, -4 },
-		{ 3.6, 6 },
-		{ 0, 9 },
-		{ -3.6, 6 },
-		{ -3.6, -4 } });
+		hullLines.add(new double[][] { { 3.6, -4 }, { 3.6, 6 }, { 0, 9 }, { -3.6, 6 }, { -3.6, -4 } });
 
 		return hullLines;
 
 	}
 
-	public String getType()
-	{
+	@Override
+	public String getType() {
 		return "Destroyer";
 	}
 

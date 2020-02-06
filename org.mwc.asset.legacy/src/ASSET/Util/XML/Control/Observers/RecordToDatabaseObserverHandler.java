@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package ASSET.Util.XML.Control.Observers;
@@ -67,152 +67,137 @@ import ASSET.Scenario.Observers.Recording.DebriefReplayObserver;
 import ASSET.Scenario.Observers.Recording.RecordStatusToDBObserverType;
 import ASSET.Util.XML.Decisions.Util.TargetTypeHandler;
 
-
 /**
  * read in a debrief replay observer from file
  */
-abstract class RecordToDatabaseObserverHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
-{
+abstract class RecordToDatabaseObserverHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader {
 
-  private final static String type = "RecordToDatabaseObserver";
+	private final static String type = "RecordToDatabaseObserver";
 
+	private static final String DATASET_PREFIX = "dataset_prefix";
+	private static final String RECORD_DETECTIONS = "record_detections";
+	private static final String RECORD_DECISIONS = "record_decisions";
+	private static final String RECORD_POSITIONS = "record_positions";
+	private static final String TARGET_TYPE = "SubjectToTrack";
+	private final static String NAME = "Name";
+	private final static String ACTIVE = "Active";
 
-  boolean _recordDetections = false;
-  boolean _recordPositions = false;
-  boolean _recordDecisions = false;
-  TargetType _targetType = null;
-  protected String _name;
-  protected String _datasetPrefix;
-  protected boolean _isActive;
+	static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc) {
+		// create ourselves
+		final org.w3c.dom.Element thisPart = doc.createElement(type);
 
-  
-  
-  private static final String DATASET_PREFIX = "dataset_prefix";
-  private static final String RECORD_DETECTIONS = "record_detections";
-  private static final String RECORD_DECISIONS = "record_decisions";
-  private static final String RECORD_POSITIONS = "record_positions";
-  private static final String TARGET_TYPE = "SubjectToTrack";
-  private final static String NAME = "Name";
-  private final static String ACTIVE = "Active";
-  
-  public RecordToDatabaseObserverHandler(String type)
-  {
-    super(type);
+		// get data item
+		final DebriefReplayObserver bb = (DebriefReplayObserver) toExport;
 
-    addAttributeHandler(new HandleBooleanAttribute(ACTIVE)
-    {
-      public void setValue(String name, final boolean val)
-      {
-        _isActive = val;
-      }
-    });
+		// output the parent ttributes
+		CoreFileObserverHandler.exportThis(bb, thisPart);
 
-    addAttributeHandler(new HandleBooleanAttribute(RECORD_DETECTIONS)
-    {
-      public void setValue(String name, final boolean val)
-      {
-        _recordDetections = val;
-      }
-    });
-    addAttributeHandler(new HandleBooleanAttribute(RECORD_DECISIONS)
-    {
-      public void setValue(String name, final boolean val)
-      {
-        _recordDecisions = val;
-      }
-    });
-    addAttributeHandler(new HandleBooleanAttribute(RECORD_POSITIONS)
-    {
-      public void setValue(String name, final boolean val)
-      {
-        _recordPositions = val;
-      }
-    });
-    addAttributeHandler(new HandleAttribute(NAME)
-    {
-      public void setValue(String name, final String val)
-      {
-        _name = val;
-      }
-    });
-    addAttributeHandler(new HandleAttribute(DATASET_PREFIX)
-    {
-      public void setValue(String name, final String val)
-      {
-        _datasetPrefix = val;
-      }
-    });
+		// output it's attributes
+		thisPart.setAttribute(RECORD_DETECTIONS, writeThis(bb.getRecordDetections()));
+		thisPart.setAttribute(RECORD_DECISIONS, writeThis(bb.getRecordDecisions()));
+		thisPart.setAttribute(RECORD_POSITIONS, writeThis(bb.getRecordPositions()));
+		if (bb.getSubjectToTrack() != null) {
+			TargetTypeHandler.exportThis(TARGET_TYPE, bb.getSubjectToTrack(), thisPart, doc);
+		}
 
-        
-    addHandler(new TargetTypeHandler(TARGET_TYPE)
-    {
-      public void setTargetType(TargetType type1)
-      {
-        _targetType = type1;
-      }
-    });
+		// output it's attributes
+		parent.appendChild(thisPart);
 
-  }
+	}
 
-  public RecordToDatabaseObserverHandler()
-  {
-    this(type);
-  }
+	boolean _recordDetections = false;
+	boolean _recordPositions = false;
+	boolean _recordDecisions = false;
+	TargetType _targetType = null;
+	protected String _name;
+	protected String _datasetPrefix;
 
-  public void elementClosed()
-  {
-    // create ourselves
-    final ScenarioObserver debriefObserver = getObserver(_name, _isActive, _recordDetections,
-                                                              _recordDecisions, _recordPositions, _targetType, _datasetPrefix);
+	protected boolean _isActive;
 
-    setObserver(debriefObserver);
+	public RecordToDatabaseObserverHandler() {
+		this(type);
+	}
 
-    // close the parenet
-    super.elementClosed();
+	public RecordToDatabaseObserverHandler(final String type) {
+		super(type);
 
-    // and clear the data
-    _recordDetections = false;
-    _recordDecisions = false;
-    _recordPositions = true;
-    _targetType = null;
+		addAttributeHandler(new HandleBooleanAttribute(ACTIVE) {
+			@Override
+			public void setValue(final String name, final boolean val) {
+				_isActive = val;
+			}
+		});
 
-  }
+		addAttributeHandler(new HandleBooleanAttribute(RECORD_DETECTIONS) {
+			@Override
+			public void setValue(final String name, final boolean val) {
+				_recordDetections = val;
+			}
+		});
+		addAttributeHandler(new HandleBooleanAttribute(RECORD_DECISIONS) {
+			@Override
+			public void setValue(final String name, final boolean val) {
+				_recordDecisions = val;
+			}
+		});
+		addAttributeHandler(new HandleBooleanAttribute(RECORD_POSITIONS) {
+			@Override
+			public void setValue(final String name, final boolean val) {
+				_recordPositions = val;
+			}
+		});
+		addAttributeHandler(new HandleAttribute(NAME) {
+			@Override
+			public void setValue(final String name, final String val) {
+				_name = val;
+			}
+		});
+		addAttributeHandler(new HandleAttribute(DATASET_PREFIX) {
+			@Override
+			public void setValue(final String name, final String val) {
+				_datasetPrefix = val;
+			}
+		});
 
-  protected RecordStatusToDBObserverType getObserver(String name, boolean isActive, boolean recordDetections,
-                                              boolean recordDecisions, boolean recordPositions, TargetType subject, String datasetPrefix)
-  {
-    //return new DebriefReplayObserver(_directory, _fileName, recordDetections, recordDecisions, recordPositions, subject, name, isActive);
-    return new RecordStatusToDBObserverType(recordDetections, recordDecisions, recordPositions, subject, name, isActive, datasetPrefix);
-  }
+		addHandler(new TargetTypeHandler(TARGET_TYPE) {
+			@Override
+			public void setTargetType(final TargetType type1) {
+				_targetType = type1;
+			}
+		});
 
+	}
 
-  abstract public void setObserver(ScenarioObserver obs);
+	@Override
+	public void elementClosed() {
+		// create ourselves
+		final ScenarioObserver debriefObserver = getObserver(_name, _isActive, _recordDetections, _recordDecisions,
+				_recordPositions, _targetType, _datasetPrefix);
 
-  static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
-                                final org.w3c.dom.Document doc)
-  {
-    // create ourselves
-    final org.w3c.dom.Element thisPart = doc.createElement(type);
+		setObserver(debriefObserver);
 
-    // get data item
-    final DebriefReplayObserver bb = (DebriefReplayObserver) toExport;
+		// close the parenet
+		super.elementClosed();
 
-    // output the parent ttributes
-    CoreFileObserverHandler.exportThis(bb, thisPart);
+		// and clear the data
+		_recordDetections = false;
+		_recordDecisions = false;
+		_recordPositions = true;
+		_targetType = null;
 
-    // output it's attributes
-    thisPart.setAttribute(RECORD_DETECTIONS, writeThis(bb.getRecordDetections()));
-    thisPart.setAttribute(RECORD_DECISIONS, writeThis(bb.getRecordDecisions()));
-    thisPart.setAttribute(RECORD_POSITIONS, writeThis(bb.getRecordPositions()));
-    if (bb.getSubjectToTrack() != null)
-    {
-      TargetTypeHandler.exportThis(TARGET_TYPE, bb.getSubjectToTrack(), thisPart, doc);
-    }
+	}
 
-    // output it's attributes
-    parent.appendChild(thisPart);
+	protected RecordStatusToDBObserverType getObserver(final String name, final boolean isActive,
+			final boolean recordDetections, final boolean recordDecisions, final boolean recordPositions,
+			final TargetType subject, final String datasetPrefix) {
+		// return new DebriefReplayObserver(_directory, _fileName, recordDetections,
+		// recordDecisions,
+		// recordPositions, subject, name, isActive);
+		return new RecordStatusToDBObserverType(recordDetections, recordDecisions, recordPositions, subject, name,
+				isActive, datasetPrefix);
+	}
 
-  }
-
+	abstract public void setObserver(ScenarioObserver obs);
 
 }

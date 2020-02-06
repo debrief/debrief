@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 package Debrief.ReaderWriter.XML.dynamic;
 
@@ -27,8 +27,7 @@ import MWC.Utilities.ReaderWriter.XML.LayerHandlerExtension;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.Features.TimeDisplayPainterHandler;
 
-public class DynamicLayerHandler extends MWCXMLReader implements LayerHandlerExtension
-{
+public class DynamicLayerHandler extends MWCXMLReader implements LayerHandlerExtension {
 	private static final String VISIBLE = "Visible";
 	private static final String NAME = "Name";
 	public static final String TYPE = "dynamicLayer";
@@ -37,81 +36,77 @@ public class DynamicLayerHandler extends MWCXMLReader implements LayerHandlerExt
 	protected boolean _visible;
 	protected String _name;
 
-	public DynamicLayerHandler()
-	{
+	public DynamicLayerHandler() {
 		this(TYPE);
 	}
 
-	public DynamicLayerHandler(String theType)
-	{
+	public DynamicLayerHandler(final String theType) {
 		super(theType);
-		addAttributeHandler(new HandleBooleanAttribute(VISIBLE)
-		{
-			public void setValue(final String name, final boolean value)
-			{
+		addAttributeHandler(new HandleBooleanAttribute(VISIBLE) {
+			@Override
+			public void setValue(final String name, final boolean value) {
 				_visible = value;
 			}
 		});
-		addAttributeHandler(new HandleAttribute(NAME)
-		{
-			public void setValue(final String name, final String value)
-			{
+		addAttributeHandler(new HandleAttribute(NAME) {
+			@Override
+			public void setValue(final String name, final String value) {
 				_name = value;
 			}
 		});
-		addHandler(new TimeDisplayPainterHandler()
-		{
-			
+		addHandler(new TimeDisplayPainterHandler() {
+
 			@Override
-			public void addPlottable(Plottable plottable)
-			{
+			public void addPlottable(final Plottable plottable) {
 				addThis(plottable);
 			}
 		});
 	}
-	
-	@Override
-	public final void elementClosed()
-	{
-			// set our specific attributes
-			final DynamicLayer wrapper = _myLayer;
-			wrapper.setVisible(_visible);
-			wrapper.setName(_name);
-			_theLayers.addThisLayer(wrapper);
+
+	public void addThis(final MWC.GUI.Plottable plottable) {
+		_myLayer.add(plottable);
+
+		// is this an item that wants to know about the layers object?
+		if (plottable instanceof NeedsToKnowAboutLayers) {
+			final NeedsToKnowAboutLayers theL = (NeedsToKnowAboutLayers) plottable;
+			theL.setLayers(_theLayers);
+		}
+
 	}
 
 	@Override
-	public boolean canExportThis(Layer subject)
-	{
+	public boolean canExportThis(final Layer subject) {
 		return subject instanceof DynamicLayer;
 	}
 
 	@Override
-	public void exportThis(final Layer theLayer, org.w3c.dom.Element parent,
-			org.w3c.dom.Document doc)
-	{
-		
-		DynamicLayer dl = (DynamicLayer) theLayer;
-		
+	public final void elementClosed() {
+		// set our specific attributes
+		final DynamicLayer wrapper = _myLayer;
+		wrapper.setVisible(_visible);
+		wrapper.setName(_name);
+		_theLayers.addThisLayer(wrapper);
+	}
+
+	@Override
+	public void exportThis(final Layer theLayer, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc) {
+
+		final DynamicLayer dl = (DynamicLayer) theLayer;
+
 		final org.w3c.dom.Element eLayer = doc.createElement(TYPE);
 
 		eLayer.setAttribute(NAME, dl.getName());
 		eLayer.setAttribute(VISIBLE, writeThis(dl.getVisible()));
-		
+
 		// step through the components of the layer
 		final java.util.Enumeration<Editable> enumer = theLayer.elements();
-		while (enumer.hasMoreElements())
-		{
-			final MWC.GUI.Plottable nextPlottable = (MWC.GUI.Plottable) enumer
-					.nextElement();
-			if (nextPlottable instanceof TimeDisplayPainter)
-			{
-				TimeDisplayPainterHandler handler = new TimeDisplayPainterHandler()
-				{
+		while (enumer.hasMoreElements()) {
+			final MWC.GUI.Plottable nextPlottable = (MWC.GUI.Plottable) enumer.nextElement();
+			if (nextPlottable instanceof TimeDisplayPainter) {
+				final TimeDisplayPainterHandler handler = new TimeDisplayPainterHandler() {
 
 					@Override
-					public void addPlottable(Plottable plottable)
-					{
+					public void addPlottable(final Plottable plottable) {
 						theLayer.add(plottable);
 					}
 				};
@@ -122,32 +117,16 @@ public class DynamicLayerHandler extends MWCXMLReader implements LayerHandlerExt
 	}
 
 	@Override
-	public void setLayers(Layers theLayers)
-	{
-		_theLayers = theLayers;
-	}
-
-	@Override
-  //this is one of ours, so get on with it!
-	protected void handleOurselves(final String name, final Attributes attributes)
-	{
+	// this is one of ours, so get on with it!
+	protected void handleOurselves(final String name, final Attributes attributes) {
 		// we are starting a new layer, so create it!
 		_myLayer = new DynamicLayer();
 		super.handleOurselves(name, attributes);
 	}
-	
-		
-	public void addThis(final MWC.GUI.Plottable plottable)
-	{
-		_myLayer.add(plottable);
-		
-		// is this an item that wants to know about the layers object?
-		if (plottable instanceof NeedsToKnowAboutLayers)
-		{
-			final NeedsToKnowAboutLayers theL = (NeedsToKnowAboutLayers) plottable;
-			theL.setLayers(_theLayers);
-		}
 
+	@Override
+	public void setLayers(final Layers theLayers) {
+		_theLayers = theLayers;
 	}
 
 }

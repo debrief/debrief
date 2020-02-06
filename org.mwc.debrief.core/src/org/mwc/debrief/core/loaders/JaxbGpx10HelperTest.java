@@ -1,21 +1,22 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.debrief.core.loaders;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Enumeration;
 
@@ -31,18 +32,16 @@ import MWC.GenericData.WorldLocation;
 
 /**
  * Tests the GPX 1.0 version
- * 
+ *
  * @author Aravind R. Yarram <yaravind@gmail.com>
  * @date October 12, 2012
  * @category gpx
  */
-public class JaxbGpx10HelperTest
-{
+public class JaxbGpx10HelperTest {
 	private final JaxbGpxHelper helper = new JaxbGpxHelper();
 
 	@Test
-	public void unmarshallTrackWithAllData()
-	{
+	public void unmarshallTrackWithAllData() {
 		final Layers layers = helper.unmarshall(getClass().getResourceAsStream("gpx_1_0.xml"), null);
 		assertEquals("Only 1 track is present in the gpx xml", 1, layers.size());
 
@@ -68,8 +67,7 @@ public class JaxbGpx10HelperTest
 
 		int trackPointCount = 0;
 		final Enumeration<Editable> elements = segment.elements();
-		while (elements.hasMoreElements())
-		{
+		while (elements.hasMoreElements()) {
 			trackPointCount++;
 			elements.nextElement();
 

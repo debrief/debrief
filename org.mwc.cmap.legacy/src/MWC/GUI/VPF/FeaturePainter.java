@@ -1,21 +1,22 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.VPF;
 
 // Copyright MWC 1999, Debrief 3 Project
+
 // $RCSfile: FeaturePainter.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.4 $
@@ -57,7 +58,6 @@ package MWC.GUI.VPF;
 // Initial revision
 //
 
-
 import java.awt.Color;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -69,117 +69,145 @@ import MWC.GUI.ExcludeFromRightClickEdit;
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.DebriefColors;
 
-public class FeaturePainter implements Plottable, Serializable, ExcludeFromRightClickEdit
-{
+public class FeaturePainter implements Plottable, Serializable, ExcludeFromRightClickEdit {
 
-  /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private final String _featureType;
-  private final String _description;
-  private boolean _isOn = false;
-  private java.awt.Color _myColor = DebriefColors.WHITE;
-  /** our editor
-   */
-  transient private Editable.EditorType _myEditor;
+	/////////////////////////////////////////////////////////////
+	// info class
+	////////////////////////////////////////////////////////////
+	public class FeaturePainterInfo extends Editable.EditorType implements Serializable {
 
-  public FeaturePainter(final String name, final String description)
-  {
-    _featureType = name;
-    _description = description;
-  }
-
-
-  public void setVisible(final boolean val){ _isOn = val; }
-  public boolean getVisible(){ return _isOn; }
-
-  public void setColor(final Color val)
-  {
-    _myColor = val;
-  }
-
-  public Color getColor()
-  {
-    return _myColor;
-  }
-
-
-	public int compareTo(final Plottable arg0)
-	{
-		final Plottable other = (Plottable) arg0;
-		return this.getName().compareTo(other.getName());
-	}
-  /** paint this object to the specified canvas
-   */
-  public void paint(final CanvasType dest){}
-
-  /** find the data area occupied by this item
-   */
-  public MWC.GenericData.WorldArea getBounds(){return null;}
-
-  /** it this item currently visible?
-   */
-  /** Determine how far away we are from this point.
-   * or return null if it can't be calculated
-   */
-  public double rangeFrom(final MWC.GenericData.WorldLocation other){return -1;}
-
-  /** the name of this object
-  * @return the name of this editable object
-  */
-  public String getName(){return _description;}
-
-  public String toString(){return getName();}
-
-  public String getFeatureType(){return _featureType;}
-
-  /** whether there is any edit information for this item
-  * this is a convenience function to save creating the EditorType data
-  * first
-  * @return yes/no
-  */
-  public boolean hasEditor(){return true;}
-
-  /** get the editor for this item
-  * @return the BeanInfo data for this editable object
-  */
-  public Editable.EditorType getInfo()
-  {
-    if(_myEditor == null)
-      _myEditor = new FeaturePainterInfo(this);
-
-    return _myEditor;
-  }
-  /////////////////////////////////////////////////////////////
-  // info class
-  ////////////////////////////////////////////////////////////
-  public class FeaturePainterInfo extends Editable.EditorType implements Serializable
-  {
-
-    /**
-		 * 
-		 */
+		/**
+			 *
+			 */
 		private static final long serialVersionUID = 1L;
 
-		public FeaturePainterInfo(final FeaturePainter data)
-    {
-      super(data, data.getName(), "");
-    }
+		public FeaturePainterInfo(final FeaturePainter data) {
+			super(data, data.getName(), "");
+		}
 
-    public PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try{
-        final PropertyDescriptor[] res={
-          prop("Color", "the Color to draw this Feature"),
-          prop("Visible", "whether this grid is visible"),
-        };
+		@Override
+		public PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final PropertyDescriptor[] res = { prop("Color", "the Color to draw this Feature"),
+						prop("Visible", "whether this grid is visible"), };
 
-        return res;
-      }catch(final IntrospectionException e){
-        return super.getPropertyDescriptors();
-      }
-    }
-  }
+				return res;
+			} catch (final IntrospectionException e) {
+				return super.getPropertyDescriptors();
+			}
+		}
+	}
+
+	/**
+		 *
+		 */
+	private static final long serialVersionUID = 1L;
+	private final String _featureType;
+	private final String _description;
+	private boolean _isOn = false;
+	private java.awt.Color _myColor = DebriefColors.WHITE;
+
+	/**
+	 * our editor
+	 */
+	transient private Editable.EditorType _myEditor;
+
+	public FeaturePainter(final String name, final String description) {
+		_featureType = name;
+		_description = description;
+	}
+
+	@Override
+	public int compareTo(final Plottable arg0) {
+		final Plottable other = arg0;
+		return this.getName().compareTo(other.getName());
+	}
+
+	/**
+	 * find the data area occupied by this item
+	 */
+	@Override
+	public MWC.GenericData.WorldArea getBounds() {
+		return null;
+	}
+
+	public Color getColor() {
+		return _myColor;
+	}
+
+	public String getFeatureType() {
+		return _featureType;
+	}
+
+	/**
+	 * get the editor for this item
+	 *
+	 * @return the BeanInfo data for this editable object
+	 */
+	@Override
+	public Editable.EditorType getInfo() {
+		if (_myEditor == null)
+			_myEditor = new FeaturePainterInfo(this);
+
+		return _myEditor;
+	}
+
+	/**
+	 * the name of this object
+	 *
+	 * @return the name of this editable object
+	 */
+	@Override
+	public String getName() {
+		return _description;
+	}
+
+	@Override
+	public boolean getVisible() {
+		return _isOn;
+	}
+
+	/**
+	 * whether there is any edit information for this item this is a convenience
+	 * function to save creating the EditorType data first
+	 *
+	 * @return yes/no
+	 */
+	@Override
+	public boolean hasEditor() {
+		return true;
+	}
+
+	/**
+	 * paint this object to the specified canvas
+	 */
+	@Override
+	public void paint(final CanvasType dest) {
+	}
+
+	/**
+	 * it this item currently visible?
+	 */
+	/**
+	 * Determine how far away we are from this point. or return null if it can't be
+	 * calculated
+	 */
+	@Override
+	public double rangeFrom(final MWC.GenericData.WorldLocation other) {
+		return -1;
+	}
+
+	public void setColor(final Color val) {
+		_myColor = val;
+	}
+
+	@Override
+	public void setVisible(final boolean val) {
+		_isOn = val;
+	}
+
+	@Override
+	public String toString() {
+		return getName();
+	}
 }
-

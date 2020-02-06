@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.cmap.plotViewer.editors.chart;
@@ -26,48 +26,67 @@ import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.BriefFormatLocation;
 import MWC.Utilities.TextFormatting.PlainFormatLocation;
 
-public final class CursorTracker extends CoreTracker
-{
+public final class CursorTracker extends CoreTracker {
 	private static final String POSITION_TOOLTIP = "Mouse position";
 
-	private static final String POSITION_TEMPLATE = " 00"
-			+ BriefFormatLocation.DEGREE_SYMBOL + "00\'00.000\"N 000"
+	private static final String POSITION_TEMPLATE = " 00" + BriefFormatLocation.DEGREE_SYMBOL + "00\'00.000\"N 000"
 			+ BriefFormatLocation.DEGREE_SYMBOL + "00\'00.000\"W ";
 
 	/**
 	 * single instance of cursor tracker.
-	 * 
+	 *
 	 */
 	private static CursorTracker _singleton;
+
+	/**
+	 * start tracking the indicated chart
+	 *
+	 * @param chart the chart who's mouse movements we now track
+	 */
+	public static void trackThisChart(final SWTChart chart, final EditorPart editor) {
+		if ((_singleton == null) || (_singleton._myEditor != editor)) {
+			// do we need to create our bits?
+			if (_singleton == null) {
+				_singleton = new CursorTracker();
+			} else {
+				forgetSettings(_singleton);
+			}
+
+			// now start listening to the new one
+			_singleton.storeSettings(editor, chart);
+		} else {
+			if (_singleton._lastText != null)
+				CoreTracker.write(_singleton._lastText);
+		}
+	}
 
 	/**
 	 * the projection we're looking at
 	 */
 	private SWTChart _myChart;
-	/**
-	 * something to listen out for chart movement
-	 * 
-	 */
-	private final ChartCursorMovedListener _myMoveListener;
 
 	// ///////////////////////////////////////////////////
 	// constructor
 	// ///////////////////////////////////////////////////
 
-	private CursorTracker()
-	{
+	/**
+	 * something to listen out for chart movement
+	 *
+	 */
+	private final ChartCursorMovedListener _myMoveListener;
+
+	private CursorTracker() {
 
 		// declare the item
-		super("CursorTracker", POSITION_TEMPLATE, POSITION_TOOLTIP, DebriefFormattingOptionsPreferencesPage.PREFS_PAGE_ID);
+		super("CursorTracker", POSITION_TEMPLATE, POSITION_TOOLTIP,
+				DebriefFormattingOptionsPreferencesPage.PREFS_PAGE_ID);
 
 		// sort out a chart listener
-		_myMoveListener = new PlainChart.ChartCursorMovedListener()
-		{
-			public void cursorMoved(final WorldLocation thePos, final boolean dragging,
-					final Layers theData)
-			{
+		_myMoveListener = new PlainChart.ChartCursorMovedListener() {
+			@Override
+			public void cursorMoved(final WorldLocation thePos, final boolean dragging, final Layers theData) {
 				String msg;
-				
+
 				final PlainFormatLocation locationFormatter = CorePlugin.getDefault().getLocationFormat();
 
 				if (locationFormatter != null)
@@ -80,23 +99,21 @@ public final class CursorTracker extends CoreTracker
 		};
 	}
 
-	public void close()
-	{
+	@Override
+	public void close() {
 		// belt & braces, ditch stuff.
 		forgetSettings();
 	}
 
 	/**
 	 * teardown for this chart
-	 * 
+	 *
 	 */
-	private void forgetSettings()
-	{
+	private void forgetSettings() {
 		// forget the parent bits
 		super.forgetSettings(this);
 
-		if (_myChart != null)
-		{
+		if (_myChart != null) {
 			// well, stop listening to that one
 			_myChart.removeCursorMovedListener(_singleton._myMoveListener);
 		}
@@ -106,12 +123,11 @@ public final class CursorTracker extends CoreTracker
 
 	/**
 	 * setup for this chart
-	 * 
+	 *
 	 * @param editor
 	 * @param chart
 	 */
-	private void storeSettings(final EditorPart editor, final SWTChart chart)
-	{
+	private void storeSettings(final EditorPart editor, final SWTChart chart) {
 		// do the parent's store bit
 		CoreTracker.storeSettings(this, editor);
 
@@ -123,35 +139,5 @@ public final class CursorTracker extends CoreTracker
 
 		// and reset the data string
 		_singleton._myLine.setText(POSITION_TEMPLATE);
-	}
-
-	/**
-	 * start tracking the indicated chart
-	 * 
-	 * @param chart
-	 *          the chart who's mouse movements we now track
-	 */
-	public static void trackThisChart(final SWTChart chart, final EditorPart editor)
-	{
-		if ((_singleton == null) || (_singleton._myEditor != editor))
-		{
-			// do we need to create our bits?
-			if (_singleton == null)
-			{
-				_singleton = new CursorTracker();
-			}
-			else
-			{
-				forgetSettings(_singleton);
-			}
-
-			// now start listening to the new one
-			_singleton.storeSettings(editor, chart);
-		}
-		else
-		{
-			if (_singleton._lastText != null)
-				CoreTracker.write(_singleton._lastText);
-		}
 	}
 }

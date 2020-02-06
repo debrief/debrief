@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package ASSET.Scenario.LiveScenario;
@@ -32,151 +32,40 @@ import MWC.Algorithms.LiveData.IAttribute;
 
 /**
  * maintain a que of simulations
- * 
+ *
  * @author ianmayo
- * 
+ *
  */
-public class SimulationQue implements ISimulationQue
-{
-
-	/**
-	 * the que we manage
-	 * 
-	 */
-	Vector<ISimulation> _mySimulations;
-	
-	Attribute _theState;
-
-	/**
-	 * the thread that fires off the simulations
-	 * 
-	 */
-	private runThread runThread;
-
-	private Vector<IAttribute> _myAttrs;
-
-	public SimulationQue(Vector<ISimulation> simulations, Vector<IAttribute> attrs)
-	{
-		_mySimulations = simulations;
-		_myAttrs = attrs;
-		_theState = new Attribute("State", "n/a", true);
-		
-		// store the simulations
-		for (final ISimulation sim : simulations)
-		{
-			// put it in it's initial state
-			_theState.fireUpdate(sim, sim.getTime(), ISimulation.WAITING);
-			
-			// and listen out for it
-			CoreScenario scen = (CoreScenario) sim;
-			scen.addScenarioRunningListener(new ScenarioRunningListener(){
-
-				public void finished(long elapsedTime, String reason)
-				{
-					_theState.fireUpdate(sim, elapsedTime, ISimulation.COMPLETE);
-				}
-
-				public void newScenarioStepTime(int val)
-				{
-				}
-
-				public void newStepTime(int val)
-				{
-				}
-
-				public void paused()
-				{
-					_theState.fireUpdate(sim, sim.getTime(), ISimulation.TERMINATED);
-
-				}
-
-				public void restart(ScenarioType scenario)
-				{
-				}
-
-				public void started()
-				{
-					_theState.fireUpdate(sim, sim.getTime(), ISimulation.RUNNING);
-
-				}});
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see ASSET.Scenario.LiveScenario.ISimulationQue#getSimulations()
-	 */
-	public Vector<ISimulation> getSimulations()
-	{
-		return _mySimulations;
-	}
-
-	/* (non-Javadoc)
-	 * @see ASSET.Scenario.LiveScenario.ISimulationQue#getAttributes()
-	 */
-	public Vector<IAttribute> getAttributes() {
-		return _myAttrs;
-	}
-
-	/* (non-Javadoc)
-	 * @see ASSET.Scenario.LiveScenario.ISimulationQue#startQue()
-	 */
-	public void startQue(NewScenarioListener listener)
-	{
-		runThread = new runThread();
-		runThread.start();
-	}
-
-	/* (non-Javadoc)
-	 * @see ASSET.Scenario.LiveScenario.ISimulationQue#isRunning()
-	 */
-	public boolean isRunning()
-	{
-		return runThread.isAlive();
-	}
-
-	/* (non-Javadoc)
-	 * @see ASSET.Scenario.LiveScenario.ISimulationQue#stopQue()
-	 */
-	public void stopQue()
-	{
-		runThread.interrupt();
-	}
+public class SimulationQue implements ISimulationQue {
 
 	/**
 	 * class that handles running the simulations
-	 * 
+	 *
 	 */
-	private class runThread extends Thread
-	{
+	private class runThread extends Thread {
 
 		@Override
-		public void run()
-		{
+		public void run() {
 			boolean worthRunning = true;
 
 			// is it worth us bothering?
-			while (worthRunning)
-			{
-				Iterator<ISimulation> iter = _mySimulations.iterator();
-				while (iter.hasNext())
-				{
+			while (worthRunning) {
+				final Iterator<ISimulation> iter = _mySimulations.iterator();
+				while (iter.hasNext()) {
 					worthRunning = false;
-					
+
 					// get the next simulation
-					ISimulation thisS = iter.next();
+					final ISimulation thisS = iter.next();
 
 					// what's its state?
-					String thisState = _theState.getCurrent(thisS).getValue().toString();
+					final String thisState = _theState.getCurrent(thisS).getValue().toString();
 
 					// check the state
-					if (thisState.equals(MockSimulation.RUNNING))
-					{
+					if (thisState.equals(ISimulation.RUNNING)) {
 						worthRunning = true;
 						// right there's one running, let's just leave it
 						break;
-					}
-					else if (thisState.equals(MockSimulation.WAITING))
-					{
+					} else if (thisState.equals(ISimulation.WAITING)) {
 						worthRunning = true;
 						// right this one's waiting to start - get it going
 						thisS.start();
@@ -188,12 +77,9 @@ public class SimulationQue implements ISimulationQue
 				}
 
 				// give ourselves a rest
-				try
-				{
+				try {
 					Thread.sleep(200);
-				}
-				catch (InterruptedException e)
-				{
+				} catch (final InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
@@ -201,73 +87,66 @@ public class SimulationQue implements ISimulationQue
 
 	}
 
-	/** convenient little listener that tracks the state of simulations - mostly just for testing
-	 * 
+	/**
+	 * convenient little listener that tracks the state of simulations - mostly just
+	 * for testing
+	 *
 	 * @author ianmayo
 	 *
 	 */
-	private static class StateListener implements PropertyChangeListener
-	{
-		private ISimulation _thisSim;
+	private static class StateListener implements PropertyChangeListener {
+		private final ISimulation _thisSim;
 
-		public StateListener(ISimulation thisSim)
-		{
+		public StateListener(final ISimulation thisSim) {
 			_thisSim = thisSim;
 		}
 
-		public void propertyChange(PropertyChangeEvent evt)
-		{
-			DataDoublet data = (DataDoublet) evt.getNewValue();
+		@Override
+		public void propertyChange(final PropertyChangeEvent evt) {
+			final DataDoublet data = (DataDoublet) evt.getNewValue();
 			System.out.println(_thisSim.getName() + " is now " + data.getValue());
 		}
 
 	}
-	
-	private static void dumpThis(IAttribute theAttribute, Object index)
-	{
+
+	private static void dumpThis(final IAttribute theAttribute, final Object index) {
 		System.out.println("================");
-		Vector<DataDoublet> list = theAttribute.getHistoricValues(index);
-		for (Iterator<DataDoublet> iterator = list.iterator(); iterator.hasNext();)
-		{
-			DataDoublet thisOne = iterator.next();
+		final Vector<DataDoublet> list = theAttribute.getHistoricValues(index);
+		for (final Iterator<DataDoublet> iterator = list.iterator(); iterator.hasNext();) {
+			final DataDoublet thisOne = iterator.next();
 			if (thisOne != null)
-				System.out.println(" at " + thisOne.getTime() + " value of "
-						+ theAttribute.getName() + " is " + thisOne.getValue() + " " + theAttribute.getUnits());
+				System.out.println(" at " + thisOne.getTime() + " value of " + theAttribute.getName() + " is "
+						+ thisOne.getValue() + " " + theAttribute.getUnits());
 		}
 	}
 
-
-	/** sample implementation of simulation que
-	 * 
+	/**
+	 * sample implementation of simulation que
+	 *
 	 * @param args
 	 */
-	public static void main(String[] args)
-	{
+	public static void main(final String[] args) {
 		System.out.println("Working");
 
-		long runTime = 6000;
+		final long runTime = 6000;
 
-		Vector<IAttribute> attrs = new Vector<IAttribute>();
-		IAttribute att1 = new Attribute("Height","m", true);
+		final Vector<IAttribute> attrs = new Vector<IAttribute>();
+		final IAttribute att1 = new Attribute("Height", "m", true);
 		attrs.add(att1);
-		IAttribute att2 = new Attribute("Speed", "kts", false);
+		final IAttribute att2 = new Attribute("Speed", "kts", false);
 		attrs.add(att2);
 
-
-		
-		Vector<ISimulation> shortQue = new Vector<ISimulation>();
-		for (int i = 0; i < 5; i++)
-		{
-			MockSimulation m1 = new MockSimulation("sim_" + i, runTime, attrs);
+		final Vector<ISimulation> shortQue = new Vector<ISimulation>();
+		for (int i = 0; i < 5; i++) {
+			final MockSimulation m1 = new MockSimulation("sim_" + i, runTime, attrs);
 			shortQue.add(m1);
 		}
 
 		// create the que
-		ISimulationQue que = new SimulationQue(shortQue, attrs);
+		final ISimulationQue que = new SimulationQue(shortQue, attrs);
 
 		// listen out for changes
-		for (ISimulation iSimulation : shortQue)
-		{
+		for (final ISimulation iSimulation : shortQue) {
 			que.getState().addPropertyChangeListener(new StateListener(iSimulation));
 		}
 
@@ -275,14 +154,10 @@ public class SimulationQue implements ISimulationQue
 		que.startQue(null);
 
 		// wait until the simulation is complete
-		while (que.isRunning())
-		{
-			try
-			{
+		while (que.isRunning()) {
+			try {
 				Thread.sleep(100);
-			}
-			catch (InterruptedException e)
-			{
+			} catch (final InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
@@ -293,17 +168,129 @@ public class SimulationQue implements ISimulationQue
 		dumpThis(att2, shortQue.elementAt(1));
 	}
 
-	public IAttribute getState()
-	{
+	/**
+	 * the que we manage
+	 *
+	 */
+	Vector<ISimulation> _mySimulations;
+
+	Attribute _theState;
+
+	/**
+	 * the thread that fires off the simulations
+	 *
+	 */
+	private runThread runThread;
+
+	private final Vector<IAttribute> _myAttrs;
+
+	public SimulationQue(final Vector<ISimulation> simulations, final Vector<IAttribute> attrs) {
+		_mySimulations = simulations;
+		_myAttrs = attrs;
+		_theState = new Attribute("State", "n/a", true);
+
+		// store the simulations
+		for (final ISimulation sim : simulations) {
+			// put it in it's initial state
+			_theState.fireUpdate(sim, sim.getTime(), ISimulation.WAITING);
+
+			// and listen out for it
+			final CoreScenario scen = (CoreScenario) sim;
+			scen.addScenarioRunningListener(new ScenarioRunningListener() {
+
+				@Override
+				public void finished(final long elapsedTime, final String reason) {
+					_theState.fireUpdate(sim, elapsedTime, ISimulation.COMPLETE);
+				}
+
+				@Override
+				public void newScenarioStepTime(final int val) {
+				}
+
+				@Override
+				public void newStepTime(final int val) {
+				}
+
+				@Override
+				public void paused() {
+					_theState.fireUpdate(sim, sim.getTime(), ISimulation.TERMINATED);
+
+				}
+
+				@Override
+				public void restart(final ScenarioType scenario) {
+				}
+
+				@Override
+				public void started() {
+					_theState.fireUpdate(sim, sim.getTime(), ISimulation.RUNNING);
+
+				}
+			});
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see ASSET.Scenario.LiveScenario.ISimulationQue#getAttributes()
+	 */
+	@Override
+	public Vector<IAttribute> getAttributes() {
+		return _myAttrs;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see ASSET.Scenario.LiveScenario.ISimulationQue#getSimulations()
+	 */
+	@Override
+	public Vector<ISimulation> getSimulations() {
+		return _mySimulations;
+	}
+
+	@Override
+	public IAttribute getState() {
 		return _theState;
 	}
 
-	public int nowRun(PrintStream out, PrintStream err, InputStream in,
-			NewScenarioListener scenarioListener)
-	{
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see ASSET.Scenario.LiveScenario.ISimulationQue#isRunning()
+	 */
+	@Override
+	public boolean isRunning() {
+		return runThread.isAlive();
+	}
+
+	@Override
+	public int nowRun(final PrintStream out, final PrintStream err, final InputStream in,
+			final NewScenarioListener scenarioListener) {
 		startQue(scenarioListener);
 		return 0;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see ASSET.Scenario.LiveScenario.ISimulationQue#startQue()
+	 */
+	@Override
+	public void startQue(final NewScenarioListener listener) {
+		runThread = new runThread();
+		runThread.start();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see ASSET.Scenario.LiveScenario.ISimulationQue#stopQue()
+	 */
+	@Override
+	public void stopQue() {
+		runThread.interrupt();
+	}
 
 }

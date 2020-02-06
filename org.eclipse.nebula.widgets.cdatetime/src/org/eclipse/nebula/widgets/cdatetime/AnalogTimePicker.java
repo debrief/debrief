@@ -30,31 +30,35 @@ class AnalogTimePicker extends VPanel {
 	class BaseLayout extends VLayout {
 
 		@Override
-		protected Point computeSize(VPanel panel, int wHint, int hHint, boolean flushCache) {
-			Point size = dialPanel.computeSize(wHint, hHint, flushCache);
-			if(digitalClock != null) {
+		protected Point computeSize(final VPanel panel, final int wHint, final int hHint, final boolean flushCache) {
+			final Point size = dialPanel.computeSize(wHint, hHint, flushCache);
+			if (digitalClock != null) {
 				size.y += digitalClock.computeSize(wHint, hHint, flushCache).y;
 			}
 			return size;
 		}
 
 		@Override
-		protected void layout(VPanel panel, boolean flushCache) {
-			Rectangle clientArea = panel.getClientArea();
-			Point dclockSize = (digitalClock != null) ? digitalClock.computeSize(SWT.DEFAULT, SWT.DEFAULT, flushCache) : new Point(0, 0);
+		protected void layout(final VPanel panel, final boolean flushCache) {
+			final Rectangle clientArea = panel.getClientArea();
+			final Point dclockSize = (digitalClock != null)
+					? digitalClock.computeSize(SWT.DEFAULT, SWT.DEFAULT, flushCache)
+					: new Point(0, 0);
 
 			int dwidth = clientArea.width;
-			int dheight = Math.min(dwidth, clientArea.height - dclockSize.y);
-			if(dheight < dwidth)
+			final int dheight = Math.min(dwidth, clientArea.height - dclockSize.y);
+			if (dheight < dwidth) {
 				dwidth = dheight;
+			}
 
-			int dx = clientArea.x + (clientArea.width - dwidth) / 2;
-			int dy = clientArea.y + (clientArea.height - dheight - dclockSize.y) / 2;
+			final int dx = clientArea.x + (clientArea.width - dwidth) / 2;
+			final int dy = clientArea.y + (clientArea.height - dheight - dclockSize.y) / 2;
 
 			dialPanel.setBounds(dx, dy, dwidth, dheight);
 
-			if(digitalClock != null) {
-				digitalClock.setBounds(clientArea.x + (clientArea.width - dclockSize.x) / 2, dy + dheight, dclockSize.x, dclockSize.y);
+			if (digitalClock != null) {
+				digitalClock.setBounds(clientArea.x + (clientArea.width - dclockSize.x) / 2, dy + dheight, dclockSize.x,
+						dclockSize.y);
 			}
 		}
 	}
@@ -62,24 +66,25 @@ class AnalogTimePicker extends VPanel {
 	class DialLayout extends VLayout {
 
 		@Override
-		protected Point computeSize(VPanel panel, int wHint, int hHint, boolean flushCache) {
+		protected Point computeSize(final VPanel panel, final int wHint, final int hHint, final boolean flushCache) {
 			return new Point(200, 200);
 		}
 
 		@Override
-		protected void layout(VPanel panel, boolean flushCache) {
-			Rectangle r = panel.getClientArea();
+		protected void layout(final VPanel panel, final boolean flushCache) {
+			final Rectangle r = panel.getClientArea();
 			dialRadius = (Math.min(r.width, r.height) - 10) / 2;
 			dialCenter.x = r.x + r.width / 2;
 			dialCenter.y = r.y + r.height / 2;
 
-			if(timeNow != null) {
+			if (timeNow != null) {
 				timeNow.setBounds(dialCenter.x - 11, dialCenter.y - 11, 22, 22);
 			}
 
-			if(timeAmPm != null) {
-				Point size = timeAmPm.computeSize(-1, -1);
-				timeAmPm.setBounds(dialCenter.x - (size.x / 2), dialCenter.y + (dialRadius / 3) - (size.y / 4), size.x, size.y);
+			if (timeAmPm != null) {
+				final Point size = timeAmPm.computeSize(-1, -1);
+				timeAmPm.setBounds(dialCenter.x - (size.x / 2), dialCenter.y + (dialRadius / 3) - (size.y / 4), size.x,
+						size.y);
 			}
 		}
 	}
@@ -104,28 +109,28 @@ class AnalogTimePicker extends VPanel {
 	boolean secHand;
 	boolean am_pm;
 	boolean compact;
-	private int[] snap = { 1, 1 };
+	private final int[] snap = { 1, 1 };
 	long increment = 300000; // 5 minutes
 
-	private CDateTime cdt;
+	private final CDateTime cdt;
 	String pattern;
 
 	private Listener tapl;
 
-	public AnalogTimePicker(CDateTime parent) {
+	public AnalogTimePicker(final CDateTime parent) {
 		super(parent.pickerPanel, parent.style);
 		cdt = parent;
 		compact = (cdt.style & CDT.COMPACT) != 0;
 		createContents();
 	}
 
-	public AnalogTimePicker(CDateTime cdt, DatePicker parent) {
+	public AnalogTimePicker(final CDateTime cdt, final DatePicker parent) {
 		super(parent, 0);
 		this.cdt = cdt;
 		compact = (cdt.style & CDT.COMPACT) != 0;
 		createContents();
 	}
-	
+
 	protected void createContents() {
 		setLayout(new BaseLayout());
 
@@ -138,9 +143,10 @@ class AnalogTimePicker extends VPanel {
 		timeAmPm.setMargins(4, 4);
 		timeAmPm.setEnabled(!dialPanel.hasStyle(CDT.READ_ONLY));
 		tapl = new Listener() {
-			public void handleEvent(Event event) {
-				if(event.widget == null) {
-					Calendar tmpcal = cdt.getCalendarInstance();
+			@Override
+			public void handleEvent(final Event event) {
+				if (event.widget == null) {
+					final Calendar tmpcal = cdt.getCalendarInstance();
 					tmpcal.set(Calendar.AM_PM, (tmpcal.get(Calendar.AM_PM) == 0) ? 1 : 0);
 					setSelection(tmpcal.getTime());
 					cdt.fireSelectionChanged(Calendar.AM_PM);
@@ -150,12 +156,13 @@ class AnalogTimePicker extends VPanel {
 		timeAmPm.addListener(SWT.Selection, tapl);
 		timeAmPm.addListener(SWT.MouseWheel, tapl);
 
-		Listener listener = new Listener() {
-			public void handleEvent(Event event) {
-				if(cdt.getEditable()) {
-					switch(event.type) {
+		final Listener listener = new Listener() {
+			@Override
+			public void handleEvent(final Event event) {
+				if (cdt.getEditable()) {
+					switch (event.type) {
 					case SWT.Deactivate:
-						if(VTracker.isMouseDown()) {
+						if (VTracker.isMouseDown()) {
 							handleMouseUp();
 							overHour = overMin = overSec = false;
 							redraw();
@@ -197,9 +204,9 @@ class AnalogTimePicker extends VPanel {
 
 	/**
 	 * Get the snap intervals used when setting the minutes and seconds.
-	 * 
-	 * @return an int[2] where int[0] is the minutes snap, and int[1] is the
-	 *         seconds snap
+	 *
+	 * @return an int[2] where int[0] is the minutes snap, and int[1] is the seconds
+	 *         snap
 	 * @see #setTimeSnap(int, int)
 	 */
 	int[] getSnap() {
@@ -207,90 +214,95 @@ class AnalogTimePicker extends VPanel {
 	}
 
 	private void handleMouseDown() {
-		if(overHour) {
+		if (overHour) {
 			setH = true;
-		} else if(overMin) {
+		} else if (overMin) {
 			setM = true;
-		} else if(overSec) {
+		} else if (overSec) {
 			setS = true;
 		}
-		if(setH || setM || setS) {
+		if (setH || setM || setS) {
 			dialPanel.getComposite().setCursor(getDisplay().getSystemCursor(SWT.CURSOR_SIZEALL));
-			if(timeAmPm != null) {
+			if (timeAmPm != null) {
 				timeAmPm.setEnabled(false);
 			}
 		}
 	}
 
-	private void handleMouseMove(int x, int y) {
-		Calendar tmpcal = cdt.getCalendarInstance();
-		int dx = x - dialCenter.x;
-		int dy = y - dialCenter.y;
+	private void handleMouseMove(final int x, final int y) {
+		final Calendar tmpcal = cdt.getCalendarInstance();
+		final int dx = x - dialCenter.x;
+		final int dy = y - dialCenter.y;
 		double val;
-		if(dx == 0) {
-			if(dy > 0) {
+		if (dx == 0) {
+			if (dy > 0) {
 				val = 30;
 			} else {
 				val = 0;
 			}
-		} else if(dy == 0) {
-			if(dx > 0) {
+		} else if (dy == 0) {
+			if (dx > 0) {
 				val = 15;
 			} else {
 				val = 45;
 			}
 		} else {
 			val = (30 * Math.atan((double) dy / (double) dx) / Math.PI) + 15;
-			if(dx < 0) {
+			if (dx < 0) {
 				val += 30;
 			}
 		}
-		if(setH) {
+		if (setH) {
 			val = is24Hour ? val / 2.5 : val / 5;
 			int v = (int) ((val) - (double) tmpcal.get(Calendar.MINUTE) / 60 + .5);
-			if(is24Hour && v > 23)
+			if (is24Hour && v > 23) {
 				v = 23;
-			if(!is24Hour && v > 11)
+			}
+			if (!is24Hour && v > 11) {
 				v = 11;
-			int field = is24Hour ? Calendar.HOUR_OF_DAY : Calendar.HOUR;
+			}
+			final int field = is24Hour ? Calendar.HOUR_OF_DAY : Calendar.HOUR;
 			tmpcal.set(field, v);
 			setSelection(tmpcal.getTime());
-		} else if(setM) {
+		} else if (setM) {
 			int v = (int) (val + 0.5);
-			if(v > 59)
+			if (v > 59) {
 				v = 59;
+			}
 			tmpcal.set(Calendar.MINUTE, v);
 			setSelection(tmpcal.getTime());
-		} else if(setS) {
+		} else if (setS) {
 			int v = (int) (val + 0.5);
-			if(v > 59)
+			if (v > 59) {
 				v = 59;
+			}
 			tmpcal.set(Calendar.SECOND, v);
 			setSelection(tmpcal.getTime());
 		} else {
 			boolean rd = false;
-			if(overHour || overMin || overSec) {
+			if (overHour || overMin || overSec) {
 				rd = true;
 			}
 			overHour = false;
 			overMin = false;
 			overSec = false;
-			if(Math.sqrt(dx * dx + dy * dy) < dialRadius) {
-				double h = (tmpcal.get(is24Hour ? Calendar.HOUR_OF_DAY : Calendar.HOUR) + (double) tmpcal.get(Calendar.MINUTE) / 60) * (is24Hour ? 2.5 : 5);
-				int m = tmpcal.get(Calendar.MINUTE);
-				int s = tmpcal.get(Calendar.SECOND);
-				if(hourHand && val - 1 < h && h <= val + 1) {
+			if (Math.sqrt(dx * dx + dy * dy) < dialRadius) {
+				final double h = (tmpcal.get(is24Hour ? Calendar.HOUR_OF_DAY : Calendar.HOUR)
+						+ (double) tmpcal.get(Calendar.MINUTE) / 60) * (is24Hour ? 2.5 : 5);
+				final int m = tmpcal.get(Calendar.MINUTE);
+				final int s = tmpcal.get(Calendar.SECOND);
+				if (hourHand && val - 1 < h && h <= val + 1) {
 					overHour = true;
 					rd = true;
-				} else if(minHand && val - 1 < m && m <= val + 1) {
+				} else if (minHand && val - 1 < m && m <= val + 1) {
 					overMin = true;
 					rd = true;
-				} else if(secHand && val - 1 < s && s <= val + 1) {
+				} else if (secHand && val - 1 < s && s <= val + 1) {
 					overSec = true;
 					rd = true;
 				}
 			}
-			if(rd) {
+			if (rd) {
 				dialPanel.redraw();
 			}
 		}
@@ -298,156 +310,157 @@ class AnalogTimePicker extends VPanel {
 
 	private void handleMouseUp() {
 		dialPanel.getComposite().setCursor(getDisplay().getSystemCursor(SWT.CURSOR_ARROW));
-		if(timeAmPm != null) {
+		if (timeAmPm != null) {
 			timeAmPm.setEnabled(true);
 		}
-		if(setH) {
-			int field = is24Hour ? Calendar.HOUR_OF_DAY : Calendar.HOUR;
+		if (setH) {
+			final int field = is24Hour ? Calendar.HOUR_OF_DAY : Calendar.HOUR;
 			cdt.fireSelectionChanged(field);
-		} else if(setM) {
+		} else if (setM) {
 			cdt.fireSelectionChanged(Calendar.MINUTE);
-		} else if(setS) {
+		} else if (setS) {
 			cdt.fireSelectionChanged(Calendar.SECOND);
 		}
 		setH = setM = setS = false;
 	}
 
-	private void handleMouseWheel(int count) {
+	private void handleMouseWheel(final int count) {
 		long time = cdt.getCalendarTimeInMillis();
 		time += (count > 0) ? increment : -increment;
 		setSelection(snap(new Date(time), true));
 		cdt.fireSelectionChanged();
 	}
 
-	public void setFields(int[] calendarFields) {
+	public void setFields(final int[] calendarFields) {
 		is24Hour = false;
 		hourHand = false;
 		minHand = false;
 		secHand = false;
 		am_pm = false;
-		for(int field : calendarFields) {
-			if(field == Calendar.HOUR_OF_DAY) {
+		for (final int field : calendarFields) {
+			if (field == Calendar.HOUR_OF_DAY) {
 				is24Hour = true;
-			} else if(field == Calendar.HOUR) {
+			} else if (field == Calendar.HOUR) {
 				hourHand = true;
-			} else if(field == Calendar.MINUTE) {
+			} else if (field == Calendar.MINUTE) {
 				minHand = true;
-			} else if(field == Calendar.SECOND) {
+			} else if (field == Calendar.SECOND) {
 				secHand = true;
-			} else if(field == Calendar.AM_PM) {
+			} else if (field == Calendar.AM_PM) {
 				am_pm = true;
 			}
 		}
-		if((cdt.style & CDT.CLOCK_12_HOUR) != 0) {
+		if ((cdt.style & CDT.CLOCK_12_HOUR) != 0) {
 			is24Hour = false;
 			hourHand = true;
 			am_pm = true;
-		} else if((cdt.style & CDT.CLOCK_24_HOUR) != 0) {
+		} else if ((cdt.style & CDT.CLOCK_24_HOUR) != 0) {
 			is24Hour = true;
 		}
-		if(is24Hour) {
+		if (is24Hour) {
 			hourHand = true;
 			am_pm = false;
 		}
 		timeAmPm.setVisible(am_pm);
 		boolean sepOK = false;
 		pattern = ""; //$NON-NLS-1$
-		String cdtPattern = cdt.getPattern();
-		for(int i = 0; i < cdtPattern.length(); i++) {
-			char c = cdtPattern.charAt(i);
-			if("Hhmsa".indexOf(c) > -1) { //$NON-NLS-1$
+		final String cdtPattern = cdt.getPattern();
+		for (int i = 0; i < cdtPattern.length(); i++) {
+			final char c = cdtPattern.charAt(i);
+			if ("Hhmsa".indexOf(c) > -1) { //$NON-NLS-1$
 				pattern += c;
 				sepOK = true;
 			} else {
-				if(sepOK && ":., ".indexOf(c) > -1) { //$NON-NLS-1$
+				if (sepOK && ":., ".indexOf(c) > -1) { //$NON-NLS-1$
 					pattern += c;
 				}
 				sepOK = false;
 			}
 		}
-		if(digitalClock != null) {
+		if (digitalClock != null) {
 			digitalClock.setPattern(pattern);
 		}
 		updateLabels();
 	}
 
+	@Override
 	public boolean setFocus() {
-		if(timeNow != null) {
+		if (timeNow != null) {
 			return timeNow.setFocus();
 		} else {
 			return getComposite().forceFocus();
 		}
 	}
 
-	void setIncrement(long millis) {
+	void setIncrement(final long millis) {
 		increment = millis;
 	}
 
-	private void setSelection(Date date) {
+	private void setSelection(final Date date) {
 		cdt.setSelection(snap(date));
 	}
 
 	/**
 	 * Set the snap for the minutes and seconds. If the value given for either
-	 * parameter is less than or equal to zero then its corresponding snap will
-	 * be set to its default of one (1).
-	 * 
-	 * @param min
-	 *            the snap interval for the minutes
-	 * @param sec
-	 *            the snap interval for the seconds
+	 * parameter is less than or equal to zero then its corresponding snap will be
+	 * set to its default of one (1).
+	 *
+	 * @param min the snap interval for the minutes
+	 * @param sec the snap interval for the seconds
 	 * @see #getSnap()
 	 */
-	void setSnap(int min, int sec) {
+	void setSnap(final int min, final int sec) {
 		snap[0] = (min < 0) ? 1 : min;
 		snap[1] = (sec < 0) ? 1 : sec;
 	}
 
 	@Override
-	public boolean setStyle(int style, boolean set) {
-		if((style & SWT.READ_ONLY) != 0) {
-			if(timeAmPm != null && !timeAmPm.isDisposed()) {
+	public boolean setStyle(final int style, final boolean set) {
+		if ((style & SWT.READ_ONLY) != 0) {
+			if (timeAmPm != null && !timeAmPm.isDisposed()) {
 				timeAmPm.setEnabled(!set);
 			}
-			if(timeNow != null && !timeNow.isDisposed()) {
+			if (timeNow != null && !timeNow.isDisposed()) {
 				timeNow.setEnabled(!set);
 			}
 		}
 		return super.setStyle(style, set);
 	}
-	
+
 	/**
 	 * perform the snap and return a new "snapped" Date object
 	 */
-	private Date snap(Date date) {
+	private Date snap(final Date date) {
 		return snap(date, false);
 	}
 
 	/**
 	 * perform the snap and return a new "snapped" Date object
 	 */
-	private Date snap(Date date, boolean toIncrement) {
-		Calendar tmpcal = cdt.getCalendarInstance();
+	private Date snap(final Date date, final boolean toIncrement) {
+		final Calendar tmpcal = cdt.getCalendarInstance();
 		tmpcal.setTime(date);
 
-		int msnap = toIncrement ? (int) (increment / 60000) : snap[0];
+		final int msnap = toIncrement ? (int) (increment / 60000) : snap[0];
 
 		int v = tmpcal.get(Calendar.MINUTE);
 		int m = v % msnap;
-		if(m != 0) {
+		if (m != 0) {
 			v += (m > msnap / 2) ? (msnap - m) : -m;
-			if(v > 59)
+			if (v > 59) {
 				v = 0;
+			}
 			tmpcal.set(Calendar.MINUTE, v);
 		}
 
-		if(!toIncrement) {
+		if (!toIncrement) {
 			v = tmpcal.get(Calendar.SECOND);
 			m = v % snap[1];
-			if(m != 0) {
+			if (m != 0) {
 				v += (m > snap[1] / 2) ? (snap[1] - m) : -m;
-				if(v > 59)
+				if (v > 59) {
 					v = 0;
+				}
 				tmpcal.set(Calendar.SECOND, v);
 			}
 		}
@@ -456,17 +469,17 @@ class AnalogTimePicker extends VPanel {
 	}
 
 	void updateLabels() {
-		if(timeNow != null) {
+		if (timeNow != null) {
 			timeNow.setToolTipText(Resources.getString("nav_current_time", cdt.getLocale())); //$NON-NLS-1$
 		}
 	}
 
 	void updateView() {
-		if(digitalClock != null) {
+		if (digitalClock != null) {
 			digitalClock.setSelection(new Date(cdt.getCalendarTimeInMillis()));
 		}
-		if(timeAmPm != null) {
-			SimpleDateFormat sdf = new SimpleDateFormat("a"); //$NON-NLS-1$
+		if (timeAmPm != null) {
+			final SimpleDateFormat sdf = new SimpleDateFormat("a"); //$NON-NLS-1$
 			timeAmPm.setText(sdf.format(cdt.getCalendarTime()));
 		}
 		dialPanel.redraw();

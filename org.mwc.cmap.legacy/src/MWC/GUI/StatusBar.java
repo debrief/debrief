@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: StatusBar.java,v $
@@ -65,15 +65,16 @@
 
 package MWC.GUI;
 
-public interface StatusBar
-{
+public interface StatusBar {
 
+	/**
+	 * set range and bearing data in this text panel
+	 *
+	 * @param range   the range in degrees
+	 * @param bearing the bearing in radians
+	 */
+	public void setRngBearing(double range, double bearing);
 
-  public void setText(String theVal);
-  /** set range and bearing data in this text panel
-   *  @param range the range in degrees
-   *  @param bearing the bearing in radians
-   */
-  public void setRngBearing(double range, double bearing);
+	public void setText(String theVal);
 
 }

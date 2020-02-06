@@ -4,19 +4,21 @@ package MWC.Utilities.ReaderWriter.XML.Features;
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 import org.w3c.dom.Element;
+
+import com.bbn.openmap.layer.vpf.LibrarySelectionTable;
 
 import MWC.GUI.Editable;
 import MWC.GUI.ToolParent;
@@ -27,42 +29,39 @@ import MWC.GUI.VPF.VPFDatabase;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
 
-import com.bbn.openmap.layer.vpf.LibrarySelectionTable;
-
-abstract public class VPFDatabaseHandler extends MWCXMLReader implements
-		PlottableExporter
-{
+abstract public class VPFDatabaseHandler extends MWCXMLReader implements PlottableExporter {
 
 	private static final String _myType = "vpf_database";
 
 	private static ToolParent _myParent;
 
+	public static void initialise(final ToolParent toolParent) {
+		_myParent = toolParent;
+	}
+
 	boolean _isVisible;
 
 	VPFDatabase _myDatabase;
 
-	public VPFDatabaseHandler()
-	{
+	public VPFDatabaseHandler() {
 		// inform our parent what type of class we are
 		super(_myType);
 
-		addAttributeHandler(new HandleBooleanAttribute("Visible")
-		{
-			public void setValue(final String name, final boolean value)
-			{
+		addAttributeHandler(new HandleBooleanAttribute("Visible") {
+			@Override
+			public void setValue(final String name, final boolean value) {
 				_isVisible = value;
 			}
 		});
-		addHandler(new VPFLibraryHandler()
-		{
+		addHandler(new VPFLibraryHandler() {
+			@Override
 			public void addLibrary(final String name, final boolean visible,
-					final java.util.Vector<CoverageLayer> coverages)
-			{
+					final java.util.Vector<CoverageLayer> coverages) {
 				addThisLibrary(name, visible, coverages);
 			}
 
-			public com.bbn.openmap.layer.vpf.LibrarySelectionTable getLST(final String name)
-			{
+			@Override
+			public com.bbn.openmap.layer.vpf.LibrarySelectionTable getLST(final String name) {
 				LibrarySelectionTable res = null;
 
 				checkDatabase();
@@ -73,8 +72,8 @@ abstract public class VPFDatabaseHandler extends MWCXMLReader implements
 				return res;
 			}
 
-			public DebriefFeatureWarehouse getWarehouse()
-			{
+			@Override
+			public DebriefFeatureWarehouse getWarehouse() {
 				checkDatabase();
 				return _myDatabase.getWarehouse();
 			}
@@ -82,33 +81,21 @@ abstract public class VPFDatabaseHandler extends MWCXMLReader implements
 
 	}
 
-	void checkDatabase()
-	{
-		if (_myDatabase == null)
-		{
-			// create the database, but don't populate it
-			_myDatabase = MWC.GUI.Tools.Palette.CreateVPFLayers
-					.createMyLibrary(false);
-		}
-	}
+	abstract public void addPlottable(MWC.GUI.Plottable plottable);
 
 	public void addThisLibrary(final String name, final boolean visible,
-			final java.util.Vector<CoverageLayer> coverages)
-	{
+			final java.util.Vector<CoverageLayer> coverages) {
 		checkDatabase();
 
 		// did we manage to load the library?
-		if (_myDatabase != null)
-		{
+		if (_myDatabase != null) {
 
 			// do we know about this library?
 			final LibraryLayer lib = _myDatabase.getLibrary(name);
 
-			if (lib == null)
-			{
+			if (lib == null) {
 				if (_myParent != null)
-					_myParent.logError(ToolParent.ERROR,
-							"Unable to find VPF library for:" + name, null);
+					_myParent.logError(ToolParent.ERROR, "Unable to find VPF library for:" + name, null);
 				return;
 			}
 
@@ -116,28 +103,30 @@ abstract public class VPFDatabaseHandler extends MWCXMLReader implements
 			lib.setVisible(visible);
 
 			// check that there are coverages in this layer
-			if (coverages != null)
-			{
+			if (coverages != null) {
 
 				// now add the coverages to the library
 				final java.util.Enumeration<CoverageLayer> enumer = coverages.elements();
-				while (enumer.hasMoreElements())
-				{
+				while (enumer.hasMoreElements()) {
 					final CoverageLayer cl = enumer.nextElement();
 					lib.add(cl);
 				}
 			}
-		}
-		else
-		{
+		} else {
 			if (_myParent != null)
-				_myParent.logError(ToolParent.ERROR,
-						"VPF Library paths not set", null);
+				_myParent.logError(ToolParent.ERROR, "VPF Library paths not set", null);
 		}
 	}
 
-	public void elementClosed()
-	{
+	void checkDatabase() {
+		if (_myDatabase == null) {
+			// create the database, but don't populate it
+			_myDatabase = MWC.GUI.Tools.Palette.CreateVPFLayers.createMyLibrary(false);
+		}
+	}
+
+	@Override
+	public void elementClosed() {
 		// have we created any data?
 		checkDatabase();
 
@@ -155,11 +144,9 @@ abstract public class VPFDatabaseHandler extends MWCXMLReader implements
 
 	}
 
-	abstract public void addPlottable(MWC.GUI.Plottable plottable);
-
-	public void exportThisPlottable(final MWC.GUI.Plottable plottable,
-			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
-	{
+	@Override
+	public void exportThisPlottable(final MWC.GUI.Plottable plottable, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc) {
 
 		final MWC.GUI.VPF.VPFDatabase ll = (MWC.GUI.VPF.VPFDatabase) plottable;
 		final Element coast = doc.createElement(_myType);
@@ -169,18 +156,12 @@ abstract public class VPFDatabaseHandler extends MWCXMLReader implements
 
 		// now pass throuth the coverages, outputting each one
 		final java.util.Enumeration<Editable> enumer = ll.elements();
-		while (enumer.hasMoreElements())
-		{
+		while (enumer.hasMoreElements()) {
 			final LibraryLayer cl = (LibraryLayer) enumer.nextElement();
 			VPFLibraryHandler.exportThisPlottable(cl, coast, doc);
 		}
 
 		parent.appendChild(coast);
-	}
-
-	public static void initialise(final ToolParent toolParent)
-	{
-		_myParent = toolParent;
 	}
 
 }

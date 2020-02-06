@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: SwingToolbar.java,v $
@@ -87,7 +87,6 @@
 // new Swing versions
 //
 
-
 package MWC.GUI.Tools.Swing;
 
 import java.awt.event.ActionEvent;
@@ -95,150 +94,83 @@ import java.awt.event.ActionListener;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
-import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
 
 import MWC.GUI.Tool;
 import MWC.GUI.Toolbar;
 
-/** implementation of toolbar using Swing controls
- * Swing*/
+/**
+ * implementation of toolbar using Swing controls Swing
+ */
 public class SwingToolbar extends JToolBar implements Toolbar {
 
-  /////////////////////////////////////////////////////////
-  // member objects
-  /////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////
+	// member objects
+	/////////////////////////////////////////////////////////
+
+	protected class Listener implements ActionListener {
+		protected Tool myTool;
+
+		public Listener(final Tool theTool) {
+			myTool = theTool;
+		}
+
+		@Override
+		public void actionPerformed(final ActionEvent p1) {
+			myTool.execute();
+		}
+	}
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
-	/** keep track of the button groups we are creating
+	/**
+	 * keep track of the button groups we are creating
 	 */
 	Dictionary<String, ButtonGroup> _theGroups;
 
-  /** the name of this toolbar - used for when it's dragged out
-   */
-  String _myName;
+	/**
+	 * the name of this toolbar - used for when it's dragged out
+	 */
+	String _myName;
 
-  /////////////////////////////////////////////////////////
-  // constructor
-  /////////////////////////////////////////////////////////
-	public SwingToolbar(final int theDirection, final String name, final MyMetalToolBarUI.ToolbarOwner  owner)
-	{
+	/////////////////////////////////////////////////////////
+	// constructor
+	/////////////////////////////////////////////////////////
+	public SwingToolbar(final int theDirection, final String name, final MyMetalToolBarUI.ToolbarOwner owner) {
 
-    // override the UI, with our special one which keeps the toolbar on top, yet it
-    // allows the toolbar to resize
-    super.setUI(new MyMetalToolBarUI(owner));
+// override the UI, with our special one which keeps the toolbar on top, yet it
+// allows the toolbar to resize
+		super.setUI(new MyMetalToolBarUI(owner));
 
-    // align the buttons
-    if(theDirection == Toolbar.HORIZONTAL)
-    {
-	    this.setOrientation(JToolBar.HORIZONTAL);
-    }
-    else
-	    this.setOrientation(JToolBar.VERTICAL);
+// align the buttons
+		if (theDirection == Toolbar.HORIZONTAL) {
+			this.setOrientation(SwingConstants.HORIZONTAL);
+		} else
+			this.setOrientation(SwingConstants.VERTICAL);
 
-		/** get ready to store any button groups we have to create
+		/**
+		 * get ready to store any button groups we have to create
 		 */
 		_theGroups = new Hashtable<String, ButtonGroup>();
 
-    // store the name
-    _myName = name;
-  }
-
-  public String toString()
-  {
-    return _myName;
-  }
-
-  public String getName()
-  {
-    return toString();
-  }
-
-  /////////////////////////////////////////////////
-  // member functions
-  //////////////////////////////////////////////////
-
-	/** method to remove tools from toolbar
-	 */
-	public void close()
-	{
-		this.removeAll();
+// store the name
+		_myName = name;
 	}
 
-
-  public void addTool(final Tool theTool)
-	{
-		addTool(theTool,null,(char)0);
-	}
-
-  public void addTool(final Tool theTool,
-											final java.awt.MenuShortcut theShortcut,
-											final char theMnemonic){
-    // cast the tool back to the correct type
-
-		// see if the tool has an image assigned
-		final String val = theTool.getImage();
-		SwingToolbarButton theBtn = null;
-		if(val != null)
-		{
-			// first try to get the URL of the image
-			final java.lang.ClassLoader loader = getClass().getClassLoader();
-      if(loader != null)
-      {
-        final java.net.URL imLoc = loader.getResource(val);
-        if(imLoc != null)
-        {
-          final ImageIcon im = new ImageIcon(imLoc);
-          theBtn = new SwingToolbarButton(theTool, im);
-        }
-        else
-        {
-          System.err.println("Failed to load image:" + val);
-        }
-      }
-			else
-			{
-				System.err.println("Failed to load image:" + val);
-				theBtn = new SwingToolbarButton(theTool);
-			}
-		}
-
-    // check if we have managed to create our button
-    if(theBtn == null)
-			theBtn = new SwingToolbarButton(theTool);
-
-    this.add(theBtn);
-
-		if(theShortcut != null)
-		{
-			this.registerKeyboardAction(new Listener(theTool),
-																	KeyStroke.getKeyStroke(theShortcut.getKey(), java.awt.Event.CTRL_MASK) ,
-																	JComponent.WHEN_IN_FOCUSED_WINDOW);
-		}
-
-		if(theMnemonic != ' ')
-		{
-			theBtn.setMnemonic(theMnemonic);
-		}
-
-  }
-
-	public void addToggleTool(final String group,
-														final Tool theTool)
-	{
+	@Override
+	public void addToggleTool(final String group, final Tool theTool) {
 		// see if there is a group for this string
-		javax.swing.ButtonGroup theGroup = (ButtonGroup) _theGroups.get(group);
+		javax.swing.ButtonGroup theGroup = _theGroups.get(group);
 
-		if(theGroup == null)
-		{
+		if (theGroup == null) {
 			theGroup = new ButtonGroup();
 			_theGroups.put(group, theGroup);
 		}
@@ -248,23 +180,21 @@ public class SwingToolbar extends JToolBar implements Toolbar {
 
 		// see if there is an image for this tool
 		final String theImage = theTool.getImage();
-		if(theImage != null)
-		{
+		if (theImage != null) {
 			final java.lang.ClassLoader loader = getClass().getClassLoader();
-			if(loader != null)
-			{
+			if (loader != null) {
 				final java.net.URL imURL = loader.getResource(theImage);
-				if(imURL != null)
+				if (imURL != null)
 					theBtn = new SwingToggleButton(theTool, new ImageIcon(imURL));
 			}
 		}
 
 		// see if we have managed to create the button yet
-		if(theBtn == null)
+		if (theBtn == null)
 			theBtn = new SwingToggleButton(theTool);
 
 		// apply some formatting
-		theBtn.setHorizontalAlignment(AbstractButton.CENTER);
+		theBtn.setHorizontalAlignment(SwingConstants.CENTER);
 
 		//
 		theGroup.add(theBtn);
@@ -273,23 +203,22 @@ public class SwingToolbar extends JToolBar implements Toolbar {
 		this.add(theBtn);
 
 		// if this is the first button, fire it
-		if(_theGroups.size() == 1)
-		{
+		if (_theGroups.size() == 1) {
 			theBtn.doClick();
 		}
 	}
 
+	/////////////////////////////////////////////////
+	// member functions
+	//////////////////////////////////////////////////
 
-	public void addToggleTool(final String group,
-														final Tool theTool,
-														final java.awt.MenuShortcut theShortcut,
-														final char theMnemonic)
-	{
+	@Override
+	public void addToggleTool(final String group, final Tool theTool, final java.awt.MenuShortcut theShortcut,
+			final char theMnemonic) {
 		// see if there is a group for this string
-		javax.swing.ButtonGroup theGroup = (ButtonGroup) _theGroups.get(group);
+		javax.swing.ButtonGroup theGroup = _theGroups.get(group);
 
-		if(theGroup == null)
-		{
+		if (theGroup == null) {
 			theGroup = new ButtonGroup();
 			_theGroups.put(group, theGroup);
 		}
@@ -300,19 +229,17 @@ public class SwingToolbar extends JToolBar implements Toolbar {
 		// see if there is an image for this tool
 		final String theImage = theTool.getImage();
 
-		if(theImage != null)
-		{
+		if (theImage != null) {
 			final java.lang.ClassLoader loader = getClass().getClassLoader();
-			if(loader != null)
-			{
+			if (loader != null) {
 				final java.net.URL imURL = loader.getResource(theImage);
-				if(imURL != null)
+				if (imURL != null)
 					theBtn = new SwingToggleButton(theTool, new ImageIcon(imURL));
 			}
 		}
 
 		// see if we have successfully created it
-		if(theBtn == null)
+		if (theBtn == null)
 			theBtn = new SwingToggleButton(theTool);
 
 		//
@@ -322,48 +249,85 @@ public class SwingToolbar extends JToolBar implements Toolbar {
 		this.add(theBtn);
 
 		// if this is the first button, fire it
-		if(_theGroups.size() == 1)
-		{
+		if (_theGroups.size() == 1) {
 			theBtn.doClick();
 		}
 
-		if(theMnemonic != ' ')
-		{
+		if (theMnemonic != ' ') {
 			theBtn.setMnemonic(theMnemonic);
 		}
 
-		if(theShortcut != null)
-		{
+		if (theShortcut != null) {
 			this.registerKeyboardAction(new Listener(theTool),
-																	KeyStroke.getKeyStroke(theShortcut.getKey(), java.awt.Event.CTRL_MASK) ,
-																	JComponent.WHEN_IN_FOCUSED_WINDOW);
+					KeyStroke.getKeyStroke(theShortcut.getKey(), java.awt.Event.CTRL_MASK),
+					JComponent.WHEN_IN_FOCUSED_WINDOW);
 		}
-
 
 	}
 
-	protected class Listener implements ActionListener
-	{
-		protected Tool myTool;
-		public Listener(final Tool theTool)
-		{
-			myTool = theTool;
+	@Override
+	public void addTool(final Tool theTool) {
+		addTool(theTool, null, (char) 0);
+	}
+
+	@Override
+	public void addTool(final Tool theTool, final java.awt.MenuShortcut theShortcut, final char theMnemonic) {
+		// cast the tool back to the correct type
+
+		// see if the tool has an image assigned
+		final String val = theTool.getImage();
+		SwingToolbarButton theBtn = null;
+		if (val != null) {
+			// first try to get the URL of the image
+			final java.lang.ClassLoader loader = getClass().getClassLoader();
+			if (loader != null) {
+				final java.net.URL imLoc = loader.getResource(val);
+				if (imLoc != null) {
+					final ImageIcon im = new ImageIcon(imLoc);
+					theBtn = new SwingToolbarButton(theTool, im);
+				} else {
+					System.err.println("Failed to load image:" + val);
+				}
+			} else {
+				System.err.println("Failed to load image:" + val);
+				theBtn = new SwingToolbarButton(theTool);
+			}
 		}
 
-		public void actionPerformed(final ActionEvent p1)
-		{
-			myTool.execute();
+		// check if we have managed to create our button
+		if (theBtn == null)
+			theBtn = new SwingToolbarButton(theTool);
+
+		this.add(theBtn);
+
+		if (theShortcut != null) {
+			this.registerKeyboardAction(new Listener(theTool),
+					KeyStroke.getKeyStroke(theShortcut.getKey(), java.awt.Event.CTRL_MASK),
+					JComponent.WHEN_IN_FOCUSED_WINDOW);
 		}
+
+		if (theMnemonic != ' ') {
+			theBtn.setMnemonic(theMnemonic);
+		}
+
+	}
+
+	/**
+	 * method to remove tools from toolbar
+	 */
+	@Override
+	public void close() {
+		this.removeAll();
+	}
+
+	@Override
+	public String getName() {
+		return toString();
+	}
+
+	@Override
+	public String toString() {
+		return _myName;
 	}
 
 }
-
-
-
-
-
-
-
-
-
-

@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.Properties;
@@ -68,107 +68,100 @@ package MWC.GUI.Properties;
 
 import java.beans.PropertyEditorSupport;
 
-public class LabelLocationPropertyEditor extends PropertyEditorSupport
-{
+public class LabelLocationPropertyEditor extends PropertyEditorSupport {
 
-  final static public int TOP = 0;
-  final static public int BOTTOM = 1;
-  final static public int LEFT = 2;
-  final static public int RIGHT = 3;
-  final static public int ALL = 4;
+	final static public int TOP = 0;
+	final static public int BOTTOM = 1;
+	final static public int LEFT = 2;
+	final static public int RIGHT = 3;
+	final static public int ALL = 4;
 
-  protected Integer _myLocation;
+	/**
+	 * find the location opposite to the specified one
+	 *
+	 * @param loc
+	 * @return
+	 */
+	public static int oppositeFor(final int loc) {
+		final int res;
+		switch (loc) {
+		case TOP:
+			res = BOTTOM;
+			break;
+		case LEFT:
+			res = RIGHT;
+			break;
+		case BOTTOM:
+			res = TOP;
+			break;
+		case RIGHT:
+			res = LEFT;
+			break;
+		default:
+			res = TOP;
+		}
 
-  public String[] getTags()
-  {
-    final String tags[] =
-    {"Top", "Bottom", "Left", "Right", "All"};
-    return tags;
-  }
+		return res;
+	}
 
-  public Object getValue()
-  {
-    return _myLocation;
-  }
+	protected Integer _myLocation;
 
-  /** find the location opposite to the specified one
-   * 
-   * @param loc
-   * @return
-   */
-  public static int oppositeFor(final int loc)
-  {
-    final int res;
-    switch (loc)
-    {
-    case TOP:
-      res = BOTTOM;
-      break;
-    case LEFT:
-      res = RIGHT;
-      break;
-    case BOTTOM:
-      res = TOP;
-      break;
-    case RIGHT:
-      res = LEFT;
-      break;
-    default:
-      res = TOP;
-    }
+	@Override
+	public String getAsText() {
+		String res = null;
+		switch (_myLocation.intValue()) {
+		case (TOP):
+			res = "Top";
+			break;
+		case (BOTTOM):
+			res = "Bottom";
+			break;
+		case (LEFT):
+			res = "Left";
+			break;
+		case (RIGHT):
+			res = "Right";
+			break;
+		case (ALL):
+			res = "All";
+			break;
+		}
+		return res;
+	}
 
-    return res;
-  }
+	@Override
+	public String[] getTags() {
+		final String tags[] = { "Top", "Bottom", "Left", "Right", "All" };
+		return tags;
+	}
 
-  public void setValue(final Object p1)
-  {
-    if (p1 instanceof Integer)
-    {
-      _myLocation = (Integer) p1;
-    }
-    else if (p1 instanceof String)
-    {
-      final String val = (String) p1;
-      setAsText(val);
-    }
-  }
+	@Override
+	public Object getValue() {
+		return _myLocation;
+	}
 
-  public void setAsText(final String val)
-  {
-    if (val.equals("Top"))
-      _myLocation = new Integer(TOP);
-    if (val.equals("Bottom"))
-      _myLocation = new Integer(BOTTOM);
-    if (val.equals("Left"))
-      _myLocation = new Integer(LEFT);
-    if (val.equals("Right"))
-      _myLocation = new Integer(RIGHT);
-    if (val.equals("All"))
-      _myLocation = new Integer(ALL);
+	@Override
+	public void setAsText(final String val) {
+		if (val.equals("Top"))
+			_myLocation = new Integer(TOP);
+		if (val.equals("Bottom"))
+			_myLocation = new Integer(BOTTOM);
+		if (val.equals("Left"))
+			_myLocation = new Integer(LEFT);
+		if (val.equals("Right"))
+			_myLocation = new Integer(RIGHT);
+		if (val.equals("All"))
+			_myLocation = new Integer(ALL);
 
-  }
+	}
 
-  public String getAsText()
-  {
-    String res = null;
-    switch (_myLocation.intValue())
-    {
-    case (TOP):
-      res = "Top";
-      break;
-    case (BOTTOM):
-      res = "Bottom";
-      break;
-    case (LEFT):
-      res = "Left";
-      break;
-    case (RIGHT):
-      res = "Right";
-      break;
-    case (ALL):
-      res = "All";
-      break;
-    }
-    return res;
-  }
+	@Override
+	public void setValue(final Object p1) {
+		if (p1 instanceof Integer) {
+			_myLocation = (Integer) p1;
+		} else if (p1 instanceof String) {
+			final String val = (String) p1;
+			setAsText(val);
+		}
+	}
 }

@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.Properties;
@@ -74,65 +74,56 @@ package MWC.GUI.Properties;
 
 import java.beans.PropertyEditorSupport;
 
-public class PlanningLegCalcModelPropertyEditor extends PropertyEditorSupport
-{
+public class PlanningLegCalcModelPropertyEditor extends PropertyEditorSupport {
 
-  public static final int SPEED_TIME = 0;
-  public static final int RANGE_TIME = 1;
-  public static final int RANGE_SPEED = 2;
+	public static final int SPEED_TIME = 0;
+	public static final int RANGE_TIME = 1;
+	public static final int RANGE_SPEED = 2;
 
-  protected Integer _myCalcModel;
+	protected Integer _myCalcModel;
 
-  private String[] _myTags;
+	private String[] _myTags;
 
-  public String[] getTags()
-  {
-    if(_myTags == null)
-    {
-      _myTags = new String[3];
-      _myTags[SPEED_TIME] = "Speed/Time";
-      _myTags[RANGE_TIME] = "Range/Time";
-      _myTags[RANGE_SPEED] = "Range/Speed";
-    }
-    return _myTags;
-  }
+	@Override
+	public String getAsText() {
+		String res = null;
+		final int index = _myCalcModel.intValue();
+		res = getTags()[index];
+		return res;
+	}
 
-  public Object getValue()
-  {
-    return _myCalcModel;
-  }
+	@Override
+	public String[] getTags() {
+		if (_myTags == null) {
+			_myTags = new String[3];
+			_myTags[SPEED_TIME] = "Speed/Time";
+			_myTags[RANGE_TIME] = "Range/Time";
+			_myTags[RANGE_SPEED] = "Range/Speed";
+		}
+		return _myTags;
+	}
 
+	@Override
+	public Object getValue() {
+		return _myCalcModel;
+	}
 
+	@Override
+	public void setAsText(final String val) {
+		for (int i = 0; i < getTags().length; i++) {
+			final String thisStr = getTags()[i];
+			if (thisStr.equals(val))
+				_myCalcModel = new Integer(i);
+		}
+	}
 
-  public void setValue(final Object p1)
-  {
-    if(p1 instanceof Integer)
-    {
-      _myCalcModel = (Integer)p1;
-    }
-    else if(p1 instanceof String)
-    {
-      final String val = (String) p1;
-      setAsText(val);
-    }
-  }
-
-  public void setAsText(final String val)
-  {
-    for(int i=0;i<getTags().length;i++)
-    {
-      final String thisStr = getTags()[i];
-      if(thisStr.equals(val))
-        _myCalcModel = new Integer(i);
-    }
-  }
-
-  public String getAsText()
-  {
-    String res = null;
-    final int index = _myCalcModel.intValue();
-    res = getTags()[index];
-    return res;
-  }
+	@Override
+	public void setValue(final Object p1) {
+		if (p1 instanceof Integer) {
+			_myCalcModel = (Integer) p1;
+		} else if (p1 instanceof String) {
+			final String val = (String) p1;
+			setAsText(val);
+		}
+	}
 }
-

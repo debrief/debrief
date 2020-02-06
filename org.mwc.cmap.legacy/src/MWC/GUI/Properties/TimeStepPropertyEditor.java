@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: TimeStepPropertyEditor.java,v $
@@ -66,129 +66,91 @@
 // Initial revision
 //
 
-
 package MWC.GUI.Properties;
 
 import java.beans.PropertyEditorSupport;
 
-public class TimeStepPropertyEditor extends PropertyEditorSupport
-{
+public class TimeStepPropertyEditor extends PropertyEditorSupport {
 
-  /**
-   * the time step (micros)
-   */
-  protected long _myStep;
+	/**
+	 * the time step (micros)
+	 */
+	protected long _myStep;
 
-  /**
-   * the string tags representing selectable items
-   */
-  protected String _stringTags[];
+	/**
+	 * the string tags representing selectable items
+	 */
+	protected String _stringTags[];
 
-  /**
-   * the frequencies which the tags represent
-   */
-  protected long _freqs[];
+	/**
+	 * the frequencies which the tags represent
+	 */
+	protected long _freqs[];
 
-  /** put the items into the lists.  We do it here so that
-   * we can over-ride it to provide the hi-res timers
-   */
-  protected void initialiseLists()
-  {
-    if (_stringTags == null)
-    {
+	@Override
+	public String getAsText() {
+		initialiseLists();
 
-      _stringTags = new String[]
-      {
-        "1/10 Sec",
-        "1/2 Sec",
-        "1 Sec",
-        "5 Secs",
-        "15 Secs",
-        "30 Secs",
-        "1 Min",
-        "5 Mins",
-        "10 Mins",
-        "15 Mins",
-        "30 Mins",
-        "60 Mins"};
+		String res = null;
+		for (int i = 0; i < _freqs.length; i++) {
+			final double v = _freqs[i];
+			if (v == _myStep) {
+				res = _stringTags[i];
+			}
 
-      _freqs =
-        new long[]
-        {
-          100 * 1000,
-          500 * 1000,
-          1000 * 1000,
-          5 * 1000 * 1000,
-          15 * 1000 * 1000,
-          30 * 1000 * 1000,
-          1 * 60 * 1000 * 1000,
-          5 * 60 * 1000 * 1000,
-          10 * 60 * 1000 * 1000,
-          15 * 60 * 1000 * 1000,
-          30 * 60 * 1000 * 1000,
-          60 * 60 * 1000 * 1000l,
-        };
-    }
-  }
+		}
 
+		return res;
+	}
 
-  public String[] getTags()
-  {
-    initialiseLists();
+	@Override
+	public String[] getTags() {
+		initialiseLists();
 
-    return _stringTags;
-  }
+		return _stringTags;
+	}
 
-  public Object getValue()
-  {
-    return new Long(_myStep);
-  }
+	@Override
+	public Object getValue() {
+		return new Long(_myStep);
+	}
 
+	/**
+	 * put the items into the lists. We do it here so that we can over-ride it to
+	 * provide the hi-res timers
+	 */
+	protected void initialiseLists() {
+		if (_stringTags == null) {
 
-  public void setValue(final Object p1)
-  {
-    if (p1 instanceof Long)
-    {
-      _myStep = ((Long)p1).longValue();
-    }
-    else if (p1 instanceof String)
-    {
-      final String val = (String) p1;
-      setAsText(val);
-    }
-  }
+			_stringTags = new String[] { "1/10 Sec", "1/2 Sec", "1 Sec", "5 Secs", "15 Secs", "30 Secs", "1 Min",
+					"5 Mins", "10 Mins", "15 Mins", "30 Mins", "60 Mins" };
 
-  public void setAsText(final String val)
-  {
-    initialiseLists();
+			_freqs = new long[] { 100 * 1000, 500 * 1000, 1000 * 1000, 5 * 1000 * 1000, 15 * 1000 * 1000,
+					30 * 1000 * 1000, 1 * 60 * 1000 * 1000, 5 * 60 * 1000 * 1000, 10 * 60 * 1000 * 1000,
+					15 * 60 * 1000 * 1000, 30 * 60 * 1000 * 1000, 60 * 60 * 1000 * 1000l, };
+		}
+	}
 
-    for (int i = 0; i < _stringTags.length; i++)
-    {
-      final String thisS = _stringTags[i];
-      if (thisS.equals(val))
-      {
-        _myStep = _freqs[i];
-      }
-    }
+	@Override
+	public void setAsText(final String val) {
+		initialiseLists();
 
-  }
+		for (int i = 0; i < _stringTags.length; i++) {
+			final String thisS = _stringTags[i];
+			if (thisS.equals(val)) {
+				_myStep = _freqs[i];
+			}
+		}
 
-  public String getAsText()
-  {
-    initialiseLists();
+	}
 
-    String res = null;
-    for (int i = 0; i < _freqs.length; i++)
-    {
-      final double v = _freqs[i];
-      if (v == _myStep)
-      {
-        res = _stringTags[i];
-      }
-
-    }
-
-    return res;
-  }
+	@Override
+	public void setValue(final Object p1) {
+		if (p1 instanceof Long) {
+			_myStep = ((Long) p1).longValue();
+		} else if (p1 instanceof String) {
+			final String val = (String) p1;
+			setAsText(val);
+		}
+	}
 }
-

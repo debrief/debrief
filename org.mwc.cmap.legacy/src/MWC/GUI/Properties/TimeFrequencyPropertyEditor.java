@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: TimeFrequencyPropertyEditor.java,v $
@@ -60,7 +60,6 @@
 // Initial revision
 //
 
-
 package MWC.GUI.Properties;
 
 import java.beans.PropertyEditorSupport;
@@ -71,168 +70,114 @@ import MWC.GenericData.TimePeriod;
 /**
  * class to provide list of time frequencies, together with ALL value
  */
-public class TimeFrequencyPropertyEditor extends PropertyEditorSupport
-{
+public class TimeFrequencyPropertyEditor extends PropertyEditorSupport {
 
-  public static final long _60_MINS = 60 * 60 * 1000000l;
+	public static final long _60_MINS = 60 * 60 * 1000000l;
 
-  public static final long _30_MINS = 30 * 60 * 1000000l;
+	public static final long _30_MINS = 30 * 60 * 1000000l;
 
-  public static final long _15_MINS = 15 * 60 * 1000000l;
+	public static final long _15_MINS = 15 * 60 * 1000000l;
 
-  public static final long _10_MINS = 10 * 60 * 1000000l;
+	public static final long _10_MINS = 10 * 60 * 1000000l;
 
-  public static final long _5_MINS = 5 * 60 * 1000000l;
+	public static final long _5_MINS = 5 * 60 * 1000000l;
 
 	/**
-   * the value used to represent ALL items
-   */
-  public static long SHOW_ALL_FREQUENCY = TimePeriod.INVALID_TIME;
+	 * the value used to represent ALL items
+	 */
+	public static long SHOW_ALL_FREQUENCY = TimePeriod.INVALID_TIME;
 
-  /**
-   * the currently selected frequency (in micros)
-   */
-  protected HiResDate _myFreq;
+	/**
+	 * the currently selected frequency (in micros)
+	 */
+	protected HiResDate _myFreq;
 
-  // HI-RES NOT DONE
-  // switch to two modes - with hi-res options when in hi-res mode
+	// HI-RES NOT DONE
+	// switch to two modes - with hi-res options when in hi-res mode
 
-  /**
-   * the list of tags shown in the drop-down list
-   */
-  private final String _stringTags[] =
-    {
-      "All",
-      "1 Secs",
-      "5 Secs",
-      "10 Secs",
-      "30 Secs",
-      "1 Min",
-      "2 Mins",
-      "3 Mins",
-      "5 Mins",
-      "6 Mins",
-      "10 Mins",
-      "15 Mins",
-      "30 Mins",
-      "60 Mins",
-      "2 Hours",
-      "6 Hours",
-      "12 Hours",
-      "24 Hours",
-      "48 Hours",
-      "72 Hours",
-      "None"};
+	/**
+	 * the list of tags shown in the drop-down list
+	 */
+	private final String _stringTags[] = { "All", "1 Secs", "5 Secs", "10 Secs", "30 Secs", "1 Min", "2 Mins", "3 Mins",
+			"5 Mins", "6 Mins", "10 Mins", "15 Mins", "30 Mins", "60 Mins", "2 Hours", "6 Hours", "12 Hours",
+			"24 Hours", "48 Hours", "72 Hours", "None" };
 
-  /**
-   * the values to use for the tags in the list
-   */
-  private final long _freqs[] =
-    {
-      SHOW_ALL_FREQUENCY,
-      1 * 1000000l,
-      5 * 1000000l,
-      10 * 1000000l,
-      30 * 1000000l,
-      1 * 60 * 1000000l,
-      2 * 60 * 1000000l,
-      3 * 60 * 1000000l,
-      _5_MINS,
-      6 * 60 * 1000000l,
-      _10_MINS,
-      _15_MINS,
-      _30_MINS,
-      _60_MINS,
-      2 * _60_MINS,
-      6 * _60_MINS,
-      12 * _60_MINS,
-      24 * _60_MINS,
-      48 * _60_MINS,
-      72 * _60_MINS,
-      0};
+	/**
+	 * the values to use for the tags in the list
+	 */
+	private final long _freqs[] = { SHOW_ALL_FREQUENCY, 1 * 1000000l, 5 * 1000000l, 10 * 1000000l, 30 * 1000000l,
+			1 * 60 * 1000000l, 2 * 60 * 1000000l, 3 * 60 * 1000000l, _5_MINS, 6 * 60 * 1000000l, _10_MINS, _15_MINS,
+			_30_MINS, _60_MINS, 2 * _60_MINS, 6 * _60_MINS, 12 * _60_MINS, 24 * _60_MINS, 48 * _60_MINS, 72 * _60_MINS,
+			0 };
 
+	@Override
+	public String getAsText() {
+		String res = null;
 
-  public String[] getTags()
-  {
-    return _stringTags;
-  }
+		// check we have a freq
+		if (_myFreq == null)
+			return res;
 
-  public long[] getFreqs()
-  {
-    return _freqs;
-  }
+		final long[] freqs = getFreqs();
+		final String[] tags = getTags();
+		final long current = _myFreq.getMicros();
+		for (int i = 0; i < freqs.length; i++) {
+			final long v = freqs[i];
+			if (v == current) {
+				res = tags[i];
+				break;
+			}
+		}
 
-  public Object getValue()
-  {
-    final Object res;
-    if(_myFreq != null)
-    {
-      res = new HiResDate(_myFreq);
-    }
-    else
-    {
-      res = null;
-    }
-    return res;
-  }
+		// hmm, did we manage it?
+		if (res == null) {
+			res = tags[tags.length - 2];
+		}
 
-  public void setValue(final Object p1)
-  {
-    if (p1 instanceof HiResDate)
-    {
-      _myFreq = new HiResDate((HiResDate) p1);
-    }
-    else if (p1 instanceof String)
-    {
-      final String val = (String) p1;
-      setAsText(val);
-    }
-  }
+		return res;
+	}
 
-  public void setAsText(final String val)
-  {
-    final long[] freqs = getFreqs();
-    final String[] tags = getTags();
-    for (int i = 0; i < tags.length; i++)
-    {
-      final String thisS = tags[i];
-      if (thisS.equals(val))
-      {
-        _myFreq = new HiResDate(0, freqs[i]);
-        break;
-      }
-    }
+	public long[] getFreqs() {
+		return _freqs;
+	}
 
-  }
+	@Override
+	public String[] getTags() {
+		return _stringTags;
+	}
 
-  public String getAsText()
-  {
-    String res = null;
-    
-    // check we have a freq
-    if(_myFreq == null)
-    	return res;
-    
-    final long[] freqs = getFreqs();
-    final String[] tags = getTags();
-    final long current = _myFreq.getMicros();
-    for (int i = 0; i < freqs.length; i++)
-    {
-      final long v = freqs[i];
-      if (v == current)
-      {
-        res = tags[i];
-        break;
-      }
-    }
-    
-    // hmm, did we manage it?
-    if (res == null)
-    {
-      res = tags[tags.length - 2];
-    }
+	@Override
+	public Object getValue() {
+		final Object res;
+		if (_myFreq != null) {
+			res = new HiResDate(_myFreq);
+		} else {
+			res = null;
+		}
+		return res;
+	}
 
-    return res;
-  }
+	@Override
+	public void setAsText(final String val) {
+		final long[] freqs = getFreqs();
+		final String[] tags = getTags();
+		for (int i = 0; i < tags.length; i++) {
+			final String thisS = tags[i];
+			if (thisS.equals(val)) {
+				_myFreq = new HiResDate(0, freqs[i]);
+				break;
+			}
+		}
+
+	}
+
+	@Override
+	public void setValue(final Object p1) {
+		if (p1 instanceof HiResDate) {
+			_myFreq = new HiResDate((HiResDate) p1);
+		} else if (p1 instanceof String) {
+			final String val = (String) p1;
+			setAsText(val);
+		}
+	}
 }
-

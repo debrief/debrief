@@ -1,19 +1,21 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GenericData;
+
+import java.util.Collection;
 
 // Copyright MWC 1999, Debrief 3 Project
 // $RCSfile: WatchableList.java,v $
@@ -112,129 +114,19 @@ package MWC.GenericData;
 //
 
 import MWC.GUI.Editable;
-
-import java.util.Collection;
-
 import junit.framework.TestCase;
 
-public interface WatchableList extends ColoredWatchable, Editable
-{
-	/**
-	 * the name of the property change event to fire should this object get
-	 * filtered
-	 * 
-	 */
-	public static final String FILTERED_PROPERTY = "WATCHABLE_FILTERED";
-
-	/**
-	 * the time threshold around a Watchable to decide if it is visible or not
-	 * (value in micros)
-	 */
-	public static final long TIME_THRESHOLD = 120000000; // 2 minutes
-
-	/**
-	 * get the name of this list
-	 * 
-	 * @return the name of this list
-	 */
-	public String getName();
-
-	/**
-	 * get the start DTG of this list
-	 * 
-	 * @return the start DTG, or -1 if not time-related
-	 */
-	public HiResDate getStartDTG();
-
-	/**
-	 * get the end DTG of this list
-	 * 
-	 * @return the end DTG, or -1 if not time-related
-	 */
-	public HiResDate getEndDTG();
-
-  /**
-   * find out if this object is visible
-   * 
-   * @return yes/no for visible
-   */
-  public boolean getVisible();
-
-  /**
-   * get the watchable in this list nearest to the specified DTG. If the watchable list has
-   * start/finish times, only return a fix if the DTG supplied is during the "live" period of the
-   * watchables. If not DTG is present, or an invalid DTG is requested ,return all valid points
-   * 
-   * @param DTG
-   *          to search for
-   * @return the nearest Watchable, or EMPTY_WATCHABLE_LIST if empty
-   */
-  public Watchable[] getNearestTo(HiResDate DTG);
-
-  /**
-   * static instance of "null return" for getNearestTo(), when no items found
-   * 
-   */
-  public static final Watchable[] EMPTY_WATCHABLE_LIST = new Watchable[]
-  {};
-
-	/**
-	 * filter the list to the specified time period
-	 */
-	public void filterListTo(HiResDate start, HiResDate end);
-
-	/**
-	 * return the set of items which fall inside the indicated period. If an items
-	 * has an "alive" period which overlaps this period then it will be returned.
-	 * If the item has no time set, then return it as being valid
-	 */
-	public Collection<Editable> getItemsBetween(HiResDate start, HiResDate end);
-
-	/**
-	 * find out the total area covered by this list
-	 */
-	public MWC.GenericData.WorldArea getBounds();
-
-	/**
-	 * find out the symbol to use for plotting this list in Snail mode
-	 */
-	public MWC.GUI.Shapes.Symbols.PlainSymbol getSnailShape();
-
+public interface WatchableList extends ColoredWatchable, Editable {
 	/**********************************************************************
-	 * embedded class for testing watchable lists. Used in support of JUnit
-	 * testing
+	 * embedded class for testing watchable lists. Used in support of JUnit testing
 	 *********************************************************************/
-	public abstract class TestWatchables
-	{
-		/**
-		 * get an example of this kind of list with no dates set
-		 * 
-		 * @return
-		 */
-		public abstract WatchableList getNullDates();
-
-		/**
-		 * get an example of this kind of list with both dates set
-		 * 
-		 * @return
-		 */
-		public abstract WatchableList getBothDates(HiResDate startDate,
-				HiResDate endDate);
-
-		/**
-		 * get an example of this kind of list with only start date set
-		 * 
-		 * @return
-		 */
-		public abstract WatchableList getStartDateOnly(HiResDate startDate);
-
+	public abstract class TestWatchables {
 		/**
 		 * test an instance of this class
-		 * 
+		 *
 		 * @param tester
 		 */
-		public final void doTest(final junit.framework.TestCase tester)
-		{
+		public final void doTest(final junit.framework.TestCase tester) {
 			// test without dates
 			final WatchableList noDates = getNullDates();
 
@@ -243,15 +135,12 @@ public interface WatchableList extends ColoredWatchable, Editable
 			TestCase.assertTrue("item wasn't filtered", noDates.getVisible());
 
 			// test get items between
-			Collection<Editable> coll = noDates.getItemsBetween(new HiResDate(2000),
-					new HiResDate(3000));
+			Collection<Editable> coll = noDates.getItemsBetween(new HiResDate(2000), new HiResDate(3000));
 			TestCase.assertTrue("all items were returned", coll.size() == 1);
 
 			// test get nearest to
-			MWC.GenericData.Watchable[] nearest = noDates.getNearestTo(new HiResDate(
-					3000, 0));
-			TestCase.assertEquals("return itself when no DTG present", 1,
-					nearest.length);
+			MWC.GenericData.Watchable[] nearest = noDates.getNearestTo(new HiResDate(3000, 0));
+			TestCase.assertEquals("return itself when no DTG present", 1, nearest.length);
 
 			// test get start DTG
 			TestCase.assertEquals("no start DTG", null, noDates.getStartDTG());
@@ -273,16 +162,13 @@ public interface WatchableList extends ColoredWatchable, Editable
 			TestCase.assertTrue("item was filtered", startOnly.getVisible());
 
 			// test get items between
-			coll = startOnly
-					.getItemsBetween(new HiResDate(2000), new HiResDate(3000));
+			coll = startOnly.getItemsBetween(new HiResDate(2000), new HiResDate(3000));
 			TestCase.assertTrue("items were returned", coll != null);
 			if (coll != null)
 				TestCase.assertTrue("items were returned", coll.size() == 1);
-			coll = startOnly
-					.getItemsBetween(new HiResDate(4000), new HiResDate(6000));
+			coll = startOnly.getItemsBetween(new HiResDate(4000), new HiResDate(6000));
 			TestCase.assertTrue("no items were returned", coll == null);
-			coll = startOnly
-					.getItemsBetween(new HiResDate(1000), new HiResDate(2000));
+			coll = startOnly.getItemsBetween(new HiResDate(1000), new HiResDate(2000));
 			TestCase.assertTrue("no items were returned", coll == null);
 
 			// test get nearest to
@@ -291,15 +177,13 @@ public interface WatchableList extends ColoredWatchable, Editable
 			TestCase.assertEquals("nearest item found", nearest.length, 1);
 
 			// test get start DTG
-			TestCase.assertEquals("no start DTG", 2500, startOnly.getStartDTG()
-					.getDate().getTime());
+			TestCase.assertEquals("no start DTG", 2500, startOnly.getStartDTG().getDate().getTime());
 
 			// test get end DTG
 			TestCase.assertEquals("no end DTG", null, startOnly.getEndDTG());
 
 			// test with dates
-			final WatchableList withDates = getBothDates(new HiResDate(2500),
-					new HiResDate(2700));
+			final WatchableList withDates = getBothDates(new HiResDate(2500), new HiResDate(2700));
 
 			// test filter list to
 			withDates.filterListTo(new HiResDate(2000), new HiResDate(3000));
@@ -312,16 +196,13 @@ public interface WatchableList extends ColoredWatchable, Editable
 			TestCase.assertTrue("item was filtered", withDates.getVisible());
 
 			// test get items between
-			coll = withDates
-					.getItemsBetween(new HiResDate(2000), new HiResDate(3000));
+			coll = withDates.getItemsBetween(new HiResDate(2000), new HiResDate(3000));
 			TestCase.assertTrue("items were returned", coll != null);
 			if (coll != null)
 				TestCase.assertTrue("items were returned", coll.size() == 1);
-			coll = withDates
-					.getItemsBetween(new HiResDate(4000), new HiResDate(6000));
+			coll = withDates.getItemsBetween(new HiResDate(4000), new HiResDate(6000));
 			TestCase.assertTrue("no items were returned", coll == null);
-			coll = withDates
-					.getItemsBetween(new HiResDate(1000), new HiResDate(2000));
+			coll = withDates.getItemsBetween(new HiResDate(1000), new HiResDate(2000));
 			TestCase.assertTrue("no items were returned", coll == null);
 
 			// test get nearest to
@@ -334,12 +215,111 @@ public interface WatchableList extends ColoredWatchable, Editable
 			TestCase.assertEquals("nearest item found", nearest.length, 0);
 
 			// test get start DTG
-			TestCase.assertEquals("start DTG", 2500, withDates.getStartDTG()
-					.getDate().getTime());
+			TestCase.assertEquals("start DTG", 2500, withDates.getStartDTG().getDate().getTime());
 
 			// test get end DTG
-			TestCase.assertEquals("end DTG", 2700, withDates.getEndDTG().getDate()
-					.getTime());
+			TestCase.assertEquals("end DTG", 2700, withDates.getEndDTG().getDate().getTime());
 		}
+
+		/**
+		 * get an example of this kind of list with both dates set
+		 *
+		 * @return
+		 */
+		public abstract WatchableList getBothDates(HiResDate startDate, HiResDate endDate);
+
+		/**
+		 * get an example of this kind of list with no dates set
+		 *
+		 * @return
+		 */
+		public abstract WatchableList getNullDates();
+
+		/**
+		 * get an example of this kind of list with only start date set
+		 *
+		 * @return
+		 */
+		public abstract WatchableList getStartDateOnly(HiResDate startDate);
 	}
+
+	/**
+	 * the name of the property change event to fire should this object get filtered
+	 *
+	 */
+	public static final String FILTERED_PROPERTY = "WATCHABLE_FILTERED";
+
+	/**
+	 * the time threshold around a Watchable to decide if it is visible or not
+	 * (value in micros)
+	 */
+	public static final long TIME_THRESHOLD = 120000000; // 2 minutes
+
+	/**
+	 * static instance of "null return" for getNearestTo(), when no items found
+	 *
+	 */
+	public static final Watchable[] EMPTY_WATCHABLE_LIST = new Watchable[] {};
+
+	/**
+	 * filter the list to the specified time period
+	 */
+	public void filterListTo(HiResDate start, HiResDate end);
+
+	/**
+	 * find out the total area covered by this list
+	 */
+	public MWC.GenericData.WorldArea getBounds();
+
+	/**
+	 * get the end DTG of this list
+	 *
+	 * @return the end DTG, or -1 if not time-related
+	 */
+	public HiResDate getEndDTG();
+
+	/**
+	 * return the set of items which fall inside the indicated period. If an items
+	 * has an "alive" period which overlaps this period then it will be returned. If
+	 * the item has no time set, then return it as being valid
+	 */
+	public Collection<Editable> getItemsBetween(HiResDate start, HiResDate end);
+
+	/**
+	 * get the name of this list
+	 *
+	 * @return the name of this list
+	 */
+	@Override
+	public String getName();
+
+	/**
+	 * get the watchable in this list nearest to the specified DTG. If the watchable
+	 * list has start/finish times, only return a fix if the DTG supplied is during
+	 * the "live" period of the watchables. If not DTG is present, or an invalid DTG
+	 * is requested ,return all valid points
+	 *
+	 * @param DTG to search for
+	 * @return the nearest Watchable, or EMPTY_WATCHABLE_LIST if empty
+	 */
+	public Watchable[] getNearestTo(HiResDate DTG);
+
+	/**
+	 * find out the symbol to use for plotting this list in Snail mode
+	 */
+	public MWC.GUI.Shapes.Symbols.PlainSymbol getSnailShape();
+
+	/**
+	 * get the start DTG of this list
+	 *
+	 * @return the start DTG, or -1 if not time-related
+	 */
+	public HiResDate getStartDTG();
+
+	/**
+	 * find out if this object is visible
+	 *
+	 * @return yes/no for visible
+	 */
+	public boolean getVisible();
 }

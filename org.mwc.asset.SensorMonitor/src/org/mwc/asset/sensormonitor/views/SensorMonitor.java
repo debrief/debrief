@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.asset.sensormonitor.views;
@@ -69,8 +69,7 @@ import MWC.Utilities.TextFormatting.GeneralFormat;
  * <p>
  */
 
-public class SensorMonitor extends ViewPart
-{
+public class SensorMonitor extends ViewPart {
 	Table _table;
 
 	/**
@@ -100,26 +99,29 @@ public class SensorMonitor extends ViewPart
 	/**
 	 * The constructor.
 	 */
-	public SensorMonitor()
-	{
+	public SensorMonitor() {
+	}
+
+	private void contributeToActionBars() {
+		final IActionBars bars = getViewSite().getActionBars();
+		fillLocalPullDown(bars.getMenuManager());
+		fillLocalToolBar(bars.getToolBarManager());
 	}
 
 	/**
-	 * This is a callback that will allow us to create the viewer and initialize
-	 * it.
+	 * This is a callback that will allow us to create the viewer and initialize it.
 	 */
-	public void createPartControl(final Composite parent)
-	{
+	@Override
+	public void createPartControl(final Composite parent) {
 		// Composite holder = new Composite(parent,SWT.NONE);
 		// holder.setLayout(new FillLayout());
 
 		_table = new Table(parent, SWT.NONE);
 		_table.setHeaderVisible(true);
 
-		_table.addDisposeListener(new DisposeListener()
-		{
-			public void widgetDisposed(final DisposeEvent e)
-			{
+		_table.addDisposeListener(new DisposeListener() {
+			@Override
+			public void widgetDisposed(final DisposeEvent e) {
 				widgetClosing();
 			}
 		});
@@ -131,160 +133,133 @@ public class SensorMonitor extends ViewPart
 		listenToMyParts();
 	}
 
-	protected void widgetClosing()
-	{
-		// we're closing - stop listening
-		if (_mySensor != null)
-		{
-			_mySensor.removeSensorCalculationListener(_sensorCalcListener);
-			_mySensor = null;
-			_sensorCalcListener = null;
+	@Override
+	public void dispose() {
+		if (_myPartMonitor != null) {
+			_myPartMonitor.ditch();
 		}
-
-		_myPartMonitor.ditch();
+		super.dispose();
 	}
 
-	protected void testCall()
-	{
-		final TableItem t1 = new TableItem(_table, SWT.NONE);
-		t1.setText(new String[]
-		{ "a", "b", "c" });
+	private String f(final double val) {
+		return GeneralFormat.formatOneDecimalPlace(val);
 	}
 
-	private void listenToMyParts()
-	{
-		_selectionChangeListener = new ISelectionChangedListener()
-		{
-			public void selectionChanged(final SelectionChangedEvent event)
-			{
+	private String f(final WorldDistance val) {
+		final String res;
+		if (val != null)
+			res = GeneralFormat.formatOneDecimalPlace(val.getValueIn(WorldDistance.METRES));
+		else
+			res = "n/a";
+		return res;
+	}
+
+	private void fillLocalPullDown(final IMenuManager manager) {
+		manager.add(_keepHistory);
+		manager.add(_followSelection);
+		manager.add(_newWindow);
+		manager.add(_onlyShowValidDetections);
+	}
+
+	private void fillLocalToolBar(final IToolBarManager manager) {
+		manager.add(_keepHistory);
+		manager.add(_followSelection);
+		manager.add(_newWindow);
+		manager.add(_onlyShowValidDetections);
+	}
+
+	void generateCol(final Table table, final String name, final int wid) {
+		final TableColumn col = new TableColumn(table, SWT.LEFT);
+		col.setText(name);
+		col.setWidth(wid);
+	}
+
+	private void hookContextMenu() {
+
+	}
+
+	private void listenToMyParts() {
+		_selectionChangeListener = new ISelectionChangedListener() {
+			@Override
+			public void selectionChanged(final SelectionChangedEvent event) {
 				newItemSelected(event);
 			}
 		};
 
-		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
-				.getPartService());
-		_myPartMonitor.addPartListener(ISelectionProvider.class,
-				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
-				{
-					public void eventTriggered(final String type, final Object part,
-							final IWorkbenchPart parentPart)
-					{
-						final ISelectionProvider iS = (ISelectionProvider) part;
-						iS.addSelectionChangedListener(_selectionChangeListener);
-					}
-				});
-		_myPartMonitor.addPartListener(ISelectionProvider.class,
-				PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
-				{
-					public void eventTriggered(final String type, final Object part,
-							final IWorkbenchPart parentPart)
-					{
-						final ISelectionProvider iS = (ISelectionProvider) part;
-						iS.removeSelectionChangedListener(_selectionChangeListener);
-					}
-				});
+		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
+		_myPartMonitor.addPartListener(ISelectionProvider.class, PartMonitor.ACTIVATED, new PartMonitor.ICallback() {
+			@Override
+			public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart) {
+				final ISelectionProvider iS = (ISelectionProvider) part;
+				iS.addSelectionChangedListener(_selectionChangeListener);
+			}
+		});
+		_myPartMonitor.addPartListener(ISelectionProvider.class, PartMonitor.DEACTIVATED, new PartMonitor.ICallback() {
+			@Override
+			public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart) {
+				final ISelectionProvider iS = (ISelectionProvider) part;
+				iS.removeSelectionChangedListener(_selectionChangeListener);
+			}
+		});
 
 		// ok we're all ready now. just try and see if the current part is valid
-		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
-				.getActivePage());
+		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow().getActivePage());
 	}
 
-	private void hookContextMenu()
-	{
-
-	}
-
-	private void contributeToActionBars()
-	{
-		final IActionBars bars = getViewSite().getActionBars();
-		fillLocalPullDown(bars.getMenuManager());
-		fillLocalToolBar(bars.getToolBarManager());
-	}
-
-	private void fillLocalPullDown(final IMenuManager manager)
-	{
-		manager.add(_keepHistory);
-		manager.add(_followSelection);
-		manager.add(_newWindow);
-		manager.add(_onlyShowValidDetections);
-	}
-
-	private void fillLocalToolBar(final IToolBarManager manager)
-	{
-		manager.add(_keepHistory);
-		manager.add(_followSelection);
-		manager.add(_newWindow);
-		manager.add(_onlyShowValidDetections);
-	}
-
-	private void makeActions()
-	{
-		_onlyShowValidDetections = new Action("Only actual detections", SWT.TOGGLE)
-		{
+	private void makeActions() {
+		_onlyShowValidDetections = new Action("Only actual detections", SWT.TOGGLE) {
 		};
 		_onlyShowValidDetections.setText("Only actual detections");
 		_onlyShowValidDetections.setChecked(true);
 		_onlyShowValidDetections.setToolTipText("Only show detections");
-		_onlyShowValidDetections.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/Binocular.gif"));
+		_onlyShowValidDetections.setImageDescriptor(CorePlugin.getImageDescriptor("icons/Binocular.gif"));
 
-		_followSelection = new Action("Track", SWT.TOGGLE)
-		{
+		_followSelection = new Action("Track", SWT.TOGGLE) {
 		};
 		_followSelection.setText("Sync");
 		_followSelection.setChecked(true);
 		_followSelection.setToolTipText("Follow selected participant");
-		_followSelection.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/synced.gif"));
+		_followSelection.setImageDescriptor(CorePlugin.getImageDescriptor("icons/synced.gif"));
 
-		_keepHistory = new Action("Keep History", SWT.TOGGLE)
-		{
+		_keepHistory = new Action("Keep History", SWT.TOGGLE) {
 		};
 		_keepHistory.setText("Keep History");
 		_keepHistory.setChecked(true);
 		_keepHistory.setToolTipText("remember past detection calculations");
-		_keepHistory.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/history.png"));
+		_keepHistory.setImageDescriptor(CorePlugin.getImageDescriptor("icons/history.png"));
 
-		_newWindow = new Action("New monitor", SWT.NONE)
-		{
-			public void run()
-			{
+		_newWindow = new Action("New monitor", SWT.NONE) {
+			@Override
+			public void run() {
 				super.run();
 
 				// ok, open a new view
-				CorePlugin.openSecondaryView(ASSETPlugin.SENSOR_MONITOR,
-						"" + System.currentTimeMillis(), IWorkbenchPage.VIEW_VISIBLE);
+				CorePlugin.openSecondaryView(ASSETPlugin.SENSOR_MONITOR, "" + System.currentTimeMillis(),
+						IWorkbenchPage.VIEW_VISIBLE);
 			}
 
 		};
 		_newWindow.setText("New monitor");
 		_newWindow.setToolTipText("Open a new sensor monitor");
-		_newWindow.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/window_new.png"));
+		_newWindow.setImageDescriptor(CorePlugin.getImageDescriptor("icons/window_new.png"));
 
 	}
 
-	protected void newItemSelected(final SelectionChangedEvent event)
-	{
+	protected void newItemSelected(final SelectionChangedEvent event) {
 
-		if (_followSelection.isChecked())
-		{
+		if (_followSelection.isChecked()) {
 			// right, let's have a look at it.
 			final ISelection theSelection = event.getSelection();
 
 			// get the first element
-			if (theSelection instanceof StructuredSelection)
-			{
+			if (theSelection instanceof StructuredSelection) {
 				final StructuredSelection sel = (StructuredSelection) theSelection;
 				final Object first = sel.getFirstElement();
 				// hmm, is it adaptable?
-				if (first instanceof EditableWrapper)
-				{
+				if (first instanceof EditableWrapper) {
 					final EditableWrapper ew = (EditableWrapper) first;
 					final Editable ed = ew.getEditable();
-					if (ed instanceof SensorType)
-					{
+					if (ed instanceof SensorType) {
 						updateSensor((SensorType) ed);
 					}
 				}
@@ -292,169 +267,65 @@ public class SensorMonitor extends ViewPart
 		}
 	}
 
-	public void updateSensor(final SensorType sensor)
-	{
-		// is this different to our current one?
-		if (sensor != _mySensor)
-		{
-			if (_mySensor != null)
-			{
-				_mySensor.removeSensorCalculationListener(_sensorCalcListener);
-			}
-		}
-
-		if (_sensorCalcListener == null)
-		{
-			_sensorCalcListener = new PropertyChangeListener()
-			{
-				public void propertyChange(final PropertyChangeEvent evt)
-				{
-					processNewDetection(evt);
-				}
-			};
-		}
-
-		_mySensor = sensor;
-		_mySensor.addSensorCalculationListener(_sensorCalcListener);
-
-		// and update our title
-		this.setPartName(sensor.getName());
-
-		Display.getDefault().asyncExec(new Runnable()
-		{
-			public void run()
-			{
-				if (!_table.isDisposed())
-				{
-					// hey, clear the existing columns
-					final TableColumn[] cols = _table.getColumns();
-					for (int i = 0; i < cols.length; i++)
-					{
-						final TableColumn column = cols[i];
-						column.dispose();
-					}
-
-					// ok, now sort out our table
-					if (sensor instanceof LookupSensor)
-					{
-						// ok - do our sensor headings.
-						generateCol(_table, "Name", 80);
-						generateCol(_table, "State", 60);
-						generateCol(_table, "RP (m)", 60);
-						generateCol(_table, "RI (m)", 60);
-						generateCol(_table, "Actual (m)", 60);
-					}
-					else if (sensor instanceof TypedCookieSensor)
-					{
-						generateCol(_table, "Name", 80);
-						generateCol(_table, "Msrd Range (m)", 60);
-						generateCol(_table, "Detection Range (m)", 60);
-						generateCol(_table, "Matching Types", 60);
-						generateCol(_table, "Detected", 60);
-					}
-					else
-					{
-						generateCol(_table, "Name", 80);
-						generateCol(_table, "Loss", 60);
-						generateCol(_table, "Bk Noise", 60);
-						generateCol(_table, "OS Noise", 60);
-						generateCol(_table, "Tgt Noise", 60);
-						generateCol(_table, "RD", 60);
-						generateCol(_table, "DI", 60);
-						generateCol(_table, "SE", 60);
-					}
-				}
-			}
-		});
-	}
-
-	void generateCol(final Table table, final String name, final int wid)
-	{
-		final TableColumn col = new TableColumn(table, SWT.LEFT);
-		col.setText(name);
-		col.setWidth(wid);
-	}
-
 	/**
 	 * ok, extract the relevant bits
-	 * 
-	 * @param evt
-	 *          the event that triggered us.
+	 *
+	 * @param evt the event that triggered us.
 	 */
-	protected void processNewDetection(final PropertyChangeEvent evt)
-	{
+	protected void processNewDetection(final PropertyChangeEvent evt) {
 
 		String[] fields = null;
 		final long newTime;
 
 		boolean validDetection = false;
 
-		if (evt.getNewValue() instanceof LookupSensorComponentsEvent)
-		{
+		if (evt.getNewValue() instanceof LookupSensorComponentsEvent) {
 			// sort out the lookup fields
-			final LookupSensorComponentsEvent ev = (LookupSensorComponentsEvent) evt
-					.getNewValue();
-			fields = new String[]
-			{ ev.getTgtName(), ev.getStateString(), f(ev.getRP()), f(ev.getRI()),
+			final LookupSensorComponentsEvent ev = (LookupSensorComponentsEvent) evt.getNewValue();
+			fields = new String[] { ev.getTgtName(), ev.getStateString(), f(ev.getRP()), f(ev.getRI()),
 					f(ev.getActual()) };
 
-			if (ev.getStateString().equals(DetectionEvent.UNDETECTED_STR))
-			{
+			if (ev.getStateString().equals(DetectionEvent.UNDETECTED_STR)) {
 				// nope, it's not detected
-			}
-			else
+			} else
 				validDetection = true;
 
 			newTime = ev.getTime();
-		}
-		else if (evt.getNewValue() instanceof InitialSensorComponentsEvent)
-		{
+		} else if (evt.getNewValue() instanceof InitialSensorComponentsEvent) {
 			// sort out the component fields
-			final InitialSensorComponentsEvent ev = (InitialSensorComponentsEvent) evt
-					.getNewValue();
-			fields = new String[]
-			{ ev.getTgtName(), f(ev.getLoss()), f(ev.getBkNoise()),
-					f(ev.getOsNoise()), f(ev.getTgtNoise()), f(ev.getRd()),
-					f(ev.getDi()), f(ev.getSE()) };
+			final InitialSensorComponentsEvent ev = (InitialSensorComponentsEvent) evt.getNewValue();
+			fields = new String[] { ev.getTgtName(), f(ev.getLoss()), f(ev.getBkNoise()), f(ev.getOsNoise()),
+					f(ev.getTgtNoise()), f(ev.getRd()), f(ev.getDi()), f(ev.getSE()) };
 			newTime = ev.getTime();
 
 			if (ev.getSE() > 0)
 				validDetection = true;
 		}
 
-		else if (evt.getNewValue() instanceof TypedCookieSensor.TypedSensorComponentsEvent)
-		{
+		else if (evt.getNewValue() instanceof TypedCookieSensor.TypedSensorComponentsEvent) {
 			// sort out the lookup fields
-			final TypedSensorComponentsEvent ev = (TypedSensorComponentsEvent) evt
-					.getNewValue();
-			fields = new String[]
-			{ ev.getTgtName(), f(ev.getDetRange()), f(ev.getTgtRange()),
-					ev.getTypeCriteria(), Boolean.toString(ev.getDetected()) };
+			final TypedSensorComponentsEvent ev = (TypedSensorComponentsEvent) evt.getNewValue();
+			fields = new String[] { ev.getTgtName(), f(ev.getDetRange()), f(ev.getTgtRange()), ev.getTypeCriteria(),
+					Boolean.toString(ev.getDetected()) };
 
 			newTime = ev.getTime();
 
 			// aah, check out if we're only showing valid detections
 			if (ev.getDetected())
 				validDetection = true;
-		}
-		else
+		} else
 			newTime = -1;
 
-		if (fields != null)
-		{
+		if (fields != null) {
 			final String[] finalFields = fields;
-			final Runnable doUpdate = new Runnable()
-			{
-				public void run()
-				{
-					if (!_table.isDisposed())
-					{
+			final Runnable doUpdate = new Runnable() {
+				@Override
+				public void run() {
+					if (!_table.isDisposed()) {
 						// are we clearing the history?
-						if (!_keepHistory.isChecked())
-						{
+						if (!_keepHistory.isChecked()) {
 							// is this a new DTG?
-							if (newTime > _lastTime)
-							{
+							if (newTime > _lastTime) {
 								// clear the table before we add new items
 								_table.removeAll();
 								_lastTime = newTime;
@@ -472,42 +343,94 @@ public class SensorMonitor extends ViewPart
 		}
 	}
 
-	private String f(final WorldDistance val)
-	{
-		final String res;
-		if (val != null)
-			res = GeneralFormat.formatOneDecimalPlace(val
-					.getValueIn(WorldDistance.METRES));
-		else
-			res = "n/a";
-		return res;
-	}
-
-	public void setKeepMonitoring(final boolean val)
-	{
-		_followSelection.setChecked(val);
-	}
-
-	private String f(final double val)
-	{
-		return GeneralFormat.formatOneDecimalPlace(val);
-	}
-
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
-	public void setFocus()
-	{
+	@Override
+	public void setFocus() {
 		_table.setFocus();
 	}
 
-	@Override
-	public void dispose()
-	{
-		if (_myPartMonitor != null)
-		{
-			_myPartMonitor.ditch();
+	public void setKeepMonitoring(final boolean val) {
+		_followSelection.setChecked(val);
+	}
+
+	protected void testCall() {
+		final TableItem t1 = new TableItem(_table, SWT.NONE);
+		t1.setText(new String[] { "a", "b", "c" });
+	}
+
+	public void updateSensor(final SensorType sensor) {
+		// is this different to our current one?
+		if (sensor != _mySensor) {
+			if (_mySensor != null) {
+				_mySensor.removeSensorCalculationListener(_sensorCalcListener);
+			}
 		}
-		super.dispose();
+
+		if (_sensorCalcListener == null) {
+			_sensorCalcListener = new PropertyChangeListener() {
+				@Override
+				public void propertyChange(final PropertyChangeEvent evt) {
+					processNewDetection(evt);
+				}
+			};
+		}
+
+		_mySensor = sensor;
+		_mySensor.addSensorCalculationListener(_sensorCalcListener);
+
+		// and update our title
+		this.setPartName(sensor.getName());
+
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				if (!_table.isDisposed()) {
+					// hey, clear the existing columns
+					final TableColumn[] cols = _table.getColumns();
+					for (int i = 0; i < cols.length; i++) {
+						final TableColumn column = cols[i];
+						column.dispose();
+					}
+
+					// ok, now sort out our table
+					if (sensor instanceof LookupSensor) {
+						// ok - do our sensor headings.
+						generateCol(_table, "Name", 80);
+						generateCol(_table, "State", 60);
+						generateCol(_table, "RP (m)", 60);
+						generateCol(_table, "RI (m)", 60);
+						generateCol(_table, "Actual (m)", 60);
+					} else if (sensor instanceof TypedCookieSensor) {
+						generateCol(_table, "Name", 80);
+						generateCol(_table, "Msrd Range (m)", 60);
+						generateCol(_table, "Detection Range (m)", 60);
+						generateCol(_table, "Matching Types", 60);
+						generateCol(_table, "Detected", 60);
+					} else {
+						generateCol(_table, "Name", 80);
+						generateCol(_table, "Loss", 60);
+						generateCol(_table, "Bk Noise", 60);
+						generateCol(_table, "OS Noise", 60);
+						generateCol(_table, "Tgt Noise", 60);
+						generateCol(_table, "RD", 60);
+						generateCol(_table, "DI", 60);
+						generateCol(_table, "SE", 60);
+					}
+				}
+			}
+		});
+	}
+
+	protected void widgetClosing() {
+		// we're closing - stop listening
+		if (_mySensor != null) {
+			_mySensor.removeSensorCalculationListener(_sensorCalcListener);
+			_mySensor = null;
+			_sensorCalcListener = null;
+		}
+
+		_myPartMonitor.ditch();
 	}
 }

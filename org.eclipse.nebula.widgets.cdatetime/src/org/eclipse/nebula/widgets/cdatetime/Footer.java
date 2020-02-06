@@ -20,15 +20,15 @@ public class Footer {
 	static final int CLEAR = 0;
 	static final int TODAY = 1;
 	static final int VERBOSE_TODAY = 2;
-	
+
 	public static Footer Clear() {
 		return new Footer(CLEAR, Calendar.YEAR, Calendar.MONTH, Calendar.DATE);
 	}
-	
+
 	public static Footer Today() {
 		return new Footer(TODAY, Calendar.YEAR, Calendar.MONTH, Calendar.DATE);
 	}
-	
+
 	public static Footer VerboseToday() {
 		return new Footer(VERBOSE_TODAY, Calendar.YEAR, Calendar.MONTH, Calendar.DATE);
 	}
@@ -39,18 +39,18 @@ public class Footer {
 	int alignment = SWT.FILL;
 	boolean grab = false;
 	boolean readOnly = false;
-	
-	private Footer(int type, int... fields) {
+
+	private Footer(final int type, final int... fields) {
 		this.type = type;
 		this.fields = fields;
 	}
-	
-	public Footer align(int alignment) {
+
+	public Footer align(final int alignment) {
 		this.alignment = alignment;
 		return this;
 	}
 
-	public Footer align(int textAlignment, int controlAlignment, boolean grab) {
+	public Footer align(final int textAlignment, final int controlAlignment, final boolean grab) {
 		this.textAlignment = textAlignment;
 		this.alignment = controlAlignment;
 		this.grab = grab;

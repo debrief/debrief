@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.debrief.sensorfusion.views;
@@ -74,21 +74,62 @@ import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
 import MWC.GenericData.WatchableList;
 
-public class SensorFusionView extends ViewPart implements ISelectionProvider,
-		FusionHelper
-{
+public class SensorFusionView extends ViewPart implements ISelectionProvider, FusionHelper {
 
-	private static class TrimToSubjectOperation extends CMAPOperation
-	{
+	private static class SplitSegmentsOperation extends CMAPOperation {
+
+		final private Layers _layers;
+		private final SplittableLayer _youSplitter;
+
+		public SplitSegmentsOperation(final SplittableLayer youSplitter, final Layers currentLayers) {
+			super("Auto-split sensor datasets");
+			_youSplitter = youSplitter;
+			_layers = currentLayers;
+		}
+
+		@Override
+		public boolean canRedo() {
+			return false;
+		}
+
+		@Override
+		public boolean canUndo() {
+			return false;
+		}
+
+		@Override
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
+			_youSplitter.AutoSplitTracks();
+
+			// ok, fire off a layers extended event to share the good news
+			if (_layers != null)
+				_layers.fireExtended();
+
+			final IStatus res = new Status(IStatus.OK, Activator.PLUGIN_ID, "split sensor tracks successful", null);
+			return res;
+		}
+
+		@Override
+		public IStatus redo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
+			return execute(monitor, info);
+		}
+
+		@Override
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
+			// register success
+			return new Status(IStatus.OK, Activator.PLUGIN_ID, "Undo trim sensors", null);
+		}
+	}
+
+	private static class TrimToSubjectOperation extends CMAPOperation {
 
 		final private TrackWrapper _primary;
 		final private WatchableList[] _secondaries;
 		final private Layers _layers;
 		private ArrayList<SensorWrapper> _deletedSensors;
 
-		public TrimToSubjectOperation(TrackWrapper primary,
-				WatchableList[] secondaries, Layers _currentLayers)
-		{
+		public TrimToSubjectOperation(final TrackWrapper primary, final WatchableList[] secondaries,
+				final Layers _currentLayers) {
 			super("Trim to sensors that match secondary tracks");
 			_primary = primary;
 			_secondaries = secondaries;
@@ -96,211 +137,124 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 
 		}
 
-		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
-				throws ExecutionException
-		{
-			_deletedSensors = DataSupport.trimToSensorNearSubjectTracks(_primary,
-					_secondaries);
+		@Override
+		public boolean canRedo() {
+			return true;
+		}
 
-			Iterator<SensorWrapper> iter = _deletedSensors.iterator();
-			while (iter.hasNext())
-			{
-				SensorWrapper thisSensor = (SensorWrapper) iter.next();
+		@Override
+		public boolean canUndo() {
+			return true;
+		}
+
+		@Override
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
+			_deletedSensors = DataSupport.trimToSensorNearSubjectTracks(_primary, _secondaries);
+
+			final Iterator<SensorWrapper> iter = _deletedSensors.iterator();
+			while (iter.hasNext()) {
+				final SensorWrapper thisSensor = iter.next();
 				_primary.removeElement(thisSensor);
 			}
 
 			// ok, fire off a layers extended event to share the good news
-			if (_layers != null && !_deletedSensors.isEmpty())
-			{
+			if (_layers != null && !_deletedSensors.isEmpty()) {
 				_layers.fireExtended();
 			}
 
-			IStatus res = new Status(IStatus.OK, Activator.PLUGIN_ID,
-					"trim sensors successful", null);
+			final IStatus res = new Status(IStatus.OK, Activator.PLUGIN_ID, "trim sensors successful", null);
 			return res;
 		}
 
 		@Override
-		public boolean canRedo()
-		{
-			return true;
-		}
-
-		@Override
-		public boolean canUndo()
-		{
-			return true;
-		}
-
-		@Override
-		public IStatus redo(IProgressMonitor monitor, IAdaptable info)
-				throws ExecutionException
-		{
+		public IStatus redo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
 			return execute(monitor, info);
 		}
 
 		@Override
-		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
-				throws ExecutionException
-		{
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
 			// ok, restore the items
-			Iterator<SensorWrapper> iter = _deletedSensors.iterator();
-			while (iter.hasNext())
-			{
-				SensorWrapper thisSensor = (SensorWrapper) iter.next();
+			final Iterator<SensorWrapper> iter = _deletedSensors.iterator();
+			while (iter.hasNext()) {
+				final SensorWrapper thisSensor = iter.next();
 				_primary.add(thisSensor);
 			}
 
 			// ok, fire off a layers extended event to share the good news
-			if (_layers != null && !_deletedSensors.isEmpty())
-			{
+			if (_layers != null && !_deletedSensors.isEmpty()) {
 				_layers.fireExtended();
 				_deletedSensors.clear();
 			}
 
 			// register success
-			return new Status(IStatus.OK, Activator.PLUGIN_ID, "Undo trim sensors",
-					null);
+			return new Status(IStatus.OK, Activator.PLUGIN_ID, "Undo trim sensors", null);
 		}
 	}
 
-	private static class TrimToTrackPeriodOperation extends CMAPOperation
-	{
+	private static class TrimToTrackPeriodOperation extends CMAPOperation {
 
 		final private TrackWrapper _primary;
 		final private Layers _layers;
 		private ArrayList<SensorWrapper> _deletedSensors;
 
-		public TrimToTrackPeriodOperation(TrackWrapper primary,
-				Layers _currentLayers)
-		{
+		public TrimToTrackPeriodOperation(final TrackWrapper primary, final Layers _currentLayers) {
 			super("Trim sensors outside primary track period");
 			_primary = primary;
 			_layers = _currentLayers;
 
 		}
 
-		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
-				throws ExecutionException
-		{
+		@Override
+		public boolean canRedo() {
+			return true;
+		}
+
+		@Override
+		public boolean canUndo() {
+			return true;
+		}
+
+		@Override
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
 			_deletedSensors = DataSupport.trimToTrackPeriod(_primary);
 
-			Iterator<SensorWrapper> iter = _deletedSensors.iterator();
-			while (iter.hasNext())
-			{
-				SensorWrapper thisSensor = (SensorWrapper) iter.next();
+			final Iterator<SensorWrapper> iter = _deletedSensors.iterator();
+			while (iter.hasNext()) {
+				final SensorWrapper thisSensor = iter.next();
 				_primary.removeElement(thisSensor);
 			}
 
 			// ok, fire off a layers extended event to share the good news
-			if (_layers != null && !_deletedSensors.isEmpty())
-			{
+			if (_layers != null && !_deletedSensors.isEmpty()) {
 				_layers.fireExtended();
 			}
 
-			IStatus res = new Status(IStatus.OK, Activator.PLUGIN_ID,
-					"trim sensors successful", null);
+			final IStatus res = new Status(IStatus.OK, Activator.PLUGIN_ID, "trim sensors successful", null);
 			return res;
 		}
 
 		@Override
-		public boolean canRedo()
-		{
-			return true;
-		}
-
-		@Override
-		public boolean canUndo()
-		{
-			return true;
-		}
-
-		@Override
-		public IStatus redo(IProgressMonitor monitor, IAdaptable info)
-				throws ExecutionException
-		{
+		public IStatus redo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
 			return execute(monitor, info);
 		}
 
 		@Override
-		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
-				throws ExecutionException
-		{
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
 			// ok, restore the items
-			Iterator<SensorWrapper> iter = _deletedSensors.iterator();
-			while (iter.hasNext())
-			{
-				SensorWrapper thisSensor = (SensorWrapper) iter.next();
+			final Iterator<SensorWrapper> iter = _deletedSensors.iterator();
+			while (iter.hasNext()) {
+				final SensorWrapper thisSensor = iter.next();
 				_primary.add(thisSensor);
 			}
 
 			// ok, fire off a layers extended event to share the good news
-			if (_layers != null && !_deletedSensors.isEmpty())
-			{
+			if (_layers != null && !_deletedSensors.isEmpty()) {
 				_layers.fireExtended();
 				_deletedSensors.clear();
 			}
 
 			// register success
-			return new Status(IStatus.OK, Activator.PLUGIN_ID, "Undo trim sensors",
-					null);
-		}
-	}
-
-	private static class SplitSegmentsOperation extends CMAPOperation
-	{
-
-		final private Layers _layers;
-		private SplittableLayer _youSplitter;
-
-		public SplitSegmentsOperation(SplittableLayer youSplitter,
-				Layers currentLayers)
-		{
-			super("Auto-split sensor datasets");
-			_youSplitter = youSplitter;
-			_layers = currentLayers;
-		}
-
-		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
-				throws ExecutionException
-		{
-			_youSplitter.AutoSplitTracks();
-
-			// ok, fire off a layers extended event to share the good news
-			if (_layers != null)
-				_layers.fireExtended();
-
-			IStatus res = new Status(IStatus.OK, Activator.PLUGIN_ID,
-					"split sensor tracks successful", null);
-			return res;
-		}
-
-		@Override
-		public boolean canRedo()
-		{
-			return false;
-		}
-
-		@Override
-		public boolean canUndo()
-		{
-			return false;
-		}
-
-		@Override
-		public IStatus redo(IProgressMonitor monitor, IAdaptable info)
-				throws ExecutionException
-		{
-			return execute(monitor, info);
-		}
-
-		@Override
-		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
-				throws ExecutionException
-		{
-			// register success
-			return new Status(IStatus.OK, Activator.PLUGIN_ID, "Undo trim sensors",
-					null);
+			return new Status(IStatus.OK, Activator.PLUGIN_ID, "Undo trim sensors", null);
 		}
 	}
 
@@ -336,7 +290,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 
 	/**
 	 * listen out for new data being added or removed
-	 * 
+	 *
 	 */
 	protected DataListener _layerListener;
 
@@ -353,233 +307,45 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 	/**
 	 * The constructor.
 	 */
-	public SensorFusionView()
-	{
+	public SensorFusionView() {
 		_selectedTracks = new Vector<SensorSeries>(0, 1);
 		_plotRenderer = new FusionPlotRenderer(this);
 		_trackIndex = new HashMap<SensorWrapper, SensorSeries>();
 	}
 
-	private SensorFusionView getMe()
-	{
-		return this;
+	@Override
+	public void addSelectionChangedListener(final ISelectionChangedListener listener) {
+		_selectionHelper.addSelectionChangedListener(listener);
 	}
 
-	protected void setupListeners()
-	{
-		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
-				.getPartService());
-		_myPartMonitor.addPartListener(ISelectionProvider.class,
-				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
-				{
-					public void eventTriggered(final String type, final Object part,
-							final IWorkbenchPart parentPart)
-					{
-						// aah, just check it's not us
-						if (part != getMe())
-						{
-							if (_currentProvider != null)
-								stopListeningTo(_currentProvider);
+	private void contributeToActionBars() {
+		final IActionBars bars = getViewSite().getActionBars();
+		bars.getToolBarManager().add(_useOriginalColors);
+		bars.getToolBarManager().add(new Separator());
+		bars.getToolBarManager().add(_doSplit);
+		bars.getToolBarManager().add(_trimToTrack);
+		bars.getToolBarManager().add(_trimToSubjectTracks);
+		// and the help link
+		bars.getToolBarManager().add(new Separator());
+		bars.getToolBarManager()
+				.add(CorePlugin.createOpenHelpAction("org.mwc.debrief.help.BulkSensorData", null, this));
 
-							startListeningTo((ISelectionProvider) part);
-						}
-					}
-				});
-		_myPartMonitor.addPartListener(ISelectionProvider.class,
-				PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
-				{
-					public void eventTriggered(final String type, final Object part,
-							final IWorkbenchPart parentPart)
-					{
-						// aah, just check it's not is
-						if (part != getMe())
-						{
-							stopListeningTo((ISelectionProvider) part);
-						}
-					}
-				});
-
-		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.ACTIVATED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(final String type, final Object part,
-							final IWorkbenchPart parentPart)
-					{
-						final TrackManager provider = (TrackManager) part;
-
-						// is this different to our current one?
-						if (provider != _trackData)
-							storeDetails(provider, parentPart);
-					}
-				});
-
-		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.CLOSED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(final String type, final Object part,
-							final IWorkbenchPart parentPart)
-					{
-						if (part == _trackData)
-						{
-							_trackData = null;
-							resetPlot();
-						}
-					}
-				});
-		_myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(final String type, final Object part,
-							final IWorkbenchPart parentPart)
-					{
-
-						// is this different to our current one?
-						if (part != _currentLayers)
-						{
-							if (_layerListener == null)
-								_layerListener = new DataListener()
-								{
-
-									public void dataExtended(final Layers theData)
-									{
-										// redo the data
-										recalculateData();
-									}
-
-									public void dataModified(final Layers theData,
-											final Layer changedLayer)
-									{
-										// redo the data
-										recalculateData();
-									}
-
-									public void dataReformatted(final Layers theData,
-											final Layer changedLayer)
-									{
-										// redo the presentation
-										redrawPlot();
-									}
-								};
-
-							// ok, stop listening to the current one
-							if (_currentLayers != null)
-								stopListeningTo(_currentLayers);
-
-							// and start listening to the new one
-							startListeningTo((Layers) part);
-						}
-					}
-				});
-
-		_myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(final String type, final Object part,
-							final IWorkbenchPart parentPart)
-					{
-						if (part == _currentLayers)
-						{
-							stopListeningTo((Layers) part);
-						}
-					}
-				});
-
-		// ok we're all ready now. just try and see if the current part is valid
-		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
-				.getActivePage());
-
-	}
-
-	protected void startListeningTo(final Layers part)
-	{
-		_currentLayers = part;
-		_currentLayers.addDataModifiedListener(_layerListener);
-		_currentLayers.addDataReformattedListener(_layerListener);
-		_currentLayers.addDataExtendedListener(_layerListener);
-	}
-
-	protected void stopListeningTo(final Layers part)
-	{
-		if (_currentLayers != null)
-		{
-			_currentLayers.removeDataModifiedListener(_layerListener);
-			_currentLayers.removeDataReformattedListener(_layerListener);
-			_currentLayers.removeDataExtendedListener(_layerListener);
-		}
-		_currentLayers = null;
-	}
-
-	protected void startListeningTo(final ISelectionProvider part)
-	{
-		_currentProvider = part;
-		_currentProvider.addSelectionChangedListener(_selectionChangeListener);
-	}
-
-	protected void stopListeningTo(final ISelectionProvider part)
-	{
-		if (_currentProvider != null)
-			_currentProvider.removeSelectionChangedListener(_selectionChangeListener);
-		_currentProvider = null;
-	}
-
-	protected void storeDetails(final TrackManager provider,
-			final IWorkbenchPart parentPart)
-	{
-		// ok, we've got a new plot to watch. better watch it...
-		_trackData = provider;
-
-		// clear our list
-		_selectedTracks.removeAllElements();
-
-		recalculateData();
-
-	}
-
-	private void recalculateData()
-	{
-
-		// which is the primary?
-		final WatchableList primary = _trackData.getPrimaryTrack();
-
-		if (primary == null)
-		{
-			_myChartFrame.getChart().setTitle("Primary track missing");
-			_myChartFrame.getChart().getXYPlot().setDataset(null);
-			return;
-		}
-		else
-			_myChartFrame.getChart().setTitle(CHART_NAME);
-
-		// check it's a track
-		if (!(primary instanceof TrackWrapper))
-		{
-			CorePlugin.logError(Status.WARNING,
-					"Primary track not suitable for watching", null);
-		}
-		else
-		{
-			final TrackWrapper _primary = (TrackWrapper) primary;
-			// and which are the secondaries?
-			final WatchableList[] secondaries = _trackData.getSecondaryTracks();
-
-			// sort out the bearing tracks
-			final TimeSeriesCollection newData = new TimeSeriesCollection();
-			DataSupport.tracksFor(_primary, secondaries, newData);
-
-			DataSupport.sensorDataFor(_primary, newData, _trackIndex);
-
-			// and now the sensor data
-			_myChartFrame.getChart().getXYPlot().setDataset(newData);
-		}
+		final IMenuManager menu = getViewSite().getActionBars().getMenuManager();
+		menu.add(_useOriginalColors);
+		bars.getToolBarManager().add(new Separator());
+		menu.add(_doSplit);
+		menu.add(_trimToTrack);
+		menu.add(_trimToSubjectTracks);
+		menu.add(new Separator());
+		menu.add(CorePlugin.createOpenHelpAction("org.mwc.debrief.help.BulkSensorData", null, this));
 
 	}
 
 	/**
-	 * This is a callback that will allow us to create the viewer and initialize
-	 * it.
+	 * This is a callback that will allow us to create the viewer and initialize it.
 	 */
-	public void createPartControl(final Composite parent)
-	{
+	@Override
+	public void createPartControl(final Composite parent) {
 		makeActions();
 		contributeToActionBars();
 
@@ -588,8 +354,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		getSite().setSelectionProvider(_selectionHelper);
 
 		// declare our context sensitive help
-		CorePlugin
-				.declareContextHelp(parent, "org.mwc.debrief.help.BulkSensorData");
+		CorePlugin.declareContextHelp(parent, "org.mwc.debrief.help.BulkSensorData");
 
 		parent.setLayout(new FillLayout());
 
@@ -599,25 +364,21 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		myChart.getXYPlot().setRenderer(_plotRenderer);
 
 		// and the chart frame
-		_myChartFrame = new ChartComposite(parent, SWT.NONE, myChart, 400, 600, 300, 200,
-				1800, 1800, true, true, true, true, true, true)
-		{
+		_myChartFrame = new ChartComposite(parent, SWT.NONE, myChart, 400, 600, 300, 200, 1800, 1800, true, true, true,
+				true, true, true) {
 
 			@Override
-			protected Menu createPopupMenu(boolean arg0, boolean arg1, boolean arg2,
-					boolean arg3)
-			{
+			protected Menu createPopupMenu(final boolean arg0, final boolean arg1, final boolean arg2,
+					final boolean arg3) {
 				// prevent the JFreeChart menu from opening
 				return null;
 			}
-			
+
 			@Override
-			public void mouseUp(MouseEvent event)
-			{
+			public void mouseUp(final MouseEvent event) {
 				super.mouseUp(event);
-				JFreeChart c = getChart();
-				if (c != null) 
-				{
+				final JFreeChart c = getChart();
+				if (c != null) {
 					c.setNotify(true); // force redraw
 				}
 			}
@@ -626,58 +387,45 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		_myChartFrame.setHorizontalAxisTrace(false);
 		_myChartFrame.setVerticalAxisTrace(false);
 
-		_myChartFrame.addChartMouseListener(new ChartMouseListener()
-		{
+		_myChartFrame.addChartMouseListener(new ChartMouseListener() {
 
-			public void chartMouseClicked(final ChartMouseEvent event)
-			{
+			@Override
+			public void chartMouseClicked(final ChartMouseEvent event) {
 				final ChartEntity entity = event.getEntity();
-				if (entity instanceof XYItemEntity)
-				{
+				if (entity instanceof XYItemEntity) {
 					final XYItemEntity xyi = (XYItemEntity) entity;
-					final TimeSeriesCollection coll = (TimeSeriesCollection) xyi
-							.getDataset();
-					final TacticalSeries ts = (TacticalSeries) coll
-							.getSeries(((XYItemEntity) entity).getSeriesIndex());
-					if (ts instanceof SensorSeries)
-					{
+					final TimeSeriesCollection coll = (TimeSeriesCollection) xyi.getDataset();
+					final TacticalSeries ts = (TacticalSeries) coll.getSeries(((XYItemEntity) entity).getSeriesIndex());
+					if (ts instanceof SensorSeries) {
 						final SensorSeries ss = (SensorSeries) ts;
 
 						// check which mouse it si
-						if (event.getTrigger().getButton() == 3)
-						{
+						if (event.getTrigger().getButton() == 3) {
 							// get the sensor itself
 							final SensorWrapper sensor = ss.getSensor();
 
 							// get the parent layer
-							final TrackWrapper parentLayer = (TrackWrapper) _trackData
-									.getPrimaryTrack();
+							final TrackWrapper parentLayer = (TrackWrapper) _trackData.getPrimaryTrack();
 
 							// ok, create ourselves a menu
 							final MenuManager mmgr = new MenuManager();
 
 							// insert the relevant menu items
-							RightClickSupport.getDropdownListFor(mmgr, new Editable[]
-							{ sensor }, null, new Layer[]
-							{ parentLayer }, _currentLayers, false);
+							RightClickSupport.getDropdownListFor(mmgr, new Editable[] { sensor }, null,
+									new Layer[] { parentLayer }, _currentLayers, false);
 
 							// get the SWT menu object for it
 							final Menu thisM = mmgr.createContextMenu(_myChartFrame);
 
 							// and display it
 							thisM.setVisible(true);
-						}
-						else
-						{
+						} else {
 							// right, is ctrl-key pressed
 							final int mods = event.getTrigger().getModifiers();
-							if ((mods & InputEvent.CTRL_MASK) == 0)
-							{
+							if ((mods & InputEvent.CTRL_MASK) == 0) {
 								_selectedTracks.removeAllElements();
 								_selectedTracks.add(ss);
-							}
-							else
-							{
+							} else {
 								if (_selectedTracks.contains(ts))
 									_selectedTracks.remove(ts);
 								else
@@ -692,9 +440,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 							redrawPlot();
 						}
 					}
-				}
-				else
-				{
+				} else {
 					_selectedTracks.removeAllElements();
 
 					// and update the UI
@@ -704,36 +450,29 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 				}
 			}
 
-			public void chartMouseMoved(final ChartMouseEvent event)
-			{
+			@Override
+			public void chartMouseMoved(final ChartMouseEvent event) {
 			}
 		});
 
-		_selectionChangeListener = new ISelectionChangedListener()
-		{
+		_selectionChangeListener = new ISelectionChangedListener() {
 
-			@SuppressWarnings(
-			{ "rawtypes" })
-			public void selectionChanged(final SelectionChangedEvent event)
-			{
+			@Override
+			@SuppressWarnings({ "rawtypes" })
+			public void selectionChanged(final SelectionChangedEvent event) {
 				// right, see what it is
 				final ISelection sel = event.getSelection();
-				if (sel instanceof StructuredSelection)
-				{
+				if (sel instanceof StructuredSelection) {
 					final StructuredSelection ss = (StructuredSelection) sel;
 					final Iterator eles = ss.iterator();
 					boolean processingThese = false;
-					while (eles.hasNext())
-					{
+					while (eles.hasNext()) {
 						final Object datum = eles.next();
-						if (datum instanceof EditableWrapper)
-						{
+						if (datum instanceof EditableWrapper) {
 							final EditableWrapper pw = (EditableWrapper) datum;
 							final Editable ed = pw.getEditable();
-							if (ed instanceof SensorWrapper)
-							{
-								if (!processingThese)
-								{
+							if (ed instanceof SensorWrapper) {
+								if (!processingThese) {
 									processingThese = true;
 									_selectedTracks.removeAllElements();
 
@@ -755,8 +494,7 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 	}
 
 	@Override
-	public void dispose()
-	{
+	public void dispose() {
 		stopListeningTo(_currentProvider);
 		stopListeningTo(_currentLayers);
 		_myPartMonitor.ditch();
@@ -764,168 +502,240 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 		super.dispose();
 	}
 
-	protected void updatedSelection()
-	{
-		final Vector<EditableWrapper> wrappers = new Vector<EditableWrapper>(0, 1);
-		final Iterator<SensorSeries> it = _selectedTracks.iterator();
-		while (it.hasNext())
-		{
-			final SensorSeries ss = (SensorSeries) it.next();
-			final SensorWrapper sw = ss.getSensor();
-			final EditableWrapper ed = new EditableWrapper(sw);
-			wrappers.add(ed);
-		}
-
-		if (!wrappers.isEmpty())
-		{
-			// and provide the selection object
-			final StructuredSelection trackSelection = new StructuredSelection(
-					wrappers);
-			setSelection(trackSelection);
-		}
+	@Override
+	public HashMap<SensorWrapper, SensorSeries> getIndex() {
+		return _trackIndex;
 	}
 
-	private void contributeToActionBars()
-	{
-		final IActionBars bars = getViewSite().getActionBars();
-		bars.getToolBarManager().add(_useOriginalColors);
-		bars.getToolBarManager().add(new Separator());
-		bars.getToolBarManager().add(_doSplit);
-		bars.getToolBarManager().add(_trimToTrack);
-		bars.getToolBarManager().add(_trimToSubjectTracks);
-		// and the help link
-		bars.getToolBarManager().add(new Separator());
-		bars.getToolBarManager().add(
-				CorePlugin.createOpenHelpAction("org.mwc.debrief.help.BulkSensorData",
-						null, this));
-
-		IMenuManager menu = getViewSite().getActionBars().getMenuManager();
-		menu.add(_useOriginalColors);
-		bars.getToolBarManager().add(new Separator());
-		menu.add(_doSplit);
-		menu.add(_trimToTrack);
-		menu.add(_trimToSubjectTracks);
-		menu.add(new Separator());
-		menu.add(CorePlugin.createOpenHelpAction(
-				"org.mwc.debrief.help.BulkSensorData", null, this));
-
+	private SensorFusionView getMe() {
+		return this;
 	}
 
-	private void makeActions()
-	{
-		_useOriginalColors = new Action("Plot tracks using original colors",
-				SWT.TOGGLE)
-		{
+	@Override
+	public Vector<SensorSeries> getSelectedItems() {
+		return _selectedTracks;
+	}
+
+	@Override
+	public ISelection getSelection() {
+		return _selectionHelper.getSelection();
+	}
+
+	private void makeActions() {
+		_useOriginalColors = new Action("Plot tracks using original colors", SWT.TOGGLE) {
 			@Override
-			public void run()
-			{
+			public void run() {
 				// we don't need to do any fancy processing. If we trigger redraw,
 				// it will pick up the new value
 				redrawPlot();
 			}
 		};
-		_useOriginalColors.setImageDescriptor(Activator
-				.getImageDescriptor("icons/ColorPalette.png"));
+		_useOriginalColors.setImageDescriptor(Activator.getImageDescriptor("icons/ColorPalette.png"));
 
-		_doSplit = new Action("Auto-split sensor segments", SWT.NONE)
-		{
+		_doSplit = new Action("Auto-split sensor segments", SWT.NONE) {
 			@Override
-			public void run()
-			{
+			public void run() {
 				// we don't need to do any fancy processing. If we trigger redraw,
 				// it will pick up the new value
 				splitTracks();
 			}
 
 		};
-		_doSplit.setImageDescriptor(Activator
-				.getImageDescriptor("icons/handaxe.png"));
+		_doSplit.setImageDescriptor(Activator.getImageDescriptor("icons/handaxe.png"));
 
-		_trimToTrack = new Action("Trim to track period", SWT.NONE)
-		{
+		_trimToTrack = new Action("Trim to track period", SWT.NONE) {
 			@Override
-			public void run()
-			{
+			public void run() {
 				trimToTrack();
 			}
 
 		};
-		_trimToTrack.setImageDescriptor(Activator
-				.getImageDescriptor("icons/hourglass.png"));
+		_trimToTrack.setImageDescriptor(Activator.getImageDescriptor("icons/hourglass.png"));
 
-		_trimToSubjectTracks = new Action(
-				"Remove sensor data unrelated to Secondary Tracks", SWT.NONE)
-		{
+		_trimToSubjectTracks = new Action("Remove sensor data unrelated to Secondary Tracks", SWT.NONE) {
 			@Override
-			public void run()
-			{
+			public void run() {
 				trimToSubjectTracks();
 			}
 
 		};
-		_trimToSubjectTracks.setImageDescriptor(Activator
-				.getImageDescriptor("icons/scissors.png"));
+		_trimToSubjectTracks.setImageDescriptor(Activator.getImageDescriptor("icons/scissors.png"));
 	}
 
-	protected void splitTracks()
-	{
+	private void recalculateData() {
+
+		// which is the primary?
+		final WatchableList primary = _trackData.getPrimaryTrack();
+
+		if (primary == null) {
+			_myChartFrame.getChart().setTitle("Primary track missing");
+			_myChartFrame.getChart().getXYPlot().setDataset(null);
+			return;
+		} else
+			_myChartFrame.getChart().setTitle(CHART_NAME);
+
+		// check it's a track
+		if (!(primary instanceof TrackWrapper)) {
+			CorePlugin.logError(IStatus.WARNING, "Primary track not suitable for watching", null);
+		} else {
+			final TrackWrapper _primary = (TrackWrapper) primary;
+			// and which are the secondaries?
+			final WatchableList[] secondaries = _trackData.getSecondaryTracks();
+
+			// sort out the bearing tracks
+			final TimeSeriesCollection newData = new TimeSeriesCollection();
+			DataSupport.tracksFor(_primary, secondaries, newData);
+
+			DataSupport.sensorDataFor(_primary, newData, _trackIndex);
+
+			// and now the sensor data
+			_myChartFrame.getChart().getXYPlot().setDataset(newData);
+		}
+
+	}
+
+	protected void redrawPlot() {
+		if (_plotRenderer != null) {
+			_plotRenderer.setSeriesShapesVisible(0, true);
+		}
+	}
+
+	@Override
+	public void removeSelectionChangedListener(final ISelectionChangedListener listener) {
+		_selectionHelper.removeSelectionChangedListener(listener);
+	}
+
+	protected void resetPlot() {
+		if (!_myChartFrame.isDisposed()) {
+			_myChartFrame.getChart().getXYPlot().setDataset(null);
+			_myChartFrame.getChart().setTitle("Pending");
+		}
+	}
+
+	/**
+	 * Passing the focus request to the viewer's control.
+	 */
+	@Override
+	public void setFocus() {
+	}
+
+	@Override
+	public void setSelection(final ISelection selection) {
+		_selectionHelper.fireNewSelection(selection);
+	}
+
+	protected void setupListeners() {
+		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
+		_myPartMonitor.addPartListener(ISelectionProvider.class, PartMonitor.ACTIVATED, new PartMonitor.ICallback() {
+			@Override
+			public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart) {
+				// aah, just check it's not us
+				if (part != getMe()) {
+					if (_currentProvider != null)
+						stopListeningTo(_currentProvider);
+
+					startListeningTo((ISelectionProvider) part);
+				}
+			}
+		});
+		_myPartMonitor.addPartListener(ISelectionProvider.class, PartMonitor.DEACTIVATED, new PartMonitor.ICallback() {
+			@Override
+			public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart) {
+				// aah, just check it's not is
+				if (part != getMe()) {
+					stopListeningTo((ISelectionProvider) part);
+				}
+			}
+		});
+
+		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.ACTIVATED, new PartMonitor.ICallback() {
+			@Override
+			public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart) {
+				final TrackManager provider = (TrackManager) part;
+
+				// is this different to our current one?
+				if (provider != _trackData)
+					storeDetails(provider, parentPart);
+			}
+		});
+
+		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.CLOSED, new PartMonitor.ICallback() {
+			@Override
+			public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart) {
+				if (part == _trackData) {
+					_trackData = null;
+					resetPlot();
+				}
+			}
+		});
+		_myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED, new PartMonitor.ICallback() {
+			@Override
+			public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart) {
+
+				// is this different to our current one?
+				if (part != _currentLayers) {
+					if (_layerListener == null)
+						_layerListener = new DataListener() {
+
+							@Override
+							public void dataExtended(final Layers theData) {
+								// redo the data
+								recalculateData();
+							}
+
+							@Override
+							public void dataModified(final Layers theData, final Layer changedLayer) {
+								// redo the data
+								recalculateData();
+							}
+
+							@Override
+							public void dataReformatted(final Layers theData, final Layer changedLayer) {
+								// redo the presentation
+								redrawPlot();
+							}
+						};
+
+					// ok, stop listening to the current one
+					if (_currentLayers != null)
+						stopListeningTo(_currentLayers);
+
+					// and start listening to the new one
+					startListeningTo((Layers) part);
+				}
+			}
+		});
+
+		_myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED, new PartMonitor.ICallback() {
+			@Override
+			public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart) {
+				if (part == _currentLayers) {
+					stopListeningTo((Layers) part);
+				}
+			}
+		});
+
+		// ok we're all ready now. just try and see if the current part is valid
+		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow().getActivePage());
+
+	}
+
+	protected void splitTracks() {
 		// ok, go get the primary track
-		if (_trackData != null)
-		{
+		if (_trackData != null) {
 			final TrackWrapper primary = (TrackWrapper) _trackData.getPrimaryTrack();
 			final BaseLayer sensors = primary.getSensors();
-			if (sensors instanceof SplittableLayer)
-			{
+			if (sensors instanceof SplittableLayer) {
 				final SplittableLayer youSplitter = (SplittableLayer) sensors;
-				IUndoableOperation op = new SplitSegmentsOperation(youSplitter,
-						_currentLayers);
+				final IUndoableOperation op = new SplitSegmentsOperation(youSplitter, _currentLayers);
 				CorePlugin.run(op);
 			}
 		}
 	}
 
-	protected void trimToTrack()
-	{
-		// ok, go get the primary track
-		if (_trackData != null)
-		{
-			final TrackWrapper primary = (TrackWrapper) _trackData.getPrimaryTrack();
-
-			IUndoableOperation op = new TrimToTrackPeriodOperation(primary,
-					_currentLayers);
-			CorePlugin.run(op);
-		}
-	}
-
-	protected void trimToSubjectTracks()
-	{
-		// ok, go get the primary track
-		if (_trackData != null)
-		{
-			final TrackWrapper primary = (TrackWrapper) _trackData.getPrimaryTrack();
-			final WatchableList[] secondaries = _trackData.getSecondaryTracks();
-
-			IUndoableOperation op = new TrimToSubjectOperation(primary, secondaries,
-					_currentLayers);
-			CorePlugin.run(op);
-		}
-	}
-
-	protected void redrawPlot()
-	{
-		if (_plotRenderer != null)
-		{
-			_plotRenderer.setSeriesShapesVisible(0, true);
-		}
-	}
-
-	protected void resetPlot()
-	{
-		if (!_myChartFrame.isDisposed())
-		{
-			_myChartFrame.getChart().getXYPlot().setDataset(null);
-			_myChartFrame.getChart().setTitle("Pending");
-		}
+	protected void startListeningTo(final ISelectionProvider part) {
+		_currentProvider = part;
+		_currentProvider.addSelectionChangedListener(_selectionChangeListener);
 	}
 
 	// protected void resetData()
@@ -965,47 +775,79 @@ public class SensorFusionView extends ViewPart implements ISelectionProvider,
 	// System.out.println("created " + ctr + " cuts");
 	// }
 
-	/**
-	 * Passing the focus request to the viewer's control.
-	 */
-	public void setFocus()
-	{
+	protected void startListeningTo(final Layers part) {
+		_currentLayers = part;
+		_currentLayers.addDataModifiedListener(_layerListener);
+		_currentLayers.addDataReformattedListener(_layerListener);
+		_currentLayers.addDataExtendedListener(_layerListener);
 	}
 
-	public void addSelectionChangedListener(
-			final ISelectionChangedListener listener)
-	{
-		_selectionHelper.addSelectionChangedListener(listener);
+	protected void stopListeningTo(final ISelectionProvider part) {
+		if (_currentProvider != null)
+			_currentProvider.removeSelectionChangedListener(_selectionChangeListener);
+		_currentProvider = null;
 	}
 
-	public ISelection getSelection()
-	{
-		return _selectionHelper.getSelection();
+	protected void stopListeningTo(final Layers part) {
+		if (_currentLayers != null) {
+			_currentLayers.removeDataModifiedListener(_layerListener);
+			_currentLayers.removeDataReformattedListener(_layerListener);
+			_currentLayers.removeDataExtendedListener(_layerListener);
+		}
+		_currentLayers = null;
 	}
 
-	public void removeSelectionChangedListener(
-			final ISelectionChangedListener listener)
-	{
-		_selectionHelper.removeSelectionChangedListener(listener);
+	protected void storeDetails(final TrackManager provider, final IWorkbenchPart parentPart) {
+		// ok, we've got a new plot to watch. better watch it...
+		_trackData = provider;
+
+		// clear our list
+		_selectedTracks.removeAllElements();
+
+		recalculateData();
+
 	}
 
-	public void setSelection(final ISelection selection)
-	{
-		_selectionHelper.fireNewSelection(selection);
+	protected void trimToSubjectTracks() {
+		// ok, go get the primary track
+		if (_trackData != null) {
+			final TrackWrapper primary = (TrackWrapper) _trackData.getPrimaryTrack();
+			final WatchableList[] secondaries = _trackData.getSecondaryTracks();
+
+			final IUndoableOperation op = new TrimToSubjectOperation(primary, secondaries, _currentLayers);
+			CorePlugin.run(op);
+		}
 	}
 
-	public Vector<SensorSeries> getSelectedItems()
-	{
-		return _selectedTracks;
+	protected void trimToTrack() {
+		// ok, go get the primary track
+		if (_trackData != null) {
+			final TrackWrapper primary = (TrackWrapper) _trackData.getPrimaryTrack();
+
+			final IUndoableOperation op = new TrimToTrackPeriodOperation(primary, _currentLayers);
+			CorePlugin.run(op);
+		}
 	}
 
-	public boolean useOriginalColors()
-	{
+	protected void updatedSelection() {
+		final Vector<EditableWrapper> wrappers = new Vector<EditableWrapper>(0, 1);
+		final Iterator<SensorSeries> it = _selectedTracks.iterator();
+		while (it.hasNext()) {
+			final SensorSeries ss = it.next();
+			final SensorWrapper sw = ss.getSensor();
+			final EditableWrapper ed = new EditableWrapper(sw);
+			wrappers.add(ed);
+		}
+
+		if (!wrappers.isEmpty()) {
+			// and provide the selection object
+			final StructuredSelection trackSelection = new StructuredSelection(wrappers);
+			setSelection(trackSelection);
+		}
+	}
+
+	@Override
+	public boolean useOriginalColors() {
 		return _useOriginalColors.isChecked();
-	}
-
-	public HashMap<SensorWrapper, SensorSeries> getIndex()
-	{
-		return _trackIndex;
 	}
 }

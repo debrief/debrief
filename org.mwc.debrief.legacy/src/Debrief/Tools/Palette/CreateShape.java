@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: CreateShape.java,v $
@@ -93,143 +93,136 @@ import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Action;
 import MWC.GenericData.WorldLocation;
 
-abstract public class CreateShape extends CoreCreateShape
-{
+abstract public class CreateShape extends CoreCreateShape {
 
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  /** the properties panel
-   */
-  private PropertiesPanel _thePanel;
-  
+	///////////////////////////////////////////////////////
+	// store action information
+	///////////////////////////////////////////////////////
+	public static class CreateShapeAction implements Action {
+		/**
+		 * the panel we are going to show the initial editor in
+		 */
+		final protected PropertiesPanel _thePanel;
+		final protected Layer _theLayer;
+		final protected Debrief.Wrappers.ShapeWrapper _theShape;
+		final protected Layers _theLayers;
+		final private Layer addedLayer;
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  public CreateShape(final ToolParent theParent,
-      final PropertiesPanel thePanel,
-      final Layers theData,
-      final String theName,
-      final String theImage, BoundsProvider bounds)
-  {
-    super(theParent, theName, theImage,theData,bounds);
-    _thePanel = thePanel;
+		public CreateShapeAction(final PropertiesPanel thePanel, final Layer theLayer, final ShapeWrapper theShape,
+				final Layers theLayers, final Layer newLayer) {
+			_thePanel = thePanel;
+			_theLayer = theLayer;
+			_theShape = theShape;
+			_theLayers = theLayers;
+			addedLayer = newLayer;
+		}
 
-  }
+		@Override
+		public void execute() {
+			if (addedLayer != null) {
+				_theLayers.addThisLayer(addedLayer);
+			}
+			// add the Shape to the layer, and put it
+			// in the property editor
+			_theLayer.add(_theShape);
 
+			if (_thePanel != null)
+				_thePanel.addEditor(_theShape.getInfo(), _theLayer);
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+			// and fire the extended event
+			_theLayers.fireExtended(_theShape, _theLayer);
+		}
 
-  public final Action getData()
-  {
-    final GetAction getAction = new GetAction() {
+		@Override
+		public final boolean isRedoable() {
+			return true;
+		}
 
-      @Override
-      public Action createLabelAction(final PropertiesPanel thePanel, final Layer theLayer,
-          final PlainWrapper theItem, final Layers theData)
-      {
-        return new CreateShapeAction(_thePanel, theLayer,
-            (ShapeWrapper) theItem, _theData,addedLayer);
-      }
+		@Override
+		public final boolean isUndoable() {
+			return true;
+		}
 
-      @Override
-      public PlainWrapper getItem(final WorldLocation centre)
-      {
-        return getShape(centre);
-      }};
-    return commonGetData(getAction, _thePanel);
-  }
-  
-  /** get the actual instance of the shape we are creating
-   * @return ShapeWrapper containing an instance of the new shape
-   * @param centre the current centre of the screen, where the shape should be centred
-   */
-  abstract protected ShapeWrapper getShape(WorldLocation centre);
+		@Override
+		public final String toString() {
+			return "New shape:" + _theShape.getName();
+		}
 
+		/**
+		 * take the shape away from the layer
+		 */
+		@Override
+		public final void undo() {
+			if (addedLayer != null) {
+				_theLayers.removeThisLayer(addedLayer);
+			} else {
+				_theLayer.removeElement(_theShape);
+			}
 
-  ///////////////////////////////////////////////////////
-  // store action information
-  ///////////////////////////////////////////////////////
-  public static class CreateShapeAction implements Action
-  {
-    /** the panel we are going to show the initial editor in
-     */
-    final protected PropertiesPanel _thePanel;
-    final protected Layer _theLayer;
-    final protected Debrief.Wrappers.ShapeWrapper _theShape;
-    final protected Layers _theLayers;
-    final private Layer addedLayer;
+			// and fire the extended event
+			_theLayers.fireExtended();
+		}
+	}
 
+	/**
+		 *
+		 */
+	private static final long serialVersionUID = 1L;
 
-    public CreateShapeAction(final PropertiesPanel thePanel,
-        final Layer theLayer,
-        final ShapeWrapper theShape,
-        final Layers theLayers,final Layer newLayer)
-    {
-      _thePanel = thePanel;
-      _theLayer = theLayer;
-      _theShape = theShape;
-      _theLayers = theLayers;
-      addedLayer = newLayer;
-    }
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+	/**
+	 * the properties panel
+	 */
+	private PropertiesPanel _thePanel;
 
-    public final boolean isUndoable()
-    {
-      return true;
-    }
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-    public final boolean isRedoable()
-    {
-      return true;
-    }
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	public CreateShape(final ToolParent theParent, final PropertiesPanel thePanel, final Layers theData,
+			final String theName, final String theImage, final BoundsProvider bounds) {
+		super(theParent, theName, theImage, theData, bounds);
+		_thePanel = thePanel;
 
-    public final String toString()
-    {
-      return "New shape:" + _theShape.getName();
-    }
+	}
 
-    /** take the shape away from the layer
-     */
-    public final void undo()
-    {
-      if(addedLayer!=null) {
-        _theLayers.removeThisLayer(addedLayer);
-      }
-      else{
-        _theLayer.removeElement(_theShape);  
-      }
-      
+	@Override
+	public final void close() {
+		super.close();
 
-      // and fire the extended event
-      _theLayers.fireExtended();
-    }
+		// remove our local references
+		_thePanel = null;
+	}
 
-    public void execute()
-    {
-      if(addedLayer!=null) {
-        _theLayers.addThisLayer(addedLayer);
-      }
-      // add the Shape to the layer, and put it
-      // in the property editor
-      _theLayer.add(_theShape);
+	@Override
+	public final Action getData() {
+		final GetAction getAction = new GetAction() {
 
-      if(_thePanel != null)
-        _thePanel.addEditor(_theShape.getInfo(), _theLayer);
+			@Override
+			public Action createLabelAction(final PropertiesPanel thePanel, final Layer theLayer,
+					final PlainWrapper theItem, final Layers theData) {
+				return new CreateShapeAction(_thePanel, theLayer, (ShapeWrapper) theItem, _theData, addedLayer);
+			}
 
-      // and fire the extended event
-      _theLayers.fireExtended(_theShape, _theLayer);
-    }
-  }
+			@Override
+			public PlainWrapper getItem(final WorldLocation centre) {
+				return getShape(centre);
+			}
+		};
+		return commonGetData(getAction, _thePanel);
+	}
 
-
-  public final void close()
-  {
-    super.close();
-
-    // remove our local references
-    _thePanel = null;
-  }
+	/**
+	 * get the actual instance of the shape we are creating
+	 *
+	 * @return ShapeWrapper containing an instance of the new shape
+	 * @param centre the current centre of the screen, where the shape should be
+	 *               centred
+	 */
+	abstract protected ShapeWrapper getShape(WorldLocation centre);
 }

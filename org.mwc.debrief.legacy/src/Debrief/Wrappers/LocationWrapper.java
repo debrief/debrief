@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package Debrief.Wrappers;
@@ -95,86 +95,84 @@ import MWC.GenericData.WorldLocation;
 import MWC.Utilities.Errors.Trace;
 
 public final class LocationWrapper extends MWC.GUI.PlainWrapper {
-  //////////////////////////////////////////////////
-  // member variables
-  //////////////////////////////////////////////////
+	//////////////////////////////////////////////////
+	// member variables
+	//////////////////////////////////////////////////
 
-  // keep track of versions
-  static final long serialVersionUID = 1;
+	// keep track of versions
+	static final long serialVersionUID = 1;
 
-  private final MWC.GUI.Shapes.Symbols.PlainSymbol _theSymbol;
-  private WorldLocation _theLocation;
+	private final MWC.GUI.Shapes.Symbols.PlainSymbol _theSymbol;
+	private WorldLocation _theLocation;
 
-  //////////////////////////////////////////////////
-  // constructor
-  //////////////////////////////////////////////////
-  public LocationWrapper(final WorldLocation theLocation){
-    // create the symbol for this location
-    _theLocation = theLocation;
+	//////////////////////////////////////////////////
+	// constructor
+	//////////////////////////////////////////////////
+	public LocationWrapper(final WorldLocation theLocation) {
+		// create the symbol for this location
+		_theLocation = theLocation;
 
-    // get the symbol for this location
-    _theSymbol = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol("Square");
+		// get the symbol for this location
+		_theSymbol = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol("Square");
 
-    // shrink the location, we want a small symbol, not a medium one
-    _theSymbol.setScaleVal(MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.SMALL);
-  }
+		// shrink the location, we want a small symbol, not a medium one
+		_theSymbol.setScaleVal(MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.SMALL);
+	}
 
-  //////////////////////////////////////////////////
-  // member functions
-  //////////////////////////////////////////////////
+	//////////////////////////////////////////////////
+	// member functions
+	//////////////////////////////////////////////////
 
-  public final void paint(final CanvasType dest){
-    // draw the symbol, based on the current location
-    _theSymbol.setColor(getColor());
+	@Override
+	public final WorldArea getBounds() {
+		// get the bounds from the data object (or its location object)
+		return new WorldArea(_theLocation, _theLocation);
+	}
 
-    // draw in our symbol
-    _theSymbol.paint(dest, _theLocation);
+	@Override
+	public final String getName() {
+		return "a location";
+	}
 
-  }
+	public final Double getSymbolScale() {
+		return new Double(_theSymbol.getScaleVal());
+	}
 
-  public final WorldArea getBounds(){
-    // get the bounds from the data object (or its location object)
-    return new WorldArea(_theLocation, _theLocation);
-  }
+	/**
+	 * does this item have an editor?
+	 */
+	@Override
+	public final boolean hasEditor() {
+		return false;
+	}
 
-  public final String getName(){
-    return "a location";
-  }
-  
-  
+	@Override
+	public final void paint(final CanvasType dest) {
+		// draw the symbol, based on the current location
+		_theSymbol.setColor(getColor());
 
-  @Override
-  public void setName(String name)
-  {
-    Trace.trace("Should not be trying to rename Location wrapper");
-    // ignore it
-  }
+		// draw in our symbol
+		_theSymbol.paint(dest, _theLocation);
 
-  /** does this item have an editor?
-   */
-  public final boolean hasEditor(){
-    return false;
-  }
+	}
 
-  public final void setLocation(final WorldLocation val)
-  {
-    _theLocation = val;
-  }
+	public final void setFillSymbol(final boolean val) {
 
-  public final void setFillSymbol(final boolean val)
-  {
+		_theSymbol.setFillSymbol(val);
+	}
 
-    _theSymbol.setFillSymbol(val);
-  }
+	public final void setLocation(final WorldLocation val) {
+		_theLocation = val;
+	}
 
-  public final void setSymbolScale(final Double val)
-  {
-    _theSymbol.setScaleVal(val.doubleValue());
-  }
+	@Override
+	public void setName(final String name) {
+		Trace.trace("Should not be trying to rename Location wrapper");
+		// ignore it
+	}
 
-  public final Double getSymbolScale()
-  {
-    return new Double(_theSymbol.getScaleVal());
-  }
+	public final void setSymbolScale(final Double val) {
+		_theSymbol.setScaleVal(val.doubleValue());
+	}
 
 }

@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: Fix.java,v $
@@ -96,8 +96,7 @@ import MWC.GenericData.WorldLocation;
  * a composite structure containing a time stamp, a location, and a set of
  * vessel parameter
  */
-public class Fix implements java.io.Serializable
-{
+public class Fix implements java.io.Serializable {
 
 	// ////////////////////////////////////////////////
 	// member variables
@@ -115,25 +114,19 @@ public class Fix implements java.io.Serializable
 	/**
 	 * default constructor, used serialization
 	 */
-	public Fix()
-	{
+	public Fix() {
 	}
 
 	/**
 	 * Constructor, normal parameters
-	 * 
-	 * @param theTime
-	 *          dtg of fix
-	 * @param theLocation
-	 *          is the location for this fix
-	 * @param theCourse
-	 *          the current course (in Radians)
-	 * @param theSpeed
-	 *          the current speed (in yards per second)
+	 *
+	 * @param theTime     dtg of fix
+	 * @param theLocation is the location for this fix
+	 * @param theCourse   the current course (in Radians)
+	 * @param theSpeed    the current speed (in yards per second)
 	 */
 	public Fix(final HiResDate theTime, final WorldLocation theLocation, final double theCourse,
-			final double theSpeed)
-	{
+			final double theSpeed) {
 		_theTime = theTime;
 		_theLocation = theLocation;
 		_theCourse = theCourse;
@@ -145,11 +138,46 @@ public class Fix implements java.io.Serializable
 	// ////////////////////////////////////////////////
 
 	/**
-	 * create deep clone of ourselves
-	 * 
+	 * get the current vessel course (rads)
+	 *
+	 * @return vessel course in radians
 	 */
-	public Fix makeCopy()
-	{
+	public double getCourse() {
+		return _theCourse;
+	}
+
+	/**
+	 * get the current vessel location
+	 *
+	 * @return vessel location
+	 */
+	public WorldLocation getLocation() {
+		return _theLocation;
+	}
+
+	/**
+	 * get the current vessel speed (yps)
+	 *
+	 * @return vessel speed in yards per second
+	 */
+	public double getSpeed() {
+		return _theSpeed;
+	}
+
+	/**
+	 * get the timestamp of this fix
+	 *
+	 * @return dtg of fix
+	 */
+	public HiResDate getTime() {
+		return _theTime;
+	}
+
+	/**
+	 * create deep clone of ourselves
+	 *
+	 */
+	public Fix makeCopy() {
 		final Fix newFix = new Fix();
 		newFix._theCourse = _theCourse;
 		newFix._theSpeed = _theSpeed;
@@ -161,75 +189,31 @@ public class Fix implements java.io.Serializable
 	}
 
 	/**
-	 * get the current vessel speed (yps)
-	 * 
-	 * @return vessel speed in yards per second
+	 * set the course of the fix (rads)
 	 */
-	public double getSpeed()
-	{
-		return _theSpeed;
-	}
-
-	/**
-	 * get the current vessel course (rads)
-	 * 
-	 * @return vessel course in radians
-	 */
-	public double getCourse()
-	{
-		return _theCourse;
-	}
-
-	/**
-	 * get the current vessel location
-	 * 
-	 * @return vessel location
-	 */
-	public WorldLocation getLocation()
-	{
-		return _theLocation;
+	public void setCourse(final double rads) {
+		_theCourse = rads;
 	}
 
 	/**
 	 * set the location of the fix
 	 */
-	public void setLocation(final WorldLocation val)
-	{
+	public void setLocation(final WorldLocation val) {
 		_theLocation = val;
-	}
-
-	/**
-	 * set the time of the fix
-	 */
-	public void setTime(final HiResDate dtg)
-	{
-		_theTime = dtg;
-	}
-
-	/**
-	 * set the course of the fix (rads)
-	 */
-	public void setCourse(final double rads)
-	{
-		_theCourse = rads;
 	}
 
 	/**
 	 * set the speed of the fix (yards per sec)
 	 */
-	public void setSpeed(final double yps)
-	{
+	public void setSpeed(final double yps) {
 		_theSpeed = yps;
 	}
 
 	/**
-	 * get the timestamp of this fix
-	 * 
-	 * @return dtg of fix
+	 * set the time of the fix
 	 */
-	public HiResDate getTime()
-	{
-		return _theTime;
+	public void setTime(final HiResDate dtg) {
+		_theTime = dtg;
 	}
 
 }

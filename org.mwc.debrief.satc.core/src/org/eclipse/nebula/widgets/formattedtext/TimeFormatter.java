@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.eclipse.nebula.widgets.formattedtext;
@@ -27,10 +27,10 @@ import org.eclipse.swt.SWT;
  * part. Supports a subset of time patterns defined in
  * <code>SimpleDateFormat</code> for input.
  * <p>
- * 
+ *
  * See <code>DateTimeFormatter</code> for a full description of patterns, given
  * that only patterns chars related to time are allowed.
- * 
+ *
  * <h4>Examples</h4>
  * <ul>
  * <li><code>new TimeFormatter("HH:mm")</code> - 15:45:11 will edit and display
@@ -39,8 +39,7 @@ import org.eclipse.swt.SWT;
  * "05:05 AM" and display as "5:5 AM".</li>
  * </ul>
  */
-public class TimeFormatter extends DateTimeFormatter
-{
+public class TimeFormatter extends DateTimeFormatter {
 	/**
 	 * Constructs a new instance with all defaults :
 	 * <ul>
@@ -49,110 +48,89 @@ public class TimeFormatter extends DateTimeFormatter
 	 * <li>default locale</li>
 	 * </ul>
 	 */
-	public TimeFormatter()
-	{
+	public TimeFormatter() {
 		super();
 	}
 
 	/**
 	 * Constructs a new instance with default edit and display masks for the given
 	 * locale.
-	 * 
-	 * @param loc
-	 *          locale
+	 *
+	 * @param loc locale
 	 */
-	public TimeFormatter(Locale loc)
-	{
+	public TimeFormatter(final Locale loc) {
 		super(loc);
 	}
 
 	/**
-	 * Constructs a new instance with the given edit mask. Display mask is
-	 * identical to the edit mask, and locale is the default one.
-	 * 
-	 * @param editPattern
-	 *          edit mask
+	 * Constructs a new instance with the given edit mask. Display mask is identical
+	 * to the edit mask, and locale is the default one.
+	 *
+	 * @param editPattern edit mask
 	 */
-	public TimeFormatter(String editPattern)
-	{
+	public TimeFormatter(final String editPattern) {
 		super(editPattern);
 	}
 
 	/**
 	 * Constructs a new instance with the given edit mask and locale. Display mask
 	 * is identical to the edit mask.
-	 * 
-	 * @param editPattern
-	 *          edit mask
-	 * @param loc
-	 *          locale
+	 *
+	 * @param editPattern edit mask
+	 * @param loc         locale
 	 */
-	public TimeFormatter(String editPattern, Locale loc)
-	{
+	public TimeFormatter(final String editPattern, final Locale loc) {
 		super(editPattern, loc);
 	}
 
 	/**
 	 * Constructs a new instance with the given edit and display masks. Uses the
 	 * default locale.
-	 * 
-	 * @param editPattern
-	 *          edit mask
-	 * @param displayPattern
-	 *          display mask
+	 *
+	 * @param editPattern    edit mask
+	 * @param displayPattern display mask
 	 */
-	public TimeFormatter(String editPattern, String displayPattern)
-	{
+	public TimeFormatter(final String editPattern, final String displayPattern) {
 		super(editPattern, displayPattern);
 	}
 
 	/**
 	 * Constructs a new instance with the given masks and locale.
-	 * 
-	 * @param editPattern
-	 *          edit mask
-	 * @param displayPattern
-	 *          display mask
-	 * @param loc
-	 *          locale
+	 *
+	 * @param editPattern    edit mask
+	 * @param displayPattern display mask
+	 * @param loc            locale
 	 */
-	public TimeFormatter(String editPattern, String displayPattern, Locale loc)
-	{
+	public TimeFormatter(final String editPattern, final String displayPattern, final Locale loc) {
 		super(editPattern, displayPattern, loc);
 	}
 
 	/**
 	 * Returns the default edit pattern for the given <code>Locale</code>.
 	 * <p>
-	 * 
+	 *
 	 * A <code>DateFormat</code> object is instantiated with SHORT format for both
-	 * the time part for the given locale. The corresponding pattern string is
-	 * then retrieved by calling the <code>toPattern</code>.
+	 * the time part for the given locale. The corresponding pattern string is then
+	 * retrieved by calling the <code>toPattern</code>.
 	 * <p>
-	 * 
+	 *
 	 * Default patterns are stored in a cache with ISO3 language and country codes
 	 * as key. So they are computed only once by locale.
-	 * 
-	 * @param loc
-	 *          locale
+	 *
+	 * @param loc locale
 	 * @return edit pattern for the locale
 	 */
 	@Override
-	public String getDefaultEditPattern(Locale loc)
-	{
-		if (loc == null)
-		{
+	public String getDefaultEditPattern(Locale loc) {
+		if (loc == null) {
 			loc = Locale.getDefault();
 		}
-		String key = "TI" + loc.toString(); //$NON-NLS-1$
+		final String key = "TI" + loc.toString(); //$NON-NLS-1$
 		String pattern = (String) cachedPatterns.get(key);
-		if (pattern == null)
-		{
-			DateFormat df = DateFormat.getTimeInstance(DateFormat.SHORT, loc);
-			if (!(df instanceof SimpleDateFormat))
-			{
-				SWT.error(SWT.ERROR_INVALID_ARGUMENT, null,
-						"No default pattern for locale " + loc.getDisplayName()); //$NON-NLS-1$
+		if (pattern == null) {
+			final DateFormat df = DateFormat.getTimeInstance(DateFormat.SHORT, loc);
+			if (!(df instanceof SimpleDateFormat)) {
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, "No default pattern for locale " + loc.getDisplayName()); //$NON-NLS-1$
 			}
 			pattern = ((SimpleDateFormat) df).toPattern();
 			cachedPatterns.put(key, pattern);
@@ -163,18 +141,14 @@ public class TimeFormatter extends DateTimeFormatter
 	/**
 	 * Checks if a given char is valid for the edit pattern. This method overrides
 	 * the parent method, restricting authorized chars to time patterns.
-	 * 
-	 * @param c
-	 *          pattern char
-	 * @throws IllegalArgumentException
-	 *           if not valid
+	 *
+	 * @param c pattern char
+	 * @throws IllegalArgumentException if not valid
 	 * @see DateTimeFormatter#isValidCharPattern(char)
 	 */
 	@Override
-	protected void isValidCharPattern(char c)
-	{
-		switch (c)
-		{
+	protected void isValidCharPattern(final char c) {
+		switch (c) {
 		case 'y':
 		case 'M':
 		case 'd':

@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: PlainImporter.java,v $
@@ -98,84 +98,77 @@
 
 package MWC.Utilities.ReaderWriter;
 
-
-
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 
+public interface PlainImporter {
 
+	public static class ImportException extends RuntimeException {
 
-public interface PlainImporter
-{
-  
-  public static class ImportException extends RuntimeException
-  {
-
-    public ImportException(String msg, Exception se)
-    {
-      super(msg, se);
-    }
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-    
-  }
-
-    /** general command used to import a whole file of a specific type
-     */
-    public void importThis(String fName,
-                           java.io.InputStream is, Layers theData);
-
-    public void importThis(String fName,
-                                       java.io.InputStream is);
-    
-    public void importThis(String fName,
-        java.io.InputStream is, Layers theData,MonitorProvider provider);
-    
-    public void importThis(String fName,
-        java.io.InputStream is,MonitorProvider provider);
-
-    /** read in this whole file
-     */
-    public boolean canImportThisFile(String theFile);
-
-    /** export this item using this format
-     */
-    public void exportThis(Plottable item);
-    
-    /** export this item using this format
-     */
-    public void exportThis(String comment);
-
-    /** signal problem importing data
-     */
-    public void readError(String fName, int line, String msg, String thisLine);
-
-    /** start the export process
-     * 
-     * @param item identifier for this sequence
-     */
-		public void startExport(Plottable item);
-
-		/** finish the export process
-		 * 
-     * @param item identifier for this sequence
+		/**
+		 *
 		 */
-		public void endExport(Plottable item);
-		
-		
-		public static interface MonitorProvider
-	  {
+		private static final long serialVersionUID = 1L;
 
-	    public void init(final String fileName, final int length);
+		public ImportException(final String msg, final Exception se) {
+			super(msg, se);
+		}
 
-	    public void progress(int _progress);
-	    
-	    void done();
+	}
 
-	  }
+	public static interface MonitorProvider {
 
+		void done();
+
+		public void init(final String fileName, final int length);
+
+		public void progress(int _progress);
+
+	}
+
+	/**
+	 * read in this whole file
+	 */
+	public boolean canImportThisFile(String theFile);
+
+	/**
+	 * finish the export process
+	 *
+	 * @param item identifier for this sequence
+	 */
+	public void endExport(Plottable item);
+
+	/**
+	 * export this item using this format
+	 */
+	public void exportThis(Plottable item);
+
+	/**
+	 * export this item using this format
+	 */
+	public void exportThis(String comment);
+
+	public void importThis(String fName, java.io.InputStream is);
+
+	/**
+	 * general command used to import a whole file of a specific type
+	 */
+	public void importThis(String fName, java.io.InputStream is, Layers theData);
+
+	public void importThis(String fName, java.io.InputStream is, Layers theData, MonitorProvider provider);
+
+	public void importThis(String fName, java.io.InputStream is, MonitorProvider provider);
+
+	/**
+	 * signal problem importing data
+	 */
+	public void readError(String fName, int line, String msg, String thisLine);
+
+	/**
+	 * start the export process
+	 *
+	 * @param item identifier for this sequence
+	 */
+	public void startExport(Plottable item);
 
 }

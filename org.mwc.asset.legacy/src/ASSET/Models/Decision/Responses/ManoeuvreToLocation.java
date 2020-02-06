@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package ASSET.Models.Decision.Responses;
@@ -26,229 +26,206 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 
-public class ManoeuvreToLocation extends Response.CoreResponse
-{
-  ////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////
+public class ManoeuvreToLocation extends Response.CoreResponse {
+	////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////
 
-  /**
-   * the location to head to
-   */
-  private WorldLocation _myLocation;
+	/**
+	 * ************************************************* editor support
+	 * *************************************************
+	 */
 
-  /**
-   * the speed to travel at (kts)
-   */
-  private WorldSpeed _mySpeed;
+	static public class GotoLocationInfo extends MWC.GUI.Editable.EditorType {
 
-  ////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////
+		/**
+		 * constructor for editable details of a set of Layers
+		 *
+		 * @param data the Layers themselves
+		 */
+		public GotoLocationInfo(final ManoeuvreToLocation data) {
+			super(data, data.getName(), "Location Response");
+		}
 
-  /**
-   * @param location the location to steer to (we use the depth value for the transit depth)
-   * @param speed    the speed to travel at (m), or null to continue at current speed
-   */
-  public ManoeuvreToLocation(final WorldLocation location,
-                             final WorldSpeed speed)
-  {
-    this._myLocation = location;
-    _mySpeed = speed;
-  }
+		/**
+		 * editable GUI properties for our participant
+		 *
+		 * @return property descriptions
+		 */
+		@Override
+		public java.beans.PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final java.beans.PropertyDescriptor[] res = { prop("Name", "the name of this response"),
+						prop("Location", "the location to head for"), prop("Speed", "the speed to travel at (kts)"), };
+				return res;
+			} catch (final java.beans.IntrospectionException e) {
+				return super.getPropertyDescriptors();
+			}
+		}
+	}
 
-  ////////////////////////////////////////////////////
-  // response object
-  ////////////////////////////////////////////////////
+	////////////////////////////////////////////////////
+	// testing support
+	////////////////////////////////////////////////////
+	public static class ManToLocationTest extends SupportTesting.EditableTesting {
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
+		public ManToLocationTest(final String name) {
+			super(name);
+		}
 
-  /**
-   * get the description of what we're doing
-   */
-  public String getActivity()
-  {
-    return "Move to location";
-  }
+		/**
+		 * get an object which we can test
+		 *
+		 * @return Editable object which we can check the properties for
+		 */
+		@Override
+		public Editable getEditable() {
+			final WorldLocation newLoc = new WorldLocation(0.4, 0.4, 40);
+			final WorldLocation origin = new WorldLocation(0, 0, 40);
+			final Status currentStat = new Status(12, 200);
+			currentStat.setLocation(origin);
+			currentStat.setSpeed(new WorldSpeed(12, WorldSpeed.M_sec));
 
-  /**
-   * produce the required response
-   *
-   * @param conditionResult the result from the condition test
-   * @param status          the current status
-   * @param detections      the current set of detections
-   * @param monitor         the object monitoring us(for add/remove participants, detonations, etc)
-   * @param time            the current time
-   * @return
-   * @see ASSET.Models.Decision.Conditions.Condition
-   */
+			final ManoeuvreToLocation ml = new ManoeuvreToLocation(newLoc, null);
+			return ml;
+		}
 
-  public DemandedStatus direct(Object conditionResult,
-                               final Status status,
-                               DemandedStatus demStat, DetectionList detections,
-                               ScenarioActivityMonitor monitor,
-                               final long time)
-  {
-    // produce a vector to the demanded location
-    final WorldVector newDir = _myLocation.subtract(status.getLocation());
+		public void testIt() {
+			final WorldLocation newLoc = new WorldLocation(0.4, 0.4, 40);
+			final WorldLocation origin = new WorldLocation(0, 0, 40);
+			final Status currentStat = new Status(12, 200);
+			currentStat.setLocation(origin);
+			currentStat.setSpeed(new WorldSpeed(12, WorldSpeed.M_sec));
 
-    // steer a course to the demanded location
-    final double brgDegs = MWC.Algorithms.Conversions.Rads2Degs(newDir.getBearing());
+			final ManoeuvreToLocation ml = new ManoeuvreToLocation(newLoc, null);
+			DemandedStatus ds = ml.direct(null, currentStat, null, null, null, -1);
+			// check we are at the same speed
+			assertEquals("maintain speed", 12, ((SimpleDemandedStatus) ds).getSpeed(), 0.001);
+			assertEquals("on correct course", 45, ((SimpleDemandedStatus) ds).getCourse(), 1);
 
-    final SimpleDemandedStatus ds = new SimpleDemandedStatus(time, status);
+			// now provide a speed value
+			ml.setSpeed(new WorldSpeed(20, WorldSpeed.M_sec));
+			ds = ml.direct(null, currentStat, null, null, null, -1);
+			// check we are at the same speed
+			assertEquals("maintain speed", 20, ((SimpleDemandedStatus) ds).getSpeed(), 0.001);
+			assertEquals("on correct course", 45, ((SimpleDemandedStatus) ds).getCourse(), 1);
 
-    // set the course
-    ds.setCourse(brgDegs);
+		}
 
-    // set the depth
-    ds.setHeight(-_myLocation.getDepth());
+	}
 
-    // check the other data
-    if (_mySpeed != null)
-    {
-      ds.setSpeed(_mySpeed.getValueIn(WorldSpeed.M_sec));
-    }
+	////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////
 
-    return ds;
-  }
+	/**
+	 * the location to head to
+	 */
+	private WorldLocation _myLocation;
 
-  public void restart()
-  {
-    // don't bother, we don't react to this
-  }
+	////////////////////////////////////////////////////
+	// response object
+	////////////////////////////////////////////////////
 
-  public WorldLocation getLocation()
-  {
-    return _myLocation;
-  }
+	/**
+	 * the speed to travel at (kts)
+	 */
+	private WorldSpeed _mySpeed;
 
-  public void setLocation(final WorldLocation location)
-  {
-    this._myLocation = location;
-  }
+	/**
+	 * @param location the location to steer to (we use the depth value for the
+	 *                 transit depth)
+	 * @param speed    the speed to travel at (m), or null to continue at current
+	 *                 speed
+	 */
+	public ManoeuvreToLocation(final WorldLocation location, final WorldSpeed speed) {
+		this._myLocation = location;
+		_mySpeed = speed;
+	}
 
-  public WorldSpeed getSpeed()
-  {
-    return _mySpeed;
-  }
+	/**
+	 * produce the required response
+	 *
+	 * @param conditionResult the result from the condition test
+	 * @param status          the current status
+	 * @param detections      the current set of detections
+	 * @param monitor         the object monitoring us(for add/remove participants,
+	 *                        detonations, etc)
+	 * @param time            the current time
+	 * @return
+	 * @see ASSET.Models.Decision.Conditions.Condition
+	 */
 
-  public void setSpeed(final WorldSpeed spd_kts)
-  {
-    this._mySpeed = spd_kts;
-  }
+	@Override
+	public DemandedStatus direct(final Object conditionResult, final Status status, final DemandedStatus demStat,
+			final DetectionList detections, final ScenarioActivityMonitor monitor, final long time) {
+		// produce a vector to the demanded location
+		final WorldVector newDir = _myLocation.subtract(status.getLocation());
 
-  public boolean hasEditor()
-  {
-    return true;
-  }
+		// steer a course to the demanded location
+		final double brgDegs = MWC.Algorithms.Conversions.Rads2Degs(newDir.getBearing());
 
-  /**
-   * get the editor for this item
-   *
-   * @return the BeanInfo data for this editable object
-   */
-  public Editable.EditorType getInfo()
-  {
-    if (_myEditor == null)
-      _myEditor = new GotoLocationInfo(this);
+		final SimpleDemandedStatus ds = new SimpleDemandedStatus(time, status);
 
-    return _myEditor;
-  }
+		// set the course
+		ds.setCourse(brgDegs);
 
-  /**
-   * *************************************************
-   * editor support
-   * *************************************************
-   */
+		// set the depth
+		ds.setHeight(-_myLocation.getDepth());
 
-  static public class GotoLocationInfo extends MWC.GUI.Editable.EditorType
-  {
+		// check the other data
+		if (_mySpeed != null) {
+			ds.setSpeed(_mySpeed.getValueIn(WorldSpeed.M_sec));
+		}
 
+		return ds;
+	}
 
-    /**
-     * constructor for editable details of a set of Layers
-     *
-     * @param data the Layers themselves
-     */
-    public GotoLocationInfo(final ManoeuvreToLocation data)
-    {
-      super(data, data.getName(), "Location Response");
-    }
+	/**
+	 * get the description of what we're doing
+	 */
+	@Override
+	public String getActivity() {
+		return "Move to location";
+	}
 
-    /**
-     * editable GUI properties for our participant
-     *
-     * @return property descriptions
-     */
-    public java.beans.PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try
-      {
-        java.beans.PropertyDescriptor[] res = {
-          prop("Name", "the name of this response"),
-          prop("Location", "the location to head for"),
-          prop("Speed", "the speed to travel at (kts)"),
-        };
-        return res;
-      }
-      catch (java.beans.IntrospectionException e)
-      {
-        return super.getPropertyDescriptors();
-      }
-    }
-  }
+	/**
+	 * get the editor for this item
+	 *
+	 * @return the BeanInfo data for this editable object
+	 */
+	@Override
+	public Editable.EditorType getInfo() {
+		if (_myEditor == null)
+			_myEditor = new GotoLocationInfo(this);
 
-  ////////////////////////////////////////////////////
-  // testing support
-  ////////////////////////////////////////////////////
-  public static class ManToLocationTest extends SupportTesting.EditableTesting
-  {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+		return _myEditor;
+	}
 
-    public ManToLocationTest(final String name)
-    {
-      super(name);
-    }
+	public WorldLocation getLocation() {
+		return _myLocation;
+	}
 
-    /**
-     * get an object which we can test
-     *
-     * @return Editable object which we can check the properties for
-     */
-    public Editable getEditable()
-    {
-      final WorldLocation newLoc = new WorldLocation(0.4, 0.4, 40);
-      final WorldLocation origin = new WorldLocation(0, 0, 40);
-      final Status currentStat = new Status(12, 200);
-      currentStat.setLocation(origin);
-      currentStat.setSpeed(new WorldSpeed(12, WorldSpeed.M_sec));
+	public WorldSpeed getSpeed() {
+		return _mySpeed;
+	}
 
-      final ManoeuvreToLocation ml = new ManoeuvreToLocation(newLoc, null);
-      return ml;
-    }
+	@Override
+	public boolean hasEditor() {
+		return true;
+	}
 
-    public void testIt()
-    {
-      final WorldLocation newLoc = new WorldLocation(0.4, 0.4, 40);
-      final WorldLocation origin = new WorldLocation(0, 0, 40);
-      final Status currentStat = new Status(12, 200);
-      currentStat.setLocation(origin);
-      currentStat.setSpeed(new WorldSpeed(12, WorldSpeed.M_sec));
+	@Override
+	public void restart() {
+		// don't bother, we don't react to this
+	}
 
-      final ManoeuvreToLocation ml = new ManoeuvreToLocation(newLoc, null);
-      DemandedStatus ds = ml.direct(null, currentStat, null, null, null, -1);
-      // check we are at the same speed
-      assertEquals("maintain speed", 12, ((SimpleDemandedStatus) ds).getSpeed(), 0.001);
-      assertEquals("on correct course", 45, ((SimpleDemandedStatus) ds).getCourse(), 1);
+	public void setLocation(final WorldLocation location) {
+		this._myLocation = location;
+	}
 
-      // now provide a speed value
-      ml.setSpeed(new WorldSpeed(20, WorldSpeed.M_sec));
-      ds = ml.direct(null, currentStat, null, null, null, -1);
-      // check we are at the same speed
-      assertEquals("maintain speed", 20, ((SimpleDemandedStatus) ds).getSpeed(), 0.001);
-      assertEquals("on correct course", 45, ((SimpleDemandedStatus) ds).getCourse(), 1);
-
-
-    }
-
-  }
+	public void setSpeed(final WorldSpeed spd_kts) {
+		this._mySpeed = spd_kts;
+	}
 }

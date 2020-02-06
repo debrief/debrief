@@ -1,18 +1,19 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 package com.planetmayo.debrief.satc.zigdetector;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,19 +25,16 @@ import org.joda.time.format.DateTimeFormatter;
 
 import au.com.bytecode.opencsv.CSVReader;
 
-public class Sensor
-{
+public class Sensor {
 
 	private long[] times;
 	private double[] bearings;
 	private double[] rawBearings;
 	private final Random genny = new Random();
 
-	public Sensor(final String path) throws IOException
-	{
+	public Sensor(final String path) throws IOException {
 
-		final DateTimeFormatter formatter = DateTimeFormat
-				.forPattern("yyMMdd HHmmss.SSS");
+		final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyMMdd HHmmss.SSS");
 
 		// schema
 		// 100112 120000,12000.00 ,24000.00 ,0.00 ,-153.43
@@ -45,8 +43,7 @@ public class Sensor
 		// headings the result is stored in a list
 		CSVReader csvReader = null;
 
-		try
-		{
+		try {
 			csvReader = new CSVReader(new FileReader(path), ',', '\'', 1);
 			final List<String[]> content = csvReader.readAll();
 			// variable to hold each row of the List while iterating through it
@@ -61,8 +58,7 @@ public class Sensor
 			rawBearings = new double[content.size()];
 			times = new long[content.size()];
 
-			for (final Object object : content)
-			{
+			for (final Object object : content) {
 				row = (String[]) object;
 				/* parsing data from the list to the variables */
 				final String thisDate = row[0].toString();
@@ -71,11 +67,8 @@ public class Sensor
 				rawBearings[counter] = (Double.parseDouble(row[4].toString()));
 				counter++;
 			}
-		}
-		finally
-		{
-			if (csvReader != null)
-			{
+		} finally {
+			if (csvReader != null) {
 				csvReader.close();
 			}
 		}
@@ -84,14 +77,12 @@ public class Sensor
 	/**
 	 * generate a new set of bearings by applying the provided SD to the raw
 	 * bearings
-	 * 
+	 *
 	 * @param sd
 	 */
-	public void applyError(final double sd)
-	{
+	public void applyError(final double sd) {
 		// loop through the bearings
-		for (int i = 0; i < rawBearings.length; i++)
-		{
+		for (int i = 0; i < rawBearings.length; i++) {
 			final double thisB = rawBearings[i];
 			// calc a new error
 			final double thisBearing = thisB + genny.nextGaussian() * sd;
@@ -102,15 +93,12 @@ public class Sensor
 		}
 	}
 
-	public List<Double> extractBearings(final Long start, final Long end)
-	{
+	public List<Double> extractBearings(final Long start, final Long end) {
 		final List<Double> thisBearings = new ArrayList<Double>();
 		// ok, loop through our data
-		for (int i = 0; i < times.length; i++)
-		{
+		for (int i = 0; i < times.length; i++) {
 			final long thisT = times[i];
-			if ((thisT >= start) && (thisT <= end))
-			{
+			if ((thisT >= start) && (thisT <= end)) {
 				thisBearings.add(bearings[i]);
 			}
 
@@ -118,15 +106,12 @@ public class Sensor
 		return thisBearings;
 	}
 
-	public List<Long> extractTimes(final Long start, final Long end)
-	{
+	public List<Long> extractTimes(final Long start, final Long end) {
 		final List<Long> thisTimes = new ArrayList<Long>();
 		// ok, loop through our data
-		for (int i = 0; i < times.length; i++)
-		{
+		for (int i = 0; i < times.length; i++) {
 			final long thisT = times[i];
-			if ((thisT >= start) && (thisT <= end))
-			{
+			if ((thisT >= start) && (thisT <= end)) {
 				thisTimes.add(times[i]);
 			}
 
@@ -134,13 +119,11 @@ public class Sensor
 		return thisTimes;
 	}
 
-	public double[] getBearings()
-	{
+	public double[] getBearings() {
 		return bearings;
 	}
 
-	public long[] getTimes()
-	{
+	public long[] getTimes() {
 		return times;
 	}
 

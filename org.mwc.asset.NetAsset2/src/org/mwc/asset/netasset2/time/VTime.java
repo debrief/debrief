@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.asset.netasset2.time;
@@ -26,8 +26,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 
-public class VTime extends Composite implements IVTime, IVTimeControl
-{
+public class VTime extends Composite implements IVTime, IVTimeControl {
 	private final Text _time;
 	private final Button btnStep;
 	private final Button btnPlay;
@@ -38,12 +37,11 @@ public class VTime extends Composite implements IVTime, IVTimeControl
 
 	/**
 	 * Create the composite.
-	 * 
+	 *
 	 * @param parent
 	 * @param style
 	 */
-	public VTime(final Composite parent, final int style)
-	{
+	public VTime(final Composite parent, final int style) {
 		super(parent, style);
 		setLayout(new RowLayout(SWT.HORIZONTAL));
 
@@ -80,22 +78,43 @@ public class VTime extends Composite implements IVTime, IVTimeControl
 	}
 
 	@Override
-	protected void checkSubclass()
-	{
+	public void addFasterListener(final SelectionListener listener) {
+		btnFaster.addSelectionListener(listener);
+	}
+
+	@Override
+	public void addPlayListener(final SelectionListener listener) {
+		btnPlay.addSelectionListener(listener);
+	}
+
+	@Override
+	public void addSlowerListener(final SelectionListener listener) {
+		btnSlower.addSelectionListener(listener);
+	}
+
+	@Override
+	public void addStepListener(final SelectionListener listener) {
+		btnStep.addSelectionListener(listener);
+	}
+
+	@Override
+	public void addStopListener(final SelectionListener listener) {
+		btnStop.addSelectionListener(listener);
+	}
+
+	@Override
+	protected void checkSubclass() {
 		// Disable the check that prevents subclassing of SWT components
 	}
 
 	@Override
-	public void newTime(final long newTime)
-	{
+	public void newTime(final long newTime) {
 		final Date dt = new Date(newTime);
 		final String date = dt.toString();
 
-		Display.getDefault().asyncExec(new Runnable()
-		{
+		Display.getDefault().asyncExec(new Runnable() {
 			@Override
-			public void run()
-			{
+			public void run() {
 				if (!_time.isDisposed())
 					_time.setText(date);
 			}
@@ -103,48 +122,12 @@ public class VTime extends Composite implements IVTime, IVTimeControl
 	}
 
 	@Override
-	public void addStepListener(final SelectionListener listener)
-	{
-		btnStep.addSelectionListener(listener);
-	}
-
-	@Override
-	public void addPlayListener(final SelectionListener listener)
-	{
-		btnPlay.addSelectionListener(listener);
-	}
-
-	@Override
-	public void addStopListener(final SelectionListener listener)
-	{
-		btnStop.addSelectionListener(listener);
-	}
-
-	@Override
-	public void setPlayLabel(final String text)
-	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
+	public void setEnabled(final boolean val) {
+		Display.getDefault().asyncExec(new Runnable() {
 
 			@Override
-			public void run()
-			{
-				if (btnPlay.isDisposed())
-					btnPlay.setText(text);
-			}
-		});
-	}
-
-	public void setEnabled(final boolean val)
-	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
-
-			@Override
-			public void run()
-			{
-				if (!_time.isDisposed())
-				{
+			public void run() {
+				if (!_time.isDisposed()) {
 					_time.setEnabled(val);
 					btnStep.setEnabled(val);
 					btnPlay.setEnabled(val);
@@ -157,15 +140,15 @@ public class VTime extends Composite implements IVTime, IVTimeControl
 	}
 
 	@Override
-	public void addFasterListener(final SelectionListener listener)
-	{
-		btnFaster.addSelectionListener(listener);
-	}
+	public void setPlayLabel(final String text) {
+		Display.getDefault().asyncExec(new Runnable() {
 
-	@Override
-	public void addSlowerListener(final SelectionListener listener)
-	{
-		btnSlower.addSelectionListener(listener);
+			@Override
+			public void run() {
+				if (btnPlay.isDisposed())
+					btnPlay.setText(text);
+			}
+		});
 	}
 
 }

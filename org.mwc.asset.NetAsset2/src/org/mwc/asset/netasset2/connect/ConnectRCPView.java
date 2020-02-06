@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.asset.netasset2.connect;
@@ -26,36 +26,30 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.asset.netasset2.connect.IVConnect.StringProvider;
 
-public class ConnectRCPView extends ViewPart
-{
+public class ConnectRCPView extends ViewPart {
 	public static final String ID = "org.mwc.asset.NetAsset2.ConnectView";
 	private static final String LAST_IP = "LAST_IP_ADDRESS";
 	private IVConnect controlV;
 	private String _lastIPAddress = "127.0.0.1";
 
-	public ConnectRCPView()
-	{
+	public ConnectRCPView() {
 	}
-	
+
 	/**
-	 * This is a callback that will allow us to create the viewer and initialize
-	 * it.
+	 * This is a callback that will allow us to create the viewer and initialize it.
 	 */
-	public void createPartControl(final Composite parent)
-	{
-		final StringProvider stringProvider = new StringProvider()
-		{
+	@Override
+	public void createPartControl(final Composite parent) {
+		final StringProvider stringProvider = new StringProvider() {
 
 			@Override
-			public String getString(final String title, final String message)
-			{
+			public String getString(final String title, final String message) {
 				String res = null;
-				final InputDialog dialog = new InputDialog(Display.getDefault()
-						.getActiveShell(), title, message, _lastIPAddress, null); // new
-																																			// input
-																																			// dialog
-				if (dialog.open() == IStatus.OK)
-				{
+				final InputDialog dialog = new InputDialog(Display.getDefault().getActiveShell(), title, message,
+						_lastIPAddress, null); // new
+												// input
+												// dialog
+				if (dialog.open() == IStatus.OK) {
 					res = _lastIPAddress = dialog.getValue();
 				}
 				return res;
@@ -65,37 +59,12 @@ public class ConnectRCPView extends ViewPart
 		controlV = new VConnect(parent, SWT.NONE, stringProvider);
 	}
 
-	@Override
-	public void init(final IViewSite site, final IMemento memento) throws PartInitException
-	{
-		// do the parent bit
-		super.init(site, memento);
-
-		if (memento != null)
-		{
-			// now restore my state
-			final String lastA = memento.getString(LAST_IP);
-			if (lastA != null)
-				_lastIPAddress = lastA;
-		}
-	}
-
-	@Override
-	public void saveState(final IMemento memento)
-	{
-		super.saveState(memento);
-
-		memento.putString(LAST_IP, _lastIPAddress);
-	}
-
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Object getAdapter(final Class adapter)
-	{
+	public Object getAdapter(final Class adapter) {
 		Object res = null;
 
-		if (adapter == IVConnect.class)
-		{
+		if (adapter == IVConnect.class) {
 			res = controlV;
 		}
 
@@ -105,11 +74,31 @@ public class ConnectRCPView extends ViewPart
 		return res;
 	}
 
+	@Override
+	public void init(final IViewSite site, final IMemento memento) throws PartInitException {
+		// do the parent bit
+		super.init(site, memento);
+
+		if (memento != null) {
+			// now restore my state
+			final String lastA = memento.getString(LAST_IP);
+			if (lastA != null)
+				_lastIPAddress = lastA;
+		}
+	}
+
+	@Override
+	public void saveState(final IMemento memento) {
+		super.saveState(memento);
+
+		memento.putString(LAST_IP, _lastIPAddress);
+	}
+
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
-	public void setFocus()
-	{
+	@Override
+	public void setFocus() {
 	}
 
 }

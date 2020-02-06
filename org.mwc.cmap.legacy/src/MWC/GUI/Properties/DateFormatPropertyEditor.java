@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: DateFormatPropertyEditor.java,v $
@@ -80,159 +80,137 @@ package MWC.GUI.Properties;
 import java.beans.PropertyEditorSupport;
 
 /**
- * property editor which provides a set of date formats to be used in date presentation.
- * 
+ * property editor which provides a set of date formats to be used in date
+ * presentation.
+ *
  */
 
-public class DateFormatPropertyEditor extends PropertyEditorSupport
-{
+public class DateFormatPropertyEditor extends PropertyEditorSupport {
 
-  @SuppressWarnings("rawtypes")
-  abstract static public class SwingDateFormatEditor extends
-      javax.swing.JComboBox
-  {
+	@SuppressWarnings("rawtypes")
+	abstract static public class SwingDateFormatEditor extends javax.swing.JComboBox {
 
-    /**
-		 * 
-		 */
-    private static final long serialVersionUID = 1L;
+		/**
+			 *
+			 */
+		private static final long serialVersionUID = 1L;
 
-    @SuppressWarnings("unchecked")
-    public SwingDateFormatEditor()
-    {
-      // get our property editor data
-      final DateFormatPropertyEditor pe = new DateFormatPropertyEditor();
+		@SuppressWarnings("unchecked")
+		public SwingDateFormatEditor() {
+			// get our property editor data
+			final DateFormatPropertyEditor pe = new DateFormatPropertyEditor();
 
-      // create and collate the data model for the combo box
-      final javax.swing.DefaultComboBoxModel dcm =
-          new javax.swing.DefaultComboBoxModel(pe.getTags());
+			// create and collate the data model for the combo box
+			final javax.swing.DefaultComboBoxModel dcm = new javax.swing.DefaultComboBoxModel(pe.getTags());
 
-      // put the model into the combo box
-      super.setModel(dcm);
+			// put the model into the combo box
+			super.setModel(dcm);
 
-      // assign the listener for the combobox
-      super.addActionListener(new java.awt.event.ActionListener()
-      {
-        @Override
-        public void actionPerformed(final java.awt.event.ActionEvent e)
-        {
-          final String current = (String) getSelectedItem();
-          if (current != null)
-          {
-            newFormat(current);
-          }
-        }
-      });
-    }
+			// assign the listener for the combobox
+			super.addActionListener(new java.awt.event.ActionListener() {
+				@Override
+				public void actionPerformed(final java.awt.event.ActionEvent e) {
+					final String current = (String) getSelectedItem();
+					if (current != null) {
+						newFormat(current);
+					}
+				}
+			});
+		}
 
-    abstract public void newFormat(String format);
+		abstract public void newFormat(String format);
 
-  }
+	}
 
-  public static final int INVALID_INDEX = 4;
+	public static final int INVALID_INDEX = 4;
 
-  // ////////////////////////////////////////////////
-  // member objects
-  // ////////////////////////////////////////////////
-  static private String _stringTags[];
+	// ////////////////////////////////////////////////
+	// member objects
+	// ////////////////////////////////////////////////
+	static private String _stringTags[];
 
-  // ////////////////////////////////////////////////
-  //
-  // ////////////////////////////////////////////////
+	// ////////////////////////////////////////////////
+	//
+	// ////////////////////////////////////////////////
 
-  public static int getIndexOf(final String val)
-  {
-    int res = INVALID_INDEX;
+	/**
+	 * provide easy access to the 'first cut of the day' format
+	 *
+	 */
+	public static final String DATE_FORMAT = "ddHHmm";
 
-    // cycle through the tags until we get a matching one
-    for (int i = 0; i < getTagList().length; i++)
-    {
-      final String thisTag = getTagList()[i];
-      if (thisTag.equals(val))
-      {
-        res = i;
-        break;
-      }
+	/**
+	 * provide easy access to the 'normal' time lable format
+	 *
+	 */
+	public static final String TIME_FORMAT = "HHmm";
 
-    }
-    return res;
-  }
+	/**
+	 * default format for time label
+	 */
+	public static final String DEFAULT_DATETIME_FORMAT = "yy/MM/dd HH:mm:ss";
 
-  /**
-   * the currently selected format
-   * 
-   */
-  protected int _myFormat = 6;
+	public static int getIndexOf(final String val) {
+		int res = INVALID_INDEX;
 
-  /**
-   * provide easy access to the 'first cut of the day' format
-   * 
-   */
-  public static final String DATE_FORMAT = "ddHHmm";
+		// cycle through the tags until we get a matching one
+		for (int i = 0; i < getTagList().length; i++) {
+			final String thisTag = getTagList()[i];
+			if (thisTag.equals(val)) {
+				res = i;
+				break;
+			}
 
-  /**
-   * provide easy access to the 'normal' time lable format
-   * 
-   */
-  public static final String TIME_FORMAT = "HHmm";
-  
-  /**
-   * default format for time label
-   */
-  public static final String DEFAULT_DATETIME_FORMAT = "yy/MM/dd HH:mm:ss";
+		}
+		return res;
+	}
 
-  /**
-   * retrieve/initialise our list of date formats
-   * 
-   * @return
-   */
-  public static String[] getTagList()
-  {
-    if (_stringTags == null)
-    {
-      _stringTags =
-          new String[]
-          {"mm:ss.SSS", "HHmm.ss", TIME_FORMAT, DATE_FORMAT, "ddHHmm:ss",
-              "yy/MM/dd HH:mm", DEFAULT_DATETIME_FORMAT};
-    }
-    return _stringTags;
-  }
+	/**
+	 * retrieve/initialise our list of date formats
+	 *
+	 * @return
+	 */
+	public static String[] getTagList() {
+		if (_stringTags == null) {
+			_stringTags = new String[] { "mm:ss.SSS", "HHmm.ss", TIME_FORMAT, DATE_FORMAT, "ddHHmm:ss",
+					"yy/MM/dd HH:mm", DEFAULT_DATETIME_FORMAT };
+		}
+		return _stringTags;
+	}
 
-  @Override
-  public String getAsText()
-  {
-    return getTags()[_myFormat];
-  }
+	/**
+	 * the currently selected format
+	 *
+	 */
+	protected int _myFormat = 6;
 
-  @Override
-  public String[] getTags()
-  {
-    return getTagList();
-  }
+	@Override
+	public String getAsText() {
+		return getTags()[_myFormat];
+	}
 
-  @Override
-  public Object getValue()
-  {
-    return getTags()[_myFormat];
-  }
+	@Override
+	public String[] getTags() {
+		return getTagList();
+	}
 
-  @Override
-  public void setAsText(final String val)
-  {
-    _myFormat = getIndexOf(val);
-  }
+	@Override
+	public Object getValue() {
+		return getTags()[_myFormat];
+	}
 
-  @Override
-  public void setValue(final Object p1)
-  {
-    if (p1 instanceof String)
-    {
-      final String val = (String) p1;
-      setAsText(val);
-    }
-    else if (p1 instanceof Integer)
-    {
-      _myFormat = (Integer) p1;
-    }
-  }
+	@Override
+	public void setAsText(final String val) {
+		_myFormat = getIndexOf(val);
+	}
+
+	@Override
+	public void setValue(final Object p1) {
+		if (p1 instanceof String) {
+			final String val = (String) p1;
+			setAsText(val);
+		} else if (p1 instanceof Integer) {
+			_myFormat = (Integer) p1;
+		}
+	}
 }

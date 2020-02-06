@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.cmap.core.property_support;
@@ -29,11 +29,9 @@ import org.mwc.cmap.core.property_support.ui.ValueWithUnitsDataModel;
 
 import MWC.GenericData.WorldDistance;
 
-public class WorldDistanceHelper extends EditorHelper implements Serializable
-{
+public class WorldDistanceHelper extends EditorHelper implements Serializable {
 
-	protected static class DistanceModel implements ValueWithUnitsDataModel
-	{
+	protected static class DistanceModel implements ValueWithUnitsDataModel {
 
 		/**
 		 * the world distance we're editing
@@ -41,19 +39,20 @@ public class WorldDistanceHelper extends EditorHelper implements Serializable
 		WorldDistance _myVal;
 
 		/**
-		 * @return
+		 * @param dist  the value typed in
+		 * @param units the units for the value
+		 * @return an object representing the new data value
 		 */
-		public int getUnitsValue()
-		{
-			// so, what are the preferred units?
-			return _myVal.getUnits();
+		@Override
+		public Object createResultsObject(final double dist, final int units) {
+			return new WorldDistance(dist, units);
 		}
 
 		/**
 		 * @return
 		 */
-		public double getDoubleValue()
-		{
+		@Override
+		public double getDoubleValue() {
 			double theValue = _myVal.getValue();
 
 			// try to round it to a sensible value
@@ -65,99 +64,91 @@ public class WorldDistanceHelper extends EditorHelper implements Serializable
 		/**
 		 * @return
 		 */
-		public String[] getTagsList()
-		{
+		@Override
+		public String[] getTagsList() {
 			return WorldDistance.UnitLabels;
 		}
 
 		/**
-		 * @param dist
-		 *          the value typed in
-		 * @param units
-		 *          the units for the value
-		 * @return an object representing the new data value
+		 * @return
 		 */
-		public Object createResultsObject(final double dist, final int units)
-		{
-			return new WorldDistance(dist, units);
+		@Override
+		public int getUnitsValue() {
+			// so, what are the preferred units?
+			return _myVal.getUnits();
 		}
 
 		/**
 		 * convert the object to our data units
-		 * 
+		 *
 		 * @param value
 		 */
-		public void storeMe(final Object value)
-		{
+		@Override
+		public void storeMe(final Object value) {
 			_myVal = (WorldDistance) value;
 		}
-		
-		
-	}
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
-	/** easily accessible cell editor class
-	 * 
+	}
+
+	/**
+	 * easily accessible cell editor class
+	 *
 	 * @author Administrator
 	 *
 	 */
-	public static class WorldDistanceCellEditor extends ValueWithUnitsCellEditor2
-	{
+	public static class WorldDistanceCellEditor extends ValueWithUnitsCellEditor2 {
 		/**
 		 * the world distance we're editing
 		 */
 		WorldDistance _myVal;
 
-		public WorldDistanceCellEditor(final Composite parent)
-		{
+		public WorldDistanceCellEditor(final Composite parent) {
 			super(parent, "Distance", "Units", new DistanceModel());
 		}
-	}	
-	
+	}
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * constructor..
 	 */
-	public WorldDistanceHelper()
-	{
+	public WorldDistanceHelper() {
 		super(WorldDistance.class);
 	}
 
 	/**
 	 * create an instance of the cell editor suited to our data-type
-	 * 
+	 *
 	 * @param parent
 	 * @return
 	 */
-	public CellEditor getCellEditorFor(final Composite parent)
-	{
+	@Override
+	public CellEditor getCellEditorFor(final Composite parent) {
 		return new ValueWithUnitsCellEditor2(parent, "Distance", "Units", new DistanceModel());
 	}
 
-	public ILabelProvider getLabelFor(final Object currentValue)
-	{
-		final ILabelProvider label1 = new LabelProvider()
-		{
-			public String getText(final Object element)
-			{
-				return element.toString();
+	@Override
+	public Control getEditorControlFor(final Composite parent, final IDebriefProperty property) {
+		return new ValueWithUnitsControl(parent, "Distance", "Units", new DistanceModel(), property);
+	}
+
+	@Override
+	public ILabelProvider getLabelFor(final Object currentValue) {
+		final ILabelProvider label1 = new LabelProvider() {
+			@Override
+			public Image getImage(final Object element) {
+				return null;
 			}
 
-			public Image getImage(final Object element)
-			{
-				return null;
+			@Override
+			public String getText(final Object element) {
+				return element.toString();
 			}
 
 		};
 		return label1;
-	}
-
-	@Override
-	public Control getEditorControlFor(final Composite parent, final IDebriefProperty property)
-	{
-		return new ValueWithUnitsControl(parent, "Distance", "Units", new DistanceModel(), property);
 	}
 }

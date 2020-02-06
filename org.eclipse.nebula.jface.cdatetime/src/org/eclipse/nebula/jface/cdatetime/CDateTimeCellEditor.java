@@ -20,66 +20,72 @@ public class CDateTimeCellEditor extends CellEditor {
 	 */
 	private CDateTime cdt;
 
-    /**
-     * Creates a new date/time cell editor parented under the given control.
-     *
-     * @param parent the parent control
-     */
-    public CDateTimeCellEditor(Composite parent) {
-        this(parent, CDT.DROP_DOWN);
-    }
+	/**
+	 * Creates a new date/time cell editor parented under the given control.
+	 *
+	 * @param parent the parent control
+	 */
+	public CDateTimeCellEditor(final Composite parent) {
+		this(parent, CDT.DROP_DOWN);
+	}
 
-    /**
-     * Creates a new date/time cell editor parented under the given control.
-     *
-     * @param parent the parent control
-     * @param style the style bits
-     */
-    public CDateTimeCellEditor(Composite parent, int style) {
-        super(parent, style);
-    }
+	/**
+	 * Creates a new date/time cell editor parented under the given control.
+	 *
+	 * @param parent the parent control
+	 * @param style  the style bits
+	 */
+	public CDateTimeCellEditor(final Composite parent, final int style) {
+		super(parent, style);
+	}
 
-    /**
-     * Creates a new date/time cell editor parented under the given control.
-     *
-     * @param parent the parent control
-     * @param style the style bits
-     */
-    public CDateTimeCellEditor(Composite parent, String pattern) {
-        super(parent, CDT.DROP_DOWN);
-        cdt.setPattern(pattern);
-    }
+	/**
+	 * Creates a new date/time cell editor parented under the given control.
+	 *
+	 * @param parent the parent control
+	 * @param style  the style bits
+	 */
+	public CDateTimeCellEditor(final Composite parent, final String pattern) {
+		super(parent, CDT.DROP_DOWN);
+		cdt.setPattern(pattern);
+	}
 
-    protected Control createControl(Composite parent) {
+	@Override
+	protected Control createControl(final Composite parent) {
 		cdt = new CDateTime(parent, CDT.DROP_DOWN | getStyle());
 		cdt.addSelectionListener(new SelectionAdapter() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-		        fireApplyEditorValue();
-		        deactivate();
+			@Override
+			public void widgetDefaultSelected(final SelectionEvent e) {
+				fireApplyEditorValue();
+				deactivate();
 			}
 		});
-        cdt.addTraverseListener(new TraverseListener() {
-            public void keyTraversed(TraverseEvent e) {
-                if(e.detail == SWT.TRAVERSE_ESCAPE) {
-                    deactivate();
-                }
-            }
-        });
+		cdt.addTraverseListener(new TraverseListener() {
+			@Override
+			public void keyTraversed(final TraverseEvent e) {
+				if (e.detail == SWT.TRAVERSE_ESCAPE) {
+					deactivate();
+				}
+			}
+		});
 		cdt.setFont(parent.getFont());
 		cdt.setBackground(parent.getBackground());
 		return cdt;
 	}
 
+	@Override
 	protected Object doGetValue() {
 		return cdt.getSelection();
 	}
 
+	@Override
 	protected void doSetFocus() {
 		cdt.setFocus();
 	}
 
-	protected void doSetValue(Object value) {
-        cdt.setSelection((Date) value);
+	@Override
+	protected void doSetValue(final Object value) {
+		cdt.setSelection((Date) value);
 	}
 
 }

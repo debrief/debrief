@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.Chart.Painters;
@@ -177,679 +177,56 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
-public class Grid4WPainter implements Plottable, Serializable, DraggableItem
-{
+public class Grid4WPainter implements Plottable, Serializable, DraggableItem {
 	// ///////////////////////////////////////////////////////////
 	// member variables
 	// //////////////////////////////////////////////////////////
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/**
-	 * flag for invalid 4w index
-	 * 
-	 */
-	private static final int INVALID_INDEX = 0;
-
-	/**
-	 * the colour for this grid
-	 */
-	protected Color _myColor;
-
-	/**
-	 * the horizontal grid separation (in degrees)
-	 */
-	protected WorldDistance _myXDelta;
-
-	/**
-	 * the vertical grid separation (in degrees)
-	 */
-	protected WorldDistance _myYDelta;
-
-	/**
-	 * whether this grid is visible
-	 */
-	protected boolean _isOn;
-
-  /**
-   * are we plotting lines?
-   */
-  protected boolean _plotLines = true;
-
-  /**
-   * the style the lines of this shape are drawn in
-   */
-  private int _lineStyle = LineStylePropertyEditor.SOLID;
-
-  /**
-   * are we plotting lat/long labels?
-   */
-	protected boolean _plotLabels = true;
-
-	/**
-	 * whether to fill the grid
-	 */
-	protected boolean _fillGrid = false;
-
-	/**
-	 * the color to fill in the grid
-	 * 
-	 */
-	protected Color _fillColor = Color.white;
-	
-	/** the font color
-	 * 
-	 */
-	protected Color _fontColor = null;
-
-	/**
-	 * whether to put the origin at the top-left
-	 * 
-	 */
-	private boolean _originTopLeft = false;
-
-	/**
-	 * the min x-axis square we're plotting
-	 * 
-	 */
-	protected int _xMin = 0;
-
-	/**
-	 * the max x-axis square we're plotting
-	 * 
-	 */
-	protected int _xMax = 23;
-
-	/**
-	 * the min y-axis square we're plotting
-	 * 
-	 */
-	protected int _yMin = 0;
-
-	/**
-	 * the max y-axis square we're plotting
-	 * 
-	 */
-	protected int _yMax = 23;
-
-	/**
-	 * the bottom-left corner of the grid
-	 */
-	protected WorldLocation _origin;
-
-	/**
-	 * the orientation of the 4W grid
-	 */
-	private double _orientation;
-
-	/**
-	 * our editor
-	 */
-	transient protected Editable.EditorType _myEditor;
-
-	/**
-	 * the name of this grid
-	 * 
-	 */
-	private String _myName = DEFAULT_NAME;
-
-	public static final String DEFAULT_NAME = "4W Grid";
-
-	/**
-	 * the font to use
-	 */
-	private Font _theFont = Defaults.getScaledFont(0.8f);
-
-	// ///////////////////////////////////////////////////////////
-	// constructor
-	// //////////////////////////////////////////////////////////
-	public Grid4WPainter(final WorldLocation origin)
-	{
-		_myColor = Color.darkGray;
-		_fontColor = _myColor;
-
-		_origin = origin;
-
-		// give it some default deltas
-		setXDelta(new WorldDistance(10, WorldDistance.NM));
-		setYDelta(new WorldDistance(10, WorldDistance.NM));
-
-		_orientation = 0;
-
-		// make it visible to start with
-		setVisible(true);
-	}
-
-	// ///////////////////////////////////////////////////////////
-	// member functions
-	// //////////////////////////////////////////////////////////
-
-	public void setVisible(final boolean val)
-	{
-		_isOn = val;
-	}
-
-	public boolean getVisible()
-	{
-		return _isOn;
-	}
-
-	public void setColor(final Color val)
-	{
-		_myColor = val;
-	}
-
-	public Color getColor()
-	{
-		return _myColor;
-	}
-
-	/**
-	 * set the y delta for this grid
-	 * 
-	 * @param val
-	 *          the size
-	 */
-	public void setYDelta(final WorldDistance val)
-	{
-		_myYDelta = val;
-	}
-
-	/**
-	 * get the y delta for the grid
-	 * 
-	 * @return the size
-	 */
-	public WorldDistance getYDelta()
-	{
-		return _myYDelta;
-	}
-
-	/**
-	 * set the x delta for this grid
-	 * 
-	 * @param val
-	 *          the size
-	 */
-	public void setXDelta(final WorldDistance val)
-	{
-		_myXDelta = val;
-	}
-
-	/**
-	 * get the x delta for the grid
-	 * 
-	 * @return the size
-	 */
-	public WorldDistance getXDelta()
-	{
-		return _myXDelta;
-	}
-
-	/**
-	 * whether to plot the labels or not
-	 */
-	public boolean getPlotLabels()
-	{
-		return _plotLabels;
-	}
-
-	/**
-	 * whether to plot the labels or not
-	 */
-	public void setPlotLabels(final boolean val)
-	{
-		_plotLabels = val;
-	}
-
-	public Font getFont()
-	{
-		return _theFont;
-	}
-
-	public void setFont(final Font theFont)
-	{
-		_theFont = theFont;
-	}
-
-	/**
-	 * whether to plot the labels or not
-	 */
-	public void setName(final String name)
-	{
-		_myName = name;
-	}
-
-	public void paint(final CanvasType g)
-	{
-
-		// check we are visible
-		if (!_isOn)
-			return;
-		
-		// create a transparent colour
-		g.setColor(new Color(_myColor.getRed(), _myColor.getGreen(), _myColor
-				.getBlue(), 160));
-
-		final float oldLineWidth = g.getLineWidth();
-
-		// get the screen dimensions
-		final Dimension dim = g.getSize();
-
-		g.setLineWidth(1.0f);
-
-		// is it filled?
-		if (_fillGrid)
-		{
-			// sort out the bounds
-			final int[] xPoints = new int[4];
-			final int[] yPoints = new int[4];
-			int ctr = 0;
-
-			Point thisP = g.toScreen(calcLocationFor(_xMin, _yMin));
-			
-      // handle unable to gen screen coords (if off visible area)
-      if(thisP == null)
-        return;
-
-			xPoints[ctr] = thisP.x;
-			yPoints[ctr++] = thisP.y;
-
-			thisP = g.toScreen(calcLocationFor(_xMin, _yMax + 1));
-			xPoints[ctr] = thisP.x;
-			yPoints[ctr++] = thisP.y;
-
-			thisP = g.toScreen(calcLocationFor(_xMax + 1, _yMax + 1));
-			xPoints[ctr] = thisP.x;
-			yPoints[ctr++] = thisP.y;
-
-			thisP = g.toScreen(calcLocationFor(_xMax + 1, _yMin));
-			xPoints[ctr] = thisP.x;
-			yPoints[ctr++] = thisP.y;
-
-			g.setColor(_fillColor);
-			g.fillPolygon(xPoints, yPoints, xPoints.length);
-		}
-		
-		// ok, draw the vertical lines
-		for (int x = _xMin; x <= _xMax + 1; x++)
-		{
-      // set the normal color
-      g.setColor(_myColor);
-		  
-			if (_plotLines)
-			{
-		    // sort out the line style
-		    g.setLineStyle(_lineStyle);
-
-				final Point start = new Point(g.toScreen(calcLocationFor(x, _yMin)));
-				final Point end = new Point(g.toScreen(calcLocationFor(x, _yMax + 1)));
-				g.drawLine(start.x, start.y, end.x, end.y);
-			}
-
-			if ((x <= _xMax) && _plotLabels)
-			{
-				// find the centre-point for the label
-				final Point start = new Point(g.toScreen(calcLocationFor(x, _yMin)));
-				final Point end = new Point(g.toScreen(calcLocationFor(x + 1, _yMin)));
-
-				final Point centre = new Point(start.x + (end.x - start.x) / 2, start.y);
-
-				// what's this label
-				final String thisLbl = labelFor(x);
-
-				// sort out the dimensions of the font
-				int ht = g.getStringHeight(_theFont);
-				final int wid = g.getStringWidth(_theFont, thisLbl);
-
-				if (dim != null)
-				{
-					// sometimes we don't have a dimension - such as when the grid is
-					// being dragged
-					centre.y = Math.min(centre.y, dim.height - 2 * ht);
-				}
-
-				if(getOriginAtTopLeft())
-					ht = -ht;
-
-				// set the font color
-				g.setColor(_fontColor);
-				
-				// and draw it
-				g.drawText(_theFont, thisLbl, centre.x - wid / 2, centre.y + ht);
-			}
-
-		}
-
-		// ok, now the horizontal lines
-		for (int y = _yMin; y <= _yMax + 1; y++)
-		{
-		  // set the normal color
-		  g.setColor(_myColor);
-		  
-			if (_plotLines)
-			{
-		    // sort out the line style
-		    g.setLineStyle(_lineStyle);
-
-				final Point start = new Point(g.toScreen(calcLocationFor(_xMin, y)));
-				final Point end = new Point(g.toScreen(calcLocationFor(_xMax + 1, y)));
-				g.drawLine(start.x, start.y, end.x, end.y);
-			}
-
-			if ((y <= _yMax) && _plotLabels)
-			{
-				// find the centre-point for the label
-				final Point start = new Point(g.toScreen(calcLocationFor(_xMin, y)));
-				final Point end = new Point(g.toScreen(calcLocationFor(_xMin, y + 1)));
-
-				final Point centre = new Point(start.x, start.y + (end.y - start.y) / 2);
-
-				// move this into the visible area if it's outside.
-				if (dim != null)
-				{
-					// sometimes we don't have a dimension - such as when the grid is
-					// being dragged
-					centre.x = Math.max(centre.x, (int) (dim.getWidth() * 0.03));
-				}
-
-				// what's this label
-				final String thisLbl = "" + (y + 1);
-
-				// sort out the dimensions of the font
-				final int ht = g.getStringHeight(_theFont);
-				final int wid = g.getStringWidth(_theFont, thisLbl);
-				
-        // set the font color
-        g.setColor(_fontColor);
-        
-				// and draw it
-				g.drawText(_theFont, thisLbl, centre.x - (wid + 2), centre.y + ht / 2);
-			}
-		}
-
-		// and restore the line width
-		g.setLineWidth(oldLineWidth);
-
-	}
-
-	/**
-	 * determine where to start counting our grid labels from
-	 * 
-	 * @param bounds
-	 * @return
-	 */
-	protected WorldLocation getGridLabelOrigin(final WorldArea bounds)
-	{
-		return bounds.getBottomLeft();
-	}
-
-	/**
-	 * unfortunately we need to do some plotting tricks when we're doing a
-	 * locally-origined grid. This method is over-ridden by the LocalGrid to allow
-	 * this
-	 * 
-	 * @return
-	 */
-	protected boolean isLocalPlotting()
-	{
-		return false;
-	}
-
-	/**
-	 * find the top, bottom, left and right limits to plot. We've refactored it to
-	 * a child class so that it can be overwritten
-	 * 
-	 * @param g
-	 *          the plotting converter
-	 * @param screenArea
-	 *          the visible screen area
-	 * @param deltaDegs
-	 *          the grid separation requested
-	 * @return an area providing the coverage requested
-	 */
-	protected WorldArea getOuterBounds(final CanvasType g, final Dimension screenArea,
-			final double deltaDegs)
-	{
-		// create data coordinates from the current corners of the screen
-		final WorldLocation topLeft = g.toWorld(new Point(0, 0));
-
-		// create new corners just outside the current plot area, and clip
-		// them to the nearest 'delta' value
-		final double maxLat1 = Math.ceil(topLeft.getLat() / deltaDegs) * deltaDegs;
-		final double minLong1 = (int) Math.floor(topLeft.getLong() / deltaDegs)
-				* deltaDegs;
-
-		// now for the bottom right
-		final WorldLocation bottomRight = g.toWorld(new Point(screenArea.width,
-				screenArea.height));
-
-		// create new corners just outside the current plot area, and clip
-		// them to the nearest 'delta' value
-		final double maxLong1 = Math.ceil(bottomRight.getLong() / deltaDegs) * deltaDegs;
-		final double minLat1 = Math.floor(bottomRight.getLat() / deltaDegs) * deltaDegs;
-
-		final WorldArea bounds = new WorldArea(new WorldLocation(maxLat1, minLong1, 0),
-				new WorldLocation(minLat1, maxLong1, 0));
-		return bounds;
-	}
-
-	public MWC.GenericData.WorldArea getBounds()
-	{
-		return null;
-	}
-
-	/**
-	 * sort out the location of this point
-	 * 
-	 * @param x
-	 *          how far across to go
-	 * @param y
-	 *          how far down to go
-	 * @return the location at this index
-	 */
-	protected WorldLocation calcLocationFor(final int x, final int y)
-	{
-		// convert the orientation to radians
-		final double orient = MWC.Algorithms.Conversions.Degs2Rads(_orientation);
-
-		// calculate the deltas
-		final double xComponent = x * _myXDelta.getValueIn(WorldDistance.DEGS);
-		final double yComponent = y * _myYDelta.getValueIn(WorldDistance.DEGS);
-		final double xNew = xComponent * Math.cos(orient) + yComponent * Math.sin(orient);
-		double yNew = -xComponent * Math.sin(orient) + yComponent
-				* Math.cos(orient);
-
-		// are we in US units?
-		if (getOriginAtTopLeft())
-		{
-			// switch the vertical axis
-			yNew = -yNew;
-		}
-
-		final WorldLocation res = new WorldLocation(_origin.getLat() + yNew, _origin
-				.getLong()
-				+ xNew, 0);
-		return res;
-	}
-
-	public double rangeFrom(final MWC.GenericData.WorldLocation other)
-	{
-		final MWC.GenericData.WorldArea wa = new WorldArea(calcLocationFor(_xMin, _yMin),
-				calcLocationFor(_xMax + 1, _yMax + 1));
-		// doesn't return a sensible distance;
-		return wa.rangeFrom(other);
-	}
-
-	/**
-	 * return this item as a string
-	 */
-	public String toString()
-	{
-		return getName();
-	}
-
-	public String getName()
-	{
-		return _myName;
-	}
-
-	public boolean hasEditor()
-	{
-		return true;
-	}
-
-	public Editable.EditorType getInfo()
-	{
-		if (_myEditor == null)
-			_myEditor = new GridPainterInfo(this);
-
-		return _myEditor;
-	}
-
-	public int compareTo(final Plottable arg0)
-	{
-		final Plottable other = (Plottable) arg0;
-		final String myName = this.getName() + this.hashCode();
-		final String hisName = other.getName() + arg0.hashCode();
-		return myName.compareTo(hisName);
-	}
-
-	// ///////////////////////////////////////////////////////////
-	// info class
-	// //////////////////////////////////////////////////////////
-	public class GridPainterInfo extends Editable.EditorType implements
-			Serializable
-	{
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public GridPainterInfo(final Grid4WPainter data)
-		{
-			super(data, data.getName(), "");
-		}
-
-		public PropertyDescriptor[] getPropertyDescriptors()
-		{
-			try
-			{
-				final PropertyDescriptor[] res =
-				{
-						prop("Color", "the Color to draw the grid", FORMAT),
-						prop("Visible", "whether this grid is visible", VISIBILITY),
-						displayProp("PlotLabels", "Plot labels", "whether to plot grid labels", VISIBILITY),
-						displayProp("PlotLines", "Plot lines", "whether to plot grid lines", VISIBILITY),
-						displayProp("FillGrid", "Fill grid", "whether to fill the grid", VISIBILITY),
-						prop("Name", "name of this grid", FORMAT),
-						prop("Font", "font to use for labels", FORMAT),
-						displayProp("FillColor", "Fill color", "color to use to fill the grid", FORMAT),
-            displayProp("FontColor", "Label color", "color to use for grid labels", FORMAT),
-						displayProp("XDelta", "X delta", "the x step size for the grid", SPATIAL),
-						displayProp("YDelta", "Y delta", "the y step size for the grid", SPATIAL),
-						prop("Orientation", "the orientation of the grid", SPATIAL),
-						displayProp("XMin", "X min index", "the min index shown on the x-axis (A-AZ)", SPATIAL),
-						displayProp("XMax", "X max index", "the max index shown on the x-axis (A-AZ)", SPATIAL),
-						displayProp("YMin", "Y min index", "the min index shown on the y-axis (A-AZ)", SPATIAL),
-						displayProp("YMax", "Y max index", "the max index shown on the y-axis (A-AZ)", SPATIAL),
-						prop("Origin", "the bottom-left corner of the grid", SPATIAL),
-						displayProp("OriginAtTopLeft", "Origin at top-left",
-								"whether to put the origin at the top-left", FORMAT),
-            displayLongProp("LineStyle", "Line style",
-                "the dot-dash style to use for plotting this grid",
-                LineStylePropertyEditor.class, FORMAT),
-								};
-
-				return res;
-			}
-			catch (final IntrospectionException e)
-			{
-				return super.getPropertyDescriptors();
-			}
-		}
-	}
-
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	// testing for this class
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	// testing for this class
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public class Grid4WTest extends junit.framework.TestCase
-	{
+	static public class Grid4WTest extends junit.framework.TestCase {
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-		public Grid4WTest(final String val)
-		{
+		public Grid4WTest(final String val) {
 			super(val);
 		}
 
-		public void testMyParams()
-		{
-			MWC.GUI.Editable ed = new Grid4WPainter(null);
-			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-
-		public void testIndexMgt()
-		{
+		public void testIndexMgt() {
 			// first some valid ones
-			assertEquals("index not calculated properly", 1, Grid4WPainter
-					.indexOf("B"));
-			assertEquals("index not calculated properly", 0, Grid4WPainter
-					.indexOf("A"));
-			assertEquals("index not calculated properly", 5, Grid4WPainter
-					.indexOf("F"));
-			assertEquals("index not calculated properly", 22, Grid4WPainter
-					.indexOf("Y"));
-			assertEquals("index not calculated properly", 24, Grid4WPainter
-					.indexOf("AA"));
-			assertEquals("index not calculated properly", 26, Grid4WPainter
-					.indexOf("AC"));
-			assertEquals("index not calculated properly", 47, Grid4WPainter
-					.indexOf("AZ"));
+			assertEquals("index not calculated properly", 1, Grid4WPainter.indexOf("B"));
+			assertEquals("index not calculated properly", 0, Grid4WPainter.indexOf("A"));
+			assertEquals("index not calculated properly", 5, Grid4WPainter.indexOf("F"));
+			assertEquals("index not calculated properly", 22, Grid4WPainter.indexOf("Y"));
+			assertEquals("index not calculated properly", 24, Grid4WPainter.indexOf("AA"));
+			assertEquals("index not calculated properly", 26, Grid4WPainter.indexOf("AC"));
+			assertEquals("index not calculated properly", 47, Grid4WPainter.indexOf("AZ"));
 			// and some invalid ones
-			assertEquals("invalid index not rejected properly", INVALID_INDEX,
-					Grid4WPainter.indexOf("3"));
-			assertEquals("invalid index not rejected properly", INVALID_INDEX,
-					Grid4WPainter.indexOf(""));
-			assertEquals("invalid index not rejected properly", INVALID_INDEX,
-					Grid4WPainter.indexOf("CC"));
-			assertEquals("invalid index not rejected properly", INVALID_INDEX,
-					Grid4WPainter.indexOf("?A"));
+			assertEquals("invalid index not rejected properly", INVALID_INDEX, Grid4WPainter.indexOf("3"));
+			assertEquals("invalid index not rejected properly", INVALID_INDEX, Grid4WPainter.indexOf(""));
+			assertEquals("invalid index not rejected properly", INVALID_INDEX, Grid4WPainter.indexOf("CC"));
+			assertEquals("invalid index not rejected properly", INVALID_INDEX, Grid4WPainter.indexOf("?A"));
 			// now some reverse checks
 			// first some valid ones
-			assertEquals("index not calculated properly", Grid4WPainter.labelFor(1),
-					"B");
-			assertEquals("index not calculated properly", Grid4WPainter.labelFor(0),
-					"A");
-			assertEquals("index not calculated properly", Grid4WPainter.labelFor(5),
-					"F");
-			assertEquals("index not calculated properly", Grid4WPainter.labelFor(22),
-					"Y");
-			assertEquals("index not calculated properly", Grid4WPainter.labelFor(24),
-					"AA");
-			assertEquals("index not calculated properly", Grid4WPainter.labelFor(26),
-					"AC");
-			assertEquals("index not calculated properly", Grid4WPainter.labelFor(47),
-					"AZ");
+			assertEquals("index not calculated properly", Grid4WPainter.labelFor(1), "B");
+			assertEquals("index not calculated properly", Grid4WPainter.labelFor(0), "A");
+			assertEquals("index not calculated properly", Grid4WPainter.labelFor(5), "F");
+			assertEquals("index not calculated properly", Grid4WPainter.labelFor(22), "Y");
+			assertEquals("index not calculated properly", Grid4WPainter.labelFor(24), "AA");
+			assertEquals("index not calculated properly", Grid4WPainter.labelFor(26), "AC");
+			assertEquals("index not calculated properly", Grid4WPainter.labelFor(47), "AZ");
 
 		}
 
-		public void testInit()
-		{
+		public void testInit() {
 			final WorldLocation origin = new WorldLocation(2, 3, 2);
 			final Grid4WPainter pt = new Grid4WPainter(origin);
 			assertEquals("wrong name", pt.getName(), DEFAULT_NAME);
-			assertEquals("wrong x def",
-					new WorldDistance(10, WorldDistance.NM), pt.getXDelta());
-			assertEquals("wrong y def",
-					new WorldDistance(10, WorldDistance.NM), pt.getYDelta());
+			assertEquals("wrong x def", new WorldDistance(10, WorldDistance.NM), pt.getXDelta());
+			assertEquals("wrong y def", new WorldDistance(10, WorldDistance.NM), pt.getYDelta());
 			assertEquals("wrong init index", 1, pt.getYMin().intValue());
 			assertEquals("wrong init index", 24, pt.getYMax().intValue());
 			assertEquals("wrong init index", "A", pt.getXMin());
@@ -858,32 +235,13 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 			assertEquals("wrong origin lat", 3d, pt._origin.getLong());
 		}
 
-		public void testProperties()
-		{
-			final Grid4WPainter pt = new Grid4WPainter(null);
-			pt.setName("new grid");
-			pt.setXDelta(new WorldDistance(12, WorldDistance.DEGS));
-			pt.setYDelta(new WorldDistance(5, WorldDistance.DEGS));
-			pt.setXMin("C");
-			pt.setXMax("E");
-			pt.setYMin(7);
-			pt.setYMax(12);
-			final WorldLocation origin = new WorldLocation(2, 2, 0);
-			pt.setOrigin(origin);
-			assertEquals("wrong name", "new grid", pt.getName());
-			assertEquals("wrong x val", new WorldDistance(12,
-					WorldDistance.DEGS), pt.getXDelta());
-			assertEquals("wrong y val", new WorldDistance(5,
-					WorldDistance.DEGS), pt.getYDelta());
-			assertEquals("wrong x index", "C", pt.getXMin());
-			assertEquals("wrong x index", "E", pt.getXMax());
-			assertEquals("wrong y index", 7, pt.getYMin().intValue());
-			assertEquals("wrong y index", 12, pt.getYMax().intValue());
-			assertEquals("wrong origin", origin, pt.getOrigin());
+		public void testMyParams() {
+			MWC.GUI.Editable ed = new Grid4WPainter(null);
+			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
+			ed = null;
 		}
 
-		public void testPosCalc()
-		{
+		public void testPosCalc() {
 			// coords to get
 			final int x = 1, y = 1;
 			final WorldLocation origin = new WorldLocation(0, 0, 0);
@@ -924,24 +282,100 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 			// now try more complex orientations
 
 		}
+
+		public void testProperties() {
+			final Grid4WPainter pt = new Grid4WPainter(null);
+			pt.setName("new grid");
+			pt.setXDelta(new WorldDistance(12, WorldDistance.DEGS));
+			pt.setYDelta(new WorldDistance(5, WorldDistance.DEGS));
+			pt.setXMin("C");
+			pt.setXMax("E");
+			pt.setYMin(7);
+			pt.setYMax(12);
+			final WorldLocation origin = new WorldLocation(2, 2, 0);
+			pt.setOrigin(origin);
+			assertEquals("wrong name", "new grid", pt.getName());
+			assertEquals("wrong x val", new WorldDistance(12, WorldDistance.DEGS), pt.getXDelta());
+			assertEquals("wrong y val", new WorldDistance(5, WorldDistance.DEGS), pt.getYDelta());
+			assertEquals("wrong x index", "C", pt.getXMin());
+			assertEquals("wrong x index", "E", pt.getXMax());
+			assertEquals("wrong y index", 7, pt.getYMin().intValue());
+			assertEquals("wrong y index", 12, pt.getYMax().intValue());
+			assertEquals("wrong origin", origin, pt.getOrigin());
+		}
 	}
 
-  private static String indices[] =
-  {"A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L", "M", "N", "P", "Q",
-      "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD",
-      "AE", "AF", "AG", "AH", "AJ", "AK", "AL", "AM", "AN", "AP", "AQ", "AR",
-      "AS", "AT", "AU", "AV", "AW", "AX", "AY", "AZ", "BA", "BB", "BC", "BD",
-      "BE", "BF", "BG", "BH", "BJ", "BK", "BL", "BM", "BN", "BP", "BQ", "BR",
-      "BS", "BT", "BU", "BV", "BW", "BX", "BY", "BZ"};
+	// ///////////////////////////////////////////////////////////
+	// info class
+	// //////////////////////////////////////////////////////////
+	public class GridPainterInfo extends Editable.EditorType implements Serializable {
+
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public GridPainterInfo(final Grid4WPainter data) {
+			super(data, data.getName(), "");
+		}
+
+		@Override
+		public PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final PropertyDescriptor[] res = { prop("Color", "the Color to draw the grid", FORMAT),
+						prop("Visible", "whether this grid is visible", VISIBILITY),
+						displayProp("PlotLabels", "Plot labels", "whether to plot grid labels", VISIBILITY),
+						displayProp("PlotLines", "Plot lines", "whether to plot grid lines", VISIBILITY),
+						displayProp("FillGrid", "Fill grid", "whether to fill the grid", VISIBILITY),
+						prop("Name", "name of this grid", FORMAT), prop("Font", "font to use for labels", FORMAT),
+						displayProp("FillColor", "Fill color", "color to use to fill the grid", FORMAT),
+						displayProp("FontColor", "Label color", "color to use for grid labels", FORMAT),
+						displayProp("XDelta", "X delta", "the x step size for the grid", SPATIAL),
+						displayProp("YDelta", "Y delta", "the y step size for the grid", SPATIAL),
+						prop("Orientation", "the orientation of the grid", SPATIAL),
+						displayProp("XMin", "X min index", "the min index shown on the x-axis (A-AZ)", SPATIAL),
+						displayProp("XMax", "X max index", "the max index shown on the x-axis (A-AZ)", SPATIAL),
+						displayProp("YMin", "Y min index", "the min index shown on the y-axis (A-AZ)", SPATIAL),
+						displayProp("YMax", "Y max index", "the max index shown on the y-axis (A-AZ)", SPATIAL),
+						prop("Origin", "the bottom-left corner of the grid", SPATIAL),
+						displayProp("OriginAtTopLeft", "Origin at top-left",
+								"whether to put the origin at the top-left", FORMAT),
+						displayLongProp("LineStyle", "Line style", "the dot-dash style to use for plotting this grid",
+								LineStylePropertyEditor.class, FORMAT), };
+
+				return res;
+			} catch (final IntrospectionException e) {
+				return super.getPropertyDescriptors();
+			}
+		}
+	}
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * flag for invalid 4w index
+	 *
+	 */
+	private static final int INVALID_INDEX = 0;
+
+	public static final String DEFAULT_NAME = "4W Grid";
+
+	private static String indices[] = { "A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L", "M", "N", "P", "Q", "R",
+			"S", "T", "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AJ", "AK", "AL",
+			"AM", "AN", "AP", "AQ", "AR", "AS", "AT", "AU", "AV", "AW", "AX", "AY", "AZ", "BA", "BB", "BC", "BD", "BE",
+			"BF", "BG", "BH", "BJ", "BK", "BL", "BM", "BN", "BP", "BQ", "BR", "BS", "BT", "BU", "BV", "BW", "BX", "BY",
+			"BZ" };
 
 	/**
 	 * find the index of the supplied string
-	 * 
+	 *
 	 * @param theTarget
 	 * @return
 	 */
-	public static int indexOf(final String target)
-	{
+	public static int indexOf(final String target) {
 		String theTarget = target;
 		// trim it down
 		theTarget = theTarget.trim();
@@ -951,10 +385,8 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 
 		// now find a match
 		int res = 0;
-		for (int i = 0; i < indices.length; i++)
-		{
-			if (indices[i].equals(theTarget))
-			{
+		for (int i = 0; i < indices.length; i++) {
+			if (indices[i].equals(theTarget)) {
 				res = i;
 				break;
 			}
@@ -964,233 +396,679 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 
 	/**
 	 * convert the integer index to a string
-	 * 
-	 * @param index
-	 *          4w grid horizontal index
+	 *
+	 * @param index 4w grid horizontal index
 	 * @return character representation of index
 	 */
-	protected static String labelFor(final int index)
-	{
+	protected static String labelFor(final int index) {
 		return indices[index];
 	}
 
 	/**
-	 * @return the xMin
+	 * the colour for this grid
 	 */
-	public String getXMin()
-	{
-		return labelFor(_xMin);
-	}
+	protected Color _myColor;
 
 	/**
-	 * @param min
-	 *          the xMin to set
+	 * the horizontal grid separation (in degrees)
 	 */
-	public void setXMin(final String min)
-	{
-		_xMin = indexOf(min);
-	}
+	protected WorldDistance _myXDelta;
 
 	/**
-	 * @return the xMax
+	 * the vertical grid separation (in degrees)
 	 */
-	public String getXMax()
-	{
-		return labelFor(_xMax);
-	}
+	protected WorldDistance _myYDelta;
 
 	/**
-	 * @param max
-	 *          the xMax to set
+	 * whether this grid is visible
 	 */
-	public void setXMax(final String max)
-	{
-		_xMax = indexOf(max);
-	}
+	protected boolean _isOn;
 
 	/**
-	 * @return the yMin
+	 * are we plotting lines?
 	 */
-	public Integer getYMin()
-	{
-		return _yMin + 1;
-	}
+	protected boolean _plotLines = true;
 
 	/**
-	 * @param min
-	 *          the yMin to set
+	 * the style the lines of this shape are drawn in
 	 */
-	public void setYMin(final Integer min)
-	{
-		_yMin = min - 1;
-	}
+	private int _lineStyle = LineStylePropertyEditor.SOLID;
 
 	/**
-	 * @return the yMax
+	 * are we plotting lat/long labels?
 	 */
-	public Integer getYMax()
-	{
-		return _yMax + 1;
-	}
+	protected boolean _plotLabels = true;
 
 	/**
-	 * @param max
-	 *          the yMax to set
+	 * whether to fill the grid
 	 */
-	public void setYMax(final Integer max)
-	{
-		_yMax = max - 1;
-	}
+	protected boolean _fillGrid = false;
 
 	/**
-	 * @return the origin
+	 * the color to fill in the grid
+	 *
 	 */
-	public WorldLocation getOrigin()
-	{
-		return _origin;
-	}
+	protected Color _fillColor = Color.white;
 
 	/**
-	 * @param origin
-	 *          the origin to set
+	 * the font color
+	 *
 	 */
-	public void setOrigin(final WorldLocation origin)
-	{
+	protected Color _fontColor = null;
+
+	/**
+	 * whether to put the origin at the top-left
+	 *
+	 */
+	private boolean _originTopLeft = false;
+
+	/**
+	 * the min x-axis square we're plotting
+	 *
+	 */
+	protected int _xMin = 0;
+
+	/**
+	 * the max x-axis square we're plotting
+	 *
+	 */
+	protected int _xMax = 23;
+
+	/**
+	 * the min y-axis square we're plotting
+	 *
+	 */
+	protected int _yMin = 0;
+
+	/**
+	 * the max y-axis square we're plotting
+	 *
+	 */
+	protected int _yMax = 23;
+
+	/**
+	 * the bottom-left corner of the grid
+	 */
+	protected WorldLocation _origin;
+
+	// ///////////////////////////////////////////////////////////
+	// member functions
+	// //////////////////////////////////////////////////////////
+
+	/**
+	 * the orientation of the 4W grid
+	 */
+	private double _orientation;
+
+	/**
+	 * our editor
+	 */
+	transient protected Editable.EditorType _myEditor;
+
+	/**
+	 * the name of this grid
+	 *
+	 */
+	private String _myName = DEFAULT_NAME;
+
+	/**
+	 * the font to use
+	 */
+	private Font _theFont = Defaults.getScaledFont(0.8f);
+
+	// ///////////////////////////////////////////////////////////
+	// constructor
+	// //////////////////////////////////////////////////////////
+	public Grid4WPainter(final WorldLocation origin) {
+		_myColor = Color.darkGray;
+		_fontColor = _myColor;
+
 		_origin = origin;
+
+		// give it some default deltas
+		setXDelta(new WorldDistance(10, WorldDistance.NM));
+		setYDelta(new WorldDistance(10, WorldDistance.NM));
+
+		_orientation = 0;
+
+		// make it visible to start with
+		setVisible(true);
 	}
 
 	/**
-	 * whether to put the origin at the top-left
-	 * 
-	 * @return
+	 * sort out the location of this point
+	 *
+	 * @param x how far across to go
+	 * @param y how far down to go
+	 * @return the location at this index
 	 */
-	public boolean getOriginAtTopLeft()
-	{
-		return _originTopLeft;
+	protected WorldLocation calcLocationFor(final int x, final int y) {
+		// convert the orientation to radians
+		final double orient = MWC.Algorithms.Conversions.Degs2Rads(_orientation);
+
+		// calculate the deltas
+		final double xComponent = x * _myXDelta.getValueIn(WorldDistance.DEGS);
+		final double yComponent = y * _myYDelta.getValueIn(WorldDistance.DEGS);
+		final double xNew = xComponent * Math.cos(orient) + yComponent * Math.sin(orient);
+		double yNew = -xComponent * Math.sin(orient) + yComponent * Math.cos(orient);
+
+		// are we in US units?
+		if (getOriginAtTopLeft()) {
+			// switch the vertical axis
+			yNew = -yNew;
+		}
+
+		final WorldLocation res = new WorldLocation(_origin.getLat() + yNew, _origin.getLong() + xNew, 0);
+		return res;
 	}
 
-	/**
-	 * whether to put the origin at the top-left
-	 * 
-	 * @return
-	 */
-	public void setOriginAtTopLeft(final boolean uSStandard)
-	{
-		_originTopLeft = uSStandard;
+	@Override
+	public int compareTo(final Plottable arg0) {
+		final Plottable other = arg0;
+		final String myName = this.getName() + this.hashCode();
+		final String hisName = other.getName() + arg0.hashCode();
+		return myName.compareTo(hisName);
 	}
 
-	/**
-	 * @return the orientation
-	 */
-	public double getOrientation()
-	{
-		return _orientation;
-	}
-
-	/**
-	 * @param orientation
-	 *          the orientation to set
-	 */
-	public void setOrientation(final double orientation)
-	{
-		_orientation = orientation;
-	}
-
-	/**
-	 * @return the fillGrid
-	 */
-	public boolean getFillGrid()
-	{
-		return _fillGrid;
-	}
-
-	/**
-	 * @param fillGrid
-	 *          the fillGrid to set
-	 */
-	public void setFillGrid(final boolean fillGrid)
-	{
-		_fillGrid = fillGrid;
-	}
-
-	/**
-	 * @return the fillColor
-	 */
-	public Color getFillColor()
-	{
-		return _fillColor;
-	}
-
-	/**
-	 * @param fillColor
-	 *          the fillColor to set
-	 */
-	public void setFillColor(final Color fillColor)
-	{
-		_fillColor = fillColor;
-	}
-
-
-  /**
-   * @return the fontColor
-   */
-  public Color getFontColor()
-  {
-    return _fontColor;
-  }
-
-  /**
-   * @param fillColor
-   *          the fillColor to set
-   */
-  public void setFontColor(final Color fontColor)
-  {
-    _fontColor = fontColor;
-  }
-
-	/**
-	 * @return the plotLines
-	 */
-	public boolean getPlotLines()
-	{
-		return _plotLines;
-	}
-
-	/**
-	 * @param plotLines
-	 *          the plotLines to set
-	 */
-	public void setPlotLines(final boolean plotLines)
-	{
-		_plotLines = plotLines;
-	}
-
-  public int getLineStyle()
-  {
-    return _lineStyle;
-  }
-
-  public void setLineStyle(final int lineStyle)
-  {
-    _lineStyle = lineStyle;
-  }
-
+	@Override
 	public void findNearestHotSpotIn(final Point cursorPos, final WorldLocation cursorLoc,
-			final LocationConstruct currentNearest, final Layer parentLayer, final Layers theData)
-	{
+			final LocationConstruct currentNearest, final Layer parentLayer, final Layers theData) {
 
 		// initialise thisDist, since we're going to be over-writing it
-		final WorldDistance thisDist = new WorldDistance(calcLocationFor(_xMin, _yMin)
-				.rangeFrom(cursorLoc), WorldDistance.DEGS);
+		final WorldDistance thisDist = new WorldDistance(calcLocationFor(_xMin, _yMin).rangeFrom(cursorLoc),
+				WorldDistance.DEGS);
 
 		// is this our first item?
 		currentNearest.checkMe(this, thisDist, null, parentLayer);
 
 	}
 
-	public void shift(final WorldVector vector)
-	{
+	@Override
+	public MWC.GenericData.WorldArea getBounds() {
+		return null;
+	}
+
+	public Color getColor() {
+		return _myColor;
+	}
+
+	/**
+	 * @return the fillColor
+	 */
+	public Color getFillColor() {
+		return _fillColor;
+	}
+
+	/**
+	 * @return the fillGrid
+	 */
+	public boolean getFillGrid() {
+		return _fillGrid;
+	}
+
+	public Font getFont() {
+		return _theFont;
+	}
+
+	/**
+	 * @return the fontColor
+	 */
+	public Color getFontColor() {
+		return _fontColor;
+	}
+
+	/**
+	 * determine where to start counting our grid labels from
+	 *
+	 * @param bounds
+	 * @return
+	 */
+	protected WorldLocation getGridLabelOrigin(final WorldArea bounds) {
+		return bounds.getBottomLeft();
+	}
+
+	@Override
+	public Editable.EditorType getInfo() {
+		if (_myEditor == null)
+			_myEditor = new GridPainterInfo(this);
+
+		return _myEditor;
+	}
+
+	public int getLineStyle() {
+		return _lineStyle;
+	}
+
+	@Override
+	public String getName() {
+		return _myName;
+	}
+
+	/**
+	 * @return the orientation
+	 */
+	public double getOrientation() {
+		return _orientation;
+	}
+
+	/**
+	 * @return the origin
+	 */
+	public WorldLocation getOrigin() {
+		return _origin;
+	}
+
+	/**
+	 * whether to put the origin at the top-left
+	 *
+	 * @return
+	 */
+	public boolean getOriginAtTopLeft() {
+		return _originTopLeft;
+	}
+
+	/**
+	 * find the top, bottom, left and right limits to plot. We've refactored it to a
+	 * child class so that it can be overwritten
+	 *
+	 * @param g          the plotting converter
+	 * @param screenArea the visible screen area
+	 * @param deltaDegs  the grid separation requested
+	 * @return an area providing the coverage requested
+	 */
+	protected WorldArea getOuterBounds(final CanvasType g, final Dimension screenArea, final double deltaDegs) {
+		// create data coordinates from the current corners of the screen
+		final WorldLocation topLeft = g.toWorld(new Point(0, 0));
+
+		// create new corners just outside the current plot area, and clip
+		// them to the nearest 'delta' value
+		final double maxLat1 = Math.ceil(topLeft.getLat() / deltaDegs) * deltaDegs;
+		final double minLong1 = (int) Math.floor(topLeft.getLong() / deltaDegs) * deltaDegs;
+
+		// now for the bottom right
+		final WorldLocation bottomRight = g.toWorld(new Point(screenArea.width, screenArea.height));
+
+		// create new corners just outside the current plot area, and clip
+		// them to the nearest 'delta' value
+		final double maxLong1 = Math.ceil(bottomRight.getLong() / deltaDegs) * deltaDegs;
+		final double minLat1 = Math.floor(bottomRight.getLat() / deltaDegs) * deltaDegs;
+
+		final WorldArea bounds = new WorldArea(new WorldLocation(maxLat1, minLong1, 0),
+				new WorldLocation(minLat1, maxLong1, 0));
+		return bounds;
+	}
+
+	/**
+	 * whether to plot the labels or not
+	 */
+	public boolean getPlotLabels() {
+		return _plotLabels;
+	}
+
+	/**
+	 * @return the plotLines
+	 */
+	public boolean getPlotLines() {
+		return _plotLines;
+	}
+
+	@Override
+	public boolean getVisible() {
+		return _isOn;
+	}
+
+	/**
+	 * get the x delta for the grid
+	 *
+	 * @return the size
+	 */
+	public WorldDistance getXDelta() {
+		return _myXDelta;
+	}
+
+	/**
+	 * @return the xMax
+	 */
+	public String getXMax() {
+		return labelFor(_xMax);
+	}
+
+	/**
+	 * @return the xMin
+	 */
+	public String getXMin() {
+		return labelFor(_xMin);
+	}
+
+	/**
+	 * get the y delta for the grid
+	 *
+	 * @return the size
+	 */
+	public WorldDistance getYDelta() {
+		return _myYDelta;
+	}
+
+	/**
+	 * @return the yMax
+	 */
+	public Integer getYMax() {
+		return _yMax + 1;
+	}
+
+	/**
+	 * @return the yMin
+	 */
+	public Integer getYMin() {
+		return _yMin + 1;
+	}
+
+	@Override
+	public boolean hasEditor() {
+		return true;
+	}
+
+	/**
+	 * unfortunately we need to do some plotting tricks when we're doing a
+	 * locally-origined grid. This method is over-ridden by the LocalGrid to allow
+	 * this
+	 *
+	 * @return
+	 */
+	protected boolean isLocalPlotting() {
+		return false;
+	}
+
+	@Override
+	public void paint(final CanvasType g) {
+
+		// check we are visible
+		if (!_isOn)
+			return;
+
+		// create a transparent colour
+		g.setColor(new Color(_myColor.getRed(), _myColor.getGreen(), _myColor.getBlue(), 160));
+
+		final float oldLineWidth = g.getLineWidth();
+
+		// get the screen dimensions
+		final Dimension dim = g.getSize();
+
+		g.setLineWidth(1.0f);
+
+		// is it filled?
+		if (_fillGrid) {
+			// sort out the bounds
+			final int[] xPoints = new int[4];
+			final int[] yPoints = new int[4];
+			int ctr = 0;
+
+			Point thisP = g.toScreen(calcLocationFor(_xMin, _yMin));
+
+			// handle unable to gen screen coords (if off visible area)
+			if (thisP == null)
+				return;
+
+			xPoints[ctr] = thisP.x;
+			yPoints[ctr++] = thisP.y;
+
+			thisP = g.toScreen(calcLocationFor(_xMin, _yMax + 1));
+			xPoints[ctr] = thisP.x;
+			yPoints[ctr++] = thisP.y;
+
+			thisP = g.toScreen(calcLocationFor(_xMax + 1, _yMax + 1));
+			xPoints[ctr] = thisP.x;
+			yPoints[ctr++] = thisP.y;
+
+			thisP = g.toScreen(calcLocationFor(_xMax + 1, _yMin));
+			xPoints[ctr] = thisP.x;
+			yPoints[ctr++] = thisP.y;
+
+			g.setColor(_fillColor);
+			g.fillPolygon(xPoints, yPoints, xPoints.length);
+		}
+
+		// ok, draw the vertical lines
+		for (int x = _xMin; x <= _xMax + 1; x++) {
+			// set the normal color
+			g.setColor(_myColor);
+
+			if (_plotLines) {
+				// sort out the line style
+				g.setLineStyle(_lineStyle);
+
+				final Point start = new Point(g.toScreen(calcLocationFor(x, _yMin)));
+				final Point end = new Point(g.toScreen(calcLocationFor(x, _yMax + 1)));
+				g.drawLine(start.x, start.y, end.x, end.y);
+			}
+
+			if ((x <= _xMax) && _plotLabels) {
+				// find the centre-point for the label
+				final Point start = new Point(g.toScreen(calcLocationFor(x, _yMin)));
+				final Point end = new Point(g.toScreen(calcLocationFor(x + 1, _yMin)));
+
+				final Point centre = new Point(start.x + (end.x - start.x) / 2, start.y);
+
+				// what's this label
+				final String thisLbl = labelFor(x);
+
+				// sort out the dimensions of the font
+				int ht = g.getStringHeight(_theFont);
+				final int wid = g.getStringWidth(_theFont, thisLbl);
+
+				if (dim != null) {
+					// sometimes we don't have a dimension - such as when the grid is
+					// being dragged
+					centre.y = Math.min(centre.y, dim.height - 2 * ht);
+				}
+
+				if (getOriginAtTopLeft())
+					ht = -ht;
+
+				// set the font color
+				g.setColor(_fontColor);
+
+				// and draw it
+				g.drawText(_theFont, thisLbl, centre.x - wid / 2, centre.y + ht);
+			}
+
+		}
+
+		// ok, now the horizontal lines
+		for (int y = _yMin; y <= _yMax + 1; y++) {
+			// set the normal color
+			g.setColor(_myColor);
+
+			if (_plotLines) {
+				// sort out the line style
+				g.setLineStyle(_lineStyle);
+
+				final Point start = new Point(g.toScreen(calcLocationFor(_xMin, y)));
+				final Point end = new Point(g.toScreen(calcLocationFor(_xMax + 1, y)));
+				g.drawLine(start.x, start.y, end.x, end.y);
+			}
+
+			if ((y <= _yMax) && _plotLabels) {
+				// find the centre-point for the label
+				final Point start = new Point(g.toScreen(calcLocationFor(_xMin, y)));
+				final Point end = new Point(g.toScreen(calcLocationFor(_xMin, y + 1)));
+
+				final Point centre = new Point(start.x, start.y + (end.y - start.y) / 2);
+
+				// move this into the visible area if it's outside.
+				if (dim != null) {
+					// sometimes we don't have a dimension - such as when the grid is
+					// being dragged
+					centre.x = Math.max(centre.x, (int) (dim.getWidth() * 0.03));
+				}
+
+				// what's this label
+				final String thisLbl = "" + (y + 1);
+
+				// sort out the dimensions of the font
+				final int ht = g.getStringHeight(_theFont);
+				final int wid = g.getStringWidth(_theFont, thisLbl);
+
+				// set the font color
+				g.setColor(_fontColor);
+
+				// and draw it
+				g.drawText(_theFont, thisLbl, centre.x - (wid + 2), centre.y + ht / 2);
+			}
+		}
+
+		// and restore the line width
+		g.setLineWidth(oldLineWidth);
+
+	}
+
+	@Override
+	public double rangeFrom(final MWC.GenericData.WorldLocation other) {
+		final MWC.GenericData.WorldArea wa = new WorldArea(calcLocationFor(_xMin, _yMin),
+				calcLocationFor(_xMax + 1, _yMax + 1));
+		// doesn't return a sensible distance;
+		return wa.rangeFrom(other);
+	}
+
+	public void setColor(final Color val) {
+		_myColor = val;
+	}
+
+	/**
+	 * @param fillColor the fillColor to set
+	 */
+	public void setFillColor(final Color fillColor) {
+		_fillColor = fillColor;
+	}
+
+	/**
+	 * @param fillGrid the fillGrid to set
+	 */
+	public void setFillGrid(final boolean fillGrid) {
+		_fillGrid = fillGrid;
+	}
+
+	public void setFont(final Font theFont) {
+		_theFont = theFont;
+	}
+
+	/**
+	 * @param fillColor the fillColor to set
+	 */
+	public void setFontColor(final Color fontColor) {
+		_fontColor = fontColor;
+	}
+
+	public void setLineStyle(final int lineStyle) {
+		_lineStyle = lineStyle;
+	}
+
+	/**
+	 * whether to plot the labels or not
+	 */
+	public void setName(final String name) {
+		_myName = name;
+	}
+
+	/**
+	 * @param orientation the orientation to set
+	 */
+	public void setOrientation(final double orientation) {
+		_orientation = orientation;
+	}
+
+	/**
+	 * @param origin the origin to set
+	 */
+	public void setOrigin(final WorldLocation origin) {
+		_origin = origin;
+	}
+
+	/**
+	 * whether to put the origin at the top-left
+	 *
+	 * @return
+	 */
+	public void setOriginAtTopLeft(final boolean uSStandard) {
+		_originTopLeft = uSStandard;
+	}
+
+	/**
+	 * whether to plot the labels or not
+	 */
+	public void setPlotLabels(final boolean val) {
+		_plotLabels = val;
+	}
+
+	/**
+	 * @param plotLines the plotLines to set
+	 */
+	public void setPlotLines(final boolean plotLines) {
+		_plotLines = plotLines;
+	}
+
+	@Override
+	public void setVisible(final boolean val) {
+		_isOn = val;
+	}
+
+	/**
+	 * set the x delta for this grid
+	 *
+	 * @param val the size
+	 */
+	public void setXDelta(final WorldDistance val) {
+		_myXDelta = val;
+	}
+
+	/**
+	 * @param max the xMax to set
+	 */
+	public void setXMax(final String max) {
+		_xMax = indexOf(max);
+	}
+
+	/**
+	 * @param min the xMin to set
+	 */
+	public void setXMin(final String min) {
+		_xMin = indexOf(min);
+	}
+
+	/**
+	 * set the y delta for this grid
+	 *
+	 * @param val the size
+	 */
+	public void setYDelta(final WorldDistance val) {
+		_myYDelta = val;
+	}
+
+	/**
+	 * @param max the yMax to set
+	 */
+	public void setYMax(final Integer max) {
+		_yMax = max - 1;
+	}
+
+	/**
+	 * @param min the yMin to set
+	 */
+	public void setYMin(final Integer min) {
+		_yMin = min - 1;
+	}
+
+	@Override
+	public void shift(final WorldVector vector) {
 		_origin.addToMe(vector);
+	}
+
+	/**
+	 * return this item as a string
+	 */
+	@Override
+	public String toString() {
+		return getName();
 	}
 
 }

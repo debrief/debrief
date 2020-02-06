@@ -1,329 +1,361 @@
 package edu.nps.moves.dis7;
 
-import java.util.*;
-import java.io.*;
-import edu.nps.moves.disenum.*;
-import edu.nps.moves.disutil.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Section 5.3.7.1. Information about active electronic warfare (EW) emissions and active EW countermeasures shall be communicated using an Electromagnetic Emission PDU. NOT COMPLETE
+ * Section 5.3.7.1. Information about active electronic warfare (EW) emissions
+ * and active EW countermeasures shall be communicated using an Electromagnetic
+ * Emission PDU. NOT COMPLETE
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class ElectronicEmissionsPdu extends DistributedEmissionsFamilyPdu implements Serializable
-{
-   /** ID of the entity emitting */
-   protected EntityID  emittingEntityID = new EntityID(); 
+public class ElectronicEmissionsPdu extends DistributedEmissionsFamilyPdu implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   /** ID of event */
-   protected EventIdentifier  eventID = new EventIdentifier(); 
+	/** ID of the entity emitting */
+	protected EntityID emittingEntityID = new EntityID();
 
-   /** This field shall be used to indicate if the data in the PDU represents a state update or just data that has changed since issuance of the last Electromagnetic Emission PDU [relative to the identified entity and emission system(s)]. */
-   protected short  stateUpdateIndicator;
+	/** ID of event */
+	protected EventIdentifier eventID = new EventIdentifier();
 
-   /** This field shall specify the number of emission systems being described in the current PDU. */
-   protected short  numberOfSystems;
+	/**
+	 * This field shall be used to indicate if the data in the PDU represents a
+	 * state update or just data that has changed since issuance of the last
+	 * Electromagnetic Emission PDU [relative to the identified entity and emission
+	 * system(s)].
+	 */
+	protected short stateUpdateIndicator;
 
-   /** padding */
-   protected int  paddingForEmissionsPdu;
+	/**
+	 * This field shall specify the number of emission systems being described in
+	 * the current PDU.
+	 */
+	protected short numberOfSystems;
 
-   /**  this field shall specify the length of this emitter system's data in 32-bit words. */
-   protected short  systemDataLength;
+	/** padding */
+	protected int paddingForEmissionsPdu;
 
-   /** the number of beams being described in the current PDU for the emitter system being described.  */
-   protected short  numberOfBeams;
+	/**
+	 * this field shall specify the length of this emitter system's data in 32-bit
+	 * words.
+	 */
+	protected short systemDataLength;
 
-   /**  information about a particular emitter system and shall be represented by an Emitter System record (see 6.2.23). */
-   protected EmitterSystem  emitterSystem = new EmitterSystem(); 
+	/**
+	 * the number of beams being described in the current PDU for the emitter system
+	 * being described.
+	 */
+	protected short numberOfBeams;
 
-   /** the location of the antenna beam source with respect to the emitting entity's coordinate system. This location shall be the origin of the emitter coordinate system that shall have the same orientation as the entity coordinate system. This field shall be represented by an Entity Coordinate Vector record see 6.2.95  */
-   protected Vector3Float  location = new Vector3Float(); 
+	/**
+	 * information about a particular emitter system and shall be represented by an
+	 * Emitter System record (see 6.2.23).
+	 */
+	protected EmitterSystem emitterSystem = new EmitterSystem();
 
-   /** Electronic emmissions systems THIS IS WRONG. It has the WRONG class type and will cause problems in any marshalling. */
-   protected List< Vector3Float > systems = new ArrayList< Vector3Float >(); 
+	/**
+	 * the location of the antenna beam source with respect to the emitting entity's
+	 * coordinate system. This location shall be the origin of the emitter
+	 * coordinate system that shall have the same orientation as the entity
+	 * coordinate system. This field shall be represented by an Entity Coordinate
+	 * Vector record see 6.2.95
+	 */
+	protected Vector3Float location = new Vector3Float();
 
-/** Constructor */
- public ElectronicEmissionsPdu()
- {
-    setPduType( (short)23 );
-    setPaddingForEmissionsPdu( (int)0 );
- }
+	/**
+	 * Electronic emmissions systems THIS IS WRONG. It has the WRONG class type and
+	 * will cause problems in any marshalling.
+	 */
+	protected List<Vector3Float> systems = new ArrayList<Vector3Float>();
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+	/** Constructor */
+	public ElectronicEmissionsPdu() {
+		setPduType((short) 23);
+		setPaddingForEmissionsPdu(0);
+	}
 
-   marshalSize = super.getMarshalledSize();
-   marshalSize = marshalSize + emittingEntityID.getMarshalledSize();  // emittingEntityID
-   marshalSize = marshalSize + eventID.getMarshalledSize();  // eventID
-   marshalSize = marshalSize + 1;  // stateUpdateIndicator
-   marshalSize = marshalSize + 1;  // numberOfSystems
-   marshalSize = marshalSize + 2;  // paddingForEmissionsPdu
-   marshalSize = marshalSize + 1;  // systemDataLength
-   marshalSize = marshalSize + 1;  // numberOfBeams
-   marshalSize = marshalSize + emitterSystem.getMarshalledSize();  // emitterSystem
-   marshalSize = marshalSize + location.getMarshalledSize();  // location
-   for(int idx=0; idx < systems.size(); idx++)
-   {
-        Vector3Float listElement = systems.get(idx);
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-   }
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-   return marshalSize;
-}
+		if (this == obj) {
+			return true;
+		}
 
+		if (obj == null) {
+			return false;
+		}
 
-public void setEmittingEntityID(EntityID pEmittingEntityID)
-{ emittingEntityID = pEmittingEntityID;
-}
+		if (getClass() != obj.getClass())
+			return false;
 
-public EntityID getEmittingEntityID()
-{ return emittingEntityID; 
-}
+		return equalsImpl(obj);
+	}
 
-public void setEventID(EventIdentifier pEventID)
-{ eventID = pEventID;
-}
+	@Override
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-public EventIdentifier getEventID()
-{ return eventID; 
-}
+		if (!(obj instanceof ElectronicEmissionsPdu))
+			return false;
 
-public void setStateUpdateIndicator(short pStateUpdateIndicator)
-{ stateUpdateIndicator = pStateUpdateIndicator;
-}
+		final ElectronicEmissionsPdu rhs = (ElectronicEmissionsPdu) obj;
 
-public short getStateUpdateIndicator()
-{ return stateUpdateIndicator; 
-}
+		if (!(emittingEntityID.equals(rhs.emittingEntityID)))
+			ivarsEqual = false;
+		if (!(eventID.equals(rhs.eventID)))
+			ivarsEqual = false;
+		if (!(stateUpdateIndicator == rhs.stateUpdateIndicator))
+			ivarsEqual = false;
+		if (!(numberOfSystems == rhs.numberOfSystems))
+			ivarsEqual = false;
+		if (!(paddingForEmissionsPdu == rhs.paddingForEmissionsPdu))
+			ivarsEqual = false;
+		if (!(systemDataLength == rhs.systemDataLength))
+			ivarsEqual = false;
+		if (!(numberOfBeams == rhs.numberOfBeams))
+			ivarsEqual = false;
+		if (!(emitterSystem.equals(rhs.emitterSystem)))
+			ivarsEqual = false;
+		if (!(location.equals(rhs.location)))
+			ivarsEqual = false;
 
-public short getNumberOfSystems()
-{ return (short)systems.size();
-}
+		for (int idx = 0; idx < systems.size(); idx++) {
+			if (!(systems.get(idx).equals(rhs.systems.get(idx))))
+				ivarsEqual = false;
+		}
 
-/** Note that setting this value will not change the marshalled value. The list whose length this describes is used for that purpose.
- * The getnumberOfSystems method will also be based on the actual list length rather than this value. 
- * The method is simply here for java bean completeness.
- */
-public void setNumberOfSystems(short pNumberOfSystems)
-{ numberOfSystems = pNumberOfSystems;
-}
+		return ivarsEqual && super.equalsImpl(rhs);
+	}
 
-public void setPaddingForEmissionsPdu(int pPaddingForEmissionsPdu)
-{ paddingForEmissionsPdu = pPaddingForEmissionsPdu;
-}
+	public EmitterSystem getEmitterSystem() {
+		return emitterSystem;
+	}
 
-public int getPaddingForEmissionsPdu()
-{ return paddingForEmissionsPdu; 
-}
+	public EntityID getEmittingEntityID() {
+		return emittingEntityID;
+	}
 
-public void setSystemDataLength(short pSystemDataLength)
-{ systemDataLength = pSystemDataLength;
-}
+	public EventIdentifier getEventID() {
+		return eventID;
+	}
 
-public short getSystemDataLength()
-{ return systemDataLength; 
-}
+	public Vector3Float getLocation() {
+		return location;
+	}
 
-public void setNumberOfBeams(short pNumberOfBeams)
-{ numberOfBeams = pNumberOfBeams;
-}
+	@Override
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
-public short getNumberOfBeams()
-{ return numberOfBeams; 
-}
+		marshalSize = super.getMarshalledSize();
+		marshalSize = marshalSize + emittingEntityID.getMarshalledSize(); // emittingEntityID
+		marshalSize = marshalSize + eventID.getMarshalledSize(); // eventID
+		marshalSize = marshalSize + 1; // stateUpdateIndicator
+		marshalSize = marshalSize + 1; // numberOfSystems
+		marshalSize = marshalSize + 2; // paddingForEmissionsPdu
+		marshalSize = marshalSize + 1; // systemDataLength
+		marshalSize = marshalSize + 1; // numberOfBeams
+		marshalSize = marshalSize + emitterSystem.getMarshalledSize(); // emitterSystem
+		marshalSize = marshalSize + location.getMarshalledSize(); // location
+		for (int idx = 0; idx < systems.size(); idx++) {
+			final Vector3Float listElement = systems.get(idx);
+			marshalSize = marshalSize + listElement.getMarshalledSize();
+		}
 
-public void setEmitterSystem(EmitterSystem pEmitterSystem)
-{ emitterSystem = pEmitterSystem;
-}
+		return marshalSize;
+	}
 
-public EmitterSystem getEmitterSystem()
-{ return emitterSystem; 
-}
+	public short getNumberOfBeams() {
+		return numberOfBeams;
+	}
 
-public void setLocation(Vector3Float pLocation)
-{ location = pLocation;
-}
+	public short getNumberOfSystems() {
+		return (short) systems.size();
+	}
 
-public Vector3Float getLocation()
-{ return location; 
-}
+	public int getPaddingForEmissionsPdu() {
+		return paddingForEmissionsPdu;
+	}
 
-public void setSystems(List<Vector3Float> pSystems)
-{ systems = pSystems;
-}
+	public short getStateUpdateIndicator() {
+		return stateUpdateIndicator;
+	}
 
-public List<Vector3Float> getSystems()
-{ return systems; }
+	public short getSystemDataLength() {
+		return systemDataLength;
+	}
 
+	public List<Vector3Float> getSystems() {
+		return systems;
+	}
 
-public void marshal(DataOutputStream dos)
-{
-    super.marshal(dos);
-    try 
-    {
-       emittingEntityID.marshal(dos);
-       eventID.marshal(dos);
-       dos.writeByte( (byte)stateUpdateIndicator);
-       dos.writeByte( (byte)systems.size());
-       dos.writeShort( (short)paddingForEmissionsPdu);
-       dos.writeByte( (byte)systemDataLength);
-       dos.writeByte( (byte)numberOfBeams);
-       emitterSystem.marshal(dos);
-       location.marshal(dos);
+	@Override
+	public void marshal(final DataOutputStream dos) {
+		super.marshal(dos);
+		try {
+			emittingEntityID.marshal(dos);
+			eventID.marshal(dos);
+			dos.writeByte((byte) stateUpdateIndicator);
+			dos.writeByte((byte) systems.size());
+			dos.writeShort((short) paddingForEmissionsPdu);
+			dos.writeByte((byte) systemDataLength);
+			dos.writeByte((byte) numberOfBeams);
+			emitterSystem.marshal(dos);
+			location.marshal(dos);
 
-       for(int idx = 0; idx < systems.size(); idx++)
-       {
-            Vector3Float aVector3Float = systems.get(idx);
-            aVector3Float.marshal(dos);
-       } // end of list marshalling
+			for (int idx = 0; idx < systems.size(); idx++) {
+				final Vector3Float aVector3Float = systems.get(idx);
+				aVector3Float.marshal(dos);
+			} // end of list marshalling
 
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
-public void unmarshal(DataInputStream dis)
-{
-     super.unmarshal(dis);
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	@Override
+	public void marshal(final java.nio.ByteBuffer buff) {
+		super.marshal(buff);
+		emittingEntityID.marshal(buff);
+		eventID.marshal(buff);
+		buff.put((byte) stateUpdateIndicator);
+		buff.put((byte) systems.size());
+		buff.putShort((short) paddingForEmissionsPdu);
+		buff.put((byte) systemDataLength);
+		buff.put((byte) numberOfBeams);
+		emitterSystem.marshal(buff);
+		location.marshal(buff);
 
-    try 
-    {
-       emittingEntityID.unmarshal(dis);
-       eventID.unmarshal(dis);
-       stateUpdateIndicator = (short)dis.readUnsignedByte();
-       numberOfSystems = (short)dis.readUnsignedByte();
-       paddingForEmissionsPdu = (int)dis.readUnsignedShort();
-       systemDataLength = (short)dis.readUnsignedByte();
-       numberOfBeams = (short)dis.readUnsignedByte();
-       emitterSystem.unmarshal(dis);
-       location.unmarshal(dis);
-       for(int idx = 0; idx < numberOfSystems; idx++)
-       {
-           Vector3Float anX = new Vector3Float();
-           anX.unmarshal(dis);
-           systems.add(anX);
-       }
+		for (int idx = 0; idx < systems.size(); idx++) {
+			final Vector3Float aVector3Float = systems.get(idx);
+			aVector3Float.marshal(buff);
+		} // end of list marshalling
 
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+	} // end of marshal method
 
+	public void setEmitterSystem(final EmitterSystem pEmitterSystem) {
+		emitterSystem = pEmitterSystem;
+	}
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
-       super.marshal(buff);
-       emittingEntityID.marshal(buff);
-       eventID.marshal(buff);
-       buff.put( (byte)stateUpdateIndicator);
-       buff.put( (byte)systems.size());
-       buff.putShort( (short)paddingForEmissionsPdu);
-       buff.put( (byte)systemDataLength);
-       buff.put( (byte)numberOfBeams);
-       emitterSystem.marshal(buff);
-       location.marshal(buff);
+	public void setEmittingEntityID(final EntityID pEmittingEntityID) {
+		emittingEntityID = pEmittingEntityID;
+	}
 
-       for(int idx = 0; idx < systems.size(); idx++)
-       {
-            Vector3Float aVector3Float = (Vector3Float)systems.get(idx);
-            aVector3Float.marshal(buff);
-       } // end of list marshalling
+	public void setEventID(final EventIdentifier pEventID) {
+		eventID = pEventID;
+	}
 
-    } // end of marshal method
+	public void setLocation(final Vector3Float pLocation) {
+		location = pLocation;
+	}
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       super.unmarshal(buff);
+	public void setNumberOfBeams(final short pNumberOfBeams) {
+		numberOfBeams = pNumberOfBeams;
+	}
 
-       emittingEntityID.unmarshal(buff);
-       eventID.unmarshal(buff);
-       stateUpdateIndicator = (short)(buff.get() & 0xFF);
-       numberOfSystems = (short)(buff.get() & 0xFF);
-       paddingForEmissionsPdu = (int)(buff.getShort() & 0xFFFF);
-       systemDataLength = (short)(buff.get() & 0xFF);
-       numberOfBeams = (short)(buff.get() & 0xFF);
-       emitterSystem.unmarshal(buff);
-       location.unmarshal(buff);
-       for(int idx = 0; idx < numberOfSystems; idx++)
-       {
-            Vector3Float anX = new Vector3Float();
-            anX.unmarshal(buff);
-            systems.add(anX);
-       }
+	/**
+	 * Note that setting this value will not change the marshalled value. The list
+	 * whose length this describes is used for that purpose. The getnumberOfSystems
+	 * method will also be based on the actual list length rather than this value.
+	 * The method is simply here for java bean completeness.
+	 */
+	public void setNumberOfSystems(final short pNumberOfSystems) {
+		numberOfSystems = pNumberOfSystems;
+	}
 
- } // end of unmarshal method 
+	public void setPaddingForEmissionsPdu(final int pPaddingForEmissionsPdu) {
+		paddingForEmissionsPdu = pPaddingForEmissionsPdu;
+	}
 
+	public void setStateUpdateIndicator(final short pStateUpdateIndicator) {
+		stateUpdateIndicator = pStateUpdateIndicator;
+	}
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+	public void setSystemDataLength(final short pSystemDataLength) {
+		systemDataLength = pSystemDataLength;
+	}
 
-    if(this == obj){
-      return true;
-    }
+	public void setSystems(final List<Vector3Float> pSystems) {
+		systems = pSystems;
+	}
 
-    if(obj == null){
-       return false;
-    }
+	@Override
+	public void unmarshal(final DataInputStream dis) {
+		super.unmarshal(dis);
 
-    if(getClass() != obj.getClass())
-        return false;
+		try {
+			emittingEntityID.unmarshal(dis);
+			eventID.unmarshal(dis);
+			stateUpdateIndicator = (short) dis.readUnsignedByte();
+			numberOfSystems = (short) dis.readUnsignedByte();
+			paddingForEmissionsPdu = dis.readUnsignedShort();
+			systemDataLength = (short) dis.readUnsignedByte();
+			numberOfBeams = (short) dis.readUnsignedByte();
+			emitterSystem.unmarshal(dis);
+			location.unmarshal(dis);
+			for (int idx = 0; idx < numberOfSystems; idx++) {
+				final Vector3Float anX = new Vector3Float();
+				anX.unmarshal(dis);
+				systems.add(anX);
+			}
 
-    return equalsImpl(obj);
- }
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
-@Override
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	@Override
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		super.unmarshal(buff);
 
-    if(!(obj instanceof ElectronicEmissionsPdu))
-        return false;
+		emittingEntityID.unmarshal(buff);
+		eventID.unmarshal(buff);
+		stateUpdateIndicator = (short) (buff.get() & 0xFF);
+		numberOfSystems = (short) (buff.get() & 0xFF);
+		paddingForEmissionsPdu = buff.getShort() & 0xFFFF;
+		systemDataLength = (short) (buff.get() & 0xFF);
+		numberOfBeams = (short) (buff.get() & 0xFF);
+		emitterSystem.unmarshal(buff);
+		location.unmarshal(buff);
+		for (int idx = 0; idx < numberOfSystems; idx++) {
+			final Vector3Float anX = new Vector3Float();
+			anX.unmarshal(buff);
+			systems.add(anX);
+		}
 
-     final ElectronicEmissionsPdu rhs = (ElectronicEmissionsPdu)obj;
-
-     if( ! (emittingEntityID.equals( rhs.emittingEntityID) )) ivarsEqual = false;
-     if( ! (eventID.equals( rhs.eventID) )) ivarsEqual = false;
-     if( ! (stateUpdateIndicator == rhs.stateUpdateIndicator)) ivarsEqual = false;
-     if( ! (numberOfSystems == rhs.numberOfSystems)) ivarsEqual = false;
-     if( ! (paddingForEmissionsPdu == rhs.paddingForEmissionsPdu)) ivarsEqual = false;
-     if( ! (systemDataLength == rhs.systemDataLength)) ivarsEqual = false;
-     if( ! (numberOfBeams == rhs.numberOfBeams)) ivarsEqual = false;
-     if( ! (emitterSystem.equals( rhs.emitterSystem) )) ivarsEqual = false;
-     if( ! (location.equals( rhs.location) )) ivarsEqual = false;
-
-     for(int idx = 0; idx < systems.size(); idx++)
-     {
-        if( ! ( systems.get(idx).equals(rhs.systems.get(idx)))) ivarsEqual = false;
-     }
-
-
-    return ivarsEqual && super.equalsImpl(rhs);
- }
+	} // end of unmarshal method
 } // end of class

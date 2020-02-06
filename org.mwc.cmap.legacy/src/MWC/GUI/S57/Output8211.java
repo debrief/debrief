@@ -1,18 +1,17 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
-
 
 package MWC.GUI.S57;
 
@@ -27,34 +26,71 @@ import com.bbn.openmap.util.Debug;
  * Class that uses the DDF* classes to read an 8211 file and print out the
  * contents.
  */
-public class Output8211
-{
+public class Output8211 {
 
 	private static FileWriter os;
+
+	private static void dOut(final String txt) {
+		try {
+			os.write(txt + "\r\n");
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(final String[] argv) {
+		String[] args = argv.clone();
+		if (args.length == 0) {
+			args = new String[] { "d://dev/AU411141.000" };
+		}
+
+		try {
+			os = new FileWriter("d:\\\\dev\\s57_listing2.txt");
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
+
+		Debug.init();
+
+		String pszFilename = null;
+		boolean bFSPTHack = false;
+
+		for (int iArg = 0; iArg < args.length; iArg++) {
+			if (args[iArg].equals("-fspt_repeating")) {
+				bFSPTHack = true;
+			} else {
+				pszFilename = args[iArg];
+			}
+		}
+
+		if (pszFilename == null) {
+			dOut("Usage: View8211 filename\n");
+			System.exit(1);
+		}
+
+		new Output8211(pszFilename, bFSPTHack);
+
+	}
 
 	protected boolean bFSPTHack = false;
 
 	protected String pszFilename = null;
 
-	public Output8211(final String filename, final boolean fspt_repeating)
-	{
+	public Output8211(final String filename, final boolean fspt_repeating) {
 		pszFilename = filename;
 		bFSPTHack = fspt_repeating;
 
 		view();
 	}
 
-	protected void view()
-	{
+	protected void view() {
 		DDFModule oModule;
 
-		try
-		{
+		try {
 
 			oModule = new DDFModule(pszFilename);
 
-			if (bFSPTHack)
-			{
+			if (bFSPTHack) {
 				final DDFFieldDefinition poFSPT = oModule.findFieldDefn("FSPT");
 
 				if (poFSPT == null)
@@ -69,24 +105,20 @@ public class Output8211
 			DDFRecord poRecord;
 			int iRecord = 1;
 
-			while ((poRecord = oModule.readRecord()) != null)
-			{
+			while ((poRecord = oModule.readRecord()) != null) {
 				dOut("Record " + (iRecord++) + "(" + poRecord.getDataSize() + " bytes)");
 
 				/* ------------------------------------------------------------ */
 				/* Loop over each field in this particular record. */
 				/* ------------------------------------------------------------ */
 				for (final Iterator<DDFField> it = poRecord.iterator(); it != null && it.hasNext();
-				// dOut(((DDFField)it.next()).toString()));
-				viewRecordField(((DDFField) it.next())))
-				{
-					
+						// dOut(((DDFField)it.next()).toString()));
+						viewRecordField((it.next()))) {
+
 				}
 			}
 
-		}
-		catch (final IOException ioe)
-		{
+		} catch (final IOException ioe) {
 			Debug.error(ioe.getMessage());
 			ioe.printStackTrace();
 		}
@@ -95,13 +127,11 @@ public class Output8211
 	/**
 	 * Dump the contents of a field instance in a record.
 	 */
-	protected void viewRecordField(final DDFField poField)
-	{
+	protected void viewRecordField(final DDFField poField) {
 		final DDFFieldDefinition poFieldDefn = poField.getFieldDefn();
 
 		// Report general information about the field.
-		dOut("    Field " + poFieldDefn.getName() + ": "
-				+ poFieldDefn.getDescription());
+		dOut("    Field " + poFieldDefn.getName() + ": " + poFieldDefn.getDescription());
 
 		// Get pointer to this fields raw data. We will move through
 		// it consuming data as we report subfield values.
@@ -114,18 +144,15 @@ public class Output8211
 		/* subfields. The repeat count will almost */
 		/* always be one. */
 		/* -------------------------------------------------------- */
-		for (int iRepeat = 0; iRepeat < poField.getRepeatCount(); iRepeat++)
-		{
-			if (iRepeat > 0)
-			{
+		for (int iRepeat = 0; iRepeat < poField.getRepeatCount(); iRepeat++) {
+			if (iRepeat > 0) {
 				dOut("Repeating (" + iRepeat + ")...");
 			}
 			/* -------------------------------------------------------- */
 			/* Loop over all the subfields of this field, advancing */
 			/* the data pointer as we consume data. */
 			/* -------------------------------------------------------- */
-			for (int iSF = 0; iSF < poFieldDefn.getSubfieldCount(); iSF++)
-			{
+			for (int iSF = 0; iSF < poFieldDefn.getSubfieldCount(); iSF++) {
 
 				final DDFSubfieldDefinition poSFDefn = poFieldDefn.getSubfieldDefn(iSF);
 				final int nBytesConsumed = viewSubfield(poSFDefn, pachFieldData, nBytesRemaining);
@@ -138,93 +165,28 @@ public class Output8211
 	}
 
 	protected int viewSubfield(final DDFSubfieldDefinition poSFDefn, final byte[] pachFieldData,
-			final int nBytesRemaining)
-	{
+			final int nBytesRemaining) {
 
 		final MutableInt nBytesConsumed = new MutableInt();
 
 		final DDFDataType ddfdt = poSFDefn.getType();
 
-		if (ddfdt == DDFDataType.DDFInt)
-		{
+		if (ddfdt == DDFDataType.DDFInt) {
 			dOut("        " + poSFDefn.getName() + " = "
 					+ poSFDefn.extractIntData(pachFieldData, nBytesRemaining, nBytesConsumed));
-		}
-		else if (ddfdt == DDFDataType.DDFFloat)
-		{
+		} else if (ddfdt == DDFDataType.DDFFloat) {
 			dOut("        " + poSFDefn.getName() + " = "
 					+ poSFDefn.extractFloatData(pachFieldData, nBytesRemaining, nBytesConsumed));
-		}
-		else if (ddfdt == DDFDataType.DDFString)
-		{
+		} else if (ddfdt == DDFDataType.DDFString) {
+			dOut("        " + poSFDefn.getName() + " = "
+					+ poSFDefn.extractStringData(pachFieldData, nBytesRemaining, nBytesConsumed));
+		} else if (ddfdt == DDFDataType.DDFBinaryString) {
+			poSFDefn.extractStringData(pachFieldData, nBytesRemaining, nBytesConsumed); // pabyBString
 			dOut("        " + poSFDefn.getName() + " = "
 					+ poSFDefn.extractStringData(pachFieldData, nBytesRemaining, nBytesConsumed));
 		}
-		else if (ddfdt == DDFDataType.DDFBinaryString)
-		{
-			poSFDefn.extractStringData(pachFieldData, nBytesRemaining, nBytesConsumed); // pabyBString
-      dOut("        " + poSFDefn.getName() + " = " + poSFDefn.extractStringData(pachFieldData,
-          nBytesRemaining,
-          nBytesConsumed));
-		}
 
 		return nBytesConsumed.value;
-	}
-
-	public static void main(final String[] argv)
-	{
-		String[] args = argv.clone();
-		if (args.length == 0)
-		{
-			args = new String[] { "d://dev/AU411141.000" };
-		}
-
-		try
-		{
-			os = new FileWriter("d:\\\\dev\\s57_listing2.txt");
-		}
-		catch (final IOException e)
-		{
-			e.printStackTrace();
-		}
-
-		Debug.init();
-
-		String pszFilename = null;
-		boolean bFSPTHack = false;
-
-		for (int iArg = 0; iArg < args.length; iArg++)
-		{
-			if (args[iArg].equals("-fspt_repeating"))
-			{
-				bFSPTHack = true;
-			}
-			else
-			{
-				pszFilename = args[iArg];
-			}
-		}
-
-		if (pszFilename == null)
-		{
-			dOut("Usage: View8211 filename\n");
-			System.exit(1);
-		}
-
-		new Output8211(pszFilename, bFSPTHack);
-
-	}
-	
-	private static void dOut(final String txt)
-	{
-		try
-		{
-			os.write(txt + "\r\n");
-		}
-		catch (final IOException e)
-		{
-			e.printStackTrace();
-		}
 	}
 
 }

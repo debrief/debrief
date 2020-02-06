@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: Trace.java,v $
@@ -91,12 +91,11 @@ import MWC.GUI.ToolParent;
 /**
  * Class to allow the output of stack traces to file, instead of the command
  * line
- * 
+ *
  * @author Ian.Mayo
  * @version 1
  */
-public class Trace extends java.lang.Object
-{
+public class Trace extends java.lang.Object {
 
 	/**
 	 * whether we also send output to the console
@@ -115,8 +114,8 @@ public class Trace extends java.lang.Object
 	static private String _line_separator;
 
 	/**
-	 * remember if we have already shown a warning to the user about the trace
-	 * file being created
+	 * remember if we have already shown a warning to the user about the trace file
+	 * being created
 	 */
 	static private boolean _warningShown = false;
 
@@ -127,153 +126,18 @@ public class Trace extends java.lang.Object
 	// ////////////////////////////////////////////////
 
 	/**
-	 * initialise the tool, so that it knows where to get it's layers information
-	 * 
-	 * @param theParent
-	 */
-	public static void initialise(final ToolParent theParent)
-	{
-		_myParent = theParent;
-	}
-
-	/**
-	 * share access to the tool parent - used for retrieving properties
-	 * 
-	 */
-	public static ToolParent getParent()
-	{
-		return _myParent;
-	}
-
-	/**
-	 * write this exception to the trace file
-	 * 
-	 * @param e
-	 *          the exception to record
-	 */
-	static public void trace(final Throwable e)
-	{
-		trace(e, null);
-	}
-
-	/**
-	 * write these details to the trace file, together with a message
-	 */
-	static public void trace(final String message, final boolean showWarning)
-	{ // do we have a logger?
-		if (_myParent != null)
-		{
-      _myParent.logError(ToolParent.INFO, "Exception caught:" + message, null,
-          showWarning);
-		}
-		else
-		{
-			if (_output == null)
-			{
-				createOutput(showWarning);
-			}
-
-			// just do an extra check to see if the user has been warned yet (if the
-			// user wants to, that-is)
-			if (showWarning && !_warningShown)
-			{
-				final String msg = "Errors have occured.  An error file has been created the working directory";
-				MWC.GUI.Dialogs.DialogFactory.showMessage("Errors recorded", msg);
-				_warningShown = true;
-			}
-
-			// do we have a logger?
-			if (_myParent != null)
-				_myParent.logError(ToolParent.INFO, message, null);
-
-			//
-			doHeader();
-
-			_output.print(message);
-			_output.print(_line_separator);
-
-			if (DEBUG)
-			{
-				System.err.println(message);
-			}
-		}
-
-	}
-
-	/**
-	 * write these details to the trace file, together with a message
-	 */
-	static public void trace(final String message)
-	{
-		trace(message, true);
-	}
-
-	/**
-	 * write these details to the trace file, together with a message
-	 */
-	static public void trace(final Throwable e, final String message)
-	{
-		if (_myParent != null)
-		{
-			Exception ex = null;
-			if(e instanceof Exception)
-			{
-				ex = (Exception) e;
-			}
-			_myParent.logError(ToolParent.INFO, "Exception caught:" + message, ex);
-		}
-		else
-		{
-			if (_output == null)
-			{
-				createOutput(true);
-			}
-
-			// just do an extra check to see if the user has been warned yet
-			if (!_warningShown)
-			{
-				final String msg = "Errors have occured.  An error file has been created the working directory";
-				MWC.GUI.Dialogs.DialogFactory.showMessage("Errors recorded", msg);
-				_warningShown = true;
-			}
-
-			//
-			doHeader();
-
-			_output.print(message);
-			_output.print(_line_separator);
-			e.printStackTrace(_output);
-
-			if (DEBUG)
-			{
-				System.err.println(message);
-				e.printStackTrace();
-			}
-
-			// do we have a logger?
-			if (_myParent != null)
-				_myParent.logError(ToolParent.INFO, message + "-" + e.getMessage(),
-						null);
-		}
-	}
-
-	/**
 	 * create the output stream
 	 */
-	static private void createOutput(final boolean showWarning)
-	{
+	static private void createOutput(final boolean showWarning) {
 		_line_separator = System.getProperty("line.separator");
 
 		final File f_out = new File(_outName);
-		try
-		{
+		try {
 
-			if (showWarning)
-			{
+			if (showWarning) {
 				// this is the first time we have sent errors to the trace, inform the
 				// user
-				final String msg = "Errors have occured.  An error file has been created in "
-						+ f_out.getAbsolutePath();
+				final String msg = "Errors have occured.  An error file has been created in " + f_out.getAbsolutePath();
 				MWC.GUI.Dialogs.DialogFactory.showMessage("Errors recorded", msg);
 
 				_warningShown = true;
@@ -292,25 +156,129 @@ public class Trace extends java.lang.Object
 
 			doHeader();
 
-		}
-		catch (final Exception e)
-		{
+		} catch (final Exception e) {
 			// don't bother
-			System.err
-					.println("Failed to create output trace, output going to sys.err");
+			System.err.println("Failed to create output trace, output going to sys.err");
 			_output = System.err;
 		}
 	}
 
-	static private void doHeader()
-	{
-		if (_output == null)
-		{
+	static private void doHeader() {
+		if (_output == null) {
 			createOutput(true);
 		}
 		//
 		_output.print("-------------------------------");
 
 		_output.print(_line_separator);
+	}
+
+	/**
+	 * share access to the tool parent - used for retrieving properties
+	 *
+	 */
+	public static ToolParent getParent() {
+		return _myParent;
+	}
+
+	/**
+	 * initialise the tool, so that it knows where to get it's layers information
+	 *
+	 * @param theParent
+	 */
+	public static void initialise(final ToolParent theParent) {
+		_myParent = theParent;
+	}
+
+	/**
+	 * write these details to the trace file, together with a message
+	 */
+	static public void trace(final String message) {
+		trace(message, true);
+	}
+
+	/**
+	 * write these details to the trace file, together with a message
+	 */
+	static public void trace(final String message, final boolean showWarning) { // do we have a logger?
+		if (_myParent != null) {
+			_myParent.logError(ToolParent.INFO, "Exception caught:" + message, null, showWarning);
+		} else {
+			if (_output == null) {
+				createOutput(showWarning);
+			}
+
+			// just do an extra check to see if the user has been warned yet (if the
+			// user wants to, that-is)
+			if (showWarning && !_warningShown) {
+				final String msg = "Errors have occured.  An error file has been created the working directory";
+				MWC.GUI.Dialogs.DialogFactory.showMessage("Errors recorded", msg);
+				_warningShown = true;
+			}
+
+			// do we have a logger?
+			if (_myParent != null)
+				_myParent.logError(ToolParent.INFO, message, null);
+
+			//
+			doHeader();
+
+			_output.print(message);
+			_output.print(_line_separator);
+
+			if (DEBUG) {
+				System.err.println(message);
+			}
+		}
+
+	}
+
+	/**
+	 * write this exception to the trace file
+	 *
+	 * @param e the exception to record
+	 */
+	static public void trace(final Throwable e) {
+		trace(e, null);
+	}
+
+	/**
+	 * write these details to the trace file, together with a message
+	 */
+	static public void trace(final Throwable e, final String message) {
+		if (_myParent != null) {
+			Exception ex = null;
+			if (e instanceof Exception) {
+				ex = (Exception) e;
+			}
+			_myParent.logError(ToolParent.INFO, "Exception caught:" + message, ex);
+		} else {
+			if (_output == null) {
+				createOutput(true);
+			}
+
+			// just do an extra check to see if the user has been warned yet
+			if (!_warningShown) {
+				final String msg = "Errors have occured.  An error file has been created the working directory";
+				MWC.GUI.Dialogs.DialogFactory.showMessage("Errors recorded", msg);
+				_warningShown = true;
+			}
+
+			//
+			doHeader();
+
+			_output.print(message);
+			_output.print(_line_separator);
+			e.printStackTrace(_output);
+
+			if (DEBUG) {
+				System.err.println(message);
+				e.printStackTrace();
+			}
+
+			// do we have a logger?
+			if (_myParent != null)
+				_myParent.logError(ToolParent.INFO, message + "-" + e.getMessage(), null);
+		}
 	}
 }

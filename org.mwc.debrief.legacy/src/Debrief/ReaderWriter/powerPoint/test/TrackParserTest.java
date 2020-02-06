@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 package Debrief.ReaderWriter.powerPoint.test;
 
@@ -35,45 +35,40 @@ import Debrief.ReaderWriter.powerPoint.model.TrackData;
 import Debrief.ReaderWriter.powerPoint.model.TrackPoint;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
-public class TrackParserTest
-{
-  private static final String sampleTrack = Utils.testFolder + File.separator
-      + "TrackParser" + File.separator + "SampleTrack.txt";
+public class TrackParserTest {
+	private static final String sampleTrack = Utils.testFolder + File.separator + "TrackParser" + File.separator
+			+ "SampleTrack.txt";
 
-  @Test
-  public void testParse() throws IOException, ParseException
-  {
-    final byte[] encoded = Files.readAllBytes(Paths.get(sampleTrack));
-    final String trackXml = new String(encoded);
-    final TrackData result = TrackParser.getInstance().parse(trackXml);
-    final TrackData expectedResult = new TrackData();
-    expectedResult.setHeight(634);
-    expectedResult.setIntervals(200);
-    expectedResult.setWidth(690);
-    expectedResult.setName("Exported DebriefNG tracks");
-    expectedResult.getNarrativeEntries().addAll(Arrays.asList(
-        new ExportNarrativeEntry[]
-        {new ExportNarrativeEntry("COMEX. Rule amendment Charlie 3",
-            "120500.00", "0", null), new ExportNarrativeEntry(
-                "CONFIRMED. OBTAIN SOLUTION", "121003.00", "12120", null)}));
-    final Track track1 = new Track("COLLINGWOOD", new Color(0, 100, 189), 0);
+	@Test
+	public void testParse() throws IOException, ParseException {
+		final byte[] encoded = Files.readAllBytes(Paths.get(sampleTrack));
+		final String trackXml = new String(encoded);
+		final TrackData result = TrackParser.getInstance().parse(trackXml);
+		final TrackData expectedResult = new TrackData();
+		expectedResult.setHeight(634);
+		expectedResult.setIntervals(200);
+		expectedResult.setWidth(690);
+		expectedResult.setName("Exported DebriefNG tracks");
+		expectedResult.getNarrativeEntries()
+				.addAll(Arrays.asList(new ExportNarrativeEntry[] {
+						new ExportNarrativeEntry("COMEX. Rule amendment Charlie 3", "120500.00", "0", null),
+						new ExportNarrativeEntry("CONFIRMED. OBTAIN SOLUTION", "121003.00", "12120", null) }));
+		final Track track1 = new Track("COLLINGWOOD", new Color(0, 100, 189), 0);
 
-    final DateFormat dateTimeFormatter = new GMTDateFormat(
-        "yyyy-MM-dd'T'HH:mm:ss'Z'");
-    Date dateTime = dateTimeFormatter.parse("1995-12-12T05:05:00Z");
-    TrackPoint trackPoint = new TrackPoint((float) 56.0, (float) 511.0,
-        (float) .0, dateTime, "1995-12-12T05:05:00Z");
-    track1.getPoints().add(trackPoint);
-    expectedResult.getTracks().add(track1);
+		final DateFormat dateTimeFormatter = new GMTDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		Date dateTime = dateTimeFormatter.parse("1995-12-12T05:05:00Z");
+		TrackPoint trackPoint = new TrackPoint((float) 56.0, (float) 511.0, (float) .0, dateTime,
+				"1995-12-12T05:05:00Z");
+		track1.getPoints().add(trackPoint);
+		expectedResult.getTracks().add(track1);
 
-    final Track track2 = new Track("NELSON", new Color(224, 28, 62), 0);
-    dateTime = dateTimeFormatter.parse("1995-12-12T05:05:00Z");
-    trackPoint = new TrackPoint((float) 585.0, (float) 304.0, (float) .0,
-        dateTime, "1995-12-12T05:05:00Z");
-    track2.getPoints().add(trackPoint);
-    expectedResult.getTracks().add(track2);
+		final Track track2 = new Track("NELSON", new Color(224, 28, 62), 0);
+		dateTime = dateTimeFormatter.parse("1995-12-12T05:05:00Z");
+		trackPoint = new TrackPoint((float) 585.0, (float) 304.0, (float) .0, dateTime, "1995-12-12T05:05:00Z");
+		track2.getPoints().add(trackPoint);
+		expectedResult.getTracks().add(track2);
 
-    assertTrue(result.equals(expectedResult));
-  }
+		assertTrue(result.equals(expectedResult));
+	}
 
 }

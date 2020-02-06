@@ -1,18 +1,17 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
-
 
 package MWC.GUI.ETOPO;
 
@@ -23,21 +22,21 @@ package MWC.GUI.ETOPO;
 // none
 
 /**
- * Abstract base representation of geometry generator of box raw coordinate
- * and geometry normals.
+ * Abstract base representation of geometry generator of box raw coordinate and
+ * geometry normals.
  * <p>
  *
- * Curved surfaces would like to generate a smooth object most of the time.
- * To do this, the normal values at each vertex are made to smooth the values
- * for each set of faces that use that value (ie the effect is averaged between
- * all the sharing faces). The typical approach to do this is to work with a
- * value called creaseAngle. If the angle between two surfaces is less that
- * the creaseAngle, a smoothed normal is generated. If greater, the normal is
- * perpendicular to the face. If we are playing with different numbers of
- * facets in an object, this gets rather annoying at times as some pieces may
- * or may not be faceted. At the same time there is a performance hit for
- * generating the normals as you have to check every face and build a lot of
- * extra data before you start doing normal calculations.
+ * Curved surfaces would like to generate a smooth object most of the time. To
+ * do this, the normal values at each vertex are made to smooth the values for
+ * each set of faces that use that value (ie the effect is averaged between all
+ * the sharing faces). The typical approach to do this is to work with a value
+ * called creaseAngle. If the angle between two surfaces is less that the
+ * creaseAngle, a smoothed normal is generated. If greater, the normal is
+ * perpendicular to the face. If we are playing with different numbers of facets
+ * in an object, this gets rather annoying at times as some pieces may or may
+ * not be faceted. At the same time there is a performance hit for generating
+ * the normals as you have to check every face and build a lot of extra data
+ * before you start doing normal calculations.
  * <p>
  *
  * This library takes a much simplified approach - let the geometry generator
@@ -47,68 +46,64 @@ package MWC.GUI.ETOPO;
  * <P>
  *
  * Obvious limitations to this are shapes like the cube or a near-degenerate
- * cone that ends up as a pyramid. The smoothing of normals may be there, but
- * no matter how hard you try, the differences between the face angles will
- * just be too great.
+ * cone that ends up as a pyramid. The smoothing of normals may be there, but no
+ * matter how hard you try, the differences between the face angles will just be
+ * too great.
  *
  * @author Justin Couch
  * @version $Revision: 1.1.1.1 $
  */
-public abstract class GeometryGenerator
-{
-    /** Working values for the normal generation */
+public abstract class GeometryGenerator {
+	/** Working values for the normal generation */
 //    private Vector3f normal;
 //    private Vector3f v0;
 //    private Vector3f v1;
 
-    protected GeometryGenerator()
-    {
-    	throw new RuntimeException("Legacy Java3d support has been deprecated");
+	protected GeometryGenerator() {
+		throw new RuntimeException("Legacy Java3d support has been deprecated");
 
-//    	
+//
 //        v0 = new Vector3f();
 //        v1 = new Vector3f();
 //        normal = new Vector3f();
-    }
+	}
 
-    /**
-     * Get the number of vertices that this generator will create for the
-     * shape given in the definition.
-     *
-     * @param data The data to base the calculations on
-     * @return The vertex count for the object
-     * @throws UnsupportedTypeException The generator cannot handle the type
-     *   of geometry you have requested.
-     */
-    public abstract int getVertexCount(GeometryData data)
-        throws UnsupportedTypeException;
+	/**
+	 * Generate a new set of geometry items based on the passed data. If the data
+	 * does not contain the right minimum array lengths an exception will be
+	 * generated. If the array reference is null, this will create arrays of the
+	 * correct length and assign them to the return value.
+	 *
+	 * @param data The data to base the calculations on
+	 * @throws InvalidArraySizeException The array is not big enough to contain the
+	 *                                   requested geometry
+	 * @throws UnsupportedTypeException  The generator cannot handle the type of
+	 *                                   geometry you have requested
+	 */
+	public abstract void generate(GeometryData data) throws UnsupportedTypeException, InvalidArraySizeException;
 
-    /**
-     * Generate a new set of geometry items based on the passed data. If the
-     * data does not contain the right minimum array lengths an exception will
-     * be generated. If the array reference is null, this will create arrays
-     * of the correct length and assign them to the return value.
-     *
-     * @param data The data to base the calculations on
-     * @throws InvalidArraySizeException The array is not big enough to contain
-     *   the requested geometry
-     * @throws UnsupportedTypeException The generator cannot handle the type
-     *   of geometry you have requested
-     */
-    public abstract void generate(GeometryData data)
-        throws UnsupportedTypeException, InvalidArraySizeException;
+	/**
+	 * Get the number of vertices that this generator will create for the shape
+	 * given in the definition.
+	 *
+	 * @param data The data to base the calculations on
+	 * @return The vertex count for the object
+	 * @throws UnsupportedTypeException The generator cannot handle the type of
+	 *                                  geometry you have requested.
+	 */
+	public abstract int getVertexCount(GeometryData data) throws UnsupportedTypeException;
 
-    /**
-     * Convenience method to create a normal for the given vertex coordinates
-     * and normal array. This performs a cross product of the two vectors
-     * described by the middle and two end points.
-     *
-     * @param coords The coordinate array to read values from
-     * @param p The index of the middle point
-     * @param p1 The index of the first point
-     * @param p2 The index of the second point
-     * @return A temporary value containing the normal value
-     */
+	/**
+	 * Convenience method to create a normal for the given vertex coordinates and
+	 * normal array. This performs a cross product of the two vectors described by
+	 * the middle and two end points.
+	 *
+	 * @param coords The coordinate array to read values from
+	 * @param p      The index of the middle point
+	 * @param p1     The index of the first point
+	 * @param p2     The index of the second point
+	 * @return A temporary value containing the normal value
+	 */
 //    protected Vector3f createFaceNormal(float[] coords, int p, int p1, int p2)
 //    {
 //        v0.x = coords[p1]     - coords[p];
@@ -125,15 +120,15 @@ public abstract class GeometryGenerator
 //        return normal;
 //    }
 
-    /**
-     * Create a normal based on the given vertex position, assuming that it is
-     * a point in space, relative to the origin. This will create a normal that
-     * points directly along the vector from the origin to the point.
-     *
-     * @param coords The coordinate array to read values from
-     * @param p The index of the point to calculate
-     * @return A temporary value containing the normal value
-     */
+	/**
+	 * Create a normal based on the given vertex position, assuming that it is a
+	 * point in space, relative to the origin. This will create a normal that points
+	 * directly along the vector from the origin to the point.
+	 *
+	 * @param coords The coordinate array to read values from
+	 * @param p      The index of the point to calculate
+	 * @return A temporary value containing the normal value
+	 */
 //    protected Vector3f createRadialNormal(float[] coords, int p)
 //    {
 //        float x = coords[p];

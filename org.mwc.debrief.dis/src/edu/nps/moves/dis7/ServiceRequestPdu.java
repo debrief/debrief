@@ -1,260 +1,264 @@
 package edu.nps.moves.dis7;
 
-import java.util.*;
-import java.io.*;
-import edu.nps.moves.disenum.*;
-import edu.nps.moves.disutil.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Service Request PDU shall be used to communicate information associated with                            one entity requesting a service from another). Section 7.4.2 COMPLETE
+ * Service Request PDU shall be used to communicate information associated with
+ * one entity requesting a service from another). Section 7.4.2 COMPLETE
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class ServiceRequestPdu extends LogisticsFamilyPdu implements Serializable
-{
-   /** Entity that is requesting service (see 6.2.28), Section 7.4.2 */
-   protected EntityID  requestingEntityID = new EntityID(); 
+public class ServiceRequestPdu extends LogisticsFamilyPdu implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   /** Entity that is providing the service (see 6.2.28), Section 7.4.2 */
-   protected EntityID  servicingEntityID = new EntityID(); 
+	/** Entity that is requesting service (see 6.2.28), Section 7.4.2 */
+	protected EntityID requestingEntityID = new EntityID();
 
-   /** Type of service requested, Section 7.4.2 */
-   protected short  serviceTypeRequested;
+	/** Entity that is providing the service (see 6.2.28), Section 7.4.2 */
+	protected EntityID servicingEntityID = new EntityID();
 
-   /** How many requested, Section 7.4.2 */
-   protected short  numberOfSupplyTypes;
+	/** Type of service requested, Section 7.4.2 */
+	protected short serviceTypeRequested;
 
-   /** padding */
-   protected short  serviceRequestPadding = (short)0;
+	/** How many requested, Section 7.4.2 */
+	protected short numberOfSupplyTypes;
 
-   /** Field shall specify the type of supply and the amount of that supply for the number specified in the numberOfSupplyTypes (see 6.2.85), Section 7.4.2 */
-   protected List< SupplyQuantity > supplies = new ArrayList< SupplyQuantity >(); 
+	/** padding */
+	protected short serviceRequestPadding = (short) 0;
 
-/** Constructor */
- public ServiceRequestPdu()
- {
-    setPduType( (short)5 );
- }
+	/**
+	 * Field shall specify the type of supply and the amount of that supply for the
+	 * number specified in the numberOfSupplyTypes (see 6.2.85), Section 7.4.2
+	 */
+	protected List<SupplyQuantity> supplies = new ArrayList<SupplyQuantity>();
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+	/** Constructor */
+	public ServiceRequestPdu() {
+		setPduType((short) 5);
+	}
 
-   marshalSize = super.getMarshalledSize();
-   marshalSize = marshalSize + requestingEntityID.getMarshalledSize();  // requestingEntityID
-   marshalSize = marshalSize + servicingEntityID.getMarshalledSize();  // servicingEntityID
-   marshalSize = marshalSize + 1;  // serviceTypeRequested
-   marshalSize = marshalSize + 1;  // numberOfSupplyTypes
-   marshalSize = marshalSize + 2;  // serviceRequestPadding
-   for(int idx=0; idx < supplies.size(); idx++)
-   {
-        SupplyQuantity listElement = supplies.get(idx);
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-   }
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-   return marshalSize;
-}
+		if (this == obj) {
+			return true;
+		}
 
+		if (obj == null) {
+			return false;
+		}
 
-public void setRequestingEntityID(EntityID pRequestingEntityID)
-{ requestingEntityID = pRequestingEntityID;
-}
+		if (getClass() != obj.getClass())
+			return false;
 
-public EntityID getRequestingEntityID()
-{ return requestingEntityID; 
-}
+		return equalsImpl(obj);
+	}
 
-public void setServicingEntityID(EntityID pServicingEntityID)
-{ servicingEntityID = pServicingEntityID;
-}
+	@Override
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-public EntityID getServicingEntityID()
-{ return servicingEntityID; 
-}
+		if (!(obj instanceof ServiceRequestPdu))
+			return false;
 
-public void setServiceTypeRequested(short pServiceTypeRequested)
-{ serviceTypeRequested = pServiceTypeRequested;
-}
+		final ServiceRequestPdu rhs = (ServiceRequestPdu) obj;
 
-public short getServiceTypeRequested()
-{ return serviceTypeRequested; 
-}
+		if (!(requestingEntityID.equals(rhs.requestingEntityID)))
+			ivarsEqual = false;
+		if (!(servicingEntityID.equals(rhs.servicingEntityID)))
+			ivarsEqual = false;
+		if (!(serviceTypeRequested == rhs.serviceTypeRequested))
+			ivarsEqual = false;
+		if (!(numberOfSupplyTypes == rhs.numberOfSupplyTypes))
+			ivarsEqual = false;
+		if (!(serviceRequestPadding == rhs.serviceRequestPadding))
+			ivarsEqual = false;
 
-public short getNumberOfSupplyTypes()
-{ return (short)supplies.size();
-}
+		for (int idx = 0; idx < supplies.size(); idx++) {
+			if (!(supplies.get(idx).equals(rhs.supplies.get(idx))))
+				ivarsEqual = false;
+		}
 
-/** Note that setting this value will not change the marshalled value. The list whose length this describes is used for that purpose.
- * The getnumberOfSupplyTypes method will also be based on the actual list length rather than this value. 
- * The method is simply here for java bean completeness.
- */
-public void setNumberOfSupplyTypes(short pNumberOfSupplyTypes)
-{ numberOfSupplyTypes = pNumberOfSupplyTypes;
-}
+		return ivarsEqual && super.equalsImpl(rhs);
+	}
 
-public void setServiceRequestPadding(short pServiceRequestPadding)
-{ serviceRequestPadding = pServiceRequestPadding;
-}
+	@Override
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
-public short getServiceRequestPadding()
-{ return serviceRequestPadding; 
-}
+		marshalSize = super.getMarshalledSize();
+		marshalSize = marshalSize + requestingEntityID.getMarshalledSize(); // requestingEntityID
+		marshalSize = marshalSize + servicingEntityID.getMarshalledSize(); // servicingEntityID
+		marshalSize = marshalSize + 1; // serviceTypeRequested
+		marshalSize = marshalSize + 1; // numberOfSupplyTypes
+		marshalSize = marshalSize + 2; // serviceRequestPadding
+		for (int idx = 0; idx < supplies.size(); idx++) {
+			final SupplyQuantity listElement = supplies.get(idx);
+			marshalSize = marshalSize + listElement.getMarshalledSize();
+		}
 
-public void setSupplies(List<SupplyQuantity> pSupplies)
-{ supplies = pSupplies;
-}
+		return marshalSize;
+	}
 
-public List<SupplyQuantity> getSupplies()
-{ return supplies; }
+	public short getNumberOfSupplyTypes() {
+		return (short) supplies.size();
+	}
 
+	public EntityID getRequestingEntityID() {
+		return requestingEntityID;
+	}
 
-public void marshal(DataOutputStream dos)
-{
-    super.marshal(dos);
-    try 
-    {
-       requestingEntityID.marshal(dos);
-       servicingEntityID.marshal(dos);
-       dos.writeByte( (byte)serviceTypeRequested);
-       dos.writeByte( (byte)supplies.size());
-       dos.writeShort( (short)serviceRequestPadding);
+	public short getServiceRequestPadding() {
+		return serviceRequestPadding;
+	}
 
-       for(int idx = 0; idx < supplies.size(); idx++)
-       {
-            SupplyQuantity aSupplyQuantity = supplies.get(idx);
-            aSupplyQuantity.marshal(dos);
-       } // end of list marshalling
+	public short getServiceTypeRequested() {
+		return serviceTypeRequested;
+	}
 
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+	public EntityID getServicingEntityID() {
+		return servicingEntityID;
+	}
 
-public void unmarshal(DataInputStream dis)
-{
-     super.unmarshal(dis);
+	public List<SupplyQuantity> getSupplies() {
+		return supplies;
+	}
 
-    try 
-    {
-       requestingEntityID.unmarshal(dis);
-       servicingEntityID.unmarshal(dis);
-       serviceTypeRequested = (short)dis.readUnsignedByte();
-       numberOfSupplyTypes = (short)dis.readUnsignedByte();
-       serviceRequestPadding = dis.readShort();
-       for(int idx = 0; idx < numberOfSupplyTypes; idx++)
-       {
-           SupplyQuantity anX = new SupplyQuantity();
-           anX.unmarshal(dis);
-           supplies.add(anX);
-       }
+	@Override
+	public void marshal(final DataOutputStream dos) {
+		super.marshal(dos);
+		try {
+			requestingEntityID.marshal(dos);
+			servicingEntityID.marshal(dos);
+			dos.writeByte((byte) serviceTypeRequested);
+			dos.writeByte((byte) supplies.size());
+			dos.writeShort(serviceRequestPadding);
 
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+			for (int idx = 0; idx < supplies.size(); idx++) {
+				final SupplyQuantity aSupplyQuantity = supplies.get(idx);
+				aSupplyQuantity.marshal(dos);
+			} // end of list marshalling
 
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
-       super.marshal(buff);
-       requestingEntityID.marshal(buff);
-       servicingEntityID.marshal(buff);
-       buff.put( (byte)serviceTypeRequested);
-       buff.put( (byte)supplies.size());
-       buff.putShort( (short)serviceRequestPadding);
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	@Override
+	public void marshal(final java.nio.ByteBuffer buff) {
+		super.marshal(buff);
+		requestingEntityID.marshal(buff);
+		servicingEntityID.marshal(buff);
+		buff.put((byte) serviceTypeRequested);
+		buff.put((byte) supplies.size());
+		buff.putShort(serviceRequestPadding);
 
-       for(int idx = 0; idx < supplies.size(); idx++)
-       {
-            SupplyQuantity aSupplyQuantity = (SupplyQuantity)supplies.get(idx);
-            aSupplyQuantity.marshal(buff);
-       } // end of list marshalling
+		for (int idx = 0; idx < supplies.size(); idx++) {
+			final SupplyQuantity aSupplyQuantity = supplies.get(idx);
+			aSupplyQuantity.marshal(buff);
+		} // end of list marshalling
 
-    } // end of marshal method
+	} // end of marshal method
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       super.unmarshal(buff);
+	/**
+	 * Note that setting this value will not change the marshalled value. The list
+	 * whose length this describes is used for that purpose. The
+	 * getnumberOfSupplyTypes method will also be based on the actual list length
+	 * rather than this value. The method is simply here for java bean completeness.
+	 */
+	public void setNumberOfSupplyTypes(final short pNumberOfSupplyTypes) {
+		numberOfSupplyTypes = pNumberOfSupplyTypes;
+	}
 
-       requestingEntityID.unmarshal(buff);
-       servicingEntityID.unmarshal(buff);
-       serviceTypeRequested = (short)(buff.get() & 0xFF);
-       numberOfSupplyTypes = (short)(buff.get() & 0xFF);
-       serviceRequestPadding = buff.getShort();
-       for(int idx = 0; idx < numberOfSupplyTypes; idx++)
-       {
-            SupplyQuantity anX = new SupplyQuantity();
-            anX.unmarshal(buff);
-            supplies.add(anX);
-       }
+	public void setRequestingEntityID(final EntityID pRequestingEntityID) {
+		requestingEntityID = pRequestingEntityID;
+	}
 
- } // end of unmarshal method 
+	public void setServiceRequestPadding(final short pServiceRequestPadding) {
+		serviceRequestPadding = pServiceRequestPadding;
+	}
 
+	public void setServiceTypeRequested(final short pServiceTypeRequested) {
+		serviceTypeRequested = pServiceTypeRequested;
+	}
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+	public void setServicingEntityID(final EntityID pServicingEntityID) {
+		servicingEntityID = pServicingEntityID;
+	}
 
-    if(this == obj){
-      return true;
-    }
+	public void setSupplies(final List<SupplyQuantity> pSupplies) {
+		supplies = pSupplies;
+	}
 
-    if(obj == null){
-       return false;
-    }
+	@Override
+	public void unmarshal(final DataInputStream dis) {
+		super.unmarshal(dis);
 
-    if(getClass() != obj.getClass())
-        return false;
+		try {
+			requestingEntityID.unmarshal(dis);
+			servicingEntityID.unmarshal(dis);
+			serviceTypeRequested = (short) dis.readUnsignedByte();
+			numberOfSupplyTypes = (short) dis.readUnsignedByte();
+			serviceRequestPadding = dis.readShort();
+			for (int idx = 0; idx < numberOfSupplyTypes; idx++) {
+				final SupplyQuantity anX = new SupplyQuantity();
+				anX.unmarshal(dis);
+				supplies.add(anX);
+			}
 
-    return equalsImpl(obj);
- }
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
-@Override
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	@Override
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		super.unmarshal(buff);
 
-    if(!(obj instanceof ServiceRequestPdu))
-        return false;
+		requestingEntityID.unmarshal(buff);
+		servicingEntityID.unmarshal(buff);
+		serviceTypeRequested = (short) (buff.get() & 0xFF);
+		numberOfSupplyTypes = (short) (buff.get() & 0xFF);
+		serviceRequestPadding = buff.getShort();
+		for (int idx = 0; idx < numberOfSupplyTypes; idx++) {
+			final SupplyQuantity anX = new SupplyQuantity();
+			anX.unmarshal(buff);
+			supplies.add(anX);
+		}
 
-     final ServiceRequestPdu rhs = (ServiceRequestPdu)obj;
-
-     if( ! (requestingEntityID.equals( rhs.requestingEntityID) )) ivarsEqual = false;
-     if( ! (servicingEntityID.equals( rhs.servicingEntityID) )) ivarsEqual = false;
-     if( ! (serviceTypeRequested == rhs.serviceTypeRequested)) ivarsEqual = false;
-     if( ! (numberOfSupplyTypes == rhs.numberOfSupplyTypes)) ivarsEqual = false;
-     if( ! (serviceRequestPadding == rhs.serviceRequestPadding)) ivarsEqual = false;
-
-     for(int idx = 0; idx < supplies.size(); idx++)
-     {
-        if( ! ( supplies.get(idx).equals(rhs.supplies.get(idx)))) ivarsEqual = false;
-     }
-
-
-    return ivarsEqual && super.equalsImpl(rhs);
- }
+	} // end of unmarshal method
 } // end of class

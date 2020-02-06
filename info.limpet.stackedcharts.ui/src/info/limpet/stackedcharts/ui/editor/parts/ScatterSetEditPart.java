@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 package info.limpet.stackedcharts.ui.editor.parts;
 
@@ -43,130 +43,109 @@ import info.limpet.stackedcharts.ui.editor.commands.DeleteScatterSetCommand;
 import info.limpet.stackedcharts.ui.editor.figures.DirectionalIconLabel;
 import info.limpet.stackedcharts.ui.editor.figures.DirectionalShape;
 
-public class ScatterSetEditPart extends AbstractGraphicalEditPart implements
-    ActionListener
-{
+public class ScatterSetEditPart extends AbstractGraphicalEditPart implements ActionListener {
 
-  private ScatterSetAdapter adapter = new ScatterSetAdapter();
+	public class ScatterSetAdapter implements Adapter {
 
-  private DirectionalIconLabel scatterSetNameLabel;
+		@Override
+		public Notifier getTarget() {
+			return getModel();
+		}
 
-  @Override
-  protected IFigure createFigure()
-  {
-    DirectionalShape figure = new DirectionalShape();
-    scatterSetNameLabel = new DirectionalIconLabel(StackedchartsImages.getImage(
-        StackedchartsImages.DESC_DATASET));
-    figure.add(scatterSetNameLabel);
-    final Button button = new Button(StackedchartsImages.getImage(
-        StackedchartsImages.DESC_DELETE));
-    button.setToolTip(new Label("Remove scatter set"));
-    button.addActionListener(this);
-    figure.add(button);
+		@Override
+		public boolean isAdapterForType(final Object type) {
+			return type.equals(ScatterSet.class);
+		}
 
-    return figure;
-  }
+		@Override
+		public void notifyChanged(final Notification notification) {
+			final int featureId = notification.getFeatureID(StackedchartsPackage.class);
+			switch (featureId) {
+			case StackedchartsPackage.SCATTER_SET__NAME:
+				refreshVisuals();
+				break;
+			}
+		}
 
-  @Override
-  public ScatterSet getModel()
-  {
-    return (ScatterSet) super.getModel();
-  }
+		@Override
+		public void setTarget(final Notifier newTarget) {
+			// Do nothing.
+		}
+	}
 
-  @Override
-  public void activate()
-  {
-    super.activate();
-    getModel().eAdapters().add(adapter);
-  }
+	private final ScatterSetAdapter adapter = new ScatterSetAdapter();
 
-  @Override
-  public void deactivate()
-  {
-    getModel().eAdapters().remove(adapter);
-    super.deactivate();
-  }
+	private DirectionalIconLabel scatterSetNameLabel;
 
-  @Override
-  protected void createEditPolicies()
-  {
-    installEditPolicy(EditPolicy.PRIMARY_DRAG_ROLE,
-        new NonResizableEditPolicy());
+	@Override
+	public void actionPerformed(final ActionEvent event) {
+		final Command deleteCommand = getCommand(new GroupRequest(REQ_DELETE));
+		if (deleteCommand != null) {
+			final CommandStack commandStack = getViewer().getEditDomain().getCommandStack();
+			commandStack.execute(deleteCommand);
+		}
+	}
 
-    installEditPolicy(EditPolicy.COMPONENT_ROLE, new ComponentEditPolicy()
-    {
-      protected Command createDeleteCommand(GroupRequest deleteRequest)
-      {
-        // TODO: implement
-        // 1. do not use this scatter set in the current chart
-        // 2. if scatter set used only here, then delete scatter set from shared axis
-        return new DeleteScatterSetCommand(getModel(), getChart());
-      }
-    });
-  }
+	@Override
+	public void activate() {
+		super.activate();
+		getModel().eAdapters().add(adapter);
+	}
 
-  @Override
-  protected void refreshVisuals()
-  {
-    super.refreshVisuals();
-    ScatterSet scatterSet = getModel();
-    String name = scatterSet.getName();
-    scatterSetNameLabel.getLabel().setText(name != null ? name : "<unnamed>");
+	@Override
+	protected void createEditPolicies() {
+		installEditPolicy(EditPolicy.PRIMARY_DRAG_ROLE, new NonResizableEditPolicy());
 
-    ChartSet chartSet = getChart().getParent();
-    boolean vertical = chartSet.getOrientation() == Orientation.VERTICAL;
-    ((DirectionalShape) getFigure()).setVertical(!vertical);
-    scatterSetNameLabel.setVertical(!vertical);
-  }
+		installEditPolicy(EditPolicy.COMPONENT_ROLE, new ComponentEditPolicy() {
+			@Override
+			protected Command createDeleteCommand(final GroupRequest deleteRequest) {
+				// TODO: implement
+				// 1. do not use this scatter set in the current chart
+				// 2. if scatter set used only here, then delete scatter set from shared axis
+				return new DeleteScatterSetCommand(getModel(), getChart());
+			}
+		});
+	}
 
-  public Chart getChart()
-  {
-    return (Chart) getParent().getParent().getModel();
-  }
+	@Override
+	protected IFigure createFigure() {
+		final DirectionalShape figure = new DirectionalShape();
+		scatterSetNameLabel = new DirectionalIconLabel(StackedchartsImages.getImage(StackedchartsImages.DESC_DATASET));
+		figure.add(scatterSetNameLabel);
+		final Button button = new Button(StackedchartsImages.getImage(StackedchartsImages.DESC_DELETE));
+		button.setToolTip(new Label("Remove scatter set"));
+		button.addActionListener(this);
+		figure.add(button);
 
-  @Override
-  public void actionPerformed(ActionEvent event)
-  {
-    Command deleteCommand = getCommand(new GroupRequest(REQ_DELETE));
-    if (deleteCommand != null)
-    {
-      CommandStack commandStack = getViewer().getEditDomain().getCommandStack();
-      commandStack.execute(deleteCommand);
-    }
-  }
+		return figure;
+	}
 
-  public class ScatterSetAdapter implements Adapter
-  {
+	@Override
+	public void deactivate() {
+		getModel().eAdapters().remove(adapter);
+		super.deactivate();
+	}
 
-    @Override
-    public void notifyChanged(Notification notification)
-    {
-      int featureId = notification.getFeatureID(StackedchartsPackage.class);
-      switch (featureId)
-      {
-      case StackedchartsPackage.SCATTER_SET__NAME:
-        refreshVisuals();
-        break;
-      }
-    }
+	public Chart getChart() {
+		return (Chart) getParent().getParent().getModel();
+	}
 
-    @Override
-    public Notifier getTarget()
-    {
-      return getModel();
-    }
+	@Override
+	public ScatterSet getModel() {
+		return (ScatterSet) super.getModel();
+	}
 
-    @Override
-    public void setTarget(Notifier newTarget)
-    {
-      // Do nothing.
-    }
+	@Override
+	protected void refreshVisuals() {
+		super.refreshVisuals();
+		final ScatterSet scatterSet = getModel();
+		final String name = scatterSet.getName();
+		scatterSetNameLabel.getLabel().setText(name != null ? name : "<unnamed>");
 
-    @Override
-    public boolean isAdapterForType(Object type)
-    {
-      return type.equals(ScatterSet.class);
-    }
-  }
+		final ChartSet chartSet = getChart().getParent();
+		final boolean vertical = chartSet.getOrientation() == Orientation.VERTICAL;
+		((DirectionalShape) getFigure()).setVertical(!vertical);
+		scatterSetNameLabel.setVertical(!vertical);
+	}
 
 }

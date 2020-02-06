@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: LofarSym.java,v $
@@ -61,74 +61,68 @@ import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.WorldLocation;
 
-public class HidarSym extends BuoySym
-{
+public class HidarSym extends BuoySym {
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 1L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-  public java.awt.Dimension getBounds()
-  {
-    // sort out the size of the symbol at the current scale factor
-    final java.awt.Dimension res = new java.awt.Dimension((int) (2 * 4
-        * getScaleVal()), (int) (2 * 4 * getScaleVal()));
-    return res;
-  }
-  
-  @Override
-  public PlainSymbol create()
-  {
-    return new HidarSym();
-  }
-  
-  public void paint(final CanvasType dest, final WorldLocation centre)
-  {
-    paint(dest, centre, 0.0);
-  }
+	@Override
+	public PlainSymbol create() {
+		return new HidarSym();
+	}
 
-  public void paint(final CanvasType dest, final WorldLocation theLocation,
-      final double direction)
-  {
-    // set the colour
-    dest.setColor(getColor());
+	@Override
+	public java.awt.Dimension getBounds() {
+		// sort out the size of the symbol at the current scale factor
+		final java.awt.Dimension res = new java.awt.Dimension((int) (2 * 4 * getScaleVal()),
+				(int) (2 * 4 * getScaleVal()));
+		return res;
+	}
 
-    // create our centre point
-    final java.awt.Point centre = dest.toScreen(theLocation);
+	@Override
+	public String getType() {
+		return SymbolFactory.HIDAR;
+	}
 
-    // handle unable to gen screen coords (if off visible area)
-    if(centre == null)
-      return;
+	@Override
+	public void paint(final CanvasType dest, final WorldLocation centre) {
+		paint(dest, centre, 0.0);
+	}
 
-    final int wid = (int) (4 * getScaleVal());
+	@Override
+	public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction) {
+		// set the colour
+		dest.setColor(getColor());
 
-    // draw our box, line by line
-    final java.awt.Point tl = new java.awt.Point(centre.x - wid, centre.y
-        - wid);
-    final java.awt.Point br = new java.awt.Point(centre.x + wid, centre.y
-        + wid);
+		// create our centre point
+		final java.awt.Point centre = dest.toScreen(theLocation);
 
-    if (!showSimplifiedSymbol())
-    {
-      // do the central character
-      // what's the width?
-      final String str = "H";
-      final int strW = dest.getStringWidth(_myFont, str);
-      final int strH = dest.getStringHeight(_myFont);
-      dest.drawText(_myFont, str, centre.x - strW / 2, centre.y + strH / 4);
-    }
+		// handle unable to gen screen coords (if off visible area)
+		if (centre == null)
+			return;
 
-    dest.drawLine(br.x, br.y, br.x, tl.y);
-    dest.drawLine(br.x, tl.y, tl.x, tl.y);
-    dest.drawLine(tl.x, tl.y, tl.x, br.y - wid / 2);
-    dest.drawLine(tl.x, br.y - wid / 2, tl.x + wid / 2, br.y);
-    dest.drawLine(tl.x + wid / 2, br.y, br.x, br.y);
-  }
+		final int wid = (int) (4 * getScaleVal());
 
-  public String getType()
-  {
-    return SymbolFactory.HIDAR;
-  }
+		// draw our box, line by line
+		final java.awt.Point tl = new java.awt.Point(centre.x - wid, centre.y - wid);
+		final java.awt.Point br = new java.awt.Point(centre.x + wid, centre.y + wid);
+
+		if (!showSimplifiedSymbol()) {
+			// do the central character
+			// what's the width?
+			final String str = "H";
+			final int strW = dest.getStringWidth(_myFont, str);
+			final int strH = dest.getStringHeight(_myFont);
+			dest.drawText(_myFont, str, centre.x - strW / 2, centre.y + strH / 4);
+		}
+
+		dest.drawLine(br.x, br.y, br.x, tl.y);
+		dest.drawLine(br.x, tl.y, tl.x, tl.y);
+		dest.drawLine(tl.x, tl.y, tl.x, br.y - wid / 2);
+		dest.drawLine(tl.x, br.y - wid / 2, tl.x + wid / 2, br.y);
+		dest.drawLine(tl.x + wid / 2, br.y, br.x, br.y);
+	}
 
 }

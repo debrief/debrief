@@ -14,6 +14,8 @@
  *****************************************************************************/
 package info.limpet.operations.admin;
 
+import java.awt.geom.Point2D;
+
 import info.limpet.IContext;
 import info.limpet.IStoreGroup;
 import info.limpet.IStoreItem;
@@ -23,119 +25,90 @@ import info.limpet.impl.StoreGroup;
 import info.limpet.operations.AbstractCommand;
 import info.limpet.operations.CollectionComplianceTests;
 
-import java.awt.geom.Point2D;
+public class CreateLocationAction extends CreateSingletonGenerator {
+	/**
+	 * encapsulate creating a location into a command
+	 *
+	 * @author ian
+	 *
+	 */
+	public static class CreateLocationCommand extends AbstractCommand {
+		private final StoreGroup _targetGroup;
 
-public class CreateLocationAction extends CreateSingletonGenerator
-{
-  public CreateLocationAction()
-  {
-    super("location", null);
-  }
+		public CreateLocationCommand(final String title, final StoreGroup group, final IStoreGroup store,
+				final IContext context) {
+			super(title, "Create single location", store, false, false, null, context);
+			_targetGroup = group;
+		}
 
-  private final CollectionComplianceTests aTests =
-      new CollectionComplianceTests();
+		@Override
+		public void execute() {
+			// get the name
+			final String seriesName = getContext().getInput("New fixed location", "Enter name for location", "");
 
-  /**
-   * encapsulate creating a location into a command
-   * 
-   * @author ian
-   * 
-   */
-  public static class CreateLocationCommand extends AbstractCommand
-  {
-    private StoreGroup _targetGroup;
+			if (seriesName == null || seriesName.isEmpty()) {
+				return;
+			}
+			final String strLat = getContext().getInput("New location", "Enter initial value for latitude", "");
+			if (strLat == null || strLat.isEmpty()) {
+				return;
+			}
+			final String strLong = getContext().getInput("New location", "Enter initial value for longitude", "");
+			if (strLong == null || strLong.isEmpty()) {
+				return;
+			}
+			try {
 
-    public CreateLocationCommand(String title, StoreGroup group,
-        IStoreGroup store, IContext context)
-    {
-      super(title, "Create single location", store, false, false, null, context);
-      _targetGroup = group;
-    }
+				// add the new value
+				final double dblLat = Double.parseDouble(strLat);
+				final double dblLong = Double.parseDouble(strLong);
 
-    @Override
-    public void execute()
-    {
-      // get the name
-      String seriesName =
-          getContext().getInput("New fixed location",
-              "Enter name for location", "");
+				final LocationDocumentBuilder builder = new LocationDocumentBuilder(seriesName, this, null);
+				final Point2D newLoc = builder.getCalculator().createPoint(dblLong, dblLat);
 
-      if (seriesName == null || seriesName.isEmpty())
-      {
-        return;
-      }
-      String strLat =
-          getContext().getInput("New location",
-              "Enter initial value for latitude", "");
-      if (strLat == null || strLat.isEmpty())
-      {
-        return;
-      }
-      String strLong =
-          getContext().getInput("New location",
-              "Enter initial value for longitude", "");
-      if (strLong == null || strLong.isEmpty())
-      {
-        return;
-      }
-      try
-      {
+				builder.add(newLoc);
+				final LocationDocument newData = builder.toDocument();
 
-        // add the new value
-        double dblLat = Double.parseDouble(strLat);
-        double dblLong = Double.parseDouble(strLong);
+				// put the new collection in to the selected folder, or into
+				// root
+				if (_targetGroup != null) {
+					_targetGroup.add(newData);
+				} else {
+					// just store it at the top level
+					final IStoreGroup store = getStore();
+					if (store != null) {
+						store.add(newData);
+					}
+				}
 
+			} catch (final NumberFormatException e) {
+				getContext().logError(IContext.Status.WARNING, "Failed to parse initial value", e);
+				return;
+			}
+		}
 
-        LocationDocumentBuilder builder =
-            new LocationDocumentBuilder(seriesName, this, null);
-        Point2D newLoc =
-            builder.getCalculator().createPoint(dblLong, dblLat);
-        
-        builder.add(newLoc);
-        LocationDocument newData = builder.toDocument();
+		@Override
+		protected void recalculate(final IStoreItem subject) {
+			// don't worry
+		}
 
-        // put the new collection in to the selected folder, or into root
-        if (_targetGroup != null)
-        {
-          _targetGroup.add(newData);
-        }
-        else
-        {
-          // just store it at the top level
-          IStoreGroup store = getStore();
-          if (store != null)
-          {
-            store.add(newData);
-          }
-        }
+	}
 
-      }
-      catch (NumberFormatException e)
-      {
-        getContext().logError(IContext.Status.WARNING,
-            "Failed to parse initial value", e);
-        return;
-      }
-    }
+	private final CollectionComplianceTests aTests = new CollectionComplianceTests();
 
-    @Override
-    protected void recalculate(IStoreItem subject)
-    {
-      // don't worry
-    }
+	public CreateLocationAction() {
+		super("location", null);
+	}
 
-  }
+	@Override
+	public CollectionComplianceTests getATests() {
+		return aTests;
+	}
 
-  @Override
-  protected AbstractCommand getCommand(IStoreGroup destination,
-      IContext context, String thisTitle, StoreGroup group)
-  {
-    return new CreateLocationCommand(thisTitle, group, destination, context);
-  }
-
-  public CollectionComplianceTests getATests()
-  {
-    return aTests;
-  }
+	@Override
+	protected AbstractCommand getCommand(final IStoreGroup destination, final IContext context, final String thisTitle,
+			final StoreGroup group) {
+		return new CreateLocationCommand(thisTitle, group, destination, context);
+	}
 
 }

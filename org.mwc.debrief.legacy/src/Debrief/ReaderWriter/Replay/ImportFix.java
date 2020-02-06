@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: ImportFix.java,v $
@@ -155,8 +155,7 @@ import MWC.Utilities.TextFormatting.GMTDateFormat;
 /**
  * import a fix from a line of text (in Replay format)
  */
-public final class ImportFix extends AbstractPlainLineImporter
-{
+public final class ImportFix extends AbstractPlainLineImporter {
 
 	// ////////////////////////////////////////////////
 	// member variables
@@ -167,548 +166,19 @@ public final class ImportFix extends AbstractPlainLineImporter
 	 */
 //	static private String dateStr;
 
-	/**
-	 * the type for this string
-	 */
-	private final String _myType = " ";
-
-	// ////////////////////////////////////////////////
-	// member methods
-	// ////////////////////////////////////////////////
-
-	/**
-	 * @throws ParseException on malformed date
-   */
-	public final Object readThisLine(final String theLine) throws ParseException
-	{
-
-		// get a stream from the string
-		final StringTokenizer st = new StringTokenizer(theLine);
-
-		// declare local variables
-		WorldLocation theLoc;
-		double latDeg, longDeg, latMin, longMin;
-		char latHem, longHem;
-		double latSec, longSec;
-		HiResDate theDate = null;
-		double theCourse;
-		double theSpeed;
-		double theDepth;
-
-		String theTrackName;
-		
-		// dateStr = new StringBuffer(100);
-
-		// parse the line
-		// 951212 050000.000 CARPET @C 12 11 10.63 N 11 41 52.37 W 269.7 2.0 0
-
-		// first the date
-
-		// combine the date, a space, and the time
-		final String dateToken = st.nextToken();
-		final String timeToken = st.nextToken();
-
-		// and extract the date
-		theDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
-
-		// trouble - the track name may have been quoted, in which case we will
-		// pull
-		// in the remaining fields aswell
-		theTrackName = checkForQuotedName(st).trim();
-
-		symbology = st.nextToken(normalDelimiters);
-
-		try
-		{
-			latDeg = MWCXMLReader.readThisDouble(st.nextToken());
-			latMin = MWCXMLReader.readThisDouble(st.nextToken());
-			latSec =  MWCXMLReader.readThisDouble(st.nextToken());
-
-			/**
-			 * now, we may have trouble here, since there may not be a space between the
-			 * hemisphere character and a 3-digit latitude value - so BE CAREFUL
-			 */
-			final String vDiff = st.nextToken();
-			if (vDiff.length() > 3)
-			{
-				// hmm, they are combined
-				latHem = vDiff.charAt(0);
-				final String secondPart = vDiff.substring(1, vDiff.length());
-				longDeg = MWCXMLReader.readThisDouble(secondPart);
-			}
-			else
-			{
-				// they are separate, so only the hem is in this one
-				latHem = vDiff.charAt(0);
-				longDeg =  MWCXMLReader.readThisDouble(st.nextToken());
-			}
-			longMin = MWCXMLReader.readThisDouble(st.nextToken());
-			longSec = MWCXMLReader.readThisDouble(st.nextToken());
-			longHem = st.nextToken().charAt(0);
-
-			// parse (and convert) the vessel status parameters
-			theCourse = MWC.Algorithms.Conversions.Degs2Rads(
-					MWCXMLReader.readThisDouble(st.nextToken()));
-			theSpeed = MWC.Algorithms.Conversions.Kts2Yps(Double
-					.valueOf(st.nextToken()).doubleValue());
-	
-			// get the depth value
-			final String depthStr = st.nextToken();
-	
-			// we know that the Depth str may be NaN, but Java can interpret this
-			// directly
-			if (depthStr.equals("NaN"))
-				theDepth = Double.NaN;
-			else
-				theDepth =  MWCXMLReader.readThisDouble(depthStr);
-
-			// NEW FEATURE: we take any remaining text, and use it as a label
-			String txtLabel = null;
-			if (st.hasMoreTokens())
-				txtLabel = st.nextToken("\r");
-			if (txtLabel != null)
-				txtLabel = txtLabel.trim();
-	
-			// create the tactical data
-			theLoc = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg,
-					longMin, longSec, longHem, theDepth);
-	
-			// create the fix ready to store it
-			final Fix res = new Fix(theDate, theLoc, theCourse, theSpeed);
-			final ReplayFix rf = new ReplayFix();
-			rf.theFix = res;
-			rf.theTrackName = theTrackName;
-			rf.theSymbology = symbology;
-			if ((txtLabel != null) && (txtLabel.length() > 0))
-			{
-				rf.label = ImportReplay.getLabel(txtLabel);
-				rf.comment = ImportReplay.getComment(txtLabel);
-			}
-	
-			return rf;
-		}
-		catch(final ParseException pe)
-		{
-			MWC.Utilities.Errors.Trace.trace(pe,
-					"Whilst import Fix");
-			return null;
-		}
-	}
-
-	/**
-	 * determine the identifier returning this type of annotation
-	 */
-	public final String getYourType()
-	{
-		return _myType;
-	}
-
-	/**
-	 * export the specified shape as a string
-	 * 
-	 * @param theWrapper
-	 *          the Shape we are exporting
-	 * @return the shape in String form
-	 */
-	public final String exportThis(final MWC.GUI.Plottable theWrapper)
-	{
-		final FixWrapper theFix = (FixWrapper) theWrapper;
-		final Fix fix = theFix.getFix();
-
-		// result value
-		String line;
-
-		// ;VLFix: @F CARPET 951212 113200.000 180 1000 145 5000 nb 1
-		// 990408 133322.000 stingr @B 24 22 16.73 N 77 34 9.20 W 52.0 24.8 20
-
-		// export the origin
-		line = ""
-				+ MWC.Utilities.TextFormatting.DebriefFormatDateTime.toStringHiRes(fix
-						.getTime());
-
-		// the track name may contain spaces - wrap in quotes if we have to
-		line = exportTrackName(theFix.getTrackWrapper().getName(), line);
-
-		line += " " + ImportReplay.replaySymbolFor(theFix.getColor(), null);
-		line += " "
-				+ MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(fix
-						.getLocation());
-		line += " "
-				+ MWC.Utilities.TextFormatting.GeneralFormat
-						.formatOneDecimalPlace(Conversions.Rads2Degs(fix.getCourse()));
-		final double theSpeedYPS = fix.getSpeed();
-		final double theSpeedKts = Conversions.Yps2Kts(theSpeedYPS);
-		line += " "
-				+ MWC.Utilities.TextFormatting.GeneralFormat
-						.formatOneDecimalPlace(theSpeedKts);
-
-		// special handling. check if we're actually storing a duff (NaN) depth
-		String depthText;
-		if (Double.isNaN(fix.getLocation().getDepth()))
-		{
-			depthText = "NaN";
-		}
-		else
-		{
-			depthText = MWC.Utilities.TextFormatting.GeneralFormat
-					.formatOneDecimalPlace(fix.getLocation().getDepth());
-		}
-		line += " " + depthText;
-
-		return line;
-	}
-
-	/**
-	 * indicate if you can export this type of object
-	 * 
-	 * @param val
-	 *          the object to test
-	 * @return boolean saying whether you can do it
-	 */
-	public final boolean canExportThis(final Object val)
-	{
-		boolean res = false;
-
-		if (val instanceof FixWrapper)
-		{
-			res = true;
-		}
-
-		return res;
-	}
-
-	// ////////////////////////////////////////////////
-	// multi-word import/export utilities
-	// ////////////////////////////////////////////////
-
-	/**
-	 * export this (possibly multi-word) name to the line of text, wrapping in
-	 * double quotes if we have ot.
-	 * 
-	 * @param trackName
-	 *          the name we are exporting
-	 * @param line
-	 *          the line to append the data to
-	 * @return the extended line
-	 */
-	public static String exportTrackName(final String trackName, final String line)
-	{
-		String theTrackName = trackName;
-		String theLine = line;
-		// right, we may need to quote the track name
-		theTrackName = wrapTrackName(theTrackName);
-
-		theLine += " " + theTrackName;
-		return theLine;
-	}
-
-  public static String wrapTrackName(String trackName)
-  {
-    String theTrackName = trackName;
-    if (theTrackName.indexOf(" ") >= 0)
-		{
-			theTrackName = "\"" + theTrackName + "\"";
-		}
-    return theTrackName;
-  }
-
-	
 	// ////////////////////////////////////////////////
 	// testing code...
 	// ////////////////////////////////////////////////
-	static public class testImport extends junit.framework.TestCase
-	{
+	static public class testImport extends junit.framework.TestCase {
 		static public final String TEST_ALL_TEST_TYPE = "CONV";
 
-		public testImport(final String val)
-		{
+		public testImport(final String val) {
 			super(val);
-		}
-
-		public void testDecimalVals() throws ParseException
-		{
-			// test the secs component
-			String iLine = "951212 051600 CARPET   @C   22 0 45 N 22 0 1.45 W 239.9   2.0      0 ";
-			AbstractPlainLineImporter iff = new ImportFix();
-			ReplayFix res = (ReplayFix) iff.readThisLine(iLine);
-			assertEquals("right lat", 22.0125, res.theFix.getLocation().getLat(),
-					0.001);
-			assertEquals("right long", -22.000402,
-					res.theFix.getLocation().getLong(), 0.00001);
-
-			// now the mins component
-			iLine = "951212 051600 CARPET   @C   22 0.5 00 N 14 0.5 0 W 239.9   2.0      0 ";
-			iff = new ImportFix();
-			res = (ReplayFix) iff.readThisLine(iLine);
-			assertEquals("right lat", 22.008, res.theFix.getLocation().getLat(), 0.01);
-			assertEquals("right long", -14.008333,
-					res.theFix.getLocation().getLong(), 0.00001);
-
-			// now the degs component
-			iLine = "951212 051600 CARPET   @C   22.5 0 00 N 14.5 0 0 W 239.9   2.0      0 ";
-			iff = new ImportFix();
-			res = (ReplayFix) iff.readThisLine(iLine);
-			assertEquals("right lat", 22.5, res.theFix.getLocation().getLat(), 0.01);
-			assertEquals("right long", -14.5, res.theFix.getLocation().getLong(),
-					0.00001);
-
-			//
-			// NOW LET'S REVERSE THE HEMISPHERE
-			// test the secs component
-			iLine = "951212 051600 CARPET   @C   22 0 45 S 22 0 1.45 E 239.9   2.0      0 ";
-			iff = new ImportFix();
-			res = (ReplayFix) iff.readThisLine(iLine);
-			assertEquals("right lat", -22.0125, res.theFix.getLocation().getLat(),
-					0.001);
-			assertEquals("right long", 22.000402, res.theFix.getLocation().getLong(),
-					0.00001);
-
-			// now the mins component
-			iLine = "951212 051600 CARPET   @C   22 0.5 00 S 14 0.5 0 E 239.9   2.0      0 ";
-			iff = new ImportFix();
-			res = (ReplayFix) iff.readThisLine(iLine);
-			assertEquals("right lat", -22.008, res.theFix.getLocation().getLat(),
-					0.01);
-			assertEquals("right long", 14.008333, res.theFix.getLocation().getLong(),
-					0.00001);
-
-			// now the degs component
-			iLine = "951212 051600 CARPET   @C   22.5 0 00 S 14.5 0 0 E 239.9   2.0      0 ";
-			iff = new ImportFix();
-			res = (ReplayFix) iff.readThisLine(iLine);
-			assertEquals("right lat", -22.5, res.theFix.getLocation().getLat(), 0.01);
-			assertEquals("right long", 14.5, res.theFix.getLocation().getLong(),
-					0.00001);
-
-			// what about hte label?
-			iLine = "951212 051600 CARPET   @C   22.5 0 00 S 14.5 0 0 E 239.9   2.0      0 brian may smells";
-			iff = new ImportFix();
-			res = (ReplayFix) iff.readThisLine(iLine);
-			assertEquals("label not read", "brian may smells", res.label);
-
-			iLine = "951212 051600 CARPET   @C   22.5 0 00 S 14.5 0 0 E 239.9   2.0      0 brian may smells   ";
-			iff = new ImportFix();
-			res = (ReplayFix) iff.readThisLine(iLine);
-			assertEquals("label not read", "brian may smells", res.label);
-
-			iLine = "951212 051600 CARPET   @C   22.5 0 00 S 14.5 0 0 E 239.9   2.0      0 a   ";
-			iff = new ImportFix();
-			res = (ReplayFix) iff.readThisLine(iLine);
-			assertEquals("label not read", "a", res.label);
-
-		}
-
-		public void testValues() throws ParseException
-		{
-			String iLine = "951212 051600 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
-			final AbstractPlainLineImporter iff = new ImportFix();
-			ReplayFix res = (ReplayFix) iff.readThisLine(iLine);
-
-			// and check the result
-			assertEquals("right track", "CARPET", res.theTrackName);
-			assertEquals("right symbology", "@C", res.theSymbology);
-			assertEquals("right course", 4.187, res.theFix.getCourse(), 0.01);
-			assertEquals("right speed", 2.0, res.theFix.getSpeed(), 2.0);
-			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(),
-					0.01);
-
-			// ok, try our more difficult import string
-			iLine = "951212 051600 \"CARPET bag\"     @C 22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
-			res = (ReplayFix) iff.readThisLine(iLine);
-
-			// and check the result
-			assertEquals("right track", "CARPET bag", res.theTrackName);
-			assertEquals("right course", 4.187, res.theFix.getCourse(), 0.01);
-			assertEquals("right symbology", "@C", res.theSymbology);
-			assertEquals("right speed", 2.0, res.theFix.getSpeed(), 2.0);
-			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(),
-					0.01);
-
-			// ok, try long years
-			iLine = "19951212 051600 \"CARPET bag\"     @C 22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
-			res = (ReplayFix) iff.readThisLine(iLine);
-
-			// and check the result
-			assertEquals("right track", "CARPET bag", res.theTrackName);
-			assertEquals("right course", 4.187, res.theFix.getCourse(), 0.01);
-			assertEquals("right symbology", "@C", res.theSymbology);
-			assertEquals("right speed", 2.0, res.theFix.getSpeed(), 2.0);
-			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(),
-					0.01);
-			Date fixDate = res.theFix.getTime().getDate();
-			DateFormat yearFormat = new GMTDateFormat("yyyy");
-			String dateYear = yearFormat.format(fixDate);
-			assertEquals("right date", "1995", dateYear);
-
-			// ok, try short years
-			iLine = "951212 051600 \"CARPET bag\"     @C 22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
-			res = (ReplayFix) iff.readThisLine(iLine);
-
-			// and check the result
-			assertEquals("right track", "CARPET bag", res.theTrackName);
-			assertEquals("right course", 4.187, res.theFix.getCourse(), 0.01);
-			assertEquals("right symbology", "@C", res.theSymbology);
-			assertEquals("right speed", 2.0, res.theFix.getSpeed(), 2.0);
-			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(),
-					0.01);
-			fixDate = res.theFix.getTime().getDate();
-			yearFormat = new GMTDateFormat("yyyy");
-			dateYear = yearFormat.format(fixDate);
-			assertEquals("right date", "1995", dateYear);
-
-			// ok, try short name
-			iLine = "951212 051600 \"1\"     @C 22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
-			res = (ReplayFix) iff.readThisLine(iLine);
-
-			// and check the result
-			assertEquals("right track", "1", res.theTrackName);
-			assertEquals("right course", 4.187, res.theFix.getCourse(), 0.01);
-			assertEquals("right symbology", "@C", res.theSymbology);
-			assertEquals("right speed", 2.0, res.theFix.getSpeed(), 2.0);
-			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(),
-					0.01);
-			fixDate = res.theFix.getTime().getDate();
-			yearFormat = new GMTDateFormat("yyyy");
-			dateYear = yearFormat.format(fixDate);
-			assertEquals("right date", "1995", dateYear);
-
-			// try with nice spaces (suitable for comparing on the way out
-			iLine = "951212 051600 \"CARPET bag\" @C 22 10 53.54 N 021 45 14.20 W 239.9 2.0 0.0";
-			res = (ReplayFix) iff.readThisLine(iLine);
-
-			// and check the result
-			assertEquals("right track", "CARPET bag", res.theTrackName);
-			assertEquals("right course", 4.187, res.theFix.getCourse(), 0.01);
-			assertEquals("right symbology", "@C", res.theSymbology);
-			assertEquals("right speed", 2.0, res.theFix.getSpeed(), 2.0);
-			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(),
-					0.01);
-
-			// find the track name
-			final String theTrack = res.theTrackName;
-			final Color thisColor = ImportReplay.replayColorFor(res.theSymbology);
-
-			// create the wrapper for this annotation
-			final SupportsPropertyListeners thisWrapper = new FixWrapper(res.theFix);
-
-			final TrackWrapper parentTrack = new TrackWrapper();
-			parentTrack.setName(theTrack);
-
-			// get the colour for this track
-			parentTrack.setColor(thisColor);
-
-			// set the sym type for the track
-			final String theSymType = ImportReplay.replayTrackSymbolFor(res.theSymbology);
-			parentTrack.setSymbolType(theSymType);
-
-			final FixWrapper thisFix = (FixWrapper) thisWrapper;
-			thisFix.setTrackWrapper(parentTrack);
-
-			// now do the export
-			final String oLine = iff.exportThis(thisFix);
-
-			// and check they're the same
-			assertEquals("exported line matches", iLine, oLine);
-		}
-
-		public void testHiResParse() throws ParseException
-		{
-			String val = "700101 000000";
-			HiResDate ers = DebriefFormatDateTime.parseThis(val);
-			assertNotNull("zero micros doesn't get parsed", ers);
-
-			val = "700101 000000.001";
-			ers = DebriefFormatDateTime.parseThis(val);
-			long micros = ers.getMicros();
-			assertEquals("zero micros", 1000, micros);
-
-			val = "19700101 000000.001";
-			ers = DebriefFormatDateTime.parseThis(val);
-			micros = ers.getMicros();
-			assertEquals("zero micros", 1000, micros);
-
-			val = "700101 000000.000001";
-			ers = DebriefFormatDateTime.parseThis(val);
-			micros = ers.getMicros();
-			assertEquals("zero micros", 1, micros);
-
-			val = "700101 000001.";
-			ers = DebriefFormatDateTime.parseThis(val);
-			micros = ers.getMicros();
-			assertEquals("zero micros", 1000000, micros);
-
-			val = "700101 000001.0";
-			ers = DebriefFormatDateTime.parseThis(val);
-			micros = ers.getMicros();
-			assertEquals("zero micros", 1000000, micros);
-
-			val = "700101 000001.01";
-			ers = DebriefFormatDateTime.parseThis(val);
-			micros = ers.getMicros();
-			assertEquals("zero micros", 1010000, micros);
-
-			val = "700101 000001.01001";
-			ers = DebriefFormatDateTime.parseThis(val);
-			micros = ers.getMicros();
-			assertEquals("zero micros", 1010010, micros);
-
-			val = "700101 000000.000000000022";
-			ers = DebriefFormatDateTime.parseThis(val);
-			assertNull("Shouldn't manage to produce value", ers);
-		}
-		
-
-		public void testPaddingStrings() throws ParseException
-		{
-			String iLine = "0101 01 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
-			AbstractPlainLineImporter iff = new ImportFix();
-			ReplayFix res = (ReplayFix) iff.readThisLine(iLine);
-
-			iLine = "700101 000000.100 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
-			iff = new ImportFix();
-			res = (ReplayFix) iff.readThisLine(iLine);
-
-			iLine = "700101 000000.100100 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
-			iff = new ImportFix();
-			res = (ReplayFix) iff.readThisLine(iLine);
-
-			// and check the result
-			assertEquals("right track", "CARPET", res.theTrackName);
-			assertEquals("right symbology", "@C", res.theSymbology);
-			assertEquals("right course", 4.187, res.theFix.getCourse(), 0.01);
-			assertEquals("right speed", 2.0, res.theFix.getSpeed(), 2.0);
-			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(),
-					0.01);
-		}
-
-
-		public void testMilliSecValues() throws ParseException
-		{
-			String iLine = "700101 000001 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
-			AbstractPlainLineImporter iff = new ImportFix();
-			ReplayFix res = (ReplayFix) iff.readThisLine(iLine);
-
-			iLine = "700101 000000.100 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
-			iff = new ImportFix();
-			res = (ReplayFix) iff.readThisLine(iLine);
-
-			iLine = "700101 000000.100100 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
-			iff = new ImportFix();
-			res = (ReplayFix) iff.readThisLine(iLine);
-
-			// and check the result
-			assertEquals("right track", "CARPET", res.theTrackName);
-			assertEquals("right symbology", "@C", res.theSymbology);
-			assertEquals("right course", 4.187, res.theFix.getCourse(), 0.01);
-			assertEquals("right speed", 2.0, res.theFix.getSpeed(), 2.0);
-			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(),
-					0.01);
 		}
 
 		// TODO FIX-TEST
 		@SuppressWarnings("deprecation")
-		public void NtestPadding() throws ParseException
-		{
+		public void NtestPadding() throws ParseException {
 			String iLine = "951212 051600.000100 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
 			final AbstractPlainLineImporter iff = new ImportFix();
 			ReplayFix res = (ReplayFix) iff.readThisLine(iLine);
@@ -803,8 +273,115 @@ public final class ImportFix extends AbstractPlainLineImporter
 
 		}
 
-		public void testHiResValues() throws ParseException
-		{
+		public void testDecimalVals() throws ParseException {
+			// test the secs component
+			String iLine = "951212 051600 CARPET   @C   22 0 45 N 22 0 1.45 W 239.9   2.0      0 ";
+			AbstractPlainLineImporter iff = new ImportFix();
+			ReplayFix res = (ReplayFix) iff.readThisLine(iLine);
+			assertEquals("right lat", 22.0125, res.theFix.getLocation().getLat(), 0.001);
+			assertEquals("right long", -22.000402, res.theFix.getLocation().getLong(), 0.00001);
+
+			// now the mins component
+			iLine = "951212 051600 CARPET   @C   22 0.5 00 N 14 0.5 0 W 239.9   2.0      0 ";
+			iff = new ImportFix();
+			res = (ReplayFix) iff.readThisLine(iLine);
+			assertEquals("right lat", 22.008, res.theFix.getLocation().getLat(), 0.01);
+			assertEquals("right long", -14.008333, res.theFix.getLocation().getLong(), 0.00001);
+
+			// now the degs component
+			iLine = "951212 051600 CARPET   @C   22.5 0 00 N 14.5 0 0 W 239.9   2.0      0 ";
+			iff = new ImportFix();
+			res = (ReplayFix) iff.readThisLine(iLine);
+			assertEquals("right lat", 22.5, res.theFix.getLocation().getLat(), 0.01);
+			assertEquals("right long", -14.5, res.theFix.getLocation().getLong(), 0.00001);
+
+			//
+			// NOW LET'S REVERSE THE HEMISPHERE
+			// test the secs component
+			iLine = "951212 051600 CARPET   @C   22 0 45 S 22 0 1.45 E 239.9   2.0      0 ";
+			iff = new ImportFix();
+			res = (ReplayFix) iff.readThisLine(iLine);
+			assertEquals("right lat", -22.0125, res.theFix.getLocation().getLat(), 0.001);
+			assertEquals("right long", 22.000402, res.theFix.getLocation().getLong(), 0.00001);
+
+			// now the mins component
+			iLine = "951212 051600 CARPET   @C   22 0.5 00 S 14 0.5 0 E 239.9   2.0      0 ";
+			iff = new ImportFix();
+			res = (ReplayFix) iff.readThisLine(iLine);
+			assertEquals("right lat", -22.008, res.theFix.getLocation().getLat(), 0.01);
+			assertEquals("right long", 14.008333, res.theFix.getLocation().getLong(), 0.00001);
+
+			// now the degs component
+			iLine = "951212 051600 CARPET   @C   22.5 0 00 S 14.5 0 0 E 239.9   2.0      0 ";
+			iff = new ImportFix();
+			res = (ReplayFix) iff.readThisLine(iLine);
+			assertEquals("right lat", -22.5, res.theFix.getLocation().getLat(), 0.01);
+			assertEquals("right long", 14.5, res.theFix.getLocation().getLong(), 0.00001);
+
+			// what about hte label?
+			iLine = "951212 051600 CARPET   @C   22.5 0 00 S 14.5 0 0 E 239.9   2.0      0 brian may smells";
+			iff = new ImportFix();
+			res = (ReplayFix) iff.readThisLine(iLine);
+			assertEquals("label not read", "brian may smells", res.label);
+
+			iLine = "951212 051600 CARPET   @C   22.5 0 00 S 14.5 0 0 E 239.9   2.0      0 brian may smells   ";
+			iff = new ImportFix();
+			res = (ReplayFix) iff.readThisLine(iLine);
+			assertEquals("label not read", "brian may smells", res.label);
+
+			iLine = "951212 051600 CARPET   @C   22.5 0 00 S 14.5 0 0 E 239.9   2.0      0 a   ";
+			iff = new ImportFix();
+			res = (ReplayFix) iff.readThisLine(iLine);
+			assertEquals("label not read", "a", res.label);
+
+		}
+
+		public void testHiResParse() throws ParseException {
+			String val = "700101 000000";
+			HiResDate ers = DebriefFormatDateTime.parseThis(val);
+			assertNotNull("zero micros doesn't get parsed", ers);
+
+			val = "700101 000000.001";
+			ers = DebriefFormatDateTime.parseThis(val);
+			long micros = ers.getMicros();
+			assertEquals("zero micros", 1000, micros);
+
+			val = "19700101 000000.001";
+			ers = DebriefFormatDateTime.parseThis(val);
+			micros = ers.getMicros();
+			assertEquals("zero micros", 1000, micros);
+
+			val = "700101 000000.000001";
+			ers = DebriefFormatDateTime.parseThis(val);
+			micros = ers.getMicros();
+			assertEquals("zero micros", 1, micros);
+
+			val = "700101 000001.";
+			ers = DebriefFormatDateTime.parseThis(val);
+			micros = ers.getMicros();
+			assertEquals("zero micros", 1000000, micros);
+
+			val = "700101 000001.0";
+			ers = DebriefFormatDateTime.parseThis(val);
+			micros = ers.getMicros();
+			assertEquals("zero micros", 1000000, micros);
+
+			val = "700101 000001.01";
+			ers = DebriefFormatDateTime.parseThis(val);
+			micros = ers.getMicros();
+			assertEquals("zero micros", 1010000, micros);
+
+			val = "700101 000001.01001";
+			ers = DebriefFormatDateTime.parseThis(val);
+			micros = ers.getMicros();
+			assertEquals("zero micros", 1010010, micros);
+
+			val = "700101 000000.000000000022";
+			ers = DebriefFormatDateTime.parseThis(val);
+			assertNull("Shouldn't manage to produce value", ers);
+		}
+
+		public void testHiResValues() throws ParseException {
 			String iLine = "951212 051600.000100 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
 			final AbstractPlainLineImporter iff = new ImportFix();
 			ReplayFix res = (ReplayFix) iff.readThisLine(iLine);
@@ -814,8 +391,7 @@ public final class ImportFix extends AbstractPlainLineImporter
 			assertEquals("right symbology", "@C", res.theSymbology);
 			assertEquals("right course", 4.187, res.theFix.getCourse(), 0.01);
 			assertEquals("right speed", 2.0, res.theFix.getSpeed(), 2.0);
-			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(),
-					0.01);
+			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(), 0.01);
 
 			// and check the DTG
 			final HiResDate hrd = DebriefFormatDateTime.parseThis("951212 051600.000100");
@@ -823,12 +399,9 @@ public final class ImportFix extends AbstractPlainLineImporter
 
 			final DateFormat otherFormat = new GMTDateFormat("yyMMdd HHmmss");
 			Date theDate = null;
-			try
-			{
+			try {
 				theDate = otherFormat.parse("951212 051600");
-			}
-			catch (final ParseException e)
-			{
+			} catch (final ParseException e) {
 				e.printStackTrace(); // To change body of catch statement use
 				// File |
 				// Settings | File Templates.
@@ -846,8 +419,7 @@ public final class ImportFix extends AbstractPlainLineImporter
 			assertEquals("right course", 4.187, res.theFix.getCourse(), 0.01);
 			assertEquals("right symbology", "@C", res.theSymbology);
 			assertEquals("right speed", 2.0, res.theFix.getSpeed(), 2.0);
-			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(),
-					0.01);
+			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(), 0.01);
 
 			// ok, try long years
 			iLine = "19951212 051600 \"CARPET bag\"     @C 22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
@@ -858,8 +430,7 @@ public final class ImportFix extends AbstractPlainLineImporter
 			assertEquals("right course", 4.187, res.theFix.getCourse(), 0.01);
 			assertEquals("right symbology", "@C", res.theSymbology);
 			assertEquals("right speed", 2.0, res.theFix.getSpeed(), 2.0);
-			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(),
-					0.01);
+			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(), 0.01);
 			Date fixDate = res.theFix.getTime().getDate();
 			DateFormat yearFormat = new GMTDateFormat("yyyy");
 			String dateYear = yearFormat.format(fixDate);
@@ -874,8 +445,7 @@ public final class ImportFix extends AbstractPlainLineImporter
 			assertEquals("right course", 4.187, res.theFix.getCourse(), 0.01);
 			assertEquals("right symbology", "@C", res.theSymbology);
 			assertEquals("right speed", 2.0, res.theFix.getSpeed(), 2.0);
-			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(),
-					0.01);
+			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(), 0.01);
 			fixDate = res.theFix.getTime().getDate();
 			yearFormat = new GMTDateFormat("yyyy");
 			dateYear = yearFormat.format(fixDate);
@@ -890,8 +460,7 @@ public final class ImportFix extends AbstractPlainLineImporter
 			assertEquals("right course", 4.187, res.theFix.getCourse(), 0.01);
 			assertEquals("right symbology", "@C", res.theSymbology);
 			assertEquals("right speed", 2.0, res.theFix.getSpeed(), 2.0);
-			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(),
-					0.01);
+			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(), 0.01);
 			fixDate = res.theFix.getTime().getDate();
 			yearFormat = new GMTDateFormat("yyyy");
 			dateYear = yearFormat.format(fixDate);
@@ -906,8 +475,155 @@ public final class ImportFix extends AbstractPlainLineImporter
 			assertEquals("right course", 4.187, res.theFix.getCourse(), 0.01);
 			assertEquals("right symbology", "@C", res.theSymbology);
 			assertEquals("right speed", 2.0, res.theFix.getSpeed(), 2.0);
-			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(),
-					0.01);
+			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(), 0.01);
+
+			// find the track name
+			final String theTrack = res.theTrackName;
+			final Color thisColor = ImportReplay.replayColorFor(res.theSymbology);
+
+			// create the wrapper for this annotation
+			final SupportsPropertyListeners thisWrapper = new FixWrapper(res.theFix);
+
+			final TrackWrapper parentTrack = new TrackWrapper();
+			parentTrack.setName(theTrack);
+
+			// get the colour for this track
+			parentTrack.setColor(thisColor);
+
+			// set the sym type for the track
+			final String theSymType = ImportReplay.replayTrackSymbolFor(res.theSymbology);
+			parentTrack.setSymbolType(theSymType);
+
+			final FixWrapper thisFix = (FixWrapper) thisWrapper;
+			thisFix.setTrackWrapper(parentTrack);
+
+			// now do the export
+			final String oLine = iff.exportThis(thisFix);
+
+			// and check they're the same
+			assertEquals("exported line matches", iLine, oLine);
+		}
+
+		public void testMilliSecValues() throws ParseException {
+			String iLine = "700101 000001 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
+			AbstractPlainLineImporter iff = new ImportFix();
+			ReplayFix res = (ReplayFix) iff.readThisLine(iLine);
+
+			iLine = "700101 000000.100 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
+			iff = new ImportFix();
+			res = (ReplayFix) iff.readThisLine(iLine);
+
+			iLine = "700101 000000.100100 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
+			iff = new ImportFix();
+			res = (ReplayFix) iff.readThisLine(iLine);
+
+			// and check the result
+			assertEquals("right track", "CARPET", res.theTrackName);
+			assertEquals("right symbology", "@C", res.theSymbology);
+			assertEquals("right course", 4.187, res.theFix.getCourse(), 0.01);
+			assertEquals("right speed", 2.0, res.theFix.getSpeed(), 2.0);
+			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(), 0.01);
+		}
+
+		public void testPaddingStrings() throws ParseException {
+			String iLine = "0101 01 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
+			AbstractPlainLineImporter iff = new ImportFix();
+			ReplayFix res = (ReplayFix) iff.readThisLine(iLine);
+
+			iLine = "700101 000000.100 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
+			iff = new ImportFix();
+			res = (ReplayFix) iff.readThisLine(iLine);
+
+			iLine = "700101 000000.100100 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
+			iff = new ImportFix();
+			res = (ReplayFix) iff.readThisLine(iLine);
+
+			// and check the result
+			assertEquals("right track", "CARPET", res.theTrackName);
+			assertEquals("right symbology", "@C", res.theSymbology);
+			assertEquals("right course", 4.187, res.theFix.getCourse(), 0.01);
+			assertEquals("right speed", 2.0, res.theFix.getSpeed(), 2.0);
+			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(), 0.01);
+		}
+
+		public void testValues() throws ParseException {
+			String iLine = "951212 051600 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
+			final AbstractPlainLineImporter iff = new ImportFix();
+			ReplayFix res = (ReplayFix) iff.readThisLine(iLine);
+
+			// and check the result
+			assertEquals("right track", "CARPET", res.theTrackName);
+			assertEquals("right symbology", "@C", res.theSymbology);
+			assertEquals("right course", 4.187, res.theFix.getCourse(), 0.01);
+			assertEquals("right speed", 2.0, res.theFix.getSpeed(), 2.0);
+			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(), 0.01);
+
+			// ok, try our more difficult import string
+			iLine = "951212 051600 \"CARPET bag\"     @C 22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
+			res = (ReplayFix) iff.readThisLine(iLine);
+
+			// and check the result
+			assertEquals("right track", "CARPET bag", res.theTrackName);
+			assertEquals("right course", 4.187, res.theFix.getCourse(), 0.01);
+			assertEquals("right symbology", "@C", res.theSymbology);
+			assertEquals("right speed", 2.0, res.theFix.getSpeed(), 2.0);
+			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(), 0.01);
+
+			// ok, try long years
+			iLine = "19951212 051600 \"CARPET bag\"     @C 22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
+			res = (ReplayFix) iff.readThisLine(iLine);
+
+			// and check the result
+			assertEquals("right track", "CARPET bag", res.theTrackName);
+			assertEquals("right course", 4.187, res.theFix.getCourse(), 0.01);
+			assertEquals("right symbology", "@C", res.theSymbology);
+			assertEquals("right speed", 2.0, res.theFix.getSpeed(), 2.0);
+			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(), 0.01);
+			Date fixDate = res.theFix.getTime().getDate();
+			DateFormat yearFormat = new GMTDateFormat("yyyy");
+			String dateYear = yearFormat.format(fixDate);
+			assertEquals("right date", "1995", dateYear);
+
+			// ok, try short years
+			iLine = "951212 051600 \"CARPET bag\"     @C 22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
+			res = (ReplayFix) iff.readThisLine(iLine);
+
+			// and check the result
+			assertEquals("right track", "CARPET bag", res.theTrackName);
+			assertEquals("right course", 4.187, res.theFix.getCourse(), 0.01);
+			assertEquals("right symbology", "@C", res.theSymbology);
+			assertEquals("right speed", 2.0, res.theFix.getSpeed(), 2.0);
+			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(), 0.01);
+			fixDate = res.theFix.getTime().getDate();
+			yearFormat = new GMTDateFormat("yyyy");
+			dateYear = yearFormat.format(fixDate);
+			assertEquals("right date", "1995", dateYear);
+
+			// ok, try short name
+			iLine = "951212 051600 \"1\"     @C 22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
+			res = (ReplayFix) iff.readThisLine(iLine);
+
+			// and check the result
+			assertEquals("right track", "1", res.theTrackName);
+			assertEquals("right course", 4.187, res.theFix.getCourse(), 0.01);
+			assertEquals("right symbology", "@C", res.theSymbology);
+			assertEquals("right speed", 2.0, res.theFix.getSpeed(), 2.0);
+			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(), 0.01);
+			fixDate = res.theFix.getTime().getDate();
+			yearFormat = new GMTDateFormat("yyyy");
+			dateYear = yearFormat.format(fixDate);
+			assertEquals("right date", "1995", dateYear);
+
+			// try with nice spaces (suitable for comparing on the way out
+			iLine = "951212 051600 \"CARPET bag\" @C 22 10 53.54 N 021 45 14.20 W 239.9 2.0 0.0";
+			res = (ReplayFix) iff.readThisLine(iLine);
+
+			// and check the result
+			assertEquals("right track", "CARPET bag", res.theTrackName);
+			assertEquals("right course", 4.187, res.theFix.getCourse(), 0.01);
+			assertEquals("right symbology", "@C", res.theSymbology);
+			assertEquals("right speed", 2.0, res.theFix.getSpeed(), 2.0);
+			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(), 0.01);
 
 			// find the track name
 			final String theTrack = res.theTrackName;
@@ -938,19 +654,233 @@ public final class ImportFix extends AbstractPlainLineImporter
 	}
 
 	// ////////////////////////////////////////////////
+	// member methods
+	// ////////////////////////////////////////////////
+
+	/**
+	 * export this (possibly multi-word) name to the line of text, wrapping in
+	 * double quotes if we have ot.
+	 *
+	 * @param trackName the name we are exporting
+	 * @param line      the line to append the data to
+	 * @return the extended line
+	 */
+	public static String exportTrackName(final String trackName, final String line) {
+		String theTrackName = trackName;
+		String theLine = line;
+		// right, we may need to quote the track name
+		theTrackName = wrapTrackName(theTrackName);
+
+		theLine += " " + theTrackName;
+		return theLine;
+	}
+
+	// ////////////////////////////////////////////////
 	// testing code
 	// ////////////////////////////////////////////////
-	public static void main(final String[] args)
-	{
+	public static void main(final String[] args) {
 		final String test = "NaN";
 		final double val = Double.valueOf(test).doubleValue();
 
 		System.out.println("res is:" + val);
-		
+
 		try {
 			System.out.println("utility res is: " + MWCXMLReader.readThisDouble(test));
-		} catch (ParseException e) {
+		} catch (final ParseException e) {
 			e.printStackTrace();
+		}
+	}
+
+	public static String wrapTrackName(final String trackName) {
+		String theTrackName = trackName;
+		if (theTrackName.indexOf(" ") >= 0) {
+			theTrackName = "\"" + theTrackName + "\"";
+		}
+		return theTrackName;
+	}
+
+	/**
+	 * the type for this string
+	 */
+	private final String _myType = " ";
+
+	// ////////////////////////////////////////////////
+	// multi-word import/export utilities
+	// ////////////////////////////////////////////////
+
+	/**
+	 * indicate if you can export this type of object
+	 *
+	 * @param val the object to test
+	 * @return boolean saying whether you can do it
+	 */
+	@Override
+	public final boolean canExportThis(final Object val) {
+		boolean res = false;
+
+		if (val instanceof FixWrapper) {
+			res = true;
+		}
+
+		return res;
+	}
+
+	/**
+	 * export the specified shape as a string
+	 *
+	 * @param theWrapper the Shape we are exporting
+	 * @return the shape in String form
+	 */
+	@Override
+	public final String exportThis(final MWC.GUI.Plottable theWrapper) {
+		final FixWrapper theFix = (FixWrapper) theWrapper;
+		final Fix fix = theFix.getFix();
+
+		// result value
+		String line;
+
+		// ;VLFix: @F CARPET 951212 113200.000 180 1000 145 5000 nb 1
+		// 990408 133322.000 stingr @B 24 22 16.73 N 77 34 9.20 W 52.0 24.8 20
+
+		// export the origin
+		line = "" + MWC.Utilities.TextFormatting.DebriefFormatDateTime.toStringHiRes(fix.getTime());
+
+		// the track name may contain spaces - wrap in quotes if we have to
+		line = exportTrackName(theFix.getTrackWrapper().getName(), line);
+
+		line += " " + ImportReplay.replaySymbolFor(theFix.getColor(), null);
+		line += " " + MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(fix.getLocation());
+		line += " " + MWC.Utilities.TextFormatting.GeneralFormat
+				.formatOneDecimalPlace(Conversions.Rads2Degs(fix.getCourse()));
+		final double theSpeedYPS = fix.getSpeed();
+		final double theSpeedKts = Conversions.Yps2Kts(theSpeedYPS);
+		line += " " + MWC.Utilities.TextFormatting.GeneralFormat.formatOneDecimalPlace(theSpeedKts);
+
+		// special handling. check if we're actually storing a duff (NaN) depth
+		String depthText;
+		if (Double.isNaN(fix.getLocation().getDepth())) {
+			depthText = "NaN";
+		} else {
+			depthText = MWC.Utilities.TextFormatting.GeneralFormat.formatOneDecimalPlace(fix.getLocation().getDepth());
+		}
+		line += " " + depthText;
+
+		return line;
+	}
+
+	/**
+	 * determine the identifier returning this type of annotation
+	 */
+	@Override
+	public final String getYourType() {
+		return _myType;
+	}
+
+	/**
+	 * @throws ParseException on malformed date
+	 */
+	@Override
+	public final Object readThisLine(final String theLine) throws ParseException {
+
+		// get a stream from the string
+		final StringTokenizer st = new StringTokenizer(theLine);
+
+		// declare local variables
+		WorldLocation theLoc;
+		double latDeg, longDeg, latMin, longMin;
+		char latHem, longHem;
+		double latSec, longSec;
+		HiResDate theDate = null;
+		double theCourse;
+		double theSpeed;
+		double theDepth;
+
+		String theTrackName;
+
+		// dateStr = new StringBuffer(100);
+
+		// parse the line
+		// 951212 050000.000 CARPET @C 12 11 10.63 N 11 41 52.37 W 269.7 2.0 0
+
+		// first the date
+
+		// combine the date, a space, and the time
+		final String dateToken = st.nextToken();
+		final String timeToken = st.nextToken();
+
+		// and extract the date
+		theDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
+
+		// trouble - the track name may have been quoted, in which case we will
+		// pull
+		// in the remaining fields aswell
+		theTrackName = checkForQuotedName(st).trim();
+
+		symbology = st.nextToken(normalDelimiters);
+
+		try {
+			latDeg = MWCXMLReader.readThisDouble(st.nextToken());
+			latMin = MWCXMLReader.readThisDouble(st.nextToken());
+			latSec = MWCXMLReader.readThisDouble(st.nextToken());
+
+			/**
+			 * now, we may have trouble here, since there may not be a space between the
+			 * hemisphere character and a 3-digit latitude value - so BE CAREFUL
+			 */
+			final String vDiff = st.nextToken();
+			if (vDiff.length() > 3) {
+				// hmm, they are combined
+				latHem = vDiff.charAt(0);
+				final String secondPart = vDiff.substring(1, vDiff.length());
+				longDeg = MWCXMLReader.readThisDouble(secondPart);
+			} else {
+				// they are separate, so only the hem is in this one
+				latHem = vDiff.charAt(0);
+				longDeg = MWCXMLReader.readThisDouble(st.nextToken());
+			}
+			longMin = MWCXMLReader.readThisDouble(st.nextToken());
+			longSec = MWCXMLReader.readThisDouble(st.nextToken());
+			longHem = st.nextToken().charAt(0);
+
+			// parse (and convert) the vessel status parameters
+			theCourse = MWC.Algorithms.Conversions.Degs2Rads(MWCXMLReader.readThisDouble(st.nextToken()));
+			theSpeed = MWC.Algorithms.Conversions.Kts2Yps(Double.valueOf(st.nextToken()).doubleValue());
+
+			// get the depth value
+			final String depthStr = st.nextToken();
+
+			// we know that the Depth str may be NaN, but Java can interpret this
+			// directly
+			if (depthStr.equals("NaN"))
+				theDepth = Double.NaN;
+			else
+				theDepth = MWCXMLReader.readThisDouble(depthStr);
+
+			// NEW FEATURE: we take any remaining text, and use it as a label
+			String txtLabel = null;
+			if (st.hasMoreTokens())
+				txtLabel = st.nextToken("\r");
+			if (txtLabel != null)
+				txtLabel = txtLabel.trim();
+
+			// create the tactical data
+			theLoc = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg, longMin, longSec, longHem, theDepth);
+
+			// create the fix ready to store it
+			final Fix res = new Fix(theDate, theLoc, theCourse, theSpeed);
+			final ReplayFix rf = new ReplayFix();
+			rf.theFix = res;
+			rf.theTrackName = theTrackName;
+			rf.theSymbology = symbology;
+			if ((txtLabel != null) && (txtLabel.length() > 0)) {
+				rf.label = ImportReplay.getLabel(txtLabel);
+				rf.comment = ImportReplay.getComment(txtLabel);
+			}
+
+			return rf;
+		} catch (final ParseException pe) {
+			MWC.Utilities.Errors.Trace.trace(pe, "Whilst import Fix");
+			return null;
 		}
 	}
 

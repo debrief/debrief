@@ -14,17 +14,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * An svg document is an xml document.  As such, all contained xml elements
- * are also svg elements.  SvgElement is the base abstract class for all
- * svg elements in an SvgDocument.
+ * An svg document is an xml document. As such, all contained xml elements are
+ * also svg elements. SvgElement is the base abstract class for all svg elements
+ * in an SvgDocument.
  */
 public abstract class SvgElement {
 
-	static List<SvgElement> getAncestry(SvgElement element) {
-		List<SvgElement> l = new ArrayList<SvgElement>();
+	static List<SvgElement> getAncestry(final SvgElement element) {
+		final List<SvgElement> l = new ArrayList<SvgElement>();
 		l.add(element);
 		SvgElement parent = element.getContainer();
-		while(parent != null) {
+		while (parent != null) {
 			l.add(0, parent);
 			parent = parent.getContainer();
 		}
@@ -32,14 +32,14 @@ public abstract class SvgElement {
 	}
 
 	private SvgContainer container;
-	private String id;
+	private final String id;
 
-	SvgElement(SvgContainer container, String id) {
+	SvgElement(final SvgContainer container, final String id) {
 		this.container = container;
 		this.id = id;
-		if(container != null) {
+		if (container != null) {
 			container.add(this);
-			if(!(this instanceof SvgFragment)) {
+			if (!(this instanceof SvgFragment)) {
 				container.getFragment().put(this);
 			}
 		}
@@ -49,12 +49,12 @@ public abstract class SvgElement {
 		return container;
 	}
 
-	SvgElement getElement(String id) {
+	SvgElement getElement(final String id) {
 		return getFragment().getElement(id);
 	}
-	
+
 	SvgFragment getFragment() {
-		if(container != null) {
+		if (container != null) {
 			return container.getFragment();
 		}
 		return null;
@@ -62,6 +62,7 @@ public abstract class SvgElement {
 
 	/**
 	 * Return the id of this SvgElement, if it exists.
+	 * 
 	 * @return the id of the element if it exists, null otherwise.
 	 */
 	public final String getId() {
@@ -72,8 +73,8 @@ public abstract class SvgElement {
 		return container.getViewport();
 	}
 
-	void setContainer(SvgContainer container) {
+	void setContainer(final SvgContainer container) {
 		this.container = container;
 	}
-	
+
 }

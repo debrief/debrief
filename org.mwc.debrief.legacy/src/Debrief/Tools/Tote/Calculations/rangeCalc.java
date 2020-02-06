@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package Debrief.Tools.Tote.Calculations;
@@ -107,61 +107,115 @@ import MWC.GUI.Shapes.PlainShape;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 
-public class rangeCalc extends plainCalc
-{
+public class rangeCalc extends plainCalc {
 
 	/**
 	 * remember what units the user prefers
 	 */
 	private static String _myUnits = null;
-	
-	/** the time we last retrieved the units (so we 
-	 * can reduce checks)
+
+	/**
+	 * the time we last retrieved the units (so we can reduce checks)
 	 */
 	private static long _unitsRetrievedAt = 0;
 
-	protected static final java.text.NumberFormat _decFormatter = new java.text.DecimalFormat(
-			"0.00");
+	protected static final java.text.NumberFormat _decFormatter = new java.text.DecimalFormat("0.00");
 
-	// ///////////////////////////////////////////////////////////
-	// constructor
-	// //////////////////////////////////////////////////////////
-	public rangeCalc()
-	{
-		super(new DecimalFormat("000"), "Range", "yards");
-	}
+	static ToolParent _prefsProvider = null;
 
 	// ///////////////////////////////////////////////////////////
 	// member functions
 	// //////////////////////////////////////////////////////////
 
-	public double calculate(final Watchable primary, final Watchable secondary,
-			final HiResDate thisTime)
-	{
+	/**
+	 * convert the range to the supplied units
+	 *
+	 * @param range    range (in degrees)
+	 * @param theUnits target units
+	 * @return converted value
+	 */
+	public static final double convertRange(final double range, final String theUnits) {
+		double theRng = 0;
+		// do the units conversion
+		if (theUnits.equals(MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS)
+				|| theUnits.equals(MWC.GUI.Properties.UnitsPropertyEditor.OLD_YDS_UNITS)) {
+			theRng = MWC.Algorithms.Conversions.Degs2Yds(range);
+		} else if (theUnits.equals(MWC.GUI.Properties.UnitsPropertyEditor.KYD_UNITS)) {
+			theRng = MWC.Algorithms.Conversions.Degs2Yds(range) / 1000.0;
+		} else if (theUnits.equals(MWC.GUI.Properties.UnitsPropertyEditor.METRES_UNITS)) {
+			theRng = MWC.Algorithms.Conversions.Degs2m(range);
+		} else if (theUnits.equals(MWC.GUI.Properties.UnitsPropertyEditor.KM_UNITS)) {
+			theRng = MWC.Algorithms.Conversions.Degs2Km(range);
+		} else if (theUnits.equals(MWC.GUI.Properties.UnitsPropertyEditor.NM_UNITS)) {
+			theRng = MWC.Algorithms.Conversions.Degs2Nm(range);
+		} else {
+			MWC.Utilities.Errors.Trace.trace("Range/Bearing units in properties file may be corrupt");
+		}
+		return theRng;
+	}
+
+	protected final static String getMyUnits() {
+		final long tNow = System.currentTimeMillis();
+		final long THRESHOLD = 500;
+		if (_myUnits == null || tNow - _unitsRetrievedAt > THRESHOLD) {
+			// ok, remember the time we last got updated
+			_unitsRetrievedAt = tNow;
+
+			// now find the value to use
+			if (_prefsProvider != null) {
+				_myUnits = _prefsProvider.getProperty(MWC.GUI.Properties.UnitsPropertyEditor.UNITS_PROPERTY);
+
+				if (_myUnits.equals(""))
+					_myUnits = null;
+			} else {
+				if (_myUnits == null) {
+					_myUnits = Debrief.GUI.Frames.Application
+							.getThisProperty(MWC.GUI.Properties.UnitsPropertyEditor.UNITS_PROPERTY);
+				}
+			}
+			if (_myUnits == null)
+				_myUnits = MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS;
+		}
+
+		return _myUnits;
+	}
+
+	/**
+	 * allow external class to specify where we get our prefs from
+	 *
+	 * @param theParent
+	 */
+	public static void init(final ToolParent theParent) {
+		_prefsProvider = theParent;
+	}
+
+	// ///////////////////////////////////////////////////////////
+	// constructor
+	// //////////////////////////////////////////////////////////
+	public rangeCalc() {
+		super(new DecimalFormat("000"), "Range", "yards");
+	}
+
+	@Override
+	public double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime) {
 		double range = 0.0;
 		double theRng = 0.0;
-		if ((primary != null) && (secondary != null) && (primary != secondary))
-		{
-			// see if the primary or secondary is a shape - so we measure from the nearest point
+		if ((primary != null) && (secondary != null) && (primary != secondary)) {
+			// see if the primary or secondary is a shape - so we measure from the nearest
+			// point
 			// Note: we can't accurately handle the range between two shapes, since they
-			// can't both iterate through points to find the nearest on the other 
-			if(secondary instanceof ShapeWrapper)
-			{
-				ShapeWrapper sw = (ShapeWrapper) secondary;
-				PlainShape shape = sw.getShape();
+			// can't both iterate through points to find the nearest on the other
+			if (secondary instanceof ShapeWrapper) {
+				final ShapeWrapper sw = (ShapeWrapper) secondary;
+				final PlainShape shape = sw.getShape();
 				range = shape.rangeFrom(primary.getLocation());
-			}
-			else if(primary instanceof ShapeWrapper)
-			{
-				ShapeWrapper sw = (ShapeWrapper) primary;
-				PlainShape shape = sw.getShape();
-				range = shape.rangeFrom(secondary.getLocation());				
-			}
-			else
-			{
+			} else if (primary instanceof ShapeWrapper) {
+				final ShapeWrapper sw = (ShapeWrapper) primary;
+				final PlainShape shape = sw.getShape();
+				range = shape.rangeFrom(secondary.getLocation());
+			} else {
 				range = primary.getLocation().rangeFrom(secondary.getLocation());
 			}
-			
 
 			// we output the range value according to the currently selected range
 			// units
@@ -173,62 +227,26 @@ public class rangeCalc extends plainCalc
 	}
 
 	/**
-	 * convert the range to the supplied units
-	 * 
-	 * @param range
-	 *          range (in degrees)
-	 * @param theUnits
-	 *          target units
-	 * @return converted value
+	 * ok, find out what units to use for the range
+	 *
+	 * @return
 	 */
-	public static final double convertRange(final double range,
-			final String theUnits)
-	{
-		double theRng = 0;
-		// do the units conversion
-		if (theUnits.equals(MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS)
-				|| theUnits
-						.equals(MWC.GUI.Properties.UnitsPropertyEditor.OLD_YDS_UNITS))
-		{
-			theRng = MWC.Algorithms.Conversions.Degs2Yds(range);
-		}
-		else if (theUnits.equals(MWC.GUI.Properties.UnitsPropertyEditor.KYD_UNITS))
-		{
-			theRng = MWC.Algorithms.Conversions.Degs2Yds(range) / 1000.0;
-		}
-		else if (theUnits
-				.equals(MWC.GUI.Properties.UnitsPropertyEditor.METRES_UNITS))
-		{
-			theRng = MWC.Algorithms.Conversions.Degs2m(range);
-		}
-		else if (theUnits.equals(MWC.GUI.Properties.UnitsPropertyEditor.KM_UNITS))
-		{
-			theRng = MWC.Algorithms.Conversions.Degs2Km(range);
-		}
-		else if (theUnits.equals(MWC.GUI.Properties.UnitsPropertyEditor.NM_UNITS))
-		{
-			theRng = MWC.Algorithms.Conversions.Degs2Nm(range);
-		}
-		else
-		{
-			MWC.Utilities.Errors.Trace
-					.trace("Range/Bearing units in properties file may be corrupt");
-		}
-		return theRng;
+	@Override
+	public final String getUnits() {
+		return getMyUnits();
 	}
 
 	/**
 	 * does this calculation require special bearing handling (prevent wrapping
 	 * through 360 degs)
 	 */
-	public final boolean isWrappableData()
-	{
+	@Override
+	public final boolean isWrappableData() {
 		return false;
 	}
 
-	public String update(final Watchable primary, final Watchable secondary,
-			final HiResDate time)
-	{
+	@Override
+	public String update(final Watchable primary, final Watchable secondary, final HiResDate time) {
 		String res = null;
 
 		java.text.NumberFormat formatter = _myPattern;
@@ -242,74 +260,14 @@ public class rangeCalc extends plainCalc
 			formatter = _decFormatter;
 
 		// do we have sufficient data for a calc?
-		if ((primary != null) && (secondary != null) && (primary != secondary))
-		{
+		if ((primary != null) && (secondary != null) && (primary != secondary)) {
 			// ok, produce the string using our calculation and our formatter
 			res = formatter.format(calculate(primary, secondary, time));
-		}
-		else
-		{
+		} else {
 			res = NOT_APPLICABLE;
 		}
 
 		return res;
-	}
-
-	static ToolParent _prefsProvider = null;
-
-	/**
-	 * allow external class to specify where we get our prefs from
-	 * 
-	 * @param theParent
-	 */
-	public static void init(final ToolParent theParent)
-	{
-		_prefsProvider = theParent;
-	}
-
-  protected final static String getMyUnits()
-  {
-    final long tNow = System.currentTimeMillis();
-    final long THRESHOLD = 500;
-    if (_myUnits == null || tNow - _unitsRetrievedAt > THRESHOLD)
-    {
-      // ok, remember the time we last got updated
-      _unitsRetrievedAt = tNow;
-      
-      // now find the value to use
-      if (_prefsProvider != null)
-      {
-        _myUnits =
-            _prefsProvider
-                .getProperty(MWC.GUI.Properties.UnitsPropertyEditor.UNITS_PROPERTY);
-
-        if (_myUnits.equals(""))
-          _myUnits = null;
-      }
-      else
-      {
-        if (_myUnits == null)
-        {
-          _myUnits =
-              Debrief.GUI.Frames.Application
-                  .getThisProperty(MWC.GUI.Properties.UnitsPropertyEditor.UNITS_PROPERTY);
-        }
-      }
-      if (_myUnits == null)
-        _myUnits = MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS;
-    }
-
-    return _myUnits;
-  }
-
-	/**
-	 * ok, find out what units to use for the range
-	 * 
-	 * @return
-	 */
-	public final String getUnits()
-	{
-		return getMyUnits();
 	}
 
 }

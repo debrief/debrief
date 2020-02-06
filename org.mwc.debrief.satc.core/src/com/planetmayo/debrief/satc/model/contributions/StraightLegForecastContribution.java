@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package com.planetmayo.debrief.satc.model.contributions;
@@ -23,174 +23,146 @@ import java.util.ListIterator;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution.HasColor;
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
-import com.planetmayo.debrief.satc.model.states.BoundedState.BoundedStateType;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
+import com.planetmayo.debrief.satc.model.states.BoundedState.BoundedStateType;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 
-public class StraightLegForecastContribution extends BaseContribution implements HasColor
-{
+public class StraightLegForecastContribution extends BaseContribution implements HasColor {
 	private static final long serialVersionUID = 1L;
 
-	/** name of the system that auto generated us, if applicable
-	 * 
+	/**
+	 * name of the system that auto generated us, if applicable
+	 *
 	 */
 	private String autoGenBy = null;
-	
+
 	private Color color = Color.red;
-	
-	public String getAutoGenBy()
-	{
-		return autoGenBy;
-	}
-	
-	
-	public void setAutoGenBy(String val)
-	{
-		autoGenBy = val;
-	}
-	
+
 	@Override
-	public void actUpon(ProblemSpace space) throws IncompatibleStateException
-	{
+	public void actUpon(final ProblemSpace space) throws IncompatibleStateException {
 		// track the color to use for this straight leg
 		Color newCol = null;
-		
-		for (BoundedState state : space.getBoundedStatesBetween(startDate,
-				finishDate))
-		{
+
+		for (final BoundedState state : space.getBoundedStatesBetween(startDate, finishDate)) {
 			// just double-check that this doesn't already have a leg - we can't
 			// let them overlap
-			String existing = state.getMemberOf();
+			final String existing = state.getMemberOf();
 			if (existing != null)
-				throw new IncompatibleStateException(
-						"We don't support overlapping legs. Old leg:" + existing
-								+ " New leg:" + this.getName() + " state at:" + state.getTime(), null, null);
+				throw new IncompatibleStateException("We don't support overlapping legs. Old leg:" + existing
+						+ " New leg:" + this.getName() + " state at:" + state.getTime(), null, null);
 
 			// ok, now just store the leg id
 			state.setMemberOf(this.getName());
-			
+
 			// do we have a color?
-			if(newCol == null && state.getColor() != null)
-			{
+			if (newCol == null && state.getColor() != null) {
 				// nope, store it.
 				newCol = new Color(state.getColor().getRGB());
 			}
 		}
 
 		// share the good news about the color change
-		Color oldCol = color;
+		final Color oldCol = color;
 		color = newCol;
 		firePropertyChange(COLOR, oldCol, color);
-		
+
 		// check that we have at least one state between two straight legs
-		List<BoundedState> previousState = new ArrayList<BoundedState>(
-				space.getBoundedStatesBetween(space.getStartDate(), new Date(startDate.getTime() - 1))
-		);
-		if (previousState.isEmpty()) 
-		{
+		final List<BoundedState> previousState = new ArrayList<BoundedState>(
+				space.getBoundedStatesBetween(space.getStartDate(), new Date(startDate.getTime() - 1)));
+		if (previousState.isEmpty()) {
 			return;
 		}
-		ListIterator<BoundedState> backIterator = previousState.listIterator(previousState.size());
-		BoundedState endPreviousLeg = backIterator.previous();
-		String prevStraightLeg = endPreviousLeg.getMemberOf();
-		if (prevStraightLeg == null) 
-		{
+		final ListIterator<BoundedState> backIterator = previousState.listIterator(previousState.size());
+		final BoundedState endPreviousLeg = backIterator.previous();
+		final String prevStraightLeg = endPreviousLeg.getMemberOf();
+		if (prevStraightLeg == null) {
 			return;
 		}
 		BoundedState state = endPreviousLeg;
-		while (backIterator.hasPrevious()) 
-		{
+		while (backIterator.hasPrevious()) {
 			state = backIterator.previous();
-			if (! prevStraightLeg.equals(state.getMemberOf())) 
-			{
+			if (!prevStraightLeg.equals(state.getMemberOf())) {
 				break;
 			}
 		}
-		addStatesForAltering(space, new Date(state.getTime().getTime() + 1), endPreviousLeg.getTime(), startDate, finishDate);
+		addStatesForAltering(space, new Date(state.getTime().getTime() + 1), endPreviousLeg.getTime(), startDate,
+				finishDate);
 	}
-	
-	private void addStatesForAltering(ProblemSpace space, Date startPrevious, Date endPrevious, Date startNext, Date endNext) 
-	{
+
+	private void addStatesForAltering(final ProblemSpace space, final Date startPrevious, final Date endPrevious,
+			final Date startNext, final Date endNext) {
 		BoundedState previous = null;
 		long sum = 0;
 		int count = 0;
-		for (BoundedState state : space.getBoundedStatesBetween(startPrevious, endPrevious))
-		{
-			if (previous != null) 
-			{
+		for (final BoundedState state : space.getBoundedStatesBetween(startPrevious, endPrevious)) {
+			if (previous != null) {
 				sum += state.getTime().getTime() - previous.getTime().getTime();
 				count++;
 			}
 			previous = state;
 		}
 		previous = null;
-		for (BoundedState state : space.getBoundedStatesBetween(startNext, endNext))
-		{
-			if (previous != null) 
-			{
+		for (final BoundedState state : space.getBoundedStatesBetween(startNext, endNext)) {
+			if (previous != null) {
 				sum += state.getTime().getTime() - previous.getTime().getTime();
 				count++;
 			}
 			previous = state;
-		}		
-		long delta = sum / count;
-		boolean stateCreated = false; 
-		for (long a = endPrevious.getTime() + delta; a < startNext.getTime(); a += delta)
-		{
-			try 
-			{
+		}
+		final long delta = sum / count;
+		boolean stateCreated = false;
+		for (long a = endPrevious.getTime() + delta; a < startNext.getTime(); a += delta) {
+			try {
 				space.add(new BoundedState(new Date(a), BoundedStateType.ALTERING));
 				stateCreated = true;
-			} 
-			catch (IncompatibleStateException ex) 
-			{				
+			} catch (final IncompatibleStateException ex) {
 			}
 		}
-		if (! stateCreated) 
-		{
-			try 
-			{
-				space.add(new BoundedState(new Date((endPrevious.getTime() + startNext.getTime()) / 2), BoundedStateType.ALTERING));
-			} 
-			catch (IncompatibleStateException ex) 
-			{				
-			}			
+		if (!stateCreated) {
+			try {
+				space.add(new BoundedState(new Date((endPrevious.getTime() + startNext.getTime()) / 2),
+						BoundedStateType.ALTERING));
+			} catch (final IncompatibleStateException ex) {
+			}
 		}
 	}
-	
+
 	@Override
-	protected int compareEqualClass(BaseContribution o)
-	{
-		int res =getStartDate().compareTo(o.getStartDate());
-		
-		if(res == 0)
-		{
+	protected int compareEqualClass(final BaseContribution o) {
+		int res = getStartDate().compareTo(o.getStartDate());
+
+		if (res == 0) {
 			// ok, have to compare names
 			res = getName().compareTo(o.getName());
 		}
-		
+
 		return res;
 	}
-	
-	public Color getColor()
-	{
+
+	public String getAutoGenBy() {
+		return autoGenBy;
+	}
+
+	@Override
+	public Color getColor() {
 		return color;
 	}
-	
-	public void setColor(Color col)
-	{
-		color = col;
-	}
-	
+
 	@Override
-	public ContributionDataType getDataType()
-	{
+	public ContributionDataType getDataType() {
 		return ContributionDataType.FORECAST;
 	}
 
 	@Override
-	protected int getSortOrder()
-	{
+	protected int getSortOrder() {
 		return MEASUREMENT_DEFAULT_SCORE + 1;
+	}
+
+	public void setAutoGenBy(final String val) {
+		autoGenBy = val;
+	}
+
+	public void setColor(final Color col) {
+		color = col;
 	}
 }

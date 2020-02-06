@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.cmap.gridharness.data.samples;
@@ -22,10 +22,9 @@ import org.mwc.cmap.gridharness.data.WorldDistance2;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GenericData.HiResDate;
 
-
 /**
  * @author Administrator
- * 
+ *
  */
 public class Observation implements TimeStampedDataItem {
 
@@ -47,52 +46,52 @@ public class Observation implements TimeStampedDataItem {
 		_color = color;
 	}
 
-	public String toString() {
-		return "Observation:" + _myTime.toString();
-	}
-
-	public HiResDate getDTG() {
-		return _myTime;
-	}
-
-	public HiResDate getTime() {
-		return _myTime;
-	}
-
-	public void setTime(final HiResDate time) {
-		_myTime = time;
-	}
-
 	public double getBearing() {
 		return _bearing;
 	}
 
-	public void setBearing(final double _bearing) {
-		this._bearing = _bearing;
+	@Override
+	public Color getColor() {
+		return _color;
+	}
+
+	@Override
+	public HiResDate getDTG() {
+		return _myTime;
 	}
 
 	public WorldDistance2 getRange() {
 		return _range;
 	}
 
-	public void setRange(final WorldDistance2 _range) {
-		this._range = _range;
+	public HiResDate getTime() {
+		return _myTime;
 	}
 
-	public void setDTG(final HiResDate newTime) {
-		this._myTime = newTime;
+	public void setBearing(final double _bearing) {
+		this._bearing = _bearing;
 	}
-	
-	public void setColor(final Color color)
-	{
+
+	public void setColor(final Color color) {
 		_color = color;
 	}
 
 	@Override
-	public Color getColor()
-	{
-		return _color;
+	public void setDTG(final HiResDate newTime) {
+		this._myTime = newTime;
 	}
 
+	public void setRange(final WorldDistance2 _range) {
+		this._range = _range;
+	}
+
+	public void setTime(final HiResDate time) {
+		_myTime = time;
+	}
+
+	@Override
+	public String toString() {
+		return "Observation:" + _myTime.toString();
+	}
 
 }

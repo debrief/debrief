@@ -22,7 +22,7 @@ import org.eclipse.swt.events.SelectionListener;
 /**
  * An implementation of the DataBindings IObservableValue interface for the
  * Nebula CDateTime control.
- * 
+ *
  * @author pcentgraf
  * @since Mar 8, 2007
  */
@@ -43,23 +43,21 @@ public class CDateTimeObservableValue extends AbstractObservableValue {
 	 */
 	protected Date currentSelection;
 
-	private SelectionListener listener = new SelectionListener() {
-		public void widgetDefaultSelected(SelectionEvent e) {
+	private final SelectionListener listener = new SelectionListener() {
+		@Override
+		public void widgetDefaultSelected(final SelectionEvent e) {
 			if (!updating) {
-				Date newSelection = CDateTimeObservableValue.this.dateTime
-						.getSelection();
-				fireValueChange(Diffs.createValueDiff(currentSelection,
-						newSelection));
+				final Date newSelection = CDateTimeObservableValue.this.dateTime.getSelection();
+				fireValueChange(Diffs.createValueDiff(currentSelection, newSelection));
 				currentSelection = newSelection;
 			}
 		}
 
-		public void widgetSelected(SelectionEvent e) {
+		@Override
+		public void widgetSelected(final SelectionEvent e) {
 			if (!updating) {
-				Date newSelection = CDateTimeObservableValue.this.dateTime
-						.getSelection();
-				fireValueChange(Diffs.createValueDiff(currentSelection,
-						newSelection));
+				final Date newSelection = CDateTimeObservableValue.this.dateTime.getSelection();
+				fireValueChange(Diffs.createValueDiff(currentSelection, newSelection));
 				currentSelection = newSelection;
 			}
 		}
@@ -67,11 +65,10 @@ public class CDateTimeObservableValue extends AbstractObservableValue {
 
 	/**
 	 * Observe the selection property of the provided CDateTime control.
-	 * 
-	 * @param dateTime
-	 *            the control to observe
+	 *
+	 * @param dateTime the control to observe
 	 */
-	public CDateTimeObservableValue(CDateTime dateTime) {
+	public CDateTimeObservableValue(final CDateTime dateTime) {
 		this.dateTime = dateTime;
 		currentSelection = dateTime.getSelection();
 		this.dateTime.addSelectionListener(listener);
@@ -83,6 +80,7 @@ public class CDateTimeObservableValue extends AbstractObservableValue {
 		super.dispose();
 	}
 
+	@Override
 	protected Object doGetValue() {
 		if (!dateTime.isDisposed()) {
 			return dateTime.getSelection();
@@ -90,7 +88,8 @@ public class CDateTimeObservableValue extends AbstractObservableValue {
 		return null;
 	}
 
-	protected void doSetValue(Object value) {
+	@Override
+	protected void doSetValue(final Object value) {
 		if ((value instanceof Date || value == null) && !dateTime.isDisposed()) {
 			Date oldValue;
 			Date newValue;
@@ -107,6 +106,7 @@ public class CDateTimeObservableValue extends AbstractObservableValue {
 		}
 	}
 
+	@Override
 	public Object getValueType() {
 		return Date.class;
 	}

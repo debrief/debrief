@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package ASSET.Util.XML.Control.Observers;
@@ -29,102 +29,89 @@ import ASSET.Util.XML.Decisions.Util.TargetTypeHandler;
 /**
  * read in a debrief replay observer from file
  */
-abstract class BMRObserverHandler extends CoreFileObserverHandler
-{
+abstract class BMRObserverHandler extends CoreFileObserverHandler {
 
-  private final static String type = "BMRObserver";
+	private final static String type = "BMRObserver";
 
-  private TargetType _targetType = null;
-  final private List<String> _formatHelpers = new ArrayList<String>();
-  private String _subjectSensor = null;
+	private static final String TARGET_TYPE = "SubjectToTrack";
+	private static final String SUBJECT_SENSOR = "SubjectSensor";
 
-  private static final String TARGET_TYPE = "SubjectToTrack";
-  private static final String SUBJECT_SENSOR = "SubjectSensor";
+	static public void exportThis(final Object toExport, final Element parent, final org.w3c.dom.Document doc) {
+		// create ourselves
+		final Element thisPart = doc.createElement(type);
 
-  public BMRObserverHandler(String type)
-  {
-    super(type);
+		// get data item
+		final BMRObserver bb = (BMRObserver) toExport;
 
-    addAttributeHandler(new HandleAttribute(SUBJECT_SENSOR)
-    {
-      public void setValue(String name, final String val)
-      {
-        _subjectSensor = val;
-      }
-    });
+		// output the parent ttributes
+		CoreFileObserverHandler.exportThis(bb, thisPart);
 
-    addHandler(new TargetTypeHandler(TARGET_TYPE)
-    {
-      public void setTargetType(TargetType type1)
-      {
-        _targetType = type1;
-      }
-    });
-    addHandler(new DebriefFormatHelperHandler()
-    {
-      @Override
-      public void storeMe(final String text)
-      {
-        _formatHelpers.add(text);
-      }
-    });
-  }
+		if (bb.getSubjectToTrack() != null) {
+			TargetTypeHandler.exportThis(TARGET_TYPE, bb.getSubjectToTrack(), thisPart, doc);
+		}
 
-  public BMRObserverHandler()
-  {
-    this(type);
-  }
+		// output it's attributes
+		parent.appendChild(thisPart);
 
-  public void elementClosed()
-  {
-    // create ourselves
-    final BMRObserver debriefObserver = getObserver(_name, _isActive,
-        _targetType, _formatHelpers, _subjectSensor);
+	}
 
-    setObserver(debriefObserver);
+	private TargetType _targetType = null;
+	final private List<String> _formatHelpers = new ArrayList<String>();
 
-    // close the parent
-    super.elementClosed();
+	private String _subjectSensor = null;
 
-    // and clear the data
-    _targetType = null;
-    _subjectSensor = null;
+	public BMRObserverHandler() {
+		this(type);
+	}
 
-    // and clear the format helpers
-    _formatHelpers.clear();
-  }
+	public BMRObserverHandler(final String type) {
+		super(type);
 
-  protected BMRObserver getObserver(String name, boolean isActive,
-      TargetType subject, List<String> formatHelpers,
-      final String subjectSensor)
-  {
-    return new BMRObserver(_directory, _fileName, subject, name, isActive,
-        subjectSensor);
-  }
+		addAttributeHandler(new HandleAttribute(SUBJECT_SENSOR) {
+			@Override
+			public void setValue(final String name, final String val) {
+				_subjectSensor = val;
+			}
+		});
 
-  abstract public void setObserver(ScenarioObserver obs);
+		addHandler(new TargetTypeHandler(TARGET_TYPE) {
+			@Override
+			public void setTargetType(final TargetType type1) {
+				_targetType = type1;
+			}
+		});
+		addHandler(new DebriefFormatHelperHandler() {
+			@Override
+			public void storeMe(final String text) {
+				_formatHelpers.add(text);
+			}
+		});
+	}
 
-  static public void exportThis(final Object toExport, final Element parent,
-      final org.w3c.dom.Document doc)
-  {
-    // create ourselves
-    final Element thisPart = doc.createElement(type);
+	@Override
+	public void elementClosed() {
+		// create ourselves
+		final BMRObserver debriefObserver = getObserver(_name, _isActive, _targetType, _formatHelpers, _subjectSensor);
 
-    // get data item
-    final BMRObserver bb = (BMRObserver) toExport;
+		setObserver(debriefObserver);
 
-    // output the parent ttributes
-    CoreFileObserverHandler.exportThis(bb, thisPart);
+		// close the parent
+		super.elementClosed();
 
-    if (bb.getSubjectToTrack() != null)
-    {
-      TargetTypeHandler.exportThis(TARGET_TYPE, bb.getSubjectToTrack(),
-          thisPart, doc);
-    }
+		// and clear the data
+		_targetType = null;
+		_subjectSensor = null;
 
-    // output it's attributes
-    parent.appendChild(thisPart);
+		// and clear the format helpers
+		_formatHelpers.clear();
+	}
 
-  }
+	protected BMRObserver getObserver(final String name, final boolean isActive, final TargetType subject,
+			final List<String> formatHelpers, final String subjectSensor) {
+		return new BMRObserver(_directory, _fileName, subject, name, isActive, subjectSensor);
+	}
+
+	@Override
+	abstract public void setObserver(ScenarioObserver obs);
 
 }

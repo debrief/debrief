@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 package org.mwc.debrief.core.gpx.mappers;
 
@@ -66,300 +66,251 @@ import junit.framework.TestCase;
  * /plot/session/layers/track/TrackSegment/fix 	/gpx/trk/trkseg/trkpt 	Debrief.Wrappers.FixWrapper
  *           </pre>
  */
-public class TrackMapper implements DebriefJaxbContextAware
-{
-  public static class TestGPXExport extends TestCase
-  {
-    private static TrackWrapper getData(final String name)
-        throws FileNotFoundException
-    {
-      // get our sample data-file
-      final ImportReplay importer = new ImportReplay();
-      final Layers theLayers = new Layers();
-      final String fName =
-          "../org.mwc.cmap.combined.feature/root_installs/sample_data/" + name;
-      final File inFile = new File(fName);
-      assertTrue("input file exists", inFile.exists());
-      final FileInputStream is = new FileInputStream(fName);
-      importer.importThis(fName, is, theLayers, new MonitorProvider()
-      {
-        
-        public void progress(int _progress)
-        {
-          // System.out.println(_progress);
-        }
+public class TrackMapper implements DebriefJaxbContextAware {
+	public static class TestGPXExport extends TestCase {
+		private static TrackWrapper getData(final String name) throws FileNotFoundException {
+			// get our sample data-file
+			final ImportReplay importer = new ImportReplay();
+			final Layers theLayers = new Layers();
+			final String fName = "../org.mwc.cmap.combined.feature/root_installs/sample_data/" + name;
+			final File inFile = new File(fName);
+			assertTrue("input file exists", inFile.exists());
+			final FileInputStream is = new FileInputStream(fName);
+			importer.importThis(fName, is, theLayers, new MonitorProvider() {
 
-        public void init(String fileName, int length)
-        {
-          System.out.println("Loading " + fileName);
-        }
+				@Override
+				public void done() {
+					// not implemented
+				}
 
-        public void done()
-        {
-          // not implemented
-        }
-      });
+				@Override
+				public void init(final String fileName, final int length) {
+					System.out.println("Loading " + fileName);
+				}
 
-      // sort out the sensors
-      importer.storePendingSensors();
+				@Override
+				public void progress(final int _progress) {
+					// System.out.println(_progress);
+				}
+			});
 
-      // get the sensor track
-      final TrackWrapper track = (TrackWrapper) theLayers.elements()
-          .nextElement();
+			// sort out the sensors
+			importer.storePendingSensors();
 
-      return track;
-    }
+			// get the sensor track
+			final TrackWrapper track = (TrackWrapper) theLayers.elements().nextElement();
 
-    public void testTrackExport() throws FileNotFoundException
-    {
-      final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
+			return track;
+		}
 
-      final TrackMapper mapper = new TrackMapper();
+		public void testTrackExport() throws FileNotFoundException {
+			final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
 
-      List<Trk> res = mapper.toGpx10(tracks);
+			final TrackMapper mapper = new TrackMapper();
 
-      assertEquals("empty list", 0, res.size());
+			List<Trk> res = mapper.toGpx10(tracks);
 
-      final TrackWrapper trk1 = getData("boat1.rep");
+			assertEquals("empty list", 0, res.size());
 
-      tracks.add(trk1);
+			final TrackWrapper trk1 = getData("boat1.rep");
 
-      res = mapper.toGpx10(tracks);
+			tracks.add(trk1);
 
-      assertEquals("has track", 1, res.size());
+			res = mapper.toGpx10(tracks);
 
-      final TrackWrapper trk2 = getData("boat2.rep");
+			assertEquals("has track", 1, res.size());
 
-      tracks.add(trk2);
+			final TrackWrapper trk2 = getData("boat2.rep");
 
-      res = mapper.toGpx10(tracks);
+			tracks.add(trk2);
 
-      assertEquals("has track", 2, res.size());
+			res = mapper.toGpx10(tracks);
 
-      // check the data
-      final Trk firstTrack = res.get(0);
-      final Trkseg seg = firstTrack.getTrkseg().iterator().next();
-      final Iterator<Trkpt> tIter = seg.getTrkpt().iterator();
-      final Trkpt fix1 = tIter.next();
+			assertEquals("has track", 2, res.size());
 
-      assertEquals("correct lat", 22.186286d, fix1.getLat().doubleValue(),
-          0.000001);
-      assertEquals("correct lon", -21.697880, fix1.getLon().doubleValue(),
-          0.000001);
-      assertEquals("correct course", 269.7d, fix1.getCourse().doubleValue(),
-          0.1);
-      assertEquals("correct speed", MWC.Algorithms.Conversions.Kts2Mps(2d), fix1
-          .getSpeed().doubleValue(), 0.001);
-      assertEquals("correct time", "1995-12-12T05:00:00Z", fix1.getTime()
-          .toString());
+			// check the data
+			final Trk firstTrack = res.get(0);
+			final Trkseg seg = firstTrack.getTrkseg().iterator().next();
+			final Iterator<Trkpt> tIter = seg.getTrkpt().iterator();
+			final Trkpt fix1 = tIter.next();
 
-      final Trkpt fix2 = tIter.next();
+			assertEquals("correct lat", 22.186286d, fix1.getLat().doubleValue(), 0.000001);
+			assertEquals("correct lon", -21.697880, fix1.getLon().doubleValue(), 0.000001);
+			assertEquals("correct course", 269.7d, fix1.getCourse().doubleValue(), 0.1);
+			assertEquals("correct speed", MWC.Algorithms.Conversions.Kts2Mps(2d), fix1.getSpeed().doubleValue(), 0.001);
+			assertEquals("correct time", "1995-12-12T05:00:00Z", fix1.getTime().toString());
 
-      assertEquals("correct lat", 22.186272d, fix2.getLat().doubleValue(),
-          0.000001);
-      assertEquals("correct lon", -21.700827, fix2.getLon().doubleValue(),
-          0.000001);
-      assertEquals("correct course", 269.7d, fix2.getCourse().doubleValue(),
-          0.1);
-      assertEquals("correct speed", MWC.Algorithms.Conversions.Kts2Mps(2d), fix2
-          .getSpeed().doubleValue(), 0.001);
-      assertEquals("correct time", "1995-12-12T05:01:00Z", fix2.getTime()
-          .toString());
+			final Trkpt fix2 = tIter.next();
 
-    }
-  }
+			assertEquals("correct lat", 22.186272d, fix2.getLat().doubleValue(), 0.000001);
+			assertEquals("correct lon", -21.700827, fix2.getLon().doubleValue(), 0.000001);
+			assertEquals("correct course", 269.7d, fix2.getCourse().doubleValue(), 0.1);
+			assertEquals("correct speed", MWC.Algorithms.Conversions.Kts2Mps(2d), fix2.getSpeed().doubleValue(), 0.001);
+			assertEquals("correct time", "1995-12-12T05:01:00Z", fix2.getTime().toString());
 
-  private static final ObjectFactory GPX_1_0_OBJ_FACTORY = new ObjectFactory();
-  private final TrackSegmentMapper segmentMapper = new TrackSegmentMapper();
-  private final FixMapper fixMapper = new FixMapper();
+		}
+	}
 
-  private JAXBContext debriefContext;
+	private static final ObjectFactory GPX_1_0_OBJ_FACTORY = new ObjectFactory();
+	private final TrackSegmentMapper segmentMapper = new TrackSegmentMapper();
+	private final FixMapper fixMapper = new FixMapper();
 
-  /**
-   * @category gpx10
-   */
-  private void exportFixes(final TrackSegment seg, final Trkseg gpxSeg)
-  {
-    final Collection<Editable> pts = seg.getData();
-    for (final Iterator<Editable> iterator = pts.iterator(); iterator
-        .hasNext();)
-    {
-      final FixWrapper fix = (FixWrapper) iterator.next();
-      gpxSeg.getTrkpt().add(fixMapper.toGpx10(fix));
-    }
-  }
+	private JAXBContext debriefContext;
 
-  /**
-   * @category gpx10
-   */
-  private void exportSegment(final Trk gpxTrack, final Editable nextElement)
-  {
-    final TrackSegment seg = (TrackSegment) nextElement;
-    final Trkseg gpxSeg = GPX_1_0_OBJ_FACTORY.createGpxTrkTrkseg();
-    gpxTrack.getTrkseg().add(gpxSeg);
-    exportFixes(seg, gpxSeg);
-  }
+	/**
+	 * @category gpx10
+	 */
+	private void exportFixes(final TrackSegment seg, final Trkseg gpxSeg) {
+		final Collection<Editable> pts = seg.getData();
+		for (final Iterator<Editable> iterator = pts.iterator(); iterator.hasNext();) {
+			final FixWrapper fix = (FixWrapper) iterator.next();
+			gpxSeg.getTrkpt().add(fixMapper.toGpx10(fix));
+		}
+	}
 
-  /**
-   * @category gpx11
-   */
-  public List<TrackWrapper> fromGpx(final GpxType gpx)
-  {
-    final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>(gpx.getTrk()
-        .size());
+	/**
+	 * @category gpx10
+	 */
+	private void exportSegment(final Trk gpxTrack, final Editable nextElement) {
+		final TrackSegment seg = (TrackSegment) nextElement;
+		final Trkseg gpxSeg = GPX_1_0_OBJ_FACTORY.createGpxTrkTrkseg();
+		gpxTrack.getTrkseg().add(gpxSeg);
+		exportFixes(seg, gpxSeg);
+	}
 
-    for (final TrkType gpxTrack : gpx.getTrk())
-    {
-      final TrackWrapper track = new TrackWrapper();
+	/**
+	 * @category gpx11
+	 */
+	public List<TrackWrapper> fromGpx(final GpxType gpx) {
+		final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>(gpx.getTrk().size());
 
-      mapGpxTrack(gpxTrack, track);
+		for (final TrkType gpxTrack : gpx.getTrk()) {
+			final TrackWrapper track = new TrackWrapper();
 
-      for (final TrksegType gpxSegment : gpxTrack.getTrkseg())
-      {
-        final TrackSegment segment = segmentMapper.fromGpx(gpxSegment);
-        track.add(segment);
+			mapGpxTrack(gpxTrack, track);
 
-        // keep track of the previous fix, in case we wish to calculate course
-        // and speed
-        FixWrapper previousFix = null;
+			for (final TrksegType gpxSegment : gpxTrack.getTrkseg()) {
+				final TrackSegment segment = segmentMapper.fromGpx(gpxSegment);
+				track.add(segment);
 
-        for (final WptType waypointType : gpxSegment.getTrkpt())
-        {
-          fixMapper.setJaxbContext(debriefContext);
-          final FixWrapper fix = fixMapper.fromGpx(waypointType, previousFix);
-          segment.add(fix);
+				// keep track of the previous fix, in case we wish to calculate course
+				// and speed
+				FixWrapper previousFix = null;
 
-          previousFix = fix;
-        }
-      }
-      tracks.add(track);
-    }
-    return tracks;
-  }
+				for (final WptType waypointType : gpxSegment.getTrkpt()) {
+					fixMapper.setJaxbContext(debriefContext);
+					final FixWrapper fix = fixMapper.fromGpx(waypointType, previousFix);
+					segment.add(fix);
 
-  /**
-   * @category gpx10
-   */
-  public List<TrackWrapper> fromGpx10(final Gpx gpx)
-  {
-    final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>(gpx.getTrk()
-        .size());
+					previousFix = fix;
+				}
+			}
+			tracks.add(track);
+		}
+		return tracks;
+	}
 
-    for (final Gpx.Trk gpxTrack : gpx.getTrk())
-    {
-      final TrackWrapper track = new TrackWrapper();
+	/**
+	 * @category gpx10
+	 */
+	public List<TrackWrapper> fromGpx10(final Gpx gpx) {
+		final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>(gpx.getTrk().size());
 
-      mapGpx10Track(gpxTrack, track);
+		for (final Gpx.Trk gpxTrack : gpx.getTrk()) {
+			final TrackWrapper track = new TrackWrapper();
 
-      for (final Gpx.Trk.Trkseg gpxSegment : gpxTrack.getTrkseg())
-      {
-        final TrackSegment segment = segmentMapper.fromGpx10(gpxSegment);
-        track.add(segment);
+			mapGpx10Track(gpxTrack, track);
 
-        // keep track of the previous fix, in case we wish to calculate course
-        // and speed
-        FixWrapper previousFix = null;
+			for (final Gpx.Trk.Trkseg gpxSegment : gpxTrack.getTrkseg()) {
+				final TrackSegment segment = segmentMapper.fromGpx10(gpxSegment);
+				track.add(segment);
 
-        for (final Gpx.Trk.Trkseg.Trkpt waypointType : gpxSegment.getTrkpt())
-        {
-          fixMapper.setJaxbContext(debriefContext);
-          final FixWrapper fix = fixMapper.fromGpx10(waypointType, previousFix);
-          segment.add(fix);
+				// keep track of the previous fix, in case we wish to calculate course
+				// and speed
+				FixWrapper previousFix = null;
 
-          previousFix = fix;
-        }
-      }
-      tracks.add(track);
-    }
-    return tracks;
-  }
+				for (final Gpx.Trk.Trkseg.Trkpt waypointType : gpxSegment.getTrkpt()) {
+					fixMapper.setJaxbContext(debriefContext);
+					final FixWrapper fix = fixMapper.fromGpx10(waypointType, previousFix);
+					segment.add(fix);
 
-  /**
-   * @category gpx10
-   */
-  private void mapGpx10Track(final Trk gpxTrack, final TrackWrapper track)
-  {
-    track.setName(gpxTrack.getName());
-    // Ignore handling of debrief extensions as they are not required for now
-  }
+					previousFix = fix;
+				}
+			}
+			tracks.add(track);
+		}
+		return tracks;
+	}
 
-  /**
-   * @category gpx11
-   */
-  private void mapGpxTrack(final TrkType gpxTrack, final TrackWrapper track)
-  {
-    track.setName(gpxTrack.getName());
+	/**
+	 * @category gpx10
+	 */
+	private void mapGpx10Track(final Trk gpxTrack, final TrackWrapper track) {
+		track.setName(gpxTrack.getName());
+		// Ignore handling of debrief extensions as they are not required for now
+	}
 
-    try
-    {
-      final ExtensionsType extensions = gpxTrack.getExtensions();
-      if (extensions != null)
-      {
-        final List<Object> any = extensions.getAny();
+	/**
+	 * @category gpx11
+	 */
+	private void mapGpxTrack(final TrkType gpxTrack, final TrackWrapper track) {
+		track.setName(gpxTrack.getName());
 
-        final Unmarshaller unmarshaller = debriefContext.createUnmarshaller();
-        final Object object = unmarshaller.unmarshal((Node) any.get(0));
-        final TrackExtensionType trackExtension =
-            (TrackExtensionType) JAXBIntrospector.getValue(object);
+		try {
+			final ExtensionsType extensions = gpxTrack.getExtensions();
+			if (extensions != null) {
+				final List<Object> any = extensions.getAny();
 
-        track.setNameAtStart(trackExtension.isNameAtStart());
-        track.setLineThickness(trackExtension.getLineThickness().intValue());
-        track.setInterpolatePoints(trackExtension.isInterpolatePoints());
-        track.setLinkPositions(trackExtension.isLinkPositions());
-        track.setLineStyle(trackExtension.getLineStyle().intValue());
-        final LocationPropertyEditor nameLocationConverter =
-            new LocationPropertyEditor();
-        nameLocationConverter.setAsText(trackExtension.getNameLocation());
-        track.setNameLocation(((Integer) nameLocationConverter.getValue())
-            .intValue());
-        track.getSensors().setVisible(trackExtension.isSensorsVisible());
-        track.getSolutions().setVisible(trackExtension.isSolutionsVisible());
-        track.setNameVisible(trackExtension.isNameVisible());
-        track.setPlotArrayCentre(trackExtension.isPlotArrayCentre());
-        track.setPositionsVisible(trackExtension.isPositionsVisible());
-        track.setLinkPositions(trackExtension.isLinkPositions());
-        track.setVisible(trackExtension.isVisible());
-        track.setSymbolType(trackExtension.getSymbol());
-      }
-    }
-    catch (final JAXBException e)
-    {
-      CorePlugin.logError(IStatus.ERROR, "Error while mapping Track from GPX",
-          e);
-    }
-  }
+				final Unmarshaller unmarshaller = debriefContext.createUnmarshaller();
+				final Object object = unmarshaller.unmarshal((Node) any.get(0));
+				final TrackExtensionType trackExtension = (TrackExtensionType) JAXBIntrospector.getValue(object);
 
-  @Override
-  public void setJaxbContext(final JAXBContext ctx)
-  {
-    debriefContext = ctx;
-  }
+				track.setNameAtStart(trackExtension.isNameAtStart());
+				track.setLineThickness(trackExtension.getLineThickness().intValue());
+				track.setInterpolatePoints(trackExtension.isInterpolatePoints());
+				track.setLinkPositions(trackExtension.isLinkPositions());
+				track.setLineStyle(trackExtension.getLineStyle().intValue());
+				final LocationPropertyEditor nameLocationConverter = new LocationPropertyEditor();
+				nameLocationConverter.setAsText(trackExtension.getNameLocation());
+				track.setNameLocation(((Integer) nameLocationConverter.getValue()).intValue());
+				track.getSensors().setVisible(trackExtension.isSensorsVisible());
+				track.getSolutions().setVisible(trackExtension.isSolutionsVisible());
+				track.setNameVisible(trackExtension.isNameVisible());
+				track.setPlotArrayCentre(trackExtension.isPlotArrayCentre());
+				track.setPositionsVisible(trackExtension.isPositionsVisible());
+				track.setLinkPositions(trackExtension.isLinkPositions());
+				track.setVisible(trackExtension.isVisible());
+				track.setSymbolType(trackExtension.getSymbol());
+			}
+		} catch (final JAXBException e) {
+			CorePlugin.logError(IStatus.ERROR, "Error while mapping Track from GPX", e);
+		}
+	}
 
-  public List<Trk> toGpx10(final List<TrackWrapper> tracks)
-  {
-    final List<Trk> gpxTracks = new ArrayList<Trk>(tracks.size());
-    for (final TrackWrapper track : tracks)
-    {
-      final Trk gpxTrack = GPX_1_0_OBJ_FACTORY.createGpxTrk();
-      gpxTrack.setName(track.getName());
+	@Override
+	public void setJaxbContext(final JAXBContext ctx) {
+		debriefContext = ctx;
+	}
 
-      final Enumeration<Editable> segs = track.getSegments().elements();
-      while (segs.hasMoreElements())
-      {
-        final Editable nextElement = segs.nextElement();
+	public List<Trk> toGpx10(final List<TrackWrapper> tracks) {
+		final List<Trk> gpxTracks = new ArrayList<Trk>(tracks.size());
+		for (final TrackWrapper track : tracks) {
+			final Trk gpxTrack = GPX_1_0_OBJ_FACTORY.createGpxTrk();
+			gpxTrack.setName(track.getName());
 
-        if (nextElement instanceof TrackSegment)
-        {
-          exportSegment(gpxTrack, nextElement);
-        }
-        else
-        {
-          CorePlugin.logError(IStatus.INFO, "Ignoring " + nextElement
-              + " while marshalling Track GPX as it is not a Fix", null);
-        }
-      }
-      gpxTracks.add(gpxTrack);
-    }
-    return gpxTracks;
-  }
+			final Enumeration<Editable> segs = track.getSegments().elements();
+			while (segs.hasMoreElements()) {
+				final Editable nextElement = segs.nextElement();
+
+				if (nextElement instanceof TrackSegment) {
+					exportSegment(gpxTrack, nextElement);
+				} else {
+					CorePlugin.logError(IStatus.INFO,
+							"Ignoring " + nextElement + " while marshalling Track GPX as it is not a Fix", null);
+				}
+			}
+			gpxTracks.add(gpxTrack);
+		}
+		return gpxTracks;
+	}
 }

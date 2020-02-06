@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.Chart.Painters;
@@ -167,8 +167,6 @@ import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 
-
-
 import MWC.GUI.CanvasType;
 import MWC.GUI.Defaults;
 import MWC.GUI.Editable;
@@ -180,21 +178,74 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
-public class GridPainter implements Plottable, Serializable, ClassWithProperty
-{
+public class GridPainter implements Plottable, Serializable, ClassWithProperty {
 	// ///////////////////////////////////////////////////////////
 	// member variables
 	// //////////////////////////////////////////////////////////
 
+	// ///////////////////////////////////////////////////////////
+	// info class
+	// //////////////////////////////////////////////////////////
+	public class GridPainterInfo extends Editable.EditorType implements Serializable {
+
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public GridPainterInfo(final GridPainter data) {
+			super(data, data.getName(), "");
+		}
+
+		@Override
+		public PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final PropertyDescriptor[] res = { prop("Color", "the Color to draw the grid", FORMAT),
+						prop("Visible", "whether this grid is visible", VISIBILITY),
+						displayProp("PlotLabels", "Plot labels", "whether to plot grid labels", VISIBILITY),
+						prop("Font", "font to use for labels", FORMAT), prop("Name", "name of this grid", FORMAT),
+						prop("Delta", "the step size for the grid", VISIBILITY) };
+
+				return res;
+			} catch (final IntrospectionException e) {
+				return super.getPropertyDescriptors();
+			}
+		}
+	}
+
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	static public class GridPainterTest extends junit.framework.TestCase {
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public GridPainterTest(final String val) {
+			super(val);
+		}
+
+		public void testMyParams() {
+			MWC.GUI.Editable ed = new GridPainter();
+			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
+			ed = null;
+		}
+	}
+
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
+
+	public static String GRID_TYPE_NAME;
+
+	/**
+	 * the formatter we use which only shows decimal places when they're present
+	 */
+	private static final DecimalFormat _distanceFormatter = new DecimalFormat("0.##");
 
 	/**
 	 * the font to use
 	 */
-  private Font _theFont = Defaults.getScaledFont(0.8f);
+	private Font _theFont = Defaults.getScaledFont(0.8f);
 
 	/**
 	 * the colour for this grid
@@ -210,13 +261,12 @@ public class GridPainter implements Plottable, Serializable, ClassWithProperty
 	 * whether this grid is visible
 	 */
 	protected boolean _isOn;
-	
 
-  /**
-   * property change support for this shape, this allows us to store a list of objects which are
-   * intererested in modification to this
-   */
-  private final PropertyChangeSupport _pSupport;
+	/**
+	 * property change support for this shape, this allows us to store a list of
+	 * objects which are intererested in modification to this
+	 */
+	private final PropertyChangeSupport _pSupport;
 
 	/**
 	 * are we plotting lat/long labels?
@@ -235,140 +285,158 @@ public class GridPainter implements Plottable, Serializable, ClassWithProperty
 
 	private String _myName;
 
-	public static String GRID_TYPE_NAME;
-
-	/**
-	 * the formatter we use which only shows decimal places when they're present
-	 */
-	private static final DecimalFormat _distanceFormatter = new DecimalFormat(
-			"0.##");
-
 	// ///////////////////////////////////////////////////////////
-	// constructor
-	// //////////////////////////////////////////////////////////
-	public GridPainter()
-	{
+// constructor
+// //////////////////////////////////////////////////////////
+	public GridPainter() {
 		_myColor = Color.darkGray;
 
 		GRID_TYPE_NAME = "Grid";
 		_myName = GRID_TYPE_NAME;
 
-    // declare the property support
-    _pSupport = new PropertyChangeSupport(this);
-		
+// declare the property support
+		_pSupport = new PropertyChangeSupport(this);
+
 		setDelta(new WorldDistance(1, WorldDistance.DEGS));
 		// make it visible to start with
 		setVisible(true);
 	}
-	
 
-  public void removePropertyListener(final PropertyChangeListener list)
-  {
-    _pSupport.removePropertyChangeListener(list);
-  }
-	
-  public void addPropertyListener(final PropertyChangeListener list)
-  {
-    _pSupport.addPropertyChangeListener(list);
-  }
-
-  protected void firePropertyChange(final String name, final Object oldValue,
-      final Object newValue)
-  {
-    if (_pSupport != null)
-      _pSupport.firePropertyChange(name, oldValue, newValue);
-  }
-	
-	public void setVisible(final boolean val)
-	{
-		_isOn = val;
-    
-    // and inform the parent (so it can move the label)
-    firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, val);
+	@Override
+	public void addPropertyListener(final PropertyChangeListener list) {
+		_pSupport.addPropertyChangeListener(list);
 	}
 
-	public boolean getVisible()
-	{
-		return _isOn;
+	@Override
+	public int compareTo(final Plottable arg0) {
+		final Plottable other = arg0;
+		final String myName = this.getName() + this.hashCode();
+		final String hisName = other.getName() + arg0.hashCode();
+		return myName.compareTo(hisName);
 	}
 
-	public void setColor(final Color val)
-	{
-		_myColor = val;
-    
-    // and inform the parent (so it can move the label)
-    firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, val);
+	protected void firePropertyChange(final String name, final Object oldValue, final Object newValue) {
+		if (_pSupport != null)
+			_pSupport.firePropertyChange(name, oldValue, newValue);
 	}
 
-	public Color getColor()
-	{
+	@Override
+	public MWC.GenericData.WorldArea getBounds() {
+		// doesn't return a sensible size
+		return null;
+	}
+
+	public Color getColor() {
 		return _myColor;
 	}
 
 	/**
-	 * set the delta for this grid
-	 * 
-	 * @param val
-	 *          the size in minutes
-	 */
-	public void setDelta(final WorldDistance val)
-	{
-		if (val != null)
-			_myDelta = val;
-    
-    // and inform the parent (so it can move the label)
-    firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, val);
-	}
-
-	/**
 	 * get the delta for the grid
-	 * 
+	 *
 	 * @return the size in minutes
 	 */
-	public WorldDistance getDelta()
-	{
+	public WorldDistance getDelta() {
 		return _myDelta;
 	}
 
-	public Font getFont()
-	{
+	public Font getFont() {
 		return _theFont;
 	}
 
-	public void setFont(final Font theFont)
-	{
-		_theFont = theFont;
-    
-    // and inform the parent (so it can move the label)
-    firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, theFont);
+	/**
+	 * determine where to start counting our grid labels from
+	 *
+	 * @param bounds
+	 * @return
+	 */
+	protected WorldLocation getGridLabelOrigin(final WorldArea bounds) {
+		return bounds.getBottomLeft();
+	}
+
+	@Override
+	public Editable.EditorType getInfo() {
+		if (_myEditor == null)
+			_myEditor = new GridPainterInfo(this);
+
+		return _myEditor;
+	}
+
+	@Override
+	public String getName() {
+		return _myName;
+	}
+
+	/**
+	 * find the top, bottom, left and right limits to plot. We've refactored it to a
+	 * child class so that it can be overwritten
+	 *
+	 * @param g          the plotting converter
+	 * @param screenArea the visible screen area
+	 * @param deltaDegs  the grid separation requested
+	 * @return an area providing the coverage requested
+	 */
+	protected WorldArea getOuterBounds(final CanvasType g, final Dimension screenArea, final double deltaDegs) {
+		// create data coordinates from the current corners of the screen
+		final WorldLocation topLeft = g.toWorld(new Point(0, 0));
+
+		// create new corners just outside the current plot area, and clip
+		// them to the nearest 'delta' value
+		final double maxLat1 = Math.ceil(topLeft.getLat() / deltaDegs) * deltaDegs;
+		final double minLong1 = (int) Math.floor(topLeft.getLong() / deltaDegs) * deltaDegs;
+
+		// now for the bottom right
+		final WorldLocation bottomRight = g.toWorld(new Point(screenArea.width, screenArea.height));
+
+		// create new corners just outside the current plot area, and clip
+		// them to the nearest 'delta' value
+		final double maxLong1 = Math.ceil(bottomRight.getLong() / deltaDegs) * deltaDegs;
+		final double minLat1 = Math.floor(bottomRight.getLat() / deltaDegs) * deltaDegs;
+
+		final WorldArea bounds = new WorldArea(new WorldLocation(maxLat1, minLong1, 0),
+				new WorldLocation(minLat1, maxLong1, 0));
+		return bounds;
 	}
 
 	/**
 	 * whether to plot the labels or not
 	 */
-	public boolean getPlotLabels()
-	{
+	public boolean getPlotLabels() {
 		return _plotLabels;
 	}
 
+	@Override
+	public boolean getVisible() {
+		return _isOn;
+	}
+
+	@Override
+	public boolean hasEditor() {
+		return true;
+	}
+
 	/**
-	 * whether to plot the labels or not
+	 * unfortunately we need to do some plotting tricks when we're doing a
+	 * locally-origined grid. This method is over-ridden by the LocalGrid to allow
+	 * this
+	 *
+	 * @return
 	 */
-	public void setPlotLabels(final boolean val)
-	{
-		_plotLabels = val;
-    
-    // and inform the parent (so it can move the label)
-    firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, val);
+	protected boolean isLocalPlotting() {
+		return false;
 	}
 
-	public void setName(final String name)
-	{
-		_myName = name;
+	/**
+	 * whether the plotting algorithm should offset the origin to the nearest whole
+	 * number of selected units
+	 *
+	 * @return yes/no
+	 */
+	protected boolean offsetOrigin() {
+		return true;
 	}
 
-	public void paint(final CanvasType g)
-	{
+	@Override
+	public void paint(final CanvasType g) {
 
 		// check we are visible
 		if (!_isOn)
@@ -406,7 +474,7 @@ public class GridPainter implements Plottable, Serializable, ClassWithProperty
 		double minLat = outerBounds.getBottomRight().getLat();
 		double maxLong = outerBounds.getBottomRight().getLong();
 
-		final WorldArea screenBounds = new WorldArea(g.toWorld(new Point(0, 0)),g.toWorld(new Point(0, 0)));
+		final WorldArea screenBounds = new WorldArea(g.toWorld(new Point(0, 0)), g.toWorld(new Point(0, 0)));
 		screenBounds.extend(g.toWorld(new Point(screenArea.width, screenArea.height)));
 		final double maxScreenLat = screenBounds.getTopLeft().getLat();
 		final double minScreenLat = screenBounds.getBottomLeft().getLat();
@@ -419,11 +487,9 @@ public class GridPainter implements Plottable, Serializable, ClassWithProperty
 		boolean plotDecimals;
 
 		// is our delta less than 1 second in width?
-		if (deltaDegs < 1d / 60d / 60d)
-		{
+		if (deltaDegs < 1d / 60d / 60d) {
 			plotDecimals = true;
-		}
-		else
+		} else
 			plotDecimals = false;
 
 		// just trim the latitude, to ensure we plot realistic lats
@@ -433,15 +499,12 @@ public class GridPainter implements Plottable, Serializable, ClassWithProperty
 		int counter = 0;
 
 		final WorldLocation gridOrigin = getGridLabelOrigin(outerBounds);
-		int latGridCounterOffset = (int) ((gridOrigin.getLat() - minLat) / _myDelta
-				.getValueIn(WorldDistance.DEGS));
-		int longGridCounterOffset = (int) ((gridOrigin.getLong() - minLong) / _myDelta
-				.getValueIn(WorldDistance.DEGS));
+		int latGridCounterOffset = (int) ((gridOrigin.getLat() - minLat) / _myDelta.getValueIn(WorldDistance.DEGS));
+		int longGridCounterOffset = (int) ((gridOrigin.getLong() - minLong) / _myDelta.getValueIn(WorldDistance.DEGS));
 
 		// if we're using a local plot we need to decrement both of these offsets by
 		// one
-		if (this.isLocalPlotting())
-		{
+		if (this.isLocalPlotting()) {
 			latGridCounterOffset--;
 			longGridCounterOffset--;
 		}
@@ -450,12 +513,10 @@ public class GridPainter implements Plottable, Serializable, ClassWithProperty
 		// first draw the lines going across
 		// ///////////////////////////////////////////////////////////
 
-		for (double thisLat = minLat; thisLat <= maxLat; thisLat += deltaDegs)
-		{
+		for (double thisLat = minLat; thisLat <= maxLat; thisLat += deltaDegs) {
 			final Point p3 = g.toScreen(new WorldLocation(thisLat, maxLong, 0));
-			
-			if(p3 == null)
-			{
+
+			if (p3 == null) {
 				// code red, zoomed out too far!!!!
 				// gracefully quit
 				return;
@@ -466,8 +527,7 @@ public class GridPainter implements Plottable, Serializable, ClassWithProperty
 
 			if (lastPoint == null)
 				lastPoint = new Point(p3);
-			else
-			{
+			else {
 				// find how far apart they are
 				dy = lastPoint.y - p3.y;
 
@@ -484,27 +544,20 @@ public class GridPainter implements Plottable, Serializable, ClassWithProperty
 			// and the labels
 			// ///////////////////////////////////////////////////////////
 
-			if (_plotLabels)
-			{
+			if (_plotLabels) {
 				// so, we are going to plot a label in the middle of this grid line
 
 				// check if the lines are too close for labels (we'll use 15 pixels)
-				if (dy >= 15)
-				{
+				if (dy >= 15) {
 					String val;
-					if (_myDelta.isAngular())
-					{
+					if (_myDelta.isAngular()) {
 						// get the formatted label
-						val = MWC.Utilities.TextFormatting.BriefFormatLocation.toStringLat(
-								thisLat, plotDecimals);
-					}
-					else
-					{
+						val = MWC.Utilities.TextFormatting.BriefFormatLocation.toStringLat(thisLat, plotDecimals);
+					} else {
 						// ok, use a counter for the units
 						final double thisVal = (counter++ - latGridCounterOffset)
 								* _myDelta.getValueIn(_myDelta.getUnits());
-						val = _distanceFormatter.format(thisVal) + " "
-								+ _myDelta.getUnitsLabel();
+						val = _distanceFormatter.format(thisVal) + " " + _myDelta.getUnitsLabel();
 					}
 					// and output it
 					g.drawText(_theFont, val, 0, p3.y - 2);
@@ -519,10 +572,8 @@ public class GridPainter implements Plottable, Serializable, ClassWithProperty
 		counter = 0;
 
 		WorldVector symetricUnitOffset = null;
-		if (!_myDelta.isAngular())
-		{
-			symetricUnitOffset = new WorldVector(
-					MWC.Algorithms.Conversions.Degs2Rads(90), deltaDegs, 0);
+		if (!_myDelta.isAngular()) {
+			symetricUnitOffset = new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90), deltaDegs, 0);
 		}
 
 		// ///////////////////////////////////////////////////////////
@@ -530,16 +581,12 @@ public class GridPainter implements Plottable, Serializable, ClassWithProperty
 		// ///////////////////////////////////////////////////////////
 
 		double thisLong = minLong;
-		while (thisLong < maxLong)
-		{
+		while (thisLong < maxLong) {
 			// find out if this is one of our "special cases" where lines of long
 			// are in yds (absolute) not degrees (adjusted)
-			if (_myDelta.isAngular())
-			{
+			if (_myDelta.isAngular()) {
 				thisLong += deltaDegs;
-			}
-			else
-			{
+			} else {
 
 				final WorldLocation thisLoc = new WorldLocation(minLat, thisLong, 0);
 				// move it across a bit
@@ -559,31 +606,25 @@ public class GridPainter implements Plottable, Serializable, ClassWithProperty
 			final Point p4 = g.toScreen(new WorldLocation(maxScreenLat, thisLong, 0));
 
 			// just check that both ends of the line are visible
-			if ((p3x >= 0) || (p4.x >= 0))
-			{
+			if ((p3x >= 0) || (p4.x >= 0)) {
 				g.drawLine(p3x, p3y, p4.x, p4.y);
 
 				// ///////////////////////////////////////////////////////////
 				// and the labels
 				// ///////////////////////////////////////////////////////////
 
-				if (_plotLabels)
-				{
+				if (_plotLabels) {
 
 					String thisLabel;
-					if (_myDelta.isAngular())
-					{
+					if (_myDelta.isAngular()) {
 						// get the formatted label
-						thisLabel = MWC.Utilities.TextFormatting.BriefFormatLocation
-								.toStringLong(thisLong, plotDecimals);
-					}
-					else
-					{
+						thisLabel = MWC.Utilities.TextFormatting.BriefFormatLocation.toStringLong(thisLong,
+								plotDecimals);
+					} else {
 						// ok, use a counter for the units
 						final double thisVal = (counter++ - longGridCounterOffset)
 								* _myDelta.getValueIn(_myDelta.getUnits());
-						thisLabel = _distanceFormatter.format(thisVal) + " "
-								+ _myDelta.getUnitsLabel();
+						thisLabel = _distanceFormatter.format(thisVal) + " " + _myDelta.getUnitsLabel();
 					}
 
 					// and output it
@@ -597,182 +638,72 @@ public class GridPainter implements Plottable, Serializable, ClassWithProperty
 
 	}
 
-	/**
-	 * determine where to start counting our grid labels from
-	 * 
-	 * @param bounds
-	 * @return
-	 */
-	protected WorldLocation getGridLabelOrigin(final WorldArea bounds)
-	{
-		return bounds.getBottomLeft();
-	}
-
-	/**
-	 * unfortunately we need to do some plotting tricks when we're doing a
-	 * locally-origined grid. This method is over-ridden by the LocalGrid to allow
-	 * this
-	 * 
-	 * @return
-	 */
-	protected boolean isLocalPlotting()
-	{
-		return false;
-	}
-
-	/**
-	 * find the top, bottom, left and right limits to plot. We've refactored it to
-	 * a child class so that it can be overwritten
-	 * 
-	 * @param g
-	 *          the plotting converter
-	 * @param screenArea
-	 *          the visible screen area
-	 * @param deltaDegs
-	 *          the grid separation requested
-	 * @return an area providing the coverage requested
-	 */
-	protected WorldArea getOuterBounds(final CanvasType g, final Dimension screenArea,
-			final double deltaDegs)
-	{
-		// create data coordinates from the current corners of the screen
-		final WorldLocation topLeft = g.toWorld(new Point(0, 0));
-
-		// create new corners just outside the current plot area, and clip
-		// them to the nearest 'delta' value
-		final double maxLat1 = Math.ceil(topLeft.getLat() / deltaDegs) * deltaDegs;
-		final double minLong1 = (int) Math.floor(topLeft.getLong() / deltaDegs)
-				* deltaDegs;
-
-		// now for the bottom right
-		final WorldLocation bottomRight = g.toWorld(new Point(screenArea.width,
-				screenArea.height));
-
-		// create new corners just outside the current plot area, and clip
-		// them to the nearest 'delta' value
-		final double maxLong1 = Math.ceil(bottomRight.getLong() / deltaDegs) * deltaDegs;
-		final double minLat1 = Math.floor(bottomRight.getLat() / deltaDegs) * deltaDegs;
-
-		final WorldArea bounds = new WorldArea(new WorldLocation(maxLat1, minLong1, 0),
-				new WorldLocation(minLat1, maxLong1, 0));
-		return bounds;
-	}
-
-	/**
-	 * whether the plotting algorithm should offset the origin to the nearest
-	 * whole number of selected units
-	 * 
-	 * @return yes/no
-	 */
-	protected boolean offsetOrigin()
-	{
-		return true;
-	}
-
-	public MWC.GenericData.WorldArea getBounds()
-	{
-		// doesn't return a sensible size
-		return null;
-	}
-
-	public double rangeFrom(final MWC.GenericData.WorldLocation other)
-	{
+	@Override
+	public double rangeFrom(final MWC.GenericData.WorldLocation other) {
 		// doesn't return a sensible distance;
 		return INVALID_RANGE;
+	}
+
+	@Override
+	public void removePropertyListener(final PropertyChangeListener list) {
+		_pSupport.removePropertyChangeListener(list);
+	}
+
+	public void setColor(final Color val) {
+		_myColor = val;
+
+		// and inform the parent (so it can move the label)
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, val);
+	}
+
+	/**
+	 * set the delta for this grid
+	 *
+	 * @param val the size in minutes
+	 */
+	public void setDelta(final WorldDistance val) {
+		if (val != null)
+			_myDelta = val;
+
+		// and inform the parent (so it can move the label)
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, val);
+	}
+
+	public void setFont(final Font theFont) {
+		_theFont = theFont;
+
+		// and inform the parent (so it can move the label)
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, theFont);
+	}
+
+	public void setName(final String name) {
+		_myName = name;
+	}
+
+	/**
+	 * whether to plot the labels or not
+	 */
+	public void setPlotLabels(final boolean val) {
+		_plotLabels = val;
+
+		// and inform the parent (so it can move the label)
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, val);
+	}
+
+	@Override
+	public void setVisible(final boolean val) {
+		_isOn = val;
+
+		// and inform the parent (so it can move the label)
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, val);
 	}
 
 	/**
 	 * return this item as a string
 	 */
-	public String toString()
-	{
+	@Override
+	public String toString() {
 		return getName();
-	}
-
-	public String getName()
-	{
-		return _myName;
-	}
-
-	public boolean hasEditor()
-	{
-		return true;
-	}
-
-	public Editable.EditorType getInfo()
-	{
-		if (_myEditor == null)
-			_myEditor = new GridPainterInfo(this);
-
-		return _myEditor;
-	}
-
-	public int compareTo(final Plottable arg0)
-	{
-		final Plottable other = (Plottable) arg0;
-		final String myName = this.getName() + this.hashCode();
-		final String hisName = other.getName() + arg0.hashCode();
-		return myName.compareTo(hisName);
-	}
-
-	// ///////////////////////////////////////////////////////////
-	// info class
-	// //////////////////////////////////////////////////////////
-	public class GridPainterInfo extends Editable.EditorType implements
-			Serializable
-	{
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public GridPainterInfo(final GridPainter data)
-		{
-			super(data, data.getName(), "");
-		}
-
-		public PropertyDescriptor[] getPropertyDescriptors()
-		{
-			try
-			{
-				final PropertyDescriptor[] res =
-				{ 
-						prop("Color", "the Color to draw the grid", FORMAT),
-						prop("Visible", "whether this grid is visible", VISIBILITY),
-						displayProp("PlotLabels", "Plot labels", "whether to plot grid labels", VISIBILITY),
-						prop("Font", "font to use for labels", FORMAT),
-						prop("Name", "name of this grid", FORMAT),
-						prop("Delta", "the step size for the grid", VISIBILITY)
-				};
-
-				return res;
-			}
-			catch (final IntrospectionException e)
-			{
-				return super.getPropertyDescriptors();
-			}
-		}
-	}
-
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public class GridPainterTest extends junit.framework.TestCase
-	{
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public GridPainterTest(final String val)
-		{
-			super(val);
-		}
-
-		public void testMyParams()
-		{
-			MWC.GUI.Editable ed = new GridPainter();
-			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
 	}
 
 }

@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.Properties.Swing;
@@ -107,176 +107,177 @@ import javax.swing.JSlider;
 
 import MWC.GUI.Properties.BoundedInteger;
 
-public class SwingBoundedIntegerEditor extends
-    MWC.GUI.Properties.BoundedIntegerEditor implements javax.swing.event.ChangeListener
-{
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
+public class SwingBoundedIntegerEditor extends MWC.GUI.Properties.BoundedIntegerEditor
+		implements javax.swing.event.ChangeListener {
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
 
-  /** slider to store the value
-   */
-  JSlider _theSlider;
+	/**
+	 * our date formatter
+	 *
+	 */
+	static java.text.NumberFormat _numFormat = new java.text.DecimalFormat(" 000;-000");
 
-  /** panel to hold everything
-   */
-  JPanel _theHolder;
+	public static void main(final String[] args) {
+		final JFrame jf = new JFrame("test");
+		jf.setSize(200, 200);
 
-  /** label to show current value
-   */
-  JLabel _theCurrent;
+		final SwingBoundedIntegerEditor bt = new SwingBoundedIntegerEditor(true, null);
+		final BoundedInteger br = new BoundedInteger(12, 0, 20);
+		bt.setValue(br);
 
-  /** our date formatter
-   *
-   */
-  static java.text.NumberFormat _numFormat = new java.text.DecimalFormat(" 000;-000");
+		final JPanel holder = new JPanel();
+		holder.setLayout(new BorderLayout());
+		jf.getContentPane().add(holder);
+		holder.add(bt.getCustomEditor());
+		jf.setVisible(true);
+	}
 
-  /** whether to show the current value
-   *
-   */
-  private boolean _showValue = true;
+	/**
+	 * slider to store the value
+	 */
+	JSlider _theSlider;
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
+	/**
+	 * panel to hold everything
+	 */
+	JPanel _theHolder;
 
-  /** create a slider editor
-   * @param showValue - whether to show the current value
-   * @param preferredSize - the preferred size (ignored)
-   */
-  public SwingBoundedIntegerEditor(final boolean showValue, final Dimension preferredSize)
-  {
-    _showValue = showValue;
-  }
+	/**
+	 * label to show current value
+	 */
+	JLabel _theCurrent;
 
-  /** no-option constructor, as used from property editors
-   *
-   */
-  public SwingBoundedIntegerEditor()
-  {
-    this(true, null);
-  }
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
 
+	/**
+	 * whether to show the current value
+	 *
+	 */
+	private boolean _showValue = true;
 
-  boolean _hasBeenUpdated = false;
+	boolean _hasBeenUpdated = false;
 
-  /** build the editor
-   */
-  public java.awt.Component getCustomEditor()
-  {
-    // create the panel
-    _theHolder = new JPanel()
-    {
-      /**
-			 * 
-			 */
+	/**
+	 * no-option constructor, as used from property editors
+	 *
+	 */
+	public SwingBoundedIntegerEditor() {
+		this(true, null);
+	}
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * create a slider editor
+	 *
+	 * @param showValue     - whether to show the current value
+	 * @param preferredSize - the preferred size (ignored)
+	 */
+	public SwingBoundedIntegerEditor(final boolean showValue, final Dimension preferredSize) {
+		_showValue = showValue;
+	}
+
+	/**
+	 * build the editor
+	 */
+	@Override
+	public java.awt.Component getCustomEditor() {
+		// create the panel
+		_theHolder = new JPanel() {
+			/**
+				 *
+				 */
 			private static final long serialVersionUID = 1L;
 
+			@Override
 			public void paint(final Graphics g) {
-        // we'e got a workaround for JDK1.3 here. It's a JDC Bug when a
-        // JSlider is inserted into a JDesktop component.
-        if(!_hasBeenUpdated)
-        {
-          _theSlider.updateUI();
-          _hasBeenUpdated = true;
-        }
-        super.paint(g);
-      }
-    };
+				// we'e got a workaround for JDK1.3 here. It's a JDC Bug when a
+				// JSlider is inserted into a JDesktop component.
+				if (!_hasBeenUpdated) {
+					_theSlider.updateUI();
+					_hasBeenUpdated = true;
+				}
+				super.paint(g);
+			}
+		};
 
-    _theHolder.setLayout(new BorderLayout());
+		_theHolder.setLayout(new BorderLayout());
 
-    _theCurrent = new JLabel("00");
+		_theCurrent = new JLabel("00");
 
-    if(_showValue)
-      _theHolder.add("West", _theCurrent);
+		if (_showValue)
+			_theHolder.add("West", _theCurrent);
 
-    // create the slider (configure it in the resetData method)
-    _theSlider = new JSlider();
+		// create the slider (configure it in the resetData method)
+		_theSlider = new JSlider();
 
-    _theHolder.add("Center", _theSlider);
+		_theHolder.add("Center", _theSlider);
 
-    _theSlider.addChangeListener(this);
+		_theSlider.addChangeListener(this);
 
-    resetData();
+		resetData();
 
-    return _theHolder;
-  }
+		return _theHolder;
+	}
 
-  /** put the data into the text fields, if they have been
-   * created yet
-   */
-  public void resetData()
-  {
-    if(_theHolder != null)
-    {
-      // put the text into the fields
-      if(_myVal != null)
-      {
-        final int startVal = _myVal.getCurrent();
-        _theSlider.setMinimum(_myVal.getMin());
-        _theSlider.setMaximum(_myVal.getMax());
-        _theSlider.setValue(startVal);
+	/**
+	 * put the data into the text fields, if they have been created yet
+	 */
+	@Override
+	public void resetData() {
+		if (_theHolder != null) {
+			// put the text into the fields
+			if (_myVal != null) {
+				final int startVal = _myVal.getCurrent();
+				_theSlider.setMinimum(_myVal.getMin());
+				_theSlider.setMaximum(_myVal.getMax());
+				_theSlider.setValue(startVal);
 
-        _theCurrent.setText(_numFormat.format(_myVal.getCurrent()));
-      }
+				_theCurrent.setText(_numFormat.format(_myVal.getCurrent()));
+			}
 
-      // set the default tick marks
-     setTicks(5, 10);
+			// set the default tick marks
+			setTicks(5, 10);
 
-      _theSlider.setPaintTicks(true);
+			_theSlider.setPaintTicks(true);
 
-      // and configure the slider
-     _theSlider.putClientProperty("JSlider.isFilled", Boolean.FALSE);
+			// and configure the slider
+			_theSlider.putClientProperty("JSlider.isFilled", Boolean.FALSE);
 
-    }
-  }
+		}
+	}
 
-  public void setCurrent(final int val)
-  {
-    // this is a bit of a round-about way, we update the GUI then update the remaining
-    // data from it
+	public void setCurrent(final int val) {
+		// this is a bit of a round-about way, we update the GUI then update the
+		// remaining
+		// data from it
 
-    // and update the GUI
-    _theSlider.setValue(val);
+		// and update the GUI
+		_theSlider.setValue(val);
 
-    // and update our data
-    stateChanged(null);
+		// and update our data
+		stateChanged(null);
 
-  }
+	}
 
-  /** set the tick sliders
-   *
-   */
-  public void setTicks(final int minor, final int major)
-  {
-    _theSlider.setMinorTickSpacing(minor);
-    _theSlider.setMajorTickSpacing(major);
-  }
+	/**
+	 * set the tick sliders
+	 *
+	 */
+	public void setTicks(final int minor, final int major) {
+		_theSlider.setMinorTickSpacing(minor);
+		_theSlider.setMajorTickSpacing(major);
+	}
 
-  public void stateChanged(final javax.swing.event.ChangeEvent p1)
-  {
-    _myVal.setCurrent(_theSlider.getValue());
-    _theCurrent.setText(_numFormat.format(_myVal.getCurrent()));
-  }
-
-  public static void main(final String[] args)
-  {
-    final JFrame jf = new JFrame("test");
-    jf.setSize(200, 200);
-
-    final SwingBoundedIntegerEditor bt = new SwingBoundedIntegerEditor(true, null);
-    final BoundedInteger br = new BoundedInteger(12, 0, 20);
-    bt.setValue(br);
-
-    final JPanel holder = new JPanel();
-    holder.setLayout(new BorderLayout());
-    jf.getContentPane().add(holder);
-    holder.add(bt.getCustomEditor());
-    jf.setVisible(true);
-  }
+	@Override
+	public void stateChanged(final javax.swing.event.ChangeEvent p1) {
+		_myVal.setCurrent(_theSlider.getValue());
+		_theCurrent.setText(_numFormat.format(_myVal.getCurrent()));
+	}
 
 }

@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: LongEditor.java,v $
@@ -61,52 +61,47 @@ package MWC.GUI.Properties;
 
 import java.beans.PropertyEditorSupport;
 
+public class LongEditor extends PropertyEditorSupport {
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
 
-public class LongEditor extends PropertyEditorSupport
-{
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  public LongEditor(){
-    super();
-  }
-  
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
-  public void setValue(final Object p1)
-  {
-    // check we are receiving a string
-    if(p1 instanceof String){
-      // check we can produce an Long
-      try{
-        final Long val = new Long((String)p1);
-        super.setValue(val);
-      }catch(final java.lang.NumberFormatException e){
-        // don't really worry, let's not update
-      }
-    }
-    else{
-      if(p1 instanceof Long){
-        super.setValue(p1);
-      }
-    }
-  }
-  
-  public String getAsText()
-  {
-    final Long val = (Long)super.getValue();
-    return "" + val.intValue();
-  }
-  
-  
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	public LongEditor() {
+		super();
+	}
 
-  public Object getValue()
-  {
-    return super.getValue();
-  }
+	@Override
+	public String getAsText() {
+		final Long val = (Long) super.getValue();
+		return "" + val.intValue();
+	}
+
+	@Override
+	public Object getValue() {
+		return super.getValue();
+	}
+
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+	@Override
+	public void setValue(final Object p1) {
+		// check we are receiving a string
+		if (p1 instanceof String) {
+			// check we can produce an Long
+			try {
+				final Long val = new Long((String) p1);
+				super.setValue(val);
+			} catch (final java.lang.NumberFormatException e) {
+				// don't really worry, let's not update
+			}
+		} else {
+			if (p1 instanceof Long) {
+				super.setValue(p1);
+			}
+		}
+	}
 }

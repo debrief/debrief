@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.Properties.Swing;
@@ -88,87 +88,89 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.WindowConstants;
 
 import MWC.GUI.Properties.SteppingBoundedInteger;
 
-public class SwingSteppingBoundedIntegerEditor extends MWC.GUI.Properties.SteppingBoundedIntegerEditor implements javax.swing.event.ChangeListener
-{
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
+public class SwingSteppingBoundedIntegerEditor extends MWC.GUI.Properties.SteppingBoundedIntegerEditor
+		implements javax.swing.event.ChangeListener {
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
 
-	/** slider to store the value
+	public static void main(final String[] args) {
+		final JFrame tester = new JFrame("test stepping editor");
+		tester.setSize(300, 300);
+		final SwingSteppingBoundedIntegerEditor jr = new SwingSteppingBoundedIntegerEditor();
+		final SteppingBoundedInteger sb = new SteppingBoundedInteger(120, 0, 180, 10);
+		jr.setValue(sb);
+		final java.awt.Component jc = jr.getCustomEditor();
+		tester.getContentPane().add("Center", jc);
+		tester.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		tester.setVisible(true);
+	}
+
+	/**
+	 * slider to store the value
 	 */
 	JSlider _theSlider;
 
-	/** panel to hold everything
+	/**
+	 * panel to hold everything
 	 */
-  JPanel _theHolder;
+	JPanel _theHolder;
 
-	/** label to show current value
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * label to show current value
 	 */
 	JLabel _theCurrent;
 
-
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
-
-  public static void main (final String[] args)
-  {
-    final JFrame tester = new JFrame("test stepping editor");
-    tester.setSize(300, 300);
-    final SwingSteppingBoundedIntegerEditor jr = new SwingSteppingBoundedIntegerEditor();
-    final SteppingBoundedInteger sb = new SteppingBoundedInteger(120, 0, 180, 10);
-    jr.setValue(sb);
-    final java.awt.Component jc = jr.getCustomEditor();
-    tester.getContentPane().add("Center", jc);
-    tester.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    tester.setVisible(true);
-  }
-
-	/** build the editor
+	/**
+	 * build the editor
 	 */
-  public java.awt.Component getCustomEditor()
-  {
-    _theHolder = new JPanel();
-    _theHolder.setLayout(new java.awt.GridLayout(1,0));
+	@Override
+	public java.awt.Component getCustomEditor() {
+		_theHolder = new JPanel();
+		_theHolder.setLayout(new java.awt.GridLayout(1, 0));
 
 		_theCurrent = new JLabel("000");
 		_theHolder.add(_theCurrent);
 
 		// create the slider (configure it in the resetData method)
 		_theSlider = new JSlider();
-		_theSlider.setSize(90,10);
+		_theSlider.setSize(90, 10);
 		_theHolder.add(_theSlider);
 
-    _theSlider.setPaintTicks(true);
-    _theSlider.setSnapToTicks (true);
+		_theSlider.setPaintTicks(true);
+		_theSlider.setSnapToTicks(true);
 
-    // and configure the slider
-    _theSlider.putClientProperty("JSlider.isFilled", Boolean.FALSE);
+		// and configure the slider
+		_theSlider.putClientProperty("JSlider.isFilled", Boolean.FALSE);
 
-    // listen to the slider
+		// listen to the slider
 		_theSlider.addChangeListener(this);
 
-    resetData();
-    return _theHolder;
-  }
+		resetData();
+		return _theHolder;
+	}
 
-	/** put the data into the text fields, if they have been
-	 * created yet
+	/**
+	 * put the data into the text fields, if they have been created yet
 	 */
-  public void resetData()
-  {
-		if(_theHolder != null)
-		{
-      // remember the new value to be set.  As we set the sliders, there's a strong
-      // chance that this current value will get over-written
-      final int newValue = _myVal.getCurrent();
+	@Override
+	public void resetData() {
+		if (_theHolder != null) {
+			// remember the new value to be set. As we set the sliders, there's a strong
+			// chance that this current value will get over-written
+			final int newValue = _myVal.getCurrent();
 
 			// put the text into the fields
 			_theSlider.setMinimum(_myVal.getMin());
@@ -179,11 +181,10 @@ public class SwingSteppingBoundedIntegerEditor extends MWC.GUI.Properties.Steppi
 
 			_theCurrent.setText("" + _myVal.getCurrent());
 		}
-  }
+	}
 
-
-	public void stateChanged(final javax.swing.event.ChangeEvent p1)
-	{
+	@Override
+	public void stateChanged(final javax.swing.event.ChangeEvent p1) {
 		_myVal.setCurrent(_theSlider.getValue());
 		_theCurrent.setText("" + _myVal.getCurrent());
 	}

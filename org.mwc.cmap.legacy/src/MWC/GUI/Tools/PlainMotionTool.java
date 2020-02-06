@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: PlainMotionTool.java,v $
@@ -81,69 +81,71 @@ import MWC.GUI.PlainChart;
 import MWC.GUI.ToolParent;
 import MWC.GenericData.WorldLocation;
 
-/** abstract class for tools which 'watch' the canvas, 
- * normally trapping movements
+/**
+ * abstract class for tools which 'watch' the canvas, normally trapping
+ * movements
  */
-abstract public class PlainMotionTool extends 
-  PlainTool implements PlainChart.ChartCursorMovedListener{
+abstract public class PlainMotionTool extends PlainTool implements PlainChart.ChartCursorMovedListener {
 
-  //////////////////////////////////////////////////
-  // member variables
-  //////////////////////////////////////////////////
+	//////////////////////////////////////////////////
+	// member variables
+	//////////////////////////////////////////////////
 
-  
-  /** 
-   * keep a reference to the chart we are currently 'watching'
-   * */
-  protected PlainChart _theChart;    
-  
-  protected WorldLocation _theStart;
-  protected WorldLocation _theEnd;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-  //////////////////////////////////////////////////
-  // constructor
-  //////////////////////////////////////////////////
-  
-  public PlainMotionTool(final PlainChart theChart,
-                         final ToolParent theParent,
-                         final String theLabel,
-                         final String theImage){ 
-    
-    super(theParent, theLabel, theImage);
-    
-    // take copy of the chart we are to listen to    
-    _theChart = theChart;
-  }
+	/**
+	 * keep a reference to the chart we are currently 'watching'
+	 */
+	protected PlainChart _theChart;
 
-  //////////////////////////////////////////////////
-  // member functions
-  //////////////////////////////////////////////////
-  
-  public PlainChart getChart(){
-    return _theChart;
-  }
-  
-  public void execute(){                       
-    // add ourselves as the listener
-    _theChart.addCursorMovedListener(this);
-    
-    // start the operation
-    startMotion();
-  }                        
-  
-  
-  public void doExecute(final Action theAction){
-    // start busy
-    setBusy(true);
-    
-    // do the action
-    if(theAction != null)
-      theAction.execute();
-		
-    // end busy
-    setBusy(false);
+	protected WorldLocation _theStart;
+	protected WorldLocation _theEnd;
 
-  }
-  
-  abstract void startMotion();
+	//////////////////////////////////////////////////
+	// constructor
+	//////////////////////////////////////////////////
+
+	public PlainMotionTool(final PlainChart theChart, final ToolParent theParent, final String theLabel,
+			final String theImage) {
+
+		super(theParent, theLabel, theImage);
+
+		// take copy of the chart we are to listen to
+		_theChart = theChart;
+	}
+
+	//////////////////////////////////////////////////
+	// member functions
+	//////////////////////////////////////////////////
+
+	public void doExecute(final Action theAction) {
+		// start busy
+		setBusy(true);
+
+		// do the action
+		if (theAction != null)
+			theAction.execute();
+
+		// end busy
+		setBusy(false);
+
+	}
+
+	@Override
+	public void execute() {
+		// add ourselves as the listener
+		_theChart.addCursorMovedListener(this);
+
+		// start the operation
+		startMotion();
+	}
+
+	public PlainChart getChart() {
+		return _theChart;
+	}
+
+	abstract void startMotion();
 }

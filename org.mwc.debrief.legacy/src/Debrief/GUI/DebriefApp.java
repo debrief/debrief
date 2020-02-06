@@ -1,21 +1,22 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package Debrief.GUI;
 
 // Copyright MWC 1999, Debrief 3 Project
+
 // $RCSfile: DebriefApp.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.3 $
@@ -34,7 +35,6 @@ package Debrief.GUI;
 //
 // Revision 1.1  2002-05-28 12:19:16+01  ian_mayo
 // Following file name change
-
 
 /**
  * This class can take a variable number of parameters on the command
@@ -55,59 +55,59 @@ import Debrief.GUI.Frames.Swing.SwingApplication;
  */
 public class DebriefApp {
 
-    /**
-     * Whether to create a SWING application, or an AWT application
-     */
-    final boolean USE_SWING = true;
+	/**
+	 * the application we start
+	 */
+	protected static Application aw;
 
-    /**
-     * the application we start
-     */
-    protected static Application aw;
+	/**
+	 * The main entry point for the application.
+	 *
+	 * @param args Array of parameters passed to the application via the command
+	 *             line.
+	 */
+	public static void main(final String[] args) {
 
-    /**
-     * The main entry point for the application.
-     *
-     * @param args Array of parameters passed to the application via the command line.
-     */
-    public static void main(final String[] args) {
+		new DebriefApp();
 
-        new DebriefApp();
+		// and now open any files, as requested
+		final int num = args.length;
+		aw.setCursor(java.awt.Cursor.WAIT_CURSOR);
+		for (int i = 0; i < num; i++) {
+			aw.openFile(new java.io.File(args[i]));
+		}
+		aw.setCursor(java.awt.Cursor.DEFAULT_CURSOR);
 
-        // and now open any files, as requested
-        final int num = args.length;
-        aw.setCursor(java.awt.Cursor.WAIT_CURSOR);
-        for (int i = 0; i < num; i++) {
-            aw.openFile(new java.io.File(args[i]));
-        }
-        aw.setCursor(java.awt.Cursor.DEFAULT_CURSOR);
+	}
 
-    }
+	/**
+	 * Whether to create a SWING application, or an AWT application
+	 */
+	final boolean USE_SWING = true;
 
-    /**
-     * Constructor for this class
-     */
-    public DebriefApp() {
-        if (USE_SWING) {
-            // try setting the look & feel
-            try {
- //           UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+	/**
+	 * Constructor for this class
+	 */
+	public DebriefApp() {
+		if (USE_SWING) {
+			// try setting the look & feel
+			try {
+				// UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
 //              UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
-              UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-              
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            } catch (InstantiationException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            } catch (UnsupportedLookAndFeelException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-            aw = new SwingApplication();
-        } else
-            aw = new AWTApplication();
-    }
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
+			} catch (final ClassNotFoundException e) {
+				e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
+			} catch (final InstantiationException e) {
+				e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
+			} catch (final IllegalAccessException e) {
+				e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
+			} catch (final UnsupportedLookAndFeelException e) {
+				e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
+			}
+			aw = new SwingApplication();
+		} else
+			aw = new AWTApplication();
+	}
 
 }
-

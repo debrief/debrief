@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.debrief.core.loaders;
@@ -28,7 +28,7 @@ import java.util.Enumeration;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.mwc.debrief.core.DebriefPlugin;
 
@@ -42,167 +42,141 @@ import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 /**
  */
-public class SATCSampleLoader extends CoreLoader
-{
+public class SATCSampleLoader extends CoreLoader {
 
-  public SATCSampleLoader()
-  {
-    super("SATC Sample", null);
-  }
+	private static class ImportSATCSample {
 
-  private static class ImportSATCSample
-  {
+		private final Layers _theLayers;
+		private final DateFormat _df;
 
-    private final Layers _theLayers;
-    private DateFormat _df;
+		public ImportSATCSample(final Layers theLayers) {
+			_theLayers = theLayers;
+			_df = new GMTDateFormat("dd HH:mm:ss.SSS");
+		}
 
-    public ImportSATCSample(final Layers theLayers)
-    {
-      _theLayers = theLayers;
-      _df = new GMTDateFormat("dd HH:mm:ss.SSS");
-    }
+		@SuppressWarnings("deprecation")
+		private HiResDate dateFor(final String string) throws ParseException {
+			final Date dt = _df.parse(string);
 
-    public void importThis(final String path, final InputStream inputStream)
-        throws IOException, ParseException
-    {
-      TrackWrapper track = null;
+			// check the day
+			final int day = Integer.parseInt(string.substring(0, 2));
 
-      Enumeration<Editable> numer = _theLayers.elements();
-      while (numer.hasMoreElements())
-      {
-        Editable editable = (Editable) numer.nextElement();
-        if (editable instanceof TrackWrapper)
-        {
-          track = (TrackWrapper) editable;
-          break;
-        }
-      }
+			// fill in the month & year
+			if (day == 31) {
+				dt.setYear(99);
+				dt.setMonth(11);
+			} else {
+				dt.setYear(100);
+				dt.setMonth(00);
+			}
 
-      if (track == null)
-      {
-        return;
-      }
+			final HiResDate res = new HiResDate(dt);
+			return res;
+		}
 
-      // trim the filename
-      File file = new File(path);
-      String fileName = file.getName();
+		public void importThis(final String path, final InputStream inputStream) throws IOException, ParseException {
+			TrackWrapper track = null;
 
-      // ok, loop through the lines
-      final BufferedReader br = new BufferedReader(new InputStreamReader(
-          inputStream));
+			final Enumeration<Editable> numer = _theLayers.elements();
+			while (numer.hasMoreElements()) {
+				final Editable editable = numer.nextElement();
+				if (editable instanceof TrackWrapper) {
+					track = (TrackWrapper) editable;
+					break;
+				}
+			}
 
-      String nmea_sentence;
+			if (track == null) {
+				return;
+			}
 
-      // come up with a color
-      final float hue = (float) (Math.random() * 1000f);
-      final Color thisCol = new Color(Color.HSBtoRGB(hue, 0.8f, 0.7f));
+			// trim the filename
+			final File file = new File(path);
+			final String fileName = file.getName();
 
-      SensorWrapper sw = new SensorWrapper(fileName);
-      sw.setColor(thisCol);
+			// ok, loop through the lines
+			final BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
 
-      // loop through the lines
-      while ((nmea_sentence = br.readLine()) != null)
-      {
-        // ok, we wrap this parsing in a try block, so we carry on
-        // processing a file after a failure
-        try
-        {
+			String nmea_sentence;
 
-          // check this isn't a comment
-          if (nmea_sentence.startsWith("#Time") || nmea_sentence.startsWith(
-              "DD HH"))
-          {
-            // ok, skip
-            continue;
-          }
+			// come up with a color
+			final float hue = (float) (Math.random() * 1000f);
+			final Color thisCol = new Color(Color.HSBtoRGB(hue, 0.8f, 0.7f));
 
-          String[] fields = nmea_sentence.split("\\s*,\\s*");
+			final SensorWrapper sw = new SensorWrapper(fileName);
+			sw.setColor(thisCol);
 
-          if (fields.length > 2)
-          {
-            // date
-            HiResDate dt = dateFor(fields[0]);
+			// loop through the lines
+			while ((nmea_sentence = br.readLine()) != null) {
+				// ok, we wrap this parsing in a try block, so we carry on
+				// processing a file after a failure
+				try {
 
-            // bearing
-            String trackNum = fields[1];
-            double brgDegs = Double.valueOf(fields[2]);
+					// check this isn't a comment
+					if (nmea_sentence.startsWith("#Time") || nmea_sentence.startsWith("DD HH")) {
+						// ok, skip
+						continue;
+					}
 
-            // public SensorContactWrapper(final String trackName, final HiResDate dtg,
-            // final WorldDistance range, final Double bearingDegs,
-            // final WorldLocation origin, final java.awt.Color color,
-            // final String label, final int style, final String sensorName)
+					final String[] fields = nmea_sentence.split("\\s*,\\s*");
 
-            SensorContactWrapper scw = new SensorContactWrapper(track.getName(),
-                dt, null, brgDegs, null, thisCol, trackNum, 1, fileName);
-            sw.add(scw);
-          }
+					if (fields.length > 2) {
+						// date
+						final HiResDate dt = dateFor(fields[0]);
 
-        }
-        catch (ParseException pe)
-        {
-          pe.printStackTrace();
-        }
-      }
+						// bearing
+						final String trackNum = fields[1];
+						final double brgDegs = Double.valueOf(fields[2]);
 
-      track.add(sw);
-    }
+						// public SensorContactWrapper(final String trackName, final HiResDate dtg,
+						// final WorldDistance range, final Double bearingDegs,
+						// final WorldLocation origin, final java.awt.Color color,
+						// final String label, final int style, final String sensorName)
 
-    @SuppressWarnings("deprecation")
-    private HiResDate dateFor(String string) throws ParseException
-    {
-      Date dt = _df.parse(string);
+						final SensorContactWrapper scw = new SensorContactWrapper(track.getName(), dt, null, brgDegs,
+								null, thisCol, trackNum, 1, fileName);
+						sw.add(scw);
+					}
 
-      // check the day
-      int day = Integer.parseInt(string.substring(0, 2));
+				} catch (final ParseException pe) {
+					pe.printStackTrace();
+				}
+			}
 
-      // fill in the month & year
-      if (day == 31)
-      {
-        dt.setYear(99);
-        dt.setMonth(11);
-      }
-      else
-      {
-        dt.setYear(100);
-        dt.setMonth(00);
-      }
+			track.add(sw);
+		}
 
-      HiResDate res = new HiResDate(dt);
-      return res;
-    }
+	}
 
-  }
+	public SATCSampleLoader() {
+		super("SATC Sample", null);
+	}
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.mwc.debrief.core.interfaces.IPlotLoader#loadFile(org.mwc.cmap.plotViewer
-   * .editors.CorePlotEditor, org.eclipse.ui.IEditorInput)
-   */
-  @Override
-  protected IRunnableWithProgress getImporter(final IAdaptable target,
-      final Layers layers, final InputStream inputStream, final String fileName)
-  {
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.mwc.debrief.core.interfaces.IPlotLoader#loadFile(org.mwc.cmap.plotViewer
+	 * .editors.CorePlotEditor, org.eclipse.ui.IEditorInput)
+	 */
+	@Override
+	protected IRunnableWithProgress getImporter(final IAdaptable target, final Layers layers,
+			final InputStream inputStream, final String fileName) {
 
-    // ok, we'll need somewhere to put the data
-    return new IRunnableWithProgress()
-    {
-      @Override
-      public void run(final IProgressMonitor pm)
+		// ok, we'll need somewhere to put the data
+		return new IRunnableWithProgress() {
+			@Override
+			public void run(final IProgressMonitor pm)
 
-      {
-        // ok - get loading going
-        ImportSATCSample importer = new ImportSATCSample(layers);
-        try
-        {
-          importer.importThis(fileName, inputStream);
-        }
-        catch (IOException | ParseException e)
-        {
-          DebriefPlugin.logError(Status.ERROR, "Problem loading " + _fileType
-              + ":" + fileName, e);
-        }
-      }
-    };
-  }
+			{
+				// ok - get loading going
+				final ImportSATCSample importer = new ImportSATCSample(layers);
+				try {
+					importer.importThis(fileName, inputStream);
+				} catch (IOException | ParseException e) {
+					DebriefPlugin.logError(IStatus.ERROR, "Problem loading " + _fileType + ":" + fileName, e);
+				}
+			}
+		};
+	}
 }

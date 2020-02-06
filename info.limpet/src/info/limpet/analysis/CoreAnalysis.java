@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 /*****************************************************************************
  *  Limpet - the Lightweight InforMation ProcEssing Toolkit
@@ -28,19 +28,15 @@
  *****************************************************************************/
 package info.limpet.analysis;
 
-
-public abstract class CoreAnalysis implements IAnalysis
-{
+public abstract class CoreAnalysis implements IAnalysis {
 	private final String _name;
 
-	public CoreAnalysis(String name)
-	{
+	public CoreAnalysis(final String name) {
 		_name = name;
 	}
 
 	@Override
-	public String getName()
-	{
+	public String getName() {
 		return _name;
 	}
 

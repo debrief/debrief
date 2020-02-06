@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.cmap.core.property_support.ui;
@@ -30,42 +30,39 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.mwc.cmap.core.property_support.IDebriefProperty;
 
-final public class ValueWithUnitsControl extends Composite implements
-		ModifyListener, FocusListener, SelectionListener
-{
+final public class ValueWithUnitsControl extends Composite implements ModifyListener, FocusListener, SelectionListener {
 
 	/**
 	 * hmm, the text bit.
-	 * 
+	 *
 	 */
 	private final Text _myText;
 
 	/**
 	 * and the drop-down units bit
-	 * 
+	 *
 	 */
 	private final Combo _myCombo;
 
 	/**
 	 * the helper class that actually handles the data
-	 * 
+	 *
 	 */
 	private ValueWithUnitsDataModel _myModel;
 
 	/**
 	 * the (optional) object we're editing
-	 * 
+	 *
 	 */
 	private IDebriefProperty _property;
 
 	/**
 	 * default constructor. it doesn't have all data, but we're not in control of
 	 * it's signature
-	 * 
+	 *
 	 * @param parent
 	 */
-	public ValueWithUnitsControl(final Composite parent)
-	{
+	public ValueWithUnitsControl(final Composite parent) {
 		super(parent, SWT.NONE);
 
 		// sort ourselves out
@@ -89,22 +86,15 @@ final public class ValueWithUnitsControl extends Composite implements
 
 	/**
 	 * convenience constructor - for when we're building ourselves
-	 * 
-	 * @param parent
-	 *          where to stick ourselves
-	 * @param textTip
-	 *          the tooltip on the text field
-	 * @param comboText
-	 *          the tooltip on the combo box
-	 * @param dataModel
-	 *          the data model we're manipulating
-	 * @param property
-	 *          who we tell if we've changed
+	 *
+	 * @param parent    where to stick ourselves
+	 * @param textTip   the tooltip on the text field
+	 * @param comboText the tooltip on the combo box
+	 * @param dataModel the data model we're manipulating
+	 * @param property  who we tell if we've changed
 	 */
-	public ValueWithUnitsControl(final Composite parent, final String textTip,
-			final String comboText, final ValueWithUnitsDataModel dataModel,
-			final IDebriefProperty property)
-	{
+	public ValueWithUnitsControl(final Composite parent, final String textTip, final String comboText,
+			final ValueWithUnitsDataModel dataModel, final IDebriefProperty property) {
 		this(parent);
 		init(textTip, comboText, dataModel);
 		_property = property;
@@ -114,8 +104,7 @@ final public class ValueWithUnitsControl extends Composite implements
 	}
 
 	@Override
-	public void dispose()
-	{
+	public void dispose() {
 		_myText.removeFocusListener(this);
 		_myText.removeSelectionListener(this);
 
@@ -125,10 +114,9 @@ final public class ValueWithUnitsControl extends Composite implements
 
 	/**
 	 * update the values displayed
-	 * 
+	 *
 	 */
-	final private void doUpdate()
-	{
+	final private void doUpdate() {
 		// get the best units
 		final int units = _myModel.getUnitsValue();
 		final String txt = "" + _myModel.getDoubleValue();
@@ -137,60 +125,50 @@ final public class ValueWithUnitsControl extends Composite implements
 	}
 
 	@Override
-	public void focusGained(final FocusEvent e)
-	{
+	public void focusGained(final FocusEvent e) {
 		selectAll();
 	}
 
 	@Override
-	public void focusLost(final FocusEvent e)
-	{
+	public void focusLost(final FocusEvent e) {
 	}
 
 	/**
 	 * encode ourselves into an object
-	 * 
+	 *
 	 * @return
 	 */
 	@Override
-	public Object getData()
-	{
+	public Object getData() {
 		Object res = null;
 		final String distTxt = _myText.getText();
-		if (distTxt.length() > 0)
-		{
-		  // wrap the parse operation, since we may have -ve value
-			try
-      {
-        final double dist = new Double(distTxt).doubleValue();
-        final int units = _myCombo.getSelectionIndex();
-        if (units != -1)
-        	res = _myModel.createResultsObject(dist, units);
-      }
-      catch (NumberFormatException e)
-      {
-        // we don't fall over for a single "-" character
-        if(!e.getMessage().equals("For input string: \"-\""))
-        {
-          e.printStackTrace();
-        }
-      }
+		if (distTxt.length() > 0) {
+			// wrap the parse operation, since we may have -ve value
+			try {
+				final double dist = new Double(distTxt).doubleValue();
+				final int units = _myCombo.getSelectionIndex();
+				if (units != -1)
+					res = _myModel.createResultsObject(dist, units);
+			} catch (final NumberFormatException e) {
+				// we don't fall over for a single "-" character
+				if (!e.getMessage().equals("For input string: \"-\"")) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return res;
 	}
 
 	/**
-	 * initialise ourselves, post-constructor. We have to do this, because we
-	 * don't have control over the constructor - sometimes it gets called by the
-	 * cell editor constructor.
-	 * 
+	 * initialise ourselves, post-constructor. We have to do this, because we don't
+	 * have control over the constructor - sometimes it gets called by the cell
+	 * editor constructor.
+	 *
 	 * @param textTip
 	 * @param comboTip
 	 * @param model
 	 */
-	public void init(final String textTip, final String comboTip,
-			final ValueWithUnitsDataModel model)
-	{
+	public void init(final String textTip, final String comboTip, final ValueWithUnitsDataModel model) {
 		_myModel = model;
 		_myText.setToolTipText(textTip);
 		_myCombo.setToolTipText(comboTip);
@@ -199,24 +177,21 @@ final public class ValueWithUnitsControl extends Composite implements
 	}
 
 	@Override
-	public void modifyText(final ModifyEvent e)
-	{
+	public void modifyText(final ModifyEvent e) {
 		// store the value in the property, if we have one?
 		if (_property != null)
 			_property.setValue(getData());
 
 		// also tell any listeners
 		final Listener[] listeners = this.getListeners(SWT.Selection);
-		for (int i = 0; i < listeners.length; i++)
-		{
+		for (int i = 0; i < listeners.length; i++) {
 			final Listener listener = listeners[i];
 			listener.handleEvent(new Event());
 		}
 
 	}
 
-	private void selectAll()
-	{
+	private void selectAll() {
 		if (_myText != null)
 			if (!_myText.isDisposed())
 				_myText.selectAll();
@@ -224,12 +199,11 @@ final public class ValueWithUnitsControl extends Composite implements
 
 	/**
 	 * set ourselves to this value
-	 * 
+	 *
 	 * @param value
 	 */
 	@Override
-	public void setData(final Object value)
-	{
+	public void setData(final Object value) {
 		// let the daddy do his bit
 		super.setData(value);
 
@@ -239,21 +213,18 @@ final public class ValueWithUnitsControl extends Composite implements
 	}
 
 	@Override
-	public void setEnabled(final boolean enabled)
-	{
+	public void setEnabled(final boolean enabled) {
 		super.setEnabled(enabled);
 		_myCombo.setEnabled(enabled);
 		_myText.setEnabled(enabled);
 	}
 
 	@Override
-	public void widgetDefaultSelected(final SelectionEvent e)
-	{
+	public void widgetDefaultSelected(final SelectionEvent e) {
 	}
 
 	@Override
-	public void widgetSelected(final SelectionEvent e)
-	{
+	public void widgetSelected(final SelectionEvent e) {
 		selectAll();
 	}
 

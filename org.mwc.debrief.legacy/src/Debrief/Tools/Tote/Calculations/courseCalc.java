@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package Debrief.Tools.Tote.Calculations;
@@ -81,45 +81,44 @@ import MWC.Algorithms.Conversions;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 
-public final class courseCalc extends plainCalc
-{
+public final class courseCalc extends plainCalc {
 
-  
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  public courseCalc()
-  {  
-    super(new DecimalFormat("000.0"), "Course", "degs");
-  }
-  
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	public courseCalc() {
+		super(new DecimalFormat("000.0"), "Course", "degs");
+	}
 
-  public final double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime)
-  {
-    double res = Conversions.Rads2Degs(primary.getCourse());
-    if(res < 0)
-    	res += 360;
-    
-    return res;
-  }
-  
-  public final String update(final Watchable primary, final Watchable secondary, final HiResDate time)
-  {
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+
+	@Override
+	public final double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime) {
+		double res = Conversions.Rads2Degs(primary.getCourse());
+		if (res < 0)
+			res += 360;
+
+		return res;
+	}
+
+	/**
+	 * does this calculation require special bearing handling (prevent wrapping
+	 * through 360 degs)
+	 *
+	 */
+	@Override
+	public final boolean isWrappableData() {
+		return true;
+	}
+
+	@Override
+	public final String update(final Watchable primary, final Watchable secondary, final HiResDate time) {
 		// check we have data
-		if(primary == null)
+		if (primary == null)
 			return NOT_APPLICABLE;
-		
-    return _myPattern.format(
-       calculate(primary, secondary, time));
-  }
 
-  /** does this calculation require special bearing handling (prevent wrapping through 360 degs)
-   *
-   */
-  public final boolean isWrappableData() {
-    return true;
-  }
+		return _myPattern.format(calculate(primary, secondary, time));
+	}
 }

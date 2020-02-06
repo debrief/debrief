@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.SplitPanel;
@@ -66,68 +66,55 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Panel;
 
-public class ThreeWayPanel extends SplitPanel
-{
+public class ThreeWayPanel extends SplitPanel {
 
-  /**
-	 * 
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	Panel _right;
-  Panel _topLeft;
-  Panel _bottomLeft;
+	Panel _topLeft;
+	Panel _bottomLeft;
 
-  //////////////////////////////////////////////////
-  // member variables
-  //////////////////////////////////////////////////
+	//////////////////////////////////////////////////
+	// member variables
+	//////////////////////////////////////////////////
 
-  //////////////////////////////////////////////////
-  // constructor
-  //////////////////////////////////////////////////
-  public ThreeWayPanel(){
-    super();
-    setGap(1);
-    setDividerColor(Color.red);
-    
-    // set the background colour
-    setBackground(Color.lightGray);
-    
-    // create the panels
-    _right = new Panel();
-    _right.setLayout(new BorderLayout());
-    _topLeft = new Panel();
-    _bottomLeft = new Panel();
-    
-    // and now add them to the interface
-    add(_right, 
-        new PaneConstraints("Right", 
-                            "Right", 
-                            PaneConstraints.ROOT, 
-                            1.0f));
-    add(_topLeft, 
-        new PaneConstraints("TopLeft", 
-                            "Right", 
-                            PaneConstraints.LEFT, 
-                            0.4f));
-    add(_bottomLeft, 
-        new PaneConstraints("BottomLeft", 
-                            "TopLeft", 
-                            PaneConstraints.BOTTOM, 
-                            0.7f));
-  }
+	//////////////////////////////////////////////////
+	// constructor
+	//////////////////////////////////////////////////
+	public ThreeWayPanel() {
+		super();
+		setGap(1);
+		setDividerColor(Color.red);
 
-  //////////////////////////////////////////////////
-  // member functions
-  //////////////////////////////////////////////////
-  public Panel getRight(){
-    return _right;
-  }
-  
-  public Panel getTopLeft(){
-    return _topLeft;
-  }
-  
-  public Panel getBottomLeft(){
-    return _bottomLeft;
-  }
+		// set the background colour
+		setBackground(Color.lightGray);
+
+		// create the panels
+		_right = new Panel();
+		_right.setLayout(new BorderLayout());
+		_topLeft = new Panel();
+		_bottomLeft = new Panel();
+
+		// and now add them to the interface
+		add(_right, new PaneConstraints("Right", "Right", PaneConstraints.ROOT, 1.0f));
+		add(_topLeft, new PaneConstraints("TopLeft", "Right", PaneConstraints.LEFT, 0.4f));
+		add(_bottomLeft, new PaneConstraints("BottomLeft", "TopLeft", PaneConstraints.BOTTOM, 0.7f));
+	}
+
+	public Panel getBottomLeft() {
+		return _bottomLeft;
+	}
+
+	//////////////////////////////////////////////////
+	// member functions
+	//////////////////////////////////////////////////
+	public Panel getRight() {
+		return _right;
+	}
+
+	public Panel getTopLeft() {
+		return _topLeft;
+	}
 }

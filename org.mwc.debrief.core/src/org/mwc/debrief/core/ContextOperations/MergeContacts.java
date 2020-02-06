@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.debrief.core.ContextOperations;
@@ -36,74 +36,9 @@ import MWC.GUI.Layers;
 /**
  * @author ian.mayo
  */
-public class MergeContacts implements RightClickContextItemGenerator
-{
+public class MergeContacts implements RightClickContextItemGenerator {
 
-	/**
-	 * @param parent
-	 * @param theLayers
-	 * @param parentLayers
-	 * @param subjects
-	 */
-	public void generate(final IMenuManager parent, final Layers theLayers,
-			final Layer[] parentLayers, final Editable[] subjects)
-	{
-		int validItems = 0;
-		
-		// we're only going to work with two or more items
-		if (subjects.length > 1)
-		{
-			// are they tracks, or track segments
-			for (int i = 0; i < subjects.length; i++)
-			{
-				boolean goForIt = false;
-				final Editable thisE = subjects[i];
-				if (thisE instanceof SensorWrapper)
-				{
-					goForIt = true;					
-				}
-				
-				if(goForIt)
-				{
-					validItems++;
-				}
-				
-				
-				else
-				{
-					// NOTE: we're no longer logging this instance - it was just of value for developing
-					// the merge operation
-//					CorePlugin.logError(Status.INFO, "Not allowing merge, there's a non-compliant entry", null);
-	
-					// may as well drop out - this item wasn't compliant
-					continue;
-				}
-			}
-		}
-
-		// ok, is it worth going for?
-		if (validItems >= 2)
-		{
-
-			// right,stick in a separator
-			parent.add(new Separator());
-
-			final Editable editable = subjects[0];
-			final String title = "Merge sensors into " + editable.getName();
-			// create this operation
-			final Action doMerge = new Action(title){
-				public void run()
-				{
-					final IUndoableOperation theAction = new MergeSensorsOperation(title, editable, theLayers, parentLayers, subjects);
-						
-					CorePlugin.run(theAction );
-				}};
-			parent.add(doMerge);
-		}
-	}
-
-	private static class MergeSensorsOperation extends CMAPOperation
-	{
+	private static class MergeSensorsOperation extends CMAPOperation {
 
 		/**
 		 * the parent to update on completion
@@ -113,10 +48,8 @@ public class MergeContacts implements RightClickContextItemGenerator
 		private final Editable[] _subjects;
 		private final Editable _target;
 
-
-		public MergeSensorsOperation(final String title, final Editable editable, final Layers theLayers, final Layer[] parentLayers,
-				final Editable[] subjects)
-		{
+		public MergeSensorsOperation(final String title, final Editable editable, final Layers theLayers,
+				final Layer[] parentLayers, final Editable[] subjects) {
 			super(title);
 			_target = editable;
 			_layers = theLayers;
@@ -124,40 +57,91 @@ public class MergeContacts implements RightClickContextItemGenerator
 			_subjects = subjects;
 		}
 
-		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
-				throws ExecutionException
-		{
+		@Override
+		public boolean canRedo() {
+			return false;
+		}
+
+		@Override
+		public boolean canUndo() {
+			return false;
+		}
+
+		@Override
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
 			final int res = SensorWrapper.mergeSensors(_target, _layers, _parents[0], _subjects);
-			if(res == IStatus.OK)
+			if (res == IStatus.OK)
 				fireModified();
 			return Status.OK_STATUS;
 		}
 
-		
-		
-		@Override
-		public boolean canRedo()
-		{
-			return false;
-		}
-
-		@Override
-		public boolean canUndo()
-		{
-			return false;
-		}
-		
-		private void fireModified()
-		{
+		private void fireModified() {
 			_layers.fireExtended();
 		}
 
 		@Override
-		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
-				throws ExecutionException
-		{
-			CorePlugin.logError(Status.INFO, "Undo not permitted for merge operation", null);
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
+			CorePlugin.logError(IStatus.INFO, "Undo not permitted for merge operation", null);
 			return null;
+		}
+	}
+
+	/**
+	 * @param parent
+	 * @param theLayers
+	 * @param parentLayers
+	 * @param subjects
+	 */
+	@Override
+	public void generate(final IMenuManager parent, final Layers theLayers, final Layer[] parentLayers,
+			final Editable[] subjects) {
+		int validItems = 0;
+
+		// we're only going to work with two or more items
+		if (subjects.length > 1) {
+			// are they tracks, or track segments
+			for (int i = 0; i < subjects.length; i++) {
+				boolean goForIt = false;
+				final Editable thisE = subjects[i];
+				if (thisE instanceof SensorWrapper) {
+					goForIt = true;
+				}
+
+				if (goForIt) {
+					validItems++;
+				}
+
+				else {
+					// NOTE: we're no longer logging this instance - it was just of value for
+					// developing
+					// the merge operation
+//					CorePlugin.logError(Status.INFO, "Not allowing merge, there's a non-compliant entry", null);
+
+					// may as well drop out - this item wasn't compliant
+					continue;
+				}
+			}
+		}
+
+		// ok, is it worth going for?
+		if (validItems >= 2) {
+
+			// right,stick in a separator
+			parent.add(new Separator());
+
+			final Editable editable = subjects[0];
+			final String title = "Merge sensors into " + editable.getName();
+			// create this operation
+			final Action doMerge = new Action(title) {
+				@Override
+				public void run() {
+					final IUndoableOperation theAction = new MergeSensorsOperation(title, editable, theLayers,
+							parentLayers, subjects);
+
+					CorePlugin.run(theAction);
+				}
+			};
+			parent.add(doMerge);
 		}
 	}
 }

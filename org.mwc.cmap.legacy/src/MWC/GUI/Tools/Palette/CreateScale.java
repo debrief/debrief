@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: CreateScale.java,v $
@@ -52,18 +52,19 @@ package MWC.GUI.Tools.Palette;
 
 import MWC.GUI.Chart.Painters.ScalePainter;
 
-public class CreateScale extends PlainCreate
-{
-	public CreateScale(final MWC.GUI.ToolParent theParent,
-										final MWC.GUI.Properties.PropertiesPanel thePanel,
-										final MWC.GUI.Layers theData,
-										final BoundsProvider theBounds)
-	{
+public class CreateScale extends PlainCreate {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public CreateScale(final MWC.GUI.ToolParent theParent, final MWC.GUI.Properties.PropertiesPanel thePanel,
+			final MWC.GUI.Layers theData, final BoundsProvider theBounds) {
 		super(theParent, thePanel, theData, theBounds, "Scale", "images/scale_add.png");
 	}
 
-	protected MWC.GUI.Plottable createItem()
-	{
+	@Override
+	protected MWC.GUI.Plottable createItem() {
 		return new ScalePainter();
 	}
 }

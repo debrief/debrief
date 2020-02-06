@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: CreateNoiseExcess.java,v $
@@ -39,28 +39,29 @@
 // Initial revision
 //
 
-
 package ASSET.GUI.Tools;
 
 import ASSET.GUI.Painters.NoiseSourceExcessPainter;
 import MWC.GUI.Tools.Palette.PlainCreate;
 
-/** create a point noise source
+/**
+ * create a point noise source
  *
  */
-public class CreateNoiseExcess extends PlainCreate
-{
+public class CreateNoiseExcess extends PlainCreate {
 
-	public CreateNoiseExcess(final MWC.GUI.ToolParent theParent,
-										final MWC.GUI.Properties.PropertiesPanel thePanel,
-										final MWC.GUI.Layers theData,
-										final BoundsProvider theChart)
-	{
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public CreateNoiseExcess(final MWC.GUI.ToolParent theParent, final MWC.GUI.Properties.PropertiesPanel thePanel,
+			final MWC.GUI.Layers theData, final BoundsProvider theChart) {
 		super(theParent, thePanel, theData, theChart, "Excess Scenario Noise", "images/noise_excess.gif");
 	}
 
-	protected MWC.GUI.Plottable createItem()
-	{
-    return new NoiseSourceExcessPainter("Noise Excess", getLayers());
+	@Override
+	protected MWC.GUI.Plottable createItem() {
+		return new NoiseSourceExcessPainter("Noise Excess", getLayers());
 	}
 }

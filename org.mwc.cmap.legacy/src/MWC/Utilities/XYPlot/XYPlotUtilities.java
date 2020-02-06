@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.Utilities.XYPlot;
@@ -29,91 +29,76 @@ import org.jfree.data.time.TimeSeriesCollection;
 
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
+public class XYPlotUtilities {
 
-public class XYPlotUtilities 
-{
-  
-  final private static DateFormat df = new GMTDateFormat("dd/MMM/yyyy HH:mm");
-  
-  public static void copyToClipboard(final String plotTitle,
-      final TimeSeriesCollection dataset)
-  {   
-    final String dataStr = textMatrix(plotTitle, dataset);
-    new TextTransfer().setClipboardContents(dataStr);   
-  }
-  
-  private synchronized static String textMatrix(final String plotTitle,
-      final TimeSeriesCollection dataset)
-  {
-    StringBuffer dataStr = new StringBuffer();
-    
-    for(int i = 0; i < dataset.getSeriesCount(); i++)
-    {
-      final TimeSeries series = dataset.getSeries(dataset.getSeriesKey(i));
-      dataStr.append(plotTitle);
-      dataStr.append(", ");
-      dataStr.append(series.getKey().toString());
-      dataStr.append("\n");
-      
-      for (int j = 0; j < series.getItemCount(); j++) 
-      { 
-        dataStr.append(df.format(series.getTimePeriod(j).getStart()));
-        dataStr.append(", ");       
-        dataStr.append(series.getDataItem(j).getValue());
-        dataStr.append("\n");
-      }     
-    }
-    return dataStr.toString();
-  }
-  
-  static final class TextTransfer implements ClipboardOwner 
-  {
-      private TextTransfer() {}
-      
-      @Override public void lostOwnership(Clipboard aClipboard, Transferable aContents)
-      {
-         //do nothing
-      }
+	static final class TextTransfer implements ClipboardOwner {
+		private TextTransfer() {
+		}
 
-      /**
-      * Place a String on the clipboard, and make this class the
-      * owner of the Clipboard's contents.
-      */
-      public void setClipboardContents(String aString)
-      {
-        StringSelection stringSelection = new StringSelection(aString);
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        clipboard.setContents(stringSelection, this);
-      }
-     
-  } 
-  
-  static public final class XYPlotUtilitiesTest extends junit.framework.TestCase
-  {
-    public synchronized void testTwoSeriesDataset()
-    {
-      final TimeSeriesCollection dataset = new TimeSeriesCollection();
-      final TimeSeries series1 = new TimeSeries("name1");
-      Date time1 = new Date();
-      Date time2 = new Date(time1.getTime() + 60000);
-      series1.add(new FixedMillisecond((long) (time1.getTime() / 1d)), 1.0);
-      series1.add(new FixedMillisecond((long) (time2.getTime() / 1d)), 2.0);
-      final TimeSeries series2 = new TimeSeries("name2");
-      series2.add(new FixedMillisecond((long) (time1.getTime() / 1d)), 3.0);
-      series2.add(new FixedMillisecond((long) (time2.getTime() / 1d)), 4.0);
-      dataset.addSeries(series1);
-      dataset.addSeries(series2);
-      
-      String result = XYPlotUtilities.textMatrix("test", dataset);
-      System.out.println(result);
-      String expected = "test, name1\n" + 
-          df.format(time1) + ", 1.0\n" +  
-          df.format(time2) + ", 2.0\n" +
-          "test, name2\n" + 
-          df.format(time1) + ", 3.0\n" +  
-          df.format(time2) +", 4.0\n";
-      assertEquals(expected, result);
-    }
-  }
+		@Override
+		public void lostOwnership(final Clipboard aClipboard, final Transferable aContents) {
+			// do nothing
+		}
+
+		/**
+		 * Place a String on the clipboard, and make this class the owner of the
+		 * Clipboard's contents.
+		 */
+		public void setClipboardContents(final String aString) {
+			final StringSelection stringSelection = new StringSelection(aString);
+			final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+			clipboard.setContents(stringSelection, this);
+		}
+
+	}
+
+	static public final class XYPlotUtilitiesTest extends junit.framework.TestCase {
+		public synchronized void testTwoSeriesDataset() {
+			final TimeSeriesCollection dataset = new TimeSeriesCollection();
+			final TimeSeries series1 = new TimeSeries("name1");
+			final Date time1 = new Date();
+			final Date time2 = new Date(time1.getTime() + 60000);
+			series1.add(new FixedMillisecond((long) (time1.getTime() / 1d)), 1.0);
+			series1.add(new FixedMillisecond((long) (time2.getTime() / 1d)), 2.0);
+			final TimeSeries series2 = new TimeSeries("name2");
+			series2.add(new FixedMillisecond((long) (time1.getTime() / 1d)), 3.0);
+			series2.add(new FixedMillisecond((long) (time2.getTime() / 1d)), 4.0);
+			dataset.addSeries(series1);
+			dataset.addSeries(series2);
+
+			final String result = XYPlotUtilities.textMatrix("test", dataset);
+			System.out.println(result);
+			final String expected = "test, name1\n" + df.format(time1) + ", 1.0\n" + df.format(time2) + ", 2.0\n"
+					+ "test, name2\n" + df.format(time1) + ", 3.0\n" + df.format(time2) + ", 4.0\n";
+			assertEquals(expected, result);
+		}
+	}
+
+	final private static DateFormat df = new GMTDateFormat("dd/MMM/yyyy HH:mm");
+
+	public static void copyToClipboard(final String plotTitle, final TimeSeriesCollection dataset) {
+		final String dataStr = textMatrix(plotTitle, dataset);
+		new TextTransfer().setClipboardContents(dataStr);
+	}
+
+	private synchronized static String textMatrix(final String plotTitle, final TimeSeriesCollection dataset) {
+		final StringBuffer dataStr = new StringBuffer();
+
+		for (int i = 0; i < dataset.getSeriesCount(); i++) {
+			final TimeSeries series = dataset.getSeries(dataset.getSeriesKey(i));
+			dataStr.append(plotTitle);
+			dataStr.append(", ");
+			dataStr.append(series.getKey().toString());
+			dataStr.append("\n");
+
+			for (int j = 0; j < series.getItemCount(); j++) {
+				dataStr.append(df.format(series.getTimePeriod(j).getStart()));
+				dataStr.append(", ");
+				dataStr.append(series.getDataItem(j).getValue());
+				dataStr.append("\n");
+			}
+		}
+		return dataStr.toString();
+	}
 
 }

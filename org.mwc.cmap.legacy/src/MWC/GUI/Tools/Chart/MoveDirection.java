@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: MoveDirection.java,v $
@@ -49,8 +49,6 @@
 
 package MWC.GUI.Tools.Chart;
 
-
-
 import MWC.GUI.PlainChart;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Tools.Action;
@@ -59,70 +57,121 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
-/** tool to instruct a particular chart to do a resize to fit all
- * of the current data
+/**
+ * tool to instruct a particular chart to do a resize to fit all of the current
+ * data
  */
 public class MoveDirection extends PlainTool {
-  
-  /////////////////////////////////////////////////////////
-  // member variables
-  /////////////////////////////////////////////////////////  
-  
-  /** keep a reference to the chart which we are acting upon*/
-  private final PlainChart _theChart;  
-  
-	/** the directions we are allowed to move in
+
+	/////////////////////////////////////////////////////////
+	// member variables
+	/////////////////////////////////////////////////////////
+
+	////////////////////////////////////////////////////////////////////
+	// store action information
+	protected class MoveDirectionAction implements Action {
+		private final PlainChart _theChart1;
+		private final WorldArea _oldArea;
+		private final WorldArea _newArea;
+
+		public MoveDirectionAction(final PlainChart theChart, final WorldArea oldArea, final WorldArea newArea) {
+			_theChart1 = theChart;
+			_oldArea = oldArea;
+			_newArea = newArea;
+		}
+
+		@Override
+		public void execute() {
+			// update the data area
+			_theChart1.getCanvas().getProjection().setDataArea(_newArea);
+		}
+
+		@Override
+		public boolean isRedoable() {
+			return true;
+		}
+
+		@Override
+		public boolean isUndoable() {
+			return true;
+		}
+
+		@Override
+		public String toString() {
+			return "fit to window ";
+		}
+
+		@Override
+		public void undo() {
+			// set the data area for the chart to the old area
+			_theChart1.getCanvas().getProjection().setDataArea(_oldArea);
+		}
+	}
+
+	/**
+		 *
+		 */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * the directions we are allowed to move in
 	 */
 	public static final int NORTH = 0;
-	public static final int EAST  = 1;
+	public static final int EAST = 1;
 	public static final int SOUTH = 2;
-	public static final int WEST  = 3;
-	public static final int NORTHEAST  = 4;
-	public static final int SOUTHEAST  = 5;
-	public static final int SOUTHWEST  = 6;
-	public static final int NORTHWEST  = 7;
-	
-	/** the direction for this instance
-	 */
-	protected int _myDirection;
-	
-	/** the proportion of the current view that we step by
+	public static final int WEST = 3;
+	public static final int NORTHEAST = 4;
+	public static final int SOUTHEAST = 5;
+	public static final int SOUTHWEST = 6;
+	public static final int NORTHWEST = 7;
+
+	/**
+	 * the proportion of the current view that we step by
 	 */
 	private static final double DISTANCE_FACTOR = 0.05;
-	
-  /////////////////////////////////////////////////////////
-  // constructor
-  /////////////////////////////////////////////////////////
-  
-  /** constructor, stores information ready for when the button
-   * finally gets pressed
-   * @param theApp the parent application, so we can set cursors
-   * @param theChart the chart we are to resize
-   */
-  public MoveDirection(final ToolParent theParent, 
-											 final PlainChart theChart,
-											 final int theDirection,
-											 final String theLabel,
-											 final String theImage){      
-    super(theParent, theLabel, theImage);
-		
-    // remember the chart we are acting upon
-    _theChart = theChart;
-		
+
+	/** keep a reference to the chart which we are acting upon */
+	private final PlainChart _theChart;
+
+	/////////////////////////////////////////////////////////
+	// constructor
+	/////////////////////////////////////////////////////////
+
+	/**
+	 * the direction for this instance
+	 */
+	protected int _myDirection;
+
+	/////////////////////////////////////////////////////////
+	// member functions
+	/////////////////////////////////////////////////////////
+
+	/**
+	 * constructor, stores information ready for when the button finally gets
+	 * pressed
+	 *
+	 * @param theApp   the parent application, so we can set cursors
+	 * @param theChart the chart we are to resize
+	 */
+	public MoveDirection(final ToolParent theParent, final PlainChart theChart, final int theDirection,
+			final String theLabel, final String theImage) {
+		super(theParent, theLabel, theImage);
+
+		// remember the chart we are acting upon
+		_theChart = theChart;
+
 		_myDirection = theDirection;
-  }
-  
-  /////////////////////////////////////////////////////////
-  // member functions
-  /////////////////////////////////////////////////////////  
-	
-	/** return the information we use in our move
+	}
+
+	/**
+	 * return the information we use in our move
+	 *
 	 * @return the Action object representing this step
 	 */
-  public Action getData()
-  {
-    // get the current data area
-    final WorldArea oldArea = _theChart.getCanvas().getProjection().getDataArea();
+	@Override
+	public Action getData() {
+// get the current data area
+		final WorldArea oldArea = _theChart.getCanvas().getProjection().getDataArea();
 
 		// working variable for the vector
 		double direction = 0;
@@ -130,98 +179,51 @@ public class MoveDirection extends PlainTool {
 
 		// sort out the distance
 		distance = oldArea.getHeight() * DISTANCE_FACTOR;
-		
+
 		// sort out the direction
 		switch (_myDirection) {
-			case NORTH:
-				direction = 0;
-			  break;
-			case EAST:
-				direction = 90;
-			  break;
-			case SOUTH:
-				direction = 180;
-			  break;
-			case WEST:
-				direction = 270;
-			  break;
-			case NORTHEAST:
-				direction = 45;
-			  break;
-			case SOUTHEAST:
-				direction = 135;
-			  break;
-			case SOUTHWEST:
-				direction = 225;
-			  break;
-			case NORTHWEST:
-				direction = 315;
-			  break;
-  	}
-			
+		case NORTH:
+			direction = 0;
+			break;
+		case EAST:
+			direction = 90;
+			break;
+		case SOUTH:
+			direction = 180;
+			break;
+		case WEST:
+			direction = 270;
+			break;
+		case NORTHEAST:
+			direction = 45;
+			break;
+		case SOUTHEAST:
+			direction = 135;
+			break;
+		case SOUTHWEST:
+			direction = 225;
+			break;
+		case NORTHWEST:
+			direction = 315;
+			break;
+		}
+
 		// convert direction to radians
 		direction = MWC.Algorithms.Conversions.Degs2Rads(direction);
-		
+
 		// produce the vector
-		final WorldVector theVector = new WorldVector(direction,
-																						distance,
-																						0);
+		final WorldVector theVector = new WorldVector(direction, distance, 0);
 		// convert direction to radians
 		direction = MWC.Algorithms.Conversions.Degs2Rads(direction);
-		
+
 		// produce the new area
 		final WorldLocation tl = oldArea.getTopLeft().add(theVector);
-		final WorldLocation br = oldArea.getBottomRight().add(theVector);		
+		final WorldLocation br = oldArea.getBottomRight().add(theVector);
 		final WorldArea newArea = new WorldArea(tl, br);
-	  
+
 		// produce the action
-		return new MoveDirectionAction(_theChart,
-																	 oldArea,
-																	 newArea);
-		
-  }
+		return new MoveDirectionAction(_theChart, oldArea, newArea);
 
-  
-  ////////////////////////////////////////////////////////////////////
-  // store action information
-  protected class MoveDirectionAction implements Action{
-    private final PlainChart _theChart1;  
-    private final WorldArea _oldArea;
-		private final WorldArea _newArea;
-    
-    public MoveDirectionAction(final PlainChart theChart,
-															 final WorldArea oldArea,
-															 final WorldArea newArea){
-      _theChart1 = theChart;
-      _oldArea = oldArea;
-			_newArea = newArea;
-    }
+	}
 
-    public boolean isRedoable(){
-      return true;
-    }
-    
-    
-    public boolean isUndoable(){
-      return true;
-    }
-                 
-    public String toString(){
-      return "fit to window ";
-    }                                        
-    
-    public void undo()      
-    {
-      // set the data area for the chart to the old area
-      _theChart1.getCanvas().getProjection().setDataArea(_oldArea);
-    }
-    
-		public void execute()
-		{
-			// update the data area
-   		_theChart1.getCanvas().getProjection().setDataArea(_newArea);
-    }
-  }
-  
-  
 }

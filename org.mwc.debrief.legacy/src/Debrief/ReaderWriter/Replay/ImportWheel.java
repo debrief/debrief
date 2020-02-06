@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: ImportWheel.java,v $
@@ -87,186 +87,169 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 /**
  * class to parse a label from a line of text
  */
-final class ImportWheel extends AbstractPlainLineImporter
-{
+final class ImportWheel extends AbstractPlainLineImporter {
 
-  /**
-   * the type for this string
-   */
-  private final String _myType = ";WHEEL:";
+	/**
+	 * the type for this string
+	 */
+	private final String _myType = ";WHEEL:";
 
-  /**
-   * read in this string and return a Label
-   * @throws ParseException 
-   */
-  public final Object readThisLine(final String theLine) throws ParseException
-  {
+	/**
+	 * indicate if you can export this type of object
+	 *
+	 * @param val the object to test
+	 * @return boolean saying whether you can do it
+	 */
+	@Override
+	public final boolean canExportThis(final Object val) {
+		boolean res = false;
 
-    // get a stream from the string
-    final StringTokenizer st = new StringTokenizer(theLine);
+		if (val instanceof ShapeWrapper) {
+			final ShapeWrapper sw = (ShapeWrapper) val;
+			final PlainShape ps = sw.getShape();
+			res = (ps instanceof EllipseShape);
+		}
 
-    // declare local variables
-    WorldLocation theLoc;
-    double latDeg, longDeg, latMin, longMin;
-    char latHem, longHem;
-    double latSec, longSec;
-    double innerRadius, outerRadius;
-    String theText;
-    String scrap;
-    HiResDate theDate = null;
+		return res;
 
-    // skip the comment identifier
-    scrap = st.nextToken();
-    if(scrap != null)
-    	scrap = null;
+	}
 
-    // start with the symbology
-    symbology = st.nextToken();
+	/**
+	 * export the specified shape as a string
+	 *
+	 * @param theWrapper the Shape we are exporting
+	 * @return the shape in String form
+	 */
+	@Override
+	public final String exportThis(final MWC.GUI.Plottable theWrapper) {
+		final ShapeWrapper theShape = (ShapeWrapper) theWrapper;
 
-    // now the date
-    String dateStr = null;
+		final EllipseShape ellipse = (EllipseShape) theShape.getShape();
 
-    // get date
-    dateStr = st.nextToken();
+		// result value
+		String line;
 
-    // now get the time, and add it to the date
-    dateStr = dateStr + " " + st.nextToken();
+		line = ";WHEEL: BD ";
 
-    // produce a date from this data
-    theDate = DebriefFormatDateTime.parseThis(dateStr);
+		HiResDate tmpDate = theShape.getStartDTG();
 
-    try
-    {
-    	// now the location
-    	latDeg = MWCXMLReader.readThisDouble(st.nextToken());
-    	latMin = MWCXMLReader.readThisDouble(st.nextToken());
-    	latSec = MWCXMLReader.readThisDouble(st.nextToken());
+		if (tmpDate == null) {
+			tmpDate = new HiResDate(0);
+		}
 
-	    /** now, we may have trouble here, since there may not be
-	     * a space between the hemisphere character and a 3-digit
-	     * latitude value - so BE CAREFUL
-	     */
-	    final String vDiff = st.nextToken();
-	    if (vDiff.length() > 3)
-	    {
-	      // hmm, they are combined
-	      latHem = vDiff.charAt(0);
-	      final String secondPart = vDiff.substring(1, vDiff.length());
-	      longDeg =MWCXMLReader.readThisDouble(secondPart);
-	    }
-	    else
-	    {
-	      // they are separate, so only the hem is in this one
-	      latHem = vDiff.charAt(0);
-	      longDeg = MWCXMLReader.readThisDouble(st.nextToken());
-	    }
-	    longMin = MWCXMLReader.readThisDouble(st.nextToken());
-	    longSec = MWCXMLReader.readThisDouble(st.nextToken());
-	    longHem = st.nextToken().charAt(0);
+		line = line + " " + ImportReplay.formatThis(tmpDate);
 
-	    // now the radius of the circle
-	    innerRadius = MWCXMLReader.readThisDouble(st.nextToken());
-	    outerRadius = MWCXMLReader.readThisDouble(st.nextToken());
-	
-	
-	    // and now read in the message
-	    theText = st.nextToken("\r").trim();
+		line = line + " " + MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(ellipse.getCentre());
 
-	    // create the tactical data
-	    theLoc = new WorldLocation(latDeg, latMin, latSec, latHem,
-	                               longDeg, longMin, longSec, longHem,
-	                               0);
-	
-	    // create the circle object
-	    final PlainShape wh = new WheelShape(theLoc, innerRadius, outerRadius);
-	    Color c = ImportReplay.replayColorFor(symbology);
+		line = line + " " + ellipse.getOrientation();
+
+		line = line + " " + (long) (ellipse.getMaxima().getValueIn(WorldDistance.YARDS));
+
+		line = line + " " + (long) (ellipse.getMinima().getValueIn(WorldDistance.YARDS));
+
+		line = line + " " + theShape.getLabel();
+
+		return line;
+
+	}
+
+	/**
+	 * determine the identifier returning this type of annotation
+	 */
+	@Override
+	public final String getYourType() {
+		return _myType;
+	}
+
+	/**
+	 * read in this string and return a Label
+	 *
+	 * @throws ParseException
+	 */
+	@Override
+	public final Object readThisLine(final String theLine) throws ParseException {
+
+		// get a stream from the string
+		final StringTokenizer st = new StringTokenizer(theLine);
+
+		// declare local variables
+		WorldLocation theLoc;
+		double latDeg, longDeg, latMin, longMin;
+		char latHem, longHem;
+		double latSec, longSec;
+		double innerRadius, outerRadius;
+		String theText;
+		String scrap;
+		HiResDate theDate = null;
+
+		// skip the comment identifier
+		scrap = st.nextToken();
+		if (scrap != null)
+			scrap = null;
+
+		// start with the symbology
+		symbology = st.nextToken();
+
+		// now the date
+		String dateStr = null;
+
+		// get date
+		dateStr = st.nextToken();
+
+		// now get the time, and add it to the date
+		dateStr = dateStr + " " + st.nextToken();
+
+		// produce a date from this data
+		theDate = DebriefFormatDateTime.parseThis(dateStr);
+
+		try {
+			// now the location
+			latDeg = MWCXMLReader.readThisDouble(st.nextToken());
+			latMin = MWCXMLReader.readThisDouble(st.nextToken());
+			latSec = MWCXMLReader.readThisDouble(st.nextToken());
+
+			/**
+			 * now, we may have trouble here, since there may not be a space between the
+			 * hemisphere character and a 3-digit latitude value - so BE CAREFUL
+			 */
+			final String vDiff = st.nextToken();
+			if (vDiff.length() > 3) {
+				// hmm, they are combined
+				latHem = vDiff.charAt(0);
+				final String secondPart = vDiff.substring(1, vDiff.length());
+				longDeg = MWCXMLReader.readThisDouble(secondPart);
+			} else {
+				// they are separate, so only the hem is in this one
+				latHem = vDiff.charAt(0);
+				longDeg = MWCXMLReader.readThisDouble(st.nextToken());
+			}
+			longMin = MWCXMLReader.readThisDouble(st.nextToken());
+			longSec = MWCXMLReader.readThisDouble(st.nextToken());
+			longHem = st.nextToken().charAt(0);
+
+			// now the radius of the circle
+			innerRadius = MWCXMLReader.readThisDouble(st.nextToken());
+			outerRadius = MWCXMLReader.readThisDouble(st.nextToken());
+
+			// and now read in the message
+			theText = st.nextToken("\r").trim();
+
+			// create the tactical data
+			theLoc = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg, longMin, longSec, longHem, 0);
+
+			// create the circle object
+			final PlainShape wh = new WheelShape(theLoc, innerRadius, outerRadius);
+			final Color c = ImportReplay.replayColorFor(symbology);
 			wh.setColor(c);
-	
-	    // and put it into a shape
-	    final ShapeWrapper sw = new ShapeWrapper(theText,
-	                                       wh,
-	                                       c,
-	                                       theDate);
-	
-	    return sw;
-    }
-    catch(final ParseException pe)
-    {
-    	MWC.Utilities.Errors.Trace.trace(pe,
-				"Whilst import Wheel");
-    	return null;
-    }
-  }
 
-  /**
-   * determine the identifier returning this type of annotation
-   */
-  public final String getYourType()
-  {
-    return _myType;
-  }
+			// and put it into a shape
+			final ShapeWrapper sw = new ShapeWrapper(theText, wh, c, theDate);
 
-  /**
-   * export the specified shape as a string
-   *
-   * @param theWrapper the Shape we are exporting
-   * @return the shape in String form
-   */
-  public final String exportThis(final MWC.GUI.Plottable theWrapper)
-  {
-    final ShapeWrapper theShape = (ShapeWrapper) theWrapper;
-
-    final EllipseShape ellipse = (EllipseShape) theShape.getShape();
-
-    // result value
-    String line;
-
-    line = ";WHEEL: BD ";
-
-    HiResDate tmpDate = theShape.getStartDTG();
-
-    if (tmpDate == null)
-    {
-      tmpDate = new HiResDate(0);
-    }
-
-    line = line + " " + ImportReplay.formatThis(tmpDate);
-
-    line = line + " " + MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(ellipse.getCentre());
-
-    line = line + " " + ellipse.getOrientation();
-
-    line = line + " " + (long) (ellipse.getMaxima().getValueIn(WorldDistance.YARDS));
-
-    line = line + " " + (long) (ellipse.getMinima().getValueIn(WorldDistance.YARDS));
-
-    line = line + " " + theShape.getLabel();
-
-    return line;
-
-  }
-
-
-  /**
-   * indicate if you can export this type of object
-   *
-   * @param val the object to test
-   * @return boolean saying whether you can do it
-   */
-  public final boolean canExportThis(final Object val)
-  {
-    boolean res = false;
-
-    if (val instanceof ShapeWrapper)
-    {
-      final ShapeWrapper sw = (ShapeWrapper) val;
-      final PlainShape ps = sw.getShape();
-      res = (ps instanceof EllipseShape);
-    }
-
-    return res;
-
-  }
+			return sw;
+		} catch (final ParseException pe) {
+			MWC.Utilities.Errors.Trace.trace(pe, "Whilst import Wheel");
+			return null;
+		}
+	}
 
 }
-

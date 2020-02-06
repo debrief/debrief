@@ -4,16 +4,16 @@ package ASSET.Util.XML.Decisions;
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 import ASSET.Models.Decision.Movement.Wander;
@@ -25,105 +25,94 @@ import MWC.GenericData.WorldSpeed;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldSpeedHandler;
 
-abstract class WanderHandler extends CoreDecisionHandler
-{
+abstract class WanderHandler extends CoreDecisionHandler {
 
-  private final static String type = "Wander";
-  private final static String WANDER_SPEED = "Speed";
-  private final static String WANDER_HEIGHT = "Height";
-  private final static String WANDER_RANGE = "Range";
-  private final static String LOCATION_NAME = "Location";
+	private final static String type = "Wander";
+	private final static String WANDER_SPEED = "Speed";
+	private final static String WANDER_HEIGHT = "Height";
+	private final static String WANDER_RANGE = "Range";
+	private final static String LOCATION_NAME = "Location";
 
-  WorldLocation _myLocation;
-  WorldDistance _myRange;
-  WorldSpeed _mySpeed = null;
-  WorldDistance _myHeight = null;
+	static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc) {
+		// create ourselves
+		final org.w3c.dom.Element thisPart = doc.createElement(type);
 
-  public WanderHandler()
-  {
-    super(type);
+		// get data item
+		final Wander bb = (Wander) toExport;
 
+		// first output the parent bits
+		CoreDecisionHandler.exportThis(bb, thisPart, doc);
 
-    addHandler(new WorldSpeedHandler(WANDER_SPEED)
-    {
-      public void setSpeed(WorldSpeed res)
-      {
-        _mySpeed = res;
-      }
-    });
-    addHandler(new WorldDistanceHandler(WANDER_HEIGHT)
-    {
-      public void setWorldDistance(WorldDistance res)
-      {
-        _myHeight = res;
-      }
-    });
+		WorldDistanceHandler.exportDistance(WANDER_RANGE, bb.getRange(), thisPart, doc);
+		ASSETLocationHandler.exportLocation(bb.getOrigin(), LOCATION_NAME, thisPart, doc);
+		if (bb.getSpeed() != null)
+			WorldSpeedHandler.exportSpeed(WANDER_SPEED, bb.getSpeed(), thisPart, doc);
+		if (bb.getHeight() != null)
+			WorldDistanceHandler.exportDistance(WANDER_HEIGHT, bb.getHeight(), thisPart, doc);
 
-    addHandler(new ASSETLocationHandler(LOCATION_NAME)
-    {
-      public void setLocation(final WorldLocation res)
-      {
-        _myLocation = res;
-      }
-    });
-    addHandler(new WorldDistanceHandler(WANDER_RANGE)
-    {
-      public void setWorldDistance(WorldDistance res)
-      {
-        _myRange = res;
-      }
-    });
+		parent.appendChild(thisPart);
 
+	}
 
-  }
+	WorldLocation _myLocation;
+	WorldDistance _myRange;
+	WorldSpeed _mySpeed = null;
 
+	WorldDistance _myHeight = null;
 
-  public void elementClosed()
-  {
-    final Wander wr = new Wander(null);
+	public WanderHandler() {
+		super(type);
 
-    super.setAttributes(wr);
+		addHandler(new WorldSpeedHandler(WANDER_SPEED) {
+			@Override
+			public void setSpeed(final WorldSpeed res) {
+				_mySpeed = res;
+			}
+		});
+		addHandler(new WorldDistanceHandler(WANDER_HEIGHT) {
+			@Override
+			public void setWorldDistance(final WorldDistance res) {
+				_myHeight = res;
+			}
+		});
 
-    wr.setOrigin(_myLocation);
+		addHandler(new ASSETLocationHandler(LOCATION_NAME) {
+			@Override
+			public void setLocation(final WorldLocation res) {
+				_myLocation = res;
+			}
+		});
+		addHandler(new WorldDistanceHandler(WANDER_RANGE) {
+			@Override
+			public void setWorldDistance(final WorldDistance res) {
+				_myRange = res;
+			}
+		});
 
-    wr.setRange(_myRange);
-    if (_myHeight != null)
-      wr.setHeight(_myHeight);
-    if (_mySpeed != null)
-      wr.setSpeed(_mySpeed);
+	}
 
-    setModel(wr);
+	@Override
+	public void elementClosed() {
+		final Wander wr = new Wander(null);
 
-    _myHeight = null;
-    _mySpeed = null;
+		super.setAttributes(wr);
 
-  }
+		wr.setOrigin(_myLocation);
 
-  abstract public void setModel(ASSET.Models.DecisionType dec);
+		wr.setRange(_myRange);
+		if (_myHeight != null)
+			wr.setHeight(_myHeight);
+		if (_mySpeed != null)
+			wr.setSpeed(_mySpeed);
 
-  static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
-                                final org.w3c.dom.Document doc)
-  {
-    // create ourselves
-    final org.w3c.dom.Element thisPart = doc.createElement(type);
+		setModel(wr);
 
-    // get data item
-    final Wander bb = (Wander) toExport;
+		_myHeight = null;
+		_mySpeed = null;
 
-    // first output the parent bits
-    CoreDecisionHandler.exportThis(bb, thisPart, doc);
+	}
 
-
-    WorldDistanceHandler.exportDistance(WANDER_RANGE, bb.getRange(), thisPart, doc);
-    ASSETLocationHandler.exportLocation(bb.getOrigin(), LOCATION_NAME, thisPart, doc);
-    if (bb.getSpeed() != null)
-      WorldSpeedHandler.exportSpeed(WANDER_SPEED, bb.getSpeed(), thisPart, doc);
-    if (bb.getHeight() != null)
-      WorldDistanceHandler.exportDistance(WANDER_HEIGHT, bb.getHeight(), thisPart, doc);
-
-    parent.appendChild(thisPart);
-
-  }
-
+	abstract public void setModel(ASSET.Models.DecisionType dec);
 
 }

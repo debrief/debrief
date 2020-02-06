@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: AWTAnalysisView.java,v $
@@ -103,170 +103,153 @@
 //
 //
 
-
 package Debrief.GUI.Views.AWT;
 
-import java.awt.*;
+import java.awt.Canvas;
+import java.awt.Label;
+import java.awt.Panel;
 
 import Debrief.GUI.Frames.Session;
 import Debrief.GUI.Frames.AWT.AWTSession;
 import Debrief.GUI.Views.AnalysisView;
 import MWC.GUI.ToolParent;
+import MWC.GUI.Toolbar;
 import MWC.GUI.Chart.AWT.AWTChart;
 import MWC.GUI.Properties.AWT.AWTPropertiesPanel;
-import MWC.GUI.SplitPanel.*;
+import MWC.GUI.SplitPanel.PaneConstraints;
+import MWC.GUI.SplitPanel.SplitPanel;
 import MWC.GUI.TabPanel.AWTTabPanel;
 import MWC.GUI.Tools.AWT.AWTToolbar;
 import MWC.GUI.Tools.Chart.AWT.AWTCursorPosition;
 
-/** AWT implementation of analysis view
+/**
+ * AWT implementation of analysis view
  */
 public final class AWTAnalysisView extends AnalysisView {
 
-  ///////////////////////////////////////////////
-  // member variables
-  ///////////////////////////////////////////////
+	///////////////////////////////////////////////
+	// member variables
+	///////////////////////////////////////////////
 
-  /** the whole of the panel we are contained in
-   */
-  private SplitPanel _thePanel;
+	/**
+	 * the whole of the panel we are contained in
+	 */
+	private SplitPanel _thePanel;
 
-  /** the left-hand pane which contains the toolbar and message window
-   */
-  private SplitPanel _theInfoPanel;
+	/**
+	 * the left-hand pane which contains the toolbar and message window
+	 */
+	private SplitPanel _theInfoPanel;
 
-  /** the toolbar in the info panel
-   */
-  protected Panel _theToolbar;
+	/**
+	 * the toolbar in the info panel
+	 */
+	protected Panel _theToolbar;
 
-  /** the zoom display in the info panel
-   */
-  protected Panel _theOverview;
+	/**
+	 * the zoom display in the info panel
+	 */
+	protected Panel _theOverview;
 
-  /** the tote/properties panel
-   */
-  protected AWTTabPanel _theProperties;
+	/**
+	 * the tote/properties panel
+	 */
+	protected AWTTabPanel _theProperties;
 
-  /** the status bar at the foot of the page
-   */
-  private MWC.GUI.AWT.AWTStatusBar _theStatusBar;
+	/**
+	 * the status bar at the foot of the page
+	 */
+	private MWC.GUI.AWT.AWTStatusBar _theStatusBar;
 
-  ///////////////////////////////////////////////
-  // constructor
-  ///////////////////////////////////////////////
-  public AWTAnalysisView(final ToolParent theParent, final AWTSession theSession){
-    super(theParent, theSession);
+	///////////////////////////////////////////////
+	// constructor
+	///////////////////////////////////////////////
+	public AWTAnalysisView(final ToolParent theParent, final AWTSession theSession) {
+		super(theParent, theSession);
 
-    // create the GUI
-    initForm(theSession);
+		// create the GUI
+		initForm(theSession);
 
-    // now build the toolbar
-    buildTheInterface();
+		// now build the toolbar
+		buildTheInterface();
 
-    // force the panel to do a layout
-    _thePanel.doLayout();
+		// force the panel to do a layout
+		_thePanel.doLayout();
 
-  }
+	}
 
-  ///////////////////////////////////////////////
-  // member functions
-  ///////////////////////////////////////////////
+	///////////////////////////////////////////////
+	// member functions
+	///////////////////////////////////////////////
 
-  /** return the AWT panel we are contained in
-   */
-  public final java.awt.Component getPanel(){
-    return _thePanel;
-  }
+	/**
+	 * return the AWT panel we are contained in
+	 */
+	public final java.awt.Component getPanel() {
+		return _thePanel;
+	}
 
-  /** layout the controls within our panel
-   */
-  private void initForm(final Session theSession){
-    // create the panel
-    _thePanel = new SplitPanel();
+	/**
+	 * layout the controls within our panel
+	 */
+	private void initForm(final Session theSession) {
+		// create the panel
+		_thePanel = new SplitPanel();
 
-    // create the main components of the panel
-    final AWTChart _theChart = new AWTChart(theSession.getData());
-    final AWTToolbar _theToolbar1 = new AWTToolbar(AWTToolbar.VERTICAL);
-    final AWTPropertiesPanel _theProperties1 = new AWTPropertiesPanel(theSession.getUndoBuffer(),
-                                                               super.getParent());
-    final Debrief.GUI.Tote.AWT.AWTTote _theTote = new
-       Debrief.GUI.Tote.AWT.AWTTote(_theProperties1, theSession.getData(), getParent());
-    _theProperties1.addTabPanel("Tote", true, _theTote.getPanel());
+		// create the main components of the panel
+		final AWTChart _theChart = new AWTChart(theSession.getData());
+		final AWTToolbar _theToolbar1 = new AWTToolbar(Toolbar.VERTICAL);
+		final AWTPropertiesPanel _theProperties1 = new AWTPropertiesPanel(theSession.getUndoBuffer(),
+				super.getParent());
+		final Debrief.GUI.Tote.AWT.AWTTote _theTote = new Debrief.GUI.Tote.AWT.AWTTote(_theProperties1,
+				theSession.getData(), getParent());
+		_theProperties1.addTabPanel("Tote", true, _theTote.getPanel());
 
-    final Debrief.GUI.Tote.Painters.TotePainter sp
-      = new Debrief.GUI.Tote.Painters.SnailPainter(_theChart,
-                                                  theSession.getData(),
-																									_theTote);
+		final Debrief.GUI.Tote.Painters.TotePainter sp = new Debrief.GUI.Tote.Painters.SnailPainter(_theChart,
+				theSession.getData(), _theTote);
 
-    final Debrief.GUI.Tote.Painters.TotePainter tp
-      = new Debrief.GUI.Tote.Painters.TotePainter(_theChart,
-                                                  theSession.getData(),
-																									_theTote);
+		final Debrief.GUI.Tote.Painters.TotePainter tp = new Debrief.GUI.Tote.Painters.TotePainter(_theChart,
+				theSession.getData(), _theTote);
 
-		final Debrief.GUI.Tote.Painters.RelativePainter  rp  =
-			new Debrief.GUI.Tote.Painters.RelativePainter(getChart(),
-			theSession.getData(),
-			getTote());
+		final Debrief.GUI.Tote.Painters.RelativePainter rp = new Debrief.GUI.Tote.Painters.RelativePainter(getChart(),
+				theSession.getData(), getTote());
 
-
-
-    final Debrief.GUI.Tote.Painters.PainterManager pm =
-		  new Debrief.GUI.Tote.Painters.PainterManager(_theTote.getStepper());
+		final Debrief.GUI.Tote.Painters.PainterManager pm = new Debrief.GUI.Tote.Painters.PainterManager(
+				_theTote.getStepper());
 		pm.addPainter(sp);
 		pm.addPainter(tp);
 		pm.addPainter(rp);
 		pm.setCurrentListener(tp);
 
-    _theStatusBar = new MWC.GUI.AWT.AWTStatusBar(_theProperties1, getParent());
+		_theStatusBar = new MWC.GUI.AWT.AWTStatusBar(_theProperties1, getParent());
 
-    // and configure the tote
-    final Label cursorPos = new Label("000 00 00.00 N 000 00 00.00W");
+		// and configure the tote
+		final Label cursorPos = new Label("000 00 00.00 N 000 00 00.00W");
 //    _theTote.getStatus().add(cursorPos);
-    _theChart.addCursorMovedListener(new AWTCursorPosition(_theChart, cursorPos));
+		_theChart.addCursorMovedListener(new AWTCursorPosition(_theChart, cursorPos));
 
-    // inform the parent of the components
-    setToolbar(_theToolbar1);
-    setChart(_theChart);
-    setProperties(_theProperties1);
-    setTote(_theTote);
-    setStatusBar(_theStatusBar);
+		// inform the parent of the components
+		setToolbar(_theToolbar1);
+		setChart(_theChart);
+		setProperties(_theProperties1);
+		setTote(_theTote);
+		setStatusBar(_theStatusBar);
 
-    // now create the utility holders we are using
-    _theInfoPanel = new SplitPanel();
+		// now create the utility holders we are using
+		_theInfoPanel = new SplitPanel();
 
-    // now insert the items
-    _thePanel.add((Canvas)_theChart.getCanvas(),
-                  new PaneConstraints("chart",
-                                      null,
-                                      PaneConstraints.ROOT,
-                                      1.0f));
+		// now insert the items
+		_thePanel.add((Canvas) _theChart.getCanvas(), new PaneConstraints("chart", null, PaneConstraints.ROOT, 1.0f));
 
-    _thePanel.add(_theInfoPanel,
-        new PaneConstraints("infoPanel",
-                            "chart",
-                            PaneConstraints.LEFT,
-                            0.3f));
+		_thePanel.add(_theInfoPanel, new PaneConstraints("infoPanel", "chart", PaneConstraints.LEFT, 0.3f));
 
-    _thePanel.add(_theStatusBar,
-        new PaneConstraints("statusBar",
-                            "chart",
-                            PaneConstraints.BOTTOM,
-                            0.1f));
+		_thePanel.add(_theStatusBar, new PaneConstraints("statusBar", "chart", PaneConstraints.BOTTOM, 0.1f));
 
+		_theInfoPanel.add(_theToolbar1, new PaneConstraints("toolbar", "", PaneConstraints.ROOT, 1.0f));
+		_theInfoPanel.add(_theProperties1, new PaneConstraints("properties", "toolbar", PaneConstraints.BOTTOM, 0.7f));
 
-    _theInfoPanel.add(_theToolbar1,
-                      new PaneConstraints("toolbar",
-                                          "",
-                                          PaneConstraints.ROOT,
-                                          1.0f));
-    _theInfoPanel.add(_theProperties1,
-                      new PaneConstraints("properties",
-                                          "toolbar",
-                                          PaneConstraints.BOTTOM,
-                                          0.7f));
-
-    // adjust layout
-    _thePanel.doLayout();
-  }
+		// adjust layout
+		_thePanel.doLayout();
+	}
 
 }

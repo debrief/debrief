@@ -8,12 +8,8 @@ import java.util.Set;
 
 import org.mwc.debrief.dis.listeners.IDISFixListener;
 
-public class TestFixListener implements IDISFixListener
-{
-	HashMap<Long, List<TestFixListener.Item>> _items = new HashMap<Long, List<TestFixListener.Item>>();
-
-	public static class Item
-	{
+public class TestFixListener implements IDISFixListener {
+	public static class Item {
 		public long _id;
 		public long _time;
 		public double _lat;
@@ -23,21 +19,13 @@ public class TestFixListener implements IDISFixListener
 		public double _speed;
 	}
 
-	public Map<Long, List<TestFixListener.Item>> getData()
-	{
-		return _items;
-	}
-
-	public Set<Long> getTracks()
-	{
-		return _items.keySet();
-	}
+	HashMap<Long, List<TestFixListener.Item>> _items = new HashMap<Long, List<TestFixListener.Item>>();
 
 	@Override
-	public void add(long time, short exerciseId, long id, String eName,
-			short force, short kind, short domain, short category, boolean isHighlighted, double dLat, double dLong, double depth, double courseDegs, double speedMS, final int damage)
-	{
-		TestFixListener.Item newI = new Item();
+	public void add(final long time, final short exerciseId, final long id, final String eName, final short force,
+			final short kind, final short domain, final short category, final boolean isHighlighted, final double dLat,
+			final double dLong, final double depth, final double courseDegs, final double speedMS, final int damage) {
+		final TestFixListener.Item newI = new Item();
 		newI._id = id;
 		newI._time = time;
 		newI._lat = dLat;
@@ -45,18 +33,24 @@ public class TestFixListener implements IDISFixListener
 		newI._depth = depth;
 		newI._course = courseDegs;
 		newI._speed = speedMS;
-		
-		
+
 		System.out.println("id:" + id);
 
 		List<TestFixListener.Item> thisL = _items.get(id);
-		if (thisL == null)
-		{
+		if (thisL == null) {
 			thisL = new ArrayList<TestFixListener.Item>();
 			_items.put(id, thisL);
 		}
 
 		thisL.add(newI);
+	}
+
+	public Map<Long, List<TestFixListener.Item>> getData() {
+		return _items;
+	}
+
+	public Set<Long> getTracks() {
+		return _items.keySet();
 	}
 
 }

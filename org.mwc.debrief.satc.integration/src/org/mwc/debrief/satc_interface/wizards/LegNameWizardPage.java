@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.debrief.satc_interface.wizards;
@@ -32,32 +32,23 @@ import MWC.GenericData.WorldLocation;
  * OR with the extension that matches the expected one (xml).
  */
 
-public class LegNameWizardPage extends CoreEditableWizardPage
-{
+public class LegNameWizardPage extends CoreEditableWizardPage {
 
-	public static class NameHolder implements Plottable
-	{
+	public static class NameHolder implements Plottable {
 		private String _name = "Pending";
 
-		public String getName()
-		{
-			return _name;
-		}
-
-		public void setName(String name)
-		{
-			_name = name;
+		@Override
+		public int compareTo(final Plottable arg0) {
+			return 0;
 		}
 
 		@Override
-		public boolean hasEditor()
-		{
-			return false;
+		public WorldArea getBounds() {
+			return null;
 		}
 
 		@Override
-		public EditorType getInfo()
-		{
+		public EditorType getInfo() {
 			return null;
 			// if (_myEditor == null)
 			// _myEditor = new NameInfo(this);
@@ -66,75 +57,68 @@ public class LegNameWizardPage extends CoreEditableWizardPage
 		}
 
 		@Override
-		public int compareTo(Plottable arg0)
-		{
-			return 0;
+		public String getName() {
+			return _name;
 		}
 
 		@Override
-		public void paint(CanvasType dest)
-		{
-
-		}
-
-		@Override
-		public WorldArea getBounds()
-		{
-			return null;
-		}
-
-		@Override
-		public boolean getVisible()
-		{
+		public boolean getVisible() {
 			return false;
 		}
 
 		@Override
-		public void setVisible(boolean val)
-		{
+		public boolean hasEditor() {
+			return false;
+		}
+
+		@Override
+		public void paint(final CanvasType dest) {
 
 		}
 
 		@Override
-		public double rangeFrom(WorldLocation other)
-		{
+		public double rangeFrom(final WorldLocation other) {
 			return 0;
+		}
+
+		public void setName(final String name) {
+			_name = name;
+		}
+
+		@Override
+		public void setVisible(final boolean val) {
+
 		}
 
 	}
 
-	@Override
-	public String getName()
-	{
-		return _editable.getName();
-	}
-
 	/**
 	 * Constructor for SampleNewWizardPage.
-	 * 
+	 *
 	 * @param pageName
 	 */
-	public LegNameWizardPage(final ISelection selection)
-	{
-		super(selection, "namePage", "Set Leg Name",
-				"Please provide a name for this leg",
-				"images/scale_wizard.gif", null, false, null);
+	public LegNameWizardPage(final ISelection selection) {
+		super(selection, "namePage", "Set Leg Name", "Please provide a name for this leg", "images/scale_wizard.gif",
+				null, false, null);
 	}
 
 	@Override
-	protected Editable createMe()
-	{
+	protected Editable createMe() {
 		if (_editable == null)
 			_editable = new NameHolder();
 
 		return _editable;
 	}
 
-	public PropertyDescriptor[] getPropertyDescriptors()
-	{
+	@Override
+	public String getName() {
+		return _editable.getName();
+	}
 
-		final PropertyDescriptor[] res =
-		{ prop("Name", "the name for this leg", getEditable()) };
+	@Override
+	public PropertyDescriptor[] getPropertyDescriptors() {
+
+		final PropertyDescriptor[] res = { prop("Name", "the name for this leg", getEditable()) };
 
 		return res;
 

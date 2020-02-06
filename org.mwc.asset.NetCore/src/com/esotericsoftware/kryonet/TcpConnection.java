@@ -1,20 +1,24 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
-
 package com.esotericsoftware.kryonet;
+
+import static com.esotericsoftware.minlog.Log.DEBUG;
+import static com.esotericsoftware.minlog.Log.TRACE;
+import static com.esotericsoftware.minlog.Log.debug;
+import static com.esotericsoftware.minlog.Log.trace;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -30,8 +34,6 @@ import com.esotericsoftware.kryo.Context;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.SerializationException;
 import com.esotericsoftware.kryo.serialize.IntSerializer;
-
-import static com.esotericsoftware.minlog.Log.*;
 
 /**
  * @author Nathan Sweet <misc@n4te.com>
@@ -52,7 +54,7 @@ class TcpConnection {
 	private long lastWriteTime;
 	private long lastReadTime;
 
-	public TcpConnection (Kryo kryo, int writeBufferSize, int objectBufferSize) {
+	public TcpConnection(final Kryo kryo, final int writeBufferSize, final int objectBufferSize) {
 		this.kryo = kryo;
 		writeBuffer = ByteBuffer.allocate(writeBufferSize);
 		tempWriteBuffer = ByteBuffer.allocate(objectBufferSize);
@@ -60,37 +62,52 @@ class TcpConnection {
 		readBuffer.flip();
 	}
 
-	public SelectionKey accept (Selector selector, SocketChannel socketChannel) throws IOException {
+	public SelectionKey accept(final Selector selector, final SocketChannel socketChannel) throws IOException {
 		try {
 			this.socketChannel = socketChannel;
 			socketChannel.configureBlocking(false);
-			Socket socket = socketChannel.socket();
+			final Socket socket = socketChannel.socket();
 			socket.setTcpNoDelay(true);
 
 			selectionKey = socketChannel.register(selector, SelectionKey.OP_READ);
 
 			if (DEBUG) {
 				debug("kryonet", "Port " + socketChannel.socket().getLocalPort() + "/TCP connected to: "
-					+ socketChannel.socket().getRemoteSocketAddress());
+						+ socketChannel.socket().getRemoteSocketAddress());
 			}
 
 			lastReadTime = lastWriteTime = System.currentTimeMillis();
 
 			return selectionKey;
-		} catch (IOException ex) {
+		} catch (final IOException ex) {
 			close();
 			throw ex;
 		}
 	}
 
-	public void connect (Selector selector, SocketAddress remoteAddress, int timeout) throws IOException {
+	public void close() {
+		try {
+			if (socketChannel != null) {
+				socketChannel.close();
+				socketChannel = null;
+				if (selectionKey != null)
+					selectionKey.selector().wakeup();
+			}
+		} catch (final IOException ex) {
+			if (DEBUG)
+				debug("kryonet", "Unable to close TCP connection.", ex);
+		}
+	}
+
+	public void connect(final Selector selector, final SocketAddress remoteAddress, final int timeout)
+			throws IOException {
 		close();
 		writeBuffer.clear();
 		readBuffer.clear();
 		readBuffer.flip();
 		try {
-			SocketChannel socketChannel = selector.provider().openSocketChannel();
-			Socket socket = socketChannel.socket();
+			final SocketChannel socketChannel = selector.provider().openSocketChannel();
+			final Socket socket = socketChannel.socket();
 			socket.setTcpNoDelay(true);
 			socket.setTrafficClass(IPTOS_LOWDELAY);
 			socket.connect(remoteAddress, timeout); // Connect using blocking mode for simplicity.
@@ -102,122 +119,113 @@ class TcpConnection {
 
 			if (DEBUG) {
 				debug("kryonet", "Port " + socketChannel.socket().getLocalPort() + "/TCP connected to: "
-					+ socketChannel.socket().getRemoteSocketAddress());
+						+ socketChannel.socket().getRemoteSocketAddress());
 			}
 
 			lastReadTime = lastWriteTime = System.currentTimeMillis();
-		} catch (IOException ex) {
+		} catch (final IOException ex) {
 			close();
-			IOException ioEx = new IOException("Unable to connect to: " + remoteAddress);
+			final IOException ioEx = new IOException("Unable to connect to: " + remoteAddress);
 			ioEx.initCause(ex);
 			throw ioEx;
 		}
 	}
 
-	public Object readObject (Connection connection) throws IOException {
-		SocketChannel socketChannel = this.socketChannel;
-		if (socketChannel == null) throw new SocketException("Connection is closed.");
+	public boolean isTimedOut(final long time) {
+		return socketChannel != null && timeoutMillis > 0 && time - lastReadTime > timeoutMillis;
+	}
+
+	public boolean needsKeepAlive(final long time) {
+		return socketChannel != null && keepAliveMillis > 0 && time - lastWriteTime > keepAliveMillis;
+	}
+
+	public Object readObject(final Connection connection) throws IOException {
+		final SocketChannel socketChannel = this.socketChannel;
+		if (socketChannel == null)
+			throw new SocketException("Connection is closed.");
 
 		if (currentObjectLength == 0) {
 			// Read the length of the next object from the socket.
 			if (!IntSerializer.canRead(readBuffer, true)) {
 				readBuffer.compact();
-				int bytesRead = socketChannel.read(readBuffer);
+				final int bytesRead = socketChannel.read(readBuffer);
 				readBuffer.flip();
-				if (bytesRead == -1) throw new SocketException("Connection is closed.");
+				if (bytesRead == -1)
+					throw new SocketException("Connection is closed.");
 				lastReadTime = System.currentTimeMillis();
 
-				if (!IntSerializer.canRead(readBuffer, true)) return null;
+				if (!IntSerializer.canRead(readBuffer, true))
+					return null;
 			}
 			currentObjectLength = IntSerializer.get(readBuffer, true);
 
-			if (currentObjectLength <= 0) throw new SerializationException("Invalid object length: " + currentObjectLength);
+			if (currentObjectLength <= 0)
+				throw new SerializationException("Invalid object length: " + currentObjectLength);
 			if (currentObjectLength > readBuffer.capacity())
-				throw new SerializationException("Unable to read object larger than read buffer: " + currentObjectLength);
+				throw new SerializationException(
+						"Unable to read object larger than read buffer: " + currentObjectLength);
 		}
 
-		int length = currentObjectLength;
+		final int length = currentObjectLength;
 		if (readBuffer.remaining() < length) {
 			// Read the bytes for the next object from the socket.
 			readBuffer.compact();
-			int bytesRead = socketChannel.read(readBuffer);
+			final int bytesRead = socketChannel.read(readBuffer);
 			readBuffer.flip();
-			if (bytesRead == -1) throw new SocketException("Connection is closed.");
+			if (bytesRead == -1)
+				throw new SocketException("Connection is closed.");
 			lastReadTime = System.currentTimeMillis();
 
-			if (readBuffer.remaining() < length) return null;
+			if (readBuffer.remaining() < length)
+				return null;
 		}
 		currentObjectLength = 0;
 
-		int startPosition = readBuffer.position();
-		int oldLimit = readBuffer.limit();
+		final int startPosition = readBuffer.position();
+		final int oldLimit = readBuffer.limit();
 		readBuffer.limit(startPosition + length);
 
-		Context context = Kryo.getContext();
+		final Context context = Kryo.getContext();
 		context.put("connection", connection);
 		context.setRemoteEntityID(connection.id);
-		Object object = kryo.readClassAndObject(readBuffer);
+		final Object object = kryo.readClassAndObject(readBuffer);
 
 		readBuffer.limit(oldLimit);
 		if (readBuffer.position() - startPosition != length)
-			throw new SerializationException("Incorrect number of bytes (" + (startPosition + length - readBuffer.position())
-				+ " remaining) used to deserialize object: " + object);
+			throw new SerializationException(
+					"Incorrect number of bytes (" + (startPosition + length - readBuffer.position())
+							+ " remaining) used to deserialize object: " + object);
 
 		return object;
-	}
-
-	public void writeOperation () throws IOException {
-		synchronized (writeLock) {
-			writeBuffer.flip();
-			if (writeToSocket(writeBuffer)) {
-				// Write successful, clear OP_WRITE.
-				selectionKey.interestOps(SelectionKey.OP_READ);
-			}
-			writeBuffer.compact();
-		}
-	}
-
-	private boolean writeToSocket (ByteBuffer buffer) throws IOException {
-		SocketChannel socketChannel = this.socketChannel;
-		if (socketChannel == null) throw new SocketException("Connection is closed.");
-
-		while (buffer.hasRemaining()) {
-			if (bufferPositionFix) {
-				buffer.compact();
-				buffer.flip();
-			}
-			if (socketChannel.write(buffer) == 0) break;
-		}
-
-		lastWriteTime = System.currentTimeMillis();
-		return !buffer.hasRemaining();
 	}
 
 	/**
 	 * This method is thread safe.
 	 */
-	public int send (Connection connection, Object object) throws IOException {
-		SocketChannel socketChannel = this.socketChannel;
-		if (socketChannel == null) throw new SocketException("Connection is closed.");
+	public int send(final Connection connection, final Object object) throws IOException {
+		final SocketChannel socketChannel = this.socketChannel;
+		if (socketChannel == null)
+			throw new SocketException("Connection is closed.");
 		synchronized (writeLock) {
 			tempWriteBuffer.clear();
 			tempWriteBuffer.position(5); // Allow room for the data length.
 
 			// Write data.
-			Context context = Kryo.getContext();
+			final Context context = Kryo.getContext();
 			context.put("connection", connection);
 			context.setRemoteEntityID(connection.id);
 			try {
 				kryo.writeClassAndObject(tempWriteBuffer, object);
-			} catch (SerializationException ex) {
-				throw new SerializationException("Unable to serialize object of type: " + object.getClass().getName(), ex);
+			} catch (final SerializationException ex) {
+				throw new SerializationException("Unable to serialize object of type: " + object.getClass().getName(),
+						ex);
 			}
 			tempWriteBuffer.flip();
 
 			// Write data length.
-			int dataLength = tempWriteBuffer.limit() - 5;
-			int lengthLength = IntSerializer.length(dataLength, true);
-			int start = 5 - lengthLength;
+			final int dataLength = tempWriteBuffer.limit() - 5;
+			final int lengthLength = IntSerializer.length(dataLength, true);
+			final int start = 5 - lengthLength;
 			tempWriteBuffer.position(start);
 			IntSerializer.put(tempWriteBuffer, dataLength, true);
 			tempWriteBuffer.position(start);
@@ -232,13 +240,13 @@ class TcpConnection {
 					// Set OP_WRITE to be notified when more writing can occur.
 					selectionKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
 				}
-			} catch (BufferOverflowException ex) {
+			} catch (final BufferOverflowException ex) {
 				throw new SerializationException(
-					"Write buffer limit exceeded writing object of type: " + object.getClass().getName(), ex);
+						"Write buffer limit exceeded writing object of type: " + object.getClass().getName(), ex);
 			}
 
 			if (DEBUG || TRACE) {
-				float percentage = writeBuffer.position() / (float)writeBuffer.capacity();
+				final float percentage = writeBuffer.position() / (float) writeBuffer.capacity();
 				if (DEBUG && percentage > 0.75f)
 					debug("kryonet", connection + " TCP write buffer is approaching capacity: " + percentage + "%");
 				else if (TRACE && percentage > 0.25f)
@@ -251,23 +259,32 @@ class TcpConnection {
 		}
 	}
 
-	public void close () {
-		try {
-			if (socketChannel != null) {
-				socketChannel.close();
-				socketChannel = null;
-				if (selectionKey != null) selectionKey.selector().wakeup();
+	public void writeOperation() throws IOException {
+		synchronized (writeLock) {
+			writeBuffer.flip();
+			if (writeToSocket(writeBuffer)) {
+				// Write successful, clear OP_WRITE.
+				selectionKey.interestOps(SelectionKey.OP_READ);
 			}
-		} catch (IOException ex) {
-			if (DEBUG) debug("kryonet", "Unable to close TCP connection.", ex);
+			writeBuffer.compact();
 		}
 	}
 
-	public boolean needsKeepAlive (long time) {
-		return socketChannel != null && keepAliveMillis > 0 && time - lastWriteTime > keepAliveMillis;
-	}
+	private boolean writeToSocket(final ByteBuffer buffer) throws IOException {
+		final SocketChannel socketChannel = this.socketChannel;
+		if (socketChannel == null)
+			throw new SocketException("Connection is closed.");
 
-	public boolean isTimedOut (long time) {
-		return socketChannel != null && timeoutMillis > 0 && time - lastReadTime > timeoutMillis;
+		while (buffer.hasRemaining()) {
+			if (bufferPositionFix) {
+				buffer.compact();
+				buffer.flip();
+			}
+			if (socketChannel.write(buffer) == 0)
+				break;
+		}
+
+		lastWriteTime = System.currentTimeMillis();
+		return !buffer.hasRemaining();
 	}
 }

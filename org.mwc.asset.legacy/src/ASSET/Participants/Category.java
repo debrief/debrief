@@ -1,59 +1,28 @@
 
 package ASSET.Participants;
 
-import java.awt.*;
+import java.awt.Color;
 
 import MWC.GUI.Properties.DebriefColors;
-
 import junit.framework.TestCase;
 
 /*******************************************************************************
- * Debrief - the Open Source Maritime Analysis Application
- * http://debrief.info
- *  
+ * Debrief - the Open Source Maritime Analysis Application http://debrief.info
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the Eclipse Public License v1.0
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
-public class Category implements java.io.Serializable
-{
+public class Category implements java.io.Serializable {
 
-	/**
-	 * the serializable id of this type
-	 */
-	private static final long serialVersionUID = 33;
-
-	@Override
-	public boolean equals(Object arg0)
-	{
-		return this.hashCode() == arg0.hashCode();
-	}
-
-	@Override
-	public int hashCode()
-	{
-		return environment.hashCode() * force.hashCode() * type.hashCode();
-	}
-
-	public interface Force
-	{
-		/**
-		 * force
-		 */
-		static public final String RED = "RED";
-		static public final String BLUE = "BLUE";
-		public static final String GREEN = "GREEN";
-	}
-
-	public interface Environment
-	{
+	public interface Environment {
 		/**
 		 * environment
 		 */
@@ -63,8 +32,35 @@ public class Category implements java.io.Serializable
 		public static final String CROSS = "CROSS";
 	}
 
-	public interface Type
-	{
+	/**
+	 * and here's how to test it
+	 *
+	 * @author ianmayo
+	 *
+	 */
+	public static class EqualityTest extends TestCase {
+		public void testEquals() {
+			final Category catOne = new Category(Force.BLUE, Environment.SURFACE, Type.FRIGATE);
+			final Category catTwo = new Category(Force.RED, Environment.SURFACE, Type.FRIGATE);
+			final Category catThree = new Category(Force.BLUE, Environment.SURFACE, Type.FRIGATE);
+
+			assertNotSame("not equal", catOne, catTwo);
+			assertTrue(" equal", catOne.equals(catThree));
+			assertTrue(" equal", catThree.equals(catOne));
+			assertFalse(" equal", catOne.equals(catTwo));
+		}
+	}
+
+	public interface Force {
+		/**
+		 * force
+		 */
+		static public final String RED = "RED";
+		static public final String BLUE = "BLUE";
+		public static final String GREEN = "GREEN";
+	}
+
+	public interface Type {
 
 		/**
 		 * submarine types
@@ -96,115 +92,51 @@ public class Category implements java.io.Serializable
 	}
 
 	/**
+	 * the serializable id of this type
+	 */
+	private static final long serialVersionUID = 33;
+
+	/**
 	 * the lists of objects
 	 */
 	static private java.util.Vector<String> _forces;
+
 	static private java.util.Vector<String> _environments;
 	static private java.util.Vector<String> _types;
 
-	/**
-	 * our local objects
-	 */
-	private String type;
-	private String environment;
-	private String force;
+	static public String checkEnv(final String val) {
+		String res = null;
 
-	// ////////////////////////////////////////////////////////////////////
-	// constructors
-	// ////////////////////////////////////////////////////////////////////
-	public Category(final String force, final String environment,
-			final String type)
-	{
-		setForce(force);
-		setType(type);
-		setEnvironment(environment);
+		final java.util.Iterator<String> it = getEnvironments().iterator();
+		while (it.hasNext()) {
+			final String thisC = it.next();
+			if (thisC.equals(val)) {
+				res = thisC;
+				break;
+			}
+
+		}
+		return res;
 	}
 
-	public Category()
-	{
-	}
+	static public String checkForce(final String val) {
+		String res = null;
 
-	// ////////////////////////////////////////////////////////////////////
-	// property getter/setters
-	// ////////////////////////////////////////////////////////////////////
+		final java.util.Iterator<String> it = getForces().iterator();
+		while (it.hasNext()) {
+			final String thisC = it.next();
+			if (thisC.equals(val)) {
+				res = thisC;
+				break;
+			}
 
-	public String getType()
-	{
-		return type;
-	}
-
-	public void setType(final String newType)
-	{
-		type = newType;
-	}
-
-	public void setEnvironment(final String newEnvironment)
-	{
-		environment = newEnvironment;
-	}
-
-	public String getEnvironment()
-	{
-		return environment;
-	}
-
-	public void setForce(final String newForce)
-	{
-		force = newForce;
-	}
-
-	public String getForce()
-	{
-		return force;
-	}
-
-	public boolean isA(final String type1)
-	{
-		final boolean res;
-
-		if ((getType() == type1) || (getForce() == type1)
-				|| (getEnvironment() == type1))
-			res = true;
-		else
-			res = false;
+		}
 
 		return res;
 	}
 
-	public String toString()
-	{
-		return "Category force:" + getForce() + " type:" + getType() + " env:"
-				+ getEnvironment();
-	}
-
-	public String toShortString()
-	{
-		return getForce() + " " + getType().substring(0, 4) + " "
-				+ getEnvironment().substring(0, 3);
-	}
-
-	static public java.util.Vector<String> getTypes()
-	{
-		checkLists();
-		return _types;
-	}
-
-	static public java.util.Vector<String> getForces()
-	{
-		checkLists();
-		return _forces;
-	}
-
-	static public java.util.Vector<String> getEnvironments()
-	{
-		checkLists();
-		return _environments;
-	}
-
-	static synchronized private void checkLists()
-	{
-		if (_types == null)
-		{
+	static synchronized private void checkLists() {
+		if (_types == null) {
 			_forces = new java.util.Vector<String>(3, 1);
 			_forces.addElement(Force.RED);
 			_forces.addElement(Force.GREEN);
@@ -235,53 +167,13 @@ public class Category implements java.io.Serializable
 		}
 	}
 
-	static public String checkEnv(final String val)
-	{
-		String res = null;
-
-		final java.util.Iterator<String> it = getEnvironments().iterator();
-		while (it.hasNext())
-		{
-			final String thisC = (String) it.next();
-			if (thisC.equals(val))
-			{
-				res = thisC;
-				break;
-			}
-
-		}
-		return res;
-	}
-
-	static public String checkForce(final String val)
-	{
-		String res = null;
-
-		final java.util.Iterator<String> it = getForces().iterator();
-		while (it.hasNext())
-		{
-			final String thisC = (String) it.next();
-			if (thisC.equals(val))
-			{
-				res = thisC;
-				break;
-			}
-
-		}
-
-		return res;
-	}
-
-	static public String checkType(final String val)
-	{
+	static public String checkType(final String val) {
 		String res = null;
 
 		final java.util.Iterator<String> it = getTypes().iterator();
-		while (it.hasNext())
-		{
-			final String thisC = (String) it.next();
-			if (thisC.equals(val))
-			{
+		while (it.hasNext()) {
+			final String thisC = it.next();
+			if (thisC.equals(val)) {
 				res = thisC;
 				break;
 			}
@@ -290,8 +182,11 @@ public class Category implements java.io.Serializable
 		return res;
 	}
 
-	private static Color getColorFor(final String category)
-	{
+	static public Color getColorFor(final Category theCategory) {
+		return getColorFor(theCategory.getForce());
+	}
+
+	private static Color getColorFor(final String category) {
 		if (category.equals(ASSET.Participants.Category.Force.RED))
 			return DebriefColors.RED;
 		else if (category.equals(ASSET.Participants.Category.Force.BLUE))
@@ -300,32 +195,97 @@ public class Category implements java.io.Serializable
 			return DebriefColors.GREEN;
 	}
 
-	static public Color getColorFor(final Category theCategory)
-	{
-		return getColorFor(theCategory.getForce());
+	// ////////////////////////////////////////////////////////////////////
+	// property getter/setters
+	// ////////////////////////////////////////////////////////////////////
+
+	static public java.util.Vector<String> getEnvironments() {
+		checkLists();
+		return _environments;
+	}
+
+	static public java.util.Vector<String> getForces() {
+		checkLists();
+		return _forces;
+	}
+
+	static public java.util.Vector<String> getTypes() {
+		checkLists();
+		return _types;
 	}
 
 	/**
-	 * and here's how to test it
-	 * 
-	 * @author ianmayo
-	 * 
+	 * our local objects
 	 */
-	public static class EqualityTest extends TestCase
-	{
-		public void testEquals()
-		{
-			Category catOne = new Category(Force.BLUE, Environment.SURFACE,
-					Type.FRIGATE);
-			Category catTwo = new Category(Force.RED, Environment.SURFACE,
-					Type.FRIGATE);
-			Category catThree = new Category(Force.BLUE, Environment.SURFACE,
-					Type.FRIGATE);
+	private String type;
 
-			assertNotSame("not equal", catOne, catTwo);
-			assertTrue(" equal", catOne.equals(catThree));
-			assertTrue(" equal", catThree.equals(catOne));
-			assertFalse(" equal", catOne.equals(catTwo));
-		}
+	private String environment;
+
+	private String force;
+
+	public Category() {
+	}
+
+	// ////////////////////////////////////////////////////////////////////
+	// constructors
+	// ////////////////////////////////////////////////////////////////////
+	public Category(final String force, final String environment, final String type) {
+		setForce(force);
+		setType(type);
+		setEnvironment(environment);
+	}
+
+	@Override
+	public boolean equals(final Object arg0) {
+		return this.hashCode() == arg0.hashCode();
+	}
+
+	public String getEnvironment() {
+		return environment;
+	}
+
+	public String getForce() {
+		return force;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	@Override
+	public int hashCode() {
+		return environment.hashCode() * force.hashCode() * type.hashCode();
+	}
+
+	public boolean isA(final String type1) {
+		final boolean res;
+
+		if ((getType() == type1) || (getForce() == type1) || (getEnvironment() == type1))
+			res = true;
+		else
+			res = false;
+
+		return res;
+	}
+
+	public void setEnvironment(final String newEnvironment) {
+		environment = newEnvironment;
+	}
+
+	public void setForce(final String newForce) {
+		force = newForce;
+	}
+
+	public void setType(final String newType) {
+		type = newType;
+	}
+
+	public String toShortString() {
+		return getForce() + " " + getType().substring(0, 4) + " " + getEnvironment().substring(0, 3);
+	}
+
+	@Override
+	public String toString() {
+		return "Category force:" + getForce() + " type:" + getType() + " env:" + getEnvironment();
 	}
 }

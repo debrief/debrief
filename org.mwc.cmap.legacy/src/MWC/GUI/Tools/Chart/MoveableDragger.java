@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.Tools.Chart;
@@ -99,348 +99,304 @@ import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.PlainDragTool;
 import MWC.GenericData.WorldLocation;
 
-public class MoveableDragger extends PlainDragTool implements Serializable,
-  PlainChart.ChartCursorMovedListener
-{
-  /**
-	 * 
+public class MoveableDragger extends PlainDragTool implements Serializable, PlainChart.ChartCursorMovedListener {
+	protected class MoveableDraggerAction implements Action {
+
+		private final PlainChart _theChart1;
+		private final WorldLocation _oldLocation;
+		private final WorldLocation _newLocation;
+		private final Moveable _theMoveable;
+
+		public MoveableDraggerAction(final PlainChart theChart, final Moveable theMoveable,
+				final WorldLocation oldLocation, final WorldLocation newLocation) {
+			_theMoveable = theMoveable;
+			_theChart1 = theChart;
+			_oldLocation = oldLocation;
+			_newLocation = newLocation;
+		}
+
+		@Override
+		public void execute() {
+			// move to the new location
+			_theMoveable.doMove(_oldLocation, _newLocation);
+
+			// and redraw
+			_theChart1.update();
+		}
+
+		@Override
+		public boolean isRedoable() {
+			return true;
+		}
+
+		@Override
+		public boolean isUndoable() {
+			return true;
+		}
+
+		@Override
+		public String toString() {
+			return "Move item operation";
+		}
+
+		@Override
+		public void undo() {
+			// put back to the old location
+			_theMoveable.doMove(_newLocation, _oldLocation);
+
+			// and redraw
+			_theChart1.update();
+		}
+	}
+
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
+	public static void findNearestMoveable(final Layer thisLayer, final MWC.GenericData.WorldLocation cursorPos,
+			final RightClickEdit.ObjectConstruct currentNearest) {
+		// so, step through this layer
+		if (thisLayer.getVisible()) {
+			// go through this layer
+			final Enumeration<Editable> enumer = thisLayer.elements();
+			while (enumer.hasMoreElements()) {
+				final Plottable p = (Plottable) enumer.nextElement();
+
+				// is this item draggable?
+				if (p instanceof Moveable) {
+					// how far away is it?
+					final double rng = p.rangeFrom(cursorPos);
+
+					// does it return a range?
+					if (rng != -1.0) {
+						// has our results object been initialised?
+						if (currentNearest.object == null) {
+							// no, just copy in the data
+							currentNearest.setData(p, rng, thisLayer, thisLayer);
+						} else {
+							// yes it has, copy the data items in
+							if (rng < currentNearest.distance) {
+								currentNearest.setData(p, rng, thisLayer, thisLayer);
+							}
+						}
+					}
+				} else {
+					// is this item a layer itself?
+					if (p instanceof Layer) {
+						// cast to Layer
+						final Layer l = (Layer) p;
+
+						// find the nearest values
+						findNearestMoveable(l, cursorPos, currentNearest);
+					}
+				} // whether this is moveable
+			}
+		}
+	}
+
 	/////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  /**
-   * the chart we are watching
-   */
-  PlainChart _theChart;
+	// member variables
+	////////////////////////////////////////////////////////////
+	/**
+	 * the chart we are watching
+	 */
+	PlainChart _theChart;
 
-  /**
-   * the previous listener, so that we can re-install it
-   */
-  transient PlainChart.ChartDragListener _oldListener;
+	/**
+	 * the previous listener, so that we can re-install it
+	 */
+	transient PlainChart.ChartDragListener _oldListener;
 
-  /**
-   * the object currently being moved
-   */
-  transient Moveable _movingObject;
+	/**
+	 * the object currently being moved
+	 */
+	transient Moveable _movingObject;
 
-  /**
-   * the thing being dragged
-   */
-  transient boolean _dragging = false;
+	/**
+	 * the thing being dragged
+	 */
+	transient boolean _dragging = false;
 
-  /**
-   * our rubberband thingy
-   */
-  protected Rubberband _myRubber = new MWC.GUI.RubberBanding.RubberbandDrag();
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  public MoveableDragger(final PlainChart theChart,
-                         final ToolParent theParent,
-                         final String theLabel)
-  {
-    super(theChart, theParent, theLabel, null);
+	/**
+	 * our rubberband thingy
+	 */
+	protected Rubberband _myRubber = new MWC.GUI.RubberBanding.RubberbandDrag();
 
-    _theChart = theChart;
-  }
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	public MoveableDragger(final PlainChart theChart, final ToolParent theParent, final String theLabel) {
+		super(theChart, theParent, theLabel, null);
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+		_theChart = theChart;
+	}
 
-  /**
-   * cursor is moving, see if it is hitting anything
-   */
-  public void cursorMoved(final WorldLocation thePos, final boolean dragging, final Layers theData)
-  {
-    // see if we are already in a 'drag' movement
-    if (_dragging)
-      return;
+	/**
+	 * drag operation is complete - move the object
+	 */
+	@Override
+	public void areaSelected(final MWC.GenericData.WorldLocation theLocation, final Point thePoint) {
+		super.areaSelected(theLocation, thePoint);
 
-    // see if the chart in already in a dragging movement (by somebody else)
-    if (dragging)
-      return;
+		// see if we have selected a worthwhile area
+		final Rectangle rt = new Rectangle(_theStartPoint);
+		rt.add(_theEndPoint);
 
-    // convert this to screen
-    Moveable res = null;
-    // find the nearest editable item
-    final RightClickEdit.ObjectConstruct vals = new RightClickEdit.ObjectConstruct();
-    final int num = theData.size();
-    for (int i = 0; i < num; i++)
-    {
-      final Layer thisL = theData.elementAt(i);
-      if (thisL.getVisible())
-      {
-        // find the nearest items, this method call will recursively pass down through
-        // the layers
-        findNearestMoveable(thisL, thePos, vals);
-      }
-    }
+		// check we still have our object
+		if (_movingObject != null) {
 
-    // retrieve the results
-    res = (Moveable) vals.object;
-    // see if the nearest moveable is within range
-    if (res != null)
-    {
-      if (HitTester.doesHit(thePos, res.getBounds(), 20, _theChart.getCanvas().getProjection()))
-      {
-        // get the existing listener
-        final PlainChart.ChartDragListener cd = _theChart.getChartDragListener();
+			final WorldLocation oldL = _movingObject.getLocation();
 
-        // remember what we are moving
-        _movingObject = res;
+			// do the operation
+			super.doExecute(new MoveableDraggerAction(_theChart, _movingObject, oldL, _theEnd));
 
-        // set the cursor
-        super.setCursor(Cursor.CROSSHAIR_CURSOR);
+			if (_oldListener != null) {
+				// adn replace the old listener
+				getChart().setChartDragListener(_oldListener);
+			}
 
-        // is it somebody other than me?
-        if (cd != this)
-        {
+			_movingObject = null;
+		}
 
-          // remember it
-          _oldListener = cd;
+		_dragging = false;
+	}
 
-          // add us as the listener
-          _theChart.setChartDragListener(this);
+	/**
+	 * cursor is moving, see if it is hitting anything
+	 */
+	@Override
+	public void cursorMoved(final WorldLocation thePos, final boolean dragging, final Layers theData) {
+		// see if we are already in a 'drag' movement
+		if (_dragging)
+			return;
 
-        }
-      }
-      else
-      {
-        // clear the pointer to the object we're dragging
-        _movingObject = null;
+		// see if the chart in already in a dragging movement (by somebody else)
+		if (dragging)
+			return;
 
-        // cancel setting the cursor
-        super.setCursor(Cursor.DEFAULT_CURSOR);
-      }
-    }
+		// convert this to screen
+		Moveable res = null;
+		// find the nearest editable item
+		final RightClickEdit.ObjectConstruct vals = new RightClickEdit.ObjectConstruct();
+		final int num = theData.size();
+		for (int i = 0; i < num; i++) {
+			final Layer thisL = theData.elementAt(i);
+			if (thisL.getVisible()) {
+				// find the nearest items, this method call will recursively pass down through
+				// the layers
+				findNearestMoveable(thisL, thePos, vals);
+			}
+		}
 
-    // see if we have failed the hit test
-    if (_movingObject != res)
-    {
+		// retrieve the results
+		res = (Moveable) vals.object;
+		// see if the nearest moveable is within range
+		if (res != null) {
+			if (HitTester.doesHit(thePos, res.getBounds(), 20, _theChart.getCanvas().getProjection())) {
+				// get the existing listener
+				final PlainChart.ChartDragListener cd = _theChart.getChartDragListener();
 
-      // see if we are currently the listener
-      if (_theChart.getChartDragListener() == this)
-      {
-        _theChart.removeChartDragListener(this);
+				// remember what we are moving
+				_movingObject = res;
 
-        // restore the old lister
-        if (_oldListener != null)
-        {
-          _theChart.setChartDragListener(_oldListener);
-        }
+				// set the cursor
+				super.setCursor(Cursor.CROSSHAIR_CURSOR);
 
-        super.restoreCursor();
-      }
+				// is it somebody other than me?
+				if (cd != this) {
 
-      // we've missed the objects, so clear our target
-      _movingObject = null;
+					// remember it
+					_oldListener = cd;
 
-    }
+					// add us as the listener
+					_theChart.setChartDragListener(this);
 
-  }
+				}
+			} else {
+				// clear the pointer to the object we're dragging
+				_movingObject = null;
 
+				// cancel setting the cursor
+				super.setCursor(Cursor.DEFAULT_CURSOR);
+			}
+		}
 
-  /**
-   * return my rubber band
-   */
-  public MWC.GUI.Rubberband getRubberband()
-  {
-    return _myRubber;
-  }
+		// see if we have failed the hit test
+		if (_movingObject != res) {
 
-  /**
-   * drag operation is complete - move the object
-   */
-  public void areaSelected(final MWC.GenericData.WorldLocation theLocation, final Point thePoint)
-  {
-    super.areaSelected(theLocation, thePoint);
+			// see if we are currently the listener
+			if (_theChart.getChartDragListener() == this) {
+				_theChart.removeChartDragListener(this);
 
-    // see if we have selected a worthwhile area
-    final Rectangle rt = new Rectangle(_theStartPoint);
-    rt.add(_theEndPoint);
+				// restore the old lister
+				if (_oldListener != null) {
+					_theChart.setChartDragListener(_oldListener);
+				}
 
-    // check we still have our object
-    if (_movingObject != null)
-    {
+				super.restoreCursor();
+			}
 
-      final WorldLocation oldL = _movingObject.getLocation();
+			// we've missed the objects, so clear our target
+			_movingObject = null;
 
-      // do the operation
-      super.doExecute(new MoveableDraggerAction(_theChart,
-                                                _movingObject,
-                                                oldL,
-                                                _theEnd));
+		}
 
-      if (_oldListener != null)
-      {
-        // adn replace the old listener
-        getChart().setChartDragListener(_oldListener);
-      }
+	}
 
-      _movingObject = null;
-    }
+	@Override
+	public void execute() {
+		// add ourselves as a moved listener
+		getChart().addCursorMovedListener(this);
+	}
 
-    _dragging = false;
-  }
+	/**
+	 * we have been de-selected, release the drag and replace the rubber
+	 */
+	public void finish() {
+		// make sure we aren't listening for drags
+		getChart().removeChartDragListener(this);
 
+		// stop listening for cursor movement
+		getChart().removeCursorMovedListener(this);
 
-  /**
-   * we don't really do an aciton
-   */
-  public Action getData()
-  {
-    return null;
-  }
+		// do we still have the old one?
+		if (_oldListener != null) {
+			getChart().setChartDragListener(_oldListener);
+		}
+	}
 
-  public void execute()
-  {
-    // add ourselves as a moved listener
-    getChart().addCursorMovedListener(this);
-  }
+	/**
+	 * we don't really do an aciton
+	 */
+	@Override
+	public Action getData() {
+		return null;
+	}
 
-  /**
-   * we have been de-selected, release the drag and replace the rubber
-   */
-  public void finish()
-  {
-    // make sure we aren't listening for drags
-    getChart().removeChartDragListener(this);
+	/**
+	 * return my rubber band
+	 */
+	@Override
+	public MWC.GUI.Rubberband getRubberband() {
+		return _myRubber;
+	}
 
-    // stop listening for cursor movement
-    getChart().removeCursorMovedListener(this);
+	//////////////////////////////////////////////////
+	// the data for the action
+	///////////////////////////////////////////////////
 
-    // do we still have the old one?
-    if (_oldListener != null)
-    {
-      getChart().setChartDragListener(_oldListener);
-    }
-  }
-
-  /**
-   * so, we have now started moving, hooray
-   */
-  public void startMotion()
-  {
-    // store the current area
-    _dragging = true;
-  }
-
-  public static void findNearestMoveable(final Layer thisLayer,
-                                         final MWC.GenericData.WorldLocation cursorPos,
-                                         final RightClickEdit.ObjectConstruct currentNearest)
-  {
-    // so, step through this layer
-    if (thisLayer.getVisible())
-    {
-      // go through this layer
-      final Enumeration<Editable> enumer = thisLayer.elements();
-      while (enumer.hasMoreElements())
-      {
-        final Plottable p = (Plottable) enumer.nextElement();
-
-        // is this item draggable?
-        if (p instanceof Moveable)
-        {
-          // how far away is it?
-          final double rng = p.rangeFrom(cursorPos);
-
-          // does it return a range?
-          if (rng != -1.0)
-          {
-            // has our results object been initialised?
-            if (currentNearest.object == null)
-            {
-              // no, just copy in the data
-              currentNearest.setData(p, rng, thisLayer, thisLayer);
-            }
-            else
-            {
-              // yes it has, copy the data items in
-              if (rng < currentNearest.distance)
-              {
-                currentNearest.setData(p, rng, thisLayer, thisLayer);
-              }
-            }
-          }
-        }
-        else
-        {
-          // is this item a layer itself?
-          if (p instanceof Layer)
-          {
-            // cast to Layer
-            final Layer l = (Layer) p;
-
-            // find the nearest values
-            findNearestMoveable(l, cursorPos, currentNearest);
-          }
-        } // whether this is moveable
-      }
-    }
-  }
-
-
-
-  //////////////////////////////////////////////////
-  // the data for the action
-  ///////////////////////////////////////////////////
-
-  protected class MoveableDraggerAction implements Action
-  {
-
-    private final PlainChart _theChart1;
-    private final WorldLocation _oldLocation;
-    private final WorldLocation _newLocation;
-    private final Moveable _theMoveable;
-
-
-    public MoveableDraggerAction(final PlainChart theChart,
-                                 final Moveable theMoveable,
-                                 final WorldLocation oldLocation,
-                                 final WorldLocation newLocation)
-    {
-      _theMoveable = theMoveable;
-      _theChart1 = theChart;
-      _oldLocation = oldLocation;
-      _newLocation = newLocation;
-    }
-
-    public boolean isRedoable()
-    {
-      return true;
-    }
-
-    public boolean isUndoable()
-    {
-      return true;
-    }
-
-    public String toString()
-    {
-      return "Move item operation";
-    }
-
-    public void undo()
-    {
-      // put back to the old location
-      _theMoveable.doMove(_newLocation, _oldLocation);
-
-      // and redraw
-      _theChart1.update();
-    }
-
-    public void execute()
-    {
-      // move to the new location
-      _theMoveable.doMove(_oldLocation, _newLocation);
-
-      // and redraw
-      _theChart1.update();
-    }
-  }
+	/**
+	 * so, we have now started moving, hooray
+	 */
+	@Override
+	public void startMotion() {
+		// store the current area
+		_dragging = true;
+	}
 
 }

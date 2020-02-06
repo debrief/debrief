@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: AWTFile.java,v $
@@ -70,42 +70,39 @@
 
 package MWC.GUI.Dialogs.AWT;
 
-
 import java.awt.FileDialog;
 import java.awt.Frame;
 import java.io.File;
 
-/** AWT implementation of getting a file
+/**
+ * AWT implementation of getting a file
  */
-public class AWTFile implements MWC.GUI.Dialogs.DialogFactory.FileGetter
-{
-  @SuppressWarnings("deprecation")
-	public File[] getExistingFile(final String filter,
-																	final String description,
-																	final String lastDirectory){
-    final Frame frm = new Frame("dummy");
-    final FileDialog fd = new FileDialog(frm, "Load a file");
-    fd.setFile(filter);
-    fd.setMode(FileDialog.LOAD);
-    fd.show();
-    frm.dispose();
-		
+public class AWTFile implements MWC.GUI.Dialogs.DialogFactory.FileGetter {
+	@Override
+	@SuppressWarnings("deprecation")
+	public File[] getExistingFile(final String filter, final String description, final String lastDirectory) {
+		final Frame frm = new Frame("dummy");
+		final FileDialog fd = new FileDialog(frm, "Load a file");
+		fd.setFile(filter);
+		fd.setMode(FileDialog.LOAD);
+		fd.show();
+		frm.dispose();
+
 		final File[] res = new File[1];
 		res[0] = new File(fd.getDirectory() + fd.getFile());
 		return res;
-  }
-  
-  @SuppressWarnings("deprecation")
-	public java.io.File getNewFile(final String filter,
-																	final String description,
-																	final String lastDirectory){
-    final Frame frm = new Frame("dummy");
-    final FileDialog fd = new FileDialog(frm, "Load a file");
-    fd.setFile(filter);
-    fd.setMode(FileDialog.SAVE);
-    fd.show();
-    frm.dispose();
-    return new File(fd.getDirectory() + fd.getFile());
-  }
-  
+	}
+
+	@Override
+	@SuppressWarnings("deprecation")
+	public java.io.File getNewFile(final String filter, final String description, final String lastDirectory) {
+		final Frame frm = new Frame("dummy");
+		final FileDialog fd = new FileDialog(frm, "Load a file");
+		fd.setFile(filter);
+		fd.setMode(FileDialog.SAVE);
+		fd.show();
+		frm.dispose();
+		return new File(fd.getDirectory() + fd.getFile());
+	}
+
 }

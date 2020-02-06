@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.Properties;
@@ -80,64 +80,64 @@ import java.beans.PropertyEditorSupport;
 import MWC.GUI.PlainChart;
 import MWC.GenericData.WorldLocation;
 
-abstract public class WorldLocationPropertyEditor extends 
-           PropertyEditorSupport implements ActionListener,
-                                            PlainChart.ChartDoubleClickListener
-{
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-	/** the value we are editing
+abstract public class WorldLocationPropertyEditor extends PropertyEditorSupport
+		implements ActionListener, PlainChart.ChartDoubleClickListener {
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+	/**
+	 * the value we are editing
 	 */
-  protected WorldLocation _myVal;
+	protected WorldLocation _myVal;
 
-	/** the chart object which we are letting the user select from
+	/**
+	 * the chart object which we are letting the user select from
 	 */
-  protected PlainChart _theChart;
-  
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	protected PlainChart _theChart;
 
-  /** indicate that we can't just be painted, we've got to be edited
-   */
-  public boolean isPaintable()
-  {
-    return false;
-  }
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
 
-  abstract public java.awt.Component getCustomEditor();
-  abstract protected void resetData();
-  abstract public void actionPerformed(ActionEvent p1);
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-  
+	@Override
+	abstract public void actionPerformed(ActionEvent p1);
 
-  public void setValue(final Object p1)
-  {
-    if(p1 instanceof WorldLocation)
-    {
-      _myVal = (WorldLocation) p1;
-      resetData();
-    }
-    else
-      return;
-  }
+	@Override
+	abstract public void cursorDblClicked(PlainChart theChart, WorldLocation theLocation, Point thePoint);
 
-  public boolean supportsCustomEditor()
-  {
-    return true;
-  }
+	@Override
+	abstract public java.awt.Component getCustomEditor();
 
-  public Object getValue()
-  {
-    return _myVal;
-  }
+	@Override
+	public Object getValue() {
+		return _myVal;
+	}
 
-  abstract public void cursorDblClicked(PlainChart theChart,
-                               WorldLocation theLocation, 
-                               Point thePoint);
+	/**
+	 * indicate that we can't just be painted, we've got to be edited
+	 */
+	@Override
+	public boolean isPaintable() {
+		return false;
+	}
+
+	abstract protected void resetData();
+
+	@Override
+	public void setValue(final Object p1) {
+		if (p1 instanceof WorldLocation) {
+			_myVal = (WorldLocation) p1;
+			resetData();
+		} else
+			return;
+	}
+
+	@Override
+	public boolean supportsCustomEditor() {
+		return true;
+	}
 }

@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package com.planetmayo.debrief.satc_rcp.ui.contributions;
@@ -42,125 +42,101 @@ import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
 
-public class LocationForecastContributionView extends
-		BaseContributionView<LocationForecastContribution>
-{
+public class LocationForecastContributionView extends BaseContributionView<LocationForecastContribution> {
 	private static final int MAX_RANGE = 20000;
 	private Label limitLabel;
 	private Button limitActiveButton;
 	private Scale limitSlider;
 	private FormattedText latitude;
 	private FormattedText longitude;
-	private IConverter geoConverter = new IConverter()
-	{
+	private final IConverter geoConverter = new IConverter() {
 
 		@Override
-		public Object getToType()
-		{
-			return String.class;
-		}
-
-		@Override
-		public Object getFromType()
-		{
-			return GeoPoint.class;
-		}
-
-		@Override
-		public Object convert(Object arg0)
-		{
+		public Object convert(final Object arg0) {
 			if (arg0 instanceof GeoPoint)
 				return GeoSupport.formatGeoPoint((GeoPoint) arg0);
 			return arg0.toString();
 		}
+
+		@Override
+		public Object getFromType() {
+			return GeoPoint.class;
+		}
+
+		@Override
+		public Object getToType() {
+			return String.class;
+		}
 	};
 
-	public LocationForecastContributionView(Composite parent,
-			LocationForecastContribution contribution, IContributions contributions)
-	{
+	public LocationForecastContributionView(final Composite parent, final LocationForecastContribution contribution,
+			final IContributions contributions) {
 		super(parent, contribution, contributions);
 		initUI();
 	}
 
 	@Override
-	protected void bindValues(DataBindingContext context)
-	{
-		PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(
-				Object.class, " m");	
-		IObservableValue limitValue = BeansObservables.observeValue(contribution,
+	protected void bindValues(final DataBindingContext context) {
+		final PrefixSuffixLabelConverter labelsConverter = new PrefixSuffixLabelConverter(Object.class, " m");
+		final IObservableValue limitValue = BeansObservables.observeValue(contribution,
 				LocationForecastContribution.LIMIT);
-		IObservableValue locationValue = BeansObservables.observeValue(contribution, 
+		final IObservableValue locationValue = BeansObservables.observeValue(contribution,
 				LocationForecastContribution.LOCATION);
-		bindCommonHeaderWidgets(context, limitValue, locationValue, geoConverter , labelsConverter);
+		bindCommonHeaderWidgets(context, limitValue, locationValue, geoConverter, labelsConverter);
 		bindCommonDates(context);
 
-		bindSliderLabelCheckbox(context, limitValue, limitSlider, limitLabel, limitActiveButton, 
-				labelsConverter, new BooleanToNullConverter<Double>(0d), null);
+		bindSliderLabelCheckbox(context, limitValue, limitSlider, limitLabel, limitActiveButton, labelsConverter,
+				new BooleanToNullConverter<Double>(0d), null);
 
-		IObservableValue latValue = BeansObservables.observeDetailValue(
-				BeansObservables.observeValue(contribution, LocationForecastContribution.LOCATION),
-				GeoPoint.LAT, double.class);
+		final IObservableValue latValue = BeansObservables.observeDetailValue(
+				BeansObservables.observeValue(contribution, LocationForecastContribution.LOCATION), GeoPoint.LAT,
+				double.class);
 		context.bindValue(PojoObservables.observeValue(latitude, "value"), latValue);
-		latitude.getControl().addListener(SWT.FocusOut, new Listener()
-		{
+		latitude.getControl().addListener(SWT.FocusOut, new Listener() {
 			@Override
-			public void handleEvent(Event event)
-			{
-				LocationForecastContribution temp = ((LocationForecastContribution) contribution);
-				GeoPoint geoPoint = new GeoPoint((Double) latitude.getValue(), temp
-						.getLocation().getLon());
+			public void handleEvent(final Event event) {
+				final LocationForecastContribution temp = (contribution);
+				final GeoPoint geoPoint = new GeoPoint((Double) latitude.getValue(), temp.getLocation().getLon());
 				temp.setLocation(geoPoint);
 			}
 		});
 
-		IObservableValue lonValue = BeansObservables.observeDetailValue(
-				BeansObservables.observeValue(contribution, LocationForecastContribution.LOCATION),
-				GeoPoint.LON, double.class);
-		context.bindValue(PojoObservables.observeValue(longitude, "value"),
-				lonValue);
-		longitude.getControl().addListener(SWT.FocusOut, new Listener()
-		{
+		final IObservableValue lonValue = BeansObservables.observeDetailValue(
+				BeansObservables.observeValue(contribution, LocationForecastContribution.LOCATION), GeoPoint.LON,
+				double.class);
+		context.bindValue(PojoObservables.observeValue(longitude, "value"), lonValue);
+		longitude.getControl().addListener(SWT.FocusOut, new Listener() {
 			@Override
-			public void handleEvent(Event event)
-			{
-				LocationForecastContribution temp = ((LocationForecastContribution) contribution);
-				GeoPoint geoPoint = new GeoPoint(temp.getLocation().getLat(),
-						(Double) longitude.getValue());
+			public void handleEvent(final Event event) {
+				final LocationForecastContribution temp = (contribution);
+				final GeoPoint geoPoint = new GeoPoint(temp.getLocation().getLat(), (Double) longitude.getValue());
 				temp.setLocation(geoPoint);
 			}
 		});
 	}
 
 	@Override
-	protected void createLimitAndEstimateSliders()
-	{
-		UIUtils.createLabel(bodyGroup, "Range:", new GridData(
-				GridData.HORIZONTAL_ALIGN_FILL));
-		Composite composite = new Composite(bodyGroup, SWT.NONE);
+	protected void createLimitAndEstimateSliders() {
+		UIUtils.createLabel(bodyGroup, "Range:", new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+		final Composite composite = new Composite(bodyGroup, SWT.NONE);
 		composite.setLayout(UIUtils.createGridLayoutWithoutMargins(2, false));
 		composite.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 		limitActiveButton = new Button(composite, SWT.CHECK);
-		limitLabel = UIUtils.createSpacer(composite, new GridData(
-				GridData.FILL_HORIZONTAL));
+		limitLabel = UIUtils.createSpacer(composite, new GridData(GridData.FILL_HORIZONTAL));
 		limitSlider = new Scale(bodyGroup, SWT.HORIZONTAL);
 		limitSlider.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		limitSlider.setMaximum(MAX_RANGE);
 
-		UIUtils.createLabel(bodyGroup, "Location", new GridData(
-				GridData.HORIZONTAL_ALIGN_FILL));
-		GridLayout estimateLayout = new GridLayout(1, false);
+		UIUtils.createLabel(bodyGroup, "Location", new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+		final GridLayout estimateLayout = new GridLayout(1, false);
 		estimateLayout.horizontalSpacing = 15;
-		Composite estimateComposite = UIUtils.createEmptyComposite(bodyGroup,
-				estimateLayout, new GridData(GridData.VERTICAL_ALIGN_FILL
-						| GridData.HORIZONTAL_ALIGN_FILL));
-		UIUtils.createLabel(estimateComposite, "lat:", new GridData(
-				GridData.GRAB_VERTICAL | GridData.FILL_HORIZONTAL));
-		UIUtils.createLabel(estimateComposite, "lon:", new GridData(
-				GridData.GRAB_VERTICAL | GridData.FILL_HORIZONTAL));
+		final Composite estimateComposite = UIUtils.createEmptyComposite(bodyGroup, estimateLayout,
+				new GridData(GridData.VERTICAL_ALIGN_FILL | GridData.HORIZONTAL_ALIGN_FILL));
+		UIUtils.createLabel(estimateComposite, "lat:", new GridData(GridData.GRAB_VERTICAL | GridData.FILL_HORIZONTAL));
+		UIUtils.createLabel(estimateComposite, "lon:", new GridData(GridData.GRAB_VERTICAL | GridData.FILL_HORIZONTAL));
 
-		Composite estimateGroup = UIUtils.createEmptyComposite(bodyGroup,
-				new RowLayout(SWT.VERTICAL), new GridData(
-						GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL));
+		final Composite estimateGroup = UIUtils.createEmptyComposite(bodyGroup, new RowLayout(SWT.VERTICAL),
+				new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL));
 		latitude = new FormattedText(estimateGroup);
 		latitude.setFormatter(new GeoPointFormatter(GeoPointFormatter.LAT));
 		latitude.getControl().setLayoutData(new RowData(100, SWT.DEFAULT));
@@ -170,8 +146,7 @@ public class LocationForecastContributionView extends
 	}
 
 	@Override
-	protected String getTitlePrefix()
-	{
+	protected String getTitlePrefix() {
 		return "Location Forecast - ";
 	}
 }

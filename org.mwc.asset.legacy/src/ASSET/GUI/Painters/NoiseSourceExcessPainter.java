@@ -1,325 +1,295 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package ASSET.GUI.Painters;
 
-import ASSET.Util.SupportTesting;
-import MWC.GUI.Chart.Painters.SpatialRasterPainter;
-import MWC.GUI.Chart.Painters.SpatialRasterPainter.ColorConverter.SwingColorConverter;
-import MWC.GUI.Editable;
-import MWC.GUI.Layer;
-import MWC.GUI.Layers;
-import MWC.GenericData.WorldLocation;
-
-import java.awt.*;
+import java.awt.Color;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.beans.PropertyEditorSupport;
 import java.util.Vector;
 
-/**
- * class to show the excess between the in-water noise and the residual noise-level from
- * a point source
- */
-public class NoiseSourceExcessPainter extends SpatialRasterPainter implements NoiseSource
-{
-  ///////////////////////////////////////////////////
-  // member variables
-  ///////////////////////////////////////////////////
+import ASSET.Util.SupportTesting;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.Chart.Painters.SpatialRasterPainter;
+import MWC.GUI.Chart.Painters.SpatialRasterPainter.ColorConverter.SwingColorConverter;
+import MWC.GenericData.WorldLocation;
 
-  /**
-	 * 
+/**
+ * class to show the excess between the in-water noise and the residual
+ * noise-level from a point source
+ */
+public class NoiseSourceExcessPainter extends SpatialRasterPainter implements NoiseSource {
+	///////////////////////////////////////////////////
+	// member variables
+	///////////////////////////////////////////////////
+
+	/////////////////////////////////////////////////////////////
+	// info class
+	////////////////////////////////////////////////////////////
+	public class NoiseInfo extends Editable.EditorType implements java.io.Serializable {
+
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public NoiseInfo(final NoiseSourceExcessPainter data) {
+			super(data, data.getName(), "Edit");
+		}
+
+		@Override
+		public PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final PropertyDescriptor[] res = { prop("Visible", "whether this layer is visible"),
+						prop("SimplePlotting", "whether to use simple colors"),
+						prop("SourceAlpha", "the background noise level"),
+						prop("SourceBravo", "the noise source to examine"),
+						prop("KeyLocation", "the location of the scale"), prop("Name", "name of this painter"), };
+				res[2].setPropertyEditorClass(NoiseSourcePropertyEditor.class);
+				res[3].setPropertyEditorClass(NoiseSourcePropertyEditor.class);
+				res[5].setPropertyEditorClass(SpatialRasterPainter.KeyLocationPropertyEditor.class);
+				return res;
+			} catch (final IntrospectionException e) {
+				return super.getPropertyDescriptors();
+			}
+		}
+	}
+
+	/**
+	 * ************************************************* custom editor allowing
+	 * noise source editors to be selected
+	 * *************************************************
+	 */
+	public static class NoiseSourcePropertyEditor extends PropertyEditorSupport {
+		public static Layers _myLayers;
+
+		String _theSource;
+
+		@Override
+		public String getAsText() {
+			return _theSource;
+		}
+
+		@Override
+		public String[] getTags() {
+			String[] res = new String[] { " ", " " };
+
+			final Vector<String> list = new Vector<String>(0, 1);
+
+			// pass through the layers to find any noise sources
+			for (int i = 0; i < _myLayers.size(); i++) {
+				final Layer thisL = _myLayers.elementAt(i);
+				if (thisL instanceof NoiseSource) {
+					list.add(thisL.getName());
+				}
+			}
+
+			// did we find any?
+			if (list.size() > 0) {
+				res = new String[list.size()];
+				res = list.toArray(res);
+			}
+
+			return res;
+		}
+
+		@Override
+		public Object getValue() {
+			return _theSource;
+		}
+
+		@Override
+		public void setAsText(final String val) {
+			_theSource = val;
+		}
+
+		@Override
+		public void setValue(final Object p1) {
+			if (p1 instanceof String) {
+				final String val = (String) p1;
+				setAsText(val);
+			}
+		}
+	}
+
+	//////////////////////////////////////////////////
+	// add testing code
+	//////////////////////////////////////////////////
+	public static class PainterTest extends SupportTesting.EditableTesting {
+		/**
+		 * get an object which we can test
+		 *
+		 * @return Editable object which we can check the properties for
+		 */
+		@Override
+		public Editable getEditable() {
+			return new NoiseSourceExcessPainter("the layer", new Layers());
+		}
+	}
+
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	/**
-   * the calculated noise levels across the environment
-   */
-  private SpatialRasterPainter _wholeScenario = null;
+	 * the calculated noise levels across the environment
+	 */
+	private SpatialRasterPainter _wholeScenario = null;
 
-  /**
-   * the source of interest
-   */
-  private SpatialRasterPainter _source = null;
+	/**
+	 * the source of interest
+	 */
+	private SpatialRasterPainter _source = null;
 
-  /**
-   * whether to produce detailed or vague plots
-   */
-  private boolean _simplePlotting = true;
+	/**
+	 * whether to produce detailed or vague plots
+	 */
+	private boolean _simplePlotting = true;
 
-  /**
-   * the layers object to take the layers from
-   */
-  private Layers _theLayers = null;
-  
-  /** temporarily create a color converter, use the swing one
-   * 
-   */
-  private SwingColorConverter _myConverter = null;
+	/**
+	 * the layers object to take the layers from
+	 */
+	private Layers _theLayers = null;
 
-  ///////////////////////////////////////////////////
-  // constructor
-  ///////////////////////////////////////////////////
-  public NoiseSourceExcessPainter(final NoiseSourcePainter point, final ScenarioNoiseLevelPainter scenario,
-                                  final Layers theData)
-  {
-    this("Noise Source Excess Painter", theData);
-    _wholeScenario = scenario;
-    _source = point;
-    
-    _myConverter = new SwingColorConverter();
-  }
+	/**
+	 * temporarily create a color converter, use the swing one
+	 *
+	 */
+	private SwingColorConverter _myConverter = null;
 
-  public NoiseSourceExcessPainter(final String layerName, final Layers theData)
-  {
-    super(layerName);
+	///////////////////////////////////////////////////
+	// constructor
+	///////////////////////////////////////////////////
+	public NoiseSourceExcessPainter(final NoiseSourcePainter point, final ScenarioNoiseLevelPainter scenario,
+			final Layers theData) {
+		this("Noise Source Excess Painter", theData);
+		_wholeScenario = scenario;
+		_source = point;
 
-    // put the layers into the data
-    _theLayers = theData;
-  }
-  ///////////////////////////////////////////////////
-  // member methods
-  ///////////////////////////////////////////////////
+		_myConverter = new SwingColorConverter();
+	}
 
-  /**
-   * provide the delta for the data  (in degrees)
-   */
-  public double getGridDelta()
-  {
-    return MWC.Algorithms.Conversions.Nm2Degs(5);
-  }
+	public NoiseSourceExcessPainter(final String layerName, final Layers theData) {
+		super(layerName);
 
-  /**
-   * whether the data has been loaded yet
-   */
-  public boolean isDataLoaded()
-  {
-    return true;
-  }
+		// put the layers into the data
+		_theLayers = theData;
+	}
+	///////////////////////////////////////////////////
+	// member methods
+	///////////////////////////////////////////////////
 
-  public int getValueAt(final WorldLocation location)
-  {
-    // work out the noise dissipation from this origin
-    int res = 0;
+	/* returns a color based on slope and elevation */
+	public int getColor(final int elevation, final double lowerLimit, final double upperLimit) {
 
-    final int source = _source.getValueAt(location);
-    final int scenario = _wholeScenario.getValueAt(location);
-    res = source - scenario;
+		int res = 0;
 
-    return res;
-  }
+		if (_simplePlotting) {
+			if (elevation > 0)
+				res = Color.green.getRGB();
+			else
+				res = Color.red.getRGB();
+		} else
+			res = super.getColor(elevation, lowerLimit, upperLimit, _myConverter, false);
 
-  /* returns a color based on slope and elevation */
-  public int getColor(final int elevation, final double lowerLimit, final double upperLimit)
-  {
+		return res;
 
-    int res = 0;
+	}
 
-    if (_simplePlotting)
-    {
-      if (elevation > 0)
-        res = Color.green.getRGB();
-      else
-        res = Color.red.getRGB();
-    }
-    else
-      res = super.getColor(elevation, lowerLimit, upperLimit, _myConverter, false);
+	/**
+	 * provide the delta for the data (in degrees)
+	 */
+	@Override
+	public double getGridDelta() {
+		return MWC.Algorithms.Conversions.Nm2Degs(5);
+	}
 
+	@Override
+	public Editable.EditorType getInfo() {
+		// update the layers in the editor
+		NoiseSourcePropertyEditor._myLayers = _theLayers;
 
-    return res;
+		if (_myEditor == null) {
+			_myEditor = new NoiseInfo(this);
+		}
+		return _myEditor;
+	}
 
-  }
+	public String getSourceAlpha() {
+		String res = null;
+		if (_source != null)
+			res = _source.getName();
 
-  ///////////////////////////////////////////////////
-  // editor support
-  ///////////////////////////////////////////////////
-  public boolean hasEditor()
-  {
-    return true;
-  }
+		return res;
+	}
 
-  public Editable.EditorType getInfo()
-  {
-    // update the layers in the editor
-    NoiseSourcePropertyEditor._myLayers = _theLayers;
+	public String getSourceBravo() {
+		String res = null;
+		if (_wholeScenario != null)
+			res = _wholeScenario.getName();
 
-    if (_myEditor == null)
-    {
-      _myEditor = new NoiseInfo(this);
-    }
-    return _myEditor;
-  }
+		return res;
+	}
 
-  public boolean isSimplePlotting()
-  {
-    return _simplePlotting;
-  }
+	@Override
+	public int getValueAt(final WorldLocation location) {
+		// work out the noise dissipation from this origin
+		int res = 0;
 
-  public void setSimplePlotting(final boolean simplePlotting)
-  {
-    this._simplePlotting = simplePlotting;
-  }
+		final int source = _source.getValueAt(location);
+		final int scenario = _wholeScenario.getValueAt(location);
+		res = source - scenario;
 
-  public void setSourceAlpha(final String source)
-  {
-    // set this source
-    _source = (SpatialRasterPainter) _theLayers.findLayer(source);
-  }
+		return res;
+	}
 
-  public String getSourceAlpha()
-  {
-    String res = null;
-    if (_source != null)
-      res = _source.getName();
+	///////////////////////////////////////////////////
+	// editor support
+	///////////////////////////////////////////////////
+	@Override
+	public boolean hasEditor() {
+		return true;
+	}
 
-    return res;
-  }
+	/**
+	 * whether the data has been loaded yet
+	 */
+	@Override
+	public boolean isDataLoaded() {
+		return true;
+	}
 
-  public void setSourceBravo(final String source)
-  {
-    // set this source
-    _wholeScenario = (SpatialRasterPainter) _theLayers.findLayer(source);
-  }
+	public boolean isSimplePlotting() {
+		return _simplePlotting;
+	}
 
-  public String getSourceBravo()
-  {
-    String res = null;
-    if (_wholeScenario != null)
-      res = _wholeScenario.getName();
+	public void setSimplePlotting(final boolean simplePlotting) {
+		this._simplePlotting = simplePlotting;
+	}
 
-    return res;
-  }
+	public void setSourceAlpha(final String source) {
+		// set this source
+		_source = (SpatialRasterPainter) _theLayers.findLayer(source);
+	}
 
-
-  /////////////////////////////////////////////////////////////
-  // info class
-  ////////////////////////////////////////////////////////////
-  public class NoiseInfo extends Editable.EditorType implements java.io.Serializable
-  {
-
-    /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public NoiseInfo(final NoiseSourceExcessPainter data)
-    {
-      super(data, data.getName(), "Edit");
-    }
-
-    public PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try
-      {
-        final PropertyDescriptor[] res = {
-          prop("Visible", "whether this layer is visible"),
-          prop("SimplePlotting", "whether to use simple colors"),
-          prop("SourceAlpha", "the background noise level"),
-          prop("SourceBravo", "the noise source to examine"),
-          prop("KeyLocation", "the location of the scale"),
-          prop("Name", "name of this painter"),
-        };
-        res[2].setPropertyEditorClass(NoiseSourcePropertyEditor.class);
-        res[3].setPropertyEditorClass(NoiseSourcePropertyEditor.class);
-        res[5].setPropertyEditorClass(SpatialRasterPainter.KeyLocationPropertyEditor.class);
-        return res;
-      }
-      catch (IntrospectionException e)
-      {
-        return super.getPropertyDescriptors();
-      }
-    }
-  }
-
-
-  /**
-   * *************************************************
-   * custom editor allowing noise source editors to be selected
-   * *************************************************
-   */
-  public static class NoiseSourcePropertyEditor extends PropertyEditorSupport
-  {
-    public static Layers _myLayers;
-
-    String _theSource;
-
-    public String[] getTags()
-    {
-      String[] res = new String[]{" ", " "};
-
-      final Vector<String> list = new Vector<String>(0, 1);
-
-      // pass through the layers to find any noise sources
-      for (int i = 0; i < _myLayers.size(); i++)
-      {
-        final Layer thisL = (Layer) _myLayers.elementAt(i);
-        if (thisL instanceof NoiseSource)
-        {
-          list.add(thisL.getName());
-        }
-      }
-
-      // did we find any?
-      if (list.size() > 0)
-      {
-        res = new String[list.size()];
-        res = (String[]) list.toArray(res);
-      }
-
-      return res;
-    }
-
-    public Object getValue()
-    {
-      return _theSource;
-    }
-
-    public void setValue(final Object p1)
-    {
-      if (p1 instanceof String)
-      {
-        final String val = (String) p1;
-        setAsText(val);
-      }
-    }
-
-    public void setAsText(final String val)
-    {
-      _theSource = val;
-    }
-
-    public String getAsText()
-    {
-      return _theSource;
-    }
-  }
-
-
-  //////////////////////////////////////////////////
-  // add testing code
-  //////////////////////////////////////////////////
-  public static class PainterTest extends SupportTesting.EditableTesting
-  {
-    /**
-     * get an object which we can test
-     *
-     * @return Editable object which we can check the properties for
-     */
-    public Editable getEditable()
-    {
-      return new NoiseSourceExcessPainter("the layer", new Layers());
-    }
-  }
+	public void setSourceBravo(final String source) {
+		// set this source
+		_wholeScenario = (SpatialRasterPainter) _theLayers.findLayer(source);
+	}
 }

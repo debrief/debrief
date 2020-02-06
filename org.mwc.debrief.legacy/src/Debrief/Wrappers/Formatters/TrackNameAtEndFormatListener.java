@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 package Debrief.Wrappers.Formatters;
 
@@ -18,7 +18,6 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 
-import junit.framework.TestCase;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.CanvasType;
@@ -30,235 +29,194 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
+import junit.framework.TestCase;
 
-public class TrackNameAtEndFormatListener extends PlainWrapper implements
-    INewItemListener
-{
+public class TrackNameAtEndFormatListener extends PlainWrapper implements INewItemListener {
 
-  // ///////////////////////////////////////////////////////////
-  // info class
-  // //////////////////////////////////////////////////////////
-  final public class TrackNameInfo extends Editable.EditorType implements
-      Serializable
-  {
+	public static class TestMe extends TestCase {
+		private FixWrapper createFix(final int time) {
+			final Fix newF = new Fix(new HiResDate(time), new WorldLocation(2, 2, 0), 22, 33);
+			final FixWrapper fw = new FixWrapper(newF);
+			return fw;
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
+		}
 
-    public TrackNameInfo(final TrackNameAtEndFormatListener data)
-    {
-      super(data, data.getName(), "");
-    }
+		public void testNameMatch() {
+			final TrackNameAtEndFormatListener cf = new TrackNameAtEndFormatListener("Test", new String[] { "Name2" });
+			final TrackWrapper tw = new TrackWrapper();
+			tw.setName("Name");
+			final FixWrapper f1 = createFix(4000);
+			final FixWrapper f2 = createFix(5000);
+			final FixWrapper f3 = createFix(6000);
+			final FixWrapper f4 = createFix(10000);
+			final FixWrapper f5 = createFix(12000);
 
-    final public PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try
-      {
-        final PropertyDescriptor[] res =
-            {
-                displayProp("Name", "Name", "Name for this formatter"),
-                displayProp("Visible", "Active",
-                    "Whether this formatter is active")};
+			cf.newItem(tw, f1, null);
+			cf.newItem(tw, f2, null);
+			cf.newItem(tw, f3, null);
+			cf.newItem(tw, f4, null);
+			cf.newItem(tw, f5, null);
 
-        return res;
-      }
-      catch (final IntrospectionException e)
-      {
-        return super.getPropertyDescriptors();
-      }
-    }
-  }
+			assertTrue("not at end", tw.getNameAtStart());
 
-  public static class TestMe extends TestCase
-  {
-    public void testNameMatch()
-    {
-      TrackNameAtEndFormatListener cf =
-          new TrackNameAtEndFormatListener("Test", new String[]
-          {"Name2"});
-      TrackWrapper tw = new TrackWrapper();
-      tw.setName("Name");
-      FixWrapper f1 = createFix(4000);
-      FixWrapper f2 = createFix(5000);
-      FixWrapper f3 = createFix(6000);
-      FixWrapper f4 = createFix(10000);
-      FixWrapper f5 = createFix(12000);
+		}
 
-      cf.newItem(tw, f1, null);
-      cf.newItem(tw, f2, null);
-      cf.newItem(tw, f3, null);
-      cf.newItem(tw, f4, null);
-      cf.newItem(tw, f5, null);
+		public void testNameNotMatch() {
+			final TrackNameAtEndFormatListener cf = new TrackNameAtEndFormatListener("Test", new String[] { "Name" });
+			final TrackWrapper tw = new TrackWrapper();
+			tw.setName("Name");
+			final FixWrapper f1 = createFix(4000);
+			final FixWrapper f2 = createFix(5000);
+			final FixWrapper f3 = createFix(9000);
+			final FixWrapper f4 = createFix(10000);
+			final FixWrapper f5 = createFix(14100);
 
-      assertTrue("not at end", tw.getNameAtStart());
+			cf.newItem(tw, f1, null);
+			cf.newItem(tw, f2, null);
+			cf.newItem(tw, f3, null);
+			cf.newItem(tw, f4, null);
+			cf.newItem(tw, f5, null);
 
-    }
+			assertFalse("at end", tw.getNameAtStart());
 
-    public void testNameNotMatch()
-    {
-      TrackNameAtEndFormatListener cf =
-          new TrackNameAtEndFormatListener("Test", new String[]
-          {"Name"});
-      TrackWrapper tw = new TrackWrapper();
-      tw.setName("Name");
-      FixWrapper f1 = createFix(4000);
-      FixWrapper f2 = createFix(5000);
-      FixWrapper f3 = createFix(9000);
-      FixWrapper f4 = createFix(10000);
-      FixWrapper f5 = createFix(14100);
+		}
 
-      cf.newItem(tw, f1, null);
-      cf.newItem(tw, f2, null);
-      cf.newItem(tw, f3, null);
-      cf.newItem(tw, f4, null);
-      cf.newItem(tw, f5, null);
+		public void testNoNames() {
+			final TrackNameAtEndFormatListener cf = new TrackNameAtEndFormatListener("Test", null);
+			final TrackWrapper tw = new TrackWrapper();
+			tw.setName("Name");
+			final FixWrapper f1 = createFix(4000);
+			final FixWrapper f2 = createFix(5000);
+			final FixWrapper f3 = createFix(9000);
+			final FixWrapper f4 = createFix(10000);
+			final FixWrapper f5 = createFix(14100);
 
-      assertFalse("at end", tw.getNameAtStart());
+			cf.newItem(tw, f1, null);
+			cf.newItem(tw, f2, null);
+			cf.newItem(tw, f3, null);
+			cf.newItem(tw, f4, null);
+			cf.newItem(tw, f5, null);
 
-    }
+			assertFalse("at end", tw.getNameAtStart());
+		}
+	}
 
-    public void testNoNames()
-    {
-      TrackNameAtEndFormatListener cf =
-          new TrackNameAtEndFormatListener("Test", null);
-      TrackWrapper tw = new TrackWrapper();
-      tw.setName("Name");
-      FixWrapper f1 = createFix(4000);
-      FixWrapper f2 = createFix(5000);
-      FixWrapper f3 = createFix(9000);
-      FixWrapper f4 = createFix(10000);
-      FixWrapper f5 = createFix(14100);
+	// ///////////////////////////////////////////////////////////
+	// info class
+	// //////////////////////////////////////////////////////////
+	final public class TrackNameInfo extends Editable.EditorType implements Serializable {
 
-      cf.newItem(tw, f1, null);
-      cf.newItem(tw, f2, null);
-      cf.newItem(tw, f3, null);
-      cf.newItem(tw, f4, null);
-      cf.newItem(tw, f5, null);
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
 
-      assertFalse("at end", tw.getNameAtStart());
-    }
+		public TrackNameInfo(final TrackNameAtEndFormatListener data) {
+			super(data, data.getName(), "");
+		}
 
-    private FixWrapper createFix(int time)
-    {
-      Fix newF =
-          new Fix(new HiResDate(time), new WorldLocation(2, 2, 0), 22, 33);
-      FixWrapper fw = new FixWrapper(newF);
-      return fw;
+		@Override
+		final public PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final PropertyDescriptor[] res = { displayProp("Name", "Name", "Name for this formatter"),
+						displayProp("Visible", "Active", "Whether this formatter is active") };
 
-    }
-  }
+				return res;
+			} catch (final IntrospectionException e) {
+				return super.getPropertyDescriptors();
+			}
+		}
+	}
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 1L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-  private String _formatName;
-  private EditorType _myEditor;
-  private String[] _tracks;
+	private String _formatName;
+	private EditorType _myEditor;
+	private final String[] _tracks;
 
-  public TrackNameAtEndFormatListener(String name, String[] tracks)
-  {
-    _formatName = name;
-    _tracks = tracks;
-  }
+	public TrackNameAtEndFormatListener(final String name, final String[] tracks) {
+		_formatName = name;
+		_tracks = tracks;
+	}
 
-  @Override
-  public void paint(CanvasType dest)
-  {
-    // don't bother, it can't be plotted
-  }
+	@Override
+	public void fileComplete() {
+	}
 
-  @Override
-  public String getName()
-  {
-    return _formatName;
-  }
+	@Override
+	public WorldArea getBounds() {
+		return null;
+	}
 
-  public void setName(final String name)
-  {
-    _formatName = name;
-  }
+	@Override
+	public EditorType getInfo() {
+		if (_myEditor == null) {
+			_myEditor = new TrackNameInfo(this);
+		}
+		return _myEditor;
+	}
 
-  @Override
-  public String toString()
-  {
-    return getName();
-  }
+	@Override
+	public String getName() {
+		return _formatName;
+	}
 
-  @Override
-  public WorldArea getBounds()
-  {
-    return null;
-  }
+	public String[] getTracks() {
+		return _tracks;
+	}
 
-  @Override
-  public boolean hasEditor()
-  {
-    return true;
-  }
+	@Override
+	public boolean hasEditor() {
+		return true;
+	}
 
-  @Override
-  public EditorType getInfo()
-  {
-    if (_myEditor == null)
-    {
-      _myEditor = new TrackNameInfo(this);
-    }
-    return _myEditor;
-  }
+	@Override
+	public void newItem(final Layer parent, final Editable item, final String symbology) {
+		// are we active
+		if (!getVisible()) {
+			return;
+		}
 
-  @Override
-  public void newItem(final Layer parent, final Editable item,
-      final String symbology)
-  {
-    // are we active
-    if (!getVisible())
-    {
-      return;
-    }
+		// just check if this is actually a new layer call
+		if (parent instanceof TrackWrapper) {
+			final TrackWrapper track = (TrackWrapper) parent;
 
-    // just check if this is actually a new layer call
-    if (parent instanceof TrackWrapper)
-    {
-      TrackWrapper track = (TrackWrapper) parent;
+			// ok, do we have a set of track names?
+			if (_tracks == null || _tracks.length == 0) {
+				// nope, just set it
+				track.setNameAtStart(false);
+			} else {
+				// check if this is one of our tracks
+				for (int i = 0; i < _tracks.length; i++) {
+					final String thisT = _tracks[i];
+					if (thisT.equals(track.getName())) {
+						track.setNameAtStart(false);
+					}
+				}
+			}
+		}
+	}
 
-      // ok, do we have a set of track names?
-      if (_tracks == null || _tracks.length == 0)
-      {
-        // nope, just set it
-        track.setNameAtStart(false);
-      }
-      else
-      {
-        // check if this is one of our tracks
-        for (int i = 0; i < _tracks.length; i++)
-        {
-          String thisT = _tracks[i];
-          if (thisT.equals(track.getName()))
-          {
-            track.setNameAtStart(false);
-          }
-        }
-      }
-    }
-  }
+	@Override
+	public void paint(final CanvasType dest) {
+		// don't bother, it can't be plotted
+	}
 
-  @Override
-  public void reset()
-  {
-    // ignore
-  }
+	@Override
+	public void reset() {
+		// ignore
+	}
 
-  public String[] getTracks()
-  {
-    return _tracks;
-  }
+	@Override
+	public void setName(final String name) {
+		_formatName = name;
+	}
 
-  @Override
-  public void fileComplete()
-  {
-  }
+	@Override
+	public String toString() {
+		return getName();
+	}
 }

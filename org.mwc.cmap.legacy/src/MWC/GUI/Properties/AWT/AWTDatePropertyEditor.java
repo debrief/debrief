@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.Properties.AWT;
@@ -82,39 +82,40 @@ import java.awt.TextField;
 
 import MWC.GUI.Properties.DatePropertyEditor;
 
-public class AWTDatePropertyEditor extends
-           DatePropertyEditor
-{
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-	/** field to edit the date
+public class AWTDatePropertyEditor extends DatePropertyEditor {
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+	/**
+	 * field to edit the date
 	 */
-  TextField _theDate;
+	TextField _theDate;
 
-	/** field to edit the time
+	/**
+	 * field to edit the time
 	 */
 	TextField _theTime;
 
-	/** panel to hold everything
+	/**
+	 * panel to hold everything
 	 */
-  Panel _theHolder;
+	Panel _theHolder;
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-
-	/** build the editor
+	/**
+	 * build the editor
 	 */
-  public java.awt.Component getCustomEditor()
-  {
-    _theHolder = new Panel();
-    _theHolder.setLayout(new GridLayout(1,0));
+	@Override
+	public java.awt.Component getCustomEditor() {
+		_theHolder = new Panel();
+		_theHolder.setLayout(new GridLayout(1, 0));
 		_theDate = new TextField();
 		_theTime = new TextField();
 		_theHolder.add(new Label("Date:"));
@@ -122,45 +123,49 @@ public class AWTDatePropertyEditor extends
 		_theHolder.add(new Label("Time:"));
 		_theHolder.add(_theTime);
 
-    resetData();
-    return _theHolder;
-  }
+		resetData();
+		return _theHolder;
+	}
 
-  /** get the date text as a string
-   */
-  protected String getDateText()
-  {
-    return _theDate.getText();
-  }
+	/**
+	 * get the date text as a string
+	 */
+	@Override
+	protected String getDateText() {
+		return _theDate.getText();
+	}
 
-  /** get the date text as a string
-   */
-  protected String getTimeText()
-  {
-    return _theTime.getText();
-  }
+	/**
+	 * get the date text as a string
+	 */
+	@Override
+	protected String getTimeText() {
+		return _theTime.getText();
+	}
 
-  /** set the date text in string form
-   */
-  protected void setDateText(final String val)
-  {
-    _theDate.setText(val);
-  }
+	/**
+	 * set the date text in string form
+	 */
+	@Override
+	protected void setDateText(final String val) {
+		_theDate.setText(val);
+	}
 
-  /** set the time text in string form
-   */
-  protected void setTimeText(final String val)
-  {
-    _theTime.setText(val);
-  }
+	/**
+	 * show the user how many microseconds there are
+	 *
+	 * @param val
+	 */
+	@Override
+	protected void setMicroText(final long val) {
+		throw new RuntimeException("Not implemented!!!");
+	}
 
-  /**
-   * show the user how many microseconds there are
-   *
-   * @param val
-   */
-  protected void setMicroText(final long val)
-  {
-    throw new RuntimeException("Not implemented!!!");
-  }
+	/**
+	 * set the time text in string form
+	 */
+	@Override
+	protected void setTimeText(final String val) {
+		_theTime.setText(val);
+	}
 }

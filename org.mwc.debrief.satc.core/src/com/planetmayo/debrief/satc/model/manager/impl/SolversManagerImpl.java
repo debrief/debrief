@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package com.planetmayo.debrief.satc.model.manager.impl;
@@ -37,82 +37,70 @@ import com.planetmayo.debrief.satc.model.manager.IVehicleTypesManager;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
 
-public class SolversManagerImpl implements ISolversManager
-{
-	private final Set<ISolversManagerListener> listeners = Collections.newSetFromMap(new WeakHashMap<ISolversManagerListener, Boolean>());
-	
+public class SolversManagerImpl implements ISolversManager {
+	private final Set<ISolversManagerListener> listeners = Collections
+			.newSetFromMap(new WeakHashMap<ISolversManagerListener, Boolean>());
+
 	private final Set<ISolver> available = Collections.newSetFromMap(new WeakHashMap<ISolver, Boolean>());
-	
+
 	private ISolver activeSolver;
 
-	private IVehicleTypesManager vehicleTypesManager;
-	
-	public SolversManagerImpl(IVehicleTypesManager vehicleTypesManager)
-	{
+	private final IVehicleTypesManager vehicleTypesManager;
+
+	public SolversManagerImpl(final IVehicleTypesManager vehicleTypesManager) {
 		this.vehicleTypesManager = vehicleTypesManager;
 	}
-	
+
 	@Override
-	public void addSolversManagerListener(ISolversManagerListener listener)
-	{
+	public void addSolversManagerListener(final ISolversManagerListener listener) {
 		listeners.add(listener);
 	}
 
 	@Override
-	public void removeSolverManagerListener(ISolversManagerListener listener)
-	{
-		listeners.remove(listener);		
-	}
+	public ISolver createSolver(final String name) {
+		final IContributions contributions = new Contributions();
+		final ProblemSpace space = new ProblemSpace();
+		final IBoundsManager boundsManager = new BoundsManager(contributions, space);
+		final IJobsManager jobsManager = new RCPJobsManager();
+		final ISolutionGenerator solutionGenerator = new SwitchableSolutionGenerator(contributions, jobsManager,
+				new SafeProblemSpace(space));
 
-	@Override
-	public ISolver createSolver(String name)
-	{
-		IContributions contributions = new Contributions();
-		ProblemSpace space = new ProblemSpace();
-		IBoundsManager boundsManager = new BoundsManager(contributions, space);
-		IJobsManager jobsManager = new RCPJobsManager();
-		ISolutionGenerator solutionGenerator = new SwitchableSolutionGenerator(
-				contributions, jobsManager, new SafeProblemSpace(space)
-		);
-		
-		ISolver solver = new Solver(name, contributions, space, boundsManager, solutionGenerator, jobsManager);
+		final ISolver solver = new Solver(name, contributions, space, boundsManager, solutionGenerator, jobsManager);
 		solver.setVehicleType(vehicleTypesManager.getAllTypes().get(0));
 		available.add(solver);
-		for (ISolversManagerListener listener : listeners) 
-		{
+		for (final ISolversManagerListener listener : listeners) {
 			listener.solverCreated(solver);
 		}
 		return solver;
 	}
 
 	@Override
-	public List<ISolver> getAvailableSolvers()
-	{
-		return new ArrayList<ISolver>(available);
-	}
-
-	@Override
-	public ISolver getActiveSolver()
-	{
-		return activeSolver;
-	}
-
-	@Override
-	public void setActiveSolver(ISolver solver)
-	{
-		activeSolver = solver;
-		for (ISolversManagerListener listener : listeners) 
-		{
-			listener.activeSolverChanged(activeSolver);
+	public void deactivateSolverIfActive(final ISolver solver) {
+		if (activeSolver == solver) {
+			setActiveSolver(null);
 		}
 	}
 
 	@Override
-	public void deactivateSolverIfActive(ISolver solver)
-	{
-		if (activeSolver == solver) 
-		{
-			setActiveSolver(null);
+	public ISolver getActiveSolver() {
+		return activeSolver;
+	}
+
+	@Override
+	public List<ISolver> getAvailableSolvers() {
+		return new ArrayList<ISolver>(available);
+	}
+
+	@Override
+	public void removeSolverManagerListener(final ISolversManagerListener listener) {
+		listeners.remove(listener);
+	}
+
+	@Override
+	public void setActiveSolver(final ISolver solver) {
+		activeSolver = solver;
+		for (final ISolversManagerListener listener : listeners) {
+			listener.activeSolverChanged(activeSolver);
 		}
 	}
 }

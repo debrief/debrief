@@ -1,32 +1,29 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package com.planetmayo.debrief.satc.model;
 
-import com.planetmayo.debrief.satc.model.ModelObject;
-
 /**
  * description of the range of performances achievable by a vehicle
- * 
+ *
  * @author ian
- * 
+ *
  */
-public class VehicleType extends ModelObject
-{
+public class VehicleType extends ModelObject {
 	private static final long serialVersionUID = 1L;
-	
+
 	private final String name;
 	private final double minSpeedMS;
 	private final double maxSpeedMS;
@@ -37,10 +34,9 @@ public class VehicleType extends ModelObject
 	private final double minDecelRateMSS;
 	private final double maxDecelRateMSS;
 
-	public VehicleType(String name, double minSpeedMS, double maxSpeedMS,
-			double minTurnRate_RadperSec, double maxTurnRate_RadperSec, double minAccelRateMSS,
-			double maxAccelRateMSS, double minDecelRateMSS, double maxDecelRateMSS)
-	{
+	public VehicleType(final String name, final double minSpeedMS, final double maxSpeedMS,
+			final double minTurnRate_RadperSec, final double maxTurnRate_RadperSec, final double minAccelRateMSS,
+			final double maxAccelRateMSS, final double minDecelRateMSS, final double maxDecelRateMSS) {
 		this.name = name;
 		this.minSpeedMS = minSpeedMS;
 		this.maxSpeedMS = maxSpeedMS;
@@ -52,49 +48,40 @@ public class VehicleType extends ModelObject
 		this.maxDecelRateMSS = maxDecelRateMSS;
 	}
 
-	public String getName()
-	{
-		return name;
-	}
-
-	public double getMinSpeed()
-	{
-		return minSpeedMS;
-	}
-
-	public double getMaxSpeed()
-	{
-		return maxSpeedMS;
-	}
-
-	public double getMinTurnRate()
-	{
-		return minTurnRate_RadperSec;
-	}
-
-	public double getMaxTurnRate()
-	{
-		return maxTurnRate_RadperSec;
-	}
-
-	public double getMinAccelRate()
-	{
-		return minAccelRateMSS;
-	}
-
-	public double getMaxAccelRate()
-	{
+	public double getMaxAccelRate() {
 		return maxAccelRateMSS;
 	}
 
-	public double getMinDecelRate()
-	{
+	public double getMaxDecelRate() {
+		return maxDecelRateMSS;
+	}
+
+	public double getMaxSpeed() {
+		return maxSpeedMS;
+	}
+
+	public double getMaxTurnRate() {
+		return maxTurnRate_RadperSec;
+	}
+
+	public double getMinAccelRate() {
+		return minAccelRateMSS;
+	}
+
+	public double getMinDecelRate() {
 		return minDecelRateMSS;
 	}
 
-	public double getMaxDecelRate()
-	{
-		return maxDecelRateMSS;
+	public double getMinSpeed() {
+		return minSpeedMS;
+	}
+
+	public double getMinTurnRate() {
+		return minTurnRate_RadperSec;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 }

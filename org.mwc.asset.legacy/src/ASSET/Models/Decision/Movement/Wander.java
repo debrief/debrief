@@ -17,30 +17,116 @@ import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 
 /*******************************************************************************
- * Debrief - the Open Source Maritime Analysis Application
- * http://debrief.info
- *  
+ * Debrief - the Open Source Maritime Analysis Application http://debrief.info
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the Eclipse Public License v1.0
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
-public class Wander extends CoreDecision implements Response,
-		java.io.Serializable
-{
+public class Wander extends CoreDecision implements Response, java.io.Serializable {
 
 	/***********************************************************************
 	 * member variables
 	 ***********************************************************************/
 
+	public static class Wander2Test extends SupportTesting.EditableTesting {
+		public Wander2Test(final String val) {
+			super(val);
+		}
+
+		/**
+		 * get an object which we can test
+		 *
+		 * @return Editable object which we can check the properties for
+		 */
+		@Override
+		public Editable getEditable() {
+			final Wander newWander = new Wander(createLocation(0, 0), new WorldDistance(21, WorldDistance.KM));
+			newWander.setName("testing wander");
+			return newWander;
+		}
+
+		/**
+		 * test we handle missing demanded speed
+		 */
+		public final void testNoDemCourseSpeed() {
+			final WorldLocation origin = SupportTesting.createLocation(0, 0);
+			final Wander tw = new Wander(origin, new WorldDistance(21, WorldDistance.KM));
+
+			final Status stat = new Status(1, 0);
+			stat.setLocation(origin.add(new WorldVector(100, WorldDistance.METRES, 0)));
+			stat.setCourse(22);
+			stat.setSpeed(new WorldSpeed(12, WorldSpeed.M_sec));
+
+			final DemandedStatus dem = null;
+
+			final SimpleDemandedStatus ds = (SimpleDemandedStatus) tw.decide(stat, null, dem, null, null, 100);
+
+			assertNotNull("dem returned", ds);
+			assertEquals("still on old course", 22, ds.getCourse(), 0);
+			assertEquals("still on old speed", 12, ds.getSpeed(), 0);
+		}
+
+		public final void testWithDemCourseSpeed() {
+			final WorldLocation origin = SupportTesting.createLocation(0, 0);
+			final Wander tw = new Wander(origin, new WorldDistance(21, WorldDistance.KM));
+			tw.setSpeed(new WorldSpeed(44, WorldSpeed.M_sec));
+			tw.setHeight(new WorldDistance(45, WorldDistance.METRES));
+
+			final Status stat = new Status(1, 0);
+			stat.setLocation(origin.add(new WorldVector(100, WorldDistance.METRES, 0)));
+			stat.setCourse(22);
+			stat.setSpeed(new WorldSpeed(12, WorldSpeed.M_sec));
+
+			final DemandedStatus dem = null;
+
+			final SimpleDemandedStatus ds = (SimpleDemandedStatus) tw.decide(stat, null, dem, null, null, 100);
+
+			assertNotNull("dem returned", ds);
+			assertEquals("new demanded Height", 45, ds.getHeight(), 0);
+			assertEquals("new demanded speed", 44, ds.getSpeed(), 0);
+		}
+	}
+
+	static public final class WanderInfo extends MWC.GUI.Editable.EditorType {
+
+		/**
+		 * constructor for editable details of a set of Layers
+		 *
+		 * @param data the Layers themselves
+		 */
+		public WanderInfo(final Wander data) {
+			super(data, data.getName(), "Wander");
+		}
+
+		/**
+		 * editable GUI properties for our participant
+		 *
+		 * @return property descriptions
+		 */
+		@Override
+		public final java.beans.PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final java.beans.PropertyDescriptor[] res = { prop("Origin", "the center about which we wander"),
+						prop("Range", "the distance we wander out to (yds)"),
+						prop("Name", "the name of this wandering model"), prop("Speed", "the speed we wander at (kts)"),
+						prop("Height", "the Height we wander at (m)"), };
+				return res;
+			} catch (final java.beans.IntrospectionException e) {
+				return super.getPropertyDescriptors();
+			}
+		}
+	}
+
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -95,8 +181,8 @@ public class Wander extends CoreDecision implements Response,
 	private WorldDistance _Height;
 
 	/**
-	 * an offset to randomly apply to the course to the centre of the area - to
-	 * give the wandering effect
+	 * an offset to randomly apply to the course to the centre of the area - to give
+	 * the wandering effect
 	 */
 	final double OFFSET_RANGE = 120;
 
@@ -106,37 +192,36 @@ public class Wander extends CoreDecision implements Response,
 	 * *********************************************************************
 	 */
 
-	public Wander(final MWC.GenericData.WorldLocation origin,
-			final WorldDistance range_yds)
-	{
+	public Wander(final MWC.GenericData.WorldLocation origin, final WorldDistance range_yds) {
 		this("unset");
 		setOrigin(origin);
 		setRange(range_yds);
 	}
 
-	public Wander(String myName)
-	{
+	public Wander(final String myName) {
 		super(myName);
 	}
 
+	@Override
+	public final ASSET.Participants.DemandedStatus decide(final ASSET.Participants.Status status,
+			final ASSET.Models.Movement.MovementCharacteristics chars, final DemandedStatus demStatus,
+			final ASSET.Models.Detection.DetectionList detections, final ASSET.Scenario.ScenarioActivityMonitor monitor,
+			final long time) {
+		return direct(null, status, demStatus, detections, monitor, time);
+	}
+
 	/**
-	 * @param conditionResult
-	 *          the object returned from the condition object
-	 * @param status
-	 *          the current status of the participant
-	 * @param detections
-	 *          the current set of detections
-	 * @param monitor
-	 *          the monitor object listening out for significant activity
-	 * @param time
-	 *          the current time step
+	 * @param conditionResult the object returned from the condition object
+	 * @param status          the current status of the participant
+	 * @param detections      the current set of detections
+	 * @param monitor         the monitor object listening out for significant
+	 *                        activity
+	 * @param time            the current time step
 	 * @return the DemandedStatus for this vessel
 	 */
-	public final DemandedStatus direct(final Object conditionResult,
-			final Status status, final DemandedStatus demStat,
-			final DetectionList detections, final ScenarioActivityMonitor monitor,
-			final long time)
-	{
+	@Override
+	public final DemandedStatus direct(final Object conditionResult, final Status status, final DemandedStatus demStat,
+			final DetectionList detections, final ScenarioActivityMonitor monitor, final long time) {
 
 		SimpleDemandedStatus res;
 		Double oldDemCourse = null;
@@ -146,14 +231,12 @@ public class Wander extends CoreDecision implements Response,
 		String thisActivity = null;
 
 		// do we have an existing simple demanded status?
-		if (demStat != null)
-		{
+		if (demStat != null) {
 			// if we have an existing demanded status, we will continue with it -
 			// there's no need to change it if
 			// we don't need to
-			if (demStat instanceof SimpleDemandedStatus)
-			{
-				SimpleDemandedStatus sds = (SimpleDemandedStatus) demStat;
+			if (demStat instanceof SimpleDemandedStatus) {
+				final SimpleDemandedStatus sds = (SimpleDemandedStatus) demStat;
 				oldDemCourse = new Double(sds.getCourse());
 
 				double courseError = sds.getCourse() - status.getCourse();
@@ -164,8 +247,7 @@ public class Wander extends CoreDecision implements Response,
 					courseError += 360;
 
 				// is the error acceptable?
-				if (Math.abs(courseError) > 1)
-				{
+				if (Math.abs(courseError) > 1) {
 					// yes, put us on course
 					changingCourse = true;
 				}
@@ -174,12 +256,9 @@ public class Wander extends CoreDecision implements Response,
 		}
 
 		// and did we find a value?
-		if (oldDemCourse != null)
-		{
+		if (oldDemCourse != null) {
 			res = new SimpleDemandedStatus(time, (SimpleDemandedStatus) demStat);
-		}
-		else
-		{
+		} else {
 			res = new SimpleDemandedStatus(time, status);
 		}
 
@@ -191,28 +270,21 @@ public class Wander extends CoreDecision implements Response,
 			res.setSpeed(_speed.getValueIn(WorldSpeed.M_sec));
 
 		// ok, find out if we have passed the limit
-		boolean beyondLimit = isBeyondLimit(status);
+		final boolean beyondLimit = isBeyondLimit(status);
 
-		if (changingCourse)
-		{
+		if (changingCourse) {
 			// just continue, until we're on course
 			if (oldDemCourse != null)
 				res.setCourse(oldDemCourse.doubleValue());
-			thisActivity += " " + Wander.OUT_OF_AREA + ":"
-					+ Wander.MANOEUVERING_TO_NEW_COURSE;
-		}
-		else
-		{
-			if (beyondLimit)
-			{
+			thisActivity += " " + Wander.OUT_OF_AREA + ":" + Wander.MANOEUVERING_TO_NEW_COURSE;
+		} else {
+			if (beyondLimit) {
 				// we're on course. find a new one
 				thisActivity = Wander.OUT_OF_AREA;
 
 				// ok, set the new course
 				setNewCourse(status, oldDemCourse, res);
-			}
-			else
-			{
+			} else {
 				// no, continue in course
 				res.setCourse(status.getCourse());
 
@@ -228,213 +300,49 @@ public class Wander extends CoreDecision implements Response,
 	}
 
 	/**
-	 * function to determine if it's time to turn to the new course
-	 * 
-	 * @param current
-	 *          the current status
-	 * @return
-	 */
-	protected boolean isBeyondLimit(Status current)
-	{
-
-		// how far are we from the centre?
-		final MWC.GenericData.WorldVector offset = _origin.subtract(current
-				.getLocation());
-
-		// have we passed our outer range?
-		final boolean beyondLimit = offset.getRange() > _range
-				.getValueIn(WorldDistance.DEGS);
-		return beyondLimit;
-	}
-
-	/**
-	 * ok, plot a new course because we're at the edge
-	 * 
-	 * @param status
-	 *          our current status
-	 * @param oldDemCourse
-	 *          the old demanded course
-	 * @param res
-	 *          the demanded status object (to place our data into)
-	 * @param origin
-	 * @return the status message
-	 */
-	protected String setNewCourse(final Status status, Double oldDemCourse,
-			SimpleDemandedStatus res)
-	{
-		return setNewCourse(status, oldDemCourse, res, _origin);
-	}
-
-	protected String setNewCourse(final Status status, Double oldDemCourse,
-			SimpleDemandedStatus res, WorldLocation origin)
-	{
-		StringBuffer activity = new StringBuffer();
-
-		// what's the range to the origin?
-		final MWC.GenericData.WorldVector offset = origin.subtract(status
-				.getLocation());
-
-		// plot a course back to the centre
-		double courseRequired = MWC.Algorithms.Conversions.Rads2Degs(offset
-				.getBearing());
-
-		// just double-check whether we are currently heading for the wander area,
-		// but just taking a while to get there
-		double courseError = Math.abs(courseRequired - status.getCourse());
-		if (courseError < OFFSET_RANGE / 2)
-		{
-			// do we know our old course?
-			if (oldDemCourse != null)
-			{
-				// hey, just stay as we are!!
-				res.setCourse(oldDemCourse.doubleValue());
-			}
-
-			activity.append(":");
-			activity.append(Wander.HEADING_FOR_AREA);
-		}
-		else
-		{
-			// add a slight offset to this demanded course (+/- 30 degs)
-			courseRequired += (-OFFSET_RANGE / 2 + RandomGenerator.nextRandom()
-					* OFFSET_RANGE);
-
-			res.setCourse(courseRequired);
-			activity.append(":");
-			activity.append(Wander.NEW_COURSE);
-
-		}
-
-		return activity.toString();
-	}
-
-	public final ASSET.Participants.DemandedStatus decide(
-			final ASSET.Participants.Status status,
-			ASSET.Models.Movement.MovementCharacteristics chars,
-			final DemandedStatus demStatus,
-			final ASSET.Models.Detection.DetectionList detections,
-			final ASSET.Scenario.ScenarioActivityMonitor monitor, final long time)
-	{
-		return direct(null, status, demStatus, detections, monitor, time);
-	}
-
-	/**
-	 * reset this decision model
-	 */
-	public final void restart()
-	{
-		//
-	}
-
-	/**
-	 * indicate to this model that its execution has been interrupted by another
-	 * (prob higher priority) model
-	 * 
-	 * @param currentStatus
-	 */
-	public void interrupted(Status currentStatus)
-	{
-		// ignore.
-	}
-
-	/**
-	 * the origin we wander about
-	 */
-	public final void setOrigin(final MWC.GenericData.WorldLocation origin)
-	{
-		_origin = origin;
-	}
-
-	/**
-	 * the origin we wander about
-	 */
-	public final MWC.GenericData.WorldLocation getOrigin()
-	{
-		return _origin;
-	}
-
-	/**
-	 * the range we wander out to (yds)
-	 */
-	public final void setRange(final WorldDistance range_yds)
-	{
-		_range = range_yds;
-	}
-
-	/**
-	 * the range we wander out to
-	 */
-	public final WorldDistance getRange()
-	{
-		return _range;
-	}
-
-	/**
-	 * the speed we wander at (kts)
-	 */
-	public final void setSpeed(final WorldSpeed kts)
-	{
-		_speed = kts;
-	}
-
-	/**
-	 * the speed we wander at (kts)
-	 */
-	public final WorldSpeed getSpeed()
-	{
-		return _speed;
-	}
-
-	/**
 	 * the Height we wander at
 	 */
-	public final void setHeight(final WorldDistance val)
-	{
-		_Height = val;
-	}
-
-	/**
-	 * the Height we wander at
-	 */
-	public final WorldDistance getHeight()
-	{
+	public final WorldDistance getHeight() {
 		return _Height;
-	}
-
-	// ////////////////////////////////////////////////////////////////////
-	// editable data
-	// ////////////////////////////////////////////////////////////////////
-	/**
-	 * whether there is any edit information for this item this is a convenience
-	 * function to save creating the EditorType data first
-	 * 
-	 * @return yes/no
-	 */
-	public boolean hasEditor()
-	{
-		return true;
 	}
 
 	/**
 	 * get the editor for this item
-	 * 
+	 *
 	 * @return the BeanInfo data for this editable object
 	 */
-	public MWC.GUI.Editable.EditorType getInfo()
-	{
+	@Override
+	public MWC.GUI.Editable.EditorType getInfo() {
 		if (_myEditor == null)
 			_myEditor = new WanderInfo(this);
 
 		return _myEditor;
 	}
 
-	// //////////////////////////////////////////////////////////
-	// model support
-	// //////////////////////////////////////////////////////////
+	/**
+	 * the origin we wander about
+	 */
+	public final MWC.GenericData.WorldLocation getOrigin() {
+		return _origin;
+	}
+
+	/**
+	 * the range we wander out to
+	 */
+	public final WorldDistance getRange() {
+		return _range;
+	}
+
+	/**
+	 * the speed we wander at (kts)
+	 */
+	public final WorldSpeed getSpeed() {
+		return _speed;
+	}
 
 	/**
 	 * get the version details for this model.
-	 * 
+	 *
 	 * <pre>
 	 * $Log: Wander.java,v $
 	 * Revision 1.2  2006/08/29 13:12:38  Ian.Mayo
@@ -491,117 +399,138 @@ public class Wander extends CoreDecision implements Response,
 	 * <p/>
 	 * </pre>
 	 */
-	public String getVersion()
-	{
+	@Override
+	public String getVersion() {
 		return "$Date$";
 	}
 
-	static public final class WanderInfo extends MWC.GUI.Editable.EditorType
-	{
-
-		/**
-		 * constructor for editable details of a set of Layers
-		 * 
-		 * @param data
-		 *          the Layers themselves
-		 */
-		public WanderInfo(final Wander data)
-		{
-			super(data, data.getName(), "Wander");
-		}
-
-		/**
-		 * editable GUI properties for our participant
-		 * 
-		 * @return property descriptions
-		 */
-		public final java.beans.PropertyDescriptor[] getPropertyDescriptors()
-		{
-			try
-			{
-				final java.beans.PropertyDescriptor[] res =
-				{ prop("Origin", "the center about which we wander"),
-						prop("Range", "the distance we wander out to (yds)"),
-						prop("Name", "the name of this wandering model"),
-						prop("Speed", "the speed we wander at (kts)"),
-						prop("Height", "the Height we wander at (m)"), };
-				return res;
-			}
-			catch (java.beans.IntrospectionException e)
-			{
-				return super.getPropertyDescriptors();
-			}
-		}
+	// ////////////////////////////////////////////////////////////////////
+	// editable data
+	// ////////////////////////////////////////////////////////////////////
+	/**
+	 * whether there is any edit information for this item this is a convenience
+	 * function to save creating the EditorType data first
+	 *
+	 * @return yes/no
+	 */
+	@Override
+	public boolean hasEditor() {
+		return true;
 	}
 
-	public static class Wander2Test extends SupportTesting.EditableTesting
-	{
-		public Wander2Test(final String val)
-		{
-			super(val);
+	/**
+	 * indicate to this model that its execution has been interrupted by another
+	 * (prob higher priority) model
+	 *
+	 * @param currentStatus
+	 */
+	@Override
+	public void interrupted(final Status currentStatus) {
+		// ignore.
+	}
+
+	/**
+	 * function to determine if it's time to turn to the new course
+	 *
+	 * @param current the current status
+	 * @return
+	 */
+	protected boolean isBeyondLimit(final Status current) {
+
+		// how far are we from the centre?
+		final MWC.GenericData.WorldVector offset = _origin.subtract(current.getLocation());
+
+		// have we passed our outer range?
+		final boolean beyondLimit = offset.getRange() > _range.getValueIn(WorldDistance.DEGS);
+		return beyondLimit;
+	}
+
+	/**
+	 * reset this decision model
+	 */
+	@Override
+	public final void restart() {
+		//
+	}
+
+	/**
+	 * the Height we wander at
+	 */
+	public final void setHeight(final WorldDistance val) {
+		_Height = val;
+	}
+
+	/**
+	 * ok, plot a new course because we're at the edge
+	 *
+	 * @param status       our current status
+	 * @param oldDemCourse the old demanded course
+	 * @param res          the demanded status object (to place our data into)
+	 * @param origin
+	 * @return the status message
+	 */
+	protected String setNewCourse(final Status status, final Double oldDemCourse, final SimpleDemandedStatus res) {
+		return setNewCourse(status, oldDemCourse, res, _origin);
+	}
+
+	protected String setNewCourse(final Status status, final Double oldDemCourse, final SimpleDemandedStatus res,
+			final WorldLocation origin) {
+		final StringBuffer activity = new StringBuffer();
+
+		// what's the range to the origin?
+		final MWC.GenericData.WorldVector offset = origin.subtract(status.getLocation());
+
+		// plot a course back to the centre
+		double courseRequired = MWC.Algorithms.Conversions.Rads2Degs(offset.getBearing());
+
+		// just double-check whether we are currently heading for the wander area,
+		// but just taking a while to get there
+		final double courseError = Math.abs(courseRequired - status.getCourse());
+		if (courseError < OFFSET_RANGE / 2) {
+			// do we know our old course?
+			if (oldDemCourse != null) {
+				// hey, just stay as we are!!
+				res.setCourse(oldDemCourse.doubleValue());
+			}
+
+			activity.append(":");
+			activity.append(Wander.HEADING_FOR_AREA);
+		} else {
+			// add a slight offset to this demanded course (+/- 30 degs)
+			courseRequired += (-OFFSET_RANGE / 2 + RandomGenerator.nextRandom() * OFFSET_RANGE);
+
+			res.setCourse(courseRequired);
+			activity.append(":");
+			activity.append(Wander.NEW_COURSE);
+
 		}
 
-		/**
-		 * get an object which we can test
-		 * 
-		 * @return Editable object which we can check the properties for
-		 */
-		public Editable getEditable()
-		{
-			Wander newWander = new Wander(createLocation(0, 0), new WorldDistance(21,
-					WorldDistance.KM));
-			newWander.setName("testing wander");
-			return newWander;
-		}
+		return activity.toString();
+	}
 
-		/**
-		 * test we handle missing demanded speed
-		 */
-		public final void testNoDemCourseSpeed()
-		{
-			final WorldLocation origin = SupportTesting.createLocation(0, 0);
-			final Wander tw = new Wander(origin, new WorldDistance(21,
-					WorldDistance.KM));
+	// //////////////////////////////////////////////////////////
+	// model support
+	// //////////////////////////////////////////////////////////
 
-			final Status stat = new Status(1, 0);
-			stat.setLocation(origin
-					.add(new WorldVector(100, WorldDistance.METRES, 0)));
-			stat.setCourse(22);
-			stat.setSpeed(new WorldSpeed(12, WorldSpeed.M_sec));
+	/**
+	 * the origin we wander about
+	 */
+	public final void setOrigin(final MWC.GenericData.WorldLocation origin) {
+		_origin = origin;
+	}
 
-			final DemandedStatus dem = null;
+	/**
+	 * the range we wander out to (yds)
+	 */
+	public final void setRange(final WorldDistance range_yds) {
+		_range = range_yds;
+	}
 
-			final SimpleDemandedStatus ds = (SimpleDemandedStatus) tw.decide(stat,
-					null, dem, null, null, 100);
-
-			assertNotNull("dem returned", ds);
-			assertEquals("still on old course", 22, ds.getCourse(), 0);
-			assertEquals("still on old speed", 12, ds.getSpeed(), 0);
-		}
-
-		public final void testWithDemCourseSpeed()
-		{
-			final WorldLocation origin = SupportTesting.createLocation(0, 0);
-			final Wander tw = new Wander(origin, new WorldDistance(21,
-					WorldDistance.KM));
-			tw.setSpeed(new WorldSpeed(44, WorldSpeed.M_sec));
-			tw.setHeight(new WorldDistance(45, WorldDistance.METRES));
-
-			final Status stat = new Status(1, 0);
-			stat.setLocation(origin
-					.add(new WorldVector(100, WorldDistance.METRES, 0)));
-			stat.setCourse(22);
-			stat.setSpeed(new WorldSpeed(12, WorldSpeed.M_sec));
-
-			final DemandedStatus dem = null;
-
-			final SimpleDemandedStatus ds = (SimpleDemandedStatus) tw.decide(stat,
-					null, dem, null, null, 100);
-
-			assertNotNull("dem returned", ds);
-			assertEquals("new demanded Height", 45, ds.getHeight(), 0);
-			assertEquals("new demanded speed", 44, ds.getSpeed(), 0);
-		}
+	/**
+	 * the speed we wander at (kts)
+	 */
+	public final void setSpeed(final WorldSpeed kts) {
+		_speed = kts;
 	}
 
 }

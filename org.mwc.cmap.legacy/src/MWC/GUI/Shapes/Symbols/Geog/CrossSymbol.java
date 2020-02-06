@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: CrossSymbol.java,v $
@@ -84,76 +84,72 @@ import MWC.GenericData.WorldLocation;
 
 public class CrossSymbol extends PlainSymbol {
 
-  /**
-	 * 
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	
-  @Override
-  public PlainSymbol create()
-  {
-    return new CrossSymbol();
-  }
 
-  /** get this symbol as a sequence of lines
-   *
-   * @return
-   */
-  public Vector<Vector<Point2D>> getCoordinates() {
-  	final Vector<Vector<Point2D>> res = new Vector<Vector<Point2D>>(0,1);
+	@Override
+	public PlainSymbol create() {
+		return new CrossSymbol();
+	}
 
-  	final Vector<Point2D> line1 = new Vector<Point2D>(0,1);
-  	final Vector<Point2D> line2 = new Vector<Point2D>(0,1);
+	@Override
+	public java.awt.Dimension getBounds() {
+		return new java.awt.Dimension((int) (2 * 2 * getScaleVal()), (int) (2 * 2 * getScaleVal()));
+	}
 
-    final int wid = (int)(2 * getScaleVal());
-    line1.add(new Point(-wid, 0));
-    line1.add(new Point(wid, 0));
-    line2.add(new Point(0, -wid));
-    line2.add(new Point(0, wid));
+	/**
+	 * get this symbol as a sequence of lines
+	 *
+	 * @return
+	 */
+	@Override
+	public Vector<Vector<Point2D>> getCoordinates() {
+		final Vector<Vector<Point2D>> res = new Vector<Vector<Point2D>>(0, 1);
 
-    res.add(line1);
-    res.add(line2);
+		final Vector<Point2D> line1 = new Vector<Point2D>(0, 1);
+		final Vector<Point2D> line2 = new Vector<Point2D>(0, 1);
 
-    return res;
-  }
+		final int wid = (int) (2 * getScaleVal());
+		line1.add(new Point(-wid, 0));
+		line1.add(new Point(wid, 0));
+		line2.add(new Point(0, -wid));
+		line2.add(new Point(0, wid));
 
-  public java.awt.Dimension getBounds()
-  {
-    return new java.awt.Dimension((int)(2 * 2 * getScaleVal()),(int)(2 * 2 * getScaleVal()));
-  }
+		res.add(line1);
+		res.add(line2);
 
-  public void paint(final CanvasType dest, final WorldLocation centre)
-  {
-    paint(dest, centre, 0.0);
-  }
+		return res;
+	}
 
+	@Override
+	public String getType() {
+		return "Cross";
+	}
 
-  public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
-  {
-    // set the colour
-    dest.setColor(getColor());
+	@Override
+	public void paint(final CanvasType dest, final WorldLocation centre) {
+		paint(dest, centre, 0.0);
+	}
 
-    // create our centre point
-    final java.awt.Point centre = dest.toScreen(theLocation);
-    
-    // handle unable to gen screen coords (if off visible area)
-    if(centre == null)
-      return;
+	@Override
+	public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction) {
+		// set the colour
+		dest.setColor(getColor());
 
-    final int wid = (int)(2 * getScaleVal());
+		// create our centre point
+		final java.awt.Point centre = dest.toScreen(theLocation);
 
-    // draw our cross
-    dest.drawLine(centre.x - wid, centre.y,  centre.x + wid,  centre.y);
-    dest.drawLine(centre.x, centre.y - wid,  centre.x,  centre.y + wid);
-  }
+		// handle unable to gen screen coords (if off visible area)
+		if (centre == null)
+			return;
 
-  public String getType()
-  {
-    return "Cross";
-  }
+		final int wid = (int) (2 * getScaleVal());
+
+		// draw our cross
+		dest.drawLine(centre.x - wid, centre.y, centre.x + wid, centre.y);
+		dest.drawLine(centre.x, centre.y - wid, centre.x, centre.y + wid);
+	}
 
 }
-
-
-
-

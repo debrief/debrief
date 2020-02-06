@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.Properties;
@@ -74,71 +74,62 @@ package MWC.GUI.Properties;
 
 import java.beans.PropertyEditorSupport;
 
-public class LineStylePropertyEditor extends PropertyEditorSupport
-{
+public class LineStylePropertyEditor extends PropertyEditorSupport {
 
-  public static final int SOLID = 0;
-  public static final int DOTTED = 2;
-  public static final int DOT_DASH = 3;
-  public static final int DOT_DOT_DASH = 4;
-  public static final int LONG_DASHES = 1;
-  public static final int UNCONNECTED = 5;
+	public static final int SOLID = 0;
+	public static final int DOTTED = 2;
+	public static final int DOT_DASH = 3;
+	public static final int DOT_DOT_DASH = 4;
+	public static final int LONG_DASHES = 1;
+	public static final int UNCONNECTED = 5;
 
-  protected Integer _myLineStyle;
+	protected Integer _myLineStyle;
 
-  private String[] _myTags;
+	private String[] _myTags;
 
-  public String[] getTags()
-  {
-    if(_myTags == null)
-    {
-      _myTags = new String[6];
-      _myTags[SOLID] = "Solid";
-      _myTags[DOTTED] = "Dotted";
-      _myTags[DOT_DASH] = "Dot Dash";
-      _myTags[DOT_DOT_DASH] = "Dot Dot Dash";
-      _myTags[LONG_DASHES] = "Long Dashes";
-      _myTags[UNCONNECTED] = "Unconnected";
-    }
-    return _myTags;
-  }
+	@Override
+	public String getAsText() {
+		String res = null;
+		final int index = _myLineStyle.intValue();
+		res = getTags()[index];
+		return res;
+	}
 
-  public Object getValue()
-  {
-    return _myLineStyle;
-  }
+	@Override
+	public String[] getTags() {
+		if (_myTags == null) {
+			_myTags = new String[6];
+			_myTags[SOLID] = "Solid";
+			_myTags[DOTTED] = "Dotted";
+			_myTags[DOT_DASH] = "Dot Dash";
+			_myTags[DOT_DOT_DASH] = "Dot Dot Dash";
+			_myTags[LONG_DASHES] = "Long Dashes";
+			_myTags[UNCONNECTED] = "Unconnected";
+		}
+		return _myTags;
+	}
 
+	@Override
+	public Object getValue() {
+		return _myLineStyle;
+	}
 
+	@Override
+	public void setAsText(final String val) {
+		for (int i = 0; i < getTags().length; i++) {
+			final String thisStr = getTags()[i];
+			if (thisStr.equals(val))
+				_myLineStyle = new Integer(i);
+		}
+	}
 
-  public void setValue(final Object p1)
-  {
-    if(p1 instanceof Integer)
-    {
-      _myLineStyle = (Integer)p1;
-    }
-    else if(p1 instanceof String)
-    {
-      final String val = (String) p1;
-      setAsText(val);
-    }
-  }
-
-  public void setAsText(final String val)
-  {
-    for(int i=0;i<getTags().length;i++)
-    {
-      final String thisStr = getTags()[i];
-      if(thisStr.equals(val))
-        _myLineStyle = new Integer(i);
-    }
-  }
-
-  public String getAsText()
-  {
-    String res = null;
-    final int index = _myLineStyle.intValue();
-    res = getTags()[index];
-    return res;
-  }
+	@Override
+	public void setValue(final Object p1) {
+		if (p1 instanceof Integer) {
+			_myLineStyle = (Integer) p1;
+		} else if (p1 instanceof String) {
+			final String val = (String) p1;
+			setAsText(val);
+		}
+	}
 }
-

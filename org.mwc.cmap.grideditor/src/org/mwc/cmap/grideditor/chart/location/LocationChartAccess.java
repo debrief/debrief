@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.cmap.grideditor.chart.location;
@@ -33,34 +33,31 @@ import org.mwc.cmap.gridharness.data.GriddableItemDescriptorExtension;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GenericData.WorldLocation;
 
-
 public class LocationChartAccess implements IAdapterFactory {
 
-	@SuppressWarnings("rawtypes")
-	public Object getAdapter(final Object adaptableObject, final Class adapterType) {
-		if (false == adaptableObject instanceof GriddableItemDescriptorExtension) {
-			return null;
-		}
-		if (!ChartDataManager.class.isAssignableFrom(adapterType)) {
-			return null;
-		}
-		final GriddableItemDescriptorExtension descriptor = (GriddableItemDescriptorExtension) adaptableObject;
-		if (WorldLocation.class.isAssignableFrom(descriptor.getType())) {
-			return createLocationChart(descriptor);
-		}
-		return null;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public Class[] getAdapterList() {
-		return new Class[] { ChartDataManager.class };
-	}
-
-	private ChartDataManager createLocationChart(final GriddableItemDescriptor descriptor) {
-		return new Longitude2LatitudeChartManager(descriptor);
-	}
-
 	private static class Longitude2LatitudeChartManager extends Value2ValueManager {
+
+		private static GriddableItemChartComponent createLatitudeAccessor(final GriddableItemDescriptor descriptor) {
+			return new GriddableItemChartComponent() {
+
+				@Override
+				public double getDoubleValue(final TimeStampedDataItem dataItem) {
+					final WorldLocation location = BeanUtil.getItemValue(dataItem, descriptor, WorldLocation.class);
+					return location == null ? 0 : location.getLat();
+				}
+			};
+		}
+
+		private static GriddableItemChartComponent createLongitudeAccessor(final GriddableItemDescriptor descriptor) {
+			return new GriddableItemChartComponent() {
+
+				@Override
+				public double getDoubleValue(final TimeStampedDataItem dataItem) {
+					final WorldLocation location = BeanUtil.getItemValue(dataItem, descriptor, WorldLocation.class);
+					return location == null ? 0 : location.getLong();
+				}
+			};
+		}
 
 		private DataPointsDragTracker myDragTracker;
 
@@ -77,14 +74,16 @@ public class LocationChartAccess implements IAdapterFactory {
 
 					@Override
 					protected void dragCompleted(final BackedChartItem item, final double finalX, final double finalY) {
-						final OperationEnvironment environment = new OperationEnvironment(undoSupport.getUndoContext(), getInput(), item.getDomainItem(), getDescriptor());
-						final WorldLocation location = new WorldLocation(finalX, finalY,0);
-						final SetDescriptorValueOperation setLocation = new SetDescriptorValueOperation(environment, location);
+						final OperationEnvironment environment = new OperationEnvironment(undoSupport.getUndoContext(),
+								getInput(), item.getDomainItem(), getDescriptor());
+						final WorldLocation location = new WorldLocation(finalX, finalY, 0);
+						final SetDescriptorValueOperation setLocation = new SetDescriptorValueOperation(environment,
+								location);
 						try {
 							undoSupport.getOperationHistory().execute(setLocation, null, null);
 						} catch (final ExecutionException e) {
 							throw new RuntimeException("Can't set the location of :" + location + //
-									" for item " + item.getDomainItem(), e);
+							" for item " + item.getDomainItem(), e);
 						}
 					}
 				};
@@ -99,25 +98,31 @@ public class LocationChartAccess implements IAdapterFactory {
 				myDragTracker = null;
 			}
 		}
+	}
 
-		private static GriddableItemChartComponent createLatitudeAccessor(final GriddableItemDescriptor descriptor) {
-			return new GriddableItemChartComponent() {
+	private ChartDataManager createLocationChart(final GriddableItemDescriptor descriptor) {
+		return new Longitude2LatitudeChartManager(descriptor);
+	}
 
-				public double getDoubleValue(final TimeStampedDataItem dataItem) {
-					final WorldLocation location = BeanUtil.getItemValue(dataItem, descriptor, WorldLocation.class);
-					return location == null ? 0 : location.getLat();
-				}
-			};
+	@Override
+	@SuppressWarnings("rawtypes")
+	public Object getAdapter(final Object adaptableObject, final Class adapterType) {
+		if (false == adaptableObject instanceof GriddableItemDescriptorExtension) {
+			return null;
 		}
-
-		private static GriddableItemChartComponent createLongitudeAccessor(final GriddableItemDescriptor descriptor) {
-			return new GriddableItemChartComponent() {
-
-				public double getDoubleValue(final TimeStampedDataItem dataItem) {
-					final WorldLocation location = BeanUtil.getItemValue(dataItem, descriptor, WorldLocation.class);
-					return location == null ? 0 : location.getLong();
-				}
-			};
+		if (!ChartDataManager.class.isAssignableFrom(adapterType)) {
+			return null;
 		}
+		final GriddableItemDescriptorExtension descriptor = (GriddableItemDescriptorExtension) adaptableObject;
+		if (WorldLocation.class.isAssignableFrom(descriptor.getType())) {
+			return createLocationChart(descriptor);
+		}
+		return null;
+	}
+
+	@Override
+	@SuppressWarnings("rawtypes")
+	public Class[] getAdapterList() {
+		return new Class[] { ChartDataManager.class };
 	}
 }

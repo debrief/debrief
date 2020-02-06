@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.debrief.data_feed.views;
@@ -25,9 +25,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
@@ -76,8 +77,21 @@ import MWC.Utilities.Errors.Trace;
  * <p>
  */
 
-public class DataFeed extends ViewPart implements LiveFeedViewer
-{
+public class DataFeed extends ViewPart implements LiveFeedViewer {
+
+	/**
+	 * copy of implementation in DebriefPlugin
+	 *
+	 * @return
+	 */
+	public static Runner getSWTRunner() {
+		return new ImportReplay.Runner() {
+			@Override
+			public void run(final Runnable runnable) {
+				Display.getDefault().asyncExec(runnable);
+			}
+		};
+	}
 
 	/**
 	 * whether to update the plot centred on ownship
@@ -125,77 +139,73 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 	/**
 	 * The constructor.
 	 */
-	public DataFeed()
-	{  
+	public DataFeed() {
 		_importer = new ImportReplay(getSWTRunner());
 
-	//	_provider = new DummyDataProvider();
+		// _provider = new DummyDataProvider();
 
 		// sort out the list of data-sources
-		CorePlugin.logError(Status.INFO, "Starting to load data providers", null);
+		CorePlugin.logError(IStatus.INFO, "Starting to load data providers", null);
 
 		_dataProviders = new ArrayList<RealTimeProvider>();
-		final IExtensionPoint point = Platform.getExtensionRegistry().getExtensionPoint(
-				"org.mwc.debrief.data_feed", "RealTimeProvider");
+		final IExtensionPoint point = Platform.getExtensionRegistry().getExtensionPoint("org.mwc.debrief.data_feed",
+				"RealTimeProvider");
 
 		// check: Any <extension> tags for our extension-point?
-		if (point != null)
-		{
+		if (point != null) {
 			final IExtension[] extensions = point.getExtensions();
 
-			for (int i = 0; i < extensions.length; i++)
-			{
+			for (int i = 0; i < extensions.length; i++) {
 				final IConfigurationElement[] ces = extensions[i].getConfigurationElements();
 
-				for (int j = 0; j < ces.length; j++)
-				{
+				for (int j = 0; j < ces.length; j++) {
 					// if this is the tag we want ("tool") create a descriptor
 					// for it
-					if (ces[j].getName().equals("provider"))
-					{
+					if (ces[j].getName().equals("provider")) {
 						System.out.println("found new data-feed provider:" + ces[j].getName());
 						final IConfigurationElement thisEl = ces[j];
 						RealTimeProvider cl;
-						try
-						{
+						try {
 							cl = (RealTimeProvider) thisEl.createExecutableExtension("class");
 							_dataProviders.add(cl);
-						}
-						catch (final CoreException e)
-						{
+						} catch (final CoreException e) {
 							e.printStackTrace();
 						}
 					}
 				}
 			}
 		}
-		
-		CorePlugin.logError(Status.INFO, "Finished loading data providers", null);
+
+		CorePlugin.logError(IStatus.INFO, "Finished loading data providers", null);
 	}
 
+	protected void connectPressed() {
+		if (_connectToggle.getSelection()) {
+			_connectToggle.setText("Disconnect");
+		} else {
+			_connectToggle.setText("Connect");
+		}
 
-	/** copy of implementation in DebriefPlugin
-	 * 
-	 * @return
-	 */
-  public static Runner getSWTRunner()
-  {
-    return new ImportReplay.Runner()
-    {
-      @Override
-      public void run(Runnable runnable)
-      {
-        Display.getDefault().asyncExec(runnable);
-      }
-    };
-  }
-  
+		// do we have a data-provider
+		if (_provider != null) {
+			if (_connectToggle.getSelection())
+				_provider.connect(this);
+			else
+				_provider.disconnect(this);
+		}
+	}
+
+	private void contributeToActionBars() {
+		final IActionBars bars = getViewSite().getActionBars();
+		fillLocalPullDown(bars.getMenuManager());
+		fillLocalToolBar(bars.getToolBarManager());
+	}
+
 	/**
-	 * This is a callback that will allow us to create the viewer and initialize
-	 * it.
+	 * This is a callback that will allow us to create the viewer and initialize it.
 	 */
-	public void createPartControl(final Composite parent)
-	{
+	@Override
+	public void createPartControl(final Composite parent) {
 		final Composite topHolder = new Composite(parent, SWT.NONE);
 		topHolder.setLayout(new RowLayout(SWT.VERTICAL));
 
@@ -206,36 +216,36 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 		btnRow.pack = true;
 		btnHolder.setLayout(btnRow);
 		_sourceList = new ComboViewer(btnHolder);
-		_sourceList.setLabelProvider(new LabelProvider(){
+		_sourceList.setLabelProvider(new LabelProvider() {
 
-			public String getText(final Object element)
-			{
+			@Override
+			public String getText(final Object element) {
 				final RealTimeProvider prov = (RealTimeProvider) element;
 				return prov.getName();
-			}});
+			}
+		});
 		// add them
-		for (final Iterator<RealTimeProvider> iter = _dataProviders.iterator(); iter.hasNext();)
-		{
+		for (final Iterator<RealTimeProvider> iter = _dataProviders.iterator(); iter.hasNext();) {
 			final RealTimeProvider prov = iter.next();
 			_sourceList.add(prov);
 		}
 
-		_sourceList.addSelectionChangedListener(new ISelectionChangedListener(){
-			public void selectionChanged(final SelectionChangedEvent event)
-			{
+		_sourceList.addSelectionChangedListener(new ISelectionChangedListener() {
+			@Override
+			public void selectionChanged(final SelectionChangedEvent event) {
 				sourceChanged();
-			}});
-		
+			}
+		});
+
 		_connectToggle = new Button(btnHolder, SWT.TOGGLE);
 		_connectToggle.setText("    Connect    ");
-		_connectToggle.addSelectionListener(new SelectionListener()
-		{
-			public void widgetDefaultSelected(final SelectionEvent e)
-			{
+		_connectToggle.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetDefaultSelected(final SelectionEvent e) {
 			}
 
-			public void widgetSelected(final SelectionEvent e)
-			{
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
 				connectPressed();
 			}
 		});
@@ -257,146 +267,87 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 		// getSite().getWorkbenchWindow().getPartService().addPartListener(this);
 
 		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
-		_myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart)
-					{
-						_myLayers = (Layers) part;
-					}
-				});
+		_myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED, new PartMonitor.ICallback() {
+			@Override
+			public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart) {
+				_myLayers = (Layers) part;
+			}
+		});
 
 		// unusually, we are also going to track the open event for narrative data
 		// so that we can start off with some data
-		_myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart)
-					{
-						final Layers newLayers = (Layers) part;
-						if (newLayers == _myLayers)
-							_myLayers = null;
-					}
+		_myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED, new PartMonitor.ICallback() {
+			@Override
+			public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart) {
+				final Layers newLayers = (Layers) part;
+				if (newLayers == _myLayers)
+					_myLayers = null;
+			}
 
-				});
+		});
 
-		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.ACTIVATED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart)
-					{
-						// implementation here.
-						final ControllableTime ct = (ControllableTime) part;
-						_controllableTime = ct;
-					}
-				});
-		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.DEACTIVATED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart)
-					{
-						// no, don't bother clearing the controllable time when the plot is
-						// de-activated,
-						// - since with the highlight on the narrative, we want to be able
-						// to control the time still.
-						// _controllableTime = null;
-					}
-				});
+		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.ACTIVATED, new PartMonitor.ICallback() {
+			@Override
+			public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart) {
+				// implementation here.
+				final ControllableTime ct = (ControllableTime) part;
+				_controllableTime = ct;
+			}
+		});
+		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.DEACTIVATED, new PartMonitor.ICallback() {
+			@Override
+			public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart) {
+				// no, don't bother clearing the controllable time when the plot is
+				// de-activated,
+				// - since with the highlight on the narrative, we want to be able
+				// to control the time still.
+				// _controllableTime = null;
+			}
+		});
 
 		// ok we're all ready now. just try and see if the current part is valid
 		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow().getActivePage());
 	}
 
-	protected void sourceChanged()
-	{
-		if(_provider != null)
-		{
-			_connectToggle.setSelection(false);
-			connectPressed();
-		}
-		
-		// ok, store the new data item
-		final IStructuredSelection sel = (IStructuredSelection) _sourceList.getSelection();
-		_provider = (RealTimeProvider) sel.getFirstElement();
-	}
-
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.ui.part.WorkbenchPart#dispose()
 	 */
-	public void dispose()
-	{
+	@Override
+	public void dispose() {
 		super.dispose();
 
 		// and stop listening for part activity
 		_myPartMonitor.ditch();
 
 		// also stop listening for time events
-		if (_controllableTime != null)
-		{
+		if (_controllableTime != null) {
 		}
 	}
 
-	private void contributeToActionBars()
-	{
-		final IActionBars bars = getViewSite().getActionBars();
-		fillLocalPullDown(bars.getMenuManager());
-		fillLocalToolBar(bars.getToolBarManager());
-	}
-
-	private void fillLocalPullDown(final IMenuManager manager)
-	{
+	private void fillLocalPullDown(final IMenuManager manager) {
 		manager.add(_liveUpdate);
 		manager.add(new Separator());
 	}
 
-	private void fillLocalToolBar(final IToolBarManager manager)
-	{
+	private void fillLocalToolBar(final IToolBarManager manager) {
 		manager.add(_liveUpdate);
 	}
 
-	private void makeActions()
-	{
-		_liveUpdate = new Action("Live Update", Action.AS_CHECK_BOX)
-		{
-		};
-		_liveUpdate.setText("Live Update");
-		_liveUpdate.setChecked(true);
-		_liveUpdate.setToolTipText("Keep plot centred on current position of primary track");
-		_liveUpdate.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_TOOL_UP));
-
-	}
-
-	/**
-	 * Passing the focus request to the viewer's control.
-	 */
-	public void setFocus()
-	{
-
-	}
-
-	// //////////////////////////////
-	// temporal data management
-	// //////////////////////////////
-
-	public void insertData(final String data)
-	{
+	@Override
+	public void insertData(final String data) {
 		// ok - fire the new string of data into our reader-writer
-		try
-		{
+		try {
 			// tell it where our data it
-			if (_myLayers != null)
-			{
+			if (_myLayers != null) {
 				// ok, here's our data
 				_importer.setLayers(_myLayers);
 
 				// and let it import itself
 				final HiResDate dtg = _importer.readLine(data);
 
-				if (_liveUpdate.isChecked())
-				{
+				if (_liveUpdate.isChecked()) {
 					// and tell the layers there's been an update
 					_myLayers.fireExtended();
 
@@ -406,26 +357,42 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 				}
 
 			}
+		} catch (final IOException e) {
+			CorePlugin.logError(IStatus.ERROR, "failed whilst reading from real-time data feed", e);
+		} catch (final ParseException e) {
+			Trace.trace(e, "While parsing date from real-time data feed");
 		}
-		catch (final IOException e)
-		{
-			CorePlugin.logError(Status.ERROR, "failed whilst reading from real-time data feed",
-					e);
-		}
-    catch (ParseException e)
-    {
-      Trace.trace(e, "While parsing date from real-time data feed");
-    }
 	}
 
-	public void showMessage(final String msg)
-	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
-			public void run()
-			{
-				if (!_myList.getControl().isDisposed())
-				{
+	private void makeActions() {
+		_liveUpdate = new Action("Live Update", IAction.AS_CHECK_BOX) {
+		};
+		_liveUpdate.setText("Live Update");
+		_liveUpdate.setChecked(true);
+		_liveUpdate.setToolTipText("Keep plot centred on current position of primary track");
+		_liveUpdate.setImageDescriptor(
+				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_UP));
+
+	}
+
+	// //////////////////////////////
+	// temporal data management
+	// //////////////////////////////
+
+	/**
+	 * Passing the focus request to the viewer's control.
+	 */
+	@Override
+	public void setFocus() {
+
+	}
+
+	@Override
+	public void showMessage(final String msg) {
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				if (!_myList.getControl().isDisposed()) {
 					// ok, generate the DTG.
 					final String dtg = new Date().toString() + ":" + msg;
 
@@ -438,39 +405,27 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 		});
 	}
 
-	protected void connectPressed()
-	{
-		if (_connectToggle.getSelection())
-		{
-			_connectToggle.setText("Disconnect");
-		}
-		else
-		{
-			_connectToggle.setText("Connect");
-		}
-
-		// do we have a data-provider
-		if (_provider != null)
-		{
-			if (_connectToggle.getSelection())
-				_provider.connect(this);
-			else
-				_provider.disconnect(this);
-		}
-	}
-
-	public void showState(final String newState)
-	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
-			public void run()
-			{
-				if (!_myState.isDisposed())
-				{
+	@Override
+	public void showState(final String newState) {
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				if (!_myState.isDisposed()) {
 					_myState.setText(newState);
 				}
 			}
 		});
+	}
+
+	protected void sourceChanged() {
+		if (_provider != null) {
+			_connectToggle.setSelection(false);
+			connectPressed();
+		}
+
+		// ok, store the new data item
+		final IStructuredSelection sel = (IStructuredSelection) _sourceList.getSelection();
+		_provider = (RealTimeProvider) sel.getFirstElement();
 	}
 
 }

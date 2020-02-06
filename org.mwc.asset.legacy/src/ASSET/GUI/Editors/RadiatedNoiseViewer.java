@@ -14,16 +14,16 @@ import javax.swing.event.ListSelectionEvent;
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 import ASSET.Models.Mediums.BroadbandRadNoise;
@@ -37,237 +37,212 @@ import MWC.GUI.Properties.Swing.SwingPropertiesPanel;
 import MWC.GUI.Properties.Swing.SwingPropertyEditor2;
 import MWC.GenericData.WorldDistance;
 
-public class RadiatedNoiseViewer extends
-    MWC.GUI.Properties.Swing.SwingCustomEditor implements
-    MWC.GUI.Properties.NoEditorButtons,
-    PlainPropertyEditor.EditorUsesPropertyPanel,
-    PlainPropertyEditor.EditorUsesToolParent
-{
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  public static class ViewerTest extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+public class RadiatedNoiseViewer extends MWC.GUI.Properties.Swing.SwingCustomEditor
+		implements MWC.GUI.Properties.NoEditorButtons, PlainPropertyEditor.EditorUsesPropertyPanel,
+		PlainPropertyEditor.EditorUsesToolParent {
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	public static class ViewerTest extends junit.framework.TestCase {
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-    boolean set = false;
+		boolean set = false;
 
-    public ViewerTest(final String val)
-    {
-      super(val);
-    }
+		public ViewerTest(final String val) {
+			super(val);
+		}
 
-    public void testMe()
-    {
-      // create the object
-      final RadiatedNoiseViewer dv = new RadiatedNoiseViewer();
+		public void testMe() {
+			// create the object
+			final RadiatedNoiseViewer dv = new RadiatedNoiseViewer();
 
-      set = false;
-      final ASSET.Models.Vessels.SSN cp = new ASSET.Models.Vessels.SSN(12);
+			set = false;
+			final ASSET.Models.Vessels.SSN cp = new ASSET.Models.Vessels.SSN(12);
 
-      final RadiatedCharacteristics rc = new RadiatedCharacteristics();
-      rc.add(1, new Optic(12, new WorldDistance(12, WorldDistance.METRES)));
-      rc.add(3, new BroadbandRadNoise(23));
-      cp.setRadiatedChars(rc);
+			final RadiatedCharacteristics rc = new RadiatedCharacteristics();
+			rc.add(1, new Optic(12, new WorldDistance(12, WorldDistance.METRES)));
+			rc.add(3, new BroadbandRadNoise(23));
+			cp.setRadiatedChars(rc);
 
-      // store the radiated chars
-      dv.setObject(cp.getRadiatedChars());
+			// store the radiated chars
+			dv.setObject(cp.getRadiatedChars());
 
-      assertEquals("our data stored", dv._chars, cp.getRadiatedChars());
+			assertEquals("our data stored", dv._chars, cp.getRadiatedChars());
 
-      // check data loaded
-      assertEquals("list shows our data", dv._chars.getMediums().size(), 2);
+			// check data loaded
+			assertEquals("list shows our data", dv._chars.getMediums().size(), 2);
 
-      // check gui control created
-      assertEquals("form correctly laid out", dv._noiseList.getName(),
-          "List of noise mediums");
+			// check gui control created
+			assertEquals("form correctly laid out", dv._noiseList.getName(), "List of noise mediums");
 
-      // close down
-      dv.doClose();
+			// close down
+			dv.doClose();
 
-    }
-  }
+		}
+	}
 
-  /**
-   *
-   */
-  private static final long serialVersionUID = 1L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-  /**
-   * the border
-   */
-  final BorderLayout mainBorder = new BorderLayout();
+	/**
+	 * the border
+	 */
+	final BorderLayout mainBorder = new BorderLayout();
 
-  /**
-   * the list of radiated noise types
-   */
-  JList _noiseList;
+	/**
+	 * the list of radiated noise types
+	 */
+	JList _noiseList;
 
-  /**
-   * the radiated noise characeristics we are viewing
-   */
-  RadiatedCharacteristics _chars;
+	/**
+	 * the radiated noise characeristics we are viewing
+	 */
+	RadiatedCharacteristics _chars;
 
-  /**
-   * panel to contain editors themselves
-   */
-  private JPanel _editors;
+	/**
+	 * panel to contain editors themselves
+	 */
+	private JPanel _editors;
 
-  /**
-   * the table with the properties
-   */
-  private SwingPropertyEditor2 spe = null;
+	/**
+	 * the table with the properties
+	 */
+	private SwingPropertyEditor2 spe = null;
 
-  /**
-   * the parent
-   */
-  private ToolParent _theParent;
+	/**
+	 * the parent
+	 */
+	private ToolParent _theParent;
 
-  /**
-   * ************************************************* constructor
-   * *************************************************
-   */
-  public RadiatedNoiseViewer()
-  {
-    initForm();
-  }
+	/**
+	 * ************************************************* constructor
+	 * *************************************************
+	 */
+	public RadiatedNoiseViewer() {
+		initForm();
+	}
 
-  /**
-   * handle close event
-   */
-  @Override
-  public void doClose()
-  {
-    // do the parent bit
-    super.doClose();
-  }
+	/**
+	 * handle close event
+	 */
+	@Override
+	public void doClose() {
+		// do the parent bit
+		super.doClose();
+	}
 
-  private void initForm()
-  {
-    // layout
-    this.setLayout(new GridLayout(0, 1));
+	private void initForm() {
+		// layout
+		this.setLayout(new GridLayout(0, 1));
 
-    // create the list
-    _noiseList = new JList();
-    _noiseList.setName("List of noise mediums");
+		// create the list
+		_noiseList = new JList();
+		_noiseList.setName("List of noise mediums");
 
-    // update the list
-    updateList();
+		// update the list
+		updateList();
 
-    // collate the form
-    this.add(_noiseList);
+		// collate the form
+		this.add(_noiseList);
 
-    // sort out the editors
-    _editors = new JPanel();
-    _editors.setLayout(new GridLayout(1, 0));
-    this.add(_editors);
+		// sort out the editors
+		_editors = new JPanel();
+		_editors.setLayout(new GridLayout(1, 0));
+		this.add(_editors);
 
-    // listen out for any change
-    _noiseList.addListSelectionListener(
-        new javax.swing.event.ListSelectionListener()
-        {
-          /**
-           * Called whenever the value of the selection changes.
-           *
-           * @param e
-           *          the event that characterizes the change.
-           */
-          @Override
-          public void valueChanged(final ListSelectionEvent e)
-          {
-            if (!e.getValueIsAdjusting())
-            {
-              itemSelected();
-            }
-          }
-        });
+		// listen out for any change
+		_noiseList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+			/**
+			 * Called whenever the value of the selection changes.
+			 *
+			 * @param e the event that characterizes the change.
+			 */
+			@Override
+			public void valueChanged(final ListSelectionEvent e) {
+				if (!e.getValueIsAdjusting()) {
+					itemSelected();
+				}
+			}
+		});
 
-  }
+	}
 
-  /**
-   * ************************************************* support for a noise source being selected
-   * *************************************************
-   */
-  void itemSelected()
-  {
-    final Object newOne = _noiseList.getSelectedValue();
-    if (newOne instanceof MWC.GUI.Editable)
-    {
-      final MWC.GUI.Editable ed = (MWC.GUI.Editable) newOne;
-      if (ed.hasEditor())
-      {
-        // do we currently have one open?
-        if (spe != null)
-          spe.close();
+	/**
+	 * ************************************************* support for a noise source
+	 * being selected *************************************************
+	 */
+	void itemSelected() {
+		final Object newOne = _noiseList.getSelectedValue();
+		if (newOne instanceof MWC.GUI.Editable) {
+			final MWC.GUI.Editable ed = (MWC.GUI.Editable) newOne;
+			if (ed.hasEditor()) {
+				// do we currently have one open?
+				if (spe != null)
+					spe.close();
 
-        // empty the list
-        _editors.removeAll();
+				// empty the list
+				_editors.removeAll();
 
-        this.doLayout();
-        this.repaint();
+				this.doLayout();
+				this.repaint();
 
-        // create the new editor
-        spe = new SwingPropertyEditor2(ed.getInfo(),
-            (SwingPropertiesPanel) _thePanel, null, _theParent, null, null);
+				// create the new editor
+				spe = new SwingPropertyEditor2(ed.getInfo(), (SwingPropertiesPanel) _thePanel, null, _theParent, null,
+						null);
 
-        // put into the panel
-        _editors.add(spe.getPanel());
+				// put into the panel
+				_editors.add(spe.getPanel());
 
-        this.doLayout();
-        this.repaint();
-      }
-    }
-  }
+				this.doLayout();
+				this.repaint();
+			}
+		}
+	}
 
-  /**
-   * ************************************************* update the object we are editing
-   * *************************************************
-   */
-  @Override
-  public void setObject(final Object data)
-  {
-    // this is our vessel, start listening to it
-    if (data instanceof RadiatedCharacteristics)
-    {
-      // store it
-      _chars = (RadiatedCharacteristics) data;
+	/**
+	 * ************************************************* update the object we are
+	 * editing *************************************************
+	 */
+	@Override
+	public void setObject(final Object data) {
+		// this is our vessel, start listening to it
+		if (data instanceof RadiatedCharacteristics) {
+			// store it
+			_chars = (RadiatedCharacteristics) data;
 
-      // and update it
-      updateList();
-    }
-  }
+			// and update it
+			updateList();
+		}
+	}
 
-  @Override
-  public void setPanel(final PropertiesPanel thePanel)
-  {
-    _thePanel = thePanel;
-  }
+	@Override
+	public void setPanel(final PropertiesPanel thePanel) {
+		_thePanel = thePanel;
+	}
 
-  @Override
-  public void setParent(final ToolParent theParent)
-  {
-    _theParent = theParent;
-  }
+	@Override
+	public void setParent(final ToolParent theParent) {
+		_theParent = theParent;
+	}
 
-  /**
-   * update the list of mediums
-   */
-  private void updateList()
-  {
-    if (_chars != null)
-    {
-      final DefaultListModel newList = new javax.swing.DefaultListModel();
+	/**
+	 * update the list of mediums
+	 */
+	private void updateList() {
+		if (_chars != null) {
+			final DefaultListModel newList = new javax.swing.DefaultListModel();
 
-      final Collection<Medium> coll = _chars.getMediums();
-      final Iterator<Medium> iter = coll.iterator();
-      while (iter.hasNext())
-      {
-        final RadiatedCharacteristics.Medium thisMed = iter.next();
-        newList.addElement(thisMed);
-      }
+			final Collection<Medium> coll = _chars.getMediums();
+			final Iterator<Medium> iter = coll.iterator();
+			while (iter.hasNext()) {
+				final RadiatedCharacteristics.Medium thisMed = iter.next();
+				newList.addElement(thisMed);
+			}
 
-      // and add to list
-      _noiseList.setModel(newList);
-    }
-  }
+			// and add to list
+			_noiseList.setModel(newList);
+		}
+	}
 }

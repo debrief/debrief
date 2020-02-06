@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: ImportData2.java,v $
@@ -146,7 +146,6 @@
 
 package Debrief.Tools.Operations;
 
-
 import java.io.File;
 
 import javax.swing.SwingUtilities;
@@ -159,247 +158,243 @@ import MWC.GUI.ToolParent;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.PlainTool;
 
-/** command to import a file (initially just Replay) into Debrief.
- * The data used to implement the command is stored as a command,
- * so that it may be added to an undo buffer.
+/**
+ * command to import a file (initially just Replay) into Debrief. The data used
+ * to implement the command is stored as a command, so that it may be added to
+ * an undo buffer.
  */
 public final class ImportData2 extends PlainTool {
 
-  ///////////////////////////////////////////////////////////////
-  // member variables
-  ///////////////////////////////////////////////////////////////
-  /** keep a copy of the parent Session, */
-  private final Session _theSession;
+	///////////////////////////////////////////////////////
+	// store action information
+	///////////////////////////////////////////////////////
+	static public final class ImportAction implements Action {
+		/**
+		 * the filename we originally read the data from (note that by this point the
+		 * data has already been read, and stored in the Layers object)
+		 */
+		private final File[] _theFiles;
+		/**
+		 * the session we are going to import the data into
+		 */
+		private Session _theSession;
+		/**
+		 * the structure containing the imported data
+		 */
+		private final Layers _theLayers;
 
-  /** keep a copy of the parent application, in case
-   * we don't have a session
-   */
-  private final Application _theApplication;
+		private final Application _theApplication;
 
-  /** remember the last file location we read from
-   */
-  private static String _lastDirectory = null;
+		/**
+		 * constructor - produced AFTER we have read in the data, but before we have
+		 * added it to the session
+		 */
+		public ImportAction(final Session theSession, final java.io.File[] theFiles, final Application theApplication) {
+			_theSession = theSession;
+			_theFiles = theFiles;
+			if (_theSession != null)
+				_theLayers = _theSession.getData();
+			else {
+				// can we retrieve it from the application?
+				_theSession = theApplication.getCurrentSession();
 
-  ///////////////////////////////////////////////////////////////
-  // constructor
-  ///////////////////////////////////////////////////////////////
-  /** constructor, taking information ready for when the button
-   * gets pressed
-   * @param theParent the ToolParent window which we control the cursor of
-   * @param theApplication the Application to create a blank
-   * session to import the file into, if the session val is null
-   * @param theSessionVal the Session to add the file to (or null, see above)
-   */
-  public ImportData2(final ToolParent theParent,
-                    final Application theApplication,
-                    final Session theSessionVal){
-    super(theParent, "Import data", "images/24/import.png");
-    // store the Session
-    _theSession = theSessionVal;
-    _theApplication = theApplication;
-    if(_lastDirectory == null)
-      _lastDirectory = "";
-  }
+				// did it work?
+				if (_theSession != null) {
+					_theLayers = _theSession.getData();
+				} else
+					_theLayers = new Layers();
+			}
 
+			_theApplication = theApplication;
+		}
 
-  /** collate the data ready to perform the operations
-   */
-  public final Action getData()
-  {
-    /** temporary session variable.  Either use the existing session variable
-     * (which was assigned because we only ever read into one session),
-     * or create a fresh one each time (if we need to retrieve the variable
-     * from the application).
-     */
-    final Session tmpSession = _theSession;
+		@Override
+		public final void execute() {
+			// get our thread to import this
+			final MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller reader = new MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller(
+					_theFiles, _theLayers) {
+				// handle completion of the full import process
+				@Override
+				public void allFilesFinished(final File[] fNames, final Layers newData) {
+					// System.out.println("ImportData: all files finished received!");
+					finished();
+				}
 
-    ImportAction res = null;
+				// handle the completion of each file
+				@Override
+				public void fileFinished(final File fName, final Layers newData) {
+					// System.out.println("file finished received for:" + fName.getPath());
+					Application.addToMru(fName.getPath());
+				}
+			};
 
-    // see if we have an old directory to retrieve
-    if(_lastDirectory.equals(""))
-    {
-      final String val = getParent().getProperty("REP_Directory");
-      if(val != null)
-        _lastDirectory = val;
-    }
+			// and start it running
+			reader.start();
 
-    // get the filename of the file to import
-    final File[] fList = MWC.GUI.Dialogs.DialogFactory.getOpenFileName("*.rep,*.dsf,*.dtf",
-                                                              "Replay Files (*.rep,*.dsf,*.dtf)",
-                                                              _lastDirectory);
+			// ok, drop out now, our finished method will get called back at the end of the
+			// relevant bits
+		}
 
-    res = new ImportAction(tmpSession, fList, _theApplication);
+		// call back from the import thread, to say the data is now ready
+		public final void finished() {
 
-    // return the product
-    return res;
-  }
+			if (_theSession == null) {
+				_theSession = _theApplication.getCurrentSession();
 
+				if (_theSession == null) {
+					// if we haven't got a session, then create one
+					_theApplication.newSession(null);
 
-  ///////////////////////////////////////////////////////
-  // store action information
-  ///////////////////////////////////////////////////////
-  static public final class ImportAction implements Action{
-    /** the filename we originally read the data from (note that by this
-     * point the data has already been read, and stored in the Layers object)
-     */
-    private final File[] _theFiles;
-    /** the session we are going to import the data into
-     */
-    private Session _theSession;
-    /** the structure containing the imported data
-     */
-    private final Layers _theLayers;
+					// now try again
+					_theSession = _theApplication.getCurrentSession();
 
-    private final Application _theApplication;
+				}
+			}
 
-    /** constructor - produced AFTER we have read in the data, but
-     * before we have added it to the session
-     */
-    public ImportAction(final Session theSession,
-                        final java.io.File[] theFiles,
-                        final Application theApplication){
-      _theSession = theSession;
-      _theFiles = theFiles;
-      if(_theSession != null)
-        _theLayers = _theSession.getData();
-      else
-      {
-        // can we retrieve it from the application?
-        _theSession = theApplication.getCurrentSession();
+			// check it worked
+			if (_theSession == null) {
+				MWC.GUI.Dialogs.DialogFactory.showMessage("Import data", "Import data - create session failed!");
+				return;
+			}
 
-        // did it work?
-        if(_theSession != null)
-        {
-          _theLayers = _theSession.getData();
-        }
-        else
-          _theLayers = new Layers();
-      }
+			// we are now sure that we have a session, add the new data to it
+			// now add this fresh data
 
+			// just check that we're not working with the same object
+			if (_theSession.getData() == _theLayers) {
+				// hey, the data's been loaded into the session already, just fire "Modified"
+				_theSession.getData().fireExtended();
+			} else {
+				// looks like the data was loaded into a new layers object, we'll have to add it
+				// to our existing one.
+				_theSession.getData().addThis(_theLayers);
+			}
 
-      _theApplication = theApplication;
-    }
+			// inform any NarrativeWrapper objects of the StepContorl
+			final Debrief.GUI.Views.AnalysisView av = (Debrief.GUI.Views.AnalysisView) _theSession.getCurrentView();
 
-    public final boolean isRedoable(){
-      return false;
-    }
+			// find any narratives
+			final int len = _theSession.getData().size();
+			for (int i = 0; i < len; i++) {
+				final Layer ly = _theSession.getData().elementAt(i);
+				if (ly instanceof MWC.TacticalData.NarrativeWrapper) {
+					@SuppressWarnings("unused")
+					final MWC.TacticalData.NarrativeWrapper nw = (MWC.TacticalData.NarrativeWrapper) ly;
+				}
+			}
 
+			// instruct the session to rescale, following this import
+			_theSession.getData().fireExtended();
 
-    public final boolean isUndoable(){
-      return false;
-    }
+			/**
+			 * put the scren update bit into a runnable object - so that we can make it run
+			 * once the load is complete
+			 */
+			final Runnable runnable = new Runnable() {
+				@Override
+				public void run() {
+					// and resize the plot
+					av.rescale();
 
-    public final String toString(){
-      return "import files";
-    }
+					// and get the plot to redraw itself
+					av.update();
+				}
+			};
+			SwingUtilities.invokeLater(runnable);
 
-    public final void undo(){
-      // delete the plottables from the Session object
-    }
+		}
 
-    // call back from the import thread, to say the data is now ready
-    public final void finished()
-    {
+		@Override
+		public final boolean isRedoable() {
+			return false;
+		}
 
-      if(_theSession == null){
-        _theSession = _theApplication.getCurrentSession();
+		@Override
+		public final boolean isUndoable() {
+			return false;
+		}
 
-        if(_theSession == null){
-          // if we haven't got a session, then create one
-          _theApplication.newSession(null);
+		@Override
+		public final String toString() {
+			return "import files";
+		}
 
-          // now try again
-          _theSession = _theApplication.getCurrentSession();
+		@Override
+		public final void undo() {
+			// delete the plottables from the Session object
+		}
+	}
 
-        }
-      }
-      
-      // check it worked
-      if(_theSession == null)
-      {
-        MWC.GUI.Dialogs.DialogFactory.showMessage("Import data","Import data - create session failed!");
-        return;
-      }
+	/**
+		 *
+		 */
+	private static final long serialVersionUID = 1L;
 
-      // we are now sure that we have a session, add the new data to it
-      // now add this fresh data
+	/**
+	 * remember the last file location we read from
+	 */
+	private static String _lastDirectory = null;
 
-      // just check that we're not working with the same object
-      if(_theSession.getData() == _theLayers)
-      {
-        // hey, the data's been loaded into the session already, just fire "Modified"
-        _theSession.getData().fireExtended();
-      }
-      else
-      {
-        // looks like the data was loaded into a new layers object, we'll have to add it
-        // to our existing one.
-        _theSession.getData().addThis(_theLayers);
-      }
+	///////////////////////////////////////////////////////////////
+	// member variables
+	///////////////////////////////////////////////////////////////
+	/** keep a copy of the parent Session, */
+	private final Session _theSession;
 
-      // inform any NarrativeWrapper objects of the StepContorl
-      final Debrief.GUI.Views.AnalysisView av = (Debrief.GUI.Views.AnalysisView) _theSession.getCurrentView();
+	/**
+	 * keep a copy of the parent application, in case we don't have a session
+	 */
+	private final Application _theApplication;
 
-      // find any narratives
-      final int len = _theSession.getData().size();
-      for(int i=0;i<len;i++)
-      {
-        final Layer ly = _theSession.getData().elementAt(i);
-        if(ly instanceof MWC.TacticalData.NarrativeWrapper)
-        {
-          @SuppressWarnings("unused")
-		final
-					MWC.TacticalData.NarrativeWrapper nw = (MWC.TacticalData.NarrativeWrapper)ly;
-        }
-      }
+	///////////////////////////////////////////////////////////////
+	// constructor
+	///////////////////////////////////////////////////////////////
+	/**
+	 * constructor, taking information ready for when the button gets pressed
+	 *
+	 * @param theParent      the ToolParent window which we control the cursor of
+	 * @param theApplication the Application to create a blank session to import the
+	 *                       file into, if the session val is null
+	 * @param theSessionVal  the Session to add the file to (or null, see above)
+	 */
+	public ImportData2(final ToolParent theParent, final Application theApplication, final Session theSessionVal) {
+		super(theParent, "Import data", "images/24/import.png");
+		// store the Session
+		_theSession = theSessionVal;
+		_theApplication = theApplication;
+		if (_lastDirectory == null)
+			_lastDirectory = "";
+	}
 
-      // instruct the session to rescale, following this import
-      _theSession.getData().fireExtended();
+	/**
+	 * collate the data ready to perform the operations
+	 */
+	@Override
+	public final Action getData() {
+		/**
+		 * temporary session variable. Either use the existing session variable (which
+		 * was assigned because we only ever read into one session), or create a fresh
+		 * one each time (if we need to retrieve the variable from the application).
+		 */
+		final Session tmpSession = _theSession;
 
-      /** put the scren update bit into a runnable object - so that we can
-       * make it run once the load is complete
-       */
-      final Runnable runnable = new Runnable()
-      {
-        public void run()
-        {
-          // and resize the plot
-          av.rescale();
+		ImportAction res = null;
 
-          // and get the plot to redraw itself
-          av.update();
-        }
-      };
-      SwingUtilities.invokeLater(runnable);
+		// see if we have an old directory to retrieve
+		if (_lastDirectory.equals("")) {
+			final String val = getParent().getProperty("REP_Directory");
+			if (val != null)
+				_lastDirectory = val;
+		}
 
-    }
+		// get the filename of the file to import
+		final File[] fList = MWC.GUI.Dialogs.DialogFactory.getOpenFileName("*.rep,*.dsf,*.dtf",
+				"Replay Files (*.rep,*.dsf,*.dtf)", _lastDirectory);
 
-    public final void execute()
-    {
-      // get our thread to import this
-      final MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller reader =
-        new MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller(_theFiles,_theLayers)
-      {
-        // handle the completion of each file
-        public void fileFinished(final File fName, final Layers newData)
-        {
-    //      System.out.println("file finished received for:" + fName.getPath());
-          Application.addToMru(fName.getPath());
-        }
+		res = new ImportAction(tmpSession, fList, _theApplication);
 
-        // handle completion of the full import process
-        public void allFilesFinished(final File[] fNames, final Layers newData)
-        {
-   //       System.out.println("ImportData: all files finished received!");
-          finished();
-        }
-      };
-
-      // and start it running
-      reader.start();
-
-      // ok, drop out now, our finished method will get called back at the end of the relevant bits
-    }
-  }
+		// return the product
+		return res;
+	}
 
 }

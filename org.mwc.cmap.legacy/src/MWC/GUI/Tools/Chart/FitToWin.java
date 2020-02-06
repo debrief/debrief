@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: FitToWin.java,v $
@@ -95,93 +95,98 @@
 
 package MWC.GUI.Tools.Chart;
 
-
-
 import MWC.GUI.PlainChart;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.PlainTool;
 import MWC.GenericData.WorldArea;
 
-/** tool to instruct a particular chart to do a resize to fit all
- * of the current data
+/**
+ * tool to instruct a particular chart to do a resize to fit all of the current
+ * data
  */
 public class FitToWin extends PlainTool {
-  
-  /////////////////////////////////////////////////////////
-  // member variables
-  /////////////////////////////////////////////////////////  
-  
-  /** keep a reference to the chart which we are acting upon*/
-  protected final PlainChart _theChart;  
-  
-  /////////////////////////////////////////////////////////
-  // constructor
-  /////////////////////////////////////////////////////////
-  
-  /** constructor, stores information ready for when the button
-   * finally gets pressed
-   * @param theParent the parent application, so we can set cursors
-   * @param theChart the chart we are to resize
-   */
-  public FitToWin(final ToolParent theParent, 
-                  final PlainChart theChart){      
-    super(theParent, "fit to win","images/fit_to_win.png");
-    // remember the chart we are acting upon
-    _theChart = theChart;
-  }
-  
-  /////////////////////////////////////////////////////////
-  // member functions
-  /////////////////////////////////////////////////////////  
-  public Action getData()
-  {
-    // get the current data area
-    final WorldArea oldArea = _theChart.getCanvas().getProjection().getDataArea();
-    return new FitToWinAction(_theChart, oldArea);
-  }
 
-  
-  ////////////////////////////////////////////////////////////////////
-  // store action information
-  public static class FitToWinAction implements Action{
-    private final PlainChart _theChart;  
-    private final WorldArea _oldArea;
-    
-    public FitToWinAction(final PlainChart theChart,
-                          final WorldArea oldArea){
-      _theChart = theChart;
-      _oldArea = oldArea;
-    }
+	/////////////////////////////////////////////////////////
+	// member variables
+	/////////////////////////////////////////////////////////
 
-    public boolean isRedoable(){
-      return true;
-    }
-    
-    
-    public boolean isUndoable(){
-      return true;
-    }
-                 
-    public String toString(){
-      return "fit to window ";
-    }                                        
-    
-    public void undo()      
-    {
-      // set the data area for the chart to the old area
-      _theChart.getCanvas().getProjection().setDataArea(_oldArea);
-      
-      // get the projection to refit-itself
-  //    _theChart.getCanvas().getProjection().zoom(0.0);
-    }
-    
-    public void execute(){
+	////////////////////////////////////////////////////////////////////
+	// store action information
+	public static class FitToWinAction implements Action {
+		private final PlainChart _theChart;
+		private final WorldArea _oldArea;
 
-      // ask the chart to fit to window
-      _theChart.rescale();
-    }
-  }
-  
-  
+		public FitToWinAction(final PlainChart theChart, final WorldArea oldArea) {
+			_theChart = theChart;
+			_oldArea = oldArea;
+		}
+
+		@Override
+		public void execute() {
+
+			// ask the chart to fit to window
+			_theChart.rescale();
+		}
+
+		@Override
+		public boolean isRedoable() {
+			return true;
+		}
+
+		@Override
+		public boolean isUndoable() {
+			return true;
+		}
+
+		@Override
+		public String toString() {
+			return "fit to window ";
+		}
+
+		@Override
+		public void undo() {
+			// set the data area for the chart to the old area
+			_theChart.getCanvas().getProjection().setDataArea(_oldArea);
+
+			// get the projection to refit-itself
+			// _theChart.getCanvas().getProjection().zoom(0.0);
+		}
+	}
+
+	/**
+		 *
+		 */
+	private static final long serialVersionUID = 1L;
+
+	/////////////////////////////////////////////////////////
+	// constructor
+	/////////////////////////////////////////////////////////
+
+	/** keep a reference to the chart which we are acting upon */
+	protected final PlainChart _theChart;
+
+	/**
+	 * constructor, stores information ready for when the button finally gets
+	 * pressed
+	 *
+	 * @param theParent the parent application, so we can set cursors
+	 * @param theChart  the chart we are to resize
+	 */
+	public FitToWin(final ToolParent theParent, final PlainChart theChart) {
+		super(theParent, "fit to win", "images/fit_to_win.png");
+		// remember the chart we are acting upon
+		_theChart = theChart;
+	}
+
+	/////////////////////////////////////////////////////////
+	// member functions
+	/////////////////////////////////////////////////////////
+	@Override
+	public Action getData() {
+		// get the current data area
+		final WorldArea oldArea = _theChart.getCanvas().getProjection().getDataArea();
+		return new FitToWinAction(_theChart, oldArea);
+	}
+
 }

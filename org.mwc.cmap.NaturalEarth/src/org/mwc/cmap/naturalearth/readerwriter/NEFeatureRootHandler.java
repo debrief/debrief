@@ -4,16 +4,16 @@ package org.mwc.cmap.naturalearth.readerwriter;
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 import java.io.IOException;
@@ -39,106 +39,17 @@ import org.xml.sax.Attributes;
 
 import MWC.GUI.Editable;
 
-abstract public class NEFeatureRootHandler extends
-		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
-{
+abstract public class NEFeatureRootHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader {
 
 	public static final String TYPE = "NEStore";
 	public static final String NAME = "Name";
 	public static final String VIS = "Visible";
-	
-	private NEFeatureRoot _myStore;
 
-	public NEFeatureRootHandler()
-	{
-		// inform our parent what type of class we are
-		super(TYPE);
-
-		addAttributeHandler(new HandleAttribute(NAME)
-		{
-			public void setValue(final String name, final String val)
-			{
-				_myStore.setName(val);
-			}
-		});
-		
-		addAttributeHandler(new HandleBooleanAttribute(VIS)
-		{
-			public void setValue(final String name, final boolean val)
-			{
-				_myStore.setVisible(val);
-			}
-		});
-
-		addHandler(new NEFeatureGroupHandler()
-		{
-			public void addGroup(NEFeatureGroup res)
-			{
-				_myStore.add(res);
-			}
-		});
-		addHandler(new NEFeatureStyleHandler()
-		{
-			public void addStyle(NEFeatureStyle res)
-			{
-				_myStore.add(res);
-			}
-		});
-	}
-
-	// this is one of ours, so get on with it!
-	protected final void handleOurselves(final String name,
-			final Attributes attributes)
-	{
-		_myStore = new NEFeatureRoot(name);
-
-		super.handleOurselves(name, attributes);
-	}
-
-	public final void elementClosed()
-	{
-		addStore(_myStore);
-		_myStore = null;
-	}
-
-	public static Element exportStore(final NEFeatureRoot store,
-			final org.w3c.dom.Document doc)
-	{
-
-		final Element eStore = doc.createElement(TYPE);
-		
-		eStore.setAttribute(NAME, store.getName());
-		eStore.setAttribute(NELayerHandler.VIS, writeThis(store.getVisible()));
-
-		// loop through layers
-		Enumeration<Editable> iter = store.elements();
-		while (iter.hasMoreElements())
-		{
-			Editable next = (Editable) iter.nextElement();
-			if (next instanceof NEFeatureGroup)
-			{
-				NEFeatureGroup res = (NEFeatureGroup) next;
-				NEFeatureGroupHandler.exportGroup(res, eStore, doc);
-			}
-			else
-			{
-				NEFeatureStyle res = (NEFeatureStyle) next;
-				NEFeatureStyleHandler.exportStyle(res, eStore, doc);
-			}
-		}
-		return eStore;
-	}
-
-	abstract public void addStore(NEFeatureRoot store);
-
-	public static String encodeAsXML(NEFeatureRoot store)
-	{
+	public static String encodeAsXML(final NEFeatureRoot store) {
 		String res = null;
-		try
-		{
-			Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-					.newDocument();
-			Element eStore = NEFeatureRootHandler.exportStore(store, doc);
+		try {
+			final Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+			final Element eStore = NEFeatureRootHandler.exportStore(store, doc);
 			// ok, now convert parent to text
 			final TransformerFactory tF = TransformerFactory.newInstance();
 			Transformer tr;
@@ -146,20 +57,18 @@ abstract public class NEFeatureRootHandler extends
 
 			tr.setOutputProperty(OutputKeys.INDENT, "yes");
 
-			OutputStream output = new OutputStream()
-			{
-				private StringBuilder string = new StringBuilder();
-
-				@Override
-				public void write(int b) throws IOException
-				{
-					this.string.append((char) b);
-				}
+			final OutputStream output = new OutputStream() {
+				private final StringBuilder string = new StringBuilder();
 
 				// Netbeans IDE automatically overrides this toString()
-				public String toString()
-				{
+				@Override
+				public String toString() {
 					return this.string.toString();
+				}
+
+				@Override
+				public void write(final int b) throws IOException {
+					this.string.append((char) b);
 				}
 			};
 			final DOMSource source = new DOMSource(eStore);
@@ -167,23 +76,89 @@ abstract public class NEFeatureRootHandler extends
 			tr.transform(source, result);
 
 			res = output.toString();
-		}
-		catch (TransformerConfigurationException e)
-		{
+		} catch (final TransformerConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		catch (ParserConfigurationException e)
-		{
+		} catch (final ParserConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		catch (TransformerException e)
-		{
+		} catch (final TransformerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		return res;
+	}
+
+	public static Element exportStore(final NEFeatureRoot store, final org.w3c.dom.Document doc) {
+
+		final Element eStore = doc.createElement(TYPE);
+
+		eStore.setAttribute(NAME, store.getName());
+		eStore.setAttribute(NELayerHandler.VIS, writeThis(store.getVisible()));
+
+		// loop through layers
+		final Enumeration<Editable> iter = store.elements();
+		while (iter.hasMoreElements()) {
+			final Editable next = iter.nextElement();
+			if (next instanceof NEFeatureGroup) {
+				final NEFeatureGroup res = (NEFeatureGroup) next;
+				NEFeatureGroupHandler.exportGroup(res, eStore, doc);
+			} else {
+				final NEFeatureStyle res = (NEFeatureStyle) next;
+				NEFeatureStyleHandler.exportStyle(res, eStore, doc);
+			}
+		}
+		return eStore;
+	}
+
+	private NEFeatureRoot _myStore;
+
+	public NEFeatureRootHandler() {
+		// inform our parent what type of class we are
+		super(TYPE);
+
+		addAttributeHandler(new HandleAttribute(NAME) {
+			@Override
+			public void setValue(final String name, final String val) {
+				_myStore.setName(val);
+			}
+		});
+
+		addAttributeHandler(new HandleBooleanAttribute(VIS) {
+			@Override
+			public void setValue(final String name, final boolean val) {
+				_myStore.setVisible(val);
+			}
+		});
+
+		addHandler(new NEFeatureGroupHandler() {
+			@Override
+			public void addGroup(final NEFeatureGroup res) {
+				_myStore.add(res);
+			}
+		});
+		addHandler(new NEFeatureStyleHandler() {
+			@Override
+			public void addStyle(final NEFeatureStyle res) {
+				_myStore.add(res);
+			}
+		});
+	}
+
+	abstract public void addStore(NEFeatureRoot store);
+
+	@Override
+	public final void elementClosed() {
+		addStore(_myStore);
+		_myStore = null;
+	}
+
+	// this is one of ours, so get on with it!
+	@Override
+	protected final void handleOurselves(final String name, final Attributes attributes) {
+		_myStore = new NEFeatureRoot(name);
+
+		super.handleOurselves(name, attributes);
 	}
 }

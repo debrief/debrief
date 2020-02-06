@@ -22,9 +22,8 @@ public class MoveScrollBar extends AbstractEffect {
 
 	ScrollBar scrollBar = null;
 
-	public MoveScrollBar(ScrollBar scrollBar, int start, int end,
-			long lengthMilli, IMovement movement, Runnable onStop,
-			Runnable onCancel) {
+	public MoveScrollBar(final ScrollBar scrollBar, final int start, final int end, final long lengthMilli,
+			final IMovement movement, final Runnable onStop, final Runnable onCancel) {
 		super(lengthMilli, movement, onStop, onCancel);
 
 		this.start = start;
@@ -37,13 +36,13 @@ public class MoveScrollBar extends AbstractEffect {
 		current = start;
 	}
 
+	@Override
 	public void applyEffect(final long currentTime) {
-		current = (int) (start + step
-				* easingFunction.getValue((int) currentTime));
+		current = (int) (start + step * easingFunction.getValue((int) currentTime));
 
 		if (!scrollBar.isDisposed()) {
 			scrollBar.setSelection(current);
-			Event event = new Event();
+			final Event event = new Event();
 			event.detail = step < 0 ? SWT.PAGE_UP : SWT.PAGE_DOWN;
 			event.data = this;
 			event.display = scrollBar.getDisplay();
@@ -54,16 +53,16 @@ public class MoveScrollBar extends AbstractEffect {
 		}
 	}
 
-	public int getStart() {
-		return start;
+	public int getCurrent() {
+		return current;
 	}
 
 	public int getEnd() {
 		return end;
 	}
 
-	public int getCurrent() {
-		return current;
+	public int getStart() {
+		return start;
 	}
 
 }

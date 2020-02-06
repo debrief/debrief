@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: AWTSession.java,v $
@@ -94,94 +94,95 @@ import MWC.GenericData.WorldArea;
 /** an AWT implementation of our session */
 public final class AWTSession extends Session {
 
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  
-  /**
-	 * 
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	private transient ToolParent _theParent;
-  
-  transient private java.awt.Panel _thePanel;
-  transient private AWTAnalysisView _theView;
 
-  private final WorldArea _initialArea = null;
+	transient private java.awt.Panel _thePanel;
+	transient private AWTAnalysisView _theView;
 
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  
-  
-  /** create the first AWT View, set to the view in the parent*/
-  public AWTSession(final ToolParent theParent,
-										final java.awt.datatransfer.Clipboard theClipboard){
-    super(theClipboard);
+	private final WorldArea _initialArea = null;
 
-    _theParent = theParent;
-    
-    initialiseForm(theParent);
-  }
-  
-  
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
 
-  public final void initialiseForm(final ToolParent theParent){
-    _theParent = theParent;
-    _thePanel = new Panel();
-    _thePanel.setLayout(new BorderLayout());
-    _thePanel.setSize(200,200);
-    _thePanel.setName(getName());
-    
-    _theView = new AWTAnalysisView(_theParent, this);
-    
-    // set the view in the parent
-    addView(_theView);
-    
-    _thePanel.add("Center", _theView.getPanel());
-    
-    _thePanel.doLayout();
+	/** create the first AWT View, set to the view in the parent */
+	public AWTSession(final ToolParent theParent, final java.awt.datatransfer.Clipboard theClipboard) {
+		super(theClipboard);
 
-    if(_initialArea != null){      
-      // restore the data area    
-      _theView.getChart().getCanvas().getProjection().setDataArea(_initialArea);
-      _theView.getChart().getCanvas().getProjection().zoom(0.0);
-    }
-    
-  }
-  
-	public final void closeGUI()
-	{
-	}	
-  
-  /** @return the Panel we are using for this session
-   */
-  public final Panel getPanel(){
-    return _thePanel;
-  }
-  
-  /** repaint the current view
-   */
-  public final void repaint(){
-    _thePanel.repaint();
-     super.getCurrentView().update();
-  }
+		_theParent = theParent;
 
-  /** @param theName is the string used to name 
-   * this session
-   */
-  protected final void setName(final String theName)
-  {
-    super.setName(theName);
+		initialiseForm(theParent);
+	}
 
-    // now give the panel the same name
-    _thePanel.setName(getName());
-  }
-  
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+
+	@Override
+	public final void closeGUI() {
+	}
+
+	/**
+	 * @return the Panel we are using for this session
+	 */
+	public final Panel getPanel() {
+		return _thePanel;
+	}
+
+	@Override
+	public final void initialiseForm(final ToolParent theParent) {
+		_theParent = theParent;
+		_thePanel = new Panel();
+		_thePanel.setLayout(new BorderLayout());
+		_thePanel.setSize(200, 200);
+		_thePanel.setName(getName());
+
+		_theView = new AWTAnalysisView(_theParent, this);
+
+		// set the view in the parent
+		addView(_theView);
+
+		_thePanel.add("Center", _theView.getPanel());
+
+		_thePanel.doLayout();
+
+		if (_initialArea != null) {
+			// restore the data area
+			_theView.getChart().getCanvas().getProjection().setDataArea(_initialArea);
+			_theView.getChart().getCanvas().getProjection().zoom(0.0);
+		}
+
+	}
+
+	/**
+	 * repaint the current view
+	 */
+	@Override
+	public final void repaint() {
+		_thePanel.repaint();
+		super.getCurrentView().update();
+	}
+
+	/**
+	 * @param theName is the string used to name this session
+	 */
+	@Override
+	protected final void setName(final String theName) {
+		super.setName(theName);
+
+		// now give the panel the same name
+		_thePanel.setName(getName());
+	}
+
 //  private void writeObject(java.io.ObjectOutputStream out)     throws IOException{
 //    out.defaultWriteObject();
 //
@@ -200,10 +201,10 @@ public final class AWTSession extends Session {
 //    _initialArea = (WorldArea)in.readObject();
 //  }
 
-  protected final boolean wantsToClose()
-  {
-    // try to do a file save - ask the user
-    return true;
-  }
-  
+	@Override
+	protected final boolean wantsToClose() {
+		// try to do a file save - ask the user
+		return true;
+	}
+
 }

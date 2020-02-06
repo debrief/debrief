@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.debrief.lite.shapes.actions;
@@ -32,31 +32,29 @@ import MWC.GenericData.WorldVector;
  * @author Ayesha
  *
  */
-public class LineShapeCommandAction extends CreateShape implements CommandAction
-{
-  
+public class LineShapeCommandAction extends CreateShape implements CommandAction {
 
-  public LineShapeCommandAction(ToolParent theParent, PropertiesPanel thePanel,
-      Layers theData, String theName, String theImage, BoundsProvider bounds)
-  {
-    super(theParent, thePanel, theData, theName, theImage, bounds);
-  }
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-  @Override
-  public void commandActivated(CommandActionEvent e)
-  {
-   super.execute();
-    
-  }
+	public LineShapeCommandAction(final ToolParent theParent, final PropertiesPanel thePanel, final Layers theData,
+			final String theName, final String theImage, final BoundsProvider bounds) {
+		super(theParent, thePanel, theData, theName, theImage, bounds);
+	}
 
-  @Override
-  protected ShapeWrapper getShape(final WorldLocation centre)
-  {
-    return new ShapeWrapper("new line", new LineShape(centre, centre
-        .add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(45.0),
-            0.05, 0))), DebriefColors.RED, null);
-  }
+	@Override
+	public void commandActivated(final CommandActionEvent e) {
+		super.execute();
 
-  
+	}
+
+	@Override
+	protected ShapeWrapper getShape(final WorldLocation centre) {
+		return new ShapeWrapper("new line",
+				new LineShape(centre, centre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(45.0), 0.05, 0))),
+				DebriefColors.RED, null);
+	}
 
 }

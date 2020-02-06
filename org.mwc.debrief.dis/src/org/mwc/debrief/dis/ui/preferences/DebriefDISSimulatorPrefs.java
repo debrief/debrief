@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.mwc.debrief.dis.ui.preferences;
 
@@ -9,15 +9,13 @@ import org.mwc.debrief.dis.providers.network.IDISSimulatorPrefs;
 
 /**
  * @author ian
- * 
+ *
  */
-public class DebriefDISSimulatorPrefs implements IDISSimulatorPrefs
-{
+public class DebriefDISSimulatorPrefs implements IDISSimulatorPrefs {
 
-  @Override
-  public String getExePath()
-  {
-    IPreferenceStore store = DisActivator.getDefault().getPreferenceStore();
-    return store.getString(DisActivator.PATH_TO_SIMULATION_EXECUTABLE);
-  }
+	@Override
+	public String getExePath() {
+		final IPreferenceStore store = DisActivator.getDefault().getPreferenceStore();
+		return store.getString(DisActivator.PATH_TO_SIMULATION_EXECUTABLE);
+	}
 }

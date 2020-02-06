@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: PatternBuilderType.java,v $
@@ -91,356 +91,326 @@
 //
 package Debrief.Tools.Palette.BuoyPatterns;
 
-import MWC.GenericData.*;
-
-abstract public class PatternBuilderType implements MWC.GUI.Editable
-{
-
-  // ////////////////////////////////////////
-  // Member variables
-  // ////////////////////////////////////////
-
-  /**
-   * the properties panel we are editing ourselves within
-   */
-  private final MWC.GUI.Properties.PropertiesPanel _thePanel;
-  /**
-   * the set of layers we put the pattern into
-   */
-  private final MWC.GUI.Layers _theData;
-  /**
-   * the default colour for this pattern
-   */
-  private java.awt.Color _theColor;
-  /**
-   * the starting point for the pattern
-   */
-  private HiResDate _theStartDTG = null;
-  /**
-   * the time increment before the next buoy is dropped
-   */
-  private long _theBuoyPatternLifetime = 1000l * 1000 * 60 * 60; // 1 hour expressed in micros
-  /**
-   * whether we show the label for each buoy
-   */
-  private boolean _labelVisible = false;
-  /**
-   * the jig point used for pattern creation
-   */
-  private WorldLocation _jigPoint;
-  /**
-   * how far the kingpin is from the jig point
-   */
-  private double _kingpinRange = 0.0; // in miles
-  /**
-   * the bearing of the kingpin from the jig point
-   */
-  private double _kingpinBearing = 0.0; // in degrees
-
-  /**
-   * the name of this pattern
-   */
-  private String _name;
-
-  /**
-   * number of buoys in this barrier
-   */
-  private int _number;
-
-  /**
-   * the symbol for this label
-   */
-  private MWC.GUI.Shapes.Symbols.PlainSymbol _theShape;
-
-  /**
-   * remember the last pattern added, so that we can remove it
-   */
-  private Debrief.Wrappers.BuoyPatternWrapper _theLastPattern = null;
-
-  // ////////////////////////////////////////
-  // Member functions
-  // ////////////////////////////////////////
-
-  public PatternBuilderType(final WorldLocation centre,
-      final MWC.GUI.Properties.PropertiesPanel thePanel,
-      final MWC.GUI.Layers theData)
-  {
-    _jigPoint = centre;
-    _thePanel = thePanel;
-    _theData = theData;
-    _theColor = MWC.GUI.Properties.DebriefColors.RED;
-
-    // initialise the shape
-    _theShape = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol("Square");
-    _theShape.setColor(_theColor);
-  }
-
-  /**
-   * method called by child classes to format a new symbol (LabelWrapper) with the current default
-   * formatting options
-   */
-  final protected void formatSymbol(final Debrief.Wrappers.LabelWrapper wrapper,
-      final Debrief.Wrappers.BuoyPatternWrapper parent)
-  {
-    // get the shape for the symbol
-    final String type = getSymbolType();
-
-    // create a new symbol
-    wrapper.setSymbolType(type);
-
-    // set the size of the symbol
-    wrapper.setSymbolSize(getSymbolSize());
-
-    // set the colour of this symbol to the default colour
-    wrapper.setColor(getColor());
-
-    // specify whether the buoy label should be shown
-    wrapper.setLabelVisible(getBuoyLabelVisible());
-
-    // the time period is managed by the buoypattern, so assign it
-    final TimePeriod period =
-        new TimePeriod.BaseTimePeriod(parent.getStartDTG(), parent.getEndDTG());
-    wrapper.setTimePeriod(period);
-
-    // store the parent data within the symbol
-    wrapper.setParent(parent);
-
-    // add this point to the pattern
-    parent.add(wrapper);
-
-  }
-
-  /**
-   * whether there is any edit information for this item this is a convenience function to save
-   * creating the EditorType data first
-   * 
-   * @return yes/no
-   */
-  public final boolean hasEditor()
-  {
-    return true;
-  }
-
-  /**
-   * get the editor for this item
-   * 
-   * @return the BeanInfo data for this editable object
-   */
-  abstract public MWC.GUI.Editable.EditorType getInfo();
-
-  /**
-   * add the particular pattern of buoys to this pattern
-   */
-  abstract protected void addBuoys(Debrief.Wrappers.BuoyPatternWrapper pattern);
-
-  /**
-   * perform the actual creation process
-   */
-  final protected void create()
-  {
-    // create the new feature
-    final Debrief.Wrappers.BuoyPatternWrapper bw =
-        new Debrief.Wrappers.BuoyPatternWrapper(_jigPoint);
-
-    // and set the name
-    bw.setName(getName());
-
-    // and the colour
-    bw.setColor(getColor());
-
-    // set the default colour for the buoys
-    bw.setBuoyColor(getColor());
-
-    // update the default symbol size for the buoys
-    bw.setBuoySymbolSize(this.getSymbolSize().doubleValue());
-
-    // update the default symbol style for the buoys
-    bw.setBuoySymbolType(this.getSymbolType());
-
-    // set the start and finish times
-    bw.setStartDTG(_theStartDTG);
-
-    // only set the finish time if we have a valid lifetime
-    if (_theStartDTG != null)
-    {
-      bw.setEndDTG(new HiResDate(0, _theStartDTG.getMicros()
-          + _theBuoyPatternLifetime));
-    }
-
-    // create the buoys to place into the buoypattern
-    addBuoys(bw);
-
-    // add this wrapper as a new layer
-    _theData.addThisLayerAllowDuplication(bw);
-
-    // and start editing this layer
-    _thePanel.addEditor(bw.getInfo(), null);
-
-    // inform the data editors
-    _theData.fireExtended();
-
-    // remember this buoypattern so that we can delete it, if we want to
-    _theLastPattern = bw;
-
-    // _theData = null;
-  }
-
-  public final void undo()
-  {
-    if (_theLastPattern != null)
-    {
-      // remove the layer form the data
-      _theData.removeThisLayer(_theLastPattern);
-
-      _theData.fireExtended();
-    }
-  }
-
-  // ////////////////////////////
-  // help for child classes
-  // ////////////////////////////
-  public final WorldLocation getKingpin()
-  {
-    final double rng_degs = MWC.Algorithms.Conversions.Nm2Degs(_kingpinRange);
-    final double brg_rads =
-        MWC.Algorithms.Conversions.Degs2Rads(_kingpinBearing);
-    final WorldVector offset = new WorldVector(brg_rads, rng_degs, 0.0);
-    final WorldLocation res = _jigPoint.add(offset);
-    return res;
-  }
-
-  // ////////////////////////////
-  // help for Bean editors
-  // ////////////////////////////
-
-  public String getSymbolType()
-  {
-    return _theShape.getType();
-  }
-
-  public final void setSymbolType(final String val)
-  {
-    // is this the type of our symbol?
-    if (!val.equals(_theShape.getType()))
-    {
-      // ok, new type.
-      
-      // remember the size of the symbol
-      final double scale = _theShape.getScaleVal();
-      // replace our symbol with this new one
-      _theShape = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol(val);
-      _theShape.setColor(this.getColor());
-
-      // update the colour
-      _theShape.setScaleVal(scale);
-    }
-  }
-
-  public final void setSymbolSize(final Double val)
-  {
-    _theShape.setScaleVal(val.doubleValue());
-  }
-
-  public Double getSymbolSize()
-  {
-    return new Double(_theShape.getScaleVal());
-  }
-
-  public final void setColor(final java.awt.Color val)
-  {
-    _theColor = val;
-  }
-
-  public java.awt.Color getColor()
-  {
-    return _theColor;
-  }
-
-  public final HiResDate getDateTimeGroup()
-  {
-    return _theStartDTG;
-  }
-
-  public final void setDateTimeGroup(final HiResDate val)
-  {
-    _theStartDTG = val;
-  }
-
-  // set the lifetime of the buoypattern (expressed in hours)
-  public final void setDuration(final Duration val)
-  {
-    // convert hours to millis
-    _theBuoyPatternLifetime = (long) val.getValueIn(Duration.MICROSECONDS);
-  }
-
-  public final Duration getDuration()
-  {
-    return new Duration(_theBuoyPatternLifetime, Duration.MICROSECONDS);
-  }
-
-  public boolean getBuoyLabelVisible()
-  {
-    return _labelVisible;
-  }
-
-  public final void setBuoyLabelVisible(final boolean val)
-  {
-    _labelVisible = val;
-  }
-
-  public final WorldLocation getJigPoint()
-  {
-    return _jigPoint;
-  }
-
-  public final void setJigPoint(final WorldLocation val)
-  {
-    _jigPoint = val;
-  }
-
-  public final WorldDistance getKingpinRange()
-  {
-    return new WorldDistance(_kingpinRange, WorldDistance.NM);
-  }
-
-  public final void setKingpinRange(final WorldDistance val)
-  {
-    _kingpinRange = val.getValueIn(WorldDistance.NM);
-  }
-
-  public final double getKingpinBearing()
-  {
-    return _kingpinBearing;
-  }
-
-  public final void setKingpinBearing(final double val)
-  {
-    _kingpinBearing = val;
-  }
-
-  public final Integer getNumberOfBuoys()
-  {
-    return new Integer(_number);
-  }
-
-  public final void setNumberOfBuoys(final Integer val)
-  {
-    _number = val.intValue();
-  }
-
-  public final String getName()
-  {
-    return _name;
-  }
-
-  public final String getPatternName()
-  {
-    return getName();
-  }
-
-  public final void setPatternName(final String val)
-  {
-    _name = val;
-  }
+import MWC.GenericData.Duration;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
+
+abstract public class PatternBuilderType implements MWC.GUI.Editable {
+
+	// ////////////////////////////////////////
+	// Member variables
+	// ////////////////////////////////////////
+
+	/**
+	 * the properties panel we are editing ourselves within
+	 */
+	private final MWC.GUI.Properties.PropertiesPanel _thePanel;
+	/**
+	 * the set of layers we put the pattern into
+	 */
+	private final MWC.GUI.Layers _theData;
+	/**
+	 * the default colour for this pattern
+	 */
+	private java.awt.Color _theColor;
+	/**
+	 * the starting point for the pattern
+	 */
+	private HiResDate _theStartDTG = null;
+	/**
+	 * the time increment before the next buoy is dropped
+	 */
+	private long _theBuoyPatternLifetime = 1000l * 1000 * 60 * 60; // 1 hour expressed in micros
+	/**
+	 * whether we show the label for each buoy
+	 */
+	private boolean _labelVisible = false;
+	/**
+	 * the jig point used for pattern creation
+	 */
+	private WorldLocation _jigPoint;
+	/**
+	 * how far the kingpin is from the jig point
+	 */
+	private double _kingpinRange = 0.0; // in miles
+	/**
+	 * the bearing of the kingpin from the jig point
+	 */
+	private double _kingpinBearing = 0.0; // in degrees
+
+	/**
+	 * the name of this pattern
+	 */
+	private String _name;
+
+	/**
+	 * number of buoys in this barrier
+	 */
+	private int _number;
+
+	/**
+	 * the symbol for this label
+	 */
+	private MWC.GUI.Shapes.Symbols.PlainSymbol _theShape;
+
+	/**
+	 * remember the last pattern added, so that we can remove it
+	 */
+	private Debrief.Wrappers.BuoyPatternWrapper _theLastPattern = null;
+
+	// ////////////////////////////////////////
+	// Member functions
+	// ////////////////////////////////////////
+
+	public PatternBuilderType(final WorldLocation centre, final MWC.GUI.Properties.PropertiesPanel thePanel,
+			final MWC.GUI.Layers theData) {
+		_jigPoint = centre;
+		_thePanel = thePanel;
+		_theData = theData;
+		_theColor = MWC.GUI.Properties.DebriefColors.RED;
+
+		// initialise the shape
+		_theShape = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol("Square");
+		_theShape.setColor(_theColor);
+	}
+
+	/**
+	 * add the particular pattern of buoys to this pattern
+	 */
+	abstract protected void addBuoys(Debrief.Wrappers.BuoyPatternWrapper pattern);
+
+	/**
+	 * perform the actual creation process
+	 */
+	final protected void create() {
+		// create the new feature
+		final Debrief.Wrappers.BuoyPatternWrapper bw = new Debrief.Wrappers.BuoyPatternWrapper(_jigPoint);
+
+		// and set the name
+		bw.setName(getName());
+
+		// and the colour
+		bw.setColor(getColor());
+
+		// set the default colour for the buoys
+		bw.setBuoyColor(getColor());
+
+		// update the default symbol size for the buoys
+		bw.setBuoySymbolSize(this.getSymbolSize().doubleValue());
+
+		// update the default symbol style for the buoys
+		bw.setBuoySymbolType(this.getSymbolType());
+
+		// set the start and finish times
+		bw.setStartDTG(_theStartDTG);
+
+		// only set the finish time if we have a valid lifetime
+		if (_theStartDTG != null) {
+			bw.setEndDTG(new HiResDate(0, _theStartDTG.getMicros() + _theBuoyPatternLifetime));
+		}
+
+		// create the buoys to place into the buoypattern
+		addBuoys(bw);
+
+		// add this wrapper as a new layer
+		_theData.addThisLayerAllowDuplication(bw);
+
+		// and start editing this layer
+		_thePanel.addEditor(bw.getInfo(), null);
+
+		// inform the data editors
+		_theData.fireExtended();
+
+		// remember this buoypattern so that we can delete it, if we want to
+		_theLastPattern = bw;
+
+		// _theData = null;
+	}
+
+	/**
+	 * method called by child classes to format a new symbol (LabelWrapper) with the
+	 * current default formatting options
+	 */
+	final protected void formatSymbol(final Debrief.Wrappers.LabelWrapper wrapper,
+			final Debrief.Wrappers.BuoyPatternWrapper parent) {
+		// get the shape for the symbol
+		final String type = getSymbolType();
+
+		// create a new symbol
+		wrapper.setSymbolType(type);
+
+		// set the size of the symbol
+		wrapper.setSymbolSize(getSymbolSize());
+
+		// set the colour of this symbol to the default colour
+		wrapper.setColor(getColor());
+
+		// specify whether the buoy label should be shown
+		wrapper.setLabelVisible(getBuoyLabelVisible());
+
+		// the time period is managed by the buoypattern, so assign it
+		final TimePeriod period = new TimePeriod.BaseTimePeriod(parent.getStartDTG(), parent.getEndDTG());
+		wrapper.setTimePeriod(period);
+
+		// store the parent data within the symbol
+		wrapper.setParent(parent);
+
+		// add this point to the pattern
+		parent.add(wrapper);
+
+	}
+
+	public boolean getBuoyLabelVisible() {
+		return _labelVisible;
+	}
+
+	public java.awt.Color getColor() {
+		return _theColor;
+	}
+
+	public final HiResDate getDateTimeGroup() {
+		return _theStartDTG;
+	}
+
+	public final Duration getDuration() {
+		return new Duration(_theBuoyPatternLifetime, Duration.MICROSECONDS);
+	}
+
+	// ////////////////////////////
+	// help for Bean editors
+	// ////////////////////////////
+
+	/**
+	 * get the editor for this item
+	 *
+	 * @return the BeanInfo data for this editable object
+	 */
+	@Override
+	abstract public MWC.GUI.Editable.EditorType getInfo();
+
+	public final WorldLocation getJigPoint() {
+		return _jigPoint;
+	}
+
+	// ////////////////////////////
+	// help for child classes
+	// ////////////////////////////
+	public final WorldLocation getKingpin() {
+		final double rng_degs = MWC.Algorithms.Conversions.Nm2Degs(_kingpinRange);
+		final double brg_rads = MWC.Algorithms.Conversions.Degs2Rads(_kingpinBearing);
+		final WorldVector offset = new WorldVector(brg_rads, rng_degs, 0.0);
+		final WorldLocation res = _jigPoint.add(offset);
+		return res;
+	}
+
+	public final double getKingpinBearing() {
+		return _kingpinBearing;
+	}
+
+	public final WorldDistance getKingpinRange() {
+		return new WorldDistance(_kingpinRange, WorldDistance.NM);
+	}
+
+	@Override
+	public final String getName() {
+		return _name;
+	}
+
+	public final Integer getNumberOfBuoys() {
+		return new Integer(_number);
+	}
+
+	public final String getPatternName() {
+		return getName();
+	}
+
+	public Double getSymbolSize() {
+		return new Double(_theShape.getScaleVal());
+	}
+
+	public String getSymbolType() {
+		return _theShape.getType();
+	}
+
+	/**
+	 * whether there is any edit information for this item this is a convenience
+	 * function to save creating the EditorType data first
+	 *
+	 * @return yes/no
+	 */
+	@Override
+	public final boolean hasEditor() {
+		return true;
+	}
+
+	public final void setBuoyLabelVisible(final boolean val) {
+		_labelVisible = val;
+	}
+
+	public final void setColor(final java.awt.Color val) {
+		_theColor = val;
+	}
+
+	public final void setDateTimeGroup(final HiResDate val) {
+		_theStartDTG = val;
+	}
+
+	// set the lifetime of the buoypattern (expressed in hours)
+	public final void setDuration(final Duration val) {
+		// convert hours to millis
+		_theBuoyPatternLifetime = (long) val.getValueIn(Duration.MICROSECONDS);
+	}
+
+	public final void setJigPoint(final WorldLocation val) {
+		_jigPoint = val;
+	}
+
+	public final void setKingpinBearing(final double val) {
+		_kingpinBearing = val;
+	}
+
+	public final void setKingpinRange(final WorldDistance val) {
+		_kingpinRange = val.getValueIn(WorldDistance.NM);
+	}
+
+	public final void setNumberOfBuoys(final Integer val) {
+		_number = val.intValue();
+	}
+
+	public final void setPatternName(final String val) {
+		_name = val;
+	}
+
+	public final void setSymbolSize(final Double val) {
+		_theShape.setScaleVal(val.doubleValue());
+	}
+
+	public final void setSymbolType(final String val) {
+		// is this the type of our symbol?
+		if (!val.equals(_theShape.getType())) {
+			// ok, new type.
+
+			// remember the size of the symbol
+			final double scale = _theShape.getScaleVal();
+			// replace our symbol with this new one
+			_theShape = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol(val);
+			_theShape.setColor(this.getColor());
+
+			// update the colour
+			_theShape.setScaleVal(scale);
+		}
+	}
+
+	public final void undo() {
+		if (_theLastPattern != null) {
+			// remove the layer form the data
+			_theData.removeThisLayer(_theLastPattern);
+
+			_theData.fireExtended();
+		}
+	}
 
 }

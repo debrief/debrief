@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: ImportRangeData.java,v $
@@ -56,64 +56,71 @@
 
 package Debrief.Tools.Operations;
 
-import Debrief.ReaderWriter.PCArgos.*;
-import MWC.GUI.*;
+import Debrief.ReaderWriter.PCArgos.ImportRangeDataPanel;
+import Debrief.ReaderWriter.PCArgos.SwingImportRangeData;
+import MWC.GUI.Layers;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PropertiesPanel;
-import MWC.GUI.Tools.*;
+import MWC.GUI.Tools.Action;
+import MWC.GUI.Tools.PlainTool;
 
-/** command to import a file (initially just Replay) into Debrief. 
- * The data used to implement the command is stored as a command, 
- * so that it may be added to an undo buffer.
+/**
+ * command to import a file (initially just Replay) into Debrief. The data used
+ * to implement the command is stored as a command, so that it may be added to
+ * an undo buffer.
  */
 public final class ImportRangeData extends PlainTool {
 
-  ///////////////////////////////////////////////////////////////
-  // member variables
-  ///////////////////////////////////////////////////////////////
-	 
-  /** the properties panel to put ourselves into
+	///////////////////////////////////////////////////////////////
+	// member variables
+	///////////////////////////////////////////////////////////////
+
+	/**
+	 *
 	 */
-  private final PropertiesPanel _thePanel;
-	
-	/** the layers we should add data to
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * the properties panel to put ourselves into
 	 */
-  private final Layers _theLayers;
-  
-  ///////////////////////////////////////////////////////////////
-  // constructor
-  ///////////////////////////////////////////////////////////////
-  /** constructor, taking information ready for when the button
-   * gets pressed
-   * @param theParent the ToolParent window which we control the cursor of
-   * @param theApplication the Application to create a blank 
-   * session to import the file into, if the session val is null
-   * @param theSessionVal the Session to add the file to (or null, see above)
-   */
-  public ImportRangeData(final ToolParent theParent,
-												 final MWC.GUI.Properties.PropertiesPanel thePanel,
-												 final Layers theData){
-    super(theParent, "Import Rng Data", "images/import_range.gif");
-    // store the Session                              
+	private final PropertiesPanel _thePanel;
+
+	/**
+	 * the layers we should add data to
+	 */
+	private final Layers _theLayers;
+
+	///////////////////////////////////////////////////////////////
+	// constructor
+	///////////////////////////////////////////////////////////////
+	/**
+	 * constructor, taking information ready for when the button gets pressed
+	 *
+	 * @param theParent      the ToolParent window which we control the cursor of
+	 * @param theApplication the Application to create a blank session to import the
+	 *                       file into, if the session val is null
+	 * @param theSessionVal  the Session to add the file to (or null, see above)
+	 */
+	public ImportRangeData(final ToolParent theParent, final MWC.GUI.Properties.PropertiesPanel thePanel,
+			final Layers theData) {
+		super(theParent, "Import Rng Data", "images/import_range.gif");
+		// store the Session
 		_thePanel = thePanel;
 		_theLayers = theData;
-  }                              
-
-	public final Action getData()
-	{
-		return null;
 	}
 
+	@Override
+	public final void execute() {
 
-	public final void execute()
-	{
-    
 		// create new panel
-		ImportRangeDataPanel pn = new SwingImportRangeData(_theLayers,
-																											 null,
-																											 _thePanel);
-		
-	
-		if(pn != null)
+		ImportRangeDataPanel pn = new SwingImportRangeData(_theLayers, null, _thePanel);
+
+		if (pn != null)
 			pn = null;
+	}
+
+	@Override
+	public final Action getData() {
+		return null;
 	}
 }

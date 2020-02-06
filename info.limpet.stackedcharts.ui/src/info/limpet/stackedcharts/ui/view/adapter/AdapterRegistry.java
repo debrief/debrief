@@ -1,227 +1,178 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 package info.limpet.stackedcharts.ui.view.adapter;
-
-import info.limpet.stackedcharts.model.Dataset;
-import info.limpet.stackedcharts.model.ScatterSet;
-import info.limpet.stackedcharts.ui.editor.Activator;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 
-public class AdapterRegistry implements IStackedDatasetAdapter,
-    IStackedScatterSetAdapter
-{
+import info.limpet.stackedcharts.model.Dataset;
+import info.limpet.stackedcharts.model.ScatterSet;
+import info.limpet.stackedcharts.ui.editor.Activator;
 
-  private static final String DATASET_ADAPTER_ID =
-      "info.limpet.stackedcharts.ui.dataset_adapter";
+public class AdapterRegistry implements IStackedDatasetAdapter, IStackedScatterSetAdapter {
 
-  private static final String SCATTERSET_ADAPTER_ID =
-      "info.limpet.stackedcharts.ui.scatterset_adapter";
+	private static final String DATASET_ADAPTER_ID = "info.limpet.stackedcharts.ui.dataset_adapter";
 
-  @SuppressWarnings("unchecked")
-  @Override
-  public List<Dataset> convertToDataset(Object data)
-  {
-    List<Dataset> res = null;
-    try
-    {
-      // ok, do we need to loop through the items?
-      List<Object> list;
-      if (data instanceof List<?>)
-      {
-        list = (List<Object>) data;
-      }
-      else
-      {
-        list = new ArrayList<Object>();
-        list.add(data);
-      }
+	private static final String SCATTERSET_ADAPTER_ID = "info.limpet.stackedcharts.ui.scatterset_adapter";
 
-      // now loop through them
-      for (Object item : list)
-      {
+	@Override
+	public boolean canConvertToDataset(final Object data) {
+		boolean res = false;
+		try {
+			final IConfigurationElement[] config = Platform.getExtensionRegistry()
+					.getConfigurationElementsFor(DATASET_ADAPTER_ID);
+			for (final IConfigurationElement e : config) {
+				final Object o = e.createExecutableExtension("class");
 
-        IConfigurationElement[] config =
-            Platform.getExtensionRegistry().getConfigurationElementsFor(
-                DATASET_ADAPTER_ID);
-        for (IConfigurationElement e : config)
-        {
-          Object o = e.createExecutableExtension("class");
-          if (o instanceof IStackedDatasetAdapter)
-          {
-            IStackedDatasetAdapter sa = (IStackedDatasetAdapter) o;
+				if (o instanceof IStackedDatasetAdapter) {
+					final IStackedDatasetAdapter sa = (IStackedDatasetAdapter) o;
+					if (sa.canConvertToDataset(data)) {
+						// success, drop out
+						res = true;
+						break;
+					}
+				}
+			}
+		} catch (final Exception ex) {
+			Activator.getDefault().getLog()
+					.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Failed to load stacked charts adapter", ex));
+		}
 
-            List<Dataset> matches = sa.convertToDataset(item);
+		return res;
+	}
 
-            if (matches != null)
-            {
-              if (res == null)
-              {
-                res = new ArrayList<Dataset>();
-              }
+	@Override
+	public boolean canConvertToScatterSet(final Object data) {
+		boolean res = false;
+		try {
+			final IConfigurationElement[] config = Platform.getExtensionRegistry()
+					.getConfigurationElementsFor(SCATTERSET_ADAPTER_ID);
+			for (final IConfigurationElement e : config) {
+				final Object o = e.createExecutableExtension("class");
+				if (o instanceof IStackedScatterSetAdapter) {
+					final IStackedScatterSetAdapter sa = (IStackedScatterSetAdapter) o;
+					if (sa.canConvertToScatterSet(data)) {
+						// success, drop out
+						res = true;
+						break;
+					}
+				}
+			}
+		} catch (final Exception ex) {
+			Activator.getDefault().getLog()
+					.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Failed to load stacked charts adapter", ex));
+		}
 
-              res.addAll(matches);
-              // success, drop out
-              break;
-            }
-          }
-        }
-      }
-    }
-    catch (Exception ex)
-    {
-      Activator.getDefault().getLog().log(
-          new Status(Status.ERROR, Activator.PLUGIN_ID,
-              "Failed to load stacked charts adapter", ex));
-    }
+		return res;
+	}
 
-    return res;
-  }
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Dataset> convertToDataset(final Object data) {
+		List<Dataset> res = null;
+		try {
+			// ok, do we need to loop through the items?
+			List<Object> list;
+			if (data instanceof List<?>) {
+				list = (List<Object>) data;
+			} else {
+				list = new ArrayList<Object>();
+				list.add(data);
+			}
 
-  @Override
-  public boolean canConvertToDataset(Object data)
-  {
-    boolean res = false;
-    try
-    {
-      IConfigurationElement[] config =
-          Platform.getExtensionRegistry().getConfigurationElementsFor(
-              DATASET_ADAPTER_ID);
-      for (IConfigurationElement e : config)
-      {
-        Object o = e.createExecutableExtension("class");
-        
-        if (o instanceof IStackedDatasetAdapter)
-        {
-          IStackedDatasetAdapter sa = (IStackedDatasetAdapter) o;
-          if (sa.canConvertToDataset(data))
-          {
-            // success, drop out
-            res = true;
-            break;
-          }
-        }
-      }
-    }
-    catch (Exception ex)
-    {
-      Activator.getDefault().getLog().log(
-          new Status(Status.ERROR, Activator.PLUGIN_ID,
-              "Failed to load stacked charts adapter", ex));
-    }
+			// now loop through them
+			for (final Object item : list) {
 
-    return res;
-  }
+				final IConfigurationElement[] config = Platform.getExtensionRegistry()
+						.getConfigurationElementsFor(DATASET_ADAPTER_ID);
+				for (final IConfigurationElement e : config) {
+					final Object o = e.createExecutableExtension("class");
+					if (o instanceof IStackedDatasetAdapter) {
+						final IStackedDatasetAdapter sa = (IStackedDatasetAdapter) o;
 
-  @SuppressWarnings("unchecked")
-  @Override
-  public List<ScatterSet> convertToScatterSet(Object data)
-  {
-    List<ScatterSet> res = null;
-    try
-    {
-      // ok, do we need to loop through the items?
-      List<Object> list;
-      if (data instanceof List<?>)
-      {
-        list = (List<Object>) data;
-      }
-      else
-      {
-        list = new ArrayList<Object>();
-        list.add(data);
-      }
+						final List<Dataset> matches = sa.convertToDataset(item);
 
-      // now loop through them
-      for (Object item : list)
-      {
+						if (matches != null) {
+							if (res == null) {
+								res = new ArrayList<Dataset>();
+							}
 
-        IConfigurationElement[] config =
-            Platform.getExtensionRegistry().getConfigurationElementsFor(
-                SCATTERSET_ADAPTER_ID);
-        for (IConfigurationElement e : config)
-        {
-          Object o = e.createExecutableExtension("class");
-          if (o instanceof IStackedScatterSetAdapter)
-          {
-            IStackedScatterSetAdapter sa = (IStackedScatterSetAdapter) o;
+							res.addAll(matches);
+							// success, drop out
+							break;
+						}
+					}
+				}
+			}
+		} catch (final Exception ex) {
+			Activator.getDefault().getLog()
+					.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Failed to load stacked charts adapter", ex));
+		}
 
-            List<ScatterSet> matches = sa.convertToScatterSet(item);
+		return res;
+	}
 
-            if (matches != null)
-            {
-              if (res == null)
-              {
-                res = new ArrayList<ScatterSet>();
-              }
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ScatterSet> convertToScatterSet(final Object data) {
+		List<ScatterSet> res = null;
+		try {
+			// ok, do we need to loop through the items?
+			List<Object> list;
+			if (data instanceof List<?>) {
+				list = (List<Object>) data;
+			} else {
+				list = new ArrayList<Object>();
+				list.add(data);
+			}
 
-              res.addAll(matches);
-              // success, drop out
-              break;
-            }
-          }
-        }
-      }
-    }
-    catch (Exception ex)
-    {
-      Activator.getDefault().getLog().log(
-          new Status(Status.ERROR, Activator.PLUGIN_ID,
-              "Failed to load stacked charts adapter", ex));
-    }
+			// now loop through them
+			for (final Object item : list) {
 
-    return res;
-  }
+				final IConfigurationElement[] config = Platform.getExtensionRegistry()
+						.getConfigurationElementsFor(SCATTERSET_ADAPTER_ID);
+				for (final IConfigurationElement e : config) {
+					final Object o = e.createExecutableExtension("class");
+					if (o instanceof IStackedScatterSetAdapter) {
+						final IStackedScatterSetAdapter sa = (IStackedScatterSetAdapter) o;
 
-  @Override
-  public boolean canConvertToScatterSet(Object data)
-  {
-    boolean res = false;
-    try
-    {
-      IConfigurationElement[] config =
-          Platform.getExtensionRegistry().getConfigurationElementsFor(
-              SCATTERSET_ADAPTER_ID);
-      for (IConfigurationElement e : config)
-      {
-        Object o = e.createExecutableExtension("class");
-        if (o instanceof IStackedScatterSetAdapter)
-        {
-          IStackedScatterSetAdapter sa = (IStackedScatterSetAdapter) o;
-          if (sa.canConvertToScatterSet(data))
-          {
-            // success, drop out
-            res = true;
-            break;
-          }
-        }
-      }
-    }
-    catch (Exception ex)
-    {
-      Activator.getDefault().getLog().log(
-          new Status(Status.ERROR, Activator.PLUGIN_ID,
-              "Failed to load stacked charts adapter", ex));
-    }
+						final List<ScatterSet> matches = sa.convertToScatterSet(item);
 
-    return res;
-  }
+						if (matches != null) {
+							if (res == null) {
+								res = new ArrayList<ScatterSet>();
+							}
+
+							res.addAll(matches);
+							// success, drop out
+							break;
+						}
+					}
+				}
+			}
+		} catch (final Exception ex) {
+			Activator.getDefault().getLog()
+					.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Failed to load stacked charts adapter", ex));
+		}
+
+		return res;
+	}
 
 }

@@ -14,8 +14,10 @@ import org.eclipse.swt.graphics.GC;
 
 abstract class SvgPaint {
 
-	enum PaintType { None, Current, Color, Link }
-	
+	enum PaintType {
+		None, Current, Color, Link
+	}
+
 	SvgGraphic parent;
 	GC gc;
 	SvgGradient paintServer;
@@ -24,20 +26,20 @@ abstract class SvgPaint {
 	Integer color = null;
 	Float opacity = null;
 
-	SvgPaint(SvgGraphic parent) {
+	SvgPaint(final SvgGraphic parent) {
 		this.parent = parent;
 	}
-	
+
 	abstract void apply();
-	
-	public void create(GC gc) {
-		if(parent instanceof SvgShape) {
+
+	public void create(final GC gc) {
+		if (parent instanceof SvgShape) {
 			this.gc = gc;
-			if(linkId != null) {
-				SvgElement def = parent.getElement(linkId);
-				if(def instanceof SvgGradient) {
-					SvgGradient gradient = (SvgGradient) def;
-					SvgShape shape = (SvgShape) parent;
+			if (linkId != null) {
+				final SvgElement def = parent.getElement(linkId);
+				if (def instanceof SvgGradient) {
+					final SvgGradient gradient = (SvgGradient) def;
+					final SvgShape shape = (SvgShape) parent;
 					paintServer = gradient;
 					paintServer.create(shape, gc);
 				}
@@ -46,9 +48,9 @@ abstract class SvgPaint {
 			throw new UnsupportedOperationException("only shapes can be painted..."); //$NON-NLS-1$
 		}
 	}
-	
+
 	public boolean dispose() {
-		if(paintServer != null) {
+		if (paintServer != null) {
 			paintServer.dispose();
 			return true;
 		}
@@ -58,5 +60,5 @@ abstract class SvgPaint {
 	public boolean isPaintable() {
 		return type != PaintType.None;
 	}
-	
+
 }

@@ -1,166 +1,151 @@
 
 package ASSET.Util.XML.Decisions;
 
+import ASSET.Models.Decision.TargetType;
+
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 import ASSET.Models.Decision.Tactical.LaunchWeapon;
-import ASSET.Models.Decision.TargetType;
 import ASSET.Util.XML.Decisions.Tactical.CoreDecisionHandler;
 import MWC.GenericData.Duration;
 import MWC.GenericData.WorldDistance;
 import MWC.Utilities.ReaderWriter.XML.Util.DurationHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
 
-abstract class LaunchWeaponHandler extends CoreDecisionHandler
-  {
+abstract class LaunchWeaponHandler extends CoreDecisionHandler {
 
-  private final static String type = "LaunchWeapon";
-  private final static String TYPE = "LaunchType";
-  private final static String TYPE_FILENAME = "LaunchTypeFileName";
+	private final static String type = "LaunchWeapon";
+	private final static String TYPE = "LaunchType";
+	private final static String TYPE_FILENAME = "LaunchTypeFileName";
 
-  WorldDistance _launchRange;
-  Duration _launchTime;
-  String _launchType;
-  String _fileName;
-  TargetType _myTargetType;
+	static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc) {
+		// create ourselves
+		final org.w3c.dom.Element thisPart = doc.createElement(type);
 
+		// get data item
+		final LaunchWeapon bb = (LaunchWeapon) toExport;
 
-  public LaunchWeaponHandler()
-  {
-    super(type);
-    addAttributeHandler(new HandleAttribute(TYPE_FILENAME)
-    {
-      public void setValue(String name, final String val)
-      {
-        // store the data
-        _fileName = val;
-        _launchType = LaunchWeapon.readWeaponFromThisFile(val);
-      }
-    });
-    addAttributeHandler(new HandleAttribute(TYPE)
-    {
-      public void setValue(String name, final String val)
-      {
-        // so, before we learn to read in the actual type,
-        // set it to the hard-coded value used for testing launch
+		// first the parent export
+		CoreDecisionHandler.exportThis(bb, thisPart, doc);
 
-        _launchType = val;
-      }
-    });
+		// output it's attributes
+		// is there a filename?
+		final String fName = bb.getLaunchFilename();
+		if (fName != null) {
+			try {
 
-    addHandler(new WorldDistanceHandler()
-    {
-      public void setWorldDistance(WorldDistance res)
-      {
-        _launchRange = res;
-      }
-    });
+				// write the details to file
+				final java.io.FileWriter fw = new java.io.FileWriter(fName);
+				final java.io.BufferedWriter bw = new java.io.BufferedWriter(fw);
+				bw.write(bb.getLaunchType());
 
-    addHandler(new ASSET.Util.XML.Decisions.Util.TargetTypeHandler()
-    {
-      public void setTargetType(final TargetType type)
-      {
-        _myTargetType = type;
-      }
-    });
-    addHandler(new DurationHandler()
-    {
-      public void setDuration(Duration res)
-      {
-        _launchTime = res;
-      }
-    });
+				bw.close();
 
-  }
+				// insert the filename
+				thisPart.setAttribute(TYPE_FILENAME, fName);
 
-  public void elementClosed()
-  {
-    final LaunchWeapon lnch = new LaunchWeapon();
+			} catch (final java.io.IOException ee) {
+				ee.printStackTrace();
+			}
 
-    super.setAttributes(lnch);
+		} else {
+			// insert the launch details
+			// DON't INSERT THE DETAILS
+		}
+		ASSET.Util.XML.Decisions.Util.TargetTypeHandler.exportThis(bb.getTargetType(), thisPart, doc);
+		WorldDistanceHandler.exportDistance(bb.getLaunchRange(), thisPart, doc);
+		DurationHandler.exportDuration(bb.getCoolOffTime(), thisPart, doc);
 
-    lnch.setCoolOffTime(_launchTime);
-    lnch.setLaunchRange(_launchRange);
-    lnch.setTargetType(_myTargetType);
-    lnch.setLaunchType(_launchType);
-    if (_fileName != null)
-      lnch.setLaunchFilename(_fileName);
+		parent.appendChild(thisPart);
 
-    // finally output it
-    setModel(lnch);
+	}
 
-    // clear the data
-    _myTargetType = null;
-    _fileName = null;
-    _launchType = null;
-    _launchTime = null;
-  }
+	WorldDistance _launchRange;
+	Duration _launchTime;
+	String _launchType;
+	String _fileName;
 
-  abstract public void setModel(ASSET.Models.DecisionType dec);
+	TargetType _myTargetType;
 
+	public LaunchWeaponHandler() {
+		super(type);
+		addAttributeHandler(new HandleAttribute(TYPE_FILENAME) {
+			@Override
+			public void setValue(final String name, final String val) {
+				// store the data
+				_fileName = val;
+				_launchType = LaunchWeapon.readWeaponFromThisFile(val);
+			}
+		});
+		addAttributeHandler(new HandleAttribute(TYPE) {
+			@Override
+			public void setValue(final String name, final String val) {
+				// so, before we learn to read in the actual type,
+				// set it to the hard-coded value used for testing launch
 
-  static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
-                                final org.w3c.dom.Document doc)
-  {
-    // create ourselves
-    final org.w3c.dom.Element thisPart = doc.createElement(type);
+				_launchType = val;
+			}
+		});
 
-    // get data item
-    final LaunchWeapon bb = (LaunchWeapon) toExport;
+		addHandler(new WorldDistanceHandler() {
+			@Override
+			public void setWorldDistance(final WorldDistance res) {
+				_launchRange = res;
+			}
+		});
 
-    // first the parent export
-    CoreDecisionHandler.exportThis(bb, thisPart, doc);
+		addHandler(new ASSET.Util.XML.Decisions.Util.TargetTypeHandler() {
+			@Override
+			public void setTargetType(final TargetType type) {
+				_myTargetType = type;
+			}
+		});
+		addHandler(new DurationHandler() {
+			@Override
+			public void setDuration(final Duration res) {
+				_launchTime = res;
+			}
+		});
 
-    // output it's attributes
-    // is there a filename?
-    final String fName = bb.getLaunchFilename();
-    if (fName != null)
-    {
-      try
-      {
+	}
 
-        // write the details to file
-        final java.io.FileWriter fw = new java.io.FileWriter(fName);
-        final java.io.BufferedWriter bw = new java.io.BufferedWriter(fw);
-        bw.write(bb.getLaunchType());
+	@Override
+	public void elementClosed() {
+		final LaunchWeapon lnch = new LaunchWeapon();
 
-        bw.close();
-        
-        // insert the filename
-        thisPart.setAttribute(TYPE_FILENAME, fName);
+		super.setAttributes(lnch);
 
-      }
-      catch (java.io.IOException ee)
-      {
-        ee.printStackTrace();
-      }
+		lnch.setCoolOffTime(_launchTime);
+		lnch.setLaunchRange(_launchRange);
+		lnch.setTargetType(_myTargetType);
+		lnch.setLaunchType(_launchType);
+		if (_fileName != null)
+			lnch.setLaunchFilename(_fileName);
 
-    }
-    else
-    {
-      // insert the launch details
-      // DON't INSERT THE DETAILS
-    }
-    ASSET.Util.XML.Decisions.Util.TargetTypeHandler.exportThis(bb.getTargetType(), thisPart, doc);
-    WorldDistanceHandler.exportDistance(bb.getLaunchRange(), thisPart, doc);
-    DurationHandler.exportDuration(bb.getCoolOffTime(), thisPart, doc);
+		// finally output it
+		setModel(lnch);
 
-    parent.appendChild(thisPart);
+		// clear the data
+		_myTargetType = null;
+		_fileName = null;
+		_launchType = null;
+		_launchTime = null;
+	}
 
-  }
-
+	abstract public void setModel(ASSET.Models.DecisionType dec);
 
 }

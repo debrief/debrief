@@ -16,30 +16,34 @@ import org.eclipse.swt.widgets.Event;
 
 public class VPanelPainter implements IControlPainter {
 
+	@Override
 	public void dispose() {
 		// nothing to do
 	}
-	
-	public void paintBackground(VControl control, Event e) {
-		if(control.background != null && !control.background.isDisposed()) {
+
+	@Override
+	public void paintBackground(final VControl control, final Event e) {
+		if (control.background != null && !control.background.isDisposed()) {
 			e.gc.setBackground(control.background);
 			e.gc.fillRectangle(control.bounds);
 		}
 	}
-	
-	public void paintBorders(VControl control, Event e) {
-		if(control.hasStyle(SWT.BORDER)) {
-			if(control.foreground != null) {
+
+	@Override
+	public void paintBorders(final VControl control, final Event e) {
+		if (control.hasStyle(SWT.BORDER)) {
+			if (control.foreground != null) {
 				e.gc.setForeground(control.foreground);
 			} else {
 				e.gc.setForeground(e.display.getSystemColor(SWT.COLOR_WIDGET_BORDER));
 			}
-			e.gc.drawRectangle(control.bounds.x, control.bounds.y, control.bounds.width-1, control.bounds.height-1);
+			e.gc.drawRectangle(control.bounds.x, control.bounds.y, control.bounds.width - 1, control.bounds.height - 1);
 		}
 	}
-	
-	public void paintContent(VControl control, Event e) {
-		for(VControl child : ((VPanel) control).getChildren()) {
+
+	@Override
+	public void paintContent(final VControl control, final Event e) {
+		for (final VControl child : ((VPanel) control).getChildren()) {
 			child.paintControl(e);
 		}
 	}

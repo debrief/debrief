@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package com.planetmayo.debrief.satc.model.contributions;
@@ -22,13 +22,11 @@ import com.planetmayo.debrief.satc.model.states.SpeedRange;
 import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.util.GeoSupport;
 
-public class SpeedForecastContribution extends BaseContribution
-{
+public class SpeedForecastContribution extends BaseContribution {
 	private static final long serialVersionUID = 1L;
 
 	public static final double MAX_SPEED_VALUE_KTS = 40.0;
-	public static final double MAX_SPEED_VALUE_MS = GeoSupport
-			.kts2MSec(MAX_SPEED_VALUE_KTS);
+	public static final double MAX_SPEED_VALUE_MS = GeoSupport.kts2MSec(MAX_SPEED_VALUE_KTS);
 
 	public static final String MIN_SPEED = "minSpeed";
 
@@ -39,52 +37,42 @@ public class SpeedForecastContribution extends BaseContribution
 	protected Double estimate;
 
 	@Override
-	public void actUpon(final ProblemSpace space)
-			throws IncompatibleStateException
-	{
+	public void actUpon(final ProblemSpace space) throws IncompatibleStateException {
 
 		// check that speed values are present
-		if ((minSpeed != null) && (maxSpeed != null))
-		{
+		if ((minSpeed != null) && (maxSpeed != null)) {
 			// create a bounded state representing our values
 			final SpeedRange speedRange = new SpeedRange(getMinSpeed(), getMaxSpeed());
-			for (BoundedState state : space.getBoundedStatesBetween(startDate,
-					finishDate))
-			{
+			for (final BoundedState state : space.getBoundedStatesBetween(startDate, finishDate)) {
 				state.constrainTo(speedRange);
 			}
 		}
 	}
 
-	protected double calcError(State thisState)
-	{
+	@Override
+	protected double calcError(final State thisState) {
 		double delta = 0;
 
 		// do we have an estimate?
-		if (getEstimate() != null)
-		{
+		if (getEstimate() != null) {
 			delta = this.getEstimate() - thisState.getSpeed();
 
 			// ok - we 'normalise' this speed according to the max/min
 			Double limit;
 
 			// is the state lower than the estimate?
-			if (delta > 0)
-			{
+			if (delta > 0) {
 				// ok, do we have a min value
 				limit = getMinSpeed();
-			}
-			else
-			{
+			} else {
 				// higher, use max
 				limit = getMaxSpeed();
 			}
 
 			// do we have a relevant limit?
-			if (limit != null)
-			{
+			if (limit != null) {
 				// what's the range from the estimate to the limit
-				double allowable = getEstimate() - limit;
+				final double allowable = getEstimate() - limit;
 
 				// ok, and how far through this are we
 				delta = delta / allowable;
@@ -98,44 +86,37 @@ public class SpeedForecastContribution extends BaseContribution
 	}
 
 	@Override
-	public ContributionDataType getDataType()
-	{
+	public ContributionDataType getDataType() {
 		return ContributionDataType.FORECAST;
 	}
 
-	public Double getEstimate()
-	{
+	public Double getEstimate() {
 		return estimate;
 	}
 
-	public Double getMaxSpeed()
-	{
+	public Double getMaxSpeed() {
 		return maxSpeed;
 	}
 
-	public Double getMinSpeed()
-	{
+	public Double getMinSpeed() {
 		return minSpeed;
 	}
 
-	public void setEstimate(Double newEstimate)
-	{
-		Double oldEstimate = estimate;
+	public void setEstimate(final Double newEstimate) {
+		final Double oldEstimate = estimate;
 		this.estimate = newEstimate;
 		firePropertyChange(ESTIMATE, oldEstimate, newEstimate);
 	}
 
-	public void setMaxSpeed(Double newMaxSpeed)
-	{
-		Double oldMaxSpeed = maxSpeed;
+	public void setMaxSpeed(final Double newMaxSpeed) {
+		final Double oldMaxSpeed = maxSpeed;
 		this.maxSpeed = newMaxSpeed;
 		firePropertyChange(MAX_SPEED, oldMaxSpeed, newMaxSpeed);
 		firePropertyChange(HARD_CONSTRAINTS, oldMaxSpeed, newMaxSpeed);
 	}
 
-	public void setMinSpeed(Double newMinSpeed)
-	{
-		Double oldMinSpeed = minSpeed;
+	public void setMinSpeed(final Double newMinSpeed) {
+		final Double oldMinSpeed = minSpeed;
 		this.minSpeed = newMinSpeed;
 		firePropertyChange(MIN_SPEED, oldMinSpeed, newMinSpeed);
 		firePropertyChange(HARD_CONSTRAINTS, oldMinSpeed, newMinSpeed);

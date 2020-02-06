@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: AWTMenuItem.java,v $
@@ -68,51 +68,54 @@ import java.awt.MenuItem;
 
 import MWC.GUI.Tool;
 
-
-/** extension of normal AWT menu to create a menu item containing
- * a Debrief tool item
+/**
+ * extension of normal AWT menu to create a menu item containing a Debrief tool
+ * item
  */
-public class AWTMenuItem extends MenuItem implements java.awt.event.ActionListener
-{
-  /**
-	 * 
+public class AWTMenuItem extends MenuItem implements java.awt.event.ActionListener {
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	/////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  /** the Debrief tool we are calling
-   */
-  protected Tool _theTool;
-  
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  
-  public AWTMenuItem(final Tool theTool){
-    _theTool = theTool;
-  }
-  
-  public AWTMenuItem(final String theLabel, final Tool theTool){
-    super(theLabel);
-    _theTool = theTool;
-    this.addActionListener(this);
-  }
-  
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
-  
-  protected Tool getTool(){
-    return _theTool;
-  }
-  
-  /** callback function for when menu item if selected
-   */
-  public void actionPerformed(final java.awt.event.ActionEvent e){
-    /** check that we have a tool declared
-     */
-    if(_theTool != null)
-      _theTool.execute();
-  }
+	// member variables
+	////////////////////////////////////////////////////////////
+	/**
+	 * the Debrief tool we are calling
+	 */
+	protected Tool _theTool;
+
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+
+	public AWTMenuItem(final String theLabel, final Tool theTool) {
+		super(theLabel);
+		_theTool = theTool;
+		this.addActionListener(this);
+	}
+
+	public AWTMenuItem(final Tool theTool) {
+		_theTool = theTool;
+	}
+
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * callback function for when menu item if selected
+	 */
+	@Override
+	public void actionPerformed(final java.awt.event.ActionEvent e) {
+		/**
+		 * check that we have a tool declared
+		 */
+		if (_theTool != null)
+			_theTool.execute();
+	}
+
+	protected Tool getTool() {
+		return _theTool;
+	}
 }

@@ -1,62 +1,39 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.cmap.tote;
 
-import org.eclipse.ui.plugin.*;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
-import java.util.*;
 
 /**
  * The main plugin class to be used in the desktop.
  */
 public class TotePlugin extends AbstractUIPlugin {
-	
-	public static final String IMG_LOCATION="icons/";
-	public static final String IMG_SHOW_UNIT_COLUMN=IMG_LOCATION+"show_units.png";
 
-	//The shared instance.
+	public static final String IMG_LOCATION = "icons/";
+	public static final String IMG_SHOW_UNIT_COLUMN = IMG_LOCATION + "show_units.png";
+
+	// The shared instance.
 	private static TotePlugin plugin;
-	//Resource bundle.
-	private ResourceBundle resourceBundle;
-	
-	/**
-	 * The constructor.
-	 */
-	public TotePlugin() {
-		super();
-		plugin = this;
-	}
-
-	/**
-	 * This method is called upon plug-in activation
-	 */
-	public void start(final BundleContext context) throws Exception {
-		super.start(context);
-	}
-
-	/**
-	 * This method is called when the plug-in is stopped
-	 */
-	public void stop(final BundleContext context) throws Exception {
-		super.stop(context);
-		plugin = null;
-		resourceBundle = null;
-	}
 
 	/**
 	 * Returns the shared instance.
@@ -66,8 +43,18 @@ public class TotePlugin extends AbstractUIPlugin {
 	}
 
 	/**
-	 * Returns the string from the plugin's resource bundle,
-	 * or 'key' if not found.
+	 * Returns an image descriptor for the image file at the given plug-in relative
+	 * path.
+	 *
+	 * @param path the path
+	 * @return the image descriptor
+	 */
+	public static ImageDescriptor getImageDescriptor(final String path) {
+		return AbstractUIPlugin.imageDescriptorFromPlugin("org.mwc.cmap.tote", path);
+	}
+
+	/**
+	 * Returns the string from the plugin's resource bundle, or 'key' if not found.
 	 */
 	public static String getResourceString(final String key) {
 		final ResourceBundle bundle = TotePlugin.getDefault().getResourceBundle();
@@ -76,6 +63,32 @@ public class TotePlugin extends AbstractUIPlugin {
 		} catch (final MissingResourceException e) {
 			return key;
 		}
+	}
+
+	/**
+	 * error logging utility
+	 *
+	 * @param severity  the severity; one of <code>OK</code>, <code>ERROR</code>,
+	 *                  <code>INFO</code>, <code>WARNING</code>, or
+	 *                  <code>CANCEL</code>
+	 * @param message   a human-readable message, localized to the current locale
+	 * @param exception a low-level exception, or <code>null</code> if not
+	 *                  applicable
+	 */
+	public static void logError(final int severity, final String message, final Throwable exception) {
+		final Status stat = new Status(severity, "org.mwc.cmap.tote", IStatus.OK, message, exception);
+		getDefault().getLog().log(stat);
+	}
+
+	// Resource bundle.
+	private ResourceBundle resourceBundle;
+
+	/**
+	 * The constructor.
+	 */
+	public TotePlugin() {
+		super();
+		plugin = this;
 	}
 
 	/**
@@ -92,28 +105,20 @@ public class TotePlugin extends AbstractUIPlugin {
 	}
 
 	/**
-	 * Returns an image descriptor for the image file at the given
-	 * plug-in relative path.
-	 *
-	 * @param path the path
-	 * @return the image descriptor
+	 * This method is called upon plug-in activation
 	 */
-	public static ImageDescriptor getImageDescriptor(final String path) {
-		return AbstractUIPlugin.imageDescriptorFromPlugin("org.mwc.cmap.tote", path);
+	@Override
+	public void start(final BundleContext context) throws Exception {
+		super.start(context);
 	}
-	
-	/** error logging utility
-	 * 
-	 * @param severity the severity; one of <code>OK</code>, <code>ERROR</code>, 
-	 * <code>INFO</code>, <code>WARNING</code>,  or <code>CANCEL</code>
-	 * @param message a human-readable message, localized to the
-	 *    current locale
-	 * @param exception a low-level exception, or <code>null</code> if not
-	 *    applicable 
+
+	/**
+	 * This method is called when the plug-in is stopped
 	 */
-	public static void logError(final int severity, final String message, final Throwable exception)
-	{
-		final Status stat = new Status(severity,"org.mwc.cmap.tote", Status.OK, message, exception);
-		getDefault().getLog().log(stat);
-	}	
+	@Override
+	public void stop(final BundleContext context) throws Exception {
+		super.stop(context);
+		plugin = null;
+		resourceBundle = null;
+	}
 }

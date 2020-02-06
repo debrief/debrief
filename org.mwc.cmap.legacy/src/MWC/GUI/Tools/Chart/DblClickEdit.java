@@ -1,20 +1,19 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.Tools.Chart;
-
 
 // Copyright MWC 1999, Debrief 3 Project
 // $RCSfile: DblClickEdit.java,v $
@@ -115,152 +114,131 @@ import MWC.GUI.Plottable;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GenericData.WorldLocation;
 
-public class DblClickEdit implements PlainChart.ChartDoubleClickListener, PlainChart.ChartClickListener, Serializable
-{
-  /**
-	 * 
+public class DblClickEdit implements PlainChart.ChartDoubleClickListener, PlainChart.ChartClickListener, Serializable {
+	/**
+	 *
 	 */
-	private  static final long serialVersionUID = 1L;
-	
+	private static final long serialVersionUID = 1L;
+
 	/////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  PropertiesPanel _thePanel;
+	// member variables
+	////////////////////////////////////////////////////////////
+	PropertiesPanel _thePanel;
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  public DblClickEdit(final PropertiesPanel thePanel)
-  {
-    _thePanel = thePanel;
-  }
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	public DblClickEdit(final PropertiesPanel thePanel) {
+		_thePanel = thePanel;
+	}
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-  public void cursorDblClicked(final PlainChart theChart,
-                               final MWC.GenericData.WorldLocation theLocation,
-                               final java.awt.Point thePoint)
-  {
-  	this.CursorClicked(thePoint, theLocation, theChart.getCanvas(), theChart.getLayers());
-  }
-  
-  /** open the provided item in the editor
-   * 
-   * @param res the item to show
-   * @param e the editor details for the item
-   * @param parentLayer the layer containing this item
-   */
-  protected void addEditor(final Plottable res, final Editable.EditorType e, final Layer parentLayer)
-  {
-  	_thePanel.addEditor(e, parentLayer);
-  }
-  
-  /** we haven't found anything. it's probably not worth bothering with
-   * 
-   * @param projection
-   */
-  protected void handleItemNotFound(final PlainProjection projection)
-  {
-  	addEditor(null, projection.getInfo(), null);
-  }
+	/**
+	 * open the provided item in the editor
+	 *
+	 * @param res         the item to show
+	 * @param e           the editor details for the item
+	 * @param parentLayer the layer containing this item
+	 */
+	protected void addEditor(final Plottable res, final Editable.EditorType e, final Layer parentLayer) {
+		_thePanel.addEditor(e, parentLayer);
+	}
 
-  /** process the cursor-click operation.
-   * @param thePoint screen coordinates of click
-   * @param thePos world coordinates of click
-   * @param theCanvas what got clicked upon
-   * @param theData the information we're storing
-   */
-	public void CursorClicked(final Point thePoint, final WorldLocation thePos, final CanvasType theCanvas, final Layers theData)
-	{
+	/**
+	 * process the cursor-click operation.
+	 *
+	 * @param thePoint  screen coordinates of click
+	 * @param thePos    world coordinates of click
+	 * @param theCanvas what got clicked upon
+	 * @param theData   the information we're storing
+	 */
+	@Override
+	public void CursorClicked(final Point thePoint, final WorldLocation thePos, final CanvasType theCanvas,
+			final Layers theData) {
 
-    //
-    Plottable res = null;
-    double dist = 0;
-    Layer closestLayer = null;
+		//
+		Plottable res = null;
+		double dist = 0;
+		Layer closestLayer = null;
 
-    // find the nearest editable item
-    final int num = theData.size();
-    for (int i = 0; i < num; i++)
-    {
-      final Layer thisL = theData.elementAt(i);
-      if (thisL.getVisible())
-      {
-        // go through this layer
-        Enumeration<Editable> enumer = null;
-        if(thisL instanceof Layer.ProvidesContiguousElements)
-        {
-        	final Layer.ProvidesContiguousElements contig = (ProvidesContiguousElements) thisL;
-        	enumer = contig.contiguousElements();
-        }
-        else
-        	enumer = thisL.elements();
-        
-        while (enumer.hasMoreElements())
-        {
-          final Plottable p = (Plottable) enumer.nextElement();
-          if (p.getVisible())
-          {
-            // how far away is it
-            final double rng = p.rangeFrom(thePos);
+		// find the nearest editable item
+		final int num = theData.size();
+		for (int i = 0; i < num; i++) {
+			final Layer thisL = theData.elementAt(i);
+			if (thisL.getVisible()) {
+				// go through this layer
+				Enumeration<Editable> enumer = null;
+				if (thisL instanceof Layer.ProvidesContiguousElements) {
+					final Layer.ProvidesContiguousElements contig = (ProvidesContiguousElements) thisL;
+					enumer = contig.contiguousElements();
+				} else
+					enumer = thisL.elements();
 
-            // is it null though?
-            if (rng != -1.0)
-            {
-              // is it closer?
-              if (res == null)
-              {
-                res = p;
-                dist = rng;
-                closestLayer = thisL;
-              }
-              else
-              {
-                if (rng < dist)
-                {
-                  res = p;
-                  dist = rng;
-                  closestLayer = thisL;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+				while (enumer.hasMoreElements()) {
+					final Plottable p = (Plottable) enumer.nextElement();
+					if (p.getVisible()) {
+						// how far away is it
+						final double rng = p.rangeFrom(thePos);
 
-    // see if this is in our dbl-click range
-    if (HitTester.doesHit(thePoint,
-    		thePos,
-                          dist,
-                          theCanvas.getProjection()))
-    {
-      // do nothing, we're all happy
-    }
-    else
-    {
-      res = null;
-    }
+						// is it null though?
+						if (rng != -1.0) {
+							// is it closer?
+							if (res == null) {
+								res = p;
+								dist = rng;
+								closestLayer = thisL;
+							} else {
+								if (rng < dist) {
+									res = p;
+									dist = rng;
+									closestLayer = thisL;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 
-    // have we found something editable?
-    if (res != null)
-    {
-      // so get the editor
-      final Editable.EditorType e = res.getInfo();
-      if (e != null)
-      {
-        addEditor(res, e, closestLayer);
-      }
-    }
-    else
-    {
-    	
-      // not found anything useful,
-      // so add
-    	handleItemNotFound(theCanvas.getProjection());
-    }
-		
+		// see if this is in our dbl-click range
+		if (HitTester.doesHit(thePoint, thePos, dist, theCanvas.getProjection())) {
+			// do nothing, we're all happy
+		} else {
+			res = null;
+		}
+
+		// have we found something editable?
+		if (res != null) {
+			// so get the editor
+			final Editable.EditorType e = res.getInfo();
+			if (e != null) {
+				addEditor(res, e, closestLayer);
+			}
+		} else {
+
+			// not found anything useful,
+			// so add
+			handleItemNotFound(theCanvas.getProjection());
+		}
+
+	}
+
+	@Override
+	public void cursorDblClicked(final PlainChart theChart, final MWC.GenericData.WorldLocation theLocation,
+			final java.awt.Point thePoint) {
+		this.CursorClicked(thePoint, theLocation, theChart.getCanvas(), theChart.getLayers());
+	}
+
+	/**
+	 * we haven't found anything. it's probably not worth bothering with
+	 *
+	 * @param projection
+	 */
+	protected void handleItemNotFound(final PlainProjection projection) {
+		addEditor(null, projection.getInfo(), null);
 	}
 
 }

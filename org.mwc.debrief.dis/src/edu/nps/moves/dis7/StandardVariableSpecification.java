@@ -1,189 +1,187 @@
 package edu.nps.moves.dis7;
 
-import java.util.*;
-import java.io.*;
-import edu.nps.moves.disenum.*;
-import edu.nps.moves.disutil.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Does not work, and causes failure in anything it is embedded in. Section 6.2.83
+ * Does not work, and causes failure in anything it is embedded in. Section
+ * 6.2.83
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class StandardVariableSpecification extends Object implements Serializable
-{
-   /** Number of static variable records */
-   protected int  numberOfStandardVariableRecords;
+public class StandardVariableSpecification extends Object implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   /** variable length list of standard variables, The class type and length here are WRONG and will cause the incorrect serialization of any class in whihc it is embedded. */
-   protected List< SimulationManagementPduHeader > standardVariables = new ArrayList< SimulationManagementPduHeader >(); 
+	/** Number of static variable records */
+	protected int numberOfStandardVariableRecords;
 
-/** Constructor */
- public StandardVariableSpecification()
- {
- }
+	/**
+	 * variable length list of standard variables, The class type and length here
+	 * are WRONG and will cause the incorrect serialization of any class in whihc it
+	 * is embedded.
+	 */
+	protected List<SimulationManagementPduHeader> standardVariables = new ArrayList<SimulationManagementPduHeader>();
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+	/** Constructor */
+	public StandardVariableSpecification() {
+	}
 
-   marshalSize = marshalSize + 2;  // numberOfStandardVariableRecords
-   for(int idx=0; idx < standardVariables.size(); idx++)
-   {
-        SimulationManagementPduHeader listElement = standardVariables.get(idx);
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-   }
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-   return marshalSize;
-}
+		if (this == obj) {
+			return true;
+		}
 
+		if (obj == null) {
+			return false;
+		}
 
-public int getNumberOfStandardVariableRecords()
-{ return (int)standardVariables.size();
-}
+		if (getClass() != obj.getClass())
+			return false;
 
-/** Note that setting this value will not change the marshalled value. The list whose length this describes is used for that purpose.
- * The getnumberOfStandardVariableRecords method will also be based on the actual list length rather than this value. 
- * The method is simply here for java bean completeness.
- */
-public void setNumberOfStandardVariableRecords(int pNumberOfStandardVariableRecords)
-{ numberOfStandardVariableRecords = pNumberOfStandardVariableRecords;
-}
+		return equalsImpl(obj);
+	}
 
-public void setStandardVariables(List<SimulationManagementPduHeader> pStandardVariables)
-{ standardVariables = pStandardVariables;
-}
+	/**
+	 * Compare all fields that contribute to the state, ignoring transient and
+	 * static fields, for <code>this</code> and the supplied object
+	 *
+	 * @param obj the object to compare to
+	 * @return true if the objects are equal, false otherwise.
+	 */
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-public List<SimulationManagementPduHeader> getStandardVariables()
-{ return standardVariables; }
+		if (!(obj instanceof StandardVariableSpecification))
+			return false;
 
+		final StandardVariableSpecification rhs = (StandardVariableSpecification) obj;
 
-public void marshal(DataOutputStream dos)
-{
-    try 
-    {
-       dos.writeShort( (short)standardVariables.size());
+		if (!(numberOfStandardVariableRecords == rhs.numberOfStandardVariableRecords))
+			ivarsEqual = false;
 
-       for(int idx = 0; idx < standardVariables.size(); idx++)
-       {
-            SimulationManagementPduHeader aSimulationManagementPduHeader = standardVariables.get(idx);
-            aSimulationManagementPduHeader.marshal(dos);
-       } // end of list marshalling
+		for (int idx = 0; idx < standardVariables.size(); idx++) {
+			if (!(standardVariables.get(idx).equals(rhs.standardVariables.get(idx))))
+				ivarsEqual = false;
+		}
 
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+		return ivarsEqual;
+	}
 
-public void unmarshal(DataInputStream dis)
-{
-    try 
-    {
-       numberOfStandardVariableRecords = (int)dis.readUnsignedShort();
-       for(int idx = 0; idx < numberOfStandardVariableRecords; idx++)
-       {
-           SimulationManagementPduHeader anX = new SimulationManagementPduHeader();
-           anX.unmarshal(dis);
-           standardVariables.add(anX);
-       }
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+		marshalSize = marshalSize + 2; // numberOfStandardVariableRecords
+		for (int idx = 0; idx < standardVariables.size(); idx++) {
+			final SimulationManagementPduHeader listElement = standardVariables.get(idx);
+			marshalSize = marshalSize + listElement.getMarshalledSize();
+		}
 
+		return marshalSize;
+	}
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
-       buff.putShort( (short)standardVariables.size());
+	public int getNumberOfStandardVariableRecords() {
+		return standardVariables.size();
+	}
 
-       for(int idx = 0; idx < standardVariables.size(); idx++)
-       {
-            SimulationManagementPduHeader aSimulationManagementPduHeader = (SimulationManagementPduHeader)standardVariables.get(idx);
-            aSimulationManagementPduHeader.marshal(buff);
-       } // end of list marshalling
+	public List<SimulationManagementPduHeader> getStandardVariables() {
+		return standardVariables;
+	}
 
-    } // end of marshal method
+	public void marshal(final DataOutputStream dos) {
+		try {
+			dos.writeShort((short) standardVariables.size());
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       numberOfStandardVariableRecords = (int)(buff.getShort() & 0xFFFF);
-       for(int idx = 0; idx < numberOfStandardVariableRecords; idx++)
-       {
-            SimulationManagementPduHeader anX = new SimulationManagementPduHeader();
-            anX.unmarshal(buff);
-            standardVariables.add(anX);
-       }
+			for (int idx = 0; idx < standardVariables.size(); idx++) {
+				final SimulationManagementPduHeader aSimulationManagementPduHeader = standardVariables.get(idx);
+				aSimulationManagementPduHeader.marshal(dos);
+			} // end of list marshalling
 
- } // end of unmarshal method 
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	public void marshal(final java.nio.ByteBuffer buff) {
+		buff.putShort((short) standardVariables.size());
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+		for (int idx = 0; idx < standardVariables.size(); idx++) {
+			final SimulationManagementPduHeader aSimulationManagementPduHeader = standardVariables.get(idx);
+			aSimulationManagementPduHeader.marshal(buff);
+		} // end of list marshalling
 
-    if(this == obj){
-      return true;
-    }
+	} // end of marshal method
 
-    if(obj == null){
-       return false;
-    }
+	/**
+	 * Note that setting this value will not change the marshalled value. The list
+	 * whose length this describes is used for that purpose. The
+	 * getnumberOfStandardVariableRecords method will also be based on the actual
+	 * list length rather than this value. The method is simply here for java bean
+	 * completeness.
+	 */
+	public void setNumberOfStandardVariableRecords(final int pNumberOfStandardVariableRecords) {
+		numberOfStandardVariableRecords = pNumberOfStandardVariableRecords;
+	}
 
-    if(getClass() != obj.getClass())
-        return false;
+	public void setStandardVariables(final List<SimulationManagementPduHeader> pStandardVariables) {
+		standardVariables = pStandardVariables;
+	}
 
-    return equalsImpl(obj);
- }
+	public void unmarshal(final DataInputStream dis) {
+		try {
+			numberOfStandardVariableRecords = dis.readUnsignedShort();
+			for (int idx = 0; idx < numberOfStandardVariableRecords; idx++) {
+				final SimulationManagementPduHeader anX = new SimulationManagementPduHeader();
+				anX.unmarshal(dis);
+				standardVariables.add(anX);
+			}
 
- /**
-  * Compare all fields that contribute to the state, ignoring
- transient and static fields, for <code>this</code> and the supplied object
-  * @param obj the object to compare to
-  * @return true if the objects are equal, false otherwise.
-  */
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
-    if(!(obj instanceof StandardVariableSpecification))
-        return false;
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		numberOfStandardVariableRecords = buff.getShort() & 0xFFFF;
+		for (int idx = 0; idx < numberOfStandardVariableRecords; idx++) {
+			final SimulationManagementPduHeader anX = new SimulationManagementPduHeader();
+			anX.unmarshal(buff);
+			standardVariables.add(anX);
+		}
 
-     final StandardVariableSpecification rhs = (StandardVariableSpecification)obj;
-
-     if( ! (numberOfStandardVariableRecords == rhs.numberOfStandardVariableRecords)) ivarsEqual = false;
-
-     for(int idx = 0; idx < standardVariables.size(); idx++)
-     {
-        if( ! ( standardVariables.get(idx).equals(rhs.standardVariables.get(idx)))) ivarsEqual = false;
-     }
-
-
-    return ivarsEqual;
- }
+	} // end of unmarshal method
 } // end of class

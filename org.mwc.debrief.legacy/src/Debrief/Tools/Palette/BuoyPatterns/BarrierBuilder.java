@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: BarrierBuilder.java,v $
@@ -79,215 +79,197 @@
 //
 package Debrief.Tools.Palette.BuoyPatterns;
 
-import java.beans.*;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 
-import MWC.GenericData.*;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
-public final class BarrierBuilder extends PatternBuilderType
-{
+public final class BarrierBuilder extends PatternBuilderType {
 
-  //////////////////////////////////////////
-  // Member variables
-  //////////////////////////////////////////
+	//////////////////////////////////////////
+	// Member variables
+	//////////////////////////////////////////
 
-  /** spacing of this barrier (nm)
-   */
-  private double _spacing;
+	public final class BarrierInfo extends MWC.GUI.Editable.EditorType {
 
-  /** orientation of this barrier (degs)
-   */
-  private double _orientation;
+		public BarrierInfo(final BarrierBuilder data, final String theName) {
+			super(data, theName, "Barrier:");
+		}
 
+		@Override
+		public final PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final PropertyDescriptor[] myRes = {
+						displayProp("SymbolType", "Symbol type", "the type of symbol plotted for this label"),
+						displayProp("SymbolSize", "Symbol size", "the scale of the symbol"),
+						prop("Duration", "the lifetime of the buoy pattern"),
+						displayProp("PatternName", "Pattern name", "the name of this barrier"),
+						prop("Orientation", "the orientation of this barrier (degs)"),
+						displayProp("PatternBuoySpacing", "Pattern buoy spacing", "the spacing of this barrier"),
+						displayProp("KingpinRange", "Kingpin range", "the range of the kingpin from the jig point"),
+						displayProp("KingpinBearing", "Kingpin bearing",
+								"the bearing of the kingpin from the jig point (degs)"),
+						displayProp("JigPoint", "Jig point", "the jig point for the construction of this arc"),
+						displayProp("NumberOfBuoys", "Number of buoys", "the number of buoys in this arc"),
+						prop("Color", "the default colour for this arc"),
+						displayProp("DateTimeGroup", "DateTime group", "the DTG this pattern starts (DD/MM/YY)"),
+						displayProp("BuoyLabelVisible", "Buoy label visible", "whether the buoy labels are visible") };
+				myRes[0].setPropertyEditorClass(
+						MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor.SymbolFactoryBuoyPropertyEditor.class);
+				myRes[1].setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.class);
 
-  /** our editor
-   */
-  transient private MWC.GUI.Editable.EditorType _myEditor = null;
+				return myRes;
 
+			} catch (final IntrospectionException e) {
+				// find out which property fell over
+				MWC.Utilities.Errors.Trace.trace(e, "Creating editor for Barrier Builder");
 
+				return super.getPropertyDescriptors();
+			}
+		}
 
+		/**
+		 * method which gets called when all parameters have been updated
+		 */
+		@Override
+		public final void updatesComplete() {
+			// get the builder to build itself
+			create();
 
-  //////////////////////////////////////////
-  // Constructor
-  //////////////////////////////////////////
-  public BarrierBuilder(final WorldLocation centre,
-                        final MWC.GUI.Properties.PropertiesPanel thePanel,
-                        final MWC.GUI.Layers theData)
-  {
-    super(centre, thePanel, theData);
+			// inform the parent
+			super.updatesComplete();
+		}
+	}
 
-    // initialise our variables
-    _spacing = 5.0;
-    _orientation = 90.0;
-    setPatternName("blank barrier");
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	static public final class testMe extends junit.framework.TestCase {
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-    // and the variables in our parent
-    setKingpinBearing(0.0);
-    setKingpinRange(new WorldDistance(0.0, WorldDistance.DEGS));
-    setNumberOfBuoys(new Integer(5));
+		public testMe(final String val) {
+			super(val);
+		}
 
-  }
+		public final void testMyParams() {
+			MWC.GUI.Editable ed = new BarrierBuilder(null, null, null);
+			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
+			ed = null;
+		}
+	}
 
-  //////////////////////////////////////////
-  // Member functions
-  //////////////////////////////////////////
+	/**
+	 * spacing of this barrier (nm)
+	 */
+	private double _spacing;
 
-  /** this method is called by the 'Create' function, and it fills in the
-   *  buoys into the correct pattern
-   */
-  protected final void addBuoys(final Debrief.Wrappers.BuoyPatternWrapper pattern)
-  {
-    WorldLocation lastPoint = getKingpin();
-    final double orient_rads = MWC.Algorithms.Conversions.Degs2Rads(_orientation);
-    final double spacing_degs = MWC.Algorithms.Conversions.Nm2Degs(_spacing);
-    final WorldVector step = new WorldVector(orient_rads, spacing_degs, 0);
+	/**
+	 * orientation of this barrier (degs)
+	 */
+	private double _orientation;
 
-    boolean first_buoy = true;
+	//////////////////////////////////////////
+	// Member functions
+	//////////////////////////////////////////
 
-    for(int i =0;i<getNumberOfBuoys().intValue();i++)
-    {
-      // create the new symbol
-      final Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("B" + (i + 1),
-                                                  lastPoint,
-                                                    MWC.GUI.Properties.DebriefColors.RED);
+	/**
+	 * our editor
+	 */
+	transient private MWC.GUI.Editable.EditorType _myEditor = null;
 
-      // get the parent to do the formatting
-      this.formatSymbol(lw, pattern);
+	//////////////////////////////////////////
+	// editable accessor functions
+	//////////////////////////////////////////
 
-      // if this is the first buoy, mark it as the kingping
-      if(first_buoy)
-      {
-        lw.setSymbolType("Kingpin");
-        first_buoy = false;
-      }
+	//////////////////////////////////////////
+	// Constructor
+	//////////////////////////////////////////
+	public BarrierBuilder(final WorldLocation centre, final MWC.GUI.Properties.PropertiesPanel thePanel,
+			final MWC.GUI.Layers theData) {
+		super(centre, thePanel, theData);
 
+		// initialise our variables
+		_spacing = 5.0;
+		_orientation = 90.0;
+		setPatternName("blank barrier");
 
+		// and the variables in our parent
+		setKingpinBearing(0.0);
+		setKingpinRange(new WorldDistance(0.0, WorldDistance.DEGS));
+		setNumberOfBuoys(new Integer(5));
 
-      // move the location forward through the vector
-      lastPoint = lastPoint.add(step);
-    }
-  }
+	}
 
-  //////////////////////////////////////////
-  // editable accessor functions
-  //////////////////////////////////////////
+	/**
+	 * this method is called by the 'Create' function, and it fills in the buoys
+	 * into the correct pattern
+	 */
+	@Override
+	protected final void addBuoys(final Debrief.Wrappers.BuoyPatternWrapper pattern) {
+		WorldLocation lastPoint = getKingpin();
+		final double orient_rads = MWC.Algorithms.Conversions.Degs2Rads(_orientation);
+		final double spacing_degs = MWC.Algorithms.Conversions.Nm2Degs(_spacing);
+		final WorldVector step = new WorldVector(orient_rads, spacing_degs, 0);
 
+		boolean first_buoy = true;
 
-  public final double getOrientation()
-  {
-    return _orientation;
-  }
+		for (int i = 0; i < getNumberOfBuoys().intValue(); i++) {
+			// create the new symbol
+			final Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("B" + (i + 1), lastPoint,
+					MWC.GUI.Properties.DebriefColors.RED);
 
-  public final void setOrientation(final double val)
-  {
-    _orientation = val;
-  }
+			// get the parent to do the formatting
+			this.formatSymbol(lw, pattern);
 
-  public final WorldDistance getPatternBuoySpacing()
-  {
-    return new WorldDistance(_spacing, WorldDistance.NM);
-  }
+			// if this is the first buoy, mark it as the kingping
+			if (first_buoy) {
+				lw.setSymbolType("Kingpin");
+				first_buoy = false;
+			}
 
-  public final void setPatternBuoySpacing(final WorldDistance val)
-  {
-    _spacing = val.getValueIn(WorldDistance.NM);
-  }
+			// move the location forward through the vector
+			lastPoint = lastPoint.add(step);
+		}
+	}
 
+	/**
+	 * get the editor for this item
+	 *
+	 * @return the BeanInfo data for this editable object
+	 */
+	@Override
+	public final MWC.GUI.Editable.EditorType getInfo() {
+		if (_myEditor == null)
+			_myEditor = new BarrierInfo(this, this.getName());
 
+		return _myEditor;
+	}
 
+	public final double getOrientation() {
+		return _orientation;
+	}
 
-  /** get the editor for this item
- * @return the BeanInfo data for this editable object
- */
-  public final MWC.GUI.Editable.EditorType getInfo()
-  {
-    if(_myEditor == null)
-      _myEditor = new BarrierInfo(this, this.getName());
+	public final WorldDistance getPatternBuoySpacing() {
+		return new WorldDistance(_spacing, WorldDistance.NM);
+	}
 
-    return _myEditor;
-  }
+	public final void setOrientation(final double val) {
+		_orientation = val;
+	}
 
-  public final String toString()
-  {
-    return "Barrier Builder";
-  }
+	//////////////////////////////////////////
+	// editable details
+	//////////////////////////////////////////
 
-  //////////////////////////////////////////
-  // editable details
-  //////////////////////////////////////////
+	public final void setPatternBuoySpacing(final WorldDistance val) {
+		_spacing = val.getValueIn(WorldDistance.NM);
+	}
 
-  public final class BarrierInfo extends MWC.GUI.Editable.EditorType
-  {
-
-    public BarrierInfo(final BarrierBuilder data,
-                   final String theName)
-    {
-      super(data, theName, "Barrier:");
-    }
-
-    /** method which gets called when all parameters have
-     *  been updated
-     */
-    public final void updatesComplete()
-    {
-      // get the builder to build itself
-      create();
-
-      // inform the parent
-      super.updatesComplete();
-    }
-
-    public final PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try
-      {
-        final PropertyDescriptor[] myRes=
-        {
-        		displayProp("SymbolType", "Symbol type", "the type of symbol plotted for this label"),
-            displayProp("SymbolSize", "Symbol size", "the scale of the symbol"),
-            prop("Duration", "the lifetime of the buoy pattern"),
-            displayProp("PatternName", "Pattern name", "the name of this barrier"),
-            prop("Orientation", "the orientation of this barrier (degs)"),
-            displayProp("PatternBuoySpacing", "Pattern buoy spacing", "the spacing of this barrier"),
-            displayProp("KingpinRange", "Kingpin range", "the range of the kingpin from the jig point"),
-            displayProp("KingpinBearing", "Kingpin bearing", "the bearing of the kingpin from the jig point (degs)"),
-            displayProp("JigPoint", "Jig point", "the jig point for the construction of this arc"),
-            displayProp("NumberOfBuoys", "Number of buoys", "the number of buoys in this arc"),
-            prop("Color", "the default colour for this arc"),
-            displayProp("DateTimeGroup", "DateTime group", "the DTG this pattern starts (DD/MM/YY)"),
-            displayProp("BuoyLabelVisible", "Buoy label visible", "whether the buoy labels are visible")
-        };
-        myRes[0].setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor.SymbolFactoryBuoyPropertyEditor.class);
-        myRes[1].setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.class);
-
-
-        return myRes;
-
-      }catch(final IntrospectionException e)
-      {
-        // find out which property fell over
-        MWC.Utilities.Errors.Trace.trace(e, "Creating editor for Barrier Builder");
-
-        return super.getPropertyDescriptors();
-      }
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  static public final class testMe extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE  = "UNIT";
-    public testMe(final String val)
-    {
-      super(val);
-    }
-    public final void testMyParams()
-    {
-      MWC.GUI.Editable ed = new BarrierBuilder(null,null,null);
-      MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
-      ed = null;
-    }
-  }
+	@Override
+	public final String toString() {
+		return "Barrier Builder";
+	}
 
 }

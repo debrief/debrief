@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: Session.java,v $
@@ -122,6 +122,9 @@
 
 package Debrief.GUI.Frames;
 
+import java.io.Serializable;
+import java.util.Observer;
+
 import Debrief.GUI.Tote.StepControl;
 import Debrief.GUI.Views.AnalysisView;
 import Debrief.GUI.Views.PlainView;
@@ -132,335 +135,294 @@ import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Undo.UndoBuffer;
 
-import java.io.Serializable;
-import java.util.Observer;
+abstract public class Session implements Serializable, Observer {
 
-abstract public class Session implements Serializable, Observer
-{
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
+	/**
+	 * our version id
+	 */
+	static final long serialVersionUID = 6064926140905655210L;
 
-  /**
-   * our version id
-   */
-  static final long serialVersionUID = 6064926140905655210L;
+	/**
+	 * the name of this session
+	 */
+	private String _theName;
 
-  /**
-   * the name of this session
-   */
-  private String _theName;
+	/**
+	 * the data contained in this session
+	 */
+	private Layers _theData;
 
-  /**
-   * the data contained in this session
-   */
-  private Layers _theData;
+	/**
+	 * the list of views currently placed on this data
+	 */
+	transient private java.util.Vector<PlainView> _theViews;
 
-  /**
-   * the list of views currently placed on this data
-   */
-  transient private java.util.Vector<PlainView> _theViews;
+	/**
+	 * our undo buffer
+	 */
+	private transient UndoBuffer _theBuffer;
 
-  /**
-   * our undo buffer
-   */
-  private transient UndoBuffer _theBuffer;
+	/**
+	 * whether this session has been modified since the last change
+	 */
+	private transient boolean _modified = false;
 
-  /**
-   * whether this session has been modified since the last change
-   */
-  private transient boolean _modified = false;
+	/**
+	 * the current clipboard
+	 */
+	private transient java.awt.datatransfer.Clipboard _theClipboard;
 
-  /**
-   * the current clipboard
-   */
-  private transient java.awt.datatransfer.Clipboard _theClipboard;
+	/**
+	 * the filename we have been stored as (null to start with)
+	 */
+	transient private String _fileName = null;
 
-  /**
-   * the filename we have been stored as
-   * (null to start with)
-   */
-  transient private String _fileName = null;
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
+	public Session(final java.awt.datatransfer.Clipboard theClipboard) {
+		this(theClipboard, new Layers());
+	}
 
-  public Session(final java.awt.datatransfer.Clipboard theClipboard)
-  {
-    this(theClipboard, new Layers());
-  }
-  
-  public Session(final java.awt.datatransfer.Clipboard theClipboard, final Layers theLayers)
-  {
-    _theData = theLayers;
+	public Session(final java.awt.datatransfer.Clipboard theClipboard, final Layers theLayers) {
+		_theData = theLayers;
 
+		// @@ IM HACK: ignore theClipboard parameter - we do not use unique clipboards,
+		// we use clipboards of a specified name so that they are valid between
+		// sessions (we don't want to have to store unique clipboards, so that the
+		// data may be copied between sessions
+		_theClipboard = theClipboard;
 
-    // @@ IM HACK: ignore theClipboard parameter - we do not use unique clipboards,
-    // we use clipboards of a specified name so that they are valid between
-    // sessions (we don't want to have to store unique clipboards, so that the
-    // data may be copied between sessions
-    _theClipboard = theClipboard;
+		// create decorations layer
+		Layer dec = _theData.findLayer(Layers.CHART_FEATURES);
+		if (dec == null) {
+			dec = _theData.cleanLayer();
+			dec.setName(Layers.CHART_FEATURES);
+			_theData.addThisLayer(dec);
+		}
 
-    // create decorations layer
-    Layer dec = _theData.findLayer(Layers.CHART_FEATURES);
-    if (dec == null)
-    {
-      dec = _theData.cleanLayer();
-      dec.setName(Layers.CHART_FEATURES);
-      _theData.addThisLayer(dec);
-    }
+		// what-ever happened, tell the Chart Features layer to double-buffer itself
+		if (dec instanceof BaseLayer) {
+			final BaseLayer bl = (BaseLayer) dec;
+			bl.setBuffered(true);
+		}
 
-    // what-ever happened, tell the Chart Features layer to double-buffer itself
-    if (dec instanceof BaseLayer)
-    {
-      final BaseLayer bl = (BaseLayer) dec;
-      bl.setBuffered(true);
-    }
+		initData();
+	}
 
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-    initData();
-  }
+	/**
+	 * Add a view to this session
+	 *
+	 * @param theView is the view to add to the session
+	 */
+	protected final void addView(final PlainView theView) {
+		//
+		_theViews.addElement(theView);
+	}
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	/**
+	 * close this session, inviting user to save as necessary.
+	 *
+	 * @return flag specifying whether close was successful (since user may have
+	 *         decided to cancel the file save)
+	 */
+	public final boolean close() {
 
-  public StepControl getStepControl()
-  {
-    final PlainView view = getCurrentView();
-    final StepControl res;
-    if(view != null && (view instanceof AnalysisView))
-    {
-      AnalysisView av = (AnalysisView) view;
-      res = av.getTote().getStepper();
-    }
-    else
-    {
-      res = null;
-    }
-    
-    return res;
-  }
+		// see if we need to save data
+		if (isDirty()) {
+			// try to do a file save - ask the user
+			if (wantsToClose()) {
+				// user still want to close
+			} else {
+				// user doesn't want to close anymore, drop out
+				return false;
+			}
 
-  /**
-   * initialise the data which has to be initialised whether we
-   * are a fresh session or not
-   */
-  private void initData()
-  {
-    _theViews = new java.util.Vector<PlainView>(0, 1);
-    _theBuffer = new UndoBuffer();
+		}
 
-    if (_theClipboard == null)
-    {
-      System.out.println("creating supplemental clipboard");
-      _theClipboard = new java.awt.datatransfer.Clipboard("Debrief");
-    }
+		// delete the local variables
 
-    // set ourselves as a listener to the buffer, so that we can keep track
-    // of how it runs
-    _theBuffer.addObserver(this);
-  }
+		_theBuffer.close();
+		_theBuffer = null;
 
-  /**
-   * get the current clipboard
-   */
-  public final java.awt.datatransfer.Clipboard getClipboard()
-  {
-    return _theClipboard;
-  }
+		_theClipboard = null;
+		_fileName = null;
+		_theName = null;
 
-  /**
-   * Set the name of this session
-   *
-   * @param theName is a String representing the name of the session
-   */
-  protected void setName(final String theName)
-  {
-    _theName = theName;
-  }
+		if (_theViews != null) {
+			if (_theViews.size() == 1) {
+				final PlainView theV = _theViews.elementAt(0);
+				theV.close();
+				_theViews.removeElement(theV);
+			}
+			_theViews = null;
+		}
 
-  /**
-   * set the filename of this session
-   */
-  public void setFileName(final String theName)
-  {
+		// and the layers
+		_theData.close();
+		_theData = null;
 
-    // this means we are currently in a save operation
-    _modified = false;
+		// now the GUI stuff
+		// closeGUI();
 
-    // store the filename
-    _fileName = theName;
+		// set the stuff we don;t want to null
+		return true;
+	}
 
-    // and use it as the name
-    if (theName.equals(NewSession.DEFAULT_NAME))
-      setName(theName);
+	abstract public void closeGUI();
 
-  }
+	@Override
+	protected void finalize() {
+		try {
+			super.finalize();
+		} catch (final Throwable e) {
+			MWC.Utilities.Errors.Trace.trace(e);
+		}
+	}
 
-  /**
-   * get the filename of this session (or null if it hasn't been saved yet)
-   */
-  public final String getFileName()
-  {
-    return _fileName;
-  }
+	/**
+	 * get the current clipboard
+	 */
+	public final java.awt.datatransfer.Clipboard getClipboard() {
+		return _theClipboard;
+	}
 
+	/**
+	 * @return the view currently being looked at.
+	 */
+	public final PlainView getCurrentView() {
+		PlainView res = null;
 
-  /**
-   * Get the current data for this session
-   *
-   * @return the data being used by the session
-   */
-  public final Layers getData()
-  {
-    return _theData;
-  }
+		if (_theViews.size() == 0)
+			res = null;
+		else
+			res = _theViews.elementAt(0);
 
-  /**
-   * Add a view to this session
-   *
-   * @param theView is the view to add to the session
-   */
-  protected final void addView(final PlainView theView)
-  {
-    //
-    _theViews.addElement(theView);
-  }
+		// see which view is currently on top
+		return res;
+	}
 
-  /**
-   * @return the view currently being looked at.
-   */
-  public final PlainView getCurrentView()
-  {
-    PlainView res = null;
+	/**
+	 * Get the current data for this session
+	 *
+	 * @return the data being used by the session
+	 */
+	public final Layers getData() {
+		return _theData;
+	}
 
-    if (_theViews.size() == 0)
-      res = null;
-    else
-      res = (PlainView) _theViews.elementAt(0);
+	/**
+	 * get the filename of this session (or null if it hasn't been saved yet)
+	 */
+	public final String getFileName() {
+		return _fileName;
+	}
 
-    // see which view is currently on top
-    return res;
-  }
+	/**
+	 * @return the name of the current session
+	 */
+	public final String getName() {
+		return _theName;
+	}
 
-  /**
-   * @return the name of the current session
-   */
-  public final String getName()
-  {
-    return _theName;
-  }
+	public StepControl getStepControl() {
+		final PlainView view = getCurrentView();
+		final StepControl res;
+		if (view != null && (view instanceof AnalysisView)) {
+			final AnalysisView av = (AnalysisView) view;
+			res = av.getTote().getStepper();
+		} else {
+			res = null;
+		}
 
-  abstract protected boolean wantsToClose();
+		return res;
+	}
 
-  /**
-   * close this session, inviting user to save as necessary.
-   *
-   * @return flag specifying whether close was successful
-   *         (since user may have decided to cancel the file save)
-   */
-  public final boolean close()
-  {
+	public final UndoBuffer getUndoBuffer() {
+		return _theBuffer;
+	}
 
-    // see if we need to save data
-    if (isDirty())
-    {
-      // try to do a file save - ask the user
-      if (wantsToClose())
-      {
-        // user still want to close
-      }
-      else
-      {
-        // user doesn't want to close anymore, drop out
-        return false;
-      }
+	/**
+	 * initialise the data which has to be initialised whether we are a fresh
+	 * session or not
+	 */
+	private void initData() {
+		_theViews = new java.util.Vector<PlainView>(0, 1);
+		_theBuffer = new UndoBuffer();
 
-    }
+		if (_theClipboard == null) {
+			System.out.println("creating supplemental clipboard");
+			_theClipboard = new java.awt.datatransfer.Clipboard("Debrief");
+		}
 
-    // delete the local variables
+		// set ourselves as a listener to the buffer, so that we can keep track
+		// of how it runs
+		_theBuffer.addObserver(this);
+	}
 
-    _theBuffer.close();
-    _theBuffer = null;
+	abstract public void initialiseForm(ToolParent theParent);
 
-    _theClipboard = null;
-    _fileName = null;
-    _theName = null;
+	/**
+	 * see if we are 'dirty'
+	 */
+	private boolean isDirty() {
+		//
+		return _modified;
+	}
 
-    if (_theViews != null)
-    {
-      if (_theViews.size() == 1)
-      {
-        final PlainView theV = (PlainView) _theViews.elementAt(0);
-        theV.close();
-        _theViews.removeElement(theV);
-      }
-      _theViews = null;
-    }
+	/**
+	 * cause redraw
+	 */
+	abstract public void repaint();
 
-    // and the layers
-    _theData.close();
-    _theData = null;
+	/**
+	 * set the filename of this session
+	 */
+	public void setFileName(final String theName) {
 
-    // now the GUI stuff
-    //	closeGUI();
+		// this means we are currently in a save operation
+		_modified = false;
 
-    // set the stuff we don;t want to null
-    return true;
-  }
+		// store the filename
+		_fileName = theName;
 
-  abstract public void closeGUI();
+		// and use it as the name
+		if (theName.equals(NewSession.DEFAULT_NAME))
+			setName(theName);
 
-  /**
-   * see if we are 'dirty'
-   */
-  private boolean isDirty()
-  {
-    //
-    return _modified;
-  }
+	}
 
-  /**
-   * cause redraw
-   */
-  abstract public void repaint();
+	/**
+	 * Set the name of this session
+	 *
+	 * @param theName is a String representing the name of the session
+	 */
+	protected void setName(final String theName) {
+		_theName = theName;
+	}
 
+	/**
+	 * listen out for changes to the undo buffer
+	 *
+	 * @param p1 the item which has been changed
+	 * @param p2 the parameter it has sent to us
+	 */
+	@Override
+	public final void update(final java.util.Observable p1, final java.lang.Object p2) {
+		// check it actually was the buffer which changed
+		if (p1.equals(_theBuffer))
+			_modified = true;
+	}
 
-  public final UndoBuffer getUndoBuffer()
-  {
-    return _theBuffer;
-  }
-
-  abstract public void initialiseForm(ToolParent theParent);
-
-  protected void finalize()
-  {
-    try
-    {
-      super.finalize();
-    }
-    catch (final Throwable e)
-    {
-      MWC.Utilities.Errors.Trace.trace(e);
-    }
-  }
-
-  /**
-   * listen out for changes to the undo buffer
-   *
-   * @param p1 the item which has been changed
-   * @param p2 the parameter it has sent to us
-   */
-  public final void update(final java.util.Observable p1, final java.lang.Object p2)
-  {
-    // check it actually was the buffer which changed
-    if (p1.equals(_theBuffer))
-      _modified = true;
-  }
+	abstract protected boolean wantsToClose();
 
 }
-
-

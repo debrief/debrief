@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 /*
  *    Debrief - the Open Source Maritime Analysis Application
@@ -24,7 +24,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.cmap.naturalearth.preferences;
 
@@ -55,41 +55,37 @@ import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.mwc.cmap.naturalearth.Activator;
 
-public class NaturalEarhPrefs extends PreferencePage implements
-		IWorkbenchPreferencePage
-{
+public class NaturalEarhPrefs extends PreferencePage implements IWorkbenchPreferencePage {
+
+	class StylesLabelProvider extends LabelProvider {
+
+		@Override
+		public Image getImage(final Object element) {
+			return null;
+		}
+
+	}
 
 	public static final String ID = "org.mwc.cmap.naturalearth.preferences.NaturalEarhPrefs";
 	private Text dataFolderText;
+
 	private Button memoryMapButton;
-	
-	public NaturalEarhPrefs()
-	{
+
+	public NaturalEarhPrefs() {
 		super("Natural Earth");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
-	 */
-	public void init(IWorkbench workbench)
-	{
-	}
-
 	@Override
-	protected Control createContents(Composite parent)
-	{
-		Composite composite = new Composite(parent, SWT.NONE);
+	protected Control createContents(final Composite parent) {
+		final Composite composite = new Composite(parent, SWT.NONE);
 		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 		composite.setLayoutData(gd);
-		GridLayout layout = new GridLayout(3, false);
+		final GridLayout layout = new GridLayout(3, false);
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
 		composite.setLayout(layout);
 
-		Label dataFolderLabel = new Label(composite, SWT.NONE);
+		final Label dataFolderLabel = new Label(composite, SWT.NONE);
 		gd = new GridData(SWT.FILL, SWT.CENTER, false, false);
 		dataFolderLabel.setLayoutData(gd);
 		dataFolderLabel.setText("Data Folder:");
@@ -97,29 +93,25 @@ public class NaturalEarhPrefs extends PreferencePage implements
 		dataFolderText = new Text(composite, SWT.SINGLE | SWT.BORDER);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 		dataFolderText.setLayoutData(gd);
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-		String dataFolderValue = store.getString(PreferenceConstants.DATA_FOLDER);
+		final IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		final String dataFolderValue = store.getString(PreferenceConstants.DATA_FOLDER);
 		dataFolderText.setText(dataFolderValue == null ? "" : dataFolderValue);
 
 		final Button dataFolderBrowse = new Button(composite, SWT.PUSH);
 		dataFolderBrowse.setText("Browse...");
-		dataFolderBrowse.addSelectionListener(new SelectionAdapter()
-		{
+		dataFolderBrowse.addSelectionListener(new SelectionAdapter() {
 
 			@Override
-			public void widgetSelected(SelectionEvent e)
-			{
-				DirectoryDialog dialog = new DirectoryDialog(getShell(), SWT.SINGLE);
+			public void widgetSelected(final SelectionEvent e) {
+				final DirectoryDialog dialog = new DirectoryDialog(getShell(), SWT.SINGLE);
 				String value = dataFolderText.getText();
-				if (value.trim().length() == 0)
-				{
+				if (value.trim().length() == 0) {
 					value = Platform.getLocation().toOSString();
 				}
 				dialog.setFilterPath(value);
 
-				String result = dialog.open();
-				if (result == null || result.trim().length() == 0)
-				{
+				final String result = dialog.open();
+				if (result == null || result.trim().length() == 0) {
 					return;
 				}
 				dataFolderText.setText(result);
@@ -133,39 +125,42 @@ public class NaturalEarhPrefs extends PreferencePage implements
 		gd.horizontalSpan = 3;
 		memoryMapButton.setLayoutData(gd);
 		memoryMapButton.setText("Use memory map file");
-		boolean selected = store.getBoolean(PreferenceConstants.MEMORY_MAPPED);
+		final boolean selected = store.getBoolean(PreferenceConstants.MEMORY_MAPPED);
 		memoryMapButton.setSelection(selected);
 
-		Link link = new Link(composite, SWT.NONE);
+		final Link link = new Link(composite, SWT.NONE);
 		gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 		gd.horizontalSpan = 3;
 		link.setLayoutData(gd);
 		link.setText("Natural Earth data trimmed to suit Debrief's Mercator projection is available online from here:\n"
 				+ "<a>https://github.com/debrief/NaturalEarth</a>");
-		link.addSelectionListener(new SelectionAdapter()
-		{
+		link.addSelectionListener(new SelectionAdapter() {
 			@Override
-			public void widgetSelected(SelectionEvent event)
-			{
-				try
-				{
-					IWorkbenchBrowserSupport support = PlatformUI.getWorkbench().getBrowserSupport();
-					IWebBrowser browser = support.getExternalBrowser();
+			public void widgetSelected(final SelectionEvent event) {
+				try {
+					final IWorkbenchBrowserSupport support = PlatformUI.getWorkbench().getBrowserSupport();
+					final IWebBrowser browser = support.getExternalBrowser();
 					browser.openURL(new URL("https://github.com/debrief/NaturalEarth"));
-				}
-				catch (Exception e)
-				{
+				} catch (final Exception e) {
 					Activator.logError(IStatus.WARNING, "Cannot open an external browser", e);
 				}
 			}
 		});
-		
+
 		return composite;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
+	 */
 	@Override
-	protected void performDefaults()
-	{
+	public void init(final IWorkbench workbench) {
+	}
+
+	@Override
+	protected void performDefaults() {
 		dataFolderText.setText(""); //$NON-NLS-1$
 		memoryMapButton.setSelection(false);
 		storePreferences();
@@ -173,34 +168,19 @@ public class NaturalEarhPrefs extends PreferencePage implements
 	}
 
 	@Override
-	public boolean performOk()
-	{
+	public boolean performOk() {
 		storePreferences();
 		return super.performOk();
 	}
 
-	private void storePreferences()
-	{
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-		String value = dataFolderText.getText();
-		if (value != null)
-		{
+	private void storePreferences() {
+		final IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		final String value = dataFolderText.getText();
+		if (value != null) {
 			store.setValue(PreferenceConstants.DATA_FOLDER, value);
 		}
-		boolean selected = memoryMapButton.getSelection();
+		final boolean selected = memoryMapButton.getSelection();
 		store.setValue(PreferenceConstants.MEMORY_MAPPED, selected);
-	}
-
-	class StylesLabelProvider extends LabelProvider
-	{
-
-		@Override
-		public Image getImage(Object element)
-		{
-			return null;
-		}
-
-
 	}
 
 }

@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 package org.mwc.debrief.core.wizards;
 
@@ -38,218 +38,183 @@ import org.eclipse.swt.widgets.Text;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.DropdownProvider;
 
-public abstract class CustomWizardPage extends WizardPage
-{
+public abstract class CustomWizardPage extends WizardPage {
 
-  private Composite pageNameBody;
-  private Composite pageNameSection;
+	protected static ComboViewer addCmbField(final Composite contents, final String key, final String title,
+			final String tooltip, final boolean edit, final String val, final WizardPage page,
+			final DropdownProvider provider) {
 
-  public CustomWizardPage(String pageName, String title,
-      ImageDescriptor titleImage)
-  {
-    super(pageName, title, titleImage);
-  }
+		final Label lbl = new Label(contents, SWT.NONE);
+		lbl.setText(title);
+		lbl.setToolTipText(tooltip);
+		lbl.setAlignment(SWT.RIGHT);
+		lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 
-  public CustomWizardPage(String pageName)
-  {
-    super(pageName);
-  }
-  
+		final ComboViewer typeCmb = new ComboViewer(contents, (edit ? SWT.BORDER : SWT.READ_ONLY | SWT.BORDER));
+		final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.widthHint = 120;
+		typeCmb.setContentProvider(new ArrayContentProvider());
+		List<String> values = provider.getValuesFor(key);
+		if (values == null) {
+			values = new ArrayList<String>();
+			page.setErrorMessage("No value for " + title + " in file, may be an invalid file");
+			page.setPageComplete(false);
+		}
+		typeCmb.setInput(values.toArray());
+		typeCmb.getCombo().setLayoutData(gridData);
+		if (val != null)
+			typeCmb.getCombo().setText(val);
+		else if (typeCmb.getCombo().getItemCount() > 0)
+			typeCmb.getCombo().setText(typeCmb.getCombo().getItem(0));// select default first item
 
-  final protected static String getPrefValue(String key, String currentVal)
-  {
-    IPreferenceStore preferenceStore = CorePlugin.getDefault()
-        .getPreferenceStore();
-    String newVal = preferenceStore.getString(key.toUpperCase());
+		return typeCmb;
+	}
 
-    return (newVal == null || newVal.isEmpty()) ? currentVal : newVal;
-  }
+	protected static String getCmbVal(final ComboViewer comboViewer, final String val) {
+		final String res;
+		if (comboViewer != null && !comboViewer.getCombo().isDisposed()) {
+			final StructuredSelection selection = (StructuredSelection) comboViewer.getSelection();
+			if (selection.isEmpty()) {
+				// ah, it's not one of the drop downs, so
+				// get the value from the combo
+				final String comboText = comboViewer.getCombo().getText();
+				res = comboText == null ? val : comboText;
+			} else {
+				// just get the selected item
+				res = (String) selection.getFirstElement();
+			}
+		} else {
+			res = val;
+		}
 
-  final protected static String setPrefValue(String key, String currentVal)
-  {
-    IPreferenceStore preferenceStore = CorePlugin.getDefault()
-        .getPreferenceStore();
+		return res;
+	}
 
-    preferenceStore.setValue(key.toUpperCase(), currentVal);
-    return currentVal;
-  }
+	final protected static String getPrefValue(final String key, final String currentVal) {
+		final IPreferenceStore preferenceStore = CorePlugin.getDefault().getPreferenceStore();
+		final String newVal = preferenceStore.getString(key.toUpperCase());
 
-  @Override
-  public void createControl(final Composite parent)
-  {
-    final Composite contents = new Composite(parent, SWT.NONE);
-    contents.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-    contents.setLayout(new GridLayout(3, false));
+		return (newVal == null || newVal.isEmpty()) ? currentVal : newVal;
+	}
 
-    pageNameSection = new Composite(contents, SWT.NONE);
+	protected static String getTxtVal(final Text control, final String val) {
+		if (control != null && !control.isDisposed()) {
+			return control.getText().trim();
+		} else {
+			return val;
+		}
+	}
 
-    {
-      GridData gridData = new GridData(SWT.FILL, SWT.FILL, false, true);
-      gridData.widthHint = 120;
-      pageNameSection.setLayoutData(gridData);
-      pageNameSection.setLayout(new FillLayout());
-      updatePageNames();
-    }
-    {
-      Label sep = new Label(contents, SWT.SEPARATOR | SWT.VERTICAL);
-      sep.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
-    }
-    {
-      Composite createDataSection = createDataSection(contents);
-      createDataSection.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-          true));
+	final protected static String setPrefValue(final String key, final String currentVal) {
+		final IPreferenceStore preferenceStore = CorePlugin.getDefault().getPreferenceStore();
 
-    }
+		preferenceStore.setValue(key.toUpperCase(), currentVal);
+		return currentVal;
+	}
 
-    setControl(contents);
-  }
+	private Composite pageNameBody;
 
-  protected void updatePageNames()
-  {
-    if (pageNameBody != null)
-      pageNameBody.dispose();
+	private Composite pageNameSection;
 
-    pageNameBody = new Composite(pageNameSection, SWT.NONE);
+	public CustomWizardPage(final String pageName) {
+		super(pageName);
+	}
 
-    FontData nomalFontData = pageNameBody.getFont().getFontData()[0];
-    final Font nomalFont = new Font(pageNameBody.getDisplay(), new FontData(
-        nomalFontData.getName(), nomalFontData.getHeight() + 1, SWT.NORMAL));
-    pageNameBody.addDisposeListener(new DisposeListener()
-    {
+	public CustomWizardPage(final String pageName, final String title, final ImageDescriptor titleImage) {
+		super(pageName, title, titleImage);
+	}
 
-      @Override
-      public void widgetDisposed(DisposeEvent e)
-      {
-        nomalFont.dispose();
-      }
-    });
+	protected Text addTxtField(final Composite contents, final String label, final String tooltip,
+			final String initialValue) {
 
-    pageNameBody.setLayout(new RowLayout(SWT.VERTICAL));
+		final Label lbl = new Label(contents, SWT.NONE);
+		lbl.setText(label);
+		lbl.setToolTipText(tooltip);
+		lbl.setAlignment(SWT.RIGHT);
+		lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 
-    List<String> pageNames = getPageNames();
-    for (String name : pageNames)
-    {
-      Label section = new Label(pageNameBody, SWT.NONE);
-      section.setText(name);
-      section.setFont(nomalFont);
+		final Text textControl = new Text(contents, SWT.BORDER);
+		final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.widthHint = 120;
+		textControl.setLayoutData(gridData);
+		if (initialValue != null)
+			textControl.setText(initialValue);
 
-      if (name.equals(getName()))
-      {
-        FontData fontData = section.getFont().getFontData()[0];
-        final Font font = new Font(section.getDisplay(), new FontData(fontData
-            .getName(), fontData.getHeight() + 1, SWT.BOLD));
-        section.setFont(font);
-        section.addDisposeListener(new DisposeListener()
-        {
+		return textControl;
 
-          @Override
-          public void widgetDisposed(DisposeEvent e)
-          {
-            font.dispose();
-          }
-        });
-      }
-    }
+	}
 
-  }
+	@Override
+	public void createControl(final Composite parent) {
+		final Composite contents = new Composite(parent, SWT.NONE);
+		contents.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		contents.setLayout(new GridLayout(3, false));
 
-  protected abstract List<String> getPageNames();
+		pageNameSection = new Composite(contents, SWT.NONE);
 
-  protected abstract Composite createDataSection(Composite parent);
+		{
+			final GridData gridData = new GridData(SWT.FILL, SWT.FILL, false, true);
+			gridData.widthHint = 120;
+			pageNameSection.setLayoutData(gridData);
+			pageNameSection.setLayout(new FillLayout());
+			updatePageNames();
+		}
+		{
+			final Label sep = new Label(contents, SWT.SEPARATOR | SWT.VERTICAL);
+			sep.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
+		}
+		{
+			final Composite createDataSection = createDataSection(contents);
+			createDataSection.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-  protected static ComboViewer addCmbField(final Composite contents, final String key,
-      final String title, String tooltip, final boolean edit, final String val,
-      final WizardPage page, final DropdownProvider provider)
-  {
+		}
 
-    final Label lbl = new Label(contents, SWT.NONE);
-    lbl.setText(title);
-    lbl.setToolTipText(tooltip);
-    lbl.setAlignment(SWT.RIGHT);
-    lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+		setControl(contents);
+	}
 
-    final ComboViewer typeCmb = new ComboViewer(contents, (edit ? SWT.BORDER
-        : SWT.READ_ONLY | SWT.BORDER));
-    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-    gridData.widthHint = 120;
-    typeCmb.setContentProvider(new ArrayContentProvider());
-    List<String> values = provider.getValuesFor(key);
-    if(values==null) {
-      values = new ArrayList<String>();
-      page.setErrorMessage("No value for "+ title +" in file, may be an invalid file");
-      page.setPageComplete(false);
-    }
-    typeCmb.setInput(values.toArray());
-    typeCmb.getCombo().setLayoutData(gridData);
-    if (val != null)
-      typeCmb.getCombo().setText(val);
-    else if (typeCmb.getCombo().getItemCount() > 0)
-      typeCmb.getCombo().setText(typeCmb.getCombo().getItem(0));// select default first item
+	protected abstract Composite createDataSection(Composite parent);
 
-    return typeCmb;
-  }
+	protected abstract List<String> getPageNames();
 
+	protected void updatePageNames() {
+		if (pageNameBody != null)
+			pageNameBody.dispose();
 
-  protected static String getTxtVal(final Text control, final String val)
-  {
-    if (control != null && !control.isDisposed())
-    {
-      return control.getText().trim();
-    }
-    else
-    {
-      return val;
-    }
-  }
-  
-  
-  protected static String getCmbVal(final ComboViewer comboViewer, String val)
-  {
-    final String res;
-    if (comboViewer != null && !comboViewer.getCombo().isDisposed())
-    {
-      final StructuredSelection selection = (StructuredSelection) comboViewer
-          .getSelection();
-      if (selection.isEmpty())
-      {
-        // ah, it's not one of the drop downs, so
-        // get the value from the combo
-        final String comboText = comboViewer.getCombo().getText();
-        res = comboText == null ? val : comboText;
-      }
-      else
-      {
-        // just get the selected item
-        res = (String) selection.getFirstElement();
-      }
-    }
-    else
-    {
-      res = val;
-    }
+		pageNameBody = new Composite(pageNameSection, SWT.NONE);
 
-    return res;
-  }
+		final FontData nomalFontData = pageNameBody.getFont().getFontData()[0];
+		final Font nomalFont = new Font(pageNameBody.getDisplay(),
+				new FontData(nomalFontData.getName(), nomalFontData.getHeight() + 1, SWT.NORMAL));
+		pageNameBody.addDisposeListener(new DisposeListener() {
 
+			@Override
+			public void widgetDisposed(final DisposeEvent e) {
+				nomalFont.dispose();
+			}
+		});
 
-  protected Text addTxtField(final Composite contents, final String label,
-      String tooltip, final String initialValue)
-  {
+		pageNameBody.setLayout(new RowLayout(SWT.VERTICAL));
 
-    final Label lbl = new Label(contents, SWT.NONE);
-    lbl.setText(label);
-    lbl.setToolTipText(tooltip);
-    lbl.setAlignment(SWT.RIGHT);
-    lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+		final List<String> pageNames = getPageNames();
+		for (final String name : pageNames) {
+			final Label section = new Label(pageNameBody, SWT.NONE);
+			section.setText(name);
+			section.setFont(nomalFont);
 
-    final Text textControl = new Text(contents, SWT.BORDER);
-    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-    gridData.widthHint = 120;
-    textControl.setLayoutData(gridData);
-    if (initialValue != null)
-      textControl.setText(initialValue);
+			if (name.equals(getName())) {
+				final FontData fontData = section.getFont().getFontData()[0];
+				final Font font = new Font(section.getDisplay(),
+						new FontData(fontData.getName(), fontData.getHeight() + 1, SWT.BOLD));
+				section.setFont(font);
+				section.addDisposeListener(new DisposeListener() {
 
-    return textControl;
+					@Override
+					public void widgetDisposed(final DisposeEvent e) {
+						font.dispose();
+					}
+				});
+			}
+		}
 
-  }
+	}
 }

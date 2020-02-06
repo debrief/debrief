@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.Properties.Swing;
@@ -78,91 +78,88 @@ import java.beans.PropertyEditorSupport;
 
 import javax.swing.JCheckBox;
 
-public class SwingBooleanPropertyEditor extends 
-           PropertyEditorSupport 
-{
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  boolean _myVal;
-  JCheckBox _theBox;
-  
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+public class SwingBooleanPropertyEditor extends PropertyEditorSupport {
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+	boolean _myVal;
+	JCheckBox _theBox;
 
-  /** indicate that we can't just be painted, we've got to be edited
-   */
-  public boolean isPaintable()
-  {
-    return false;
-  }
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
 
-  public java.awt.Component getCustomEditor()
-  {
-    _theBox = new JCheckBox();
-    _theBox.setName("boolean");
-    _theBox.addActionListener(new ActionListener()
-    {
-      public void actionPerformed(final ActionEvent e)
-     {   _myVal = _theBox.isSelected();     }    
-    });
-    resetData();
-    return _theBox;
-  }
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-  public void setValue(final Object p1)
-  {
-    if(p1 instanceof Boolean)
-    {
-      final Boolean val = (Boolean)p1;
-      _myVal = val.booleanValue();
-    }
-    else
-      return;
-  }
+	@Override
+	public String getAsText() {
+		String res = null;
+		if (_myVal == true)
+			res = "Yes";
+		else
+			res = "No";
 
-  public void setAsText(final String text) throws IllegalArgumentException
-  {
-    if(text.equals("Yes"))
-      _myVal = true;
-    else
-      _myVal = false;
-  }
+		return res;
+	}
 
-  public boolean supportsCustomEditor()
-  {
-    return true;
-  }
+	@Override
+	public java.awt.Component getCustomEditor() {
+		_theBox = new JCheckBox();
+		_theBox.setName("boolean");
+		_theBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				_myVal = _theBox.isSelected();
+			}
+		});
+		resetData();
+		return _theBox;
+	}
 
-  public Object getValue()
-  {
-    return new Boolean(_myVal);
-  }
+	@Override
+	public String[] getTags() {
+		return new String[] { "Yes", "No" };
+	}
 
-  public void resetData()
-  {
-    if(_theBox != null)
-      _theBox.setSelected(_myVal);
-  }
+	@Override
+	public Object getValue() {
+		return new Boolean(_myVal);
+	}
 
-  public String[] getTags()
-  {
-    return new String[]{"Yes", "No"};
-  }
+	/**
+	 * indicate that we can't just be painted, we've got to be edited
+	 */
+	@Override
+	public boolean isPaintable() {
+		return false;
+	}
 
-  public String getAsText()
-  {
-    String res = null;
-    if(_myVal == true)
-      res = "Yes";
-    else
-      res = "No";
+	public void resetData() {
+		if (_theBox != null)
+			_theBox.setSelected(_myVal);
+	}
 
-    return res;
-  }
+	@Override
+	public void setAsText(final String text) throws IllegalArgumentException {
+		if (text.equals("Yes"))
+			_myVal = true;
+		else
+			_myVal = false;
+	}
+
+	@Override
+	public void setValue(final Object p1) {
+		if (p1 instanceof Boolean) {
+			final Boolean val = (Boolean) p1;
+			_myVal = val.booleanValue();
+		} else
+			return;
+	}
+
+	@Override
+	public boolean supportsCustomEditor() {
+		return true;
+	}
 }

@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package Debrief.GUI.Tote.AWT;
@@ -102,280 +102,247 @@ import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
-public final class AWTStepControl extends StepControl implements
-    java.awt.event.ActionListener
-{
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  private Panel _thePanel;
-  private Button _smallFwd;
-  private Button _smallBwd;
-  private Button _largeFwd;
-  private Button _largeBwd;
-  private Button _editBtn;
-  private Button _startBtn;
-  private Button _endBtn;
-  private Label _timeTxt;
-  private final PropertiesPanel _theEditor;
-  Checkbox _autoBtn;
+public final class AWTStepControl extends StepControl implements java.awt.event.ActionListener {
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+	private Panel _thePanel;
+	private Button _smallFwd;
+	private Button _smallBwd;
+	private Button _largeFwd;
+	private Button _largeBwd;
+	private Button _editBtn;
+	private Button _startBtn;
+	private Button _endBtn;
+	private Label _timeTxt;
+	private final PropertiesPanel _theEditor;
+	Checkbox _autoBtn;
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  public AWTStepControl(final PropertiesPanel theEditor,
-      final ToolParent theParent)
-  {
-    super(theParent, Color.white);
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	public AWTStepControl(final PropertiesPanel theEditor, final ToolParent theParent) {
+		super(theParent, Color.white);
 
-    _theEditor = theEditor;
+		_theEditor = theEditor;
 
-    initForm();
-  }
+		initForm();
+	}
 
-  /**
-   * one of our edit buttons has been pressed
-   */
-  @Override
-  public final void actionPerformed(final java.awt.event.ActionEvent p1)
-  {
-    // get the name of the control
-    boolean fwd = true;
-    boolean large = true;
-    final Button b = (Button) p1.getSource();
+	/**
+	 * one of our edit buttons has been pressed
+	 */
+	@Override
+	public final void actionPerformed(final java.awt.event.ActionEvent p1) {
+		// get the name of the control
+		boolean fwd = true;
+		boolean large = true;
+		final Button b = (Button) p1.getSource();
 
-    // first sort out which set it is
-    if ((b == _startBtn) || (b == _endBtn))
-    {
-      if (b == _startBtn)
-      {
-        super.gotoStart();
-      }
-      else
-        super.gotoEnd();
-    }
-    else
-    {
-      if (b == _largeBwd)
-      {
-        fwd = false;
-        large = true;
-      }
-      if (b == _smallBwd)
-      {
-        fwd = false;
-        large = false;
-      }
-      if (b == _smallFwd)
-      {
-        fwd = true;
-        large = false;
-      }
-      if (b == _largeFwd)
-      {
-        fwd = true;
-        large = true;
-      }
+		// first sort out which set it is
+		if ((b == _startBtn) || (b == _endBtn)) {
+			if (b == _startBtn) {
+				super.gotoStart();
+			} else
+				super.gotoEnd();
+		} else {
+			if (b == _largeBwd) {
+				fwd = false;
+				large = true;
+			}
+			if (b == _smallBwd) {
+				fwd = false;
+				large = false;
+			}
+			if (b == _smallFwd) {
+				fwd = true;
+				large = false;
+			}
+			if (b == _largeFwd) {
+				fwd = true;
+				large = true;
+			}
 
-      _goingForward = fwd;
-      _largeSteps = large;
+			_goingForward = fwd;
+			_largeSteps = large;
 
-      super.doStep(fwd, large);
-    }
-  }
+			super.doStep(fwd, large);
+		}
+	}
 
-  /**
-   * set the automatic mode as indicated
-   * 
-   * @param go
-   *          boolean whether to go auto or not
-   */
-  void doAuto(final boolean go)
-  {
+	/**
+	 * set the automatic mode as indicated
+	 *
+	 * @param go boolean whether to go auto or not
+	 */
+	void doAuto(final boolean go) {
 
-    if (go)
-      startTimer();
-    else
-      stopTimer();
-  }
+		if (go)
+			startTimer();
+		else
+			stopTimer();
+	}
 
-  /**
-   * edit button has been pressed
-   */
-  void doEdit()
-  {
-    // has the editor been assigned?
-    if (_thePanel != null)
-    {
-      // get our edit info
-      final Editable.EditorType et2 = getInfo();
-      // and open it in the panel
-      _theEditor.addEditor(et2, null);
-    }
-  }
+	/**
+	 * edit button has been pressed
+	 */
+	void doEdit() {
+		// has the editor been assigned?
+		if (_thePanel != null) {
+			// get our edit info
+			final Editable.EditorType et2 = getInfo();
+			// and open it in the panel
+			_theEditor.addEditor(et2, null);
+		}
+	}
 
-  // convenience method called from parent class
-  @Override
-  protected void doEditPainter()
-  {
-    doEdit();
-  }
+	// convenience method called from parent class
+	@Override
+	protected void doEditPainter() {
+		doEdit();
+	}
 
-  @Override
-  protected final void formatTimeText()
-  {
-    // don't bother
-  }
+	@Override
+	protected final void formatTimeText() {
+		// don't bother
+	}
 
-  public final Panel getPanel()
-  {
-    return _thePanel;
-  }
+	public final Panel getPanel() {
+		return _thePanel;
+	}
 
-  /**
-   * accessor method from the parent class
-   */
-  @Override
-  protected final PropertiesPanel getPropertiesPanel()
-  {
-    return _theEditor;
-  }
+	/**
+	 * accessor method from the parent class
+	 */
+	@Override
+	protected final PropertiesPanel getPropertiesPanel() {
+		return _theEditor;
+	}
 
-  /**
-   * get the time in the finish slider in the toolbox
-   *
-   */
-  @Override
-  public final HiResDate getToolboxEndTime()
-  {
-    return null;
-  }
+	/**
+	 * get the time in the finish slider in the toolbox
+	 *
+	 */
+	@Override
+	public final HiResDate getToolboxEndTime() {
+		return null;
+	}
 
-  /**
-   * get the time in the start slider in the toolbox
-   *
-   */
-  @Override
-  public final HiResDate getToolboxStartTime()
-  {
-    return null;
-  }
+	/**
+	 * get the time in the start slider in the toolbox
+	 *
+	 */
+	@Override
+	public final HiResDate getToolboxStartTime() {
+		return null;
+	}
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
-  @Override
-  protected final void initForm()
-  {
-    _thePanel = new Panel();
-    _thePanel.setLayout(new BorderLayout());
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+	@Override
+	protected final void initForm() {
+		_thePanel = new Panel();
+		_thePanel.setLayout(new BorderLayout());
 
-    // the left and right hand sides
-    final Panel lhh = new Panel();
-    lhh.setLayout(new BorderLayout());
-    final Panel lh = new Panel();
-    lh.setLayout(new GridLayout(1, 0));
-    final Panel rh = new Panel();
-    rh.setLayout(new GridLayout(1, 0));
+		// the left and right hand sides
+		final Panel lhh = new Panel();
+		lhh.setLayout(new BorderLayout());
+		final Panel lh = new Panel();
+		lh.setLayout(new GridLayout(1, 0));
+		final Panel rh = new Panel();
+		rh.setLayout(new GridLayout(1, 0));
 
-    // create the edit button
-    _editBtn = new Button("?");
-    _editBtn.addActionListener(new ActionListener()
-    {
-      @Override
-      public void actionPerformed(final ActionEvent e)
-      {
-        doEdit();
-      }
-    });
+		// create the edit button
+		_editBtn = new Button("?");
+		_editBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				doEdit();
+			}
+		});
 
-    // create the manual/auto button
-    _autoBtn = new Checkbox("Auto");
-    _autoBtn.setState(false);
-    _autoBtn.addItemListener(new ItemListener()
-    {
-      @Override
-      public void itemStateChanged(final ItemEvent e)
-      {
-        doAuto(_autoBtn.getState());
-      }
-    });
+		// create the manual/auto button
+		_autoBtn = new Checkbox("Auto");
+		_autoBtn.setState(false);
+		_autoBtn.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(final ItemEvent e) {
+				doAuto(_autoBtn.getState());
+			}
+		});
 
-    // create the simple buttons
-    _startBtn = new Button("<-");
-    _largeBwd = new Button("<<");
-    _smallBwd = new Button("<");
-    _timeTxt = new Label("-----", Label.CENTER);
-    _smallFwd = new Button(">");
-    _largeFwd = new Button(">>");
-    _endBtn = new Button("->");
+		// create the simple buttons
+		_startBtn = new Button("<-");
+		_largeBwd = new Button("<<");
+		_smallBwd = new Button("<");
+		_timeTxt = new Label("-----", Label.CENTER);
+		_smallFwd = new Button(">");
+		_largeFwd = new Button(">>");
+		_endBtn = new Button("->");
 
-    // add the buttons to the step panel
-    lh.add(_editBtn);
-    lh.add(_startBtn);
-    lh.add(_largeBwd);
-    lh.add(_smallBwd);
+		// add the buttons to the step panel
+		lh.add(_editBtn);
+		lh.add(_startBtn);
+		lh.add(_largeBwd);
+		lh.add(_smallBwd);
 
-    // put the left hand components in
-    lhh.add("West", _autoBtn);
-    lhh.add("East", lh);
-    rh.add(_smallFwd);
-    rh.add(_largeFwd);
-    rh.add(_endBtn);
+		// put the left hand components in
+		lhh.add("West", _autoBtn);
+		lhh.add("East", lh);
+		rh.add(_smallFwd);
+		rh.add(_largeFwd);
+		rh.add(_endBtn);
 
-    // add the other components
-    _thePanel.add("Center", _timeTxt);
-    _thePanel.add("West", lhh);
-    _thePanel.add("East", rh);
+		// add the other components
+		_thePanel.add("Center", _timeTxt);
+		_thePanel.add("West", lhh);
+		_thePanel.add("East", rh);
 
-    // and the event handlers
-    _startBtn.addActionListener(this);
-    _largeBwd.addActionListener(this);
-    _smallBwd.addActionListener(this);
-    _smallFwd.addActionListener(this);
-    _largeFwd.addActionListener(this);
-    _endBtn.addActionListener(this);
-  }
+		// and the event handlers
+		_startBtn.addActionListener(this);
+		_largeBwd.addActionListener(this);
+		_smallBwd.addActionListener(this);
+		_smallFwd.addActionListener(this);
+		_largeFwd.addActionListener(this);
+		_endBtn.addActionListener(this);
+	}
 
-  /***************************************************
-   * set of methods to control the time displayed in the toolbox (of particular use in remembering
-   * the T-Zero time)
-   */
+	/***************************************************
+	 * set of methods to control the time displayed in the toolbox (of particular
+	 * use in remembering the T-Zero time)
+	 */
 
-  /**
-   * register with the painter manager
-   */
-  @Override
-  protected final void painterIsDefined()
-  {
-  }
+	/**
+	 * register with the painter manager
+	 */
+	@Override
+	protected final void painterIsDefined() {
+	}
 
-  /**
-   * set the time in the start slider in the toolbox
-   *
-   */
-  @Override
-  public final void setToolboxEndTime(final HiResDate val)
-  {
-  }
+	/**
+	 * set the time in the start slider in the toolbox
+	 *
+	 */
+	@Override
+	public final void setToolboxEndTime(final HiResDate val) {
+	}
 
-  /**
-   * set the time in the start slider in the toolbox
-   *
-   */
-  @Override
-  public final void setToolboxStartTime(final HiResDate val)
-  {
-  }
+	/**
+	 * set the time in the start slider in the toolbox
+	 *
+	 */
+	@Override
+	public final void setToolboxStartTime(final HiResDate val) {
+	}
 
-  /**
-   * respond to update event as triggered by GUI-independent parent
-   */
-  @Override
-  public final void updateForm(final HiResDate DTG)
-  {
-    final String val = DebriefFormatDateTime.toStringHiRes(DTG);
-    _timeTxt.setText(val);
-  }
+	/**
+	 * respond to update event as triggered by GUI-independent parent
+	 */
+	@Override
+	public final void updateForm(final HiResDate DTG) {
+		final String val = DebriefFormatDateTime.toStringHiRes(DTG);
+		_timeTxt.setText(val);
+	}
 
 }

@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: SWTCanvasAdapter.java,v $
@@ -154,1497 +154,1284 @@ import MWC.GenericData.WorldLocation;
 /**
  * SWT implementation of a canvas.
  */
-public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
-    ExtendedCanvasType
-{
-
-  // ////////////////////////////////////////////////////
-  // bean info for this class
-  // ///////////////////////////////////////////////////
-  public final class CanvasInfo extends Editable.EditorType
-  {
-
-    public CanvasInfo(final Object data)
-    {
-      super(data, data.toString(), "");
-    }
-
-    @Override
-    public final PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try
-      {
-        final PropertyDescriptor[] res =
-        {displayProp("BackgroundColor", "Background color",
-            "the background color"), displayProp("LineThickness",
-                "Line thickness", "the line thickness"), displayReadOnlyProp(
-                    DIMENSIONS, "Current plot size",
-                    "the editor control dimensions (read-only)")};
-
-        return res;
-
-      }
-      catch (final IntrospectionException e)
-      {
-        e.printStackTrace();
-        return super.getPropertyDescriptors();
-      }
-    }
-  }
-
-  protected static final String EDITOR_LABEL = "Appearance";
-
-  /**
-   * the alpha depth of semi-transparent objects
-   *
-   */
-  private static final int SEMI_TRANSPARENCY_ALPHA = 125;
-
-  /**
-     *
-     */
-  private static final long serialVersionUID = 1L;
-
-  // ///////////////////////////////////////////////////////////
-  // member variables
-  // //////////////////////////////////////////////////////////
-
-  private static final float UNSET_LINE_WIDTH = -1;
-
-  /**
-   * a list of the line-styles we know about.
-   */
-  static private java.util.HashMap<Integer, BasicStroke> _myLineStyles = null;
-
-  public final static String BACKGROUND_COLOR_PROPERTY =
-      "DefaultBackgroundColor";
-
-  private static final String DIMENSIONS = "Dimensions";
-
-  /**
-   * do we anti-alias this font.
-   *
-   * @param theFont
-   *          the font we are looking at
-   * @return yes/no decision
-   */
-  public static boolean antiAliasThis(final Font theFont)
-  {
-    boolean res = false;
-
-    final int size = theFont.getSize();
-    final boolean isBold = theFont.isBold();
-
-    if (size >= 14)
-    {
-      res = true;
-    }
-    else
-    {
-      if (isBold && (size >= 12))
-      {
-        res = true;
-      }
-    }
-
-    return res;
-  }
-
-  /**
-   * doDecide whether this line thickness could be anti-aliased.
-   *
-   * @param width
-   *          the line width setting
-   * @return yes/no
-   */
-  public static boolean antiAliasThisLine(final float width)
-  {
-    boolean res = false;
-
-    if (width > 1)
-      res = true;
-
-    return res;
-  }
-
-  private static int[] getPolygonArray(final int[] xPoints, final int[] yPoints,
-      final int nPoints)
-  {
-    final int[] poly = new int[nPoints * 2];
-
-    for (int i = 0; i < nPoints; i++)
-    {
-      poly[2 * i] = xPoints[i];
-      poly[2 * i + 1] = yPoints[i];
-    }
-
-    return poly;
-  }
-
-  static synchronized public java.awt.BasicStroke getStrokeFor(final int style)
-  {
-    if (_myLineStyles == null)
-    {
-      _myLineStyles = new java.util.HashMap<Integer, BasicStroke>(5);
-      _myLineStyles.put(new Integer(MWC.GUI.CanvasType.SOLID),
-          new java.awt.BasicStroke(1, java.awt.BasicStroke.CAP_BUTT,
-              java.awt.BasicStroke.JOIN_MITER, 1, new float[]
-              {5, 0}, 0));
-      _myLineStyles.put(new Integer(MWC.GUI.CanvasType.DOTTED),
-          new java.awt.BasicStroke(1, java.awt.BasicStroke.CAP_BUTT,
-              java.awt.BasicStroke.JOIN_MITER, 1, new float[]
-              {2, 6}, 0));
-      _myLineStyles.put(new Integer(MWC.GUI.CanvasType.DOT_DASH),
-          new java.awt.BasicStroke(1, java.awt.BasicStroke.CAP_BUTT,
-              java.awt.BasicStroke.JOIN_MITER, 1, new float[]
-              {4, 4, 12, 4}, 0));
-      _myLineStyles.put(new Integer(MWC.GUI.CanvasType.SHORT_DASHES),
-          new java.awt.BasicStroke(1, java.awt.BasicStroke.CAP_BUTT,
-              java.awt.BasicStroke.JOIN_MITER, 1, new float[]
-              {6, 6}, 0));
-      _myLineStyles.put(new Integer(MWC.GUI.CanvasType.LONG_DASHES),
-          new java.awt.BasicStroke(1, java.awt.BasicStroke.CAP_BUTT,
-              java.awt.BasicStroke.JOIN_MITER, 1, new float[]
-              {12, 6}, 0));
-      _myLineStyles.put(new Integer(MWC.GUI.CanvasType.UNCONNECTED),
-          new java.awt.BasicStroke(1));
-    }
-
-    return _myLineStyles.get(new Integer(style));
-  }
-
-  /**
-   * remember the background color - SWT has trouble remembering it
-   */
-  java.awt.Color _backgroundColor;
-
-  /**
-   * the projection in use
-   */
-  protected PlainProjection _theProjection;
-
-  /**
-   * our graphics object - only valid between 'start' and 'stop' paint events.
-   */
-  private GC _theDest = null;
-
-  /**
-   * the list of registered painters for this canvas.
-   */
-  protected Vector<PaintListener> _thePainters;
-
-  /**
-   * the dimensions of the canvas - we keep our own track of this in order to handle the number of
-   * resize messages we get.
-   */
-  protected java.awt.Dimension _theSize;
-
-  /**
-   * our tool tip handler.
-   */
-  protected CanvasType.TooltipHandler _tooltipHandler;
-
-  // ///////////////////////////////////////////////////////////
-  // constructor
-  // //////////////////////////////////////////////////////////
-
-  /**
-   * our editor.
-   */
-  transient private Editable.EditorType _myEditor;
-
-  // ////////////////////////////////////////////////////
-  // screen redraw related
-  // ////////////////////////////////////////////////////
-
-  // ///////////////////////////////////////////////////////////
-  // member functions
-  // //////////////////////////////////////////////////////////
-
-  /**
-   * the current color
-   */
-  private java.awt.Color _currentColor;
-
-  /**
-   * the current line width.
-   */
-  private float _lineWidth = UNSET_LINE_WIDTH;
-
-  /**
-   * flag for whether we have the GDI library availble. The plotting algs will keep on failing if
-   * it's not. We should remember when its not avaialble, and not bother calling from there on.
-   */
-  private boolean _gdiAvailable = true;
-
-  /**
-   * and our default background color
-   *
-   */
-  @SuppressWarnings("unused")
-  private final java.awt.Color DEFAULT_BACKGROUND_COLOR =
-      DebriefColors.LIGHT_GRAY;
-
-  private SWTGraphics2D _sg2d;
-
-  /**
-   * default constructor.
-   */
-  public SWTCanvasAdapter(final PlainProjection proj)
-  {
-    // get the background color
-    final String backGroundColor = CorePlugin.getDefault().getPreferenceStore()
-        .getString(BACKGROUND_COLOR_PROPERTY);
-    final String[] items = backGroundColor.split(",");
-    final java.awt.Color defaultColor;
-    if (items.length == 3)
-    {
-      final int red = Integer.valueOf(items[0]);
-      final int green = Integer.valueOf(items[1]);
-      final int blue = Integer.valueOf(items[2]);
-      defaultColor = new java.awt.Color(red, green, blue);
-    }
-    else
-    {
-      defaultColor = new java.awt.Color(255, 255, 255);
-    }
-
-    // start with our background colour
-    setBackgroundColor(defaultColor);
-
-    // initialisation
-    _thePainters = new Vector<PaintListener>(0, 1);
-
-    // create our projection
-    if (proj != null)
-      _theProjection = proj;
-    else
-      _theProjection = new FlatProjection();
-  }
-
-  // //////////////////////////////////////////////////////////
-  // painter handling
-  // //////////////////////////////////////////////////////////
-  @Override
-  public final void addPainter(final CanvasType.PaintListener listener)
-  {
-    _thePainters.addElement(listener);
-  }
-
-  /**
-   * provide close method, clear elements.
-   */
-  public void close()
-  {
-    _thePainters.removeAllElements();
-    _thePainters = null;
-    _theProjection = null;
-    _theDest = null;
-    _theSize = null;
-    _tooltipHandler = null;
-  }
-
-  @Override
-  public final void drawArc(final int x, final int y, final int width,
-      final int height, final int startAngle, final int arcAngle)
-  {
-    if (_theDest != null)
-    {
-      // doDecide whether to anti-alias this line
-      this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this
-          .getLineWidth()));
-    }
-
-    if (_theDest != null)
-    {
-      if (!_theDest.isDisposed())
-        _theDest.drawArc(x, y, width, height, startAngle, arcAngle);
-    }
-  }
-
-  public void drawImage(final Image image, final int x, final int y,
-      final int width, final int height)
-  {
-    drawImage(image, x, y, width, height, 255);
-  }
-
-  public void drawImage(final Image image, final int x, final int y,
-      final int width, final int height, final int alpha)
-  {
-    if (_theDest != null)
-      if (!_theDest.isDisposed())
-      {
-        final int oldAlpha = _theDest.getAlpha();
-        _theDest.setAlpha(alpha);
-        _theDest.drawImage(image, x, y);
-        _theDest.setAlpha(oldAlpha);
-      }
-  }
-
-  @Override
-  public final boolean drawImage(final java.awt.Image img, final int x0,
-      final int y0, final int width, final int height,
-      final ImageObserver observer)
-  {
-    if (_theDest == null)
-      return true;
-
-    final PaletteData palette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
-    // PaletteData palette = new PaletteData(new RGB[]{new RGB(255,0,0), new
-    // RGB(0,255,0)});
-    final ImageData imageData = new ImageData(48, 48, 24, palette);
-
-    for (int x = 0; x < 48; x++)
-    {
-      for (int y = 0; y < 48; y++)
-      {
-        if (y > 11 && y < 35 && x > 11 && x < 35)
-        {
-          imageData.setPixel(x, y, SWTRasterPainter.toSWTColor(255, 0, 0)); // Set
-          // the
-          // center
-          // to
-          // red
-        }
-        else
-        {
-          imageData.setPixel(x, y, SWTRasterPainter.toSWTColor(0, 255, 0)); // Set
-          // the
-          // outside
-          // to
-          // green
-        }
-      }
-    }
-
-    final Image image = new Image(Display.getCurrent(), imageData);
-
-    if (!_theDest.isDisposed())
-      _theDest.drawImage(image, 0, 0);
-
-    // return _theDest.drawImage(img, x, y, width, height, observer);
-
-    image.dispose();
-
-    return false;
-
-  }
-
-  @Override
-  public final void drawLine(final int x1, final int y1, final int x2,
-      final int y2)
-  {
-    if (_theDest == null)
-      return;
-
-    // Decide whether to anti-alias this line
-    final float thisWid = this.getLineWidth();
-    final boolean doAntiAlias = SWTCanvasAdapter.antiAliasThisLine(thisWid);
-
-    // BUG: when we adjust the anti-alaising, the colours in the ETOPO key
-    // were
-    // getting messed up. bugger.
-    // The bug was fixed on 31st May 2005. Builds after this date should be
-    // ok.
-    this.switchAntiAliasOn(doAntiAlias);
-
-    // ok, may as well go for it now..
-    if (!_theDest.isDisposed())
-    {
-      int xmin, ymin, xmax, ymax;
-      xmin = ymin = 0;
-      xmax = this.getSize().width;
-      ymax = this.getSize().height;
-      // workaround for issue_1906 to avoid GC ignore line styles
-      _theDest.setLineAttributes(new LineAttributes(_theDest.getLineWidth(),
-          SWT.CAP_FLAT, SWT.JOIN_MITER, _theDest.getLineStyle(), null, 0, 10));
-
-      SWTClipper.drawLine(_theDest, x1, y1, x2, y2, xmin, xmax, ymin, ymax);
-    }
-  }
-
-  @Override
-  public void drawLine(final int x1, final int y1, final int x2, final int y2,
-      final int transparency)
-  {
-    if (_theDest != null && !_theDest.isDisposed())
-    {
-      // get current transparency
-      final int curT = _theDest.getAlpha();
-
-      _theDest.setAlpha(transparency);
-
-      // do paint
-      this.drawLine(x1, y1, x2, y2);
-
-      // restore transparency
-      _theDest.setAlpha(curT);
-    }
-  }
-
-  @Override
-  public final void drawOval(final int x, final int y, final int width,
-      final int height)
-  {
-    if (_theDest != null)
-      if (!_theDest.isDisposed())
-        this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this
-            .getLineWidth()));
-
-    if (_theDest != null)
-      if (!_theDest.isDisposed())
-      {
-        _theDest.drawOval(x, y, width, height);
-      }
-  }
-
-  /**
-   * drawPolygon.
-   *
-   * @param xPoints
-   *          list of x coordinates
-   * @param yPoints
-   *          list of y coordinates
-   * @param nPoints
-   *          length of list
-   */
-  @Override
-  public final void drawPolygon(final int[] xPoints, final int[] yPoints,
-      final int nPoints)
-  {
-    if (_theDest == null)
-      return;
-
-    if (!_theDest.isDisposed())
-    {
-
-      // doDecide whether to anti-alias this line
-      this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this
-          .getLineWidth()));
-
-      // translate the polygon to SWT format
-      final int[] poly = getPolygonArray(xPoints, yPoints, nPoints);
-
-      if (poly != null)
-        if (poly.length > 0)
-          _theDest.drawPolygon(poly);
-    }
-  }
-
-  /**
-   * drawPolyline
-   *
-   * @param points
-   *          list of x,y coordinates pairs
-   */
-  @Override
-  public final void drawPolyline(final int[] points)
-  {
-    if (_theDest == null)
-      return;
-
-    if (!_theDest.isDisposed())
-    {
-      // doDecide whether to anti-alias this line
-      this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this
-          .getLineWidth()));
-
-      _theDest.drawPolyline(points);
-    }
-  }
-
-  /**
-   * drawPolyline
-   *
-   * @param xPoints
-   *          list of x coordinates
-   * @param yPoints
-   *          list of y coordinates (or null if xPoints contains both lists - in SWT PolyLine
-   *          format)
-   * @param nPoints
-   *          length of list (ignored if yPoints is null)
-   */
-  @Override
-  public final void drawPolyline(final int[] xPoints, final int[] yPoints,
-      final int nPoints)
-  {
-    if (_theDest == null)
-      return;
-
-    if (!_theDest.isDisposed())
-    {
-      // translate the polygon to SWT format
-      final int[] poly = getPolygonArray(xPoints, yPoints, nPoints);
-
-      drawPolyline(poly);
-    }
-  }
-
-  @Override
-  public final void drawRect(final int x1, final int y1, final int wid,
-      final int height)
-  {
-    if (_theDest == null)
-      return;
-
-    // doDecide whether to anti-alias this line
-    this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this
-        .getLineWidth()));
-
-    if (_theDest == null)
-      return;
-
-    if (!_theDest.isDisposed())
-      _theDest.drawRectangle(x1, y1, wid, height);
-  }
-
-  public final boolean drawSWTImage(final Image img, final int x, final int y,
-      final int width, final int height, final int alphaTransparency)
-  {
-    if (_theDest == null)
-      return true;
-
-    if (!_theDest.isDisposed())
-    {
-      _theDest.setAlpha(alphaTransparency);
-      if (Platform.OS_LINUX.equals(Platform.getOS()))
-      {
-        // SPECIAL CASE: It should fix background issue on Linux (it is constrained
-        // on Linux; maybe it should be the same on Mac). The issue happen
-        // because "new GC(image)" ignores transparency on Linux.
-        // It is probably a bug in SWT.
-        final ImageData data = img.getImageData();
-        final java.awt.Color trColor = DebriefColors.BLACK;
-        final int transPx = data.palette.getPixel(new RGB(trColor.getRed(),
-            trColor.getGreen(), trColor.getBlue()));
-        data.transparentPixel = transPx;
-        final Image image = new Image(Display.getCurrent(), data);
-        _theDest.drawImage(image, x, y, width, height, x, y, width, height);
-        image.dispose();
-      }
-      else
-      {
-        _theDest.drawImage(img, x, y, width, height, x, y, width, height);
-      }
-      _theDest.setAlpha(255);
-    }
-
-    // return _theDest.drawImage(img, x, y, width, height, observer);
-
-    return false;
-
-  }
-
-  @Override
-  public void drawText(final java.awt.Font theFont, final String theStr,
-      final int x, final int y)
-  {
-    if (_theDest == null)
-      return;
-
-    if (!_theDest.isDisposed())
-    {
-      // get/set the font
-      setFont(theFont);
-
-      // and plot the text
-      drawText(theStr, x, y);
-    }
-  }
-
-  @Override
-  public void drawText(final String theStr, final int x, final int y)
-  {
-
-    // don't use the rotate-able command, it mangles the fine positioning for existing elements
-    // drawText(theStr, x, y, 0);
-
-    if (_theDest == null)
-      return;
-
-    if (!_theDest.isDisposed())
-
-    {
-      final FontData[] fd = _theDest.getFont().getFontData();
-
-      final FontData font = fd[0];
-      final int fontHt = font.getHeight();
-
-      // shift the y. JDK uses bottom left coordinate, SWT uses top-left
-      final int y2 = y - fontHt;
-
-      // and draw it
-      _theDest.drawText(theStr, x, y2, true);
-    }
-  }
-
-  @Override
-  public void drawText(final String theStr, final int x, final int y,
-      final float rotate)
-  {
-    if (_theDest == null)
-      return;
-
-    if (!_theDest.isDisposed())
-    {
-
-      final FontData[] fd = _theDest.getFont().getFontData();
-      final FontData fontData = fd[0];
-      // shift the y. JDK uses bottom left coordinate, SWT uses top-left
-      int y2 = y;
-      if (rotate == 0)
-        y2 -= fontData.getHeight();
-
-      final Transform oldTransform = new Transform(_theDest.getDevice());
-      _theDest.getTransform(oldTransform);
-
-      final Transform tr = new Transform(_theDest.getDevice());
-      tr.translate(x, y2);
-      tr.rotate(rotate);
-      final Font awFont = new Font(fontData.getName(), fontData.getStyle(),
-          fontData.getHeight());
-      final int strWidth = getStringWidth(awFont, theStr);
-      tr.translate(-x - strWidth / 2, -y2);
-
-      _theDest.setTransform(tr);
-      _theDest.drawText(theStr, x, y, true);
-
-      _theDest.setTransform(oldTransform);
-      tr.dispose();
-    }
-  }
-
-  @Override
-  public void drawText(final String theStr, final int x, final int y,
-      float rotate, final boolean above)
-  {
-    if (_theDest == null)
-      return;
-
-    if (!_theDest.isDisposed())
-    {
-
-      final FontData[] fd = _theDest.getFont().getFontData();
-      final FontData fontData = fd[0];
-
-      int deltaX = 0, deltaY = 0;
-
-      int height = _theDest.getFontMetrics().getDescent() + _theDest
-          .getFontMetrics().getAscent() + _theDest.getFontMetrics()
-              .getLeading();
-
-      if (!above)
-      {
-        final double direction = Math.toRadians(rotate);
-        deltaX = -(int) (height * Math.cos(direction));
-        deltaY = -(int) (height * Math.sin(direction));
-      }
-      else
-      {
-
-        height = _theDest.getFontMetrics().getLeading();
-        final double direction = Math.toRadians(rotate);
-        deltaX = (int) (height * Math.cos(direction));
-        deltaY = (int) (height * Math.sin(direction));
-      }
-
-      if (rotate > 180)
-      {
-        rotate -= 180;
-        final Font awFont = new Font(fontData.getName(), fontData.getStyle(),
-            fontData.getHeight());
-        final int distance = getStringWidth(awFont, theStr);
-
-        final double direction = Math.toRadians(rotate - 90);
-        if (above)
-        {
-          deltaX -= (int) (distance * Math.cos(direction));
-          deltaY -= (int) (distance * Math.sin(direction)) - 5;
-        }
-        else
-        {
-          deltaX = -(int) 1.5 * deltaX - (int) (distance * Math.cos(direction));
-          deltaY = -(int) 1.5 * deltaY - (int) (distance * Math.sin(direction))
-              - 5;
-        }
-      }
-      rotate -= 90;
-
-      final Transform oldTransform = new Transform(_theDest.getDevice());
-      _theDest.getTransform(oldTransform);
-
-      final Transform tr = new Transform(_theDest.getDevice());
-
-      tr.translate(x + deltaX, y + deltaY);
-
-      tr.rotate(rotate);
-
-      tr.translate(-x - deltaX, -y - deltaY);
-
-      _theDest.setTransform(tr);
-      _theDest.drawText(theStr, x + deltaX, y + deltaY, true);
-
-      // final Font awFont = new Font(fontData.getName(), fontData.getStyle(),
-      // fontData.getHeight());
-      // _theDest.drawRectangle(x, y, getStringWidth(awFont, theStr), height);
-
-      _theDest.setTransform(oldTransform);
-
-      tr.dispose();
-    }
-  }
-
-  @Override
-  public void emptyShape(final Shape shape)
-  {
-    if (_sg2d != null && shape != null)
-    {
-      _theDest.setAlpha(255);
-      _sg2d.draw(shape);
-    }
-  }
-
-  @Override
-  public final void endDraw(final Object theVal)
-  {
-    // _theDest = null;
-
-    // and forget the line width
-    _lineWidth = UNSET_LINE_WIDTH;
-
-    // and the color
-    _currentColor = null;
-  }
-
-  @Override
-  public final void fillArc(final int x, final int y, final int width,
-      final int height, final int startAngle, final int arcAngle)
-  {
-    if (_theDest != null)
-      if (!_theDest.isDisposed())
-        _theDest.fillArc(x, y, width, height, startAngle, arcAngle);
-    // else
-    // MWC.Utilities.Errors.Trace.trace("Graphics object not available when
-    // painting oval - occasionally happens in first pass", false);
-
-  }
-
-  public final void fillArc(final int x, final int y, final int width,
-      final int height, final int startAngle, final int arcAngle,
-      final int alpha)
-  {
-    if (_theDest != null)
-      if (!_theDest.isDisposed())
-      {
-        _theDest.setAlpha(alpha);
-        _theDest.fillArc(x, y, width, height, startAngle, arcAngle);
-      }
-    // else
-    // MWC.Utilities.Errors.Trace.trace("Graphics object not available when
-    // painting oval - occasionally happens in first pass", false);
-
-  }
-
-  @Override
-  public final void fillOval(final int x, final int y, final int width,
-      final int height)
-  {
-    if (_theDest != null)
-      if (!_theDest.isDisposed())
-      {
-        _theDest.fillOval(x, y, width, height);
-      }
-    // else
-    // MWC.Utilities.Errors.Trace.trace("Graphics object not available when
-    // painting oval - occasionally happens in first pass", false);
-  }
-
-  /**
-   * draw a filled polygon
-   *
-   * @param xPoints
-   *          list of x coordinates
-   * @param yPoints
-   *          list of y coordinates
-   * @param nPoints
-   *          length of list
-   */
-  @Override
-  public final void fillPolygon(final int[] xPoints, final int[] yPoints,
-      final int nPoints)
-  {
-    if (_theDest == null)
-      return;
-
-    if (!_theDest.isDisposed())
-    {
-
-      // translate the polygon to SWT format
-      final int[] poly = getPolygonArray(xPoints, yPoints, nPoints);
-
-      _theDest.fillPolygon(poly);
-    }
-  }
-
-  @Override
-  public final void fillRect(final int x, final int y, final int wid,
-      final int height)
-  {
-    if (_theDest == null)
-      return;
-
-    // fillOn();
-
-    if (!_theDest.isDisposed())
-    {
-      // _theDest.setBackground(ColorHelper.getColor( MWC.GUI.Properties.DebriefColors.green));
-      _theDest.fillRectangle(x, y, wid, height);
-
-      // now, the fill only fills in the provided rectangle. we also have
-      // to
-      // paint
-      // in it's border
-      _theDest.drawRectangle(x, y, wid, height);
-    }
-
-    // fillOff();
-  }
-
-  @Override
-  public void fillShape(final Shape shape)
-  {
-    if (_sg2d != null && shape != null)
-    {
-      _sg2d.fill(shape);
-      _sg2d.draw(shape);
-    }
-  }
-
-  /**
-   * get the current background colour
-   */
-  @Override
-  public final java.awt.Color getBackgroundColor()
-  {
-    // don't worry - we've remembered it.
-    return _backgroundColor;
-  }
-
-  public String getDimensions()
-  {
-    final Dimension dims = this.getSize();
-    return (int) dims.getWidth() + "px * " + (int) dims.getHeight() + "px";
-  }
-
-  /**
-   * ONLY USE THIS FOR NON-PERSISTENT PLOTTING
-   */
-  @Override
-  public final java.awt.Graphics getGraphicsTemp()
-  {
-    System.err.println("graphics temp not implemented...");
-    final java.awt.Graphics res = null;
-    // /** if we are in a paint operation already,
-    // * return the graphics object, since it may
-    // * be a double-buffering image
-    // */
-    // if (_theDest != null)
-    // {
-    // res = _theDest.create(); // return a copy, so the user can dispose it
-    // }
-    // else
-    // {
-    // if (_dblBuff != null)
-    // {
-    // res = _dblBuff.getGraphics();
-    // }
-    // else
-    // {
-    // }
-    // }
-    //
-    return res;
-  }
-
-  // ////////////////////////////////////////////////////
-  // bean/editable methods
-  // ///////////////////////////////////////////////////
-  @Override
-  public final Editable.EditorType getInfo()
-  {
-    if (_myEditor == null)
-      _myEditor = new CanvasInfo(this);
-
-    return _myEditor;
-  }
-
-  public final BoundedInteger getLineThickness()
-  {
-    return new BoundedInteger((int) this.getLineWidth(), 0, 4);
-  }
-
-  /**
-   * get the width of the line, in pixels
-   */
-  @Override
-  public final float getLineWidth()
-  {
-    float res = 0;
-
-    // try to use our cached line-width, to save fetching system pens &
-    // things
-    if (_lineWidth != UNSET_LINE_WIDTH)
-      res = _lineWidth;
-    else
-    {
-      // are we currently in a plot operation?
-      if (_theDest != null)
-      {
-
-        // create the stroke
-        if (!_theDest.isDisposed())
-          res = _theDest.getLineWidth();
-        // final java.awt.Graphics2D g2 = (java.awt.Graphics2D)
-        // _theDest;
-        // final BasicStroke bs = (BasicStroke) g2.getStroke();
-        // res = bs.getLineWidth();
-      }
-      else
-      {
-        res = _lineWidth;
-      }
-    }
-
-    return res;
-  }
-
-  @Override
-  public String getName()
-  {
-    return "SWT Canvas";
-  }
-
-  @Override
-  public final Enumeration<PaintListener> getPainters()
-  {
-    return _thePainters.elements();
-  }
-
-  /**
-   * get the current projection.
-   */
-  @Override
-  public final PlainProjection getProjection()
-  {
-    return _theProjection;
-  }
-
-  @Override
-  public Dimension getSize()
-  {
-    return _theSize;
-  }
-
-  @Override
-  public final int getStringHeight(final java.awt.Font theFont)
-  {
-    int res = 0;
-
-    if (theFont != null)
-      res = theFont.getSize();
-    else
-      res = _theDest.getFontMetrics().getHeight();
-
-    // if (!_theDest.isDisposed())
-    // res = _theDest.getFontMetrics().getHeight();
-    return res;
-  }
-
-  @Override
-  public final int getStringWidth(final java.awt.Font theFont,
-      final String theString)
-  {
-    int res = 0;
-
-    // set the font to start with,
-    if (!_theDest.isDisposed())
-    {
-      if (theFont != null)
-      {
-        final org.eclipse.swt.graphics.Font myFont = FontHelper
-            .convertFontFromAWT(theFont);
-        if (!_theDest.isDisposed())
-          _theDest.setFont(myFont);
-      }
-
-      for (int thisC = 0; thisC < theString.length(); thisC++)
-      {
-        final char thisChar = theString.charAt(thisC);
-        int thisWid;
-        // just check if it's a space - we're not getting the right
-        // width back
-        if (thisChar == ' ')
-        {
-          thisWid = (int) _theDest.getFontMetrics().getAverageCharacterWidth();
-        }
-        else
-        {
-          // thisWid = _theDest.getCharWidth(thisChar);
-          thisWid = _theDest.getAdvanceWidth(thisChar);
-        }
-        res += thisWid;
-      }
-    }
-    return res;
-  }
-
-  /**
-   * get a string describing the current screen & world location
-   */
-  public final String getTheToolTipText(final java.awt.Point pt)
-  {
-    String res = null;
-    if (_tooltipHandler != null)
-    {
-      // check we have a valid projection
-      final java.awt.Dimension dim = getProjection().getScreenArea();
-      if (dim != null)
-      {
-        if (dim.width > 0)
-        {
-          final WorldLocation loc = toWorld(pt);
-          if (loc != null)
-            res = _tooltipHandler.getString(loc, pt);
-        }
-      }
-    }
-
-    return res;
-  }
-
-  @Override
-  public boolean getXORMode()
-  {
-    if (_theDest != null && !_theDest.isDisposed())
-    {
-      return _theDest.getXORMode();
-    }
-    return false;
-  }
-
-  @Override
-  public final boolean hasEditor()
-  {
-    return true;
-  }
-
-  @Override
-  public final void removePainter(final CanvasType.PaintListener listener)
-  {
-    _thePainters.removeElement(listener);
-  }
-
-  /**
-   * re-determine the area of data we cover. then resize to cover it
-   */
-  @Override
-  public final void rescale()
-  {
-
-    // get the data area for the current painters
-    WorldArea theArea = null;
-    final Enumeration<PaintListener> enumer = _thePainters.elements();
-    while (enumer.hasMoreElements())
-    {
-      final CanvasType.PaintListener thisP = enumer.nextElement();
-      theArea = WorldArea.extend(theArea, thisP.getDataArea());
-    }
-
-    // check we have found a valid area
-    if (theArea != null)
-    {
-      // what's the width in degs?
-      final double wid = theArea.getWidth();
-
-      // get the border for this projection
-      double border = _theProjection.getDataBorder();
-      if (border >= 1)
-      {
-        border = border - 1d;
-      }
-
-      // add a border
-      theArea.grow(wid * border, 0);
-
-      // so, we now have the data area for everything which
-      // wants to plot to it, give it to the projection
-      _theProjection.setDataArea(theArea);
-    }
-
-  }
-
-  @Override
-  public final void semiFillArc(final int x, final int y, final int width,
-      final int height, final int startAngle, final int arcAngle)
-  {
-    if (_theDest != null)
-      if (!_theDest.isDisposed())
-      {
-        _theDest.setAlpha(SEMI_TRANSPARENCY_ALPHA);
-        _theDest.fillArc(x, y, width, height, startAngle, arcAngle);
-        _theDest.setAlpha(255);
-        _theDest.drawArc(x, y, width, height, startAngle, arcAngle);
-      }
-    // else
-    // MWC.Utilities.Errors.Trace.trace("Graphics object not available when
-    // painting oval - occasionally happens in first pass", false);
-
-  }
-
-  @Override
-  public final void semiFillOval(final int x, final int y, final int width,
-      final int height)
-  {
-    if (_theDest != null)
-      if (!_theDest.isDisposed())
-      {
-        _theDest.setAlpha(SEMI_TRANSPARENCY_ALPHA);
-        _theDest.fillOval(x, y, width, height);
-        _theDest.setAlpha(255);
-      }
-    // else
-    // MWC.Utilities.Errors.Trace.trace("Graphics object not available when
-    // painting oval - occasionally happens in first pass", false);
-  }
-
-  @Override
-  public final void semiFillPolygon(final int[] xPoints, final int[] yPoints,
-      final int nPoints)
-  {
-    if (_theDest == null)
-      return;
-
-    if (!_theDest.isDisposed())
-    {
-
-      // translate the polygon to SWT format
-      final int[] poly = getPolygonArray(xPoints, yPoints, nPoints);
-
-      _theDest.setAlpha(SEMI_TRANSPARENCY_ALPHA);
-      _theDest.fillPolygon(poly);
-      _theDest.setAlpha(255);
-      _theDest.drawPolygon(poly);
-    }
-  }
-
-  @Override
-  public final void semiFillRect(final int x, final int y, final int wid,
-      final int height)
-  {
-    if (_theDest == null)
-      return;
-
-    // fillOn();
-
-    if (!_theDest.isDisposed())
-    {
-      _theDest.setAlpha(SEMI_TRANSPARENCY_ALPHA);
-      _theDest.fillRectangle(x, y, wid, height);
-      _theDest.setAlpha(255);
-
-      // now, the fill only fills in the provided rectangle. we also have
-      // to
-      // paint
-      // in it's border
-      _theDest.drawRectangle(x, y, wid, height);
-    }
-
-    // fillOff();
-  }
-
-  @Override
-  public void semiFillShape(final Shape shape)
-  {
-    if (_sg2d != null && shape != null)
-    {
-      _theDest.setAlpha(SEMI_TRANSPARENCY_ALPHA);
-      _sg2d.fill(shape);
-      _theDest.setAlpha(255);
-      _sg2d.draw(shape);
-    }
-  }
-
-  /**
-   * set the current background colour, and trigger a screen update
-   */
-  @Override
-  public final void setBackgroundColor(final java.awt.Color theColor)
-  {
-    // remember it
-    _backgroundColor = theColor;
-
-    // convert to SWT
-    final Color swtCol = ColorHelper.getColor(theColor);
-
-    // set the colour in the parent
-    if (_theDest != null)
-      if (!_theDest.isDisposed())
-        _theDest.setBackground(swtCol);
-  }
-
-  @Override
-  public void setColor(final java.awt.Color theCol)
-  {
-    if (_theDest == null)
-      return;
-
-    if (theCol != _currentColor)
-    {
-      _currentColor = theCol;
-
-      // transfer the color
-      final Color swtCol = ColorHelper.getColor(theCol);
-
-      if (!_theDest.isDisposed())
-      {
-        _theDest.setForeground(swtCol);
-        _theDest.setBackground(swtCol);
-      }
-    }
-  }
-
-  @Override
-  public final void setFont(final java.awt.Font theFont)
-  {
-    final org.eclipse.swt.graphics.Font swtFont = FontHelper.convertFontFromAWT(
-        theFont);
-    if (!_theDest.isDisposed())
-      _theDest.setFont(swtFont);
-  }
-
-  // ////////////////////////////////////////////////
-  // methods to support anti-alias decisions
-  // ////////////////////////////////////////////////
-
-  @Override
-  public final void setLineStyle(final int style)
-  {
-    // convert the swing line-style to SWT
-    final int SWT_style = style + 1;
-
-    if (!_theDest.isDisposed())
-      if (!_theDest.isDisposed())
-        _theDest.setLineStyle(SWT_style);
-  }
-
-  public final void setLineThickness(final BoundedInteger val)
-  {
-    setLineWidth(val.getCurrent());
-  }
-
-  /**
-   * set the width of the line, in pixels
-   */
-  @Override
-  public final void setLineWidth(final float width)
-  {
-    float theWidth = width;
-    // check we've got a valid width
-    theWidth = Math.max(theWidth, 0);
-
-    _lineWidth = theWidth;
-
-    // are we currently in a plot operation?
-    if (_theDest != null)
-    {
-      // create the stroke
-      // final java.awt.BasicStroke stk = new BasicStroke(width);
-      // final java.awt.Graphics2D g2 = (java.awt.Graphics2D) _theDest;
-      // g2.setStroke(stk);
-      if (!_theDest.isDisposed())
-        _theDest.setLineWidth((int) theWidth);
-    }
-  }
-
-  // ///////////////////////////////////////////////////////////
-  // projection related
-  // //////////////////////////////////////////////////////////
-  /**
-   * update the projection.
-   */
-  @Override
-  public final void setProjection(final PlainProjection theProjection)
-  {
-    // ok - let's not use the new projection. We'll keep our own projection,
-    // but we'll copy the data viewport
-    final WorldArea dataArea = theProjection.getDataArea();
-    if (dataArea != null)
-    {
-      _theProjection.setDataArea(dataArea);
-    }
-  }
-
-  // public final void setSize(final int p1, final int p2)
-  // {
-  // // ok, store the dimension
-  // _theSize = new Dimension(p1, p2);
-  //
-  // _myCanvas.setSize(p1, p2);
-  //
-  // // reset our double buffer, since we've changed size
-  // _dblBuff = null;
-  // }
-  //
-  /**
-   * handler for a screen resize - inform our projection of the resize then inform the painters.
-   */
-  public void setScreenSize(final java.awt.Dimension p1)
-  {
-    // check if this is a real resize
-    if ((_theSize == null) || (!_theSize.equals(p1)))
-    {
-
-      final Dimension oldDim = _theSize;
-
-      // ok, now remember it
-      _theSize = p1;
-
-      // and pass it onto the projection
-      _theProjection.setScreenArea(p1);
-
-      // fire screen size updated
-      this.getInfo().fireChanged(this, DIMENSIONS, oldDim, p1);
-    }
-  }
-
-  // /////////////////////////////////////////////////////////
-  // handle tooltip stuff
-  // /////////////////////////////////////////////////////////
-  @Override
-  public final void setTooltipHandler(final CanvasType.TooltipHandler handler)
-  {
-    _tooltipHandler = handler;
-  }
-
-  @SuppressWarnings("deprecation")
-  @Override
-  public void setXORMode(final boolean mode)
-  {
-    if (_theDest != null && !_theDest.isDisposed())
-    {
-      _theDest.setXORMode(mode);
-    }
-  }
-
-  @Override
-  public final void startDraw(final Object theVal)
-  {
-    _theDest = (GC) theVal;
-
-    if (!_theDest.isDisposed())
-    {
-      _sg2d = new SWTGraphics2D(_theDest);
-      _sg2d.setFont(Defaults.getFont());
-    }
-
-    // initialise the background color
-    if (!_theDest.isDisposed())
-      _theDest.setBackground(_theDest.getBackground());
-
-    // and update the size
-    this.setScreenSize(new Dimension(_theDest.getClipping().width, _theDest
-        .getClipping().height));
-    // ._theSize = _theDest.getClipping();
-
-    // set the thickness
-    // final BasicStroke bs = new BasicStroke(_lineWidth);
-    // final Graphics2D g2 = (Graphics2D) _theDest;
-    // g2.setStroke(bs);
-
-    // set the stroke so that the pointy corner doesn't go past the symbol
-    if (!_theDest.isDisposed())
-    {
-      _theDest.setLineJoin(SWT.JOIN_BEVEL);
-    }
-
-  }
-
-  /**
-   * switch anti-aliasing on or off.
-   *
-   * @param val
-   *          yes/no
-   */
-  protected void switchAntiAliasOn(final boolean val)
-  {
-
-    // hmmm, has the GDI retrieval already failed
-    if (_gdiAvailable)
-    {
-      // well, this is either the first time, or we already know it's
-      // there for
-      // us
-      try
-      {
-        if (!_theDest.isDisposed())
-          if (!_theDest.isDisposed())
-
-          {
-
-            if (val)
-            {
-              if (_theDest.getAntialias() != SWT.ON)
-                _theDest.setAntialias(SWT.ON);
-            }
-            else
-            {
-              if (_theDest.getAntialias() != SWT.OFF)
-                _theDest.setAntialias(SWT.OFF);
-            }
-          }
-      }
-      catch (final RuntimeException e)
-      {
-        CorePlugin.logError(IStatus.INFO, "Graphics library not found", e);
-        System.err.println("GDIplus graphics library not found");
-        _gdiAvailable = false;
-      }
-    }
-  }
-
-  /**
-   * convenience function.
-   */
-  @Override
-  public final java.awt.Point toScreen(final WorldLocation val)
-  {
-    return _theProjection.toScreen(val);
-  }
-
-  /**
-   * return our name (used in editing)
-   */
-  @Override
-  public final String toString()
-  {
-    return EDITOR_LABEL;
-  }
-
-  /**
-   * convenience function.
-   */
-  @Override
-  public final WorldLocation toWorld(final java.awt.Point val)
-  {
-    return _theProjection.toWorld(val);
-  }
-
-  /**
-   * first repaint the plot, then trigger a screen update
-   */
-  @Override
-  public void updateMe()
-  {
-  }
+public class SWTCanvasAdapter implements CanvasType, Serializable, Editable, ExtendedCanvasType {
+
+	// ////////////////////////////////////////////////////
+	// bean info for this class
+	// ///////////////////////////////////////////////////
+	public final class CanvasInfo extends Editable.EditorType {
+
+		public CanvasInfo(final Object data) {
+			super(data, data.toString(), "");
+		}
+
+		@Override
+		public final PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final PropertyDescriptor[] res = {
+						displayProp("BackgroundColor", "Background color", "the background color"),
+						displayProp("LineThickness", "Line thickness", "the line thickness"), displayReadOnlyProp(
+								DIMENSIONS, "Current plot size", "the editor control dimensions (read-only)") };
+
+				return res;
+
+			} catch (final IntrospectionException e) {
+				e.printStackTrace();
+				return super.getPropertyDescriptors();
+			}
+		}
+	}
+
+	protected static final String EDITOR_LABEL = "Appearance";
+
+	/**
+	 * the alpha depth of semi-transparent objects
+	 *
+	 */
+	private static final int SEMI_TRANSPARENCY_ALPHA = 125;
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	// ///////////////////////////////////////////////////////////
+	// member variables
+	// //////////////////////////////////////////////////////////
+
+	private static final float UNSET_LINE_WIDTH = -1;
+
+	/**
+	 * a list of the line-styles we know about.
+	 */
+	static private java.util.HashMap<Integer, BasicStroke> _myLineStyles = null;
+
+	public final static String BACKGROUND_COLOR_PROPERTY = "DefaultBackgroundColor";
+
+	private static final String DIMENSIONS = "Dimensions";
+
+	/**
+	 * do we anti-alias this font.
+	 *
+	 * @param theFont the font we are looking at
+	 * @return yes/no decision
+	 */
+	public static boolean antiAliasThis(final Font theFont) {
+		boolean res = false;
+
+		final int size = theFont.getSize();
+		final boolean isBold = theFont.isBold();
+
+		if (size >= 14) {
+			res = true;
+		} else {
+			if (isBold && (size >= 12)) {
+				res = true;
+			}
+		}
+
+		return res;
+	}
+
+	/**
+	 * doDecide whether this line thickness could be anti-aliased.
+	 *
+	 * @param width the line width setting
+	 * @return yes/no
+	 */
+	public static boolean antiAliasThisLine(final float width) {
+		boolean res = false;
+
+		if (width > 1)
+			res = true;
+
+		return res;
+	}
+
+	private static int[] getPolygonArray(final int[] xPoints, final int[] yPoints, final int nPoints) {
+		final int[] poly = new int[nPoints * 2];
+
+		for (int i = 0; i < nPoints; i++) {
+			poly[2 * i] = xPoints[i];
+			poly[2 * i + 1] = yPoints[i];
+		}
+
+		return poly;
+	}
+
+	static synchronized public java.awt.BasicStroke getStrokeFor(final int style) {
+		if (_myLineStyles == null) {
+			_myLineStyles = new java.util.HashMap<Integer, BasicStroke>(5);
+			_myLineStyles.put(new Integer(MWC.GUI.CanvasType.SOLID), new java.awt.BasicStroke(1,
+					java.awt.BasicStroke.CAP_BUTT, java.awt.BasicStroke.JOIN_MITER, 1, new float[] { 5, 0 }, 0));
+			_myLineStyles.put(new Integer(MWC.GUI.CanvasType.DOTTED), new java.awt.BasicStroke(1,
+					java.awt.BasicStroke.CAP_BUTT, java.awt.BasicStroke.JOIN_MITER, 1, new float[] { 2, 6 }, 0));
+			_myLineStyles.put(new Integer(MWC.GUI.CanvasType.DOT_DASH), new java.awt.BasicStroke(1,
+					java.awt.BasicStroke.CAP_BUTT, java.awt.BasicStroke.JOIN_MITER, 1, new float[] { 4, 4, 12, 4 }, 0));
+			_myLineStyles.put(new Integer(MWC.GUI.CanvasType.SHORT_DASHES), new java.awt.BasicStroke(1,
+					java.awt.BasicStroke.CAP_BUTT, java.awt.BasicStroke.JOIN_MITER, 1, new float[] { 6, 6 }, 0));
+			_myLineStyles.put(new Integer(MWC.GUI.CanvasType.LONG_DASHES), new java.awt.BasicStroke(1,
+					java.awt.BasicStroke.CAP_BUTT, java.awt.BasicStroke.JOIN_MITER, 1, new float[] { 12, 6 }, 0));
+			_myLineStyles.put(new Integer(MWC.GUI.CanvasType.UNCONNECTED), new java.awt.BasicStroke(1));
+		}
+
+		return _myLineStyles.get(new Integer(style));
+	}
+
+	/**
+	 * remember the background color - SWT has trouble remembering it
+	 */
+	java.awt.Color _backgroundColor;
+
+	/**
+	 * the projection in use
+	 */
+	protected PlainProjection _theProjection;
+
+	/**
+	 * our graphics object - only valid between 'start' and 'stop' paint events.
+	 */
+	private GC _theDest = null;
+
+	/**
+	 * the list of registered painters for this canvas.
+	 */
+	protected Vector<PaintListener> _thePainters;
+
+	/**
+	 * the dimensions of the canvas - we keep our own track of this in order to
+	 * handle the number of resize messages we get.
+	 */
+	protected java.awt.Dimension _theSize;
+
+	/**
+	 * our tool tip handler.
+	 */
+	protected CanvasType.TooltipHandler _tooltipHandler;
+
+	// ///////////////////////////////////////////////////////////
+	// constructor
+	// //////////////////////////////////////////////////////////
+
+	/**
+	 * our editor.
+	 */
+	transient private Editable.EditorType _myEditor;
+
+	// ////////////////////////////////////////////////////
+	// screen redraw related
+	// ////////////////////////////////////////////////////
+
+	// ///////////////////////////////////////////////////////////
+	// member functions
+	// //////////////////////////////////////////////////////////
+
+	/**
+	 * the current color
+	 */
+	private java.awt.Color _currentColor;
+
+	/**
+	 * the current line width.
+	 */
+	private float _lineWidth = UNSET_LINE_WIDTH;
+
+	/**
+	 * flag for whether we have the GDI library availble. The plotting algs will
+	 * keep on failing if it's not. We should remember when its not avaialble, and
+	 * not bother calling from there on.
+	 */
+	private boolean _gdiAvailable = true;
+
+	/**
+	 * and our default background color
+	 *
+	 */
+	@SuppressWarnings("unused")
+	private final java.awt.Color DEFAULT_BACKGROUND_COLOR = DebriefColors.LIGHT_GRAY;
+
+	private SWTGraphics2D _sg2d;
+
+	/**
+	 * default constructor.
+	 */
+	public SWTCanvasAdapter(final PlainProjection proj) {
+		// get the background color
+		final String backGroundColor = CorePlugin.getDefault().getPreferenceStore()
+				.getString(BACKGROUND_COLOR_PROPERTY);
+		final String[] items = backGroundColor.split(",");
+		final java.awt.Color defaultColor;
+		if (items.length == 3) {
+			final int red = Integer.valueOf(items[0]);
+			final int green = Integer.valueOf(items[1]);
+			final int blue = Integer.valueOf(items[2]);
+			defaultColor = new java.awt.Color(red, green, blue);
+		} else {
+			defaultColor = new java.awt.Color(255, 255, 255);
+		}
+
+		// start with our background colour
+		setBackgroundColor(defaultColor);
+
+		// initialisation
+		_thePainters = new Vector<PaintListener>(0, 1);
+
+		// create our projection
+		if (proj != null)
+			_theProjection = proj;
+		else
+			_theProjection = new FlatProjection();
+	}
+
+	// //////////////////////////////////////////////////////////
+	// painter handling
+	// //////////////////////////////////////////////////////////
+	@Override
+	public final void addPainter(final CanvasType.PaintListener listener) {
+		_thePainters.addElement(listener);
+	}
+
+	/**
+	 * provide close method, clear elements.
+	 */
+	public void close() {
+		_thePainters.removeAllElements();
+		_thePainters = null;
+		_theProjection = null;
+		_theDest = null;
+		_theSize = null;
+		_tooltipHandler = null;
+	}
+
+	@Override
+	public final void drawArc(final int x, final int y, final int width, final int height, final int startAngle,
+			final int arcAngle) {
+		if (_theDest != null) {
+			// doDecide whether to anti-alias this line
+			this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this.getLineWidth()));
+		}
+
+		if (_theDest != null) {
+			if (!_theDest.isDisposed())
+				_theDest.drawArc(x, y, width, height, startAngle, arcAngle);
+		}
+	}
+
+	public void drawImage(final Image image, final int x, final int y, final int width, final int height) {
+		drawImage(image, x, y, width, height, 255);
+	}
+
+	public void drawImage(final Image image, final int x, final int y, final int width, final int height,
+			final int alpha) {
+		if (_theDest != null)
+			if (!_theDest.isDisposed()) {
+				final int oldAlpha = _theDest.getAlpha();
+				_theDest.setAlpha(alpha);
+				_theDest.drawImage(image, x, y);
+				_theDest.setAlpha(oldAlpha);
+			}
+	}
+
+	@Override
+	public final boolean drawImage(final java.awt.Image img, final int x0, final int y0, final int width,
+			final int height, final ImageObserver observer) {
+		if (_theDest == null)
+			return true;
+
+		final PaletteData palette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
+		// PaletteData palette = new PaletteData(new RGB[]{new RGB(255,0,0), new
+		// RGB(0,255,0)});
+		final ImageData imageData = new ImageData(48, 48, 24, palette);
+
+		for (int x = 0; x < 48; x++) {
+			for (int y = 0; y < 48; y++) {
+				if (y > 11 && y < 35 && x > 11 && x < 35) {
+					imageData.setPixel(x, y, SWTRasterPainter.toSWTColor(255, 0, 0)); // Set
+					// the
+					// center
+					// to
+					// red
+				} else {
+					imageData.setPixel(x, y, SWTRasterPainter.toSWTColor(0, 255, 0)); // Set
+					// the
+					// outside
+					// to
+					// green
+				}
+			}
+		}
+
+		final Image image = new Image(Display.getCurrent(), imageData);
+
+		if (!_theDest.isDisposed())
+			_theDest.drawImage(image, 0, 0);
+
+		// return _theDest.drawImage(img, x, y, width, height, observer);
+
+		image.dispose();
+
+		return false;
+
+	}
+
+	@Override
+	public final void drawLine(final int x1, final int y1, final int x2, final int y2) {
+		if (_theDest == null)
+			return;
+
+		// Decide whether to anti-alias this line
+		final float thisWid = this.getLineWidth();
+		final boolean doAntiAlias = SWTCanvasAdapter.antiAliasThisLine(thisWid);
+
+		// BUG: when we adjust the anti-alaising, the colours in the ETOPO key
+		// were
+		// getting messed up. bugger.
+		// The bug was fixed on 31st May 2005. Builds after this date should be
+		// ok.
+		this.switchAntiAliasOn(doAntiAlias);
+
+		// ok, may as well go for it now..
+		if (!_theDest.isDisposed()) {
+			int xmin, ymin, xmax, ymax;
+			xmin = ymin = 0;
+			xmax = this.getSize().width;
+			ymax = this.getSize().height;
+			// workaround for issue_1906 to avoid GC ignore line styles
+			_theDest.setLineAttributes(new LineAttributes(_theDest.getLineWidth(), SWT.CAP_FLAT, SWT.JOIN_MITER,
+					_theDest.getLineStyle(), null, 0, 10));
+
+			SWTClipper.drawLine(_theDest, x1, y1, x2, y2, xmin, xmax, ymin, ymax);
+		}
+	}
+
+	@Override
+	public void drawLine(final int x1, final int y1, final int x2, final int y2, final int transparency) {
+		if (_theDest != null && !_theDest.isDisposed()) {
+			// get current transparency
+			final int curT = _theDest.getAlpha();
+
+			_theDest.setAlpha(transparency);
+
+			// do paint
+			this.drawLine(x1, y1, x2, y2);
+
+			// restore transparency
+			_theDest.setAlpha(curT);
+		}
+	}
+
+	@Override
+	public final void drawOval(final int x, final int y, final int width, final int height) {
+		if (_theDest != null)
+			if (!_theDest.isDisposed())
+				this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this.getLineWidth()));
+
+		if (_theDest != null)
+			if (!_theDest.isDisposed()) {
+				_theDest.drawOval(x, y, width, height);
+			}
+	}
+
+	/**
+	 * drawPolygon.
+	 *
+	 * @param xPoints list of x coordinates
+	 * @param yPoints list of y coordinates
+	 * @param nPoints length of list
+	 */
+	@Override
+	public final void drawPolygon(final int[] xPoints, final int[] yPoints, final int nPoints) {
+		if (_theDest == null)
+			return;
+
+		if (!_theDest.isDisposed()) {
+
+			// doDecide whether to anti-alias this line
+			this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this.getLineWidth()));
+
+			// translate the polygon to SWT format
+			final int[] poly = getPolygonArray(xPoints, yPoints, nPoints);
+
+			if (poly != null)
+				if (poly.length > 0)
+					_theDest.drawPolygon(poly);
+		}
+	}
+
+	/**
+	 * drawPolyline
+	 *
+	 * @param points list of x,y coordinates pairs
+	 */
+	@Override
+	public final void drawPolyline(final int[] points) {
+		if (_theDest == null)
+			return;
+
+		if (!_theDest.isDisposed()) {
+			// doDecide whether to anti-alias this line
+			this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this.getLineWidth()));
+
+			_theDest.drawPolyline(points);
+		}
+	}
+
+	/**
+	 * drawPolyline
+	 *
+	 * @param xPoints list of x coordinates
+	 * @param yPoints list of y coordinates (or null if xPoints contains both lists
+	 *                - in SWT PolyLine format)
+	 * @param nPoints length of list (ignored if yPoints is null)
+	 */
+	@Override
+	public final void drawPolyline(final int[] xPoints, final int[] yPoints, final int nPoints) {
+		if (_theDest == null)
+			return;
+
+		if (!_theDest.isDisposed()) {
+			// translate the polygon to SWT format
+			final int[] poly = getPolygonArray(xPoints, yPoints, nPoints);
+
+			drawPolyline(poly);
+		}
+	}
+
+	@Override
+	public final void drawRect(final int x1, final int y1, final int wid, final int height) {
+		if (_theDest == null)
+			return;
+
+		// doDecide whether to anti-alias this line
+		this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this.getLineWidth()));
+
+		if (_theDest == null)
+			return;
+
+		if (!_theDest.isDisposed())
+			_theDest.drawRectangle(x1, y1, wid, height);
+	}
+
+	public final boolean drawSWTImage(final Image img, final int x, final int y, final int width, final int height,
+			final int alphaTransparency) {
+		if (_theDest == null)
+			return true;
+
+		if (!_theDest.isDisposed()) {
+			_theDest.setAlpha(alphaTransparency);
+			if (Platform.OS_LINUX.equals(Platform.getOS())) {
+				// SPECIAL CASE: It should fix background issue on Linux (it is constrained
+				// on Linux; maybe it should be the same on Mac). The issue happen
+				// because "new GC(image)" ignores transparency on Linux.
+				// It is probably a bug in SWT.
+				final ImageData data = img.getImageData();
+				final java.awt.Color trColor = DebriefColors.BLACK;
+				final int transPx = data.palette
+						.getPixel(new RGB(trColor.getRed(), trColor.getGreen(), trColor.getBlue()));
+				data.transparentPixel = transPx;
+				final Image image = new Image(Display.getCurrent(), data);
+				_theDest.drawImage(image, x, y, width, height, x, y, width, height);
+				image.dispose();
+			} else {
+				_theDest.drawImage(img, x, y, width, height, x, y, width, height);
+			}
+			_theDest.setAlpha(255);
+		}
+
+		// return _theDest.drawImage(img, x, y, width, height, observer);
+
+		return false;
+
+	}
+
+	@Override
+	public void drawText(final java.awt.Font theFont, final String theStr, final int x, final int y) {
+		if (_theDest == null)
+			return;
+
+		if (!_theDest.isDisposed()) {
+			// get/set the font
+			setFont(theFont);
+
+			// and plot the text
+			drawText(theStr, x, y);
+		}
+	}
+
+	@Override
+	public void drawText(final String theStr, final int x, final int y) {
+
+		// don't use the rotate-able command, it mangles the fine positioning for
+		// existing elements
+		// drawText(theStr, x, y, 0);
+
+		if (_theDest == null)
+			return;
+
+		if (!_theDest.isDisposed())
+
+		{
+			final FontData[] fd = _theDest.getFont().getFontData();
+
+			final FontData font = fd[0];
+			final int fontHt = font.getHeight();
+
+			// shift the y. JDK uses bottom left coordinate, SWT uses top-left
+			final int y2 = y - fontHt;
+
+			// and draw it
+			_theDest.drawText(theStr, x, y2, true);
+		}
+	}
+
+	@Override
+	public void drawText(final String theStr, final int x, final int y, final float rotate) {
+		if (_theDest == null)
+			return;
+
+		if (!_theDest.isDisposed()) {
+
+			final FontData[] fd = _theDest.getFont().getFontData();
+			final FontData fontData = fd[0];
+			// shift the y. JDK uses bottom left coordinate, SWT uses top-left
+			int y2 = y;
+			if (rotate == 0)
+				y2 -= fontData.getHeight();
+
+			final Transform oldTransform = new Transform(_theDest.getDevice());
+			_theDest.getTransform(oldTransform);
+
+			final Transform tr = new Transform(_theDest.getDevice());
+			tr.translate(x, y2);
+			tr.rotate(rotate);
+			final Font awFont = new Font(fontData.getName(), fontData.getStyle(), fontData.getHeight());
+			final int strWidth = getStringWidth(awFont, theStr);
+			tr.translate(-x - strWidth / 2, -y2);
+
+			_theDest.setTransform(tr);
+			_theDest.drawText(theStr, x, y, true);
+
+			_theDest.setTransform(oldTransform);
+			tr.dispose();
+		}
+	}
+
+	@Override
+	public void drawText(final String theStr, final int x, final int y, float rotate, final boolean above) {
+		if (_theDest == null)
+			return;
+
+		if (!_theDest.isDisposed()) {
+
+			final FontData[] fd = _theDest.getFont().getFontData();
+			final FontData fontData = fd[0];
+
+			int deltaX = 0, deltaY = 0;
+
+			int height = _theDest.getFontMetrics().getDescent() + _theDest.getFontMetrics().getAscent()
+					+ _theDest.getFontMetrics().getLeading();
+
+			if (!above) {
+				final double direction = Math.toRadians(rotate);
+				deltaX = -(int) (height * Math.cos(direction));
+				deltaY = -(int) (height * Math.sin(direction));
+			} else {
+
+				height = _theDest.getFontMetrics().getLeading();
+				final double direction = Math.toRadians(rotate);
+				deltaX = (int) (height * Math.cos(direction));
+				deltaY = (int) (height * Math.sin(direction));
+			}
+
+			if (rotate > 180) {
+				rotate -= 180;
+				final Font awFont = new Font(fontData.getName(), fontData.getStyle(), fontData.getHeight());
+				final int distance = getStringWidth(awFont, theStr);
+
+				final double direction = Math.toRadians(rotate - 90);
+				if (above) {
+					deltaX -= (int) (distance * Math.cos(direction));
+					deltaY -= (int) (distance * Math.sin(direction)) - 5;
+				} else {
+					deltaX = -(int) 1.5 * deltaX - (int) (distance * Math.cos(direction));
+					deltaY = -(int) 1.5 * deltaY - (int) (distance * Math.sin(direction)) - 5;
+				}
+			}
+			rotate -= 90;
+
+			final Transform oldTransform = new Transform(_theDest.getDevice());
+			_theDest.getTransform(oldTransform);
+
+			final Transform tr = new Transform(_theDest.getDevice());
+
+			tr.translate(x + deltaX, y + deltaY);
+
+			tr.rotate(rotate);
+
+			tr.translate(-x - deltaX, -y - deltaY);
+
+			_theDest.setTransform(tr);
+			_theDest.drawText(theStr, x + deltaX, y + deltaY, true);
+
+			// final Font awFont = new Font(fontData.getName(), fontData.getStyle(),
+			// fontData.getHeight());
+			// _theDest.drawRectangle(x, y, getStringWidth(awFont, theStr), height);
+
+			_theDest.setTransform(oldTransform);
+
+			tr.dispose();
+		}
+	}
+
+	@Override
+	public void emptyShape(final Shape shape) {
+		if (_sg2d != null && shape != null) {
+			_theDest.setAlpha(255);
+			_sg2d.draw(shape);
+		}
+	}
+
+	@Override
+	public final void endDraw(final Object theVal) {
+		// _theDest = null;
+
+		// and forget the line width
+		_lineWidth = UNSET_LINE_WIDTH;
+
+		// and the color
+		_currentColor = null;
+	}
+
+	@Override
+	public final void fillArc(final int x, final int y, final int width, final int height, final int startAngle,
+			final int arcAngle) {
+		if (_theDest != null)
+			if (!_theDest.isDisposed())
+				_theDest.fillArc(x, y, width, height, startAngle, arcAngle);
+		// else
+		// MWC.Utilities.Errors.Trace.trace("Graphics object not available when
+		// painting oval - occasionally happens in first pass", false);
+
+	}
+
+	public final void fillArc(final int x, final int y, final int width, final int height, final int startAngle,
+			final int arcAngle, final int alpha) {
+		if (_theDest != null)
+			if (!_theDest.isDisposed()) {
+				_theDest.setAlpha(alpha);
+				_theDest.fillArc(x, y, width, height, startAngle, arcAngle);
+			}
+		// else
+		// MWC.Utilities.Errors.Trace.trace("Graphics object not available when
+		// painting oval - occasionally happens in first pass", false);
+
+	}
+
+	@Override
+	public final void fillOval(final int x, final int y, final int width, final int height) {
+		if (_theDest != null)
+			if (!_theDest.isDisposed()) {
+				_theDest.fillOval(x, y, width, height);
+			}
+		// else
+		// MWC.Utilities.Errors.Trace.trace("Graphics object not available when
+		// painting oval - occasionally happens in first pass", false);
+	}
+
+	/**
+	 * draw a filled polygon
+	 *
+	 * @param xPoints list of x coordinates
+	 * @param yPoints list of y coordinates
+	 * @param nPoints length of list
+	 */
+	@Override
+	public final void fillPolygon(final int[] xPoints, final int[] yPoints, final int nPoints) {
+		if (_theDest == null)
+			return;
+
+		if (!_theDest.isDisposed()) {
+
+			// translate the polygon to SWT format
+			final int[] poly = getPolygonArray(xPoints, yPoints, nPoints);
+
+			_theDest.fillPolygon(poly);
+		}
+	}
+
+	@Override
+	public final void fillRect(final int x, final int y, final int wid, final int height) {
+		if (_theDest == null)
+			return;
+
+		// fillOn();
+
+		if (!_theDest.isDisposed()) {
+			// _theDest.setBackground(ColorHelper.getColor(
+			// MWC.GUI.Properties.DebriefColors.green));
+			_theDest.fillRectangle(x, y, wid, height);
+
+			// now, the fill only fills in the provided rectangle. we also have
+			// to
+			// paint
+			// in it's border
+			_theDest.drawRectangle(x, y, wid, height);
+		}
+
+		// fillOff();
+	}
+
+	@Override
+	public void fillShape(final Shape shape) {
+		if (_sg2d != null && shape != null) {
+			_sg2d.fill(shape);
+			_sg2d.draw(shape);
+		}
+	}
+
+	/**
+	 * get the current background colour
+	 */
+	@Override
+	public final java.awt.Color getBackgroundColor() {
+		// don't worry - we've remembered it.
+		return _backgroundColor;
+	}
+
+	public String getDimensions() {
+		final Dimension dims = this.getSize();
+		return (int) dims.getWidth() + "px * " + (int) dims.getHeight() + "px";
+	}
+
+	/**
+	 * ONLY USE THIS FOR NON-PERSISTENT PLOTTING
+	 */
+	@Override
+	public final java.awt.Graphics getGraphicsTemp() {
+		System.err.println("graphics temp not implemented...");
+		final java.awt.Graphics res = null;
+		// /** if we are in a paint operation already,
+		// * return the graphics object, since it may
+		// * be a double-buffering image
+		// */
+		// if (_theDest != null)
+		// {
+		// res = _theDest.create(); // return a copy, so the user can dispose it
+		// }
+		// else
+		// {
+		// if (_dblBuff != null)
+		// {
+		// res = _dblBuff.getGraphics();
+		// }
+		// else
+		// {
+		// }
+		// }
+		//
+		return res;
+	}
+
+	// ////////////////////////////////////////////////////
+	// bean/editable methods
+	// ///////////////////////////////////////////////////
+	@Override
+	public final Editable.EditorType getInfo() {
+		if (_myEditor == null)
+			_myEditor = new CanvasInfo(this);
+
+		return _myEditor;
+	}
+
+	public final BoundedInteger getLineThickness() {
+		return new BoundedInteger((int) this.getLineWidth(), 0, 4);
+	}
+
+	/**
+	 * get the width of the line, in pixels
+	 */
+	@Override
+	public final float getLineWidth() {
+		float res = 0;
+
+		// try to use our cached line-width, to save fetching system pens &
+		// things
+		if (_lineWidth != UNSET_LINE_WIDTH)
+			res = _lineWidth;
+		else {
+			// are we currently in a plot operation?
+			if (_theDest != null) {
+
+				// create the stroke
+				if (!_theDest.isDisposed())
+					res = _theDest.getLineWidth();
+				// final java.awt.Graphics2D g2 = (java.awt.Graphics2D)
+				// _theDest;
+				// final BasicStroke bs = (BasicStroke) g2.getStroke();
+				// res = bs.getLineWidth();
+			} else {
+				res = _lineWidth;
+			}
+		}
+
+		return res;
+	}
+
+	@Override
+	public String getName() {
+		return "SWT Canvas";
+	}
+
+	@Override
+	public final Enumeration<PaintListener> getPainters() {
+		return _thePainters.elements();
+	}
+
+	/**
+	 * get the current projection.
+	 */
+	@Override
+	public final PlainProjection getProjection() {
+		return _theProjection;
+	}
+
+	@Override
+	public Dimension getSize() {
+		return _theSize;
+	}
+
+	@Override
+	public final int getStringHeight(final java.awt.Font theFont) {
+		int res = 0;
+
+		if (theFont != null)
+			res = theFont.getSize();
+		else
+			res = _theDest.getFontMetrics().getHeight();
+
+		// if (!_theDest.isDisposed())
+		// res = _theDest.getFontMetrics().getHeight();
+		return res;
+	}
+
+	@Override
+	public final int getStringWidth(final java.awt.Font theFont, final String theString) {
+		int res = 0;
+
+		// set the font to start with,
+		if (!_theDest.isDisposed()) {
+			if (theFont != null) {
+				final org.eclipse.swt.graphics.Font myFont = FontHelper.convertFontFromAWT(theFont);
+				if (!_theDest.isDisposed())
+					_theDest.setFont(myFont);
+			}
+
+			for (int thisC = 0; thisC < theString.length(); thisC++) {
+				final char thisChar = theString.charAt(thisC);
+				int thisWid;
+				// just check if it's a space - we're not getting the right
+				// width back
+				if (thisChar == ' ') {
+					thisWid = (int) _theDest.getFontMetrics().getAverageCharacterWidth();
+				} else {
+					// thisWid = _theDest.getCharWidth(thisChar);
+					thisWid = _theDest.getAdvanceWidth(thisChar);
+				}
+				res += thisWid;
+			}
+		}
+		return res;
+	}
+
+	/**
+	 * get a string describing the current screen & world location
+	 */
+	public final String getTheToolTipText(final java.awt.Point pt) {
+		String res = null;
+		if (_tooltipHandler != null) {
+			// check we have a valid projection
+			final java.awt.Dimension dim = getProjection().getScreenArea();
+			if (dim != null) {
+				if (dim.width > 0) {
+					final WorldLocation loc = toWorld(pt);
+					if (loc != null)
+						res = _tooltipHandler.getString(loc, pt);
+				}
+			}
+		}
+
+		return res;
+	}
+
+	@Override
+	public boolean getXORMode() {
+		if (_theDest != null && !_theDest.isDisposed()) {
+			return _theDest.getXORMode();
+		}
+		return false;
+	}
+
+	@Override
+	public final boolean hasEditor() {
+		return true;
+	}
+
+	@Override
+	public final void removePainter(final CanvasType.PaintListener listener) {
+		_thePainters.removeElement(listener);
+	}
+
+	/**
+	 * re-determine the area of data we cover. then resize to cover it
+	 */
+	@Override
+	public final void rescale() {
+
+		// get the data area for the current painters
+		WorldArea theArea = null;
+		final Enumeration<PaintListener> enumer = _thePainters.elements();
+		while (enumer.hasMoreElements()) {
+			final CanvasType.PaintListener thisP = enumer.nextElement();
+			theArea = WorldArea.extend(theArea, thisP.getDataArea());
+		}
+
+		// check we have found a valid area
+		if (theArea != null) {
+			// what's the width in degs?
+			final double wid = theArea.getWidth();
+
+			// get the border for this projection
+			double border = _theProjection.getDataBorder();
+			if (border >= 1) {
+				border = border - 1d;
+			}
+
+			// add a border
+			theArea.grow(wid * border, 0);
+
+			// so, we now have the data area for everything which
+			// wants to plot to it, give it to the projection
+			_theProjection.setDataArea(theArea);
+		}
+
+	}
+
+	@Override
+	public final void semiFillArc(final int x, final int y, final int width, final int height, final int startAngle,
+			final int arcAngle) {
+		if (_theDest != null)
+			if (!_theDest.isDisposed()) {
+				_theDest.setAlpha(SEMI_TRANSPARENCY_ALPHA);
+				_theDest.fillArc(x, y, width, height, startAngle, arcAngle);
+				_theDest.setAlpha(255);
+				_theDest.drawArc(x, y, width, height, startAngle, arcAngle);
+			}
+		// else
+		// MWC.Utilities.Errors.Trace.trace("Graphics object not available when
+		// painting oval - occasionally happens in first pass", false);
+
+	}
+
+	@Override
+	public final void semiFillOval(final int x, final int y, final int width, final int height) {
+		if (_theDest != null)
+			if (!_theDest.isDisposed()) {
+				_theDest.setAlpha(SEMI_TRANSPARENCY_ALPHA);
+				_theDest.fillOval(x, y, width, height);
+				_theDest.setAlpha(255);
+			}
+		// else
+		// MWC.Utilities.Errors.Trace.trace("Graphics object not available when
+		// painting oval - occasionally happens in first pass", false);
+	}
+
+	@Override
+	public final void semiFillPolygon(final int[] xPoints, final int[] yPoints, final int nPoints) {
+		if (_theDest == null)
+			return;
+
+		if (!_theDest.isDisposed()) {
+
+			// translate the polygon to SWT format
+			final int[] poly = getPolygonArray(xPoints, yPoints, nPoints);
+
+			_theDest.setAlpha(SEMI_TRANSPARENCY_ALPHA);
+			_theDest.fillPolygon(poly);
+			_theDest.setAlpha(255);
+			_theDest.drawPolygon(poly);
+		}
+	}
+
+	@Override
+	public final void semiFillRect(final int x, final int y, final int wid, final int height) {
+		if (_theDest == null)
+			return;
+
+		// fillOn();
+
+		if (!_theDest.isDisposed()) {
+			_theDest.setAlpha(SEMI_TRANSPARENCY_ALPHA);
+			_theDest.fillRectangle(x, y, wid, height);
+			_theDest.setAlpha(255);
+
+			// now, the fill only fills in the provided rectangle. we also have
+			// to
+			// paint
+			// in it's border
+			_theDest.drawRectangle(x, y, wid, height);
+		}
+
+		// fillOff();
+	}
+
+	@Override
+	public void semiFillShape(final Shape shape) {
+		if (_sg2d != null && shape != null) {
+			_theDest.setAlpha(SEMI_TRANSPARENCY_ALPHA);
+			_sg2d.fill(shape);
+			_theDest.setAlpha(255);
+			_sg2d.draw(shape);
+		}
+	}
+
+	/**
+	 * set the current background colour, and trigger a screen update
+	 */
+	@Override
+	public final void setBackgroundColor(final java.awt.Color theColor) {
+		// remember it
+		_backgroundColor = theColor;
+
+		// convert to SWT
+		final Color swtCol = ColorHelper.getColor(theColor);
+
+		// set the colour in the parent
+		if (_theDest != null)
+			if (!_theDest.isDisposed())
+				_theDest.setBackground(swtCol);
+	}
+
+	@Override
+	public void setColor(final java.awt.Color theCol) {
+		if (_theDest == null)
+			return;
+
+		if (theCol != _currentColor) {
+			_currentColor = theCol;
+
+			// transfer the color
+			final Color swtCol = ColorHelper.getColor(theCol);
+
+			if (!_theDest.isDisposed()) {
+				_theDest.setForeground(swtCol);
+				_theDest.setBackground(swtCol);
+			}
+		}
+	}
+
+	@Override
+	public final void setFont(final java.awt.Font theFont) {
+		final org.eclipse.swt.graphics.Font swtFont = FontHelper.convertFontFromAWT(theFont);
+		if (!_theDest.isDisposed())
+			_theDest.setFont(swtFont);
+	}
+
+	// ////////////////////////////////////////////////
+	// methods to support anti-alias decisions
+	// ////////////////////////////////////////////////
+
+	@Override
+	public final void setLineStyle(final int style) {
+		// convert the swing line-style to SWT
+		final int SWT_style = style + 1;
+
+		if (!_theDest.isDisposed())
+			if (!_theDest.isDisposed())
+				_theDest.setLineStyle(SWT_style);
+	}
+
+	public final void setLineThickness(final BoundedInteger val) {
+		setLineWidth(val.getCurrent());
+	}
+
+	/**
+	 * set the width of the line, in pixels
+	 */
+	@Override
+	public final void setLineWidth(final float width) {
+		float theWidth = width;
+		// check we've got a valid width
+		theWidth = Math.max(theWidth, 0);
+
+		_lineWidth = theWidth;
+
+		// are we currently in a plot operation?
+		if (_theDest != null) {
+			// create the stroke
+			// final java.awt.BasicStroke stk = new BasicStroke(width);
+			// final java.awt.Graphics2D g2 = (java.awt.Graphics2D) _theDest;
+			// g2.setStroke(stk);
+			if (!_theDest.isDisposed())
+				_theDest.setLineWidth((int) theWidth);
+		}
+	}
+
+	// ///////////////////////////////////////////////////////////
+	// projection related
+	// //////////////////////////////////////////////////////////
+	/**
+	 * update the projection.
+	 */
+	@Override
+	public final void setProjection(final PlainProjection theProjection) {
+		// ok - let's not use the new projection. We'll keep our own projection,
+		// but we'll copy the data viewport
+		final WorldArea dataArea = theProjection.getDataArea();
+		if (dataArea != null) {
+			_theProjection.setDataArea(dataArea);
+		}
+	}
+
+	// public final void setSize(final int p1, final int p2)
+	// {
+	// // ok, store the dimension
+	// _theSize = new Dimension(p1, p2);
+	//
+	// _myCanvas.setSize(p1, p2);
+	//
+	// // reset our double buffer, since we've changed size
+	// _dblBuff = null;
+	// }
+	//
+	/**
+	 * handler for a screen resize - inform our projection of the resize then inform
+	 * the painters.
+	 */
+	public void setScreenSize(final java.awt.Dimension p1) {
+		// check if this is a real resize
+		if ((_theSize == null) || (!_theSize.equals(p1))) {
+
+			final Dimension oldDim = _theSize;
+
+			// ok, now remember it
+			_theSize = p1;
+
+			// and pass it onto the projection
+			_theProjection.setScreenArea(p1);
+
+			// fire screen size updated
+			this.getInfo().fireChanged(this, DIMENSIONS, oldDim, p1);
+		}
+	}
+
+	// /////////////////////////////////////////////////////////
+	// handle tooltip stuff
+	// /////////////////////////////////////////////////////////
+	@Override
+	public final void setTooltipHandler(final CanvasType.TooltipHandler handler) {
+		_tooltipHandler = handler;
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public void setXORMode(final boolean mode) {
+		if (_theDest != null && !_theDest.isDisposed()) {
+			_theDest.setXORMode(mode);
+		}
+	}
+
+	@Override
+	public final void startDraw(final Object theVal) {
+		_theDest = (GC) theVal;
+
+		if (!_theDest.isDisposed()) {
+			_sg2d = new SWTGraphics2D(_theDest);
+			_sg2d.setFont(Defaults.getFont());
+		}
+
+		// initialise the background color
+		if (!_theDest.isDisposed())
+			_theDest.setBackground(_theDest.getBackground());
+
+		// and update the size
+		this.setScreenSize(new Dimension(_theDest.getClipping().width, _theDest.getClipping().height));
+		// ._theSize = _theDest.getClipping();
+
+		// set the thickness
+		// final BasicStroke bs = new BasicStroke(_lineWidth);
+		// final Graphics2D g2 = (Graphics2D) _theDest;
+		// g2.setStroke(bs);
+
+		// set the stroke so that the pointy corner doesn't go past the symbol
+		if (!_theDest.isDisposed()) {
+			_theDest.setLineJoin(SWT.JOIN_BEVEL);
+		}
+
+	}
+
+	/**
+	 * switch anti-aliasing on or off.
+	 *
+	 * @param val yes/no
+	 */
+	protected void switchAntiAliasOn(final boolean val) {
+
+		// hmmm, has the GDI retrieval already failed
+		if (_gdiAvailable) {
+			// well, this is either the first time, or we already know it's
+			// there for
+			// us
+			try {
+				if (!_theDest.isDisposed())
+					if (!_theDest.isDisposed())
+
+					{
+
+						if (val) {
+							if (_theDest.getAntialias() != SWT.ON)
+								_theDest.setAntialias(SWT.ON);
+						} else {
+							if (_theDest.getAntialias() != SWT.OFF)
+								_theDest.setAntialias(SWT.OFF);
+						}
+					}
+			} catch (final RuntimeException e) {
+				CorePlugin.logError(IStatus.INFO, "Graphics library not found", e);
+				System.err.println("GDIplus graphics library not found");
+				_gdiAvailable = false;
+			}
+		}
+	}
+
+	/**
+	 * convenience function.
+	 */
+	@Override
+	public final java.awt.Point toScreen(final WorldLocation val) {
+		return _theProjection.toScreen(val);
+	}
+
+	/**
+	 * return our name (used in editing)
+	 */
+	@Override
+	public final String toString() {
+		return EDITOR_LABEL;
+	}
+
+	/**
+	 * convenience function.
+	 */
+	@Override
+	public final WorldLocation toWorld(final java.awt.Point val) {
+		return _theProjection.toWorld(val);
+	}
+
+	/**
+	 * first repaint the plot, then trigger a screen update
+	 */
+	@Override
+	public void updateMe() {
+	}
 
 }

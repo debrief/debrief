@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: Tool.java,v $
@@ -80,28 +80,38 @@
 
 package MWC.GUI;
 
-/** definition of things to be implemented by a command
+/**
+ * definition of things to be implemented by a command
  */
-public interface Tool extends java.awt.event.ActionListener
-{
-  /** do your operation
-   */
-  public void execute();
-  /** prepare the data for your operation
-   */
-  public MWC.GUI.Tools.Action getData();
-  /** what text do we display
-   */
-  public String getLabel();
-  /** what image do we display
-   */
-  public String getImage();
-
-	/** also allow us to be defined as an action listener
+public interface Tool extends java.awt.event.ActionListener {
+	/**
+	 * also allow us to be defined as an action listener
 	 */
+	@Override
 	public void actionPerformed(java.awt.event.ActionEvent p1);
-	
-	/** provide a method which will allow us to close (finalise) the tool
+
+	/**
+	 * provide a method which will allow us to close (finalise) the tool
 	 */
 	public void close();
+
+	/**
+	 * do your operation
+	 */
+	public void execute();
+
+	/**
+	 * prepare the data for your operation
+	 */
+	public MWC.GUI.Tools.Action getData();
+
+	/**
+	 * what image do we display
+	 */
+	public String getImage();
+
+	/**
+	 * what text do we display
+	 */
+	public String getLabel();
 }

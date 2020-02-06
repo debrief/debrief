@@ -1,102 +1,94 @@
 
 package ASSET.Util.XML.Decisions.Conditions;
 
+import ASSET.Models.Decision.TargetType;
+
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 import ASSET.Models.Decision.Conditions.Condition;
 import ASSET.Models.Decision.Conditions.Detection;
-import ASSET.Models.Decision.TargetType;
 import MWC.GenericData.WorldDistance;
 
-abstract public class DetectionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
-  {
+abstract public class DetectionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader {
 
-  private final static String type = "Detection";
+	private final static String type = "Detection";
 
-//  private final static String THRESHOLD = "Threshold";
+	// private final static String THRESHOLD = "Threshold";
 
-  WorldDistance _rangeThreshold;
-  String _name;
-  TargetType _myTargetType;
+	static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc) {
+		// create ourselves
+		final org.w3c.dom.Element thisPart = doc.createElement(type);
 
+		// get data item
+		final Detection bb = (Detection) toExport;
 
-  public DetectionHandler()
-  {
-    super("Detection");
+		// output it's attributes
+		thisPart.setAttribute("Name", bb.getName());
+		MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler.exportDistance(bb.getRangeThreshold(), thisPart, doc);
+		ASSET.Util.XML.Decisions.Util.TargetTypeHandler.exportThis(bb.getTargetType(), thisPart, doc);
 
-    addAttributeHandler(new HandleAttribute("Name")
-    {
-      public void setValue(String name, final String val)
-      {
-        _name = val;
-      }
-    });
+		parent.appendChild(thisPart);
 
-    addHandler(new MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler()
-    {
-      public void setWorldDistance(final WorldDistance res)
-      {
-        _rangeThreshold = res;
-      }
-    });
+	}
 
-    addHandler(new ASSET.Util.XML.Decisions.Util.TargetTypeHandler()
-    {
-      public void setTargetType(final TargetType type)
-      {
-        _myTargetType = type;
-      }
-    });
-  }
+	WorldDistance _rangeThreshold;
+	String _name;
 
+	TargetType _myTargetType;
 
-  public void elementClosed()
-  {
-    final Detection res = new Detection(_myTargetType, _rangeThreshold);
-    res.setName(_name);
+	public DetectionHandler() {
+		super("Detection");
 
-    // finally output it
-    setCondition(res);
+		addAttributeHandler(new HandleAttribute("Name") {
+			@Override
+			public void setValue(final String name, final String val) {
+				_name = val;
+			}
+		});
 
-    // and reset
-    _myTargetType = null;
-    _rangeThreshold = null;
-    _name = null;
-  }
+		addHandler(new MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler() {
+			@Override
+			public void setWorldDistance(final WorldDistance res) {
+				_rangeThreshold = res;
+			}
+		});
 
-  abstract public void setCondition(Condition dec);
+		addHandler(new ASSET.Util.XML.Decisions.Util.TargetTypeHandler() {
+			@Override
+			public void setTargetType(final TargetType type) {
+				_myTargetType = type;
+			}
+		});
+	}
 
+	@Override
+	public void elementClosed() {
+		final Detection res = new Detection(_myTargetType, _rangeThreshold);
+		res.setName(_name);
 
-  static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
-                                final org.w3c.dom.Document doc)
-  {
-    // create ourselves
-    final org.w3c.dom.Element thisPart = doc.createElement(type);
+		// finally output it
+		setCondition(res);
 
-    // get data item
-    final Detection bb = (Detection) toExport;
+		// and reset
+		_myTargetType = null;
+		_rangeThreshold = null;
+		_name = null;
+	}
 
-    // output it's attributes
-    thisPart.setAttribute("Name", bb.getName());
-    MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler.exportDistance(bb.getRangeThreshold(), thisPart, doc);
-    ASSET.Util.XML.Decisions.Util.TargetTypeHandler.exportThis(bb.getTargetType(), thisPart, doc);
-
-    parent.appendChild(thisPart);
-
-  }
-
+	abstract public void setCondition(Condition dec);
 
 }

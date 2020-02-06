@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.cmap.grideditor.table;
@@ -38,6 +38,12 @@ public class DateTimeCellEditor extends CellEditor {
 	private static final GregorianCalendar CALENDAR_TEMPLATE;
 
 	private static final TimeZone DEFAULT_TIME_ZONE;
+
+	static {
+		CALENDAR_TEMPLATE = new GregorianCalendar();
+		DEFAULT_TIME_ZONE = TimeZone.getTimeZone(FormatDateTime.DEFAULT_TIME_ZONE_ID);
+		CALENDAR_TEMPLATE.setTimeZone(DEFAULT_TIME_ZONE);
+	}
 
 	private DateTime myDateUI;
 
@@ -67,6 +73,7 @@ public class DateTimeCellEditor extends CellEditor {
 
 		final TraverseListener onEscapeCloser = new TraverseListener() {
 
+			@Override
 			public void keyTraversed(final TraverseEvent e) {
 				if (e.detail == SWT.TRAVERSE_ESCAPE || e.detail == SWT.TRAVERSE_RETURN) {
 					e.doit = false;
@@ -104,7 +111,8 @@ public class DateTimeCellEditor extends CellEditor {
 		}
 		final GregorianCalendar calendar = (GregorianCalendar) CALENDAR_TEMPLATE.clone();
 		calendar.setTimeZone(DEFAULT_TIME_ZONE);
-		calendar.set(myDateUI.getYear(), myDateUI.getMonth(), myDateUI.getDay(), myTimeUI.getHours(), myTimeUI.getMinutes(), myTimeUI.getSeconds());
+		calendar.set(myDateUI.getYear(), myDateUI.getMonth(), myDateUI.getDay(), myTimeUI.getHours(),
+				myTimeUI.getMinutes(), myTimeUI.getSeconds());
 		calendar.set(Calendar.MILLISECOND, 0);
 		final Date result = calendar.getTime();
 		return result;
@@ -145,12 +153,6 @@ public class DateTimeCellEditor extends CellEditor {
 		myTimeUI.setHours(calendar.get(Calendar.HOUR_OF_DAY));
 		myTimeUI.setMinutes(calendar.get(Calendar.MINUTE));
 		myTimeUI.setSeconds(calendar.get(Calendar.SECOND));
-	}
-
-	static {
-		CALENDAR_TEMPLATE = new GregorianCalendar();
-		DEFAULT_TIME_ZONE = TimeZone.getTimeZone(FormatDateTime.DEFAULT_TIME_ZONE_ID);
-		CALENDAR_TEMPLATE.setTimeZone(DEFAULT_TIME_ZONE);
 	}
 
 }

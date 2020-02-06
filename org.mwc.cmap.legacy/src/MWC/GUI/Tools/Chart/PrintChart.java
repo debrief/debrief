@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: PrintChart.java,v $
@@ -54,55 +54,55 @@
 // Initial revision
 //
 
-
 package MWC.GUI.Tools.Chart;
-
-
 
 import MWC.GUI.PlainChart;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.PlainTool;
 
-/** tool to instruct a particular chart to do a resize to fit all
- * of the current data
+/**
+ * tool to instruct a particular chart to do a resize to fit all of the current
+ * data
  */
 public class PrintChart extends PlainTool {
 
-  /////////////////////////////////////////////////////////
-  // constructor
-  /////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////
+	// constructor
+	/////////////////////////////////////////////////////////
 
-  /** constructor, stores information ready for when the button
-   * finally gets pressed
-   * @param theApp the parent application, so we can set cursors
-   * @param theChart the chart we are to resize
-   */
-  public PrintChart(final ToolParent theParent,final PlainChart theChart){
-    super(theParent, "Print Chart","images/fit_to_win.png");
-  }
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-  /////////////////////////////////////////////////////////
-  // member functions
-  /////////////////////////////////////////////////////////
-  public Action getData()
-  {
-    // get the current data area
-    final java.awt.print.PrinterJob jp = java.awt.print.PrinterJob.getPrinterJob();
-    jp.setJobName("Debrief Plot");
-    if(jp.printDialog())
-    {
-      try
-      {
-        jp.print();
-      }
-      catch(final java.awt.print.PrinterException e)
-      {
+	/**
+	 * constructor, stores information ready for when the button finally gets
+	 * pressed
+	 *
+	 * @param theApp   the parent application, so we can set cursors
+	 * @param theChart the chart we are to resize
+	 */
+	public PrintChart(final ToolParent theParent, final PlainChart theChart) {
+		super(theParent, "Print Chart", "images/fit_to_win.png");
+	}
 
-      }
-    }
-    return null;
-  }
+	/////////////////////////////////////////////////////////
+	// member functions
+	/////////////////////////////////////////////////////////
+	@Override
+	public Action getData() {
+		// get the current data area
+		final java.awt.print.PrinterJob jp = java.awt.print.PrinterJob.getPrinterJob();
+		jp.setJobName("Debrief Plot");
+		if (jp.printDialog()) {
+			try {
+				jp.print();
+			} catch (final java.awt.print.PrinterException e) {
 
+			}
+		}
+		return null;
+	}
 
 }

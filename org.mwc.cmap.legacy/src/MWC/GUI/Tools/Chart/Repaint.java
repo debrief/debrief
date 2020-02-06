@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: Repaint.java,v $
@@ -76,35 +76,34 @@
 
 package MWC.GUI.Tools.Chart;
 
-
 import MWC.GUI.PlainChart;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.PlainTool;
 
+public class Repaint extends PlainTool {
 
-public class Repaint extends PlainTool 
-{
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	private final PlainChart _theChart;
 
-  private final PlainChart _theChart;
-  
-  /** produce the Command item - not necessary, since this is not
-   *  undoable
-   */
-  public Action getData(){
-    return null;
-  }
+	public Repaint(final ToolParent theParent, final PlainChart theChart) {
+		super(theParent, "Redraw", "images/repaint.png");
+		_theChart = theChart;
+	}
 
-  public Repaint(final ToolParent theParent,
-                 final PlainChart theChart)
-  {
-    super(theParent, "Redraw", "images/repaint.png");
-    _theChart = theChart;
-  }
-  
+	@Override
+	public void execute() {
+		_theChart.update();
+	}
 
-  public void execute()
-  {
-    _theChart.update();
-  }
+	/**
+	 * produce the Command item - not necessary, since this is not undoable
+	 */
+	@Override
+	public Action getData() {
+		return null;
+	}
 }

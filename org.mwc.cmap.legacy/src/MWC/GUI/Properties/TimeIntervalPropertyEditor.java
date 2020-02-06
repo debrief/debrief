@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: TimeIntervalPropertyEditor.java,v $
@@ -73,168 +73,145 @@ import java.beans.PropertyEditorSupport;
 /**
  * Class providing support for editing time intervals in the property editor
  */
-public class TimeIntervalPropertyEditor extends PropertyEditorSupport
-{
+public class TimeIntervalPropertyEditor extends PropertyEditorSupport {
 
-  /**
-   * currently selected interval
-   */
-  protected Long _myFreq; // time interval in millis
+	/**
+	 * test labels for the available frequencies
+	 */
+	private static String _stringTags[] = null;
 
-  /**
-   * test labels for the available frequencies
-   */
-  private static String _stringTags[] = null;
+	/**
+	 * values (in millis) for the selectable frequencies
+	 */
+	private static long _freqs[] = null;
 
-  /**
-   * values (in millis) for the selectable frequencies
-   */
-  private static long _freqs[] = null;
+	/**
+	 * static version of return tag list (used for reference)
+	 *
+	 * @return
+	 */
+	public static String[] getTagList() {
+		initialise();
+		return _stringTags;
+	}
 
-  private static void initialise()
-  {
-    if (_stringTags == null)
-    {
-      _stringTags =
-          new String[]
-          {"1/10 Sec", "1/5 Sec", "1/3 Sec", "1/2 Sec", "1 Sec", "5 Secs",
-              "10 Secs", "30 Secs", "1 Minute", "2 Minutes", "5 Minutes",
-              "10 Minutes", "15 Minutes", "30 Minutes", "60 Minutes"};
+	/**
+	 * static version of return values
+	 *
+	 * @return
+	 */
+	public static long[] getValueList() {
+		initialise();
+		return _freqs;
+	}
 
-      _freqs =
-          new long[]
-          {100, 200, 333, 500, 1000, 5000, 10 * 1000, 30 * 1000, 60 * 1000,
-              2 * 60 * 1000, 5 * 60 * 1000, 10 * 60 * 1000, 15 * 60 * 1000,
-              30 * 60 * 1000, 60 * 60 * 1000};
-    }
-  }
+	private static void initialise() {
+		if (_stringTags == null) {
+			_stringTags = new String[] { "1/10 Sec", "1/5 Sec", "1/3 Sec", "1/2 Sec", "1 Sec", "5 Secs", "10 Secs",
+					"30 Secs", "1 Minute", "2 Minutes", "5 Minutes", "10 Minutes", "15 Minutes", "30 Minutes",
+					"60 Minutes" };
 
-  /**
-   * static version of return tag list (used for reference)
-   * 
-   * @return
-   */
-  public static String[] getTagList()
-  {
-    initialise();
-    return _stringTags;
-  }
+			_freqs = new long[] { 100, 200, 333, 500, 1000, 5000, 10 * 1000, 30 * 1000, 60 * 1000, 2 * 60 * 1000,
+					5 * 60 * 1000, 10 * 60 * 1000, 15 * 60 * 1000, 30 * 60 * 1000, 60 * 60 * 1000 };
+		}
+	}
 
-  /**
-   * static version of return values
-   * 
-   * @return
-   */
-  public static long[] getValueList()
-  {
-    initialise();
-    return _freqs;
-  }
+	/**
+	 * currently selected interval
+	 */
+	protected Long _myFreq; // time interval in millis
 
-  /**
-   * return the labels to use
-   * 
-   * @return list of labels
-   */
-  public String[] getTags()
-  {
-    return getTagList();
-  }
+	/**
+	 * find the current value of this field
+	 *
+	 * @return current value in text form
+	 */
+	@Override
+	public String getAsText() {
+		final long[] list = getValues();
+		final String[] tags = getTags();
 
-  /**
-   * return the list of integer values
-   */
-  public long[] getValues()
-  {
-    return getValueList();
-  }
+		String res = null;
+		final double current = _myFreq.longValue();
+		for (int i = 0; i < list.length; i++) {
+			final double v = list[i];
+			if (v == current) {
+				res = tags[i];
+				break;
+			}
+		}
 
-  /**
-   * get the current value
-   * 
-   * @return current interval in millis as asn Integer
-   */
-  public Object getValue()
-  {
-    System.out.println("getting Value:"+_myFreq);
-    return _myFreq;
-  }
+		// hmm, did we manage it?
+		if (res == null) {
+			res = tags[tags.length - 1];
+		}
 
-  /**
-   * Initialise the value of this editable object (expecting to receive either an Integer or a
-   * String
-   * 
-   * @param p1
-   *          the value to use
-   */
-  public void setValue(final Object p1)
-  {
-    if (p1 instanceof Long)
-    {
-      _myFreq = (Long) p1;
-    }
-    else if(p1 instanceof Integer)
-    {
-      _myFreq = new Long(((Integer)p1).intValue());
-    }
-    else if (p1 instanceof String)
-    {
-      final String val = (String) p1;
-      setAsText(val);
-    }
-  }
+		return res;
+	}
 
-  /**
-   * User has selected an item from the list, update our internal value
-   * 
-   * @param val
-   *          user input
-   */
-  public void setAsText(final String val)
-  {
-    final long[] list = getValues();
-    final String[] tags = getTags();
-    for (int i = 0; i < tags.length; i++)
-    {
-      final String thisS = tags[i];
-      if (thisS.equals(val))
-      {
-        _myFreq = new Long(list[i]);
-        break;
-      }
-    }
+	/**
+	 * return the labels to use
+	 *
+	 * @return list of labels
+	 */
+	@Override
+	public String[] getTags() {
+		return getTagList();
+	}
 
-  }
+	/**
+	 * get the current value
+	 *
+	 * @return current interval in millis as asn Integer
+	 */
+	@Override
+	public Object getValue() {
+		System.out.println("getting Value:" + _myFreq);
+		return _myFreq;
+	}
 
-  /**
-   * find the current value of this field
-   * 
-   * @return current value in text form
-   */
-  public String getAsText()
-  {
-    final long[] list = getValues();
-    final String[] tags = getTags();
+	/**
+	 * return the list of integer values
+	 */
+	public long[] getValues() {
+		return getValueList();
+	}
 
-    String res = null;
-    final double current = _myFreq.longValue();
-    for (int i = 0; i < list.length; i++)
-    {
-      final double v = list[i];
-      if (v == current)
-      {
-        res = tags[i];
-        break;
-      }
-    }
+	/**
+	 * User has selected an item from the list, update our internal value
+	 *
+	 * @param val user input
+	 */
+	@Override
+	public void setAsText(final String val) {
+		final long[] list = getValues();
+		final String[] tags = getTags();
+		for (int i = 0; i < tags.length; i++) {
+			final String thisS = tags[i];
+			if (thisS.equals(val)) {
+				_myFreq = new Long(list[i]);
+				break;
+			}
+		}
 
-    // hmm, did we manage it?
-    if (res == null)
-    {
-      res = tags[tags.length - 1];
-    }
+	}
 
-    return res;
-  }
+	/**
+	 * Initialise the value of this editable object (expecting to receive either an
+	 * Integer or a String
+	 *
+	 * @param p1 the value to use
+	 */
+	@Override
+	public void setValue(final Object p1) {
+		if (p1 instanceof Long) {
+			_myFreq = (Long) p1;
+		} else if (p1 instanceof Integer) {
+			_myFreq = new Long(((Integer) p1).intValue());
+		} else if (p1 instanceof String) {
+			final String val = (String) p1;
+			setAsText(val);
+		}
+	}
 
 }

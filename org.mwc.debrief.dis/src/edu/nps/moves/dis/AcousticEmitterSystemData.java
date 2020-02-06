@@ -1,257 +1,258 @@
 package edu.nps.moves.dis;
 
-import java.util.*;
-import java.io.*;
-import edu.nps.moves.disenum.*;
-import edu.nps.moves.disutil.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Used in the UA pdu; ties together an emmitter and a location. This requires manual cleanup; the beam data should not be attached to each emitter system.
+ * Used in the UA pdu; ties together an emmitter and a location. This requires
+ * manual cleanup; the beam data should not be attached to each emitter system.
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class AcousticEmitterSystemData extends Object implements Serializable
-{
-   /** Length of emitter system data */
-   protected short  emitterSystemDataLength;
+public class AcousticEmitterSystemData extends Object implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   /** Number of beams */
-   protected short  numberOfBeams;
+	/** Length of emitter system data */
+	protected short emitterSystemDataLength;
 
-   /** padding */
-   protected int  pad2;
+	/** Number of beams */
+	protected short numberOfBeams;
 
-   /** This field shall specify the system for a particular UA emitter. */
-   protected AcousticEmitterSystem  acousticEmitterSystem = new AcousticEmitterSystem(); 
+	/** padding */
+	protected int pad2;
 
-   /** Represents the location wrt the entity */
-   protected Vector3Float  emitterLocation = new Vector3Float(); 
+	/** This field shall specify the system for a particular UA emitter. */
+	protected AcousticEmitterSystem acousticEmitterSystem = new AcousticEmitterSystem();
 
-   /** For each beam in numberOfBeams, an emitter system. This is not right--the beam records need to be at the end of the PDU, rather than attached to each system. */
-   protected List< AcousticBeamData > beamRecords = new ArrayList< AcousticBeamData >(); 
+	/** Represents the location wrt the entity */
+	protected Vector3Float emitterLocation = new Vector3Float();
 
-/** Constructor */
- public AcousticEmitterSystemData()
- {
- }
+	/**
+	 * For each beam in numberOfBeams, an emitter system. This is not right--the
+	 * beam records need to be at the end of the PDU, rather than attached to each
+	 * system.
+	 */
+	protected List<AcousticBeamData> beamRecords = new ArrayList<AcousticBeamData>();
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+	/** Constructor */
+	public AcousticEmitterSystemData() {
+	}
 
-   marshalSize = marshalSize + 1;  // emitterSystemDataLength
-   marshalSize = marshalSize + 1;  // numberOfBeams
-   marshalSize = marshalSize + 2;  // pad2
-   marshalSize = marshalSize + acousticEmitterSystem.getMarshalledSize();  // acousticEmitterSystem
-   marshalSize = marshalSize + emitterLocation.getMarshalledSize();  // emitterLocation
-   for(int idx=0; idx < beamRecords.size(); idx++)
-   {
-        AcousticBeamData listElement = beamRecords.get(idx);
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-   }
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-   return marshalSize;
-}
+		if (this == obj) {
+			return true;
+		}
 
+		if (obj == null) {
+			return false;
+		}
 
-public void setEmitterSystemDataLength(short pEmitterSystemDataLength)
-{ emitterSystemDataLength = pEmitterSystemDataLength;
-}
+		if (getClass() != obj.getClass())
+			return false;
 
-public short getEmitterSystemDataLength()
-{ return emitterSystemDataLength; 
-}
+		return equalsImpl(obj);
+	}
 
-public short getNumberOfBeams()
-{ return (short)beamRecords.size();
-}
+	/**
+	 * Compare all fields that contribute to the state, ignoring transient and
+	 * static fields, for <code>this</code> and the supplied object
+	 *
+	 * @param obj the object to compare to
+	 * @return true if the objects are equal, false otherwise.
+	 */
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-/** Note that setting this value will not change the marshalled value. The list whose length this describes is used for that purpose.
- * The getnumberOfBeams method will also be based on the actual list length rather than this value. 
- * The method is simply here for java bean completeness.
- */
-public void setNumberOfBeams(short pNumberOfBeams)
-{ numberOfBeams = pNumberOfBeams;
-}
+		if (!(obj instanceof AcousticEmitterSystemData))
+			return false;
 
-public void setPad2(int pPad2)
-{ pad2 = pPad2;
-}
+		final AcousticEmitterSystemData rhs = (AcousticEmitterSystemData) obj;
 
-public int getPad2()
-{ return pad2; 
-}
+		if (!(emitterSystemDataLength == rhs.emitterSystemDataLength))
+			ivarsEqual = false;
+		if (!(numberOfBeams == rhs.numberOfBeams))
+			ivarsEqual = false;
+		if (!(pad2 == rhs.pad2))
+			ivarsEqual = false;
+		if (!(acousticEmitterSystem.equals(rhs.acousticEmitterSystem)))
+			ivarsEqual = false;
+		if (!(emitterLocation.equals(rhs.emitterLocation)))
+			ivarsEqual = false;
 
-public void setAcousticEmitterSystem(AcousticEmitterSystem pAcousticEmitterSystem)
-{ acousticEmitterSystem = pAcousticEmitterSystem;
-}
+		for (int idx = 0; idx < beamRecords.size(); idx++) {
+			if (!(beamRecords.get(idx).equals(rhs.beamRecords.get(idx))))
+				ivarsEqual = false;
+		}
 
-public AcousticEmitterSystem getAcousticEmitterSystem()
-{ return acousticEmitterSystem; 
-}
+		return ivarsEqual;
+	}
 
-public void setEmitterLocation(Vector3Float pEmitterLocation)
-{ emitterLocation = pEmitterLocation;
-}
+	public AcousticEmitterSystem getAcousticEmitterSystem() {
+		return acousticEmitterSystem;
+	}
 
-public Vector3Float getEmitterLocation()
-{ return emitterLocation; 
-}
+	public List<AcousticBeamData> getBeamRecords() {
+		return beamRecords;
+	}
 
-public void setBeamRecords(List<AcousticBeamData> pBeamRecords)
-{ beamRecords = pBeamRecords;
-}
+	public Vector3Float getEmitterLocation() {
+		return emitterLocation;
+	}
 
-public List<AcousticBeamData> getBeamRecords()
-{ return beamRecords; }
+	public short getEmitterSystemDataLength() {
+		return emitterSystemDataLength;
+	}
 
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
-public void marshal(DataOutputStream dos)
-{
-    try 
-    {
-       dos.writeByte( (byte)emitterSystemDataLength);
-       dos.writeByte( (byte)beamRecords.size());
-       dos.writeShort( (short)pad2);
-       acousticEmitterSystem.marshal(dos);
-       emitterLocation.marshal(dos);
+		marshalSize = marshalSize + 1; // emitterSystemDataLength
+		marshalSize = marshalSize + 1; // numberOfBeams
+		marshalSize = marshalSize + 2; // pad2
+		marshalSize = marshalSize + acousticEmitterSystem.getMarshalledSize(); // acousticEmitterSystem
+		marshalSize = marshalSize + emitterLocation.getMarshalledSize(); // emitterLocation
+		for (int idx = 0; idx < beamRecords.size(); idx++) {
+			final AcousticBeamData listElement = beamRecords.get(idx);
+			marshalSize = marshalSize + listElement.getMarshalledSize();
+		}
 
-       for(int idx = 0; idx < beamRecords.size(); idx++)
-       {
-            AcousticBeamData aAcousticBeamData = beamRecords.get(idx);
-            aAcousticBeamData.marshal(dos);
-       } // end of list marshalling
+		return marshalSize;
+	}
 
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+	public short getNumberOfBeams() {
+		return (short) beamRecords.size();
+	}
 
-public void unmarshal(DataInputStream dis)
-{
-    try 
-    {
-       emitterSystemDataLength = (short)dis.readUnsignedByte();
-       numberOfBeams = (short)dis.readUnsignedByte();
-       pad2 = (int)dis.readUnsignedShort();
-       acousticEmitterSystem.unmarshal(dis);
-       emitterLocation.unmarshal(dis);
-       for(int idx = 0; idx < numberOfBeams; idx++)
-       {
-           AcousticBeamData anX = new AcousticBeamData();
-           anX.unmarshal(dis);
-           beamRecords.add(anX);
-       }
+	public int getPad2() {
+		return pad2;
+	}
 
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+	public void marshal(final DataOutputStream dos) {
+		try {
+			dos.writeByte((byte) emitterSystemDataLength);
+			dos.writeByte((byte) beamRecords.size());
+			dos.writeShort((short) pad2);
+			acousticEmitterSystem.marshal(dos);
+			emitterLocation.marshal(dos);
 
+			for (int idx = 0; idx < beamRecords.size(); idx++) {
+				final AcousticBeamData aAcousticBeamData = beamRecords.get(idx);
+				aAcousticBeamData.marshal(dos);
+			} // end of list marshalling
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
-       buff.put( (byte)emitterSystemDataLength);
-       buff.put( (byte)beamRecords.size());
-       buff.putShort( (short)pad2);
-       acousticEmitterSystem.marshal(buff);
-       emitterLocation.marshal(buff);
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
-       for(int idx = 0; idx < beamRecords.size(); idx++)
-       {
-            AcousticBeamData aAcousticBeamData = (AcousticBeamData)beamRecords.get(idx);
-            aAcousticBeamData.marshal(buff);
-       } // end of list marshalling
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	public void marshal(final java.nio.ByteBuffer buff) {
+		buff.put((byte) emitterSystemDataLength);
+		buff.put((byte) beamRecords.size());
+		buff.putShort((short) pad2);
+		acousticEmitterSystem.marshal(buff);
+		emitterLocation.marshal(buff);
 
-    } // end of marshal method
+		for (int idx = 0; idx < beamRecords.size(); idx++) {
+			final AcousticBeamData aAcousticBeamData = beamRecords.get(idx);
+			aAcousticBeamData.marshal(buff);
+		} // end of list marshalling
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       emitterSystemDataLength = (short)(buff.get() & 0xFF);
-       numberOfBeams = (short)(buff.get() & 0xFF);
-       pad2 = (int)(buff.getShort() & 0xFFFF);
-       acousticEmitterSystem.unmarshal(buff);
-       emitterLocation.unmarshal(buff);
-       for(int idx = 0; idx < numberOfBeams; idx++)
-       {
-            AcousticBeamData anX = new AcousticBeamData();
-            anX.unmarshal(buff);
-            beamRecords.add(anX);
-       }
+	} // end of marshal method
 
- } // end of unmarshal method 
+	public void setAcousticEmitterSystem(final AcousticEmitterSystem pAcousticEmitterSystem) {
+		acousticEmitterSystem = pAcousticEmitterSystem;
+	}
 
+	public void setBeamRecords(final List<AcousticBeamData> pBeamRecords) {
+		beamRecords = pBeamRecords;
+	}
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+	public void setEmitterLocation(final Vector3Float pEmitterLocation) {
+		emitterLocation = pEmitterLocation;
+	}
 
-    if(this == obj){
-      return true;
-    }
+	public void setEmitterSystemDataLength(final short pEmitterSystemDataLength) {
+		emitterSystemDataLength = pEmitterSystemDataLength;
+	}
 
-    if(obj == null){
-       return false;
-    }
+	/**
+	 * Note that setting this value will not change the marshalled value. The list
+	 * whose length this describes is used for that purpose. The getnumberOfBeams
+	 * method will also be based on the actual list length rather than this value.
+	 * The method is simply here for java bean completeness.
+	 */
+	public void setNumberOfBeams(final short pNumberOfBeams) {
+		numberOfBeams = pNumberOfBeams;
+	}
 
-    if(getClass() != obj.getClass())
-        return false;
+	public void setPad2(final int pPad2) {
+		pad2 = pPad2;
+	}
 
-    return equalsImpl(obj);
- }
+	public void unmarshal(final DataInputStream dis) {
+		try {
+			emitterSystemDataLength = (short) dis.readUnsignedByte();
+			numberOfBeams = (short) dis.readUnsignedByte();
+			pad2 = dis.readUnsignedShort();
+			acousticEmitterSystem.unmarshal(dis);
+			emitterLocation.unmarshal(dis);
+			for (int idx = 0; idx < numberOfBeams; idx++) {
+				final AcousticBeamData anX = new AcousticBeamData();
+				anX.unmarshal(dis);
+				beamRecords.add(anX);
+			}
 
- /**
-  * Compare all fields that contribute to the state, ignoring
- transient and static fields, for <code>this</code> and the supplied object
-  * @param obj the object to compare to
-  * @return true if the objects are equal, false otherwise.
-  */
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
-    if(!(obj instanceof AcousticEmitterSystemData))
-        return false;
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		emitterSystemDataLength = (short) (buff.get() & 0xFF);
+		numberOfBeams = (short) (buff.get() & 0xFF);
+		pad2 = buff.getShort() & 0xFFFF;
+		acousticEmitterSystem.unmarshal(buff);
+		emitterLocation.unmarshal(buff);
+		for (int idx = 0; idx < numberOfBeams; idx++) {
+			final AcousticBeamData anX = new AcousticBeamData();
+			anX.unmarshal(buff);
+			beamRecords.add(anX);
+		}
 
-     final AcousticEmitterSystemData rhs = (AcousticEmitterSystemData)obj;
-
-     if( ! (emitterSystemDataLength == rhs.emitterSystemDataLength)) ivarsEqual = false;
-     if( ! (numberOfBeams == rhs.numberOfBeams)) ivarsEqual = false;
-     if( ! (pad2 == rhs.pad2)) ivarsEqual = false;
-     if( ! (acousticEmitterSystem.equals( rhs.acousticEmitterSystem) )) ivarsEqual = false;
-     if( ! (emitterLocation.equals( rhs.emitterLocation) )) ivarsEqual = false;
-
-     for(int idx = 0; idx < beamRecords.size(); idx++)
-     {
-        if( ! ( beamRecords.get(idx).equals(rhs.beamRecords.get(idx)))) ivarsEqual = false;
-     }
-
-
-    return ivarsEqual;
- }
+	} // end of unmarshal method
 } // end of class

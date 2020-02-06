@@ -1,19 +1,21 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package Debrief.Tools.Tote;
+
+import java.text.NumberFormat;
 
 // Copyright MWC 1999, Debrief 3 Project
 // $RCSfile: toteCalculation.java,v $
@@ -72,38 +74,41 @@ package Debrief.Tools.Tote;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 
-import java.text.*;
+public interface toteCalculation {
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-public interface toteCalculation
-{
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
-
-	/** calculate a fresh set of results for this data, return
-	 * as a string
+	/**
+	 * produce the calculated value as a double
 	 */
-  public String update(Watchable primary, Watchable secondary, HiResDate thisTime);
+	public double calculate(Watchable primary, Watchable secondary, HiResDate thisTime);
 
-  /** produce the calculated value as a double
-   */
-  public double calculate(Watchable primary, Watchable secondary, HiResDate thisTime);
-
-	/** @param format format (java.text.NumberFormat) we use to display the results
+	/**
+	 * @return the title to show above the row
 	 */
-  public void setPattern(NumberFormat format);
+	public String getTitle();
 
-	/** @return the title to show above the row
+	/**
+	 * @return the units to show for the tow
 	 */
-  public String getTitle();
+	public String getUnits();
 
-	/** @return the units to show for the tow
+	/**
+	 * does this calculation require special bearing handling (prevent wrapping
+	 * through 180 or 360 degs)
+	 *
 	 */
-  public String getUnits();
+	public boolean isWrappableData();
 
-  /** does this calculation require special bearing handling (prevent wrapping through 180 or 360 degs)
-   *
-   */
-  public boolean isWrappableData();
+	/**
+	 * @param format format (java.text.NumberFormat) we use to display the results
+	 */
+	public void setPattern(NumberFormat format);
+
+	/**
+	 * calculate a fresh set of results for this data, return as a string
+	 */
+	public String update(Watchable primary, Watchable secondary, HiResDate thisTime);
 
 }

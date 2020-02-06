@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: PlainLineImporter.java,v $
@@ -79,57 +79,65 @@ package MWC.Utilities.ReaderWriter;
 
 import java.text.ParseException;
 
-/** interface describing behavior for an import function which reads a line 
- * of data at a time
+/**
+ * interface describing behavior for an import function which reads a line of
+ * data at a time
  */
-public interface PlainLineImporter 
-{
+public interface PlainLineImporter {
 
-  /** interface for importers that need to be finalised
-   * 
-   */
-  public static interface ImportRequiresFinalisation
-  {
-    /** perform any end of import processing
-     * 
-     */
-    public void finalise();
-  }
-  
-  /**
-   * the normal token delimiter (for comma & white-space separated fields)
-   */
-  static final String normalDelimiters = " \t\n\r\f";
-
-  /**
-   * the quoted delimiter, for quoted track names
-   */
-  static final String quoteDelimiter = "\"";
-
-
-	/** parse this line and return the object created
-	 * @throws ParseException  on malformed date/numbers
+	/**
+	 * interface for importers that need to be finalised
+	 *
 	 */
-  public Object readThisLine(String theLine) throws ParseException;
-	
-	/** @return the comment identifier for this line
+	public static interface ImportRequiresFinalisation {
+		/**
+		 * perform any end of import processing
+		 *
+		 */
+		public void finalise();
+	}
+
+	/**
+	 * the normal token delimiter (for comma & white-space separated fields)
 	 */
-  public String getYourType();
-	
-	/** export the specified shape as a string
-	 * @return the shape in String form
-	 * @param theShape the Shape we are exporting
-	 */	
-	public String exportThis(MWC.GUI.Plottable theShape);	
-	
-	/** indicate if you can export this type of object
+	static final String normalDelimiters = " \t\n\r\f";
+
+	/**
+	 * the quoted delimiter, for quoted track names
+	 */
+	static final String quoteDelimiter = "\"";
+
+	/**
+	 * indicate if you can export this type of object
 	 */
 	public boolean canExportThis(Object val);
 
-	/** we occasionally wish to retrieve the symbology after the line is ready in. Retain it,
-	 * and provide it here
+	/**
+	 * export the specified shape as a string
+	 *
+	 * @return the shape in String form
+	 * @param theShape the Shape we are exporting
+	 */
+	public String exportThis(MWC.GUI.Plottable theShape);
+
+	/**
+	 * we occasionally wish to retrieve the symbology after the line is ready in.
+	 * Retain it, and provide it here
+	 *
 	 * @return symbology string read in from file
 	 */
 	String getSymbology();
-	
+
+	/**
+	 * @return the comment identifier for this line
+	 */
+	public String getYourType();
+
+	/**
+	 * parse this line and return the object created
+	 *
+	 * @throws ParseException on malformed date/numbers
+	 */
+	public Object readThisLine(String theLine) throws ParseException;
+
 }

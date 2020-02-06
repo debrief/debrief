@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.cmap.gridharness.views;
@@ -24,21 +24,20 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.mwc.cmap.gridharness.data.UnitsSet;
-import org.mwc.cmap.gridharness.data.ValueInUnits;
 import org.mwc.cmap.gridharness.data.UnitsSet.Unit;
-
+import org.mwc.cmap.gridharness.data.ValueInUnits;
 
 public abstract class ValueWithUnitsCellEditor2 extends CellEditor implements MultiControlCellEditor {
 
 	/**
 	 * hmm, the text bit.
-	 * 
+	 *
 	 */
 	Text _myText;
 
 	/**
 	 * and the drop-down units bit
-	 * 
+	 *
 	 */
 	Combo _myCombo;
 
@@ -57,9 +56,8 @@ public abstract class ValueWithUnitsCellEditor2 extends CellEditor implements Mu
 		_textTip = textTip;
 		_comboTip = comboTip;
 	}
-	
-	protected abstract ValueInUnits initializeValue();
 
+	@Override
 	protected Control createControl(final Composite parent) {
 		_value = initializeValue();
 		_unitsSet = _value.getUnitsSet();
@@ -95,10 +93,7 @@ public abstract class ValueWithUnitsCellEditor2 extends CellEditor implements Mu
 		return holder;
 	}
 
-	public Control getLastControl() {
-		return _myCombo;
-	}
-	
+	@Override
 	protected Object doGetValue() {
 		final String distTxt = _myText.getText();
 		final double dist = new Double(distTxt).doubleValue();
@@ -111,10 +106,12 @@ public abstract class ValueWithUnitsCellEditor2 extends CellEditor implements Mu
 		return result;
 	}
 
+	@Override
 	protected void doSetFocus() {
 		_myText.setFocus();
 	}
 
+	@Override
 	protected void doSetValue(final Object value) {
 		final ValueInUnits valueImpl = (ValueInUnits) value;
 		final UnitsSet.Unit mainUnit = _unitsSet.getMainUnit();
@@ -125,6 +122,11 @@ public abstract class ValueWithUnitsCellEditor2 extends CellEditor implements Mu
 		_myText.setText(String.valueOf(_value.getValueIn(bestFitUnit)));
 	}
 
+	@Override
+	public Control getLastControl() {
+		return _myCombo;
+	}
+
 	private int getUndexFor(final Unit unit) {
 		for (int i = 0; i < _unitLabels.length; i++) {
 			if (unit.getLabel().equals(_unitLabels[i])) {
@@ -133,5 +135,7 @@ public abstract class ValueWithUnitsCellEditor2 extends CellEditor implements Mu
 		}
 		throw new IllegalStateException("Can't find unit: " + unit.getLabel() + " in units set: " + _unitsSet);
 	}
+
+	protected abstract ValueInUnits initializeValue();
 
 }

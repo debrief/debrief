@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.debrief.timebar.views;
@@ -55,276 +55,212 @@ import MWC.GenericData.WatchableList;
 import MWC.TacticalData.NarrativeWrapper;
 import MWC.TacticalData.temporal.ControllableTime;
 
-public class TimeBarViewer implements ISelectionProvider,
-    ITimeBarsPainterListener
-{
+public class TimeBarViewer implements ISelectionProvider, ITimeBarsPainterListener {
 
-  /**
-   * the people listening to us
-   */
-  List<ISelectionChangedListener> _listeners =
-      new ArrayList<ISelectionChangedListener>();
+	/**
+	 * the people listening to us
+	 */
+	List<ISelectionChangedListener> _listeners = new ArrayList<ISelectionChangedListener>();
 
-  /**
-   * The current selection for this provider
-   */
-  ISelection _theSelection = null;
+	/**
+	 * The current selection for this provider
+	 */
+	ISelection _theSelection = null;
 
-  private final Layers _myLayers;
+	private final Layers _myLayers;
 
-  // GanttChart _chart;
+	// GanttChart _chart;
 
-  List<IEventEntry> _timeBars = new ArrayList<IEventEntry>();
-  List<IEventEntry> _timeSpots = new ArrayList<IEventEntry>();
+	List<IEventEntry> _timeBars = new ArrayList<IEventEntry>();
+	List<IEventEntry> _timeSpots = new ArrayList<IEventEntry>();
 
-  ITimeBarsPainter _painter;
+	ITimeBarsPainter _painter;
 
-  public TimeBarViewer(final Composite parent, final Layers theLayers)
-  {
-    _myLayers = theLayers;
-    _painter = new NebulaGanttPainter(parent);
-    _painter.addListener(this);
-  }
+	public TimeBarViewer(final Composite parent, final Layers theLayers) {
+		_myLayers = theLayers;
+		_painter = new NebulaGanttPainter(parent);
+		_painter.addListener(this);
+	}
 
-  @Override
-  public void addSelectionChangedListener(
-      final ISelectionChangedListener listener)
-  {
-    if (!_listeners.contains(listener))
-    {
-      _listeners.add(listener);
-    }
-  }
+	@Override
+	public void addSelectionChangedListener(final ISelectionChangedListener listener) {
+		if (!_listeners.contains(listener)) {
+			_listeners.add(listener);
+		}
+	}
 
-  @Override
-  public void chartDoubleClicked(final Date clickedAt)
-  {
-    final HiResDate newDTG = new HiResDate(clickedAt);
-   
-    final IWorkbench wb = PlatformUI.getWorkbench();
-    final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-    final IWorkbenchPage page = win.getActivePage();
-    if (page != null)
-    {
-      final IEditorPart editor = page.getActiveEditor();
-      if (editor != null)
-      {
-        final ControllableTime timer = (ControllableTime) editor.getAdapter(
-            ControllableTime.class);
-        if (timer != null)
-        {
-          timer.setTime(this, newDTG, true);
-        }
-      }
-    }
-  }
+	@Override
+	public void chartDoubleClicked(final Date clickedAt) {
+		final HiResDate newDTG = new HiResDate(clickedAt);
 
-  protected void dispose()
-  {
-    if (_painter != null)
-    {
-      _painter.removeListener(this);
-      _painter = null;
-    }
-  }
+		final IWorkbench wb = PlatformUI.getWorkbench();
+		final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+		final IWorkbenchPage page = win.getActivePage();
+		if (page != null) {
+			final IEditorPart editor = page.getActiveEditor();
+			if (editor != null) {
+				final ControllableTime timer = editor.getAdapter(ControllableTime.class);
+				if (timer != null) {
+					timer.setTime(this, newDTG, true);
+				}
+			}
+		}
+	}
 
-  /**
-   * Runs through the layers, extracts the required elements: track segments, sensor wrappers for a
-   * track, annotations/shapes with the time. Draw these elements as Gantt Events (time bars) on the
-   * GanttChart control. Extracts narrative entries and annotations/shapes with single time to
-   * display them as point markers.
-   * 
-   * @param theLayers
-   *          - Debrief data.
-   */
-  public void drawDiagram(final Layers theLayers, final boolean jumpToBegin,
-      final TimeBarPrefs prefs)
-  {
-    _timeBars.clear();
-    _timeSpots.clear();
+	protected void dispose() {
+		if (_painter != null) {
+			_painter.removeListener(this);
+			_painter = null;
+		}
+	}
 
-    _painter.clear();
+	/**
+	 * Runs through the layers, extracts the required elements: track segments,
+	 * sensor wrappers for a track, annotations/shapes with the time. Draw these
+	 * elements as Gantt Events (time bars) on the GanttChart control. Extracts
+	 * narrative entries and annotations/shapes with single time to display them as
+	 * point markers.
+	 *
+	 * @param theLayers - Debrief data.
+	 */
+	public void drawDiagram(final Layers theLayers, final boolean jumpToBegin, final TimeBarPrefs prefs) {
+		_timeBars.clear();
+		_timeSpots.clear();
 
-    walkThrough(theLayers, prefs);
-    for (final IEventEntry barEvent : _timeBars)
-    {
-      _painter.drawBar(barEvent);
-    }
-    for (final IEventEntry spotEvent : _timeSpots)
-    {
-      _painter.drawSpot(spotEvent);
-    }
-    // move chart start date to the earliest event
-    if (jumpToBegin)
-    {
-      _painter.jumpToBegin();
-    }
-  }
+		_painter.clear();
 
-  public void drawDiagram(final Layers theLayers, final TimeBarPrefs prefs)
-  {
-    this.drawDiagram(theLayers, false, prefs);
-  }
+		walkThrough(theLayers, prefs);
+		for (final IEventEntry barEvent : _timeBars) {
+			_painter.drawBar(barEvent);
+		}
+		for (final IEventEntry spotEvent : _timeSpots) {
+			_painter.drawSpot(spotEvent);
+		}
+		// move chart start date to the earliest event
+		if (jumpToBegin) {
+			_painter.jumpToBegin();
+		}
+	}
 
-  @Override
-  public void eventDoubleClicked(final Object eventEntry)
-  {
-    CorePlugin.openView(IPageLayout.ID_OUTLINE);
-    CorePlugin.openView(IPageLayout.ID_PROP_SHEET);
-  }
+	public void drawDiagram(final Layers theLayers, final TimeBarPrefs prefs) {
+		this.drawDiagram(theLayers, false, prefs);
+	}
 
-  @Override
-  public void eventSelected(final Object eventEntry)
-  {
-    setSelectionToObject(eventEntry);
-  }
+	@Override
+	public void eventDoubleClicked(final Object eventEntry) {
+		CorePlugin.openView(IPageLayout.ID_OUTLINE);
+		CorePlugin.openView(IPageLayout.ID_PROP_SHEET);
+	}
 
-  public void fitToWindow()
-  {
-    _painter.fitToWindow();
-  }
+	@Override
+	public void eventSelected(final Object eventEntry) {
+		setSelectionToObject(eventEntry);
+	}
 
-  @Override
-  public ISelection getSelection()
-  {
-    return _theSelection;
-  }
+	public void fitToWindow() {
+		_painter.fitToWindow();
+	}
 
-  public boolean isDisposed()
-  {
-    return _painter == null || _painter.isDisposed();
-  }
+	@Override
+	public ISelection getSelection() {
+		return _theSelection;
+	}
 
-  @Override
-  public void removeSelectionChangedListener(
-      final ISelectionChangedListener listener)
-  {
-    _listeners.remove(listener);
-  }
+	public boolean isDisposed() {
+		return _painter == null || _painter.isDisposed();
+	}
 
-  public void setFocus()
-  {
-    _painter.setFocus();
-  }
+	@Override
+	public void removeSelectionChangedListener(final ISelectionChangedListener listener) {
+		_listeners.remove(listener);
+	}
 
-  @Override
-  public void setSelection(final ISelection selection)
-  {
-    _theSelection = selection;
-    final SelectionChangedEvent e = new SelectionChangedEvent(this, selection);
+	public void setFocus() {
+		_painter.setFocus();
+	}
 
-    for (final ISelectionChangedListener l : _listeners)
-    {
-      SafeRunner.run(new SafeRunnable()
-      {
-        @Override
-        public void run()
-        {
-          l.selectionChanged(e);
-        }
-      });
-    }
-  }
+	@Override
+	public void setSelection(final ISelection selection) {
+		_theSelection = selection;
+		final SelectionChangedEvent e = new SelectionChangedEvent(this, selection);
 
-  public void setSelectionToObject(final Object modelEntry)
-  {
-    if (modelEntry instanceof Editable)
-    {
-      final Editable ed = (Editable) modelEntry;
-      setSelection(new StructuredSelection(new EditableWrapper(ed, null,
-          _myLayers)));
-    }
-  }
+		for (final ISelectionChangedListener l : _listeners) {
+			SafeRunner.run(new SafeRunnable() {
+				@Override
+				public void run() {
+					l.selectionChanged(e);
+				}
+			});
+		}
+	}
 
-  public void setSelectionToWidget(final StructuredSelection selection)
-  {
-    final Object o = selection.getFirstElement();
-    if (!(o instanceof EditableWrapper))
-    {
-      return;
-    }
-    final EditableWrapper element = (EditableWrapper) o;
-    final Editable selectedItem = element.getEditable();
-    _painter.selectTimeBar(selectedItem);
-  }
+	public void setSelectionToObject(final Object modelEntry) {
+		if (modelEntry instanceof Editable) {
+			final Editable ed = (Editable) modelEntry;
+			setSelection(new StructuredSelection(new EditableWrapper(ed, null, _myLayers)));
+		}
+	}
 
-  private void walkThrough(final Object root, final TimeBarPrefs prefs)
-  {
-    Enumeration<Editable> numer;
-    if (root instanceof Layer)
-    {
-      numer = ((Layer) root).elements();
-    }
-    else if (root instanceof Layers)
-    {
-      numer = ((Layers) root).elements();
-    }
-    else
-    {
-      return;
-    }
+	public void setSelectionToWidget(final StructuredSelection selection) {
+		final Object o = selection.getFirstElement();
+		if (!(o instanceof EditableWrapper)) {
+			return;
+		}
+		final EditableWrapper element = (EditableWrapper) o;
+		final Editable selectedItem = element.getEditable();
+		_painter.selectTimeBar(selectedItem);
+	}
 
-    while (numer.hasMoreElements())
-    {
-      final Editable next = numer.nextElement();
+	private void walkThrough(final Object root, final TimeBarPrefs prefs) {
+		Enumeration<Editable> numer;
+		if (root instanceof Layer) {
+			numer = ((Layer) root).elements();
+		} else if (root instanceof Layers) {
+			numer = ((Layers) root).elements();
+		} else {
+			return;
+		}
 
-      if (next instanceof WatchableList)
-      {
-        final WatchableList wlist = (WatchableList) next;
-        if (wlist.getStartDTG() != null)
-        {
-          if (wlist.getEndDTG() != null)
-          {
-            if (wlist instanceof TrackWrapper)
-            {
-              _timeBars.add(new TimeBar((TrackWrapper) next, prefs));
-            }
-            else
-            {
-              _timeBars.add(new TimeBar(wlist));
-            }
-          }
-          else
-          {
-            _timeSpots.add(new TimeSpot(wlist));
-          }
-        }
-      }
-      else if (next instanceof Watchable)
-      {
-        final Watchable wb = (Watchable) next;
-        if (wb.getTime() != null)
-        {
-          _timeSpots.add(new TimeSpot(wb));
-        }
-      }
-      else if (next instanceof NarrativeWrapper)
-      {
-        _timeBars.add(new TimeBar((NarrativeWrapper) next));
-      }
-      else if (next instanceof SATC_Solution)
-      {
-        final SATC_Solution solution = (SATC_Solution) next;
-        if (solution.getStartDTG() != null)
-        {
-          _timeBars.add(new TimeBar(solution));
-        }
-      }
-      else if (!(next instanceof WatchableList))
-      {
-        walkThrough(next, prefs);
-      }
-    }
-  }
+		while (numer.hasMoreElements()) {
+			final Editable next = numer.nextElement();
 
-  public void zoomIn()
-  {
-    _painter.zoomIn();
-  }
+			if (next instanceof WatchableList) {
+				final WatchableList wlist = (WatchableList) next;
+				if (wlist.getStartDTG() != null) {
+					if (wlist.getEndDTG() != null) {
+						if (wlist instanceof TrackWrapper) {
+							_timeBars.add(new TimeBar((TrackWrapper) next, prefs));
+						} else {
+							_timeBars.add(new TimeBar(wlist));
+						}
+					} else {
+						_timeSpots.add(new TimeSpot(wlist));
+					}
+				}
+			} else if (next instanceof Watchable) {
+				final Watchable wb = (Watchable) next;
+				if (wb.getTime() != null) {
+					_timeSpots.add(new TimeSpot(wb));
+				}
+			} else if (next instanceof NarrativeWrapper) {
+				_timeBars.add(new TimeBar((NarrativeWrapper) next));
+			} else if (next instanceof SATC_Solution) {
+				final SATC_Solution solution = (SATC_Solution) next;
+				if (solution.getStartDTG() != null) {
+					_timeBars.add(new TimeBar(solution));
+				}
+			} else if (!(next instanceof WatchableList)) {
+				walkThrough(next, prefs);
+			}
+		}
+	}
 
-  public void zoomOut()
-  {
-    _painter.zoomOut();
-  }
+	public void zoomIn() {
+		_painter.zoomIn();
+	}
+
+	public void zoomOut() {
+		_painter.zoomOut();
+	}
 
 }

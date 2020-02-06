@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: SwingSession.java,v $
@@ -108,7 +108,6 @@
 // new Swing versions
 //
 
-
 package Debrief.GUI.Frames.Swing;
 
 import java.awt.BorderLayout;
@@ -117,6 +116,7 @@ import javax.swing.JDialog;
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.WindowConstants;
 
 import Debrief.GUI.Frames.Session;
 import Debrief.GUI.Views.AnalysisView;
@@ -129,265 +129,231 @@ import MWC.GenericData.WorldArea;
 /**
  * Swing
  */
-public final class SwingSession extends Session implements MyMetalToolBarUI.ToolbarOwner
-{
+public final class SwingSession extends Session implements MyMetalToolBarUI.ToolbarOwner {
 
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
 
-  transient ToolParent _theParent;
-
-  transient private javax.swing.JInternalFrame _thePanel;
-  transient private SwingAnalysisView _theView;
-  transient private WorldArea _initialArea;
-
-  static final long serialVersionUID = -6899302110582614129L;
-
-  transient private java.beans.VetoableChangeListener _frameListener;
-
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-
-
-  /**
-   * create the first Swing View, set to the view in the parent
-   */
-  public SwingSession(final ToolParent theParent,
-                      final java.awt.datatransfer.Clipboard theClipboard,
-                      final String newName)
-  {
-    super(theClipboard);
-
-    super.setName(newName);
-
-    _theParent = theParent;
-
-    initialiseForm(theParent);
-
-    _thePanel.setVisible(true);
-
-    // take a copy of this session, which we can use in our frame close listener
-    final SwingSession thisSession = this;
-
-    // create the listener (we will remember this, so we can remove it later)
-    _frameListener = new java.beans.VetoableChangeListener()
-    {
-      public void vetoableChange(final java.beans.PropertyChangeEvent evt)
-        throws java.beans.PropertyVetoException
-      {
-        // find out which event we are receiving
-        final String name = evt.getPropertyName();
-
-        if (name.equals(javax.swing.JInternalFrame.IS_CLOSED_PROPERTY))
-        {
-          final Boolean oldValue = (Boolean) evt.getOldValue();
-          final Boolean newValue = (Boolean) evt.getNewValue();
-
-          if (oldValue == Boolean.FALSE && newValue == Boolean.TRUE)
-          {
-
-            // get the application to handle the close
-            if (_theParent instanceof Debrief.GUI.Frames.Application)
-            {
-              final Debrief.GUI.Frames.Application parent = (Debrief.GUI.Frames.Application) _theParent;
-              parent.closeSession(thisSession);
-
-              // throw the exception anyway, we've handled it in the "closeSession" method
-              throw new java.beans.PropertyVetoException("Handled elsewhere", evt);
-            }
-          }
-        }
-
-      }
-    };
-
-    // add the listener to the panel
-    _thePanel.addVetoableChangeListener(_frameListener);
-
-
-  }
-
-
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
-
-  public final void initialiseForm(final ToolParent theParent)
-  {
-    // SPECIAL PROCESSING, open up a mouse-less view if we are running jdk1.3
-    try
-    {
-      _theView = new SwingMouseAnalysisView(_theParent, this);
-    }
-    catch (final java.lang.NoClassDefFoundError er)
-    {
-      MWC.Utilities.Errors.Trace.trace(er, "Failed to load mouse-wheel libraries.  Will continue");
-      _theView = new SwingAnalysisView(_theParent, this);
-    }
-
-    _theParent = theParent;
-    _thePanel = new SessionJInternalFrame(super.getName(),
-                                          true,
-                                          true,
-                                          true,
-                                          true,
-                                          _theView);
-    _thePanel.getContentPane().setLayout(new BorderLayout());
-    _thePanel.setSize(900, 400);
-    _thePanel.setName(getName());
-    _thePanel.setDefaultCloseOperation(JInternalFrame.DISPOSE_ON_CLOSE);
-
-    // set the view in the parent
-    addView(_theView);
-
-    _thePanel.getContentPane().add("Center", _theView.getPanel());
-
-    _thePanel.doLayout();
-
-
-    if (_initialArea != null)
-    {
-      // restore the data area
-      _theView.getChart().getCanvas().getProjection().setDataArea(_initialArea);
-      _theView.getChart().getCanvas().getProjection().zoom(0.0);
-    }
-
-    // and do an update
-    _theView.getChart().update();
-
-  }
-
-  public final void closeGUI()
-  {
-    _theParent = null;
-    _initialArea = null;
-
-    // note that the Session bit clears all of the
-    // views itself
-    _theView = null;
-
-    // stop listening for a frame to close
-    _thePanel.removeVetoableChangeListener(_frameListener);
-    _frameListener = null;
-
-    // clear all of our references
-    _thePanel.setVisible(false);
-    _thePanel.removeAll();
-    _thePanel.dispose();
-    _thePanel = null;
-
-  }
-
-
-  /**
-   * @return the Panel we are using for this session
-   */
-  public final JInternalFrame getPanel()
-  {
-    return _thePanel;
-  }
-
-  /**
-   * repaint the current view
-   */
-  public final void repaint()
-  {
-    _thePanel.repaint();
-    super.getCurrentView().update();
-  }
-
-  /**
-   * @param theName is the string used to name
-   *                this session
-   */
-  protected final void setName(final String theName)
-  {
-    super.setName(theName);
-
-    // now give the panel the same name
-    _thePanel.setName(getName());
-    _thePanel.setTitle(getName());
-  }
-
-  protected final void finalize()
-  {
-    try
-    {
-      super.finalize();
-    }
-    catch (final Throwable e)
-    {
-      MWC.Utilities.Errors.Trace.trace(e);
-    }
-  }
-
-  @SuppressWarnings("deprecation")
-	protected final boolean wantsToClose()
-  {
-    // try to do a file save - ask the user
-    final JPanel jp = new JPanel();
-    final JOptionPane pane = new JOptionPane("Session has not been saved. Do you wish to close?",
-                                             JOptionPane.QUESTION_MESSAGE,
-                                             JOptionPane.YES_NO_OPTION);
-    final JDialog dialog = pane.createDialog(jp, "Close Session");
-    dialog.show();
-    final Integer value = (Integer) pane.getValue();
-    return (value.intValue() == JOptionPane.YES_OPTION);
-  }
-
-  /**
-   * *******************************************************************
-   * embedded class which adds a session pointer to a desktop frame.
-   * - partially so we can get the session back when we're implementing
-   * the third party mouse scroller for JDK1.3
-   * *******************************************************************
-   */
-  public static final class SessionJInternalFrame extends JInternalFrame
-  {
-    /**
-		 * 
-		 */
+	/**
+	 * ******************************************************************* embedded
+	 * class which adds a session pointer to a desktop frame. - partially so we can
+	 * get the session back when we're implementing the third party mouse scroller
+	 * for JDK1.3
+	 * *******************************************************************
+	 */
+	public static final class SessionJInternalFrame extends JInternalFrame {
+		/**
+			 *
+			 */
 		private static final long serialVersionUID = 1L;
 		/**
-     * the view we're looking at
-     */
-    final private AnalysisView theView;
+		 * the view we're looking at
+		 */
+		final private AnalysisView theView;
 
-    /**
-     * Creates a <code>JInternalFrame</code> with the specified title and
-     * with resizability, closability, maximizability, and iconifiability
-     * specified.  All constructors defer to this one.
-     *
-     * @param title       the <code>String</code> to display in the title bar
-     * @param resizable   if true, the frame can be resized
-     * @param closable    if true, the frame can be closed
-     * @param maximizable if true, the frame can be maximized
-     * @param iconifiable if true, the frame can be iconified
-     */
-    public SessionJInternalFrame(final String title,
-                                 final boolean resizable,
-                                 final boolean closable,
-                                 final boolean maximizable,
-                                 final boolean iconifiable,
-                                 final AnalysisView theView)
-    {
-      super(title, resizable, closable, maximizable, iconifiable);
-      this.theView = theView;
-    }
+		/**
+		 * Creates a <code>JInternalFrame</code> with the specified title and with
+		 * resizability, closability, maximizability, and iconifiability specified. All
+		 * constructors defer to this one.
+		 *
+		 * @param title       the <code>String</code> to display in the title bar
+		 * @param resizable   if true, the frame can be resized
+		 * @param closable    if true, the frame can be closed
+		 * @param maximizable if true, the frame can be maximized
+		 * @param iconifiable if true, the frame can be iconified
+		 */
+		public SessionJInternalFrame(final String title, final boolean resizable, final boolean closable,
+				final boolean maximizable, final boolean iconifiable, final AnalysisView theView) {
+			super(title, resizable, closable, maximizable, iconifiable);
+			this.theView = theView;
+		}
 
-    /**
-     * retrive the view which this frame is looking at
-     *
-     * @return the current view
-     */
+		/**
+		 * retrive the view which this frame is looking at
+		 *
+		 * @return the current view
+		 */
 
-    public final AnalysisView getTheView()
-    {
-      return theView;
-    }
+		public final AnalysisView getTheView() {
+			return theView;
+		}
 
-  }
+	}
+
+	static final long serialVersionUID = -6899302110582614129L;
+	transient ToolParent _theParent;
+	transient private javax.swing.JInternalFrame _thePanel;
+
+	transient private SwingAnalysisView _theView;
+
+	transient private WorldArea _initialArea;
+
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+
+	transient private java.beans.VetoableChangeListener _frameListener;
+
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * create the first Swing View, set to the view in the parent
+	 */
+	public SwingSession(final ToolParent theParent, final java.awt.datatransfer.Clipboard theClipboard,
+			final String newName) {
+		super(theClipboard);
+
+		super.setName(newName);
+
+		_theParent = theParent;
+
+		initialiseForm(theParent);
+
+		_thePanel.setVisible(true);
+
+		// take a copy of this session, which we can use in our frame close listener
+		final SwingSession thisSession = this;
+
+		// create the listener (we will remember this, so we can remove it later)
+		_frameListener = new java.beans.VetoableChangeListener() {
+			@Override
+			public void vetoableChange(final java.beans.PropertyChangeEvent evt)
+					throws java.beans.PropertyVetoException {
+				// find out which event we are receiving
+				final String name = evt.getPropertyName();
+
+				if (name.equals(javax.swing.JInternalFrame.IS_CLOSED_PROPERTY)) {
+					final Boolean oldValue = (Boolean) evt.getOldValue();
+					final Boolean newValue = (Boolean) evt.getNewValue();
+
+					if (oldValue == Boolean.FALSE && newValue == Boolean.TRUE) {
+
+						// get the application to handle the close
+						if (_theParent instanceof Debrief.GUI.Frames.Application) {
+							final Debrief.GUI.Frames.Application parent = (Debrief.GUI.Frames.Application) _theParent;
+							parent.closeSession(thisSession);
+
+							// throw the exception anyway, we've handled it in the "closeSession" method
+							throw new java.beans.PropertyVetoException("Handled elsewhere", evt);
+						}
+					}
+				}
+
+			}
+		};
+
+		// add the listener to the panel
+		_thePanel.addVetoableChangeListener(_frameListener);
+
+	}
+
+	@Override
+	public final void closeGUI() {
+		_theParent = null;
+		_initialArea = null;
+
+		// note that the Session bit clears all of the
+		// views itself
+		_theView = null;
+
+		// stop listening for a frame to close
+		_thePanel.removeVetoableChangeListener(_frameListener);
+		_frameListener = null;
+
+		// clear all of our references
+		_thePanel.setVisible(false);
+		_thePanel.removeAll();
+		_thePanel.dispose();
+		_thePanel = null;
+
+	}
+
+	@Override
+	protected final void finalize() {
+		try {
+			super.finalize();
+		} catch (final Throwable e) {
+			MWC.Utilities.Errors.Trace.trace(e);
+		}
+	}
+
+	/**
+	 * @return the Panel we are using for this session
+	 */
+	public final JInternalFrame getPanel() {
+		return _thePanel;
+	}
+
+	@Override
+	public final void initialiseForm(final ToolParent theParent) {
+		// SPECIAL PROCESSING, open up a mouse-less view if we are running jdk1.3
+		try {
+			_theView = new SwingMouseAnalysisView(_theParent, this);
+		} catch (final java.lang.NoClassDefFoundError er) {
+			MWC.Utilities.Errors.Trace.trace(er, "Failed to load mouse-wheel libraries.  Will continue");
+			_theView = new SwingAnalysisView(_theParent, this);
+		}
+
+		_theParent = theParent;
+		_thePanel = new SessionJInternalFrame(super.getName(), true, true, true, true, _theView);
+		_thePanel.getContentPane().setLayout(new BorderLayout());
+		_thePanel.setSize(900, 400);
+		_thePanel.setName(getName());
+		_thePanel.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+		// set the view in the parent
+		addView(_theView);
+
+		_thePanel.getContentPane().add("Center", _theView.getPanel());
+
+		_thePanel.doLayout();
+
+		if (_initialArea != null) {
+			// restore the data area
+			_theView.getChart().getCanvas().getProjection().setDataArea(_initialArea);
+			_theView.getChart().getCanvas().getProjection().zoom(0.0);
+		}
+
+		// and do an update
+		_theView.getChart().update();
+
+	}
+
+	/**
+	 * repaint the current view
+	 */
+	@Override
+	public final void repaint() {
+		_thePanel.repaint();
+		super.getCurrentView().update();
+	}
+
+	/**
+	 * @param theName is the string used to name this session
+	 */
+	@Override
+	protected final void setName(final String theName) {
+		super.setName(theName);
+
+		// now give the panel the same name
+		_thePanel.setName(getName());
+		_thePanel.setTitle(getName());
+	}
+
+	@Override
+	@SuppressWarnings("deprecation")
+	protected final boolean wantsToClose() {
+		// try to do a file save - ask the user
+		final JPanel jp = new JPanel();
+		final JOptionPane pane = new JOptionPane("Session has not been saved. Do you wish to close?",
+				JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION);
+		final JDialog dialog = pane.createDialog(jp, "Close Session");
+		dialog.show();
+		final Integer value = (Integer) pane.getValue();
+		return (value.intValue() == JOptionPane.YES_OPTION);
+	}
 
 }

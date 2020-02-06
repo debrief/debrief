@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.cmap.core.wizards;
@@ -30,45 +30,34 @@ import MWC.GenericData.WorldDistance;
  * OR with the extension that matches the expected one (xml).
  */
 
-public class GridWizardPage extends CoreEditableWizardPage
-{
+public class GridWizardPage extends CoreEditableWizardPage {
 
-	public static class DefaultDistancePropertyEditor extends
-			PropertyEditorSupport
-	{
-
-		protected WorldDistance _myDistance;
+	public static class DefaultDistancePropertyEditor extends PropertyEditorSupport {
 
 		private static WorldDistance[] _myDistances;
 
 		private static String[] _myTags;
 
+		protected WorldDistance _myDistance;
+
 		@Override
-		public String getAsText()
-		{
+		public String getAsText() {
 			return _myDistance.toString();
 		}
 
 		@Override
-		public synchronized String[] getTags()
-		{
-			if (_myDistances == null)
-			{
-				_myDistances = new WorldDistance[]
-				{ new WorldDistance(500, WorldDistance.METRES),
-						new WorldDistance(1, WorldDistance.KM),
-						new WorldDistance(1, WorldDistance.MINUTES),
-						new WorldDistance(5, WorldDistance.MINUTES),
-						new WorldDistance(15, WorldDistance.MINUTES),
-						new WorldDistance(30, WorldDistance.MINUTES),
-						new WorldDistance(1, WorldDistance.DEGS), };
+		public synchronized String[] getTags() {
+			if (_myDistances == null) {
+				_myDistances = new WorldDistance[] { new WorldDistance(500, WorldDistance.METRES),
+						new WorldDistance(1, WorldDistance.KM), new WorldDistance(1, WorldDistance.MINUTES),
+						new WorldDistance(5, WorldDistance.MINUTES), new WorldDistance(15, WorldDistance.MINUTES),
+						new WorldDistance(30, WorldDistance.MINUTES), new WorldDistance(1, WorldDistance.DEGS), };
 
 				// and now convert them to strings
 				_myTags = new String[_myDistances.length];
 
 				// cycle through converting as we go
-				for (int i = 0; i < _myDistances.length; i++)
-				{
+				for (int i = 0; i < _myDistances.length; i++) {
 					final WorldDistance thisDist = _myDistances[i];
 					_myTags[i] = thisDist.toString();
 
@@ -79,31 +68,24 @@ public class GridWizardPage extends CoreEditableWizardPage
 		}
 
 		@Override
-		public Object getValue()
-		{
+		public Object getValue() {
 			return _myDistance;
 		}
 
 		@Override
-		public void setAsText(final String val)
-		{
+		public void setAsText(final String val) {
 			setValue(val);
 		}
 
 		@Override
-		public void setValue(final Object p1)
-		{
-			if (p1 instanceof WorldDistance)
-			{
+		public void setValue(final Object p1) {
+			if (p1 instanceof WorldDistance) {
 				_myDistance = (WorldDistance) p1;
 			}
-			if (p1 instanceof String)
-			{
-				for (int i = 0; i < _myTags.length; i++)
-				{
+			if (p1 instanceof String) {
+				for (int i = 0; i < _myTags.length; i++) {
 					final String thisTag = _myTags[i];
-					if (p1.equals(thisTag))
-					{
+					if (p1.equals(thisTag)) {
 						_myDistance = _myDistances[i];
 						break;
 					}
@@ -114,18 +96,16 @@ public class GridWizardPage extends CoreEditableWizardPage
 
 	/**
 	 * Constructor for SampleNewWizardPage.
-	 * 
+	 *
 	 * @param pageName
 	 */
-	public GridWizardPage(final ISelection selection)
-	{
-		super(selection, "gridPage", "Add Grid to Plot",
-				"This page adds a grid to your plot", "images/grid_wizard.gif", null);
+	public GridWizardPage(final ISelection selection) {
+		super(selection, "gridPage", "Add Grid to Plot", "This page adds a grid to your plot", "images/grid_wizard.gif",
+				null);
 	}
 
 	@Override
-	protected Editable createMe()
-	{
+	protected Editable createMe() {
 		if (_editable == null)
 			_editable = new GridPainter();
 
@@ -136,14 +116,10 @@ public class GridWizardPage extends CoreEditableWizardPage
 	 * @return
 	 */
 	@Override
-	protected PropertyDescriptor[] getPropertyDescriptors()
-	{
-		final PropertyDescriptor[] descriptors =
-		{
-				prop("Color", "the Color to draw the grid", getEditable()),
+	protected PropertyDescriptor[] getPropertyDescriptors() {
+		final PropertyDescriptor[] descriptors = { prop("Color", "the Color to draw the grid", getEditable()),
 				prop("PlotLabels", "whether to plot grid labels", getEditable()),
-				longProp("Delta", "the step size for the grid", getEditable(),
-						DefaultDistancePropertyEditor.class) };
+				longProp("Delta", "the step size for the grid", getEditable(), DefaultDistancePropertyEditor.class) };
 		return descriptors;
 	}
 

@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: ImportCircle.java,v $
@@ -104,160 +104,155 @@ import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
-/** class to parse a circle from a line of text
+/**
+ * class to parse a circle from a line of text
  */
-final class ImportDynamicCircle extends AbstractPlainLineImporter
-{
-  /** the type for this string
-   */
-  private final String _myType = ";DYNAMIC_CIRCLE:";
-  
-  /** read in this string and return a Label
-   * @throws ParseException 
-   */
-  public final Object readThisLine(final String theLine) throws ParseException{
-    
-    // get a stream from the string
-    final StringTokenizer st = new StringTokenizer(theLine);
-    
-    // declare local variables
-    WorldLocation theLoc;
-    double latDeg, longDeg, latMin, longMin;
-    char latHem, longHem;
-    double latSec, longSec;
-    double radius;
-    String theText = null;
-    
-    // skip the comment identifier
-    st.nextToken();
-    
-    // start with the symbology
-    symbology = st.nextToken();
-    
-    String theName = checkForQuotedName(st).trim();
+final class ImportDynamicCircle extends AbstractPlainLineImporter {
+	/**
+	 * the type for this string
+	 */
+	private final String _myType = ";DYNAMIC_CIRCLE:";
+
+	/**
+	 * indicate if you can export this type of object
+	 *
+	 * @param val the object to test
+	 * @return boolean saying whether you can do it
+	 */
+	@Override
+	public final boolean canExportThis(final Object val) {
+		boolean res = false;
+
+		if (val instanceof ShapeWrapper) {
+			final ShapeWrapper sw = (ShapeWrapper) val;
+			final PlainShape ps = sw.getShape();
+			res = (ps instanceof CircleShape);
+		}
+
+		return res;
+	}
+
+	/**
+	 * export the specified shape as a string
+	 *
+	 * @return the shape in String form
+	 * @param theWrapper the Shape we are exporting
+	 */
+	@Override
+	public final String exportThis(final MWC.GUI.Plottable theWrapper) {
+		final ShapeWrapper theShape = (ShapeWrapper) theWrapper;
+
+		final CircleShape circle = (CircleShape) theShape.getShape();
+
+		// result value
+		String line;
+
+		line = _myType + " BD ";
+
+		line = line + " " + MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(circle.getCentre());
+
+		line = line + " " + circle.getRadius().getValueIn(WorldDistance.YARDS);
+
+		line = line + " " + theShape.getLabel();
+
+		return line;
+
+	}
+
+	/**
+	 * determine the identifier returning this type of annotation
+	 */
+	@Override
+	public final String getYourType() {
+		return _myType;
+	}
+
+	/**
+	 * read in this string and return a Label
+	 *
+	 * @throws ParseException
+	 */
+	@Override
+	public final Object readThisLine(final String theLine) throws ParseException {
+
+		// get a stream from the string
+		final StringTokenizer st = new StringTokenizer(theLine);
+
+		// declare local variables
+		WorldLocation theLoc;
+		double latDeg, longDeg, latMin, longMin;
+		char latHem, longHem;
+		double latSec, longSec;
+		double radius;
+		String theText = null;
+
+		// skip the comment identifier
+		st.nextToken();
+
+		// start with the symbology
+		symbology = st.nextToken();
+
+		final String theName = checkForQuotedName(st).trim();
 
 		// combine the date, a space, and the time
 		final String dateToken = st.nextToken();
 		final String timeToken = st.nextToken();
 
 		// and extract the date
-		HiResDate theDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
-		
-    try
-    {
-    	// now the location
-    	latDeg = MWCXMLReader.readThisDouble(st.nextToken());
-    	latMin = MWCXMLReader.readThisDouble(st.nextToken());
-    	latSec = MWCXMLReader.readThisDouble(st.nextToken());
-    
-	    /** now, we may have trouble here, since there may not be
-	     * a space between the hemisphere character and a 3-digit
-	     * latitude value - so BE CAREFUL
-	     */
-	    final String vDiff = st.nextToken();
-	    if(vDiff.length() > 3)
-	    {
-	      // hmm, they are combined
-	      latHem = vDiff.charAt(0);
-	      final String secondPart = vDiff.substring(1, vDiff.length());
-	      longDeg  = MWCXMLReader.readThisDouble(secondPart);
-	    }
-	    else
-	    {
-	      // they are separate, so only the hem is in this one
-	      latHem = vDiff.charAt(0);
-	      longDeg = MWCXMLReader.readThisDouble(st.nextToken());
-	    }
-	    longMin = MWCXMLReader.readThisDouble(st.nextToken());
-	    longSec = MWCXMLReader.readThisDouble(st.nextToken());
-	    longHem = st.nextToken().charAt(0);
+		final HiResDate theDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
 
-	    // now the radius of the circle
-	    radius = MWCXMLReader.readThisDouble(st.nextToken());
-    
-    
-	    // and now read in the message
-		if (st.hasMoreTokens()) {
-			theText = st.nextToken("\r");
-			if (theText != null)
-				theText = theText.trim();
-		}
-	    
-	    // create the tactical data    
-	    theLoc = new WorldLocation(latDeg, latMin, latSec, latHem,
-	                               longDeg, longMin, longSec, longHem,
-	                               0);
-  
-	    // create the circle object
-	    final PlainShape sp = new CircleShape(theLoc, radius);
-	    Color c = ImportReplay.replayColorFor(symbology);
+		try {
+			// now the location
+			latDeg = MWCXMLReader.readThisDouble(st.nextToken());
+			latMin = MWCXMLReader.readThisDouble(st.nextToken());
+			latSec = MWCXMLReader.readThisDouble(st.nextToken());
+
+			/**
+			 * now, we may have trouble here, since there may not be a space between the
+			 * hemisphere character and a 3-digit latitude value - so BE CAREFUL
+			 */
+			final String vDiff = st.nextToken();
+			if (vDiff.length() > 3) {
+				// hmm, they are combined
+				latHem = vDiff.charAt(0);
+				final String secondPart = vDiff.substring(1, vDiff.length());
+				longDeg = MWCXMLReader.readThisDouble(secondPart);
+			} else {
+				// they are separate, so only the hem is in this one
+				latHem = vDiff.charAt(0);
+				longDeg = MWCXMLReader.readThisDouble(st.nextToken());
+			}
+			longMin = MWCXMLReader.readThisDouble(st.nextToken());
+			longSec = MWCXMLReader.readThisDouble(st.nextToken());
+			longHem = st.nextToken().charAt(0);
+
+			// now the radius of the circle
+			radius = MWCXMLReader.readThisDouble(st.nextToken());
+
+			// and now read in the message
+			if (st.hasMoreTokens()) {
+				theText = st.nextToken("\r");
+				if (theText != null)
+					theText = theText.trim();
+			}
+
+			// create the tactical data
+			theLoc = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg, longMin, longSec, longHem, 0);
+
+			// create the circle object
+			final PlainShape sp = new CircleShape(theLoc, radius);
+			final Color c = ImportReplay.replayColorFor(symbology);
 			sp.setColor(c);
-	    
-	    // and put it into a shape
-	    final DynamicShapeWrapper sw = new DynamicShapeWrapper(theText, 
-	                                       sp, 
-	                                       c,
-																				 theDate, theName);
-	    
-	    return sw;
-    }
-    catch (final ParseException pe) 
-	{
-		MWC.Utilities.Errors.Trace.trace(pe,
-				"Whilst import Circle");
-		return null;
-	}
 
-  }
-  
-  /** determine the identifier returning this type of annotation
-   */
-  public final String getYourType(){
-    return _myType;
-  }
+			// and put it into a shape
+			final DynamicShapeWrapper sw = new DynamicShapeWrapper(theText, sp, c, theDate, theName);
 
-	/** export the specified shape as a string
-	 * @return the shape in String form
-	 * @param theWrapper the Shape we are exporting
-	 */	
-	public final String exportThis(final MWC.GUI.Plottable theWrapper)
-	{
-		final ShapeWrapper theShape = (ShapeWrapper) theWrapper;
-		
-		final CircleShape circle = (CircleShape) theShape.getShape();
-		
-		// result value
-		String line;
-		
-		line = _myType + " BD ";
-							
-		line = line + " " + MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(circle.getCentre());
-
-		line = line + " " + circle.getRadius().getValueIn(WorldDistance.YARDS);
-				
-		line = line + " " + theShape.getLabel();
-				
-		return line;
-		
-	}
-
-	/** indicate if you can export this type of object
-	 * @param val the object to test
-	 * @return boolean saying whether you can do it
-	 */
-	public final boolean canExportThis(final Object val)
-	{
-		boolean res = false;
-		
-		if(val instanceof ShapeWrapper)
-		{
-			final ShapeWrapper sw = (ShapeWrapper) val;
-			final PlainShape ps = sw.getShape();
-			res = (ps instanceof CircleShape);
+			return sw;
+		} catch (final ParseException pe) {
+			MWC.Utilities.Errors.Trace.trace(pe, "Whilst import Circle");
+			return null;
 		}
-		
-		return res;
-	}
-	
-}
 
+	}
+
+}

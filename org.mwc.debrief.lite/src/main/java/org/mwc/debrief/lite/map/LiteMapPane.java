@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 package org.mwc.debrief.lite.map;
 
@@ -36,7 +36,6 @@ import org.geotools.swing.event.MapMouseAdapter;
 import org.geotools.swing.event.MapMouseEvent;
 import org.geotools.swing.event.MapMouseListener;
 import org.geotools.swing.tool.CursorTool;
-import org.geotools.util.factory.Hints;
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.operation.MathTransform;
@@ -47,312 +46,258 @@ import MWC.GUI.ToolParent;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.BriefFormatLocation;
 
-public class LiteMapPane extends JMapPane
-{
+public class LiteMapPane extends JMapPane {
 
-  /**
-   *
-   */
-  private static final long serialVersionUID = 1L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-  private static final String WORLD_PROJECTION = "EPSG:3395"; // 3395 for Mercator proj (? or may
+	private static final String WORLD_PROJECTION = "EPSG:3395"; // 3395 for Mercator proj (? or may
 
-  // be 3857?)
-  private static final String DATA_PROJECTION = "EPSG:4326";
-  /**
-   * background transparency
-   *
-   */
-  private float mapTransparency;
+	// be 3857?)
+	private static final String DATA_PROJECTION = "EPSG:4326";
 
-  private final GeoToolMapRenderer _renderer;
+	private static Color getNewColor(final double alpha) {
+		return new Color((int) (255 - alpha * 171), (int) (255 - alpha * 119), (int) (255 - alpha * 57));
+	}
 
-  private final ArrayList<ActionListener> repaintListeners = new ArrayList<>();
+	/**
+	 * background transparency
+	 *
+	 */
+	private float mapTransparency;
 
-  public LiteMapPane(final GeoToolMapRenderer geoToolMapRenderer,
-      final float alpha)
-  {
-    super();
+	private final GeoToolMapRenderer _renderer;
 
-    mapTransparency = alpha;
+	private final ArrayList<ActionListener> repaintListeners = new ArrayList<>();
 
-    _renderer = geoToolMapRenderer;
+	public LiteMapPane(final GeoToolMapRenderer geoToolMapRenderer, final float alpha) {
+		super();
 
-    addMouseListener(getMouseListener(_renderer.getTransform()));
+		mapTransparency = alpha;
 
-    disableBoxDrawRightClick();
+		_renderer = geoToolMapRenderer;
 
-    // try to set background color
-    super.setBackground(getNewColor(mapTransparency));
-  }
+		addMouseListener(getMouseListener(_renderer.getTransform()));
 
-  private static Color getNewColor(final double alpha)
-  {
-    return new Color((int) (255 - alpha * 171), (int) (255 - alpha * 119),
-        (int) (255 - alpha * 57));
-  }
+		disableBoxDrawRightClick();
 
-  public void addRepaintListener(final ActionListener actionListener)
-  {
-    repaintListeners.add(actionListener);
-  }
+		// try to set background color
+		super.setBackground(getNewColor(mapTransparency));
+	}
 
-  private void disableBoxDrawRightClick()
-  {
-    final MouseListener[] listeners = getMouseListeners();
-    MouseDragBox dragbox = null;
-    for (final MouseListener l : listeners)
-    {
-      if (l instanceof MouseDragBox)
-      {
-        dragbox = ((MouseDragBox) l);
-      }
-    }
-    final MouseDragBox finalDragbox = dragbox;
+	public void addRepaintListener(final ActionListener actionListener) {
+		repaintListeners.add(actionListener);
+	}
 
-    addMouseListener(new MapMouseListener()
-    {
+	private void disableBoxDrawRightClick() {
+		final MouseListener[] listeners = getMouseListeners();
+		MouseDragBox dragbox = null;
+		for (final MouseListener l : listeners) {
+			if (l instanceof MouseDragBox) {
+				dragbox = ((MouseDragBox) l);
+			}
+		}
+		final MouseDragBox finalDragbox = dragbox;
 
-      @Override
-      public void onMouseClicked(final MapMouseEvent paramMapMouseEvent)
-      {
+		addMouseListener(new MapMouseListener() {
 
-      }
+			@Override
+			public void onMouseClicked(final MapMouseEvent paramMapMouseEvent) {
 
-      @Override
-      public void onMouseDragged(final MapMouseEvent paramMapMouseEvent)
-      {
+			}
 
-      }
+			@Override
+			public void onMouseDragged(final MapMouseEvent paramMapMouseEvent) {
 
-      @Override
-      public void onMouseEntered(final MapMouseEvent paramMapMouseEvent)
-      {
+			}
 
-      }
+			@Override
+			public void onMouseEntered(final MapMouseEvent paramMapMouseEvent) {
 
-      @Override
-      public void onMouseExited(final MapMouseEvent paramMapMouseEvent)
-      {
+			}
 
-      }
+			@Override
+			public void onMouseExited(final MapMouseEvent paramMapMouseEvent) {
 
-      @Override
-      public void onMouseMoved(final MapMouseEvent paramMapMouseEvent)
-      {
+			}
 
-      }
+			@Override
+			public void onMouseMoved(final MapMouseEvent paramMapMouseEvent) {
 
-      @Override
-      public void onMousePressed(final MapMouseEvent paramMapMouseEvent)
-      {
-        if (finalDragbox != null)
-        {
-          final boolean isRightClick = paramMapMouseEvent
-              .getButton() == MouseEvent.BUTTON3;
-          finalDragbox.setEnabled(!isRightClick && currentCursorTool != null
-              && currentCursorTool.drawDragBox());
-        }
-      }
+			}
 
-      @Override
-      public void onMouseReleased(final MapMouseEvent paramMapMouseEvent)
-      {
+			@Override
+			public void onMousePressed(final MapMouseEvent paramMapMouseEvent) {
+				if (finalDragbox != null) {
+					final boolean isRightClick = paramMapMouseEvent.getButton() == MouseEvent.BUTTON3;
+					finalDragbox
+							.setEnabled(!isRightClick && currentCursorTool != null && currentCursorTool.drawDragBox());
+				}
+			}
 
-      }
+			@Override
+			public void onMouseReleased(final MapMouseEvent paramMapMouseEvent) {
 
-      @Override
-      public void onMouseWheelMoved(final MapMouseEvent paramMapMouseEvent)
-      {
+			}
 
-      }
-    });
-  }
+			@Override
+			public void onMouseWheelMoved(final MapMouseEvent paramMapMouseEvent) {
 
-  public MapMouseAdapter getMouseListener(final MathTransform transform)
-  {
-    return new MapMouseAdapter()
-    {
+			}
+		});
+	}
 
-      void handleMouseMovement(final MapMouseEvent ev)
-      {
-        // mouse pos in Map coordinates
-        final DirectPosition2D curPos = ev.getWorldPos();
+	public MapMouseAdapter getMouseListener(final MathTransform transform) {
+		return new MapMouseAdapter() {
 
-        if (curPos.getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84)
-        {
-          try
-          {
-            transform.transform(curPos, curPos);
-          }
-          catch (MismatchedDimensionException | TransformException e)
-          {
-            Application.logError2(ToolParent.ERROR,
-                "Failure in projection transform", e);
-          }
-        }
+			void handleMouseMovement(final MapMouseEvent ev) {
+				// mouse pos in Map coordinates
+				final DirectPosition2D curPos = ev.getWorldPos();
 
-        final WorldLocation current = new WorldLocation(curPos.getY(), curPos
-            .getX(), 0);
-        final String message = BriefFormatLocation.toString(current);
-        DebriefLiteApp.updateStatusMessage(message);
-      }
+				if (curPos.getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84) {
+					try {
+						transform.transform(curPos, curPos);
+					} catch (MismatchedDimensionException | TransformException e) {
+						Application.logError2(ToolParent.ERROR, "Failure in projection transform", e);
+					}
+				}
 
-      @Override
-      public void onMouseDragged(final MapMouseEvent arg0)
-      {
-        if (!(currentCursorTool instanceof RangeBearingTool))
-        {
-          handleMouseMovement(arg0);
-        }
-      }
+				final WorldLocation current = new WorldLocation(curPos.getY(), curPos.getX(), 0);
+				final String message = BriefFormatLocation.toString(current);
+				DebriefLiteApp.updateStatusMessage(message);
+			}
 
-      @Override
-      public void onMouseEntered(final MapMouseEvent arg0)
-      {
-        handleMouseMovement(arg0);
-      }
+			@Override
+			public void onMouseDragged(final MapMouseEvent arg0) {
+				if (!(currentCursorTool instanceof RangeBearingTool)) {
+					handleMouseMovement(arg0);
+				}
+			}
 
-      @Override
-      public void onMouseExited(final MapMouseEvent arg0)
-      {
-        handleMouseMovement(arg0);
-      }
+			@Override
+			public void onMouseEntered(final MapMouseEvent arg0) {
+				handleMouseMovement(arg0);
+			}
 
-      @Override
-      public void onMouseMoved(final MapMouseEvent arg0)
-      {
-        handleMouseMovement(arg0);
-      }
+			@Override
+			public void onMouseExited(final MapMouseEvent arg0) {
+				handleMouseMovement(arg0);
+			}
 
-      @Override
-      public void onMouseWheelMoved(final MapMouseEvent arg0)
-      {
-        handleMouseMovement(arg0);
-      }
-    };
+			@Override
+			public void onMouseMoved(final MapMouseEvent arg0) {
+				handleMouseMovement(arg0);
+			}
 
-  }
+			@Override
+			public void onMouseWheelMoved(final MapMouseEvent arg0) {
+				handleMouseMovement(arg0);
+			}
+		};
 
-  /**
-   * There are some classes (for example MouseDragLine), which need to know when the map has been
-   * repainted. Simply add an ActionEvent to the repaintListeners list and it will be notified :)
-   *
-   * Don't forget to call the notifier... Saul Hidalgo
-   */
-  private void notifyRepaintListeners()
-  {
-    if (repaintListeners != null)
-    {
-      for (final ActionListener action : repaintListeners)
-      {
-        action.actionPerformed(null);
-      }
-    }
-  }
+	}
 
-  // @Override
-  // protected void paintComponent(final Graphics arg0)
-  // {
-  // super.paintComponent(arg0);
-  // }
+	/**
+	 * There are some classes (for example MouseDragLine), which need to know when
+	 * the map has been repainted. Simply add an ActionEvent to the repaintListeners
+	 * list and it will be notified :)
+	 *
+	 * Don't forget to call the notifier... Saul Hidalgo
+	 */
+	private void notifyRepaintListeners() {
+		if (repaintListeners != null) {
+			for (final ActionListener action : repaintListeners) {
+				action.actionPerformed(null);
+			}
+		}
+	}
 
-  @Override
-  public void paint(final Graphics g)
-  {
-    super.paint(g);
-    notifyRepaintListeners();
-  }
+	// @Override
+	// protected void paintComponent(final Graphics arg0)
+	// {
+	// super.paintComponent(arg0);
+	// }
 
-  @Override
-  protected void paintComponent(final Graphics g)
-  {
-    // don't ask the parent to paint, since we're doing it, instead
-    // super.paintComponent(g);
+	@Override
+	public void paint(final Graphics g) {
+		super.paint(g);
+		notifyRepaintListeners();
+	}
 
-    // draw in background
-    final Dimension dim = this.getSize();
-    g.setColor(getNewColor(mapTransparency));
-    g.fillRect(0, 0, dim.width, dim.height);
+	@Override
+	protected void paintComponent(final Graphics g) {
+		// don't ask the parent to paint, since we're doing it, instead
+		// super.paintComponent(g);
 
-    if (drawingLock.tryLock())
-    {
-      try
-      {
-        final RenderedImage image = getBaseImage();
-        if (image != null)
-        {
-          final Graphics2D g2 = (Graphics2D) g;
+		// draw in background
+		final Dimension dim = this.getSize();
+		g.setColor(getNewColor(mapTransparency));
+		g.fillRect(0, 0, dim.width, dim.height);
 
-          // remember the imaging composite
-          final Composite before = g2.getComposite();
+		if (drawingLock.tryLock()) {
+			try {
+				final RenderedImage image = getBaseImage();
+				if (image != null) {
+					final Graphics2D g2 = (Graphics2D) g;
 
-          // ok, set transparency
-          final AlphaComposite transOne = AlphaComposite.getInstance(
-              AlphaComposite.SRC_OVER, mapTransparency);
-          g2.setComposite(transOne);
+					// remember the imaging composite
+					final Composite before = g2.getComposite();
 
-          // draw the image
-          g2.drawImage((Image) image, imageOrigin.x, imageOrigin.y, null);
+					// ok, set transparency
+					final AlphaComposite transOne = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+							mapTransparency);
+					g2.setComposite(transOne);
 
-          // restore the mode
-          g2.setComposite(before);
+					// draw the image
+					g2.drawImage((Image) image, imageOrigin.x, imageOrigin.y, null);
 
-        }
-      }
-      finally
-      {
-        drawingLock.unlock();
-      }
-    }
-    _renderer.paintEvent(g);
-  }
+					// restore the mode
+					g2.setComposite(before);
 
-  public void setContextMenu(final ContextMenu menu)
-  {
-    setComponentPopupMenu(menu);
-  }
+				}
+			} finally {
+				drawingLock.unlock();
+			}
+		}
+		_renderer.paintEvent(g);
+	}
 
-  @Override
-  public void setCursorTool(final CursorTool tool)
-  {
-    paramsLock.writeLock().lock();
-    try
-    {
-      if (currentCursorTool != null)
-      {
-        mouseEventDispatcher.removeMouseListener(currentCursorTool);
-        if (currentCursorTool instanceof RangeBearingTool)
-        {
-          ((RangeBearingTool) currentCursorTool).eraseOldDrawing();
-        }
-      }
+	public void setContextMenu(final ContextMenu menu) {
+		setComponentPopupMenu(menu);
+	}
 
-      currentCursorTool = tool;
+	@Override
+	public void setCursorTool(final CursorTool tool) {
+		paramsLock.writeLock().lock();
+		try {
+			if (currentCursorTool != null) {
+				mouseEventDispatcher.removeMouseListener(currentCursorTool);
+				if (currentCursorTool instanceof RangeBearingTool) {
+					((RangeBearingTool) currentCursorTool).eraseOldDrawing();
+				}
+			}
 
-      if (currentCursorTool == null)
-      {
-        setCursor(Cursor.getDefaultCursor());
-        dragBox.setEnabled(false);
-      }
-      else
-      {
-        setCursor(currentCursorTool.getCursor());
-        dragBox.setEnabled(currentCursorTool.drawDragBox());
-        currentCursorTool.setMapPane(this);
-        mouseEventDispatcher.addMouseListener(currentCursorTool);
-      }
+			currentCursorTool = tool;
 
-    }
-    finally
-    {
-      paramsLock.writeLock().unlock();
-    }
-  }
+			if (currentCursorTool == null) {
+				setCursor(Cursor.getDefaultCursor());
+				dragBox.setEnabled(false);
+			} else {
+				setCursor(currentCursorTool.getCursor());
+				dragBox.setEnabled(currentCursorTool.drawDragBox());
+				currentCursorTool.setMapPane(this);
+				mouseEventDispatcher.addMouseListener(currentCursorTool);
+			}
 
-  public void setTransparency(final float transparency)
-  {
-    mapTransparency = transparency;
-  }
+		} finally {
+			paramsLock.writeLock().unlock();
+		}
+	}
+
+	public void setTransparency(final float transparency) {
+		mapTransparency = transparency;
+	}
 
 }

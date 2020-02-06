@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 package MWC.Utilities.ReaderWriter.XML.Features;
 
@@ -27,8 +27,7 @@ import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
 
-public abstract class TimeDisplayPainterHandler extends MWCXMLReader implements PlottableExporter
-{
+public abstract class TimeDisplayPainterHandler extends MWCXMLReader implements PlottableExporter {
 	public static final String COLOR = "Color";
 	public static final String BACKGROUND_COLOR = "BackgroundColor";
 	public static final String NEGATIVE_COLOR = "NegativeColor";
@@ -58,165 +57,140 @@ public abstract class TimeDisplayPainterHandler extends MWCXMLReader implements 
 	protected Color _negativeColor;
 	protected Color _bgColor;
 
-	public TimeDisplayPainterHandler()
-	{
+	public TimeDisplayPainterHandler() {
 		super(TYPE);
-		addAttributeHandler(new HandleBooleanAttribute(VISIBLE)
-		{
-			public void setValue(final String name, final boolean value)
-			{
+		addAttributeHandler(new HandleBooleanAttribute(VISIBLE) {
+			@Override
+			public void setValue(final String name, final boolean value) {
 				_visible = value;
 			}
 		});
-		addAttributeHandler(new HandleAttribute(ORIGIN)
-		{
-			public void setValue(final String name, final String value)
-			{
-				try
-        {
-          _origin = parseThisDate(value);
-        }
-        catch (ParseException e)
-        {
-          Trace.trace(e, "While parsing date");
-        }
+		addAttributeHandler(new HandleAttribute(ORIGIN) {
+			@Override
+			public void setValue(final String name, final String value) {
+				try {
+					_origin = parseThisDate(value);
+				} catch (final ParseException e) {
+					Trace.trace(e, "While parsing date");
+				}
 			}
 		});
-		addAttributeHandler(new HandleBooleanAttribute(ABSOLUTE)
-		{
-			public void setValue(final String name, final boolean value)
-			{
+		addAttributeHandler(new HandleBooleanAttribute(ABSOLUTE) {
+			@Override
+			public void setValue(final String name, final boolean value) {
 				_absolute = value;
 			}
 		});
-		addAttributeHandler(new HandleBooleanAttribute(FILL_BACKGROUND)
-		{
-			public void setValue(final String name, final boolean value)
-			{
+		addAttributeHandler(new HandleBooleanAttribute(FILL_BACKGROUND) {
+			@Override
+			public void setValue(final String name, final boolean value) {
 				_fillBackground = value;
 			}
 		});
-		addAttributeHandler(new HandleBooleanAttribute(SEMI_TRANSPARENT)
-		{
-			public void setValue(final String name, final boolean value)
-			{
+		addAttributeHandler(new HandleBooleanAttribute(SEMI_TRANSPARENT) {
+			@Override
+			public void setValue(final String name, final boolean value) {
 				_semiTransparent = value;
 			}
 		});
-		addAttributeHandler(new HandleAttribute(NAME)
-		{
-			public void setValue(final String name, final String value)
-			{
+		addAttributeHandler(new HandleAttribute(NAME) {
+			@Override
+			public void setValue(final String name, final String value) {
 				_name = value;
 			}
 		});
-		addAttributeHandler(new HandleAttribute(FORMAT_TIME)
-		{
-			public void setValue(final String name, final String val)
-			{
+		addAttributeHandler(new HandleAttribute(FORMAT_TIME) {
+			@Override
+			public void setValue(final String name, final String val) {
 				_formatTime = val;
 			}
 		});
-		addAttributeHandler(new HandleAttribute(PREFIX)
-		{
-			public void setValue(final String name, final String val)
-			{
+		addAttributeHandler(new HandleAttribute(PREFIX) {
+			@Override
+			public void setValue(final String name, final String val) {
 				_prefix = val;
 			}
 		});
-		addAttributeHandler(new HandleAttribute(SUFFIX)
-		{
-			public void setValue(final String name, final String val)
-			{
+		addAttributeHandler(new HandleAttribute(SUFFIX) {
+			@Override
+			public void setValue(final String name, final String val) {
 				_suffix = val;
 			}
 		});
-		addAttributeHandler(new HandleIntegerAttribute(LOCATION)
-		{
-			public void setValue(final String name, final int val)
-			{
+		addAttributeHandler(new HandleIntegerAttribute(LOCATION) {
+			@Override
+			public void setValue(final String name, final int val) {
 				_location = val;
 			}
 		});
-		addHandler(new FontHandler()
-    {
-      public void setFont(final java.awt.Font font)
-      {
-        _font = font;
-      }
-    });
-		addHandler(new ColourHandler(COLOR)
-    {
-			public void setColour(Color res)
-			{
+		addHandler(new FontHandler() {
+			@Override
+			public void setFont(final java.awt.Font font) {
+				_font = font;
+			}
+		});
+		addHandler(new ColourHandler(COLOR) {
+			@Override
+			public void setColour(final Color res) {
 				_color = res;
 			}
-    });
-		addHandler(new ColourHandler(NEGATIVE_COLOR)
-    {
-			public void setColour(Color res)
-			{
+		});
+		addHandler(new ColourHandler(NEGATIVE_COLOR) {
+			@Override
+			public void setColour(final Color res) {
 				_negativeColor = res;
 			}
-    });
-		addHandler(new ColourHandler(BACKGROUND_COLOR)
-    {
-			public void setColour(Color res)
-			{
+		});
+		addHandler(new ColourHandler(BACKGROUND_COLOR) {
+			@Override
+			public void setColour(final Color res) {
 				_bgColor = res;
 			}
-    });
-    
+		});
+
 	}
-	
-	@Override
-	public final void elementClosed()
-	{
-			// set our specific attributes
-			final TimeDisplayPainter wrapper = new TimeDisplayPainter();
-			wrapper.setVisible(_visible);
-			wrapper.setAbsolute(_absolute);
-			wrapper.setOrigin(_origin);
-			wrapper.setFillBackground(_fillBackground);
-			wrapper.setSemiTransparent(_semiTransparent);
-			wrapper.setName(_name);
-			wrapper.setFormat(_formatTime);
-			wrapper.setPrefix(_prefix);
-			wrapper.setSuffix(_suffix);
-			if (_font != null)
-			{
-				wrapper.setFont(_font);
-			}
-			if (_color != null)
-			{
-				wrapper.setColor(_color);
-			}
-			if (_negativeColor != null)
-			{
-				wrapper.setNegativeColor(_negativeColor);
-			}
-			if (_bgColor != null)
-			{
-				wrapper.setBackground(_bgColor);
-			}
-			wrapper.setLocation(_location);
-			addPlottable(wrapper);
-			
-			_font = null;
-			_color = null;
-			_bgColor = null;
-			_negativeColor = null;
-	}
-		
+
 	abstract public void addPlottable(MWC.GUI.Plottable plottable);
 
 	@Override
-	public void exportThisPlottable(Plottable plottable, org.w3c.dom.Element parent,
-			org.w3c.dom.Document doc)
-	{
-		TimeDisplayPainter tdp = (TimeDisplayPainter) plottable;
-		if (tdp == null)
-		{
+	public final void elementClosed() {
+		// set our specific attributes
+		final TimeDisplayPainter wrapper = new TimeDisplayPainter();
+		wrapper.setVisible(_visible);
+		wrapper.setAbsolute(_absolute);
+		wrapper.setOrigin(_origin);
+		wrapper.setFillBackground(_fillBackground);
+		wrapper.setSemiTransparent(_semiTransparent);
+		wrapper.setName(_name);
+		wrapper.setFormat(_formatTime);
+		wrapper.setPrefix(_prefix);
+		wrapper.setSuffix(_suffix);
+		if (_font != null) {
+			wrapper.setFont(_font);
+		}
+		if (_color != null) {
+			wrapper.setColor(_color);
+		}
+		if (_negativeColor != null) {
+			wrapper.setNegativeColor(_negativeColor);
+		}
+		if (_bgColor != null) {
+			wrapper.setBackground(_bgColor);
+		}
+		wrapper.setLocation(_location);
+		addPlottable(wrapper);
+
+		_font = null;
+		_color = null;
+		_bgColor = null;
+		_negativeColor = null;
+	}
+
+	@Override
+	public void exportThisPlottable(final Plottable plottable, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc) {
+		final TimeDisplayPainter tdp = (TimeDisplayPainter) plottable;
+		if (tdp == null) {
 			return;
 		}
 		final org.w3c.dom.Element timeDisplay = doc.createElement(TYPE);
@@ -224,8 +198,7 @@ public abstract class TimeDisplayPainterHandler extends MWCXMLReader implements 
 		timeDisplay.setAttribute(NAME, tdp.getName());
 		timeDisplay.setAttribute(VISIBLE, writeThis(tdp.getVisible()));
 		timeDisplay.setAttribute(ABSOLUTE, writeThis(tdp.isAbsolute()));
-		if (!tdp.isAbsolute())
-		{
+		if (!tdp.isAbsolute()) {
 			timeDisplay.setAttribute(ORIGIN, writeThis(tdp.getOrigin()));
 		}
 		timeDisplay.setAttribute(FILL_BACKGROUND, writeThis(tdp.isFillBackground()));
@@ -235,13 +208,12 @@ public abstract class TimeDisplayPainterHandler extends MWCXMLReader implements 
 		timeDisplay.setAttribute(PREFIX, tdp.getPrefix());
 		timeDisplay.setAttribute(SUFFIX, tdp.getSuffix());
 		FontHandler.exportFont(tdp.getFont(), timeDisplay, doc);
-    ColourHandler.exportColour(tdp.getColor(), timeDisplay, doc, COLOR);
-    if (!tdp.isAbsolute())
-    {
-    	ColourHandler.exportColour(tdp.getNegativeColor(), timeDisplay, doc, NEGATIVE_COLOR);
-    }
-    ColourHandler.exportColour(tdp.getBackground(), timeDisplay, doc, BACKGROUND_COLOR);
-    
+		ColourHandler.exportColour(tdp.getColor(), timeDisplay, doc, COLOR);
+		if (!tdp.isAbsolute()) {
+			ColourHandler.exportColour(tdp.getNegativeColor(), timeDisplay, doc, NEGATIVE_COLOR);
+		}
+		ColourHandler.exportColour(tdp.getBackground(), timeDisplay, doc, BACKGROUND_COLOR);
+
 		parent.appendChild(timeDisplay);
 	}
 

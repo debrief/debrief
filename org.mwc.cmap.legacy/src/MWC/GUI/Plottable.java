@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: Plottable.java,v $
@@ -90,38 +90,40 @@
 // Initial revision
 //
 
-
 package MWC.GUI;
 
-/** an object which may be plotted to a canvas
+/**
+ * an object which may be plotted to a canvas
  */
 public interface Plottable extends Editable, Comparable<Plottable> {
 
-  public final static int INVALID_RANGE = -1;
+	public final static int INVALID_RANGE = -1;
 
-  /** paint this object to the specified canvas
-   */
-  public void paint(CanvasType dest);
+	/**
+	 * find the data area occupied by this item
+	 */
+	public MWC.GenericData.WorldArea getBounds();
 
-  /** find the data area occupied by this item
-   */
-  public MWC.GenericData.WorldArea getBounds();
+	/**
+	 * it this item currently visible?
+	 */
+	public boolean getVisible();
 
-  /** it this item currently visible?
-   */
-  public boolean getVisible();
+	/**
+	 * paint this object to the specified canvas
+	 */
+	public void paint(CanvasType dest);
 
-  /** set the visibility of this item
-   *
-   */
-  public void setVisible(boolean val);
+	/**
+	 * how far away are we from this point? or return INVALID_RANGE if it can't be
+	 * calculated
+	 */
+	public double rangeFrom(MWC.GenericData.WorldLocation other);
 
-  /** how far away are we from this point?
-   * or return INVALID_RANGE if it can't be calculated
-   */
-  public double rangeFrom(MWC.GenericData.WorldLocation other);
+	/**
+	 * set the visibility of this item
+	 *
+	 */
+	public void setVisible(boolean val);
 
 }
-
-
-

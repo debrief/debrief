@@ -16,44 +16,48 @@ import java.util.List;
 import org.eclipse.swt.graphics.GC;
 
 /**
- * An SvgElement which is capable of containing other SvgElements.
- * The most commonly accessed container element types are the document, fragment, and group.
+ * An SvgElement which is capable of containing other SvgElements. The most
+ * commonly accessed container element types are the document, fragment, and
+ * group.
  */
 public class SvgContainer extends SvgGraphic {
 
 	List<SvgElement> elements;
-	
-	SvgContainer(SvgContainer container, String id) {
+
+	SvgContainer(final SvgContainer container, final String id) {
 		super(container, id);
 		elements = new ArrayList<SvgElement>();
 	}
 
-	void add(SvgElement element) {
+	void add(final SvgElement element) {
 		elements.add(element);
 	}
-	
-	public void apply(GC gc) {
-		for(SvgElement element : elements) {
-			if(element instanceof SvgGraphic) {
+
+	@Override
+	public void apply(final GC gc) {
+		for (final SvgElement element : elements) {
+			if (element instanceof SvgGraphic) {
 				((SvgGraphic) element).apply(gc);
 			}
 		}
 	}
-	
+
 	/**
 	 * Returns an array of child elements contained by this container element.
 	 * Modifying this array will not affect the underlying element list of this
 	 * container element.
+	 * 
 	 * @return an array of child elements contained by this element.
 	 */
 	public SvgElement[] getElements() {
 		return elements.toArray(new SvgElement[elements.size()]);
 	}
 
-    /**
-     * Returns true if this list contains no elements.
-     * @return true if this list contains no elements.
-     */
+	/**
+	 * Returns true if this list contains no elements.
+	 * 
+	 * @return true if this list contains no elements.
+	 */
 	public boolean isEmpty() {
 		return elements.isEmpty();
 	}

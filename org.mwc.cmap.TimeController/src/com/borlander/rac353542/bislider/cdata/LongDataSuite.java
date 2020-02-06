@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package com.borlander.rac353542.bislider.cdata;
@@ -24,80 +24,85 @@ import com.borlander.rac353542.bislider.DefaultBiSliderUIModel;
  */
 public class LongDataSuite {
 
-    public LongDataModel createDataModel(long totalMin, long totalMax, long userMin, long userMax){
-        LongDataModel result = new LongDataModel();
-        result.setTotalRange(new Long(totalMin), new Long(totalMax));
-        result.setUserMinimum(new Long(userMin));
-        result.setUserMaximum(new Long(userMax));
-        return result;
-    }
-    
-    public BiSliderUIModel createUIModel(){
-        DefaultBiSliderUIModel result = new DefaultBiSliderUIModel();
-        result.setLabelProvider(createLabelProvider());
-        //assuming that long values are big enough
-        result.setVerticalLabels(true);
-        return result;
-    }
-    
-    public DataObjectLabelProvider createLabelProvider() {
-        return new DataObjectLabelProvider(MAPPER_LONG){
-            public String getLabel(Object dataObject) {
-                Long longValue = (Long)dataObject;
-                return longValue.toString();
-            }
-        };
-    }
-    
-    public static class LongDataModel extends DataObjectDataModel {
-        public LongDataModel(){
-            super(MAPPER_LONG);
-        }
-        
-        public Long getTotalMinimumLong(){
-            return (Long)getTotalMinimumObject();
-        }
-        
-        public Long getTotalMaximumLong(){
-            return (Long)getTotalMaximumObject();
-        }
-        
-        public Long getUserMinimumLong(){
-            return (Long)getUserMinimumObject();
-        }
-        
-        public Long getUserMaximumLong(){
-            return (Long)getUserMaximumObject();
-        }
-        
-        public void setUserMaximum(Long longMaximum){
-            setUserMaximumObject(longMaximum);
-        }
-        
-        public void setUserMinimum(Long longMinimum){
-            setUserMinimumObject(longMinimum);
-        }
-        
-        public void setTotalRange(Long minimum, Long maximum){
-            setTotalObjectRange(minimum, maximum);
-        }
-        
-    }
-    
-    public static DataObjectMapper MAPPER_LONG = new DataObjectMapper() {
-        public Object double2object(double value) {
-            long longValue = Math.round(value);
-            return new Long(longValue);
-        }
+	public static class LongDataModel extends DataObjectDataModel {
+		public LongDataModel() {
+			super(MAPPER_LONG);
+		}
 
-        public double object2double(Object object) {
-            Long longValue = (Long) object;
-            return longValue.doubleValue();
-        }
-        
-        public double getPrecision() {
-            return 1;
-        }
-    };
-    
+		public Long getTotalMaximumLong() {
+			return (Long) getTotalMaximumObject();
+		}
+
+		public Long getTotalMinimumLong() {
+			return (Long) getTotalMinimumObject();
+		}
+
+		public Long getUserMaximumLong() {
+			return (Long) getUserMaximumObject();
+		}
+
+		public Long getUserMinimumLong() {
+			return (Long) getUserMinimumObject();
+		}
+
+		public void setTotalRange(final Long minimum, final Long maximum) {
+			setTotalObjectRange(minimum, maximum);
+		}
+
+		public void setUserMaximum(final Long longMaximum) {
+			setUserMaximumObject(longMaximum);
+		}
+
+		public void setUserMinimum(final Long longMinimum) {
+			setUserMinimumObject(longMinimum);
+		}
+
+	}
+
+	public static DataObjectMapper MAPPER_LONG = new DataObjectMapper() {
+		@Override
+		public Object double2object(final double value) {
+			final long longValue = Math.round(value);
+			return new Long(longValue);
+		}
+
+		@Override
+		public double getPrecision() {
+			return 1;
+		}
+
+		@Override
+		public double object2double(final Object object) {
+			final Long longValue = (Long) object;
+			return longValue.doubleValue();
+		}
+	};
+
+	public LongDataModel createDataModel(final long totalMin, final long totalMax, final long userMin,
+			final long userMax) {
+		final LongDataModel result = new LongDataModel();
+		result.setTotalRange(new Long(totalMin), new Long(totalMax));
+		result.setUserMinimum(new Long(userMin));
+		result.setUserMaximum(new Long(userMax));
+		return result;
+	}
+
+	public DataObjectLabelProvider createLabelProvider() {
+		return new DataObjectLabelProvider(MAPPER_LONG) {
+			@Override
+			public String getLabel(final Object dataObject) {
+				final Long longValue = (Long) dataObject;
+				return longValue.toString();
+			}
+		};
+	}
+
+	public BiSliderUIModel createUIModel() {
+		final DefaultBiSliderUIModel result = new DefaultBiSliderUIModel();
+		result.setLabelProvider(createLabelProvider());
+		// assuming that long values are big enough
+		result.setVerticalLabels(true);
+		return result;
+	}
+
 }

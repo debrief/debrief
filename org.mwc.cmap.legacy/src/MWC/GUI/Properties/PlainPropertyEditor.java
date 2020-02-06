@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: PlainPropertyEditor.java,v $
@@ -259,997 +259,856 @@ import MWC.TacticalData.NarrativeEntry;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 /**
- * Class defining GUI-independent part of property editing. AWT Portion is implemented in @see
- * MWC.GUI.Properties.AWT.AWTPropertyEditor Property editing works roughly like this:
+ * Class defining GUI-independent part of property editing. AWT Portion is
+ * implemented in @see MWC.GUI.Properties.AWT.AWTPropertyEditor Property editing
+ * works roughly like this:
  */
 
-abstract public class PlainPropertyEditor implements PropertyChangeListener
-{
-  //////////////////////////////////////////////////
-  // nested interface for custom editors which want
-  // to know about the layers object
-  //////////////////////////////////////////////////
-  static public interface EditorUsesLayers
-  {
-    /**
-     * this is the internal layers object
-     *
-     * @param theLayers
-     *          the layers object
-     */
-    public void setLayers(Layers theLayers);
-  }
-
-  //////////////////////////////////////////////////
-  // nested interface for custom editors which want
-  // to know about the properties window
-  //////////////////////////////////////////////////
-  static public interface EditorUsesPropertyPanel
-  {
-    /**
-     * this is the property panel we're using
-     *
-     * @param thePanel
-     */
-    public void setPanel(PropertiesPanel thePanel);
-  }
-
-  //////////////////////////////////////////////////
-  // nested interface for custom editors which want
-  // to know about the tool parent
-  //////////////////////////////////////////////////
-  static public interface EditorUsesToolParent
-  {
-    /**
-     * here's the data
-     *
-     * @param theParent
-     *          the parent object
-     */
-    public void setParent(ToolParent theParent);
-  }
-
-  //////////////////////////////////////////////////
-  // the action itself - we take the chart to display the results on
-  // and the list of property changes made in this action
-  ///////////////////////////////////////////////////
-  public class PropertyChangeAction implements Action
-  {
-    /**
-     * the list of things to change
-     */
-    protected Vector<PropertyChangeItem> _theMods;
-
-    /**
-     * the item being edited
-     */
-    protected Object _theData1;
-
-    public PropertyChangeAction(
-        final Vector<PropertyChangeItem> theModifications, final Object theData)
-    {
-      // take a copy of the vector, not the vector itself
-      _theMods = copyVector(theModifications);
-
-      // store the object
-      _theData1 = theData;
-    }
-
-    protected Vector<PropertyChangeItem> copyVector(
-        final Vector<PropertyChangeItem> other)
-    {
-      final Vector<PropertyChangeItem> vector = new Vector<PropertyChangeItem>(
-          other.size(), 1);
-      final Vector<PropertyChangeItem> res = vector;
-      final Enumeration<PropertyChangeItem> enumer = other.elements();
-      while (enumer.hasMoreElements())
-      {
-        final PropertyChangeItem oldP = enumer.nextElement();
-        final PropertyChangeItem newP = new PropertyChangeItem(oldP.data,
-            oldP.setter, oldP.newValue, oldP.oldValue, oldP.editorInfo,
-            oldP.propertyName);
-        res.addElement(newP);
-      }
-      return res;
-    }
-
-    /**
-     * utility function to perform the 'setting' for us
-     */
-    protected void doThis(final Method setter, final Object data,
-        final Object val)
-    {
-
-      final Object args[] =
-      {val};
-
-      Class<?> p1 = null;
-
-      try
-      {
-        // check that there is a valid setter
-        if (setter == null)
-          return;
-
-        // see if the setter is expecting a double
-        final Class<?>[] params = setter.getParameterTypes();
-        // get the first parameter
-        p1 = params[0];
-
-        // do we have to do our special 'double' handling?
-        if (p1 != null && p1.equals(double.class))
-        {
-          // is the value we are going to set currently
-          // a string?
-          if (val.getClass().equals(String.class))
-          {
-            final double d = MWCXMLReader.readThisDouble((String) val);
-            final Object args2[] =
-            {d};
-            setter.invoke(data, args2);
-          }
-          else if (val.getClass().equals(Double.class))
-          {
-            final Double d = (Double) val;
-            final Object args2[] =
-            {d};
-            setter.invoke(data, args2);
-          }
-
-        }
-        else
-          setter.invoke(data, args);
-      }
-      catch (final java.lang.NumberFormatException e)
-      {
-        MWC.Utilities.Errors.Trace.trace(e);
-      }
-      catch (final java.lang.reflect.InvocationTargetException ie)
-      {
-        final String tmpStr = null;
-        if (p1 != null)
-          p1.toString();
-        final String msg = "Using:" + setter.getName() + " to set:" + data
-            + " to " + val + " expecting type:" + tmpStr;
-        MWC.Utilities.Errors.Trace.trace(ie, msg);
-      }
-      catch (final java.lang.IllegalArgumentException ell)
-      {
-        final String msg = "Using:" + setter.getName() + " to set:" + data
-            + " to " + val;
-        MWC.Utilities.Errors.Trace.trace(ell, msg);
-      }
-      catch (final Exception e)
-      {
-        MWC.Utilities.Errors.Trace.trace(e);
-      }
-
-    }
-
-    @Override
-    public void execute()
-    {
-      // go through the vector and make the changes
-      final Enumeration<PropertyChangeItem> enumer = _theMods.elements();
-      while (enumer.hasMoreElements())
-      {
-        final PropertyChangeItem it = enumer.nextElement();
-        if ("Name".equals(it.propertyName))
-        {
-          if (NarrativeEntry.NARRATIVE_LAYER.equalsIgnoreCase(it.newValue
-              .toString()))
-          {
-            SwingUtilities.invokeLater(new Runnable()
-            {
-
-              @Override
-              public void run()
-              {
-                JOptionPane.showMessageDialog(null, "Sorry, the name `"
-                    + NarrativeEntry.NARRATIVE_LAYER
-                    + "` is reserved for narratives.\nPlease choose another layer name",
-                    "Add layer", JOptionPane.WARNING_MESSAGE);
-              }
-
-            });
-            continue;
-          }
-          _theName = it.newValue.toString();
-          it.editorInfo.setName(_theName);
-          if (_propsPanel != null)
-          {
-            _propsPanel.setTitleAt(_propsPanel.getSelectedIndex(), _theName);
-          }
-        }
-
-        doThis(it.setter, it.data, it.newValue);
-        it.editorInfo.fireChanged(this, it.propertyName, it.oldValue,
-            it.newValue);
-        // TODO We are calling it after every change, and we are forcing to update UI again anda
-        // again.
-        // Maybe it could be done once at the end.
-        // Saul Hidalgo
-      }
-
-      // try to update just the layer
-      if (_theLayers != null)
-        _theLayers.fireModified(_parentLayer);
-    }
-
-    /**
-     * accessor for the object being edited
-     */
-    public Object getData()
-    {
-      return _theData1;
-    }
-
-    @Override
-    public boolean isRedoable()
-    {
-      return true;
-    }
-
-    @Override
-    public boolean isUndoable()
-    {
-      return true;
-    }
-
-    public int size()
-    {
-      return _theMods.size();
-    }
-
-    @Override
-    public String toString()
-    {
-      return "Property change";
-    }
-
-    @Override
-    public void undo()
-    {
-      // go through the vector and reset to the old values
-      // go through the vector and make the changes
-      final Enumeration<PropertyChangeItem> enumer = _theMods.elements();
-      while (enumer.hasMoreElements())
-      {
-        final PropertyChangeItem it = enumer.nextElement();
-        doThis(it.setter, it.data, it.oldValue);
-        it.editorInfo.fireChanged(this, it.propertyName, it.newValue,
-            it.oldValue);
-      }
-
-      _theLayers.fireModified(_parentLayer);
-    }
-  }
-
-  protected class PropertyChangeItem
-  {
-    public Object data;
-    transient public Method setter;
-    public Object newValue;
-    public Object oldValue;
-    transient public Editable.EditorType editorInfo;
-    public String propertyName;
-
-    public PropertyChangeItem(final Object theData, final Method theSetter,
-        final Object theNewValue, final Object theOldValue,
-        final Editable.EditorType theEditorInfo, final String thePropertyName)
-    {
-      data = theData;
-      setter = theSetter;
-      newValue = theNewValue;
-      oldValue = theOldValue;
-      editorInfo = theEditorInfo;
-      propertyName = thePropertyName;
-    }
-  }
-
-  /////////////////////////////////////////////////////
-  // class which represents a combination of a
-  // property descriptor and the screen object that
-  // is used to edit that property
-  ////////////////////////////////////////////////////
-  public static class PropertyEditorItem
-  {
-    public final PropertyDescriptor theDescriptor;
-    public Component theEditorGUI;
-    public final PropertyEditor theEditor;
-    public final Object theData;
-    public final Object originalValue;
-    transient public Editable.EditorType theEditableInfo;
-
-    public PropertyEditorItem(final PropertyDescriptor propVal,
-        final PropertyEditor theEditorVal, final Object data,
-        final Object theOriginalValue, final Editable.EditorType editableInfo)
-    {
-      theDescriptor = propVal;
-      theEditor = theEditorVal;
-      theData = data;
-      originalValue = theOriginalValue;
-      theEditableInfo = editableInfo;
-    }
-
-    public Object getCurrentVal()
-    {
-      final Object res = getValueFor(theData, theDescriptor);
-      return res;
-    }
-  }
-
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  // the property editor manager
-  protected static PropertyEditorManager _myPropertyManager;
-
-  public static final String _START = "Start";
-
-  public static final String _END = "End";
-
-  // method to create the property manager - called by the child classes to do the core stuff.
-  protected static void createCorePropertyEditors()
-  {
-    // ok, create it first
-    _myPropertyManager = new PropertyEditorManager();
-
-    // and now stick in the stuff which is GUI independent
-    PropertyEditorManager.registerEditor(Integer.class, IntegerEditor.class);
-    PropertyEditorManager.registerEditor(Long.class, LongEditor.class);
-  }
-
-  /**
-   * method to retrieve an editor for the supplied property from our internal list
-   *
-   * @param p
-   *          the property to get an editor for
-   * @return a GUI editor component (or null)
-   */
-  public static PropertyEditor findEditor(final PropertyDescriptor p)
-  {
-    PropertyEditor res = null;
-
-    // find out the type of the editor
-    final Method m = p.getReadMethod();
-    final Class<?> cl = m.getReturnType();
-
-    // is there a custom editor for this type?
-    final Class<?> c = p.getPropertyEditorClass();
-
-    if (c == null)
-    {
-      res = PropertyEditorManager.findEditor(cl);
-    }
-    else
-    {
-      try
-      {
-        res = (PropertyEditor) c.newInstance();
-      }
-      catch (final Exception e)
-      {
-        MWC.Utilities.Errors.Trace.trace(e);
-      }
-    }
-    return res;
-  }
-
-  protected static Object getValueFor(final Object data,
-      final PropertyDescriptor p)
-  {
-    Object res = null;
-
-    try
-    {
-      // find out the type of the editor
-      final Method m = p.getReadMethod();
-
-      res = m.invoke(data, (Object[]) null);
-    }
-    catch (final Exception e)
-    {
-      System.err.println("Plain property editor: problem calling read method");
-      MWC.Utilities.Errors.Trace.trace(e);
-    }
-
-    return res;
-
-  }
-
-  /**
-   * the data object which we are editing
-   */
-  protected Object _theData;
-
-  /**
-   * the properties shown by this object
-   */
-  protected PropertyDescriptor[] _theProperties;
-
-  /**
-   * the name of this object
-   */
-  protected String _theName;
-
-  /**
-   * the property editors we are adding
-   */
-  protected Hashtable<PropertyDescriptor, PropertyEditorItem> _theEditors;
-
-  /**
-   * the list of modifications made (plus their old values and the setter methods)
-   */
-  protected Vector<PropertyChangeItem> _theModifications;
-
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
-
-  /**
-   * the custom editor, if there is one
-   */
-  protected Class<?> _theCustomEditor;
-
-  /**
-   * the panel which is holding us
-   */
-  protected PropertiesPanel _thePanel = null;
-
-  /**
-   * the additional editable items returned by this object
-   */
-  protected java.beans.BeanInfo[] _otherEditors;
-
-  /**
-   * and other methods supported by the object
-   */
-  protected MethodDescriptor[] _theMethods;
-
-  /**
-   * the editable behaviour for this item
-   */
-  transient protected MWC.GUI.Editable.EditorType _theInfo;
-
-  /**
-   * the toolparent for this interface, so that we can set the cursor busy when we want to
-   */
-  protected MWC.GUI.ToolParent _toolParent;
-
-  /**
-   * the layer which this editable object belongs to
-   */
-  protected Layer _parentLayer;
-
-  /**
-   * the listener object we declare for this item, so that we can remove it later on
-   */
-  private PropertyChangeListener _reportListener;
-
-  /**
-   * JTabbedPane
-   */
-  private final SwingPropertiesPanel _propsPanel;
-
-  protected final Layers _theLayers;
-
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  public PlainPropertyEditor(final MWC.GUI.Editable.EditorType theInfo,
-      final Layers theLayers, final PropertiesPanel thePanel,
-      final ToolParent toolParent, final Layer parentLayer,
-      final SwingPropertiesPanel propsPanel)
-  {
-    _propsPanel = propsPanel;
-
-    // store the editor
-    _theInfo = theInfo;
-
-    // store the data
-    _theData = theInfo.getData();
-
-    // store the tool parent
-    _toolParent = toolParent;
-
-    // store the properties panel
-    _thePanel = thePanel;
-
-    // store the layer this object belongs to (so we can trigger a layer-specific repaint, where
-    // supported)
-    _parentLayer = parentLayer;
-
-    // declare our custom property editors
-    declarePropertyEditors();
-
-    // do the editors
-    _theEditors = new Hashtable<PropertyDescriptor, PropertyEditorItem>();
-
-    // see if there is a custom editor
-    _theCustomEditor = theInfo.getBeanDescriptor().getCustomizerClass();
-
-    // store the properties
-    _theProperties = theInfo.getPropertyDescriptors();
-
-    // see if there are any additional editors
-    // note we only edit additional items if they are not "Expert" parameters
-    _otherEditors = theInfo.getAdditionalBeanInfo();
-
-    // see if there are any other methods
-    // note that even though we retrieve this full list,
-    // we only show additional parameters which are not
-    // "Expert" parameters
-    _theMethods = theInfo.getMethodDescriptors();
-
-    // store the name
-    _theName = theInfo.getName();
-
-    // store the chart
-    _theLayers = theLayers;
-
-    // assign the editors
-    assignEditors();
-
-    // layout the form
-    initForm(thePanel);
-
-    // show the method buttons
-    showMethods();
-
-    /**
-     * get ready to store the list of changes, for our undoable action
-     */
-    _theModifications = new Vector<PropertyChangeItem>(0, 1);
-
-    // see if we should be listening to this object
-    theInfo.addPropertyChangeListener(this);
-
-    // does this object fire any reports?
-    if (theInfo.firesReports())
-    {
-      // ok, create the report listener for this item
-      _reportListener = new PropertyChangeListener()
-      {
-        @Override
-        public void propertyChange(final PropertyChangeEvent evt)
-        {
-          fireNewReport((String) evt.getNewValue());
-        }
-      };
-
-      // ok, declare an interest in any reports from the object
-      theInfo.addPropertyChangeListener(Editable.EditorType.REPORT_NAME,
-          _reportListener);
-    }
-
-    // also try to listen in to the additional items
-    if (_otherEditors != null)
-    {
-      for (int i = 0; i < _otherEditors.length; i++)
-      {
-        final Editable.EditorType et = (Editable.EditorType) _otherEditors[i];
-        et.addPropertyChangeListener(this);
-      }
-    }
-
-    // did we actually find any editors?
-    if ((_theEditors.size() == 0) && (_theCustomEditor == null))
-    {
-      // inform the user that this object has no editable properties
-      showZeroEditorsFound(theInfo.getDisplayName());
-    }
-
-  }
-
-  /**
-   * find a editor for the supplied component, and add it to our list
-   *
-   * @param p
-   * @param data
-   * @param editor
-   * @return
-   */
-  public PropertyEditor addEditor(final PropertyDescriptor p, final Object data,
-      final Editable.EditorType editor)
-  {
-    PropertyEditor res = null;
-
-    if (p != null)
-    {
-
-      res = findEditor(p);
-
-      if (res != null)
-      {
-        final Object val = getValueFor(data, p);
-        res.setValue(val);
-        _theEditors.put(p, new PropertyEditorItem(p, res, data, val, editor));
-      }
-      else
-      {
-        MWC.Utilities.Errors.Trace.trace("Failed to find " + p + " editor for "
-            + data + ", method:" + p.getReadMethod());
-      }
-    }
-
-    return res;
-  }
-
-  protected void addUs()
-  {
-    final hasPropertyListeners l = (hasPropertyListeners) _theData;
-    l.addPropertyChangeListener(this);
-  }
-
-  private void assignEditors()
-  {
-    // try for a custom editor first
-    if (_theCustomEditor != null)
-    {
-    }
-    else
-    {
-      if (_theProperties != null)
-      {
-
-        // introspection here we come
-        final int cnt = _theProperties.length;
-        for (int i = 0; i < cnt; i++)
-        {
-          final PropertyDescriptor p = _theProperties[i];
-          addEditor(p, _theData, _theInfo);
-        }
-      }
-    }
-
-    // also have a go at creating supplemental editors
-    if (_otherEditors != null)
-    {
-      // adding more editors
-      for (int i = 0; i < _otherEditors.length; i++)
-      {
-        final BeanInfo bn = _otherEditors[i];
-        if (bn instanceof MWC.GUI.Editable.EditorType)
-        {
-          final Editable.EditorType et = (Editable.EditorType) bn;
-          final Object obj = et.getData();
-          final PropertyDescriptor[] pds = et.getPropertyDescriptors();
-          if (pds != null)
-          {
-            for (int j = 0; j < pds.length; j++)
-            {
-              final PropertyDescriptor pd = pds[j];
-
-              // is this an 'expert' property which
-              // should not appear in here as an additional?
-              if (pd.isExpert())
-              {
-                // do nothing, we don't want to show this
-              }
-              else
-              {
-                addEditor(pd, obj, et);
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
-  protected boolean checkIntegrity()
-  {
-    // Let's iterate all the editors, and lets get anything with the word
-    // Start or End.
-    final Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
-    final HashMap<String, Object> startItems = new HashMap<>();
-    final HashMap<String, Object> endItems = new HashMap<>();
-    final HashMap<String, String> startDescription = new HashMap<>();
-    final HashMap<String, String> endDescription = new HashMap<>();
-
-    while (enumer.hasMoreElements())
-    {
-      final PropertyEditorItem pei = enumer.nextElement();
-      final PropertyDescriptor pd = pei.theDescriptor;
-
-      if (pd.getName().contains(_START))
-      {
-        final String innerName = pd.getName().replaceAll(_START, "");
-        startItems.put(innerName, pei.theEditor.getValue());
-        startDescription.put(innerName, pd.getDisplayName());
-      }
-      if (pd.getName().contains(_END))
-      {
-        final String innerName = pd.getName().replaceAll(_END, "");
-        endItems.put(innerName, pei.theEditor.getValue());
-        endDescription.put(innerName, pd.getDisplayName());
-      }
-    }
-
-    // then we compare them with each other, matching them
-    for (final String key : startItems.keySet())
-    {
-      if (endItems.containsKey(key))
-      {
-        final Object startObject = startItems.get(key);
-        final Object endObject = endItems.get(key);
-
-        if (startObject instanceof HiResDate && endObject instanceof HiResDate)
-        {
-          final HiResDate startDate = (HiResDate) startObject;
-          final HiResDate endDate = (HiResDate) endObject;
-
-          if (HiResDate.isNotInitialized(startDate) || HiResDate
-              .isNotInitialized(endDate))
-          {
-            return true;
-          }
-          if (startDate.getMicros() > endDate.getMicros())
-          {
-            notifyDateInconsistency(startDescription.get(key), endDescription
-                .get(key));
-
-            return false;
-          }
-        }
-      }
-    }
-
-    return true;
-  }
-
-  protected void closing()
-  {
-    // remove the normal property change listener
-    _theInfo.removePropertyChangeListener(this);
-
-    // do we have a reporting listener?
-    if (_reportListener != null)
-      _theInfo.removePropertyChangeListener(Editable.EditorType.REPORT_NAME,
-          _reportListener);
-
-    // also try to listen in to the additional items
-    if (_otherEditors != null)
-    {
-      for (int i = 0; i < _otherEditors.length; i++)
-      {
-        final Editable.EditorType et = (Editable.EditorType) _otherEditors[i];
-        et.removePropertyChangeListener(this);
-      }
-    }
-  }
-
-  //////////////////////////////////////////////////
-  // the data for the action
-  ///////////////////////////////////////////////////
-
-  abstract protected void declarePropertyEditors();
-
-  public void doRefresh()
-  {
-    final Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
-    while (enumer.hasMoreElements())
-    {
-      final PropertyEditorItem pi = enumer.nextElement();
-      final Component c = pi.theEditorGUI;
-      final PropertyEditor pe = pi.theEditor;
-
-      // now get the new value
-      final Object current = getValueFor(pi.theData, pi.theDescriptor);
-
-      if (current != null)
-      {
-        pe.setValue(current);
-        updateThis(c, pe);
-      }
-
-    }
-  }
-
-  /**
-   * pass through all of our editors and reset them to their original values
-   */
-  protected void doReset()
-  {
-    // remember if we have made a change
-    boolean _someChanged = false;
-
-    // update the editors in turn
-    final Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
-    while (enumer.hasMoreElements())
-    {
-      final PropertyEditorItem pei = enumer.nextElement();
-      final PropertyDescriptor pd = pei.theDescriptor;
-
-      final Object res = pei.theEditor.getValue();
-
-      // find out if the value for this parameter is different to the
-      // original one (has it been modified?)
-      final Object orig = pei.originalValue;
-
-      if (res != null && !res.equals(orig))
-      {
-        _someChanged = true;
-
-        // get the "writer" method
-        final Method write = pd.getWriteMethod();
-
-        try
-        {
-          final Object[] params =
-          {orig};
-          write.invoke(pei.theData, params);
-        }
-        catch (final Exception e)
-        {
-          MWC.Utilities.Errors.Trace.trace(e);
-        }
-
-        // so reset the value of this property editor
-        final PropertyEditor pe = pei.theEditor;
-
-        if ("Name".equals(pd.getName()))
-        {
-          _theName = pei.originalValue.toString();
-          _theInfo.setName(pei.originalValue.toString());
-          if (_propsPanel != null)
-          {
-            _propsPanel.setTitleAt(_propsPanel.getSelectedIndex(), _theName);
-          }
-        }
-        pe.setValue(pei.originalValue);
-        updateThis(pei.theEditorGUI, pe);
-      }
-    }
-
-    // and trigger an update
-    if (_someChanged && _theLayers != null)
-      _theLayers.fireModified(null);
-
-  }
-
-  public void doUpdate()
-  {
-
-    // see if there is a custom editor
-    if (_theCustomEditor != null)
-    {
-      // then let's leave it to edit itself
-    }
-    else
-    {
-      boolean integral = checkIntegrity();
-
-      if (integral)
-      {
-
-        // update the editors in turn
-        final Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
-        while (enumer.hasMoreElements())
-        {
-          final PropertyEditorItem pei = enumer.nextElement();
-          final PropertyDescriptor pd = pei.theDescriptor;
-          update(pd, pei.theData);
-        }
-
-        // check if there are any modifications to be made
-        if (_theModifications.size() > 0)
-        {
-
-          /*
-           * we now have a list of properties to be changed (and their old values) in our vector we
-           * now have to do them
-           */
-          final PropertyChangeAction act = new PropertyChangeAction(
-              _theModifications, _theData);
-
-          // check if the list actually contains any modifications
-
-          // and do it
-          act.execute();
-
-          // and put it on the undo buffer
-          final MWC.GUI.Undo.UndoBuffer buff = getBuffer();
-          if (buff != null)
-            buff.add(act);
-
-          // and now clear the list of modifications (we don't want to repeat them)
-          _theModifications.removeAllElements();
-
-        }
-
-        // finally inform the item being edited that we are finished
-        _theInfo.updatesComplete();
-      }
-    }
-  }
-
-  /**
-   * the object we are listening to has fired a new report. Display it in our GUI if we want to
-   *
-   * @param report
-   *          the text to show
-   */
-  abstract protected void fireNewReport(String report);
-
-  abstract protected UndoBuffer getBuffer();
-
-  public String getName()
-  {
-    return _theName;
-  }
-
-  /////////////////////////////////////////////////////
-  // abstract methods
-  ////////////////////////////////////////////////////
-  abstract protected void initForm(PropertiesPanel thePanel);
-
-  public abstract void notifyDateInconsistency(String startDescription,
-      String endDescription);
-
-  @Override
-  public void propertyChange(final PropertyChangeEvent pce)
-  {
-    // check that the change didn't come from us
-    if (pce.getSource() != this)
-    {
-      // trigger a refresh
-      doRefresh();
-    }
-  }
-
-  abstract public void setNames(String apply, String close, String reset);
-
-  abstract protected void showMethods();
-
-  abstract protected void showZeroEditorsFound(final String objectName);
-
-  /**
-   * return this item as a string
-   */
-  @Override
-  public String toString()
-  {
-    return getName();
-  }
-
-  private void update(final PropertyDescriptor pd, final Object data)
-  {
-    final PropertyEditorItem pei = _theEditors.get(pd);
-    final PropertyEditor pe = pei.theEditor;
-
-    if (pe == null)
-    {
-      return;
-    }
-
-    final Object newVal = pe.getValue();
-    final Object oldVal = pei.getCurrentVal();
-
-    // find out if the value for this parameter is different to the
-    // current one for this object - or if there isn't a current value
-    if ((newVal == null) || (!newVal.equals(oldVal)))
-    {
-      if (newVal == null && HiResDate.class.equals(pei.theDescriptor
-          .getPropertyType()))
-      {
-        JOptionPane.showMessageDialog(_propsPanel, pei.theDescriptor
-            .getDisplayName()
-            + " has an invalid value. It will be interpreted as \'Not set\'. \n"
-            + "Use the following formats (Date - dd/mm/yy), (Time - hh:mm:ss).",
-            "Invalid property value", JOptionPane.ERROR_MESSAGE);
-      }
-
-      // find out the type of the editor
-      final Method write = pd.getWriteMethod();
-
-      // and store all of this data, ready to apply it
-      _theModifications.addElement(new PropertyChangeItem(data, write, newVal,
-          oldVal, pei.theEditableInfo, pei.theDescriptor.getName()));
-    }
-  }
-
-  abstract protected void updateThis(Component c, PropertyEditor pe);
+abstract public class PlainPropertyEditor implements PropertyChangeListener {
+	//////////////////////////////////////////////////
+	// nested interface for custom editors which want
+	// to know about the layers object
+	//////////////////////////////////////////////////
+	static public interface EditorUsesLayers {
+		/**
+		 * this is the internal layers object
+		 *
+		 * @param theLayers the layers object
+		 */
+		public void setLayers(Layers theLayers);
+	}
+
+	//////////////////////////////////////////////////
+	// nested interface for custom editors which want
+	// to know about the properties window
+	//////////////////////////////////////////////////
+	static public interface EditorUsesPropertyPanel {
+		/**
+		 * this is the property panel we're using
+		 *
+		 * @param thePanel
+		 */
+		public void setPanel(PropertiesPanel thePanel);
+	}
+
+	//////////////////////////////////////////////////
+	// nested interface for custom editors which want
+	// to know about the tool parent
+	//////////////////////////////////////////////////
+	static public interface EditorUsesToolParent {
+		/**
+		 * here's the data
+		 *
+		 * @param theParent the parent object
+		 */
+		public void setParent(ToolParent theParent);
+	}
+
+	//////////////////////////////////////////////////
+	// the action itself - we take the chart to display the results on
+	// and the list of property changes made in this action
+	///////////////////////////////////////////////////
+	public class PropertyChangeAction implements Action {
+		/**
+		 * the list of things to change
+		 */
+		protected Vector<PropertyChangeItem> _theMods;
+
+		/**
+		 * the item being edited
+		 */
+		protected Object _theData1;
+
+		public PropertyChangeAction(final Vector<PropertyChangeItem> theModifications, final Object theData) {
+			// take a copy of the vector, not the vector itself
+			_theMods = copyVector(theModifications);
+
+			// store the object
+			_theData1 = theData;
+		}
+
+		protected Vector<PropertyChangeItem> copyVector(final Vector<PropertyChangeItem> other) {
+			final Vector<PropertyChangeItem> vector = new Vector<PropertyChangeItem>(other.size(), 1);
+			final Vector<PropertyChangeItem> res = vector;
+			final Enumeration<PropertyChangeItem> enumer = other.elements();
+			while (enumer.hasMoreElements()) {
+				final PropertyChangeItem oldP = enumer.nextElement();
+				final PropertyChangeItem newP = new PropertyChangeItem(oldP.data, oldP.setter, oldP.newValue,
+						oldP.oldValue, oldP.editorInfo, oldP.propertyName);
+				res.addElement(newP);
+			}
+			return res;
+		}
+
+		/**
+		 * utility function to perform the 'setting' for us
+		 */
+		protected void doThis(final Method setter, final Object data, final Object val) {
+
+			final Object args[] = { val };
+
+			Class<?> p1 = null;
+
+			try {
+				// check that there is a valid setter
+				if (setter == null)
+					return;
+
+				// see if the setter is expecting a double
+				final Class<?>[] params = setter.getParameterTypes();
+				// get the first parameter
+				p1 = params[0];
+
+				// do we have to do our special 'double' handling?
+				if (p1 != null && p1.equals(double.class)) {
+					// is the value we are going to set currently
+					// a string?
+					if (val.getClass().equals(String.class)) {
+						final double d = MWCXMLReader.readThisDouble((String) val);
+						final Object args2[] = { d };
+						setter.invoke(data, args2);
+					} else if (val.getClass().equals(Double.class)) {
+						final Double d = (Double) val;
+						final Object args2[] = { d };
+						setter.invoke(data, args2);
+					}
+
+				} else
+					setter.invoke(data, args);
+			} catch (final java.lang.NumberFormatException e) {
+				MWC.Utilities.Errors.Trace.trace(e);
+			} catch (final java.lang.reflect.InvocationTargetException ie) {
+				final String tmpStr = null;
+				if (p1 != null)
+					p1.toString();
+				final String msg = "Using:" + setter.getName() + " to set:" + data + " to " + val + " expecting type:"
+						+ tmpStr;
+				MWC.Utilities.Errors.Trace.trace(ie, msg);
+			} catch (final java.lang.IllegalArgumentException ell) {
+				final String msg = "Using:" + setter.getName() + " to set:" + data + " to " + val;
+				MWC.Utilities.Errors.Trace.trace(ell, msg);
+			} catch (final Exception e) {
+				MWC.Utilities.Errors.Trace.trace(e);
+			}
+
+		}
+
+		@Override
+		public void execute() {
+			// go through the vector and make the changes
+			final Enumeration<PropertyChangeItem> enumer = _theMods.elements();
+			while (enumer.hasMoreElements()) {
+				final PropertyChangeItem it = enumer.nextElement();
+				if ("Name".equals(it.propertyName)) {
+					if (NarrativeEntry.NARRATIVE_LAYER.equalsIgnoreCase(it.newValue.toString())) {
+						SwingUtilities.invokeLater(new Runnable() {
+
+							@Override
+							public void run() {
+								JOptionPane.showMessageDialog(null,
+										"Sorry, the name `" + NarrativeEntry.NARRATIVE_LAYER
+												+ "` is reserved for narratives.\nPlease choose another layer name",
+										"Add layer", JOptionPane.WARNING_MESSAGE);
+							}
+
+						});
+						continue;
+					}
+					_theName = it.newValue.toString();
+					it.editorInfo.setName(_theName);
+					if (_propsPanel != null) {
+						_propsPanel.setTitleAt(_propsPanel.getSelectedIndex(), _theName);
+					}
+				}
+
+				doThis(it.setter, it.data, it.newValue);
+				it.editorInfo.fireChanged(this, it.propertyName, it.oldValue, it.newValue);
+				// TODO We are calling it after every change, and we are forcing to update UI
+				// again anda
+				// again.
+				// Maybe it could be done once at the end.
+				// Saul Hidalgo
+			}
+
+			// try to update just the layer
+			if (_theLayers != null)
+				_theLayers.fireModified(_parentLayer);
+		}
+
+		/**
+		 * accessor for the object being edited
+		 */
+		public Object getData() {
+			return _theData1;
+		}
+
+		@Override
+		public boolean isRedoable() {
+			return true;
+		}
+
+		@Override
+		public boolean isUndoable() {
+			return true;
+		}
+
+		public int size() {
+			return _theMods.size();
+		}
+
+		@Override
+		public String toString() {
+			return "Property change";
+		}
+
+		@Override
+		public void undo() {
+			// go through the vector and reset to the old values
+			// go through the vector and make the changes
+			final Enumeration<PropertyChangeItem> enumer = _theMods.elements();
+			while (enumer.hasMoreElements()) {
+				final PropertyChangeItem it = enumer.nextElement();
+				doThis(it.setter, it.data, it.oldValue);
+				it.editorInfo.fireChanged(this, it.propertyName, it.newValue, it.oldValue);
+			}
+
+			_theLayers.fireModified(_parentLayer);
+		}
+	}
+
+	protected class PropertyChangeItem {
+		public Object data;
+		transient public Method setter;
+		public Object newValue;
+		public Object oldValue;
+		transient public Editable.EditorType editorInfo;
+		public String propertyName;
+
+		public PropertyChangeItem(final Object theData, final Method theSetter, final Object theNewValue,
+				final Object theOldValue, final Editable.EditorType theEditorInfo, final String thePropertyName) {
+			data = theData;
+			setter = theSetter;
+			newValue = theNewValue;
+			oldValue = theOldValue;
+			editorInfo = theEditorInfo;
+			propertyName = thePropertyName;
+		}
+	}
+
+	/////////////////////////////////////////////////////
+	// class which represents a combination of a
+	// property descriptor and the screen object that
+	// is used to edit that property
+	////////////////////////////////////////////////////
+	public static class PropertyEditorItem {
+		public final PropertyDescriptor theDescriptor;
+		public Component theEditorGUI;
+		public final PropertyEditor theEditor;
+		public final Object theData;
+		public final Object originalValue;
+		transient public Editable.EditorType theEditableInfo;
+
+		public PropertyEditorItem(final PropertyDescriptor propVal, final PropertyEditor theEditorVal,
+				final Object data, final Object theOriginalValue, final Editable.EditorType editableInfo) {
+			theDescriptor = propVal;
+			theEditor = theEditorVal;
+			theData = data;
+			originalValue = theOriginalValue;
+			theEditableInfo = editableInfo;
+		}
+
+		public Object getCurrentVal() {
+			final Object res = getValueFor(theData, theDescriptor);
+			return res;
+		}
+	}
+
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+	// the property editor manager
+	protected static PropertyEditorManager _myPropertyManager;
+
+	public static final String _START = "Start";
+
+	public static final String _END = "End";
+
+	// method to create the property manager - called by the child classes to do the
+	// core stuff.
+	protected static void createCorePropertyEditors() {
+		// ok, create it first
+		_myPropertyManager = new PropertyEditorManager();
+
+		// and now stick in the stuff which is GUI independent
+		PropertyEditorManager.registerEditor(Integer.class, IntegerEditor.class);
+		PropertyEditorManager.registerEditor(Long.class, LongEditor.class);
+	}
+
+	/**
+	 * method to retrieve an editor for the supplied property from our internal list
+	 *
+	 * @param p the property to get an editor for
+	 * @return a GUI editor component (or null)
+	 */
+	public static PropertyEditor findEditor(final PropertyDescriptor p) {
+		PropertyEditor res = null;
+
+		// find out the type of the editor
+		final Method m = p.getReadMethod();
+		final Class<?> cl = m.getReturnType();
+
+		// is there a custom editor for this type?
+		final Class<?> c = p.getPropertyEditorClass();
+
+		if (c == null) {
+			res = PropertyEditorManager.findEditor(cl);
+		} else {
+			try {
+				res = (PropertyEditor) c.newInstance();
+			} catch (final Exception e) {
+				MWC.Utilities.Errors.Trace.trace(e);
+			}
+		}
+		return res;
+	}
+
+	protected static Object getValueFor(final Object data, final PropertyDescriptor p) {
+		Object res = null;
+
+		try {
+			// find out the type of the editor
+			final Method m = p.getReadMethod();
+
+			res = m.invoke(data, (Object[]) null);
+		} catch (final Exception e) {
+			System.err.println("Plain property editor: problem calling read method");
+			MWC.Utilities.Errors.Trace.trace(e);
+		}
+
+		return res;
+
+	}
+
+	/**
+	 * the data object which we are editing
+	 */
+	protected Object _theData;
+
+	/**
+	 * the properties shown by this object
+	 */
+	protected PropertyDescriptor[] _theProperties;
+
+	/**
+	 * the name of this object
+	 */
+	protected String _theName;
+
+	/**
+	 * the property editors we are adding
+	 */
+	protected Hashtable<PropertyDescriptor, PropertyEditorItem> _theEditors;
+
+	/**
+	 * the list of modifications made (plus their old values and the setter methods)
+	 */
+	protected Vector<PropertyChangeItem> _theModifications;
+
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * the custom editor, if there is one
+	 */
+	protected Class<?> _theCustomEditor;
+
+	/**
+	 * the panel which is holding us
+	 */
+	protected PropertiesPanel _thePanel = null;
+
+	/**
+	 * the additional editable items returned by this object
+	 */
+	protected java.beans.BeanInfo[] _otherEditors;
+
+	/**
+	 * and other methods supported by the object
+	 */
+	protected MethodDescriptor[] _theMethods;
+
+	/**
+	 * the editable behaviour for this item
+	 */
+	transient protected MWC.GUI.Editable.EditorType _theInfo;
+
+	/**
+	 * the toolparent for this interface, so that we can set the cursor busy when we
+	 * want to
+	 */
+	protected MWC.GUI.ToolParent _toolParent;
+
+	/**
+	 * the layer which this editable object belongs to
+	 */
+	protected Layer _parentLayer;
+
+	/**
+	 * the listener object we declare for this item, so that we can remove it later
+	 * on
+	 */
+	private PropertyChangeListener _reportListener;
+
+	/**
+	 * JTabbedPane
+	 */
+	private final SwingPropertiesPanel _propsPanel;
+
+	protected final Layers _theLayers;
+
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	public PlainPropertyEditor(final MWC.GUI.Editable.EditorType theInfo, final Layers theLayers,
+			final PropertiesPanel thePanel, final ToolParent toolParent, final Layer parentLayer,
+			final SwingPropertiesPanel propsPanel) {
+		_propsPanel = propsPanel;
+
+		// store the editor
+		_theInfo = theInfo;
+
+		// store the data
+		_theData = theInfo.getData();
+
+		// store the tool parent
+		_toolParent = toolParent;
+
+		// store the properties panel
+		_thePanel = thePanel;
+
+		// store the layer this object belongs to (so we can trigger a layer-specific
+		// repaint, where
+		// supported)
+		_parentLayer = parentLayer;
+
+		// declare our custom property editors
+		declarePropertyEditors();
+
+		// do the editors
+		_theEditors = new Hashtable<PropertyDescriptor, PropertyEditorItem>();
+
+		// see if there is a custom editor
+		_theCustomEditor = theInfo.getBeanDescriptor().getCustomizerClass();
+
+		// store the properties
+		_theProperties = theInfo.getPropertyDescriptors();
+
+		// see if there are any additional editors
+		// note we only edit additional items if they are not "Expert" parameters
+		_otherEditors = theInfo.getAdditionalBeanInfo();
+
+		// see if there are any other methods
+		// note that even though we retrieve this full list,
+		// we only show additional parameters which are not
+		// "Expert" parameters
+		_theMethods = theInfo.getMethodDescriptors();
+
+		// store the name
+		_theName = theInfo.getName();
+
+		// store the chart
+		_theLayers = theLayers;
+
+		// assign the editors
+		assignEditors();
+
+		// layout the form
+		initForm(thePanel);
+
+		// show the method buttons
+		showMethods();
+
+		/**
+		 * get ready to store the list of changes, for our undoable action
+		 */
+		_theModifications = new Vector<PropertyChangeItem>(0, 1);
+
+		// see if we should be listening to this object
+		theInfo.addPropertyChangeListener(this);
+
+		// does this object fire any reports?
+		if (theInfo.firesReports()) {
+			// ok, create the report listener for this item
+			_reportListener = new PropertyChangeListener() {
+				@Override
+				public void propertyChange(final PropertyChangeEvent evt) {
+					fireNewReport((String) evt.getNewValue());
+				}
+			};
+
+			// ok, declare an interest in any reports from the object
+			theInfo.addPropertyChangeListener(Editable.EditorType.REPORT_NAME, _reportListener);
+		}
+
+		// also try to listen in to the additional items
+		if (_otherEditors != null) {
+			for (int i = 0; i < _otherEditors.length; i++) {
+				final Editable.EditorType et = (Editable.EditorType) _otherEditors[i];
+				et.addPropertyChangeListener(this);
+			}
+		}
+
+		// did we actually find any editors?
+		if ((_theEditors.size() == 0) && (_theCustomEditor == null)) {
+			// inform the user that this object has no editable properties
+			showZeroEditorsFound(theInfo.getDisplayName());
+		}
+
+	}
+
+	/**
+	 * find a editor for the supplied component, and add it to our list
+	 *
+	 * @param p
+	 * @param data
+	 * @param editor
+	 * @return
+	 */
+	public PropertyEditor addEditor(final PropertyDescriptor p, final Object data, final Editable.EditorType editor) {
+		PropertyEditor res = null;
+
+		if (p != null) {
+
+			res = findEditor(p);
+
+			if (res != null) {
+				final Object val = getValueFor(data, p);
+				res.setValue(val);
+				_theEditors.put(p, new PropertyEditorItem(p, res, data, val, editor));
+			} else {
+				MWC.Utilities.Errors.Trace
+						.trace("Failed to find " + p + " editor for " + data + ", method:" + p.getReadMethod());
+			}
+		}
+
+		return res;
+	}
+
+	protected void addUs() {
+		final hasPropertyListeners l = (hasPropertyListeners) _theData;
+		l.addPropertyChangeListener(this);
+	}
+
+	private void assignEditors() {
+		// try for a custom editor first
+		if (_theCustomEditor != null) {
+		} else {
+			if (_theProperties != null) {
+
+				// introspection here we come
+				final int cnt = _theProperties.length;
+				for (int i = 0; i < cnt; i++) {
+					final PropertyDescriptor p = _theProperties[i];
+					addEditor(p, _theData, _theInfo);
+				}
+			}
+		}
+
+		// also have a go at creating supplemental editors
+		if (_otherEditors != null) {
+			// adding more editors
+			for (int i = 0; i < _otherEditors.length; i++) {
+				final BeanInfo bn = _otherEditors[i];
+				if (bn instanceof MWC.GUI.Editable.EditorType) {
+					final Editable.EditorType et = (Editable.EditorType) bn;
+					final Object obj = et.getData();
+					final PropertyDescriptor[] pds = et.getPropertyDescriptors();
+					if (pds != null) {
+						for (int j = 0; j < pds.length; j++) {
+							final PropertyDescriptor pd = pds[j];
+
+							// is this an 'expert' property which
+							// should not appear in here as an additional?
+							if (pd.isExpert()) {
+								// do nothing, we don't want to show this
+							} else {
+								addEditor(pd, obj, et);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	protected boolean checkIntegrity() {
+		// Let's iterate all the editors, and lets get anything with the word
+		// Start or End.
+		final Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
+		final HashMap<String, Object> startItems = new HashMap<>();
+		final HashMap<String, Object> endItems = new HashMap<>();
+		final HashMap<String, String> startDescription = new HashMap<>();
+		final HashMap<String, String> endDescription = new HashMap<>();
+
+		while (enumer.hasMoreElements()) {
+			final PropertyEditorItem pei = enumer.nextElement();
+			final PropertyDescriptor pd = pei.theDescriptor;
+
+			if (pd.getName().contains(_START)) {
+				final String innerName = pd.getName().replaceAll(_START, "");
+				startItems.put(innerName, pei.theEditor.getValue());
+				startDescription.put(innerName, pd.getDisplayName());
+			}
+			if (pd.getName().contains(_END)) {
+				final String innerName = pd.getName().replaceAll(_END, "");
+				endItems.put(innerName, pei.theEditor.getValue());
+				endDescription.put(innerName, pd.getDisplayName());
+			}
+		}
+
+		// then we compare them with each other, matching them
+		for (final String key : startItems.keySet()) {
+			if (endItems.containsKey(key)) {
+				final Object startObject = startItems.get(key);
+				final Object endObject = endItems.get(key);
+
+				if (startObject instanceof HiResDate && endObject instanceof HiResDate) {
+					final HiResDate startDate = (HiResDate) startObject;
+					final HiResDate endDate = (HiResDate) endObject;
+
+					if (HiResDate.isNotInitialized(startDate) || HiResDate.isNotInitialized(endDate)) {
+						return true;
+					}
+					if (startDate.getMicros() > endDate.getMicros()) {
+						notifyDateInconsistency(startDescription.get(key), endDescription.get(key));
+
+						return false;
+					}
+				}
+			}
+		}
+
+		return true;
+	}
+
+	protected void closing() {
+		// remove the normal property change listener
+		_theInfo.removePropertyChangeListener(this);
+
+		// do we have a reporting listener?
+		if (_reportListener != null)
+			_theInfo.removePropertyChangeListener(Editable.EditorType.REPORT_NAME, _reportListener);
+
+		// also try to listen in to the additional items
+		if (_otherEditors != null) {
+			for (int i = 0; i < _otherEditors.length; i++) {
+				final Editable.EditorType et = (Editable.EditorType) _otherEditors[i];
+				et.removePropertyChangeListener(this);
+			}
+		}
+	}
+
+	//////////////////////////////////////////////////
+	// the data for the action
+	///////////////////////////////////////////////////
+
+	abstract protected void declarePropertyEditors();
+
+	public void doRefresh() {
+		final Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
+		while (enumer.hasMoreElements()) {
+			final PropertyEditorItem pi = enumer.nextElement();
+			final Component c = pi.theEditorGUI;
+			final PropertyEditor pe = pi.theEditor;
+
+			// now get the new value
+			final Object current = getValueFor(pi.theData, pi.theDescriptor);
+
+			if (current != null) {
+				pe.setValue(current);
+				updateThis(c, pe);
+			}
+
+		}
+	}
+
+	/**
+	 * pass through all of our editors and reset them to their original values
+	 */
+	protected void doReset() {
+		// remember if we have made a change
+		boolean _someChanged = false;
+
+		// update the editors in turn
+		final Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
+		while (enumer.hasMoreElements()) {
+			final PropertyEditorItem pei = enumer.nextElement();
+			final PropertyDescriptor pd = pei.theDescriptor;
+
+			final Object res = pei.theEditor.getValue();
+
+			// find out if the value for this parameter is different to the
+			// original one (has it been modified?)
+			final Object orig = pei.originalValue;
+
+			if (res != null && !res.equals(orig)) {
+				_someChanged = true;
+
+				// get the "writer" method
+				final Method write = pd.getWriteMethod();
+
+				try {
+					final Object[] params = { orig };
+					write.invoke(pei.theData, params);
+				} catch (final Exception e) {
+					MWC.Utilities.Errors.Trace.trace(e);
+				}
+
+				// so reset the value of this property editor
+				final PropertyEditor pe = pei.theEditor;
+
+				if ("Name".equals(pd.getName())) {
+					_theName = pei.originalValue.toString();
+					_theInfo.setName(pei.originalValue.toString());
+					if (_propsPanel != null) {
+						_propsPanel.setTitleAt(_propsPanel.getSelectedIndex(), _theName);
+					}
+				}
+				pe.setValue(pei.originalValue);
+				updateThis(pei.theEditorGUI, pe);
+			}
+		}
+
+		// and trigger an update
+		if (_someChanged && _theLayers != null)
+			_theLayers.fireModified(null);
+
+	}
+
+	public void doUpdate() {
+
+		// see if there is a custom editor
+		if (_theCustomEditor != null) {
+			// then let's leave it to edit itself
+		} else {
+			final boolean integral = checkIntegrity();
+
+			if (integral) {
+
+				// update the editors in turn
+				final Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
+				while (enumer.hasMoreElements()) {
+					final PropertyEditorItem pei = enumer.nextElement();
+					final PropertyDescriptor pd = pei.theDescriptor;
+					update(pd, pei.theData);
+				}
+
+				// check if there are any modifications to be made
+				if (_theModifications.size() > 0) {
+
+					/*
+					 * we now have a list of properties to be changed (and their old values) in our
+					 * vector we now have to do them
+					 */
+					final PropertyChangeAction act = new PropertyChangeAction(_theModifications, _theData);
+
+					// check if the list actually contains any modifications
+
+					// and do it
+					act.execute();
+
+					// and put it on the undo buffer
+					final MWC.GUI.Undo.UndoBuffer buff = getBuffer();
+					if (buff != null)
+						buff.add(act);
+
+					// and now clear the list of modifications (we don't want to repeat them)
+					_theModifications.removeAllElements();
+
+				}
+
+				// finally inform the item being edited that we are finished
+				_theInfo.updatesComplete();
+			}
+		}
+	}
+
+	/**
+	 * the object we are listening to has fired a new report. Display it in our GUI
+	 * if we want to
+	 *
+	 * @param report the text to show
+	 */
+	abstract protected void fireNewReport(String report);
+
+	abstract protected UndoBuffer getBuffer();
+
+	public String getName() {
+		return _theName;
+	}
+
+	/////////////////////////////////////////////////////
+	// abstract methods
+	////////////////////////////////////////////////////
+	abstract protected void initForm(PropertiesPanel thePanel);
+
+	public abstract void notifyDateInconsistency(String startDescription, String endDescription);
+
+	@Override
+	public void propertyChange(final PropertyChangeEvent pce) {
+		// check that the change didn't come from us
+		if (pce.getSource() != this) {
+			// trigger a refresh
+			doRefresh();
+		}
+	}
+
+	abstract public void setNames(String apply, String close, String reset);
+
+	abstract protected void showMethods();
+
+	abstract protected void showZeroEditorsFound(final String objectName);
+
+	/**
+	 * return this item as a string
+	 */
+	@Override
+	public String toString() {
+		return getName();
+	}
+
+	private void update(final PropertyDescriptor pd, final Object data) {
+		final PropertyEditorItem pei = _theEditors.get(pd);
+		final PropertyEditor pe = pei.theEditor;
+
+		if (pe == null) {
+			return;
+		}
+
+		final Object newVal = pe.getValue();
+		final Object oldVal = pei.getCurrentVal();
+
+		// find out if the value for this parameter is different to the
+		// current one for this object - or if there isn't a current value
+		if ((newVal == null) || (!newVal.equals(oldVal))) {
+			if (newVal == null && HiResDate.class.equals(pei.theDescriptor.getPropertyType())) {
+				JOptionPane.showMessageDialog(_propsPanel,
+						pei.theDescriptor.getDisplayName()
+								+ " has an invalid value. It will be interpreted as \'Not set\'. \n"
+								+ "Use the following formats (Date - dd/mm/yy), (Time - hh:mm:ss).",
+						"Invalid property value", JOptionPane.ERROR_MESSAGE);
+			}
+
+			// find out the type of the editor
+			final Method write = pd.getWriteMethod();
+
+			// and store all of this data, ready to apply it
+			_theModifications.addElement(new PropertyChangeItem(data, write, newVal, oldVal, pei.theEditableInfo,
+					pei.theDescriptor.getName()));
+		}
+	}
+
+	abstract protected void updateThis(Component c, PropertyEditor pe);
 
 }

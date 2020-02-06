@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.debrief.gndmanager.preferences;
@@ -34,13 +34,9 @@ import org.mwc.debrief.gndmanager.Tracks.TrackStoreWrapper;
  * preferences can be accessed directly via the preference store.
  */
 
-public class CloudStoragePrefsPage extends FieldEditorPreferencePage implements
-		IWorkbenchPreferencePage
-{
-	public CloudStoragePrefsPage()
-	{
-		super("Cloud Storage", CorePlugin.getImageDescriptor("icons/coast.gif"),
-				GRID);
+public class CloudStoragePrefsPage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
+	public CloudStoragePrefsPage() {
+		super("Cloud Storage", CorePlugin.getImageDescriptor("icons/coast.gif"), GRID);
 		setDescription("Locations of cloud-based storage");
 	}
 
@@ -49,22 +45,21 @@ public class CloudStoragePrefsPage extends FieldEditorPreferencePage implements
 	 * blocks needed to manipulate various types of preferences. Each field editor
 	 * knows how to save and restore itself.
 	 */
-	public void createFieldEditors()
-	{
-		addField(new StringFieldEditor(TrackStoreWrapper.COUCHDB_LOCATION,
-				"&CouchDb Database URL:", getFieldEditorParent()));
-		addField(new StringFieldEditor(TrackStoreWrapper.ES_LOCATION,
-				"&ElasticSearch index URL:", getFieldEditorParent()));
+	@Override
+	public void createFieldEditors() {
+		addField(new StringFieldEditor(TrackStoreWrapper.COUCHDB_LOCATION, "&CouchDb Database URL:",
+				getFieldEditorParent()));
+		addField(new StringFieldEditor(TrackStoreWrapper.ES_LOCATION, "&ElasticSearch index URL:",
+				getFieldEditorParent()));
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
+	 *
+	 * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
 	 */
-	public void init(final IWorkbench workbench)
-	{
+	@Override
+	public void init(final IWorkbench workbench) {
 		setPreferenceStore(Activator.getDefault().getPreferenceStore());
 	}
 

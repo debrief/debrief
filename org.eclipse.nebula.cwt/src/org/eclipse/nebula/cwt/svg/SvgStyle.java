@@ -15,8 +15,8 @@ import java.util.Map;
 class SvgStyle extends SvgElement {
 
 	Map<String, Map<String, String>> styles;
-	
-	SvgStyle(SvgContainer container) {
+
+	SvgStyle(final SvgContainer container) {
 		super(container, "style"); //$NON-NLS-1$
 	}
 

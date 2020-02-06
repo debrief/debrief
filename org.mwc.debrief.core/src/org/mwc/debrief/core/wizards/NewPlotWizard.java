@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.debrief.core.wizards;
@@ -67,8 +67,7 @@ import MWC.GUI.Chart.Painters.CoastPainter;
  * same extension, it will be able to open it.
  */
 
-public class NewPlotWizard extends Wizard implements INewWizard
-{
+public class NewPlotWizard extends Wizard implements INewWizard {
 	private NewPlotFilenameWizardPage _fileWizard;
 	private ScaleWizardPage _scaleWizard;
 	private CoastWizardPage _coastWizard;
@@ -83,8 +82,7 @@ public class NewPlotWizard extends Wizard implements INewWizard
 	/**
 	 * Constructor for NewPlotWizard.
 	 */
-	public NewPlotWizard()
-	{
+	public NewPlotWizard() {
 		super();
 		setNeedsProgressMonitor(true);
 
@@ -96,11 +94,10 @@ public class NewPlotWizard extends Wizard implements INewWizard
 	 */
 
 	@Override
-	public void addPages()
-	{
+	public void addPages() {
 		_fileWizard = new NewPlotFilenameWizardPage(selection);
 		_scaleWizard = new ScaleWizardPage(selection);
-	  _coastWizard = new CoastWizardPage(selection);
+		_coastWizard = new CoastWizardPage(selection);
 		_gridWizard = new GridWizardPage(selection);
 		// _etopoWizard = new ETOPOWizardPage(selection);
 
@@ -117,55 +114,41 @@ public class NewPlotWizard extends Wizard implements INewWizard
 	}
 
 	/**
-	 * The worker method. It will find the container, create the file if missing
-	 * or just replace its contents, and open the editor on the newly created
-	 * file.
+	 * The worker method. It will find the container, create the file if missing or
+	 * just replace its contents, and open the editor on the newly created file.
 	 */
 
-	void doFinish(final String containerName, final String fileName,
-			final IProgressMonitor monitor) throws CoreException
-	{
+	void doFinish(final String containerName, final String fileName, final IProgressMonitor monitor)
+			throws CoreException {
 		// create a sample file
 		monitor.beginTask("Creating " + fileName, 2);
 		final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		final IResource resource = root.findMember(new Path(containerName));
-		if (!resource.exists() || !(resource instanceof IContainer))
-		{
+		if (!resource.exists() || !(resource instanceof IContainer)) {
 			throwCoreException("Container \"" + containerName + "\" does not exist.");
 		}
 		final IContainer container = (IContainer) resource;
 		final IFile file = container.getFile(new Path(fileName));
-		try
-		{
+		try {
 			final InputStream stream = openContentStream();
-			if (file.exists())
-			{
+			if (file.exists()) {
 				file.setContents(stream, true, true, monitor);
-			}
-			else
-			{
+			} else {
 				file.create(stream, true, monitor);
 			}
 			stream.close();
-		}
-		catch (final IOException e)
-		{
+		} catch (final IOException e) {
 		}
 		monitor.worked(1);
 		monitor.setTaskName("Opening file for editing...");
-		getShell().getDisplay().asyncExec(new Runnable()
-		{
-			public void run()
-			{
-				final IWorkbenchPage page = PlatformUI.getWorkbench()
-						.getActiveWorkbenchWindow().getActivePage();
-				try
-				{
+		getShell().getDisplay().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				try {
 					IDE.openEditor(page, file, DebriefPlugin.DEBRIEF_EDITOR);
-				}
-				catch (final PartInitException e)
-				{
-					CorePlugin.logError(Status.ERROR, "Whilst opening new file", e);
+				} catch (final PartInitException e) {
+					CorePlugin.logError(IStatus.ERROR, "Whilst opening new file", e);
 				}
 			}
 		});
@@ -175,20 +158,18 @@ public class NewPlotWizard extends Wizard implements INewWizard
 	/**
 	 * We will accept the selection in the workbench to see if we can initialize
 	 * from it.
-	 * 
+	 *
 	 * @see IWorkbenchWizard#init(IWorkbench, IStructuredSelection)
 	 */
-	public void init(final IWorkbench workbench,
-			final IStructuredSelection selection1)
-	{
+	@Override
+	public void init(final IWorkbench workbench, final IStructuredSelection selection1) {
 		this.selection = selection1;
 	}
 
 	/**
 	 * Put our layers object into a file
 	 */
-	private InputStream openContentStream()
-	{
+	private InputStream openContentStream() {
 		// ok, where do we dump our layers to?
 		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
@@ -200,17 +181,15 @@ public class NewPlotWizard extends Wizard implements INewWizard
 	}
 
 	/**
-	 * This method is called when 'Finish' button is pressed in the wizard. We
-	 * will create an operation and run it using wizard as execution context.
+	 * This method is called when 'Finish' button is pressed in the wizard. We will
+	 * create an operation and run it using wizard as execution context.
 	 */
 	@Override
-	public boolean performFinish()
-	{
+	public boolean performFinish() {
 
 		// get the chart features layer.
 		Layer chartFeatures = _myNewLayers.findLayer(Layers.CHART_FEATURES);
-		if (chartFeatures == null)
-		{
+		if (chartFeatures == null) {
 			final BaseLayer baseFeatures = new BaseLayer();
 			baseFeatures.setName(Layers.CHART_FEATURES);
 
@@ -233,11 +212,9 @@ public class NewPlotWizard extends Wizard implements INewWizard
 		chartFeatures.add(_scaleWizard.getEditable());
 		chartFeatures.add(_gridWizard.getEditable());
 
-		if (_coastWizard != null)
-		{
+		if (_coastWizard != null) {
 			final CoastPainter coast = (CoastPainter) _coastWizard.getEditable();
-			if (coast != null)
-			{
+			if (coast != null) {
 				// complete the laze instantiation of the coastline - we're only
 				// going to
 				// load the data if/when we need it
@@ -249,10 +226,8 @@ public class NewPlotWizard extends Wizard implements INewWizard
 		}
 
 		// also add in the ETOPO layer if it worked
-		if (_etopoWizard != null)
-		{
-			if (_etopoWizard.isAvailable())
-			{
+		if (_etopoWizard != null) {
+			if (_etopoWizard.isAvailable()) {
 				final Layer etopoLayer = (Layer) _etopoWizard.getEditable();
 				if (etopoLayer != null)
 					_myNewLayers.addThisLayer(etopoLayer);
@@ -260,42 +235,29 @@ public class NewPlotWizard extends Wizard implements INewWizard
 		}
 
 		final Layer neLayer = (Layer) _naturalEarthWizard.getEditable();
-		if (neLayer != null)
-		{
+		if (neLayer != null) {
 			_myNewLayers.addThisLayer(neLayer);
 		}
 
 		final String containerName = _fileWizard.getContainerName();
 		final String fileName = _fileWizard.getFileName();
-		final IRunnableWithProgress op = new IRunnableWithProgress()
-		{
-			public void run(final IProgressMonitor monitor)
-					throws InvocationTargetException
-			{
-				try
-				{
+		final IRunnableWithProgress op = new IRunnableWithProgress() {
+			@Override
+			public void run(final IProgressMonitor monitor) throws InvocationTargetException {
+				try {
 					doFinish(containerName, fileName, monitor);
-				}
-				catch (final CoreException e)
-				{
+				} catch (final CoreException e) {
 					throw new InvocationTargetException(e);
-				}
-				finally
-				{
+				} finally {
 					monitor.done();
 				}
 			}
 		};
-		try
-		{
+		try {
 			getContainer().run(true, false, op);
-		}
-		catch (final InterruptedException e)
-		{
+		} catch (final InterruptedException e) {
 			return false;
-		}
-		catch (final InvocationTargetException e)
-		{
+		} catch (final InvocationTargetException e) {
 			final Throwable realException = e.getTargetException();
 			MessageDialog.openError(getShell(), "Error", realException.getMessage());
 			return false;
@@ -303,10 +265,8 @@ public class NewPlotWizard extends Wizard implements INewWizard
 		return true;
 	}
 
-	private void throwCoreException(final String message) throws CoreException
-	{
-		final IStatus status = new Status(IStatus.ERROR, "org.mwc.debrief.core",
-				IStatus.OK, message, null);
+	private void throwCoreException(final String message) throws CoreException {
+		final IStatus status = new Status(IStatus.ERROR, "org.mwc.debrief.core", IStatus.OK, message, null);
 		throw new CoreException(status);
 	}
 }

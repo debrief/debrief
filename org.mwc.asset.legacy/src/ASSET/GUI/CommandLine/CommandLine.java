@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package ASSET.GUI.CommandLine;
@@ -50,14 +50,14 @@ import MWC.GenericData.WorldLocation;
  * Class providing command line access to the ASSET engine Log: $Log:
  * CommandLine.java,v $ Revision 1.2 2006/11/06 15:00:25 Ian.Mayo Only use
  * hard-coded if we don't receive any
- * 
+ *
  * Revision 1.1 2006/08/08 14:21:07 Ian.Mayo Second import
- * 
+ *
  * Revision 1.1 2006/08/07 12:25:15 Ian.Mayo First versions
- * 
+ *
  * Revision 1.22 2005/04/14 13:24:57 Ian.Mayo Don't initialise with completely
  * flat earth
- * 
+ *
  * Revision 1.21 2004/11/01 14:12:55 Ian.Mayo Don't bother hard-coding filenames
  * int
  * <p/>
@@ -90,75 +90,22 @@ import MWC.GenericData.WorldLocation;
  * <p/>
  * Revision 1.9 2003/09/04 14:42:12 Ian.Mayo Correct header comment
  */
-public class CommandLine
-{
+public class CommandLine {
 
 	/**********************************************************************
 	 * local methods
 	 *********************************************************************/
 
 	/**
-	 * message for file not specified
-	 */
-	static public final String FILE_NOT_SPECIFIED = " not specified";
-
-	/**
-	 * message for file not found
-	 */
-	static public final String FILE_NOT_FOUND = " not found";
-
-	/**
-	 * message for invalid file found
-	 */
-	static public final String FILE_INVALID = " is invalid";
-
-	/**
-	 * the scenario we are going to run
-	 */
-	private final CoreScenario _myScenario;
-
-	/**
-	 * the list of observers loaded from the control file
-	 */
-	private Vector<ScenarioObserver> _myObservers;
-
-	/**
-	 * keep track of whether we're alive or not
-	 */
-	protected boolean _isRunning = false;
-
-	/**
-	 * *******************************************************************
-	 * constructor - receives parsed elements
-	 * *******************************************************************
-	 */
-	public CommandLine()
-	{
-		this(new CoreScenario());
-	}
-
-	public CommandLine(CoreScenario theScenario)
-	{
-		// do some kind of checks?
-		_myScenario = theScenario;
-
-		// and create the list of observers
-		_myObservers = new Vector<ScenarioObserver>(0, 1);
-
-	}
-
-	/**
 	 * class that helps monitor the progress of scenario tasks
-	 * 
+	 *
 	 * @author ianmayo
-	 * 
+	 *
 	 */
-	public static interface ASSETProgressMonitor
-	{
+	public static interface ASSETProgressMonitor {
 		/**
-		 * the specified task has started, and we predict the specified amount of
-		 * effort
-		 * 
+		 * the specified task has started, and we predict the specified amount of effort
+		 *
 		 * @param name
 		 * @param totalWork
 		 */
@@ -166,259 +113,20 @@ public class CommandLine
 
 		/**
 		 * the specified amount of work has been performed
-		 * 
+		 *
 		 * @param work
 		 */
 		void worked(int work);
 	}
 
-	/**
-	 * run through the scenario until its natural conclusion
-	 */
-	public void run()
-	{
-
-		// ok, listen out for the scenario finishing
-		_myScenario.addScenarioRunningListener(new ScenarioRunningListener()
-		{
-			public void newScenarioStepTime(int val)
-			{
-			}
-
-			/**
-			 * the scenario has stopped running on auto
-			 */
-			public void paused()
-			{
-			}
-
-			public void newStepTime(int val)
-			{
-			}
-
-			public void restart(ScenarioType scenario)
-			{
-			}
-
-			public void started()
-			{
-				System.out.print("STARTED. ");
-			}
-
-			public void finished(long elapsedTime, String reason)
-			{
-				double secs = elapsedTime / 1000d;
-				String elapsedTimeStr = MWC.Utilities.TextFormatting.GeneralFormat
-						.formatOneDecimalPlace(secs);
-				System.out.println("STOPPED after:" + elapsedTimeStr + " secs");
-
-				_isRunning = false;
-			}
-		});
-
-		_isRunning = true;
-
-		_myScenario.start();
-
-		// wait for it to finish
-		while (_isRunning)
-		{
-			try
-			{
-				Thread.sleep(50);
-			}
-			catch (InterruptedException e)
-			{
-				e.printStackTrace(); // To change body of catch statement use Options |
-															// File Templates.
-			}
-
-		}
-		// and clear up
-		scenarioComplete();
-	}
-
-	private void scenarioComplete()
-	{
-		// clear out the observers
-		// - NO, we don't setup the observers, don't tear them down
-	}
-
-	/**
-	 * command to setup and execute the run
-	 * 
-	 * @param scenario
-	 * @param control
-	 */
-	public boolean setup(String scenario, String control, PrintStream out)
-	{
-		boolean success = true;
-
-		try
-		{
-
-			// get the scenario
-			InputStream scenarioStream = getInput(scenario, "Scenario file ("
-					+ scenario + ")");
-
-			// get the control data
-			InputStream controlStream = getInput(control, "Control file (" + control
-					+ ")");
-
-			// and load the data
-			importStreams(scenario, scenarioStream, control, controlStream);
-
-		}
-		catch (RuntimeException e)
-		{
-			// so, we've failed to get the data, output it
-			String msg = e.getMessage();
-
-			out.println("Setup failed:" + msg);
-
-			if (msg != null)
-			{
-				// just see if we may have the files the wrong way around
-				if (msg.indexOf("ObserverList") != -1)
-				{
-					out.println("Could you have the scenario and control files in the wrong order?");
-				}
-			}
-			else
-			{
-				System.err.println("Unknown runtimrerror");
-				e.printStackTrace();
-			}
-
-			// and remember it failed
-			success = false;
-		}
-
-		return success;
-	}
-
-	public CoreScenario getScenario()
-	{
-		return _myScenario;
-	}
-
-	public void addObserver(CoreObserver obs)
-	{
-		_myObservers.add(obs);
-	}
-
-	public void clearObservers()
-	{
-		_myObservers.clear();
-	}
-
-	/**
-	 * method to handle loading the data from the streams
-	 * 
-	 * @param scenario
-	 * @param scenarioStream
-	 * @param control
-	 * @param controlStream
-	 */
-	public void importStreams(String scenario, InputStream scenarioStream,
-			String control, InputStream controlStream)
-	{
-
-		// todo: handle the multi-participant generation aspects
-
-		// ok, read in the scenario
-		ASSET.Util.XML.ASSETReaderWriter.importThis(_myScenario, scenario,
-				scenarioStream);
-
-		// now get the control data
-		ASSETReaderWriter.ResultsContainer controller = ASSET.Util.XML.ASSETReaderWriter
-				.importThisControlFile(control, controlStream);
-
-		// and do our stuff with the observers (tell them about our scenario)
-		configureObservers(controller.observerList, controller.outputDirectory);
-
-		// and setup the random number seed
-		_myScenario.setSeed(controller.randomSeed);
-	}
-
-	public void configureObservers(Vector<ScenarioObserver> observers,
-			File outputPath)
-	{
-		Iterator<ScenarioObserver> iter = observers.iterator();
-		while (iter.hasNext())
-		{
-			ScenarioObserver observer = iter.next();
-
-			// // is this an observer which is interested in the output path
-			// if (observer instanceof RecordToFileObserverType)
-			// {
-			// RecordToFileObserverType obs = (RecordToFileObserverType) observer;
-			// obs.setDirectory(outputPath);
-			// }
-
-			// ok, let it set itself up
-			observer.setup(_myScenario);
-
-			// and remember it for when we finish
-			_myObservers.add(observer);
-		}
-	}
-
-	/**
-	 * check if this is a valid file
-	 * 
-	 * @param fileName
-	 *          the supplied filename
-	 * @param type
-	 *          the type of file being specified (scenario or control)
-	 * @return an error message, or null for satisfactory
-	 */
-	static InputStream getInput(String fileName, String type)
-			throws RuntimeException
-	{
-		InputStream res = null;
-
-		// check name isn't null
-		if (fileName == null)
-		{
-			throw new RuntimeException(type + FILE_NOT_SPECIFIED);
-		}
-		else
-		{
-			// check file exists
-			File tmpFile = new File(fileName);
-
-			if (tmpFile.exists())
-			{
-				// hey, everything's ok - read it into the string
-				try
-				{
-					res = new FileInputStream(tmpFile);
-				}
-				catch (FileNotFoundException e)
-				{
-					throw new RuntimeException(type + FILE_NOT_FOUND);
-				}
-			}
-			else
-				throw new RuntimeException(type + FILE_NOT_FOUND);
-		}
-
-		// ok, all done.
-		return res;
-	}
-
-	public static class ServerTest extends SupportTesting
-	{
+	public static class ServerTest extends SupportTesting {
 		private String TEST_ROOT;
 
-		public ServerTest(final String val)
-		{
+		public ServerTest(final String val) {
 			super(val);
 		}
 
-		public void testInvalidStartups()
-		{
+		public void testInvalidStartups() {
 			/**********************************************************************
 			 * first test invalid combinations
 			 *********************************************************************/
@@ -427,17 +135,16 @@ public class CommandLine
 			// final String sep = "\r\n";
 
 			TEST_ROOT = System.getProperty("TEST_ROOT");
-			if (TEST_ROOT == null)
-			{
+			if (TEST_ROOT == null) {
 				TEST_ROOT = "../org.mwc.asset.core.feature/root_installs/AssetData/Samples/legacy";
 			}
 
 			System.out.println("root is:" + TEST_ROOT);
 
-			CommandLine cl = new CommandLine();
+			final CommandLine cl = new CommandLine();
 
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			PrintStream output = new PrintStream(bos);
+			final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			final PrintStream output = new PrintStream(bos);
 
 			// check handles missing scenario, missing control
 			res = cl.setup(null, null, output);
@@ -450,8 +157,7 @@ public class CommandLine
 			// check handles invalid scenario, missing control
 			res = cl.setup(TEST_ROOT + "/test1_scenario_valid.xml", null, output);
 			assertFalse("correctly failed to open", res);
-			final String testMsg2 = "Setup failed:Control file (null)"
-					+ CommandLine.FILE_NOT_SPECIFIED;
+			final String testMsg2 = "Setup failed:Control file (null)" + CommandLine.FILE_NOT_SPECIFIED;
 			final String bosString = bos.toString().trim();
 			assertEquals("message is correct", testMsg2, bosString);
 			bos.reset();
@@ -460,15 +166,13 @@ public class CommandLine
 			res = cl.setup(TEST_ROOT + "\test1_scenario.xml", null, output);
 			assertFalse("correctly failed to open", res);
 			final String bos3 = bos.toString();
-			assertTrue("message is correct",
-					bos3.indexOf("Setup failed:Scenario file") > -1);
+			assertTrue("message is correct", bos3.indexOf("Setup failed:Scenario file") > -1);
 			bos.reset();
 
 			// check handles missing scenario, invalid control
 			res = cl.setup(null, TEST_ROOT + "\\test1_control_invalid.xml", output);
 			assertFalse("correctly failed to open", res);
-			assertTrue("message is correct",
-					bos.toString().indexOf("Setup failed:Scenario file") > -1);
+			assertTrue("message is correct", bos.toString().indexOf("Setup failed:Scenario file") > -1);
 			bos.reset();
 
 			// check handles valid scenario, invalid control
@@ -483,8 +187,7 @@ public class CommandLine
 			// check handles missing scenario, valid control
 			res = cl.setup(null, TEST_ROOT + "\\test1_control.xml", output);
 			assertFalse("correctly failed to open", res);
-			assertTrue("message is correct",
-					bos.toString().indexOf("Setup failed:Scenario file (n") > -1);
+			assertTrue("message is correct", bos.toString().indexOf("Setup failed:Scenario file (n") > -1);
 			bos.reset();
 
 			// check handles invalid scenario, valid control
@@ -511,8 +214,21 @@ public class CommandLine
 
 		}
 
-		public void testRunScenario()
-		{
+		public void testMonteCarlo() {
+
+			TEST_ROOT = System.getProperty("TEST_ROOT");
+			if (TEST_ROOT == null) {
+				TEST_ROOT = "test_reports";
+			}
+
+			// todo - create new command line extension which will handle multiple
+			// scenario generation
+
+			// run scenario genny
+
+		}
+
+		public void testRunScenario() {
 			// todo: implement thest tests
 
 			// check we don't run when empty
@@ -528,34 +244,99 @@ public class CommandLine
 			// check everything's in a tidy state
 		}
 
-		public void testMonteCarlo()
-		{
-
-			TEST_ROOT = System.getProperty("TEST_ROOT");
-			if (TEST_ROOT == null)
-			{
-				TEST_ROOT = "test_reports";
-			}
-
-			// todo - create new command line extension which will handle multiple
-			// scenario generation
-
-			// run scenario genny
-
-		}
-
 	}
 
-	public static void main(String[] args)
-	{
+	/**
+	 * message for file not specified
+	 */
+	static public final String FILE_NOT_SPECIFIED = " not specified";
 
-		CommandLine cl = new CommandLine();
+	/**
+	 * message for file not found
+	 */
+	static public final String FILE_NOT_FOUND = " not found";
 
-		if (args.length == 0)
-		{
+	/**
+	 * message for invalid file found
+	 */
+	static public final String FILE_INVALID = " is invalid";
+
+	/**
+	 * check if this is a valid file
+	 *
+	 * @param fileName the supplied filename
+	 * @param type     the type of file being specified (scenario or control)
+	 * @return an error message, or null for satisfactory
+	 */
+	static InputStream getInput(final String fileName, final String type) throws RuntimeException {
+		InputStream res = null;
+
+		// check name isn't null
+		if (fileName == null) {
+			throw new RuntimeException(type + FILE_NOT_SPECIFIED);
+		} else {
+			// check file exists
+			final File tmpFile = new File(fileName);
+
+			if (tmpFile.exists()) {
+				// hey, everything's ok - read it into the string
+				try {
+					res = new FileInputStream(tmpFile);
+				} catch (final FileNotFoundException e) {
+					throw new RuntimeException(type + FILE_NOT_FOUND);
+				}
+			} else
+				throw new RuntimeException(type + FILE_NOT_FOUND);
+		}
+
+		// ok, all done.
+		return res;
+	}
+
+	private static boolean isMultiScenario(final File controlFile) throws FileNotFoundException {
+		boolean multiScenario = false;
+
+		final FileInputStream fis = new FileInputStream(controlFile);
+		Document document;
+		try {
+			document = ScenarioGenerator.readDocumentFrom(fis);
+
+			// can we find a scenario generator?
+			final XPathExpression xp2 = NamespaceContextProvider
+					.createPath("//" + MultiScenarioGenerator.GENERATOR_TYPE);
+			final Element el = (Element) xp2.evaluate(document, XPathConstants.NODE);
+
+			if (el != null) {
+				// just see if it's active. If there's an 'Active' attribute and it's set
+				// to true, or if there's no 'Active' attribute - do the genny
+				final String isActive = el.getAttribute("Active");
+				if ((isActive == null) || (isActive.equals(""))
+						|| (isActive != null) && (Boolean.valueOf(isActive).booleanValue()))
+					multiScenario = true;
+			}
+		} catch (final SAXParseException e1) {
+			e1.printStackTrace();
+		} catch (final SAXException e1) {
+			e1.printStackTrace();
+		} catch (final XPathExpressionException e) {
+			e.printStackTrace();
+		}
+
+		return multiScenario;
+	}
+
+	public static boolean isMultiScenarioFile(final String controlFileName) throws FileNotFoundException {
+		final File controlFile = new File(controlFileName);
+		return isMultiScenario(controlFile);
+	}
+
+	public static void main(String[] args) {
+
+		final CommandLine cl = new CommandLine();
+
+		if (args.length == 0) {
 			System.out.println("Using hard-coded scenario files");
-			args = new String[]
-			{ "../org.mwc.asset.sample_data/data/CQB_Scenario.xml",
+			args = new String[] { "../org.mwc.asset.sample_data/data/CQB_Scenario.xml",
 					"../org.mwc.asset.sample_data/data/CQB_Control.xml" };
 		}
 
@@ -566,82 +347,61 @@ public class CommandLine
 		// "D:\\Dev\\Asset\\src\\java\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\test_variance_area.xml"};
 
 		// TEMPORARILY OVERRIDE THE EARTH MODEL
-		WorldLocation
-				.setModel(new MWC.Algorithms.EarthModels.CompletelyFlatEarth());
+		WorldLocation.setModel(new MWC.Algorithms.EarthModels.CompletelyFlatEarth());
 
-		if (args.length == 2)
-		{
+		if (args.length == 2) {
 
 			// find out if this is a multi-scenario run
 			// get the control file
-			File controlFile = new File(args[1].trim());
+			final File controlFile = new File(args[1].trim());
 
 			boolean isMultiScenario = false;
 
-			try
-			{
+			try {
 				// see if it contains multi-scenario instructions
 				isMultiScenario = isMultiScenario(controlFile);
-			}
-			catch (FileNotFoundException e)
-			{
+			} catch (final FileNotFoundException e) {
 				System.err.println("Sorry, control file:" + controlFile + " not found");
 			}
 
 			// so, is it?
-			if (isMultiScenario)
-			{
+			if (isMultiScenario) {
 				// ok, pass it on to the multi scenario handler
-				MultiScenarioCommandLine multi = new MultiScenarioCommandLine();
+				final MultiScenarioCommandLine multi = new MultiScenarioCommandLine();
 				int res = 0;
-				try
-				{
+				try {
 					res = multi.processThis(args, System.out, System.err, System.in);
-				}
-				catch (XPathExpressionException e)
-				{
+				} catch (final XPathExpressionException e) {
 					e.printStackTrace();
 				}
-				if (res != MultiScenarioCommandLine.SUCCESS)
-				{
+				if (res != MultiScenarioCommandLine.SUCCESS) {
 					System.err.println("Multi-scenario run failed. Terminated");
 				}
-			}
-			else
-			{
+			} else {
 
 				// ok, load single scenario
-				boolean success = cl.setup(args[0], args[1], System.err);
+				final boolean success = cl.setup(args[0], args[1], System.err);
 
 				// did it work?
-				if (success)
-				{
+				if (success) {
 					// ok, give it a go
 					cl.run();
 
-					while (cl._isRunning)
-					{
-						try
-						{
+					while (cl._isRunning) {
+						try {
 							Thread.sleep(100);
-						}
-						catch (InterruptedException e)
-						{
+						} catch (final InterruptedException e) {
 							e.printStackTrace(); // To change body of catch statement use
-																		// Options | File Templates.
+													// Options | File Templates.
 						}
 					}
 
 				} // whether we got a scenario or not
 			}
 
-		}
-		else
-		{
-			if (args.length == 1)
-			{
-				System.err
-						.println("Sorry, both a scenario file and command file are required");
+		} else {
+			if (args.length == 1) {
+				System.err.println("Sorry, both a scenario file and command file are required");
 				System.err.println("");
 			}
 
@@ -650,54 +410,202 @@ public class CommandLine
 		}
 	}
 
-	public static boolean isMultiScenarioFile(String controlFileName)
-			throws FileNotFoundException
-	{
-		File controlFile = new File(controlFileName);
-		return isMultiScenario(controlFile);
+	/**
+	 * the scenario we are going to run
+	 */
+	private final CoreScenario _myScenario;
+
+	/**
+	 * the list of observers loaded from the control file
+	 */
+	private final Vector<ScenarioObserver> _myObservers;
+
+	/**
+	 * keep track of whether we're alive or not
+	 */
+	protected boolean _isRunning = false;
+
+	/**
+	 * *******************************************************************
+	 * constructor - receives parsed elements
+	 * *******************************************************************
+	 */
+	public CommandLine() {
+		this(new CoreScenario());
 	}
 
-	private static boolean isMultiScenario(File controlFile)
-			throws FileNotFoundException
-	{
-		boolean multiScenario = false;
-		
-		FileInputStream fis = new FileInputStream(controlFile);
-		Document document;
-		try
-		{
-			document = ScenarioGenerator.readDocumentFrom(fis);
+	public CommandLine(final CoreScenario theScenario) {
+		// do some kind of checks?
+		_myScenario = theScenario;
 
-			
-			// can we find a scenario generator?
-			XPathExpression xp2 = NamespaceContextProvider.createPath("//"
-					+ MultiScenarioGenerator.GENERATOR_TYPE);
-			Element el = (Element) xp2.evaluate(document, XPathConstants.NODE);
+		// and create the list of observers
+		_myObservers = new Vector<ScenarioObserver>(0, 1);
 
-			if (el != null)
-			{
-				// just see if it's active. If there's an 'Active' attribute and it's set
-				// to true, or if there's no 'Active' attribute - do the genny
-				String isActive = el.getAttribute("Active");
-				if ((isActive == null) || (isActive.equals("")) || (isActive != null)
-						&& (Boolean.valueOf(isActive).booleanValue()))
-					multiScenario = true;
+	}
+
+	public void addObserver(final CoreObserver obs) {
+		_myObservers.add(obs);
+	}
+
+	public void clearObservers() {
+		_myObservers.clear();
+	}
+
+	public void configureObservers(final Vector<ScenarioObserver> observers, final File outputPath) {
+		final Iterator<ScenarioObserver> iter = observers.iterator();
+		while (iter.hasNext()) {
+			final ScenarioObserver observer = iter.next();
+
+			// // is this an observer which is interested in the output path
+			// if (observer instanceof RecordToFileObserverType)
+			// {
+			// RecordToFileObserverType obs = (RecordToFileObserverType) observer;
+			// obs.setDirectory(outputPath);
+			// }
+
+			// ok, let it set itself up
+			observer.setup(_myScenario);
+
+			// and remember it for when we finish
+			_myObservers.add(observer);
+		}
+	}
+
+	public CoreScenario getScenario() {
+		return _myScenario;
+	}
+
+	/**
+	 * method to handle loading the data from the streams
+	 *
+	 * @param scenario
+	 * @param scenarioStream
+	 * @param control
+	 * @param controlStream
+	 */
+	public void importStreams(final String scenario, final InputStream scenarioStream, final String control,
+			final InputStream controlStream) {
+
+		// todo: handle the multi-participant generation aspects
+
+		// ok, read in the scenario
+		ASSET.Util.XML.ASSETReaderWriter.importThis(_myScenario, scenario, scenarioStream);
+
+		// now get the control data
+		final ASSETReaderWriter.ResultsContainer controller = ASSET.Util.XML.ASSETReaderWriter
+				.importThisControlFile(control, controlStream);
+
+		// and do our stuff with the observers (tell them about our scenario)
+		configureObservers(controller.observerList, controller.outputDirectory);
+
+		// and setup the random number seed
+		_myScenario.setSeed(controller.randomSeed);
+	}
+
+	/**
+	 * run through the scenario until its natural conclusion
+	 */
+	public void run() {
+
+		// ok, listen out for the scenario finishing
+		_myScenario.addScenarioRunningListener(new ScenarioRunningListener() {
+			@Override
+			public void finished(final long elapsedTime, final String reason) {
+				final double secs = elapsedTime / 1000d;
+				final String elapsedTimeStr = MWC.Utilities.TextFormatting.GeneralFormat.formatOneDecimalPlace(secs);
+				System.out.println("STOPPED after:" + elapsedTimeStr + " secs");
+
+				_isRunning = false;
 			}
+
+			@Override
+			public void newScenarioStepTime(final int val) {
+			}
+
+			@Override
+			public void newStepTime(final int val) {
+			}
+
+			/**
+			 * the scenario has stopped running on auto
+			 */
+			@Override
+			public void paused() {
+			}
+
+			@Override
+			public void restart(final ScenarioType scenario) {
+			}
+
+			@Override
+			public void started() {
+				System.out.print("STARTED. ");
+			}
+		});
+
+		_isRunning = true;
+
+		_myScenario.start();
+
+		// wait for it to finish
+		while (_isRunning) {
+			try {
+				Thread.sleep(50);
+			} catch (final InterruptedException e) {
+				e.printStackTrace(); // To change body of catch statement use Options |
+										// File Templates.
+			}
+
 		}
-		catch (SAXParseException e1)
-		{
-			e1.printStackTrace();
-		}
-		catch (SAXException e1)
-		{
-			e1.printStackTrace();
-		}
-		catch (XPathExpressionException e)
-		{
-			e.printStackTrace();
+		// and clear up
+		scenarioComplete();
+	}
+
+	private void scenarioComplete() {
+		// clear out the observers
+		// - NO, we don't setup the observers, don't tear them down
+	}
+
+	/**
+	 * command to setup and execute the run
+	 *
+	 * @param scenario
+	 * @param control
+	 */
+	public boolean setup(final String scenario, final String control, final PrintStream out) {
+		boolean success = true;
+
+		try {
+
+			// get the scenario
+			final InputStream scenarioStream = getInput(scenario, "Scenario file (" + scenario + ")");
+
+			// get the control data
+			final InputStream controlStream = getInput(control, "Control file (" + control + ")");
+
+			// and load the data
+			importStreams(scenario, scenarioStream, control, controlStream);
+
+		} catch (final RuntimeException e) {
+			// so, we've failed to get the data, output it
+			final String msg = e.getMessage();
+
+			out.println("Setup failed:" + msg);
+
+			if (msg != null) {
+				// just see if we may have the files the wrong way around
+				if (msg.indexOf("ObserverList") != -1) {
+					out.println("Could you have the scenario and control files in the wrong order?");
+				}
+			} else {
+				System.err.println("Unknown runtimrerror");
+				e.printStackTrace();
+			}
+
+			// and remember it failed
+			success = false;
 		}
 
-		
-		return multiScenario;
+		return success;
 	}
 }

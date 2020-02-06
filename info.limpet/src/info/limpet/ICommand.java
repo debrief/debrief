@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 /*****************************************************************************
  *  Limpet - the Lightweight InforMation ProcEssing Toolkit
@@ -28,29 +28,37 @@
  *****************************************************************************/
 package info.limpet;
 
-import info.limpet.impl.Document;
-
 import java.util.List;
 
+import info.limpet.impl.Document;
 
-/** encapsulation of some change to data
- * 
+/**
+ * encapsulation of some change to data
+ *
  * @author ian
  *
  */
-public interface ICommand extends IChangeListener, IStoreItem
-{
-	String getDescription();
-	void execute();
-	void undo();
-	void redo();
-	boolean canUndo();
+public interface ICommand extends IChangeListener, IStoreItem {
+	String NEW_DATASET_MESSAGE = "Provide name for new dataset";
+
 	boolean canRedo();
-	List<Document<?>> getOutputs();
-	List<IStoreItem> getInputs();
+
+	boolean canUndo();
+
+	void execute();
+
+	String getDescription();
+
 	boolean getDynamic();
+
+	List<IStoreItem> getInputs();
+
+	List<Document<?>> getOutputs();
+
+	void redo();
+
 	void setDynamic(boolean dynamic);
-	
-	String NEW_DATASET_MESSAGE = "Provide name for new dataset"; 
-	
+
+	void undo();
+
 }

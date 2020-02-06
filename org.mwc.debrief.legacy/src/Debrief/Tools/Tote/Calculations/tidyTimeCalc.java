@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package Debrief.Tools.Tote.Calculations;
@@ -41,49 +41,51 @@ import java.text.DecimalFormat;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 
-/** class to provide nice and tidy text-output, in a form which is readable by Excel
+/**
+ * class to provide nice and tidy text-output, in a form which is readable by
+ * Excel
  *
  */
-public final class tidyTimeCalc extends plainCalc
-{
+public final class tidyTimeCalc extends plainCalc {
 
-  
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  public tidyTimeCalc()
-  {  
-    super(new DecimalFormat("000.0"), "Time", "dd/MMM/yy HH:mm:ss");
-  }
-  
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
-  public final double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime)
-  {
-    double res = 0.0;
-    res = thisTime.getMicros();
-    return res;
-  }
-  public final String update(final Watchable primary, final Watchable secondary, final HiResDate time)
-  {
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	public tidyTimeCalc() {
+		super(new DecimalFormat("000.0"), "Time", "dd/MMM/yy HH:mm:ss");
+	}
+
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+	@Override
+	public final double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime) {
+		double res = 0.0;
+		res = thisTime.getMicros();
+		return res;
+	}
+
+	/**
+	 * does this calculation require special bearing handling (prevent wrapping
+	 * through 360 degs)
+	 *
+	 */
+	@Override
+	public final boolean isWrappableData() {
+		return false;
+	}
+
+	@Override
+	public final String update(final Watchable primary, final Watchable secondary, final HiResDate time) {
 		// check we have data
-		if(secondary == null)
+		if (secondary == null)
 			return NOT_APPLICABLE;
 
-		if(time == null)
+		if (time == null)
 			return NOT_APPLICABLE;
 
 		final String res = MWC.Utilities.TextFormatting.FullFormatDateTime.toString(time.getDate().getTime());
 
-  	return res;
-  }
-
-
-  /** does this calculation require special bearing handling (prevent wrapping through 360 degs)
-   *
-   */
-  public final boolean isWrappableData() {
-    return false;
-  }
+		return res;
+	}
 }

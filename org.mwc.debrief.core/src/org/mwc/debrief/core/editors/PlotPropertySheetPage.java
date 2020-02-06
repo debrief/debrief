@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.debrief.core.editors;
@@ -40,199 +40,167 @@ import org.mwc.cmap.core.property_support.EditableWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Editable.EditorType;
 
-public class PlotPropertySheetPage extends PropertySheetPage
-{
+public class PlotPropertySheetPage extends PropertySheetPage {
 
-  private final PlotEditor _plotEditor;
-  private Composite _base;
-  private Label context;
-  
-  /** listen out for property changes on the selected
-   * items
-   */
-  final private PropertyChangeListener _propListener;
-  
-  /** remember the current selection, so we can
-   * remove listeners on a new selection
-   */
-  private Object[] _curSelection;
+	private static void removePropertyChangeListenersFor(final Object[] curSelection,
+			final PropertyChangeListener propListener) {
+		if (curSelection != null) {
+			for (final Object obj : curSelection) {
+				// was it an editable?
+				if (obj instanceof EditableWrapper) {
+					final EditableWrapper ed = (EditableWrapper) obj;
+					// ok, de-register
+					final Editable editable = ed.getEditable();
+					if (editable.hasEditor()) {
+						editable.getInfo().removePropertyChangeListener(propListener);
+					}
+				}
+			}
+		}
+	}
 
-  public PlotPropertySheetPage(final PlotEditor plotEditor)
-  {
-    this._plotEditor = plotEditor;
-    _propListener = new PropertyChangeListener()
-    {
-      @Override
-      public void propertyChange(final PropertyChangeEvent evt)
-      {
-        // make sure we fire the update on the UI thread
-        Display.getDefault().syncExec(new Runnable()
-        {
-          @Override
-          public void run()
-          {
-            // ok, refresh.
-            refresh();
-          }
-        });
-      }
-    };
-  }
+	private final PlotEditor _plotEditor;
+	private Composite _base;
 
-  @Override
-  public void createControl(final Composite parent)
-  {
-    _base = new Composite(parent, SWT.NONE);
-    // clean layout
-    final GridLayout layout = new GridLayout();
-    layout.marginTop = 0;
-    layout.marginBottom = 0;
-    layout.marginRight = 0;
-    layout.marginLeft = 0;
-    layout.verticalSpacing = 5;
-    layout.marginWidth = 0;
-    layout.marginHeight = 0;
-    _base.setLayout(layout);
-    context = new Label(_base, SWT.NONE);
-    final FontData fontData = context.getFont().getFontData()[0];
-    final Font font =
-        new Font(parent.getDisplay(), new FontData(fontData.getName(), fontData
-            .getHeight(), SWT.ITALIC));
-    context.setFont(font);
-    context.addDisposeListener(new DisposeListener()
-    {
+	private Label context;
 
-      @Override
-      public void widgetDisposed(final DisposeEvent e)
-      {
-        font.dispose();
+	/**
+	 * listen out for property changes on the selected items
+	 */
+	final private PropertyChangeListener _propListener;
 
-      }
-    });
+	/**
+	 * remember the current selection, so we can remove listeners on a new selection
+	 */
+	private Object[] _curSelection;
 
-    context.setText("<selection>");
+	public PlotPropertySheetPage(final PlotEditor plotEditor) {
+		this._plotEditor = plotEditor;
+		_propListener = new PropertyChangeListener() {
+			@Override
+			public void propertyChange(final PropertyChangeEvent evt) {
+				// make sure we fire the update on the UI thread
+				Display.getDefault().syncExec(new Runnable() {
+					@Override
+					public void run() {
+						// ok, refresh.
+						refresh();
+					}
+				});
+			}
+		};
+	}
 
-    super.createControl(_base);
-    context.setLayoutData(new GridData(GridData.FILL_HORIZONTAL
-        | GridData.GRAB_HORIZONTAL));
-    super.getControl().setLayoutData(
-        new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL
-            | GridData.GRAB_VERTICAL));
+	@Override
+	public void createControl(final Composite parent) {
+		_base = new Composite(parent, SWT.NONE);
+		// clean layout
+		final GridLayout layout = new GridLayout();
+		layout.marginTop = 0;
+		layout.marginBottom = 0;
+		layout.marginRight = 0;
+		layout.marginLeft = 0;
+		layout.verticalSpacing = 5;
+		layout.marginWidth = 0;
+		layout.marginHeight = 0;
+		_base.setLayout(layout);
+		context = new Label(_base, SWT.NONE);
+		final FontData fontData = context.getFont().getFontData()[0];
+		final Font font = new Font(parent.getDisplay(),
+				new FontData(fontData.getName(), fontData.getHeight(), SWT.ITALIC));
+		context.setFont(font);
+		context.addDisposeListener(new DisposeListener() {
 
-  }
+			@Override
+			public void widgetDisposed(final DisposeEvent e) {
+				font.dispose();
 
-  @Override
-  public Control getControl()
-  {
-    return _base;
-  }
-  
-  
+			}
+		});
 
-  @Override
-  public void dispose()
-  {
-    // de-register any existing listeners
-    removePropertyChangeListenersFor(_curSelection, _propListener);
-    //fix bug - 2998, reset the cached propertysheetpage in editor.
-    _plotEditor.disposePlotPropertySheetPage();
-    super.dispose();
-  }
+		context.setText("<selection>");
 
-  @Override
-  public void selectionChanged(final IWorkbenchPart part,
-      final ISelection selection)
-  {
-    super.selectionChanged(part, selection);
-    if (selection instanceof StructuredSelection)
-    {
-      final StructuredSelection treeSelection = (StructuredSelection) selection;
+		super.createControl(_base);
+		context.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.GRAB_HORIZONTAL));
+		super.getControl()
+				.setLayoutData(new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL));
 
-      final Object[] objs = treeSelection.toArray();
-      if (objs.length > 0)
-      {
-        
-        // do we have a previous selection?
-        removePropertyChangeListenersFor(_curSelection, _propListener);
-        
-        // store the new selection
-        _curSelection = objs;
-        
-        final StringBuilder builder = new StringBuilder();
-        boolean addSep = false;
-        final int MAX_SIZE = 5;
-        for (int ctr = 0; ctr < objs.length && ctr < MAX_SIZE; ctr++)
-        {
-          final Object object = objs[ctr];
-          if (object instanceof EditableWrapper)
-          {
-            if (addSep)
-            {
-              builder.append(", ");
-            }
-            final EditableWrapper wrapper = (EditableWrapper) object;
-            builder.append(wrapper.getEditable().toString());
-            
-            addSep = true;
-            
-            // listen for any property changes
-            final Editable editable = wrapper.getEditable();
-            if (editable != null)
-            {
-              if (editable.hasEditor())
-              {
-                final EditorType info = editable.getInfo();
-                info.addPropertyChangeListener(_propListener);
-              }
-            }
-          }
-        }
+	}
 
-        // see if we need to append ...
-        if (objs.length > MAX_SIZE)
-        {
-          builder.append(", ...");
-        }
+	@Override
+	public void dispose() {
+		// de-register any existing listeners
+		removePropertyChangeListenersFor(_curSelection, _propListener);
+		// fix bug - 2998, reset the cached propertysheetpage in editor.
+		_plotEditor.disposePlotPropertySheetPage();
+		super.dispose();
+	}
 
-        context.setText(builder.toString());
-        context.setToolTipText(builder.toString());
-        return;
-      }
-    }
-    context.setText("<pending>");
-    context.setToolTipText("");
-  }
+	@Override
+	public Control getControl() {
+		return _base;
+	}
 
-  private static void removePropertyChangeListenersFor(Object[] curSelection, PropertyChangeListener propListener)
-  {
-    if(curSelection != null)
-    {
-      for(Object obj: curSelection)
-      {
-        // was it an editable?
-        if (obj instanceof EditableWrapper)
-        {
-          EditableWrapper ed = (EditableWrapper) obj;
-          // ok, de-register
-          final Editable editable = ed.getEditable();
-          if (editable.hasEditor())
-          {
-            editable.getInfo().removePropertyChangeListener(propListener);
-          }
-        }
-      }
-    }
-  }
+	@Override
+	public void selectionChanged(final IWorkbenchPart part, final ISelection selection) {
+		super.selectionChanged(part, selection);
+		if (selection instanceof StructuredSelection) {
+			final StructuredSelection treeSelection = (StructuredSelection) selection;
 
-  @Override
-  public void setActionBars(final IActionBars actionBars)
-  {
-    super.setActionBars(actionBars);
-    actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), _plotEditor
-        .getUndoAction());
-    actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), _plotEditor
-        .getRedoAction());
-    actionBars.updateActionBars();
-  }
+			final Object[] objs = treeSelection.toArray();
+			if (objs.length > 0) {
+
+				// do we have a previous selection?
+				removePropertyChangeListenersFor(_curSelection, _propListener);
+
+				// store the new selection
+				_curSelection = objs;
+
+				final StringBuilder builder = new StringBuilder();
+				boolean addSep = false;
+				final int MAX_SIZE = 5;
+				for (int ctr = 0; ctr < objs.length && ctr < MAX_SIZE; ctr++) {
+					final Object object = objs[ctr];
+					if (object instanceof EditableWrapper) {
+						if (addSep) {
+							builder.append(", ");
+						}
+						final EditableWrapper wrapper = (EditableWrapper) object;
+						builder.append(wrapper.getEditable().toString());
+
+						addSep = true;
+
+						// listen for any property changes
+						final Editable editable = wrapper.getEditable();
+						if (editable != null) {
+							if (editable.hasEditor()) {
+								final EditorType info = editable.getInfo();
+								info.addPropertyChangeListener(_propListener);
+							}
+						}
+					}
+				}
+
+				// see if we need to append ...
+				if (objs.length > MAX_SIZE) {
+					builder.append(", ...");
+				}
+
+				context.setText(builder.toString());
+				context.setToolTipText(builder.toString());
+				return;
+			}
+		}
+		context.setText("<pending>");
+		context.setToolTipText("");
+	}
+
+	@Override
+	public void setActionBars(final IActionBars actionBars) {
+		super.setActionBars(actionBars);
+		actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), _plotEditor.getUndoAction());
+		actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), _plotEditor.getRedoAction());
+		actionBars.updateActionBars();
+	}
 
 }

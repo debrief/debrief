@@ -1,21 +1,22 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.VPF;
 
 // Copyright MWC 1999, Debrief 3 Project
+
 // $RCSfile: VPFDatabase.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.5 $
@@ -69,171 +70,151 @@ package MWC.GUI.VPF;
 // Initial revision
 //
 
-
 import java.util.Enumeration;
 import java.util.Iterator;
-
-import MWC.GUI.Editable;
 
 import com.bbn.openmap.layer.vpf.LibrarySelectionTable;
 import com.bbn.openmap.util.Debug;
 
+import MWC.GUI.Editable;
 
 /**
- * Class to store and index a number of VPF databases,
- * such as the VMap Level 0 database and the DNC navigational
- * chart database.
+ * Class to store and index a number of VPF databases, such as the VMap Level 0
+ * database and the DNC navigational chart database.
  */
 
-public class VPFDatabase extends MWC.GUI.BaseLayer implements MWC.GUI.Plottables.PlotMeFirst
-{
+public class VPFDatabase extends MWC.GUI.BaseLayer implements MWC.GUI.Plottables.PlotMeFirst {
 
-  /**
-	 * 
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	/**
-   * the warehouse used to plot the data
-   */
-  DebriefFeatureWarehouse _myWarehouse = null;
+	 * the warehouse used to plot the data
+	 */
+	DebriefFeatureWarehouse _myWarehouse = null;
 
-  /**
-   * Constructor, we look through the list of paths and
-   * create a list of unique VPF databases, since a number of
-   * paths may contain data from a single database.  We ensure
-   * that only one unique Library Layer is created for each
-   * database read in.
-   *
-   * @param paths        A list of paths which contain VPF data
-   * @param autoPopulate Whether the layers we create should populate themselves by investigating their coverage information
-   */
-  public VPFDatabase(final String[] paths, final boolean autoPopulate)
-  {
-    // construct me
-    super.setName("VPF");
+	/**
+	 * Constructor, we look through the list of paths and create a list of unique
+	 * VPF databases, since a number of paths may contain data from a single
+	 * database. We ensure that only one unique Library Layer is created for each
+	 * database read in.
+	 *
+	 * @param paths        A list of paths which contain VPF data
+	 * @param autoPopulate Whether the layers we create should populate themselves
+	 *                     by investigating their coverage information
+	 */
+	public VPFDatabase(final String[] paths, final boolean autoPopulate) {
+		// construct me
+		super.setName("VPF");
 
-    // create the warehouse
-    _myWarehouse = new DebriefFeatureWarehouse();
+		// create the warehouse
+		_myWarehouse = new DebriefFeatureWarehouse();
 
-    // create the LST
-    //    _myLST = new LibrarySelectionTable();
+		// create the LST
+		// _myLST = new LibrarySelectionTable();
 
-    // a hashmap to store databases we know about
-    final java.util.HashMap<String, LibrarySelectionTable> _myDatabases = new java.util.HashMap<String, LibrarySelectionTable>();
+		// a hashmap to store databases we know about
+		final java.util.HashMap<String, LibrarySelectionTable> _myDatabases = new java.util.HashMap<String, LibrarySelectionTable>();
 
-    // add the paths
-    Debug.init();
-    for (int i = 0; i < paths.length; i++)
-    {
-      try
-      {
-        final String thisPath = paths[i];
+		// add the paths
+		Debug.init();
+		for (int i = 0; i < paths.length; i++) {
+			try {
+				final String thisPath = paths[i];
 
-        // first let's check if this file exists
-        final java.io.File newFile = new java.io.File(thisPath);
+				// first let's check if this file exists
+				final java.io.File newFile = new java.io.File(thisPath);
 
-        if (!newFile.exists())
-        {
-          // file not found, better report it!
-          MWC.Utilities.Errors.Trace.trace("VPF Error: file not found:" + thisPath);
-        }
-        else
-        {
+				if (!newFile.exists()) {
+					// file not found, better report it!
+					MWC.Utilities.Errors.Trace.trace("VPF Error: file not found:" + thisPath);
+				} else {
 
-          // we need to find out which database this is part of, so put it into an LST first
-          final LibrarySelectionTable tmpL = new LibrarySelectionTable(newFile);
+					// we need to find out which database this is part of, so put it into an LST
+					// first
+					final LibrarySelectionTable tmpL = new LibrarySelectionTable(newFile);
 
-          final String thisName = tmpL.getDatabaseName().toUpperCase();
+					final String thisName = tmpL.getDatabaseName().toUpperCase();
 
-          final LibrarySelectionTable thisLibrary = _myDatabases.get(thisName);
+					final LibrarySelectionTable thisLibrary = _myDatabases.get(thisName);
 
-          // do we have it already?
-          if (thisLibrary == null)
-          {
-            // no, we'll have to add it
-            _myDatabases.put(thisName, tmpL);
-          }
-          else
-          {
-            // we have this database already, just add this path to it
-            thisLibrary.addDataPath(new java.io.File(paths[i]));
-          }
-        }
-      }
-      catch (final com.bbn.openmap.io.FormatException fe)
-      {
-        MWC.Utilities.Errors.Trace.trace(fe, "Add VPF data path:" + paths[i]);
-      }
-    }
+					// do we have it already?
+					if (thisLibrary == null) {
+						// no, we'll have to add it
+						_myDatabases.put(thisName, tmpL);
+					} else {
+						// we have this database already, just add this path to it
+						thisLibrary.addDataPath(new java.io.File(paths[i]));
+					}
+				}
+			} catch (final com.bbn.openmap.io.FormatException fe) {
+				MWC.Utilities.Errors.Trace.trace(fe, "Add VPF data path:" + paths[i]);
+			}
+		}
 
-    // so, we now have a list of library selection tables, one for each database we are handling
+		// so, we now have a list of library selection tables, one for each database we
+		// are handling
 
-    // create a library for each library we know of
-    final Iterator<LibrarySelectionTable> enumer = _myDatabases.values().iterator();
-    while (enumer.hasNext())
-    {
-      // get the table
-      final LibrarySelectionTable thisLib = enumer.next();
+		// create a library for each library we know of
+		final Iterator<LibrarySelectionTable> enumer = _myDatabases.values().iterator();
+		while (enumer.hasNext()) {
+			// get the table
+			final LibrarySelectionTable thisLib = enumer.next();
 
-      // create the layer to manage this
-      final LibraryLayer layer = new LibraryLayer(thisLib, thisLib.getDatabaseName(), _myWarehouse, autoPopulate);
+			// create the layer to manage this
+			final LibraryLayer layer = new LibraryLayer(thisLib, thisLib.getDatabaseName(), _myWarehouse, autoPopulate);
 
+			// and remember it
+			this.add(layer);
 
-      // and remember it
-      this.add(layer);
+		}
 
-    }
+	}
 
-  }
-
-  /**
-   * accessor to get the LST for the library in question
-   */
-  public LibrarySelectionTable getLST(final String library)
-  {
-    LibrarySelectionTable res = null;
-    final LibraryLayer lib = this.getLibrary(library);
-    if (lib != null)
-      res = lib.getLST();
-    return res;
-  }
-
-	/** whether this type of BaseLayer is able to have shapes added to it
-	 * 
+	/**
+	 * whether this type of BaseLayer is able to have shapes added to it
+	 *
 	 * @return
 	 */
 	@Override
-	public boolean canTakeShapes()
-	{
+	public boolean canTakeShapes() {
 		return false;
 	}
-  
-  /**
-   * accessor to get the warehouse
-   */
-  public DebriefFeatureWarehouse getWarehouse()
-  {
-    return _myWarehouse;
-  }
 
-  /**
-   * accessor to get a named library
-   */
-  public LibraryLayer getLibrary(final String theName)
-  {
-    LibraryLayer res = null;
-    final Enumeration<Editable> enumer = this.elements();
-    while (enumer.hasMoreElements())
-    {
-      final LibraryLayer ll = (LibraryLayer) enumer.nextElement();
-      if (ll.getName().toUpperCase().equals(theName.toUpperCase()))
-      {
-        res = ll;
-        break;
-      }
-    }
+	/**
+	 * accessor to get a named library
+	 */
+	public LibraryLayer getLibrary(final String theName) {
+		LibraryLayer res = null;
+		final Enumeration<Editable> enumer = this.elements();
+		while (enumer.hasMoreElements()) {
+			final LibraryLayer ll = (LibraryLayer) enumer.nextElement();
+			if (ll.getName().toUpperCase().equals(theName.toUpperCase())) {
+				res = ll;
+				break;
+			}
+		}
 
-    return res;
-  }
+		return res;
+	}
+
+	/**
+	 * accessor to get the LST for the library in question
+	 */
+	public LibrarySelectionTable getLST(final String library) {
+		LibrarySelectionTable res = null;
+		final LibraryLayer lib = this.getLibrary(library);
+		if (lib != null)
+			res = lib.getLST();
+		return res;
+	}
+
+	/**
+	 * accessor to get the warehouse
+	 */
+	public DebriefFeatureWarehouse getWarehouse() {
+		return _myWarehouse;
+	}
 
 }

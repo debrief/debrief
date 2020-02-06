@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: WheelShape.java,v $
@@ -129,8 +129,7 @@ import MWC.Utilities.Errors.Trace;
  * Class representing a cart-wheel type shape - drawn with inner and outer
  * radiuses, with spokes at 60 degree intervals
  */
-public class RangeRingShape extends PlainShape implements Editable
-{
+public class RangeRingShape extends PlainShape implements Editable {
 
 	// ////////////////////////////////////////////////
 	// member variables
@@ -139,35 +138,25 @@ public class RangeRingShape extends PlainShape implements Editable
 	// ////////////////////////////////////////////////////
 	// bean info for this class
 	// ///////////////////////////////////////////////////
-	public class WheelInfo extends Editable.EditorType
-	{
+	public class WheelInfo extends Editable.EditorType {
 
-		public WheelInfo(final RangeRingShape data, final String theName)
-		{
+		public WheelInfo(final RangeRingShape data, final String theName) {
 			super(data, theName, "");
 		}
 
 		@Override
-		public PropertyDescriptor[] getPropertyDescriptors()
-		{
-			try
-			{
-				final PropertyDescriptor[] res =
-				{ 
+		public PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final PropertyDescriptor[] res = {
 						displayProp("NumRings", "Number of rings", "the number of rings to plot"),
 						displayProp("RingWidth", "Ring width", "the width of the range rings"),
-						prop("Centre", "the centre of the range rings"),
-						prop("Color", "Color of the range rings"),
-            displayLongProp("RangeLabelLocation", "Range label location",
-                "where to position the labels",
-                LabelLocationPropertyEditor.class)				
-        };
+						prop("Centre", "the centre of the range rings"), prop("Color", "Color of the range rings"),
+						displayLongProp("RangeLabelLocation", "Range label location", "where to position the labels",
+								LabelLocationPropertyEditor.class) };
 
 				return res;
 
-			}
-			catch (final IntrospectionException e)
-			{
+			} catch (final IntrospectionException e) {
 				return super.getPropertyDescriptors();
 			}
 		}
@@ -176,19 +165,16 @@ public class RangeRingShape extends PlainShape implements Editable
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	// testing for this class
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public class WheelTest extends junit.framework.TestCase
-	{
+	static public class WheelTest extends junit.framework.TestCase {
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-		public WheelTest(final String val)
-		{
+		public WheelTest(final String val) {
 			super(val);
 		}
 
-		public void testMyParams()
-		{
-			MWC.GUI.Editable ed = new RangeRingShape(new WorldLocation(2d, 2d, 2d),
-					3, new WorldDistance(2, WorldDistance.DEGS));
+		public void testMyParams() {
+			MWC.GUI.Editable ed = new RangeRingShape(new WorldLocation(2d, 2d, 2d), 3,
+					new WorldDistance(2, WorldDistance.DEGS));
 			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
 			ed = null;
 		}
@@ -201,11 +187,11 @@ public class RangeRingShape extends PlainShape implements Editable
 	 * the area covered by this Wheel
 	 */
 	private WorldArea _theArea;
-	
-  /**
-   * the font to use
-   */
-  private Font _theFont = Defaults.getScaledFont(0.8f);
+
+	/**
+	 * the font to use
+	 */
+	private final Font _theFont = Defaults.getScaledFont(0.8f);
 
 	/**
 	 * the centre of this Wheel
@@ -224,7 +210,7 @@ public class RangeRingShape extends PlainShape implements Editable
 
 	/**
 	 * where to plot the range labels
-	 * 
+	 *
 	 */
 	private int _rangeLabelLocation = LabelLocationPropertyEditor.ALL;
 
@@ -239,19 +225,13 @@ public class RangeRingShape extends PlainShape implements Editable
 
 	/**
 	 * Normal constructor for object
-	 * 
-	 * @param theCentre
-	 *          the centre of the wheel
-	 * @param theInnerRadius
-	 *          the inner radius of the wheel, in yds
-	 * @param theOuterRadius
-	 *          the outer radius of the wheel, in yds
-	 * @param theColor
-	 *          the colour to plot the wheel
+	 *
+	 * @param theCentre      the centre of the wheel
+	 * @param theInnerRadius the inner radius of the wheel, in yds
+	 * @param theOuterRadius the outer radius of the wheel, in yds
+	 * @param theColor       the colour to plot the wheel
 	 */
-	public RangeRingShape(final WorldLocation theCentre, final int numRings,
-			final WorldDistance ringWidth)
-	{
+	public RangeRingShape(final WorldLocation theCentre, final int numRings, final WorldDistance ringWidth) {
 		super(0, "Range Ring");
 
 		// store the values
@@ -267,91 +247,90 @@ public class RangeRingShape extends PlainShape implements Editable
 	// member functions
 	// ////////////////////////////////////////////////
 
-
-  /**
-   * get the 'anchor point' for any labels attached to this shape
-   */
-  public MWC.GenericData.WorldLocation getAnchor()
-  {
-    return _theCentre;
-  }
-
-  @Override
-  public MWC.GenericData.WorldArea getBounds()
-  {
-    return _theArea;
-  }
-
 	/**
-	 * calculate some convenience values based on the radius and centre of the
-	 * Wheel
+	 * calculate some convenience values based on the radius and centre of the Wheel
 	 */
-	protected void calcPoints()
-	{
+	protected void calcPoints() {
 		// create our area
 		_theArea = new WorldArea(_theCentre, _theCentre);
 
 		final WorldDistance ringWidth = getRingWidth();
-		if(ringWidth == null)
-		{
-		  Trace.trace("Range Rings must have non-null width");
-		}
-    else
-    {
-      // create & extend to top left
-      WorldLocation other = _theCentre.add(new WorldVector(0, getRingWidth()
-          .getValueIn(WorldDistance.DEGS) * _numRings, 0));
-      other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270),
-          getRingWidth().getValueIn(WorldDistance.DEGS) * _numRings, 0));
-      _theArea.extend(other);
+		if (ringWidth == null) {
+			Trace.trace("Range Rings must have non-null width");
+		} else {
+			// create & extend to top left
+			WorldLocation other = _theCentre
+					.add(new WorldVector(0, getRingWidth().getValueIn(WorldDistance.DEGS) * _numRings, 0));
+			other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270),
+					getRingWidth().getValueIn(WorldDistance.DEGS) * _numRings, 0));
+			_theArea.extend(other);
 
-      // create & extend to bottom right
-      other = _theCentre.add(new WorldVector(MWC.Algorithms.Conversions
-          .Degs2Rads(180), getRingWidth().getValueIn(WorldDistance.DEGS)
-              * _numRings, 0));
-      other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90),
-          getRingWidth().getValueIn(WorldDistance.DEGS) * _numRings, 0));
-      _theArea.extend(other);
-    }
+			// create & extend to bottom right
+			other = _theCentre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(180),
+					getRingWidth().getValueIn(WorldDistance.DEGS) * _numRings, 0));
+			other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90),
+					getRingWidth().getValueIn(WorldDistance.DEGS) * _numRings, 0));
+			_theArea.extend(other);
+		}
+	}
+
+	/**
+	 * get the 'anchor point' for any labels attached to this shape
+	 */
+	public MWC.GenericData.WorldLocation getAnchor() {
+		return _theCentre;
+	}
+
+	@Override
+	public MWC.GenericData.WorldArea getBounds() {
+		return _theArea;
 	}
 
 	/**
 	 * return the centre of the Wheel
-	 * 
+	 *
 	 * @return the centre of the Wheel
 	 */
-	public WorldLocation getCentre()
-	{
+	public WorldLocation getCentre() {
 		return _theCentre;
 	}
 
-	public Editable.EditorType getInfo()
-	{
+	@Override
+	public Editable.EditorType getInfo() {
 		if (_myEditor == null)
 			_myEditor = new WheelInfo(this, this.getName());
 
 		return _myEditor;
 	}
 
-	public Color getWheelColor()
-	{
+	public BoundedInteger getNumRings() {
+		return new BoundedInteger(_numRings, 1, 10);
+	}
+
+	public int getRangeLabelLocation() {
+		return _rangeLabelLocation;
+	}
+
+	public WorldDistance getRingWidth() {
+		return _ringWidth;
+	}
+
+	public Color getWheelColor() {
 		return super.getColor();
 	}
 
-	public boolean hasEditor()
-	{
+	@Override
+	public boolean hasEditor() {
 		return true;
 	}
 
 	/**
 	 * paint the object
-	 * 
-	 * @param dest
-	 *          the destination
+	 *
+	 * @param dest the destination
 	 */
 	@Override
-	public void paint(final CanvasType dest)
-	{
+	public void paint(final CanvasType dest) {
 		// are we visible?
 		if (!getVisible())
 			return;
@@ -367,9 +346,8 @@ public class RangeRingShape extends PlainShape implements Editable
 		final Point centre = new Point(_proj.toScreen(_theCentre));
 
 		// sort out the range in screen coords
-		final WorldLocation outerEdge = _theCentre.add(new WorldVector(
-				MWC.Algorithms.Conversions.Degs2Rads(0), getRingWidth().getValueIn(
-						WorldDistance.DEGS), 0));
+		final WorldLocation outerEdge = _theCentre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(0),
+				getRingWidth().getValueIn(WorldDistance.DEGS), 0));
 		final Point screenOuterEdge = new Point(_proj.toScreen(outerEdge));
 		final int dx = screenOuterEdge.x - centre.x;
 		final int dy = screenOuterEdge.y - centre.y;
@@ -383,8 +361,7 @@ public class RangeRingShape extends PlainShape implements Editable
 		final int lLoc = _rangeLabelLocation;
 
 		// draw the ovals
-		for (int i = 0; i < _numRings; i++)
-		{
+		for (int i = 0; i < _numRings; i++) {
 			origin.setLocation(centre);
 
 			// shift the centre point to the TL corner of the area
@@ -394,28 +371,27 @@ public class RangeRingShape extends PlainShape implements Editable
 			dest.drawOval(origin.x, origin.y, thisRadius * 2, thisRadius * 2);
 
 			// sort out the labels
-      final double ringWidth = getRingWidth().getValue();
-      
-      // if the width is an integer, we don't need the decimal place
-      final String widthStr = ringWidth == (int) ringWidth ? ""
-          + (int) ringWidth * (i + 1) : "" + ringWidth * (i + 1);
-			
-      final String thisLabel = widthStr + " " + getRingWidth().getUnitsLabel();
+			final double ringWidth = getRingWidth().getValue();
+
+			// if the width is an integer, we don't need the decimal place
+			final String widthStr = ringWidth == (int) ringWidth ? "" + (int) ringWidth * (i + 1)
+					: "" + ringWidth * (i + 1);
+
+			final String thisLabel = widthStr + " " + getRingWidth().getUnitsLabel();
 
 			final int strWidth = dest.getStringWidth(null, thisLabel);
 			final int strHeight = dest.getStringHeight(null);
 
 			if ((lLoc == ALL) || (lLoc == TOP))
-				dest.drawText(_theFont, thisLabel, (int)(centre.x - strWidth / 2.3), (int) (centre.y
-						- thisRadius - strHeight * 0.4));
+				dest.drawText(_theFont, thisLabel, (int) (centre.x - strWidth / 2.3),
+						(int) (centre.y - thisRadius - strHeight * 0.4));
 			if ((lLoc == ALL) || (lLoc == BOTTOM))
-				dest.drawText(_theFont, thisLabel, (int)(centre.x - strWidth / 2.3), (int) (centre.y
-						+ thisRadius + strHeight * 1.2));
+				dest.drawText(_theFont, thisLabel, (int) (centre.x - strWidth / 2.3),
+						(int) (centre.y + thisRadius + strHeight * 1.2));
 			if ((lLoc == ALL) || (lLoc == LEFT))
-				dest.drawText(_theFont, thisLabel, centre.x - strWidth - thisRadius, centre.y
-						+ strHeight / 2);
+				dest.drawText(_theFont, thisLabel, centre.x - strWidth - thisRadius, centre.y + strHeight / 2);
 			if ((lLoc == ALL) || (lLoc == RIGHT))
-				dest.drawText(_theFont, thisLabel, (int)(centre.x + thisRadius + strWidth / 15d),
+				dest.drawText(_theFont, thisLabel, (int) (centre.x + thisRadius + strWidth / 15d),
 						centre.y + strHeight / 2);
 
 			// move on to the next radius
@@ -425,23 +401,20 @@ public class RangeRingShape extends PlainShape implements Editable
 	}
 
 	/**
-	 * get the range from the indicated world location - making this abstract
-	 * allows for individual shapes to have 'hit-spots' in various locations.
+	 * get the range from the indicated world location - making this abstract allows
+	 * for individual shapes to have 'hit-spots' in various locations.
 	 */
 	@Override
-	public double rangeFrom(final WorldLocation point)
-	{
+	public double rangeFrom(final WorldLocation point) {
 		final double thisRes = _theCentre.rangeFrom(point);
 		double res = thisRes;
-		
+
 		// sort out the range from each radius
-		for(int i=0;i<=_numRings;i++)
-		{
+		for (int i = 0; i <= _numRings; i++) {
 			final double thisR = i * _ringWidth.getValueIn(WorldDistance.DEGS);
-			
-			res = Math.min(Math.abs(thisR - thisRes) ,res);
+
+			res = Math.min(Math.abs(thisR - thisRes), res);
 		}
-	
 
 		return res;
 	}
@@ -449,8 +422,7 @@ public class RangeRingShape extends PlainShape implements Editable
 	/**
 	 * set the centre location of the Wheel
 	 */
-	public void setCentre(final WorldLocation centre)
-	{
+	public void setCentre(final WorldLocation centre) {
 		// inform our listeners
 		firePropertyChange(PlainWrapper.LOCATION_CHANGED, _theCentre, centre);
 		// make the change
@@ -463,42 +435,7 @@ public class RangeRingShape extends PlainShape implements Editable
 
 	}
 
-	public int getRangeLabelLocation()
-	{
-		return _rangeLabelLocation;
-	}
-
-	public void setRangeLabelLocation(final int rangeLabelLocation)
-	{
-		_rangeLabelLocation = rangeLabelLocation;
-
-	   // and inform the parent (so it can move the label)
-    firePropertyChange(PlainWrapper.TEXT_CHANGED, null, rangeLabelLocation);
-}
-
-	public WorldDistance getRingWidth()
-	{
-		return _ringWidth;
-	}
-
-	public void setRingWidth(final WorldDistance ringWidth)
-	{
-		_ringWidth = ringWidth;
-
-		// and calc the new summary data
-		calcPoints();
-
-		// and inform the parent (so it can move the label)
-		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, ringWidth);
-	}
-
-	public BoundedInteger getNumRings()
-	{
-		return new BoundedInteger(_numRings, 1, 10);
-	}
-
-	public void setNumRings(final BoundedInteger numRings)
-	{
+	public void setNumRings(final BoundedInteger numRings) {
 		_numRings = numRings.getCurrent();
 
 		// and calc the new summary data
@@ -508,19 +445,35 @@ public class RangeRingShape extends PlainShape implements Editable
 		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
 	}
 
+	public void setRangeLabelLocation(final int rangeLabelLocation) {
+		_rangeLabelLocation = rangeLabelLocation;
+
+		// and inform the parent (so it can move the label)
+		firePropertyChange(PlainWrapper.TEXT_CHANGED, null, rangeLabelLocation);
+	}
+
+	public void setRingWidth(final WorldDistance ringWidth) {
+		_ringWidth = ringWidth;
+
+		// and calc the new summary data
+		calcPoints();
+
+		// and inform the parent (so it can move the label)
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, ringWidth);
+	}
+
 	// ////////////////////////////////////////
 	// convenience functions which pass calls back to parent
 	// ////////////////////////////////////////
-	public void setWheelColor(final Color val)
-	{
+	public void setWheelColor(final Color val) {
 		super.setColor(val);
-		
-    // and inform the parent (so it can move the label)
-    firePropertyChange(PlainWrapper.COLOR_CHANGED, null, null);
+
+		// and inform the parent (so it can move the label)
+		firePropertyChange(PlainWrapper.COLOR_CHANGED, null, null);
 	}
 
-	public void shift(final WorldVector vector)
-	{
+	@Override
+	public void shift(final WorldVector vector) {
 		final WorldLocation oldCentre = getCentre();
 		final WorldLocation newCentre = oldCentre.add(vector);
 		setCentre(newCentre);

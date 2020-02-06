@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.cmap.gridharness.data.base60;
@@ -21,7 +21,7 @@ import java.text.ParseException;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.PlainFormatLocation;
 
-public abstract class SexagesimalFormat implements PlainFormatLocation{
+public abstract class SexagesimalFormat implements PlainFormatLocation {
 
 	public static final char MINUS_LATITUDE = 'S';
 
@@ -37,17 +37,10 @@ public abstract class SexagesimalFormat implements PlainFormatLocation{
 
 	public static DecimalFormat XX_XXX = new DecimalFormat("00.000");
 
-  public static DecimalFormat XX_XXXXXX = new DecimalFormat("0.000000");
+	public static DecimalFormat XX_XXXXXX = new DecimalFormat("0.000000");
 
-	public abstract String format(Sexagesimal sexagesimal, boolean forLongitudeNotLatitude);
-
-	public abstract Sexagesimal parse(String text, boolean forLongitudeNotLatitude) throws ParseException;
-
-	public abstract Sexagesimal parseDouble(double degrees);
-
-	public abstract String getNebulaPattern(boolean forLongitudeNotLatitude);
-
-	protected void appendHemisphere(final Sexagesimal value, final boolean forLongitudeNotLatitude, final StringBuffer output) {
+	protected void appendHemisphere(final Sexagesimal value, final boolean forLongitudeNotLatitude,
+			final StringBuffer output) {
 		if (value.getHemi() < 0) {
 			output.append(forLongitudeNotLatitude ? MINUS_LONGITUDE : MINUS_LATITUDE);
 		} else {
@@ -55,9 +48,19 @@ public abstract class SexagesimalFormat implements PlainFormatLocation{
 		}
 	}
 
+	@Override
+	public String convertToString(final WorldLocation theLocation) {
+		final Sexagesimal theLat = parseDouble(theLocation.getLat());
+		final Sexagesimal theLong = parseDouble(theLocation.getLong());
+		final String res = format(theLat, false) + " " + format(theLong, true);
+		return res;
+	}
+
+	public abstract String format(Sexagesimal sexagesimal, boolean forLongitudeNotLatitude);
+
 	/**
 	 * @return <code>1</code> if this text denotes positive hemisphere (N or W),
-	 * 	<code>-1</code> otherwise
+	 *         <code>-1</code> otherwise
 	 */
 	protected int getHemisphereSignum(final String text, final boolean forLongitudeNotLatitude) throws ParseException {
 		if (text.length() != 0) {
@@ -78,15 +81,14 @@ public abstract class SexagesimalFormat implements PlainFormatLocation{
 				}
 			}
 		}
-		throw new ParseException("There should be hemisphere: " + (forLongitudeNotLatitude ? " (W/E)" : " (N/S)") + ": " + text, 0);
+		throw new ParseException(
+				"There should be hemisphere: " + (forLongitudeNotLatitude ? " (W/E)" : " (N/S)") + ": " + text, 0);
 	}
 
-	public String convertToString(final WorldLocation theLocation)
-	{
-		final Sexagesimal theLat = parseDouble(theLocation.getLat());
-		final Sexagesimal theLong = parseDouble(theLocation.getLong());
-		final String res = format(theLat, false) + " " + format(theLong, true);
-		return res;
-	}
+	public abstract String getNebulaPattern(boolean forLongitudeNotLatitude);
+
+	public abstract Sexagesimal parse(String text, boolean forLongitudeNotLatitude) throws ParseException;
+
+	public abstract Sexagesimal parseDouble(double degrees);
 
 }

@@ -1,20 +1,19 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.Tools.Chart;
-
 
 // Copyright MWC 1999, Debrief 3 Project
 // $RCSfile: HitTester.java,v $
@@ -77,82 +76,73 @@ import MWC.Algorithms.PlainProjection;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
-public class HitTester
-{
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  protected static final int THRESHOLD = 20;
+public class HitTester {
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+	protected static final int THRESHOLD = 20;
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
-  /**
-   * does the screen point represent a valid click on the data point?
-   */
-  static public boolean doesHit(final Point theHitScreen,
-                                final WorldLocation theHitData,
-                                final double theDistance,
-                                final PlainProjection theProjection)
-  {
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+	/**
+	 * does the screen point represent a valid click on the data point?
+	 */
+	static public boolean doesHit(final Point theHitScreen, final WorldLocation theHitData, final double theDistance,
+			final PlainProjection theProjection) {
 
-    // first create a pretend point in data coordinates
-    // (make it a point due east of the origin, so that it is still a valid earth location)
-    final WorldLocation other = theHitData.add(new MWC.GenericData.WorldVector(1.57, theDistance, 0));
+		// first create a pretend point in data coordinates
+		// (make it a point due east of the origin, so that it is still a valid earth
+		// location)
+		final WorldLocation other = theHitData.add(new MWC.GenericData.WorldVector(1.57, theDistance, 0));
 
-    // and convert it to screen coordinates
-    final Point pOther = theProjection.toScreen(other);
-    if (pOther == null) {
-    	return false;
-    }
-    final int dx = pOther.x - theHitScreen.x;
-    final int dy = pOther.y - theHitScreen.y;
-    final int pDist = (int) Math.sqrt(dx * dx + dy * dy);
+		// and convert it to screen coordinates
+		final Point pOther = theProjection.toScreen(other);
+		if (pOther == null) {
+			return false;
+		}
+		final int dx = pOther.x - theHitScreen.x;
+		final int dy = pOther.y - theHitScreen.y;
+		final int pDist = (int) Math.sqrt(dx * dx + dy * dy);
 
-    return pDist < THRESHOLD;
-  }
+		return pDist < THRESHOLD;
+	}
 
-  static public boolean doesHit(final WorldLocation theHitScreen,
-                                final WorldLocation theHitData,
-                                final double theDistance,
-                                final PlainProjection theProjection)
-  {
+	static public boolean doesHit(final WorldLocation theHitScreen, final WorldArea theHitData,
+			final double theDistance, final PlainProjection theProjection) {
 
-    // first create a pretend point in data coordinates
-    final Point pThis = theProjection.toScreen(theHitScreen);
-    final Point pOther = theProjection.toScreen(theHitData);
+		// first create a pretend point in data coordinates
+		final Point pThis = new Point(theProjection.toScreen(theHitScreen));
+		final Point pOtherTL = new Point(theProjection.toScreen(theHitData.getTopLeft()));
+		final Point pOtherBR = new Point(theProjection.toScreen(theHitData.getBottomRight()));
 
-    final int dx = pOther.x - pThis.x;
-    final int dy = pOther.y - pThis.y;
-    final int pDist = (int) Math.sqrt(dx * dx + dy * dy);
+		// create a screen rectangle from the area
+		final Rectangle rt = new Rectangle(pOtherTL);
+		rt.add(pOtherBR);
 
-    return pDist < THRESHOLD;
-  }
+		// grow the area by the threshold
+		rt.grow(THRESHOLD, THRESHOLD);
 
-  static public boolean doesHit(final WorldLocation theHitScreen,
-                                final WorldArea theHitData,
-                                final double theDistance,
-                                final PlainProjection theProjection)
-  {
+		// are we in the threshold
+		return (rt.contains(pThis));
+	}
 
-    // first create a pretend point in data coordinates
-    final Point pThis = new Point(theProjection.toScreen(theHitScreen));
-    final Point pOtherTL = new Point(theProjection.toScreen(theHitData.getTopLeft()));
-    final Point pOtherBR = new Point(theProjection.toScreen(theHitData.getBottomRight()));
+	static public boolean doesHit(final WorldLocation theHitScreen, final WorldLocation theHitData,
+			final double theDistance, final PlainProjection theProjection) {
 
-    // create a screen rectangle from the area
-    final Rectangle rt = new Rectangle(pOtherTL);
-    rt.add(pOtherBR);
+		// first create a pretend point in data coordinates
+		final Point pThis = theProjection.toScreen(theHitScreen);
+		final Point pOther = theProjection.toScreen(theHitData);
 
-    // grow the area by the threshold
-    rt.grow(THRESHOLD, THRESHOLD);
+		final int dx = pOther.x - pThis.x;
+		final int dy = pOther.y - pThis.y;
+		final int pDist = (int) Math.sqrt(dx * dx + dy * dy);
 
-    // are we in the threshold
-    return (rt.contains(pThis));
-  }
+		return pDist < THRESHOLD;
+	}
 
 }

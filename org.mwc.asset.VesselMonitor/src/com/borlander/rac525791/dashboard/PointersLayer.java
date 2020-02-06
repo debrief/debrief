@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package com.borlander.rac525791.dashboard;
@@ -38,17 +38,83 @@ import com.borlander.rac525791.draw2d.ext.RotatableDecorationExt;
 /**
  * Intended to correct z-order of controls components. We need to draw them in
  * following order:
- * 
+ *
  * <code>
  * 1. Control background
  * 2. Red Sector (if any)
- * 3. White numbers 
+ * 3. White numbers
  * 4. Demanded decoration
  * 5. Actual arrows
  * 6. Lids
  * </code>
  */
 public class PointersLayer extends InvisibleRectangle {
+	private class Layout extends BaseDashboardLayout {
+		private final Rectangle RECT = new Rectangle();
+
+		public Layout(final DashboardUIModel uiModel) {
+			super(uiModel);
+		}
+
+		@Override
+		public void layout(final IFigure container) {
+			// each control pointers group can layout itself
+			mySpeedArrows.layoutGroup(container);
+			myDepthArrows.layoutGroup(container);
+			myDirectionArrows.layoutGroup(container);
+
+			RECT.setSize(getSuite(container).getPreferredSizeRO());
+			placeAtTopLeft(container, RECT);
+
+			myCircles.setBounds(RECT);
+			myNumbers.setBounds(RECT);
+		}
+	}
+
+	private static final ControlPointersLayer.Factory SPEED_DEPTH_FACTORY = new ControlPointersLayer.Factory() {
+		@Override
+		public RotatableDecorationExt createActualArrow() {
+			return new SpeedDepthArrow();
+		}
+
+		@Override
+		public AngleMapper createAngleMapper() {
+			return new ArcAngleMapper(0, 1000, true);
+		}
+
+		@Override
+		public RotatableDecorationExt createDemandedArrow() {
+			return new SpeedDepthDemandedValueArrow();
+		}
+
+		@Override
+		public RedSector createRedSector(final AngleMapper mapper) {
+			return new RedSector(mapper, false);
+		}
+	};
+
+	private static final ControlPointersLayer.Factory DIRECTION_FACTORY = new ControlPointersLayer.Factory() {
+		@Override
+		public RotatableDecorationExt createActualArrow() {
+			return new DirectionArrow();
+		}
+
+		@Override
+		public AngleMapper createAngleMapper() {
+			return new FullCircleAngleMapper(-Math.PI / 2, 360);
+		}
+
+		@Override
+		public RotatableDecorationExt createDemandedArrow() {
+			return new DirectionDemandedArrow();
+		}
+
+		@Override
+		public RedSector createRedSector(final AngleMapper mapper) {
+			return new RedSector(mapper, true);
+		}
+	};
+
 	ScaledControlPointersLayer mySpeedArrows;
 
 	ScaledControlPointersLayer myDepthArrows;
@@ -59,20 +125,20 @@ public class PointersLayer extends InvisibleRectangle {
 
 	ImageFigure myNumbers;
 
-	public PointersLayer(DashboardUIModel uiModel) {
+	public PointersLayer(final DashboardUIModel uiModel) {
 		mySpeedArrows = new ScaledControlPointersLayer(SPEED_DEPTH_FACTORY, uiModel, ControlUISuite.SPEED);
 		myDepthArrows = new ScaledControlPointersLayer(SPEED_DEPTH_FACTORY, uiModel, ControlUISuite.DEPTH);
 		myDirectionArrows = new ControlPointersLayer(DIRECTION_FACTORY, uiModel, ControlUISuite.DIRECTION);
 
-		myNumbers = new SelectableImageFigure(uiModel){
+		myNumbers = new SelectableImageFigure(uiModel) {
 			@Override
-			protected Image selectImage(DashboardImages images) {
+			protected Image selectImage(final DashboardImages images) {
 				return images.getNumbers();
 			}
 		};
-		myCircles = new SelectableImageFigure(uiModel){
+		myCircles = new SelectableImageFigure(uiModel) {
 			@Override
-			protected Image selectImage(DashboardImages images) {
+			protected Image selectImage(final DashboardImages images) {
 				return images.getCircleLids();
 			}
 		};
@@ -99,10 +165,6 @@ public class PointersLayer extends InvisibleRectangle {
 		setLayoutManager(new Layout(uiModel));
 	}
 
-	public ScaledControlPointersLayer getSpeedArrows() {
-		return mySpeedArrows;
-	}
-
 	public ScaledControlPointersLayer getDepthArrows() {
 		return myDepthArrows;
 	}
@@ -111,62 +173,8 @@ public class PointersLayer extends InvisibleRectangle {
 		return myDirectionArrows;
 	}
 
-	private class Layout extends BaseDashboardLayout {
-		private final Rectangle RECT = new Rectangle();
-
-		public Layout(DashboardUIModel uiModel) {
-			super(uiModel);
-		}
-
-		@Override
-		public void layout(IFigure container) {
-			// each control pointers group can layout itself
-			mySpeedArrows.layoutGroup(container);
-			myDepthArrows.layoutGroup(container);
-			myDirectionArrows.layoutGroup(container);
-
-			RECT.setSize(getSuite(container).getPreferredSizeRO());
-			placeAtTopLeft(container, RECT);
-
-			myCircles.setBounds(RECT);
-			myNumbers.setBounds(RECT);
-		}
+	public ScaledControlPointersLayer getSpeedArrows() {
+		return mySpeedArrows;
 	}
-
-	private static final ControlPointersLayer.Factory SPEED_DEPTH_FACTORY = new ControlPointersLayer.Factory() {
-		public RedSector createRedSector(AngleMapper mapper) {
-			return new RedSector(mapper, false);
-		}
-
-		public RotatableDecorationExt createDemandedArrow() {
-			return new SpeedDepthDemandedValueArrow();
-		}
-
-		public RotatableDecorationExt createActualArrow() {
-			return new SpeedDepthArrow();
-		}
-
-		public AngleMapper createAngleMapper() {
-			return new ArcAngleMapper(0, 1000, true);
-		}
-	};
-
-	private static final ControlPointersLayer.Factory DIRECTION_FACTORY = new ControlPointersLayer.Factory() {
-		public RedSector createRedSector(AngleMapper mapper) {
-			return new RedSector(mapper, true);
-		}
-
-		public RotatableDecorationExt createDemandedArrow() {
-			return new DirectionDemandedArrow();
-		}
-
-		public RotatableDecorationExt createActualArrow() {
-			return new DirectionArrow();
-		}
-
-		public AngleMapper createAngleMapper() {
-			return new FullCircleAngleMapper(-Math.PI / 2, 360);
-		}
-	};
 
 }

@@ -9,11 +9,11 @@
  *******************************************************************************/
 
 /*********************************************************************************
- * TERMS OF USE - EASING EQUATIONS 
- * 
- * Copyright © 2001 Robert Penner
+ * TERMS OF USE - EASING EQUATIONS
+ *
+ * Copyright ï¿½ 2001 Robert Penner
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -22,7 +22,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the author nor the names of contributors may be 
+ *     * Neither the name of the author nor the names of contributors may be
  *       used to endorse or promote products derived from this software without
  *       specific prior written permission.
  *
@@ -43,18 +43,19 @@ public class ElasticOut extends AbstractMovement {
 
 	Double a = null, p = null;
 
-	public ElasticOut(double a, double p) {
+	public ElasticOut() {
+		super();
+	}
+
+	public ElasticOut(final double a, final double p) {
 		super();
 		this.a = new Double(a);
 		this.p = new Double(p);
 	}
 
-	public ElasticOut() {
-		super();
-	}
-
+	@Override
 	public double getValue(double step) {
-		double c = max - min;
+		final double c = max - min;
 		double s;
 
 		if (step == 0) {
@@ -62,25 +63,23 @@ public class ElasticOut extends AbstractMovement {
 		}
 
 		step = step / duration;
-		if ((step) == 1d)
+		if ((step) == 1d) {
 			return min + c;
+		}
 
-		if (p == null)
+		if (p == null) {
 			p = new Double(duration * .3);
+		}
 
 		if (a == null || a.doubleValue() < Math.abs(c)) {
 			a = new Double(c);
 			s = p.doubleValue() / 4d;
+		} else {
+			s = p.doubleValue() / (2d * Math.PI) * Math.asin(c / a.doubleValue());
 		}
 
-		else
-			s = p.doubleValue() / (2d * Math.PI)
-					* Math.asin(c / a.doubleValue());
-
-		return (a.doubleValue()
-				* Math.pow(2d, -10d * step)
-				* Math.sin((step * duration - s) * (2d * Math.PI)
-						/ p.doubleValue()) + c + min);
+		return (a.doubleValue() * Math.pow(2d, -10d * step)
+				* Math.sin((step * duration - s) * (2d * Math.PI) / p.doubleValue()) + c + min);
 
 	}
 

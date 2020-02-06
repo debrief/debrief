@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package ASSET.GUI.DigiClock;
@@ -26,183 +26,167 @@ import javax.swing.ImageIcon;
 
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
-public class SwingClock extends javax.swing.JComponent
-{
-  /**
-	 * 
+public class SwingClock extends javax.swing.JComponent {
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	/***************************************************************
-   *  member variables
-   ***************************************************************/
-  /** our double buffer
-   *
-   */
-  Image Buffer;
+	 * member variables
+	 ***************************************************************/
+	/**
+	 * our double buffer
+	 *
+	 */
+	Image Buffer;
 
-  /** our list of digit images
-   *
-   */
-  private Image[] Digits;
+	/**
+	 * our list of digit images
+	 *
+	 */
+	private Image[] Digits;
 
-  /** the graphics buffer
-   *
-   */
-  private Graphics gBuffer;
+	/**
+	 * the graphics buffer
+	 *
+	 */
+	private Graphics gBuffer;
 
-  /** our text formatter
-   *
-   */
-  private java.text.DateFormat _dateF = null;
+	/**
+	 * our text formatter
+	 *
+	 */
+	private java.text.DateFormat _dateF = null;
 
-  /***************************************************************
-   *  constructor
-   ***************************************************************/
-  /**
-   * Default JComponent constructor.  This constructor does
-   * no initialization beyond calling the Container constructor.
-   * For example, the initial layout manager is null.
-   */
-  public SwingClock()
-  {
-    super();
+	/***************************************************************
+	 * constructor
+	 ***************************************************************/
+	/**
+	 * Default JComponent constructor. This constructor does no initialization
+	 * beyond calling the Container constructor. For example, the initial layout
+	 * manager is null.
+	 */
+	public SwingClock() {
+		super();
 
-    setSize(204, 54);
+		setSize(204, 54);
 
-    _dateF = new GMTDateFormat("HHmmss");
+		_dateF = new GMTDateFormat("HHmmss");
 
-    init();
-  }
-  /***************************************************************
-   *  member methods
-   ***************************************************************/
+		init();
+	}
 
-  private void init()
-  {
-    Digits = new Image[12];
+	private void drawDigit(final int digit, final int x) {
+		gBuffer.drawImage(Digits[digit], x, 5, this);
+	}
 
-    //we load our digit images
-    for (int i = 0; i < 10; i++)
-      Digits[i] = loadImage("images/digits/" + i + ".gif");
+	/***************************************************************
+	 * member methods
+	 ***************************************************************/
 
-    Digits[10] = loadImage("images/digits/dot_p.gif");
-    Digits[11] = loadImage("images/digits/dot_a.gif");
+	private void init() {
+		Digits = new Image[12];
 
-    //create off-screen image we can draw to
-//    Buffer = createImage(205,54);
-//    gBuffer = Buffer.getGraphics();
-  }
+		// we load our digit images
+		for (int i = 0; i < 10; i++)
+			Digits[i] = loadImage("images/digits/" + i + ".gif");
 
-  private Image loadImage(String img)
-  {
-    ImageIcon io = new ImageIcon(getClass().getClassLoader().getResource(img));
+		Digits[10] = loadImage("images/digits/dot_p.gif");
+		Digits[11] = loadImage("images/digits/dot_a.gif");
 
-    Image image = io.getImage();
-    MediaTracker tracker = new MediaTracker(this);
-    tracker.addImage(image, 0);
-    try
-    {
-      tracker.waitForID(0);
-    }
-    catch (InterruptedException e)
-    {
-    }
-    return image;
-  }
+		// create off-screen image we can draw to
+		// Buffer = createImage(205,54);
+		// gBuffer = Buffer.getGraphics();
+	}
 
-  /** paint the clock
-   */
-  public void paint(Graphics g)
-  {
+	private Image loadImage(final String img) {
+		final ImageIcon io = new ImageIcon(getClass().getClassLoader().getResource(img));
 
-    //create a new time object
-    Date today = new Date();
+		final Image image = io.getImage();
+		final MediaTracker tracker = new MediaTracker(this);
+		tracker.addImage(image, 0);
+		try {
+			tracker.waitForID(0);
+		} catch (final InterruptedException e) {
+		}
+		return image;
+	}
 
-    //get the seconds, minutes and hours
- /*   int sec = today.getSeconds();
-    int min = today.getMinutes();
-    int hour = today.getHours();
+	/**
+	 * paint the clock
+	 */
+	@Override
+	public void paint(final Graphics g) {
 
-    String secStr, minStr, hourStr;
+		// create a new time object
+		final Date today = new Date();
 
-    //copy the time integers to our string objects
-    //if values are less than 10 we add a 0
-    if (hour < 10)
-      hourStr = "0" + hour;
-    else
-      hourStr = "" + hour;
+		// get the seconds, minutes and hours
+		/*
+		 * int sec = today.getSeconds(); int min = today.getMinutes(); int hour =
+		 * today.getHours();
+		 *
+		 * String secStr, minStr, hourStr;
+		 *
+		 * //copy the time integers to our string objects //if values are less than 10
+		 * we add a 0 if (hour < 10) hourStr = "0" + hour; else hourStr = "" + hour;
+		 *
+		 * if (min < 10) minStr = "0" + min; else minStr = "" + min;
+		 *
+		 * if (sec < 10) secStr = "0" + sec; else secStr = "" + sec;
+		 */
+		final String timeStr = _dateF.format(today);
 
-    if (min < 10)
-      minStr = "0" + min;
-    else
-      minStr = "" + min;
+		gBuffer = g;
 
-    if (sec < 10)
-      secStr = "0" + sec;
-    else
-      secStr = "" + sec;
-                         */
-    String timeStr = _dateF.format(today);
+		// fill the background
+		gBuffer.setColor(new Color(105, 0, 0));
+		final Dimension siz = this.getSize();
+		gBuffer.fillRect(0, 0, siz.width, siz.height);
 
-    gBuffer = g;
+		// draw a thin frame
+		gBuffer.setColor(new Color(255, 105, 40));
+		gBuffer.drawRect(0, 0, siz.width - 1, siz.height - 1);
 
-    //fill the background
-    gBuffer.setColor(new Color(105, 0, 0));
-    Dimension siz = this.getSize();
-    gBuffer.fillRect(0, 0, siz.width, siz.height);
+		// we draw our digits from our method drawDigit
+		// drawDigit(Integer.parseInt(hourStr.substring(0, 1)), 5);
+		// drawDigit(Integer.parseInt(hourStr.substring(1, 2)), 35);
+		//
+		// drawDigit(Integer.parseInt(minStr.substring(0, 1)), 72);
+		// drawDigit(Integer.parseInt(minStr.substring(1, 2)), 102);
+		//
+		// drawDigit(Integer.parseInt(secStr.substring(0, 1)), 139);
+		// drawDigit(Integer.parseInt(secStr.substring(1, 2)), 169);
 
-    //draw a thin frame
-    gBuffer.setColor(new Color(255, 105, 40));
-    gBuffer.drawRect(0, 0, siz.width - 1, siz.height - 1);
+		drawDigit(Integer.parseInt(timeStr.substring(0, 1)), 5);
+		drawDigit(Integer.parseInt(timeStr.substring(1, 2)), 35);
 
-    //we draw our digits from our method drawDigit
-//    drawDigit(Integer.parseInt(hourStr.substring(0, 1)), 5);
-//    drawDigit(Integer.parseInt(hourStr.substring(1, 2)), 35);
-//
-//    drawDigit(Integer.parseInt(minStr.substring(0, 1)), 72);
-//    drawDigit(Integer.parseInt(minStr.substring(1, 2)), 102);
-//
-//    drawDigit(Integer.parseInt(secStr.substring(0, 1)), 139);
-//    drawDigit(Integer.parseInt(secStr.substring(1, 2)), 169);
+		drawDigit(Integer.parseInt(timeStr.substring(2, 3)), 72);
+		drawDigit(Integer.parseInt(timeStr.substring(3, 4)), 102);
 
-    drawDigit(Integer.parseInt(timeStr.substring(0, 1)), 5);
-    drawDigit(Integer.parseInt(timeStr.substring(1, 2)), 35);
+		drawDigit(Integer.parseInt(timeStr.substring(4, 5)), 139);
+		drawDigit(Integer.parseInt(timeStr.substring(5, 6)), 169);
 
-    drawDigit(Integer.parseInt(timeStr.substring(2, 3)), 72);
-    drawDigit(Integer.parseInt(timeStr.substring(3, 4)), 102);
+		// the blinking dots
+		gBuffer.drawImage(Digits[10], 65, 5, this);
+		gBuffer.drawImage(Digits[10], 132, 5, this);
 
-    drawDigit(Integer.parseInt(timeStr.substring(4, 5)), 139);
-    drawDigit(Integer.parseInt(timeStr.substring(5, 6)), 169);
+		// copy the buffer to the screen (no flickering!)
+		// g.drawImage(Buffer, 0, 0, this);
 
-    //the blinking dots
-    gBuffer.drawImage(Digits[10], 65, 5, this);
-    gBuffer.drawImage(Digits[10], 132, 5, this);
+		super.paint(g);
 
+		g.setColor(Color.red);
+		g.drawLine(2, 3, 4, 5);
+		g.drawLine(12, 33, 44, 65);
+	}
 
-    //copy the buffer to the screen (no flickering!)
-  //  g.drawImage(Buffer, 0, 0, this);
+	/**
+	 * set the time
+	 *
+	 */
+	public void setTime(final long time) {
 
-
-
-
-    super.paint(g);
-
-    g.setColor(Color.red);
-    g.drawLine(2,3,4,5);
-    g.drawLine(12,33,44,65);
-  }
-
-  private void drawDigit(int digit, int x)
-  {
-    gBuffer.drawImage(Digits[digit], x, 5, this);
-  }
-
-  /** set the time
-   *
-   */
-  public void setTime(long time)
-  {
-
-  }
+	}
 }

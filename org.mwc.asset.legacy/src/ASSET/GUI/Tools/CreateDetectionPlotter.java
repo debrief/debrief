@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: CreateDetectionPlotter.java,v $
@@ -42,40 +42,37 @@
 // Initial revision
 //
 
-
 package ASSET.GUI.Tools;
 
 import ASSET.GUI.Painters.Detections.ScenarioDetectionPainter;
 import MWC.GUI.Tools.Palette.PlainCreate;
 
-/** create a point noise source
+/**
+ * create a point noise source
  *
  */
-public class CreateDetectionPlotter extends PlainCreate
-{
+public class CreateDetectionPlotter extends PlainCreate {
 
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	/****************************************************
+	 * member objects
+	 ***************************************************/
+	private ASSET.ScenarioType _theScenario = null;
 
-  /****************************************************
-   * member objects
-   ***************************************************/
-  private ASSET.ScenarioType _theScenario = null;
-
-
-  /****************************************************
-   * constructor
-   ***************************************************/
-	public CreateDetectionPlotter(final MWC.GUI.ToolParent theParent,
-										final MWC.GUI.Properties.PropertiesPanel thePanel,
-                    final ASSET.ScenarioType theScenario,
-										final MWC.GUI.Layers theData,
-										final BoundsProvider theChart)
-	{
+	/****************************************************
+	 * constructor
+	 ***************************************************/
+	public CreateDetectionPlotter(final MWC.GUI.ToolParent theParent, final MWC.GUI.Properties.PropertiesPanel thePanel,
+			final ASSET.ScenarioType theScenario, final MWC.GUI.Layers theData, final BoundsProvider theChart) {
 		super(theParent, thePanel, theData, theChart, "Detection Painter", "images/noise_excess.gif");
-    _theScenario = theScenario;
+		_theScenario = theScenario;
 	}
 
-	protected MWC.GUI.Plottable createItem()
-	{
-    return new ScenarioDetectionPainter(_theScenario);
+	@Override
+	protected MWC.GUI.Plottable createItem() {
+		return new ScenarioDetectionPainter(_theScenario);
 	}
 }

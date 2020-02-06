@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.cmap.NarrativeViewer;
@@ -40,346 +40,272 @@ import MWC.GenericData.HiResDate;
 import MWC.TacticalData.IRollingNarrativeProvider;
 import MWC.TacticalData.NarrativeEntry;
 
-public class NarrativeViewer
-{
+public class NarrativeViewer {
 
-  public static int getVisibleRows(final Grid grid)
-  {
-    final Rectangle rect = grid.getClientArea();
-    final int iItemHeight = grid.getItemHeight();
-    final int iHeaderHeight = grid.getHeaderHeight();
-    final int iVisibleCount =
-        (rect.height - iHeaderHeight + iItemHeight - 1) / iItemHeight;
-    return iVisibleCount;
-  }
+	public static int getVisibleRows(final Grid grid) {
+		final Rectangle rect = grid.getClientArea();
+		final int iItemHeight = grid.getItemHeight();
+		final int iHeaderHeight = grid.getHeaderHeight();
+		final int iVisibleCount = (rect.height - iHeaderHeight + iItemHeight - 1) / iItemHeight;
+		return iVisibleCount;
+	}
 
-  private final NarrativeViewerModel myModel;
+	private final NarrativeViewerModel myModel;
 
-  private NarrativeViewerActions myActions;
-  private final GridTableViewer viewer;
+	private NarrativeViewerActions myActions;
+	private final GridTableViewer viewer;
 
-  private final FilteredGrid filterGrid;
+	private final FilteredGrid filterGrid;
 
-  public NarrativeViewer(final Composite parent,
-      final IPreferenceStore preferenceStore)
-  {
-    final GridColumnLayout layout = new GridColumnLayout();
+	public NarrativeViewer(final Composite parent, final IPreferenceStore preferenceStore) {
+		final GridColumnLayout layout = new GridColumnLayout();
 
-    filterGrid =
-        new FilteredGrid(parent, SWT.V_SCROLL | SWT.MULTI | SWT.VIRTUAL, true)
-        {
+		filterGrid = new FilteredGrid(parent, SWT.V_SCROLL | SWT.MULTI | SWT.VIRTUAL, true) {
 
-          @Override
-          protected void updateGridData(final String text)
-          {
+			@Override
+			protected void updateGridData(final String text) {
 
-            myModel.updateFilters();
-            refresh();
+				myModel.updateFilters();
+				refresh();
 
-          }
+			}
 
-        };
-    filterGrid.getGridComposite().setLayout(layout);
-    viewer = filterGrid.getViewer();
-    viewer.getGrid().setHeaderVisible(true);
-    viewer.getGrid().setLinesVisible(true);
+		};
+		filterGrid.getGridComposite().setLayout(layout);
+		viewer = filterGrid.getViewer();
+		viewer.getGrid().setHeaderVisible(true);
+		viewer.getGrid().setLinesVisible(true);
 
-    viewer.setAutoPreferredHeight(true);
+		viewer.setAutoPreferredHeight(true);
 
-    myModel =
-        new NarrativeViewerModel(viewer, preferenceStore, new EntryFilter()
-        {
+		myModel = new NarrativeViewerModel(viewer, preferenceStore, new EntryFilter() {
 
-          @Override
-          public boolean accept(final NarrativeEntry entry)
-          {
-            if (viewer != null && !viewer.getGrid().isDisposed())
-            {
-              final String filterString = filterGrid.getFilterString();
-              if (filterString != null && !filterString.trim().isEmpty())
-              {
-                final Pattern pattern =
-                    Pattern.compile(filterString, Pattern.CASE_INSENSITIVE);
+			@Override
+			public boolean accept(final NarrativeEntry entry) {
+				if (viewer != null && !viewer.getGrid().isDisposed()) {
+					final String filterString = filterGrid.getFilterString();
+					if (filterString != null && !filterString.trim().isEmpty()) {
+						final Pattern pattern = Pattern.compile(filterString, Pattern.CASE_INSENSITIVE);
 
-                final AbstractColumn[] allColumns = myModel.getAllColumns();
-                for (final AbstractColumn abstractColumn : allColumns)
-                {
-                  if (abstractColumn.isVisible())
-                  {
-                    final Object property = abstractColumn.getProperty(entry);
-                    if (property instanceof String)
-                    {
-                      final Matcher matcher =
-                          pattern.matcher((CharSequence) property);
-                      if (matcher.find())
-                      {
-                        return true;
-                      }
+						final AbstractColumn[] allColumns = myModel.getAllColumns();
+						for (final AbstractColumn abstractColumn : allColumns) {
+							if (abstractColumn.isVisible()) {
+								final Object property = abstractColumn.getProperty(entry);
+								if (property instanceof String) {
+									final Matcher matcher = pattern.matcher((CharSequence) property);
+									if (matcher.find()) {
+										return true;
+									}
 
-                    }
-                  }
-                }
-                return false;
-              }
-            }
+								}
+							}
+						}
+						return false;
+					}
+				}
 
-            return true;
-          }
-        });
+				return true;
+			}
+		});
 
-    myModel.createTable(this, layout);
+		myModel.createTable(this, layout);
 
-  }
+	}
 
-  private void calculateGridRawHeight()
-  {
-    viewer.getGrid().setRedraw(false);
-    viewer.setInput(new Object());
-    viewer.getGrid().setRedraw(true);
-  }
+	private void calculateGridRawHeight() {
+		viewer.getGrid().setRedraw(false);
+		viewer.setInput(new Object());
+		viewer.getGrid().setRedraw(true);
+	}
 
-  public Composite getControl()
-  {
-    return filterGrid;
-  }
+	public Composite getControl() {
+		return filterGrid;
+	}
 
-  FilteredGrid getFilterGrid()
-  {
-    return filterGrid;
-  }
+	FilteredGrid getFilterGrid() {
+		return filterGrid;
+	}
 
-  public NarrativeViewerModel getModel()
-  {
-    return myModel;
-  }
+	public NarrativeViewerModel getModel() {
+		return myModel;
+	}
 
-  public GridTableViewer getViewer()
-  {
-    return viewer;
-  }
+	public GridTableViewer getViewer() {
+		return viewer;
+	}
 
-  public NarrativeViewerActions getViewerActions()
-  {
-    if (myActions == null)
-    {
-      myActions = new NarrativeViewerActions(this);
-    }
-    return myActions;
-  }
+	public NarrativeViewerActions getViewerActions() {
+		if (myActions == null) {
+			myActions = new NarrativeViewerActions(this);
+		}
+		return myActions;
+	}
 
-  public boolean isWrappingEntries()
-  {
-    return myModel.isWrappingEntries();
-  }
+	public boolean isWrappingEntries() {
+		return myModel.isWrappingEntries();
+	}
 
-  public void refresh()
-  {
-    // check we're not closing
-    if (!viewer.getGrid().isDisposed() && viewer.getContentProvider() != null)
-    {
-      viewer.setInput(new Object());
-    }
-  }
+	public void refresh() {
+		// check we're not closing
+		if (!viewer.getGrid().isDisposed() && viewer.getContentProvider() != null) {
+			viewer.setInput(new Object());
+		}
+	}
 
-  /**
-   * the controlling time has updated
-   * 
-   * @param dtg
-   *          the selected dtg
-   */
-  public void setDTG(final HiResDate dtg)
-  {
-    // find the previous entry (so we know if we're going up or down
-    final ISelection curSel = getViewer().getSelection();
-    Boolean goingDown = null;
-    NarrativeEntry existingItem = null;
-    if (curSel instanceof StructuredSelection)
-    {
-      final StructuredSelection sel = (StructuredSelection) curSel;
-      if (sel.size() == 1)
-      {
-        final Object item = sel.getFirstElement();
-        if (item instanceof NarrativeEntry)
-        {
-          existingItem = (NarrativeEntry) item;
-          goingDown = existingItem.getDTG().lessThanOrEqualTo(dtg);
-        }
-      }
-    }
+	/**
+	 * the controlling time has updated
+	 *
+	 * @param dtg the selected dtg
+	 */
+	public void setDTG(final HiResDate dtg) {
+		// find the previous entry (so we know if we're going up or down
+		final ISelection curSel = getViewer().getSelection();
+		Boolean goingDown = null;
+		NarrativeEntry existingItem = null;
+		if (curSel instanceof StructuredSelection) {
+			final StructuredSelection sel = (StructuredSelection) curSel;
+			if (sel.size() == 1) {
+				final Object item = sel.getFirstElement();
+				if (item instanceof NarrativeEntry) {
+					existingItem = (NarrativeEntry) item;
+					goingDown = existingItem.getDTG().lessThanOrEqualTo(dtg);
+				}
+			}
+		}
 
-    // find the table entry immediately after or on this DTG
-    NarrativeEntry entry = null;
+		// find the table entry immediately after or on this DTG
+		NarrativeEntry entry = null;
 
-    // retrieve the list of visible rows
-    final LinkedList<NarrativeEntry> rows = myModel.myVisibleRows;
+		// retrieve the list of visible rows
+		final LinkedList<NarrativeEntry> rows = myModel.myVisibleRows;
 
-    // step through them
-    int index = 0;
-    for (final Iterator<NarrativeEntry> entryIterator = rows.iterator(); entryIterator
-        .hasNext();)
-    {
-      final NarrativeEntry narrativeEntry = entryIterator.next();
+		// step through them
+		int index = 0;
+		for (final Iterator<NarrativeEntry> entryIterator = rows.iterator(); entryIterator.hasNext();) {
+			final NarrativeEntry narrativeEntry = entryIterator.next();
 
-      // get the date
-      final HiResDate dt = narrativeEntry.getDTG();
+			// get the date
+			final HiResDate dt = narrativeEntry.getDTG();
 
-      // is this what we're looking for?
-      if (dt.greaterThanOrEqualTo(dtg))
-      {
-        entry = narrativeEntry;
-        break;
-      }
+			// is this what we're looking for?
+			if (dt.greaterThanOrEqualTo(dtg)) {
+				entry = narrativeEntry;
+				break;
+			}
 
-      // let ourselves use the last entry, if we don't find one
-      entry = narrativeEntry;
+			// let ourselves use the last entry, if we don't find one
+			entry = narrativeEntry;
 
-      index++;
-    }
+			index++;
+		}
 
-    // ok, try to select this entry
-    if (entry != null)
-    {
-      if (!entry.equals(existingItem))
-      {
-        // ok, find the item we want to reveal
-        final NarrativeEntry toReveal;
+		// ok, try to select this entry
+		if (entry != null) {
+			if (!entry.equals(existingItem)) {
+				// ok, find the item we want to reveal
+				final NarrativeEntry toReveal;
 
-        // allow 1/3 of the visible rows either side
-        final int offset = getVisibleRows(viewer.getGrid()) / 3;
+				// allow 1/3 of the visible rows either side
+				final int offset = getVisibleRows(viewer.getGrid()) / 3;
 
-        final int totalRows = rows.size();
+				final int totalRows = rows.size();
 
-        // do we know the previous entry?
-        if (goingDown != null)
-        {
-          if (goingDown)
-          {
-            // ok, going down. We need to show a few rows after the entry
-            if (index < totalRows - offset)
-            {
-              toReveal = rows.get(index + offset);
-            }
-            else
-            {
-              toReveal = null;
-            }
-          }
-          else
-          {
-            // going up, we need to show a few rows before the entry
-            if (index > offset)
-            {
-              final int toRetreive = index - offset;
-              toReveal = rows.get(toRetreive);
-            }
-            else
-            {
-              toReveal = null;
-            }
-          }
-        }
-        else
-        {
-          toReveal = null;
-        }
+				// do we know the previous entry?
+				if (goingDown != null) {
+					if (goingDown) {
+						// ok, going down. We need to show a few rows after the entry
+						if (index < totalRows - offset) {
+							toReveal = rows.get(index + offset);
+						} else {
+							toReveal = null;
+						}
+					} else {
+						// going up, we need to show a few rows before the entry
+						if (index > offset) {
+							final int toRetreive = index - offset;
+							toReveal = rows.get(toRetreive);
+						} else {
+							toReveal = null;
+						}
+					}
+				} else {
+					toReveal = null;
+				}
 
-        // ok, go for it.
-        setEntry(entry, toReveal);
-      }
-    }
+				// ok, go for it.
+				setEntry(entry, toReveal);
+			}
+		}
 
-  }
+	}
 
-  /**
-   * the controlling time has updated
-   * 
-   * @param dtg
-   *          the selected dtg
-   */
-  public void
-      setEntry(final NarrativeEntry entry, final NarrativeEntry toReveal)
-  {
-    try
-    {
-      viewer.getGrid().setRedraw(false);
-      // select this item
-      viewer.setSelection(new StructuredSelection(entry));
+	/**
+	 * the controlling time has updated
+	 *
+	 * @param dtg the selected dtg
+	 */
+	public void setEntry(final NarrativeEntry entry, final NarrativeEntry toReveal) {
+		try {
+			viewer.getGrid().setRedraw(false);
+			// select this item
+			viewer.setSelection(new StructuredSelection(entry));
 
-      // make sure the new item is visible
-      if (toReveal != null)
-      {
-        viewer.reveal(toReveal);
-      }
-      else
-      {
-        viewer.reveal(entry);
-      }
-    }
-    finally
-    {
-      viewer.getGrid().setRedraw(true);
-    }
-  }
+			// make sure the new item is visible
+			if (toReveal != null) {
+				viewer.reveal(toReveal);
+			} else {
+				viewer.reveal(entry);
+			}
+		} finally {
+			viewer.getGrid().setRedraw(true);
+		}
+	}
 
-  public void setInput(final IRollingNarrativeProvider entryWrapper)
-  {
-    myModel.setInput(entryWrapper);
-    Display.getDefault().asyncExec(new Runnable()
-    {
-      @Override
-      public void run()
-      {
-        refresh();
-      }
-    });
-  }
+	public void setInput(final IRollingNarrativeProvider entryWrapper) {
+		myModel.setInput(entryWrapper);
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				refresh();
+			}
+		});
+	}
 
-  public void setSearchMode(final boolean checked)
-  {
-    filterGrid.setFilterMode(checked);
-  }
+	public void setSearchMode(final boolean checked) {
+		filterGrid.setFilterMode(checked);
+	}
 
-  public void setTimeFormatter(final TimeFormatter timeFormatter)
-  {
-    myModel.setTimeFormatter(timeFormatter);
-    viewer.refresh();
-  }
+	public void setTimeFormatter(final TimeFormatter timeFormatter) {
+		myModel.setTimeFormatter(timeFormatter);
+		viewer.refresh();
+	}
 
-  public void setWrappingEntries(final boolean shouldWrap)
-  {
-    if (myModel.setWrappingEntries(shouldWrap))
-    {
-      final GridColumn[] columns = getViewer().getGrid().getColumns();
-      for (final GridColumn gridColumn : columns)
-      {
-        gridColumn.setWordWrap(shouldWrap);
-      }
-      calculateGridRawHeight();
-    }
-  }
+	public void setWrappingEntries(final boolean shouldWrap) {
+		if (myModel.setWrappingEntries(shouldWrap)) {
+			final GridColumn[] columns = getViewer().getGrid().getColumns();
+			for (final GridColumn gridColumn : columns) {
+				gridColumn.setWordWrap(shouldWrap);
+			}
+			calculateGridRawHeight();
+		}
+	}
 
-  public void showFilterDialog(final Column column)
-  {
-    if (!myModel.hasInput())
-    {
-      return;
-    }
+	public void showFilterDialog(final Column column) {
+		if (!myModel.hasInput()) {
+			return;
+		}
 
-    final EntryFilter filter = column.getFilter();
-    if (filter == null)
-    {
-      return;
-    }
+		final EntryFilter filter = column.getFilter();
+		if (filter == null) {
+			return;
+		}
 
-    final FilterDialog dialog =
-        new FilterDialog(viewer.getGrid().getShell(), myModel.getInput(),
-            column);
+		final FilterDialog dialog = new FilterDialog(viewer.getGrid().getShell(), myModel.getInput(), column);
 
-    if (Window.OK == dialog.open())
-    {
-      dialog.commitFilterChanges();
-      refresh();
-    }
-  }
+		if (Window.OK == dialog.open()) {
+			dialog.commitFilterChanges();
+			refresh();
+		}
+	}
 
 }

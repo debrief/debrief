@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.debrief.core.splashHandlers;
@@ -31,117 +31,99 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.splash.AbstractSplashHandler;
 import org.osgi.framework.Bundle;
 
-public class ExtensibleSplashHandler extends AbstractSplashHandler
-{
+public class ExtensibleSplashHandler extends AbstractSplashHandler {
 
-  private static final String ABOUT_MAPPINGS = "$nl$/about.mappings"; //$NON-NLS-1$
+	private static final String ABOUT_MAPPINGS = "$nl$/about.mappings"; //$NON-NLS-1$
 
-  // read the product bundle version
-  private static String[] loadMappings(final Bundle definingBundle)
-  {
-    final URL location = FileLocator.find(definingBundle, new Path(
-        ABOUT_MAPPINGS), null);
-    PropertyResourceBundle bundle = null;
-    if (location != null)
-    {
-      try (InputStream is = location.openStream())
-      {
-        bundle = new PropertyResourceBundle(is);
-      }
-      catch (final IOException e)
-      {
-        bundle = null;
-      }
-    }
+	// read the product bundle version
+	private static String[] loadMappings(final Bundle definingBundle) {
+		final URL location = FileLocator.find(definingBundle, new Path(ABOUT_MAPPINGS), null);
+		PropertyResourceBundle bundle = null;
+		if (location != null) {
+			try (InputStream is = location.openStream()) {
+				bundle = new PropertyResourceBundle(is);
+			} catch (final IOException e) {
+				bundle = null;
+			}
+		}
 
-    final ArrayList<String> mappingsList = new ArrayList<>();
-    if (bundle != null)
-    {
-      boolean found = true;
-      int i = 0;
-      while (found)
-      {
-        try
-        {
-          mappingsList.add(bundle.getString(Integer.toString(i)));
-        }
-        catch (final MissingResourceException e)
-        {
-          found = false;
-        }
-        i++;
-      }
-    }
-    final String[] mappings = mappingsList.toArray(new String[mappingsList
-        .size()]);
-    return mappings;
-  }
+		final ArrayList<String> mappingsList = new ArrayList<>();
+		if (bundle != null) {
+			boolean found = true;
+			int i = 0;
+			while (found) {
+				try {
+					mappingsList.add(bundle.getString(Integer.toString(i)));
+				} catch (final MissingResourceException e) {
+					found = false;
+				}
+				i++;
+			}
+		}
+		final String[] mappings = mappingsList.toArray(new String[mappingsList.size()]);
+		return mappings;
+	}
 
-  private void configureUICompositeBuildBounds()
-  {
-    final String[] loadMappings = loadMappings(Platform.getProduct()
-        .getDefiningBundle());
-    final String qualifier = loadMappings[0] + "-" + loadMappings[1];
-    final Label build = new Label(getSplash(), SWT.NONE);
+	private void configureUICompositeBuildBounds() {
+		final String[] loadMappings = loadMappings(Platform.getProduct().getDefiningBundle());
+		final String qualifier = loadMappings[0] + "-" + loadMappings[1];
+		final Label build = new Label(getSplash(), SWT.NONE);
 
-    build.setText(qualifier);
+		build.setText(qualifier);
 
-    final int x_coord = getSplash().getSize().x - 120;
-    final int y_coord = getSplash().getSize().y - 22;
+		final int x_coord = getSplash().getSize().x - 120;
+		final int y_coord = getSplash().getSize().y - 22;
 
-    build.setBounds(x_coord, y_coord, 120, 22);
-  }
+		build.setBounds(x_coord, y_coord, 120, 22);
+	}
 
-  /**
-   *
-   */
-  private void configureUISplash()
-  {
-    // Configure layout
-    // GridLayout layout = new GridLayout(1, true);
-    getSplash().setLayout(null);
-    // Force shell to inherit the splash background
-    getSplash().setBackgroundMode(SWT.INHERIT_DEFAULT);
-  }
+	/**
+	 *
+	 */
+	private void configureUISplash() {
+		// Configure layout
+		// GridLayout layout = new GridLayout(1, true);
+		getSplash().setLayout(null);
+		// Force shell to inherit the splash background
+		getSplash().setBackgroundMode(SWT.INHERIT_DEFAULT);
+	}
 
-  /**
-   *
-   */
-  private void createUI()
-  {
-    configureUICompositeBuildBounds();
-  }
+	/**
+	 *
+	 */
+	private void createUI() {
+		configureUICompositeBuildBounds();
+	}
 
-  /**
-   *
-   */
-  private void doEventLoop()
-  {
-    final Shell splash = getSplash();
-    if (!splash.getDisplay().readAndDispatch())
-    {
-      splash.getDisplay().sleep();
-    }
-  }
+	/**
+	 *
+	 */
+	private void doEventLoop() {
+		final Shell splash = getSplash();
+		if (!splash.getDisplay().readAndDispatch()) {
+			splash.getDisplay().sleep();
+		}
+	}
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.ui.splash.AbstractSplashHandler#init(org.eclipse.swt.widgets.Shell)
-   */
-  @Override
-  public void init(final Shell splash)
-  {
-    // Store the shell
-    super.init(splash);
-    // Configure the shell layout
-    configureUISplash();
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.eclipse.ui.splash.AbstractSplashHandler#init(org.eclipse.swt.widgets.
+	 * Shell)
+	 */
+	@Override
+	public void init(final Shell splash) {
+		// Store the shell
+		super.init(splash);
+		// Configure the shell layout
+		configureUISplash();
 
-    // Create UI
-    createUI();
-    // Enter event loop and prevent the RCP application from
-    // loading until all work is done
-    doEventLoop();
-  }
+		// Create UI
+		createUI();
+		// Enter event loop and prevent the RCP application from
+		// loading until all work is done
+		doEventLoop();
+	}
 
 }

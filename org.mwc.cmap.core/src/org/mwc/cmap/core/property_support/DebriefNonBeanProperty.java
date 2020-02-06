@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.cmap.core.property_support;
@@ -21,140 +21,86 @@ import java.util.Vector;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import MWC.GUI.Griddable.NonBeanPropertyDescriptor;
 
-public class DebriefNonBeanProperty implements IPropertyDescriptor, IDebriefProperty
-{
-	EditorHelper _myHelper = null;
-
-
-	private final  NonBeanPropertyDescriptor _theProp;
-
-
+public class DebriefNonBeanProperty implements IPropertyDescriptor, IDebriefProperty {
 	static Vector<EditorHelper> _myHelperList;
 
 	static Control _theControl;
 
-	public DebriefNonBeanProperty( final NonBeanPropertyDescriptor prop, final Control theControl)
-	{
-		_theProp = prop;
-		_theControl = theControl;
-
-		initialiseHelpers();
-
-		_myHelper = findHelperFor(_theProp.getDataType());
-	}
-
-	@SuppressWarnings({ "rawtypes" })
-	private EditorHelper findHelperFor(final Class theClass)
-	{
-		EditorHelper res = null;
-
-			for (final Iterator iter = _myHelperList.iterator(); iter.hasNext();)
-			{
-				final EditorHelper thisHelper = (EditorHelper) iter.next();
-				if (thisHelper.editsThis(theClass))
-				{
-					res = thisHelper;
-					break;
-				}
-			}
-
-			if (res == null)
-			{
-				// ok, log the error
-				final String msg = "editor not found for:"
-						+ _theProp.getDataType().toString() + "("
-						+ _theProp.getFieldName() + ")";
-				System.out.println(msg);
-			}
-
-		return res;
-	}
-
-	public static void addSupplementalHelpers(final Vector<EditorHelper> newHelpers)
-	{
+	public static void addSupplementalHelpers(final Vector<EditorHelper> newHelpers) {
 		// make sure our starter list is created
 		initialiseHelpers();
 
 		// now add the new ones
-		for (final Iterator<EditorHelper> iter = newHelpers.iterator(); iter.hasNext();)
-		{
-			final EditorHelper thisHelper = (EditorHelper) iter.next();
+		for (final Iterator<EditorHelper> iter = newHelpers.iterator(); iter.hasNext();) {
+			final EditorHelper thisHelper = iter.next();
 			_myHelperList.add(thisHelper);
 		}
 	}
 
-	private synchronized static void initialiseHelpers()
-	{
-		if (_myHelperList == null)
-		{
+	private synchronized static void initialiseHelpers() {
+		if (_myHelperList == null) {
 			_myHelperList = new Vector<EditorHelper>(0, 1);
 			_myHelperList.add(new MultiTextHelper());
 			_myHelperList.add(new ColorHelper(_theControl));
 			_myHelperList.add(new BoundedIntegerHelper());
-			_myHelperList
-					.add(new BoundedIntegerHelper.SteppingBoundedIntegerHelper());
-		
-			_myHelperList.add(new EditorHelper(Long.class)
-			{
+			_myHelperList.add(new BoundedIntegerHelper.SteppingBoundedIntegerHelper());
 
-				public CellEditor getCellEditorFor(final Composite parent)
-				{
+			_myHelperList.add(new EditorHelper(Long.class) {
+
+				@Override
+				public CellEditor getCellEditorFor(final Composite parent) {
 					return new TextCellEditor(parent);
 				}
 
-				public Object translateToSWT(final Object value)
-				{
-					String res = " ";
-					final Long val = (Long) value;
-					if (val != null)
-					{
-						final int thisInt = val.intValue();
-						res = "" + thisInt;
-					}
-					return res;
-				}
-
-				public Object translateFromSWT(final Object value)
-				{
+				@Override
+				public Object translateFromSWT(final Object value) {
 					final String val = (String) value;
 					Long res = null;
 					res = new Long(val);
 					return res;
 				}
 
-			});
-			_myHelperList.add(new EditorHelper(Integer.class)
-			{
-
-				public CellEditor getCellEditorFor(final Composite parent)
-				{
-					return new TextCellEditor(parent);
-				}
-
-				public Object translateToSWT(final Object value)
-				{
+				@Override
+				public Object translateToSWT(final Object value) {
 					String res = " ";
-					final Integer val = (Integer) value;
-					if (val != null)
-					{
+					final Long val = (Long) value;
+					if (val != null) {
 						final int thisInt = val.intValue();
 						res = "" + thisInt;
 					}
 					return res;
 				}
 
-				public Object translateFromSWT(final Object value)
-				{
+			});
+			_myHelperList.add(new EditorHelper(Integer.class) {
+
+				@Override
+				public CellEditor getCellEditorFor(final Composite parent) {
+					return new TextCellEditor(parent);
+				}
+
+				@Override
+				public Object translateFromSWT(final Object value) {
 					final String val = (String) value;
 					Integer res = null;
 					res = new Integer(val);
+					return res;
+				}
+
+				@Override
+				public Object translateToSWT(final Object value) {
+					String res = " ";
+					final Integer val = (Integer) value;
+					if (val != null) {
+						final int thisInt = val.intValue();
+						res = "" + thisInt;
+					}
 					return res;
 				}
 
@@ -176,78 +122,138 @@ public class DebriefNonBeanProperty implements IPropertyDescriptor, IDebriefProp
 		}
 	}
 
-	public CellEditor createPropertyEditor(final Composite parent)
-	{
-		CellEditor res = null;
-		if (_myHelper != null)
-		{
-			res = _myHelper.getCellEditorFor(parent);
-		}
-		return res;
+	EditorHelper _myHelper = null;
+
+	private final NonBeanPropertyDescriptor _theProp;
+
+	public DebriefNonBeanProperty(final NonBeanPropertyDescriptor prop, final Control theControl) {
+		_theProp = prop;
+		_theControl = theControl;
+
+		initialiseHelpers();
+
+		_myHelper = findHelperFor(_theProp.getDataType());
 	}
 
-	public Control createEditor(final Composite parent)
-	{
+	public Control createEditor(final Composite parent) {
 		Control res = null;
-		if (_myHelper != null)
-		{
+		if (_myHelper != null) {
 			res = _myHelper.getEditorControlFor(parent, this);
 		}
 		return res;
 	}
 
-	public String getCategory()
-	{
+	@Override
+	public CellEditor createPropertyEditor(final Composite parent) {
+		CellEditor res = null;
+		if (_myHelper != null) {
+			res = _myHelper.getCellEditorFor(parent);
+		}
+		return res;
+	}
+
+	@SuppressWarnings({ "rawtypes" })
+	private EditorHelper findHelperFor(final Class theClass) {
+		EditorHelper res = null;
+
+		for (final Iterator iter = _myHelperList.iterator(); iter.hasNext();) {
+			final EditorHelper thisHelper = (EditorHelper) iter.next();
+			if (thisHelper.editsThis(theClass)) {
+				res = thisHelper;
+				break;
+			}
+		}
+
+		if (res == null) {
+			// ok, log the error
+			final String msg = "editor not found for:" + _theProp.getDataType().toString() + "("
+					+ _theProp.getFieldName() + ")";
+			System.out.println(msg);
+		}
+
+		return res;
+	}
+
+	@Override
+	public String getCategory() {
 		return "Data";
 	}
 
-	public String getDescription()
-	{
+	@Override
+	public String getDescription() {
 		return _theProp.getFieldName();
 	}
 
-	public String getName()
-	{
-		return _theProp.getFieldName();
-	}
-	
-	public String getDisplayName()
-	{
+	@Override
+	public String getDisplayName() {
 		return _theProp.getFieldName();
 	}
 
-	public String[] getFilterFlags()
-	{
+	@Override
+	public String[] getFilterFlags() {
 		return null;
 	}
 
-	public Object getHelpContextIds()
-	{
+	@Override
+	public Object getHelpContextIds() {
 		return null;
 	}
 
-	public Object getId()
-	{
+	@Override
+	public EditorHelper getHelper() {
+		return _myHelper;
+	}
+
+	@Override
+	public Object getId() {
 		return _theProp.getFieldName();
 	}
 
-	public ILabelProvider getLabelProvider()
-	{
+	@Override
+	public ILabelProvider getLabelProvider() {
 		ILabelProvider res = null;
-		if (_myHelper != null)
-		{
+		if (_myHelper != null) {
 			res = _myHelper.getLabelFor(null);
 		}
 		return res;
 	}
 
-	public EditorHelper getHelper()
-	{
-		return _myHelper;
+	@Override
+	public String getName() {
+		return _theProp.getFieldName();
 	}
 
-	public boolean isCompatibleWith(final IPropertyDescriptor anotherProperty)
-	{
+	@Override
+	public Object getRawValue() {
+
+		Object res = null;
+		try {
+
+			res = _theProp.getDataObject().getValue(_theProp.getFieldName());
+
+		} catch (final Exception e) {
+			MWC.Utilities.Errors.Trace.trace(e);
+		}
+
+		return res;
+	}
+
+	@Override
+	public Object getValue() {
+		Object res = null;
+
+		// get the raw value for this object
+		res = getRawValue();
+
+		if (_myHelper != null) {
+			res = _myHelper.translateToSWT(res);
+		}
+
+		return res;
+	}
+
+	@Override
+	public boolean isCompatibleWith(final IPropertyDescriptor anotherProperty) {
 		// the name properties aren't compatible.
 		boolean res = true;
 		if (this.getDisplayName().equals("Name"))
@@ -259,50 +265,15 @@ public class DebriefNonBeanProperty implements IPropertyDescriptor, IDebriefProp
 		return res;
 	}
 
-	public Object getRawValue()
-	{
-
-		Object res = null;
-		try
-		{
-			
-			res = _theProp.getDataObject().getValue(_theProp.getFieldName());
-			
-		}
-		catch (final Exception e)
-		{
-			MWC.Utilities.Errors.Trace.trace(e);
-		}
-
-		return res;
-	}
-
 	@Override
-	public Object getValue()
-	{
-		Object res = null;
-
-		// get the raw value for this object
-		res = getRawValue();
-
-		if (_myHelper != null)
-		{
-			res = _myHelper.translateToSWT(res);
-		}
-
-		return res;
-	}
-
-	public void setValue(final Object value)
-	{
+	public void setValue(final Object value) {
 		Object theValue = value;
-		if (_myHelper != null)
-		{
+		if (_myHelper != null) {
 			theValue = _myHelper.translateFromSWT(theValue);
 		}
 
 		_theProp.getDataObject().setValue(_theProp.getFieldName(), theValue);
-		
+
 	}
 
 }

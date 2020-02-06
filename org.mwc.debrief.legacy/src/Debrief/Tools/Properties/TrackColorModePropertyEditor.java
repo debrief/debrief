@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: TimeFrequencyPropertyEditor.java,v $
@@ -60,7 +60,6 @@
 // Initial revision
 //
 
-
 package Debrief.Tools.Properties;
 
 import java.beans.PropertyEditorSupport;
@@ -69,99 +68,83 @@ import java.util.List;
 import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.Track.TrackColorModeHelper;
 import Debrief.Wrappers.Track.TrackColorModeHelper.TrackColorMode;
+import MWC.GUI.ToolParent;
 
 /**
  * class to provide list of time frequencies, together with ALL value
  */
-public class TrackColorModePropertyEditor extends PropertyEditorSupport
-{
+public class TrackColorModePropertyEditor extends PropertyEditorSupport {
 
-  /** the array centres for the current object
-   * 
-   */
-  private static List<TrackColorMode> _colorModes;
-  
-  /**
-   * the currently color modes
-   */
-  protected TrackColorMode _myMode = TrackColorModeHelper.LegacyTrackColorModes.PER_FIX;
+	/**
+	 * the array centres for the current object
+	 *
+	 */
+	private static List<TrackColorMode> _colorModes;
 
-  @Override
-  public String[] getTags()
-  {
-    final String[] allTags;
-    if(_colorModes != null)
-    {
-      // ok, build up the list
-      allTags = new String[_colorModes.size()];
-      for(int i=0;i<_colorModes.size();i++)
-      {
-        allTags[i] = _colorModes.get(i).asString();
-      }
-    }
-    else
-    {
-      Application.logStack2(Application.ERROR,
-          "The color modes have not been set. We can't produce a proper list");
-      allTags = new String[]
-      {"Broken: color modes not found"};
-    }
-    
-    return allTags;
-  }
+	/**
+	 * we wish to allow some modes that have been taken from the subject sensor.
+	 * They get set here
+	 *
+	 * @param datasets
+	 */
+	public static void setCustomModes(final List<TrackColorMode> datasets) {
+		_colorModes = datasets;
+	}
 
-  @Override
-  public Object getValue()
-  {
-    return _myMode;
-  }
+	/**
+	 * the currently color modes
+	 */
+	protected TrackColorMode _myMode = TrackColorModeHelper.LegacyTrackColorModes.PER_FIX;
 
-  @Override
-  public void setValue(final Object p1)
-  {
-    if (p1 instanceof String)
-    {
-      final String val = (String) p1;
-      setAsText(val);
-    }
-    else if(p1 instanceof TrackColorMode)
-    {
-      TrackColorMode td = (TrackColorMode) p1;
-      _myMode = td;
-    }
-    else if(p1 instanceof Integer)
-    {
-      _myMode = _colorModes.get((int) p1);
-    }
-  }
+	@Override
+	public String getAsText() {
+		return _myMode.asString();
+	}
 
-  @Override
-  public void setAsText(final String val)
-  {
-    // ok, loop though modes, to fine match
-    for(final TrackColorMode t: _colorModes)
-    {
-      if(t.asString().equals(val))
-      {
-        _myMode = t;
-        break;
-      }
-    }
-  }
+	@Override
+	public String[] getTags() {
+		final String[] allTags;
+		if (_colorModes != null) {
+			// ok, build up the list
+			allTags = new String[_colorModes.size()];
+			for (int i = 0; i < _colorModes.size(); i++) {
+				allTags[i] = _colorModes.get(i).asString();
+			}
+		} else {
+			Application.logStack2(ToolParent.ERROR,
+					"The color modes have not been set. We can't produce a proper list");
+			allTags = new String[] { "Broken: color modes not found" };
+		}
 
-  @Override
-  public String getAsText()
-  {
-    return _myMode.asString();
-  }
+		return allTags;
+	}
 
-  /** we wish to allow some modes that have been taken from the
-   * subject sensor. They get set here
-   * @param datasets
-   */
-  public static void setCustomModes(List<TrackColorMode> datasets)
-  {
-    _colorModes = datasets;
-  }
+	@Override
+	public Object getValue() {
+		return _myMode;
+	}
+
+	@Override
+	public void setAsText(final String val) {
+		// ok, loop though modes, to fine match
+		for (final TrackColorMode t : _colorModes) {
+			if (t.asString().equals(val)) {
+				_myMode = t;
+				break;
+			}
+		}
+	}
+
+	@Override
+	public void setValue(final Object p1) {
+		if (p1 instanceof String) {
+			final String val = (String) p1;
+			setAsText(val);
+		} else if (p1 instanceof TrackColorMode) {
+			final TrackColorMode td = (TrackColorMode) p1;
+			_myMode = td;
+		} else if (p1 instanceof Integer) {
+			_myMode = _colorModes.get((int) p1);
+		}
+	}
 }
-

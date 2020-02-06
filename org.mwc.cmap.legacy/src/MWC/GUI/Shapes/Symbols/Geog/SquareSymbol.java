@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // Copyright MWC 1999, Debrief 3 Project
@@ -92,8 +92,7 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.WorldLocation;
 
-public class SquareSymbol extends PlainSymbol
-{
+public class SquareSymbol extends PlainSymbol {
 	/**
 	 * // keep track of versions
 	 */
@@ -101,7 +100,7 @@ public class SquareSymbol extends PlainSymbol
 
 	/**
 	 * the name of our shape
-	 * 
+	 *
 	 */
 	static public final String SQUARE_SYMBOL = "Square";
 
@@ -112,49 +111,38 @@ public class SquareSymbol extends PlainSymbol
 
 	/**
 	 * <init>
-	 * 
+	 *
 	 */
-	public SquareSymbol()
-	{
+	public SquareSymbol() {
 		super();
 		// construct the symbol from a sequence of metafile commands,
 		// if we think it is really necessary...
 	}
 
-  @Override
-  public PlainSymbol create()
-  {
-    return new SquareSymbol();
-  }
+	@Override
+	public PlainSymbol create() {
+		return new SquareSymbol();
+	}
+
 	/**
 	 * getBounds
-	 * 
+	 *
 	 * @return the returned java.awt.Dimension
 	 */
-	public java.awt.Dimension getBounds()
-	{
+	@Override
+	public java.awt.Dimension getBounds() {
 		final int sWid = (int) (wid * getScaleVal());
 		return new java.awt.Dimension(2 * sWid, 2 * sWid);
 	}
 
 	/**
-	 * getType
-	 * 
-	 * @return the returned String
-	 */
-	public String getType()
-	{
-		return SQUARE_SYMBOL;
-	}
-
-	/**
 	 * get this symbol as a sequence of lines. The
-	 * 
+	 *
 	 * @return a collection of paths. Each path is a collection of java.awt.Point
 	 *         objects.
 	 */
-	public Vector<Vector<Point2D>> getCoordinates()
-	{
+	@Override
+	public Vector<Vector<Point2D>> getCoordinates() {
 		final Vector<Vector<Point2D>> res = new Vector<Vector<Point2D>>(0, 1);
 
 		final Vector<Point2D> line1 = new Vector<Point2D>(0, 1);
@@ -171,30 +159,38 @@ public class SquareSymbol extends PlainSymbol
 		return res;
 	}
 
-	public void paint(final CanvasType dest, final WorldLocation centre)
-	{
+	/**
+	 * getType
+	 *
+	 * @return the returned String
+	 */
+	@Override
+	public String getType() {
+		return SQUARE_SYMBOL;
+	}
+
+	@Override
+	public void paint(final CanvasType dest, final WorldLocation centre) {
 		paint(dest, centre, 0.0);
 	}
 
 	/**
 	 * paint
-	 * 
-	 * @param dest
-	 *          parameter for paint
-	 * @param theLocation
-	 *          the place where we paint it
+	 *
+	 * @param dest        parameter for paint
+	 * @param theLocation the place where we paint it
 	 */
-	public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
-	{
+	@Override
+	public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction) {
 		// set the colour
 		dest.setColor(getColor());
 
 		// create our centre point
 		final java.awt.Point centre = dest.toScreen(theLocation);
-    
-    // handle unable to gen screen coords (if off visible area)
-    if(centre == null)
-      return;
+
+		// handle unable to gen screen coords (if off visible area)
+		if (centre == null)
+			return;
 
 		// calculate the scaled width
 		final int sWid = (int) (wid * getScaleVal());

@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI;
@@ -72,50 +72,63 @@ package MWC.GUI;
 //
 import MWC.GUI.Tools.Action;
 
-/** interface of methods to be provided by a
- * parent of a tool, mostly providing functionality
- * necessary setting a busy cursor
+/**
+ * interface of methods to be provided by a parent of a tool, mostly providing
+ * functionality necessary setting a busy cursor
  */
-public interface ToolParent extends ErrorLogger
-{
-  public void setCursor(int theCursor);
-  public void restoreCursor();
-  public void addActionToBuffer(Action theAction);
-  public String getProperty(String name);
-  public java.util.Map<String, String> getPropertiesLike(String pattern);
-  public void setProperty(String name, String value);
-
-  
-	/** Status severity constant (value 0) indicating this status represents the nominal case.
-	 * This constant is also used as the status code representing the nominal case.
+public interface ToolParent extends ErrorLogger {
+	/**
+	 * Status severity constant (value 0) indicating this status represents the
+	 * nominal case. This constant is also used as the status code representing the
+	 * nominal case.
+	 *
 	 * @see #getSeverity()
 	 * @see #isOK()
 	 */
 	public static final int OK = 0;
-
-	/** Status type severity (bit mask, value 1) indicating this status is informational only.
+	/**
+	 * Status type severity (bit mask, value 1) indicating this status is
+	 * informational only.
+	 *
 	 * @see #getSeverity()
 	 * @see #matches(int)
 	 */
 	public static final int INFO = 0x01;
-
-	/** Status type severity (bit mask, value 2) indicating this status represents a warning.
+	/**
+	 * Status type severity (bit mask, value 2) indicating this status represents a
+	 * warning.
+	 *
 	 * @see #getSeverity()
 	 * @see #matches(int)
 	 */
 	public static final int WARNING = 0x02;
-
-	/** Status type severity (bit mask, value 4) indicating this status represents an error.
+	/**
+	 * Status type severity (bit mask, value 4) indicating this status represents an
+	 * error.
+	 *
 	 * @see #getSeverity()
 	 * @see #matches(int)
 	 */
 	public static final int ERROR = 0x04;
-
-	/** Status type severity (bit mask, value 8) indicating this status represents a
+	/**
+	 * Status type severity (bit mask, value 8) indicating this status represents a
 	 * cancelation
+	 *
 	 * @see #getSeverity()
 	 * @see #matches(int)
 	 * @since 3.0
 	 */
-	public static final int CANCEL = 0x08;  
+	public static final int CANCEL = 0x08;
+
+	public void addActionToBuffer(Action theAction);
+
+	public java.util.Map<String, String> getPropertiesLike(String pattern);
+
+	public String getProperty(String name);
+
+	public void restoreCursor();
+
+	public void setCursor(int theCursor);
+
+	public void setProperty(String name, String value);
 }

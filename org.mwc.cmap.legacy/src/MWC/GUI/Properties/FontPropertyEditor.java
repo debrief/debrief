@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.Properties;
@@ -60,60 +60,50 @@ package MWC.GUI.Properties;
 import java.awt.Font;
 import java.beans.PropertyEditorSupport;
 
-public class FontPropertyEditor extends PropertyEditorSupport
-{
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  protected Font theFont;
-  
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  public FontPropertyEditor()
-  {
-  }
-  
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
-  
+public class FontPropertyEditor extends PropertyEditorSupport {
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+	protected Font theFont;
 
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	public FontPropertyEditor() {
+	}
 
-  public String getAsText()
-  {
-    final String res = theFont.getName() + " " + theFont.getSize() + " pt";
-    return res;
-  }
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-  public String[] getTags()
-  {
-    final String tags[] = {"6",
-                   "8",
-                   "10",
-                   "14",
-                   "18"};
-    return tags;
-  }
+	@Override
+	public String getAsText() {
+		final String res = theFont.getName() + " " + theFont.getSize() + " pt";
+		return res;
+	}
 
-  public Object getValue()
-  {
-    return theFont;
-  }
+	@Override
+	public String[] getTags() {
+		final String tags[] = { "6", "8", "10", "14", "18" };
+		return tags;
+	}
 
-  public void setValue(final Object p1)
-  {
-    if(p1 instanceof Font)
-      theFont = (Font)p1;
-  }
-  
-  
+	@Override
+	public Object getValue() {
+		return theFont;
+	}
 
-  public void setAsText(final String p1)
-  {
-    final Integer i = Integer.valueOf(p1);
-    final Font newF = new Font(theFont.getName(), 0, i.intValue());
-    theFont = newF;
-  }
+	@Override
+	public void setAsText(final String p1) {
+		final Integer i = Integer.valueOf(p1);
+		final Font newF = new Font(theFont.getName(), 0, i.intValue());
+		theFont = newF;
+	}
+
+	@Override
+	public void setValue(final Object p1) {
+		if (p1 instanceof Font)
+			theFont = (Font) p1;
+	}
 
 }

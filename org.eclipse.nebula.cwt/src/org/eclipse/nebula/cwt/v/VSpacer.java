@@ -15,22 +15,22 @@ import org.eclipse.swt.graphics.Point;
 
 public class VSpacer extends VControl {
 
-	public VSpacer(VPanel panel, int style) {
+	public VSpacer(final VPanel panel, final int style) {
 		super(panel, style);
 	}
 
 	@Override
-	public Point computeSize(int hint, int hint2, boolean changed) {
-		return new Point(1,1);
+	public Point computeSize(final int hint, final int hint2, final boolean changed) {
+		return new Point(1, 1);
 	}
 
 	@Override
 	public Type getType() {
 		return VControl.Type.Spacer;
 	}
-	
+
 	@Override
-	public void setBounds(int x, int y, int width, int height) {
+	public void setBounds(final int x, final int y, final int width, final int height) {
 	}
-	
+
 }

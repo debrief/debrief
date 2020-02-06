@@ -1,29 +1,32 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 package info.limpet.operations;
 
 import info.limpet.IChangeListener;
 import info.limpet.impl.Range;
 
+public interface RangedEntity {
+	void addTransientChangeListener(IChangeListener listener);
 
-public interface RangedEntity
-{
-  double getValue();
-  Range getRange();
-  void setValue(double value);
-  void addTransientChangeListener(IChangeListener listener);
-  void removeTransientChangeListener(IChangeListener listener);
-  String getName();
+	String getName();
+
+	Range getRange();
+
+	double getValue();
+
+	void removeTransientChangeListener(IChangeListener listener);
+
+	void setValue(double value);
 }

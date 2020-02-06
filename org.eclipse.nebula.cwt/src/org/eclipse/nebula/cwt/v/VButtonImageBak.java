@@ -32,33 +32,35 @@ import org.eclipse.swt.widgets.Listener;
 class VButtonImageBak {
 
 	private class ImageListener implements Listener {
-		private String key;
-		private Button b;
+		private final String key;
+		private final Button b;
 
-		ImageListener(String key, Button b) {
+		ImageListener(final String key, final Button b) {
 			this.key = key;
 			this.b = b;
 		}
 
-		public void handleEvent(Event e) {
-			GC gc = new GC(b);
-			Image image = new Image(b.getDisplay(), e.width, e.height);
+		@Override
+		public void handleEvent(final Event e) {
+			final GC gc = new GC(b);
+			final Image image = new Image(b.getDisplay(), e.width, e.height);
 			gc.copyArea(image, 0, 0);
-			ImageData data = image.getImageData();
+			final ImageData data = image.getImageData();
 			gc.dispose();
 			image.dispose();
 			images.put(key, data);
 			keys.put(data, key);
-			if(requests.containsKey(key)) {
-				for(Iterator<VButton> iter = requests.get(key).iterator(); iter.hasNext();) {
+			if (requests.containsKey(key)) {
+				for (final Iterator<VButton> iter = requests.get(key).iterator(); iter.hasNext();) {
 					iter.next().redraw();
 					iter.remove();
 				}
 				requests.remove(key);
 			}
 			Display.getDefault().asyncExec(new Runnable() {
+				@Override
 				public void run() {
-					if(!b.isDisposed() && b == b.getDisplay().getFocusControl()) {
+					if (!b.isDisposed() && b == b.getDisplay().getFocusControl()) {
 						b.getParent().forceFocus();
 					}
 					b.dispose();
@@ -69,8 +71,8 @@ class VButtonImageBak {
 
 	private static VButtonImageBak instance;
 
-	private static String getKey(VButton button) {
-		StringBuilder sb = new StringBuilder();
+	private static String getKey(final VButton button) {
+		final StringBuilder sb = new StringBuilder();
 		sb.append(button.getState());
 		sb.append(button == VTracker.getFocusControl());
 		sb.append(":"); //$NON-NLS-1$
@@ -81,7 +83,7 @@ class VButtonImageBak {
 	}
 
 	public static VButtonImageBak instance() {
-		if(instance == null) {
+		if (instance == null) {
 			instance = new VButtonImageBak();
 		}
 		return instance;
@@ -91,50 +93,50 @@ class VButtonImageBak {
 	 * Maps a unique key to a single image data object. Key => {state} : {width} :
 	 * {height}
 	 */
-	private Map<String, ImageData> images = new HashMap<String, ImageData>();
+	private final Map<String, ImageData> images = new HashMap<String, ImageData>();
 
 	/**
 	 * Map an image data object back to its unique key.
 	 */
-	private Map<ImageData, String> keys = new HashMap<ImageData, String>();
+	private final Map<ImageData, String> keys = new HashMap<ImageData, String>();
 
 	/**
 	 * Maps a unique key to a list of buttons who have requested an image data
 	 * object for that key.
 	 */
-	private Map<String, List<VButton>> requests = new HashMap<String, List<VButton>>();
+	private final Map<String, List<VButton>> requests = new HashMap<String, List<VButton>>();
 
 	/**
 	 * Maps an image data object to the set of buttons that use that image data
 	 * object.
 	 */
-	private Map<ImageData, Set<VButton>> buttons = new HashMap<ImageData, Set<VButton>>();
+	private final Map<ImageData, Set<VButton>> buttons = new HashMap<ImageData, Set<VButton>>();
 
 	private VButtonImageBak() {
-		// 
+		//
 	}
 
-	private void createImage(VButton button) {
-		String key = getKey(button);
-		if(requests.containsKey(key)) {
+	private void createImage(final VButton button) {
+		final String key = getKey(button);
+		if (requests.containsKey(key)) {
 			requests.get(key).add(button);
 		} else {
 			requests.put(key, new ArrayList<VButton>());
 			requests.get(key).add(button);
 
 			int style = button.getStyle() & (SWT.CHECK | SWT.RADIO);
-			if(style == 0) {
+			if (style == 0) {
 				style = SWT.TOGGLE; // defaults to, and converts PUSH buttons to, TOGGLE
 			}
 
-			Button b = new Button(button.composite, style);
+			final Button b = new Button(button.composite, style);
 			b.setBackground(button.getBackground());
 			b.setBounds(button.getBounds());
-			if(button.hasState(VControl.STATE_SELECTED)) {
+			if (button.hasState(VControl.STATE_SELECTED)) {
 				b.setSelection(true);
 			}
-			if(button == VTracker.getFocusControl()) {
-				 b.setFocus();
+			if (button == VTracker.getFocusControl()) {
+				b.setFocus();
 			}
 			b.addListener(SWT.Paint, new ImageListener(key, b));
 
@@ -143,24 +145,24 @@ class VButtonImageBak {
 		}
 	}
 
-	public ImageData getImageData(VButton button) {
-		if(!button.bounds.isEmpty()) {
-			String key = getKey(button);
-			ImageData data = images.get(key);
-			if(data == null) {
+	public ImageData getImageData(final VButton button) {
+		if (!button.bounds.isEmpty()) {
+			final String key = getKey(button);
+			final ImageData data = images.get(key);
+			if (data == null) {
 				createImage(button);
 			} else {
-				if(partialImage(key, data)) {
+				if (partialImage(key, data)) {
 					images.remove(key);
 					keys.remove(data);
 				} else {
-					if(button.oldImageData != null && button.oldImageData != data) {
+					if (button.oldImageData != null && button.oldImageData != data) {
 						removeUnusedData();
 					}
-					if(!buttons.containsKey(data)) {
+					if (!buttons.containsKey(data)) {
 						buttons.put(data, new HashSet<VButton>());
 					}
-					if(!buttons.get(data).contains(button)) {
+					if (!buttons.get(data).contains(button)) {
 						buttons.get(data).add(button);
 					}
 				}
@@ -170,23 +172,23 @@ class VButtonImageBak {
 		return null;
 	}
 
-	private boolean partialImage(String key, ImageData data) {
-		String[] sa = key.split(":"); //$NON-NLS-1$
-		int w = Integer.parseInt(sa[1]);
-		int h = Integer.parseInt(sa[2]);
+	private boolean partialImage(final String key, final ImageData data) {
+		final String[] sa = key.split(":"); //$NON-NLS-1$
+		final int w = Integer.parseInt(sa[1]);
+		final int h = Integer.parseInt(sa[2]);
 		return (data.height != h) || (data.width != w);
 	}
 
 	void removeUnusedData() {
-		for(Iterator<ImageData> i1 = buttons.keySet().iterator(); i1.hasNext();) {
-			ImageData data = i1.next();
-			for(Iterator<VButton> i2 = buttons.get(data).iterator(); i2.hasNext();) {
-				Point size = i2.next().getSize();
-				if(size.x != data.width || size.y != data.height) {
+		for (final Iterator<ImageData> i1 = buttons.keySet().iterator(); i1.hasNext();) {
+			final ImageData data = i1.next();
+			for (final Iterator<VButton> i2 = buttons.get(data).iterator(); i2.hasNext();) {
+				final Point size = i2.next().getSize();
+				if (size.x != data.width || size.y != data.height) {
 					i2.remove();
 				}
 			}
-			if(buttons.get(data).isEmpty()) {
+			if (buttons.get(data).isEmpty()) {
 				images.remove(keys.get(data));
 				keys.remove(data);
 				i1.remove();

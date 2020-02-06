@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI;
@@ -58,27 +58,30 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
-public interface Moveable
-{
-  
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
-  
-  /** find the data area occupied by this item
-   */
-  public WorldArea getBounds();
+public interface Moveable {
 
-  /** apply the necessary movement (during drag)
-   */
-  public void dragBy(WorldVector wv);
-  
-  /** and apply the final movement
-   */
-  public void doMove(WorldLocation start, WorldLocation end);
-  
-  /** get the current origin of this item (to support undo operation)
-   */
-  public WorldLocation getLocation();
-  
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * and apply the final movement
+	 */
+	public void doMove(WorldLocation start, WorldLocation end);
+
+	/**
+	 * apply the necessary movement (during drag)
+	 */
+	public void dragBy(WorldVector wv);
+
+	/**
+	 * find the data area occupied by this item
+	 */
+	public WorldArea getBounds();
+
+	/**
+	 * get the current origin of this item (to support undo operation)
+	 */
+	public WorldLocation getLocation();
+
 }

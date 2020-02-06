@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: AircraftSym.java,v $
@@ -54,71 +54,65 @@ import MWC.GenericData.WorldLocation;
 
 public class AircraftSym extends PlainSymbol {
 
-  /**
-	 * 
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
-  private final String _myType;
+	private final String _myType;
 
-	public AircraftSym(String type)
-  {
-	  _myType = type;
-  }
-	
-	public AircraftSym()
-	{
-	  this(SymbolFactory.AIRCRAFT);
+	public AircraftSym() {
+		this(SymbolFactory.AIRCRAFT);
 	}
 
-  @Override
-  public PlainSymbol create()
-  {
-    return new AircraftSym(_myType);
-  }
+	public AircraftSym(final String type) {
+		_myType = type;
+	}
 
-  public java.awt.Dimension getBounds(){
-    // sort out the size of the symbol at the current scale factor
-    final java.awt.Dimension res = new java.awt.Dimension((int)(2 * 4 * getScaleVal()),(int)( 2 * 4 * getScaleVal()));
-    return res;
-  }
+	@Override
+	public PlainSymbol create() {
+		return new AircraftSym(_myType);
+	}
 
-  public void paint(final CanvasType dest, final WorldLocation centre)
-  {
-    paint(dest, centre, 0.0);
-  }
+	@Override
+	public java.awt.Dimension getBounds() {
+		// sort out the size of the symbol at the current scale factor
+		final java.awt.Dimension res = new java.awt.Dimension((int) (2 * 4 * getScaleVal()),
+				(int) (2 * 4 * getScaleVal()));
+		return res;
+	}
 
+	@Override
+	public String getType() {
+		return _myType;
+	}
 
-  public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
-  {
-    // set the colour
-    dest.setColor(getColor());
+	@Override
+	public void paint(final CanvasType dest, final WorldLocation centre) {
+		paint(dest, centre, 0.0);
+	}
 
-    // create our centre point
-    final java.awt.Point centre = dest.toScreen(theLocation);
-    
-    // handle unable to gen screen coords (if off visible area)
-    if(centre == null)
-      return;
+	@Override
+	public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction) {
+		// set the colour
+		dest.setColor(getColor());
 
-    final int wid = (int)(3 * getScaleVal());
+		// create our centre point
+		final java.awt.Point centre = dest.toScreen(theLocation);
 
-    // start with the centre object
-    dest.drawOval(centre.x - (int)(wid/2d), centre.y - (int)(wid/2d), wid, wid);
+		// handle unable to gen screen coords (if off visible area)
+		if (centre == null)
+			return;
 
-    // draw in the legs
-    dest.drawLine(centre.x + (int)(wid/2d), centre.y, centre.x + (int)(wid * 2d), centre.y);
-    dest.drawLine(centre.x - (int)(wid/2d), centre.y, centre.x - (int)(wid * 2d), centre.y);
-    dest.drawLine(centre.x, centre.y - (int)(wid/2d), centre.x, centre.y - wid);
+		final int wid = (int) (3 * getScaleVal());
 
-  }
+		// start with the centre object
+		dest.drawOval(centre.x - (int) (wid / 2d), centre.y - (int) (wid / 2d), wid, wid);
 
-  public String getType()
-  {
-    return _myType;
-  }
+		// draw in the legs
+		dest.drawLine(centre.x + (int) (wid / 2d), centre.y, centre.x + (int) (wid * 2d), centre.y);
+		dest.drawLine(centre.x - (int) (wid / 2d), centre.y, centre.x - (int) (wid * 2d), centre.y);
+		dest.drawLine(centre.x, centre.y - (int) (wid / 2d), centre.x, centre.y - wid);
+
+	}
 
 }
-
-
-
-

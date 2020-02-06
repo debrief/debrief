@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.LayerManager;
@@ -85,44 +85,39 @@ import MWC.GUI.Layers;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Chart.RightClickEdit;
 
-public class EditLayersPopupMenuAdaptor  extends RightClickEdit.BaseMenuCreator implements Serializable
-{
+public class EditLayersPopupMenuAdaptor extends RightClickEdit.BaseMenuCreator implements Serializable {
 
-  /**
-	 * 
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	/////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
 
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	@Override
+	public void createMenu(final javax.swing.JPopupMenu menu, final java.awt.Point thePoint,
+			final MWC.GUI.CanvasType theCanvas, final PropertiesPanel thePanel, final Layers theData) {
+		final Editable.EditorType et = theData.getInfo();
+		// is this projection editable?
+		if (et != null) {
+			final javax.swing.JMenuItem mi = new javax.swing.JMenuItem(
+					"Edit " + et.getBeanDescriptor().getDisplayName());
+			mi.addActionListener(new RightClickEdit.EditThisActionListener(thePanel, et, null));
+			menu.add(mi);
 
-  public void createMenu(final javax.swing.JPopupMenu menu,
-                         final java.awt.Point thePoint,
-                         final MWC.GUI.CanvasType theCanvas,
-                         final PropertiesPanel thePanel,
-                         final Layers theData)
-  {
-    final Editable.EditorType et = theData.getInfo();
-    // is this projection editable?
-    if(et != null)
-    {
-      final javax.swing.JMenuItem mi = new javax.swing.JMenuItem("Edit " + et.getBeanDescriptor().getDisplayName());
-      mi.addActionListener(new RightClickEdit.EditThisActionListener(thePanel, et, null));
-      menu.add(mi);
+			// finally add the other editors
+			super.createAdditionalItems(menu, thePanel, (Editable) et.getData(), theData);
 
-      // finally add the other editors
-      super.createAdditionalItems(menu, thePanel, (Editable)et.getData(), theData);
-
-    }
-  }
+		}
+	}
 }

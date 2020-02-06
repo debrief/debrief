@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package com.planetmayo.debrief.satc.model.contributions;
@@ -26,26 +26,22 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 
-public abstract class BaseAnalysisContribution<R extends BaseRange<?>> extends
-		BaseContribution
-{
+public abstract class BaseAnalysisContribution<R extends BaseRange<?>> extends BaseContribution {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	final public void actUpon(final ProblemSpace space)
-			throws IncompatibleStateException
-	{
-		ArrayList<BoundedState> states = new ArrayList<BoundedState>(space.states());
+	final public void actUpon(final ProblemSpace space) throws IncompatibleStateException {
+		final ArrayList<BoundedState> states = new ArrayList<BoundedState>(space.states());
 		// do a forward pass through the list
 		applyAnalysisConstraints(states, space.getVehicleType());
-		
+
 		// and now a reverse pass
 		Collections.reverse(states);
 		applyAnalysisConstraints(states, space.getVehicleType());
 	}
 
-	protected void applyAnalysisConstraints(List<BoundedState> states, VehicleType vType) throws IncompatibleStateException
-	{
+	protected void applyAnalysisConstraints(final List<BoundedState> states, final VehicleType vType)
+			throws IncompatibleStateException {
 		// remember the previous state
 		BoundedState lastStateWithState = null;
 
@@ -58,48 +54,36 @@ public abstract class BaseAnalysisContribution<R extends BaseRange<?>> extends
 
 		// ok, loop through the states, setting range limits for any unbounded
 		// ranges
-		for (BoundedState currentState : states)
-		{
+		for (final BoundedState currentState : states) {
 			// ok - what leg is this?
-			String thisLeg = currentState.getMemberOf();
+			final String thisLeg = currentState.getMemberOf();
 
 			// is it even in a leg?
-			if (thisLeg == null)
-			{
+			if (thisLeg == null) {
 				// ok, have we just finished a leg?
-				if (!statesInThisLeg.isEmpty())
-				{
+				if (!statesInThisLeg.isEmpty()) {
 					assignCommonState(currentLegRange, statesInThisLeg);
 					currentLegRange = null;
 				}
 				// ok, we're not in a leg. relax it.
-				lastStateWithState = applyRelaxedRangeBounds(lastStateWithState,
-							currentState, vType);
-			}
-			else
-			{
+				lastStateWithState = applyRelaxedRangeBounds(lastStateWithState, currentState, vType);
+			} else {
 				// ok, we're in a leg - see if this is the first point (in which case we
 				// allow relaxation),
 				// or a successive point (in which case we just constrain)
 
 				// is this the first item in this leg
-				if (statesInThisLeg.isEmpty())
-				{
+				if (statesInThisLeg.isEmpty()) {
 					// yes. this is the first leg. We do need to allow some relaxation
 					// on range from the previous one
-					lastStateWithState = applyRelaxedRangeBounds(lastStateWithState,
-								currentState, vType);
+					lastStateWithState = applyRelaxedRangeBounds(lastStateWithState, currentState, vType);
 				}
-				R thisRange = getRangeFor(currentState);				
-				if (thisRange != null)
-				{
-					if (currentLegRange == null)
-					{
+				final R thisRange = getRangeFor(currentState);
+				if (thisRange != null) {
+					if (currentLegRange == null) {
 						// ok, store it
 						currentLegRange = cloneRange(thisRange);
-					}
-					else
-					{
+					} else {
 						furtherConstrain(currentLegRange, thisRange);
 					}
 					lastStateWithState = currentState;
@@ -110,108 +94,98 @@ public abstract class BaseAnalysisContribution<R extends BaseRange<?>> extends
 		}
 
 		// ok, do we have a dangling set of states to be assigned?
-		if (!statesInThisLeg.isEmpty())
-		{
+		if (!statesInThisLeg.isEmpty()) {
 			assignCommonState(currentLegRange, statesInThisLeg);
 			currentLegRange = null;
 		}
 	}
 
+	protected BoundedState applyRelaxedRangeBounds(final BoundedState lastStateWithRange,
+			final BoundedState currentState, final VehicleType vehicleType) throws IncompatibleStateException {
+		R newRange = null;
+
+		// do we have vehicle reference data and last state?
+		if (vehicleType != null && lastStateWithRange != null) {
+			// ok, how long since that last observation?
+			final long millis = currentState.getTime().getTime() - lastStateWithRange.getTime().getTime();
+
+			// ok, what does that state relax to
+			newRange = calcRelaxedRange(lastStateWithRange, vehicleType, millis);
+
+			// ok, apply this new constraint, or further constrain any existing one
+			applyThis(currentState, newRange);
+		}
+		// retrieve our range
+		final R thisRange = getRangeFor(currentState);
+		// is there a range for our type?
+		if (thisRange != null) {
+			// yes - we can use this state
+			return currentState;
+		}
+		return null;
+	}
+
+	protected abstract void applyThis(BoundedState state, R thisState) throws IncompatibleStateException;
+
 	/**
 	 * apply this bounded constraint to all to all of the states in the list
-	 * 
+	 *
 	 * @param commonRange
 	 * @param statesInThisLeg
 	 * @throws IncompatibleStateException
 	 */
-	protected void assignCommonState(R commonRange,
-			ArrayList<BoundedState> statesInThisLeg) throws IncompatibleStateException
-			
+	protected void assignCommonState(final R commonRange, final ArrayList<BoundedState> statesInThisLeg)
+			throws IncompatibleStateException
+
 	{
-		// ok - apply the common bounded range to all the states in the leg	
+		// ok - apply the common bounded range to all the states in the leg
 		// have we produced a constrained range?
-		if (commonRange != null)
-		{
+		if (commonRange != null) {
 			// yes. we need to apply the min constraints to all the points in
 			// that leg
-			Iterator<BoundedState> iter = statesInThisLeg.iterator();
-			while (iter.hasNext())
-			{
-				BoundedState boundedState = (BoundedState) iter.next();
+			final Iterator<BoundedState> iter = statesInThisLeg.iterator();
+			while (iter.hasNext()) {
+				final BoundedState boundedState = iter.next();
 				applyThis(boundedState, commonRange);
 			}
-		}	
+		}
 		// now we need to clear the remembered states, so we're ready for the
 		// next leg
 		statesInThisLeg.clear();
 	}
 
-	protected BoundedState applyRelaxedRangeBounds(
-			BoundedState lastStateWithRange, BoundedState currentState,
-			VehicleType vehicleType) throws IncompatibleStateException
-	{
-		R newRange = null;
-		
-		// do we have vehicle reference data and last state?
-		if (vehicleType != null && lastStateWithRange != null)
-		{
-			// ok, how long since that last observation?
-			long millis = currentState.getTime().getTime()
-					- lastStateWithRange.getTime().getTime();
-	
-			// ok, what does that state relax to
-		  newRange = calcRelaxedRange(lastStateWithRange, vehicleType, millis);
-			
-			// ok, apply this new constraint, or further constrain any existing one
-			applyThis(currentState, newRange);
-		}
-		// retrieve our range
-		R thisRange = getRangeFor(currentState);		
-		// is there a range for our type?
-		if (thisRange != null)
-		{
-			// yes - we can use this state
-			return currentState;
-		}
-		return null;	
-	}
-	
-	protected abstract void applyThis(BoundedState state, R thisState)
-			throws IncompatibleStateException;	
-
 	/**
-	 * apply our range to this existing one
-	 * 
-	 * @param currentLegRange
-	 * @param thisRange
-	 * @throws IncompatibleStateException
+	 * ok, how far does the range relax after the specified period
+	 *
+	 * @param lastStateWithRange the last known state with contraints for our range
+	 * @param vType              the vehicle type data
+	 * @param millis             how long has elapsed
+	 * @return the new bounded state
 	 */
-	abstract protected void furtherConstrain(R currentLegRange, R thisRange)
-			throws IncompatibleStateException;
+	abstract protected R calcRelaxedRange(BoundedState lastStateWithRange, VehicleType vType, long millis);
 
 	/**
 	 * run the copy constructor for this range
-	 * 
+	 *
 	 * @param thisRange
 	 * @return
 	 */
 	protected abstract R cloneRange(R thisRange);
 
 	/**
+	 * apply our range to this existing one
+	 *
+	 * @param currentLegRange
+	 * @param thisRange
+	 * @throws IncompatibleStateException
+	 */
+	abstract protected void furtherConstrain(R currentLegRange, R thisRange) throws IncompatibleStateException;
+
+	/**
 	 * extract my range type from this state
-	 * 
+	 *
 	 * @param lastStateWithRange
 	 * @return
 	 */
 	abstract protected R getRangeFor(BoundedState lastStateWithRange);
-
-	/** ok, how far does the range relax after the specified period
-	 * 
-	 * @param lastStateWithRange the last known state with contraints for our range
-	 * @param vType the vehicle type data
-	 * @param millis how long has elapsed
-	 * @return the new bounded state
-	 */
-	abstract protected R calcRelaxedRange(BoundedState lastStateWithRange,
-			VehicleType vType, long millis);
 }

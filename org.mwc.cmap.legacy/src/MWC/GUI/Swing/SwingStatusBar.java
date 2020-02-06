@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.Swing;
@@ -83,6 +83,7 @@ package MWC.GUI.Swing;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import MWC.GUI.StatusBar;
 import MWC.GUI.Properties.DebriefColors;
@@ -90,99 +91,95 @@ import MWC.GUI.Properties.DebriefColors;
 /**
  * Class providing Swing implementation of StatusBar.
  */
-public class SwingStatusBar extends JPanel implements StatusBar
-{
-  /**
-	 * 
+public class SwingStatusBar extends JPanel implements StatusBar {
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	/////////////////////////////////////////////////////////////
-  // member variables
-  /**
- * ////////////////////////////////////////////////////////////
- * the text label we are managing
- */
-  protected JLabel theText;
+	// member variables
+	/**
+	 * //////////////////////////////////////////////////////////// the text label
+	 * we are managing
+	 */
+	protected JLabel theText;
 
-  /**
-   * support class to help us format the text & set the correct unites
-   */
-  protected MWC.GUI.AWT.AWTStatusBar.StatusBarSupport _support;
+	/**
+	 * support class to help us format the text & set the correct unites
+	 */
+	protected MWC.GUI.AWT.AWTStatusBar.StatusBarSupport _support;
 
-  /** the property editor
-   *
-   */
-  protected MWC.GUI.Properties.PropertiesPanel _theEditor;
+	/**
+	 * the property editor
+	 *
+	 */
+	protected MWC.GUI.Properties.PropertiesPanel _theEditor;
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  public SwingStatusBar(final MWC.GUI.Properties.PropertiesPanel editor, final MWC.GUI.ToolParent parent)
-  {
-    theText = new JLabel("             ");
-    theText.setAlignmentX(JLabel.CENTER);
-    theText.setToolTipText("Double-click to change units");
-    final java.awt.BorderLayout lm = new java.awt.BorderLayout();
-    setLayout(lm);
-    add("Center", theText);
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	public SwingStatusBar(final MWC.GUI.Properties.PropertiesPanel editor, final MWC.GUI.ToolParent parent) {
+		theText = new JLabel("             ");
+		theText.setAlignmentX(SwingConstants.CENTER);
+		theText.setToolTipText("Double-click to change units");
+		final java.awt.BorderLayout lm = new java.awt.BorderLayout();
+		setLayout(lm);
+		add("Center", theText);
 
-    _support = new MWC.GUI.AWT.AWTStatusBar.StatusBarSupport();
-    _support.setParent(parent);
+		_support = new MWC.GUI.AWT.AWTStatusBar.StatusBarSupport();
+		_support.setParent(parent);
 
-    // handle a double-click on the status bar (used to set units)
-    theText.addMouseListener(new java.awt.event.MouseAdapter(){
-      public void mouseClicked(final java.awt.event.MouseEvent e)
-      {
-        if(e.getClickCount() == 2)
-        {
-          doubleClicked();
-        }
+		// handle a double-click on the status bar (used to set units)
+		theText.addMouseListener(new java.awt.event.MouseAdapter() {
+			@Override
+			public void mouseClicked(final java.awt.event.MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					doubleClicked();
+				}
 
-      }
-    });
+			}
+		});
 
-    _theEditor = editor;
-  }
+		_theEditor = editor;
+	}
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-  public void doubleClicked()
-  {
-    // go for it, using the property editor
-    _theEditor.addEditor(_support.getInfo(), null);
+	public void doubleClicked() {
+		// go for it, using the property editor
+		_theEditor.addEditor(_support.getInfo(), null);
 
-  }
+	}
 
-  public void setText(final String theVal)
-  {
-    theText.setText(" " + theVal);
-  }
+	@Override
+	public void paint(final java.awt.Graphics p1) {
+		super.paint(p1);
 
-  /** set range and bearing data in this text panel
-   *  @param range the range in degrees
-   *  @param bearing the bearing in radians
-   */
-  public void setRngBearing(final double range, final double bearing)
-  {
-    final String rngStr = _support.formatRange(range);
-    final String brgStr = _support.formatBearing(bearing);
+		final java.awt.Rectangle rt = super.getBounds();
+		p1.setColor(DebriefColors.LIGHT_GRAY);
+		p1.draw3DRect(1, 1, rt.width - 3, rt.height - 3, false);
+	}
 
-    setText(rngStr + " " + brgStr);
-  }
+	/**
+	 * set range and bearing data in this text panel
+	 *
+	 * @param range   the range in degrees
+	 * @param bearing the bearing in radians
+	 */
+	@Override
+	public void setRngBearing(final double range, final double bearing) {
+		final String rngStr = _support.formatRange(range);
+		final String brgStr = _support.formatBearing(bearing);
 
+		setText(rngStr + " " + brgStr);
+	}
 
-  public void paint(final java.awt.Graphics p1)
-  {
-    super.paint(p1);
-
-    final java.awt.Rectangle rt = super.getBounds();
-    p1.setColor(DebriefColors.LIGHT_GRAY);
-    p1.draw3DRect(1, 1, rt.width-3, rt.height-3, false);
-  }
-
-
+	@Override
+	public void setText(final String theVal) {
+		theText.setText(" " + theVal);
+	}
 
 }

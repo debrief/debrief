@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 package org.mwc.debrief.track_shift.zig_detector.moving_average;
 
@@ -22,80 +22,49 @@ import java.util.TreeSet;
 
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
+public class TestTimeBasedMovingAvg {
 
-public class TestTimeBasedMovingAvg
-{
+	public static class DataPoint implements Comparable<DataPoint> {
 
-	private static final SimpleDateFormat FORMATTER = new GMTDateFormat(
-			"dd/MMM/yyyy HH:mm:ss");
+		private final Calendar timestamp;
 
-	public static void main(String[] args)
-	{
+		private final Double value;
 
-		Long[] durations = { 30L * 1000 };
+		private final SimpleDateFormat sdf = new GMTDateFormat("dd/MM/yyyy HH:mm:ss");
 
-		for (Long duration : durations)
-		{
+		public DataPoint(final Calendar timestamp, final Double value) {
+			this.timestamp = timestamp;
+			this.value = value;
+		}
 
-			final Set<DataPoint> thisData = dataPointsTest2;
+		@Override
+		public int compareTo(final DataPoint o) {
+			return this.getTimestamp().compareTo(o.getTimestamp());
+		}
 
-			// we now wish to have the data in an array
-			long times[] = new long[thisData.size()];
-			double[] values = new double[thisData.size()];
+		public Calendar getTimestamp() {
+			return timestamp;
+		}
 
-			final DataPoint[] dataArray = thisData.toArray(new DataPoint[] { null });
+		public Double getValue() {
+			return value;
+		}
 
-			for (int i = 0; i < dataArray.length; i++)
-			{
-				times[i] = dataArray[i].getTimestamp().getTimeInMillis();
-				values[i] = dataArray[i].getValue();
-			}
-
-			// ok, now for the moving average
-			final TimeBasedMovingAverage movingAverage = new TimeBasedMovingAverage(
-					duration);
-
-			for (DataPoint pt : dataPointsTest2)
-			{
-				final long thisTime = pt.getTimestamp().getTimeInMillis();
-				printAvg(movingAverage, thisTime, times, values);
-			}
+		@Override
+		public String toString() {
+			return "DataPoint{" + "timestamp=" + sdf.format(timestamp.getTime()) + ", value=" + value + '}';
 		}
 	}
 
-	public static void printAvg(TimeBasedMovingAverage movingAverage,
-			long thisTime, long[] times, double[] values)
-	{
-		Double avg = movingAverage.average(thisTime, times, values);
-		String msg = String.format(
-				"The centered moving average for %d with period %s is %f", thisTime,
-				movingAverage.getDuration(), avg);
-		System.out.println(msg);
-	}
-
-	public static Calendar parse(String dateTime)
-	{
-		final Calendar calendar = Calendar.getInstance();
-		try
-		{
-			calendar.setTime(FORMATTER.parse(dateTime));
-
-		}
-		catch (ParseException e)
-		{
-			System.out.print(e);
-		}
-		return calendar;
-	}
-
-	public static DataPoint parse(String dateTime, Double value)
-	{
-		return new DataPoint(parse(dateTime), value);
-	}
+	private static final SimpleDateFormat FORMATTER = new GMTDateFormat("dd/MMM/yyyy HH:mm:ss");
 
 	@SuppressWarnings("serial")
-	static final Set<DataPoint> dataPointsTest1 = new TreeSet<DataPoint>()
-	{
+	static final Set<DataPoint> dataPointsTest1 = new TreeSet<DataPoint>() {
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
 		{
 			add(parse("07/Aug/2000 00:00:00", 001d));
 			add(parse("07/Aug/2000 00:00:01", 002d));
@@ -111,8 +80,12 @@ public class TestTimeBasedMovingAvg
 	};
 
 	@SuppressWarnings("serial")
-	static final Set<DataPoint> dataPointsTest2 = new TreeSet<DataPoint>()
-	{
+	static final Set<DataPoint> dataPointsTest2 = new TreeSet<DataPoint>() {
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
 		{
 			add(parse("07/Aug/2000 00:00:00", 001d));
 			add(parse("07/Aug/2000 00:00:01", 002d));
@@ -128,8 +101,12 @@ public class TestTimeBasedMovingAvg
 	};
 
 	@SuppressWarnings("serial")
-	static final Set<DataPoint> dataPoints = new TreeSet<DataPoint>()
-	{
+	static final Set<DataPoint> dataPoints = new TreeSet<DataPoint>() {
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
 		{
 
 			add(parse("07/Aug/2000 00:00:14", 70.5));
@@ -293,43 +270,56 @@ public class TestTimeBasedMovingAvg
 		}
 	};
 
-	public static class DataPoint implements Comparable<DataPoint>
-	{
+	public static void main(final String[] args) {
 
-		private final Calendar timestamp;
+		final Long[] durations = { 30L * 1000 };
 
-		private final Double value;
+		for (final Long duration : durations) {
 
-		private SimpleDateFormat sdf = new GMTDateFormat("dd/MM/yyyy HH:mm:ss");
+			final Set<DataPoint> thisData = dataPointsTest2;
 
-		public DataPoint(Calendar timestamp, Double value)
-		{
-			this.timestamp = timestamp;
-			this.value = value;
+			// we now wish to have the data in an array
+			final long times[] = new long[thisData.size()];
+			final double[] values = new double[thisData.size()];
+
+			final DataPoint[] dataArray = thisData.toArray(new DataPoint[] { null });
+
+			for (int i = 0; i < dataArray.length; i++) {
+				times[i] = dataArray[i].getTimestamp().getTimeInMillis();
+				values[i] = dataArray[i].getValue();
+			}
+
+			// ok, now for the moving average
+			final TimeBasedMovingAverage movingAverage = new TimeBasedMovingAverage(duration);
+
+			for (final DataPoint pt : dataPointsTest2) {
+				final long thisTime = pt.getTimestamp().getTimeInMillis();
+				printAvg(movingAverage, thisTime, times, values);
+			}
 		}
+	}
 
-		@Override
-		public String toString()
-		{
-			return "DataPoint{" + "timestamp=" + sdf.format(timestamp.getTime())
-					+ ", value=" + value + '}';
-		}
+	public static Calendar parse(final String dateTime) {
+		final Calendar calendar = Calendar.getInstance();
+		try {
+			calendar.setTime(FORMATTER.parse(dateTime));
 
-		public Calendar getTimestamp()
-		{
-			return timestamp;
+		} catch (final ParseException e) {
+			System.out.print(e);
 		}
+		return calendar;
+	}
 
-		public Double getValue()
-		{
-			return value;
-		}
+	public static DataPoint parse(final String dateTime, final Double value) {
+		return new DataPoint(parse(dateTime), value);
+	}
 
-		@Override
-		public int compareTo(DataPoint o)
-		{
-			return this.getTimestamp().compareTo(o.getTimestamp());
-		}
+	public static void printAvg(final TimeBasedMovingAverage movingAverage, final long thisTime, final long[] times,
+			final double[] values) {
+		final Double avg = movingAverage.average(thisTime, times, values);
+		final String msg = String.format("The centered moving average for %d with period %s is %f", thisTime,
+				movingAverage.getDuration(), avg);
+		System.out.println(msg);
 	}
 
 }

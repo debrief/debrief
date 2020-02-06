@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.Tools.Chart;
@@ -97,124 +97,120 @@ import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.PlainDragTool;
 import MWC.GenericData.WorldArea;
 
-public class ZoomIn extends PlainDragTool  implements Serializable
-{
-  /**
-	 * 
+public class ZoomIn extends PlainDragTool implements Serializable {
+	public static class ZoomInAction implements Action {
+
+		private final PlainChart _theChart;
+		private final WorldArea _oldArea;
+		private final WorldArea _newArea;
+
+		public ZoomInAction(final PlainChart theChart, final WorldArea oldArea, final WorldArea newArea) {
+			_theChart = theChart;
+			_oldArea = oldArea;
+			_newArea = newArea;
+		}
+
+		public void dispose() {
+			System.err.println("disposing of zoomin action");
+		}
+
+		@Override
+		public void execute() {
+			// set the data area for the chart to the specified area
+			_theChart.getCanvas().getProjection().setDataArea(_newArea);
+
+			// get the projection to refit-itself
+			// _theChart.getCanvas().getProjection().zoom(0.0);
+		}
+
+		@Override
+		public boolean isRedoable() {
+			return true;
+		}
+
+		@Override
+		public boolean isUndoable() {
+			return true;
+		}
+
+		@Override
+		public String toString() {
+			return "Zoom in operation";
+		}
+
+		@Override
+		public void undo() {
+			// set the data area for the chart to the old area
+			_theChart.getCanvas().getProjection().setDataArea(_oldArea);
+
+			// get the projection to refit-itself
+			// _theChart.getCanvas().getProjection().zoom(0.0);
+		}
+	}
+
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	//////////////////////////////////////////////////
-  // member variables
-  //////////////////////////////////////////////////
-  transient WorldArea _oldArea;
-  transient WorldArea _newArea;
+	// member variables
+	//////////////////////////////////////////////////
+	transient WorldArea _oldArea;
+
+	transient WorldArea _newArea;
 //  WorldLocation _startLocation;
-   
-  Rubberband _myRubber = new MWC.GUI.RubberBanding.RubberbandRectangle();
-  //////////////////////////////////////////////////
-  // constructor
-  //////////////////////////////////////////////////
-  public ZoomIn(final PlainChart theChart,
-                         final ToolParent theParent){ 
-    super(theChart, theParent, "Zoom in", "images/zoomin.png");
-  }
-  
+	Rubberband _myRubber = new MWC.GUI.RubberBanding.RubberbandRectangle();
 
-  //////////////////////////////////////////////////
-  // member functions
-  //////////////////////////////////////////////////
+	//////////////////////////////////////////////////
+	// member functions
+	//////////////////////////////////////////////////
 
-  
-  
-  public void areaSelected(final MWC.GenericData.WorldLocation theLocation, final Point thePoint){
-    super.areaSelected(theLocation, thePoint);
-    
-    // see if we have selected a worthwhile area
-    final Rectangle rt = new Rectangle(_theStartPoint);
-    rt.add(_theEndPoint);
-    
-    if(rt.width + rt.height > 5){
-      // ok, go for it
-      _newArea = new WorldArea(_theStart, _theEnd);
-      _newArea.normalise();
-    
-      super.doExecute(new ZoomInAction(getChart(), _oldArea, _newArea));
-    }
-  }
-  
-  public void startMotion(){
-    // store the current area
-    _oldArea = getChart().getCanvas().getProjection().getDataArea();
-  }
-                            
-    
-  public String getName(){
-    return "Zoom tool";
-  }
+	//////////////////////////////////////////////////
+	// constructor
+	//////////////////////////////////////////////////
+	public ZoomIn(final PlainChart theChart, final ToolParent theParent) {
+		super(theChart, theParent, "Zoom in", "images/zoomin.png");
+	}
 
-  public Action getData(){
-    return null;
-  }
-  
-  //////////////////////////////////////////////////
-  // the data for the action
-  ///////////////////////////////////////////////////
-  
-  public static class ZoomInAction implements Action{
-    
-    private final PlainChart _theChart;
-    private final WorldArea _oldArea;
-    private final WorldArea _newArea;
-   
-    
-    public ZoomInAction(final PlainChart theChart,
-                        final WorldArea oldArea,
-                        final WorldArea newArea){
-      _theChart = theChart;
-      _oldArea = oldArea;
-      _newArea = newArea;
-    }
-                        
-    public void dispose()
-    {
-    	System.err.println("disposing of zoomin action");
-    }
-    
-    public boolean isRedoable(){
-      return true;
-    }
-    
-    public boolean isUndoable()
-    {
-      return true;
-    }
+	@Override
+	public void areaSelected(final MWC.GenericData.WorldLocation theLocation, final Point thePoint) {
+		super.areaSelected(theLocation, thePoint);
 
-    public String toString()
-    {
-      return "Zoom in operation";
-    }
+		// see if we have selected a worthwhile area
+		final Rectangle rt = new Rectangle(_theStartPoint);
+		rt.add(_theEndPoint);
 
-    public void undo()
-    {
-      // set the data area for the chart to the old area
-      _theChart.getCanvas().getProjection().setDataArea(_oldArea);
-      
-      // get the projection to refit-itself
-  //    _theChart.getCanvas().getProjection().zoom(0.0);
-    }
+		if (rt.width + rt.height > 5) {
+			// ok, go for it
+			_newArea = new WorldArea(_theStart, _theEnd);
+			_newArea.normalise();
 
-    public void execute()
-    {
-      // set the data area for the chart to the specified area
-      _theChart.getCanvas().getProjection().setDataArea(_newArea);
-      
-      // get the projection to refit-itself
-  //    _theChart.getCanvas().getProjection().zoom(0.0);
-    }
-  }
+			super.doExecute(new ZoomInAction(getChart(), _oldArea, _newArea));
+		}
+	}
 
-  public MWC.GUI.Rubberband getRubberband(){
-    return _myRubber;
-  }
+	@Override
+	public Action getData() {
+		return null;
+	}
+
+	public String getName() {
+		return "Zoom tool";
+	}
+
+	//////////////////////////////////////////////////
+	// the data for the action
+	///////////////////////////////////////////////////
+
+	@Override
+	public MWC.GUI.Rubberband getRubberband() {
+		return _myRubber;
+	}
+
+	@Override
+	public void startMotion() {
+		// store the current area
+		_oldArea = getChart().getCanvas().getProjection().getDataArea();
+	}
 
 }

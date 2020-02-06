@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package Debrief.Tools.Tote.Calculations;
@@ -80,52 +80,50 @@ import java.text.DecimalFormat;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 
-public final class depthCalc extends plainCalc
-{
+public final class depthCalc extends plainCalc {
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
 
-  public depthCalc()
-  {  
-    super(new DecimalFormat("000"), "Depth", "metres");
-  }
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	public depthCalc() {
+		super(new DecimalFormat("000"), "Depth", "metres");
+	}
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-  public final double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime)
-  {
-    return primary.getDepth();
-  }
-  
-  public final String update(final Watchable primary, final Watchable secondary, final HiResDate time)
-  {
+	@Override
+	public final double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime) {
+		return primary.getDepth();
+	}
+
+	/**
+	 * does this calculation require special bearing handling (prevent wrapping
+	 * through 360 degs)
+	 *
+	 */
+	@Override
+	public final boolean isWrappableData() {
+		return false;
+	}
+
+	@Override
+	public final String update(final Watchable primary, final Watchable secondary, final HiResDate time) {
 		// check we have data
-		if(primary == null)
+		if (primary == null)
 			return NOT_APPLICABLE;
 
-    String res;
+		String res;
 
-    // just check if we have an invalid depth
-    if(primary.getLocation().hasValidDepth())
-    {
-      final double depth = calculate(primary, secondary, time);
-      res = _myPattern.format(depth);
-    }
-    else
-    {
-      res = NOT_APPLICABLE;
-    }
+		// just check if we have an invalid depth
+		if (primary.getLocation().hasValidDepth()) {
+			final double depth = calculate(primary, secondary, time);
+			res = _myPattern.format(depth);
+		} else {
+			res = NOT_APPLICABLE;
+		}
 
-    return res;
-  }
-
-  /** does this calculation require special bearing handling (prevent wrapping through 360 degs)
-   *
-   */
-  public final boolean isWrappableData() {
-    return false;
-  }
+		return res;
+	}
 }

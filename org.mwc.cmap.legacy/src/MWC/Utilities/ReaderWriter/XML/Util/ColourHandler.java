@@ -4,16 +4,16 @@ package MWC.Utilities.ReaderWriter.XML.Util;
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 import java.awt.Color;
@@ -23,75 +23,12 @@ import org.xml.sax.Attributes;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
-abstract public class ColourHandler extends MWCXMLReader
-{
-
-	private java.awt.Color _res;
-	private int _r;
-	private int _g;
-	private int _b;
+abstract public class ColourHandler extends MWCXMLReader {
 
 	static private java.util.Hashtable<String, java.awt.Color> _myColours;
 
-	public ColourHandler()
-	{
-		// handle this in the "normal" constructor
-		this("colour");
-	}
-
-	/**
-	 * custom constructor, for when the attribute does not contain the standard
-	 * name
-	 * 
-	 * @param name
-	 *          the name of the attribute we are handling
-	 */
-	public ColourHandler(final String name)
-	{
-		// pass our attribute name up the line
-		super(name);
-
-		// check that the colours have been defined
-		checkColours();
-	}
-
-	// this is one of ours, so get on with it!
-	@Override
-	protected void handleOurselves(final String name, final Attributes attributes)
-	{
-		// initialise data
-		_r = _g = _b = 0;
-
-		final int len = attributes.getLength();
-		for (int i = 0; i < len; i++)
-		{
-
-			final String nm = attributes.getLocalName(i);
-			final String val = attributes.getValue(i);
-			if (nm.equals("Value"))
-			{
-				_setColour(val);
-			}
-			else if (nm.equals("CustomRed"))
-			{
-				_r = Integer.valueOf(val).intValue();
-			}
-			else if (nm.equals("CustomGreen"))
-			{
-				_g = Integer.valueOf(val).intValue();
-			}
-			else if (nm.equals("CustomBlue"))
-			{
-				_b = Integer.valueOf(val).intValue();
-			}
-		}
-
-	}
-
-	private synchronized static void checkColours()
-	{
-		if (_myColours == null)
-		{
+	private synchronized static void checkColours() {
+		if (_myColours == null) {
 			_myColours = new java.util.Hashtable<String, java.awt.Color>();
 			_myColours.put("RED", DebriefColors.RED);
 			_myColours.put("BLUE", DebriefColors.BLUE);
@@ -115,88 +52,23 @@ abstract public class ColourHandler extends MWCXMLReader
 		}
 	}
 
-	private void _setColour(final String val)
-	{
-		// try to convert this string to a colour
-		if (val.equals("CUSTOM"))
-		{
-			// this is clearly a custom colour, leave colour definition
-			// until we close the element, so that we can be sure we've
-			// got all three r,g,b components
-			_res = null;
-		}
-
-		// have the colours been defined?
-		checkColours();
-
-		// step through the colours, to see if we find one which matches
-		final java.util.Enumeration<String> enumer = _myColours.keys();
-		while (enumer.hasMoreElements())
-		{
-			final String thisK = enumer.nextElement();
-			if (thisK.equals(val))
-			{
-				_res = _myColours.get(val);
-				break;
-			}
+	/**
+	 * standard exporter, using our proper attribute name
+	 */
+	public static void exportColour(final java.awt.Color color, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc) {
+		if (color != null) {
+			exportColour(color, parent, doc, "colour");
 		}
 	}
-
-	public Color resolveColor(final String val)
-	{
-		// try to convert this string to a colour
-		if (val.equals("CUSTOM"))
-		{
-			// this is clearly a custom colour, leave colour definition
-			// until we close the element, so that we can be sure we've
-			// got all three r,g,b components
-			return null;
-		}
-
-		// have the colours been defined?
-		checkColours();
-
-		// step through the colours, to see if we find one which matches
-		final java.util.Enumeration<String> enumer = _myColours.keys();
-		while (enumer.hasMoreElements())
-		{
-			final String thisK = enumer.nextElement();
-			if (thisK.equals(val))
-			{
-				return _myColours.get(val);
-			}
-		}
-
-		return null;
-	}
-
-	@Override
-	public void elementClosed()
-	{
-		// has a a predefined colour been selected?
-		if (_res == null)
-		{
-			// no, create our own
-			_res = new java.awt.Color(_r, _g, _b);
-		}
-
-		// return the result
-		setColour(_res);
-
-		// reset
-		_res = null;
-	}
-
-	abstract public void setColour(java.awt.Color res);
 
 	/**
 	 * custom exporter, for when we are not using the expected attribute name
 	 */
-	public static void exportColour(final java.awt.Color color, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc, final String name)
-	{
+	public static void exportColour(final java.awt.Color color, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc, final String name) {
 
-		if (color == null)
-		{
+		if (color == null) {
 			return;
 		}
 
@@ -206,12 +78,10 @@ abstract public class ColourHandler extends MWCXMLReader
 		// see if this is one of our export values
 		final java.util.Enumeration<String> enumer = _myColours.keys();
 		String ourKey = null;
-		while (enumer.hasMoreElements())
-		{
+		while (enumer.hasMoreElements()) {
 			final Object thisKey = enumer.nextElement();
 			final java.awt.Color thisCol = _myColours.get(thisKey);
-			if (thisCol.equals(color))
-			{
+			if (thisCol.equals(color)) {
 				// found it!
 				ourKey = (String) thisKey;
 				break;
@@ -219,12 +89,9 @@ abstract public class ColourHandler extends MWCXMLReader
 		}
 
 		final org.w3c.dom.Element eLoc = doc.createElement(name);
-		if (ourKey != null)
-		{
+		if (ourKey != null) {
 			eLoc.setAttribute("Value", ourKey);
-		}
-		else
-		{
+		} else {
 			eLoc.setAttribute("CustomRed", "" + color.getRed());
 			eLoc.setAttribute("CustomGreen", "" + color.getGreen());
 			eLoc.setAttribute("CustomBlue", "" + color.getBlue());
@@ -236,16 +103,14 @@ abstract public class ColourHandler extends MWCXMLReader
 
 	/**
 	 * produce a color from the comma-separated string
-	 * 
+	 *
 	 * @param val
 	 * @return
 	 */
-	public static Color fromString(final String val)
-	{
+	public static Color fromString(final String val) {
 		Color res = null;
 		final String[] items = val.split(",");
-		if (items.length == 3)
-		{
+		if (items.length == 3) {
 			res = new Color(Integer.parseInt(items[0]), Integer.parseInt(items[1]), Integer.parseInt(items[2]));
 		}
 		return res;
@@ -253,24 +118,126 @@ abstract public class ColourHandler extends MWCXMLReader
 
 	/**
 	 * produce a comma-separated string from the color
-	 * 
+	 *
 	 * @param val
 	 * @return
 	 */
-	public static String toString(final Color val)
-	{
+	public static String toString(final Color val) {
 		return "" + val.getRed() + "," + val.getGreen() + "," + val.getBlue();
 	}
 
+	private java.awt.Color _res;
+
+	private int _r;
+
+	private int _g;
+
+	private int _b;
+
+	public ColourHandler() {
+		// handle this in the "normal" constructor
+		this("colour");
+	}
+
 	/**
-	 * standard exporter, using our proper attribute name
+	 * custom constructor, for when the attribute does not contain the standard name
+	 *
+	 * @param name the name of the attribute we are handling
 	 */
-	public static void exportColour(final java.awt.Color color, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
-	{
-		if (color != null)
-		{
-			exportColour(color, parent, doc, "colour");
+	public ColourHandler(final String name) {
+		// pass our attribute name up the line
+		super(name);
+
+		// check that the colours have been defined
+		checkColours();
+	}
+
+	private void _setColour(final String val) {
+		// try to convert this string to a colour
+		if (val.equals("CUSTOM")) {
+			// this is clearly a custom colour, leave colour definition
+			// until we close the element, so that we can be sure we've
+			// got all three r,g,b components
+			_res = null;
+		}
+
+		// have the colours been defined?
+		checkColours();
+
+		// step through the colours, to see if we find one which matches
+		final java.util.Enumeration<String> enumer = _myColours.keys();
+		while (enumer.hasMoreElements()) {
+			final String thisK = enumer.nextElement();
+			if (thisK.equals(val)) {
+				_res = _myColours.get(val);
+				break;
+			}
 		}
 	}
+
+	@Override
+	public void elementClosed() {
+		// has a a predefined colour been selected?
+		if (_res == null) {
+			// no, create our own
+			_res = new java.awt.Color(_r, _g, _b);
+		}
+
+		// return the result
+		setColour(_res);
+
+		// reset
+		_res = null;
+	}
+
+	// this is one of ours, so get on with it!
+	@Override
+	protected void handleOurselves(final String name, final Attributes attributes) {
+		// initialise data
+		_r = _g = _b = 0;
+
+		final int len = attributes.getLength();
+		for (int i = 0; i < len; i++) {
+
+			final String nm = attributes.getLocalName(i);
+			final String val = attributes.getValue(i);
+			if (nm.equals("Value")) {
+				_setColour(val);
+			} else if (nm.equals("CustomRed")) {
+				_r = Integer.valueOf(val).intValue();
+			} else if (nm.equals("CustomGreen")) {
+				_g = Integer.valueOf(val).intValue();
+			} else if (nm.equals("CustomBlue")) {
+				_b = Integer.valueOf(val).intValue();
+			}
+		}
+
+	}
+
+	public Color resolveColor(final String val) {
+		// try to convert this string to a colour
+		if (val.equals("CUSTOM")) {
+			// this is clearly a custom colour, leave colour definition
+			// until we close the element, so that we can be sure we've
+			// got all three r,g,b components
+			return null;
+		}
+
+		// have the colours been defined?
+		checkColours();
+
+		// step through the colours, to see if we find one which matches
+		final java.util.Enumeration<String> enumer = _myColours.keys();
+		while (enumer.hasMoreElements()) {
+			final String thisK = enumer.nextElement();
+			if (thisK.equals(val)) {
+				return _myColours.get(val);
+			}
+		}
+
+		return null;
+	}
+
+	abstract public void setColour(java.awt.Color res);
 
 }

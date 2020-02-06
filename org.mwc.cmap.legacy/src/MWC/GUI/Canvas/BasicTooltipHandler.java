@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: BasicTooltipHandler.java,v $
@@ -96,182 +96,11 @@ import MWC.GenericData.WorldLocation;
  * simple implementation of tooltip handler. Provides support for multi-line
  * tooltips when applicable
  */
-public final class BasicTooltipHandler implements CanvasType.TooltipHandler
-{
-	// ///////////////////////////////////////////////////////////
-	// member variables
-	// //////////////////////////////////////////////////////////
-	/**
-	 * the data we are working with.
-	 */
-	private final MWC.GUI.Layers _theLayers;
-
-	// ///////////////////////////////////////////////////////////
-	// constructor
-	// //////////////////////////////////////////////////////////
-
-	/**
-	 * constructor, takes the layers we are currently working on.
-	 * 
-	 * @param theLayers
-	 *          Layers object representing our data
-	 */
-	public BasicTooltipHandler(final Layers theLayers)
-	{
-		_theLayers = theLayers;
-	}
-
-	// ///////////////////////////////////////////////////////////
-	// member functions
-	// //////////////////////////////////////////////////////////
-
-	public final String getString(final WorldLocation loc, final Point point)
-	{
-		String res = null;
-
-		// drop out if we don't know our layers objects
-		if(_theLayers == null)
-			return res;
-		
-		final dataStruct nearest = new dataStruct(loc);
-
-		// find the nearest editable item
-		final int num = _theLayers.size();
-		for (int i = 0; i < num; i++)
-		{
-			final Layer thisL = _theLayers.elementAt(i);
-			if (thisL.getVisible())
-			{
-				try
-				{
-					findNearest(thisL, nearest);
-				}
-				catch (final NullPointerException e)
-				{
-					// we sometimes get errors here, no need to propagate them
-					// juse ignore them
-				}
-			}
-		}
-
-		// did we find one?
-		if (nearest.getNearest() != null)
-		{
-			// is this a multi-line text label?
-			final Plottable plt = nearest.getNearest();
-			if (plt instanceof CanvasType.MultiLineTooltipProvider)
-			{
-				final CanvasType.MultiLineTooltipProvider provider = (CanvasType.MultiLineTooltipProvider) plt;
-				res = "<html><font face=\"sansserif\">"; // start text
-
-				String multiLineText = provider.getMultiLineName();
-
-				// convert to HTML breaks
-				multiLineText = toHTML(multiLineText);
-
-				res += multiLineText; // the data
-				res += "</font></html>"; // end text
-			}
-			else
-			{
-				res = nearest.getNearest().getName();
-			}
-		}
-		else
-			res = "";
-
-		return res;
-	}
-
-	/**
-	 * replace newline characters with the long equivalent.
-	 * 
-	 * @param val
-	 *          the text as a normal Java string
-	 * @return the text in XML form
-	 */
-	private static String toHTML(final String val)
-	{
-		String res = new String();
-
-		if (val != null)
-		{
-			int start = 0;
-			int newlineAt;
-
-			final String HTML_MARKER = "<BR>";
-
-			while ((newlineAt = val.indexOf(TextLabel.NEWLINE_MARKER, start)) > 0)
-			{
-				res += val.substring(start, newlineAt) + HTML_MARKER;
-				start = newlineAt + TextLabel.NEWLINE_MARKER.length();
-			}
-
-			// did we find any?
-			// if we did, we have to append the last line
-			if (res.length() > 0)
-			{
-				// yes, we've found some - append the last line
-				res += val.substring(start);
-			}
-			else
-			{
-				// no - we've not found anything, just take a copy of the line
-				res = val;
-			}
-		}
-
-		return res;
-
-	}
-
-	/**
-	 * recursive method to find nearest item in this layer (or any layer it
-	 * contains).
-	 * 
-	 * @param pl
-	 *          the one we want to be near to
-	 * @param nearest
-	 *          the place to put the results
-	 */
-	private void findNearest(final Plottable pl, final dataStruct nearest)
-	{
-		if (pl.getVisible())
-		{
-			// is this a layer?
-			if (pl instanceof Layer)
-			{
-				// do the check for this item
-				// NOTE: we only check the distance of elements, not whole tracks
-				// nearest.compare(pl);
-
-				// we need to call ourselves for each layer inside it
-				final Layer l = (Layer) pl;
-
-				final java.util.Enumeration<Editable> enumer = l.elements();
-				while (enumer.hasMoreElements())
-				{
-					final Editable next = enumer.nextElement();
-					if (next instanceof Plottable)
-					{
-						final Plottable this_plottable = (Plottable) next;
-						findNearest(this_plottable, nearest);
-					}
-				}
-			}
-			else
-			{
-				// so, we've got to a node - compare it to our current data
-				nearest.compare(pl);
-			}
-		}
-	}
-
+public final class BasicTooltipHandler implements CanvasType.TooltipHandler {
 	/**
 	 * class to store ongoing results of nearest search.
 	 */
-	private static final class dataStruct
-	{
+	private static final class dataStruct {
 		/**
 		 * the nearest distance so far.
 		 */
@@ -287,23 +116,19 @@ public final class BasicTooltipHandler implements CanvasType.TooltipHandler
 
 		/**
 		 * constructor.
-		 * 
-		 * @param loc
-		 *          location we're searching for
+		 *
+		 * @param loc location we're searching for
 		 */
-		public dataStruct(final WorldLocation loc)
-		{
+		public dataStruct(final WorldLocation loc) {
 			location = loc;
 		}
 
 		/**
 		 * compare method, is this new plottable nearest than the current one.
-		 * 
-		 * @param newPl
-		 *          the item we're looking at
+		 *
+		 * @param newPl the item we're looking at
 		 */
-		private final void compare(final Plottable newPl)
-		{
+		private final void compare(final Plottable newPl) {
 			// is it even visible?
 			if (!newPl.getVisible())
 				return;
@@ -312,21 +137,16 @@ public final class BasicTooltipHandler implements CanvasType.TooltipHandler
 			final double range = newPl.rangeFrom(location);
 
 			// did it produce a valid range?
-			if (range == Plottable.INVALID_RANGE)
-			{
+			if (range == Plottable.INVALID_RANGE) {
 				return;
 			}
 
 			// so, we have a valid range. is it our first?
-			if (distance == Plottable.INVALID_RANGE)
-			{
+			if (distance == Plottable.INVALID_RANGE) {
 				object = newPl;
 				distance = range;
-			}
-			else
-			{
-				if (range < distance)
-				{
+			} else {
+				if (range < distance) {
 					distance = range;
 					object = newPl;
 				}
@@ -335,12 +155,152 @@ public final class BasicTooltipHandler implements CanvasType.TooltipHandler
 
 		/**
 		 * accessor method to get the results.
-		 * 
+		 *
 		 * @return the nearest item
 		 */
-		public final Plottable getNearest()
-		{
+		public final Plottable getNearest() {
 			return object;
 		}
+	}
+
+	// ///////////////////////////////////////////////////////////
+	// constructor
+	// //////////////////////////////////////////////////////////
+
+	/**
+	 * replace newline characters with the long equivalent.
+	 *
+	 * @param val the text as a normal Java string
+	 * @return the text in XML form
+	 */
+	private static String toHTML(final String val) {
+		String res = new String();
+
+		if (val != null) {
+			int start = 0;
+			int newlineAt;
+
+			final String HTML_MARKER = "<BR>";
+
+			while ((newlineAt = val.indexOf(TextLabel.NEWLINE_MARKER, start)) > 0) {
+				res += val.substring(start, newlineAt) + HTML_MARKER;
+				start = newlineAt + TextLabel.NEWLINE_MARKER.length();
+			}
+
+			// did we find any?
+			// if we did, we have to append the last line
+			if (res.length() > 0) {
+				// yes, we've found some - append the last line
+				res += val.substring(start);
+			} else {
+				// no - we've not found anything, just take a copy of the line
+				res = val;
+			}
+		}
+
+		return res;
+
+	}
+
+	// ///////////////////////////////////////////////////////////
+	// member functions
+	// //////////////////////////////////////////////////////////
+
+	// ///////////////////////////////////////////////////////////
+	// member variables
+	// //////////////////////////////////////////////////////////
+	/**
+	 * the data we are working with.
+	 */
+	private final MWC.GUI.Layers _theLayers;
+
+	/**
+	 * constructor, takes the layers we are currently working on.
+	 *
+	 * @param theLayers Layers object representing our data
+	 */
+	public BasicTooltipHandler(final Layers theLayers) {
+		_theLayers = theLayers;
+	}
+
+	/**
+	 * recursive method to find nearest item in this layer (or any layer it
+	 * contains).
+	 *
+	 * @param pl      the one we want to be near to
+	 * @param nearest the place to put the results
+	 */
+	private void findNearest(final Plottable pl, final dataStruct nearest) {
+		if (pl.getVisible()) {
+			// is this a layer?
+			if (pl instanceof Layer) {
+				// do the check for this item
+				// NOTE: we only check the distance of elements, not whole tracks
+				// nearest.compare(pl);
+
+				// we need to call ourselves for each layer inside it
+				final Layer l = (Layer) pl;
+
+				final java.util.Enumeration<Editable> enumer = l.elements();
+				while (enumer.hasMoreElements()) {
+					final Editable next = enumer.nextElement();
+					if (next instanceof Plottable) {
+						final Plottable this_plottable = (Plottable) next;
+						findNearest(this_plottable, nearest);
+					}
+				}
+			} else {
+				// so, we've got to a node - compare it to our current data
+				nearest.compare(pl);
+			}
+		}
+	}
+
+	@Override
+	public final String getString(final WorldLocation loc, final Point point) {
+		String res = null;
+
+		// drop out if we don't know our layers objects
+		if (_theLayers == null)
+			return res;
+
+		final dataStruct nearest = new dataStruct(loc);
+
+		// find the nearest editable item
+		final int num = _theLayers.size();
+		for (int i = 0; i < num; i++) {
+			final Layer thisL = _theLayers.elementAt(i);
+			if (thisL.getVisible()) {
+				try {
+					findNearest(thisL, nearest);
+				} catch (final NullPointerException e) {
+					// we sometimes get errors here, no need to propagate them
+					// juse ignore them
+				}
+			}
+		}
+
+		// did we find one?
+		if (nearest.getNearest() != null) {
+			// is this a multi-line text label?
+			final Plottable plt = nearest.getNearest();
+			if (plt instanceof CanvasType.MultiLineTooltipProvider) {
+				final CanvasType.MultiLineTooltipProvider provider = (CanvasType.MultiLineTooltipProvider) plt;
+				res = "<html><font face=\"sansserif\">"; // start text
+
+				String multiLineText = provider.getMultiLineName();
+
+				// convert to HTML breaks
+				multiLineText = toHTML(multiLineText);
+
+				res += multiLineText; // the data
+				res += "</font></html>"; // end text
+			} else {
+				res = nearest.getNearest().getName();
+			}
+		} else
+			res = "";
+
+		return res;
 	}
 }

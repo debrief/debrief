@@ -1,34 +1,37 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.debrief.core.editors.painters;
 
-import java.beans.*;
-import java.util.*;
+import java.beans.PropertyChangeSupport;
+import java.util.Iterator;
+import java.util.Vector;
 
-import org.mwc.debrief.core.editors.painters.highlighters.*;
+import org.mwc.debrief.core.editors.painters.highlighters.NullHighlighter;
+import org.mwc.debrief.core.editors.painters.highlighters.SWTPlotHighlighter;
+import org.mwc.debrief.core.editors.painters.highlighters.SWTRangeHighlighter;
+import org.mwc.debrief.core.editors.painters.highlighters.SWTSymbolHighlighter;
 
 import MWC.TacticalData.TrackDataProvider;
 
 /**
  * @author ian.mayo
  */
-public class LayerPainterManager extends PropertyChangeSupport
-{
+public class LayerPainterManager extends PropertyChangeSupport {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -39,30 +42,29 @@ public class LayerPainterManager extends PropertyChangeSupport
 
 	/**
 	 * our list of highlighters
-	 * 
+	 *
 	 */
 	private final Vector<SWTPlotHighlighter> _myHighlighterList;
 
 	/**
 	 * the current one
-	 * 
+	 *
 	 * @param dataProvider
 	 */
 	private TemporalLayerPainter _currentPainter = null;
 
 	/**
 	 * and the highlighter
-	 * 
+	 *
 	 */
 	private SWTPlotHighlighter _currentHighlighter = null;
 
 	/**
 	 * constructor - to collate the list
-	 * 
+	 *
 	 * @param dataProvider
 	 */
-	public LayerPainterManager(final TrackDataProvider dataProvider)
-	{
+	public LayerPainterManager(final TrackDataProvider dataProvider) {
 		super(dataProvider);
 
 		// and now build the painters
@@ -70,7 +72,7 @@ public class LayerPainterManager extends PropertyChangeSupport
 		_myPainterList.add(new PlainHighlighter());
 		_myPainterList.add(new SnailHighlighter(dataProvider));
 
-		setCurrentPainter((TemporalLayerPainter) _myPainterList.firstElement());
+		setCurrentPainter(_myPainterList.firstElement());
 
 		// and the plot highlighters
 		_myHighlighterList = new Vector<SWTPlotHighlighter>(0, 1);
@@ -85,21 +87,10 @@ public class LayerPainterManager extends PropertyChangeSupport
 	}
 
 	/**
-	 * get the list of painters
-	 */
-	public TemporalLayerPainter[] getPainterList()
-	{
-		final TemporalLayerPainter[] res = new TemporalLayerPainter[]
-		{ null };
-		return (TemporalLayerPainter[]) _myPainterList.toArray(res);
-	}
-
-	/**
 	 * ditch ourselves
-	 * 
+	 *
 	 */
-	public void close()
-	{
+	public void close() {
 		_myHighlighterList.clear();
 		_myPainterList.clear();
 		_currentHighlighter = null;
@@ -107,57 +98,50 @@ public class LayerPainterManager extends PropertyChangeSupport
 	}
 
 	/**
-	 * get the list of painters
+	 * find out which is the currently selected painter
+	 *
+	 * @return
 	 */
-	public SWTPlotHighlighter[] getHighlighterList()
-	{
-		final SWTPlotHighlighter[] res = new SWTPlotHighlighter[]
-		{ null };
-		return (SWTPlotHighlighter[]) _myHighlighterList.toArray(res);
+	public SWTPlotHighlighter getCurrentHighlighter() {
+		return _currentHighlighter;
 	}
 
 	/**
 	 * find out which is the currently selected painter
-	 * 
+	 *
 	 * @return
 	 */
-	public TemporalLayerPainter getCurrentPainter()
-	{
+	public TemporalLayerPainter getCurrentPainter() {
 		return _currentPainter;
 	}
 
 	/**
-	 * allow changing of the current painter
-	 * 
-	 * @param current
-	 *          the new one being selected
+	 * get the list of painters
 	 */
-	public void setCurrentPainter(final TemporalLayerPainter current)
-	{
-		// store the old one
-		final TemporalLayerPainter old = _currentPainter;
+	public SWTPlotHighlighter[] getHighlighterList() {
+		final SWTPlotHighlighter[] res = new SWTPlotHighlighter[] { null };
+		return _myHighlighterList.toArray(res);
+	}
 
-		// assign to the new one
-		_currentPainter = current;
-
-		// inform anybody who wants to know
-		firePropertyChange("Changed", old, current);
+	/**
+	 * get the list of painters
+	 */
+	public TemporalLayerPainter[] getPainterList() {
+		final TemporalLayerPainter[] res = new TemporalLayerPainter[] { null };
+		return _myPainterList.toArray(res);
 	}
 
 	/**
 	 * decide which cursor to use (based on text string)
-	 * 
-	 * @param cursorName
+	 *
+	 * @param highlighterName
 	 */
-	public void setCurrentPainter(final String cursorName)
-	{
-		TemporalLayerPainter newCursor = null;
-		for (final Iterator<TemporalLayerPainter> thisPainter = _myPainterList.iterator(); thisPainter
-				.hasNext();)
-		{
-			final TemporalLayerPainter thisP = (TemporalLayerPainter) thisPainter.next();
-			if (thisP.getName().equals(cursorName))
-			{
+	public void setCurrentHighlighter(final String highlighterName) {
+		SWTPlotHighlighter newCursor = null;
+		for (final Iterator<SWTPlotHighlighter> thisHighlighter = _myHighlighterList.iterator(); thisHighlighter
+				.hasNext();) {
+			final SWTPlotHighlighter thisP = thisHighlighter.next();
+			if (thisP.getName().equals(highlighterName)) {
 				newCursor = thisP;
 				break;
 			}
@@ -165,27 +149,15 @@ public class LayerPainterManager extends PropertyChangeSupport
 
 		// cool. did we find one?
 		if (newCursor != null)
-			setCurrentPainter(newCursor);
-	}
-
-	/**
-	 * find out which is the currently selected painter
-	 * 
-	 * @return
-	 */
-	public SWTPlotHighlighter getCurrentHighlighter()
-	{
-		return _currentHighlighter;
+			setCurrentHighlighter(newCursor);
 	}
 
 	/**
 	 * allow changing of the current painter
-	 * 
-	 * @param current
-	 *          the new one being selected
+	 *
+	 * @param current the new one being selected
 	 */
-	public void setCurrentHighlighter(final SWTPlotHighlighter current)
-	{
+	public void setCurrentHighlighter(final SWTPlotHighlighter current) {
 		// store the old one
 		final SWTPlotHighlighter old = _currentHighlighter;
 
@@ -198,18 +170,14 @@ public class LayerPainterManager extends PropertyChangeSupport
 
 	/**
 	 * decide which cursor to use (based on text string)
-	 * 
-	 * @param highlighterName
+	 *
+	 * @param cursorName
 	 */
-	public void setCurrentHighlighter(final String highlighterName)
-	{
-		SWTPlotHighlighter newCursor = null;
-		for (final Iterator<SWTPlotHighlighter> thisHighlighter = _myHighlighterList
-				.iterator(); thisHighlighter.hasNext();)
-		{
-			final SWTPlotHighlighter thisP = (SWTPlotHighlighter) thisHighlighter.next();
-			if (thisP.getName().equals(highlighterName))
-			{
+	public void setCurrentPainter(final String cursorName) {
+		TemporalLayerPainter newCursor = null;
+		for (final Iterator<TemporalLayerPainter> thisPainter = _myPainterList.iterator(); thisPainter.hasNext();) {
+			final TemporalLayerPainter thisP = thisPainter.next();
+			if (thisP.getName().equals(cursorName)) {
 				newCursor = thisP;
 				break;
 			}
@@ -217,6 +185,22 @@ public class LayerPainterManager extends PropertyChangeSupport
 
 		// cool. did we find one?
 		if (newCursor != null)
-			setCurrentHighlighter(newCursor);
+			setCurrentPainter(newCursor);
+	}
+
+	/**
+	 * allow changing of the current painter
+	 *
+	 * @param current the new one being selected
+	 */
+	public void setCurrentPainter(final TemporalLayerPainter current) {
+		// store the old one
+		final TemporalLayerPainter old = _currentPainter;
+
+		// assign to the new one
+		_currentPainter = current;
+
+		// inform anybody who wants to know
+		firePropertyChange("Changed", old, current);
 	}
 }

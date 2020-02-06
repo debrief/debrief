@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.cmap.gridharness.data;
@@ -24,12 +24,10 @@ public class FormatDateTime {
 	public static final String DEFAULT_TIME_ZONE_ID = "GMT";
 	static private SimpleDateFormat _df = null;
 
-	// private constructor, to stop anybody accidentally declaring it
-	private FormatDateTime()
-	{
-		
+	static public String getExample() {
+		return "ddHHmm.ss";
 	}
-	
+
 	static public String toString(final long theVal) {
 		return toStringLikeThis(theVal, DEFAULT_PATTERN);
 	}
@@ -55,7 +53,8 @@ public class FormatDateTime {
 		return res;
 	}
 
-	static public String getExample() {
-		return "ddHHmm.ss";
+	// private constructor, to stop anybody accidentally declaring it
+	private FormatDateTime() {
+
 	}
 }

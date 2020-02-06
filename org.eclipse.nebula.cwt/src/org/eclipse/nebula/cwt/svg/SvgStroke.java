@@ -19,21 +19,22 @@ class SvgStroke extends SvgPaint {
 	Integer lineCap = SWT.CAP_FLAT;
 	Integer lineJoin = SWT.JOIN_MITER;
 
-	SvgStroke(SvgGraphic parent) {
+	SvgStroke(final SvgGraphic parent) {
 		super(parent);
 	}
-	
+
+	@Override
 	public void apply() {
-		if(paintServer != null) {
+		if (paintServer != null) {
 			paintServer.apply(true);
 		} else {
-			Color c = new Color(gc.getDevice(), color >> 16, (color & 0x00FF00) >> 8, color & 0x0000FF);
+			final Color c = new Color(gc.getDevice(), color >> 16, (color & 0x00FF00) >> 8, color & 0x0000FF);
 			gc.setForeground(c);
 			c.dispose();
-			gc.setLineWidth((int)Math.ceil(width));
+			gc.setLineWidth((int) Math.ceil(width));
 			gc.setLineCap(lineCap);
 			gc.setLineJoin(lineJoin);
-			gc.setAlpha((int)(255 * opacity));
+			gc.setAlpha((int) (255 * opacity));
 		}
 	}
 

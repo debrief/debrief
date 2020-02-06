@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: MinesweeperSym.java,v $
@@ -56,68 +56,65 @@ import MWC.GenericData.WorldLocation;
 
 public class MinesweeperSym extends PlainSymbol {
 
-  /**
-	 * 
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
-  public java.awt.Dimension getBounds(){
-    // sort out the size of the symbol at the current scale factor
-    final java.awt.Dimension res = new java.awt.Dimension((int)(2 * 4 * getScaleVal()),(int)( 2 * 4 * getScaleVal()));
-    return res;
-  }
+	@Override
+	public PlainSymbol create() {
+		return new MinesweeperSym();
+	}
 
-  public void paint(final CanvasType dest, final WorldLocation centre)
-  {
-    paint(dest, centre, 0.0);
-  }
+	@Override
+	public java.awt.Dimension getBounds() {
+		// sort out the size of the symbol at the current scale factor
+		final java.awt.Dimension res = new java.awt.Dimension((int) (2 * 4 * getScaleVal()),
+				(int) (2 * 4 * getScaleVal()));
+		return res;
+	}
 
-  @Override
-  public PlainSymbol create()
-  {
-    return new MinesweeperSym();
-  }
+	@Override
+	public String getType() {
+		return "Minesweeper";
+	}
 
-  public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
-  {
-    // set the colour
-    dest.setColor(getColor());
+	@Override
+	public void paint(final CanvasType dest, final WorldLocation centre) {
+		paint(dest, centre, 0.0);
+	}
 
-    // create our centre point
-    final java.awt.Point centre = dest.toScreen(theLocation);
-    
-    // handle unable to gen screen coords (if off visible area)
-    if(centre == null)
-      return;
+	@Override
+	public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction) {
+		// set the colour
+		dest.setColor(getColor());
 
-    final int wid = (int)(6 * getScaleVal());
-    final int wid_2 = (int)(wid/2d);
-    final int wid_4 = (int)(wid/4d);
-    final int tinyWid = (int) getScaleVal();
+		// create our centre point
+		final java.awt.Point centre = dest.toScreen(theLocation);
 
-    // start with the centre object
-    dest.fillOval(centre.x - tinyWid/2, centre.y - tinyWid/2, tinyWid, tinyWid);
+		// handle unable to gen screen coords (if off visible area)
+		if (centre == null)
+			return;
 
-    // first the side pieces
-    dest.drawLine(centre.x - wid_4, centre.y , centre.x - wid_4, centre.y - wid);
-    dest.drawLine(centre.x + wid_4, centre.y, centre.x + wid_4, centre.y - wid);
+		final int wid = (int) (6 * getScaleVal());
+		final int wid_2 = (int) (wid / 2d);
+		final int wid_4 = (int) (wid / 4d);
+		final int tinyWid = (int) getScaleVal();
 
-    // now the bottom piece
-    dest.drawLine(centre.x - wid_2, centre.y, centre.x + wid_2, centre.y);
+		// start with the centre object
+		dest.fillOval(centre.x - tinyWid / 2, centre.y - tinyWid / 2, tinyWid, tinyWid);
 
-    // now the top pieces
-    dest.drawLine(centre.x - wid_4, centre.y - wid, centre.x, centre.y - (wid - wid_4));
-    dest.drawLine(centre.x + wid_4, centre.y - wid, centre.x, centre.y - (wid - wid_4));
+		// first the side pieces
+		dest.drawLine(centre.x - wid_4, centre.y, centre.x - wid_4, centre.y - wid);
+		dest.drawLine(centre.x + wid_4, centre.y, centre.x + wid_4, centre.y - wid);
 
-  }
+		// now the bottom piece
+		dest.drawLine(centre.x - wid_2, centre.y, centre.x + wid_2, centre.y);
 
-  public String getType()
-  {
-    return "Minesweeper";
-  }
+		// now the top pieces
+		dest.drawLine(centre.x - wid_4, centre.y - wid, centre.x, centre.y - (wid - wid_4));
+		dest.drawLine(centre.x + wid_4, centre.y - wid, centre.x, centre.y - (wid - wid_4));
+
+	}
 
 }
-
-
-
-

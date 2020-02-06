@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.Utilities.TextFormatting;
@@ -75,70 +75,66 @@ package MWC.Utilities.TextFormatting;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
-public class GeneralFormat
-{
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  private static NumberFormat _oneDPFormat = new DecimalFormat("0.0", new java.text.DecimalFormatSymbols(java.util.Locale.UK));
-  private static NumberFormat _threeDPFormat = new DecimalFormat("0.000", new java.text.DecimalFormatSymbols(java.util.Locale.UK));
-  private static NumberFormat _bearingFormat = new DecimalFormat("000.00", new java.text.DecimalFormatSymbols(java.util.Locale.UK));
-  private static NumberFormat _rangeFormat = new DecimalFormat("#0", new java.text.DecimalFormatSymbols(java.util.Locale.UK));
+public class GeneralFormat {
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+	private static NumberFormat _oneDPFormat = new DecimalFormat("0.0",
+			new java.text.DecimalFormatSymbols(java.util.Locale.UK));
+	private static NumberFormat _threeDPFormat = new DecimalFormat("0.000",
+			new java.text.DecimalFormatSymbols(java.util.Locale.UK));
+	private static NumberFormat _bearingFormat = new DecimalFormat("000.00",
+			new java.text.DecimalFormatSymbols(java.util.Locale.UK));
+	private static NumberFormat _rangeFormat = new DecimalFormat("#0",
+			new java.text.DecimalFormatSymbols(java.util.Locale.UK));
 
+	/**
+	 * just declare the line separator once
+	 *
+	 */
+	public final static String LINE_SEPARATOR = System.getProperty("line.separator");
 
-  /** just declare the line separator once
-   * 
-   */
-  public final static String LINE_SEPARATOR = System.getProperty("line.separator");
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
 
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+	public static String formatBearing(final double val) {
+		// format bearing to give a 3 figure leading part, followed
+		// by a 2 digit decimal
+		return _bearingFormat.format(val) + "degs";
+	}
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
+	public static String formatOneDecimalPlace(final double val) {
+		return _oneDPFormat.format(val);
+	}
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
-  public static String formatBearing(final double val){
-    // format bearing to give a 3 figure leading part, followed
-    // by a 2 digit decimal
-    return _bearingFormat.format(val) + "degs";
-  }
+	public static String formatRange(final double val) {
+		return _rangeFormat.format(val) + "yds";
+	}
 
-  public static String formatRange(final double val){
-    return _rangeFormat.format(val) + "yds";
-  }
+	public static String formatStatus(final double courseDegs, final double speedKts, final double depthMetres) {
+		String res = "n/a";
 
-  public static String formatOneDecimalPlace(final double val){
-    return _oneDPFormat.format(val);
-  }
-  
-  public static String formatTwoDecimalPlaces(final double val){
-    return _bearingFormat.format(val);
-  }
+		//
+		if ((courseDegs == 0d) && (speedKts == 0d) && (depthMetres == 0d)) {
+			// we don't have vessel status details
+			res = "Status unavailable";
+		} else {
+			res = "Crse:" + formatOneDecimalPlace(courseDegs) + " Spd:" + formatOneDecimalPlace(speedKts) + " Depth:"
+					+ formatOneDecimalPlace(depthMetres);
+		}
+		return res;
+	}
 
+	public static String formatThreeDecimalPlaces(final double val) {
+		return _threeDPFormat.format(val);
+	}
 
-  public static String formatThreeDecimalPlaces(final double val){
-    return _threeDPFormat.format(val);
-  }
-
-  public static String formatStatus(final double courseDegs, final double speedKts, final double depthMetres)
-  {
-    String res = "n/a";
-
-    //
-    if((courseDegs == 0d) && (speedKts == 0d) && (depthMetres == 0d))
-    {
-      // we don't have vessel status details
-      res = "Status unavailable";
-    }
-    else
-    {
-      res = "Crse:" + formatOneDecimalPlace(courseDegs) +
-         " Spd:" + formatOneDecimalPlace(speedKts) +
-         " Depth:" + formatOneDecimalPlace(depthMetres);
-    }
-    return res;
-  }
+	public static String formatTwoDecimalPlaces(final double val) {
+		return _bearingFormat.format(val);
+	}
 
 }

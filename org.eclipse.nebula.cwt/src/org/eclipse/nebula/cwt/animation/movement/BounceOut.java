@@ -9,11 +9,11 @@
  *******************************************************************************/
 
 /*********************************************************************************
- * TERMS OF USE - EASING EQUATIONS 
- * 
- * Copyright © 2001 Robert Penner
+ * TERMS OF USE - EASING EQUATIONS
+ *
+ * Copyright ï¿½ 2001 Robert Penner
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -40,12 +40,14 @@ package org.eclipse.nebula.cwt.animation.movement;
 
 public class BounceOut extends AbstractMovement {
 
+	@Override
 	public double getValue(double step) {
-		double c = max - min;
+		final double c = max - min;
 		step = step / duration;
 
-		if (step == 1)
+		if (step == 1) {
 			return max;
+		}
 
 		if (step < (1 / 2.75)) {
 
@@ -61,8 +63,7 @@ public class BounceOut extends AbstractMovement {
 
 		} else {
 
-			return c * (7.5625 * (step -= (2.625 / 2.75)) * step + .984375)
-					+ min;
+			return c * (7.5625 * (step -= (2.625 / 2.75)) * step + .984375) + min;
 
 		}
 

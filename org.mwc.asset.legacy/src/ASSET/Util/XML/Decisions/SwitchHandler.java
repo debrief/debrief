@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package ASSET.Util.XML.Decisions;
@@ -25,71 +25,66 @@ import ASSET.Models.Decision.CoreDecision;
 import ASSET.Models.Decision.Switch;
 import ASSET.Util.XML.Decisions.Tactical.CoreDecisionHandler;
 
-abstract public class SwitchHandler extends WaterfallHandler
-{
+abstract public class SwitchHandler extends WaterfallHandler {
 
-  private final static String type = "Switch";
-  private final static String INDEX = "Index";
+	private final static String type = "Switch";
+	private final static String INDEX = "Index";
 
-  int _index;
+	static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc) {
+		// create ourselves
+		final org.w3c.dom.Element thisPart = doc.createElement(type);
 
-  public SwitchHandler(int thisDepth)
-  {
-    super(type, thisDepth);
+		// get data item
+		final Switch bb = (Switch) toExport;
 
-    super.addAttributeHandler(new HandleIntegerAttribute(INDEX)
-    {
-      public void setValue(String name, int value)
-      {
-        _index = value;
-      }
-    });
-  }
+		// do the parent export bits
+		CoreDecisionHandler.exportThis(bb, thisPart, doc);
 
+		// thisPart.setAttribute("MIN_DEPTH", writeThis(bb.getMinDepth()));
+		// step through the models
+		final java.util.Iterator<DecisionType> it = bb.getModels().iterator();
+		while (it.hasNext()) {
+			final ASSET.Models.DecisionType dec = it.next();
 
-  protected BehaviourList createNewList()
-  {
-    return new Switch();
-  }
+			exportThisDecisionModel(dec, thisPart, doc);
+		}
 
-  /**
-   * set our attributes within this decision object
-   *
-   * @param decision the decision object to update
-   */
-  protected void setAttributes(CoreDecision decision)
-  {
-    super.setAttributes(decision);
-    ((Switch)_myList).setIndex(_index);
-  }
+		thisPart.setAttribute(INDEX, writeThis(bb.getIndex()));
 
-  abstract public void setModel(ASSET.Models.DecisionType dec);
+		parent.appendChild(thisPart);
 
-  static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
-                                final org.w3c.dom.Document doc)
-  {
-    // create ourselves
-    final org.w3c.dom.Element thisPart = doc.createElement(type);
+	}
 
-    // get data item
-    final Switch bb = (Switch) toExport;
+	int _index;
 
-    // do the parent export bits
-    CoreDecisionHandler.exportThis(bb, thisPart, doc);
+	public SwitchHandler(final int thisDepth) {
+		super(type, thisDepth);
 
-    // thisPart.setAttribute("MIN_DEPTH", writeThis(bb.getMinDepth()));
-    // step through the models
-    final java.util.Iterator<DecisionType> it = bb.getModels().iterator();
-    while (it.hasNext())
-    {
-      final ASSET.Models.DecisionType dec = (ASSET.Models.DecisionType) it.next();
+		super.addAttributeHandler(new HandleIntegerAttribute(INDEX) {
+			@Override
+			public void setValue(final String name, final int value) {
+				_index = value;
+			}
+		});
+	}
 
-      exportThisDecisionModel(dec, thisPart, doc);
-    }
+	@Override
+	protected BehaviourList createNewList() {
+		return new Switch();
+	}
 
-    thisPart.setAttribute(INDEX, writeThis(bb.getIndex()));
+	/**
+	 * set our attributes within this decision object
+	 *
+	 * @param decision the decision object to update
+	 */
+	@Override
+	protected void setAttributes(final CoreDecision decision) {
+		super.setAttributes(decision);
+		((Switch) _myList).setIndex(_index);
+	}
 
-    parent.appendChild(thisPart);
-
-  }
+	@Override
+	abstract public void setModel(ASSET.Models.DecisionType dec);
 }

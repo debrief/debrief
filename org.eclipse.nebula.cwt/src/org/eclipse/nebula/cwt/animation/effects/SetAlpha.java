@@ -20,6 +20,55 @@ import org.eclipse.swt.widgets.Shell;
 public class SetAlpha extends AbstractEffect {
 
 	/**
+	 * Add a listener that will fade the window when it get closed.
+	 *
+	 * @param shell
+	 * @param duration
+	 * @param easing
+	 */
+	public static void fadeOnClose(final Shell shell, final int duration, final IMovement easing) {
+
+		final Runnable closeListener = new Runnable() {
+			@Override
+			public void run() {
+				shell.dispose();
+			}
+		};
+
+		shell.addShellListener(new ShellListener() {
+
+			@Override
+			public void shellActivated(final ShellEvent e) {
+				// Do nothing
+			}
+
+			@Override
+			public void shellClosed(final ShellEvent e) {
+				e.doit = false;
+
+				setAlpha(new AnimationRunner(), shell, 0, duration, easing, closeListener, null);
+			}
+
+			@Override
+			public void shellDeactivated(final ShellEvent e) {
+				// Do nothing
+			}
+
+			@Override
+			public void shellDeiconified(final ShellEvent e) {
+				// Do nothing
+			}
+
+			@Override
+			public void shellIconified(final ShellEvent e) {
+				// Do nothing
+			}
+
+		});
+
+	}
+
+	/**
 	 * @deprecated
 	 * @param w
 	 * @param alpha
@@ -28,64 +77,19 @@ public class SetAlpha extends AbstractEffect {
 	 * @param onStop
 	 * @param onCancel
 	 */
-	public static void setAlpha(AnimationRunner runner, Shell w, int alpha,
-			int duration, IMovement movement, Runnable onStop, Runnable onCancel) {
-		SetAlpha effect = new SetAlpha(w, w.getAlpha(), alpha, duration,
-				movement, onStop, onCancel);
+	@Deprecated
+	public static void setAlpha(final AnimationRunner runner, final Shell w, final int alpha, final int duration,
+			final IMovement movement, final Runnable onStop, final Runnable onCancel) {
+		final SetAlpha effect = new SetAlpha(w, w.getAlpha(), alpha, duration, movement, onStop, onCancel);
 		runner.runEffect(effect);
-	}
-
-	/**
-	 * Add a listener that will fade the window when it get closed.
-	 * 
-	 * @param shell
-	 * @param duration
-	 * @param easing
-	 */
-	public static void fadeOnClose(final Shell shell, final int duration,
-			final IMovement easing) {
-
-		final Runnable closeListener = new Runnable() {
-			public void run() {
-				shell.dispose();
-			}
-		};
-
-		shell.addShellListener(new ShellListener() {
-
-			public void shellIconified(ShellEvent e) {
-				// Do nothing
-			}
-
-			public void shellDeiconified(ShellEvent e) {
-				// Do nothing
-			}
-
-			public void shellDeactivated(ShellEvent e) {
-				// Do nothing
-			}
-
-			public void shellClosed(ShellEvent e) {
-				e.doit = false;
-
-				setAlpha(new AnimationRunner(), shell, 0, duration, easing,
-						closeListener, null);
-			}
-
-			public void shellActivated(ShellEvent e) {
-				// Do nothing
-			}
-
-		});
-
 	}
 
 	int start, end, step;
 
 	Shell shell = null;
 
-	public SetAlpha(Shell shell, int start, int end, long lengthMilli,
-			IMovement movement, Runnable onStop, Runnable onCancel) {
+	public SetAlpha(final Shell shell, final int start, final int end, final long lengthMilli, final IMovement movement,
+			final Runnable onStop, final Runnable onCancel) {
 		super(lengthMilli, movement, onStop, onCancel);
 
 		this.start = start;
@@ -96,12 +100,13 @@ public class SetAlpha extends AbstractEffect {
 
 	}
 
+	@Override
 	public void applyEffect(final long currentTime) {
-		if (shell.isDisposed())
+		if (shell.isDisposed()) {
 			return;
+		}
 
-		shell.setAlpha((int) (start + step
-				* easingFunction.getValue((int) currentTime)));
+		shell.setAlpha((int) (start + step * easingFunction.getValue((int) currentTime)));
 	}
 
 }

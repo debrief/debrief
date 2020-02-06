@@ -37,142 +37,150 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.Vector;
 
 import edu.nps.moves.dis.Pdu;
 import edu.nps.moves.disutil.PduFactory;
-import java.nio.Buffer;
 
 /**
- * This implements an object that can read and write DIS PDUs from a unicast
- * or multicast UDP socket. It implements the BehaviorProducer interface,
- * which allows objects to register as listeners for PDU arrival events,
- * and the BehaviorWriter interface, which allows PDUs to be written. It's
- * a bit complex internally, but not all that bad from an interface standpoint.<p>
+ * This implements an object that can read and write DIS PDUs from a unicast or
+ * multicast UDP socket. It implements the BehaviorProducer interface, which
+ * allows objects to register as listeners for PDU arrival events, and the
+ * BehaviorWriter interface, which allows PDUs to be written. It's a bit complex
+ * internally, but not all that bad from an interface standpoint.
+ * <p>
  *
- * This runs in a thread of its own. The listeners for PDU events can either
- * run in threads of their own, which is a bit complex, or simply process
- * PDU objects as they come in, which is simple but may have performance
- * problems if processing a PDU takes a long time.<p>
+ * This runs in a thread of its own. The listeners for PDU events can either run
+ * in threads of their own, which is a bit complex, or simply process PDU
+ * objects as they come in, which is simple but may have performance problems if
+ * processing a PDU takes a long time.
+ * <p>
  *
  * @author DMcG
  */
 public class BehaviorProducerUDP implements BehaviorProducerIF, // Listener pattern for pdus
-                                            BehaviorWriterIF, // IF for writing DIS pdus
-                                            Runnable // Threaded object
+		BehaviorWriterIF, // IF for writing DIS pdus
+		Runnable // Threaded object
 {
 
-    /** People who listen to us for PDU events. This is a Vector rather than
-     * the preferred List to preserve compatability with older VRML browsers
-     * that don't have the newer List interface.
-     */
-    private Vector<BehaviorConsumerIF> behaviorConsumerListeners;
+	/**
+	 * People who listen to us for PDU events. This is a Vector rather than the
+	 * preferred List to preserve compatability with older VRML browsers that don't
+	 * have the newer List interface.
+	 */
+	private final Vector<BehaviorConsumerIF> behaviorConsumerListeners;
 
-    /**
-     * Whether listeners are given unique copies of PDUs, or a single shared
-     * copy.
-     */
-    private boolean useCopies = true;
+	/**
+	 * Whether listeners are given unique copies of PDUs, or a single shared copy.
+	 */
+	private boolean useCopies = true;
 
-    /**
-     * Socket (multicast or unicast) that sends and receives data
-     */
-    private final DatagramSocket socket;
-    private DatagramPacket packet;
-    private Pdu pdu;
-    private Pdu copyPdu;
-    private PduFactory pduf;
-    
-    /** An allocated receive only buffer */
-    private ByteBuffer buffer;
+	/**
+	 * Socket (multicast or unicast) that sends and receives data
+	 */
+	private final DatagramSocket socket;
+	private final DatagramPacket packet;
+	private Pdu pdu;
+	private Pdu copyPdu;
+	private final PduFactory pduf;
 
-    public BehaviorProducerUDP(DatagramSocket pSocket) {
-        behaviorConsumerListeners = new Vector<BehaviorConsumerIF>();
-        socket = pSocket;
-        buffer = ByteBuffer.allocate(MTU_SIZE);
-        packet = new DatagramPacket(buffer.array(), buffer.capacity());
+	/** An allocated receive only buffer */
+	private final ByteBuffer buffer;
 
-        // Doesn't use FastEntityStatePdu (by default)
-        pduf = new PduFactory();
-    }
+	public BehaviorProducerUDP(final DatagramSocket pSocket) {
+		behaviorConsumerListeners = new Vector<BehaviorConsumerIF>();
+		socket = pSocket;
+		buffer = ByteBuffer.allocate(MTU_SIZE);
+		packet = new DatagramPacket(buffer.array(), buffer.capacity());
 
-    public void addListener(BehaviorConsumerIF consumer) {
-        // Add it only if absent, so we don't get dupe copies.
-        if (!(behaviorConsumerListeners.contains(consumer))) {
-            behaviorConsumerListeners.add(consumer);
-        }
-    }
+		// Doesn't use FastEntityStatePdu (by default)
+		pduf = new PduFactory();
+	}
 
-    public void removeListener(BehaviorConsumerIF consumer) {
-        behaviorConsumerListeners.remove(consumer);
-    }
-  
-    public void setDefaultDestination(InetAddress addr, int port) {
-        packet.setAddress(addr);
-        packet.setPort(port);
-    }
+	@Override
+	public void addListener(final BehaviorConsumerIF consumer) {
+		// Add it only if absent, so we don't get dupe copies.
+		if (!(behaviorConsumerListeners.contains(consumer))) {
+			behaviorConsumerListeners.add(consumer);
+		}
+	}
 
-    public void write(ByteBuffer buffer) {
-        packet.setData(buffer.array());
-        try {
-            socket.send(packet);
-        } catch (IOException ioe) {
-            System.out.println(ioe);
-        }
-    }
+	@Override
+	public void removeListener(final BehaviorConsumerIF consumer) {
+		behaviorConsumerListeners.remove(consumer);
+	}
 
-    /**
-     * If we have a byte buffer we are marshalling to, it may be bigger than the
-     * actuall size of the marshalled PDU. This writes only the first numberOfBytes
-     * bytes of the ByteBuffer to the network.
-     * 
-     * @param buffer
-     * @param numberOfBytes
-     */
-     public void write(ByteBuffer buffer, int numberOfBytes) {
-        byte[] normalBuffer = buffer.array();
-        packet.setData(normalBuffer, 0, numberOfBytes);
-        try {
-            socket.send(packet);
-        } catch (IOException ioe) {
-            System.out.println(ioe);
-        }
-    }
+	/** Entry point for thread */
+	@Override
+	public void run() {
 
-    public void setUseCopies(boolean shouldCreateCopy) {
-        useCopies = shouldCreateCopy;
-    }
+		while (true) {
+			try {
+				final Buffer buff = buffer.rewind();
+				socket.receive(packet);
 
-    /** Entry point for thread */
-    public void run() {        
-        
-        while (true) {
-            try {
-                final Buffer buff = buffer.rewind();
-                socket.receive(packet);
+				// ByteBuffers are not thread safe
+				synchronized (buff) {
+					pdu = pduf.createPdu(buffer);
+					if (pdu != null) {
+						for (final BehaviorConsumerIF consumer : behaviorConsumerListeners) {
 
-                // ByteBuffers are not thread safe
-                synchronized (buff) {
-                    pdu = pduf.createPdu(buffer);
-                    if (pdu != null) {
-                        for (BehaviorConsumerIF consumer : behaviorConsumerListeners) {
+							// Use a copy of the received PDU for more safety, or send a single
+							// copy of the object to multiple listeners for better performance.
+							if (useCopies) {
+								copyPdu = pduf.createPdu(buffer);
+								consumer.receivePdu(copyPdu);
+							} else {
+								consumer.receivePdu(pdu);
+							}
+						}
+					}
+				}
+			} catch (final IOException ioe) {
+				System.out.println(ioe);
+			}
+		}
+	}
 
-                            // Use a copy of the received PDU for more safety, or send a single
-                            // copy of the object to multiple listeners for better performance.
-                            if (useCopies) {
-                                copyPdu = pduf.createPdu(buffer);
-                                consumer.receivePdu(copyPdu);
-                            } else {
-                                consumer.receivePdu(pdu);
-                            }
-                        }
-                    }
-                }
-            } catch (IOException ioe) {
-                System.out.println(ioe);
-            }
-        }
-    }
+	@Override
+	public void setDefaultDestination(final InetAddress addr, final int port) {
+		packet.setAddress(addr);
+		packet.setPort(port);
+	}
+
+	@Override
+	public void setUseCopies(final boolean shouldCreateCopy) {
+		useCopies = shouldCreateCopy;
+	}
+
+	@Override
+	public void write(final ByteBuffer buffer) {
+		packet.setData(buffer.array());
+		try {
+			socket.send(packet);
+		} catch (final IOException ioe) {
+			System.out.println(ioe);
+		}
+	}
+
+	/**
+	 * If we have a byte buffer we are marshalling to, it may be bigger than the
+	 * actuall size of the marshalled PDU. This writes only the first numberOfBytes
+	 * bytes of the ByteBuffer to the network.
+	 *
+	 * @param buffer
+	 * @param numberOfBytes
+	 */
+	public void write(final ByteBuffer buffer, final int numberOfBytes) {
+		final byte[] normalBuffer = buffer.array();
+		packet.setData(normalBuffer, 0, numberOfBytes);
+		try {
+			socket.send(packet);
+		} catch (final IOException ioe) {
+			System.out.println(ioe);
+		}
+	}
 
 } // end class file BehaviorProducerUDP.java

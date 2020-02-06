@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 package org.mwc.debrief.lite.gui;
 
@@ -38,99 +38,82 @@ import MWC.GUI.ToolParent;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
-public class FitToWindow extends AbstractAction implements CommandAction
-{
-  /**
-   *
-   */
-  private static final long serialVersionUID = 1L;
+public class FitToWindow extends AbstractAction implements CommandAction {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-  public static void fitToWindow(final Layers layers, final JMapPane map, final PlainProjection projection)
-  {
-    final WorldArea area = layers.getBounds();
-    if (area != null)
-    {
-      // check it's not the default area that gets returned when
-      // no data is loaded
-      if (area.equals(Layers.getDebriefOrigin()))
-      {
-        // ok, don't bother resizing. Leave it as-is
-      }
-      else
-      {
-        // ok, let's introduce a 5% border
-        area.grow(area.getWidth() * 0.05, 0);
+	public static void fitToWindow(final Layers layers, final JMapPane map, final PlainProjection projection) {
+		final WorldArea area = layers.getBounds();
+		if (area != null) {
+			// check it's not the default area that gets returned when
+			// no data is loaded
+			if (area.equals(Layers.getDebriefOrigin())) {
+				// ok, don't bother resizing. Leave it as-is
+			} else {
+				// ok, let's introduce a 5% border
+				area.grow(area.getWidth() * 0.05, 0);
 
-        final WorldLocation tl = area.getTopLeft();
-        final WorldLocation br = area.getBottomRight();
-        final CoordinateReferenceSystem crs = map.getMapContent()
-            .getCoordinateReferenceSystem();
-        double long1 = tl.getLong();
-        double lat1 = tl.getLat();
-        double long2 = br.getLong();
-        double lat2 = br.getLat();
-        // TODO: Ian Turton
-        // Ideally, I'd like to make use of the GTProjection object here but I'm not sure how to
-        // find it
-        if (crs != DefaultGeographicCRS.WGS84)
-        {
-          try
-          {
-            final MathTransform degsToWorld = CRS.findMathTransform(
-                DefaultGeographicCRS.WGS84, crs);
-            final DirectPosition2D tlDegs = new DirectPosition2D(long1, lat1);
-            final DirectPosition2D brDegs = new DirectPosition2D(long2, lat2);
-            degsToWorld.transform(tlDegs, tlDegs);
-            degsToWorld.transform(brDegs, brDegs);
-            long1 = tlDegs.x;
-            lat1 = tlDegs.y;
-            long2 = brDegs.x;
-            lat2 = brDegs.y;
+				final WorldLocation tl = area.getTopLeft();
+				final WorldLocation br = area.getBottomRight();
+				final CoordinateReferenceSystem crs = map.getMapContent().getCoordinateReferenceSystem();
+				double long1 = tl.getLong();
+				double lat1 = tl.getLat();
+				double long2 = br.getLong();
+				double lat2 = br.getLat();
+				// TODO: Ian Turton
+				// Ideally, I'd like to make use of the GTProjection object here but I'm not
+				// sure how to
+				// find it
+				if (crs != DefaultGeographicCRS.WGS84) {
+					try {
+						final MathTransform degsToWorld = CRS.findMathTransform(DefaultGeographicCRS.WGS84, crs);
+						final DirectPosition2D tlDegs = new DirectPosition2D(long1, lat1);
+						final DirectPosition2D brDegs = new DirectPosition2D(long2, lat2);
+						degsToWorld.transform(tlDegs, tlDegs);
+						degsToWorld.transform(brDegs, brDegs);
+						long1 = tlDegs.x;
+						lat1 = tlDegs.y;
+						long2 = brDegs.x;
+						lat2 = brDegs.y;
 
-          }
-          catch (final FactoryException | MismatchedDimensionException
-              | TransformException e)
-          {
-            Application.logError2(ToolParent.ERROR,
-                "Failure in projection transform", e);
-          }
-        }
-        final ReferencedEnvelope bounds = new ReferencedEnvelope(long1, long2,
-            lat1, lat2, crs);
-        map.getMapContent().getViewport().setBounds(bounds);
-        
-        // force repaint
-        final ReferencedEnvelope paneArea = map.getDisplayArea();
-        map.setDisplayArea(paneArea);
-        
-        projection.setDataArea(area);
-      }
-    }
-  }
+					} catch (final FactoryException | MismatchedDimensionException | TransformException e) {
+						Application.logError2(ToolParent.ERROR, "Failure in projection transform", e);
+					}
+				}
+				final ReferencedEnvelope bounds = new ReferencedEnvelope(long1, long2, lat1, lat2, crs);
+				map.getMapContent().getViewport().setBounds(bounds);
 
-  private final Layers _layers;
+				// force repaint
+				final ReferencedEnvelope paneArea = map.getDisplayArea();
+				map.setDisplayArea(paneArea);
 
-  private final JMapPane _map;
-  
-  private final PlainProjection _projection;
+				projection.setDataArea(area);
+			}
+		}
+	}
 
-  public FitToWindow(final Layers layers, final JMapPane map, final PlainProjection projection)
-  {
-    _layers = layers;
-    _map = map;
-    _projection = projection;
-  }
+	private final Layers _layers;
 
-  @Override
-  public void actionPerformed(final ActionEvent e)
-  {
-    fitToWindow(_layers, _map, _projection);
-  }
+	private final JMapPane _map;
 
-  @Override
-  public void commandActivated(CommandActionEvent e)
-  {
-    actionPerformed(e);
-  }
+	private final PlainProjection _projection;
+
+	public FitToWindow(final Layers layers, final JMapPane map, final PlainProjection projection) {
+		_layers = layers;
+		_map = map;
+		_projection = projection;
+	}
+
+	@Override
+	public void actionPerformed(final ActionEvent e) {
+		fitToWindow(_layers, _map, _projection);
+	}
+
+	@Override
+	public void commandActivated(final CommandActionEvent e) {
+		actionPerformed(e);
+	}
 
 }

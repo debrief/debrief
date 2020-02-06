@@ -1,26 +1,27 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 /**
  */
 package info.limpet.stackedcharts.model;
 
 /**
- * <!-- begin-user-doc --> A representation of the model object '<em><b>Zone</b></em>'. <!--
- * end-user-doc -->
+ * <!-- begin-user-doc --> A representation of the model object
+ * '<em><b>Zone</b></em>'. <!-- end-user-doc -->
  *
- * <!-- begin-model-doc --> Zonal marker on independent axis <!-- end-model-doc -->
+ * <!-- begin-model-doc --> Zonal marker on independent axis <!-- end-model-doc
+ * -->
  *
  * <p>
  * The following features are supported:
@@ -34,60 +35,59 @@ package info.limpet.stackedcharts.model;
  * @model
  * @generated
  */
-public interface Zone extends AbstractAnnotation
-{
-  /**
-   * Returns the value of the '<em><b>Start</b></em>' attribute. <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>Start</em>' attribute isn't clear, there really should be more of a
-   * description here...
-   * </p>
-   * <!-- end-user-doc -->
-   * 
-   * @return the value of the '<em>Start</em>' attribute.
-   * @see #setStart(double)
-   * @see info.limpet.stackedcharts.model.StackedchartsPackage#getZone_Start()
-   * @model
-   * @generated
-   */
-  double getStart();
+public interface Zone extends AbstractAnnotation {
+	/**
+	 * Returns the value of the '<em><b>End</b></em>' attribute. <!-- begin-user-doc
+	 * -->
+	 * <p>
+	 * If the meaning of the '<em>End</em>' attribute isn't clear, there really
+	 * should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 *
+	 * @return the value of the '<em>End</em>' attribute.
+	 * @see #setEnd(double)
+	 * @see info.limpet.stackedcharts.model.StackedchartsPackage#getZone_End()
+	 * @model
+	 * @generated
+	 */
+	double getEnd();
 
-  /**
-   * Sets the value of the '{@link info.limpet.stackedcharts.model.Zone#getStart <em>Start</em>}'
-   * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
-   * @param value
-   *          the new value of the '<em>Start</em>' attribute.
-   * @see #getStart()
-   * @generated
-   */
-  void setStart(double value);
+	/**
+	 * Returns the value of the '<em><b>Start</b></em>' attribute. <!--
+	 * begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Start</em>' attribute isn't clear, there really
+	 * should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 *
+	 * @return the value of the '<em>Start</em>' attribute.
+	 * @see #setStart(double)
+	 * @see info.limpet.stackedcharts.model.StackedchartsPackage#getZone_Start()
+	 * @model
+	 * @generated
+	 */
+	double getStart();
 
-  /**
-   * Returns the value of the '<em><b>End</b></em>' attribute. <!-- begin-user-doc -->
-   * <p>
-   * If the meaning of the '<em>End</em>' attribute isn't clear, there really should be more of a
-   * description here...
-   * </p>
-   * <!-- end-user-doc -->
-   * 
-   * @return the value of the '<em>End</em>' attribute.
-   * @see #setEnd(double)
-   * @see info.limpet.stackedcharts.model.StackedchartsPackage#getZone_End()
-   * @model
-   * @generated
-   */
-  double getEnd();
+	/**
+	 * Sets the value of the '{@link info.limpet.stackedcharts.model.Zone#getEnd
+	 * <em>End</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
+	 * @param value the new value of the '<em>End</em>' attribute.
+	 * @see #getEnd()
+	 * @generated
+	 */
+	void setEnd(double value);
 
-  /**
-   * Sets the value of the '{@link info.limpet.stackedcharts.model.Zone#getEnd <em>End</em>}'
-   * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-   * 
-   * @param value
-   *          the new value of the '<em>End</em>' attribute.
-   * @see #getEnd()
-   * @generated
-   */
-  void setEnd(double value);
+	/**
+	 * Sets the value of the '{@link info.limpet.stackedcharts.model.Zone#getStart
+	 * <em>Start</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
+	 * @param value the new value of the '<em>Start</em>' attribute.
+	 * @see #getStart()
+	 * @generated
+	 */
+	void setStart(double value);
 
 } // Zone

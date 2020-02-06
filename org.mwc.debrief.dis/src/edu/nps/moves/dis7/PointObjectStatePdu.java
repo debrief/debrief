@@ -1,327 +1,336 @@
 package edu.nps.moves.dis7;
 
-import java.util.*;
-import java.io.*;
-import edu.nps.moves.disenum.*;
-import edu.nps.moves.disutil.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
 
 /**
- * : Inormation abut the addition or modification of a synthecic enviroment object that is anchored to the terrain with a single point. Section 7.10.4 COMPLETE
+ * : Inormation abut the addition or modification of a synthecic enviroment
+ * object that is anchored to the terrain with a single point. Section 7.10.4
+ * COMPLETE
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class PointObjectStatePdu extends SyntheticEnvironmentFamilyPdu implements Serializable
-{
-   /** Object in synthetic environment */
-   protected EntityID  objectID = new EntityID(); 
+public class PointObjectStatePdu extends SyntheticEnvironmentFamilyPdu implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   /** Object with which this point object is associated */
-   protected EntityID  referencedObjectID = new EntityID(); 
+	/** Object in synthetic environment */
+	protected EntityID objectID = new EntityID();
 
-   /** unique update number of each state transition of an object */
-   protected int  updateNumber;
+	/** Object with which this point object is associated */
+	protected EntityID referencedObjectID = new EntityID();
 
-   /** force ID */
-   protected short  forceID;
+	/** unique update number of each state transition of an object */
+	protected int updateNumber;
 
-   /** modifications */
-   protected short  modifications;
+	/** force ID */
+	protected short forceID;
 
-   /** Object type */
-   protected ObjectType  objectType = new ObjectType(); 
+	/** modifications */
+	protected short modifications;
 
-   /** Object location */
-   protected Vector3Double  objectLocation = new Vector3Double(); 
+	/** Object type */
+	protected ObjectType objectType = new ObjectType();
 
-   /** Object orientation */
-   protected EulerAngles  objectOrientation = new EulerAngles(); 
+	/** Object location */
+	protected Vector3Double objectLocation = new Vector3Double();
 
-   /** Object apperance */
-   protected double  objectAppearance;
+	/** Object orientation */
+	protected EulerAngles objectOrientation = new EulerAngles();
 
-   /** requesterID */
-   protected SimulationAddress  requesterID = new SimulationAddress(); 
+	/** Object apperance */
+	protected double objectAppearance;
 
-   /** receiver ID */
-   protected SimulationAddress  receivingID = new SimulationAddress(); 
+	/** requesterID */
+	protected SimulationAddress requesterID = new SimulationAddress();
 
-   /** padding */
-   protected long  pad2;
+	/** receiver ID */
+	protected SimulationAddress receivingID = new SimulationAddress();
 
+	/** padding */
+	protected long pad2;
 
-/** Constructor */
- public PointObjectStatePdu()
- {
-    setPduType( (short)43 );
- }
+	/** Constructor */
+	public PointObjectStatePdu() {
+		setPduType((short) 43);
+	}
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-   marshalSize = super.getMarshalledSize();
-   marshalSize = marshalSize + objectID.getMarshalledSize();  // objectID
-   marshalSize = marshalSize + referencedObjectID.getMarshalledSize();  // referencedObjectID
-   marshalSize = marshalSize + 2;  // updateNumber
-   marshalSize = marshalSize + 1;  // forceID
-   marshalSize = marshalSize + 1;  // modifications
-   marshalSize = marshalSize + objectType.getMarshalledSize();  // objectType
-   marshalSize = marshalSize + objectLocation.getMarshalledSize();  // objectLocation
-   marshalSize = marshalSize + objectOrientation.getMarshalledSize();  // objectOrientation
-   marshalSize = marshalSize + 8;  // objectAppearance
-   marshalSize = marshalSize + requesterID.getMarshalledSize();  // requesterID
-   marshalSize = marshalSize + receivingID.getMarshalledSize();  // receivingID
-   marshalSize = marshalSize + 4;  // pad2
+		if (this == obj) {
+			return true;
+		}
 
-   return marshalSize;
-}
+		if (obj == null) {
+			return false;
+		}
 
+		if (getClass() != obj.getClass())
+			return false;
 
-public void setObjectID(EntityID pObjectID)
-{ objectID = pObjectID;
-}
+		return equalsImpl(obj);
+	}
 
-public EntityID getObjectID()
-{ return objectID; 
-}
+	@Override
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-public void setReferencedObjectID(EntityID pReferencedObjectID)
-{ referencedObjectID = pReferencedObjectID;
-}
+		if (!(obj instanceof PointObjectStatePdu))
+			return false;
 
-public EntityID getReferencedObjectID()
-{ return referencedObjectID; 
-}
+		final PointObjectStatePdu rhs = (PointObjectStatePdu) obj;
 
-public void setUpdateNumber(int pUpdateNumber)
-{ updateNumber = pUpdateNumber;
-}
+		if (!(objectID.equals(rhs.objectID)))
+			ivarsEqual = false;
+		if (!(referencedObjectID.equals(rhs.referencedObjectID)))
+			ivarsEqual = false;
+		if (!(updateNumber == rhs.updateNumber))
+			ivarsEqual = false;
+		if (!(forceID == rhs.forceID))
+			ivarsEqual = false;
+		if (!(modifications == rhs.modifications))
+			ivarsEqual = false;
+		if (!(objectType.equals(rhs.objectType)))
+			ivarsEqual = false;
+		if (!(objectLocation.equals(rhs.objectLocation)))
+			ivarsEqual = false;
+		if (!(objectOrientation.equals(rhs.objectOrientation)))
+			ivarsEqual = false;
+		if (!(objectAppearance == rhs.objectAppearance))
+			ivarsEqual = false;
+		if (!(requesterID.equals(rhs.requesterID)))
+			ivarsEqual = false;
+		if (!(receivingID.equals(rhs.receivingID)))
+			ivarsEqual = false;
+		if (!(pad2 == rhs.pad2))
+			ivarsEqual = false;
 
-public int getUpdateNumber()
-{ return updateNumber; 
-}
+		return ivarsEqual && super.equalsImpl(rhs);
+	}
 
-public void setForceID(short pForceID)
-{ forceID = pForceID;
-}
+	public short getForceID() {
+		return forceID;
+	}
 
-public short getForceID()
-{ return forceID; 
-}
+	@Override
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
-public void setModifications(short pModifications)
-{ modifications = pModifications;
-}
+		marshalSize = super.getMarshalledSize();
+		marshalSize = marshalSize + objectID.getMarshalledSize(); // objectID
+		marshalSize = marshalSize + referencedObjectID.getMarshalledSize(); // referencedObjectID
+		marshalSize = marshalSize + 2; // updateNumber
+		marshalSize = marshalSize + 1; // forceID
+		marshalSize = marshalSize + 1; // modifications
+		marshalSize = marshalSize + objectType.getMarshalledSize(); // objectType
+		marshalSize = marshalSize + objectLocation.getMarshalledSize(); // objectLocation
+		marshalSize = marshalSize + objectOrientation.getMarshalledSize(); // objectOrientation
+		marshalSize = marshalSize + 8; // objectAppearance
+		marshalSize = marshalSize + requesterID.getMarshalledSize(); // requesterID
+		marshalSize = marshalSize + receivingID.getMarshalledSize(); // receivingID
+		marshalSize = marshalSize + 4; // pad2
 
-public short getModifications()
-{ return modifications; 
-}
+		return marshalSize;
+	}
 
-public void setObjectType(ObjectType pObjectType)
-{ objectType = pObjectType;
-}
+	public short getModifications() {
+		return modifications;
+	}
 
-public ObjectType getObjectType()
-{ return objectType; 
-}
+	public double getObjectAppearance() {
+		return objectAppearance;
+	}
 
-public void setObjectLocation(Vector3Double pObjectLocation)
-{ objectLocation = pObjectLocation;
-}
+	public EntityID getObjectID() {
+		return objectID;
+	}
 
-public Vector3Double getObjectLocation()
-{ return objectLocation; 
-}
+	public Vector3Double getObjectLocation() {
+		return objectLocation;
+	}
 
-public void setObjectOrientation(EulerAngles pObjectOrientation)
-{ objectOrientation = pObjectOrientation;
-}
+	public EulerAngles getObjectOrientation() {
+		return objectOrientation;
+	}
 
-public EulerAngles getObjectOrientation()
-{ return objectOrientation; 
-}
+	public ObjectType getObjectType() {
+		return objectType;
+	}
 
-public void setObjectAppearance(double pObjectAppearance)
-{ objectAppearance = pObjectAppearance;
-}
+	public long getPad2() {
+		return pad2;
+	}
 
-public double getObjectAppearance()
-{ return objectAppearance; 
-}
+	public SimulationAddress getReceivingID() {
+		return receivingID;
+	}
 
-public void setRequesterID(SimulationAddress pRequesterID)
-{ requesterID = pRequesterID;
-}
+	public EntityID getReferencedObjectID() {
+		return referencedObjectID;
+	}
 
-public SimulationAddress getRequesterID()
-{ return requesterID; 
-}
+	public SimulationAddress getRequesterID() {
+		return requesterID;
+	}
 
-public void setReceivingID(SimulationAddress pReceivingID)
-{ receivingID = pReceivingID;
-}
+	public int getUpdateNumber() {
+		return updateNumber;
+	}
 
-public SimulationAddress getReceivingID()
-{ return receivingID; 
-}
+	@Override
+	public void marshal(final DataOutputStream dos) {
+		super.marshal(dos);
+		try {
+			objectID.marshal(dos);
+			referencedObjectID.marshal(dos);
+			dos.writeShort((short) updateNumber);
+			dos.writeByte((byte) forceID);
+			dos.writeByte((byte) modifications);
+			objectType.marshal(dos);
+			objectLocation.marshal(dos);
+			objectOrientation.marshal(dos);
+			dos.writeDouble(objectAppearance);
+			requesterID.marshal(dos);
+			receivingID.marshal(dos);
+			dos.writeInt((int) pad2);
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
-public void setPad2(long pPad2)
-{ pad2 = pPad2;
-}
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	@Override
+	public void marshal(final java.nio.ByteBuffer buff) {
+		super.marshal(buff);
+		objectID.marshal(buff);
+		referencedObjectID.marshal(buff);
+		buff.putShort((short) updateNumber);
+		buff.put((byte) forceID);
+		buff.put((byte) modifications);
+		objectType.marshal(buff);
+		objectLocation.marshal(buff);
+		objectOrientation.marshal(buff);
+		buff.putDouble(objectAppearance);
+		requesterID.marshal(buff);
+		receivingID.marshal(buff);
+		buff.putInt((int) pad2);
+	} // end of marshal method
 
-public long getPad2()
-{ return pad2; 
-}
+	public void setForceID(final short pForceID) {
+		forceID = pForceID;
+	}
 
+	public void setModifications(final short pModifications) {
+		modifications = pModifications;
+	}
 
-public void marshal(DataOutputStream dos)
-{
-    super.marshal(dos);
-    try 
-    {
-       objectID.marshal(dos);
-       referencedObjectID.marshal(dos);
-       dos.writeShort( (short)updateNumber);
-       dos.writeByte( (byte)forceID);
-       dos.writeByte( (byte)modifications);
-       objectType.marshal(dos);
-       objectLocation.marshal(dos);
-       objectOrientation.marshal(dos);
-       dos.writeDouble( (double)objectAppearance);
-       requesterID.marshal(dos);
-       receivingID.marshal(dos);
-       dos.writeInt( (int)pad2);
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+	public void setObjectAppearance(final double pObjectAppearance) {
+		objectAppearance = pObjectAppearance;
+	}
 
-public void unmarshal(DataInputStream dis)
-{
-     super.unmarshal(dis);
+	public void setObjectID(final EntityID pObjectID) {
+		objectID = pObjectID;
+	}
 
-    try 
-    {
-       objectID.unmarshal(dis);
-       referencedObjectID.unmarshal(dis);
-       updateNumber = (int)dis.readUnsignedShort();
-       forceID = (short)dis.readUnsignedByte();
-       modifications = (short)dis.readUnsignedByte();
-       objectType.unmarshal(dis);
-       objectLocation.unmarshal(dis);
-       objectOrientation.unmarshal(dis);
-       objectAppearance = dis.readDouble();
-       requesterID.unmarshal(dis);
-       receivingID.unmarshal(dis);
-       pad2 = dis.readInt();
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+	public void setObjectLocation(final Vector3Double pObjectLocation) {
+		objectLocation = pObjectLocation;
+	}
 
+	public void setObjectOrientation(final EulerAngles pObjectOrientation) {
+		objectOrientation = pObjectOrientation;
+	}
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
-       super.marshal(buff);
-       objectID.marshal(buff);
-       referencedObjectID.marshal(buff);
-       buff.putShort( (short)updateNumber);
-       buff.put( (byte)forceID);
-       buff.put( (byte)modifications);
-       objectType.marshal(buff);
-       objectLocation.marshal(buff);
-       objectOrientation.marshal(buff);
-       buff.putDouble( (double)objectAppearance);
-       requesterID.marshal(buff);
-       receivingID.marshal(buff);
-       buff.putInt( (int)pad2);
-    } // end of marshal method
+	public void setObjectType(final ObjectType pObjectType) {
+		objectType = pObjectType;
+	}
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       super.unmarshal(buff);
+	public void setPad2(final long pPad2) {
+		pad2 = pPad2;
+	}
 
-       objectID.unmarshal(buff);
-       referencedObjectID.unmarshal(buff);
-       updateNumber = (int)(buff.getShort() & 0xFFFF);
-       forceID = (short)(buff.get() & 0xFF);
-       modifications = (short)(buff.get() & 0xFF);
-       objectType.unmarshal(buff);
-       objectLocation.unmarshal(buff);
-       objectOrientation.unmarshal(buff);
-       objectAppearance = buff.getDouble();
-       requesterID.unmarshal(buff);
-       receivingID.unmarshal(buff);
-       pad2 = buff.getInt();
- } // end of unmarshal method 
+	public void setReceivingID(final SimulationAddress pReceivingID) {
+		receivingID = pReceivingID;
+	}
 
+	public void setReferencedObjectID(final EntityID pReferencedObjectID) {
+		referencedObjectID = pReferencedObjectID;
+	}
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+	public void setRequesterID(final SimulationAddress pRequesterID) {
+		requesterID = pRequesterID;
+	}
 
-    if(this == obj){
-      return true;
-    }
+	public void setUpdateNumber(final int pUpdateNumber) {
+		updateNumber = pUpdateNumber;
+	}
 
-    if(obj == null){
-       return false;
-    }
+	@Override
+	public void unmarshal(final DataInputStream dis) {
+		super.unmarshal(dis);
 
-    if(getClass() != obj.getClass())
-        return false;
+		try {
+			objectID.unmarshal(dis);
+			referencedObjectID.unmarshal(dis);
+			updateNumber = dis.readUnsignedShort();
+			forceID = (short) dis.readUnsignedByte();
+			modifications = (short) dis.readUnsignedByte();
+			objectType.unmarshal(dis);
+			objectLocation.unmarshal(dis);
+			objectOrientation.unmarshal(dis);
+			objectAppearance = dis.readDouble();
+			requesterID.unmarshal(dis);
+			receivingID.unmarshal(dis);
+			pad2 = dis.readInt();
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
-    return equalsImpl(obj);
- }
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	@Override
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		super.unmarshal(buff);
 
-@Override
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
-
-    if(!(obj instanceof PointObjectStatePdu))
-        return false;
-
-     final PointObjectStatePdu rhs = (PointObjectStatePdu)obj;
-
-     if( ! (objectID.equals( rhs.objectID) )) ivarsEqual = false;
-     if( ! (referencedObjectID.equals( rhs.referencedObjectID) )) ivarsEqual = false;
-     if( ! (updateNumber == rhs.updateNumber)) ivarsEqual = false;
-     if( ! (forceID == rhs.forceID)) ivarsEqual = false;
-     if( ! (modifications == rhs.modifications)) ivarsEqual = false;
-     if( ! (objectType.equals( rhs.objectType) )) ivarsEqual = false;
-     if( ! (objectLocation.equals( rhs.objectLocation) )) ivarsEqual = false;
-     if( ! (objectOrientation.equals( rhs.objectOrientation) )) ivarsEqual = false;
-     if( ! (objectAppearance == rhs.objectAppearance)) ivarsEqual = false;
-     if( ! (requesterID.equals( rhs.requesterID) )) ivarsEqual = false;
-     if( ! (receivingID.equals( rhs.receivingID) )) ivarsEqual = false;
-     if( ! (pad2 == rhs.pad2)) ivarsEqual = false;
-
-    return ivarsEqual && super.equalsImpl(rhs);
- }
+		objectID.unmarshal(buff);
+		referencedObjectID.unmarshal(buff);
+		updateNumber = buff.getShort() & 0xFFFF;
+		forceID = (short) (buff.get() & 0xFF);
+		modifications = (short) (buff.get() & 0xFF);
+		objectType.unmarshal(buff);
+		objectLocation.unmarshal(buff);
+		objectOrientation.unmarshal(buff);
+		objectAppearance = buff.getDouble();
+		requesterID.unmarshal(buff);
+		receivingID.unmarshal(buff);
+		pad2 = buff.getInt();
+	} // end of unmarshal method
 } // end of class

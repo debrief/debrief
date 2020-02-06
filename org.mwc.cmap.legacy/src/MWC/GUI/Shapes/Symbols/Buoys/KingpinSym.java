@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: KingpinSym.java,v $
@@ -57,77 +57,68 @@ import MWC.GenericData.WorldLocation;
 
 public class KingpinSym extends BuoySym {
 
-  /**
-	 * 
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
-  public java.awt.Dimension getBounds(){
-    // sort out the size of the symbol at the current scale factor
-    final java.awt.Dimension res = new java.awt.Dimension((int)(6 * getScaleVal()),(int)(6 * getScaleVal()));
-    return res;
-  }
+	@Override
+	public PlainSymbol create() {
+		return new KingpinSym();
+	}
 
-  public void paint(final CanvasType dest, final WorldLocation centre)
-  {
-    paint(dest, centre, 0.0);
-  }
+	@Override
+	public java.awt.Dimension getBounds() {
+		// sort out the size of the symbol at the current scale factor
+		final java.awt.Dimension res = new java.awt.Dimension((int) (6 * getScaleVal()), (int) (6 * getScaleVal()));
+		return res;
+	}
 
-  @Override
-  public PlainSymbol create()
-  {
-    return new KingpinSym();
-  }
-  
-  public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
-  {
-    // set the colour
-    dest.setColor(getColor());
+	@Override
+	public String getType() {
+		return SymbolFactory.KINGPIN;
+	}
 
-    // create our centre point
-    final java.awt.Point centre = dest.toScreen(theLocation);
-    
-    // handle unable to gen screen coords (if off visible area)
-    if(centre == null)
-      return;
+	@Override
+	public void paint(final CanvasType dest, final WorldLocation centre) {
+		paint(dest, centre, 0.0);
+	}
 
-    final int wid = (int)(6 * getScaleVal() * 1.5);
-    final int tinyWid = (int) (getScaleVal() * 1.5);
-    final int tinyWid_2 = (int)(tinyWid/2d);
-    final int wid_2 = (int)(wid/2d);
+	@Override
+	public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction) {
+		// set the colour
+		dest.setColor(getColor());
 
-    // start with the centre object
-    dest.fillOval(centre.x - tinyWid_2, centre.y - tinyWid_2, tinyWid, tinyWid);
+		// create our centre point
+		final java.awt.Point centre = dest.toScreen(theLocation);
 
-    // now the outer circle
-    dest.drawOval(centre.x - wid_2, centre.y - wid_2, wid, wid);
+		// handle unable to gen screen coords (if off visible area)
+		if (centre == null)
+			return;
 
-    // now the direction of the stalk
-    final double theta = MWC.Algorithms.Conversions.Degs2Rads(45.0);
-    final double dX = Math.sin(theta) * wid_2;
-    final double dY = Math.cos(theta) * wid_2;
+		final int wid = (int) (6 * getScaleVal() * 1.5);
+		final int tinyWid = (int) (getScaleVal() * 1.5);
+		final int tinyWid_2 = (int) (tinyWid / 2d);
+		final int wid_2 = (int) (wid / 2d);
 
-    dest.drawLine(centre.x + (int)dX, centre.y - (int)dY,
-                  centre.x + wid, centre.y - wid);
+		// start with the centre object
+		dest.fillOval(centre.x - tinyWid_2, centre.y - tinyWid_2, tinyWid, tinyWid);
 
-    dest.drawLine(centre.x + wid, centre.y - wid,
-                  centre.x + wid, centre.y - wid + 2 * tinyWid);
+		// now the outer circle
+		dest.drawOval(centre.x - wid_2, centre.y - wid_2, wid, wid);
 
-    dest.drawLine(centre.x + wid, centre.y - wid + 2 * tinyWid,
-                  centre.x + wid + wid_2 , centre.y - wid + 2 * tinyWid - wid_2);
+		// now the direction of the stalk
+		final double theta = MWC.Algorithms.Conversions.Degs2Rads(45.0);
+		final double dX = Math.sin(theta) * wid_2;
+		final double dY = Math.cos(theta) * wid_2;
 
+		dest.drawLine(centre.x + (int) dX, centre.y - (int) dY, centre.x + wid, centre.y - wid);
 
+		dest.drawLine(centre.x + wid, centre.y - wid, centre.x + wid, centre.y - wid + 2 * tinyWid);
 
+		dest.drawLine(centre.x + wid, centre.y - wid + 2 * tinyWid, centre.x + wid + wid_2,
+				centre.y - wid + 2 * tinyWid - wid_2);
 
-  }
-
-  public String getType()
-  {
-    return SymbolFactory.KINGPIN;
-  }
+	}
 
 }
-
-
-
-

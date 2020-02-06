@@ -1,21 +1,22 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.Canvas;
 
 // Copyright MWC 1999, Debrief 3 Project
+
 // $RCSfile: EditCanvasPopupMenuAdaptor.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.3 $
@@ -78,7 +79,6 @@ package MWC.GUI.Canvas;
 // Initial revision
 //
 
-
 import java.io.Serializable;
 
 import MWC.GUI.CanvasType;
@@ -87,57 +87,47 @@ import MWC.GUI.Layers;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Chart.RightClickEdit;
 
-public class EditCanvasPopupMenuAdaptor extends RightClickEdit.BaseMenuCreator implements Serializable
-{
+public class EditCanvasPopupMenuAdaptor extends RightClickEdit.BaseMenuCreator implements Serializable {
 
-  /**
-	 * 
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	/////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-	protected Editable	_theCanvasEditor;
+	// member variables
+	////////////////////////////////////////////////////////////
+	protected Editable _theCanvasEditor;
 
-
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-	public EditCanvasPopupMenuAdaptor(final CanvasType theCanvas)
-	{
-		if(theCanvas instanceof Editable)
-		{
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	public EditCanvasPopupMenuAdaptor(final CanvasType theCanvas) {
+		if (theCanvas instanceof Editable) {
 			_theCanvasEditor = (Editable) theCanvas;
-		}
-		else
+		} else
 			_theCanvasEditor = null;
 	}
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-  public void createMenu(final javax.swing.JPopupMenu menu,
-                         final java.awt.Point thePoint,
-                         final MWC.GUI.CanvasType theCanvas,
-                         final PropertiesPanel thePanel,
-                         final Layers theData)
-  {
+	@Override
+	public void createMenu(final javax.swing.JPopupMenu menu, final java.awt.Point thePoint,
+			final MWC.GUI.CanvasType theCanvas, final PropertiesPanel thePanel, final Layers theData) {
 		// see if our canvas is editable
-		if(_theCanvasEditor != null)
-		{
+		if (_theCanvasEditor != null) {
 			final Editable.EditorType et = _theCanvasEditor.getInfo();
 
-			if(et != null)
-			{
-			  final javax.swing.JMenuItem mi = new javax.swing.JMenuItem("Edit Appearance");
-        mi.addActionListener(new RightClickEdit.EditThisActionListener(thePanel, et, null));
-			  menu.add(mi);
+			if (et != null) {
+				final javax.swing.JMenuItem mi = new javax.swing.JMenuItem("Edit Appearance");
+				mi.addActionListener(new RightClickEdit.EditThisActionListener(thePanel, et, null));
+				menu.add(mi);
 
-        // finally add the other editors
-        super.createAdditionalItems(menu, thePanel, (Editable)et.getData(), theData);
+				// finally add the other editors
+				super.createAdditionalItems(menu, thePanel, (Editable) et.getData(), theData);
 
 			}
 		}
-  }
+	}
 }

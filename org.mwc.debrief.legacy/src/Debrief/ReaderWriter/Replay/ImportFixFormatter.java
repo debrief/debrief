@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: ImportTimeText.java,v $
@@ -67,187 +67,170 @@ package Debrief.ReaderWriter.Replay;
 
 import java.util.StringTokenizer;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
 
 import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.Formatters.CoreFormatItemListener;
 import MWC.GUI.Properties.AttributeTypePropertyEditor;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
+import junit.framework.TestCase;
 
 /**
  * class to parse a label from a line of text
  */
-final class ImportFixFormatter extends AbstractPlainLineImporter
-{
+final class ImportFixFormatter extends AbstractPlainLineImporter {
 
-  /*
-   * example: ;FORMAT_FIX: 10_sec_sym SYMBOL NULL NULL TRUE 600000
-   */
+	/*
+	 * example: ;FORMAT_FIX: 10_sec_sym SYMBOL NULL NULL TRUE 600000
+	 */
 
-  /**
-   * the type for this string
-   */
-  private final String _myType = ";FORMAT_FIX:";
+	public static class TestMe extends TestCase {
+		@Test
+		public void testRead() {
+			/*
+			 * example:
+			 */
 
-  /**
-   * read in this string and return a Label
-   */
-  public final Object readThisLine(final String theLine)
-  {
- 
-    // get a stream from the string
-    final StringTokenizer st = new StringTokenizer(theLine);
+			final ImportFixFormatter iff = new ImportFixFormatter();
+			CoreFormatItemListener res = (CoreFormatItemListener) iff
+					.readThisLine(";FORMAT_FIX: 10_sec_sym SYMBOL NULL NULL TRUE 600000");
+			assertNotNull(res);
+			assertNull("No track", res.getLayerName());
+			assertNull("no sym", res.getSymbology());
+			assertTrue("active", res.getVisible());
+			assertNotNull("has name", res.getName());
+			assertEquals("has correct attr", 1, res.getAttributeType());
+			assertEquals("has correct freq", 600000, res.getInterval().getDate().getTime());
+			assertTrue("regular intervals", res.getRegularIntervals());
 
-    // declare local variables
-    String formatName;
-    String trackName;
-    String symbology;
-    boolean regularTimes; 
-    int interval;
-    String attributeType;
+			res = (CoreFormatItemListener) iff
+					.readThisLine(";FORMAT_FIX: 10_sec_sym ARROW \"Track One\" @A FALSE 100000");
+			assertNotNull(res);
+			assertEquals("No track", "Track One", res.getLayerName());
+			assertNotNull("sym", res.getSymbology());
+			assertTrue("active", res.getVisible());
+			assertNotNull("has name", res.getName());
+			assertEquals("has correct attr", 0, res.getAttributeType());
+			assertEquals("has correct freq", 100000, res.getInterval().getDate().getTime());
+			assertFalse("regular intervals", res.getRegularIntervals());
 
-    // skip the comment identifier
-    st.nextToken();
+			res = (CoreFormatItemListener) iff
+					.readThisLine(";FORMAT_FIX: \"10 arrow\" ARROW \"Track One\" BB FALSE 100000");
+			assertNotNull(res);
+			assertEquals("No track", "Track One", res.getLayerName());
+			assertNotNull("sym", res.getSymbology());
+			assertEquals("correct sym", "BB", res.getSymbology());
+			assertTrue("active", res.getVisible());
+			assertNotNull("has name", res.getName());
 
-    formatName = checkForQuotedName(st).trim();
-    attributeType = st.nextToken();
+		}
+	}
 
-    // do processing for track name in quotes
-    // trouble - the track name may have been quoted, in which case we will
-    // pull in the remaining fields aswell
-    trackName = checkForQuotedName(st).trim();
+	/**
+	 * the type for this string
+	 */
+	private final String _myType = ";FORMAT_FIX:";
 
-    // bit of tidying
-    if (trackName.equals("NULL"))
-    {
-      trackName = null;
-    }
+	/**
+	 * indicate if you can export this type of object
+	 *
+	 * @param val the object to test
+	 * @return boolean saying whether you can do it
+	 */
+	@Override
+	public final boolean canExportThis(final Object val) {
+		boolean res = false;
 
-    symbology = st.nextToken();
+		if (val instanceof LabelWrapper) {
+			// also see if there is just the start time specified
+			final LabelWrapper lw = (LabelWrapper) val;
+			if ((lw.getStartDTG() != null) && (lw.getEndDTG() == null)) {
+				// yes, this is a label with only the start time specified,
+				// we can export it
+				res = true;
+			}
+		}
+		return res;
+	}
 
-    // bit of tidying
-    if (symbology.equals("NULL"))
-    {
-      symbology = null;
-    }
-    regularTimes = Boolean.parseBoolean(st.nextToken());
-    interval = Integer.parseInt(st.nextToken());
+	/**
+	 * export the specified shape as a string
+	 *
+	 * @return the shape in String form
+	 * @param theWrapper the Shape we are exporting
+	 */
+	@Override
+	public final String exportThis(final MWC.GUI.Plottable theWrapper) {
+		final LabelWrapper theLabel = (LabelWrapper) theWrapper;
 
-    AttributeTypePropertyEditor pe = new AttributeTypePropertyEditor();
-    pe.setAsText(attributeType);
-    int attType = (int) pe.getValue();
+		String line = null;
 
-    CoreFormatItemListener cif =
-        new CoreFormatItemListener(formatName, trackName, symbology, interval,
-            regularTimes, attType, true);
+		line = _myType + " BB ";
+		line = line + MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(theLabel.getLocation());
 
-    return cif;
-  }
+		line = line + theLabel.getLabel();
 
-  /**
-   * determine the identifier returning this type of annotation
-   */
-  public final String getYourType()
-  {
-    return _myType;
-  }
+		return line;
+	}
 
-  /**
-   * export the specified shape as a string
-   * 
-   * @return the shape in String form
-   * @param theWrapper
-   *          the Shape we are exporting
-   */
-  public final String exportThis(final MWC.GUI.Plottable theWrapper)
-  {
-    final LabelWrapper theLabel = (LabelWrapper) theWrapper;
+	/**
+	 * determine the identifier returning this type of annotation
+	 */
+	@Override
+	public final String getYourType() {
+		return _myType;
+	}
 
-    String line = null;
+	/**
+	 * read in this string and return a Label
+	 */
+	@Override
+	public final Object readThisLine(final String theLine) {
 
-    line = _myType + " BB ";
-    line =
-        line
-            + MWC.Utilities.TextFormatting.DebriefFormatLocation
-                .toString(theLabel.getLocation());
+		// get a stream from the string
+		final StringTokenizer st = new StringTokenizer(theLine);
 
-    line = line + theLabel.getLabel();
+		// declare local variables
+		String formatName;
+		String trackName;
+		String symbology;
+		boolean regularTimes;
+		int interval;
+		String attributeType;
 
-    return line;
-  }
+		// skip the comment identifier
+		st.nextToken();
 
-  /**
-   * indicate if you can export this type of object
-   * 
-   * @param val
-   *          the object to test
-   * @return boolean saying whether you can do it
-   */
-  public final boolean canExportThis(final Object val)
-  {
-    boolean res = false;
+		formatName = checkForQuotedName(st).trim();
+		attributeType = st.nextToken();
 
-    if (val instanceof LabelWrapper)
-    {
-      // also see if there is just the start time specified
-      final LabelWrapper lw = (LabelWrapper) val;
-      if ((lw.getStartDTG() != null) && (lw.getEndDTG() == null))
-      {
-        // yes, this is a label with only the start time specified,
-        // we can export it
-        res = true;
-      }
-    }
-    return res;
-  }
+		// do processing for track name in quotes
+		// trouble - the track name may have been quoted, in which case we will
+		// pull in the remaining fields aswell
+		trackName = checkForQuotedName(st).trim();
 
-  public static class TestMe extends TestCase
-  {
-    @Test
-    public void testRead()
-    {
-      /*
-       * example:
-       */
+		// bit of tidying
+		if (trackName.equals("NULL")) {
+			trackName = null;
+		}
 
-      ImportFixFormatter iff = new ImportFixFormatter();
-      CoreFormatItemListener res =
-          (CoreFormatItemListener) iff
-              .readThisLine(";FORMAT_FIX: 10_sec_sym SYMBOL NULL NULL TRUE 600000");
-      assertNotNull(res);
-      assertNull("No track", res.getLayerName());
-      assertNull("no sym", res.getSymbology());
-      assertTrue("active", res.getVisible());
-      assertNotNull("has name", res.getName());
-      assertEquals("has correct attr", 1, res.getAttributeType());
-      assertEquals("has correct freq", 600000, res.getInterval().getDate().getTime());
-      assertTrue("regular intervals", res.getRegularIntervals());
+		symbology = st.nextToken();
 
-      res =
-          (CoreFormatItemListener) iff
-              .readThisLine(";FORMAT_FIX: 10_sec_sym ARROW \"Track One\" @A FALSE 100000");
-      assertNotNull(res);
-      assertEquals("No track", "Track One", res.getLayerName());
-      assertNotNull("sym", res.getSymbology());
-      assertTrue("active", res.getVisible());
-      assertNotNull("has name", res.getName());
-      assertEquals("has correct attr", 0, res.getAttributeType());
-      assertEquals("has correct freq", 100000, res.getInterval().getDate().getTime());
-      assertFalse("regular intervals", res.getRegularIntervals());
+		// bit of tidying
+		if (symbology.equals("NULL")) {
+			symbology = null;
+		}
+		regularTimes = Boolean.parseBoolean(st.nextToken());
+		interval = Integer.parseInt(st.nextToken());
 
-      res =
-          (CoreFormatItemListener) iff
-              .readThisLine(";FORMAT_FIX: \"10 arrow\" ARROW \"Track One\" BB FALSE 100000");
-      assertNotNull(res);
-      assertEquals("No track", "Track One", res.getLayerName());
-      assertNotNull("sym", res.getSymbology());
-      assertEquals("correct sym", "BB", res.getSymbology());
-      assertTrue("active", res.getVisible());
-      assertNotNull("has name", res.getName());
+		final AttributeTypePropertyEditor pe = new AttributeTypePropertyEditor();
+		pe.setAsText(attributeType);
+		final int attType = (int) pe.getValue();
 
-    }
-  }
+		final CoreFormatItemListener cif = new CoreFormatItemListener(formatName, trackName, symbology, interval,
+				regularTimes, attType, true);
+
+		return cif;
+	}
 
 }

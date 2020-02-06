@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: MenuItemInfo.java,v $
@@ -78,129 +78,125 @@ import java.awt.MenuShortcut;
 import MWC.GUI.Tool;
 
 /**
- * description of information necessary to put an item on
- * a menu or a toolbar
+ * description of information necessary to put an item on a menu or a toolbar
  */
-public class MenuItemInfo{
-  /////////////////////////////////////////////////////////
-  // member variables
-  /////////////////////////////////////////////////////////
-  /**
-   * the name of the menu we are placing this item on
-   */
-  private final String _menuName;
-  /**
-   * the name appearing on the menu
-   */
-  private final String _menuItemName;
-
-  /**
-   * the toggle group this tool belongs to
-   */
-  private final String _toggleGroup;
-
-  /**
-   * the tool to call when this item is selected
-   */
-  private Tool _theTool;
-  /**
-   * the shortcut representing this menu item
-   */
-  private final MenuShortcut _theShortCut;
+public class MenuItemInfo {
+	/////////////////////////////////////////////////////////
+	// member variables
+	/////////////////////////////////////////////////////////
+	/**
+	 * the name of the menu we are placing this item on
+	 */
+	private final String _menuName;
+	/**
+	 * the name appearing on the menu
+	 */
+	private final String _menuItemName;
 
 	/**
-   * the shortcut key to apply to this command
-   */
+	 * the toggle group this tool belongs to
+	 */
+	private final String _toggleGroup;
+
+	/**
+	 * the tool to call when this item is selected
+	 */
+	private Tool _theTool;
+	/**
+	 * the shortcut representing this menu item
+	 */
+	private final MenuShortcut _theShortCut;
+
+	/**
+	 * the shortcut key to apply to this command
+	 */
 	private final char _theMnemonic;
 
-  /////////////////////////////////////////////////////////
-  // constructor
+	/////////////////////////////////////////////////////////
+	// constructor
 
-  // constructor
-  /**
-   *
-   * @param menuName name of the menu we are placing this item on
-   * @param toggleGroup toggle group this item belongs to (or null)
-   * @param menuItemName the name appearing on the menu
-   * @param theTool the tool to call when this item is selected
-   * @param theShortCut shortcut for this item
-   * @param theMnemonic shortcut key for this command
-   */
-  public MenuItemInfo(final String menuName,
-                      final String toggleGroup,
-                      final String menuItemName,
-                      final Tool theTool,
-                      final MenuShortcut theShortCut,
-                      final char theMnemonic){
-    _menuName     = menuName;
-    _menuItemName = menuItemName;
-    _toggleGroup  = toggleGroup;
-    _theTool      = theTool;
-    _theShortCut  = theShortCut;
-    _theMnemonic  = theMnemonic;
-  }
+	// constructor
+	/**
+	 *
+	 * @param menuName     name of the menu we are placing this item on
+	 * @param toggleGroup  toggle group this item belongs to (or null)
+	 * @param menuItemName the name appearing on the menu
+	 * @param theTool      the tool to call when this item is selected
+	 * @param theShortCut  shortcut for this item
+	 * @param theMnemonic  shortcut key for this command
+	 */
+	public MenuItemInfo(final String menuName, final String toggleGroup, final String menuItemName, final Tool theTool,
+			final MenuShortcut theShortCut, final char theMnemonic) {
+		_menuName = menuName;
+		_menuItemName = menuItemName;
+		_toggleGroup = toggleGroup;
+		_theTool = theTool;
+		_theShortCut = theShortCut;
+		_theMnemonic = theMnemonic;
+	}
 
-  /////////////////////////////////////////////////////////
-  // member functions
-  /**
- * /////////////////////////////////////////////////////////
- *
- */
-  public String getMenuName(){
-    return _menuName;
-  }
-  /**
-   * getMenuItemName
-   *
-   * @return the returned String
-   */
-  public String getMenuItemName(){
-    return _menuItemName;
-  }
-  /**
-   * getToggleGroup
-   *
-   * @return the returned String
-   */
-  public String getToggleGroup()
-  {
-    return _toggleGroup;
-  }
-  /**
-   * getTool
-   *
-   * @return the returned Tool
-   */
-  public Tool getTool(){
-    return _theTool;
-  }
-  /**
-   * getShortCut
-   *
-   * @return the returned MenuShortcut
-   */
-  public MenuShortcut getShortCut(){
-    return _theShortCut;
-  }
+	/**
+	 * provide method to close us, clearing any local references
+	 *
+	 */
+	public void close() {
+		_theTool.close();
+		_theTool = null;
+	}
 
-  /**
-   * getMnemonic
-   *
-   * @return the returned char
-   */
-  public char getMnemonic()
-	{
+	/**
+	 * getMenuItemName
+	 *
+	 * @return the returned String
+	 */
+	public String getMenuItemName() {
+		return _menuItemName;
+	}
+
+	/////////////////////////////////////////////////////////
+	// member functions
+	/**
+	 * /////////////////////////////////////////////////////////
+	 *
+	 */
+	public String getMenuName() {
+		return _menuName;
+	}
+
+	/**
+	 * getMnemonic
+	 *
+	 * @return the returned char
+	 */
+	public char getMnemonic() {
 		return _theMnemonic;
 	}
 
 	/**
-   * provide method to close us, clearing any local references
-   *
-   */
-	public void close()
-	{
-		_theTool.close();
-		_theTool = null;
+	 * getShortCut
+	 *
+	 * @return the returned MenuShortcut
+	 */
+	public MenuShortcut getShortCut() {
+		return _theShortCut;
+	}
+
+	/**
+	 * getToggleGroup
+	 *
+	 * @return the returned String
+	 */
+	public String getToggleGroup() {
+		return _toggleGroup;
+	}
+
+	/**
+	 * getTool
+	 *
+	 * @return the returned Tool
+	 */
+	public Tool getTool() {
+		return _theTool;
 	}
 
 }

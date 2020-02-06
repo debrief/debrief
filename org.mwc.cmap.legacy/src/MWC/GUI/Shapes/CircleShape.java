@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: CircleShape.java,v $
@@ -148,16 +148,66 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
-public class CircleShape extends PlainShape implements Editable,
-		HasDraggableComponents
-{
+public class CircleShape extends PlainShape implements Editable, HasDraggableComponents {
 
 	// ////////////////////////////////////////////////
 	// member variables
 	// ////////////////////////////////////////////////
 
+	// ////////////////////////////////////////////////////
+	// bean info for this class
+	// ///////////////////////////////////////////////////
+	public class CircleInfo extends Editable.EditorType {
+
+		public CircleInfo(final CircleShape data, final String theName) {
+			super(data, theName, "");
+		}
+
+		@Override
+		public String getName() {
+			return CircleShape.this.getName();
+		}
+
+		@Override
+		public PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final PropertyDescriptor[] res = { prop("Radius", "the circle radius", SPATIAL),
+						prop("Centre", "the centre of the circle", SPATIAL),
+						prop("Filled", "whether to fill the circle", FORMAT), displayProp("SemiTransparent",
+								"Semi transparent", "whether the filled circle is semi-transparent", FORMAT), };
+
+				return res;
+
+			} catch (final IntrospectionException e) {
+				return super.getPropertyDescriptors();
+			}
+		}
+	}
+
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	static public class CircleTest extends junit.framework.TestCase {
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public CircleTest(final String val) {
+			super(val);
+		}
+
+		public void testMyParams() {
+			MWC.GUI.Editable ed = new CircleShape(new WorldLocation(2d, 2d, 2d), 2d);
+			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
+			ed = null;
+		}
+	}
+
 	// keep track of versions
 	static final long serialVersionUID = 1;
+
+	/**
+	 * the number of segments to use to plot this shape (when applicable)
+	 */
+	public static final int NUM_SEGMENTS = 40;
 
 	/**
 	 * the area covered by this circle
@@ -166,7 +216,7 @@ public class CircleShape extends PlainShape implements Editable,
 
 	/**
 	 * the shape, broken down into a series of points
-	 * 
+	 *
 	 */
 	protected Vector<WorldLocation> _myPoints = new Vector<WorldLocation>();
 
@@ -174,6 +224,10 @@ public class CircleShape extends PlainShape implements Editable,
 	 * the centre of this circle
 	 */
 	protected WorldLocation _theCentre;
+
+	// ////////////////////////////////////////////////
+	// constructor
+	// ////////////////////////////////////////////////
 
 	/**
 	 * the radius of this circle (in yards)
@@ -186,112 +240,41 @@ public class CircleShape extends PlainShape implements Editable,
 	transient protected Editable.EditorType _myEditor;
 
 	/**
-	 * the number of segments to use to plot this shape (when applicable)
-	 */
-	public static final int NUM_SEGMENTS = 40;
-
-	// ////////////////////////////////////////////////
-	// constructor
-	// ////////////////////////////////////////////////
-
-	 public CircleShape(WorldLocation theCentre, WorldDistance theRadius,
-	      String name)
-	  {
-	    super(0, name);
-
-	    // store the values
-	    _theCentre = theCentre;
-	    _theRadius = theRadius;
-
-	    // now represented our circle as an area
-	    calcPoints();
-	  }
-
-	
-	/**
 	 * constructor
-	 * 
-	 * @param theCentre
-	 *          the WorldLocation marking the centre of the circle
-	 * @param theRadius
-	 *          the radius of the circle (in yards)
+	 *
+	 * @param theCentre the WorldLocation marking the centre of the circle
+	 * @param theRadius the radius of the circle (in yards)
 	 */
-	public CircleShape(final WorldLocation theCentre, final double theRadius)
-	{
+	public CircleShape(final WorldLocation theCentre, final double theRadius) {
 		this(theCentre, new WorldDistance(theRadius, WorldDistance.YARDS));
 	}
 
 	/**
 	 * constructor
-	 * 
-	 * @param theCentre
-	 *          the WorldLocation marking the centre of the circle
-	 * @param theRadius
-	 *          the radius of the circle (in yards)
+	 *
+	 * @param theCentre the WorldLocation marking the centre of the circle
+	 * @param theRadius the radius of the circle (in yards)
 	 */
-	public CircleShape(final WorldLocation theCentre,
-			final WorldDistance theRadius)
-	{
-	  this(theCentre, theRadius, "Circle");
+	public CircleShape(final WorldLocation theCentre, final WorldDistance theRadius) {
+		this(theCentre, theRadius, "Circle");
 	}
 
+	public CircleShape(final WorldLocation theCentre, final WorldDistance theRadius, final String name) {
+		super(0, name);
 
-  public void paint(final CanvasType dest)
-	{
+		// store the values
+		_theCentre = theCentre;
+		_theRadius = theRadius;
 
-		// are we visible?
-		if (!getVisible())
-			return;
-
-		if (this.getColor() != null)
-		{
-			// create a transparent colour
-			final Color newcol = getColor();
-			dest.setColor(new Color(newcol.getRed(), newcol.getGreen(), newcol
-					.getBlue(), TRANSPARENCY_SHADE));
-		}
-
-		// break the circle down into points
-		final int STEPS = _myPoints.size();
-		final int[] xP = new int[STEPS];
-		final int[] yP = new int[STEPS];
-		int ctr = 0;
-		final Iterator<WorldLocation> iter = _myPoints.iterator();
-		while (iter.hasNext())
-		{
-			final WorldLocation nextPos = iter.next();
-			final Point pt = dest.toScreen(nextPos);
-			if(pt == null)
-			{
-			  return;
-			}
-      xP[ctr] = pt.x;
-      yP[ctr++] = pt.y;
-		}
-
-		// and plot the polygon
-		if (getFilled())
-		{
-			if (getSemiTransparent() && dest instanceof ExtendedCanvasType)
-			{
-				ExtendedCanvasType ext = (ExtendedCanvasType) dest;
-				ext.semiFillPolygon(xP, yP, STEPS);
-			}
-			else
-				dest.fillPolygon(xP, yP, STEPS);
-		}
-		else
-		{
-			dest.drawPolygon(xP, yP, STEPS);
-		}
+		// now represented our circle as an area
+		calcPoints();
 	}
 
 	/**
 	 * calculate some convenience values based on the radius and centre of the
 	 * circle
 	 */
-	protected void calcPoints()
-	{
+	protected void calcPoints() {
 		// calc the radius in degrees
 		final double radDegs = _theRadius.getValueIn(WorldDistance.DEGS);
 
@@ -301,16 +284,13 @@ public class CircleShape extends PlainShape implements Editable,
 		// create & extend to top left
 		WorldLocation other = _theCentre.add(new WorldVector(0, radDegs, 0));
 		_theArea.extend(other);
-		other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270),
-				radDegs, 0));
+		other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270), radDegs, 0));
 		_theArea.extend(other);
 
 		// create & extend to bottom right
-		other = _theCentre.add(new WorldVector(MWC.Algorithms.Conversions
-				.Degs2Rads(180), radDegs, 0));
+		other = _theCentre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(180), radDegs, 0));
 		_theArea.extend(other);
-		other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90),
-				radDegs, 0));
+		other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90), radDegs, 0));
 		_theArea.extend(other);
 
 		// clear our local list of points
@@ -319,184 +299,17 @@ public class CircleShape extends PlainShape implements Editable,
 		// and the circle as a series of points (so it turns properly in relative
 		// mode)
 		final int STEPS = NUM_SEGMENTS;
-		for (int i = 0; i < STEPS; i++)
-		{
-			final double thisAngle = (Math.PI * 2) / (double) STEPS * i;
+		for (int i = 0; i < STEPS; i++) {
+			final double thisAngle = (Math.PI * 2) / STEPS * i;
 			// create & extend to top left
-			final WorldLocation newPt = _theCentre.add(new WorldVector(thisAngle,
-					radDegs, 0));
+			final WorldLocation newPt = _theCentre.add(new WorldVector(thisAngle, radDegs, 0));
 			_myPoints.add(newPt);
 		}
 	}
 
-	public MWC.GenericData.WorldArea getBounds()
-	{
-		return _theArea;
-	}
-
-	/**
-	 * get the range from the indicated world location - making this abstract
-	 * allows for individual shapes to have 'hit-spots' in various locations.
-	 */
-	public double rangeFrom(final WorldLocation point)
-	{
-		final double res = this._theCentre.rangeFrom(point);
-
-		/**
-		 * note, also allow us to recognise that the user may be clicking on the
-		 * circle itself, so do a second check using the difference between the
-		 * range from the centre of the circle and the radius of the circle
-		 */
-		final double res2 = Math.abs(_theRadius.getValueIn(WorldDistance.DEGS)
-				- res);
-
-		return Math.min(res, res2);
-	}
-
-	/**
-	 * return the radius of this circle
-	 * 
-	 * @return the radius of this circle
-	 */
-	public WorldDistance getRadius()
-	{
-		return _theRadius;
-	}
-
-	/**
-	 * set the centre location of the circle
-	 * 
-	 * @param centre
-	 *          the WorldLocation marking the centre
-	 */
-  public void setCentre(final WorldLocation centre)
-  {
-    // remember the old value of centre
-    final WorldLocation oldCentre = _theCentre;
-    
-    // make the change
-    _theCentre = centre;
-    
-    // and calc the new summary data
-    calcPoints();
-    
-    // inform our listeners, including the parent (so it can move the label)
-    firePropertyChange(PlainWrapper.LOCATION_CHANGED, oldCentre, centre);
-  }
-
-	/**
-	 * @return the centre of the circle
-	 */
-	public WorldLocation getCentre()
-	{
-		return _theCentre;
-	}
-
-	public void setCircleColor(final Color val)
-	{
-		super.setColor(val);
-	}
-
-	public Color getCircleColor()
-	{
-		return super.getColor();
-	}
-
-	/**
-	 * set the radius of this circle
-	 */
-	public void setRadius(final WorldDistance val)
-	{
-		_theRadius = val;
-
-		// and calc the new summary data
-		calcPoints();
-
-		// and inform the parent (so it can move the label)
-		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
-
-	}
-
-	public boolean hasEditor()
-	{
-		return true;
-	}
-
-	public Editable.EditorType getInfo()
-	{
-		if (_myEditor == null)
-			_myEditor = new CircleInfo(this, this.getName());
-
-		return _myEditor;
-	}
-
-	/**
-	 * get the 'anchor point' for any labels attached to this shape
-	 */
-	public MWC.GenericData.WorldLocation getAnchor()
-	{
-		return _theCentre;
-	}
-
-	// ////////////////////////////////////////////////
-	// 3-d support
-	// ////////////////////////////////////////////////
-
-	// ////////////////////////////////////////////////////
-	// bean info for this class
-	// ///////////////////////////////////////////////////
-	public class CircleInfo extends Editable.EditorType
-	{
-
-		public CircleInfo(final CircleShape data, final String theName)
-		{
-			super(data, theName, "");
-		}
-
-		public String getName()
-		{
-			return CircleShape.this.getName();
-		}
-
-		public PropertyDescriptor[] getPropertyDescriptors()
-		{
-			try
-			{
-				final PropertyDescriptor[] res =
-				{
-						prop("Radius", "the circle radius", SPATIAL),
-						prop("Centre", "the centre of the circle", SPATIAL),
-						prop("Filled", "whether to fill the circle", FORMAT),
-						displayProp("SemiTransparent", "Semi transparent",
-								"whether the filled circle is semi-transparent", FORMAT), };
-
-				return res;
-
-			}
-			catch (final IntrospectionException e)
-			{
-				return super.getPropertyDescriptors();
-			}
-		}
-	}
-
-	public void shift(final WorldLocation feature, final WorldVector vector)
-	{
-		// ok, just shift it...
-		feature.addToMe(vector);
-
-		// and calc the new summary data
-		calcPoints();
-
-		// and inform the parent (so it can move the label)
-		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
-
-	}
-
-	public void findNearestHotSpotIn(final Point cursorPos,
-			final WorldLocation cursorLoc, final ComponentConstruct currentNearest,
-			final Layer parentLayer)
-	{
+	@Override
+	public void findNearestHotSpotIn(final Point cursorPos, final WorldLocation cursorLoc,
+			final ComponentConstruct currentNearest, final Layer parentLayer) {
 		// right, see if the cursor is at the centre (that's the easy component)
 		checkThisOne(_theCentre, cursorLoc, currentNearest, this, parentLayer);
 
@@ -506,17 +319,16 @@ public class CircleShape extends PlainShape implements Editable,
 		final WorldDistance sep = new WorldDistance(vec);
 
 		// ahh, now subtract the radius from this separation
-		final WorldDistance newSep = new WorldDistance(Math.abs(sep
-				.getValueIn(WorldDistance.YARDS)
-				- this._theRadius.getValueIn(WorldDistance.YARDS)), WorldDistance.YARDS);
+		final WorldDistance newSep = new WorldDistance(
+				Math.abs(sep.getValueIn(WorldDistance.YARDS) - this._theRadius.getValueIn(WorldDistance.YARDS)),
+				WorldDistance.YARDS);
 
 		// now we have to wrap this operation in a made-up location
-		final WorldLocation dragCentre = new WorldLocation(cursorLoc)
-		{
+		final WorldLocation dragCentre = new WorldLocation(cursorLoc) {
 			private static final long serialVersionUID = 100L;
 
-			public void addToMe(final WorldVector delta)
-			{
+			@Override
+			public void addToMe(final WorldVector delta) {
 				// ok - process the drag
 				super.addToMe(delta);
 				// ok, what's this distance from the origin?
@@ -536,28 +348,166 @@ public class CircleShape extends PlainShape implements Editable,
 
 	}
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public class CircleTest extends junit.framework.TestCase
-	{
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+	/**
+	 * get the 'anchor point' for any labels attached to this shape
+	 */
+	public MWC.GenericData.WorldLocation getAnchor() {
+		return _theCentre;
+	}
 
-		public CircleTest(final String val)
-		{
-			super(val);
+	@Override
+	public MWC.GenericData.WorldArea getBounds() {
+		return _theArea;
+	}
+
+	/**
+	 * @return the centre of the circle
+	 */
+	public WorldLocation getCentre() {
+		return _theCentre;
+	}
+
+	public Color getCircleColor() {
+		return super.getColor();
+	}
+
+	@Override
+	public Editable.EditorType getInfo() {
+		if (_myEditor == null)
+			_myEditor = new CircleInfo(this, this.getName());
+
+		return _myEditor;
+	}
+
+	/**
+	 * return the radius of this circle
+	 *
+	 * @return the radius of this circle
+	 */
+	public WorldDistance getRadius() {
+		return _theRadius;
+	}
+
+	@Override
+	public boolean hasEditor() {
+		return true;
+	}
+
+	@Override
+	public void paint(final CanvasType dest) {
+
+		// are we visible?
+		if (!getVisible())
+			return;
+
+		if (this.getColor() != null) {
+			// create a transparent colour
+			final Color newcol = getColor();
+			dest.setColor(new Color(newcol.getRed(), newcol.getGreen(), newcol.getBlue(), TRANSPARENCY_SHADE));
 		}
 
-		public void testMyParams()
-		{
-			MWC.GUI.Editable ed = new CircleShape(new WorldLocation(2d, 2d, 2d), 2d);
-			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
-			ed = null;
+		// break the circle down into points
+		final int STEPS = _myPoints.size();
+		final int[] xP = new int[STEPS];
+		final int[] yP = new int[STEPS];
+		int ctr = 0;
+		final Iterator<WorldLocation> iter = _myPoints.iterator();
+		while (iter.hasNext()) {
+			final WorldLocation nextPos = iter.next();
+			final Point pt = dest.toScreen(nextPos);
+			if (pt == null) {
+				return;
+			}
+			xP[ctr] = pt.x;
+			yP[ctr++] = pt.y;
+		}
+
+		// and plot the polygon
+		if (getFilled()) {
+			if (getSemiTransparent() && dest instanceof ExtendedCanvasType) {
+				final ExtendedCanvasType ext = (ExtendedCanvasType) dest;
+				ext.semiFillPolygon(xP, yP, STEPS);
+			} else
+				dest.fillPolygon(xP, yP, STEPS);
+		} else {
+			dest.drawPolygon(xP, yP, STEPS);
 		}
 	}
 
-	public void shift(final WorldVector vector)
-	{
+	/**
+	 * get the range from the indicated world location - making this abstract allows
+	 * for individual shapes to have 'hit-spots' in various locations.
+	 */
+	@Override
+	public double rangeFrom(final WorldLocation point) {
+		final double res = this._theCentre.rangeFrom(point);
+
+		/**
+		 * note, also allow us to recognise that the user may be clicking on the circle
+		 * itself, so do a second check using the difference between the range from the
+		 * centre of the circle and the radius of the circle
+		 */
+		final double res2 = Math.abs(_theRadius.getValueIn(WorldDistance.DEGS) - res);
+
+		return Math.min(res, res2);
+	}
+
+	// ////////////////////////////////////////////////
+	// 3-d support
+	// ////////////////////////////////////////////////
+
+	/**
+	 * set the centre location of the circle
+	 *
+	 * @param centre the WorldLocation marking the centre
+	 */
+	public void setCentre(final WorldLocation centre) {
+		// remember the old value of centre
+		final WorldLocation oldCentre = _theCentre;
+
+		// make the change
+		_theCentre = centre;
+
+		// and calc the new summary data
+		calcPoints();
+
+		// inform our listeners, including the parent (so it can move the label)
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, oldCentre, centre);
+	}
+
+	public void setCircleColor(final Color val) {
+		super.setColor(val);
+	}
+
+	/**
+	 * set the radius of this circle
+	 */
+	public void setRadius(final WorldDistance val) {
+		_theRadius = val;
+
+		// and calc the new summary data
+		calcPoints();
+
+		// and inform the parent (so it can move the label)
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
+
+	}
+
+	@Override
+	public void shift(final WorldLocation feature, final WorldVector vector) {
+		// ok, just shift it...
+		feature.addToMe(vector);
+
+		// and calc the new summary data
+		calcPoints();
+
+		// and inform the parent (so it can move the label)
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
+
+	}
+
+	@Override
+	public void shift(final WorldVector vector) {
 		final WorldLocation oldCentre = getCentre();
 		final WorldLocation newCentre = oldCentre.add(vector);
 		setCentre(newCentre);

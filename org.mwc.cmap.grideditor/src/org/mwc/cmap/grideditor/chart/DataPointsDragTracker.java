@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.cmap.grideditor.chart;
@@ -34,9 +34,92 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleEdge;
 
-public abstract class DataPointsDragTracker implements
-		ChartMouseListenerExtension
-{
+public abstract class DataPointsDragTracker implements ChartMouseListenerExtension {
+
+	private class DragSubject {
+
+		private BackedChartItem myDraggedItem;
+
+		private XYItemEntity myDraggedEntity;
+
+		private Point2D.Double myLastDomainPoint;
+
+		private void clear() {
+			myDraggedEntity = null;
+			myDraggedItem = null;
+			myLastDomainPoint = null;
+		}
+
+		@SuppressWarnings("rawtypes")
+		private BackedChartItem extractBackedChartItem(final XYItemEntity xyEntity) {
+			final Comparable seriesKey = xyEntity.getDataset().getSeriesKey(xyEntity.getSeriesIndex());
+			if (xyEntity.getDataset() instanceof XYSeriesCollection) {
+				final XYSeries series = ((XYSeriesCollection) xyEntity.getDataset()).getSeries(seriesKey);
+				final XYDataItem dataItem = series.getDataItem(xyEntity.getItem());
+				if (dataItem instanceof BackedChartItem) {
+					return (BackedChartItem) dataItem;
+				}
+			} else if (xyEntity.getDataset() instanceof TimeSeriesCollection) {
+				final TimeSeries series = ((TimeSeriesCollection) xyEntity.getDataset()).getSeries(seriesKey);
+				final TimeSeriesDataItem dataItem = series.getDataItem(xyEntity.getItem());
+				if (dataItem instanceof BackedChartItem) {
+					return (BackedChartItem) dataItem;
+				}
+			}
+			return null;
+		}
+
+		@SuppressWarnings("unused")
+		public XYItemEntity getDraggedEntity() {
+			return myDraggedEntity;
+		}
+
+		public BackedChartItem getDraggedItem() {
+			return myDraggedItem;
+		}
+
+		public Point2D.Double getLastDomainPoint() {
+			return myLastDomainPoint;
+		}
+
+		public boolean isEmpty() {
+			return myDraggedEntity == null;
+		}
+
+		public void setProposedValues(final double x, final double y) {
+			if (isEmpty()) {
+				return;
+			}
+
+			final RendererWithDynamicFeedback renderer = getFeedbackRenderer();
+			if (renderer == null) {
+				return;
+			}
+			if (myLastDomainPoint == null) {
+				myLastDomainPoint = new Point2D.Double();
+			}
+			myLastDomainPoint.setLocation(x, y);
+			renderer.setFeedBackValue((Point2D.Double) myLastDomainPoint.clone());
+		}
+
+		public void setSubject(final ChartEntity chartEntity) {
+			clear();
+			if (chartEntity instanceof XYItemEntity) {
+				myDraggedEntity = (XYItemEntity) chartEntity;
+				myDraggedItem = extractBackedChartItem(myDraggedEntity);
+				if (myDraggedItem == null) {
+					clear();
+				}
+			}
+
+			final RendererWithDynamicFeedback renderer = getFeedbackRenderer();
+			if (renderer != null) {
+				renderer.setFeedbackSubject(myDraggedEntity);
+				renderer.setFeedBackValue(null);
+			}
+		}
+
+	}
 
 	private final JFreeChartComposite myChartPanel;
 
@@ -44,27 +127,21 @@ public abstract class DataPointsDragTracker implements
 
 	private final boolean myAllowVerticalMovesOnly;
 
-	protected abstract void dragCompleted(BackedChartItem item, double finalX,
-			double finalY);
-
-	public DataPointsDragTracker(final JFreeChartComposite chartPanel,
-			final boolean allowYOnly)
-	{
+	public DataPointsDragTracker(final JFreeChartComposite chartPanel, final boolean allowYOnly) {
 		myChartPanel = chartPanel;
 		myAllowVerticalMovesOnly = allowYOnly;
 		myDragSubject = new DragSubject();
 	}
 
-	public void chartMouseClicked(final ChartMouseEvent event)
-	{
+	@Override
+	public void chartMouseClicked(final ChartMouseEvent event) {
 		myDragSubject.setSubject(event.getEntity());
 		myChartPanel.redrawCanvas();
 	}
 
-	public void chartMouseMoved(final ChartMouseEvent event)
-	{
-		if (!myDragSubject.isEmpty())
-		{
+	@Override
+	public void chartMouseMoved(final ChartMouseEvent event) {
+		if (!myDragSubject.isEmpty()) {
 			myChartPanel.forgetZoomPoints();
 
 			// Rectangle clientArea = myChartPanel.getClientArea();
@@ -91,20 +168,16 @@ public abstract class DataPointsDragTracker implements
 			// does reflect the scaling applied to the y axis.
 			// - and all works well now.
 			final Rectangle dataArea2 = myChartPanel.getScreenDataArea();
-			dataArea = new Rectangle2D.Double(dataArea2.x, dataArea.getY(),
-					dataArea2.width, dataArea.getHeight());
+			dataArea = new Rectangle2D.Double(dataArea2.x, dataArea.getY(), dataArea2.width, dataArea.getHeight());
 
 			final ValueAxis domainAxis = xyplot.getDomainAxis();
 			final RectangleEdge domainEdge = xyplot.getDomainAxisEdge();
 			final ValueAxis valueAxis = xyplot.getRangeAxis();
 			final RectangleEdge valueEdge = xyplot.getRangeAxisEdge();
-			double domainX = domainAxis.java2DToValue(point2d.getX(), dataArea,
-					domainEdge);
-			final double domainY = valueAxis.java2DToValue(point2d.getY(), dataArea,
-					valueEdge);
+			double domainX = domainAxis.java2DToValue(point2d.getX(), dataArea, domainEdge);
+			final double domainY = valueAxis.java2DToValue(point2d.getY(), dataArea, valueEdge);
 
-			if (myAllowVerticalMovesOnly)
-			{
+			if (myAllowVerticalMovesOnly) {
 				domainX = myDragSubject.getDraggedItem().getXValue();
 			}
 
@@ -114,146 +187,30 @@ public abstract class DataPointsDragTracker implements
 		}
 	}
 
-	public void chartMouseReleased(final ChartMouseEvent event)
-	{
-		if (!myDragSubject.isEmpty() && myDragSubject.getLastDomainPoint() != null)
-		{
-			try
-			{
+	@Override
+	public void chartMouseReleased(final ChartMouseEvent event) {
+		if (!myDragSubject.isEmpty() && myDragSubject.getLastDomainPoint() != null) {
+			try {
 				final Point2D finalPoint = myDragSubject.getLastDomainPoint();
-				dragCompleted(myDragSubject.getDraggedItem(), finalPoint.getX(),
-						finalPoint.getY());
-			}
-			catch (final Exception e)
-			{
+				dragCompleted(myDragSubject.getDraggedItem(), finalPoint.getX(), finalPoint.getY());
+			} catch (final Exception e) {
 				e.printStackTrace();
 			}
 		}
-		if (!myDragSubject.isEmpty())
-		{
+		if (!myDragSubject.isEmpty()) {
 			myDragSubject.setSubject(null);
 			myChartPanel.redrawCanvas();
 		}
 	}
 
-	private RendererWithDynamicFeedback getFeedbackRenderer()
-	{
-		if (myChartPanel.getChart() == null)
-		{
+	protected abstract void dragCompleted(BackedChartItem item, double finalX, double finalY);
+
+	private RendererWithDynamicFeedback getFeedbackRenderer() {
+		if (myChartPanel.getChart() == null) {
 			return null;
 		}
-		final XYItemRenderer renderer = myChartPanel.getChart().getXYPlot()
-				.getRenderer(0);
-		return renderer instanceof RendererWithDynamicFeedback ? (RendererWithDynamicFeedback) renderer
-				: null;
-	}
-
-	private class DragSubject
-	{
-
-		private BackedChartItem myDraggedItem;
-
-		private XYItemEntity myDraggedEntity;
-
-		private Point2D.Double myLastDomainPoint;
-
-		public void setSubject(final ChartEntity chartEntity)
-		{
-			clear();
-			if (chartEntity instanceof XYItemEntity)
-			{
-				myDraggedEntity = (XYItemEntity) chartEntity;
-				myDraggedItem = extractBackedChartItem(myDraggedEntity);
-				if (myDraggedItem == null)
-				{
-					clear();
-				}
-			}
-
-			final RendererWithDynamicFeedback renderer = getFeedbackRenderer();
-			if (renderer != null)
-			{
-				renderer.setFeedbackSubject(myDraggedEntity);
-				renderer.setFeedBackValue(null);
-			}
-		}
-
-		public void setProposedValues(final double x, final double y)
-		{
-			if (isEmpty())
-			{
-				return;
-			}
-
-			final RendererWithDynamicFeedback renderer = getFeedbackRenderer();
-			if (renderer == null)
-			{
-				return;
-			}
-			if (myLastDomainPoint == null)
-			{
-				myLastDomainPoint = new Point2D.Double();
-			}
-			myLastDomainPoint.setLocation(x, y);
-			renderer.setFeedBackValue((Point2D.Double) myLastDomainPoint.clone());
-		}
-
-		public BackedChartItem getDraggedItem()
-		{
-			return myDraggedItem;
-		}
-
-		@SuppressWarnings("unused")
-		public XYItemEntity getDraggedEntity()
-		{
-			return myDraggedEntity;
-		}
-
-		public boolean isEmpty()
-		{
-			return myDraggedEntity == null;
-		}
-
-		private void clear()
-		{
-			myDraggedEntity = null;
-			myDraggedItem = null;
-			myLastDomainPoint = null;
-		}
-
-		public Point2D.Double getLastDomainPoint()
-		{
-			return myLastDomainPoint;
-		}
-
-		@SuppressWarnings("rawtypes")
-		private BackedChartItem extractBackedChartItem(final XYItemEntity xyEntity)
-		{
-			final Comparable seriesKey = xyEntity.getDataset().getSeriesKey(
-					xyEntity.getSeriesIndex());
-			if (xyEntity.getDataset() instanceof XYSeriesCollection)
-			{
-				final XYSeries series = ((XYSeriesCollection) xyEntity.getDataset())
-						.getSeries(seriesKey);
-				final XYDataItem dataItem = series.getDataItem(xyEntity.getItem());
-				if (dataItem instanceof BackedChartItem)
-				{
-					return (BackedChartItem) dataItem;
-				}
-			}
-			else if (xyEntity.getDataset() instanceof TimeSeriesCollection)
-			{
-				final TimeSeries series = ((TimeSeriesCollection) xyEntity.getDataset())
-						.getSeries(seriesKey);
-				final TimeSeriesDataItem dataItem = series.getDataItem(xyEntity.getItem());
-				if (dataItem instanceof BackedChartItem)
-				{
-					return (BackedChartItem) dataItem;
-				}
-			}
-			return null;
-		}
-
+		final XYItemRenderer renderer = myChartPanel.getChart().getXYPlot().getRenderer(0);
+		return renderer instanceof RendererWithDynamicFeedback ? (RendererWithDynamicFeedback) renderer : null;
 	}
 
 }

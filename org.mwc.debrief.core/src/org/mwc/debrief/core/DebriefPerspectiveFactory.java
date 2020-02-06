@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.debrief.core;
@@ -25,44 +25,41 @@ import org.mwc.cmap.core.CorePlugin;
  * @author ian.mayo
  *
  */
-public class DebriefPerspectiveFactory implements IPerspectiveFactory
-{
+public class DebriefPerspectiveFactory implements IPerspectiveFactory {
 
 	/**
 	 * @param layout
 	 */
+	@Override
 	@SuppressWarnings("deprecation")
-	public void createInitialLayout(final IPageLayout layout)
-	{
+	public void createInitialLayout(final IPageLayout layout) {
 		// Get the editor area.
 		final String editorArea = layout.getEditorArea();
 
 		// Top left: Resource Navigator view and Bookmarks view placeholder
-		final IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT, 0.25f,
-			editorArea);
+		final IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT, 0.25f, editorArea);
 		topLeft.addView(IPageLayout.ID_RES_NAV);
 		topLeft.addView(CorePlugin.TIME_CONTROLLER);
 		topLeft.addPlaceholder(CorePlugin.TIME_BAR);
-		
+
 		// split the time one - so we can insert the track tote
 		// Top left: Resource Navigator view and Bookmarks view placeholder
-		final IFolderLayout midLeft = layout.createFolder("midLeft", IPageLayout.BOTTOM, 0.3f,
-				"topLeft");
-		midLeft.addView(IPageLayout.ID_PROP_SHEET);		
+		final IFolderLayout midLeft = layout.createFolder("midLeft", IPageLayout.BOTTOM, 0.3f, "topLeft");
+		midLeft.addView(IPageLayout.ID_PROP_SHEET);
 		midLeft.addView(CorePlugin.TOTE);
 		midLeft.addView(CorePlugin.OVERVIEW_PLOT);
 		midLeft.addPlaceholder(CorePlugin.DIS_LISTENER_VIEW);
-		midLeft.addPlaceholder(CorePlugin.POLYGON_EDITOR);		
-    midLeft.addPlaceholder(CorePlugin.UNIT_CENTRIC);    
-		
+		midLeft.addPlaceholder(CorePlugin.POLYGON_EDITOR);
+		midLeft.addPlaceholder(CorePlugin.UNIT_CENTRIC);
+
 		// Bottom left: Outline view and Property Sheet view
-		final IFolderLayout bottomLeft = layout.createFolder("bottomLeft", IPageLayout.BOTTOM, 0.40f,
-			"midLeft");
+		final IFolderLayout bottomLeft = layout.createFolder("bottomLeft", IPageLayout.BOTTOM, 0.40f, "midLeft");
 		bottomLeft.addView(IPageLayout.ID_OUTLINE);
 		bottomLeft.addPlaceholder(DebriefPlugin.MULTI_PATH);
-		
+
 		// bottom: placeholder for the xyplot
-		final IPlaceholderFolderLayout bottomPanel = layout.createPlaceholderFolder("bottom", IPageLayout.BOTTOM, 0.7f, editorArea);
+		final IPlaceholderFolderLayout bottomPanel = layout.createPlaceholderFolder("bottom", IPageLayout.BOTTOM, 0.7f,
+				editorArea);
 		bottomPanel.addPlaceholder(CorePlugin.XY_PLOT + ":*");
 		bottomPanel.addPlaceholder(IPageLayout.ID_BOOKMARKS);
 		bottomPanel.addPlaceholder(IPageLayout.ID_TASK_LIST);
@@ -70,12 +67,12 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 
 		// RIGHT: SATC contributions
 		final IPlaceholderFolderLayout right = layout.createPlaceholderFolder("right", IPageLayout.RIGHT, 0.6f,
-			editorArea);
-		right.addPlaceholder(DebriefPlugin.SATC_MAINTAIN_CONTRIBUTIONS);		
+				editorArea);
+		right.addPlaceholder(DebriefPlugin.SATC_MAINTAIN_CONTRIBUTIONS);
 		right.addPlaceholder(CorePlugin.GRID_EDITOR);
 		right.addPlaceholder(CorePlugin.STACKED_DOTS);
 		right.addPlaceholder(CorePlugin.FREQ_RESIDUALS);
-		
+
 		// and our view shortcuts
 		layout.addShowViewShortcut(IPageLayout.ID_OUTLINE);
 		layout.addShowViewShortcut(CorePlugin.BULK_NARRATIVE_VIEWER);
@@ -87,16 +84,16 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		layout.addShowViewShortcut(CorePlugin.GRID_EDITOR);
 		layout.addShowViewShortcut(CorePlugin.OVERVIEW_PLOT);
 		layout.addShowViewShortcut(CorePlugin.DIS_LISTENER_VIEW);
-		
+
 		layout.addShowViewShortcut(DebriefPlugin.SENSOR_FUSION);
 		layout.addShowViewShortcut(DebriefPlugin.MULTI_PATH);
 		layout.addShowViewShortcut(DebriefPlugin.TIME_BAR);
 		layout.addShowViewShortcut(DebriefPlugin.SATC_MAINTAIN_CONTRIBUTIONS);
 		layout.addShowViewShortcut(CorePlugin.VIDEO_PLAYER_VIEW);
-    layout.addShowViewShortcut(CorePlugin.IMAGE_VIEWER_VIEW);
-    layout.addShowViewShortcut(CorePlugin.UNIT_CENTRIC);
-		
-		// it via action (so we can populate it)  
+		layout.addShowViewShortcut(CorePlugin.IMAGE_VIEWER_VIEW);
+		layout.addShowViewShortcut(CorePlugin.UNIT_CENTRIC);
+
+		// it via action (so we can populate it)
 
 		layout.addShowViewShortcut(IPageLayout.ID_RES_NAV);
 		layout.addShowViewShortcut(IPageLayout.ID_PROP_SHEET);
@@ -104,12 +101,12 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 
 		// and the error log
 		layout.addShowViewShortcut("org.eclipse.pde.runtime.LogView");
-		
+
 		// hey - try to add the 'new plot' to the New menu
 		layout.addNewWizardShortcut("org.mwc.debrief.core.wizards.NewProjectWizard");
 		layout.addNewWizardShortcut("org.eclipse.ui.wizards.new.folder");
 		layout.addNewWizardShortcut("org.mwc.debrief.core.wizards.NewPlotWizard");
-		
+
 		// ok - make sure the debrief action sets are visible
 		// The actionSets ext point has been moved to commands/menus
 		// See https://www.assembla.com/spaces/Debrief/tickets/517

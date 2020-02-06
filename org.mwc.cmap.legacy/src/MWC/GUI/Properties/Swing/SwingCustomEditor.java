@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.Properties.Swing;
@@ -81,105 +81,100 @@ import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PropertiesPanel;
 
-abstract public class SwingCustomEditor extends JPanel implements Customizer
-{
-  /**
-	 * 
+abstract public class SwingCustomEditor extends JPanel implements Customizer {
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	/////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  protected PropertiesPanel _thePanel;
-  protected MWC.GUI.ToolParent _theToolParent;
-  protected Layers _theLayers;
+	// member variables
+	////////////////////////////////////////////////////////////
+	protected PropertiesPanel _thePanel;
+	protected MWC.GUI.ToolParent _theToolParent;
+	protected Layers _theLayers;
 
-  protected final java.beans.PropertyChangeSupport _pSupport;
+	protected final java.beans.PropertyChangeSupport _pSupport;
 
-  public SwingCustomEditor()
-  {
-    _pSupport = new java.beans.PropertyChangeSupport(this);
-  }
-
-  final public void setObject(final Object data,
-                        final ToolParent theParent,
-                        final Layers theLayers,
-                        final PropertiesPanel thePanel)
-  {
-    _theLayers = theLayers;
-    _thePanel = thePanel;
-    _theToolParent = theParent;
-
-    setObject(data);
-  }
-
-  /**  get the toolparent for this panel
-   *
-   */
-  final public ToolParent getToolParent()
-  {
-    return _theToolParent;
-  }
-
-  /** get the chart we are painting to
-   *
-   */
-	final public Layers getLayers()
-	{
-		return _theLayers;
+	public SwingCustomEditor() {
+		_pSupport = new java.beans.PropertyChangeSupport(this);
 	}
 
-  /** get the properties panel we are displayed inside
-   *
-   */
-	final public PropertiesPanel getPanel()
-	{
-		return _thePanel;
+	/**
+	 * add the indicated property event
+	 *
+	 */
+	@Override
+	final public void addPropertyChangeListener(final PropertyChangeListener listener) {
+		_pSupport.addPropertyChangeListener(listener);
 	}
 
-  /** update the editor with the supplied object
-   *
-   */
-  abstract public void setObject(Object data);
+	public void doClose() {
+		// remove the listeners
+		final PropertyChangeListener[] listeners = _pSupport.getPropertyChangeListeners();
+		for (final PropertyChangeListener l : listeners) {
+			_pSupport.removePropertyChangeListener(l);
+		}
+	}
 
-
-  /** add the indicated property event
-   *
-   */
-  final public void addPropertyChangeListener(final PropertyChangeListener listener)
-  {
-    _pSupport.addPropertyChangeListener(listener);
-  }
-
-  /** remove the indicated property listener
-   *
-   */
-  final public void removePropertyChangeListener(final PropertyChangeListener listener)
-  {
-    _pSupport.removePropertyChangeListener(listener);
-  }
-
-  /** fire the indicated event
-   *
-   */
-  final protected void fireModified(final String name, final Object oldVal, final Object newVal)
-  {
-    _pSupport.firePropertyChange(name, oldVal, newVal);
-  }
-
-	public void doReset()
-	{
+	public void doReset() {
 		// don't do anything, but allow child class to process reset
 	}
 
-  public void doClose()
-  {
-		// remove the listeners
-    PropertyChangeListener[] listeners = _pSupport.getPropertyChangeListeners();
-    for(PropertyChangeListener l: listeners)
-    {
-      _pSupport.removePropertyChangeListener(l);
-    }
-  }
+	/**
+	 * fire the indicated event
+	 *
+	 */
+	final protected void fireModified(final String name, final Object oldVal, final Object newVal) {
+		_pSupport.firePropertyChange(name, oldVal, newVal);
+	}
+
+	/**
+	 * get the chart we are painting to
+	 *
+	 */
+	final public Layers getLayers() {
+		return _theLayers;
+	}
+
+	/**
+	 * get the properties panel we are displayed inside
+	 *
+	 */
+	final public PropertiesPanel getPanel() {
+		return _thePanel;
+	}
+
+	/**
+	 * get the toolparent for this panel
+	 *
+	 */
+	final public ToolParent getToolParent() {
+		return _theToolParent;
+	}
+
+	/**
+	 * remove the indicated property listener
+	 *
+	 */
+	@Override
+	final public void removePropertyChangeListener(final PropertyChangeListener listener) {
+		_pSupport.removePropertyChangeListener(listener);
+	}
+
+	/**
+	 * update the editor with the supplied object
+	 *
+	 */
+	@Override
+	abstract public void setObject(Object data);
+
+	final public void setObject(final Object data, final ToolParent theParent, final Layers theLayers,
+			final PropertiesPanel thePanel) {
+		_theLayers = theLayers;
+		_thePanel = thePanel;
+		_theToolParent = theParent;
+
+		setObject(data);
+	}
 
 }

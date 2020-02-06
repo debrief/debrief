@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: BarraSym.java,v $
@@ -54,7 +54,6 @@
 // Initial revision
 //
 
-
 package MWC.GUI.Shapes.Symbols.Buoys;
 
 import MWC.GUI.CanvasType;
@@ -64,71 +63,67 @@ import MWC.GenericData.WorldLocation;
 
 public class BarraSym extends BuoySym {
 
-  /**
-	 * 
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
-  public java.awt.Dimension getBounds(){
-    // sort out the size of the symbol at the current scale factor
-    final java.awt.Dimension res = new java.awt.Dimension((int)(2 * 4 * getScaleVal()),(int)( 2 * 4 * getScaleVal()));
-    return res;
-  }
+	@Override
+	public PlainSymbol create() {
+		return new BarraSym();
+	}
 
-  public void paint(final CanvasType dest, final WorldLocation centre)
-  {
-    paint(dest, centre, 0.0);
-  }
+	@Override
+	public java.awt.Dimension getBounds() {
+		// sort out the size of the symbol at the current scale factor
+		final java.awt.Dimension res = new java.awt.Dimension((int) (2 * 4 * getScaleVal()),
+				(int) (2 * 4 * getScaleVal()));
+		return res;
+	}
 
-  @Override
-  public PlainSymbol create()
-  {
-    return new BarraSym();
-  }
+	@Override
+	public String getType() {
+		return SymbolFactory.BARRA;
+	}
 
-  public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
-  {
-    // set the colour
-    dest.setColor(getColor());
+	@Override
+	public void paint(final CanvasType dest, final WorldLocation centre) {
+		paint(dest, centre, 0.0);
+	}
 
-    // create our centre point
-    final java.awt.Point centre = dest.toScreen(theLocation);
-    
-    // handle unable to gen screen coords (if off visible area)
-    if(centre == null)
-      return;
+	@Override
+	public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction) {
+		// set the colour
+		dest.setColor(getColor());
 
-    final int wid = (int)(4 * getScaleVal());
+		// create our centre point
+		final java.awt.Point centre = dest.toScreen(theLocation);
 
-    // draw our box, line by line
-    final java.awt.Point tl = new java.awt.Point(centre.x - wid, centre.y - wid);
-    final java.awt.Point br = new java.awt.Point(centre.x + wid, centre.y + wid);
+		// handle unable to gen screen coords (if off visible area)
+		if (centre == null)
+			return;
 
-    if(!showSimplifiedSymbol())
-    {
-      // do the central character
-      // what's the width?
-      final String str = "P";
-      final int strW = dest.getStringWidth(_myFont,str);
-      final int strH = dest.getStringHeight(_myFont);
-      dest.drawText(_myFont, str, centre.x - strW/2, centre.y + strH/4);
-    }
+		final int wid = (int) (4 * getScaleVal());
 
-    dest.drawLine(tl.x, br.y, br.x - wid / 2, br.y);
-    dest.drawLine(br.x - wid / 2, br.y, br.x, centre.y + wid / 2);
-    dest.drawLine(br.x, centre.y + wid / 2, br.x, tl.y);
-    dest.drawLine(br.x, tl.y, br.x, tl.y);
-    dest.drawLine(br.x, tl.y, tl.x, tl.y);
-    dest.drawLine(tl.x, tl.y, tl.x, br.y);
-  }
+		// draw our box, line by line
+		final java.awt.Point tl = new java.awt.Point(centre.x - wid, centre.y - wid);
+		final java.awt.Point br = new java.awt.Point(centre.x + wid, centre.y + wid);
 
-  public String getType()
-  {    
-    return SymbolFactory.BARRA;
-  }
+		if (!showSimplifiedSymbol()) {
+			// do the central character
+			// what's the width?
+			final String str = "P";
+			final int strW = dest.getStringWidth(_myFont, str);
+			final int strH = dest.getStringHeight(_myFont);
+			dest.drawText(_myFont, str, centre.x - strW / 2, centre.y + strH / 4);
+		}
+
+		dest.drawLine(tl.x, br.y, br.x - wid / 2, br.y);
+		dest.drawLine(br.x - wid / 2, br.y, br.x, centre.y + wid / 2);
+		dest.drawLine(br.x, centre.y + wid / 2, br.x, tl.y);
+		dest.drawLine(br.x, tl.y, br.x, tl.y);
+		dest.drawLine(br.x, tl.y, tl.x, tl.y);
+		dest.drawLine(tl.x, tl.y, tl.x, br.y);
+	}
 
 }
-
-
-
-

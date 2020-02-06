@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 package com.planetmayo.debrief.satc.zigdetector;
 
@@ -24,16 +24,13 @@ import org.joda.time.format.DateTimeFormatter;
 
 import au.com.bytecode.opencsv.CSVReader;
 
-public class Track
-{
+public class Track {
 
-	public static Track read(final String path) throws IOException
-	{
+	public static Track read(final String path) throws IOException {
 		Track res = null;
 		// check it exists
 		final File theFile = new File(path);
-		if (theFile.exists())
-		{
+		if (theFile.exists()) {
 			res = new Track(path);
 		}
 
@@ -49,11 +46,9 @@ public class Track
 	// public double[] averageCourses;
 	// public double[] averageSpeeds;
 
-	public Track(final String path) throws IOException
-	{
+	public Track(final String path) throws IOException {
 
-		final DateTimeFormatter formatter = DateTimeFormat
-				.forPattern("yyMMdd HHmmss.SSS");
+		final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyMMdd HHmmss.SSS");
 
 		// Filename containing the data
 		// String csvFilename = "data/ArcTan_Data.csv";
@@ -70,8 +65,7 @@ public class Track
 		// file
 		int counter = 0;
 
-		try
-		{
+		try {
 			final FileReader fReader = new FileReader(path);
 			csvReader = new CSVReader(fReader, ',', '\'', 1);
 			final List<String[]> content = csvReader.readAll();
@@ -85,13 +79,11 @@ public class Track
 			courses = new double[content.size()];
 			dates = new long[content.size()];
 
-			for (final Object object : content)
-			{
+			for (final Object object : content) {
 				row = (String[]) object;
 				/* parsing data from the list to the variables */
 				final String thisDate = row[0].toString();
-				if (thisDate == null || thisDate.length() == 0)
-				{
+				if (thisDate == null || thisDate.length() == 0) {
 					continue;
 				}
 				dates[counter] = formatter.parseDateTime(thisDate).getMillis();
@@ -102,40 +94,32 @@ public class Track
 
 				counter++;
 			}
-		}
-		finally
-		{
+		} finally {
 //			System.out.println("Counter got to:" + counter);
-			if (csvReader != null)
-			{
+			if (csvReader != null) {
 				csvReader.close();
 			}
 		}
 
 	}
 
-	public double[] getCourses()
-	{
+	public double[] getCourses() {
 		return courses;
 	}
 
-	public long[] getDates()
-	{
+	public long[] getDates() {
 		return dates;
 	}
 
-	public double[] getSpeeds()
-	{
+	public double[] getSpeeds() {
 		return speeds;
 	}
 
-	public double[] getX()
-	{
+	public double[] getX() {
 		return x;
 	}
 
-	public double[] getY()
-	{
+	public double[] getY() {
 		return y;
 	}
 

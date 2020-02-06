@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.cmap.grideditor;
@@ -30,7 +30,6 @@ import org.mwc.cmap.grideditor.interpolation.location.LocationInterpolatorFactor
 import org.mwc.cmap.gridharness.data.GriddableItemDescriptorExtension;
 import org.osgi.framework.BundleContext;
 
-
 public class GridEditorPlugin extends AbstractUIPlugin {
 
 	public static final String IMG_ADD = "icons/16/add.png";
@@ -47,37 +46,17 @@ public class GridEditorPlugin extends AbstractUIPlugin {
 
 	private static GridEditorPlugin ourInstance;
 
+	public static GridEditorPlugin getInstance() {
+		return ourInstance;
+	}
+
 	private String myPluginId;
 
 	private List<IAdapterFactory> myAdapterFactories;
 
-	@Override
-	public void start(final BundleContext context) throws Exception {
-		super.start(context);
-		ourInstance = this;
-		myPluginId = context.getBundle().getSymbolicName();
-		final IAdapterFactory locationChartAdapterFactory = new LocationChartAccess();
-		final IAdapterFactory locationInterpolatorAdapterFactory = new LocationInterpolatorFactory();
-		myAdapterFactories = new LinkedList<IAdapterFactory>();
-		myAdapterFactories.add(locationChartAdapterFactory);
-		myAdapterFactories.add(locationInterpolatorAdapterFactory);
-		Platform.getAdapterManager().registerAdapters(locationChartAdapterFactory, GriddableItemDescriptorExtension.class);
-		Platform.getAdapterManager().registerAdapters(locationInterpolatorAdapterFactory, GriddableItemDescriptorExtension.class);
-	}
-
-	@Override
-	public void stop(final BundleContext context) throws Exception {
-		ourInstance = null;
-		for (final IAdapterFactory next : myAdapterFactories) {
-			Platform.getAdapterManager().unregisterAdapters(next);
-		}
-		myAdapterFactories.clear();
-		myAdapterFactories = null;
-		super.stop(context);
-	}
-
-	public static GridEditorPlugin getInstance() {
-		return ourInstance;
+	private void addImage(final ImageRegistry registry, final String pluginPath) {
+		registry.put(pluginPath,
+				ImageDescriptor.createFromURL(FileLocator.find(getBundle(), new Path(pluginPath), null)));
 	}
 
 	public String getPluginId() {
@@ -96,8 +75,31 @@ public class GridEditorPlugin extends AbstractUIPlugin {
 		addImage(reg, IMG_EXPORT);
 	}
 
-	private void addImage(final ImageRegistry registry, final String pluginPath) {
-		registry.put(pluginPath, ImageDescriptor.createFromURL(FileLocator.find(getBundle(), new Path(pluginPath), null)));
+	@Override
+	public void start(final BundleContext context) throws Exception {
+		super.start(context);
+		ourInstance = this;
+		myPluginId = context.getBundle().getSymbolicName();
+		final IAdapterFactory locationChartAdapterFactory = new LocationChartAccess();
+		final IAdapterFactory locationInterpolatorAdapterFactory = new LocationInterpolatorFactory();
+		myAdapterFactories = new LinkedList<IAdapterFactory>();
+		myAdapterFactories.add(locationChartAdapterFactory);
+		myAdapterFactories.add(locationInterpolatorAdapterFactory);
+		Platform.getAdapterManager().registerAdapters(locationChartAdapterFactory,
+				GriddableItemDescriptorExtension.class);
+		Platform.getAdapterManager().registerAdapters(locationInterpolatorAdapterFactory,
+				GriddableItemDescriptorExtension.class);
+	}
+
+	@Override
+	public void stop(final BundleContext context) throws Exception {
+		ourInstance = null;
+		for (final IAdapterFactory next : myAdapterFactories) {
+			Platform.getAdapterManager().unregisterAdapters(next);
+		}
+		myAdapterFactories.clear();
+		myAdapterFactories = null;
+		super.stop(context);
 	}
 
 }

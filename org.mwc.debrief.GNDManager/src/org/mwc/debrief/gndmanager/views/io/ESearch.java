@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.debrief.gndmanager.views.io;
@@ -35,35 +35,189 @@ import org.mwc.debrief.gndmanager.views.ManagerView;
 import MWC.TacticalData.GND.GDataset;
 import MWC.TacticalData.GND.GTrack;
 
-public class ESearch implements SearchModel
-{
+public class ESearch implements SearchModel {
+
+	public static class FacetWrap implements Facet {
+
+		private final JsonNode _node;
+
+		public FacetWrap(final JsonNode jsonNode) {
+			_node = jsonNode;
+		}
+
+		@Override
+		public int getCount(final int index) {
+			return _node.get("terms").get(index).get("count").asInt();
+		}
+
+		@Override
+		public String getName(final int index) {
+			return _node.get("terms").get(index).get("term").getTextValue();
+		}
+
+		@Override
+		public int size() {
+			int res = 0;
+			if (_node.has("terms"))
+				res = _node.get("terms").size();
+			return res;
+		}
+
+		@Override
+		public ArrayList<String> toList() {
+			final ArrayList<String> res = new ArrayList<String>();
+			for (int i = 0; i < size(); i++) {
+				res.add(getName(i));
+			}
+			return res;
+		}
+
+	}
+
+	protected class MatchListWrap implements MatchList {
+
+		private final JsonNode _node;
+		private final String _dbURL;
+
+		public MatchListWrap(final JsonNode list, final String dbURL) {
+			_node = list;
+			_dbURL = dbURL;
+		}
+
+		@Override
+		public Facet getFacet(final String name) {
+			final JsonNode facets = _node.get("facets");
+			return new FacetWrap(facets.get(name));
+		}
+
+		@Override
+		public Match getMatch(final int index) {
+			final JsonNode node = _node.get("hits").get("hits").get(index);
+			return new MatchWrap(node, _dbURL);
+		}
+
+		@Override
+		public int getNumMatches() {
+			final int hits = _node.get("hits").get("hits").size();
+			return hits;
+		}
+
+	}
+
+	protected class MatchWrap implements Match, IAdaptable {
+		private final JsonNode _node;
+		private final String _dbURL;
+		private EditableWrapper _wrappedMe;
+
+		public MatchWrap(final JsonNode item, final String dbURL) {
+			_node = item;
+			_dbURL = dbURL;
+		}
+
+		@SuppressWarnings("rawtypes")
+		@Override
+		public Object getAdapter(final Class adapter) {
+			final Object res;
+			if (adapter == EditableWrapper.class) {
+				if (_wrappedMe == null) {
+					final GTrack track = loadTrack(getId());
+					_wrappedMe = new EditableWrapper(track, null, null);
+				}
+				res = _wrappedMe;
+			} else
+				res = null;
+			return res;
+		}
+
+		@Override
+		public String getId() {
+			String res = _node.get("_id").getTextValue();
+			res = res.split("_")[0];
+			return res;
+		}
+
+		@Override
+		public String getName() {
+			return _node.get("_source").get("name").getTextValue();
+		}
+
+		@Override
+		public String getPlatform() {
+			return _node.get("_source").get("platform").getTextValue();
+		}
+
+		@Override
+		public String getPlatformType() {
+			return _node.get("_source").get("platform_type").getTextValue();
+		}
+
+		@Override
+		public String getTrial() {
+			return _node.get("_source").get("trial").getTextValue();
+		}
+
+		public GTrack loadTrack(final String id) {
+			GTrack res = null;
+			JsonNode obj;
+			try {
+				final URL url = new URL(_dbURL + "/" + id);
+				final URL databaseURL = new URL(_dbURL);
+				obj = _mapper.readValue(url, JsonNode.class);
+				final GDataset data = new GDataset(obj, databaseURL);
+				res = new GTrack(data);
+			} catch (final JsonParseException e) {
+				e.printStackTrace();
+			} catch (final JsonMappingException e) {
+				e.printStackTrace();
+			} catch (final IOException e) {
+				e.printStackTrace();
+			}
+
+			return res;
+		}
+
+	}
 
 	private final ObjectMapper _mapper;
 
-	public ESearch()
-	{
+	public ESearch() {
 		_mapper = new ObjectMapper();
 	}
 
-	@Override
-	public MatchList getMatches(final String indexURL, final String dbURL, final ManagerView view)
-			throws IOException
-	{
-		final JsonNode query = createQuery(view);
-		return fireSearch(indexURL, dbURL, query);
+	/**
+	 * create a term facet for the specified term
+	 *
+	 * @param parent
+	 * @param term
+	 */
+	private void addFacetFor(final ObjectNode parent, final String term) {
+		final ObjectNode platform = _mapper.createObjectNode();
+		final ObjectNode platTerm = _mapper.createObjectNode();
+		platTerm.put("field", term);
+		platTerm.put("size", 1000);
+		platform.put("terms", platTerm);
+		parent.put(term, platform);
 	}
 
-	@Override
-	public MatchList getAll(final String indexURL, final String dbURL) throws IOException
-	{
-		final ObjectNode queryObj = _mapper.createObjectNode();
-		queryObj.put("match_all", _mapper.createObjectNode());
+	private void addThis(final ArrayNode facets, final List<String> items, final String tag_name) {
+		if (items.size() > 0) {
+			final ObjectNode holder = _mapper.createObjectNode();
+			final ObjectNode terms = _mapper.createObjectNode();
+			final ArrayNode matches = _mapper.createArrayNode();
+			for (final Iterator<String> iterator = items.iterator(); iterator.hasNext();) {
+				final String thisItem = iterator.next();
 
-		return fireSearch(indexURL, dbURL, queryObj);
+				// and store it
+				matches.add(thisItem);
+			}
+			terms.put(tag_name, matches);
+			terms.put("minimum_match", 1);
+			holder.put("terms", terms);
+			facets.add(holder);
+		}
 	}
 
-	public JsonNode createQuery(final ManagerView view)
-	{
+	public JsonNode createQuery(final ManagerView view) {
 		final ArrayNode facets = _mapper.createArrayNode();
 		// ok, get collating the items.
 		addThis(facets, view.getPlatforms().getSelectedItems(), "platform");
@@ -72,8 +226,7 @@ public class ESearch implements SearchModel
 
 		// we also have to do the free search
 		final String freeText = view.getFreeText();
-		if (freeText != null)
-		{
+		if (freeText != null) {
 			final ObjectNode field = _mapper.createObjectNode();
 			final ObjectNode term = _mapper.createObjectNode();
 			term.put("query", freeText);
@@ -90,30 +243,7 @@ public class ESearch implements SearchModel
 		return boolHolder;
 	}
 
-	private void addThis(final ArrayNode facets, final List<String> items, final String tag_name)
-	{
-		if (items.size() > 0)
-		{
-			final ObjectNode holder = _mapper.createObjectNode();
-			final ObjectNode terms = _mapper.createObjectNode();
-			final ArrayNode matches = _mapper.createArrayNode();
-			for (final Iterator<String> iterator = items.iterator(); iterator.hasNext();)
-			{
-				final String thisItem = (String) iterator.next();
-
-				// and store it
-				matches.add(thisItem);
-			}
-			terms.put(tag_name, matches);
-			terms.put("minimum_match", 1);
-			holder.put("terms", terms);
-			facets.add(holder);
-		}
-	}
-
-	private MatchList fireSearch(final String root, final String dbURL, final JsonNode queryObj)
-			throws IOException
-	{
+	private MatchList fireSearch(final String root, final String dbURL, final JsonNode queryObj) throws IOException {
 		MatchList res = null;
 
 		// sort out the facets
@@ -129,214 +259,33 @@ public class ESearch implements SearchModel
 		qq.put("query", queryObj);
 		qq.put("facets", facets);
 
-		try
-		{
+		try {
 			URL url;
 			url = new URL(root + "/_search?pretty=true&source=" + qq.toString());
 			final JsonNode obj = _mapper.readValue(url, JsonNode.class);
 			res = new MatchListWrap(obj, dbURL);
-		}
-		catch (final MalformedURLException e)
-		{
+		} catch (final MalformedURLException e) {
 			e.printStackTrace();
-		}
-		catch (final JsonParseException e)
-		{
+		} catch (final JsonParseException e) {
 			e.printStackTrace();
-		}
-		catch (final JsonMappingException e)
-		{
+		} catch (final JsonMappingException e) {
 			e.printStackTrace();
 		}
 		return res;
 	}
 
-	protected class MatchListWrap implements MatchList
-	{
+	@Override
+	public MatchList getAll(final String indexURL, final String dbURL) throws IOException {
+		final ObjectNode queryObj = _mapper.createObjectNode();
+		queryObj.put("match_all", _mapper.createObjectNode());
 
-		private final JsonNode _node;
-		private final String _dbURL;
-
-		public MatchListWrap(final JsonNode list, final String dbURL)
-		{
-			_node = list;
-			_dbURL = dbURL;
-		}
-
-		@Override
-		public int getNumMatches()
-		{
-			final int hits = _node.get("hits").get("hits").size();
-			return hits;
-		}
-
-		@Override
-		public Match getMatch(final int index)
-		{
-			final JsonNode node = _node.get("hits").get("hits").get(index);
-			return new MatchWrap(node, _dbURL);
-		}
-
-		@Override
-		public Facet getFacet(final String name)
-		{
-			final JsonNode facets = _node.get("facets");
-			return new FacetWrap(facets.get(name));
-		}
-
+		return fireSearch(indexURL, dbURL, queryObj);
 	}
 
-	public static class FacetWrap implements Facet
-	{
-
-		private final JsonNode _node;
-
-		public FacetWrap(final JsonNode jsonNode)
-		{
-			_node = jsonNode;
-		}
-
-		@Override
-		public int size()
-		{
-			int res = 0;
-			if (_node.has("terms"))
-				res = _node.get("terms").size();
-			return res;
-		}
-
-		@Override
-		public String getName(final int index)
-		{
-			return _node.get("terms").get(index).get("term").getTextValue();
-		}
-
-		@Override
-		public int getCount(final int index)
-		{
-			return _node.get("terms").get(index).get("count").asInt();
-		}
-
-		@Override
-		public ArrayList<String> toList()
-		{
-			final ArrayList<String> res = new ArrayList<String>();
-			for (int i = 0; i < size(); i++)
-			{
-				res.add(getName(i));
-			}
-			return res;
-		}
-
-	}
-
-	protected class MatchWrap implements Match, IAdaptable
-	{
-		private final JsonNode _node;
-		private final String _dbURL;
-		private EditableWrapper _wrappedMe;
-
-		public MatchWrap(final JsonNode item, final String dbURL)
-		{
-			_node = item;
-			_dbURL = dbURL;
-		}
-
-		@Override
-		public String getName()
-		{
-			return _node.get("_source").get("name").getTextValue();
-		}
-
-		@Override
-		public String getPlatform()
-		{
-			return _node.get("_source").get("platform").getTextValue();
-		}
-
-		@Override
-		public String getPlatformType()
-		{
-			return _node.get("_source").get("platform_type").getTextValue();
-		}
-
-		@Override
-		public String getTrial()
-		{
-			return _node.get("_source").get("trial").getTextValue();
-		}
-
-		@Override
-		public String getId()
-		{
-			String res = _node.get("_id").getTextValue();
-			res = res.split("_")[0];
-			return res;
-		}
-
-		@SuppressWarnings("rawtypes")
-		@Override
-		public Object getAdapter(final Class adapter)
-		{
-			final Object res;
-			if (adapter == EditableWrapper.class)
-			{
-				if (_wrappedMe == null)
-				{
-					final GTrack track = loadTrack(getId());
-					_wrappedMe = new EditableWrapper(track, null, null);
-				}
-				res = _wrappedMe;
-			}
-			else
-				res = null;
-			return res;
-		}
-
-		public GTrack loadTrack(final String id)
-		{
-			GTrack res = null;
-			JsonNode obj;
-			try
-			{
-				final URL url = new URL(_dbURL + "/" + id);
-				final URL databaseURL = new URL(_dbURL);
-				obj = _mapper.readValue(url, JsonNode.class);
-				final GDataset data = new GDataset(obj, databaseURL);
-				res = new GTrack(data);
-			}
-			catch (final JsonParseException e)
-			{
-				e.printStackTrace();
-			}
-			catch (final JsonMappingException e)
-			{
-				e.printStackTrace();
-			}
-			catch (final IOException e)
-			{
-				e.printStackTrace();
-			}
-
-			return res;
-		}
-
-	}
-
-	/**
-	 * create a term facet for the specified term
-	 * 
-	 * @param parent
-	 * @param term
-	 */
-	private void addFacetFor(final ObjectNode parent, final String term)
-	{
-		final ObjectNode platform = _mapper.createObjectNode();
-		final ObjectNode platTerm = _mapper.createObjectNode();
-		platTerm.put("field", term);
-		platTerm.put("size", 1000);
-		platform.put("terms", platTerm);
-		parent.put(term, platform);
+	@Override
+	public MatchList getMatches(final String indexURL, final String dbURL, final ManagerView view) throws IOException {
+		final JsonNode query = createQuery(view);
+		return fireSearch(indexURL, dbURL, query);
 	}
 
 }

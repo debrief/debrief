@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.debrief.core.creators.shapes;
@@ -29,40 +29,47 @@ import org.eclipse.ui.handlers.HandlerUtil;
  * @author ian.mayo
  *
  */
-public class AutoSelectTarget extends AbstractHandler implements IWorkbenchWindowActionDelegate
-{
-	
-	private static boolean _ticked = true; 
+public class AutoSelectTarget extends AbstractHandler implements IWorkbenchWindowActionDelegate {
 
-	public static boolean getAutoSelectTarget()
-	{
+	private static boolean _ticked = true;
+
+	public static boolean getAutoSelectTarget() {
 		return _ticked;
 	}
-	
-	public static void setAutoSelectTarget(final boolean yes)
-	{
+
+	public static void setAutoSelectTarget(final boolean yes) {
 		_ticked = yes;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
-	public void dispose()
-	{
+	@Override
+	public void dispose() {
+	}
+
+	@Override
+	public Object execute(final ExecutionEvent event) throws ExecutionException {
+
+		final Command command = event.getCommand();
+		@SuppressWarnings("unused")
+		final boolean oldValue = HandlerUtil.toggleCommandState(command);
+		_ticked = !_ticked;
+		return null;
 	}
 
 	/**
 	 * @param window
 	 */
-	public void init(final IWorkbenchWindow window)
-	{
+	@Override
+	public void init(final IWorkbenchWindow window) {
 	}
 
 	/**
 	 * @param action
 	 */
-	public void run(final IAction action)
-	{
+	@Override
+	public void run(final IAction action) {
 		_ticked = !_ticked;
 		System.out.println("state is now:" + _ticked);
 	}
@@ -71,18 +78,7 @@ public class AutoSelectTarget extends AbstractHandler implements IWorkbenchWindo
 	 * @param action
 	 * @param selection
 	 */
-	public void selectionChanged(final IAction action, final ISelection selection)
-	{
-	}
-
 	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException
-	{
-
-		Command command = event.getCommand();
-		@SuppressWarnings("unused")
-		boolean oldValue = HandlerUtil.toggleCommandState(command);
-		_ticked = !_ticked;
-		return null;
+	public void selectionChanged(final IAction action, final ISelection selection) {
 	}
 }

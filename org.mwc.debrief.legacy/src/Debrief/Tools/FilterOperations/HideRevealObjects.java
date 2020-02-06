@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package Debrief.Tools.FilterOperations;
@@ -55,269 +55,263 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WatchableList;
 
 /**************************************************************
- * Class which lets user reformat a series of positions in the Track/Time toolbox.
- * Whilst the Toolbox may contain different types of object, this just edits
- * Fixes contained in Tracks
+ * Class which lets user reformat a series of positions in the Track/Time
+ * toolbox. Whilst the Toolbox may contain different types of object, this just
+ * edits Fixes contained in Tracks
  **************************************************************/
 
-public final class HideRevealObjects implements FilterOperation
-{
+public final class HideRevealObjects implements FilterOperation {
 
-  /*********************************************************************************************
-   * member objects
-   **********************************************************************************************/
+	/*********************************************************************************************
+	 * member objects
+	 **********************************************************************************************/
 
-  /** the selected objects
-   *
-   */
-  private Vector<WatchableList> _theObjects = null;
+	///////////////////////////////////////////////////////
+	// store action information
+	///////////////////////////////////////////////////////
+	final static class HideRevealAction implements Action {
+		/**
+		 * embedded class to store the changes we make
+		 *
+		 */
+		public final class ItemEdit {
+			public final Object _object;
+			public final boolean _oldValue;
 
-  /** the set of layers which we will update
-   *
-   */
-  private final Layers _theLayers;
+			public ItemEdit(final Object object, final boolean oldValue) {
+				_object = object;
+				_oldValue = oldValue;
+			}
+		} // end of ItemEdit class
 
-  /** the separator we use in the operation description
-   *
-   */
-  private final String _theSeparator = System.getProperties().getProperty("line.separator");
+		private final Vector<ItemEdit> _valuesChanged;
+		private final boolean _hideIt;
 
-  /*********************************************************************************************
-   * constructor
-   **********************************************************************************************/
+		private final Layers _theLayers1;
 
-  /** constructor
-   * @param theLayers the layers object to be updated on our completion
-   */
-  public HideRevealObjects(final Layers theLayers)
-  {
-    _theLayers = theLayers;
-  }
+		public HideRevealAction(final boolean hideIt, final Layers theLayers) {
+			_hideIt = hideIt;
+			_theLayers1 = theLayers;
+			_valuesChanged = new Vector<ItemEdit>(0, 1);
+		}
 
-  /*********************************************************************************************
-   * member methods
-   **********************************************************************************************/
+		/**
+		 * add an update to a new object
+		 *
+		 */
+		public final void changeThisObject(final Plottable val) {
+			final boolean oldVal = val.getVisible();
 
-  public final String getDescription()
-  {
-    String res = "2. Select objects to be hidden/reveals";
-    res += _theSeparator + "3. Press 'Apply' button";
-    res += _theSeparator + "4. Select Hide/Reveal from the dialog box which appears";
-    res += _theSeparator + 	"====================";
-    res += _theSeparator + 	"This operations allows a group of objects to be hidden/revealed";
-    return res;
-  }
+			// remember the object and it's old value
+			final ItemEdit ie = new ItemEdit(val, oldVal);
 
-  /** get the property which is to be edited
-   *
-   */
-  private boolean getHideReveal()
-  {
-    boolean res = false;
+			// and store it
+			_valuesChanged.add(ie);
+		}
 
-    // create the selections
-    final String[] list= new String[]{"Hide", "Reveal"};
+		/**
+		 * make it so!
+		 */
+		@Override
+		public final void execute() {
+			final Iterator<ItemEdit> it = _valuesChanged.iterator();
+			while (it.hasNext()) {
+				final ItemEdit ie = it.next();
+				final Plottable theO = (Plottable) ie._object;
+				theO.setVisible(!_hideIt);
+			}
 
-    // find out which one the user wants to edit
-    final Object val = JOptionPane.showInputDialog(null,
-                                             "Do you wish to hide or reveal the selected objects?",
-                                             "Hide/Reveal objects",
-                                             JOptionPane.QUESTION_MESSAGE,
-                                             null,
-                                             list,
-                                             null);
+			_theLayers1.fireReformatted(null);
+		}
 
-    final String selected = (String)val;
-    if(selected.equals("Hide"))
-    {
-      res = true;
-    }
-    else
-      res = false;
+		/**
+		 * specify is this is an operation which can be redone
+		 */
+		@Override
+		public final boolean isRedoable() {
+			return true;
+		}
 
-    return res;
-  }
+		/**
+		 * specify is this is an operation which can be undone
+		 */
+		@Override
+		public final boolean isUndoable() {
+			return true;
+		}
 
-  public final void setPeriod(final HiResDate startDTG, final HiResDate finishDTG)
-  {
-    // ignore, since we don't mind
-  }
+		/**
+		 * return string describing this operation
+		 *
+		 * @return String describing this operation
+		 */
+		@Override
+		public final String toString() {
+			return "Reformat time values";
+		}
 
-  public final void setTracks(final java.util.Vector<WatchableList> selectedTracks)
-  {
-    // store the objects
-    _theObjects = selectedTracks;
-  }
+		/**
+		 * take the shape away from the layer
+		 */
+		@Override
+		public final void undo() {
+			final Iterator<ItemEdit> it = _valuesChanged.iterator();
+			while (it.hasNext()) {
+				final ItemEdit ie = it.next();
+				final Plottable theO = (Plottable) ie._object;
+				theO.setVisible(ie._oldValue);
+			}
 
-  /** the user has pressed RESET whilst this button is pressed
-   *
-   * @param startTime the new start time
-   * @param endTime the new end time
-   */
-  public void resetMe(final HiResDate startTime, final HiResDate endTime)
-  {
-  }
+			_theLayers1.fireReformatted(null);
+		}
 
-  public final void execute()
-  {
-  }
+	} // end of Action Class
 
-  public final Action getData()
-  {
-    // produce the list of modifications to be made
-    HideRevealAction res = null;
+	/**
+	 * the selected objects
+	 *
+	 */
+	private Vector<WatchableList> _theObjects = null;
 
-    // check we've got some tracks
-    if(_theObjects == null)
-    {
-      MWC.GUI.Dialogs.DialogFactory.showMessage("Hide/Reveal objects", "Please select some objects prior to starting");
-      return res;
-    }
+	/**
+	 * the set of layers which we will update
+	 *
+	 */
+	private final Layers _theLayers;
 
-    // find out what we're doing
-    final boolean hideIt = getHideReveal();
+	/*********************************************************************************************
+	 * constructor
+	 **********************************************************************************************/
 
-    // make our symbols and labels visible
-    final Enumeration<WatchableList> iter = _theObjects.elements();
-    while(iter.hasMoreElements())
-    {
-      final WatchableList wl = (WatchableList)iter.nextElement();
+	/**
+	 * the separator we use in the operation description
+	 *
+	 */
+	private final String _theSeparator = System.getProperties().getProperty("line.separator");
 
-      if(wl instanceof Plottable)
-      {
-        final Plottable thisP = (Plottable)wl;
+	/**
+	 * constructor
+	 *
+	 * @param theLayers the layers object to be updated on our completion
+	 */
+	public HideRevealObjects(final Layers theLayers) {
+		_theLayers = theLayers;
+	}
 
-        if(res == null)
-        {
-          res = new HideRevealAction(hideIt, this._theLayers);
-        }
+	@Override
+	public final void actionPerformed(final java.awt.event.ActionEvent p1) {
+	}
 
-        // and store it
-        res.changeThisObject(thisP);
-      }
-    }
+	@Override
+	public final void close() {
+	}
 
-    // return the new action
-    return res;
-  }
+	@Override
+	public final void execute() {
+	}
 
-  public final String getLabel()
-  {
-    return "Hide/Reveal objects";
-  }
+	@Override
+	public final Action getData() {
+		// produce the list of modifications to be made
+		HideRevealAction res = null;
 
-  public final String getImage()
-  {
-    return null;
-  }
+		// check we've got some tracks
+		if (_theObjects == null) {
+			MWC.GUI.Dialogs.DialogFactory.showMessage("Hide/Reveal objects",
+					"Please select some objects prior to starting");
+			return res;
+		}
 
-  public final void actionPerformed(final java.awt.event.ActionEvent p1)
-  {
-  }
+		// find out what we're doing
+		final boolean hideIt = getHideReveal();
 
-  public final void close()
-  {
-  }
+		// make our symbols and labels visible
+		final Enumeration<WatchableList> iter = _theObjects.elements();
+		while (iter.hasMoreElements()) {
+			final WatchableList wl = iter.nextElement();
 
-  ///////////////////////////////////////////////////////
-  // store action information
-  ///////////////////////////////////////////////////////
-  final static class HideRevealAction implements Action
-  {
-    private final Vector<ItemEdit> _valuesChanged;
-    private final boolean _hideIt;
-    private final Layers _theLayers1;
+			if (wl instanceof Plottable) {
+				final Plottable thisP = (Plottable) wl;
 
-    public HideRevealAction(final boolean hideIt, final Layers theLayers)
-    {
-      _hideIt = hideIt;
-      _theLayers1 = theLayers;
-      _valuesChanged = new Vector<ItemEdit>(0,1);
-    }
+				if (res == null) {
+					res = new HideRevealAction(hideIt, this._theLayers);
+				}
 
-    /** add an update to a new object
-     *
-     */
-    public final void changeThisObject(final Plottable val)
-    {
-      final boolean oldVal = val.getVisible();
+				// and store it
+				res.changeThisObject(thisP);
+			}
+		}
 
-      // remember the object and it's old value
-      final ItemEdit ie = new ItemEdit(val, oldVal);
+		// return the new action
+		return res;
+	}
 
-      // and store it
-      _valuesChanged.add(ie);
-    }
+	/*********************************************************************************************
+	 * member methods
+	 **********************************************************************************************/
 
+	@Override
+	public final String getDescription() {
+		String res = "2. Select objects to be hidden/reveals";
+		res += _theSeparator + "3. Press 'Apply' button";
+		res += _theSeparator + "4. Select Hide/Reveal from the dialog box which appears";
+		res += _theSeparator + "====================";
+		res += _theSeparator + "This operations allows a group of objects to be hidden/revealed";
+		return res;
+	}
 
-    /** specify is this is an operation which can be undone
-     */
-    public final boolean isUndoable()
-    {
-      return true;
-    }
+	/**
+	 * get the property which is to be edited
+	 *
+	 */
+	private boolean getHideReveal() {
+		boolean res = false;
 
-    /** specify is this is an operation which can be redone
-     */
-    public final boolean isRedoable()
-    {
-      return true;
-    }
+		// create the selections
+		final String[] list = new String[] { "Hide", "Reveal" };
 
-    /** return string describing this operation
-     * @return String describing this operation
-     */
-    public final String toString()
-    {
-      return "Reformat time values";
-    }
+		// find out which one the user wants to edit
+		final Object val = JOptionPane.showInputDialog(null, "Do you wish to hide or reveal the selected objects?",
+				"Hide/Reveal objects", JOptionPane.QUESTION_MESSAGE, null, list, null);
 
-    /** take the shape away from the layer
-     */
-    public final void undo()
-    {
-      final Iterator<ItemEdit> it = _valuesChanged.iterator();
-      while(it.hasNext())
-      {
-        final ItemEdit ie = (ItemEdit)it.next();
-        final Plottable theO = (Plottable)ie._object;
-        theO.setVisible(ie._oldValue);
-      }
+		final String selected = (String) val;
+		if (selected.equals("Hide")) {
+			res = true;
+		} else
+			res = false;
 
-      _theLayers1.fireReformatted(null);
-    }
+		return res;
+	}
 
-    /** make it so!
-     */
-    public final void execute()
-    {
-      final Iterator<ItemEdit> it = _valuesChanged.iterator();
-      while(it.hasNext())
-      {
-        final ItemEdit ie = (ItemEdit)it.next();
-        final Plottable theO = (Plottable)ie._object;
-        theO.setVisible(!_hideIt);
-      }
+	@Override
+	public final String getImage() {
+		return null;
+	}
 
-      _theLayers1.fireReformatted(null);
-    }
+	@Override
+	public final String getLabel() {
+		return "Hide/Reveal objects";
+	}
 
-    /** embedded class to store the changes we make
-     *
-     */
-    public final class ItemEdit
-    {
-      public final Object _object;
-      public final boolean _oldValue;
+	/**
+	 * the user has pressed RESET whilst this button is pressed
+	 *
+	 * @param startTime the new start time
+	 * @param endTime   the new end time
+	 */
+	@Override
+	public void resetMe(final HiResDate startTime, final HiResDate endTime) {
+	}
 
-      public ItemEdit(final Object object, final boolean oldValue)
-      {
-        _object = object;
-        _oldValue = oldValue;
-      }
-    } // end of ItemEdit class
+	@Override
+	public final void setPeriod(final HiResDate startDTG, final HiResDate finishDTG) {
+		// ignore, since we don't mind
+	}
 
-  } // end of Action Class
+	@Override
+	public final void setTracks(final java.util.Vector<WatchableList> selectedTracks) {
+		// store the objects
+		_theObjects = selectedTracks;
+	}
 
 }
-

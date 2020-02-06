@@ -4,16 +4,16 @@ package Debrief.ReaderWriter.XML.Formatters;
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 import java.util.ArrayList;
@@ -25,118 +25,103 @@ import org.w3c.dom.Element;
 import Debrief.Wrappers.Formatters.TrackNameAtEndFormatListener;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 
-public abstract class TrackNameAtEndFormatHandler extends
-    MWC.Utilities.ReaderWriter.XML.MWCXMLReader
-{
-  private static final String MY_TYPE = "TrackNameAtEndFormatter";
+public abstract class TrackNameAtEndFormatHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader {
+	private static final String MY_TYPE = "TrackNameAtEndFormatter";
 
-  /**
-   * and define the strings used to describe the shape
-   * 
-   */
-  private static final String NAME = "Name";
-  private static final String ACTIVE = "Active";
-  private static final String TRACKS = "Tracks";
+	/**
+	 * and define the strings used to describe the shape
+	 *
+	 */
+	private static final String NAME = "Name";
+	private static final String ACTIVE = "Active";
+	private static final String TRACKS = "Tracks";
 
-  private String fName;
-  private List<String> trackNames;
+	static public void exportThisPlottable(final MWC.GUI.Plottable plottable, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc) {
 
-  protected boolean active;
+		final Element theFormatter = doc.createElement(MY_TYPE);
+		parent.appendChild(theFormatter);
 
-  public TrackNameAtEndFormatHandler()
-  {
-    super(MY_TYPE);
+		final TrackNameAtEndFormatListener theShape = (TrackNameAtEndFormatListener) plottable;
 
-    addAttributeHandler(new HandleAttribute(NAME)
-    {
-      public void setValue(final String name, final String value)
-      {
-        fName = value;
-      }
-    });
-    addAttributeHandler(new HandleAttribute(TRACKS)
-    {
-      public void setValue(final String name, final String value)
-      {
-        // check it's non-empty
-        if (value.length() > 0)
-        {
-          trackNames = new ArrayList<String>();
+		// put the parameters into the parent
+		theFormatter.setAttribute(NAME, theShape.getName());
+		final StringBuffer trackNames = new StringBuffer();
+		final String[] tracks = theShape.getTracks();
+		for (int i = 0; i < tracks.length; i++) {
+			final String string = tracks[i];
+			trackNames.append(string);
+			trackNames.append(" ");
+		}
 
-          // ok, parse the tracks
-          // get a stream from the string
-          final StringTokenizer st = new StringTokenizer(value);
+		theFormatter.setAttribute(NAME, theShape.getName());
+		theFormatter.setAttribute(TRACKS, trackNames.toString());
+		theFormatter.setAttribute(ACTIVE, writeThis(theShape.getVisible()));
+	}
 
-          while (st.hasMoreElements())
-          {
-            String nextItem =
-                AbstractPlainLineImporter.checkForQuotedName(st).trim();
-            if (nextItem != null && nextItem.length() > 0)
-            {
-              trackNames.add(nextItem);
-            }
-          }
-        }
+	private String fName;
 
-      }
-    });
-    addAttributeHandler(new HandleBooleanAttribute(ACTIVE)
-    {
-      public void setValue(final String name, final boolean value)
-      {
-        active = value;
-      }
-    });
+	private List<String> trackNames;
 
-  }
+	protected boolean active;
 
-  public void elementClosed()
-  {
-    String[] names = null;
-    if (trackNames != null)
-    {
-      names = trackNames.toArray(new String[]
-      {});
-    }
+	public TrackNameAtEndFormatHandler() {
+		super(MY_TYPE);
 
-    // create the object
-    TrackNameAtEndFormatListener listener =
-        new TrackNameAtEndFormatListener(fName, names);
+		addAttributeHandler(new HandleAttribute(NAME) {
+			@Override
+			public void setValue(final String name, final String value) {
+				fName = value;
+			}
+		});
+		addAttributeHandler(new HandleAttribute(TRACKS) {
+			@Override
+			public void setValue(final String name, final String value) {
+				// check it's non-empty
+				if (value.length() > 0) {
+					trackNames = new ArrayList<String>();
 
-    addFormatter(listener);
+					// ok, parse the tracks
+					// get a stream from the string
+					final StringTokenizer st = new StringTokenizer(value);
 
-    // reset the local parameters
-    fName = null;
-    trackNames = null;
-    active = true;
-  }
+					while (st.hasMoreElements()) {
+						final String nextItem = AbstractPlainLineImporter.checkForQuotedName(st).trim();
+						if (nextItem != null && nextItem.length() > 0) {
+							trackNames.add(nextItem);
+						}
+					}
+				}
 
-  abstract public void addFormatter(MWC.GUI.Editable editable);
+			}
+		});
+		addAttributeHandler(new HandleBooleanAttribute(ACTIVE) {
+			@Override
+			public void setValue(final String name, final boolean value) {
+				active = value;
+			}
+		});
 
-  static public void exportThisPlottable(final MWC.GUI.Plottable plottable,
-      final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
-  {
+	}
 
-    Element theFormatter = doc.createElement(MY_TYPE);
-    parent.appendChild(theFormatter);
+	abstract public void addFormatter(MWC.GUI.Editable editable);
 
-    final TrackNameAtEndFormatListener theShape =
-        (TrackNameAtEndFormatListener) plottable;
+	@Override
+	public void elementClosed() {
+		String[] names = null;
+		if (trackNames != null) {
+			names = trackNames.toArray(new String[] {});
+		}
 
-    // put the parameters into the parent
-    theFormatter.setAttribute(NAME, theShape.getName());
-    StringBuffer trackNames = new StringBuffer();
-    String[] tracks = theShape.getTracks();
-    for (int i = 0; i < tracks.length; i++)
-    {
-      String string = tracks[i];
-      trackNames.append(string);
-      trackNames.append(" ");
-    }
+		// create the object
+		final TrackNameAtEndFormatListener listener = new TrackNameAtEndFormatListener(fName, names);
 
-    theFormatter.setAttribute(NAME, theShape.getName());
-    theFormatter.setAttribute(TRACKS, trackNames.toString());
-    theFormatter.setAttribute(ACTIVE, writeThis(theShape.getVisible()));
-  }
+		addFormatter(listener);
+
+		// reset the local parameters
+		fName = null;
+		trackNames = null;
+		active = true;
+	}
 
 }

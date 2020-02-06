@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: PlainChart.java,v $
@@ -184,6 +184,7 @@ package MWC.GUI;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -202,13 +203,49 @@ import MWC.GenericData.WorldLocation;
 /**
  * GUI-independent implemententation of a chart
  */
-abstract public class PlainChart implements Pane, CanvasType.PaintListener, Serializable,
-		MouseListener, MouseMotionListener
-{
+abstract public class PlainChart
+		implements Pane, CanvasType.PaintListener, Serializable, MouseListener, MouseMotionListener {
 
 	// ////////////////////////////////////////////////////////
 	// member variables
 	// ////////////////////////////////////////////////////////
+
+	// //////////////////////////////////////////////////////////
+	// more listener convenience methods
+	// //////////////////////////////////////////////////////////
+	/**
+	 * definition of function to be implemented for each mouse movement
+	 */
+	public interface ChartClickListener {
+		public void CursorClicked(Point thePoint, WorldLocation thePos, CanvasType theCanvas, Layers theData);
+	}
+
+	/**
+	 * definition of function to be implemented for each mouse movement
+	 */
+	public interface ChartCursorMovedListener {
+		public void cursorMoved(WorldLocation thePos, boolean dragging, Layers theData);
+	}
+
+	// //////////////////////////////////////////////////////////
+	// double-click listener interface
+	// //////////////////////////////////////////////////////////
+	public interface ChartDoubleClickListener {
+		public void cursorDblClicked(PlainChart theChart, WorldLocation theLocation, Point thePoint);
+	}
+
+	/**
+	 * definition of function to be implemented if an area is selected on the chart
+	 */
+	public interface ChartDragListener {
+		public void areaSelected(WorldLocation theLocation, Point thePoint);
+
+		public void dragging(WorldLocation theLocation, Point thePoint);
+
+		public Rubberband getRubberband();
+
+		public void startDrag(WorldLocation theLocation, Point thePoint);
+	}
 
 	/**
 	 * serialisation constant, to manage file version control
@@ -243,12 +280,16 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 	transient protected Stack<ChartDoubleClickListener> _theDblClickListeners;
 
 	/**
-	 * classes which is listening out for left and right (res) single clicks on
-	 * the chart
+	 * classes which is listening out for left and right (res) single clicks on the
+	 * chart
 	 */
 	transient protected ChartClickListener _theLeftClickListener;
 
 	transient protected ChartClickListener _theRightClickListener;
+
+	// ////////////////////////////////////////////////////////
+	// member functions, mostly callbacks
+	// ////////////////////////////////////////////////////////
 
 	/**
 	 * classes which want to listen out for any cursor movements
@@ -263,67 +304,61 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 	// ////////////////////////////////////////////////////////
 	// constructor
 	// ////////////////////////////////////////////////////////
-	public PlainChart(final Layers theLayers)
-	{
+	public PlainChart(final Layers theLayers) {
 		// create a common listener for both types of change
-		_dataReformattedListener = new DataListenerAdaptor()
-		{
+		_dataReformattedListener = new DataListenerAdaptor() {
 
-			public void dataReformatted(final Layers theData, final Layer changedLayer)
-			{
-				if (!_suspendUpdates)
-					update(changedLayer);
-			}
-
-			public void dataModified(final Layers theData, final Layer changedLayer)
-			{
-				if (!_suspendUpdates)
-					update(changedLayer);
-			}
-
-			public void dataExtended(final Layers theData)
-			{
-				if (!_suspendUpdates)
-				{
-				  WorldArea area = theData.getBounds();
+			@Override
+			public void dataExtended(final Layers theData) {
+				if (!_suspendUpdates) {
+					final WorldArea area = theData.getBounds();
 					// do we need to rescale the data?
-				  if(Layers.getDebriefOrigin().equals(area))
-          {
-            WorldArea myArea = theData.getRawBounds();
-            if(myArea != null)
-            {
-              rescale();
-            }
-          }
+					if (Layers.getDebriefOrigin().equals(area)) {
+						final WorldArea myArea = theData.getRawBounds();
+						if (myArea != null) {
+							rescale();
+						}
+					}
 					// and trigger a full repaint
 					update();
 				}
 			}
 
-			/** ok, we know which specific layer has been updated. fire away...
-			 * 
+			/**
+			 * ok, we know which specific layer has been updated. fire away...
+			 *
 			 * @param theData
 			 * @param newItem
 			 * @param parent
 			 */
-			public void dataExtended(final Layers theData, final Plottable newItem, final HasEditables parent)
-			{
-				if (!_suspendUpdates)
-				{
-				  WorldArea dataArea = getCanvas().getProjection().getDataArea();
-				  
+			@Override
+			public void dataExtended(final Layers theData, final Plottable newItem, final HasEditables parent) {
+				if (!_suspendUpdates) {
+					final WorldArea dataArea = getCanvas().getProjection().getDataArea();
+
 					// do we need to rescale the data?
-					if (dataArea!=null && dataArea.equals(Layers.getDebriefOrigin()))
-					{
-					  // note - this logic got changed, to meet Full Debrief requirements, since 
-					  // we only want plot to rescale if it has only just loaded.
+					if (dataArea != null && dataArea.equals(Layers.getDebriefOrigin())) {
+						// note - this logic got changed, to meet Full Debrief requirements, since
+						// we only want plot to rescale if it has only just loaded.
 						rescale();
 					}
-						
+
 					// and trigger a full repaint
-					//rescale();
+					// rescale();
 					update(parent);
 				}
+			}
+
+			@Override
+			public void dataModified(final Layers theData, final Layer changedLayer) {
+				if (!_suspendUpdates)
+					update(changedLayer);
+			}
+
+			@Override
+			public void dataReformatted(final Layers theData, final Layer changedLayer) {
+				if (!_suspendUpdates)
+					update(changedLayer);
 			}
 		};
 
@@ -334,66 +369,363 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 
 	}
 
-	public void setLayers(final Layers theLayers)
-	{
-		// hmm, do we have an exising set of layers?
-		if (_theLayers != null)
-		{
-			// yup, better remove ourselves
-			// listen out for new data being added
-			_theLayers.removeDataExtendedListener(_dataReformattedListener);
+	/**
+	 * add a cursor movement listener
+	 */
+	public void addCursorDblClickedListener(final ChartDoubleClickListener theListener) {
+		_theDblClickListeners.addElement(theListener);
+	}
 
-			// listen out for the data being reformatted
-			_theLayers.removeDataReformattedListener(_dataReformattedListener);
+	/**
+	 * add a cursor movement listener
+	 */
+	public void addCursorMovedListener(final ChartCursorMovedListener theListener) {
+		_movementListeners.addElement(theListener);
+	}
 
-			// listen out for the data being modified
-			_theLayers.removeDataModifiedListener(_dataReformattedListener);
+	/**
+	 * add a cursor movement listener
+	 */
+	public void addLeftClickListener(final ChartClickListener theListener) {
+		_theLeftClickListener = theListener;
+	}
+
+	/**
+	 * add a cursor movement listener
+	 */
+	public void addRightClickListener(final ChartClickListener theListener) {
+		_theRightClickListener = theListener;
+	}
+
+	public void canvasResized() {
+		/**
+		 * HACK: in this function we're having to overcome the fact that the panel gets
+		 * 3 resize calls for each real resize
+		 */
+
+		// see if we are still initialising our chart
+		final Dimension sz = getScreenSize();
+		if ((sz.width != 0) && (sz.height != 0)) {
+
+			_theSize = sz;
+
+			final PlainProjection theProj = getCanvas().getProjection();
+
+			// retrieve the data area
+			final WorldArea dataArea = theProj.getDataArea();
+
+			// resize to fit the new window
+			theProj.zoom(1);
+
+			// override the data area
+			theProj.setDataArea(dataArea);
+
+			// and redraw. Note this call isn't essential, but it's absence causes an SWT
+			// error,
+			// presumably associated with the buffered images not matching the size of the
+			// updated window
+			getCanvas().updateMe();
+		}
+	}
+
+	/**
+	 * provide method to clear stored data
+	 */
+	public void close() {
+		// ok, forget the layesr object - and stop listening to it
+		setLayers(null);
+
+		// remove the layer listeners
+		_theSize = null;
+		_theLayers = null;
+		_theChartDragListener = null;
+		_theChartDblClickListener = null;
+		_theDblClickListeners = null;
+		_theLeftClickListener = null;
+		_theRightClickListener = null;
+		_movementListeners.removeAllElements();
+		_movementListeners = null;
+
+	}
+
+	public abstract CanvasType getCanvas();
+
+	public ChartDragListener getChartDragListener() {
+		return _theChartDragListener;
+	}
+
+	@Override
+	public WorldArea getDataArea() {
+		if (_theLayers == null)
+			return null;
+		final WorldArea res = _theLayers.getBounds();
+		return res;
+	}
+
+	/**
+	 * get the layers object being plotted by this canvas
+	 */
+	public Layers getLayers() {
+		return _theLayers;
+	}
+
+	@Override
+	public String getName() {
+		return "Chart";
+	}
+
+	/**
+	 * return the gui component for the chart
+	 */
+	abstract public java.awt.Component getPanel();
+
+	public WorldArea getProjectionArea() {
+		return getCanvas().getProjection().getDataArea();
+	}
+
+	// /////////////////////////////////////////////////////////
+	// interfaces for listener classes
+	// /////////////////////////////////////////////////////////
+
+	public abstract Dimension getScreenSize();
+
+	// //////////////////////////////////////////////////////////
+	// mouse events
+	// //////////////////////////////////////////////////////////
+	@Override
+	public void mouseClicked(final MouseEvent p1) {
+		// get the world location for this point
+		final WorldLocation val = getCanvas().toWorld(p1.getPoint());
+
+		// is it duff? - drop out if it is
+		if (val == null)
+			return;
+
+		final WorldLocation wl = new WorldLocation(val);
+
+		if (p1.getClickCount() == 2) {
+			if (_theDblClickListeners.size() > 0) {
+
+				// get the top one off the stack
+				final ChartDoubleClickListener lc = _theDblClickListeners.lastElement();
+				lc.cursorDblClicked(this, wl, p1.getPoint());
+			}
+		} else {
+			// single click,
+
+			// see if it is left or right
+			if ((p1.getModifiers() & InputEvent.BUTTON3_MASK) != 0) {
+				// popup trigger is a right-mouse click, tell the listener
+				if (this._theRightClickListener != null) {
+					_theRightClickListener.CursorClicked(p1.getPoint(), wl, getCanvas(), _theLayers);
+				}
+			} else {
+				if (_theLeftClickListener != null) {
+					_theLeftClickListener.CursorClicked(p1.getPoint(), wl, getCanvas(), _theLayers);
+				}
+			}
+
 		}
 
-		// register interest in the layers
-		_theLayers = theLayers;
+	}
 
-		// is it a valid layesr object
-		if (_theLayers != null)
-		{
-			// listen out for new data being added
-			_theLayers.addDataExtendedListener(_dataReformattedListener);
+	@Override
+	public void mouseDragged(final MouseEvent p1) {
+		// see if it was a right-click
+		if ((p1.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
+			return;
 
-			// listen out for the data being reformatted
-			_theLayers.addDataReformattedListener(_dataReformattedListener);
+		// get the location, we'll prob want it anyway
+		final WorldLocation val = getCanvas().toWorld(p1.getPoint());
 
-			// listen out for the data being modified
-			_theLayers.addDataModifiedListener(_dataReformattedListener);
+		// do we have a valid position?
+		if (val != null) {
+			final WorldLocation theLoc = new WorldLocation(val);
+
+			// see which mouse was being dragged
+			if ((p1.getModifiers() & InputEvent.BUTTON2_MASK) != 0) {
+				// middle mouse button being dragged - do our alternate behaviour!!
+				// see if we have a drag listener
+				if (_theAlternateChartDragListener != null) {
+					_theAlternateChartDragListener.dragging(theLoc, p1.getPoint());
+				}
+			} else {
+				if (_movementListeners != null) {
+					final Enumeration<ChartCursorMovedListener> enumer = _movementListeners.elements();
+					while (enumer.hasMoreElements()) {
+						final ChartCursorMovedListener cl = enumer.nextElement();
+						// check that we have managed to create a
+						// location
+						if (theLoc != null) {
+							cl.cursorMoved(theLoc, true, _theLayers);
+						}
+					}
+				}
+
+				// see if we have a drag listener
+				if (_theChartDragListener != null) {
+					_theChartDragListener.dragging(theLoc, p1.getPoint());
+				}
+
+			} // whether it was middle or right
+		} // whether we have a valid position
+	}
+
+	@Override
+	public void mouseEntered(final MouseEvent p1) {
+	}
+
+	@Override
+	public void mouseExited(final MouseEvent p1) {
+	}
+
+	@Override
+	public void mouseMoved(final MouseEvent p1) {
+		mouseMoved(p1.getPoint());
+	}
+
+	/**
+	 * simpler-to-access version of mouse-moved event handler
+	 *
+	 * @param x
+	 * @param y
+	 */
+	public void mouseMoved(final Point thePoint) {
+		if (_movementListeners != null) {
+			final Enumeration<ChartCursorMovedListener> enumer = _movementListeners.elements();
+			while (enumer.hasMoreElements()) {
+				final ChartCursorMovedListener cl = enumer.nextElement();
+				final WorldLocation val = getCanvas().toWorld(thePoint);
+				// check that we have managed to create a
+				// location
+				if (val != null) {
+					final WorldLocation lp = new WorldLocation(getCanvas().toWorld(thePoint));
+					cl.cursorMoved(lp, false, _theLayers);
+				}
+			}
+		}
+
+	}
+
+	@Override
+	public void mousePressed(final MouseEvent p1) {
+		// see if it was a right-click
+		if ((p1.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
+			return;
+
+		// see if we have a valid position
+		final WorldLocation val = getCanvas().toWorld(p1.getPoint());
+		// do we have a valid position?
+		if (val != null) {
+			final WorldLocation theLoc = new WorldLocation(val);
+
+			Rubberband theRubber = null;
+
+			if ((p1.getModifiers() & InputEvent.BUTTON2_MASK) != 0) {
+				if (_theAlternateChartDragListener != null) {
+					theRubber = _theAlternateChartDragListener.getRubberband();
+					_theAlternateChartDragListener.startDrag(theLoc, p1.getPoint());
+				}
+			} else {
+				if (_theChartDragListener != null) {
+					theRubber = _theChartDragListener.getRubberband();
+					_theChartDragListener.startDrag(theLoc, p1.getPoint());
+				}
+			}
+
+			if (theRubber != null) {
+				theRubber.setComponent(getPanel());
+				theRubber.setActive(true);
+				theRubber.mousePressed(p1);
+			}
+
+		}
+
+	}
+
+	@Override
+	public void mouseReleased(final MouseEvent p1) {
+		// see if it was a right-click
+		if ((p1.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
+			return;
+
+		final WorldLocation val = getCanvas().toWorld(p1.getPoint());
+
+		// do we have a valid position?
+		if (val != null) {
+			final WorldLocation theLoc = new WorldLocation(val);
+
+			Rubberband theRubber = null;
+
+			// was this the middle button?
+			if ((p1.getModifiers() & InputEvent.BUTTON2_MASK) != 0) {
+				if (_theAlternateChartDragListener != null) {
+					_theAlternateChartDragListener.areaSelected(theLoc, p1.getPoint());
+					theRubber = _theAlternateChartDragListener.getRubberband();
+				}
+			} else {
+				if (_theChartDragListener != null) {
+					_theChartDragListener.areaSelected(theLoc, p1.getPoint());
+					theRubber = _theChartDragListener.getRubberband();
+				}
+			}
+
+			if (theRubber != null) {
+				theRubber.setActive(false);
+				theRubber.removeFromComponent(getPanel());
+			}
+
 		}
 	}
 
 	// ////////////////////////////////////////////////////////
-	// member functions, mostly callbacks
+	// methods for handling requests from our canvas
 	// ////////////////////////////////////////////////////////
+	@Override
+	public void paintMe(final CanvasType dest) {
+		// do a repaint, instruct the layers to paint
+		_theLayers.paint(dest);
+	}
 
-	protected void produceListeners()
-	{
+	protected void produceListeners() {
 		_movementListeners = new Vector<ChartCursorMovedListener>(0, 1);
 		_theDblClickListeners = new Stack<ChartDoubleClickListener>();
 	}
 
-	/** select a zoom that shows all visible data
-	 * 
+	/**
+	 * remove an area listener
 	 */
-	abstract public void rescale();
+	public void removeChartDragListener(final ChartDragListener theListener) {
+		_theChartDragListener = null;
+	}
 
 	/**
-	 * redraw the screen from scratch
+	 * remove a cursor movement listener
 	 */
-	abstract public void update();
+	public void removeCursorDblClickedListener(final ChartDoubleClickListener theListener) {
+		_theDblClickListeners.removeElement(theListener);
+	}
 
 	/**
-	 * redraw the indicated layer (or all layers if null)
-	 * 
-	 * @param changedLayer
-	 *          the layer which needs repaining (or null for all)
+	 * remove a cursor movement listener
 	 */
-	abstract public void update(HasEditables changedLayer);
+	public void removeCursorMovedListener(final ChartCursorMovedListener theListener) {
+		_movementListeners.removeElement(theListener);
+	}
+
+	/**
+	 * remove a cursor movement listener
+	 */
+	public void removeLeftClickListener(final ChartClickListener theListener) {
+		_theLeftClickListener = theListener;
+	}
+
+	/**
+	 * remove a cursor movement listener
+	 */
+	public void removeRightClickListener(final ChartClickListener theListener) {
+		_theRightClickListener = theListener;
+	}
 
 	/**
 	 * just refresh the double-buffer
@@ -405,124 +737,52 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 	 */
 	abstract public void repaintNow(java.awt.Rectangle rect);
 
-	public abstract Dimension getScreenSize();
-
-	public void canvasResized()
-	{
-		/**
-		 * HACK: in this function we're having to overcome the fact that the panel
-		 * gets 3 resize calls for each real resize
-		 */
-
-		// see if we are still initialising our chart
-		final Dimension sz = getScreenSize();
-		if ((sz.width != 0) && (sz.height != 0))
-		{
-			
-			_theSize = sz;
-
-			final PlainProjection theProj = getCanvas().getProjection();
-			
-			// retrieve the data area
-			WorldArea dataArea = theProj.getDataArea();
-
-			// resize to fit the new window
-			theProj.zoom(1);
-			
-			// override the data area
-			theProj.setDataArea(dataArea);
-						
-			// and redraw.  Note this call isn't essential, but it's absence causes an SWT error,
-			// presumably associated with the buffered images not matching the size of the 
-			// updated window			
-			getCanvas().updateMe();
-		}
-	}
-
 	/**
-	 * tell the layers that even though they've been modified, they don't need to
-	 * do a repaint
-	 * 
-	 * @param suspendUpdates
-	 *          yes/no
+	 * select a zoom that shows all visible data
+	 *
 	 */
-	public void setSuspendUpdates(final boolean suspendUpdates)
-	{
-		_dataReformattedListener.setSuspendUpdates(suspendUpdates);
-	}
+	abstract public void rescale();
 
-	// ////////////////////////////////////////////////////////
-	// methods for handling requests from our canvas
-	// ////////////////////////////////////////////////////////
-	public void paintMe(final CanvasType dest)
-	{
-		// do a repaint, instruct the layers to paint
-		_theLayers.paint(dest);
-	}
-
-	public WorldArea getDataArea()
-	{
-		if (_theLayers == null) return null;
-		final WorldArea res = _theLayers.getBounds();
-		return res;
-	}
-
-	public void resizedEvent(final MWC.Algorithms.PlainProjection theProj, final Dimension newScreenArea)
-	{
+	@Override
+	public void resizedEvent(final MWC.Algorithms.PlainProjection theProj, final Dimension newScreenArea) {
 		// don't really bother doing anything here - since the canvas repaints
 		// itself
 	}
 
-	public String toString()
-	{
-		return getName();
+	public void restore(final ObjectInputStream is) {
+		try {
+			_theSize = (Dimension) is.readObject();
+			_theLayers = (Layers) is.readObject();
+
+		} catch (final Exception e) {
+			MWC.Utilities.Errors.Trace.trace(e);
+		}
 	}
 
-	public String getName()
-	{
-		return "Chart";
-	}
-
-	public abstract CanvasType getCanvas();
-
-	/**
-	 * get the layers object being plotted by this canvas
-	 */
-	public Layers getLayers()
-	{
-		return _theLayers;
-	}
-
-	// /////////////////////////////////////////////////////////
-	// interfaces for listener classes
-	// /////////////////////////////////////////////////////////
-
-	/**
-	 * definition of function to be implemented if an area is selected on the
-	 * chart
-	 */
-	public interface ChartDragListener
-	{
-		public void areaSelected(WorldLocation theLocation, Point thePoint);
-
-		public void startDrag(WorldLocation theLocation, Point thePoint);
-
-		public void dragging(WorldLocation theLocation, Point thePoint);
-
-		public Rubberband getRubberband();
+	public void save(final ObjectOutputStream os) {
+		// create the output stream
+		try {
+			// save this
+			os.writeObject(_theSize);
+			os.writeObject(_theLayers);
+			// os.writeObject(this._theDblClickListeners);
+			// os.writeObject(this._theLeftClickListener);
+			// os.writeObject(this._theRightClickListener);
+			// os.writeObject(this._movementListeners);
+			// os.writeObject(this._myRubber);
+		} catch (final IOException e) {
+			MWC.Utilities.Errors.Trace.trace(e);
+		}
 	}
 
 	/**
 	 * add an area listener
 	 */
-	public void setAlternateChartDragListener(final ChartDragListener theListener)
-	{
+	public void setAlternateChartDragListener(final ChartDragListener theListener) {
 		// stop the old listener from listening
-		if (_theAlternateChartDragListener != null)
-		{
+		if (_theAlternateChartDragListener != null) {
 			final Rubberband oldBand = _theAlternateChartDragListener.getRubberband();
-			if (oldBand != null)
-			{
+			if (oldBand != null) {
 				oldBand.removeFromComponent(this.getPanel());
 				oldBand.setActive(false);
 			}
@@ -533,8 +793,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 
 		// set it's rubberband to active, if we have one
 		final Rubberband newBand = _theAlternateChartDragListener.getRubberband();
-		if (newBand != null)
-		{
+		if (newBand != null) {
 			newBand.setActive(true);
 		}
 	}
@@ -542,15 +801,12 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 	/**
 	 * add an area listener
 	 */
-	public void setChartDragListener(final ChartDragListener theListener)
-	{
+	public void setChartDragListener(final ChartDragListener theListener) {
 
 		// stop the old listener from listening
-		if (_theChartDragListener != null)
-		{
+		if (_theChartDragListener != null) {
 			final Rubberband oldBand = _theChartDragListener.getRubberband();
-			if (oldBand != null)
-			{
+			if (oldBand != null) {
 				oldBand.removeFromComponent(this.getPanel());
 				oldBand.setActive(false);
 			}
@@ -570,414 +826,73 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 		// }
 	}
 
-	/**
-	 * remove an area listener
-	 */
-	public void removeChartDragListener(final ChartDragListener theListener)
-	{
-		_theChartDragListener = null;
-	}
+	public void setLayers(final Layers theLayers) {
+		// hmm, do we have an exising set of layers?
+		if (_theLayers != null) {
+			// yup, better remove ourselves
+			// listen out for new data being added
+			_theLayers.removeDataExtendedListener(_dataReformattedListener);
 
-	public ChartDragListener getChartDragListener()
-	{
-		return _theChartDragListener;
-	}
+			// listen out for the data being reformatted
+			_theLayers.removeDataReformattedListener(_dataReformattedListener);
 
-	/**
-	 * return the gui component for the chart
-	 */
-	abstract public java.awt.Component getPanel();
-
-  public WorldArea getProjectionArea()
-  {
-    return getCanvas().getProjection().getDataArea();
-  }
-	 
-	/**
-	 * definition of function to be implemented for each mouse movement
-	 */
-	public interface ChartCursorMovedListener
-	{
-		public void cursorMoved(WorldLocation thePos, boolean dragging, Layers theData);
-	}
-
-	/**
-	 * add a cursor movement listener
-	 */
-	public void addCursorMovedListener(final ChartCursorMovedListener theListener)
-	{
-		_movementListeners.addElement(theListener);
-	}
-
-	/**
-	 * remove a cursor movement listener
-	 */
-	public void removeCursorMovedListener(final ChartCursorMovedListener theListener)
-	{
-		_movementListeners.removeElement(theListener);
-	}
-
-	// //////////////////////////////////////////////////////////
-	// double-click listener interface
-	// //////////////////////////////////////////////////////////
-	public interface ChartDoubleClickListener
-	{
-		public void cursorDblClicked(PlainChart theChart, WorldLocation theLocation,
-				Point thePoint);
-	}
-
-	/**
-	 * add a cursor movement listener
-	 */
-	public void addCursorDblClickedListener(final ChartDoubleClickListener theListener)
-	{
-		_theDblClickListeners.addElement(theListener);
-	}
-
-	/**
-	 * remove a cursor movement listener
-	 */
-	public void removeCursorDblClickedListener(final ChartDoubleClickListener theListener)
-	{
-		_theDblClickListeners.removeElement(theListener);
-	}
-
-	// //////////////////////////////////////////////////////////
-	// more listener convenience methods
-	// //////////////////////////////////////////////////////////
-	/**
-	 * definition of function to be implemented for each mouse movement
-	 */
-	public interface ChartClickListener
-	{
-		public void CursorClicked(Point thePoint, WorldLocation thePos, CanvasType theCanvas,
-				Layers theData);
-	}
-
-	/**
-	 * add a cursor movement listener
-	 */
-	public void addLeftClickListener(final ChartClickListener theListener)
-	{
-		_theLeftClickListener = theListener;
-	}
-
-	/**
-	 * remove a cursor movement listener
-	 */
-	public void removeLeftClickListener(final ChartClickListener theListener)
-	{
-		_theLeftClickListener = theListener;
-	}
-
-	/**
-	 * add a cursor movement listener
-	 */
-	public void addRightClickListener(final ChartClickListener theListener)
-	{
-		_theRightClickListener = theListener;
-	}
-
-	/**
-	 * remove a cursor movement listener
-	 */
-	public void removeRightClickListener(final ChartClickListener theListener)
-	{
-		_theRightClickListener = theListener;
-	}
-
-	// //////////////////////////////////////////////////////////
-	// mouse events
-	// //////////////////////////////////////////////////////////
-	public void mouseClicked(final MouseEvent p1)
-	{
-		// get the world location for this point
-		final WorldLocation val = getCanvas().toWorld(p1.getPoint());
-
-		// is it duff? - drop out if it is
-		if (val == null)
-			return;
-
-		final WorldLocation wl = new WorldLocation(val);
-
-		if (p1.getClickCount() == 2)
-		{
-			if (_theDblClickListeners.size() > 0)
-			{
-
-				// get the top one off the stack
-				final ChartDoubleClickListener lc = (ChartDoubleClickListener) _theDblClickListeners
-						.lastElement();
-				lc.cursorDblClicked(this, wl, p1.getPoint());
-			}
-		}
-		else
-		{
-			// single click,
-
-			// see if it is left or right
-			if ((p1.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
-			{
-				// popup trigger is a right-mouse click, tell the listener
-				if (this._theRightClickListener != null)
-				{
-					_theRightClickListener
-							.CursorClicked(p1.getPoint(), wl, getCanvas(), _theLayers);
-				}
-			}
-			else
-			{
-				if (_theLeftClickListener != null)
-				{
-					_theLeftClickListener.CursorClicked(p1.getPoint(), wl, getCanvas(), _theLayers);
-				}
-			}
-
+			// listen out for the data being modified
+			_theLayers.removeDataModifiedListener(_dataReformattedListener);
 		}
 
-	}
+		// register interest in the layers
+		_theLayers = theLayers;
 
-	public void mousePressed(final MouseEvent p1)
-	{
-		// see if it was a right-click
-		if ((p1.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
-			return;
+		// is it a valid layesr object
+		if (_theLayers != null) {
+			// listen out for new data being added
+			_theLayers.addDataExtendedListener(_dataReformattedListener);
 
-		// see if we have a valid position
-		final WorldLocation val = getCanvas().toWorld(p1.getPoint());
-		// do we have a valid position?
-		if (val != null)
-		{
-			final WorldLocation theLoc = new WorldLocation(val);
+			// listen out for the data being reformatted
+			_theLayers.addDataReformattedListener(_dataReformattedListener);
 
-			Rubberband theRubber = null;
-
-			if ((p1.getModifiers() & MouseEvent.BUTTON2_MASK) != 0)
-			{
-				if (_theAlternateChartDragListener != null)
-				{
-					theRubber = _theAlternateChartDragListener.getRubberband();
-					_theAlternateChartDragListener.startDrag(theLoc, p1.getPoint());
-				}
-			}
-			else
-			{
-				if (_theChartDragListener != null)
-				{
-					theRubber = _theChartDragListener.getRubberband();
-					_theChartDragListener.startDrag(theLoc, p1.getPoint());
-				}
-			}
-
-			if (theRubber != null)
-			{
-				theRubber.setComponent(getPanel());
-				theRubber.setActive(true);
-				theRubber.mousePressed(p1);
-			}
-
-		}
-
-	}
-
-	public void mouseReleased(final MouseEvent p1)
-	{
-		// see if it was a right-click
-		if ((p1.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
-			return;
-
-		final WorldLocation val = getCanvas().toWorld(p1.getPoint());
-
-		// do we have a valid position?
-		if (val != null)
-		{
-			final WorldLocation theLoc = new WorldLocation(val);
-
-			Rubberband theRubber = null;
-
-			// was this the middle button?
-			if ((p1.getModifiers() & MouseEvent.BUTTON2_MASK) != 0)
-			{
-				if (_theAlternateChartDragListener != null)
-				{
-					_theAlternateChartDragListener.areaSelected(theLoc, p1.getPoint());
-					theRubber = _theAlternateChartDragListener.getRubberband();
-				}
-			}
-			else
-			{
-				if (_theChartDragListener != null)
-				{
-					_theChartDragListener.areaSelected(theLoc, p1.getPoint());
-					theRubber = _theChartDragListener.getRubberband();
-				}
-			}
-
-			if (theRubber != null)
-			{
-				theRubber.setActive(false);
-				theRubber.removeFromComponent(getPanel());
-			}
-
+			// listen out for the data being modified
+			_theLayers.addDataModifiedListener(_dataReformattedListener);
 		}
 	}
 
-	public void mouseEntered(final MouseEvent p1)
-	{
+	/**
+	 * tell the layers that even though they've been modified, they don't need to do
+	 * a repaint
+	 *
+	 * @param suspendUpdates yes/no
+	 */
+	public void setSuspendUpdates(final boolean suspendUpdates) {
+		_dataReformattedListener.setSuspendUpdates(suspendUpdates);
 	}
 
-	public void mouseExited(final MouseEvent p1)
-	{
-	}
-
-	public void mouseDragged(final MouseEvent p1)
-	{
-		// see if it was a right-click
-		if ((p1.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
-			return;
-
-		// get the location, we'll prob want it anyway
-		final WorldLocation val = getCanvas().toWorld(p1.getPoint());
-
-		// do we have a valid position?
-		if (val != null)
-		{
-			final WorldLocation theLoc = new WorldLocation(val);
-
-			// see which mouse was being dragged
-			if ((p1.getModifiers() & MouseEvent.BUTTON2_MASK) != 0)
-			{
-				// middle mouse button being dragged - do our alternate behaviour!!
-				// see if we have a drag listener
-				if (_theAlternateChartDragListener != null)
-				{
-					_theAlternateChartDragListener.dragging(theLoc, p1.getPoint());
-				}
-			}
-			else
-			{
-				if (_movementListeners != null)
-				{
-					final Enumeration<ChartCursorMovedListener> enumer = _movementListeners.elements();
-					while (enumer.hasMoreElements())
-					{
-						final ChartCursorMovedListener cl = (ChartCursorMovedListener) enumer.nextElement();
-						// check that we have managed to create a
-						// location
-						if (theLoc != null)
-						{
-							cl.cursorMoved(theLoc, true, _theLayers);
-						}
-					}
-				}
-
-				// see if we have a drag listener
-				if (_theChartDragListener != null)
-				{
-					_theChartDragListener.dragging(theLoc, p1.getPoint());
-				}
-
-			} // whether it was middle or right
-		} // whether we have a valid position
-	}
-
-	public void mouseMoved(final MouseEvent p1)
-	{
-		mouseMoved(p1.getPoint());
+	@Override
+	public String toString() {
+		return getName();
 	}
 
 	/**
-	 * simpler-to-access version of mouse-moved event handler
-	 * 
-	 * @param x
-	 * @param y
+	 * redraw the screen from scratch
 	 */
-	public void mouseMoved(final Point thePoint)
-	{
-		if (_movementListeners != null)
-		{
-			final Enumeration<ChartCursorMovedListener> enumer = _movementListeners.elements();
-			while (enumer.hasMoreElements())
-			{
-				final ChartCursorMovedListener cl = (ChartCursorMovedListener) enumer.nextElement();
-				final WorldLocation val = getCanvas().toWorld(thePoint);
-				// check that we have managed to create a
-				// location
-				if (val != null)
-				{
-					final WorldLocation lp = new WorldLocation(getCanvas().toWorld(thePoint));
-					cl.cursorMoved(lp, false, _theLayers);
-				}
-			}
-		}
-
-	}
+	@Override
+	abstract public void update();
 
 	/**
-	 * provide method to clear stored data
+	 * redraw the indicated layer (or all layers if null)
+	 *
+	 * @param changedLayer the layer which needs repaining (or null for all)
 	 */
-	public void close()
-	{
-		// ok, forget the layesr object - and stop listening to it
-		setLayers(null);
-		
-		// remove the layer listeners
-		_theSize = null;
-		_theLayers = null;
-		_theChartDragListener = null;
-		_theChartDblClickListener = null;
-		_theDblClickListeners = null;
-		_theLeftClickListener = null;
-		_theRightClickListener = null;
-		_movementListeners.removeAllElements();
-		_movementListeners = null;
-
-	}
-
-	public void save(final ObjectOutputStream os)
-	{
-		// create the output stream
-		try
-		{
-			// save this
-			os.writeObject(_theSize);
-			os.writeObject(_theLayers);
-			// os.writeObject(this._theDblClickListeners);
-			// os.writeObject(this._theLeftClickListener);
-			// os.writeObject(this._theRightClickListener);
-			// os.writeObject(this._movementListeners);
-			// os.writeObject(this._myRubber);
-		}
-		catch (final IOException e)
-		{
-			MWC.Utilities.Errors.Trace.trace(e);
-		}
-	}
-
-	public void restore(final ObjectInputStream is)
-	{
-		try
-		{
-			_theSize = (Dimension) is.readObject();
-			_theLayers = (Layers) is.readObject();
-
-		}
-		catch (final Exception e)
-		{
-			MWC.Utilities.Errors.Trace.trace(e);
-		}
-	}
+	abstract public void update(HasEditables changedLayer);
 
 	/*
-	 * public int print(final java.awt.Graphics dest,final
-	 * java.awt.print.PageFormat format,int pageIndex) throws
-	 * java.awt.print.PrinterException { if(pageIndex != 0) return NO_SUCH_PAGE; //
-	 * get the graphics as a 2D, then offset it by the imageable area, so that we //
-	 * don't try to print into the margins Graphics2D g2 = (Graphics2D)dest;
-	 * g2.translate(format.getImageableX(), format.getImageableY()); // put this
-	 * canvas into an adaptor MWC.GUI.Canvas.CanvasAdaptor canv = new
-	 * MWC.GUI.Canvas.CanvasAdaptor(getCanvas().getProjection(), dest); // pant
-	 * the object this.paintMe(canv); // return the success flag return
-	 * PAGE_EXISTS; }
+	 * public int print(final java.awt.Graphics dest,final java.awt.print.PageFormat
+	 * format,int pageIndex) throws java.awt.print.PrinterException { if(pageIndex
+	 * != 0) return NO_SUCH_PAGE; // get the graphics as a 2D, then offset it by the
+	 * imageable area, so that we // don't try to print into the margins Graphics2D
+	 * g2 = (Graphics2D)dest; g2.translate(format.getImageableX(),
+	 * format.getImageableY()); // put this canvas into an adaptor
+	 * MWC.GUI.Canvas.CanvasAdaptor canv = new
+	 * MWC.GUI.Canvas.CanvasAdaptor(getCanvas().getProjection(), dest); // pant the
+	 * object this.paintMe(canv); // return the success flag return PAGE_EXISTS; }
 	 */
 }

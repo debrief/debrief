@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: CreateNoiseLevel.java,v $
@@ -72,28 +72,26 @@ import ASSET.GUI.Painters.ScenarioNoiseLevelPainter;
 import ASSET.Models.Environment.EnvironmentType;
 import MWC.GUI.Tools.Palette.PlainCreate;
 
-public class CreateNoiseLevel extends PlainCreate
-{
-  private EnvironmentType _theEnv = null;
-  private ScenarioNoiseLevelPainter.StatusProvider _provider;
-  private int _medium;
+public class CreateNoiseLevel extends PlainCreate {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	private EnvironmentType _theEnv = null;
+	private final ScenarioNoiseLevelPainter.StatusProvider _provider;
+	private final int _medium;
 
-	public CreateNoiseLevel(final MWC.GUI.ToolParent theParent,
-										final MWC.GUI.Properties.PropertiesPanel thePanel,
-										final MWC.GUI.Layers theData,
-										final BoundsProvider theChart,
-                    final EnvironmentType theEnv,
-                    final ScenarioNoiseLevelPainter.StatusProvider provider,
-                    final int medium)
-	{
+	public CreateNoiseLevel(final MWC.GUI.ToolParent theParent, final MWC.GUI.Properties.PropertiesPanel thePanel,
+			final MWC.GUI.Layers theData, final BoundsProvider theChart, final EnvironmentType theEnv,
+			final ScenarioNoiseLevelPainter.StatusProvider provider, final int medium) {
 		super(theParent, thePanel, theData, theChart, "Scenario Noise", "images/noise_level.gif");
-    _theEnv = theEnv;
-    _provider = provider;
-    _medium = medium;
+		_theEnv = theEnv;
+		_provider = provider;
+		_medium = medium;
 	}
 
-	protected MWC.GUI.Plottable createItem()
-	{
+	@Override
+	protected MWC.GUI.Plottable createItem() {
 		return new ScenarioNoiseLevelPainter(_theEnv, _provider, _medium, getLayers());
 	}
 }

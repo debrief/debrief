@@ -4,16 +4,16 @@ package ASSET.Models.Sensor.Initial;
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 import ASSET.NetworkParticipant;
@@ -37,13 +37,190 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 
-public class NarrowbandSensor extends InitialSensor
-{
+public class NarrowbandSensor extends InitialSensor {
+
+	// //////////////////////////////////////////////////
+	// the editor object
+	// //////////////////////////////////////////////////
+	static public class NarrowbandInfo extends BaseSensorInfo {
+		/**
+		 * @param data the Layers themselves
+		 */
+		public NarrowbandInfo(final NarrowbandSensor data) {
+			super(data, true);
+		}
+
+		/**
+		 * editable GUI properties for our participant
+		 *
+		 * @return property descriptions
+		 */
+		@Override
+		public java.beans.PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final java.beans.PropertyDescriptor[] res = { prop("Name", "the name of this narrowband sensor"),
+						prop("SteadyTime", "the size of the aperture of this sensor"),
+						prop("Working", "whether this sensor is in use"), };
+				return res;
+			} catch (final java.beans.IntrospectionException e) {
+				return super.getPropertyDescriptors();
+			}
+		}
+
+	}
+
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	public static class NBSensorTest extends ASSET.Util.SupportTesting.EditableTesting {
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public NBSensorTest(final String val) {
+			super(val);
+		}
+
+		/**
+		 * get an object which we can test
+		 *
+		 * @return Editable object which we can check the properties for
+		 */
+		@Override
+		public Editable getEditable() {
+			return new NarrowbandSensor(12);
+		}
+
+		public void testSteadyTime() {
+			final NarrowbandSensor ns = new NarrowbandSensor(22);
+			ns.setName("ian test");
+			ns.setSteadyTime(new Duration(2, Duration.MINUTES));
+
+			// create valid locations
+			final WorldLocation loca = SupportTesting.createLocation(100, 1000);
+			final WorldLocation locb = SupportTesting.createLocation(200, 1000);
+
+			long time = 0;
+
+			final EnvironmentType env = new SimpleEnvironment(1, 1, 1);
+			final DetectionList dets = new DetectionList();
+			final SSN me = new SSN(12);
+			final Status stat = new Status(12, 0);
+			stat.setCourse(11);
+			stat.setLocation(loca);
+			stat.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
+			me.setStatus(stat);
+
+			final Surface him = new Surface(122);
+			final Status statb = new Status(32, 0);
+			statb.setCourse(13);
+			statb.setLocation(locb);
+			statb.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
+			him.setStatus(statb);
+			him.getRadiatedChars().add(EnvironmentType.NARROWBAND, new NarrowbandRadNoise(222, 12));
+
+			final CoreScenario theScenario = new CoreScenario();
+			theScenario.addParticipant(him.getId(), him);
+
+			// check dets is empty
+			assertEquals("dets starts empty", 0, dets.size());
+
+			ns.detects(env, dets, me, theScenario, time);
+
+			assertEquals("should have gained at least one detection", 1, dets.size());
+
+			// ok, move time forward. check we get another
+			time += 1000;
+
+			ns.detects(env, dets, me, theScenario, time);
+
+			assertEquals("should have gained at least one detection", 1, dets.size());
+
+			// ok, move time forward. check we get another
+			time += 1000;
+
+			// and change our course
+			me.getStatus().setCourse(22);
+
+			ns.detects(env, dets, me, theScenario, time);
+
+			assertEquals("should not have gained any more detections", 0, dets.size());
+			assertEquals("correct steady time set", 122000, ns._timeArraySteady, 0);
+
+			// ok try another cycle
+			time += 1000;
+
+			// and change our course
+			me.getStatus().setCourse(23);
+
+			ns.detects(env, dets, me, theScenario, time);
+
+			assertEquals("should not have gained any more detections", 0, dets.size());
+			assertEquals("correct steady extended time set", 123000, ns._timeArraySteady, 0);
+			// ok try another cycle
+			time += 10000;
+
+			// and change our course
+			me.getStatus().setCourse(24);
+
+			ns.detects(env, dets, me, theScenario, time);
+
+			assertEquals("should not have gained any more detections", 0, dets.size());
+			assertEquals("correct steady extended time set", 133000, ns._timeArraySteady, 0);
+
+			// AND BACK ON COURSE
+			time += 10000;
+
+			ns.detects(env, dets, me, theScenario, time);
+
+			assertEquals("should not have gained any more detections", 0, dets.size());
+			assertEquals("correct steady extended time set", 133000, ns._timeArraySteady, 0);
+
+			// STAY ON COURSE
+			time += 10000;
+
+			ns.detects(env, dets, me, theScenario, time);
+
+			assertEquals("should not have gained any more detections", 0, dets.size());
+			assertEquals("correct steady extended time set", 133000, ns._timeArraySteady, 0);
+
+			// MAKE TIME ELAPSED VALID
+			time = 133000;
+
+			ns.detects(env, dets, me, theScenario, time);
+
+			assertEquals("should not have gained any more detections", 1, dets.size());
+			assertEquals("correct steady extended time set", 133000, ns._timeArraySteady, 0);
+
+			// MAKE TIME ELAPSED VALID
+			time = 134000;
+
+			ns.detects(env, dets, me, theScenario, time);
+
+			assertEquals("should not have gained any more detections", 1, dets.size());
+			assertEquals("correct steady extended time set", 133000, ns._timeArraySteady, 0);
+
+		}
+
+	}
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
+
+	/**
+	 * constant used to indicate that course has not yet been assigned
+	 */
+	private static final double INVALID_COURSE = -999d;
+
+	/**
+	 * string used to indicate that array is steady
+	 */
+	private static final String ARRAY_STEADY = "Array Steady";
+
+	/**
+	 * string marker used when firing reports to indicate that the array is unsteady
+	 */
+	private static final String ARRAY_UNSTEADY = "Array unsteady";
 
 	/**
 	 * time it takes this sensor to steady
@@ -60,78 +237,40 @@ public class NarrowbandSensor extends InitialSensor
 	 */
 	protected long _timeArraySteady;
 
-	/**
-	 * whether this sensor can record bearing
-	 * 
-	 */
-	private Boolean _hasBearing = true;
-
-	/** whether this sensor tracks the second harmonic
-	 * 
-	 */
-  private boolean _tracksSecondHarmonic = false;
-
-	/**
-	 * constant used to indicate that course has not yet been assigned
-	 */
-	private static final double INVALID_COURSE = -999d;
-
-	/**
-	 * string used to indicate that array is steady
-	 */
-	private static final String ARRAY_STEADY = "Array Steady";
-
-	/**
-	 * string marker used when firing reports to indicate that the array is
-	 * unsteady
-	 */
-	private static final String ARRAY_UNSTEADY = "Array unsteady";
-
 	// /////////////////////////////////
 	// member variables
 	// ////////////////////////////////
 
 	/**
-	 * ************************************************* constructor
-	 * *************************************************
+	 * whether this sensor can record bearing
+	 *
 	 */
-	public NarrowbandSensor(final int id)
-	{
-		super(id, "NB");
-	}
+	private Boolean _hasBearing = true;
 
 	// ////////////////////////////////////////////////
 	// member methods
 	// ////////////////////////////////////////////////
 
 	/**
-	 * find out which medium this sensor operates under
-	 * 
-	 * @return
+	 * whether this sensor tracks the second harmonic
+	 *
 	 */
-	public int getMedium()
-	{
-		return EnvironmentType.NARROWBAND;
-	}
+	private boolean _tracksSecondHarmonic = false;
 
 	/**
-	 * find out how long it takes this sensor to steady
-	 * 
-	 * @return
+	 * ************************************************* constructor
+	 * *************************************************
 	 */
-	public Duration getSteadyTime()
-	{
-		return _mySteadyTime;
+	public NarrowbandSensor(final int id) {
+		super(id, "NB");
 	}
 
-	/**
-	 * set how long it takes this sensor to steady
-	 * 
-	 * @param val
-	 */
-	public void setSteadyTime(final Duration val)
-	{
-		_mySteadyTime = val;
+	// allow an 'overview' test, just to check if it is worth all of the above
+	// processing
+	@Override
+	protected boolean canDetectThisType(final NetworkParticipant ownship, final ASSET.ParticipantType other,
+			final EnvironmentType env) {
+		return other.radiatesThisNoise(getMedium());
 	}
 
 	// ////////////////////////////////////////////////
@@ -139,127 +278,104 @@ public class NarrowbandSensor extends InitialSensor
 	// ////////////////////////////////////////////////
 
 	/**
-	 * restart this sensors
+	 * Whether this sensor cannot be used to positively identify a target
 	 */
-	public void restart()
-	{
-		super.restart();
-
-		// and clear the time array expected to steady
-		_timeArraySteady = -01;
-
-		// and forget the old course
-		_oldCourse = INVALID_COURSE;
+	@Override
+	public boolean canIdentifyTarget() {
+		return false;
 	}
 
 	// what is the detection strength for this target?
-	protected DetectionEvent detectThis(EnvironmentType environment,
-			ParticipantType host, ParticipantType target, long time,
-			ScenarioType scenario)
-	{
+	@Override
+	protected DetectionEvent detectThis(final EnvironmentType environment, final ParticipantType host,
+			final ParticipantType target, final long time, final ScenarioType scenario) {
 		DetectionEvent res = null;
 		String msg = null;
 
 		// ok, before we let our parent do the real calculation, handle the array
 		// unsteady bits
-		Status curStatus = host.getStatus();
-		double course = curStatus.getCourse();
-		
-    final WorldLocation hostLoc = getHostLocationFor(host);
+		final Status curStatus = host.getStatus();
+		final double course = curStatus.getCourse();
+
+		final WorldLocation hostLoc = getHostLocationFor(host);
 
 		// is this the first time we've examined the course?
-		if (_oldCourse == INVALID_COURSE)
-		{
+		if (_oldCourse == INVALID_COURSE) {
 			// yes, just initialise it
 			_oldCourse = course;
 		}
 
 		// right see if we are currently changing course?
 		final double courseDelta = Math.abs(_oldCourse - course);
-		if (courseDelta > 0.01)
-		{
+		if (courseDelta > 0.01) {
 			// yes, update our calculated time when the array will be steady
 			_timeArraySteady = time + getSteadyTime().getMillis();
 		}
 
 		// have we passed the steady time?
-		if (time >= _timeArraySteady)
-		{
+		if (time >= _timeArraySteady) {
 
 			msg = ARRAY_STEADY;
 
 			// yup, do our calc
 			// can it detect beraing?
-			if (this.getHasBearing())
-			{
+			if (this.getHasBearing()) {
 				res = super.detectThis(environment, host, target, time, scenario);
 			}
 
 			// ok, also generate frequency, if we can!
-			RadiatedCharacteristics radChars = target.getRadiatedChars();
-			if (radChars != null)
-			{
-				NarrowbandRadNoise nbNoise = (NarrowbandRadNoise) target
-						.getRadiatedChars().getMedium(1);
-				if (nbNoise != null)
-				{
-          // do we have a detecftion event yet?
-          if (res == null)
-          {
-            // nope, better create one.
-            res = new DetectionEvent(time, host.getId(), hostLoc, this, null,
-                null, null, null, null, target.getCategory(), new Float(target
-                    .getStatus().getSpeed().getValueIn(WorldSpeed.Kts)),
-                new Float(target.getStatus().getCourse()), target);
-          }
-					
+			final RadiatedCharacteristics radChars = target.getRadiatedChars();
+			if (radChars != null) {
+				final NarrowbandRadNoise nbNoise = (NarrowbandRadNoise) target.getRadiatedChars().getMedium(1);
+				if (nbNoise != null) {
+					// do we have a detecftion event yet?
+					if (res == null) {
+						// nope, better create one.
+						res = new DetectionEvent(time, host.getId(), hostLoc, this, null, null, null, null, null,
+								target.getCategory(),
+								new Float(target.getStatus().getSpeed().getValueIn(WorldSpeed.Kts)),
+								new Float(target.getStatus().getCourse()), target);
+					}
+
 					// get the f-nought
 					final double f0;
-					if(_tracksSecondHarmonic)
-					{
-					  // ok, mock tracking a second harmonic
-					  // by doubling the base frequency
-					  f0 = 2 * nbNoise.getFrequency();
+					if (_tracksSecondHarmonic) {
+						// ok, mock tracking a second harmonic
+						// by doubling the base frequency
+						f0 = 2 * nbNoise.getFrequency();
+					} else {
+						f0 = nbNoise.getFrequency();
 					}
-          else
-          {
-            f0 = nbNoise.getFrequency();
-          }
 
 					final double speedOfSoundKts = FrequencyCalcs.SpeedOfSoundKts;
 
 					// start preparing the data
-					Status hS = host.getStatus();
-					Status tS = target.getStatus();
+					final Status hS = host.getStatus();
+					final Status tS = target.getStatus();
 
-					double rxSpeedKts = hS.getSpeed().getValueIn(WorldSpeed.Kts);
-					double txSpeedKts = tS.getSpeed().getValueIn(WorldSpeed.Kts);
+					final double rxSpeedKts = hS.getSpeed().getValueIn(WorldSpeed.Kts);
+					final double txSpeedKts = tS.getSpeed().getValueIn(WorldSpeed.Kts);
 
-					double rxCourseDegs = hS.getCourse();
-					double txCourseDegs = tS.getCourse();
+					final double rxCourseDegs = hS.getCourse();
+					final double txCourseDegs = tS.getCourse();
 
-					double bearingDegs = Math.toDegrees(target.getStatus().getLocation()
-							.bearingFrom(hostLoc));
+					final double bearingDegs = Math.toDegrees(target.getStatus().getLocation().bearingFrom(hostLoc));
 
 					// what's the observed freq?
-					double freq = FrequencyCalcs.getPredictedFreq(f0, speedOfSoundKts,
-							rxSpeedKts, rxCourseDegs, txSpeedKts, txCourseDegs, bearingDegs);
+					final double freq = FrequencyCalcs.getPredictedFreq(f0, speedOfSoundKts, rxSpeedKts, rxCourseDegs,
+							txSpeedKts, txCourseDegs, bearingDegs);
 
 					res.setFreq((float) freq);
 				}
 			}
 
-		}
-		else
-		{
+		} else {
 			// no, still waiting to steady. return null...
 			msg = ARRAY_UNSTEADY;
 		}
 
-		if (msg != null)
-		{
-			if (_myEditor != null)
-			{
+		if (msg != null) {
+			if (_myEditor != null) {
 				if (_myEditor.hasReportListeners())
 					_myEditor.fireReport(this, msg);
 			}
@@ -271,58 +387,54 @@ public class NarrowbandSensor extends InitialSensor
 		return res;
 	}
 
+	@Override
+	protected double getBkgndNoise(final EnvironmentType environment, final WorldLocation host,
+			final double absBearingDegs) {
+
+		double res;
+
+		// use the environment to determine the loss
+		res = environment.getBkgndNoise(EnvironmentType.BROADBAND_PASSIVE, host, absBearingDegs);
+
+		return res;
+	}
+
+	@Override
+	protected double getDI(final double courseDegs, final double absBearingDegs) {
+		// double res = 74;
+		final double res = 34; // URICK page 43, for cylindrical sensor 60 inches diameter
+		// @ 15Khz
+
+		return res;
+	}
+
 	/**
-	 * whether there is any edit information for this item this is a convenience
-	 * function to save creating the EditorType data first
-	 * 
-	 * @return yes/no
+	 * the estimated range for a detection of this type (where applicable)
 	 */
-	public boolean hasEditor()
-	{
-		return true;
+	@Override
+	public WorldDistance getEstimatedRange() {
+		return new WorldDistance(1000, WorldDistance.YARDS);
+	}
+
+	public Boolean getHasBearing() {
+		return _hasBearing;
 	}
 
 	/**
 	 * get the editor for this item
-	 * 
+	 *
 	 * @return the BeanInfo data for this editable object
 	 */
-	public EditorType getInfo()
-	{
+	@Override
+	public EditorType getInfo() {
 		if (_myEditor == null)
 			_myEditor = new NarrowbandInfo(this);
 
 		return _myEditor;
 	}
 
-	/**
-	 * Whether this sensor cannot be used to positively identify a target
-	 */
-	public boolean canIdentifyTarget()
-	{
-		return false;
-	}
-
-	// allow an 'overview' test, just to check if it is worth all of the above
-	// processing
-	protected boolean canDetectThisType(NetworkParticipant ownship,
-			final ASSET.ParticipantType other, EnvironmentType env)
-	{
-		return other.radiatesThisNoise(getMedium());
-	}
-
-	protected double getDI(final double courseDegs, final double absBearingDegs)
-	{
-		// double res = 74;
-		double res = 34; // URICK page 43, for cylindrical sensor 60 inches diameter
-											// @ 15Khz
-
-		return res;
-	}
-
-	protected double getLoss(EnvironmentType environment,
-			final WorldLocation target, final WorldLocation host)
-	{
+	@Override
+	protected double getLoss(final EnvironmentType environment, final WorldLocation target, final WorldLocation host) {
 		double res = 0;
 
 		// use the environment to determine the loss
@@ -331,76 +443,60 @@ public class NarrowbandSensor extends InitialSensor
 		return res;
 	}
 
-	protected double getOSNoise(final ASSET.ParticipantType ownship,
-			final double absBearingDegs)
-	{
+	/**
+	 * find out which medium this sensor operates under
+	 *
+	 * @return
+	 */
+	@Override
+	public int getMedium() {
+		return EnvironmentType.NARROWBAND;
+	}
+
+	@Override
+	protected double getOSNoise(final ASSET.ParticipantType ownship, final double absBearingDegs) {
 		return ownship.getSelfNoiseFor(getMedium(), absBearingDegs);
 	}
 
-	/**
-	 * the estimated range for a detection of this type (where applicable)
-	 */
-	public WorldDistance getEstimatedRange()
-	{
-		return new WorldDistance(1000, WorldDistance.YARDS);
-	}
-
-	protected double getRD(NetworkParticipant host, NetworkParticipant target)
-	{
+	@Override
+	protected double getRD(final NetworkParticipant host, final NetworkParticipant target) {
 		return 2;
 	}
 
-	protected double getTgtNoise(final ASSET.ParticipantType target,
-			final double absBearingDegs)
-	{
+	/**
+	 * find out how long it takes this sensor to steady
+	 *
+	 * @return
+	 */
+	public Duration getSteadyTime() {
+		return _mySteadyTime;
+	}
+
+	@Override
+	protected double getTgtNoise(final ASSET.ParticipantType target, final double absBearingDegs) {
 		return target.getRadiatedNoiseFor(getMedium(), absBearingDegs);
 	}
 
-	protected double getBkgndNoise(EnvironmentType environment,
-			WorldLocation host, double absBearingDegs)
-	{
-
-		double res;
-
-		// use the environment to determine the loss
-		res = environment.getBkgndNoise(EnvironmentType.BROADBAND_PASSIVE, host,
-				absBearingDegs);
-
-		return res;
-	}
-
-	/**
-	 * does this sensor return the course of the target?
-	 */
-	public boolean hasTgtCourse()
-	{
-		return true;
-	}
-
-	// //////////////////////////////////////////////////////////
-	// model support
-	// //////////////////////////////////////////////////////////
-
 	/**
 	 * get the version details for this model.
-	 * 
+	 *
 	 * <pre>
 	 * $Log: NarrowbandSensor.java,v $
 	 * Revision 1.3  2006/09/21 12:20:42  Ian.Mayo
 	 * Reflect introduction of default names
-	 * 
+	 *
 	 * Revision 1.2  2006/08/31 14:34:08  Ian.Mayo
 	 * Undeprecate old models = we'll no longer rely on lookup sensors
-	 * 
+	 *
 	 * Revision 1.1  2006/08/08 14:21:55  Ian.Mayo
 	 * Second import
-	 * 
+	 *
 	 * Revision 1.1  2006/08/07 12:26:03  Ian.Mayo
 	 * First versions
-	 * 
+	 *
 	 * Revision 1.5  2004/11/03 15:42:08  Ian.Mayo
 	 * More support for MAD sensors, better use of canDetectThis method
-	 * 
+	 *
 	 * Revision 1.4  2004/10/18 19:06:27  ian
 	 * Fire array steady messages
 	 * <p/>
@@ -445,209 +541,67 @@ public class NarrowbandSensor extends InitialSensor
 	 * <p/>
 	 * </pre>
 	 */
-	public String getVersion()
-	{
+	@Override
+	public String getVersion() {
 		return "$Date$";
 	}
 
-	// //////////////////////////////////////////////////
-	// the editor object
-	// //////////////////////////////////////////////////
-	static public class NarrowbandInfo extends BaseSensorInfo
-	{
-		/**
-		 * @param data
-		 *          the Layers themselves
-		 */
-		public NarrowbandInfo(final NarrowbandSensor data)
-		{
-			super(data, true);
-		}
+	// //////////////////////////////////////////////////////////
+	// model support
+	// //////////////////////////////////////////////////////////
 
-		/**
-		 * editable GUI properties for our participant
-		 * 
-		 * @return property descriptions
-		 */
-		public java.beans.PropertyDescriptor[] getPropertyDescriptors()
-		{
-			try
-			{
-				final java.beans.PropertyDescriptor[] res = {
-						prop("Name", "the name of this narrowband sensor"),
-						prop("SteadyTime", "the size of the aperture of this sensor"),
-						prop("Working", "whether this sensor is in use"), };
-				return res;
-			}
-			catch (java.beans.IntrospectionException e)
-			{
-				return super.getPropertyDescriptors();
-			}
-		}
-
+	/**
+	 * whether there is any edit information for this item this is a convenience
+	 * function to save creating the EditorType data first
+	 *
+	 * @return yes/no
+	 */
+	@Override
+	public boolean hasEditor() {
+		return true;
 	}
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	public static class NBSensorTest extends
-			ASSET.Util.SupportTesting.EditableTesting
-	{
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+	/**
+	 * does this sensor return the course of the target?
+	 */
+	@Override
+	public boolean hasTgtCourse() {
+		return true;
+	}
 
-		public NBSensorTest(final String val)
-		{
-			super(val);
-		}
+	/**
+	 * restart this sensors
+	 */
+	@Override
+	public void restart() {
+		super.restart();
 
-		/**
-		 * get an object which we can test
-		 * 
-		 * @return Editable object which we can check the properties for
-		 */
-		public Editable getEditable()
-		{
-			return new NarrowbandSensor(12);
-		}
+		// and clear the time array expected to steady
+		_timeArraySteady = -01;
 
-		public void testSteadyTime()
-		{
-			NarrowbandSensor ns = new NarrowbandSensor(22);
-			ns.setName("ian test");
-			ns.setSteadyTime(new Duration(2, Duration.MINUTES));
-
-			// create valid locations
-			WorldLocation loca = SupportTesting.createLocation(100, 1000);
-			WorldLocation locb = SupportTesting.createLocation(200, 1000);
-
-			long time = 0;
-
-			EnvironmentType env = new SimpleEnvironment(1, 1, 1);
-			DetectionList dets = new DetectionList();
-			SSN me = new SSN(12);
-			Status stat = new Status(12, 0);
-			stat.setCourse(11);
-			stat.setLocation(loca);
-			stat.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
-			me.setStatus(stat);
-
-			Surface him = new Surface(122);
-			Status statb = new Status(32, 0);
-			statb.setCourse(13);
-			statb.setLocation(locb);
-			statb.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
-			him.setStatus(statb);
-			him.getRadiatedChars().add(EnvironmentType.NARROWBAND,
-					new NarrowbandRadNoise(222, 12));
-
-			CoreScenario theScenario = new CoreScenario();
-			theScenario.addParticipant(him.getId(), him);
-
-			// check dets is empty
-			assertEquals("dets starts empty", 0, dets.size());
-
-			ns.detects(env, dets, me, theScenario, time);
-
-			assertEquals("should have gained at least one detection", 1, dets.size());
-
-			// ok, move time forward. check we get another
-			time += 1000;
-
-			ns.detects(env, dets, me, theScenario, time);
-
-			assertEquals("should have gained at least one detection", 1, dets.size());
-
-			// ok, move time forward. check we get another
-			time += 1000;
-
-			// and change our course
-			me.getStatus().setCourse(22);
-
-			ns.detects(env, dets, me, theScenario, time);
-
-			assertEquals("should not have gained any more detections", 0, dets.size());
-			assertEquals("correct steady time set", 122000, ns._timeArraySteady, 0);
-
-			// ok try another cycle
-			time += 1000;
-
-			// and change our course
-			me.getStatus().setCourse(23);
-
-			ns.detects(env, dets, me, theScenario, time);
-
-			assertEquals("should not have gained any more detections", 0, dets.size());
-			assertEquals("correct steady extended time set", 123000,
-					ns._timeArraySteady, 0);
-			// ok try another cycle
-			time += 10000;
-
-			// and change our course
-			me.getStatus().setCourse(24);
-
-			ns.detects(env, dets, me, theScenario, time);
-
-			assertEquals("should not have gained any more detections", 0, dets.size());
-			assertEquals("correct steady extended time set", 133000,
-					ns._timeArraySteady, 0);
-
-			// AND BACK ON COURSE
-			time += 10000;
-
-			ns.detects(env, dets, me, theScenario, time);
-
-			assertEquals("should not have gained any more detections", 0, dets.size());
-			assertEquals("correct steady extended time set", 133000,
-					ns._timeArraySteady, 0);
-
-			// STAY ON COURSE
-			time += 10000;
-
-			ns.detects(env, dets, me, theScenario, time);
-
-			assertEquals("should not have gained any more detections", 0, dets.size());
-			assertEquals("correct steady extended time set", 133000,
-					ns._timeArraySteady, 0);
-
-			// MAKE TIME ELAPSED VALID
-			time = 133000;
-
-			ns.detects(env, dets, me, theScenario, time);
-
-			assertEquals("should not have gained any more detections", 1, dets.size());
-			assertEquals("correct steady extended time set", 133000,
-					ns._timeArraySteady, 0);
-
-			// MAKE TIME ELAPSED VALID
-			time = 134000;
-
-			ns.detects(env, dets, me, theScenario, time);
-
-			assertEquals("should not have gained any more detections", 1, dets.size());
-			assertEquals("correct steady extended time set", 133000,
-					ns._timeArraySteady, 0);
-
-		}
-
+		// and forget the old course
+		_oldCourse = INVALID_COURSE;
 	}
 
 	/**
 	 * set whether this sensor can measure bearing
-	 * 
+	 *
 	 * @param hasBearing
 	 */
-	public void setHasBearing(Boolean hasBearing)
-	{
+	public void setHasBearing(final Boolean hasBearing) {
 		_hasBearing = hasBearing;
 	}
 
-	public Boolean getHasBearing()
-	{
-		return _hasBearing;
+	public void setSecondHarmonic(final boolean tracksSecond) {
+		_tracksSecondHarmonic = tracksSecond;
 	}
 
-  public void setSecondHarmonic(final boolean tracksSecond)
-  {
-    _tracksSecondHarmonic = tracksSecond;
-  }
+	/**
+	 * set how long it takes this sensor to steady
+	 *
+	 * @param val
+	 */
+	public void setSteadyTime(final Duration val) {
+		_mySteadyTime = val;
+	}
 }

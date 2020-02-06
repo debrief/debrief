@@ -10,72 +10,39 @@ import MWC.TacticalData.temporal.TimeManager;
 import MWC.TacticalData.temporal.TimeProvider;
 
 /*******************************************************************************
- * Debrief - the Open Source Maritime Analysis Application
- * http://debrief.info
- *  
+ * Debrief - the Open Source Maritime Analysis Application http://debrief.info
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the Eclipse Public License v1.0
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
-final public class PlotHandler extends
-		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
-{
-	
-	public PlotHandler(final String fileName, final Layers destination,
-			final IControllableViewport view, final PlotEditor plot)
-	{
-		// inform our parent what type of class we are
-		super("plot");
-		
-		// sort out the handlers
-		addHandler(new SessionHandler(destination, view, plot));
-		addHandler(new DetailsHandler(null));
+final public class PlotHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader {
 
-		super.addAttributeHandler(new HandleAttribute("Name")
-		{
-			public void setValue(final String name, final String val)
-			{
-				System.out.println("Name of Plot is " + val);
-			}
-		});
-		super.addAttributeHandler(new HandleAttribute("Created")
-		{
-			public void setValue(final String name, final String val)
-			{
-				System.out.println("Plot was created on " + val);
-			}
-		});
-		super.addAttributeHandler(new HandleAttribute("PlotId")
-		{
-			public void setValue(final String name, final String val)
-			{
-				final TimeProvider prov = (TimeProvider) plot.getAdapter(TimeProvider.class);
-				if(prov instanceof TimeManager)
-				{
-					final TimeManager tMgr = (TimeManager) prov;
-					tMgr.setId(val);
-				}
-			}
-		});
+	public static org.w3c.dom.Element exportPlot(final Layers theLayers, final org.w3c.dom.Document doc) {
+		final org.w3c.dom.Element plt = doc.createElement("plot");
+		plt.setAttribute("Created", new java.util.Date().toString());
+		plt.setAttribute("Name", "Debrief Plot");
+		final String details = "Saved with Debrief version dated " + Debrief.GUI.VersionInfo.getVersion();
+		DetailsHandler.exportPlot(details, plt, doc);
+		SessionHandler.exportTheseLayers(theLayers, null, plt, doc);
+		return plt;
 	}
 
-	public static org.w3c.dom.Element exportPlot(final PlotEditor thePlot,
-			final org.w3c.dom.Document doc, final String version)
-	{
+	public static org.w3c.dom.Element exportPlot(final PlotEditor thePlot, final org.w3c.dom.Document doc,
+			final String version) {
 		final org.w3c.dom.Element plt = doc.createElement("plot");
 		plt.setAttribute("xmlns", "http://www.debrief.info/plot");
 		plt.setAttribute("Created", new java.util.Date().toString());
 		plt.setAttribute("Name", "Debrief Plot");
 		final TimeProvider mgr = (TimeProvider) thePlot.getAdapter(TimeProvider.class);
-		if (mgr != null)
-		{
+		if (mgr != null) {
 			plt.setAttribute("PlotId", mgr.getId());
 		}
 		String theVersion = version;
@@ -84,21 +51,41 @@ final public class PlotHandler extends
 		final String details = "Saved with Debrief version dated " + theVersion;
 		DetailsHandler.exportPlot(details, plt, doc);
 		SessionHandler.exportThis(thePlot, plt, doc);
-		
+
 		return plt;
 	}
 
-	public static org.w3c.dom.Element exportPlot(final Layers theLayers,
-			final org.w3c.dom.Document doc)
-	{
-		final org.w3c.dom.Element plt = doc.createElement("plot");
-		plt.setAttribute("Created", new java.util.Date().toString());
-		plt.setAttribute("Name", "Debrief Plot");
-		final String details = "Saved with Debrief version dated "
-				+ Debrief.GUI.VersionInfo.getVersion();
-		DetailsHandler.exportPlot(details, plt, doc);
-		SessionHandler.exportTheseLayers(theLayers, null, plt, doc);
-		return plt;
+	public PlotHandler(final String fileName, final Layers destination, final IControllableViewport view,
+			final PlotEditor plot) {
+		// inform our parent what type of class we are
+		super("plot");
+
+		// sort out the handlers
+		addHandler(new SessionHandler(destination, view, plot));
+		addHandler(new DetailsHandler(null));
+
+		super.addAttributeHandler(new HandleAttribute("Name") {
+			@Override
+			public void setValue(final String name, final String val) {
+				System.out.println("Name of Plot is " + val);
+			}
+		});
+		super.addAttributeHandler(new HandleAttribute("Created") {
+			@Override
+			public void setValue(final String name, final String val) {
+				System.out.println("Plot was created on " + val);
+			}
+		});
+		super.addAttributeHandler(new HandleAttribute("PlotId") {
+			@Override
+			public void setValue(final String name, final String val) {
+				final TimeProvider prov = (TimeProvider) plot.getAdapter(TimeProvider.class);
+				if (prov instanceof TimeManager) {
+					final TimeManager tMgr = (TimeManager) prov;
+					tMgr.setId(val);
+				}
+			}
+		});
 	}
 
 }

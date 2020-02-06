@@ -4,16 +4,16 @@ package ASSET.Util.XML.Control.Observers;
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 import ASSET.Models.Decision.TargetType;
@@ -22,179 +22,161 @@ import ASSET.Scenario.Observers.Summary.BatchCollator;
 import MWC.GenericData.WorldDistance;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
 
-abstract class ProximityObserverHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
-{
+abstract class ProximityObserverHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader {
 
-  private final static String type = "ProximityObserver";
+	////////////////////////////////////////////////////////////
+	// AND THE STOP ON PROXIMITY HANDLER
+	////////////////////////////////////////////////////////////
+	public static abstract class StopOnProximityHandler extends ProximityObserverHandler {
+		public final static String THIS_TYPE = "StopOnProximityObserver";
+		public final static String STOP_RANGE = "Range";
 
-  private final static String ACTIVE = "Active";
+		static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
+				final org.w3c.dom.Document doc) {
+			// create ourselves
+			final org.w3c.dom.Element thisPart = doc.createElement(type);
 
-  private final static String TARGET_TYPE = "Target";
-  private final static String WATCH_TYPE = "Watch";
+			// get data item
+			final ProximityObserver.StopOnProximityObserver bb = (ProximityObserver.StopOnProximityObserver) toExport;
 
-  protected TargetType _watchType = null;
-  protected TargetType _targetType = null;
-  protected boolean _isActive;
-  protected String _name = "Proximity Observer";
+			// output it's attributes
+			thisPart.setAttribute("Name", bb.getName());
+			thisPart.setAttribute(ACTIVE, writeThis(bb.isActive()));
 
+			TargetHandler.exportThis(bb.getTargetType(), thisPart, doc, TARGET_TYPE);
+			TargetHandler.exportThis(bb.getWatchType(), thisPart, doc, WATCH_TYPE);
+			WorldDistanceHandler.exportDistance(STOP_RANGE, bb.getRange(), thisPart, doc);
 
-  protected BatchCollatorHandler _myBatcher = new BatchCollatorHandler();
+			// output it's attributes
+			parent.appendChild(thisPart);
 
-  public ProximityObserverHandler()
-  {
-    this(type);
-  }
+		}
 
-  public ProximityObserverHandler(String type)
-  {
-    super(type);
+		protected WorldDistance _thisDist = null;
 
-    addAttributeHandler(new HandleBooleanAttribute(ACTIVE)
-    {
-      public void setValue(String name, final boolean val)
-      {
-        _isActive = val;
-      }
-    });
+		public StopOnProximityHandler() {
+			super(THIS_TYPE);
 
-    addAttributeHandler(new HandleAttribute("Name")
-    {
-      public void setValue(String name, final String val)
-      {
-        _name = val;
-      }
-    });
+			// and add our extra handler
+			addHandler(new WorldDistanceHandler(STOP_RANGE) {
+				@Override
+				public void setWorldDistance(final WorldDistance res) {
+					// To change body of implemented methods use File | Settings | File Templates.
+					_thisDist = res;
+				}
+			});
 
-    addHandler(new TargetHandler(TARGET_TYPE)
-    {
-      public void setTargetType(final TargetType type1)
-      {
-        _targetType = type1;
-      }
-    });
+		}
 
-    addHandler(new TargetHandler(WATCH_TYPE)
-    {
-      public void setTargetType(final TargetType type1)
-      {
-        _watchType = type1;
-      }
-    });
+		@Override
+		public void elementClosed() {
+			// create ourselves
+			final BatchCollator timeO = new ProximityObserver.StopOnProximityObserver(_watchType, _targetType,
+					_thisDist, _name, _isActive);
 
+			// (possibly) set batch collation results
+			_myBatcher.setData(timeO);
 
-    addHandler(_myBatcher);
-  }
+			setObserver(timeO);
 
-  public void elementClosed()
-  {
-    // create ourselves
-    final BatchCollator timeO = new ProximityObserver(_watchType, _targetType, _name, _isActive);
+			// and reset
+			_name = null;
+			_targetType = null;
+			_watchType = null;
+			_thisDist = null;
+		}
 
+	}
 
+	private final static String type = "ProximityObserver";
 
-    // (possibly) set batch collation results
-    _myBatcher.setData(timeO);
+	private final static String ACTIVE = "Active";
+	private final static String TARGET_TYPE = "Target";
 
+	private final static String WATCH_TYPE = "Watch";
 
-    setObserver(timeO);
+	static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc) {
+		// create ourselves
+		final org.w3c.dom.Element thisPart = doc.createElement(type);
 
-    // and reset
-    _name = "Proximity Observer";
-    _targetType = null;
-    _watchType = null;
-  }
+		// get data item
+		final ProximityObserver bb = (ProximityObserver) toExport;
 
+		// output it's attributes
+		thisPart.setAttribute("Name", bb.getName());
+		thisPart.setAttribute(ACTIVE, writeThis(bb.isActive()));
 
-  abstract public void setObserver(BatchCollator obs);
+		TargetHandler.exportThis(bb.getTargetType(), thisPart, doc, TARGET_TYPE);
+		TargetHandler.exportThis(bb.getWatchType(), thisPart, doc, WATCH_TYPE);
 
-  static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
-                                final org.w3c.dom.Document doc)
-  {
-    // create ourselves
-    final org.w3c.dom.Element thisPart = doc.createElement(type);
+		// output it's attributes
+		parent.appendChild(thisPart);
 
-    // get data item
-    final ProximityObserver bb = (ProximityObserver) toExport;
+	}
 
-    // output it's attributes
-    thisPart.setAttribute("Name", bb.getName());
-    thisPart.setAttribute(ACTIVE, writeThis(bb.isActive()));
+	protected TargetType _watchType = null;
+	protected TargetType _targetType = null;
 
-    TargetHandler.exportThis(bb.getTargetType(), thisPart, doc, TARGET_TYPE);
-    TargetHandler.exportThis(bb.getWatchType(), thisPart, doc, WATCH_TYPE);
+	protected boolean _isActive;
 
-    // output it's attributes
-    parent.appendChild(thisPart);
+	protected String _name = "Proximity Observer";
 
-  }
+	protected BatchCollatorHandler _myBatcher = new BatchCollatorHandler();
 
+	public ProximityObserverHandler() {
+		this(type);
+	}
 
-  ////////////////////////////////////////////////////////////
-  // AND THE STOP ON PROXIMITY HANDLER
-  ////////////////////////////////////////////////////////////
-  public static abstract class StopOnProximityHandler extends ProximityObserverHandler
-  {
-    public final static String THIS_TYPE = "StopOnProximityObserver";
-    public final static String STOP_RANGE = "Range";
+	public ProximityObserverHandler(final String type) {
+		super(type);
 
+		addAttributeHandler(new HandleBooleanAttribute(ACTIVE) {
+			@Override
+			public void setValue(final String name, final boolean val) {
+				_isActive = val;
+			}
+		});
 
-    protected WorldDistance _thisDist = null;
+		addAttributeHandler(new HandleAttribute("Name") {
+			@Override
+			public void setValue(final String name, final String val) {
+				_name = val;
+			}
+		});
 
-    public StopOnProximityHandler()
-    {
-      super(THIS_TYPE);
+		addHandler(new TargetHandler(TARGET_TYPE) {
+			@Override
+			public void setTargetType(final TargetType type1) {
+				_targetType = type1;
+			}
+		});
 
-      // and add our extra handler
-      addHandler(new WorldDistanceHandler(STOP_RANGE)
-      {
-        public void setWorldDistance(WorldDistance res)
-        {
-          //To change body of implemented methods use File | Settings | File Templates.
-          _thisDist = res;
-        }
-      });
+		addHandler(new TargetHandler(WATCH_TYPE) {
+			@Override
+			public void setTargetType(final TargetType type1) {
+				_watchType = type1;
+			}
+		});
 
-    }
+		addHandler(_myBatcher);
+	}
 
-    public void elementClosed()
-    {
-      // create ourselves
-      final BatchCollator timeO = new ProximityObserver.StopOnProximityObserver(_watchType, _targetType, _thisDist, _name, _isActive);
+	@Override
+	public void elementClosed() {
+		// create ourselves
+		final BatchCollator timeO = new ProximityObserver(_watchType, _targetType, _name, _isActive);
 
-      // (possibly) set batch collation results
-      _myBatcher.setData(timeO);
+		// (possibly) set batch collation results
+		_myBatcher.setData(timeO);
 
-      setObserver(timeO);
+		setObserver(timeO);
 
-      // and reset
-      _name = null;
-      _targetType = null;
-      _watchType = null;
-      _thisDist = null;
-    }
+		// and reset
+		_name = "Proximity Observer";
+		_targetType = null;
+		_watchType = null;
+	}
 
-
-    static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
-                                  final org.w3c.dom.Document doc)
-    {
-      // create ourselves
-      final org.w3c.dom.Element thisPart = doc.createElement(type);
-
-      // get data item
-      final ProximityObserver.StopOnProximityObserver bb = (ProximityObserver.StopOnProximityObserver) toExport;
-
-      // output it's attributes
-      thisPart.setAttribute("Name", bb.getName());
-      thisPart.setAttribute(ACTIVE, writeThis(bb.isActive()));
-
-      TargetHandler.exportThis(bb.getTargetType(), thisPart, doc, TARGET_TYPE);
-      TargetHandler.exportThis(bb.getWatchType(), thisPart, doc, WATCH_TYPE);
-      WorldDistanceHandler.exportDistance(STOP_RANGE, bb.getRange(), thisPart, doc);
-
-      // output it's attributes
-      parent.appendChild(thisPart);
-
-    }
-
-  }
+	abstract public void setObserver(BatchCollator obs);
 }

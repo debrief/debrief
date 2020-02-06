@@ -1,21 +1,22 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.Chart.Painters;
 
 // Copyright MWC 1999, Debrief 3 Project
+
 // $RCSfile: ScalePainter.java,v $
 // @author $Author: ian.mayo $
 // @version $Revision: 1.12 $
@@ -126,7 +127,6 @@ package MWC.GUI.Chart.Painters;
 // Initial revision
 //
 
-
 import java.awt.Color;
 import java.awt.Point;
 import java.beans.IntrospectionException;
@@ -146,834 +146,761 @@ import MWC.GenericData.WorldLocation;
 /**
  * Class to plot a scale onto a plot
  */
-public class ScalePainter implements Plottable, Serializable, ExcludeFromRightClickEdit
-{
+public class ScalePainter implements Plottable, Serializable, ExcludeFromRightClickEdit {
 
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  /**
-   * version number for this painter
-   */
-  static final long serialVersionUID = -1;
-
-  /**
-   * colour of this scale
-   */
-  Color _myColor;
-  /**
-   * whether we are visible or not
-   */
-  boolean _isOn;
-
-  /**
-   * default location for the scale
-   */
-  protected int _location = DiagonalLocationPropertyEditor.BOTTOM_RIGHT;
-
-  /**
-   * set of values used to doDecide on what steps to use for the scale
-   */
-  transient private Label_Limit _limits[];
-
-  /**
-   * our editor
-   */
-  transient private Editable.EditorType _myEditor;
-
-  /**
-   * the maximum value to plot on the scale axis
-   */
-  private long _scaleMax;
-
-  /**
-   * the step size to use on the axis
-   */
-  private long _scaleStep;
-
-  /**
-   * whether we are in auto mode for the scale
-   */
-  private boolean _autoScale = true;
-
-  /**
-   * the units to use for the scale
-   */
-  private UnitsConverter _DisplayUnits = null;
-
-  /**
-   * the list of units types we know about (we don't remember this when serialising, we create it afresh)
-   */
-  private static transient java.util.HashMap<String, UnitsConverter> _unitsList;
-
-  /**
-   * the font we use for the D DifarSymbols
-   */
-  private java.awt.Font _myFont = Defaults.getFont();
-  
-  private boolean _fillBackground = false;
-  
-  private Color _background = Color.white;
-  
-  private boolean _semiTransparent = false;
-
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  /**
-   * constructor, also initialises the list of limits we use
-   */
-  public ScalePainter()
-  {
-    _myColor = Color.darkGray;
-    _isOn = true;
-
-    // create our array of limits
-    initialiseLimits();
-
-    // create the list of units
-    setupUnits();
-
-    // start off in known units
-    this.setDisplayUnits(MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS);
-  }
-
-  /**
-   * setup the list of units converters
-   */
-  private synchronized void setupUnits()
-  {
-  	
-  	// just check it hasn't already been generated
-  	if(_unitsList != null)
-  		return;
-  	
-    // create the list itself
-    _unitsList = new java.util.HashMap<String, UnitsConverter>();
-
-    // and put in the converters
-    _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.KM_UNITS, new UnitsConverter(MWC.GUI.Properties.UnitsPropertyEditor.KM_UNITS)
-    {
-      /**
-			 * 
+	/////////////////////////////////////////////////////////////
+	// scale limits and labels from a data range
+	////////////////////////////////////////////////////////////
+	class Label_Limit implements Serializable {
+		/**
+			 *
 			 */
-			private static final long serialVersionUID = 1L;
-
-			public double convertThis(final double degs)
-      {
-        return MWC.Algorithms.Conversions.Degs2Km(degs);
-      }
-
-      public String writeThis(final double myUnits)
-      {
-        return "" + (int) myUnits;
-      }
-    });
-
-    _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.METRES_UNITS, new UnitsConverter(MWC.GUI.Properties.UnitsPropertyEditor.METRES_UNITS)
-    {
-      /**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			public double convertThis(final double degs)
-      {
-        return MWC.Algorithms.Conversions.Degs2m(degs);
-      }
-
-      public String writeThis(final double myUnits)
-      {
-        return "" + (int) myUnits;
-      }
-    });
-
-
-    _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.NM_UNITS, new UnitsConverter(MWC.GUI.Properties.UnitsPropertyEditor.NM_UNITS)
-    {
-      /**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			public double convertThis(final double degs)
-      {
-        return MWC.Algorithms.Conversions.Degs2Nm(degs);
-      }
-
-      public String writeThis(final double myUnits)
-      {
-        return "" + (int) myUnits;
-      }
-    });
-
-    _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS, new UnitsConverter(MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS)
-    {
-      /**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			public double convertThis(final double degs)
-      {
-        return MWC.Algorithms.Conversions.Degs2Yds(degs);
-      }
-
-      public String writeThis(final double myUnits)
-      {
-        return "" + (int) myUnits;
-      }
-    });
-
-    _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.KYD_UNITS, new UnitsConverter(MWC.GUI.Properties.UnitsPropertyEditor.KYD_UNITS)
-    {
-      /**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			public double convertThis(final double degs)
-      {
-        return MWC.Algorithms.Conversions.Degs2Yds(degs) / 1000;
-      }
-
-      public String writeThis(final double myUnits)
-      {
-        return "" + (int) myUnits;
-      }
-    });
-
-
-  }
-
-
-  /**
-   * setup the list
-   */
-  private void initialiseLimits()
-  {
-    // create the array of limits values in a tmp parameter
-    final Label_Limit[] tmp = {
-      new Label_Limit(7, 1),
-      new Label_Limit(20, 5),
-      new Label_Limit(70, 10),
-      new Label_Limit(200, 50),
-      new Label_Limit(700, 100),
-      new Label_Limit(2000, 500),
-      new Label_Limit(7000, 1000),
-      new Label_Limit(20000, 5000),
-      new Label_Limit(70000, 10000),
-      new Label_Limit(200000, 50000),
-      new Label_Limit(700000, 100000),
-      new Label_Limit(2000000, 500000),
-      new Label_Limit(7000000, 1000000),
-      new Label_Limit(20000000, 5000000),
-      new Label_Limit(70000000, 10000000)};
-
-    // and now store the array in our local variable
-    _limits = tmp;
-  }
-
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
-
-  /**
-   * whether the scale is visible or not
-   *
-   * @param val yes/no visibility
-   */
-  public void setVisible(final boolean val)
-  {
-    _isOn = val;
-  }
-
-  /**
-   * whether the scale is visible or not
-   *
-   * @return yes/no
-   */
-  public boolean getVisible()
-  {
-    return _isOn;
-  }
-
-  /**
-   * current colour of the scale
-   *
-   * @param val the colour
-   */
-  public void setColor(final Color val)
-  {
-    _myColor = val;
-  }
-
-  /**
-   * current colour of the scale
-   *
-   * @return colour
-   */
-  public Color getColor()
-  {
-    return _myColor;
-  }
-
-  /**
-   * which corner to position the scale
-   *
-   * @param loc one of the enumerated types listed earlier
-   */
-  public void setLocation(final Integer loc)
-  {
-    _location = loc.intValue();
-  }
-
-  /**
-   * retrieve the current location of the scale
-   *
-   * @return the current location, from the enumerated types defined for this class
-   */
-  public Integer getLocation()
-  {
-    return new Integer(_location);
-  }
-
-  /**
-   * redraw the scale
-   *
-   * @param g the destination
-   */
-  public void paint(final CanvasType g)
-  {
-
-    // check we are visible
-    if (!_isOn)
-      return;
-
-    // what is the screen width in logical coordinate?
-    final MWC.Algorithms.PlainProjection proj = g.getProjection();
-
-    // find the screen width
-    final java.awt.Dimension screen_size = proj.getScreenArea().getSize();
-    final long screen_width = screen_size.width;
-
-    // generate screen points in the middle on the left & right-hand sides
-    final Point left = new Point(0, (int) screen_size.getHeight() / 2);
-    final Point right = new Point((int) screen_width, (int) screen_size.getHeight() / 2);
-
-    // and now world locations to represent them
-    final WorldLocation leftLoc = new WorldLocation(proj.toWorld(left));
-    final WorldLocation rightLoc = proj.toWorld(right);
-
-    // and get the distance between them
-    double data_width = rightLoc.rangeFrom(leftLoc);
-
-    // convert this data width (in degs) to our units
-    data_width = _DisplayUnits.convertThis(data_width);
-
-    // make a guess at the scale
-    final double scale = data_width / screen_width;
-
-    // clip the screen width so that the scale bar doesn't go across the
-    // whole screen, and so that we can offset it a bit.
-    data_width *= 0.5;
-
-
-    // trap the occasion where the data has zero size
-    if (data_width == 0)
-    {
-      return;
-    }
-
-    // find the current text height
-    final int txtHt = g.getStringHeight(_myFont);
-
-    // we now have to determine the labels to use on the axis
-
-    long first;
-
-    // since we always start the axis at zero,
-    first = 0;
-
-    // check we have our set of data
-    if (_limits == null)
-      initialiseLimits();
-
-
-    // find the range we are working in
-    int counter = 0;
-    while ((counter < _limits.length) &&
-      (data_width > _limits[counter].upper_limit))
-    {
-      counter++;
-    }
-
-    // check if we have sufficient data to perform range scale
-    if (!_autoScale)
-    {
-      if ((_scaleMax == 0) || (_scaleStep == 0))
-      {
-        _autoScale = true;
-      }
-    }
-
-    // doDecide if we are plotting in auto mode or not
-    if (_autoScale)
-    {
-
-      // check that we aren't trying to zoom out beyond the size of our wonderful planet
-      if (counter == _limits.length)
-      {
-        MWC.Utilities.Errors.Trace.trace("Zoomed out too far!");
-        return;
-      }
-
-      // set our increment counter
-      _scaleStep = _limits[counter].increment;
-
-      // determine the value of the last scale object we are trying to
-      // plot
-      _scaleMax = ((long) data_width / _scaleStep * _scaleStep + _scaleStep);
-
-
-      if (_myEditor != null)
-      {
-        _myEditor.fireChanged(this, "Calc", null, this);
-      }
-    }
-
-
-    // find the width of the scale in screen units
-    final int scale_width = (int) (_scaleMax / scale);
-
-    // determine the start / end points according to the scale location
-    // variable
-    java.awt.Point TL = null, BR = null;
-    switch (_location)
-    {
-      case (DiagonalLocationPropertyEditor.TOP_LEFT):
-        TL = new Point((int) (screen_size.width * 0.05), (int) (txtHt + screen_size.height * 0.032));
-        BR = new Point((TL.x + scale_width), (int) (txtHt + screen_size.height * 0.035));
-        break;
-      case (DiagonalLocationPropertyEditor.TOP_RIGHT):
-        BR = new Point((int) (screen_size.width * 0.95), (int) (txtHt + screen_size.height * 0.035));
-        TL = new Point((BR.x - scale_width), (int) (txtHt + screen_size.height * 0.032));
-        break;
-      case (DiagonalLocationPropertyEditor.BOTTOM_LEFT):
-        TL = new Point((int) (screen_size.width * 0.05), (int) (screen_size.height * 0.987));
-        BR = new Point((TL.x + scale_width), (int) (screen_size.height * 0.99));
-        break;
-      default:
-        BR = new Point((int) (screen_size.width * 0.95), (int) (screen_size.height * 0.99));
-        TL = new Point((BR.x - scale_width), (int) (screen_size.height * 0.987));
-        break;
-    }
-
-    // create the figures to step along the line
-    final int num_ticks = (int) ((_scaleMax - first) / _scaleStep);
-    final int tick_step = (int) (_scaleStep / scale);
-
-    // set our drawing flags
-    boolean fill_this = true;
-    boolean first_point = true;
-
-    // setup the drawing object
-    Color oldBackground = g.getBackgroundColor();
-  	g.setBackgroundColor(_background);
-  	
-    if (_fillBackground)
-    {
-    	g.setColor(_background);
-    	int step = g.getStringHeight(_myFont)*2;
-    	int x = TL.x - step;
-    	int y = TL.y - step;
-    	int w = scale_width + step*3;
-    	int h = step*2;
-    	if (g instanceof ExtendedCanvasType && _semiTransparent)
-    	{
-    		((ExtendedCanvasType)g).semiFillRect(x, y, w, h);
-    	}
-    	else
-    	{
-    		g.fillRect(x, y, w, h);
-    	}
-    }
-    g.setColor(this.getColor());
-    // first draw in 10 ticks in the first section of the scale
-    final double tmp_tick_step = tick_step / 10.0;
-    for (int j = 0; j < 10; j++)
-    {
-      // put in the tick at this point
-      final int this_dist = TL.x + (int) (j * tmp_tick_step);
-
-      // check if we are 1/2 way along the strip. If so the we'll draw in a
-      // higher tick
-      if (j == 5)
-        g.drawLine(this_dist, BR.y, this_dist, TL.y - (int) (txtHt * 0.5));
-      else
-        g.drawLine(this_dist, BR.y, this_dist, (int) (TL.y - (txtHt * 0.3)));
-    }
-
-
-    // draw in the major ticks and the labels
-    for (int i = 0; i <= num_ticks; i++)
-    {
-    	// sort out the label
-      String str = "" + (int) (i * _scaleStep)+ " " + _DisplayUnits.getUnits();
-      
-      // make the label plural if it's > 0
-      if((i * _scaleStep) > 1)
-      	str += "s";
-
-      // find the text size for this label
-      final int wid = g.getStringWidth(_myFont, str);
-
-      // put in the tick at this point
-      final int this_dist = TL.x + i * tick_step;
-      g.drawLine(this_dist, BR.y, this_dist, TL.y - (int) (txtHt * 0.5));
-
-      if (first_point)
-      {
-        // skip this one
-        first_point = false;
-      }
-      else
-      {
-        // we will draw in the boxes by drawing to the previous point,
-        // we cant do this for the first point
-        if (fill_this)
-        {
-          g.fillRect(this_dist - tick_step, BR.y, tick_step + 1, (BR.y - TL.y) + 1);
-        }
-        else
-        {
-          g.drawRect(this_dist - tick_step, BR.y, tick_step + 1, BR.y - TL.y);
-        }
-
-        // flip the counter to paint alternate panels
-        fill_this = !fill_this;
-
-      }
-
-      // draw in the scale value
-      g.drawText(_myFont, str, this_dist - (wid / 2), (int) (TL.y - (0.7 * txtHt)));
-
-    }
-
-    g.setBackgroundColor(oldBackground);
-  	
-  }
-
-  /**
-   * the area covered by the scale.  It's null in this case, since the scale resizes to suit the data area.
-   *
-   * @return always null - meaning the scale doesn't mind what size the visible plot is
-   */
-  public MWC.GenericData.WorldArea getBounds()
-  {
-    // doesn't return a sensible size
-    return null;
-  }
-
-  /**
-   * the range of the scale from a point (ignored)
-   *
-   * @param other the other point
-   * @return INVALID_RANGE since this is value can't be calculated
-   */
-  public double rangeFrom(final MWC.GenericData.WorldLocation other)
-  {
-    // doesn't return a sensible distance;
-    return INVALID_RANGE;
-  }
-
-  /**
-   * return this item as a string
-   *
-   * @return the name of the scale
-   */
-  public String toString()
-  {
-    return getName();
-  }
-
-  /**
-   * get the name of the scale
-   *
-   * @return the name of the scale
-   */
-  public String getName()
-  {
-    return "Scale";
-  }
-
-  /**
-   * get the max limit on the scale
-   *
-   * @return the max value
-   */
-  public Long getScaleMax()
-  {
-    return new Long(_scaleMax);
-  }
-
-  /**
-   * set the max limit on the scale
-   *
-   * @param val the max value
-   */
-  public void setScaleMax(final Long val)
-  {
-    _scaleMax = val.longValue();
-  }
-
-  /**
-   * get the step size on the scale
-   *
-   * @return the step size
-   */
-  public Long getScaleStep()
-  {
-    return new Long(_scaleStep);
-  }
-
-  /**
-   * set the step size on the scale
-   *
-   * @param val the step size
-   */
-  public void setScaleStep(final Long val)
-  {
-    _scaleStep = val.longValue();
-  }
-
-  /**
-   * whether the scale is in auto mode
-   *
-   * @return auto mode
-   */
-  public boolean getAutoMode()
-  {
-    return _autoScale;
-  }
-
-  /**
-   * set the mode for auto-calculation of scales
-   *
-   * @param val the new mode for auto
-   */
-  public void setAutoMode(final boolean val)
-  {
-    _autoScale = val;
-  }
-
-  public String getDisplayUnits()
-  {
-    return _DisplayUnits.getUnits();
-  }
-
-  public void setDisplayUnits(final String DisplayUnits)
-  {
-  	// generate the units, if we have to
-  	setupUnits();
-  
-  	// see what they asked for
-  	UnitsConverter theConverter =(UnitsConverter) ScalePainter._unitsList.get(DisplayUnits); 
-  	
-  	// did we find the text string?
-  	if(theConverter == null)
-  	{
-  		theConverter =(UnitsConverter) ScalePainter._unitsList.get(UnitsPropertyEditor.KYD_UNITS);
-  	}
-  	
-    this._DisplayUnits = theConverter;
-  }
-
-
-  /**
-   * whether the scale has an editor
-   *
-   * @return yes
-   */
-  public boolean hasEditor()
-  {
-    return true;
-  }
-
-  public Editable.EditorType getInfo()
-  {
-    if (_myEditor == null)
-      _myEditor = new ScalePainterInfo(this);
-
-    return _myEditor;
-  }
-
-
-  ////////////////////////////////////
-  // static interior class to convert between units
-  ////////////////////////////////////
-  abstract private static class UnitsConverter implements Serializable
-  {
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	/**
-     * the label we use for our inits
-     */
-    private final String _myUnits;
-
-    /**
-     * constructor
-     *
-     * @param myUnits
-     */
-    public UnitsConverter(final String myUnits)
-    {
-      this._myUnits = myUnits;
-    }
-
-    abstract public double convertThis(double degs);
-
-    abstract public String writeThis(double myUnits);
-
-    public String getUnits()
-    {
-      return _myUnits;
-    }
-
-  }
-
-  /////////////////////////////////////////////////////////////
-  // info class
-  ////////////////////////////////////////////////////////////
-  public class ScalePainterInfo extends Editable.EditorType implements Serializable
-  {
-
-    // give it some old version id
-    static final long serialVersionUID = 1L;
-    
-    public ScalePainterInfo(final ScalePainter data)
-    {
-      super(data, data.getName(), "");
-    }
-
-    public PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try
-      {
-        final PropertyDescriptor[] res = {
-          prop("Color", "the Color to draw the Scale", FORMAT),
-          displayProp("FillBackground", "Fill background", "whether fill background for this Scale", FORMAT),
-          prop("Background", "the background for this Scale", FORMAT),
-          prop("Font", "the font for this Scale", FORMAT),
-       /*   displayProp("SemiTransparent", "Semi transparent",
-							"wether to use semi transparent background for the time display", FORMAT), */
-          prop("Visible", "whether this Scale is visible", VISIBILITY),
-          displayProp("ScaleMax", "Scale max", "the maximum value of the scale in yards", FORMAT),
-          displayProp("ScaleStep", "Scale step", "the step size of the scale in yards", FORMAT),
-          displayProp("AutoMode", "Auto mode", "whether to automatically calculate the scale values"),
-          displayLongProp("DisplayUnits", "Display units", "the units to use to display ranges on the scale",
-                   MWC.GUI.Properties.UnitsPropertyEditor.class, FORMAT),
-          longProp("Location",
-                   "the scale location",
-                   MWC.GUI.Properties.DiagonalLocationPropertyEditor.class, FORMAT)
-        };
-
-        return res;
-      }
-      catch (final IntrospectionException e)
-      {
-        return super.getPropertyDescriptors();
-      }
-    }
-  }
-
-  /////////////////////////////////////////////////////////////
-  // scale limits and labels from a data range
-  ////////////////////////////////////////////////////////////
-  class Label_Limit implements Serializable
-  {
-    /**
-		 * 
+		private static final long serialVersionUID = 1L;
+
+		long upper_limit;
+		long increment;
+
+		Label_Limit(final long limit, final long inc) {
+			upper_limit = limit;
+			increment = inc;
+		}
+	}
+
+	/////////////////////////////////////////////////////////////
+	// info class
+	////////////////////////////////////////////////////////////
+	public class ScalePainterInfo extends Editable.EditorType implements Serializable {
+
+		// give it some old version id
+		static final long serialVersionUID = 1L;
+
+		public ScalePainterInfo(final ScalePainter data) {
+			super(data, data.getName(), "");
+		}
+
+		@Override
+		public PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final PropertyDescriptor[] res = { prop("Color", "the Color to draw the Scale", FORMAT),
+						displayProp("FillBackground", "Fill background", "whether fill background for this Scale",
+								FORMAT),
+						prop("Background", "the background for this Scale", FORMAT),
+						prop("Font", "the font for this Scale", FORMAT),
+						/*
+						 * displayProp("SemiTransparent", "Semi transparent",
+						 * "wether to use semi transparent background for the time display", FORMAT),
+						 */
+						prop("Visible", "whether this Scale is visible", VISIBILITY),
+						displayProp("ScaleMax", "Scale max", "the maximum value of the scale in yards", FORMAT),
+						displayProp("ScaleStep", "Scale step", "the step size of the scale in yards", FORMAT),
+						displayProp("AutoMode", "Auto mode", "whether to automatically calculate the scale values"),
+						displayLongProp("DisplayUnits", "Display units",
+								"the units to use to display ranges on the scale",
+								MWC.GUI.Properties.UnitsPropertyEditor.class, FORMAT),
+						longProp("Location", "the scale location",
+								MWC.GUI.Properties.DiagonalLocationPropertyEditor.class, FORMAT) };
+
+				return res;
+			} catch (final IntrospectionException e) {
+				return super.getPropertyDescriptors();
+			}
+		}
+	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	static public class ScalePainterTest extends junit.framework.TestCase {
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public ScalePainterTest(final String val) {
+			super(val);
+		}
+
+		public void testMyParams() {
+			MWC.GUI.Editable ed = new ScalePainter();
+			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
+			ed = null;
+		}
+	}
+
+	////////////////////////////////////
+	// static interior class to convert between units
+	////////////////////////////////////
+	abstract private static class UnitsConverter implements Serializable {
+		/**
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
-		
-		long upper_limit;
-    long increment;
+		/**
+		 * the label we use for our inits
+		 */
+		private final String _myUnits;
 
-    Label_Limit(final long limit, final long inc)
-    {
-      upper_limit = limit;
-      increment = inc;
-    }
-  }
+		/**
+		 * constructor
+		 *
+		 * @param myUnits
+		 */
+		public UnitsConverter(final String myUnits) {
+			this._myUnits = myUnits;
+		}
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  static public class ScalePainterTest extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+		abstract public double convertThis(double degs);
 
-    public ScalePainterTest(final String val)
-    {
-      super(val);
-    }
+		public String getUnits() {
+			return _myUnits;
+		}
 
-    public void testMyParams()
-    {
-      MWC.GUI.Editable ed = new ScalePainter();
-      MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
-      ed = null;
-    }
-  }
+		abstract public String writeThis(double myUnits);
 
-	public int compareTo(final Plottable arg0)
-	{
-		final Plottable other = (Plottable) arg0;
+	}
+
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+	/**
+	 * version number for this painter
+	 */
+	static final long serialVersionUID = -1;
+
+	/**
+	 * the list of units types we know about (we don't remember this when
+	 * serialising, we create it afresh)
+	 */
+	private static transient java.util.HashMap<String, UnitsConverter> _unitsList;
+
+	/**
+	 * colour of this scale
+	 */
+	Color _myColor;
+
+	/**
+	 * whether we are visible or not
+	 */
+	boolean _isOn;
+
+	/**
+	 * default location for the scale
+	 */
+	protected int _location = DiagonalLocationPropertyEditor.BOTTOM_RIGHT;
+
+	/**
+	 * set of values used to doDecide on what steps to use for the scale
+	 */
+	transient private Label_Limit _limits[];
+
+	/**
+	 * our editor
+	 */
+	transient private Editable.EditorType _myEditor;
+
+	/**
+	 * the maximum value to plot on the scale axis
+	 */
+	private long _scaleMax;
+
+	/**
+	 * the step size to use on the axis
+	 */
+	private long _scaleStep;
+
+	/**
+	 * whether we are in auto mode for the scale
+	 */
+	private boolean _autoScale = true;
+
+	/**
+	 * the units to use for the scale
+	 */
+	private UnitsConverter _DisplayUnits = null;
+
+	/**
+	 * the font we use for the D DifarSymbols
+	 */
+	private java.awt.Font _myFont = Defaults.getFont();
+
+	private boolean _fillBackground = false;
+
+	private Color _background = Color.white;
+
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+
+	private boolean _semiTransparent = false;
+
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	/**
+	 * constructor, also initialises the list of limits we use
+	 */
+	public ScalePainter() {
+		_myColor = Color.darkGray;
+		_isOn = true;
+
+		// create our array of limits
+		initialiseLimits();
+
+		// create the list of units
+		setupUnits();
+
+		// start off in known units
+		this.setDisplayUnits(MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS);
+	}
+
+	@Override
+	public int compareTo(final Plottable arg0) {
+		final Plottable other = arg0;
 		return this.getName().compareTo(other.getName());
 	}
 
-	public java.awt.Font getFont()
-	{
-		return _myFont;
+	/**
+	 * whether the scale is in auto mode
+	 *
+	 * @return auto mode
+	 */
+	public boolean getAutoMode() {
+		return _autoScale;
 	}
 
-	public void setFont(java.awt.Font myFont)
-	{
-		this._myFont = myFont;
-	}
-
-	public boolean isFillBackground()
-	{
-		return _fillBackground;
-	}
-
-	public void setFillBackground(boolean fillBackground)
-	{
-		this._fillBackground = fillBackground;
-	}
-
-	public Color getBackground()
-	{
+	public Color getBackground() {
 		return _background;
 	}
 
-	public void setBackground(Color background)
-	{
-		this._background = background;
+	/**
+	 * the area covered by the scale. It's null in this case, since the scale
+	 * resizes to suit the data area.
+	 *
+	 * @return always null - meaning the scale doesn't mind what size the visible
+	 *         plot is
+	 */
+	@Override
+	public MWC.GenericData.WorldArea getBounds() {
+		// doesn't return a sensible size
+		return null;
 	}
 
-	public boolean isSemiTransparent()
-	{
+	/**
+	 * current colour of the scale
+	 *
+	 * @return colour
+	 */
+	public Color getColor() {
+		return _myColor;
+	}
+
+	public String getDisplayUnits() {
+		return _DisplayUnits.getUnits();
+	}
+
+	public java.awt.Font getFont() {
+		return _myFont;
+	}
+
+	@Override
+	public Editable.EditorType getInfo() {
+		if (_myEditor == null)
+			_myEditor = new ScalePainterInfo(this);
+
+		return _myEditor;
+	}
+
+	/**
+	 * retrieve the current location of the scale
+	 *
+	 * @return the current location, from the enumerated types defined for this
+	 *         class
+	 */
+	public Integer getLocation() {
+		return new Integer(_location);
+	}
+
+	/**
+	 * get the name of the scale
+	 *
+	 * @return the name of the scale
+	 */
+	@Override
+	public String getName() {
+		return "Scale";
+	}
+
+	/**
+	 * get the max limit on the scale
+	 *
+	 * @return the max value
+	 */
+	public Long getScaleMax() {
+		return new Long(_scaleMax);
+	}
+
+	/**
+	 * get the step size on the scale
+	 *
+	 * @return the step size
+	 */
+	public Long getScaleStep() {
+		return new Long(_scaleStep);
+	}
+
+	/**
+	 * whether the scale is visible or not
+	 *
+	 * @return yes/no
+	 */
+	@Override
+	public boolean getVisible() {
+		return _isOn;
+	}
+
+	/**
+	 * whether the scale has an editor
+	 *
+	 * @return yes
+	 */
+	@Override
+	public boolean hasEditor() {
+		return true;
+	}
+
+	/**
+	 * setup the list
+	 */
+	private void initialiseLimits() {
+		// create the array of limits values in a tmp parameter
+		final Label_Limit[] tmp = { new Label_Limit(7, 1), new Label_Limit(20, 5), new Label_Limit(70, 10),
+				new Label_Limit(200, 50), new Label_Limit(700, 100), new Label_Limit(2000, 500),
+				new Label_Limit(7000, 1000), new Label_Limit(20000, 5000), new Label_Limit(70000, 10000),
+				new Label_Limit(200000, 50000), new Label_Limit(700000, 100000), new Label_Limit(2000000, 500000),
+				new Label_Limit(7000000, 1000000), new Label_Limit(20000000, 5000000),
+				new Label_Limit(70000000, 10000000) };
+
+		// and now store the array in our local variable
+		_limits = tmp;
+	}
+
+	public boolean isFillBackground() {
+		return _fillBackground;
+	}
+
+	public boolean isSemiTransparent() {
 		return _semiTransparent;
 	}
 
-	public void setSemiTransparent(boolean semiTransparent)
-	{
+	/**
+	 * redraw the scale
+	 *
+	 * @param g the destination
+	 */
+	@Override
+	public void paint(final CanvasType g) {
+
+		// check we are visible
+		if (!_isOn)
+			return;
+
+		// what is the screen width in logical coordinate?
+		final MWC.Algorithms.PlainProjection proj = g.getProjection();
+
+		// find the screen width
+		final java.awt.Dimension screen_size = proj.getScreenArea().getSize();
+		final long screen_width = screen_size.width;
+
+		// generate screen points in the middle on the left & right-hand sides
+		final Point left = new Point(0, (int) screen_size.getHeight() / 2);
+		final Point right = new Point((int) screen_width, (int) screen_size.getHeight() / 2);
+
+		// and now world locations to represent them
+		final WorldLocation leftLoc = new WorldLocation(proj.toWorld(left));
+		final WorldLocation rightLoc = proj.toWorld(right);
+
+		// and get the distance between them
+		double data_width = rightLoc.rangeFrom(leftLoc);
+
+		// convert this data width (in degs) to our units
+		data_width = _DisplayUnits.convertThis(data_width);
+
+		// make a guess at the scale
+		final double scale = data_width / screen_width;
+
+		// clip the screen width so that the scale bar doesn't go across the
+		// whole screen, and so that we can offset it a bit.
+		data_width *= 0.5;
+
+		// trap the occasion where the data has zero size
+		if (data_width == 0) {
+			return;
+		}
+
+		// find the current text height
+		final int txtHt = g.getStringHeight(_myFont);
+
+		// we now have to determine the labels to use on the axis
+
+		long first;
+
+		// since we always start the axis at zero,
+		first = 0;
+
+		// check we have our set of data
+		if (_limits == null)
+			initialiseLimits();
+
+		// find the range we are working in
+		int counter = 0;
+		while ((counter < _limits.length) && (data_width > _limits[counter].upper_limit)) {
+			counter++;
+		}
+
+		// check if we have sufficient data to perform range scale
+		if (!_autoScale) {
+			if ((_scaleMax == 0) || (_scaleStep == 0)) {
+				_autoScale = true;
+			}
+		}
+
+		// doDecide if we are plotting in auto mode or not
+		if (_autoScale) {
+
+			// check that we aren't trying to zoom out beyond the size of our wonderful
+			// planet
+			if (counter == _limits.length) {
+				MWC.Utilities.Errors.Trace.trace("Zoomed out too far!");
+				return;
+			}
+
+			// set our increment counter
+			_scaleStep = _limits[counter].increment;
+
+			// determine the value of the last scale object we are trying to
+			// plot
+			_scaleMax = ((long) data_width / _scaleStep * _scaleStep + _scaleStep);
+
+			if (_myEditor != null) {
+				_myEditor.fireChanged(this, "Calc", null, this);
+			}
+		}
+
+		// find the width of the scale in screen units
+		final int scale_width = (int) (_scaleMax / scale);
+
+		// determine the start / end points according to the scale location
+		// variable
+		java.awt.Point TL = null, BR = null;
+		switch (_location) {
+		case (DiagonalLocationPropertyEditor.TOP_LEFT):
+			TL = new Point((int) (screen_size.width * 0.05), (int) (txtHt + screen_size.height * 0.032));
+			BR = new Point((TL.x + scale_width), (int) (txtHt + screen_size.height * 0.035));
+			break;
+		case (DiagonalLocationPropertyEditor.TOP_RIGHT):
+			BR = new Point((int) (screen_size.width * 0.95), (int) (txtHt + screen_size.height * 0.035));
+			TL = new Point((BR.x - scale_width), (int) (txtHt + screen_size.height * 0.032));
+			break;
+		case (DiagonalLocationPropertyEditor.BOTTOM_LEFT):
+			TL = new Point((int) (screen_size.width * 0.05), (int) (screen_size.height * 0.987));
+			BR = new Point((TL.x + scale_width), (int) (screen_size.height * 0.99));
+			break;
+		default:
+			BR = new Point((int) (screen_size.width * 0.95), (int) (screen_size.height * 0.99));
+			TL = new Point((BR.x - scale_width), (int) (screen_size.height * 0.987));
+			break;
+		}
+
+		// create the figures to step along the line
+		final int num_ticks = (int) ((_scaleMax - first) / _scaleStep);
+		final int tick_step = (int) (_scaleStep / scale);
+
+		// set our drawing flags
+		boolean fill_this = true;
+		boolean first_point = true;
+
+		// setup the drawing object
+		final Color oldBackground = g.getBackgroundColor();
+		g.setBackgroundColor(_background);
+
+		if (_fillBackground) {
+			g.setColor(_background);
+			final int step = g.getStringHeight(_myFont) * 2;
+			final int x = TL.x - step;
+			final int y = TL.y - step;
+			final int w = scale_width + step * 3;
+			final int h = step * 2;
+			if (g instanceof ExtendedCanvasType && _semiTransparent) {
+				((ExtendedCanvasType) g).semiFillRect(x, y, w, h);
+			} else {
+				g.fillRect(x, y, w, h);
+			}
+		}
+		g.setColor(this.getColor());
+		// first draw in 10 ticks in the first section of the scale
+		final double tmp_tick_step = tick_step / 10.0;
+		for (int j = 0; j < 10; j++) {
+			// put in the tick at this point
+			final int this_dist = TL.x + (int) (j * tmp_tick_step);
+
+			// check if we are 1/2 way along the strip. If so the we'll draw in a
+			// higher tick
+			if (j == 5)
+				g.drawLine(this_dist, BR.y, this_dist, TL.y - (int) (txtHt * 0.5));
+			else
+				g.drawLine(this_dist, BR.y, this_dist, (int) (TL.y - (txtHt * 0.3)));
+		}
+
+		// draw in the major ticks and the labels
+		for (int i = 0; i <= num_ticks; i++) {
+			// sort out the label
+			String str = "" + (int) (i * _scaleStep) + " " + _DisplayUnits.getUnits();
+
+			// make the label plural if it's > 0
+			if ((i * _scaleStep) > 1)
+				str += "s";
+
+			// find the text size for this label
+			final int wid = g.getStringWidth(_myFont, str);
+
+			// put in the tick at this point
+			final int this_dist = TL.x + i * tick_step;
+			g.drawLine(this_dist, BR.y, this_dist, TL.y - (int) (txtHt * 0.5));
+
+			if (first_point) {
+				// skip this one
+				first_point = false;
+			} else {
+				// we will draw in the boxes by drawing to the previous point,
+				// we cant do this for the first point
+				if (fill_this) {
+					g.fillRect(this_dist - tick_step, BR.y, tick_step + 1, (BR.y - TL.y) + 1);
+				} else {
+					g.drawRect(this_dist - tick_step, BR.y, tick_step + 1, BR.y - TL.y);
+				}
+
+				// flip the counter to paint alternate panels
+				fill_this = !fill_this;
+
+			}
+
+			// draw in the scale value
+			g.drawText(_myFont, str, this_dist - (wid / 2), (int) (TL.y - (0.7 * txtHt)));
+
+		}
+
+		g.setBackgroundColor(oldBackground);
+
+	}
+
+	/**
+	 * the range of the scale from a point (ignored)
+	 *
+	 * @param other the other point
+	 * @return INVALID_RANGE since this is value can't be calculated
+	 */
+	@Override
+	public double rangeFrom(final MWC.GenericData.WorldLocation other) {
+		// doesn't return a sensible distance;
+		return INVALID_RANGE;
+	}
+
+	/**
+	 * set the mode for auto-calculation of scales
+	 *
+	 * @param val the new mode for auto
+	 */
+	public void setAutoMode(final boolean val) {
+		_autoScale = val;
+	}
+
+	public void setBackground(final Color background) {
+		this._background = background;
+	}
+
+	/**
+	 * current colour of the scale
+	 *
+	 * @param val the colour
+	 */
+	public void setColor(final Color val) {
+		_myColor = val;
+	}
+
+	public void setDisplayUnits(final String DisplayUnits) {
+		// generate the units, if we have to
+		setupUnits();
+
+		// see what they asked for
+		UnitsConverter theConverter = ScalePainter._unitsList.get(DisplayUnits);
+
+		// did we find the text string?
+		if (theConverter == null) {
+			theConverter = ScalePainter._unitsList.get(UnitsPropertyEditor.KYD_UNITS);
+		}
+
+		this._DisplayUnits = theConverter;
+	}
+
+	public void setFillBackground(final boolean fillBackground) {
+		this._fillBackground = fillBackground;
+	}
+
+	public void setFont(final java.awt.Font myFont) {
+		this._myFont = myFont;
+	}
+
+	/**
+	 * which corner to position the scale
+	 *
+	 * @param loc one of the enumerated types listed earlier
+	 */
+	public void setLocation(final Integer loc) {
+		_location = loc.intValue();
+	}
+
+	/**
+	 * set the max limit on the scale
+	 *
+	 * @param val the max value
+	 */
+	public void setScaleMax(final Long val) {
+		_scaleMax = val.longValue();
+	}
+
+	/**
+	 * set the step size on the scale
+	 *
+	 * @param val the step size
+	 */
+	public void setScaleStep(final Long val) {
+		_scaleStep = val.longValue();
+	}
+
+	public void setSemiTransparent(final boolean semiTransparent) {
 		this._semiTransparent = semiTransparent;
 	}
 
-}
+	/**
+	 * setup the list of units converters
+	 */
+	private synchronized void setupUnits() {
 
+		// just check it hasn't already been generated
+		if (_unitsList != null)
+			return;
+
+		// create the list itself
+		_unitsList = new java.util.HashMap<String, UnitsConverter>();
+
+		// and put in the converters
+		_unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.KM_UNITS,
+				new UnitsConverter(MWC.GUI.Properties.UnitsPropertyEditor.KM_UNITS) {
+					/**
+						 *
+						 */
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public double convertThis(final double degs) {
+						return MWC.Algorithms.Conversions.Degs2Km(degs);
+					}
+
+					@Override
+					public String writeThis(final double myUnits) {
+						return "" + (int) myUnits;
+					}
+				});
+
+		_unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.METRES_UNITS,
+				new UnitsConverter(MWC.GUI.Properties.UnitsPropertyEditor.METRES_UNITS) {
+					/**
+						 *
+						 */
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public double convertThis(final double degs) {
+						return MWC.Algorithms.Conversions.Degs2m(degs);
+					}
+
+					@Override
+					public String writeThis(final double myUnits) {
+						return "" + (int) myUnits;
+					}
+				});
+
+		_unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.NM_UNITS,
+				new UnitsConverter(MWC.GUI.Properties.UnitsPropertyEditor.NM_UNITS) {
+					/**
+						 *
+						 */
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public double convertThis(final double degs) {
+						return MWC.Algorithms.Conversions.Degs2Nm(degs);
+					}
+
+					@Override
+					public String writeThis(final double myUnits) {
+						return "" + (int) myUnits;
+					}
+				});
+
+		_unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS,
+				new UnitsConverter(MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS) {
+					/**
+						 *
+						 */
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public double convertThis(final double degs) {
+						return MWC.Algorithms.Conversions.Degs2Yds(degs);
+					}
+
+					@Override
+					public String writeThis(final double myUnits) {
+						return "" + (int) myUnits;
+					}
+				});
+
+		_unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.KYD_UNITS,
+				new UnitsConverter(MWC.GUI.Properties.UnitsPropertyEditor.KYD_UNITS) {
+					/**
+						 *
+						 */
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public double convertThis(final double degs) {
+						return MWC.Algorithms.Conversions.Degs2Yds(degs) / 1000;
+					}
+
+					@Override
+					public String writeThis(final double myUnits) {
+						return "" + (int) myUnits;
+					}
+				});
+
+	}
+
+	/**
+	 * whether the scale is visible or not
+	 *
+	 * @param val yes/no visibility
+	 */
+	@Override
+	public void setVisible(final boolean val) {
+		_isOn = val;
+	}
+
+	/**
+	 * return this item as a string
+	 *
+	 * @return the name of the scale
+	 */
+	@Override
+	public String toString() {
+		return getName();
+	}
+
+}

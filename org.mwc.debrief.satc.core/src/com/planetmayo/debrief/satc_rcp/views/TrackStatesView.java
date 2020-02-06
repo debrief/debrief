@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package com.planetmayo.debrief.satc_rcp.views;
@@ -55,69 +55,57 @@ import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 /**
  * view that monitors the current set of bounded states
- * 
+ *
  * @author ian
- * 
+ *
  */
-public class TrackStatesView extends ViewPart implements IConstrainSpaceListener
-{
+public class TrackStatesView extends ViewPart implements IConstrainSpaceListener {
 
-	class NameSorter extends ViewerSorter
-	{
+	class NameSorter extends ViewerSorter {
 	}
 
-	class ViewContentProvider implements IStructuredContentProvider
-	{
+	class ViewContentProvider implements IStructuredContentProvider {
 		private Collection<BoundedState> _myData;
 
 		@Override
-		public void dispose()
-		{
+		public void dispose() {
 		}
 
 		@Override
-		public Object[] getElements(Object parent)
-		{
+		public Object[] getElements(final Object parent) {
 			Object[] res;
-			if ((_myData != null) && (!_myData.isEmpty()))
-			{
+			if ((_myData != null) && (!_myData.isEmpty())) {
 				// try getting it as a set
 				res = _myData.toArray();
-			}
-			else
+			} else
 				res = null;
 			return res;
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public void inputChanged(Viewer v, Object oldInput, Object newInput)
-		{
+		public void inputChanged(final Viewer v, final Object oldInput, final Object newInput) {
 			_myData = (Collection<BoundedState>) newInput;
 		}
 
 	}
 
-	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider
-	{
+	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
 
 		@Override
-		public Image getColumnImage(Object obj, int index)
-		{
+		public Image getColumnImage(final Object obj, final int index) {
 			return getImage(obj);
 		}
 
 		@Override
-		public String getColumnText(Object obj, int index)
-		{
-			BoundedState bs = (BoundedState) obj;
+		public String getColumnText(final Object obj, final int index) {
+			final BoundedState bs = (BoundedState) obj;
 			return bs.getTime().toString();
 			// return getText(obj);
 		}
 
 		@Override
-		public Image getImage(Object obj)
-		{
+		public Image getImage(final Object obj) {
 			return null;
 			// return PlatformUI.getWorkbench().getSharedImages()
 			// .getImage(ISharedImages.IMG_OBJ_ELEMENT);
@@ -133,90 +121,78 @@ public class TrackStatesView extends ViewPart implements IConstrainSpaceListener
 	private ISolver _activeSolver;
 
 	private TableViewer viewer;
-	private SimpleDateFormat _df = new GMTDateFormat("MMM/dd HH:mm:ss");
+	private final SimpleDateFormat _df = new GMTDateFormat("MMM/dd HH:mm:ss");
 
 	private IConstrainSpaceListener constrainSpaceListener;
 	private ISolversManagerListener solversManagerListener;
 	/**
 	 * let user indicate whether we wish to display intermediate bounded states
-	 * 
+	 *
 	 */
 	private Action _debugMode;
 	private Action _testSolverAction;
 	private Action _testSetActive;
-	
+
 	private ISolver _testSolver;
 
-	private void contributeToActionBars()
-	{
-		IActionBars bars = getViewSite().getActionBars();
+	private void contributeToActionBars() {
+		final IActionBars bars = getViewSite().getActionBars();
 		fillLocalPullDown(bars.getMenuManager());
 		fillLocalToolBar(bars.getToolBarManager());
 	}
 
 	/**
-	 * This is a callback that will allow us to create the viewer and initialize
-	 * it.
+	 * This is a callback that will allow us to create the viewer and initialize it.
 	 */
 	@Override
-	public void createPartControl(Composite parent)
-	{
+	public void createPartControl(final Composite parent) {
 		_solversManager = SATC_Activator.getDefault().getService(ISolversManager.class, true);
-		
+
 		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
 		viewer.setSorter(new NameSorter());
 		viewer.setInput(null);
 		viewer.getTable().setHeaderVisible(true);
-		viewer.setSorter(new ViewerSorter()
-		{
+		viewer.setSorter(new ViewerSorter() {
 
 			@Override
-			public int compare(Viewer viewer, Object e1, Object e2)
-			{
-				BoundedState c1 = (BoundedState) e1;
-				BoundedState c2 = (BoundedState) e2;
+			public int compare(final Viewer viewer, final Object e1, final Object e2) {
+				final BoundedState c1 = (BoundedState) e1;
+				final BoundedState c2 = (BoundedState) e2;
 				return c1.compareTo(c2);
 			}
 		});
 
 		// ok, sort out the columns
-		TableViewerColumn col1 = new TableViewerColumn(viewer, SWT.NONE);
+		final TableViewerColumn col1 = new TableViewerColumn(viewer, SWT.NONE);
 		col1.getColumn().setText("Time");
 		col1.getColumn().setWidth(200);
-		col1.setLabelProvider(new ColumnLabelProvider()
-		{
+		col1.setLabelProvider(new ColumnLabelProvider() {
 			@Override
-			public String getText(Object element)
-			{
-				BoundedState bs = (BoundedState) element;
+			public String getText(final Object element) {
+				final BoundedState bs = (BoundedState) element;
 				// return bs.getTime().toString();
 				return _df.format(bs.getTime());
 			}
 		});
 
 		// ok, sort out the columns
-		TableViewerColumn col2 = new TableViewerColumn(viewer, SWT.NONE);
+		final TableViewerColumn col2 = new TableViewerColumn(viewer, SWT.NONE);
 		col2.getColumn().setText("Location");
 		col2.getColumn().setWidth(100);
-		col2.setLabelProvider(new ColumnLabelProvider()
-		{
+		col2.setLabelProvider(new ColumnLabelProvider() {
 			@Override
-			public String getText(Object element)
-			{
+			public String getText(final Object element) {
 				String res;
-				BoundedState bs = (BoundedState) element;
-				LocationRange loc = bs.getLocation();
-				if (loc != null)
-				{
-					Geometry myArea = loc.getGeometry();
-					Geometry theBoundary = myArea.convexHull();
-					double theArea = theBoundary.getArea();
-					res = myArea.getCoordinates().length + "pts "
-							+ (int) (theArea * 100000);
-				}
-				else
+				final BoundedState bs = (BoundedState) element;
+				final LocationRange loc = bs.getLocation();
+				if (loc != null) {
+					final Geometry myArea = loc.getGeometry();
+					final Geometry theBoundary = myArea.convexHull();
+					final double theArea = theBoundary.getArea();
+					res = myArea.getCoordinates().length + "pts " + (int) (theArea * 100000);
+				} else
 					res = "n/a";
 
 				return res;
@@ -224,20 +200,17 @@ public class TrackStatesView extends ViewPart implements IConstrainSpaceListener
 		});
 
 		// ok, sort out the columns
-		TableViewerColumn col3 = new TableViewerColumn(viewer, SWT.NONE);
+		final TableViewerColumn col3 = new TableViewerColumn(viewer, SWT.NONE);
 		col3.getColumn().setText("Speed");
 		col3.getColumn().setWidth(100);
-		col3.setLabelProvider(new ColumnLabelProvider()
-		{
+		col3.setLabelProvider(new ColumnLabelProvider() {
 			@Override
-			public String getText(Object element)
-			{
+			public String getText(final Object element) {
 				String res;
-				BoundedState bs = (BoundedState) element;
-				SpeedRange range = bs.getSpeed();
+				final BoundedState bs = (BoundedState) element;
+				final SpeedRange range = bs.getSpeed();
 				if (range != null)
-					res = (int) GeoSupport.MSec2kts(range.getMin()) + " - "
-							+ (int) GeoSupport.MSec2kts(range.getMax());
+					res = (int) GeoSupport.MSec2kts(range.getMin()) + " - " + (int) GeoSupport.MSec2kts(range.getMax());
 				else
 					res = "n/a";
 
@@ -246,20 +219,17 @@ public class TrackStatesView extends ViewPart implements IConstrainSpaceListener
 		});
 
 		// ok, sort out the columns
-		TableViewerColumn col4 = new TableViewerColumn(viewer, SWT.NONE);
+		final TableViewerColumn col4 = new TableViewerColumn(viewer, SWT.NONE);
 		col4.getColumn().setText("Course");
 		col4.getColumn().setWidth(100);
-		col4.setLabelProvider(new ColumnLabelProvider()
-		{
+		col4.setLabelProvider(new ColumnLabelProvider() {
 			@Override
-			public String getText(Object element)
-			{
+			public String getText(final Object element) {
 				String res;
-				BoundedState bs = (BoundedState) element;
-				CourseRange range = bs.getCourse();
+				final BoundedState bs = (BoundedState) element;
+				final CourseRange range = bs.getCourse();
 				if (range != null)
-					res = (int) Math.toDegrees(range.getMin()) + " - "
-							+ (int) Math.toDegrees(range.getMax());
+					res = (int) Math.toDegrees(range.getMin()) + " - " + (int) Math.toDegrees(range.getMax());
 				else
 					res = "n/a";
 
@@ -267,17 +237,15 @@ public class TrackStatesView extends ViewPart implements IConstrainSpaceListener
 			}
 		});
 
-		TableViewerColumn col5 = new TableViewerColumn(viewer, SWT.NONE);
+		final TableViewerColumn col5 = new TableViewerColumn(viewer, SWT.NONE);
 		col5.getColumn().setText("Leg");
 		col5.getColumn().setWidth(100);
-		col5.setLabelProvider(new ColumnLabelProvider()
-		{
+		col5.setLabelProvider(new ColumnLabelProvider() {
 			@Override
-			public String getText(Object element)
-			{
+			public String getText(final Object element) {
 				String res;
-				BoundedState bs = (BoundedState) element;
-				String leg = bs.getMemberOf();
+				final BoundedState bs = (BoundedState) element;
+				final String leg = bs.getMemberOf();
 				if (leg != null)
 					res = leg;
 				else
@@ -289,72 +257,23 @@ public class TrackStatesView extends ViewPart implements IConstrainSpaceListener
 
 		makeActions();
 		contributeToActionBars();
-		
+
 		initListeners(parent.getDisplay());
 		_solversManager.addSolversManagerListener(solversManagerListener);
 		setActiveSolver(_solversManager.getActiveSolver());
 	}
-	
-	private void initListeners(Display display) 
-	{
-		solversManagerListener = new ISolversManagerListener()
-		{
-			
-			@Override
-			public void solverCreated(ISolver solver)
-			{
-			}
-			
-			@Override
-			public void activeSolverChanged(ISolver activeSolver)
-			{
-				setActiveSolver(activeSolver);
-			}
-		};
-		solversManagerListener = UIListener.wrap(display, ISolversManagerListener.class, solversManagerListener);
-		constrainSpaceListener = UIListener.wrap(display, IConstrainSpaceListener.class, this);
-	}
 
 	@Override
-	public void dispose()
-	{
+	public void dispose() {
 		_solversManager.removeSolverManagerListener(solversManagerListener);
-		if (_activeSolver != null) 
-		{
+		if (_activeSolver != null) {
 			_activeSolver.getBoundsManager().removeConstrainSpaceListener(constrainSpaceListener);
 		}
 		super.dispose();
 	}
-	
-	private void setActiveSolver(ISolver solver)
-	{
-		if (_activeSolver != null)
-		{
-			_activeSolver.getBoundsManager().removeConstrainSpaceListener(constrainSpaceListener);
-		}
-		viewer.setInput(null);
-		_activeSolver = solver;
-		if (_activeSolver != null)
-		{
-			_activeSolver.getBoundsManager().addConstrainSpaceListener(constrainSpaceListener);					
-		}		
-	}
 
 	@Override
-	public void statesBounded(IBoundsManager boundsManager)
-	{
-		viewer.setInput(_activeSolver.getProblemSpace().states());
-	}
-
-	@Override
-	public void restarted(IBoundsManager boundsManager)
-	{
-		viewer.setInput(null);
-	}
-
-	@Override
-	public void error(IBoundsManager boundsManager, IncompatibleStateException ex)
-	{
+	public void error(final IBoundsManager boundsManager, final IncompatibleStateException ex) {
 		// TODO: switch UI to be a composite view, with a label above the table.
 		// the label is normally hidden , and shown when
 		// when we get incompatible states. Show the message in that label, and
@@ -366,45 +285,46 @@ public class TrackStatesView extends ViewPart implements IConstrainSpaceListener
 		// "Bounding states", "Incompatible states found");
 	}
 
-	@Override
-	public void stepped(IBoundsManager boundsManager, int thisStep, int totalSteps)
-	{
-		if (_debugMode.isChecked())
-		{
-			viewer.setInput(_activeSolver.getProblemSpace().states());
-		}
+	private void fillLocalPullDown(final IMenuManager manager) {
 	}
 
-	private void fillLocalPullDown(IMenuManager manager)
-	{
-	}
-
-	private void fillLocalToolBar(IToolBarManager manager)
-	{
+	private void fillLocalToolBar(final IToolBarManager manager) {
 		manager.add(_testSetActive);
 		manager.add(_testSolverAction);
 		manager.add(_debugMode);
 	}
 
-	private void makeActions()
-	{
-		_debugMode = new Action("Debug Mode", SWT.TOGGLE)
-		{
+	private void initListeners(final Display display) {
+		solversManagerListener = new ISolversManagerListener() {
+
+			@Override
+			public void activeSolverChanged(final ISolver activeSolver) {
+				setActiveSolver(activeSolver);
+			}
+
+			@Override
+			public void solverCreated(final ISolver solver) {
+			}
+		};
+		solversManagerListener = UIListener.wrap(display, ISolversManagerListener.class, solversManagerListener);
+		constrainSpaceListener = UIListener.wrap(display, IConstrainSpaceListener.class, this);
+	}
+
+	private void makeActions() {
+		_debugMode = new Action("Debug Mode", SWT.TOGGLE) {
 		};
 		_debugMode.setText("Debug Mode");
 		_debugMode.setChecked(false);
-		_debugMode
-				.setToolTipText("Track all states (including application of each Contribution)");
+		_debugMode.setToolTipText("Track all states (including application of each Contribution)");
 		_testSetActive = new Action("Set active") {
 
 			@Override
 			public void run() {
 				_solversManager.setActiveSolver(_testSolver);
-			}			
+			}
 		};
 		_testSetActive.setEnabled(false);
-		_testSolverAction = new Action("Create Test solver") 
-		{
+		_testSolverAction = new Action("Create Test solver") {
 			@Override
 			public void run() {
 				_testSolver = _solversManager.createSolver("Test solver from another view");
@@ -413,13 +333,40 @@ public class TrackStatesView extends ViewPart implements IConstrainSpaceListener
 		};
 	}
 
+	@Override
+	public void restarted(final IBoundsManager boundsManager) {
+		viewer.setInput(null);
+	}
+
+	private void setActiveSolver(final ISolver solver) {
+		if (_activeSolver != null) {
+			_activeSolver.getBoundsManager().removeConstrainSpaceListener(constrainSpaceListener);
+		}
+		viewer.setInput(null);
+		_activeSolver = solver;
+		if (_activeSolver != null) {
+			_activeSolver.getBoundsManager().addConstrainSpaceListener(constrainSpaceListener);
+		}
+	}
+
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
 	@Override
-	public void setFocus()
-	{
+	public void setFocus() {
 		viewer.getControl().setFocus();
+	}
+
+	@Override
+	public void statesBounded(final IBoundsManager boundsManager) {
+		viewer.setInput(_activeSolver.getProblemSpace().states());
+	}
+
+	@Override
+	public void stepped(final IBoundsManager boundsManager, final int thisStep, final int totalSteps) {
+		if (_debugMode.isChecked()) {
+			viewer.setInput(_activeSolver.getProblemSpace().states());
+		}
 	}
 
 }

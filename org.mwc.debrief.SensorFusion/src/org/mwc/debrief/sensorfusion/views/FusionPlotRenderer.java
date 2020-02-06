@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.debrief.sensorfusion.views;
@@ -43,28 +43,30 @@ import org.mwc.debrief.sensorfusion.views.DataSupport.TacticalSeries;
 import Debrief.Wrappers.SensorWrapper;
 import MWC.GUI.JFreeChart.AttractiveDataItem;
 
-public class FusionPlotRenderer extends XYLineAndShapeRenderer
-{
+public class FusionPlotRenderer extends XYLineAndShapeRenderer {
 
-	public static interface FusionHelper
-	{
+	public static interface FusionHelper {
+		public HashMap<SensorWrapper, SensorSeries> getIndex();
+
 		/**
 		 * find the selected items
-		 * 
+		 *
 		 * @return
 		 */
 		public Vector<SensorSeries> getSelectedItems();
 
 		/**
 		 * should we use original colours?
-		 * 
+		 *
 		 * @return
 		 */
 		public boolean useOriginalColors();
-		
-		public HashMap<SensorWrapper, SensorSeries> getIndex();
 	}
 
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 	private final BasicStroke THICK_STROKE = new BasicStroke(4);
 	int _seriesNum = -1;
 	TacticalSeries _series = null;
@@ -72,36 +74,21 @@ public class FusionPlotRenderer extends XYLineAndShapeRenderer
 	private boolean _isSelected;
 	private AttractiveDataItem _thisItem;
 	final private FusionHelper _myHelper;
+
 	private Paint _trackColor;
 
-	public FusionPlotRenderer(final FusionHelper helper)
-	{
+	public FusionPlotRenderer(final FusionHelper helper) {
 		super();
 		_myHelper = helper;
 	}
 
-	@Override
-	public XYItemRendererState initialise(final Graphics2D g2, final Rectangle2D dataArea,
-			final XYPlot plot, final XYDataset data, final PlotRenderingInfo info)
-	{
-		// clear the counter, so we know we start counting again
-		_seriesNum = -1;
-
-		return super.initialise(g2, dataArea, plot, data, info);
-	}
-
-	@Override
-	public Boolean getSeriesShapesVisible(final int series)
-	{
-		return  _series.getVisible();
-	}
-
-	/** note: this method has been generated to correct the mistaken JFreeChart
+	/**
+	 * note: this method has been generated to correct the mistaken JFreeChart
 	 * implementation that breaks whtn in PlotOrientation.Horizontal.
 	 */
-	protected void addEntity(final EntityCollection entities, final Shape area,
-			final XYDataset dataset, final int series, final int item, final double entityX,
-			final double entityY) {
+	@Override
+	protected void addEntity(final EntityCollection entities, final Shape area, final XYDataset dataset,
+			final int series, final int item, final double entityX, final double entityY) {
 		if (!getItemCreateEntity(series, item)) {
 			return;
 		}
@@ -124,49 +111,17 @@ public class FusionPlotRenderer extends XYLineAndShapeRenderer
 		if (getURLGenerator() != null) {
 			url = getURLGenerator().generateURL(dataset, series, item);
 		}
-		final XYItemEntity entity = new XYItemEntity(hotspot, dataset, series,
-				item, tip, url);
+		final XYItemEntity entity = new XYItemEntity(hotspot, dataset, series, item, tip, url);
 		entities.add(entity);
 	}
-	
-	@Override
-	public Paint getItemPaint(final int row, final int column)
-	{
-		if (_trackColor == null)
-			_trackColor = super.getItemPaint(row, column);
-		return _trackColor;
-	}
 
 	@Override
-	public Stroke getItemStroke(final int row, final int column)
-	{
-		Stroke res;
-		if (!_isSensor)
-		{
-			res = THICK_STROKE;
-		}
-		else
-			res = super.getItemStroke(row, column);
-		return res;
-	}
-
-	public boolean getItemLineVisible(final int series, final int item)
-	{
-		boolean res = true;
-		res = _thisItem.connectToPrevious();
-
-		return res;
-	}
-
-	@Override
-	public void drawItem(final Graphics2D g2, final XYItemRendererState state,
-			final Rectangle2D dataArea, final PlotRenderingInfo info, final XYPlot plot,
-			final ValueAxis domainAxis, final ValueAxis rangeAxis, final XYDataset dataset, final int series,
-			final int item, final CrosshairState crosshairState, final int pass)
-	{
+	public void drawItem(final Graphics2D g2, final XYItemRendererState state, final Rectangle2D dataArea,
+			final PlotRenderingInfo info, final XYPlot plot, final ValueAxis domainAxis, final ValueAxis rangeAxis,
+			final XYDataset dataset, final int series, final int item, final CrosshairState crosshairState,
+			final int pass) {
 		// is this a new series?
-		if (series != _seriesNum)
-		{
+		if (series != _seriesNum) {
 			final TimeSeriesCollection tData = (TimeSeriesCollection) dataset;
 			_seriesNum = series;
 			_series = (TacticalSeries) tData.getSeries(series);
@@ -189,13 +144,47 @@ public class FusionPlotRenderer extends XYLineAndShapeRenderer
 		_thisItem = (AttractiveDataItem) _series.getDataItem(item);
 
 		// and let the parent do the plotting
-		super.drawItem(g2, state, dataArea, info, plot, domainAxis, rangeAxis,
-				dataset, series, item, crosshairState, pass);
+		super.drawItem(g2, state, dataArea, info, plot, domainAxis, rangeAxis, dataset, series, item, crosshairState,
+				pass);
 	}
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	@Override
+	public boolean getItemLineVisible(final int series, final int item) {
+		boolean res = true;
+		res = _thisItem.connectToPrevious();
+
+		return res;
+	}
+
+	@Override
+	public Paint getItemPaint(final int row, final int column) {
+		if (_trackColor == null)
+			_trackColor = super.getItemPaint(row, column);
+		return _trackColor;
+	}
+
+	@Override
+	public Stroke getItemStroke(final int row, final int column) {
+		Stroke res;
+		if (!_isSensor) {
+			res = THICK_STROKE;
+		} else
+			res = super.getItemStroke(row, column);
+		return res;
+	}
+
+	@Override
+	public Boolean getSeriesShapesVisible(final int series) {
+		return _series.getVisible();
+	}
+
+	@Override
+	public XYItemRendererState initialise(final Graphics2D g2, final Rectangle2D dataArea, final XYPlot plot,
+			final XYDataset data, final PlotRenderingInfo info) {
+		// clear the counter, so we know we start counting again
+		_seriesNum = -1;
+
+		return super.initialise(g2, dataArea, plot, data, info);
+	}
 
 }

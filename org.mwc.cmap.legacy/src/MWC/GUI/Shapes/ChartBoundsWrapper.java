@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.Shapes;
@@ -257,28 +257,64 @@ import MWC.GUI.Properties.LocationPropertyEditor;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
-public class ChartBoundsWrapper extends MWC.GUI.PlainWrapper implements
-		NeedsToKnowAboutLayers
-{
+public class ChartBoundsWrapper extends MWC.GUI.PlainWrapper implements NeedsToKnowAboutLayers {
+
+	// ////////////////////////////////////////////////////
+	// bean info for this class
+	// ///////////////////////////////////////////////////
+	public final class ChartInfo extends Editable.EditorType {
+
+		public ChartInfo(final ChartBoundsWrapper data, final String theName) {
+			super(data, theName, data._theShape.getType() + ":");
+		}
+
+		/**
+		 * whether the normal editable properties should be combined with the additional
+		 * editable properties into a single list. This is typically used for a
+		 * composite object which has two lists of editable properties but which is seen
+		 * by the user as a single object To be overwritten to change it
+		 */
+		@Override
+		public final boolean combinePropertyLists() {
+			return true;
+		}
+
+		@Override
+		public final MethodDescriptor[] getMethodDescriptors() {
+			// just add the reset color field first
+			final Class<?> c = ChartBoundsWrapper.class;
+			final MethodDescriptor[] mds = { method(c, "loadThisChart", null, "Load Chart") };
+
+			return mds;
+		}
+
+		@Override
+		public final PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final PropertyDescriptor[] myRes = {
+						displayProp("LabelLocation", "Label location", "the relative location of the label", FORMAT),
+						prop("Visible", "whether this shape is visible", VISIBILITY),
+						displayProp("LabelVisible", "Label visible", "whether the label is visible", VISIBILITY),
+						prop("Color", "the color of the shape itself", FORMAT), };
+				myRes[0].setPropertyEditorClass(MWC.GUI.Properties.LocationPropertyEditor.class);
+
+				return myRes;
+
+			} catch (final IntrospectionException e) {
+				e.printStackTrace();
+				return super.getPropertyDescriptors();
+			}
+		}
+
+	}
 
 	public static final String WORLDIMAGE_TYPE = "GeoTiff";
 	public static final String SHAPEFILE_TYPE = "Shapefile";
+
 	public static final String NELAYER_TYPE = "NELayer";
 	// ///////////////////////////////////////////////////////////
 	// member variables
 	// //////////////////////////////////////////////////////////
-
-	/**
-	 * filename of the chart we manager
-	 * 
-	 */
-	private final String _fileName;
-
-	/**
-	 * the layers target we will drop new charts into
-	 * 
-	 */
-	private transient Layers _myLayers;
 
 	/**
 	 * property name to indicate that the symbol visibility has been changed
@@ -289,6 +325,35 @@ public class ChartBoundsWrapper extends MWC.GUI.PlainWrapper implements
 	 * keep track of versions
 	 */
 	static final long serialVersionUID = 1;
+
+	/**
+	 * get the first part of the file for this filename
+	 *
+	 * @param fileName
+	 * @return
+	 */
+	public static String getCoverageName(final String fileName) {
+		// sort out the name of the map
+		String coverageName = fileName;
+		final int dotIndex = coverageName.lastIndexOf(".");
+		coverageName = (dotIndex == -1) ? coverageName : coverageName.substring(0, dotIndex);
+		final int pathIndex = coverageName.lastIndexOf(File.separator);
+		if (pathIndex > 0)
+			coverageName = coverageName.substring(pathIndex + 1, coverageName.length());
+		return coverageName;
+	}
+
+	/**
+	 * filename of the chart we manager
+	 *
+	 */
+	private final String _fileName;
+
+	/**
+	 * the layers target we will drop new charts into
+	 *
+	 */
+	private transient Layers _myLayers;
 
 	/**
 	 * the label
@@ -307,7 +372,7 @@ public class ChartBoundsWrapper extends MWC.GUI.PlainWrapper implements
 
 	/**
 	 * the style of line to use for this feature
-	 * 
+	 *
 	 */
 	private int _lineStyle;
 
@@ -316,71 +381,15 @@ public class ChartBoundsWrapper extends MWC.GUI.PlainWrapper implements
 	 */
 	private int _lineWidth;
 
-	// ////////////////////////////////////////////////////
-	// bean info for this class
-	// ///////////////////////////////////////////////////
-	public final class ChartInfo extends Editable.EditorType
-	{
-
-		public ChartInfo(final ChartBoundsWrapper data, final String theName)
-		{
-			super(data, theName, data._theShape.getType() + ":");
-		}
-
-		/**
-		 * whether the normal editable properties should be combined with the
-		 * additional editable properties into a single list. This is typically used
-		 * for a composite object which has two lists of editable properties but
-		 * which is seen by the user as a single object To be overwritten to change
-		 * it
-		 */
-		public final boolean combinePropertyLists()
-		{
-			return true;
-		}
-
-		public final MethodDescriptor[] getMethodDescriptors()
-		{
-			// just add the reset color field first
-			final Class<?> c = ChartBoundsWrapper.class;
-			final MethodDescriptor[] mds =
-			{ method(c, "loadThisChart", null, "Load Chart") };
-
-			return mds;
-		}
-
-		public final PropertyDescriptor[] getPropertyDescriptors()
-		{
-			try
-			{
-				final PropertyDescriptor[] myRes =
-				{ 
-						displayProp("LabelLocation", "Label location", "the relative location of the label", FORMAT),
-						prop("Visible", "whether this shape is visible", VISIBILITY),
-						displayProp("LabelVisible", "Label visible", "whether the label is visible", VISIBILITY),
-						prop("Color", "the color of the shape itself", FORMAT),
-				};
-				myRes[0]
-						.setPropertyEditorClass(MWC.GUI.Properties.LocationPropertyEditor.class);
-
-				return myRes;
-
-			}
-			catch (final IntrospectionException e)
-			{
-				e.printStackTrace();
-				return super.getPropertyDescriptors();
-			}
-		}
-
-	}
+	// ///////////////////////////////////////////////////////////
+	// member functions
+	// //////////////////////////////////////////////////////////
 
 	// ///////////////////////////////////////////////////////////
 	// constructor
 	// //////////////////////////////////////////////////////////
-	public ChartBoundsWrapper(final String label, final WorldLocation tl,
-			final WorldLocation br, final java.awt.Color theColor, final String fileName)
-	{
+	public ChartBoundsWrapper(final String label, final WorldLocation tl, final WorldLocation br,
+			final java.awt.Color theColor, final String fileName) {
 		_theShape = new RectangleShape(tl, br);
 		_fileName = fileName;
 
@@ -401,15 +410,77 @@ public class ChartBoundsWrapper extends MWC.GUI.PlainWrapper implements
 		updateLabelLocation();
 	}
 
-	// ///////////////////////////////////////////////////////////
-	// member functions
-	// //////////////////////////////////////////////////////////
+	@Override
+	public final WorldArea getBounds() {
+		// don't return a bounds object - let the user zoom out to cover the whole
+		// region
+		return null;
+	}
 
-	public final void paint(final CanvasType dest)
-	{
+	/**
+	 * method to fulfil requirements of WatchableList
+	 */
+	@Override
+	public final java.awt.Color getColor() {
+		return super.getColor();
+	}
+
+	public String getFileName() {
+		return _fileName;
+	}
+
+	@Override
+	public Editable.EditorType getInfo() {
+		if (_myEditor == null)
+			_myEditor = new ChartInfo(this, this.getName());
+
+		return _myEditor;
+	}
+
+	public final Integer getLabelLocation() {
+		return _theLabel.getRelativeLocation();
+	}
+
+	/**
+	 * whether to show the label for this shape
+	 */
+	public final boolean getLabelVisible() {
+		return _theLabel.getVisible();
+	}
+
+	@Override
+	public final String getName() {
+		return _theLabel.getString();
+	}
+
+	/**
+	 * get the shape we are containing
+	 */
+	public final MWC.GUI.Shapes.RectangleShape getShape() {
+		return _theShape;
+	}
+
+	/**
+	 * does this item have an editor?
+	 */
+	@Override
+	public final boolean hasEditor() {
+		return true;
+	}
+
+	public void loadThisChart() {
+		System.err.println("loading:" + _fileName + " into:" + _myLayers);
+
+		// represent it as a normal shapefile
+		final Layer res = new ExternallyManagedDataLayer(WORLDIMAGE_TYPE, getCoverageName(_fileName), _fileName);
+		_myLayers.addThisLayer(res);
+
+	}
+
+	@Override
+	public final void paint(final CanvasType dest) {
 		// check if we are visible
-		if (getVisible())
-		{
+		if (getVisible()) {
 			// sort out the line style
 			dest.setLineStyle(_lineStyle);
 
@@ -434,163 +505,16 @@ public class ChartBoundsWrapper extends MWC.GUI.PlainWrapper implements
 	}
 
 	/**
-	 * get the shape we are containing
-	 */
-	public final MWC.GUI.Shapes.RectangleShape getShape()
-	{
-		return _theShape;
-	}
-
-	public final WorldArea getBounds()
-	{
-		// don't return a bounds object - let the user zoom out to cover the whole
-		// region
-		return null;
-	}
-
-	public final String toString()
-	{
-		return _theShape.getName() + ":" + _theLabel.getString();
-	}
-
-	public final String getName()
-	{
-		return _theLabel.getString();
-	}
-	
-	
-
-	@Override
-  public void setName(String name)
-  {
-	  _theLabel.setString(name);
-  }
-
-  public String getFileName()
-	{
-		return _fileName;
-	}
-
-	/**
-	 * get the first part of the file for this filename
-	 * 
-	 * @param fileName
-	 * @return
-	 */
-	public static String getCoverageName(final String fileName)
-	{
-		// sort out the name of the map
-		String coverageName = fileName;
-		final int dotIndex = coverageName.lastIndexOf(".");
-		coverageName = (dotIndex == -1) ? coverageName : coverageName.substring(0,
-				dotIndex);
-		final int pathIndex = coverageName.lastIndexOf(File.separator);
-		if (pathIndex > 0)
-			coverageName = coverageName.substring(pathIndex + 1,
-					coverageName.length());
-		return coverageName;
-	}
-
-	@Override
-	public void setLayers(final Layers parent)
-	{
-		_myLayers = parent;
-	}
-
-	public void loadThisChart()
-	{
-		System.err.println("loading:" + _fileName + " into:" + _myLayers);
-		
-		// represent it as a normal shapefile
-		final Layer res = new ExternallyManagedDataLayer(WORLDIMAGE_TYPE,
-				getCoverageName(_fileName), _fileName);
-		_myLayers.addThisLayer(res);
-
-	}
-
-	/**
-	 * does this item have an editor?
-	 */
-	public final boolean hasEditor()
-	{
-		return true;
-	}
-
-	public Editable.EditorType getInfo()
-	{
-		if (_myEditor == null)
-			_myEditor = new ChartInfo(this, this.getName());
-
-		return _myEditor;
-	}
-
-	/**
-	 * whether to show the label for this shape
-	 */
-	public final boolean getLabelVisible()
-	{
-		return _theLabel.getVisible();
-	}
-
-	/**
-	 * whether to show the label for this shape
-	 */
-	public final void setLabelVisible(final boolean val)
-	{
-		_theLabel.setVisible(val);
-
-		// ok, inform any listeners
-		getSupport().firePropertyChange(ChartBoundsWrapper.LABEL_VIS_CHANGED, null,
-				new Boolean(val));
-
-	}
-
-	public final void setLabelLocation(final Integer val)
-	{
-		_theLabel.setRelativeLocation(val);
-
-		// and update the label relative to the shape if necessary
-		updateLabelLocation();
-	}
-
-	public final Integer getLabelLocation()
-	{
-		return _theLabel.getRelativeLocation();
-	}
-
-	/**
 	 * find the range from this shape to some point
 	 */
-	public final double rangeFrom(final WorldLocation other)
-	{
+	@Override
+	public final double rangeFrom(final WorldLocation other) {
 		return Math.min(_theLabel.rangeFrom(other), _theShape.rangeFrom(other));
 	}
 
-	// ////////////////////////////////////////////////////
-	// property change support
-	// ///////////////////////////////////////////////////
-	private void updateLabelLocation()
-	{
-		final WorldLocation newLoc = _theShape.getAnchor(_theLabel
-				.getRelativeLocation().intValue());
-		_theLabel.setLocation(newLoc);
-	}
-
-	// ////////////////////////////////////////////////////
-	// watchableList support
-	// ///////////////////////////////////////////////////
-
-	/**
-	 * method to fulfil requirements of WatchableList
-	 */
-	public final java.awt.Color getColor()
-	{
-		return super.getColor();
-	}
-
+	@Override
 	@FireReformatted
-	public final void setColor(final java.awt.Color theCol)
-	{
+	public final void setColor(final java.awt.Color theCol) {
 		super.setColor(theCol);
 
 		// and set the colour of the shape
@@ -598,5 +522,50 @@ public class ChartBoundsWrapper extends MWC.GUI.PlainWrapper implements
 
 		// don't forget the color of the label
 		_theLabel.setColor(theCol);
+	}
+
+	public final void setLabelLocation(final Integer val) {
+		_theLabel.setRelativeLocation(val);
+
+		// and update the label relative to the shape if necessary
+		updateLabelLocation();
+	}
+
+	/**
+	 * whether to show the label for this shape
+	 */
+	public final void setLabelVisible(final boolean val) {
+		_theLabel.setVisible(val);
+
+		// ok, inform any listeners
+		getSupport().firePropertyChange(ChartBoundsWrapper.LABEL_VIS_CHANGED, null, new Boolean(val));
+
+	}
+
+	@Override
+	public void setLayers(final Layers parent) {
+		_myLayers = parent;
+	}
+
+	@Override
+	public void setName(final String name) {
+		_theLabel.setString(name);
+	}
+
+	// ////////////////////////////////////////////////////
+	// watchableList support
+	// ///////////////////////////////////////////////////
+
+	@Override
+	public final String toString() {
+		return _theShape.getName() + ":" + _theLabel.getString();
+	}
+
+	// ////////////////////////////////////////////////////
+	// property change support
+	// ///////////////////////////////////////////////////
+	private void updateLabelLocation() {
+		final WorldLocation newLoc = _theShape.getAnchor(_theLabel.getRelativeLocation().intValue());
+		_theLabel.setLocation(newLoc);
 	}
 }

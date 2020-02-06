@@ -24,78 +24,79 @@ import org.eclipse.swt.widgets.Control;
 
 public class VNative<T extends Control> extends VControl {
 
-	public static <T extends Control> VNative<T> create(Class<T> type, VPanel parent, int style) {
+	public static <T extends Control> VNative<T> create(final Class<T> type, final VPanel parent, final int style) {
 		try {
-			Constructor<T> constructor = type.getConstructor(Composite.class, int.class);
-			T control = constructor.newInstance(parent.getComposite(), style);
-			VNative<T> vn = new VNative<T>(parent, style);
+			final Constructor<T> constructor = type.getConstructor(Composite.class, int.class);
+			final T control = constructor.newInstance(parent.getComposite(), style);
+			final VNative<T> vn = new VNative<T>(parent, style);
 			vn.setControl(control);
 			return vn;
-		} catch(Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
-	
+
 	T control;
-	private DisposeListener disposeListener;
-	
-	
-	private VNative(VPanel panel, int style) {
+	private final DisposeListener disposeListener;
+
+	private VNative(final VPanel panel, final int style) {
 		super(panel, style);
 		disposeListener = new DisposeListener() {
-			public void widgetDisposed(DisposeEvent e) {
+			@Override
+			public void widgetDisposed(final DisposeEvent e) {
 				dispose();
 			}
 		};
 	}
-	
+
 	@Override
-	void attachListeners(boolean key) {
+	void attachListeners(final boolean key) {
 		// skip
 	}
-	
-	@Override
-	void detachListeners(boolean key) {
-		// skip
-	}
-	
+
 	private boolean checkControl() {
 		return control != null && !control.isDisposed();
 	}
-	
+
 	@Override
-	public Point computeSize(int hint, int hint2, boolean changed) {
+	public Point computeSize(final int hint, final int hint2, final boolean changed) {
 		return control.computeSize(hint, hint2, changed);
 	}
-	
+
+	@Override
+	void detachListeners(final boolean key) {
+		// skip
+	}
+
 	@Override
 	public void dispose() {
 		super.dispose();
-		if(control != null && !control.isDisposed()) {
+		if (control != null && !control.isDisposed()) {
 			control.removeDisposeListener(disposeListener);
 			control.dispose();
 		}
 	}
-	
+
 	@Override
 	public Rectangle getClientArea() {
-		if(control instanceof Composite) {
+		if (control instanceof Composite) {
 			return ((Composite) control).getClientArea();
 		} else {
 			return super.getClientArea();
 		}
 	}
-	
+
+	@Override
 	public T getControl() {
 		return control;
 	}
-	
+
 	@Override
 	public String getText() {
 		try {
 			return (String) control.getClass().getMethod("getText").invoke(control);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 			return super.getText();
 		}
@@ -105,23 +106,23 @@ public class VNative<T extends Control> extends VControl {
 	public Type getType() {
 		return Type.Native;
 	}
-	
+
 	@Override
-	public void setBackground(Color color) {
+	public void setBackground(final Color color) {
 		super.setBackground(color);
-		if(checkControl()) {
+		if (checkControl()) {
 			control.setBackground(color);
 		}
 	}
-	
+
 	@Override
-	public void setBounds(int x, int y, int width, int height) {
+	public void setBounds(final int x, final int y, final int width, final int height) {
 		super.setBounds(x, y, width, height);
 		control.setBounds(x, y, width, height);
 	}
 
-	private void setControl(T control) {
-		if(this.control != null) {
+	private void setControl(final T control) {
+		if (this.control != null) {
 			throw new UnsupportedOperationException("Can only set a control once"); //$NON-NLS-1$
 		}
 		this.control = control;
@@ -134,43 +135,44 @@ public class VNative<T extends Control> extends VControl {
 	public boolean setFocus() {
 		return control.setFocus();
 	}
-	
+
 	@Override
-	public void setFont(Font font) {
+	public void setFont(final Font font) {
 		control.setFont(font);
 	}
-	
+
 	@Override
-	public void setForeground(Color color) {
+	public void setForeground(final Color color) {
 		super.setForeground(color);
-		if(checkControl()) {
+		if (checkControl()) {
 			control.setForeground(color);
 		}
 	}
 
 	@Override
-	public void setText(String text) {
+	public void setText(final String text) {
 		try {
 			control.getClass().getMethod("setText", String.class).invoke(control, text);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 			super.setText(text);
 		}
 	}
-	
+
 	@Override
-	public void setToolTipText(String text) {
+	public void setToolTipText(final String text) {
 		control.setToolTipText(text);
 	}
-	
+
 	@Override
-	public void setVisible(boolean visible) {
+	public void setVisible(final boolean visible) {
 		super.setVisible(visible);
 		control.setVisible(visible);
 	}
 
+	@Override
 	public String toString() {
 		return getClass().getName() + "@" + Integer.toHexString(hashCode()) + " {" + control.toString() + "}"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}
-	
+
 }

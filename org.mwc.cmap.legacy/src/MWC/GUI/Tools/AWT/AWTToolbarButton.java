@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: AWTToolbarButton.java,v $
@@ -69,71 +69,71 @@
 //
 package MWC.GUI.Tools.AWT;
 
-
-
 import java.awt.Button;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
 
 import MWC.GUI.Tool;
 
-/** extension of AWT button, to create one which implements one
- * of our Debrief tools
+/**
+ * extension of AWT button, to create one which implements one of our Debrief
+ * tools
  */
-public class AWTToolbarButton extends Button implements ActionListener
-{
-  
-  /////////////////////////////////////////////////////////
-  // member variables
-  /////////////////////////////////////////////////////////
-  
-  /**
-	 * 
+public class AWTToolbarButton extends Button implements ActionListener {
+
+	/////////////////////////////////////////////////////////
+	// member variables
+	/////////////////////////////////////////////////////////
+
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	protected Tool _theTool;
-  
 
-  /////////////////////////////////////////////////////////
-  // constructor
-  /////////////////////////////////////////////////////////
-  /** convenience constructor, calls normal one
-   */
-  public AWTToolbarButton(final Tool theTool){
-    this(theTool.getLabel(), theTool);
-    
-  }
-  
-  public AWTToolbarButton(final String theLabel, final Tool theTool){
-    super(theLabel);
-    _theTool = theTool;
-    this.addActionListener(this);
-  }
+	public AWTToolbarButton(final String theLabel, final Tool theTool) {
+		super(theLabel);
+		_theTool = theTool;
+		this.addActionListener(this);
+	}
 
-  /////////////////////////////////////////////////////////
-  // member functions
-  /////////////////////////////////////////////////////////
-  
-  /** callback function for a button being pressed
-   */
-  public void actionPerformed(final java.awt.event.ActionEvent e){
-    /** check that we have a tool declared
-     */
-    if(_theTool != null)
-      _theTool.execute();
-  }
-  
-  
+	/////////////////////////////////////////////////////////
+	// constructor
+	/////////////////////////////////////////////////////////
+	/**
+	 * convenience constructor, calls normal one
+	 */
+	public AWTToolbarButton(final Tool theTool) {
+		this(theTool.getLabel(), theTool);
 
-  public Dimension getMaximumSize()
-  {
-    return super.getMinimumSize();
-  }
-  
-  /** return the tool for this button
-   */
-  protected Tool getTool(){
-    return _theTool;
-  }
-  
+	}
+
+	/////////////////////////////////////////////////////////
+	// member functions
+	/////////////////////////////////////////////////////////
+
+	/**
+	 * callback function for a button being pressed
+	 */
+	@Override
+	public void actionPerformed(final java.awt.event.ActionEvent e) {
+		/**
+		 * check that we have a tool declared
+		 */
+		if (_theTool != null)
+			_theTool.execute();
+	}
+
+	@Override
+	public Dimension getMaximumSize() {
+		return super.getMinimumSize();
+	}
+
+	/**
+	 * return the tool for this button
+	 */
+	protected Tool getTool() {
+		return _theTool;
+	}
+
 }

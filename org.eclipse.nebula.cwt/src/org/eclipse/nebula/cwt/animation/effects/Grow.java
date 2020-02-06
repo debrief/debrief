@@ -18,6 +18,31 @@ import org.eclipse.swt.widgets.Control;
 
 public class Grow extends AbstractEffect {
 
+	Rectangle src, dest, diff;
+
+	Control control = null;
+
+	public Grow(final Control control, final Rectangle src, final Rectangle dest, final long lengthMilli,
+			final IMovement movement, final Runnable onStop, final Runnable onCancel) {
+		super(lengthMilli, movement, onStop, onCancel);
+		this.src = src;
+		this.dest = dest;
+		this.control = control;
+		this.diff = new Rectangle(dest.x - src.x, dest.y - src.y, dest.width - src.width, dest.height - src.height);
+
+		easingFunction.init(0, 1, (int) lengthMilli);
+	}
+
+	@Override
+	public void applyEffect(final long currentTime) {
+		if (!control.isDisposed()) {
+			control.setBounds((int) (src.x - diff.x * easingFunction.getValue(currentTime)),
+					(int) (src.y - diff.y * easingFunction.getValue(currentTime)),
+					(int) (src.width + 2 * diff.width * easingFunction.getValue(currentTime)),
+					(int) (src.height + 2 * diff.height * easingFunction.getValue(currentTime)));
+		}
+	}
+
 	/**
 	 * @deprecated
 	 * @param w
@@ -26,42 +51,11 @@ public class Grow extends AbstractEffect {
 	 * @param onStop
 	 * @param onCancel
 	 */
-	public void grow(AnimationRunner runner, Control w, int duration,
-			IMovement movement, Runnable onStop, Runnable onCancel) {
-		IEffect effect = new Grow(w, w.getBounds(), new Rectangle(w
-				.getBounds().x + 10, w.getBounds().y + 10,
-				w.getBounds().width + 10, w.getBounds().height + 10), duration,
-				movement, onStop, onCancel);
+	@Deprecated
+	public void grow(final AnimationRunner runner, final Control w, final int duration, final IMovement movement,
+			final Runnable onStop, final Runnable onCancel) {
+		final IEffect effect = new Grow(w, w.getBounds(), new Rectangle(w.getBounds().x + 10, w.getBounds().y + 10,
+				w.getBounds().width + 10, w.getBounds().height + 10), duration, movement, onStop, onCancel);
 		runner.runEffect(effect);
-	}
-
-	Rectangle src, dest, diff;
-
-	Control control = null;
-
-	public Grow(Control control, Rectangle src, Rectangle dest,
-			long lengthMilli, IMovement movement, Runnable onStop,
-			Runnable onCancel) {
-		super(lengthMilli, movement, onStop, onCancel);
-		this.src = src;
-		this.dest = dest;
-		this.control = control;
-		this.diff = new Rectangle(dest.x - src.x, dest.y - src.y, dest.width
-				- src.width, dest.height - src.height);
-
-		easingFunction.init(0, 1, (int) lengthMilli);
-	}
-
-	public void applyEffect(final long currentTime) {
-		if (!control.isDisposed()) {
-			control.setBounds((int) (src.x - diff.x
-					* easingFunction.getValue(currentTime)),
-					(int) (src.y - diff.y
-							* easingFunction.getValue(currentTime)),
-					(int) (src.width + 2 * diff.width
-							* easingFunction.getValue(currentTime)),
-					(int) (src.height + 2 * diff.height
-							* easingFunction.getValue(currentTime)));
-		}
 	}
 }

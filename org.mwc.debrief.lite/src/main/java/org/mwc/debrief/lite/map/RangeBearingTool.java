@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.debrief.lite.map;
@@ -44,257 +44,207 @@ import MWC.GenericData.WorldVector;
  *
  * @author Ian Mayo - from Michael Bedward's Zoom In tool
  */
-public class RangeBearingTool extends AbstractZoomTool
-{
+public class RangeBearingTool extends AbstractZoomTool {
 
-  public static class RangeBearingMeasure
-  {
-    private static final String DEGREE_SYMBOL = "\u00b0";
-    private final WorldDistance distance;
-    private double bearing;
+	public static class RangeBearingMeasure {
+		private static final String DEGREE_SYMBOL = "\u00b0";
+		private final WorldDistance distance;
+		private double bearing;
 
-    public RangeBearingMeasure(final WorldDistance distance,
-        final double bearing)
-    {
-      this.distance = distance;
-      this.bearing = bearing;
-    }
+		public RangeBearingMeasure(final WorldDistance distance, final double bearing) {
+			this.distance = distance;
+			this.bearing = bearing;
+		}
 
-    public int getIntBearing()
-    {
-      return (int) bearing;
-    }
+		public int getIntBearing() {
+			return (int) bearing;
+		}
 
-    public String getLongFormat()
-    {
-      return "Range:" + (int) distance.getValueIn(RangeBearingTool.bearingUnit)
-          + WorldDistance.getLabelFor(RangeBearingTool.bearingUnit) + " Brg:"
-          + (int) bearing + DEGREE_SYMBOL;
-    }
+		public String getLongFormat() {
+			return "Range:" + (int) distance.getValueIn(RangeBearingTool.bearingUnit)
+					+ WorldDistance.getLabelFor(RangeBearingTool.bearingUnit) + " Brg:" + (int) bearing + DEGREE_SYMBOL;
+		}
 
-    public int getPrintBearing()
-    {
-      // +360 just in case... :)
-      return (getIntBearing() + 360) % 180 - 90;
-    }
+		public int getPrintBearing() {
+			// +360 just in case... :)
+			return (getIntBearing() + 360) % 180 - 90;
+		}
 
-    public String getShortFormat()
-    {
-      return (int) distance.getValueIn(RangeBearingTool.bearingUnit)
-          + WorldDistance.getLabelFor(RangeBearingTool.bearingUnit) + " "
-          + (int) bearing + DEGREE_SYMBOL;
-    }
+		public String getShortFormat() {
+			return (int) distance.getValueIn(RangeBearingTool.bearingUnit)
+					+ WorldDistance.getLabelFor(RangeBearingTool.bearingUnit) + " " + (int) bearing + DEGREE_SYMBOL;
+		}
 
-    public void normalizeBearing()
-    {
-      if (bearing < 0)
-      {
-        bearing += 360d;
-      }
-    }
-  }
+		public void normalizeBearing() {
+			if (bearing < 0) {
+				bearing += 360d;
+			}
+		}
+	}
 
-  /** Tool name */
-  public static final String TOOL_NAME = "Rng/Brg";
+	/** Tool name */
+	public static final String TOOL_NAME = "Rng/Brg";
 
-  /** Tool tip text */
-  public static final String TOOL_TIP =
-      "Measure Range/Bearing between dragged points";
+	/** Tool tip text */
+	public static final String TOOL_TIP = "Measure Range/Bearing between dragged points";
 
-  /** Cursor */
-  public static final String CURSOR_IMAGE =
-      "/org/geotools/swing/icons/pointer.png";
+	/** Cursor */
+	public static final String CURSOR_IMAGE = "/org/geotools/swing/icons/pointer.png";
 
-  /** Cursor hotspot coordinates */
-  public static final Point CURSOR_HOTSPOT = new Point(0, 0);
+	/** Cursor hotspot coordinates */
+	public static final Point CURSOR_HOTSPOT = new Point(0, 0);
 
-  /** Icon for the control */
-  public static final String ICON_IMAGE =
-      "/org/geotools/swing/icons/mActionPan.png";
+	/** Icon for the control */
+	public static final String ICON_IMAGE = "/org/geotools/swing/icons/mActionPan.png";
 
-  // Unit which is getting displayed now.
-  private static int bearingUnit = WorldDistance.YARDS;
+	// Unit which is getting displayed now.
+	private static int bearingUnit = WorldDistance.YARDS;
 
-  public static int getBearingUnit()
-  {
-    return bearingUnit;
-  }
+	public static int getBearingUnit() {
+		return bearingUnit;
+	}
 
-  private final Cursor cursor;
+	public static void setBearingUnit(final int bearingUnit) {
+		RangeBearingTool.bearingUnit = bearingUnit;
+	}
 
-  private WorldLocation startPos;
+	private final Cursor cursor;
 
-  private final JLabel _statusBar;
+	private WorldLocation startPos;
 
-  private final MathTransform _transform;
+	private final JLabel _statusBar;
 
-  /**
-   * Button that we have pressed. It is used to filter multiple mouse clicking.
-   */
-  private int buttonPressed = -1;
+	private final MathTransform _transform;
 
-  /**
-   * True if it is getting dragged now
-   */
-  private boolean dragging = false;
+	/**
+	 * Button that we have pressed. It is used to filter multiple mouse clicking.
+	 */
+	private int buttonPressed = -1;
 
-  private final MouseDragLine dragLine;
+	/**
+	 * True if it is getting dragged now
+	 */
+	private boolean dragging = false;
 
-  /**
-   * Constructor
-   *
-   * @param statusBar
-   */
-  public RangeBearingTool(final JLabel statusBar, final MathTransform transform,
-      final AbstractMapPane abstractMapPane)
-  {
-    final Toolkit tk = Toolkit.getDefaultToolkit();
-    final ImageIcon imgIcon = new ImageIcon(getClass().getResource(
-        CURSOR_IMAGE));
-    cursor = tk.createCustomCursor(imgIcon.getImage(), CURSOR_HOTSPOT,
-        TOOL_NAME);
-    _statusBar = statusBar;
-    _transform = transform;
+	private final MouseDragLine dragLine;
 
-    dragLine = new MouseDragLine(abstractMapPane);
-  }
+	/**
+	 * Constructor
+	 *
+	 * @param statusBar
+	 */
+	public RangeBearingTool(final JLabel statusBar, final MathTransform transform,
+			final AbstractMapPane abstractMapPane) {
+		final Toolkit tk = Toolkit.getDefaultToolkit();
+		final ImageIcon imgIcon = new ImageIcon(getClass().getResource(CURSOR_IMAGE));
+		cursor = tk.createCustomCursor(imgIcon.getImage(), CURSOR_HOTSPOT, TOOL_NAME);
+		_statusBar = statusBar;
+		_transform = transform;
 
-  /**
-   * Returns true to indicate that this tool draws a box on the map display when the mouse is being
-   * dragged to show the zoom-in area
-   */
-  @Override
-  public boolean drawDragBox()
-  {
-    return false;
-  }
+		dragLine = new MouseDragLine(abstractMapPane);
+	}
 
-  public void eraseOldDrawing()
-  {
-    dragLine.eraseOldDrawing();
-  }
+	/**
+	 * Returns true to indicate that this tool draws a box on the map display when
+	 * the mouse is being dragged to show the zoom-in area
+	 */
+	@Override
+	public boolean drawDragBox() {
+		return false;
+	}
 
-  /**
-   * Get the mouse cursor for this tool
-   */
-  @Override
-  public Cursor getCursor()
-  {
-    return cursor;
-  }
+	public void eraseOldDrawing() {
+		dragLine.eraseOldDrawing();
+	}
 
-  /**
-   * Records that the mouse is being dragged
-   *
-   * @param ev
-   *          the mouse event
-   */
-  @Override
-  public void onMouseDragged(final MapMouseEvent ev)
-  {
-    if (ev.getButton() != MouseEvent.BUTTON3)
-    {
-      // ok, sort out the range and bearing
-      final DirectPosition2D curPos = ev.getWorldPos();
+	/**
+	 * Get the mouse cursor for this tool
+	 */
+	@Override
+	public Cursor getCursor() {
+		return cursor;
+	}
 
-      // mouse pos in Map coordinates
-      if (ev.getWorldPos()
-          .getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84)
-      {
-        try
-        {
-          _transform.transform(curPos, curPos);
-        }
-        catch (MismatchedDimensionException | TransformException e)
-        {
-          Application.logError2(ToolParent.ERROR,
-              "Failure in projection transform", e);
-        }
-      }
+	/**
+	 * Records that the mouse is being dragged
+	 *
+	 * @param ev the mouse event
+	 */
+	@Override
+	public void onMouseDragged(final MapMouseEvent ev) {
+		if (ev.getButton() != MouseEvent.BUTTON3) {
+			// ok, sort out the range and bearing
+			final DirectPosition2D curPos = ev.getWorldPos();
 
-      final WorldLocation current = new WorldLocation(curPos.getY(), curPos
-          .getX(), 0);
+			// mouse pos in Map coordinates
+			if (ev.getWorldPos().getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84) {
+				try {
+					_transform.transform(curPos, curPos);
+				} catch (MismatchedDimensionException | TransformException e) {
+					Application.logError2(ToolParent.ERROR, "Failure in projection transform", e);
+				}
+			}
 
-      // now the delta
-      final WorldVector delta = current.subtract(startPos);
-      final WorldDistance distance = new WorldDistance(delta.getRange(),
-          WorldDistance.DEGS);
-      final double bearing = Conversions.Rads2Degs(delta.getBearing());
+			final WorldLocation current = new WorldLocation(curPos.getY(), curPos.getX(), 0);
 
-      final RangeBearingMeasure rangeBearing = new RangeBearingMeasure(distance,
-          bearing);
-      rangeBearing.normalizeBearing();
-      final String msg = rangeBearing.getLongFormat();
-      if (_statusBar != null)
-      {
-        _statusBar.setText(msg);
-      }
+			// now the delta
+			final WorldVector delta = current.subtract(startPos);
+			final WorldDistance distance = new WorldDistance(delta.getRange(), WorldDistance.DEGS);
+			final double bearing = Conversions.Rads2Degs(delta.getBearing());
 
-      // Now we draw the line
-      dragLine.mouseDragged(ev, rangeBearing);
-    }
-  }
+			final RangeBearingMeasure rangeBearing = new RangeBearingMeasure(distance, bearing);
+			rangeBearing.normalizeBearing();
+			final String msg = rangeBearing.getLongFormat();
+			if (_statusBar != null) {
+				_statusBar.setText(msg);
+			}
 
-  /**
-   * Records the map position of the mouse event in case this button press is the beginning of a
-   * mouse drag
-   *
-   * @param ev
-   *          the mouse event
-   */
-  @Override
-  public void onMousePressed(final MapMouseEvent ev)
-  {
-    if (!dragging && ev.getButton() != MouseEvent.BUTTON3)
-    {
-      final DirectPosition2D startPosWorld = ev.getWorldPos();
+			// Now we draw the line
+			dragLine.mouseDragged(ev, rangeBearing);
+		}
+	}
 
-      if (ev.getWorldPos()
-          .getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84)
-      {
-        try
-        {
-          _transform.transform(startPosWorld, startPosWorld);
-        }
-        catch (MismatchedDimensionException | TransformException e)
-        {
-          Application.logError2(ToolParent.ERROR,
-              "Failure in projection transform", e);
-        }
-      }
+	/**
+	 * Records the map position of the mouse event in case this button press is the
+	 * beginning of a mouse drag
+	 *
+	 * @param ev the mouse event
+	 */
+	@Override
+	public void onMousePressed(final MapMouseEvent ev) {
+		if (!dragging && ev.getButton() != MouseEvent.BUTTON3) {
+			final DirectPosition2D startPosWorld = ev.getWorldPos();
 
-      startPos = new WorldLocation(startPosWorld.getY(), startPosWorld.getX(),
-          0);
-      buttonPressed = ev.getButton();
-      dragging = true;
+			if (ev.getWorldPos().getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84) {
+				try {
+					_transform.transform(startPosWorld, startPosWorld);
+				} catch (MismatchedDimensionException | TransformException e) {
+					Application.logError2(ToolParent.ERROR, "Failure in projection transform", e);
+				}
+			}
 
-      dragLine.mousePressed(ev);
-    }
-  }
+			startPos = new WorldLocation(startPosWorld.getY(), startPosWorld.getX(), 0);
+			buttonPressed = ev.getButton();
+			dragging = true;
 
-  /**
-   * If the mouse was dragged, determines the bounds of the box that the user defined and passes
-   * this to the mapPane's {@code setDisplayArea} method.
-   *
-   * @param ev
-   *          the mouse event
-   */
-  @Override
-  public void onMouseReleased(final MapMouseEvent ev)
-  {
-    if (dragging && ev != null && ev.getButton() == buttonPressed && ev
-        .getButton() != MouseEvent.BUTTON3)
-    {
-      dragging = false;
-      buttonPressed = -1;
-      startPos = null;
+			dragLine.mousePressed(ev);
+		}
+	}
 
-      dragLine.mouseReleased(ev);
-    }
-  }
+	/**
+	 * If the mouse was dragged, determines the bounds of the box that the user
+	 * defined and passes this to the mapPane's {@code setDisplayArea} method.
+	 *
+	 * @param ev the mouse event
+	 */
+	@Override
+	public void onMouseReleased(final MapMouseEvent ev) {
+		if (dragging && ev != null && ev.getButton() == buttonPressed && ev.getButton() != MouseEvent.BUTTON3) {
+			dragging = false;
+			buttonPressed = -1;
+			startPos = null;
 
-  public static void setBearingUnit(final int bearingUnit)
-  {
-    RangeBearingTool.bearingUnit = bearingUnit;
-  }
+			dragLine.mouseReleased(ev);
+		}
+	}
 }

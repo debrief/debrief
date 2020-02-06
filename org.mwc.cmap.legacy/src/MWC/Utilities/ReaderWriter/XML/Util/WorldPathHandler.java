@@ -4,16 +4,16 @@ package MWC.Utilities.ReaderWriter.XML.Util;
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 import java.util.Iterator;
@@ -26,70 +26,64 @@ import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 abstract public class WorldPathHandler extends MWCXMLReader {
 
-  static final private String _myType = "WorldPath";
-  static final private String POINT = "Point";
+	static final private String _myType = "WorldPath";
+	static final private String POINT = "Point";
 
-  private WorldPath _myPath;
+	public static void exportThis(final Vector<PolygonNode> nodes, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc) {
+		final org.w3c.dom.Element eLoc = doc.createElement(_myType);
 
-  public WorldPathHandler() {
-    super("WorldPath");
+		// step through the list
+		final Iterator<PolygonNode> it = nodes.iterator();
 
-    addHandler(new LocationHandler(POINT)
-    {
-      public void setLocation(final WorldLocation res)
-      {
-        addThis(res);
-      }
-    });
+		while (it.hasNext()) {
+			final WorldLocation wl = it.next().getLocation();
+			LocationHandler.exportLocation(wl, POINT, eLoc, doc);
+		}
+		parent.appendChild(eLoc);
+	}
 
-  }
+	public static void exportThis(final WorldPath path, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc) {
+		final org.w3c.dom.Element eLoc = doc.createElement(_myType);
 
-  public void addThis(final WorldLocation res)
-  {
-    if(_myPath == null)
-      _myPath = new WorldPath();
+		// step through the list
+		final Iterator<WorldLocation> it = path.getPoints().iterator();
 
-    _myPath.addPoint(res);
-  }
+		while (it.hasNext()) {
+			final WorldLocation wl = it.next();
+			LocationHandler.exportLocation(wl, POINT, eLoc, doc);
+		}
+		parent.appendChild(eLoc);
+	}
 
-  public void elementClosed()
-  {
-    setPath(_myPath);
-    _myPath = null;
-  }
+	private WorldPath _myPath;
 
-  abstract public void setPath(WorldPath path);
+	public WorldPathHandler() {
+		super("WorldPath");
 
-  public static void exportThis(final Vector<PolygonNode> nodes, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
-  {
-    final org.w3c.dom.Element eLoc = doc.createElement(_myType);
+		addHandler(new LocationHandler(POINT) {
+			@Override
+			public void setLocation(final WorldLocation res) {
+				addThis(res);
+			}
+		});
 
-    // step through the list
-    final Iterator<PolygonNode> it = nodes.iterator();
+	}
 
-    while(it.hasNext())
-    {
-      final WorldLocation wl = (WorldLocation)it.next().getLocation();
-      LocationHandler.exportLocation(wl, POINT, eLoc, doc);
-    }
-    parent.appendChild(eLoc);
-  }
+	public void addThis(final WorldLocation res) {
+		if (_myPath == null)
+			_myPath = new WorldPath();
 
+		_myPath.addPoint(res);
+	}
 
-  public static void exportThis(final WorldPath path, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
-  {
-    final org.w3c.dom.Element eLoc = doc.createElement(_myType);
+	@Override
+	public void elementClosed() {
+		setPath(_myPath);
+		_myPath = null;
+	}
 
-    // step through the list
-    final Iterator<WorldLocation> it = path.getPoints().iterator();
-
-    while(it.hasNext())
-    {
-      final WorldLocation wl = (WorldLocation)it.next();
-      LocationHandler.exportLocation(wl, POINT, eLoc, doc);
-    }
-    parent.appendChild(eLoc);
-  }
-
+	abstract public void setPath(WorldPath path);
 
 }

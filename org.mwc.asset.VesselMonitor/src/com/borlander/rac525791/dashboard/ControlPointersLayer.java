@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package com.borlander.rac525791.dashboard;
@@ -30,13 +30,60 @@ import com.borlander.rac525791.draw2d.ext.RotatableDecorationExt;
 /**
  * It is not a layer because it just creates and manages figures that are
  * children of another layer.
- * 
+ *
  * Semantic grouping (red-sector, demanded arrow, actual arrow) differs from
  * figure-containment grouping because we have 3 separate groups for each of the
  * controls but only single numbers layer and we need to paint numbers above all
  * of 3 red sectors but below all arrows.
  */
 public class ControlPointersLayer {
+	public static interface Factory {
+		public RotatableDecorationExt createActualArrow();
+
+		public AngleMapper createAngleMapper();
+
+		public RotatableDecorationExt createDemandedArrow();
+
+		public RedSector createRedSector(AngleMapper mapper);
+	}
+
+	private class Layout extends BaseDashboardLayout {
+		private final ControlUISuite.ControlAccess myControl;
+		private final Point TEMP = new Point();
+
+		public Layout(final DashboardUIModel uiModel, final ControlUISuite.ControlAccess control) {
+			super(uiModel);
+			myControl = control;
+		}
+
+		@Override
+		public void layout(final IFigure container) {
+
+			final ControlUISuite suite = getSuite(container);
+			final ControlUIModel positions = myControl.selectControl(suite);
+			final double templatesScale = suite.getTemplatesScale();
+
+			placeAtTopLeft(container, TEMP);
+			TEMP.translate(positions.getControlCenter());
+			myArrow.setLocation(TEMP);
+			myArrow.setScale(templatesScale, templatesScale);
+
+			myDemandedPointer.setLocation(TEMP);
+			myDemandedPointer.setScale(templatesScale, templatesScale);
+
+			myRedSector.setCenterLocation(TEMP);
+			myRedSector.setRadius(positions.getRedSectorRadius());
+
+			if (!positions.isFullCircleMapped()) {
+				myMapper.setAnglesRange(positions.getZeroMark(), positions.getMaximumMark());
+				// angles may change - reset pointers rotation
+				myArrow.setRotation(myMapper.computeAngle(myActualValue));
+				myDemandedPointer.setRotation(myMapper.computeAngle(myDemandedValue));
+			}
+		}
+
+	}
+
 	private final LayoutManager myLayouter;
 
 	final RotatableDecorationExt myArrow;
@@ -51,17 +98,8 @@ public class ControlPointersLayer {
 
 	int myDemandedValue;
 
-	public static interface Factory {
-		public RotatableDecorationExt createActualArrow();
-
-		public RotatableDecorationExt createDemandedArrow();
-
-		public AngleMapper createAngleMapper();
-
-		public RedSector createRedSector(AngleMapper mapper);
-	}
-
-	public ControlPointersLayer(Factory factory, DashboardUIModel uiModel, ControlUISuite.ControlAccess control) {
+	public ControlPointersLayer(final Factory factory, final DashboardUIModel uiModel,
+			final ControlUISuite.ControlAccess control) {
 		myLayouter = new Layout(uiModel, control);
 		myMapper = factory.createAngleMapper();
 		myArrow = factory.createActualArrow();
@@ -69,12 +107,8 @@ public class ControlPointersLayer {
 		myDemandedPointer = factory.createDemandedArrow();
 	}
 
-	/**
-	 * Intentionally returned as IFigure -- all that caller can do with it is to
-	 * add this figure to some container.
-	 */
-	public IFigure getRedSector() {
-		return myRedSector;
+	private double computeAngle(final int value) {
+		return myMapper.computeAngle(value);
 	}
 
 	/**
@@ -90,16 +124,20 @@ public class ControlPointersLayer {
 	public IFigure getDemandedPointer() {
 		return myDemandedPointer;
 	}
-	
-	public void layoutGroup(IFigure container){
+
+	/**
+	 * Intentionally returned as IFigure -- all that caller can do with it is to add
+	 * this figure to some container.
+	 */
+	public IFigure getRedSector() {
+		return myRedSector;
+	}
+
+	public void layoutGroup(final IFigure container) {
 		myLayouter.layout(container);
 	}
 
-	public void updateShowRedSector(boolean isOnThreshold) {
-		myRedSector.setVisible(!isOnThreshold);
-	}
-
-	public void setActualValue(int value) {
+	public void setActualValue(final int value) {
 		if (myActualValue != value) {
 			myActualValue = value;
 			myArrow.setRotation(computeAngle(myActualValue));
@@ -107,58 +145,20 @@ public class ControlPointersLayer {
 		}
 	}
 
-	public void setDemandedValue(int value) {
+	public void setDemandedValue(final int value) {
 		if (myDemandedValue != value) {
 			myDemandedValue = value;
 			myDemandedPointer.setRotation(computeAngle(myDemandedValue));
 			myRedSector.setDemandedValue(myDemandedValue);
 		}
 	}
-	
-	public void setIgnoreDemandedValue(boolean ignore){
+
+	public void setIgnoreDemandedValue(final boolean ignore) {
 		myDemandedPointer.setVisible(!ignore);
 	}
 
-	private double computeAngle(int value) {
-		return myMapper.computeAngle(value);
-	}
-
-	private class Layout extends BaseDashboardLayout {
-		private final ControlUISuite.ControlAccess myControl;
-		private final Point TEMP = new Point();
-
-		public Layout(DashboardUIModel uiModel, ControlUISuite.ControlAccess control) {
-			super(uiModel);
-			myControl = control;
-		}
-		
-		public void layout(IFigure container) {
-			
-			ControlUISuite suite = getSuite(container);
-			ControlUIModel positions = myControl.selectControl(suite);
-			double templatesScale = suite.getTemplatesScale();
-
-			placeAtTopLeft(container, TEMP);
-			TEMP.translate(positions.getControlCenter());
-			myArrow.setLocation(TEMP);
-			myArrow.setScale(templatesScale, templatesScale);
-			
-			myDemandedPointer.setLocation(TEMP);
-			myDemandedPointer.setScale(templatesScale, templatesScale);
-			
-			myRedSector.setCenterLocation(TEMP);
-			myRedSector.setRadius(positions.getRedSectorRadius());
-
-			if (!positions.isFullCircleMapped()) {
-				myMapper.setAnglesRange(positions.getZeroMark(), positions
-						.getMaximumMark());
-				// angles may change - reset pointers rotation
-				myArrow.setRotation(myMapper.computeAngle(myActualValue));
-				myDemandedPointer.setRotation(myMapper
-						.computeAngle(myDemandedValue));
-			}
-		}
-		
+	public void updateShowRedSector(final boolean isOnThreshold) {
+		myRedSector.setVisible(!isOnThreshold);
 	}
 
 }

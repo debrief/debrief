@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.cmap.grideditor.table;
@@ -36,7 +36,6 @@ import org.mwc.cmap.gridharness.views.MultiControlCellEditor;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
-
 public class DescriptorEditingSupport extends EditingSupport {
 
 	private final GriddableItemDescriptor myDescriptor;
@@ -51,14 +50,6 @@ public class DescriptorEditingSupport extends EditingSupport {
 		super(tableModel.getViewer());
 		myDescriptor = descriptor;
 		myTableModel = tableModel;
-	}
-
-	public GriddableItemDescriptor getDescriptor() {
-		return myDescriptor;
-	}
-
-	public void setTabTraverseTarget(final EditableTarget tabTraverseTarget) {
-		myTabTraverseTarget = tabTraverseTarget;
 	}
 
 	@Override
@@ -77,11 +68,28 @@ public class DescriptorEditingSupport extends EditingSupport {
 			if (traverseSubject == null) {
 				traverseSubject = cellEditor.getControl();
 			}
-			if(traverseSubject != null)
+			if (traverseSubject != null)
 				traverseSubject.addTraverseListener(new CellEditorTraverseHandler(myTabTraverseTarget, element));
 		}
 		myNeedCastValueToStringForCellEditor = cellEditor instanceof TextCellEditor;
 		return cellEditor;
+	}
+
+	protected final Composite getCellEditorParent() {
+		final TableViewer viewer = (TableViewer) getViewer();
+		return viewer.getTable();
+	}
+
+	public GriddableItemDescriptor getDescriptor() {
+		return myDescriptor;
+	}
+
+	private IOperationHistory getOperationHistory() {
+		return myTableModel.getUndoSupport().getOperationHistory();
+	}
+
+	private IUndoContext getUndoContext() {
+		return myTableModel.getUndoSupport().getUndoContext();
 	}
 
 	@Override
@@ -94,6 +102,10 @@ public class DescriptorEditingSupport extends EditingSupport {
 		return transformToCellEditor(rawValue);
 	}
 
+	public void setTabTraverseTarget(final EditableTarget tabTraverseTarget) {
+		myTabTraverseTarget = tabTraverseTarget;
+	}
+
 	@Override
 	protected void setValue(final Object element, final Object value) {
 		Object theValue = value;
@@ -102,7 +114,8 @@ public class DescriptorEditingSupport extends EditingSupport {
 			theValue = transformFromCellEditor(theValue);
 			if (theValue != null && !theValue.equals(BeanUtil.getItemValue(item, myDescriptor))) {
 				final GriddableSeries series = (GriddableSeries) getViewer().getInput();
-				final OperationEnvironment environment = new OperationEnvironment(getUndoContext(), series, item, myDescriptor);
+				final OperationEnvironment environment = new OperationEnvironment(getUndoContext(), series, item,
+						myDescriptor);
 				final SetDescriptorValueOperation update = new SetDescriptorValueOperation(environment, theValue);
 				try {
 					getOperationHistory().execute(update, null, null);
@@ -113,15 +126,6 @@ public class DescriptorEditingSupport extends EditingSupport {
 				}
 			}
 		}
-	}
-
-	protected final Composite getCellEditorParent() {
-		final TableViewer viewer = (TableViewer) getViewer();
-		return viewer.getTable();
-	}
-
-	protected Object transformToCellEditor(final Object value) {
-		return (myNeedCastValueToStringForCellEditor) ? String.valueOf(value) : value;
 	}
 
 	protected Object transformFromCellEditor(final Object cellEditorValue) {
@@ -163,11 +167,7 @@ public class DescriptorEditingSupport extends EditingSupport {
 		}
 	}
 
-	private IUndoContext getUndoContext() {
-		return myTableModel.getUndoSupport().getUndoContext();
-	}
-
-	private IOperationHistory getOperationHistory() {
-		return myTableModel.getUndoSupport().getOperationHistory();
+	protected Object transformToCellEditor(final Object value) {
+		return (myNeedCastValueToStringForCellEditor) ? String.valueOf(value) : value;
 	}
 }

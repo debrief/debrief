@@ -4,135 +4,122 @@ package Debrief.ReaderWriter.XML;
 import java.util.ArrayList;
 
 import Debrief.GUI.Frames.Application;
+import MWC.GUI.ToolParent;
 import MWC.Utilities.ReaderWriter.XML.LayerHandlerExtension;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 /*******************************************************************************
- * Debrief - the Open Source Maritime Analysis Application
- * http://debrief.info
- *  
+ * Debrief - the Open Source Maritime Analysis Application http://debrief.info
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the Eclipse Public License v1.0
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
+abstract public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader {
 
-abstract public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
-{
+	private static ArrayList<LayerHandlerExtension> _additionalHandlers;
 
-  private static ArrayList<LayerHandlerExtension> _additionalHandlers;
-  private final Debrief.GUI.Frames.Application _parent;
-  private Debrief.GUI.Frames.Session _session;
-  //  private MWC.Algorithms.PlainProjection _projection;
+	public static void addAdditionalHandler(final LayerHandlerExtension handler) {
+		if (_additionalHandlers == null) {
+			_additionalHandlers = new ArrayList<LayerHandlerExtension>();
+		}
+		_additionalHandlers.add(handler);
+	}
 
-  public SessionHandler(final Debrief.GUI.Frames.Application theDestination,
-                        final Debrief.GUI.Frames.Session theSession,
-                        final String fileName)
-  {
-    // inform our parent what type of class we are
-    super("session");
+	public static void exportThis(final Debrief.GUI.Frames.Session session, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc) {
+		final org.w3c.dom.Element eSession = doc.createElement("session");
 
-    MWC.GUI.Layers _theLayers = null;
+		// now the Layers
+		DebriefLayersHandler.exportThis(session, eSession, doc);
 
-    _parent = theDestination;
+		// now the projection
+		final Debrief.GUI.Views.PlainView pl = session.getCurrentView();
+		if (pl instanceof Debrief.GUI.Views.AnalysisView) {
+			final Debrief.GUI.Views.AnalysisView av = (Debrief.GUI.Views.AnalysisView) pl;
+			ProjectionHandler.exportProjection(av.getChart().getCanvas().getProjection(), eSession, doc);
+		}
 
-    // check if we are creating a fresh session
-    if (theSession == null)
-      _session = new Debrief.GUI.Frames.Swing.SwingSession(_parent, _parent.getClipboard(), null);
-    else
-      _session = theSession;
+		// now the GUI
+		GUIHandler.exportThis(session, eSession, doc);
 
-    // do we know the fileName?
-    if (fileName != null)
-    {
-      // has it already been set?
-      _session.setFileName(fileName);
-    }
+		// send out the data
+		parent.appendChild(eSession);
+	}
 
-    // and get the layers object for the session
-    _theLayers = _session.getData();
+	private final Debrief.GUI.Frames.Application _parent;
 
-    // define our handlers
-    addHandler(new ProjectionHandler(_session));
-    addHandler(new GUIHandler(_session));
-    
-    // create a layers handler - which we may wish to modify
-    final DebriefLayersHandler layersHandler = new DebriefLayersHandler(_theLayers);
+	private Debrief.GUI.Frames.Session _session;
+	// private MWC.Algorithms.PlainProjection _projection;
 
-    // see if we have any other handlers to add
-    if(_additionalHandlers != null)
-    {
-      for (LayerHandlerExtension thisE : _additionalHandlers)
-      {
-        // just double check taht it's an MWCXMLReader object
-        if (thisE instanceof MWCXMLReader)
-        {
-          // tell it about the top level layers object
-          thisE.setLayers(_theLayers);
+	public SessionHandler(final Debrief.GUI.Frames.Application theDestination,
+			final Debrief.GUI.Frames.Session theSession, final String fileName) {
+		// inform our parent what type of class we are
+		super("session");
 
-          // and remmber it
-          layersHandler.addHandler((MWCXMLReader) thisE);
-        }
-        else
-        {
-          Application.logError2(Application.ERROR,
-              "The layer handler we're read in is not of the corect type: "
-                  + thisE, null);
-        }
-      }
-    }
+		MWC.GUI.Layers _theLayers = null;
 
-    // ok, now actually store it
-    addHandler(layersHandler);
-  }
+		_parent = theDestination;
 
-  public static void addAdditionalHandler(final LayerHandlerExtension handler)
-  {
-    if(_additionalHandlers == null)
-    {
-      _additionalHandlers = new ArrayList<LayerHandlerExtension>();
-    }
-    _additionalHandlers.add(handler);
-  }
-  
-  public final void elementClosed()
-  {
-    // session is complete
-    addSession(_session);
+		// check if we are creating a fresh session
+		if (theSession == null)
+			_session = new Debrief.GUI.Frames.Swing.SwingSession(_parent, _parent.getClipboard(), null);
+		else
+			_session = theSession;
 
-    _session = null;
+		// do we know the fileName?
+		if (fileName != null) {
+			// has it already been set?
+			_session.setFileName(fileName);
+		}
 
-  }
+		// and get the layers object for the session
+		_theLayers = _session.getData();
 
-  abstract public void addSession(Debrief.GUI.Frames.Session data);
+		// define our handlers
+		addHandler(new ProjectionHandler(_session));
+		addHandler(new GUIHandler(_session));
 
-  public static void exportThis(final Debrief.GUI.Frames.Session session, final org.w3c.dom.Element parent,
-                                final org.w3c.dom.Document doc)
-  {
-    final org.w3c.dom.Element eSession = doc.createElement("session");
+		// create a layers handler - which we may wish to modify
+		final DebriefLayersHandler layersHandler = new DebriefLayersHandler(_theLayers);
 
-    // now the Layers
-    DebriefLayersHandler.exportThis(session, eSession, doc);
+		// see if we have any other handlers to add
+		if (_additionalHandlers != null) {
+			for (final LayerHandlerExtension thisE : _additionalHandlers) {
+				// just double check taht it's an MWCXMLReader object
+				if (thisE instanceof MWCXMLReader) {
+					// tell it about the top level layers object
+					thisE.setLayers(_theLayers);
 
-    // now the projection
-    final Debrief.GUI.Views.PlainView pl = session.getCurrentView();
-    if (pl instanceof Debrief.GUI.Views.AnalysisView)
-    {
-      final Debrief.GUI.Views.AnalysisView av = (Debrief.GUI.Views.AnalysisView) pl;
-      ProjectionHandler.exportProjection(av.getChart().getCanvas().getProjection(), eSession, doc);
-    }
+					// and remmber it
+					layersHandler.addHandler((MWCXMLReader) thisE);
+				} else {
+					Application.logError2(ToolParent.ERROR,
+							"The layer handler we're read in is not of the corect type: " + thisE, null);
+				}
+			}
+		}
 
-    // now the GUI
-    GUIHandler.exportThis(session, eSession, doc);
+		// ok, now actually store it
+		addHandler(layersHandler);
+	}
 
-    // send out the data
-    parent.appendChild(eSession);
-  }
+	abstract public void addSession(Debrief.GUI.Frames.Session data);
+
+	@Override
+	public final void elementClosed() {
+		// session is complete
+		addSession(_session);
+
+		_session = null;
+
+	}
 
 }

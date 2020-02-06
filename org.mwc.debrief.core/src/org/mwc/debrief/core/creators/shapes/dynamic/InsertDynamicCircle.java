@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.debrief.core.creators.shapes.dynamic;
@@ -29,28 +29,20 @@ import MWC.GenericData.WorldLocation;
  * @author Ayesha
  *
  */
-public class InsertDynamicCircle extends
-    InsertDynamicShape<DynamicCircleBoundsPage>
-{
-  @Override
-  protected CoreDynamicShapeWizard<DynamicCircleBoundsPage> getWizard(
-      final Date startDate, final Date endDate, final WorldLocation center)
-  {
-    return new CoreDynamicShapeWizard<DynamicCircleBoundsPage>("Circle",
-        startDate, endDate)
-    {
-      @Override
-      protected DynamicCircleBoundsPage getBoundsPage()
-      {
-        return new DynamicCircleBoundsPage(
-            DynamicShapeBaseWizardPage.BOUNDS_PAGE, center);
-      }
+public class InsertDynamicCircle extends InsertDynamicShape<DynamicCircleBoundsPage> {
+	@Override
+	protected CoreDynamicShapeWizard<DynamicCircleBoundsPage> getWizard(final Date startDate, final Date endDate,
+			final WorldLocation center) {
+		return new CoreDynamicShapeWizard<DynamicCircleBoundsPage>("Circle", startDate, endDate) {
+			@Override
+			protected DynamicCircleBoundsPage getBoundsPage() {
+				return new DynamicCircleBoundsPage(DynamicShapeBaseWizardPage.BOUNDS_PAGE, center);
+			}
 
-      @Override
-      protected PlainShape getShape(DynamicCircleBoundsPage page)
-      {
-        return new CircleShape(page.getCenter(), page.getRadius());
-      }
-    };
-  }
+			@Override
+			protected PlainShape getShape(final DynamicCircleBoundsPage page) {
+				return new CircleShape(page.getCenter(), page.getRadius());
+			}
+		};
+	}
 }

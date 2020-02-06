@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.cmap.grideditor.interpolation.location;
@@ -19,7 +19,6 @@ import org.mwc.cmap.gridharness.data.GriddableItemDescriptor;
 
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GenericData.WorldLocation;
-
 import flanagan.interpolation.CubicSpline;
 
 public class CubicLocationInterpolator extends AbstractLocationInterpolator {
@@ -46,10 +45,12 @@ public class CubicLocationInterpolator extends AbstractLocationInterpolator {
 		myLongitudeWorker = new CubicSpline(millisecs.clone(), longitudes);
 	}
 
+	@Override
 	public boolean canInterpolate(final TimeStampedDataItem item) {
 		return myLatitudeWorker != null && myLongitudeWorker != null;
 	}
 
+	@Override
 	public Object getInterpolatedValue(final TimeStampedDataItem item) {
 		final double millis = extractMillis(item);
 		final double latitude = myLatitudeWorker.interpolate(millis);

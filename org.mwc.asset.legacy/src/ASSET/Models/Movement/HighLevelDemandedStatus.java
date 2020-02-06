@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package ASSET.Models.Movement;
@@ -22,335 +22,293 @@ import MWC.GenericData.WorldPath;
 import MWC.GenericData.WorldSpeed;
 
 /**
- * Created by IntelliJ IDEA.
- * User: Ian.Mayo
- * Date: 19-Aug-2003
- * Time: 14:52:26
- * To change this template use Options | File Templates.
+ * Created by IntelliJ IDEA. User: Ian.Mayo Date: 19-Aug-2003 Time: 14:52:26 To
+ * change this template use Options | File Templates.
  */
-public class HighLevelDemandedStatus extends DemandedStatus
-{
+public class HighLevelDemandedStatus extends DemandedStatus {
 
-  /**********************************************************************
-   * member variables
-   *********************************************************************/
+	/**********************************************************************
+	 * member variables
+	 *********************************************************************/
 
-  /**
-   * the path of points we want to follow
-   */
-  private WorldPath _myPath;
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	static public class HighLevelDemStatTest extends SupportTesting {
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-  /**
-   * the current location we are heading for
-   */
-  private int _currentTarget = 0;
+		public HighLevelDemStatTest(final String val) {
+			super(val);
+		}
 
-  /**
-   * the visit strategy we employ
-   */
-  private WaypointVisitor _visitType;
+		public void testNextTarget() {
+			final WorldLocation wa = new WorldLocation(1, 0, 0);
+			final WorldLocation wb = new WorldLocation(2, 0, 0);
+			final WorldLocation wc = new WorldLocation(3, 0, 0);
+			final WorldLocation wd = new WorldLocation(4, 0, 0);
+			final WorldLocation we = new WorldLocation(5, 0, 0);
+			final WorldLocation wf = new WorldLocation(6, 0, 0);
+			final WorldLocation wg = new WorldLocation(7, 0, 0);
 
-  /**
-   * location index to mark that path is complete
-   */
-  public static final int PATH_COMPLETE = -1;
+			final WorldPath wp = new WorldPath();
+			wp.addPoint(wa);
+			wp.addPoint(wb);
+			wp.addPoint(wc);
+			wp.addPoint(wd);
+			wp.addPoint(we);
+			wp.addPoint(wf);
+			wp.addPoint(wg);
 
-  /**
-   * whether to follow through points in reverse
-   */
-  private boolean _runInReverse = false;
+			final HighLevelDemandedStatus hl = new HighLevelDemandedStatus(12, 0, 2, wp, null, null);
+			hl.setRunInReverse(false);
 
-  /**
-   * an (optional) speed to travel at
-   */
-  private WorldSpeed _demSpeed = null;
+			WorldLocation res = hl.getCurrentTarget();
+			assertEquals("returned current target", wc, res);
 
-  /**
-   * *******************************************************************
-   * constructors
-   * *******************************************************************
-   */
-  public HighLevelDemandedStatus(final long id, final long time)
-  {
-    super(id, time);
-  }
+			res = hl.getNextTarget();
+			assertEquals("returned next target", wd, res);
 
-  public HighLevelDemandedStatus(final long id, final long time, HighLevelDemandedStatus original)
-  {
-    super(id, time);
-    _myPath = original.getPath();
-  }
+			// switch us into reverse
+			hl.setRunInReverse(true);
+			res = hl.getNextTarget();
+			assertEquals("returned next target", wb, res);
 
-  public HighLevelDemandedStatus(final long id, HighLevelDemandedStatus original)
-  {
-    super(id, original.getTime());
-    _myPath = original.getPath();
-  }
+			// and forwards again
+			hl.setRunInReverse(false);
 
+			// do the next waypoint
+			hl.nextWaypointVisited();
 
-  /**
-   * constructor to build this path
-   *
-   * @param currentTarget the current target to head for (or null if the first one)
-   * @param myPath        the path of points to follow
-   * @param visitType     the type of visiting process we use
-   */
-  public HighLevelDemandedStatus(final long id,
-                                 final long time,
-                                 int currentTarget,
-                                 WorldPath myPath,
-                                 WaypointVisitor visitType,
-                                 WorldSpeed demSpeed)
-  {
-    this(id, time);
-    this._currentTarget = currentTarget;
-    this._myPath = myPath;
-    this._visitType = visitType;
-    this._demSpeed = demSpeed;
-  }
+			res = hl.getCurrentTarget();
+			assertEquals("returned current target", wd, res);
 
-  public WorldLocation getCurrentTarget()
-  {
-    final WorldLocation res;
+			res = hl.getNextTarget();
+			assertEquals("returned next target", we, res);
 
-    if (_currentTarget == PATH_COMPLETE)
-    {
-      res = null;
-    }
-    else
-      res = _myPath.getLocationAt(_currentTarget);
+			// do the next few waypoint
+			hl.nextWaypointVisited();
+			hl.nextWaypointVisited();
+			hl.nextWaypointVisited();
 
-    return res;
-  }
+			res = hl.getCurrentTarget();
+			assertEquals("returned current target", wg, res);
 
-  /**
-   * retrieve the waypoint we head for after the current one.
-   * (of particular relevance when doing a MakeWaypoint manoeuvre)
-   *
-   * @return not the current target, but the one after (or null)
-   */
-  public WorldLocation getNextTarget()
-  {
-    WorldLocation res = null;
+			res = hl.getNextTarget();
+			assertEquals("returned next target", null, res);
 
-    // have we finished?
-    if (_currentTarget != PATH_COMPLETE)
-    {
-      if (_runInReverse)
-      {
-        if (_currentTarget != 0)
-          res = _myPath.getLocationAt(_currentTarget - 1);
-      }
-      else
-      {
-        if (_currentTarget != _myPath.getPoints().size() - 1)
-        {
-          res = _myPath.getLocationAt(_currentTarget + 1);
-        }
-      }
-    }
+			// and fall of fthe plot
+			hl.nextWaypointVisited();
 
-    return res;
-  }
+			res = hl.getCurrentTarget();
+			assertEquals("returned current target", null, res);
+			res = hl.getNextTarget();
+			assertEquals("returned next target", null, res);
 
-  /**
-   * set the current target we are heading for (zero-indexed)
-   *
-   * @param currentTarget
-   */
-  public void setCurrentTargetIndex(int currentTarget)
-  {
-    this._currentTarget = currentTarget;
-  }
+			// now go into reverse
+			hl.setCurrentTargetIndex(3);
+			hl.setRunInReverse(true);
 
-  /**
-   * the current target we are heading for (zero-indexed)
-   *
-   * @return
-   */
-  public int getCurrentTargetIndex()
-  {
-    return _currentTarget;
-  }
+			res = hl.getCurrentTarget();
+			assertEquals("returned current target", wd, res);
+			res = hl.getNextTarget();
+			assertEquals("returned next target", wc, res);
 
-  public void nextWaypointVisited()
-  {
-    if (_runInReverse)
-    {
-      _currentTarget--;
+			// do the next few waypoint
+			hl.nextWaypointVisited();
+			hl.nextWaypointVisited();
+			hl.nextWaypointVisited();
 
-      // have we passed the end of our list of locaitgons?
-      if (_currentTarget < 0)
-      {
-        // yes - mark path complete
-        _currentTarget = PATH_COMPLETE;
-      }
+			res = hl.getCurrentTarget();
+			assertEquals("returned current target", wa, res);
+			res = hl.getNextTarget();
+			assertEquals("returned next target", null, res);
 
-    }
-    else
-    {
-      _currentTarget++;
+			// and fall of fthe plot
+			hl.nextWaypointVisited();
 
-      // have we passed the end of our list of locaitgons?
-      if (_currentTarget >= _myPath.getPoints().size())
-      {
-        // yes - mark path complete
-        _currentTarget = PATH_COMPLETE;
-      }
-    }
+			res = hl.getCurrentTarget();
+			assertEquals("returned current target", null, res);
+			res = hl.getNextTarget();
+			assertEquals("returned next target", null, res);
 
-  }
+		}
+	}
 
-  public WorldPath getPath()
-  {
-    return _myPath;
-  }
+	/**
+	 * location index to mark that path is complete
+	 */
+	public static final int PATH_COMPLETE = -1;
 
-  public boolean getRunInReverse()
-  {
-    return _runInReverse;
-  }
+	/**
+	 * the path of points we want to follow
+	 */
+	private WorldPath _myPath;
 
-  public void setRunInReverse(boolean runInReverse)
-  {
-    this._runInReverse = runInReverse;
-  }
+	/**
+	 * the current location we are heading for
+	 */
+	private int _currentTarget = 0;
 
-  public void setPath(WorldPath myPath)
-  {
-    this._myPath = myPath;
-  }
+	/**
+	 * the visit strategy we employ
+	 */
+	private WaypointVisitor _visitType;
 
-  public WaypointVisitor getVisitType()
-  {
-    return _visitType;
-  }
+	/**
+	 * whether to follow through points in reverse
+	 */
+	private boolean _runInReverse = false;
 
-  public void setVisitType(WaypointVisitor visitType)
-  {
-    this._visitType = visitType;
-  }
+	/**
+	 * an (optional) speed to travel at
+	 */
+	private WorldSpeed _demSpeed = null;
 
-  public int size()
-  {
-    return _myPath.size();
-  }
+	public HighLevelDemandedStatus(final long id, final HighLevelDemandedStatus original) {
+		super(id, original.getTime());
+		_myPath = original.getPath();
+	}
 
-  public WorldSpeed getSpeed()
-  {
-    return _demSpeed;
-  }
+	/**
+	 * *******************************************************************
+	 * constructors
+	 * *******************************************************************
+	 */
+	public HighLevelDemandedStatus(final long id, final long time) {
+		super(id, time);
+	}
 
-  public void setSpeed(WorldSpeed _demSpeed)
-  {
-    this._demSpeed = _demSpeed;
-  }
+	public HighLevelDemandedStatus(final long id, final long time, final HighLevelDemandedStatus original) {
+		super(id, time);
+		_myPath = original.getPath();
+	}
 
+	/**
+	 * constructor to build this path
+	 *
+	 * @param currentTarget the current target to head for (or null if the first
+	 *                      one)
+	 * @param myPath        the path of points to follow
+	 * @param visitType     the type of visiting process we use
+	 */
+	public HighLevelDemandedStatus(final long id, final long time, final int currentTarget, final WorldPath myPath,
+			final WaypointVisitor visitType, final WorldSpeed demSpeed) {
+		this(id, time);
+		this._currentTarget = currentTarget;
+		this._myPath = myPath;
+		this._visitType = visitType;
+		this._demSpeed = demSpeed;
+	}
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  static public class HighLevelDemStatTest extends SupportTesting
-  {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+	public WorldLocation getCurrentTarget() {
+		final WorldLocation res;
 
-    public HighLevelDemStatTest(final String val)
-    {
-      super(val);
-    }
+		if (_currentTarget == PATH_COMPLETE) {
+			res = null;
+		} else
+			res = _myPath.getLocationAt(_currentTarget);
 
-    public void testNextTarget()
-    {
-      WorldLocation wa = new WorldLocation(1, 0, 0);
-      WorldLocation wb = new WorldLocation(2, 0, 0);
-      WorldLocation wc = new WorldLocation(3, 0, 0);
-      WorldLocation wd = new WorldLocation(4, 0, 0);
-      WorldLocation we = new WorldLocation(5, 0, 0);
-      WorldLocation wf = new WorldLocation(6, 0, 0);
-      WorldLocation wg = new WorldLocation(7, 0, 0);
+		return res;
+	}
 
-      WorldPath wp = new WorldPath();
-      wp.addPoint(wa);
-      wp.addPoint(wb);
-      wp.addPoint(wc);
-      wp.addPoint(wd);
-      wp.addPoint(we);
-      wp.addPoint(wf);
-      wp.addPoint(wg);
+	/**
+	 * the current target we are heading for (zero-indexed)
+	 *
+	 * @return
+	 */
+	public int getCurrentTargetIndex() {
+		return _currentTarget;
+	}
 
-      HighLevelDemandedStatus hl = new HighLevelDemandedStatus(12, 0, 2, wp, null, null);
-      hl.setRunInReverse(false);
+	/**
+	 * retrieve the waypoint we head for after the current one. (of particular
+	 * relevance when doing a MakeWaypoint manoeuvre)
+	 *
+	 * @return not the current target, but the one after (or null)
+	 */
+	public WorldLocation getNextTarget() {
+		WorldLocation res = null;
 
-      WorldLocation res = hl.getCurrentTarget();
-      assertEquals("returned current target", wc, res);
+		// have we finished?
+		if (_currentTarget != PATH_COMPLETE) {
+			if (_runInReverse) {
+				if (_currentTarget != 0)
+					res = _myPath.getLocationAt(_currentTarget - 1);
+			} else {
+				if (_currentTarget != _myPath.getPoints().size() - 1) {
+					res = _myPath.getLocationAt(_currentTarget + 1);
+				}
+			}
+		}
 
-      res = hl.getNextTarget();
-      assertEquals("returned next target", wd, res);
+		return res;
+	}
 
-      // switch us into reverse
-      hl.setRunInReverse(true);
-      res = hl.getNextTarget();
-      assertEquals("returned next target", wb, res);
+	public WorldPath getPath() {
+		return _myPath;
+	}
 
-      // and forwards again
-      hl.setRunInReverse(false);
+	public boolean getRunInReverse() {
+		return _runInReverse;
+	}
 
-      // do the next waypoint
-      hl.nextWaypointVisited();
+	public WorldSpeed getSpeed() {
+		return _demSpeed;
+	}
 
-      res = hl.getCurrentTarget();
-      assertEquals("returned current target", wd, res);
+	public WaypointVisitor getVisitType() {
+		return _visitType;
+	}
 
-      res = hl.getNextTarget();
-      assertEquals("returned next target", we, res);
+	public void nextWaypointVisited() {
+		if (_runInReverse) {
+			_currentTarget--;
 
-      // do the next few waypoint
-      hl.nextWaypointVisited();
-      hl.nextWaypointVisited();
-      hl.nextWaypointVisited();
+			// have we passed the end of our list of locaitgons?
+			if (_currentTarget < 0) {
+				// yes - mark path complete
+				_currentTarget = PATH_COMPLETE;
+			}
 
-      res = hl.getCurrentTarget();
-      assertEquals("returned current target", wg, res);
+		} else {
+			_currentTarget++;
 
-      res = hl.getNextTarget();
-      assertEquals("returned next target", null, res);
+			// have we passed the end of our list of locaitgons?
+			if (_currentTarget >= _myPath.getPoints().size()) {
+				// yes - mark path complete
+				_currentTarget = PATH_COMPLETE;
+			}
+		}
 
-      // and fall of fthe plot
-      hl.nextWaypointVisited();
+	}
 
-      res = hl.getCurrentTarget();
-      assertEquals("returned current target", null, res);
-      res = hl.getNextTarget();
-      assertEquals("returned next target", null, res);
+	/**
+	 * set the current target we are heading for (zero-indexed)
+	 *
+	 * @param currentTarget
+	 */
+	public void setCurrentTargetIndex(final int currentTarget) {
+		this._currentTarget = currentTarget;
+	}
 
-      // now go into reverse
-      hl.setCurrentTargetIndex(3);
-      hl.setRunInReverse(true);
+	public void setPath(final WorldPath myPath) {
+		this._myPath = myPath;
+	}
 
-      res = hl.getCurrentTarget();
-      assertEquals("returned current target", wd, res);
-      res = hl.getNextTarget();
-      assertEquals("returned next target", wc, res);
+	public void setRunInReverse(final boolean runInReverse) {
+		this._runInReverse = runInReverse;
+	}
 
-      // do the next few waypoint
-      hl.nextWaypointVisited();
-      hl.nextWaypointVisited();
-      hl.nextWaypointVisited();
+	public void setSpeed(final WorldSpeed _demSpeed) {
+		this._demSpeed = _demSpeed;
+	}
 
-      res = hl.getCurrentTarget();
-      assertEquals("returned current target", wa, res);
-      res = hl.getNextTarget();
-      assertEquals("returned next target", null, res);
+	public void setVisitType(final WaypointVisitor visitType) {
+		this._visitType = visitType;
+	}
 
-      // and fall of fthe plot
-      hl.nextWaypointVisited();
-
-      res = hl.getCurrentTarget();
-      assertEquals("returned current target", null, res);
-      res = hl.getNextTarget();
-      assertEquals("returned next target", null, res);
-
-    }
-  }
+	public int size() {
+		return _myPath.size();
+	}
 
 }

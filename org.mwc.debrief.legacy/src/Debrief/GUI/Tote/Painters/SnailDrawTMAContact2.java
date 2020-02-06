@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 package Debrief.GUI.Tote.Painters;
 
@@ -45,33 +45,29 @@ import Debrief.Wrappers.TMAContactWrapper;
 import MWC.GenericData.Watchable;
 
 /**
- * Class to perform custom plotting of tma solution data, when in a Snail-mode. (this may include
- * Snail-mode or relative-mode).
+ * Class to perform custom plotting of tma solution data, when in a Snail-mode.
+ * (this may include Snail-mode or relative-mode).
  */
-public final class SnailDrawTMAContact2 extends SnailDrawTacticalContact2
-{
+public final class SnailDrawTMAContact2 extends SnailDrawTacticalContact2 {
 
-  ////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////
-  public SnailDrawTMAContact2(final SnailDrawFix2 plotter)
-  {
-    _fixPlotter = plotter;
-  }
+	////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////
+	public SnailDrawTMAContact2(final SnailDrawFix2 plotter) {
+		_fixPlotter = plotter;
+	}
 
-  ///////////////////////////////////
-  // member functions
-  //////////////////////////////////
+	///////////////////////////////////
+	// member functions
+	//////////////////////////////////
 
-  @Override
-  public final boolean canPlot(final Watchable wt)
-  {
-    boolean res = false;
+	@Override
+	public final boolean canPlot(final Watchable wt) {
+		boolean res = false;
 
-    if (wt instanceof TMAContactWrapper)
-    {
-      res = true;
-    }
-    return res;
-  }
+		if (wt instanceof TMAContactWrapper) {
+			res = true;
+		}
+		return res;
+	}
 }

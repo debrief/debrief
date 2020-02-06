@@ -1,17 +1,17 @@
 /******************************************************************************
  * 	Freeais.org
  * 	http://www.freeais.org		info@freeais.org
- * 	
- *  Copyright (c) 2007 
- *  
+ *
+ *  Copyright (c) 2007
+ *
  * 		ynnor systems GmbH
  * 		Mundsburger Damm 45
  * 		22087 Hamburg
  * 		Germany
- * 
+ *
  * 		Alexander Lotter	lotter@ynnor.de
  * 		David Schmitz		schmitz@ynnor.de
- * 
+ *
  *	This file is part of Freeais.org.
  *
  *  Freeais.org is free software; you can redistribute it and/or modify
@@ -26,26 +26,24 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
+ *
  ******************************************************************************/
 
 package Debrief.ReaderWriter.ais;
 
 import java.sql.Timestamp;
 
-
 /**
  * This class represents an AIS position report
- * 
+ *
  * @author David Schmitz
  * @author Alexander Lotter
- * 
+ *
  */
 public class AISPositionA implements IAISMessage, IAISDecodable, Cloneable, IPositionMessage {
 
-
 	private int msgId;
-	
+
 	private int repeatIndicator;
 
 	private int mmsi;
@@ -57,8 +55,8 @@ public class AISPositionA implements IAISMessage, IAISDecodable, Cloneable, IPos
 	private double rot;
 
 	/**
-	 * speed over ground in knots range 0-102.2 where 102.2knots denotes
-	 * 102.2knots and more
+	 * speed over ground in knots range 0-102.2 where 102.2knots denotes 102.2knots
+	 * and more
 	 */
 	private double sog;
 
@@ -83,22 +81,22 @@ public class AISPositionA implements IAISMessage, IAISDecodable, Cloneable, IPos
 
 	/**
 	 * This is the default constructor of class AISPosition.
-	 * 
+	 *
 	 * @param msgId
 	 * @param repeatIndicator
 	 * @param mmsi
-	 * @param navState	navigation state
-	 * @param rot	rate of turn
-	 * @param sog	speed over ground
+	 * @param navState        navigation state
+	 * @param rot             rate of turn
+	 * @param sog             speed over ground
 	 * @param longitude
 	 * @param latitude
-	 * @param cog	course over ground
+	 * @param cog             course over ground
 	 * @param trueHeading
 	 * @param msgTimestamp
 	 */
-	public AISPositionA(int msgId, int repeatIndicator, int mmsi, int navState, double rot,
-			double sog, double longitude, double latitude, double cog,
-			int trueHeading, Timestamp msgTimestamp) {
+	public AISPositionA(final int msgId, final int repeatIndicator, final int mmsi, final int navState,
+			final double rot, final double sog, final double longitude, final double latitude, final double cog,
+			final int trueHeading, final Timestamp msgTimestamp) {
 		this.msgId = msgId;
 		this.repeatIndicator = repeatIndicator;
 		this.mmsi = mmsi;
@@ -111,134 +109,88 @@ public class AISPositionA implements IAISMessage, IAISDecodable, Cloneable, IPos
 		this.trueHeading = trueHeading;
 		this.msgTimestamp = msgTimestamp;
 	}
-	
-	/**
-	 * Simple getter for course over ground COG.
-	 * @return COG
-	 */
+
 	@Override
-	public double getCog() {
-		return cog;
-	}
-	
-	/**
-	 * Simple getter for MSG ID
-	 * @return msgid
-	 */
-	@Override
-	public int getMsgId() {
-		return msgId;
+	public AISPositionA clone() {
+		try {
+			return (AISPositionA) super.clone();
+		}
+
+		catch (final CloneNotSupportedException e) {
+			// this shouldn't happen, since we are Cloneable
+			throw new InternalError();
+		}
 	}
 
 	/**
-	 * Simple getter for repeat indicator
-	 * @return repeatIndicator
-	 */
-	public int getRepeatIndicator() {
-		return repeatIndicator;
-	}
-	
-	/**
-	 * Simple getter for latitude.
-	 * @return latitude
+	 * Parse decoded bytes for the position data
+	 *
+	 * Message 1,2,3 position reports ITU-R M.1371-1
+	 *
+	 * @param decBytes
+	 * @throws AISParseException
 	 */
 	@Override
-	public double getLatitude() {
-		return latitude;
-	}
+	public IAISMessage decode(final String decBytes) throws AISParseException {
 
-	/**
-	 * Simple getter for longitude.
-	 * @return longitude
-	 */
-	@Override
-	public double getLongitude() {
-		return longitude;
-	}
+		if (decBytes.length() < 137) {
+			throw new AISParseException(AISParseException.NOT_CONSISTENT_DECODED_STRING);
+		}
+		/* Possition Reports Message ID 1,2,3 bits 0-5 */
+		this.msgId = AISDecoder.getDecValueByBinStr(decBytes.substring(0, 6), false);
 
-	@Override
-	public Timestamp getMsgTimestamp() {
-		return msgTimestamp;
-	}
+		/* repeat indicator, bits 6-7 */
+		this.repeatIndicator = AISDecoder.getDecValueByBinStr(decBytes.substring(6, 8), false);
 
-	/**
-	 * Simple getter for navigation state.
-	 * @return navState
-	 */
-	public int getNavState() {
-		return navState;
-	}
-	
-	/**
-	 * Simple getter for rate of turn.
-	 * @return ROT
-	 */
-	public double getRot() {
-		return rot;
-	}
+		/* user id mmsi bits 8-37 */
+		this.mmsi = AISDecoder.getDecValueByBinStr(decBytes.substring(8, 38), false);
 
-	/**
-	 * Simple getter for speed over ground.
-	 * @return SOG
-	 */
-	@Override
-	public double getSog() {
-		return sog;
-	}
+		/* navigational status bits 38-41 - 4 bits */
+		this.navState = AISDecoder.getDecValueByBinStr(decBytes.substring(38, 42), false);
 
-	@Override
-	public int getTrueHeading() {
-		return trueHeading;
-	}
+		/* rate of turn bits 42-49 - 8 bits */
+		this.rot = AISDecoder.getDecValueByBinStr(decBytes.substring(42, 50), true);
 
-	@Override
-	public int getMmsi() {
-		return mmsi;
-	}
+		/* speed over ground bits 50-59 - 10 bits */
+		this.sog = (AISDecoder.getDecValueByBinStr(decBytes.substring(50, 60), false) / 10.0);
 
-	@Override
-	public String toString(){
-		StringBuffer sBuffer = new StringBuffer();
-		sBuffer.append("AISPositionA\n");
-		sBuffer.append("MSGID\t\t" + this.msgId + "\n");
-		sBuffer.append("REPEAT IND\t" + this.repeatIndicator + "\n");
-		sBuffer.append("MMSI\t\t" + this.mmsi + "\n");
-		sBuffer.append("NAVSTATE\t" + this.navState + "\n");
-		sBuffer.append("ROT\t\t" + this.rot + "\n");
-		sBuffer.append("LONGITUDE\t" + this.longitude + "\n");
-		sBuffer.append("LATITUDE\t" + this.latitude + "\n");
-		sBuffer.append("COG\t\t" + this.cog + "\n");
-		sBuffer.append("HEADING\t\t" + this.trueHeading + "\n");
-		sBuffer.append("MSGTIMESTAMP\t" + this.msgTimestamp);
-		return sBuffer.toString();
-	}
-	
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		long temp;
-		temp = Double.doubleToLongBits(cog);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		temp = Double.doubleToLongBits(latitude);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		temp = Double.doubleToLongBits(longitude);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		result = prime * result + mmsi;
-		result = prime * result + msgId;
-		result = prime * result + ((msgTimestamp == null) ? 0 : msgTimestamp.hashCode());
-		result = prime * result + navState;
-		result = prime * result + repeatIndicator;
-		temp = Double.doubleToLongBits(rot);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		temp = Double.doubleToLongBits(sog);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		result = prime * result + trueHeading;
-		return result;
+		// bit 60 - position accuracy won't be read.
+
+		/* longitude bits 61-88 */
+		final int longitudeHour = AISDecoder.getDecValueByBinStr(decBytes.substring(61, 89), true);
+
+		this.longitude = (longitudeHour / 600000.0);
+
+		if (this.longitude > 180.0 || this.longitude < -180.0) {
+			throw new AISParseException(AISParseException.LONGITUDE_OUT_OF_RANGE + " " + longitude);
+		}
+
+		/* latitude bits 89-115 */
+		final int latitudeHour = AISDecoder.getDecValueByBinStr(decBytes.substring(89, 116), true);
+		this.latitude = (latitudeHour / 600000.0);
+		if (this.latitude > 90.0 || this.latitude < -90.0) {
+			throw new AISParseException(AISParseException.LATITUDE_OUT_OF_RANGE + " " + latitude);
+		}
+
+		/* COG bits 116-127 */
+		this.cog = (AISDecoder.getDecValueByBinStr(decBytes.substring(116, 128), false) / 10.0);
+
+		/* true heading bits 128-136 */
+		this.trueHeading = AISDecoder.getDecValueByBinStr(decBytes.substring(128, 137), false);
+
+//		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+//		this.msgTimestamp = new Timestamp(cal.getTimeInMillis());
+
+		// time stamp bits 137-143
+		final int secs = AISDecoder.getDecValueByBinStr(decBytes.substring(137, 143), false);
+		this.msgTimestamp = new Timestamp(secs * 1000);
+
+		// TODO: implement the rest bits
+		return this;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -274,85 +226,136 @@ public class AISPositionA implements IAISMessage, IAISDecodable, Cloneable, IPos
 		return true;
 	}
 
+	/**
+	 * Simple getter for course over ground COG.
+	 *
+	 * @return COG
+	 */
 	@Override
-	public AISPositionA clone() {
-		try {
-			return (AISPositionA) super.clone();
-		}
-
-		catch (CloneNotSupportedException e) {
-			// this shouldn't happen, since we are Cloneable
-			throw new InternalError();
-		}
+	public double getCog() {
+		return cog;
 	}
 
 	/**
-	 * Parse decoded bytes for the position data
-	 * 
-	 * Message 1,2,3 position reports ITU-R M.1371-1
-	 * 
-	 * @param decBytes
-	 * @throws AISParseException
+	 * Simple getter for latitude.
+	 *
+	 * @return latitude
 	 */
-	public IAISMessage decode(String decBytes) throws AISParseException {
+	@Override
+	public double getLatitude() {
+		return latitude;
+	}
 
-		if (decBytes.length() < 137) {
-			throw new AISParseException(
-					AISParseException.NOT_CONSISTENT_DECODED_STRING);
-		}
-		/* Possition Reports Message ID 1,2,3 bits 0-5 */
-		this.msgId = AISDecoder.getDecValueByBinStr(decBytes.substring(0, 6), false);
+	/**
+	 * Simple getter for longitude.
+	 *
+	 * @return longitude
+	 */
+	@Override
+	public double getLongitude() {
+		return longitude;
+	}
 
-		/* repeat indicator, bits 6-7 */
-		this.repeatIndicator = AISDecoder.getDecValueByBinStr(decBytes.substring(6, 8), false);
+	@Override
+	public int getMmsi() {
+		return mmsi;
+	}
 
-		/* user id mmsi bits 8-37 */
-		this.mmsi = AISDecoder.getDecValueByBinStr(decBytes.substring(8, 38), false);
+	/**
+	 * Simple getter for MSG ID
+	 *
+	 * @return msgid
+	 */
+	@Override
+	public int getMsgId() {
+		return msgId;
+	}
 
-		/* navigational status bits 38-41 - 4 bits */
-		this.navState = AISDecoder.getDecValueByBinStr(decBytes.substring(38, 42), false);
+	@Override
+	public Timestamp getMsgTimestamp() {
+		return msgTimestamp;
+	}
 
-		/* rate of turn bits 42-49 - 8 bits */
-		this.rot = AISDecoder.getDecValueByBinStr(decBytes.substring(42, 50), true);
+	/**
+	 * Simple getter for navigation state.
+	 *
+	 * @return navState
+	 */
+	public int getNavState() {
+		return navState;
+	}
 
-		/* speed over ground bits 50-59 - 10 bits */
-		this.sog = (AISDecoder.getDecValueByBinStr(decBytes.substring(50, 60), false) / 10.0);
-		
-		// bit 60 - position accuracy won't be read.
+	/**
+	 * Simple getter for repeat indicator
+	 *
+	 * @return repeatIndicator
+	 */
+	public int getRepeatIndicator() {
+		return repeatIndicator;
+	}
 
-		/* longitude bits 61-88 */
-		int longitudeHour = AISDecoder.getDecValueByBinStr(decBytes.substring(61, 89), true);
+	/**
+	 * Simple getter for rate of turn.
+	 *
+	 * @return ROT
+	 */
+	public double getRot() {
+		return rot;
+	}
 
-		this.longitude = (longitudeHour / 600000.0);
+	/**
+	 * Simple getter for speed over ground.
+	 *
+	 * @return SOG
+	 */
+	@Override
+	public double getSog() {
+		return sog;
+	}
 
-		if (this.longitude > 180.0 || this.longitude < -180.0)
-		{
-			throw new AISParseException(AISParseException.LONGITUDE_OUT_OF_RANGE + " " + longitude);
-		}
+	@Override
+	public int getTrueHeading() {
+		return trueHeading;
+	}
 
-		/* latitude bits 89-115 */
-		int latitudeHour = AISDecoder.getDecValueByBinStr(decBytes.substring(89, 116), true);
-		this.latitude = (latitudeHour / 600000.0);
-		if (this.latitude > 90.0 || this.latitude < -90.0)
-		{
-			throw new AISParseException(AISParseException.LATITUDE_OUT_OF_RANGE + " " + latitude);
-		}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		long temp;
+		temp = Double.doubleToLongBits(cog);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(latitude);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(longitude);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + mmsi;
+		result = prime * result + msgId;
+		result = prime * result + ((msgTimestamp == null) ? 0 : msgTimestamp.hashCode());
+		result = prime * result + navState;
+		result = prime * result + repeatIndicator;
+		temp = Double.doubleToLongBits(rot);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(sog);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + trueHeading;
+		return result;
+	}
 
-		/* COG bits 116-127 */
-		this.cog = (AISDecoder.getDecValueByBinStr(decBytes.substring(116, 128), false) / 10.0);
-		
-		/* true heading bits 128-136 */
-		this.trueHeading = AISDecoder.getDecValueByBinStr(decBytes.substring(128, 137), false);
-
-//		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-//		this.msgTimestamp = new Timestamp(cal.getTimeInMillis());
-		
-		// time stamp bits 137-143		
-		int secs = AISDecoder.getDecValueByBinStr(decBytes.substring(137, 143), false);
-		this.msgTimestamp = new Timestamp(secs * 1000);
-
-		
-		// TODO: implement the rest bits
-		return this;
+	@Override
+	public String toString() {
+		final StringBuffer sBuffer = new StringBuffer();
+		sBuffer.append("AISPositionA\n");
+		sBuffer.append("MSGID\t\t" + this.msgId + "\n");
+		sBuffer.append("REPEAT IND\t" + this.repeatIndicator + "\n");
+		sBuffer.append("MMSI\t\t" + this.mmsi + "\n");
+		sBuffer.append("NAVSTATE\t" + this.navState + "\n");
+		sBuffer.append("ROT\t\t" + this.rot + "\n");
+		sBuffer.append("LONGITUDE\t" + this.longitude + "\n");
+		sBuffer.append("LATITUDE\t" + this.latitude + "\n");
+		sBuffer.append("COG\t\t" + this.cog + "\n");
+		sBuffer.append("HEADING\t\t" + this.trueHeading + "\n");
+		sBuffer.append("MSGTIMESTAMP\t" + this.msgTimestamp);
+		return sBuffer.toString();
 	}
 }

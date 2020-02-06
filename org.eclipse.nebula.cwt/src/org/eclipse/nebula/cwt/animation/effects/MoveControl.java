@@ -28,11 +28,11 @@ public class MoveControl extends AbstractEffect {
 	 * @param onStop
 	 * @param onCancel
 	 */
-	public static void move(AnimationRunner runner, Control w, int x, int y,
-			int duration, IMovement movement, Runnable onStop, Runnable onCancel) {
-		Point oldSize = w.getLocation();
-		IEffect effect = new MoveControl(w, oldSize.x, x, oldSize.y, y,
-				duration, movement, onStop, onCancel);
+	@Deprecated
+	public static void move(final AnimationRunner runner, final Control w, final int x, final int y, final int duration,
+			final IMovement movement, final Runnable onStop, final Runnable onCancel) {
+		final Point oldSize = w.getLocation();
+		final IEffect effect = new MoveControl(w, oldSize.x, x, oldSize.y, y, duration, movement, onStop, onCancel);
 		runner.runEffect(effect);
 	}
 
@@ -40,9 +40,8 @@ public class MoveControl extends AbstractEffect {
 
 	Control control = null;
 
-	public MoveControl(Control control, int startX, int endX, int startY,
-			int endY, long lengthMilli, IMovement movement, Runnable onStop,
-			Runnable onCancel) {
+	public MoveControl(final Control control, final int startX, final int endX, final int startY, final int endY,
+			final long lengthMilli, final IMovement movement, final Runnable onStop, final Runnable onCancel) {
 		super(lengthMilli, movement, onStop, onCancel);
 
 		this.startX = startX;
@@ -58,21 +57,20 @@ public class MoveControl extends AbstractEffect {
 		this.control = control;
 	}
 
+	@Override
 	public void applyEffect(final long currentTime) {
 		if (!control.isDisposed()) {
-			control.setLocation(((int) (startX + stepX
-					* easingFunction.getValue((int) currentTime))),
-					((int) (startY + stepY
-							* easingFunction.getValue((int) currentTime))));
+			control.setLocation(((int) (startX + stepX * easingFunction.getValue((int) currentTime))),
+					((int) (startY + stepY * easingFunction.getValue((int) currentTime))));
 		}
-	}
-
-	public int getStartX() {
-		return startX;
 	}
 
 	public int getEnd() {
 		return endY;
+	}
+
+	public int getStartX() {
+		return startX;
 	}
 
 }

@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.cmap.grideditor.chart;
@@ -37,18 +37,67 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleInsets;
 
-public class ChartBuilder
-{
+public class ChartBuilder {
+
+	protected static class ColorRenderer extends RendererWithDynamicFeedback {
+
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+		private XYDataset _dataset;
+
+		@Override
+		public void drawItem(final Graphics2D g2, final XYItemRendererState state, final Rectangle2D dataArea,
+				final PlotRenderingInfo info, final XYPlot plot, final ValueAxis domainAxis, final ValueAxis rangeAxis,
+				final XYDataset dataset, final int series, final int item, final CrosshairState crosshairState,
+				final int pass) {
+			// capture the dataset - so we can plot color-sensitive items
+			_dataset = dataset;
+
+			// let the parent continue with the draw operation
+			super.drawItem(g2, state, dataArea, info, plot, domainAxis, rangeAxis, dataset, series, item,
+					crosshairState, pass);
+		}
+
+		@Override
+		public Paint getItemPaint(final int row, final int column) {
+			Paint res = null;
+			// capture (and type-cast) the dataset
+			if (_dataset instanceof TimeSeriesCollection) {
+				final TimeSeriesCollection collection = (TimeSeriesCollection) _dataset;
+				final TimeSeries series = collection.getSeries(row);
+				final TimeSeriesDataItem item = series.getDataItem(column);
+				if (item instanceof BackedTimeSeriesDataItem) {
+					final BackedTimeSeriesDataItem bs = (BackedTimeSeriesDataItem) item;
+					res = bs.getDomainItem().getColor();
+				}
+			} else if (_dataset instanceof XYSeriesCollection) {
+				final XYSeriesCollection collection = (XYSeriesCollection) _dataset;
+				final ScatteredXYSeries series = (ScatteredXYSeries) collection.getSeries(row);
+				final XYDataItem item = series.getDataItem(column);
+				if (item instanceof BackedXYDataItem) {
+					final BackedXYDataItem var = (BackedXYDataItem) item;
+					res = var.getDomainItem().getColor();
+				}
+			}
+
+			// did we find anything?
+			if (res == null)
+				res = lookupSeriesFillPaint(column);
+
+			return res;
+		}
+
+	}
 
 	private final ChartDataManager myManager;
 
-	public ChartBuilder(final ChartDataManager dataSetManager)
-	{
+	public ChartBuilder(final ChartDataManager dataSetManager) {
 		myManager = dataSetManager;
 	}
 
-	public JFreeChart buildChart()
-	{
+	public JFreeChart buildChart() {
 		final ValueAxis xAxis = myManager.createXAxis();
 		final ValueAxis yAxis = myManager.createYAxis();
 		final XYDataset data = myManager.getXYDataSet();
@@ -59,69 +108,9 @@ public class ChartBuilder
 		xyplot.setDomainGridlinePaint(Color.white);
 		xyplot.setRangeGridlinePaint(Color.white);
 		xyplot.setAxisOffset(new RectangleInsets(5, 5, 5, 5));
-		final JFreeChart result = new JFreeChart(myManager.getChartTitle(),
-				JFreeChart.DEFAULT_TITLE_FONT, xyplot, false);
+		final JFreeChart result = new JFreeChart(myManager.getChartTitle(), JFreeChart.DEFAULT_TITLE_FONT, xyplot,
+				false);
 		ChartUtilities.applyCurrentTheme(result);
 		return result;
-	}
-
-	protected static class ColorRenderer extends RendererWithDynamicFeedback
-	{
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		private XYDataset _dataset;
-		
-
-		public Paint getItemPaint(int row, int column)
-		{
-			Paint res = null;
-			// capture (and type-cast) the dataset
-			if(_dataset instanceof TimeSeriesCollection)
-			{
-				TimeSeriesCollection collection = (TimeSeriesCollection) _dataset;
-				TimeSeries series = collection.getSeries(row);
-				TimeSeriesDataItem item = series.getDataItem(column);
-				if(item instanceof BackedTimeSeriesDataItem)
-				{
-					BackedTimeSeriesDataItem bs = (BackedTimeSeriesDataItem) item;
-					res = bs.getDomainItem().getColor();
-				}
-			}
-			else if(_dataset instanceof XYSeriesCollection)
-			{
-				XYSeriesCollection collection = (XYSeriesCollection) _dataset;
-				ScatteredXYSeries series = (ScatteredXYSeries) collection.getSeries(row);
-				XYDataItem item = series.getDataItem(column);
-				if(item instanceof BackedXYDataItem)
-				{
-					BackedXYDataItem var = (BackedXYDataItem) item;
-					res = var.getDomainItem().getColor();
-				}
-			}
-			
-			// did we find anything?
-			if(res == null)
-				res = lookupSeriesFillPaint(column);
-			
-			return res;
-		}
-
-		@Override
-		public void drawItem(Graphics2D g2, XYItemRendererState state,
-				Rectangle2D dataArea, PlotRenderingInfo info, XYPlot plot,
-				ValueAxis domainAxis, ValueAxis rangeAxis, XYDataset dataset,
-				int series, int item, CrosshairState crosshairState, int pass)
-		{
-			// capture the dataset - so we can plot color-sensitive items
-			_dataset = dataset;
-
-			// let the parent continue with the draw operation
-			super.drawItem(g2, state, dataArea, info, plot, domainAxis, rangeAxis,
-					dataset, series, item, crosshairState, pass);
-		}
-
 	}
 }

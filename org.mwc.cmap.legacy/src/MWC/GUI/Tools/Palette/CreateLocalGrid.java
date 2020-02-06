@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: CreateLocalGrid.java,v $
@@ -65,21 +65,22 @@ package MWC.GUI.Tools.Palette;
 import MWC.GUI.Chart.Painters.LocalGridPainter;
 import MWC.GenericData.WorldLocation;
 
-public class CreateLocalGrid extends PlainCreate
-{
-  public CreateLocalGrid(final MWC.GUI.ToolParent theParent,
-                         final MWC.GUI.Properties.PropertiesPanel thePanel,
-                         final MWC.GUI.Layers theData,
-                         final BoundsProvider theChart)
-  {
-    super(theParent, thePanel, theData, theChart, "Local Grid", "images/local_grid_add.png");
-  }
+public class CreateLocalGrid extends PlainCreate {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-  protected MWC.GUI.Plottable createItem()
-  {
-    final WorldLocation theOrigin = new WorldLocation(getBounds().getViewport().getCentreAtSurface());
-    final LocalGridPainter res = new LocalGridPainter();
-    res.setOrigin(theOrigin);
-    return res;
-  }
+	public CreateLocalGrid(final MWC.GUI.ToolParent theParent, final MWC.GUI.Properties.PropertiesPanel thePanel,
+			final MWC.GUI.Layers theData, final BoundsProvider theChart) {
+		super(theParent, thePanel, theData, theChart, "Local Grid", "images/local_grid_add.png");
+	}
+
+	@Override
+	protected MWC.GUI.Plottable createItem() {
+		final WorldLocation theOrigin = new WorldLocation(getBounds().getViewport().getCentreAtSurface());
+		final LocalGridPainter res = new LocalGridPainter();
+		res.setOrigin(theOrigin);
+		return res;
+	}
 }

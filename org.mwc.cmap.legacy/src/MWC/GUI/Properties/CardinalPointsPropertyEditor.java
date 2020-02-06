@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.Properties;
@@ -74,63 +74,53 @@ package MWC.GUI.Properties;
 
 import java.beans.PropertyEditorSupport;
 
-public class CardinalPointsPropertyEditor extends PropertyEditorSupport implements DoNotUseTagEditorInPropertiesView
-{
+public class CardinalPointsPropertyEditor extends PropertyEditorSupport implements DoNotUseTagEditorInPropertiesView {
 
-  protected Integer _myHeading = 0;
+	protected Integer _myHeading = 0;
 
-  private String[] _myTags;
+	private String[] _myTags;
 
-  public String[] getTags()
-  {
-    if(_myTags == null)
-    {
-      _myTags = new String[8];
-      for(int i=0;i<8;i++)
-      {
-      	_myTags[i] = "" + (i * 45) + " \u00B0";
-      }
-    }
-    return _myTags;
-  }
+	@Override
+	public String getAsText() {
+		final String res = "" + _myHeading + " \u00B0";
+		return res;
+	}
 
-  public Object getValue()
-  {
-    return _myHeading;
-  }
+	@Override
+	public String[] getTags() {
+		if (_myTags == null) {
+			_myTags = new String[8];
+			for (int i = 0; i < 8; i++) {
+				_myTags[i] = "" + (i * 45) + " \u00B0";
+			}
+		}
+		return _myTags;
+	}
 
-  public void setValue(final Object p1)
-  {
-    if(p1 instanceof Integer)
-    {
-      _myHeading = (Integer)p1;
-    }
-    else if(p1 instanceof String)
-    {
-      final String val = (String) p1;
-      setAsText(val);
-    }
-    else if(p1 instanceof Double)
-    {
-    	final Double hrg = (Double) p1;
-    	_myHeading = hrg.intValue();
-    }
-  }
+	@Override
+	public Object getValue() {
+		return _myHeading;
+	}
 
-  public void setAsText(final String val)
-  {
-  	if(val != null)
-  	{
-  		final String[] toks = val.split(" ");
-  		final Integer intVal = Integer.parseInt(toks[0]);
-  		_myHeading = intVal;
-  	}
-  }
+	@Override
+	public void setAsText(final String val) {
+		if (val != null) {
+			final String[] toks = val.split(" ");
+			final Integer intVal = Integer.parseInt(toks[0]);
+			_myHeading = intVal;
+		}
+	}
 
-  public String getAsText()
-  {
-    final String res = "" + _myHeading+ " \u00B0";
-    return res;
-  }
+	@Override
+	public void setValue(final Object p1) {
+		if (p1 instanceof Integer) {
+			_myHeading = (Integer) p1;
+		} else if (p1 instanceof String) {
+			final String val = (String) p1;
+			setAsText(val);
+		} else if (p1 instanceof Double) {
+			final Double hrg = (Double) p1;
+			_myHeading = hrg.intValue();
+		}
+	}
 }
-

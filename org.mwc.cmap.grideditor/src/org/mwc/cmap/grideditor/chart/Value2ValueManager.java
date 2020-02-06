@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.cmap.grideditor.chart;
@@ -42,7 +42,8 @@ public class Value2ValueManager implements ChartDataManager {
 
 	private GriddableSeries myInput;
 
-	public Value2ValueManager(final GriddableItemDescriptor descriptor, final GriddableItemChartComponent xComponent, final GriddableItemChartComponent yComponent) {
+	public Value2ValueManager(final GriddableItemDescriptor descriptor, final GriddableItemChartComponent xComponent,
+			final GriddableItemChartComponent yComponent) {
 		myDescriptor = descriptor;
 		myXComponent = xComponent;
 		myYComponent = yComponent;
@@ -51,17 +52,16 @@ public class Value2ValueManager implements ChartDataManager {
 		mySeries = new ScatteredXYSeries("the-only-series");
 		myDataSet = new XYSeriesCollection(mySeries);
 	}
-	
-	protected GriddableSeries getInput() {
-		return myInput;
+
+	@Override
+	public void attach(final JFreeChartComposite chartPanel) {
+		//
 	}
 
-	public ValueAxis createXAxis() {
-		return createNumberAxis();
-	}
-
-	public ValueAxis createYAxis() {
-		return createNumberAxis();
+	private BackedXYDataItem createChartItem(final TimeStampedDataItem domainItem) {
+		final double xValue = myXComponent.getDoubleValue(domainItem);
+		final double yValue = myYComponent.getDoubleValue(domainItem);
+		return new BackedXYDataItem(xValue, yValue, domainItem);
 	}
 
 	private NumberAxis createNumberAxis() {
@@ -70,22 +70,46 @@ public class Value2ValueManager implements ChartDataManager {
 		return result;
 	}
 
+	@Override
+	public ValueAxis createXAxis() {
+		return createNumberAxis();
+	}
+
+	@Override
+	public ValueAxis createYAxis() {
+		return createNumberAxis();
+	}
+
+	@Override
+	public void detach(final JFreeChartComposite chartPanel) {
+		//
+	}
+
+	@Override
 	public String getChartTitle() {
 		return myTitle;
 	}
 
+	@Override
 	public GriddableItemDescriptor getDescriptor() {
 		return myDescriptor;
 	}
 
+	protected GriddableSeries getInput() {
+		return myInput;
+	}
+
+	@Override
 	public XYDataset getXYDataSet() {
 		return myDataSet;
 	}
 
+	@Override
 	public void handleItemAdded(final int index, final TimeStampedDataItem addedItem) {
 		mySeries.insertAt(index, createChartItem(addedItem));
 	}
 
+	@Override
 	public void handleItemChanged(final TimeStampedDataItem changedItem) {
 		final int index = myInput.getItems().indexOf(changedItem);
 		if (index < 0) {
@@ -109,26 +133,26 @@ public class Value2ValueManager implements ChartDataManager {
 		}
 	}
 
+	@Override
 	public void handleItemDeleted(final TimeStampedDataItem deletedItem) {
-	  // Note: we used to get the index of the deleted item. We don't any more.  So,
-	  // we've got to find the item ourselves
-	  
-	  final List<?> items = mySeries.getItems();
-	  int ctr = 0;
-	  for(final Object item: items)
-	  {
-	    final BackedXYDataItem data = (BackedXYDataItem) item;
-	    // does the stored item match ours?
-	    if(data.getDomainItem().equals(deletedItem))
-	    {
-	      mySeries.remove(ctr);
-	      break;
-	    }
-	    ctr++;
-	  }
-	  
+		// Note: we used to get the index of the deleted item. We don't any more. So,
+		// we've got to find the item ourselves
+
+		final List<?> items = mySeries.getItems();
+		int ctr = 0;
+		for (final Object item : items) {
+			final BackedXYDataItem data = (BackedXYDataItem) item;
+			// does the stored item match ours?
+			if (data.getDomainItem().equals(deletedItem)) {
+				mySeries.remove(ctr);
+				break;
+			}
+			ctr++;
+		}
+
 	}
 
+	@Override
 	public void setInput(final GriddableSeries input) {
 		myInput = input;
 		int index = 0;
@@ -136,20 +160,6 @@ public class Value2ValueManager implements ChartDataManager {
 			handleItemAdded(index, nextItem);
 			index++;
 		}
-	}
-
-	public void attach(final JFreeChartComposite chartPanel) {
-		//
-	}
-
-	public void detach(final JFreeChartComposite chartPanel) {
-		//
-	}
-
-	private BackedXYDataItem createChartItem(final TimeStampedDataItem domainItem) {
-		final double xValue = myXComponent.getDoubleValue(domainItem);
-		final double yValue = myYComponent.getDoubleValue(domainItem);
-		return new BackedXYDataItem(xValue, yValue, domainItem);
 	}
 
 }

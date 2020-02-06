@@ -1,40 +1,36 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package com.planetmayo.debrief.satc_rcp.ui.converters;
 
 import org.eclipse.core.databinding.conversion.IConverter;
 
-public class IntegerConverter implements IConverter
-{
+public class IntegerConverter implements IConverter {
 
 	@Override
-	public Object convert(Object obj)
-	{
+	public Object convert(final Object obj) {
 		return obj == null ? null : ((Number) obj).intValue();
 	}
 
 	@Override
-	public Object getFromType()
-	{
+	public Object getFromType() {
 		return Number.class;
 	}
 
 	@Override
-	public Object getToType()
-	{
+	public Object getToType() {
 		return Integer.class;
 	}
 }

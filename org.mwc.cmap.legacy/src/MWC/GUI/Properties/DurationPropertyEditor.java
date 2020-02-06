@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.Properties;
@@ -71,156 +71,154 @@ import java.text.DecimalFormat;
 
 import MWC.GenericData.Duration;
 
-/** abstract class providing core functionality necessary for editing a distance
+/**
+ * abstract class providing core functionality necessary for editing a distance
  * value where units are provided (the return value is in minutes)
  */
-abstract public class DurationPropertyEditor extends
-           PropertyEditorSupport
-{
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-	/** the value we are editing (in minutes)
+abstract public class DurationPropertyEditor extends PropertyEditorSupport {
+	/**
+	 * the formatting object used to write to screen
+	 *
 	 */
-  private Duration _myVal;
+	static protected DecimalFormat _formatter = new DecimalFormat("0.######");
 
-  /** the formatting object used to write to screen
-   *
-   */
-  static protected DecimalFormat _formatter = new DecimalFormat("0.######");
-  /** the amount of columns the users wants us to create
-   *
-   */
-  protected int _numColumns = 3;
-
-
-
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
-
-  /** indicate that we can't just be painted, we've got to be edited
-   */
-  public boolean isPaintable()
-  {
-    return false;
-  }
-
-	/** build the editor
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+	/**
+	 * the value we are editing (in minutes)
 	 */
-  abstract public Component getCustomEditor();
-
-  /** update the GUI, following a new value assignment
-   *
-   */
-  abstract protected void updateGUI();
-
-	/** store the new value (in minutes)
+	private Duration _myVal;
+	/**
+	 * the amount of columns the users wants us to create
+	 *
 	 */
-  public void setValue(final Object p1)
-  {
-    // reset value
-    _myVal = null;
+	protected int _numColumns = 3;
+
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * build the editor
+	 */
+	@Override
+	abstract public Component getCustomEditor();
+
+	/**
+	 * get the duration text as a string
+	 */
+	abstract protected double getDuration() throws java.text.ParseException;
+
+	/**
+	 * get the units text as a string
+	 */
+	abstract protected int getUnits();
+
+	/**
+	 * extract the values currently stored in the text boxes (distance in minutes)
+	 */
+	@Override
+	public Object getValue() {
+		Duration val = null;
+		try {
+			// get the distance
+			final double duration = getDuration();
+
+			// get the units scale factor
+			final int units = getUnits();
+
+			// scale the distance to our output units (minutes)
+			val = new Duration(duration, units);
+
+		} catch (final NumberFormatException e) {
+			MWC.Utilities.Errors.Trace.trace(e);
+		} catch (final java.text.ParseException pe) {
+			MWC.Utilities.Errors.Trace.trace(pe);
+		}
+
+		return val;
+	}
+
+	/**
+	 * indicate that we can't just be painted, we've got to be edited
+	 */
+	@Override
+	public boolean isPaintable() {
+		return false;
+	}
+
+	/**
+	 * put the data into the text fields, if they have been created yet
+	 */
+	public void resetData() {
+		if (_myVal == null) {
+			setDuration(0);
+			setUnits(Duration.SECONDS);
+		} else {
+			// get the best units
+			final int units = Duration.selectUnitsFor(_myVal.getValueIn(Duration.MILLISECONDS));
+			setUnits(units);
+			setDuration(_myVal.getValueIn(units));
+		}
+	}
+
+	/**
+	 * the the number of columns to use in the editor
+	 *
+	 * @param num the number of columns to show in the text field
+	 */
+	public void setColumns(final int num) {
+		_numColumns = num;
+	}
+
+	/**
+	 * set the duration text in string form
+	 */
+	abstract protected void setDuration(double val);
+
+	/**
+	 * set the units text in string form
+	 */
+	abstract protected void setUnits(int val);
+
+	/**
+	 * store the new value (in minutes)
+	 */
+	@Override
+	public void setValue(final Object p1) {
+// reset value
+		_myVal = null;
 
 		// try to catch if we are receiving a null (uninitialised) value
-		if(p1 != null)
-    {
-      // check it's a Double
-      if(p1 instanceof Duration)
-      {
-        // store the distance
-        _myVal = (Duration)p1;
+		if (p1 != null) {
+			// check it's a Double
+			if (p1 instanceof Duration) {
+				// store the distance
+				_myVal = (Duration) p1;
 
-        // and update our data
-        resetData();
-      }
-    }
-  }
-
-
-
-	/** return flag to say that we'd rather use our own (custom) editor
-	 */
-  public boolean supportsCustomEditor()
-  {
-    return true;
-  }
-
-	/** extract the values currently stored in the text boxes (distance in minutes)
-	 */
-  public Object getValue()
-  {
-		Duration val=null;
-		try{
-      // get the distance
-      final double duration = getDuration();
-
-      // get the units scale factor
-      final int units = getUnits();
-
-      // scale the distance to our output units (minutes)
-      val = new Duration(duration, units);
-
-
+				// and update our data
+				resetData();
+			}
 		}
-		catch(final NumberFormatException e)
-		{
-			MWC.Utilities.Errors.Trace.trace(e);
-		}
-    catch(final java.text.ParseException pe)
-    {
-      MWC.Utilities.Errors.Trace.trace(pe);
-    }
+	}
 
-
-    return val;
-  }
-
-	/** put the data into the text fields, if they have been
-	 * created yet
+	/**
+	 * return flag to say that we'd rather use our own (custom) editor
 	 */
-  public void resetData()
-  {
-    if(_myVal == null)
-    {
-      setDuration(0);
-      setUnits(Duration.SECONDS);
-    }
-    else
-    {
-      // get the best units
-      final int units = Duration.selectUnitsFor(_myVal.getValueIn(Duration.MILLISECONDS));
-      setUnits(units);
-			setDuration(_myVal.getValueIn(units));
-    }
-  }
+	@Override
+	public boolean supportsCustomEditor() {
+		return true;
+	}
 
-  /** get the duration text as a string
-   */
-  abstract protected double getDuration() throws java.text.ParseException;
-
-  /** get the units text as a string
-   */
-  abstract protected int getUnits();
-
-  /** set the duration text in string form
-   */
-  abstract protected void setDuration(double val);
-
-  /** set the units text in string form
-   */
-  abstract protected void setUnits(int val);
-
-  /** the the number of columns to use in the editor
-   * @param num the number of columns to show in the text field
-   */
-  public void setColumns(final int num)
-  {
-    _numColumns = num;
-  }
+	/**
+	 * update the GUI, following a new value assignment
+	 *
+	 */
+	abstract protected void updateGUI();
 
 }

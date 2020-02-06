@@ -1,22 +1,22 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
-
 
 package com.esotericsoftware.kryonet;
 
-import static com.esotericsoftware.minlog.Log.*;
+import static com.esotericsoftware.minlog.Log.DEBUG;
+import static com.esotericsoftware.minlog.Log.debug;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -44,13 +44,13 @@ class UdpConnection {
 	private final Object writeLock = new Object();
 	private long lastCommunicationTime;
 
-	public UdpConnection (Kryo kryo, int bufferSize) {
+	public UdpConnection(final Kryo kryo, final int bufferSize) {
 		this.kryo = kryo;
 		readBuffer = ByteBuffer.allocateDirect(bufferSize);
 		writeBuffer = ByteBuffer.allocateDirect(bufferSize);
 	}
 
-	public void bind (Selector selector, int localPort) throws IOException {
+	public void bind(final Selector selector, final int localPort) throws IOException {
 		close();
 		try {
 			datagramChannel = selector.provider().openDatagramChannel();
@@ -59,13 +59,28 @@ class UdpConnection {
 			selectionKey = datagramChannel.register(selector, SelectionKey.OP_READ);
 
 			lastCommunicationTime = System.currentTimeMillis();
-		} catch (IOException ex) {
+		} catch (final IOException ex) {
 			close();
 			throw ex;
 		}
 	}
 
-	public void connect (Selector selector, InetSocketAddress remoteAddress) throws IOException {
+	public void close() {
+		connectedAddress = null;
+		try {
+			if (datagramChannel != null) {
+				datagramChannel.close();
+				datagramChannel = null;
+				if (selectionKey != null)
+					selectionKey.selector().wakeup();
+			}
+		} catch (final IOException ex) {
+			if (DEBUG)
+				debug("kryonet", "Unable to close UDP connection.", ex);
+		}
+	}
+
+	public void connect(final Selector selector, final InetSocketAddress remoteAddress) throws IOException {
 		close();
 		try {
 			datagramChannel = selector.provider().openDatagramChannel();
@@ -78,31 +93,37 @@ class UdpConnection {
 			lastCommunicationTime = System.currentTimeMillis();
 
 			connectedAddress = remoteAddress;
-		} catch (IOException ex) {
+		} catch (final IOException ex) {
 			close();
-			IOException ioEx = new IOException("Unable to connect to: " + remoteAddress);
+			final IOException ioEx = new IOException("Unable to connect to: " + remoteAddress);
 			ioEx.initCause(ex);
 			throw ioEx;
 		}
 	}
 
-	public InetSocketAddress readFromAddress () throws IOException {
-		DatagramChannel datagramChannel = this.datagramChannel;
-		if (datagramChannel == null) throw new SocketException("Connection is closed.");
-		lastCommunicationTime = System.currentTimeMillis();
-		return (InetSocketAddress)datagramChannel.receive(readBuffer);
+	public boolean needsKeepAlive(final long time) {
+		return connectedAddress != null && keepAliveMillis > 0 && time - lastCommunicationTime > keepAliveMillis;
 	}
 
-	public Object readObject (Connection connection) {
+	public InetSocketAddress readFromAddress() throws IOException {
+		final DatagramChannel datagramChannel = this.datagramChannel;
+		if (datagramChannel == null)
+			throw new SocketException("Connection is closed.");
+		lastCommunicationTime = System.currentTimeMillis();
+		return (InetSocketAddress) datagramChannel.receive(readBuffer);
+	}
+
+	public Object readObject(final Connection connection) {
 		readBuffer.flip();
 		try {
-			Context context = Kryo.getContext();
+			final Context context = Kryo.getContext();
 			context.put("connection", connection);
-			if (connection != null) context.setRemoteEntityID(connection.id);
-			Object object = kryo.readClassAndObject(readBuffer);
+			if (connection != null)
+				context.setRemoteEntityID(connection.id);
+			final Object object = kryo.readClassAndObject(readBuffer);
 			if (readBuffer.hasRemaining())
 				throw new SerializationException("Incorrect number of bytes (" + readBuffer.remaining()
-					+ " remaining) used to deserialize object: " + object);
+						+ " remaining) used to deserialize object: " + object);
 			return object;
 		} finally {
 			readBuffer.clear();
@@ -112,43 +133,27 @@ class UdpConnection {
 	/**
 	 * This method is thread safe.
 	 */
-	public int send (Connection connection, Object object, SocketAddress address) throws IOException {
-		DatagramChannel datagramChannel = this.datagramChannel;
-		if (datagramChannel == null) throw new SocketException("Connection is closed.");
+	public int send(final Connection connection, final Object object, final SocketAddress address) throws IOException {
+		final DatagramChannel datagramChannel = this.datagramChannel;
+		if (datagramChannel == null)
+			throw new SocketException("Connection is closed.");
 		synchronized (writeLock) {
 			try {
-				Context context = Kryo.getContext();
+				final Context context = Kryo.getContext();
 				context.put("connection", connection);
 				context.setRemoteEntityID(connection.id);
 				kryo.writeClassAndObject(writeBuffer, object);
 				writeBuffer.flip();
-				int length = writeBuffer.limit();
+				final int length = writeBuffer.limit();
 				datagramChannel.send(writeBuffer, address);
 
 				lastCommunicationTime = System.currentTimeMillis();
 
-				boolean wasFullWrite = !writeBuffer.hasRemaining();
+				final boolean wasFullWrite = !writeBuffer.hasRemaining();
 				return wasFullWrite ? length : -1;
 			} finally {
 				writeBuffer.clear();
 			}
 		}
-	}
-
-	public void close () {
-		connectedAddress = null;
-		try {
-			if (datagramChannel != null) {
-				datagramChannel.close();
-				datagramChannel = null;
-				if (selectionKey != null) selectionKey.selector().wakeup();
-			}
-		} catch (IOException ex) {
-			if (DEBUG) debug("kryonet", "Unable to close UDP connection.", ex);
-		}
-	}
-
-	public boolean needsKeepAlive (long time) {
-		return connectedAddress != null && keepAliveMillis > 0 && time - lastCommunicationTime > keepAliveMillis;
 	}
 }

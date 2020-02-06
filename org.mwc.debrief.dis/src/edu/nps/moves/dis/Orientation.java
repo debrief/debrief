@@ -1,168 +1,163 @@
 package edu.nps.moves.dis;
 
-import java.util.*;
-import java.io.*;
-import edu.nps.moves.disenum.*;
-import edu.nps.moves.disutil.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
 
 /**
- * Section 5.2.17. Three floating point values representing an orientation, psi, theta, and phi, aka the euler angles, in radians
+ * Section 5.2.17. Three floating point values representing an orientation, psi,
+ * theta, and phi, aka the euler angles, in radians
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class Orientation extends Object implements Serializable
-{
-   protected float  psi;
+public class Orientation extends Object implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   protected float  theta;
+	protected float psi;
 
-   protected float  phi;
+	protected float theta;
 
+	protected float phi;
 
-/** Constructor */
- public Orientation()
- {
- }
+	/** Constructor */
+	public Orientation() {
+	}
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-   marshalSize = marshalSize + 4;  // psi
-   marshalSize = marshalSize + 4;  // theta
-   marshalSize = marshalSize + 4;  // phi
+		if (this == obj) {
+			return true;
+		}
 
-   return marshalSize;
-}
+		if (obj == null) {
+			return false;
+		}
 
+		if (getClass() != obj.getClass())
+			return false;
 
-public void setPsi(float pPsi)
-{ psi = pPsi;
-}
+		return equalsImpl(obj);
+	}
 
-public float getPsi()
-{ return psi; 
-}
+	/**
+	 * Compare all fields that contribute to the state, ignoring transient and
+	 * static fields, for <code>this</code> and the supplied object
+	 *
+	 * @param obj the object to compare to
+	 * @return true if the objects are equal, false otherwise.
+	 */
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-public void setTheta(float pTheta)
-{ theta = pTheta;
-}
+		if (!(obj instanceof Orientation))
+			return false;
 
-public float getTheta()
-{ return theta; 
-}
+		final Orientation rhs = (Orientation) obj;
 
-public void setPhi(float pPhi)
-{ phi = pPhi;
-}
+		if (!(psi == rhs.psi))
+			ivarsEqual = false;
+		if (!(theta == rhs.theta))
+			ivarsEqual = false;
+		if (!(phi == rhs.phi))
+			ivarsEqual = false;
 
-public float getPhi()
-{ return phi; 
-}
+		return ivarsEqual;
+	}
 
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
-public void marshal(DataOutputStream dos)
-{
-    try 
-    {
-       dos.writeFloat( (float)psi);
-       dos.writeFloat( (float)theta);
-       dos.writeFloat( (float)phi);
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+		marshalSize = marshalSize + 4; // psi
+		marshalSize = marshalSize + 4; // theta
+		marshalSize = marshalSize + 4; // phi
 
-public void unmarshal(DataInputStream dis)
-{
-    try 
-    {
-       psi = dis.readFloat();
-       theta = dis.readFloat();
-       phi = dis.readFloat();
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+		return marshalSize;
+	}
 
+	public float getPhi() {
+		return phi;
+	}
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
-       buff.putFloat( (float)psi);
-       buff.putFloat( (float)theta);
-       buff.putFloat( (float)phi);
-    } // end of marshal method
+	public float getPsi() {
+		return psi;
+	}
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       psi = buff.getFloat();
-       theta = buff.getFloat();
-       phi = buff.getFloat();
- } // end of unmarshal method 
+	public float getTheta() {
+		return theta;
+	}
 
+	public void marshal(final DataOutputStream dos) {
+		try {
+			dos.writeFloat(psi);
+			dos.writeFloat(theta);
+			dos.writeFloat(phi);
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	public void marshal(final java.nio.ByteBuffer buff) {
+		buff.putFloat(psi);
+		buff.putFloat(theta);
+		buff.putFloat(phi);
+	} // end of marshal method
 
-    if(this == obj){
-      return true;
-    }
+	public void setPhi(final float pPhi) {
+		phi = pPhi;
+	}
 
-    if(obj == null){
-       return false;
-    }
+	public void setPsi(final float pPsi) {
+		psi = pPsi;
+	}
 
-    if(getClass() != obj.getClass())
-        return false;
+	public void setTheta(final float pTheta) {
+		theta = pTheta;
+	}
 
-    return equalsImpl(obj);
- }
+	public void unmarshal(final DataInputStream dis) {
+		try {
+			psi = dis.readFloat();
+			theta = dis.readFloat();
+			phi = dis.readFloat();
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
- /**
-  * Compare all fields that contribute to the state, ignoring
- transient and static fields, for <code>this</code> and the supplied object
-  * @param obj the object to compare to
-  * @return true if the objects are equal, false otherwise.
-  */
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
-
-    if(!(obj instanceof Orientation))
-        return false;
-
-     final Orientation rhs = (Orientation)obj;
-
-     if( ! (psi == rhs.psi)) ivarsEqual = false;
-     if( ! (theta == rhs.theta)) ivarsEqual = false;
-     if( ! (phi == rhs.phi)) ivarsEqual = false;
-
-    return ivarsEqual;
- }
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		psi = buff.getFloat();
+		theta = buff.getFloat();
+		phi = buff.getFloat();
+	} // end of unmarshal method
 } // end of class

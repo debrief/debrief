@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.cmap.NarrativeViewer;
@@ -25,135 +25,112 @@ import org.eclipse.nebula.widgets.grid.Grid;
 
 import MWC.TacticalData.NarrativeEntry;
 
-abstract class AbstractColumn implements Column
-{
-  private static final String PREFERENCE_PREFIX =
-      "com.borlander.ianmayo.nviewer.preferences.isHidden.";
+abstract class AbstractColumn implements Column {
+	private static final String PREFERENCE_PREFIX = "com.borlander.ianmayo.nviewer.preferences.isHidden.";
 
-  private final int myIndex;
-  private final String myColumnName;
-  private final IPreferenceStore myStore;
+	private final int myIndex;
+	private final String myColumnName;
+	private final IPreferenceStore myStore;
 
-  private CellLabelProvider myRenderer;
+	private CellLabelProvider myRenderer;
 
-  private boolean myIsVisible = true;
-  private ColumnFilter myFilter;
+	private boolean myIsVisible = true;
+	private ColumnFilter myFilter;
 
-  private final LinkedHashSet<VisibilityListener> myVisibilityListeners =
-      new LinkedHashSet<VisibilityListener>();
+	private final LinkedHashSet<VisibilityListener> myVisibilityListeners = new LinkedHashSet<VisibilityListener>();
 
-  protected abstract CellLabelProvider createRenderer(ColumnViewer viewer); 
+	public AbstractColumn(final int index, final String columnName, final IPreferenceStore store) {
+		myIndex = index;
+		myColumnName = columnName;
+		myStore = store;
 
- 
+		myIsVisible = myStore != null && !myStore.getBoolean(getIsHiddenPreferenceName());
+	}
 
-  public AbstractColumn(final int index, final String columnName,
-       final IPreferenceStore store)
-  {
-    myIndex = index;
-    myColumnName = columnName;
-    myStore = store;
+	public void addVisibilityListener(final VisibilityListener visibilityListener) {
+		myVisibilityListeners.add(visibilityListener);
+	}
 
-    myIsVisible =
-        myStore != null && !myStore.getBoolean(getIsHiddenPreferenceName());
-  }
-  
-  @Override
-  public boolean isColumnWidthExpand()
-  {
-    return false;
-  }
-  
-  public boolean isWrapSupport()
-  {
-    return false;
-  }
+	protected void columnSelection(final NarrativeViewer viewer) {
 
-  public void
-      addVisibilityListener(final VisibilityListener visibilityListener)
-  {
-    myVisibilityListeners.add(visibilityListener);
-  }
+	}
 
-  public void setFilter(final ColumnFilter filter)
-  {
-    myFilter = filter;
-  }
+	protected abstract CellLabelProvider createRenderer(ColumnViewer viewer);
 
-  public boolean isWrap()
-  {
-    return false;
-  }
-  
-  public ColumnFilter getFilter()
-  {
-    return myFilter;
-  }
+	@Override
+	public CellEditor getCellEditor(final Grid table) {
+		// by default -- read only
+		return null;
+	}
 
-  public int getIndex()
-  {
-    return myIndex;
-  }
+	@Override
+	public CellLabelProvider getCellRenderer(final ColumnViewer viewer) {
+		if (myRenderer == null) {
+			myRenderer = createRenderer(viewer);
+		}
+		return myRenderer;
+	}
 
-  
-  protected void columnSelection(NarrativeViewer viewer)
-  {
-    
-  }
+	@Override
+	public final String getColumnName() {
+		return myColumnName;
+	}
 
+	@Override
+	public ColumnFilter getFilter() {
+		return myFilter;
+	}
 
-  public final String getColumnName()
-  {
-    return myColumnName;
-  }
+	@Override
+	public int getIndex() {
+		return myIndex;
+	}
 
-  public CellLabelProvider getCellRenderer(ColumnViewer viewer)
-  {
-    if (myRenderer == null)
-    {
-      myRenderer = createRenderer(viewer);
-    }
-    return myRenderer;
-  }
+	private String getIsHiddenPreferenceName() {
+		return PREFERENCE_PREFIX + getColumnName();
+	}
 
-  public CellEditor getCellEditor(Grid table)
-  {
-    // by default -- read only
-    return null;
-  }
-  
-  @Override
-  public void setProperty(NarrativeEntry entry, Object obj)
-  {
-    //do nothing 
-    
-  }
+	@Override
+	public boolean isColumnWidthExpand() {
+		return false;
+	}
 
-  public boolean isVisible()
-  {
-    return myIsVisible;
-  }
+	@Override
+	public boolean isVisible() {
+		return myIsVisible;
+	}
 
-  public void setVisible(final boolean isVisible)
-  {
-    final boolean oldValue = myIsVisible;
-    myIsVisible = isVisible;
-    if (myStore != null)
-    {
-      myStore.setValue(getIsHiddenPreferenceName(), !isVisible);
-    }
+	public boolean isWrap() {
+		return false;
+	}
 
-    if (myIsVisible != oldValue)
-    {
-      for (final Column.VisibilityListener next : myVisibilityListeners)
-      {
-        next.columnVisibilityChanged(this, myIsVisible);
-      }
-    }
-  }
+	public boolean isWrapSupport() {
+		return false;
+	}
 
-  private String getIsHiddenPreferenceName()
-  {
-    return PREFERENCE_PREFIX + getColumnName();
-  }
+	public void setFilter(final ColumnFilter filter) {
+		myFilter = filter;
+	}
+
+	@Override
+	public void setProperty(final NarrativeEntry entry, final Object obj) {
+		// do nothing
+
+	}
+
+	@Override
+	public void setVisible(final boolean isVisible) {
+		final boolean oldValue = myIsVisible;
+		myIsVisible = isVisible;
+		if (myStore != null) {
+			myStore.setValue(getIsHiddenPreferenceName(), !isVisible);
+		}
+
+		if (myIsVisible != oldValue) {
+			for (final Column.VisibilityListener next : myVisibilityListeners) {
+				next.columnVisibilityChanged(this, myIsVisible);
+			}
+		}
+	}
 
 }

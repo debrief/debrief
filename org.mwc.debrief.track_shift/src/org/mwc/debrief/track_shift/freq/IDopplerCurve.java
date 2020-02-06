@@ -1,38 +1,37 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 package org.mwc.debrief.track_shift.freq;
-public interface IDopplerCurve
-{
 
-  public abstract double inflectionFreq();
+public interface IDopplerCurve {
 
-  public abstract long inflectionTime();
+	public abstract double inflectionFreq();
 
-  /**
-   * calculate the value on the curve at this time
-   * 
-   * @param t
-   *          time
-   * @return frequency at this time
-   */
-  public abstract double valueAt(long t);
+	public abstract long inflectionTime();
 
+	/**
+	 * output the coordinates
+	 *
+	 */
+	public abstract void printCoords();
 
-  /** output the coordinates
-   * 
-   */
-  public abstract void printCoords();
+	/**
+	 * calculate the value on the curve at this time
+	 *
+	 * @param t time
+	 * @return frequency at this time
+	 */
+	public abstract double valueAt(long t);
 
 }

@@ -1,21 +1,22 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package Debrief.GUI.Tote.Painters;
 
 // Copyright MWC 2000, Debrief 3 Project
+
 // $RCSfile: RelativePainter.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.3 $
@@ -168,91 +169,78 @@ package Debrief.GUI.Tote.Painters;
 // Initial revision
 //
 
-
-
 import Debrief.GUI.Tote.AnalysisTote;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 
-public final class RelativePainter extends SnailPainter
-{
-  ///////////////////////////////////
-  // member variables
-  //////////////////////////////////
+public final class RelativePainter extends SnailPainter {
+	///////////////////////////////////
+	// member variables
+	//////////////////////////////////
 
-  ///////////////////////////////////
-  // constructorsna
-  //////////////////////////////////
-  public RelativePainter(final PlainChart theChart,
-                     final Layers theData,
-                     final AnalysisTote theTote)
-  {
-    super(theChart, theData, theTote, "Relative");
-  }
-
-
-
-  //
-  public final void steppingModeChanged(final boolean on)
-  {
-    // inform the parent
-    super.steppingModeChanged(on);
-
-    // are we now on?
-    if(on)
-    {
-      // we have been switched on, set to relative
-      super._theChart.getCanvas().getProjection().setPrimaryOriented(true);
-    }
-    else
-    {
-      // no, we have been switched off, reset the relative projection
-      super._theChart.getCanvas().getProjection().setPrimaryOriented(false);
-    }
-
-  }
-
-  public final String toString()
-  {
-    return "Relative";
-  }
-
-
-  /** NON-STANDARD implementation, we are returning the editor for our
-   * snail plotter object, not ourself
-   */
+	/**
+	 * NON-STANDARD implementation, we are returning the editor for our snail
+	 * plotter object, not ourself
+	 */
 //  public Editable.EditorType getInfo()
 //  {
 //    return new RelativePainterInfo(this);
 //  }
 
+	/////////////////////////////////////////
+	// accessors for the beaninfo
+	////////////////////////////////////////
+	//////////////////////////////////////////////////////////
+	// accessors for editable parameters
+	/////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////
+	// nested class describing how to edit this class
+	////////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////
-  // accessors for the beaninfo
-  ////////////////////////////////////////
-  //////////////////////////////////////////////////////////
-  // accessors for editable parameters
-  /////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////
-  // nested class describing how to edit this class
-  ////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	static public final class testMe extends junit.framework.TestCase {
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  static public final class testMe extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE  = "UNIT";
-    public testMe(final String val)
-    {
-      super(val);
-    }
-    public final void testMyParams()
-    {
-      Editable ed = new SnailPainter(null,null,null);
-      Editable.editableTesterSupport.testParams(ed, this);
-      ed = null;
-    }
-  }
+		public testMe(final String val) {
+			super(val);
+		}
+
+		public final void testMyParams() {
+			Editable ed = new SnailPainter(null, null, null);
+			Editable.editableTesterSupport.testParams(ed, this);
+			ed = null;
+		}
+	}
+
+	///////////////////////////////////
+	// constructorsna
+	//////////////////////////////////
+	public RelativePainter(final PlainChart theChart, final Layers theData, final AnalysisTote theTote) {
+		super(theChart, theData, theTote, "Relative");
+	}
+
+	//
+	@Override
+	public final void steppingModeChanged(final boolean on) {
+		// inform the parent
+		super.steppingModeChanged(on);
+
+		// are we now on?
+		if (on) {
+			// we have been switched on, set to relative
+			super._theChart.getCanvas().getProjection().setPrimaryOriented(true);
+		} else {
+			// no, we have been switched off, reset the relative projection
+			super._theChart.getCanvas().getProjection().setPrimaryOriented(false);
+		}
+
+	}
+
+	@Override
+	public final String toString() {
+		return "Relative";
+	}
 }

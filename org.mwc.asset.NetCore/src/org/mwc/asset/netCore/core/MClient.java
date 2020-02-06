@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.asset.netCore.core;
@@ -34,62 +34,51 @@ import org.mwc.asset.netCore.common.Network.ScenarioList;
 import org.mwc.asset.netCore.common.Network.StopListenPart;
 import org.mwc.asset.netCore.common.Network.StopListenScen;
 
+import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.FrameworkMessage;
+import com.esotericsoftware.kryonet.Listener;
+
 import ASSET.Participants.ParticipantDecidedListener;
 import ASSET.Participants.ParticipantDetectedListener;
 import ASSET.Participants.ParticipantMovedListener;
 import ASSET.Participants.Status;
 import ASSET.Scenario.ScenarioSteppedListener;
 
-import com.esotericsoftware.kryonet.Client;
-import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.kryonet.FrameworkMessage;
-import com.esotericsoftware.kryonet.Listener;
-
-public class MClient implements IMClient
-{
-	private static class NetClient
-	{
+public class MClient implements IMClient {
+	private static class NetClient {
 		private final Client _client;
 		private final HashMap<Class<?>, Listener> _listeners;
 
-		public NetClient() throws IOException
-		{
+		public NetClient() throws IOException {
 			_client = new Client();
 			Network.register(_client);
 			_client.start();
 			_listeners = new HashMap<Class<?>, Listener>();
 
 			// sort out our handler
-			_client.addListener(new Listener()
-			{
+			_client.addListener(new Listener() {
 
 				@Override
-				public void received(final Connection connection, final Object object)
-				{
+				public void received(final Connection connection, final Object object) {
 					// ok, see if we have a handler
 					final Listener match = _listeners.get(object.getClass());
-					if (match != null)
-					{
+					if (match != null) {
 						match.received(connection, object);
-					}
-					else
-					{
+					} else {
 						System.err.println("CLIENT HANDLER NOT FOUND FOR:" + object);
 					}
 				}
 			});
 		}
 
-		public java.util.List<java.net.InetAddress> discoverHosts()
-		{
-			return _client.discoverHosts(Network.UDP_PORT, 1000);
+		public void addListener(final Class<?> objectType, final Listener listener) {
+			_listeners.put(objectType, listener);
 		}
 
-		public void connect(final String target) throws IOException
-		{
+		public void connect(final String target) throws IOException {
 			String theTarget = target;
-			if (theTarget == null)
-			{
+			if (theTarget == null) {
 				final InetAddress address = _client.discoverHost(Network.UDP_PORT, 1000);
 				if (address != null)
 					theTarget = address.getHostAddress();
@@ -99,51 +88,43 @@ public class MClient implements IMClient
 			_client.connect(5000, theTarget, Network.TCP_PORT, Network.UDP_PORT);
 		}
 
-		public void addListener(final Class<?> objectType, final Listener listener)
-		{
-			_listeners.put(objectType, listener);
+		public java.util.List<java.net.InetAddress> discoverHosts() {
+			return _client.discoverHosts(Network.UDP_PORT, 1000);
 		}
 
-		public void removeListener(final Class<?> objectType)
-		{
+		public void removeListener(final Class<?> objectType) {
 			_listeners.remove(objectType);
 		}
 
-		public void stop()
-		{
-			_client.stop();
-		}
-
-		public void send(final Object data)
-		{
+		public void send(final Object data) {
 			_client.sendTCP(data);
 		}
 
-	}
-
-	private static class ScenListener
-	{
-		final ScenarioSteppedListener _stepper;
-
-		public ScenListener(final ScenarioSteppedListener stepper)
-		{
-			_stepper = stepper;
+		public void stop() {
+			_client.stop();
 		}
+
 	}
 
-	private static class PartListener
-	{
+	private static class PartListener {
 		final ParticipantMovedListener _mover;
 		@SuppressWarnings("unused")
 		final ParticipantDecidedListener _decider;
 		final ParticipantDetectedListener _detector;
 
-		public PartListener(final ParticipantMovedListener mover,
-				final ParticipantDecidedListener decider, final ParticipantDetectedListener detector)
-		{
+		public PartListener(final ParticipantMovedListener mover, final ParticipantDecidedListener decider,
+				final ParticipantDetectedListener detector) {
 			_mover = mover;
 			_decider = decider;
 			_detector = detector;
+		}
+	}
+
+	private static class ScenListener {
+		final ScenarioSteppedListener _stepper;
+
+		public ScenListener(final ScenarioSteppedListener stepper) {
+			_stepper = stepper;
 		}
 	}
 
@@ -151,76 +132,60 @@ public class MClient implements IMClient
 	private final HashMap<String, PartListener> _partListeners;
 	private final HashMap<String, ScenListener> _scenListeners;
 
-	public MClient() throws IOException
-	{
+	public MClient() throws IOException {
 		_model = new NetClient();
 		_partListeners = new HashMap<String, PartListener>();
 		_scenListeners = new HashMap<String, ScenListener>();
 
 		// get ready to ignore i'm alive messages...
-		_model.addListener(new FrameworkMessage.KeepAlive().getClass(),
-				new Listener()
-				{
-				});
+		_model.addListener(new FrameworkMessage.KeepAlive().getClass(), new Listener() {
+		});
 
 		// setup the step listener
-		final Listener mover = new Listener()
-		{
+		final Listener mover = new Listener() {
 			@Override
-			public void received(final Connection connection, final Object object)
-			{
+			public void received(final Connection connection, final Object object) {
 				final PartMovement pu = (PartMovement) object;
 
 				final String index = pu.scenario + pu.id;
 				final PartListener pl = _partListeners.get(index);
-				if (pl != null)
-				{
+				if (pl != null) {
 					final Status newStat = pu.lStatus;
 					if (pl._mover != null)
 						pl._mover.moved(newStat);
-				}
-				else
-				{
+				} else {
 					System.err.println("LISTENER NOT FOUND FOR:" + index);
 				}
 			}
 		};
 		_model.addListener(new PartMovement().getClass(), mover);
-		final Listener detector = new Listener()
-		{
+		final Listener detector = new Listener() {
 			@Override
-			public void received(final Connection connection, final Object object)
-			{
+			public void received(final Connection connection, final Object object) {
 				final PartDetection pu = (PartDetection) object;
 
 				final String index = pu.scenario + pu.id;
 				final PartListener pl = _partListeners.get(index);
-				if (pl != null)
-				{
+				if (pl != null) {
 					if (pl._detector != null)
 						pl._detector.newDetections(pu.detections);
-				}
-				else
-				{
+				} else {
 					System.err.println("LISTENER NOT FOUND FOR:" + index);
 				}
 			}
 		};
 		_model.addListener(new PartDetection().getClass(), detector);
 
-		final Listener stepL = new Listener()
-		{
+		final Listener stepL = new Listener() {
 
 			@Override
-			public void received(final Connection connection, final Object object)
-			{
+			public void received(final Connection connection, final Object object) {
 				final ScenUpdate su = (ScenUpdate) object;
 				final String index = su.scenarioName;
 				final ScenListener sl = _scenListeners.get(index);
 
 				// have a look at the event
-				if (su.event.equals(ScenUpdate.STEPPED))
-				{
+				if (su.event.equals(ScenUpdate.STEPPED)) {
 					sl._stepper.step(null, su.newTime);
 				}
 			}
@@ -230,34 +195,57 @@ public class MClient implements IMClient
 	}
 
 	@Override
-	public java.util.List<java.net.InetAddress> discoverHosts()
-	{
-		return _model.discoverHosts();
-	}
-
-	@Override
-	public void connect(final String target) throws IOException
-	{
+	public void connect(final String target) throws IOException {
 		_model.connect(target);
 	}
 
 	@Override
-	public void stop()
-	{
-		_model.stop();
+	public void controlPart(final String scenario, final int id, final double courseDegs, final double speedKts,
+			final double depthM) {
+		final Network.DemStatus dem = new Network.DemStatus();
+		dem.scenario = scenario;
+		dem.partId = id;
+		dem.courseDegs = courseDegs;
+		dem.speedKts = speedKts;
+		dem.depthM = depthM;
+		_model.send(dem);
+	}
+
+	@Override
+	public void controlScen(final ScenControl sc) {
+		_model.send(sc);
+	}
+
+	@Override
+	public java.util.List<java.net.InetAddress> discoverHosts() {
+		return _model.discoverHosts();
+	}
+
+	@Override
+	public void getScenarioList(final Network.AHandler<Vector<LightScenario>> handler) {
+		final Class<?> theType = new GetScenarios().getClass();
+		final Listener listener = new Listener() {
+			@Override
+			public void received(final Connection connection, final Object object) {
+				final ScenarioList sl = (ScenarioList) object;
+				handler.onSuccess(sl.list);
+				// and forget about ourselves
+				_model.removeListener(theType);
+			}
+		};
+		_model.addListener(new ScenarioList().getClass(), listener);
+		_model.send(new GetScenarios());
 	}
 
 	/**
 	 * user wants to listen to this participant
-	 * 
+	 *
 	 * @param scenarioName
 	 * @param participantId
 	 */
 	@Override
-	public void listenPart(final String scenarioName, final int participantId,
-			final ParticipantMovedListener moveL, final ParticipantDecidedListener decider,
-			final ParticipantDetectedListener detector)
-	{
+	public void listenPart(final String scenarioName, final int participantId, final ParticipantMovedListener moveL,
+			final ParticipantDecidedListener decider, final ParticipantDetectedListener detector) {
 		final ListenPart cp = new ListenPart();
 		cp.scenarioName = scenarioName;
 		cp.partId = participantId;
@@ -272,8 +260,7 @@ public class MClient implements IMClient
 	}
 
 	@Override
-	public void listenScen(final String scenarioName, final ScenarioSteppedListener listener)
-	{
+	public void listenScen(final String scenarioName, final ScenarioSteppedListener listener) {
 		// get ready to rx events
 		final ScenListener sl = new ScenListener(listener);
 		_scenListeners.put(scenarioName, sl);
@@ -285,41 +272,38 @@ public class MClient implements IMClient
 	}
 
 	@Override
-	public void stopListenScen(final String scenarioName)
-	{
-		// tell it we're not bothered
-		final StopListenScen ls = new StopListenScen();
-		ls.name = scenarioName;
-		_model.send(ls);
-
-		// ok, done. now stop listening
-		final ScenListener sl = _scenListeners.get(scenarioName);
-		_scenListeners.remove(sl);
+	public void releasePart(final String scenario, final int partId) {
+		final ReleasePart rp = new ReleasePart();
+		rp.scenarioName = scenario;
+		rp.partId = partId;
+		_model.send(rp);
 	}
 
 	@Override
-	public void step(final String scenarioName)
-	{
+	public void step(final String scenarioName) {
 		final ScenControl sc = new ScenControl(scenarioName, ScenControl.STEP);
 		_model.send(sc);
 	}
 
 	@Override
-	public void stop(final String scenarioName)
-	{
+	public void stop() {
+		_model.stop();
+	}
+
+	@Override
+	public void stop(final String scenarioName) {
 		final ScenControl sc = new ScenControl(scenarioName, ScenControl.TERMINATE);
 		_model.send(sc);
 	}
 
 	/**
 	 * user wants to release this participant
-	 * 
+	 *
 	 * @param scenarioName
 	 * @param participantId
 	 */
 	@Override
-	public void stopListenPart(final String scenarioName, final int participantId)
-	{
+	public void stopListenPart(final String scenarioName, final int participantId) {
 		final StopListenPart cp = new StopListenPart();
 		cp.scenarioName = scenarioName;
 		cp.partId = participantId;
@@ -333,50 +317,15 @@ public class MClient implements IMClient
 	}
 
 	@Override
-	public void getScenarioList(
-			final Network.AHandler<Vector<LightScenario>> handler)
-	{
-		final Class<?> theType = new GetScenarios().getClass();
-		final Listener listener = new Listener()
-		{
-			public void received(final Connection connection, final Object object)
-			{
-				final ScenarioList sl = (ScenarioList) object;
-				handler.onSuccess(sl.list);
-				// and forget about ourselves
-				_model.removeListener(theType);
-			}
-		};
-		_model.addListener(new ScenarioList().getClass(), listener);
-		_model.send(new GetScenarios());
-	}
+	public void stopListenScen(final String scenarioName) {
+		// tell it we're not bothered
+		final StopListenScen ls = new StopListenScen();
+		ls.name = scenarioName;
+		_model.send(ls);
 
-	@Override
-	public void controlPart(final String scenario, final int id, final double courseDegs,
-			final double speedKts, final double depthM)
-	{
-		final Network.DemStatus dem = new Network.DemStatus();
-		dem.scenario = scenario;
-		dem.partId = id;
-		dem.courseDegs = courseDegs;
-		dem.speedKts = speedKts;
-		dem.depthM = depthM;
-		_model.send(dem);
-	}
-
-	@Override
-	public void releasePart(final String scenario, final int partId)
-	{
-		final ReleasePart rp = new ReleasePart();
-		rp.scenarioName = scenario;
-		rp.partId = partId;
-		_model.send(rp);
-	}
-
-	@Override
-	public void controlScen(final ScenControl sc)
-	{
-		_model.send(sc);
+		// ok, done. now stop listening
+		final ScenListener sl = _scenListeners.get(scenarioName);
+		_scenListeners.remove(sl);
 	}
 
 }

@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: TimeFrequencyPropertyEditor.java,v $
@@ -60,7 +60,6 @@
 // Initial revision
 //
 
-
 package Debrief.Tools.Properties;
 
 import java.beans.PropertyEditorSupport;
@@ -69,99 +68,83 @@ import java.util.List;
 import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.Track.ArrayOffsetHelper;
 import Debrief.Wrappers.Track.ArrayOffsetHelper.ArrayCentreMode;
+import MWC.GUI.ToolParent;
 
 /**
  * class to provide list of time frequencies, together with ALL value
  */
-public class ArrayCentreModePropertyEditor extends PropertyEditorSupport
-{
+public class ArrayCentreModePropertyEditor extends PropertyEditorSupport {
 
-  /** the array centres for the current object
-   * 
-   */
-  private static List<ArrayCentreMode> _arrayCentres;
-  
-  /**
-   * the currently selected frequency (in micros)
-   */
-  protected ArrayCentreMode _myMode = ArrayOffsetHelper.LegacyArrayOffsetModes.WORM;
+	/**
+	 * the array centres for the current object
+	 *
+	 */
+	private static List<ArrayCentreMode> _arrayCentres;
 
-  @Override
-  public String[] getTags()
-  {
-    final String[] allTags;
-    if(_arrayCentres != null)
-    {
-      // ok, build up the list
-      allTags = new String[_arrayCentres.size()];
-      for(int i=0;i<_arrayCentres.size();i++)
-      {
-        allTags[i] = _arrayCentres.get(i).asString();
-      }
-    }
-    else
-    {
-      Application.logStack2(Application.ERROR,
-          "The array modes have not been set. We can't produce a proper list");
-      allTags = new String[]
-      {"Broken: centre modes not found"};
-    }
-    
-    return allTags;
-  }
+	/**
+	 * we wish to allow some modes that have been taken from the subject sensor.
+	 * They get set here
+	 *
+	 * @param arrayCentres
+	 */
+	public static void setCustomModes(final List<ArrayCentreMode> arrayCentres) {
+		_arrayCentres = arrayCentres;
+	}
 
-  @Override
-  public Object getValue()
-  {
-    return _myMode;
-  }
+	/**
+	 * the currently selected frequency (in micros)
+	 */
+	protected ArrayCentreMode _myMode = ArrayOffsetHelper.LegacyArrayOffsetModes.WORM;
 
-  @Override
-  public void setValue(final Object p1)
-  {
-    if (p1 instanceof String)
-    {
-      final String val = (String) p1;
-      setAsText(val);
-    }
-    else if(p1 instanceof ArrayCentreMode)
-    {
-      ArrayCentreMode td = (ArrayCentreMode) p1;
-      _myMode = td;
-    }
-    else if(p1 instanceof Integer)
-    {
-      _myMode = _arrayCentres.get((int) p1);
-    }
-  }
+	@Override
+	public String getAsText() {
+		return _myMode.asString();
+	}
 
-  @Override
-  public void setAsText(final String val)
-  {
-    // ok, loop though modes, to fine match
-    for(final ArrayCentreMode t: _arrayCentres)
-    {
-      if(t.asString().equals(val))
-      {
-        _myMode = t;
-        break;
-      }
-    }
-  }
+	@Override
+	public String[] getTags() {
+		final String[] allTags;
+		if (_arrayCentres != null) {
+			// ok, build up the list
+			allTags = new String[_arrayCentres.size()];
+			for (int i = 0; i < _arrayCentres.size(); i++) {
+				allTags[i] = _arrayCentres.get(i).asString();
+			}
+		} else {
+			Application.logStack2(ToolParent.ERROR,
+					"The array modes have not been set. We can't produce a proper list");
+			allTags = new String[] { "Broken: centre modes not found" };
+		}
 
-  @Override
-  public String getAsText()
-  {
-    return _myMode.asString();
-  }
+		return allTags;
+	}
 
-  /** we wish to allow some modes that have been taken from the
-   * subject sensor. They get set here
-   * @param arrayCentres
-   */
-  public static void setCustomModes(List<ArrayCentreMode> arrayCentres)
-  {
-    _arrayCentres = arrayCentres;
-  }
+	@Override
+	public Object getValue() {
+		return _myMode;
+	}
+
+	@Override
+	public void setAsText(final String val) {
+		// ok, loop though modes, to fine match
+		for (final ArrayCentreMode t : _arrayCentres) {
+			if (t.asString().equals(val)) {
+				_myMode = t;
+				break;
+			}
+		}
+	}
+
+	@Override
+	public void setValue(final Object p1) {
+		if (p1 instanceof String) {
+			final String val = (String) p1;
+			setAsText(val);
+		} else if (p1 instanceof ArrayCentreMode) {
+			final ArrayCentreMode td = (ArrayCentreMode) p1;
+			_myMode = td;
+		} else if (p1 instanceof Integer) {
+			_myMode = _arrayCentres.get((int) p1);
+		}
+	}
 }
-

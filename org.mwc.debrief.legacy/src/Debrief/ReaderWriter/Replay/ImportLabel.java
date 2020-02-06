@@ -1,18 +1,18 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
- 
+
 // $RCSfile: ImportLabel.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -85,172 +85,155 @@ import MWC.GenericData.WorldLocation;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
-/** class to parse a label from a line of text
+/**
+ * class to parse a label from a line of text
  */
-final class ImportLabel extends AbstractPlainLineImporter
-{
-  /** the type for this string
-   */
-  private final String _myType = ";TEXT:";
+final class ImportLabel extends AbstractPlainLineImporter {
+	// ///////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	static public final class testImport extends junit.framework.TestCase {
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-  /** read in this string and return a Label
-   */
-  public final Object readThisLine(final String theLine){
+		public void testLabel() {
+			//
+			final String str1 = ";TEXT: WB 21.72 0 0 N 21.52 0 0 W wreck symbol";
+			final String str2 = ";TEXT: EB 21.66 0 0 N 21.52 0 0 W";
 
-    // get a stream from the string
-    final StringTokenizer st = new StringTokenizer(theLine);
+			final ImportLabel importer = new ImportLabel();
+			final LabelWrapper res = (LabelWrapper) importer.readThisLine(str1);
+			assertEquals("Correct label", "wreck symbol", res.getLabel());
 
-    // declare local variables
-    final WorldLocation theLoc;
-    final double latDeg, longDeg, latMin, longMin;
-    final char latHem, longHem;
-    final double latSec, longSec;
-    final String theText;
-    
-    // skip the comment identifier
-    st.nextToken();
-
-    // start with the symbology
-    symbology = st.nextToken();
-
-    try
-    {
-    	// now the location
-    	latDeg = MWCXMLReader.readThisDouble(st.nextToken());
-    	latMin = MWCXMLReader.readThisDouble(st.nextToken());
-    	latSec = MWCXMLReader.readThisDouble(st.nextToken());
-
-	    /** now, we may have trouble here, since there may not be
-	     * a space between the hemisphere character and a 3-digit
-	     * latitude value - so BE CAREFUL
-	     */
-	    final String vDiff = st.nextToken();
-	    if(vDiff.length() > 3)
-	    {
-	      // hmm, they are combined
-	      latHem = vDiff.charAt(0);
-	      final String secondPart = vDiff.substring(1, vDiff.length());
-	      longDeg  = MWCXMLReader.readThisDouble(secondPart);
-	    }
-	    else
-	    {
-	      // they are separate, so only the hem is in this one
-	      latHem = vDiff.charAt(0);
-	      longDeg = MWCXMLReader.readThisDouble(st.nextToken());
-	    }
-	    longMin = MWCXMLReader.readThisDouble(st.nextToken());
-	    longSec = MWCXMLReader.readThisDouble(st.nextToken());
-	    longHem = st.nextToken().charAt(0);
-
-	    // and now read in the message, if there is one	  
-	    if(st.hasMoreElements())
-	    {
-	      theText = st.nextToken("\r").trim();
-	    }
-	    else
-	    {
-	      theText = "";
-	    }
-	
-	    // create the tactical data
-	    theLoc = new WorldLocation(latDeg, latMin, latSec, latHem,
-	                               longDeg, longMin, longSec, longHem,
-	                               0);
-	
-	    // create the fix ready to store it
-	    final LabelWrapper lw = new LabelWrapper(theText,
-	                                       theLoc,
-	                                       ImportReplay.replayColorFor(symbology));
-	    
-	    // also get the symbol type
-	    final String symType = ImportReplay.replayTrackSymbolFor(symbology);
-	    lw.setSymbolType(symType);
-	
-	    return lw;
-    }
-    catch(final ParseException pe)
-    {
-    	MWC.Utilities.Errors.Trace.trace(pe,
-				"Whilst import Label");
-		return null;
-    }
-  }
-
-  /** determine the identifier returning this type of annotation
-   */
-  public final String getYourType(){
-    return _myType;
-  }
-
-	/** export the specified shape as a string
-	 * @return the shape in String form
-	 * @param shape the Shape we are exporting
-	 */
-	public final String exportThis(final MWC.GUI.Plottable theWrapper)
-	{
-		final LabelWrapper theLabel = (LabelWrapper) theWrapper;
-
-    String line=null;
-
-    // no, just output it as a dumb text label
-    line = _myType;
-
-    line = line + " " + ImportReplay.replaySymbolFor(theLabel.getColor(), theLabel.getSymbolType()) + " ";
-
-    line = line + MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(theLabel.getLocation());
-
-    line = line + " " + theLabel.getLabel();
-
-		return line;
+			final LabelWrapper res2 = (LabelWrapper) importer.readThisLine(str2);
+			assertEquals("Correct label", "", res2.getLabel());
+		}
 	}
 
+	/**
+	 * the type for this string
+	 */
+	private final String _myType = ";TEXT:";
 
-	/** indicate if you can export this type of object
+	/**
+	 * indicate if you can export this type of object
+	 *
 	 * @param val the object to test
 	 * @return boolean saying whether you can do it
 	 */
-	public final boolean canExportThis(final Object val)
-	{
+	@Override
+	public final boolean canExportThis(final Object val) {
 		boolean res = false;
 
-		if(val instanceof LabelWrapper)
-		{
+		if (val instanceof LabelWrapper) {
 			res = true;
 
-      // just check if it has time data
+			// just check if it has time data
 		}
 
 		return res;
 	}
-	
-  // ///////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  // ////////////////////////////////////////////////////////////////////////////////////////////////
-  static public final class testImport extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-    public void testLabel()
-    {
-      //
-      final String str1 = ";TEXT: WB 21.72 0 0 N 21.52 0 0 W wreck symbol"; 
-      final String str2 = ";TEXT: EB 21.66 0 0 N 21.52 0 0 W";
-      
-      ImportLabel importer = new ImportLabel();
-      LabelWrapper res = (LabelWrapper) importer.readThisLine(str1);
-      assertEquals("Correct label", "wreck symbol", res.getLabel());
+	/**
+	 * export the specified shape as a string
+	 *
+	 * @return the shape in String form
+	 * @param shape the Shape we are exporting
+	 */
+	@Override
+	public final String exportThis(final MWC.GUI.Plottable theWrapper) {
+		final LabelWrapper theLabel = (LabelWrapper) theWrapper;
 
-      LabelWrapper res2 = (LabelWrapper) importer.readThisLine(str2);
-      assertEquals("Correct label", "", res2.getLabel());
-    }
-  }
+		String line = null;
+
+		// no, just output it as a dumb text label
+		line = _myType;
+
+		line = line + " " + ImportReplay.replaySymbolFor(theLabel.getColor(), theLabel.getSymbolType()) + " ";
+
+		line = line + MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(theLabel.getLocation());
+
+		line = line + " " + theLabel.getLabel();
+
+		return line;
+	}
+
+	/**
+	 * determine the identifier returning this type of annotation
+	 */
+	@Override
+	public final String getYourType() {
+		return _myType;
+	}
+
+	/**
+	 * read in this string and return a Label
+	 */
+	@Override
+	public final Object readThisLine(final String theLine) {
+
+		// get a stream from the string
+		final StringTokenizer st = new StringTokenizer(theLine);
+
+		// declare local variables
+		final WorldLocation theLoc;
+		final double latDeg, longDeg, latMin, longMin;
+		final char latHem, longHem;
+		final double latSec, longSec;
+		final String theText;
+
+		// skip the comment identifier
+		st.nextToken();
+
+		// start with the symbology
+		symbology = st.nextToken();
+
+		try {
+			// now the location
+			latDeg = MWCXMLReader.readThisDouble(st.nextToken());
+			latMin = MWCXMLReader.readThisDouble(st.nextToken());
+			latSec = MWCXMLReader.readThisDouble(st.nextToken());
+
+			/**
+			 * now, we may have trouble here, since there may not be a space between the
+			 * hemisphere character and a 3-digit latitude value - so BE CAREFUL
+			 */
+			final String vDiff = st.nextToken();
+			if (vDiff.length() > 3) {
+				// hmm, they are combined
+				latHem = vDiff.charAt(0);
+				final String secondPart = vDiff.substring(1, vDiff.length());
+				longDeg = MWCXMLReader.readThisDouble(secondPart);
+			} else {
+				// they are separate, so only the hem is in this one
+				latHem = vDiff.charAt(0);
+				longDeg = MWCXMLReader.readThisDouble(st.nextToken());
+			}
+			longMin = MWCXMLReader.readThisDouble(st.nextToken());
+			longSec = MWCXMLReader.readThisDouble(st.nextToken());
+			longHem = st.nextToken().charAt(0);
+
+			// and now read in the message, if there is one
+			if (st.hasMoreElements()) {
+				theText = st.nextToken("\r").trim();
+			} else {
+				theText = "";
+			}
+
+			// create the tactical data
+			theLoc = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg, longMin, longSec, longHem, 0);
+
+			// create the fix ready to store it
+			final LabelWrapper lw = new LabelWrapper(theText, theLoc, ImportReplay.replayColorFor(symbology));
+
+			// also get the symbol type
+			final String symType = ImportReplay.replayTrackSymbolFor(symbology);
+			lw.setSymbolType(symType);
+
+			return lw;
+		} catch (final ParseException pe) {
+			MWC.Utilities.Errors.Trace.trace(pe, "Whilst import Label");
+			return null;
+		}
+	}
 
 }
-
-
-
-
-
-
-
-

@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.Properties.AWT;
@@ -35,15 +35,28 @@ import MWC.GenericData.WorldLocation;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.BriefFormatLocation;
 
-public class AWTWorldLocationEditor extends Dialog implements ActionListener
-{
-  /**
-	 * 
+public class AWTWorldLocationEditor extends Dialog implements ActionListener {
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
+
 	/////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+	static public WorldLocation doEdit(final WorldLocation val) {
+		final Frame parent = new Frame("scrap");
+		WorldLocation res = new WorldLocation(val);
+		final AWTWorldLocationEditor aw = new AWTWorldLocationEditor(res, parent);
+		aw.setVisible(true);
+		res = aw.getResult();
+		parent.dispose();
+		return res;
+	}
+
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
 	Button _okBtn;
 	Button _cancelBtn;
 	TextField _latDegs;
@@ -53,89 +66,109 @@ public class AWTWorldLocationEditor extends Dialog implements ActionListener
 	TextField _longDegs;
 	TextField _longMins;
 	Checkbox _eastBtn;
+
 	Checkbox _westBtn;
-	
-  WorldLocation _result;
+	WorldLocation _result;
+
 	WorldLocation _initial;
-	
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-	public AWTWorldLocationEditor(final WorldLocation val, final Frame parent)
-	{
+
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	public AWTWorldLocationEditor(final WorldLocation val, final Frame parent) {
 		super(parent, true);
-				
+
 		// build the GUI
-		initGUI();	
-		
+		initGUI();
+
 		// size it
-		this.setSize(510, 150);		
-		
+		this.setSize(510, 150);
+
 		// store the initial position
 		_initial = val;
-		
+
 		// initialise the data
 		initData();
-					
-	}
-	
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
-	static public WorldLocation doEdit(final WorldLocation val)
-	{
-		final Frame parent = new Frame("scrap");
-		WorldLocation res = new WorldLocation(val);
-		final AWTWorldLocationEditor aw = new AWTWorldLocationEditor(res, parent);
-		aw.setVisible(true);
-		res = aw.getResult();
-		parent.dispose(); 
-		return res;
+
 	}
 
-	/** return the current value of the field
+	@Override
+	public void actionPerformed(final ActionEvent p1) {
+		// see what value it was
+		if (p1.getSource() == _cancelBtn) {
+			initData();
+		} else if (p1.getSource() == _okBtn) {
+			try {
+				// extract the data values
+				double latV = MWCXMLReader.readThisDouble(_latDegs.getText())
+						+ MWCXMLReader.readThisDouble(_latMins.getText()) / 60.0;
+
+				if (_southBtn.getState())
+					latV = latV * -1.0;
+
+				// extract the data values
+				double longV = MWCXMLReader.readThisDouble(_longDegs.getText())
+						+ MWCXMLReader.readThisDouble(_longMins.getText()) / 60.0;
+
+				if (_westBtn.getState())
+					longV = longV * -1.0;
+
+				_result = new WorldLocation(latV, longV, _result.getDepth());
+			} catch (final ParseException pe) {
+				MWC.Utilities.Errors.Trace.trace(pe);
+			}
+		}
+
+		setVisible(false);
+	}
+
+	// also handle the window being closed
+	public void doWindowClosing(final WindowEvent e) {
+		// process the cancel event
+		initData();
+	}
+
+	/**
+	 * return the current value of the field
 	 */
-	protected WorldLocation getResult()
-	{
+	protected WorldLocation getResult() {
 		return _result;
 	}
-	
-	
-	/** initialise the text boxes
+
+	/**
+	 * initialise the text boxes
 	 */
-	protected void initData()
-	{
+	protected void initData() {
 		// initialise the results parameter
 		_result = _initial;
-		
-		final MWC.Utilities.TextFormatting.BriefFormatLocation.brokenDown _lat
-			= new BriefFormatLocation.brokenDown(_result.getLat(), true);
-		final MWC.Utilities.TextFormatting.BriefFormatLocation.brokenDown _long
-			= new BriefFormatLocation.brokenDown(_result.getLong(), false);
 
-		
+		final MWC.Utilities.TextFormatting.BriefFormatLocation.brokenDown _lat = new BriefFormatLocation.brokenDown(
+				_result.getLat(), true);
+		final MWC.Utilities.TextFormatting.BriefFormatLocation.brokenDown _long = new BriefFormatLocation.brokenDown(
+				_result.getLong(), false);
+
 		_latDegs.setText("" + _lat.deg);
 		_latMins.setText("" + (_lat.min + _lat.sec / (60.0 * 60.0)));
-		
-		if(_lat.hem == 'N')
+
+		if (_lat.hem == 'N')
 			_northBtn.setState(true);
 		else
 			_southBtn.setState(true);
 
 		_longDegs.setText("" + _long.deg);
 		_longMins.setText("" + (_long.min + _long.sec / (60.0 * 60.0)));
-		
-		if(_long.hem == 'E')
+
+		if (_long.hem == 'E')
 			_eastBtn.setState(true);
 		else
 			_westBtn.setState(true);
-		
+
 	}
-	
-	/** create the GUI
+
+	/**
+	 * create the GUI
 	 */
-	protected void initGUI()
-	{
+	protected void initGUI() {
 		// create the holders
 		final Panel btnHolder = new Panel();
 		final Panel dataHolder = new Panel();
@@ -143,7 +176,7 @@ public class AWTWorldLocationEditor extends Dialog implements ActionListener
 		final Panel latBtnHolder = new Panel();
 		final Panel longHolder = new Panel();
 		final Panel longBtnHolder = new Panel();
-		
+
 		// create the ok/cancel buttons
 		_okBtn = new Button("OK");
 		_okBtn.addActionListener(this);
@@ -151,17 +184,17 @@ public class AWTWorldLocationEditor extends Dialog implements ActionListener
 		_cancelBtn.addActionListener(this);
 		btnHolder.add(_okBtn);
 		btnHolder.add(_cancelBtn);
-		
+
 		// handle the window closing
-		this.addWindowListener(new WindowAdapter(){
-			public void windowClosing(final WindowEvent e)
-			{
+		this.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(final WindowEvent e) {
 				doWindowClosing(e);
-			}			
-			});
-		
+			}
+		});
+
 		// latitude group
-		final CheckboxGroup latGrp = new CheckboxGroup();		
+		final CheckboxGroup latGrp = new CheckboxGroup();
 		_latDegs = new TextField("  ");
 		_latMins = new TextField("  ");
 		_northBtn = new Checkbox("North", latGrp, true);
@@ -178,9 +211,9 @@ public class AWTWorldLocationEditor extends Dialog implements ActionListener
 		latBtnHolder.add(_northBtn);
 		latBtnHolder.add(_southBtn);
 		latHolder.add(latBtnHolder);
-		
+
 		// longitude group
-		final CheckboxGroup longGrp = new CheckboxGroup();		
+		final CheckboxGroup longGrp = new CheckboxGroup();
 		_longDegs = new TextField("  ");
 		_longMins = new TextField("  ");
 		_eastBtn = new Checkbox("East", longGrp, true);
@@ -196,62 +229,16 @@ public class AWTWorldLocationEditor extends Dialog implements ActionListener
 		longHolder.add(new Label("Hemi"));
 		longBtnHolder.add(_eastBtn);
 		longBtnHolder.add(_westBtn);
-		longHolder.add(longBtnHolder);															
+		longHolder.add(longBtnHolder);
 
 		final GridLayout gl3 = new GridLayout(0, 2);
 		dataHolder.setLayout(gl3);
 		dataHolder.add(latHolder);
 		dataHolder.add(longHolder);
-		
+
 		this.setLayout(new BorderLayout());
 		this.add(dataHolder, "Center");
 		this.add(btnHolder, "South");
-		
-	}
-	
 
-
-	public void actionPerformed(final ActionEvent p1)
-	{
-		// see what value it was
-		if(p1.getSource() == _cancelBtn)
-		{
-			initData();
-		}
-		else if(p1.getSource() == _okBtn)
-		{
-			try
-			{
-				// extract the data values
-				double latV = MWCXMLReader.readThisDouble(_latDegs.getText()) +
-							   MWCXMLReader.readThisDouble(_latMins.getText()) / 60.0;
-				
-				if(_southBtn.getState())
-					latV = latV * -1.0;
-	
-				// extract the data values
-				double longV = MWCXMLReader.readThisDouble(_longDegs.getText()) +
-						MWCXMLReader.readThisDouble(_longMins.getText()) / 60.0;
-				 
-				if(_westBtn.getState())
-					longV = longV * -1.0;
-				
-				_result = new WorldLocation(latV, longV, _result.getDepth());
-			}
-			catch(final ParseException pe)
-			{
-				MWC.Utilities.Errors.Trace.trace(pe);	
-			}
-		}
-		
-		setVisible(false);
-	}
-	
-	
-	// also handle the window being closed
-	public void doWindowClosing(final WindowEvent e)
-	{
-		// process the cancel event
-		initData();
 	}
 }

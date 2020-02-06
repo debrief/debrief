@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.asset.scenariocontroller2.views;
@@ -29,37 +29,36 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.mwc.asset.scenariocontroller2.views.MultiScenarioView.UIDisplay;
 
-public class UISkeleton2 extends Composite implements UIDisplay
-{
+public class UISkeleton2 extends Composite implements UIDisplay {
 
 	/**
 	 * Auto-generated method to display this org.eclipse.swt.widgets.Composite
 	 * inside a new Shell.
 	 */
-	public static void showGUI()
-	{
+	public static void showGUI() {
 		final Display display = Display.getDefault();
 		final Shell shell = new Shell(display);
 		final UISkeleton2 inst = new UISkeleton2(shell, SWT.NULL);
 		final Point size = inst.getSize();
 		shell.setLayout(new FillLayout());
 		shell.layout();
-		if (size.x == 0 && size.y == 0)
-		{
+		if (size.x == 0 && size.y == 0) {
 			inst.pack();
 			shell.pack();
-		}
-		else
-		{
+		} else {
 			final Rectangle shellBounds = shell.computeTrim(0, 0, size.x, size.y);
 			shell.setSize(shellBounds.width, shellBounds.height);
 		}
 		shell.open();
-		while (!shell.isDisposed())
-		{
+		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch())
 				display.sleep();
 		}
@@ -85,8 +84,7 @@ public class UISkeleton2 extends Composite implements UIDisplay
 	 * @param parent
 	 * @param style
 	 */
-	public UISkeleton2(final Composite parent, final int style)
-	{
+	public UISkeleton2(final Composite parent, final int style) {
 		super(parent, style);
 		setLayout(new FormLayout());
 
@@ -120,8 +118,7 @@ public class UISkeleton2 extends Composite implements UIDisplay
 
 		scenarioVal = new Label(filenameHolder, SWT.NONE);
 		scenarioVal.setAlignment(SWT.RIGHT);
-		scenarioVal.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false,
-				1, 1));
+		scenarioVal.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		// scenarioVal.setBounds(0, 0, 59, 14);
 		scenarioVal.setText("[pending]                     ");
 
@@ -131,8 +128,7 @@ public class UISkeleton2 extends Composite implements UIDisplay
 
 		controlVal = new Label(filenameHolder, SWT.NONE);
 		controlVal.setAlignment(SWT.RIGHT);
-		controlVal.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false,
-				1, 1));
+		controlVal.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		// controlVal.setBounds(0, 0, 59, 14);
 		controlVal.setText("[pending]               ");
 
@@ -187,8 +183,47 @@ public class UISkeleton2 extends Composite implements UIDisplay
 	}
 
 	@Override
-	public void dispose()
-	{
+	public void addGenerateListener(final SelectionListener listener) {
+		Display.getDefault().syncExec(new Runnable() {
+			@Override
+			public void run() {
+				btnGenerate.addSelectionListener(listener);
+			}
+		});
+	}
+
+	@Override
+	public void addInitListener(final SelectionAdapter selectionAdapter) {
+		btnInit.addSelectionListener(selectionAdapter);
+	}
+
+	@Override
+	public void addPlayListener(final SelectionAdapter selectionAdapter) {
+		btnPlay.addSelectionListener(selectionAdapter);
+	}
+
+	@Override
+	public void addRunAllListener(final SelectionListener listener) {
+		Display.getDefault().syncExec(new Runnable() {
+			@Override
+			public void run() {
+				btnRunAll.addSelectionListener(listener);
+			}
+		});
+	}
+
+	@Override
+	public void addStepListener(final SelectionAdapter selectionAdapter) {
+		btnStep.addSelectionListener(selectionAdapter);
+	}
+
+	@Override
+	protected void checkSubclass() {
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	@Override
+	public void dispose() {
 		super.dispose();
 
 		// and ditch our custom objects
@@ -198,151 +233,99 @@ public class UISkeleton2 extends Composite implements UIDisplay
 	}
 
 	@Override
-	protected void checkSubclass()
-	{
-		// Disable the check that prevents subclassing of SWT components
-	}
-
-	public Composite getMultiTableHolder()
-	{
+	public Composite getMultiTableHolder() {
 		return multiTableHolder;
 	}
 
-	public void setScenario(final String name)
-	{
-		Display.getDefault().syncExec(new Runnable()
-		{
-			public void run()
-			{
-				scenarioVal.setText(name);
-			}
-		});
-	}
-
-	public void setControl(final String name)
-	{
-		Display.getDefault().syncExec(new Runnable()
-		{
-			public void run()
-			{
+	@Override
+	public void setControl(final String name) {
+		Display.getDefault().syncExec(new Runnable() {
+			@Override
+			public void run() {
 				controlVal.setText(name);
 			}
 		});
 	}
 
-	public void addGenerateListener(final SelectionListener listener)
-	{
-		Display.getDefault().syncExec(new Runnable()
-		{
-			public void run()
-			{
-				btnGenerate.addSelectionListener(listener);
-			}
-		});
-	}
-
-	public void addRunAllListener(final SelectionListener listener)
-	{
-		Display.getDefault().syncExec(new Runnable()
-		{
-			public void run()
-			{
-				btnRunAll.addSelectionListener(listener);
-			}
-		});
-	}
-
-	public void setRunAllEnabled(final boolean b)
-	{
-		Display.getDefault().syncExec(new Runnable()
-		{
-			public void run()
-			{
-				btnRunAll.setEnabled(b);
-			}
-		});
-	}
-
-	public void setGenerateEnabled(final boolean b)
-	{
-		Display.getDefault().syncExec(new Runnable()
-		{
-			public void run()
-			{
+	@Override
+	public void setGenerateEnabled(final boolean b) {
+		Display.getDefault().syncExec(new Runnable() {
+			@Override
+			public void run() {
 				btnGenerate.setEnabled(b);
 			}
 		});
 	}
 
-	public void setInitEnabled(final boolean enabled)
-	{
-		Display.getDefault().syncExec(new Runnable()
-		{
-			public void run()
-			{
+	@Override
+	public void setInitEnabled(final boolean enabled) {
+		Display.getDefault().syncExec(new Runnable() {
+			@Override
+			public void run() {
 				btnInit.setEnabled(enabled);
 			}
 		});
 	}
 
-	public void setStepEnabled(final boolean enabled)
-	{
-		Display.getDefault().syncExec(new Runnable()
-		{
-			public void run()
-			{
-				btnStep.setEnabled(enabled);
-			}
-		});
-	}
-
-	public void setPlayEnabled(final boolean enabled)
-	{
-		Display.getDefault().syncExec(new Runnable()
-		{
-			public void run()
-			{
+	@Override
+	public void setPlayEnabled(final boolean enabled) {
+		Display.getDefault().syncExec(new Runnable() {
+			@Override
+			public void run() {
 				btnPlay.setEnabled(enabled);
 			}
 		});
 	}
 
-	public void setPlayLabel(final String text)
-	{
-		Display.getDefault().syncExec(new Runnable()
-		{
-			public void run()
-			{
+	@Override
+	public void setPlayLabel(final String text) {
+		Display.getDefault().syncExec(new Runnable() {
+			@Override
+			public void run() {
 				btnPlay.setText(text);
 			}
 		});
 	}
 
-	public void setTime(final String time)
-	{
-		Display.getDefault().syncExec(new Runnable()
-		{
-			public void run()
-			{
-				if (!lblTime.isDisposed())
-					lblTime.setText(time);
+	@Override
+	public void setRunAllEnabled(final boolean b) {
+		Display.getDefault().syncExec(new Runnable() {
+			@Override
+			public void run() {
+				btnRunAll.setEnabled(b);
 			}
 		});
 	}
 
-	public void addInitListener(final SelectionAdapter selectionAdapter)
-	{
-		btnInit.addSelectionListener(selectionAdapter);
+	@Override
+	public void setScenario(final String name) {
+		Display.getDefault().syncExec(new Runnable() {
+			@Override
+			public void run() {
+				scenarioVal.setText(name);
+			}
+		});
 	}
 
-	public void addStepListener(final SelectionAdapter selectionAdapter)
-	{
-		btnStep.addSelectionListener(selectionAdapter);
+	@Override
+	public void setStepEnabled(final boolean enabled) {
+		Display.getDefault().syncExec(new Runnable() {
+			@Override
+			public void run() {
+				btnStep.setEnabled(enabled);
+			}
+		});
 	}
 
-	public void addPlayListener(final SelectionAdapter selectionAdapter)
-	{
-		btnPlay.addSelectionListener(selectionAdapter);
+	@Override
+	public void setTime(final String time) {
+		Display.getDefault().syncExec(new Runnable() {
+			@Override
+			public void run() {
+				if (!lblTime.isDisposed())
+					lblTime.setText(time);
+			}
+		});
 	}
 
 }

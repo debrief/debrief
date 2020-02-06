@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.debrief.lite.properties;
@@ -38,95 +38,85 @@ import MWC.GUI.Undo.UndoBuffer;
  * @author Ayesha <ayesha.ma@gmail.com>
  *
  */
-public class PropertiesDialog extends JDialog
-{
+public class PropertiesDialog extends JDialog {
 
-  // in order to overwride the close method, so that the dialog is closed and disposed
-  private static class PropsEditor extends SwingPropertyEditor2
-  {
+	// in order to overwride the close method, so that the dialog is closed and
+	// disposed
+	private static class PropsEditor extends SwingPropertyEditor2 {
 
-    public PropsEditor(final EditorType info, final SwingPropertiesPanel parent,
-        final Layers theLayers, final ToolParent toolParent,
-        final Layer parentLayer, final SwingPropertiesPanel propsPanel)
-    {
-      super(info, parent, theLayers, toolParent, parentLayer, propsPanel);
-    }
+		public PropsEditor(final EditorType info, final SwingPropertiesPanel parent, final Layers theLayers,
+				final ToolParent toolParent, final Layer parentLayer, final SwingPropertiesPanel propsPanel) {
+			super(info, parent, theLayers, toolParent, parentLayer, propsPanel);
+		}
 
-    @Override
-    public void close()
-    {
-      super.close();
-      if (!dialogs.isEmpty())
-      {
-        final PropertiesDialog lastDialog = dialogs.pop();
-        lastDialog.dispose();
-      }
-    }
+		@Override
+		public void close() {
+			super.close();
+			if (!dialogs.isEmpty()) {
+				final PropertiesDialog lastDialog = dialogs.pop();
+				lastDialog.dispose();
+			}
+		}
 
-  }
+	}
 
-  private static Stack<PropertiesDialog> dialogs = new Stack<>();
-  /**
-   *
-   */
-  private static final long serialVersionUID = 1L;
+	private static Stack<PropertiesDialog> dialogs = new Stack<>();
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-  private final EditorType _editableProperty;
+	private final EditorType _editableProperty;
 
-  private final Layers _theLayers;
-  /**
-   * the toolparent we supply to any new panels
-   */
-  MWC.GUI.ToolParent _theToolParent;
+	private final Layers _theLayers;
+	/**
+	 * the toolparent we supply to any new panels
+	 */
+	MWC.GUI.ToolParent _theToolParent;
 
-  /**
-   * the name of the session we read from, for when the toolbar floats
-   */
-  private final MyMetalToolBarUI.ToolbarOwner _owner;
+	/**
+	 * the name of the session we read from, for when the toolbar floats
+	 */
+	private final MyMetalToolBarUI.ToolbarOwner _owner;
 
-  private final UndoBuffer _undoBuffer;
-  private final Layer _parentLayer;
+	private final UndoBuffer _undoBuffer;
+	private final Layer _parentLayer;
 
-  public PropertiesDialog(final EditorType editableProperty,
-      final Layers layers, final UndoBuffer undoBuffer,
-      final ToolParent toolParent, final ToolbarOwner owner,
-      final Layer parentLayer)
-  {
-    _editableProperty = editableProperty;
-    _theLayers = layers;
-    _owner = owner;
-    _theToolParent = toolParent;
-    _undoBuffer = undoBuffer;
-    _parentLayer = parentLayer;
-    dialogs.add(this);
-    initForm();
-    setModal(true);
-    setTitle("Edit Properties");
-    final URL iconURL = getClass().getClassLoader().getResource(
-        "images/icon.png");
-    if (iconURL != null)
-    {
-      final ImageIcon myIcon = new ImageIcon(iconURL);
-      if (myIcon != null)
-        setIconImage(myIcon.getImage());
-    }
-  }
+	public PropertiesDialog(final EditorType editableProperty, final Layers layers, final UndoBuffer undoBuffer,
+			final ToolParent toolParent, final ToolbarOwner owner, final Layer parentLayer) {
+		_editableProperty = editableProperty;
+		_theLayers = layers;
+		_owner = owner;
+		_theToolParent = toolParent;
+		_undoBuffer = undoBuffer;
+		_parentLayer = parentLayer;
+		dialogs.add(this);
+		initForm();
+		setModal(true);
+		setTitle("Edit Properties");
+		final URL iconURL = getClass().getClassLoader().getResource("images/icon.png");
+		if (iconURL != null) {
+			final ImageIcon myIcon = new ImageIcon(iconURL);
+			if (myIcon != null)
+				setIconImage(myIcon.getImage());
+		}
+	}
 
-  protected void initForm()
-  {
-    final SwingPropertiesPanel propsPanel = new SwingPropertiesPanel(_theLayers,
-        _undoBuffer, _theToolParent, _owner);
-    propsPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-    final PropsEditor ap = new PropsEditor(_editableProperty, propsPanel,
-        _theLayers, _theToolParent, _parentLayer, propsPanel);
-    final JPanel thePanel = (JPanel) ap.getPanel();
-    thePanel.setName(_editableProperty.getDisplayName());
-    // now, listen out for the name of the panel changing - we are removed as listener by the
-    // SwingPropertyEditor
-    // in it's close operation
-    _editableProperty.addPropertyChangeListener(propsPanel);
-    propsPanel.add(thePanel);
-    add(propsPanel, BorderLayout.CENTER);
-  }
+	protected void initForm() {
+		final SwingPropertiesPanel propsPanel = new SwingPropertiesPanel(_theLayers, _undoBuffer, _theToolParent,
+				_owner);
+		propsPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		final PropsEditor ap = new PropsEditor(_editableProperty, propsPanel, _theLayers, _theToolParent, _parentLayer,
+				propsPanel);
+		final JPanel thePanel = (JPanel) ap.getPanel();
+		thePanel.setName(_editableProperty.getDisplayName());
+		// now, listen out for the name of the panel changing - we are removed as
+		// listener by the
+		// SwingPropertyEditor
+		// in it's close operation
+		_editableProperty.addPropertyChangeListener(propsPanel);
+		propsPanel.add(thePanel);
+		add(propsPanel, BorderLayout.CENTER);
+	}
 
 }

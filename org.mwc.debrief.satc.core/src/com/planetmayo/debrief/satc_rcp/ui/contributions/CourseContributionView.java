@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package com.planetmayo.debrief.satc_rcp.ui.contributions;
@@ -30,11 +30,9 @@ import com.planetmayo.debrief.satc_rcp.ui.converters.MinMaxLimitObservable;
 import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.units.UnitConverter;
 
-public class CourseContributionView extends BaseContributionView<CourseForecastContribution>
-{
-	public CourseContributionView(Composite parent, CourseForecastContribution contribution,
-			final IContributions contributions)
-	{
+public class CourseContributionView extends BaseContributionView<CourseForecastContribution> {
+	public CourseContributionView(final Composite parent, final CourseForecastContribution contribution,
+			final IContributions contributions) {
 		super(parent, contribution, contributions);
 		initUI();
 	}
@@ -42,45 +40,40 @@ public class CourseContributionView extends BaseContributionView<CourseForecastC
 	// don't use inheritance here, because of different nature and although code
 	// looks very similar it may be headache in future
 	@Override
-	protected void bindValues(DataBindingContext context)
-	{
-		PrefixSuffixLabelConverter labelConverter = new PrefixSuffixLabelConverter(
-				Object.class, " \u00B0");
+	protected void bindValues(final DataBindingContext context) {
+		final PrefixSuffixLabelConverter labelConverter = new PrefixSuffixLabelConverter(Object.class, " \u00B0");
 		labelConverter.setNestedUnitConverter(UnitConverter.ANGLE_DEG.getModelToUI());
-		
-		IObservableValue estimateValue = BeansObservables.observeValue(
-				contribution, BaseContribution.ESTIMATE);
-		IObservableValue minCourseValue = BeansObservables.observeValue(
-				contribution, CourseForecastContribution.MIN_COURSE);
-		IObservableValue maxCourseValue = BeansObservables.observeValue(
-				contribution, CourseForecastContribution.MAX_COURSE);		
-		MinMaxLimitObservable hardConstraints = new MinMaxLimitObservable(minCourseValue, 
-				maxCourseValue, new CompoundConverter(UnitConverter.ANGLE_DEG.getModelToUI(), new IntegerConverter()));
+
+		final IObservableValue estimateValue = BeansObservables.observeValue(contribution, BaseContribution.ESTIMATE);
+		final IObservableValue minCourseValue = BeansObservables.observeValue(contribution,
+				CourseForecastContribution.MIN_COURSE);
+		final IObservableValue maxCourseValue = BeansObservables.observeValue(contribution,
+				CourseForecastContribution.MAX_COURSE);
+		final MinMaxLimitObservable hardConstraints = new MinMaxLimitObservable(minCourseValue, maxCourseValue,
+				new CompoundConverter(UnitConverter.ANGLE_DEG.getModelToUI(), new IntegerConverter()));
 		bindCommonHeaderWidgets(context, hardConstraints, estimateValue, labelConverter);
 		bindCommonDates(context);
-		
-		bindSliderLabel(context, minCourseValue, minSlider, minLabel,	labelConverter, UnitConverter.ANGLE_DEG);
+
+		bindSliderLabel(context, minCourseValue, minSlider, minLabel, labelConverter, UnitConverter.ANGLE_DEG);
 		bindSliderLabel(context, maxCourseValue, maxSlider, maxLabel, labelConverter, UnitConverter.ANGLE_DEG);
-		bindSliderLabelCheckbox(context, estimateValue, estimateSlider, estimateDetailsLabel, estimateActiveCheckbox, 
-				labelConverter, new BooleanToNullConverter<Double>(0d), UnitConverter.ANGLE_DEG);		
-		
+		bindSliderLabelCheckbox(context, estimateValue, estimateSlider, estimateDetailsLabel, estimateActiveCheckbox,
+				labelConverter, new BooleanToNullConverter<Double>(0d), UnitConverter.ANGLE_DEG);
+
 		bindMaxMinEstimate(estimateValue, minCourseValue, maxCourseValue);
 	}
 
 	@Override
-	protected void initializeWidgets()
-	{
+	protected String getTitlePrefix() {
+		return "Course Forecast - ";
+	}
+
+	@Override
+	protected void initializeWidgets() {
 		minSlider.setMinimum(0);
 		minSlider.setMaximum(360);
 		maxSlider.setMinimum(0);
 		maxSlider.setMaximum(360);
 		estimateSlider.setMinimum(0);
 		estimateSlider.setMaximum(360);
-	}
-
-	@Override
-	protected String getTitlePrefix()
-	{
-		return "Course Forecast - ";
 	}
 }

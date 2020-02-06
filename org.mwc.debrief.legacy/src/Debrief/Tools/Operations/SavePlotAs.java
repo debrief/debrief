@@ -1,143 +1,144 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package Debrief.Tools.Operations;
 
-import MWC.GUI.Tools.*;
-import MWC.GUI.*;
-import Debrief.GUI.Frames.*;
-import java.io.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 
-public class SavePlotAs extends MWC.GUI.Tools.Operations.Save
-{
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  private Session _theSession = null;
+import Debrief.GUI.Frames.Session;
+import MWC.GUI.ToolParent;
+import MWC.GUI.Tools.Action;
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  public SavePlotAs(final ToolParent theParent,
-                    final Session theSession){
-    this(theParent, theSession,  "Save Plot As...", "images/save_as.png");
-  }
+public class SavePlotAs extends MWC.GUI.Tools.Operations.Save {
+	///////////////////////////////////////////////////////
+	// store action information
+	///////////////////////////////////////////////////////
+	protected final static class SavePlotAction implements Action {
+		/**
+		 * store the name of the session we have saved
+		 */
+		final String _theSessionName;
 
-  public SavePlotAs(final ToolParent theParent,
-                    final Session theSession,
-                    final String theTitle,
-                    final String theImage)
-  {
-    super(theParent, theTitle, "*.dpl", theImage);
+		public SavePlotAction(final String theName) {
+			_theSessionName = theName;
+		}
 
+		@Override
+		public final void execute() {
+		}
 
-    // store the session parameter
-    _theSession = theSession;
+		@Override
+		public final boolean isRedoable() {
+			return false;
+		}
 
-    // see if we have an old directory to retrieve
-    if(_lastDirectory.equals(""))
-    {
-      final String val = getParent().getProperty("DPL_Directory");
-      if(val != null)
-        _lastDirectory = val;
-    }
-  }
+		@Override
+		public final boolean isUndoable() {
+			return false;
+		}
 
-  /////////////////////////////////////////////////////////////
-  // member methods
-  ////////////////////////////////////////////////////////////
-  protected final Action doSave(final String filename)
-  {
-    Action res = null;
+		@Override
+		public final String toString() {
+			return "Save " + _theSessionName;
+		}
 
-    // now save session to this file
-    try
-    {
+		@Override
+		public final void undo() {
+			// delete the plottables from the Application object
+		}
 
-      // open the file
-      final OutputStream os = new FileOutputStream(filename);
+	}
 
-      // inform the session of it's filename
-      _theSession.setFileName(filename);
+	/**
+		 *
+		 */
+	private static final long serialVersionUID = 1L;
 
-      // create the object output stream
-      final ObjectOutputStream oos = new ObjectOutputStream(os);
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+	private Session _theSession = null;
 
-      // do the save
-      oos.writeObject(_theSession);
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	public SavePlotAs(final ToolParent theParent, final Session theSession) {
+		this(theParent, theSession, "Save Plot As...", "images/save_as.png");
+	}
 
-      // and relax
-      oos.close();
-      os.close();
+	public SavePlotAs(final ToolParent theParent, final Session theSession, final String theTitle,
+			final String theImage) {
+		super(theParent, theTitle, "*.dpl", theImage);
 
-      res =  new SavePlotAction(_theSession.getName());
+		// store the session parameter
+		_theSession = theSession;
 
-    }
-    catch(final IOException e)
-    {
-      MWC.Utilities.Errors.Trace.trace(e);
-    }
+		// see if we have an old directory to retrieve
+		if (_lastDirectory.equals("")) {
+			final String val = getParent().getProperty("DPL_Directory");
+			if (val != null)
+				_lastDirectory = val;
+		}
+	}
 
-    return res;
-  }
+	@Override
+	public final void close() {
+		super.close();
 
+		_theSession = null;
+	}
 
-  final Session getSession()
-  {
-    return _theSession;
-  }
+	/////////////////////////////////////////////////////////////
+	// member methods
+	////////////////////////////////////////////////////////////
+	@Override
+	protected final Action doSave(final String filename) {
+		Action res = null;
 
-  ///////////////////////////////////////////////////////
-  // store action information
-  ///////////////////////////////////////////////////////
-  protected final static class SavePlotAction implements Action{
-    /** store the name of the session we have saved
-     */
-    final String _theSessionName;
+		// now save session to this file
+		try {
 
-    public SavePlotAction(final String theName){
-      _theSessionName = theName;
-    }
+			// open the file
+			final OutputStream os = new FileOutputStream(filename);
 
-    public final boolean isRedoable(){
-      return false;
-    }
+			// inform the session of it's filename
+			_theSession.setFileName(filename);
 
+			// create the object output stream
+			final ObjectOutputStream oos = new ObjectOutputStream(os);
 
-    public final boolean isUndoable(){
-      return false;
-    }
+			// do the save
+			oos.writeObject(_theSession);
 
-    public final String toString(){
-      return "Save " + _theSessionName;
-    }
+			// and relax
+			oos.close();
+			os.close();
 
-    public final void undo(){
-      // delete the plottables from the Application object
-    }
+			res = new SavePlotAction(_theSession.getName());
 
-    public final void execute(){
-    }
+		} catch (final IOException e) {
+			MWC.Utilities.Errors.Trace.trace(e);
+		}
 
-  }
+		return res;
+	}
 
-
-  public final void close()
-  {
-    super.close();
-
-    _theSession = null;
-  }
+	final Session getSession() {
+		return _theSession;
+	}
 }

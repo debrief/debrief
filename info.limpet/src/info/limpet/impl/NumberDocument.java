@@ -1,21 +1,18 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 package info.limpet.impl;
-
-import info.limpet.ICommand;
-import info.limpet.operations.RangedEntity;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -32,346 +29,286 @@ import org.eclipse.january.dataset.IndexIterator;
 import org.eclipse.january.dataset.Maths;
 import org.eclipse.january.metadata.AxesMetadata;
 
-public class NumberDocument extends Document<Double> implements RangedEntity
-{
-  public static class DoubleIterator implements Iterator<Double>
-  {
-    private final double[] _data;
-    private int _ctr;
+import info.limpet.ICommand;
+import info.limpet.operations.RangedEntity;
 
-    public DoubleIterator(final double[] data)
-    {
-      _data = data;
-      _ctr = 0;
-    }
+public class NumberDocument extends Document<Double> implements RangedEntity {
+	public static class DoubleIterator implements Iterator<Double> {
+		private final double[] _data;
+		private int _ctr;
 
-    @Override
-    public boolean hasNext()
-    {
-      return _ctr < _data.length;
-    }
+		public DoubleIterator(final double[] data) {
+			_data = data;
+			_ctr = 0;
+		}
 
-    @Override
-    public Double next()
-    {
-      return _data[_ctr++];
-    }
+		@Override
+		public boolean hasNext() {
+			return _ctr < _data.length;
+		}
 
-    @Override
-    public void remove()
-    {
-      throw new IllegalArgumentException(
-          "Remove operation not provided for this iterator");
-    }
+		@Override
+		public Double next() {
+			return _data[_ctr++];
+		}
 
-  }
+		@Override
+		public void remove() {
+			throw new IllegalArgumentException("Remove operation not provided for this iterator");
+		}
 
-  public class MyStats
-  {
-    public double max()
-    {
-      final DoubleDataset ds = (DoubleDataset) dataset;
-      return (Double) ds.max();
-    }
+	}
 
-    public double mean()
-    {
-      final DoubleDataset ds = (DoubleDataset) dataset;
-      return (Double) ds.mean(true);
-    }
+	public class MyStats {
+		public double max() {
+			final DoubleDataset ds = (DoubleDataset) dataset;
+			return (Double) ds.max();
+		}
 
-    public double min()
-    {
-      final DoubleDataset ds = (DoubleDataset) dataset;
-      return (Double) ds.min(true);
-    }
+		public double mean() {
+			final DoubleDataset ds = (DoubleDataset) dataset;
+			return (Double) ds.mean(true);
+		}
 
-    public double sd()
-    {
-      final DoubleDataset ds = (DoubleDataset) dataset;
-      return ds.stdDeviation(true);
-    }
+		public double min() {
+			final DoubleDataset ds = (DoubleDataset) dataset;
+			return (Double) ds.min(true);
+		}
 
-    public double variance()
-    {
-      final DoubleDataset ds = (DoubleDataset) dataset;
-      return ds.variance(true);
-    }
-  }
+		public double sd() {
+			final DoubleDataset ds = (DoubleDataset) dataset;
+			return ds.stdDeviation(true);
+		}
 
-  private Unit<?> qType;
+		public double variance() {
+			final DoubleDataset ds = (DoubleDataset) dataset;
+			return ds.variance(true);
+		}
+	}
 
-  private Range range;
+	private Unit<?> qType;
 
-  public NumberDocument(final DoubleDataset dataset,
-      final ICommand predecessor, final Unit<?> qType)
-  {
-    super(dataset, predecessor);
+	private Range range;
 
-    if (qType == null)
-    {
-      this.qType = Dimensionless.UNIT;
-    }
-    else
-    {
-      this.qType = qType;
-    }
-  }
+	public NumberDocument(final DoubleDataset dataset, final ICommand predecessor, final Unit<?> qType) {
+		super(dataset, predecessor);
 
-  public void copy(final NumberDocument other)
-  {
-    this.dataset = other.dataset;
-  }
+		if (qType == null) {
+			this.qType = Dimensionless.UNIT;
+		} else {
+			this.qType = qType;
+		}
+	}
 
-  @Override
-  public Iterator<Double> getIterator()
-  {
-    final DoubleDataset od = (DoubleDataset) dataset;
-    final double[] data = od.getData();
-    return new DoubleIterator(data);
-  }
+	public void copy(final NumberDocument other) {
+		this.dataset = other.dataset;
+	}
 
-  @UIProperty(name = "Range", category = UIProperty.CATEGORY_METADATA,
-      visibleWhen = "showRange == true")
-  public Range getRange()
-  {
-    return range;
-  }
+	@Override
+	public Iterator<Double> getIterator() {
+		final DoubleDataset od = (DoubleDataset) dataset;
+		final double[] data = od.getData();
+		return new DoubleIterator(data);
+	}
 
-  /**
-   * we've introduced this method as a workaround. The "visibleWhen" operator for getRange doesn't
-   * work with "size==1". Numerical comparisions don't seem to work. So, we're wrapping the
-   * numberical comparison in this boolean method.
-   * 
-   * @return
-   */
-  public boolean getShowRange()
-  {
-    return size() == 1;
-  }
+	@Override
+	@UIProperty(name = "Range", category = UIProperty.CATEGORY_METADATA, visibleWhen = "showRange == true")
+	public Range getRange() {
+		return range;
+	}
 
-  @UIProperty(name = "Size", category = UIProperty.CATEGORY_METADATA)
-  public int getSize()
-  {
-    return size();
-  }
+	/**
+	 * we've introduced this method as a workaround. The "visibleWhen" operator
+	 * for getRange doesn't work with "size==1". Numerical comparisions don't
+	 * seem to work. So, we're wrapping the numberical comparison in this
+	 * boolean method.
+	 *
+	 * @return
+	 */
+	public boolean getShowRange() {
+		return size() == 1;
+	}
 
-  public Unit<?> getType()
-  {
-    return qType;
-  }
+	@UIProperty(name = "Size", category = UIProperty.CATEGORY_METADATA)
+	public int getSize() {
+		return size();
+	}
 
-  @UIProperty(name = "Units", category = "Label", visibleWhen = "units != null")
-  public
-      Unit<?> getUnits()
-  {
-    return qType;
-  }
+	public Unit<?> getType() {
+		return qType;
+	}
 
-  @UIProperty(name = "Value", category = UIProperty.CATEGORY_VALUE,
-      visibleWhen = "showRange == true")
-  public double getValue()
-  {
-    final DoubleDataset data = (DoubleDataset) getDataset();
-    return data.get(0);
-  }
+	@UIProperty(name = "Units", category = "Label", visibleWhen = "units != null")
+	public Unit<?> getUnits() {
+		return qType;
+	}
 
-  public double getValueAt(final int i)
-  {
-    DoubleDataset ds = (DoubleDataset) dataset;
-    return dataset.getDouble(ds.getOffset() + i);
-  }
+	@Override
+	@UIProperty(name = "Value", category = UIProperty.CATEGORY_VALUE, visibleWhen = "showRange == true")
+	public double getValue() {
+		final DoubleDataset data = (DoubleDataset) getDataset();
+		return data.get(0);
+	}
 
-  public Double interpolateValue(final double i, final InterpMethod linear)
-  {
-    Double res = null;
+	public double getValueAt(final int i) {
+		final DoubleDataset ds = (DoubleDataset) dataset;
+		return dataset.getDouble(ds.getOffset() + i);
+	}
 
-    // do we have axes?
-    final AxesMetadata index = dataset.getFirstMetadata(AxesMetadata.class);
-    final Dataset indexData = (Dataset) index.getAxes()[0];
+	public Double interpolateValue(final double i, final InterpMethod linear) {
+		Double res = null;
 
-    // check the target index is within the range
-    final double lowerIndex = indexData.getDouble(0);
-    final int indexSize = indexData.getSize();
-    final double upperVal = indexData.getDouble(indexSize - 1);
-    if (i >= lowerIndex && i <= upperVal)
-    {
-      // ok, in range
-      final DoubleDataset ds = (DoubleDataset) dataset;
-      final DoubleDataset indexes =
-          (DoubleDataset) DatasetFactory.createFromObject(new Double[]
-          {i});
+		// do we have axes?
+		final AxesMetadata index = dataset.getFirstMetadata(AxesMetadata.class);
+		final Dataset indexData = (Dataset) index.getAxes()[0];
 
-      // perform the interpolation
-      final Dataset dOut = Maths.interpolate(indexData, ds, indexes, 0, 0);
+		// check the target index is within the range
+		final double lowerIndex = indexData.getDouble(0);
+		final int indexSize = indexData.getSize();
+		final double upperVal = indexData.getDouble(indexSize - 1);
+		if (i >= lowerIndex && i <= upperVal) {
+			// ok, in range
+			final DoubleDataset ds = (DoubleDataset) dataset;
+			final DoubleDataset indexes = (DoubleDataset) DatasetFactory.createFromObject(new Double[] { i });
 
-      // get the single matching value out
-      res = dOut.getDouble(0);
-    }
+			// perform the interpolation
+			final Dataset dOut = Maths.interpolate(indexData, ds, indexes, 0, 0);
 
-    return res;
-  }
+			// get the single matching value out
+			res = dOut.getDouble(0);
+		}
 
-  @Override
-  @UIProperty(name = "Quantity", category = UIProperty.CATEGORY_LABEL)
-  public boolean isQuantity()
-  {
-    return true;
-  }
+		return res;
+	}
 
-  public void replaceSingleton(final double val)
-  {
-    final DoubleDataset ds =
-        (DoubleDataset) DatasetFactory.createFromObject(new double[]
-        {val});
-    ds.setName(getName());
-    setDataset(ds);
+	@Override
+	@UIProperty(name = "Quantity", category = UIProperty.CATEGORY_LABEL)
+	public boolean isQuantity() {
+		return true;
+	}
 
-    // ok share the good news
-    fireDataChanged();
-  }
+	public void replaceSingleton(final double val) {
+		final DoubleDataset ds = (DoubleDataset) DatasetFactory.createFromObject(new double[] { val });
+		ds.setName(getName());
+		setDataset(ds);
 
-  @Override
-  public void setDataset(final IDataset dataset)
-  {
-    if (dataset instanceof DoubleDataset)
-    {
-      super.setDataset(dataset);
-    }
-    else
-    {
-      throw new IllegalArgumentException("We only store double datasets");
-    }
-  }
+		// ok share the good news
+		fireDataChanged();
+	}
 
-  public void setRange(final Range range)
-  {
-    this.range = range;
-  }
+	@Override
+	public void setDataset(final IDataset dataset) {
+		if (dataset instanceof DoubleDataset) {
+			super.setDataset(dataset);
+		} else {
+			throw new IllegalArgumentException("We only store double datasets");
+		}
+	}
 
-  public void setUnits(final Unit<?> unit)
-  {
-    qType = unit;
-  }
+	public void setRange(final Range range) {
+		this.range = range;
+	}
 
-  /** easier support for singletons
-   * 
-   * @param value
-   */
-  public void setValue(final double value)
-  {
-    final DoubleDataset data = (DoubleDataset) getDataset();
-    data.set(value, 0);
+	public void setUnits(final Unit<?> unit) {
+		qType = unit;
+	}
 
-    // share the good news
-    fireDataChanged();
-  }
+	/**
+	 * easier support for singletons
+	 *
+	 * @param value
+	 */
+	@Override
+	public void setValue(final double value) {
+		final DoubleDataset data = (DoubleDataset) getDataset();
+		data.set(value, 0);
 
-  public MyStats stats()
-  {
-    return new MyStats();
-  }
+		// share the good news
+		fireDataChanged();
+	}
 
-  @Override
-  public String toListing()
-  {
-    final StringBuffer res = new StringBuffer();
+	public MyStats stats() {
+		return new MyStats();
+	}
 
-    final DoubleDataset dataset = (DoubleDataset) this.getDataset();
-    final AxesMetadata axesMetadata =
-        dataset.getFirstMetadata(AxesMetadata.class);
+	@Override
+	public String toListing() {
+		final StringBuffer res = new StringBuffer();
 
-    final int[] dims = dataset.getShape();
-    if (dims.length == 1)
-    {
-      toListing1D(res, dataset, axesMetadata);
-    }
-    else if (dims.length == 2)
-    {
-      toListing2D(res, dataset, axesMetadata, dims);
-    }
+		final DoubleDataset dataset = (DoubleDataset) this.getDataset();
+		final AxesMetadata axesMetadata = dataset.getFirstMetadata(AxesMetadata.class);
 
-    return res.toString();
-  }
+		final int[] dims = dataset.getShape();
+		if (dims.length == 1) {
+			toListing1D(res, dataset, axesMetadata);
+		} else if (dims.length == 2) {
+			toListing2D(res, dataset, axesMetadata, dims);
+		}
 
-  private void toListing1D(final StringBuffer res, final DoubleDataset dataset,
-      final AxesMetadata axesMetadata)
-  {
-    final DoubleDataset axisDataset;
-    if (axesMetadata != null && axesMetadata.getAxes().length > 0)
-    {
-      DoubleDataset doubleAxis = (DoubleDataset) axesMetadata.getAxes()[0];
-      axisDataset = doubleAxis != null ? doubleAxis : null;
-    }
-    else
-    {
-      axisDataset = null;
-    }
+		return res.toString();
+	}
 
-    final IndexIterator iterator = dataset.getIterator();
+	private void toListing1D(final StringBuffer res, final DoubleDataset dataset, final AxesMetadata axesMetadata) {
+		final DoubleDataset axisDataset;
+		if (axesMetadata != null && axesMetadata.getAxes().length > 0) {
+			final DoubleDataset doubleAxis = (DoubleDataset) axesMetadata.getAxes()[0];
+			axisDataset = doubleAxis != null ? doubleAxis : null;
+		} else {
+			axisDataset = null;
+		}
 
-    res.append(dataset.getName() + ":\n");
-    while (iterator.hasNext())
-    {
-      final String indexVal;
-      if (axisDataset != null)
-      {
-        indexVal = "" + axisDataset.getElementDoubleAbs(iterator.index);
-      }
-      else
-      {
-        indexVal = "N/A";
-      }
+		final IndexIterator iterator = dataset.getIterator();
 
-      res.append(indexVal + " : " + dataset.getElementDoubleAbs(iterator.index));
-      res.append(";");
-    }
-    res.append("\n");
-  }
+		res.append(dataset.getName() + ":\n");
+		while (iterator.hasNext()) {
+			final String indexVal;
+			if (axisDataset != null) {
+				indexVal = "" + axisDataset.getElementDoubleAbs(iterator.index);
+			} else {
+				indexVal = "N/A";
+			}
 
-  private void toListing2D(final StringBuffer res, final DoubleDataset dataset,
-      final AxesMetadata axesMetadata, final int[] dims)
-  {
-    DoubleDataset axisOne = null;
-    DoubleDataset axisTwo = null;
-    if (axesMetadata != null && axesMetadata.getAxes().length > 0)
-    {
-      axisOne = (DoubleDataset) axesMetadata.getAxes()[0];
-      axisTwo = (DoubleDataset) axesMetadata.getAxes()[1];
-    }
+			res.append(indexVal + " : " + dataset.getElementDoubleAbs(iterator.index));
+			res.append(";");
+		}
+		res.append("\n");
+	}
 
-    res.append(dataset.getName() + "\n");
+	private void toListing2D(final StringBuffer res, final DoubleDataset dataset, final AxesMetadata axesMetadata,
+			final int[] dims) {
+		DoubleDataset axisOne = null;
+		DoubleDataset axisTwo = null;
+		if (axesMetadata != null && axesMetadata.getAxes().length > 0) {
+			axisOne = (DoubleDataset) axesMetadata.getAxes()[0];
+			axisTwo = (DoubleDataset) axesMetadata.getAxes()[1];
+		}
 
-    final int xDim = dims[0];
-    final int yDim = dims[1];
+		res.append(dataset.getName() + "\n");
 
-    final NumberFormat nf = new DecimalFormat(" 000.0;-000.0");
+		final int xDim = dims[0];
+		final int yDim = dims[1];
 
-    res.append("        ");
-    for (int j = 0; j < yDim; j++)
-    {
-      res.append(nf.format(axisTwo.get(0, j)) + " ");
-    }
-    res.append("\n");
+		final NumberFormat nf = new DecimalFormat(" 000.0;-000.0");
 
-    for (int i = 0; i < xDim; i++)
-    {
-      res.append(nf.format(axisOne.get(i, 0)) + ": ");
-      for (int j = 0; j < yDim; j++)
-      {
-        final Double val = dataset.get(i, j);
-        if (val.equals(Double.NaN))
-        {
-          res.append("       ");
-        }
-        else
-        {
-          res.append(nf.format(val) + " ");
-        }
-      }
-      res.append("\n");
-    }
+		res.append("        ");
+		for (int j = 0; j < yDim; j++) {
+			res.append(nf.format(axisTwo.get(0, j)) + " ");
+		}
+		res.append("\n");
 
-    res.append("\n");
-  }
+		for (int i = 0; i < xDim; i++) {
+			res.append(nf.format(axisOne.get(i, 0)) + ": ");
+			for (int j = 0; j < yDim; j++) {
+				final Double val = dataset.get(i, j);
+				if (val.equals(Double.NaN)) {
+					res.append("       ");
+				} else {
+					res.append(nf.format(val) + " ");
+				}
+			}
+			res.append("\n");
+		}
+
+		res.append("\n");
+	}
 }

@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: ImportBearing.java,v $
@@ -103,39 +103,95 @@ import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
-/** class to parse a label from a line of text
+/**
+ * class to parse a label from a line of text
  */
-final class ImportBearing extends AbstractPlainLineImporter
-{
-  /** the type for this string
-   */
-  private final String _myType = ";BRG:";
+final class ImportBearing extends AbstractPlainLineImporter {
+	/**
+	 * the type for this string
+	 */
+	private final String _myType = ";BRG:";
 
-  /** read in this string and return a Label
-   * @throws ParseException 
-   */
-  public final Object readThisLine(final String theLine) throws ParseException{
+	/**
+	 * indicate if you can export this type of object
+	 *
+	 * @param val the object to test
+	 * @return boolean saying whether you can do it
+	 */
+	@Override
+	public final boolean canExportThis(final Object val) {
+		boolean res = false;
 
-    // get a stream from the string
-    final StringTokenizer st = new StringTokenizer(theLine);
+		if (val instanceof ShapeWrapper) {
+			final ShapeWrapper sw = (ShapeWrapper) val;
+			final PlainShape ps = sw.getShape();
+			res = (ps instanceof LineShape);
+		}
 
-    // declare local variables
-    WorldLocation start, end;
-    double latDeg=0.0, longDeg, latMin, longMin;
-    char latHem, longHem;
-    double latSec, longSec;
-    String theText="";
-    HiResDate theDate;
+		return res;
 
+	}
+
+	/**
+	 * export the specified shape as a string
+	 *
+	 * @return the shape in String form
+	 * @param theWrapper the Shape we are exporting
+	 */
+	@Override
+	public final String exportThis(final MWC.GUI.Plottable theWrapper) {
+		final ShapeWrapper theShape = (ShapeWrapper) theWrapper;
+
+		final LineShape Line = (LineShape) theShape.getShape();
+
+		// result value
+		String line;
+
+		line = _myType + " BD ";
+
+		line = line + " " + MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(Line.getLine_Start());
+
+		line = line + " " + MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(Line.getLineEnd());
+
+		return line;
+
+	}
+
+	/**
+	 * determine the identifier returning this type of annotation
+	 */
+	@Override
+	public final String getYourType() {
+		return _myType;
+	}
+
+	/**
+	 * read in this string and return a Label
+	 *
+	 * @throws ParseException
+	 */
+	@Override
+	public final Object readThisLine(final String theLine) throws ParseException {
+
+		// get a stream from the string
+		final StringTokenizer st = new StringTokenizer(theLine);
+
+		// declare local variables
+		WorldLocation start, end;
+		double latDeg = 0.0, longDeg, latMin, longMin;
+		char latHem, longHem;
+		double latSec, longSec;
+		String theText = "";
+		HiResDate theDate;
 
 //;BRG: BD YYMMDD HHMMSS DD MM SS.SS H DD MM SS.SS H CCC XXXX xx.xx
 //;; symb, date, time, lat, long, orientation, length (yards), label (one word)
 
-    // skip the comment identifier
-    st.nextToken();
+		// skip the comment identifier
+		st.nextToken();
 
-    // start with the symbology
-    symbology = st.nextToken();
+		// start with the symbology
+		symbology = st.nextToken();
 
 		// combine the date, a space, and the time
 		final String dateToken = st.nextToken();
@@ -144,135 +200,71 @@ final class ImportBearing extends AbstractPlainLineImporter
 		// and extract the date
 		theDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
 
-    // now the start location
-	
-	try 
-    {    	
-		latDeg = MWCXMLReader.readThisDouble(st.nextToken());
-		latMin = MWCXMLReader.readThisDouble(st.nextToken());
-	    latSec = MWCXMLReader.readThisDouble(st.nextToken());
-	 
-   
-	    latMin = MWCXMLReader.readThisDouble(st.nextToken());
-	    latSec = MWCXMLReader.readThisDouble(st.nextToken());
-   
-	    /** now, we may have trouble here, since there may not be
-	     * a space between the hemisphere character and a 3-digit
-	     * latitude value - so BE CAREFUL
-	     */
-	    final String vDiff = st.nextToken();
-	    if(vDiff.length() > 3)
-	    {
-	      // hmm, they are combined
-	      latHem = vDiff.charAt(0);
-	      final String secondPart = vDiff.substring(1, vDiff.length());
-	      longDeg  = MWCXMLReader.readThisDouble(secondPart);
-	    }
-	    else
-	    {
-	      // they are separate, so only the hem is in this one
-	      latHem = vDiff.charAt(0);
-	      longDeg = MWCXMLReader.readThisDouble(st.nextToken());
-	    }
-	    longMin = MWCXMLReader.readThisDouble(st.nextToken());
-	    longSec = MWCXMLReader.readThisDouble(st.nextToken());
-	    longHem = st.nextToken().charAt(0);
+		// now the start location
 
-	    // we have our first location, create it
-	    start = new WorldLocation(latDeg, latMin, latSec, latHem,
-	                           longDeg, longMin, longSec, longHem,
-	                           0);
+		try {
+			latDeg = MWCXMLReader.readThisDouble(st.nextToken());
+			latMin = MWCXMLReader.readThisDouble(st.nextToken());
+			latSec = MWCXMLReader.readThisDouble(st.nextToken());
 
+			latMin = MWCXMLReader.readThisDouble(st.nextToken());
+			latSec = MWCXMLReader.readThisDouble(st.nextToken());
 
+			/**
+			 * now, we may have trouble here, since there may not be a space between the
+			 * hemisphere character and a 3-digit latitude value - so BE CAREFUL
+			 */
+			final String vDiff = st.nextToken();
+			if (vDiff.length() > 3) {
+				// hmm, they are combined
+				latHem = vDiff.charAt(0);
+				final String secondPart = vDiff.substring(1, vDiff.length());
+				longDeg = MWCXMLReader.readThisDouble(secondPart);
+			} else {
+				// they are separate, so only the hem is in this one
+				latHem = vDiff.charAt(0);
+				longDeg = MWCXMLReader.readThisDouble(st.nextToken());
+			}
+			longMin = MWCXMLReader.readThisDouble(st.nextToken());
+			longSec = MWCXMLReader.readThisDouble(st.nextToken());
+			longHem = st.nextToken().charAt(0);
 
-	    // now the end location
-	    final double orient = MWCXMLReader.readThisDouble(st.nextToken());
-	    final double length = MWCXMLReader.readThisDouble(st.nextToken());
+			// we have our first location, create it
+			start = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg, longMin, longSec, longHem, 0);
 
-	    // we have our second location, create it
-	    // now create the offset
-	    final WorldVector offset = new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(orient),
-	                                         MWC.Algorithms.Conversions.Yds2Degs(length), 0);
-	    end = start.add(offset);
-	
-	    // see if there are any more tokens waiting,
-	    if(st.hasMoreTokens())
-	    {
-	      // and lastly read in the message
-	      theText = st.nextToken("\r").trim();
-	    }
+			// now the end location
+			final double orient = MWCXMLReader.readThisDouble(st.nextToken());
+			final double length = MWCXMLReader.readThisDouble(st.nextToken());
 
-	    // create the Line object
-	    final PlainShape sp = new LineShape(start, end);
-	    Color c = ImportReplay.replayColorFor(symbology);
-	    sp.setColor(c);
-	
-	    final WorldArea tmp = new WorldArea(start, end);
-	    tmp.normalise();
-	
-	    // and put it into a shape
-	    final ShapeWrapper sw = new ShapeWrapper(theText,
-	                                       sp,
-	                                       c,
-	                                       theDate);
-	
-	    return sw;
-    }
-	catch (final ParseException pe) 
-	{
-		MWC.Utilities.Errors.Trace.trace(pe,
-				"Whilst import bearing");
-		return null;
+			// we have our second location, create it
+			// now create the offset
+			final WorldVector offset = new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(orient),
+					MWC.Algorithms.Conversions.Yds2Degs(length), 0);
+			end = start.add(offset);
+
+			// see if there are any more tokens waiting,
+			if (st.hasMoreTokens()) {
+				// and lastly read in the message
+				theText = st.nextToken("\r").trim();
+			}
+
+			// create the Line object
+			final PlainShape sp = new LineShape(start, end);
+			final Color c = ImportReplay.replayColorFor(symbology);
+			sp.setColor(c);
+
+			final WorldArea tmp = new WorldArea(start, end);
+			tmp.normalise();
+
+			// and put it into a shape
+			final ShapeWrapper sw = new ShapeWrapper(theText, sp, c, theDate);
+
+			return sw;
+		} catch (final ParseException pe) {
+			MWC.Utilities.Errors.Trace.trace(pe, "Whilst import bearing");
+			return null;
+		}
+
 	}
-
-  }
-
-  /** determine the identifier returning this type of annotation
-   */
-  public final String getYourType(){
-    return _myType;
-  }
-
-  /** export the specified shape as a string
-   * @return the shape in String form
-   * @param theWrapper the Shape we are exporting
-   */
-  public final String exportThis(final MWC.GUI.Plottable theWrapper)
-  {
-    final ShapeWrapper theShape = (ShapeWrapper) theWrapper;
-
-    final LineShape Line = (LineShape) theShape.getShape();
-
-    // result value
-    String line;
-
-    line = _myType + " BD ";
-
-    line = line + " " + MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(Line.getLine_Start());
-
-    line = line + " " + MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(Line.getLineEnd());
-
-    return line;
-
-  }
-
-  /** indicate if you can export this type of object
-   * @param val the object to test
-   * @return boolean saying whether you can do it
-   */
-  public final boolean canExportThis(final Object val)
-  {
-    boolean res = false;
-
-    if(val instanceof ShapeWrapper)
-    {
-      final ShapeWrapper sw = (ShapeWrapper) val;
-      final PlainShape ps = sw.getShape();
-      res = (ps instanceof LineShape);
-    }
-
-    return res;
-
-  }
 
 }

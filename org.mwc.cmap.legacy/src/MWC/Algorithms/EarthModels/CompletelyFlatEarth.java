@@ -4,16 +4,16 @@ package MWC.Algorithms.EarthModels;
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // Copyright MWC 1999
@@ -64,155 +64,146 @@ import MWC.Algorithms.EarthModel;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
-public class CompletelyFlatEarth implements EarthModel
-{
+public class CompletelyFlatEarth implements EarthModel {
 
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	static public class FlatEarthTest extends junit.framework.TestCase {
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-  //////////////////////////////////////////////////
-  // member variables
-  //////////////////////////////////////////////////
-  /**
-   * working world location, used to reduce amount of object creation
-   */
-  private final WorldLocation _workingLocation = new WorldLocation(0, 0, 0);
+		public FlatEarthTest(final String val) {
+			super(val);
+		}
 
-  //////////////////////////////////////////////////
-  // constructor
-  //////////////////////////////////////////////////
+		public void testIt() {
 
-  /**
-   * add a vector to a location: note that the value returned
-   * is the same instance of an object each time
-   */
-  public WorldLocation add(final WorldLocation start, final WorldVector delta)
-  {
-    if ((delta.getRange()) == 0 && (delta.getDepth() == 0))
-      return start;
+			final CompletelyFlatEarth cf = new CompletelyFlatEarth();
+			final FlatEarth fe = new FlatEarth();
+			final WorldLocation w1 = new WorldLocation(5.1, 1, 0);
+			final WorldLocation w2 = new WorldLocation(5, 0.4, 1);
 
-    final double dLat = delta.getRange() * Math.cos(delta.getBearing());
-    final double dLong = delta.getRange() * Math.sin(delta.getBearing());
-    final double dDepth = delta.getDepth();
+			WorldLocation.setModel(cf);
 
-    // use our internal object for calculation, to reduce object creation
-    _workingLocation.setLat(start.getLat() + dLat);
-    _workingLocation.setLong(start.getLong() + dLong);
-    _workingLocation.setDepth(start.getDepth() + dDepth);
+			final WorldVector res = cf.subtract(w1, w2);
+			final WorldVector res2 = fe.subtract(w1, w2);
+			final WorldVector res3 = w2.subtract(w1);
+			System.out.println("res is:" + res.toString());
+			System.out.println("res2 is:" + res2.toString());
+			System.out.println("res3 is:" + res3.toString());
 
-    // 6. Hooray, now produce the result
-    return _workingLocation;
-  }
+			// try adding them back in
+			final WorldLocation w4 = cf.add(w1, res);
+			final WorldLocation w5 = fe.add(w1, res2);
+			assertEquals("Completely flat", w4, w2);
+			assertEquals("locally flat lat", w5.getLat(), w2.getLat(), 0.0001);
+			assertEquals("locally flat long", w5.getLong(), w2.getLong(), 0.0001);
 
+		}
 
-  /**
-   * bearingBetween
-   *
-   * @param from parameter for bearingBetween
-   * @return the returned double
-   */
-  public double bearingBetween(final WorldLocation from, final WorldLocation to)
-  {
-    final WorldVector res = from.subtract(to);
+	}
 
-    return res.getBearing();
-  }
+	//////////////////////////////////////////////////
+	// constructor
+	//////////////////////////////////////////////////
 
-  /**
-   * rangeBetween
-   *
-   * @param from parameter for rangeBetween
-   * @return the returned double
-   */
-  public double rangeBetween(final WorldLocation from, final WorldLocation to)
-  {
-    final WorldVector res = subtract(from, to);
-    return res.getRange();
-  }
+	//////////////////////////////////////////////////
+	// member variables
+	//////////////////////////////////////////////////
+	/**
+	 * working world location, used to reduce amount of object creation
+	 */
+	private final WorldLocation _workingLocation = new WorldLocation(0, 0, 0);
 
-  public WorldVector subtract(final WorldLocation from,
-                              final WorldLocation to)
-  {
-    WorldVector res = new WorldVector(0, 0, 0);
-    res = subtract(from, to, res);
-    return res;
-  }
+	/**
+	 * add a vector to a location: note that the value returned is the same instance
+	 * of an object each time
+	 */
+	@Override
+	public WorldLocation add(final WorldLocation start, final WorldVector delta) {
+		if ((delta.getRange()) == 0 && (delta.getDepth() == 0))
+			return start;
 
-  /**
-   * subtract
-   *
-   * @param from parameter for subtract
-   * @return the returned WorldVector
-   */
-  public WorldVector subtract(final WorldLocation from, final WorldLocation to, final WorldVector res)
-  {
-	 
-    // the algorithm used here is from Short Sailing Calculations in the
-    // admiralty manual of navigation
+		final double dLat = delta.getRange() * Math.cos(delta.getBearing());
+		final double dLong = delta.getRange() * Math.sin(delta.getBearing());
+		final double dDepth = delta.getDepth();
 
-    //		WorldVector res;
+		// use our internal object for calculation, to reduce object creation
+		_workingLocation.setLat(start.getLat() + dLat);
+		_workingLocation.setLong(start.getLong() + dLong);
+		_workingLocation.setDepth(start.getDepth() + dDepth);
 
-    // perform brief check to ensure that the positions are not identical
-    if (from.equals(to))
-      return new WorldVector(0, 0, 0);
+		// 6. Hooray, now produce the result
+		return _workingLocation;
+	}
 
-    // calculate the deltas
-    final double dLat = to.getLat() - from.getLat();
-    final double dLong = to.getLong() - from.getLong();
-    final double dDepth = to.getDepth() - from.getDepth();
-    WorldVector result = res;
+	/**
+	 * bearingBetween
+	 *
+	 * @param from parameter for bearingBetween
+	 * @return the returned double
+	 */
+	@Override
+	public double bearingBetween(final WorldLocation from, final WorldLocation to) {
+		final WorldVector res = from.subtract(to);
 
-    // produce range and bearing from the deltas
-    final double bearing = Math.atan2(dLong, dLat); // it's ok to keep this value in radians
-    final double range = Math.sqrt(dLat * dLat + dLong * dLong);
+		return res.getBearing();
+	}
 
-    result = new WorldVector(bearing, range, dDepth);
+	/**
+	 * rangeBetween
+	 *
+	 * @param from parameter for rangeBetween
+	 * @return the returned double
+	 */
+	@Override
+	public double rangeBetween(final WorldLocation from, final WorldLocation to) {
+		final WorldVector res = subtract(from, to);
+		return res.getRange();
+	}
 
-    return result;
-  }
+	@Override
+	public WorldVector subtract(final WorldLocation from, final WorldLocation to) {
+		WorldVector res = new WorldVector(0, 0, 0);
+		res = subtract(from, to, res);
+		return res;
+	}
 
-  //////////////////////////////////////////////////
-  // member functions
-  //////////////////////////////////////////////////
+	//////////////////////////////////////////////////
+	// member functions
+	//////////////////////////////////////////////////
 
+	/**
+	 * subtract
+	 *
+	 * @param from parameter for subtract
+	 * @return the returned WorldVector
+	 */
+	@Override
+	public WorldVector subtract(final WorldLocation from, final WorldLocation to, final WorldVector res) {
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  static public class FlatEarthTest extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+		// the algorithm used here is from Short Sailing Calculations in the
+		// admiralty manual of navigation
 
-    public FlatEarthTest(final String val)
-    {
-      super(val);
-    }
+		// WorldVector res;
 
-    public void testIt()
-    {
+		// perform brief check to ensure that the positions are not identical
+		if (from.equals(to))
+			return new WorldVector(0, 0, 0);
 
-      final CompletelyFlatEarth cf = new CompletelyFlatEarth();
-      final FlatEarth fe = new FlatEarth();
-      final WorldLocation w1 = new WorldLocation(5.1, 1, 0);
-      final WorldLocation w2 = new WorldLocation(5, 0.4, 1);
+		// calculate the deltas
+		final double dLat = to.getLat() - from.getLat();
+		final double dLong = to.getLong() - from.getLong();
+		final double dDepth = to.getDepth() - from.getDepth();
+		WorldVector result = res;
 
-      WorldLocation.setModel(cf);
+		// produce range and bearing from the deltas
+		final double bearing = Math.atan2(dLong, dLat); // it's ok to keep this value in radians
+		final double range = Math.sqrt(dLat * dLat + dLong * dLong);
 
-      final WorldVector res = cf.subtract(w1, w2);
-      final WorldVector res2 = fe.subtract(w1, w2);
-      final WorldVector res3 = w2.subtract(w1);
-      System.out.println("res is:" + res.toString());
-      System.out.println("res2 is:" + res2.toString());
-      System.out.println("res3 is:" + res3.toString());
+		result = new WorldVector(bearing, range, dDepth);
 
-      // try adding them back in
-      final WorldLocation w4 = cf.add(w1, res);
-      final WorldLocation w5 = fe.add(w1, res2);
-      assertEquals("Completely flat", w4, w2);
-      assertEquals("locally flat lat", w5.getLat(), w2.getLat(), 0.0001);
-      assertEquals("locally flat long", w5.getLong(), w2.getLong(), 0.0001);
-
-
-    }
-
-  }
+		return result;
+	}
 
 }

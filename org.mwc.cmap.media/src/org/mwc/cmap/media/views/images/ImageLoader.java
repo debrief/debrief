@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.cmap.media.views.images;
@@ -32,130 +32,84 @@ import org.mwc.cmap.media.gallery.ImageGallery;
 import org.mwc.cmap.media.utility.ImageUtils;
 import org.mwc.cmap.media.utility.InterruptableInputStream;
 
-@SuppressWarnings(
-{ "rawtypes", "unchecked" })
-public class ImageLoader implements Runnable
-{
-	private static ImageLoader instance;
+@SuppressWarnings({ "rawtypes", "unchecked" })
+public class ImageLoader implements Runnable {
+	private static class GalleryLoaderEntry implements LoaderEntry {
+		public String name;
+		public Object imageMeta;
+		public ImageGallery gallery;
+		public boolean visible;
 
-	public synchronized static ImageLoader getInstance()
-	{
-		if (instance == null)
-		{
-			instance = new ImageLoader();
-			Thread thread = new Thread(instance);
-			thread.setDaemon(true);
-			thread.setPriority(Thread.NORM_PRIORITY - 2);
-			thread.start();
+		public GalleryLoaderEntry(final String name, final Object imageMeta, final ImageGallery gallery) {
+			this.name = name;
+			this.imageMeta = imageMeta;
+			this.gallery = gallery;
+			visible = gallery.getMainComposite().isVisible();
 		}
-		return instance;
-	}
 
-	private final Object loaderMutex = new Object();
-	private LinkedList<LoaderEntry> labelsToLoad = new LinkedList<LoaderEntry>();
-
-	private ImageLoader()
-	{
-	}
-
-	public void load(String filename, Object imageMeta, ImageGallery gallery)
-	{
-		synchronized (loaderMutex)
-		{
-			labelsToLoad.add(new GalleryLoaderEntry(filename, imageMeta, gallery));
-			loaderMutex.notify();
+		@Override
+		public boolean isVisible() {
+			return visible;
 		}
-	}
 
-	public void load(ImagePanel panel)
-	{
-		synchronized (loaderMutex)
-		{
-			boolean load = false;
-			if (panel.shouldLoadCurrentImage())
-			{
-				load = true;
-				labelsToLoad.add(new ImagePanelLoader(panel.getCurrentImageFile(),
-						panel));
-				panel.currentImagePassedToLoad();
-			}
-			if (panel.shouldLoadNextImage())
-			{
-				load = true;
-				labelsToLoad.add(new ImagePanelLoader(panel.getNextImageFile(), panel));
-				panel.nextImagePassedToLoad();
-			}
-			if (load)
-			{
-				loaderMutex.notify();
-				Thread.yield();
-			}
-		}
-	}
-
-	public void run()
-	{
-		while (true)
-		{
-			LoaderEntry toLoad;
-			synchronized (loaderMutex)
-			{
-				if (labelsToLoad.isEmpty())
-				{
-					try
-					{
-						loaderMutex.wait();
-					}
-					catch (InterruptedException ex)
-					{
-						// ignore
-					}
-					continue;
+		@Override
+		public void load() {
+			try {
+				if (!gallery.containsImage(imageMeta)) {
+					return;
 				}
-				toLoad = null;
-				Iterator<LoaderEntry> iterator = labelsToLoad.iterator();
-				while (iterator.hasNext())
-				{
-					LoaderEntry loadEntry = iterator.next();
-					if (loadEntry.isVisible())
-					{
-						toLoad = loadEntry;
-						iterator.remove();
-						break;
+				if (gallery.getMainComposite().isDisposed()) {
+					return;
+				}
+				final Image image = new Image(gallery.getMainComposite().getDisplay(), name);
+				final ImageData imageData = image.getImageData();
+				final Point scaledSize = ImageUtils.getScaledSize(imageData.width, imageData.height,
+						gallery.getThumbnailWidth(), gallery.getThumbnailHeight());
+				if (gallery.getMainComposite().isDisposed()) {
+					return;
+				}
+				final Image rescaled = new Image(gallery.getMainComposite().getDisplay(), scaledSize.x, scaledSize.y);
+				final Image stretched = new Image(gallery.getMainComposite().getDisplay(), gallery.getThumbnailWidth(),
+						gallery.getThumbnailHeight());
+				GC gc = new GC(rescaled);
+				gc.setAntialias(SWT.ON);
+				gc.drawImage(image, 0, 0, imageData.width, imageData.height, 0, 0, scaledSize.x, scaledSize.y);
+				gc.dispose();
+				gc = new GC(stretched);
+				gc.setAntialias(SWT.ON);
+				gc.drawImage(image, 0, 0, imageData.width, imageData.height, 0, 0, gallery.getThumbnailWidth(),
+						gallery.getThumbnailHeight());
+				gc.dispose();
+
+				image.dispose();
+				Display.getDefault().asyncExec(new Runnable() {
+
+					@Override
+					public void run() {
+						if (gallery.containsImage(imageMeta)) {
+							gallery.addImage(imageMeta, new ThumbnailPackage(rescaled, stretched));
+						}
 					}
-				}
-				if (toLoad == null)
-				{
-					toLoad = labelsToLoad.poll();
-				}
+				});
+			} catch (final Exception ex) {
+				ex.printStackTrace();
 			}
-			toLoad.load();
 		}
 	}
 
-	private static interface LoaderEntry
-	{
-		void load();
-
-		boolean isVisible();
-	}
-
-	private static class ImagePanelLoader implements LoaderEntry
-	{
+	private static class ImagePanelLoader implements LoaderEntry {
 		ImagePanel panel;
 		String name;
 		boolean visible;
 
-		public ImagePanelLoader(String name, ImagePanel panel)
-		{
+		public ImagePanelLoader(final String name, final ImagePanel panel) {
 			this.name = name;
 			this.panel = panel;
 			this.visible = panel.isVisible();
 		}
 
 		@Override
-		public boolean isVisible()
-		{
+		public boolean isVisible() {
 			return visible;
 		}
 
@@ -167,18 +121,17 @@ public class ImageLoader implements Runnable
 				try {
 					iStream = new BufferedInputStream(new FileInputStream(name));
 					imageInput = new InterruptableInputStream(iStream) {
-						
+
 						@Override
 						protected void checkInterrupted() throws IOException {
-							if (! name.equals(panel.getCurrentImageFile()) &&  
-									! name.equals(panel.getNextImageFile())) {
+							if (!name.equals(panel.getCurrentImageFile()) && !name.equals(panel.getNextImageFile())) {
 								throw new IOException("interrupted");
-							}							
+							}
 						}
-					};	
+					};
 					final Image image = new Image(panel.getDisplay(), imageInput);
 					Display.getDefault().asyncExec(new Runnable() {
-					
+
 						@Override
 						public void run() {
 							if (name.equals(panel.getCurrentImageFile())) {
@@ -190,8 +143,8 @@ public class ImageLoader implements Runnable
 							}
 						}
 					});
-				} catch (Exception ex) {
-					if (imageInput == null || ! imageInput.wasInterrupted()) {
+				} catch (final Exception ex) {
+					if (imageInput == null || !imageInput.wasInterrupted()) {
 						ex.printStackTrace();
 					}
 				} finally {
@@ -202,85 +155,87 @@ public class ImageLoader implements Runnable
 		}
 	}
 
-	private static class GalleryLoaderEntry implements LoaderEntry
-	{
-		public String name;
-		public Object imageMeta;
-		public ImageGallery gallery;
-		public boolean visible;
+	private static interface LoaderEntry {
+		boolean isVisible();
 
-		public GalleryLoaderEntry(String name, Object imageMeta,
-				ImageGallery gallery)
-		{
-			this.name = name;
-			this.imageMeta = imageMeta;
-			this.gallery = gallery;
-			visible = gallery.getMainComposite().isVisible();
+		void load();
+	}
+
+	private static ImageLoader instance;
+
+	public synchronized static ImageLoader getInstance() {
+		if (instance == null) {
+			instance = new ImageLoader();
+			final Thread thread = new Thread(instance);
+			thread.setDaemon(true);
+			thread.setPriority(Thread.NORM_PRIORITY - 2);
+			thread.start();
 		}
+		return instance;
+	}
 
-		@Override
-		public boolean isVisible()
-		{
-			return visible;
+	private final Object loaderMutex = new Object();
+
+	private final LinkedList<LoaderEntry> labelsToLoad = new LinkedList<LoaderEntry>();
+
+	private ImageLoader() {
+	}
+
+	public void load(final ImagePanel panel) {
+		synchronized (loaderMutex) {
+			boolean load = false;
+			if (panel.shouldLoadCurrentImage()) {
+				load = true;
+				labelsToLoad.add(new ImagePanelLoader(panel.getCurrentImageFile(), panel));
+				panel.currentImagePassedToLoad();
+			}
+			if (panel.shouldLoadNextImage()) {
+				load = true;
+				labelsToLoad.add(new ImagePanelLoader(panel.getNextImageFile(), panel));
+				panel.nextImagePassedToLoad();
+			}
+			if (load) {
+				loaderMutex.notify();
+				Thread.yield();
+			}
 		}
+	}
 
-		@Override
-		public void load()
-		{
-			try
-			{
-				if (!gallery.containsImage(imageMeta))
-				{
-					return;
-				}
-				if (gallery.getMainComposite().isDisposed())
-				{
-					return;
-				}
-				Image image = new Image(gallery.getMainComposite().getDisplay(), name);
-				ImageData imageData = image.getImageData();
-				Point scaledSize = ImageUtils.getScaledSize(imageData.width,
-						imageData.height, gallery.getThumbnailWidth(),
-						gallery.getThumbnailHeight());
-				if (gallery.getMainComposite().isDisposed())
-				{
-					return;
-				}
-				final Image rescaled = new Image(gallery.getMainComposite()
-						.getDisplay(), scaledSize.x, scaledSize.y);
-				final Image stretched = new Image(gallery.getMainComposite()
-						.getDisplay(), gallery.getThumbnailWidth(),
-						gallery.getThumbnailHeight());
-				GC gc = new GC(rescaled);
-				gc.setAntialias(SWT.ON);
-				gc.drawImage(image, 0, 0, imageData.width, imageData.height, 0, 0,
-						scaledSize.x, scaledSize.y);
-				gc.dispose();
-				gc = new GC(stretched);
-				gc.setAntialias(SWT.ON);
-				gc.drawImage(image, 0, 0, imageData.width, imageData.height, 0, 0,
-						gallery.getThumbnailWidth(), gallery.getThumbnailHeight());
-				gc.dispose();
+	public void load(final String filename, final Object imageMeta, final ImageGallery gallery) {
+		synchronized (loaderMutex) {
+			labelsToLoad.add(new GalleryLoaderEntry(filename, imageMeta, gallery));
+			loaderMutex.notify();
+		}
+	}
 
-				image.dispose();
-				Display.getDefault().asyncExec(new Runnable()
-				{
-
-					@Override
-					public void run()
-					{
-						if (gallery.containsImage(imageMeta))
-						{
-							gallery.addImage(imageMeta, new ThumbnailPackage(rescaled,
-									stretched));
-						}
+	@Override
+	public void run() {
+		while (true) {
+			LoaderEntry toLoad;
+			synchronized (loaderMutex) {
+				if (labelsToLoad.isEmpty()) {
+					try {
+						loaderMutex.wait();
+					} catch (final InterruptedException ex) {
+						// ignore
 					}
-				});
+					continue;
+				}
+				toLoad = null;
+				final Iterator<LoaderEntry> iterator = labelsToLoad.iterator();
+				while (iterator.hasNext()) {
+					final LoaderEntry loadEntry = iterator.next();
+					if (loadEntry.isVisible()) {
+						toLoad = loadEntry;
+						iterator.remove();
+						break;
+					}
+				}
+				if (toLoad == null) {
+					toLoad = labelsToLoad.poll();
+				}
 			}
-			catch (Exception ex)
-			{
-				ex.printStackTrace();
-			}
+			toLoad.load();
 		}
 	}
 

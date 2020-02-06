@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.cmap.media.utility;
@@ -21,25 +21,43 @@ import java.io.InputStream;
 public abstract class InterruptableInputStream extends InputStream {
 
 	private boolean interrupted;
-	private InputStream in;
-	
-	public InterruptableInputStream(InputStream in) {
+	private final InputStream in;
+
+	public InterruptableInputStream(final InputStream in) {
 		this.in = in;
 	}
-	
-	public boolean wasInterrupted() {
-		return interrupted;
+
+	@Override
+	public int available() throws IOException {
+		doCheck();
+		return in.available();
 	}
-	
+
 	protected abstract void checkInterrupted() throws IOException;
-	
+
+	@Override
+	public void close() throws IOException {
+		doCheck();
+		in.close();
+	}
+
 	private void doCheck() throws IOException {
 		try {
 			checkInterrupted();
-		} catch (IOException ex) {
+		} catch (final IOException ex) {
 			interrupted = true;
 			throw ex;
 		}
+	}
+
+	@Override
+	public synchronized void mark(final int readlimit) {
+		in.mark(readlimit);
+	}
+
+	@Override
+	public boolean markSupported() {
+		return in.markSupported();
 	}
 
 	@Override
@@ -49,38 +67,15 @@ public abstract class InterruptableInputStream extends InputStream {
 	}
 
 	@Override
-	public int read(byte[] b) throws IOException {
+	public int read(final byte[] b) throws IOException {
 		doCheck();
 		return in.read(b);
 	}
 
 	@Override
-	public int read(byte[] b, int off, int len) throws IOException {
+	public int read(final byte[] b, final int off, final int len) throws IOException {
 		doCheck();
 		return in.read(b, off, len);
-	}
-
-	@Override
-	public long skip(long n) throws IOException {
-		doCheck();
-		return in.skip(n);
-	}
-
-	@Override
-	public int available() throws IOException {
-		doCheck();
-		return in.available();
-	}
-
-	@Override
-	public void close() throws IOException {
-		doCheck();
-		in.close();
-	}
-
-	@Override
-	public synchronized void mark(int readlimit) {
-		in.mark(readlimit);
 	}
 
 	@Override
@@ -90,7 +85,12 @@ public abstract class InterruptableInputStream extends InputStream {
 	}
 
 	@Override
-	public boolean markSupported() {
-		return in.markSupported();
+	public long skip(final long n) throws IOException {
+		doCheck();
+		return in.skip(n);
+	}
+
+	public boolean wasInterrupted() {
+		return interrupted;
 	}
 }

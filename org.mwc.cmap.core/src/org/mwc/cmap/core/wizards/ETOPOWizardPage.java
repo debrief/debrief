@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.cmap.core.wizards;
@@ -33,16 +33,13 @@ public class ETOPOWizardPage extends CoreEditableWizardPage {
 
 	/**
 	 * Constructor for SampleNewWizardPage.
-	 * 
+	 *
 	 * @param pageName
 	 */
 	public ETOPOWizardPage(final ISelection selection) {
-		super(
-				selection,
-				"etopoPage",
-				"Add Gridded depth data",
-				"This page adds a 2-minute resolution gridded depth layer to your plot",
-				"images/etopo_wizard.gif", null);
+		super(selection, "etopoPage", "Add Gridded depth data",
+				"This page adds a 2-minute resolution gridded depth layer to your plot", "images/etopo_wizard.gif",
+				null);
 	}
 
 	@Override
@@ -53,29 +50,27 @@ public class ETOPOWizardPage extends CoreEditableWizardPage {
 		return _editable;
 	}
 
-	/** do we have valid data?
-	 * 
-	 * @return 
-	 */
-	public boolean isAvailable() {
-		return CreateTOPO.check2MinBathyData();
-	}
-
 	/**
 	 * @return
 	 */
 	@Override
 	protected PropertyDescriptor[] getPropertyDescriptors() {
 		final java.beans.PropertyDescriptor[] descriptors = {
-				longProp("KeyLocation",
-						"the current location of the color-key", getEditable(),
+				longProp("KeyLocation", "the current location of the color-key", getEditable(),
 						KeyLocationPropertyEditor.class),
 				prop("ShowLand", "whether to shade land-data", getEditable()),
-				prop("BathyVisible", "whether to show the gridded contours",
-						getEditable()),
-				prop("ContoursVisible", "whether to show the contours",
-						getEditable()), };
+				prop("BathyVisible", "whether to show the gridded contours", getEditable()),
+				prop("ContoursVisible", "whether to show the contours", getEditable()), };
 		return descriptors;
+	}
+
+	/**
+	 * do we have valid data?
+	 *
+	 * @return
+	 */
+	public boolean isAvailable() {
+		return CreateTOPO.check2MinBathyData();
 	}
 
 }

@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: DebriefWriteVRML.java,v $
@@ -80,117 +80,102 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
  *
  * @author IAN MAYO
  */
-final class DebriefWriteVRML extends MWC.GUI.Tools.Operations.WriteVRML
-{
+final class DebriefWriteVRML extends MWC.GUI.Tools.Operations.WriteVRML {
 
-  /**
-   * Creates new DebriefWriteVRML
-   *
-   * @param theParent the parent application for the Action we are creating
-   * @param theLabel  the label for the plot button
-   * @param theData   the data we are going to plot
-   */
-  public DebriefWriteVRML(final MWC.GUI.ToolParent theParent, final String theLabel, final MWC.GUI.Layers theData)
-  {
-    super(theParent, theLabel, theData);
-  }
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-  /**
-   * over-ridden method, where we write out our data
-   *
-   * @param theData the data to plot
-   * @param out     the stream to write to
-   * @throws java.io.IOException file-related troubles
-   */
-  protected final void plotData(final MWC.GUI.Layers theData, final java.io.BufferedWriter out)
-    throws java.io.IOException
-  {
-    // work through the layers
-    int num = _theData.size();
-    for (int i = 0; i < num; i++)
-    {
-      final Layer l = (Layer) _theData.elementAt(i);
-      final Enumeration<Editable> iter = l.elements();
-      while (iter.hasMoreElements())
-      {
-        final Object oj = iter.nextElement();
-        if (oj instanceof Debrief.Wrappers.FixWrapper)
-        {
-          final Debrief.Wrappers.FixWrapper fw = (Debrief.Wrappers.FixWrapper) oj;
-          final WorldLocation pos = fw.getLocation();
+	/**
+	 * Creates new DebriefWriteVRML
+	 *
+	 * @param theParent the parent application for the Action we are creating
+	 * @param theLabel  the label for the plot button
+	 * @param theData   the data we are going to plot
+	 */
+	public DebriefWriteVRML(final MWC.GUI.ToolParent theParent, final String theLabel, final MWC.GUI.Layers theData) {
+		super(theParent, theLabel, theData);
+	}
 
-          if (fw.getSymbolShowing())
-          {
-            final String lbl = fw.getName();
-            try 
-            {
-				writeBox(out,
-				         pos.getLong(), pos.getLat(), pos.getDepth(),
-				         fw.getColor(), lbl);
-			} 
-            catch (ParseException e) 
-			{
-				MWC.Utilities.Errors.Trace.trace(e);
+	/**
+	 * over-ridden method, where we write out our data
+	 *
+	 * @param theData the data to plot
+	 * @param out     the stream to write to
+	 * @throws java.io.IOException file-related troubles
+	 */
+	@Override
+	protected final void plotData(final MWC.GUI.Layers theData, final java.io.BufferedWriter out)
+			throws java.io.IOException {
+		// work through the layers
+		int num = _theData.size();
+		for (int i = 0; i < num; i++) {
+			final Layer l = _theData.elementAt(i);
+			final Enumeration<Editable> iter = l.elements();
+			while (iter.hasMoreElements()) {
+				final Object oj = iter.nextElement();
+				if (oj instanceof Debrief.Wrappers.FixWrapper) {
+					final Debrief.Wrappers.FixWrapper fw = (Debrief.Wrappers.FixWrapper) oj;
+					final WorldLocation pos = fw.getLocation();
+
+					if (fw.getSymbolShowing()) {
+						final String lbl = fw.getName();
+						try {
+							writeBox(out, pos.getLong(), pos.getLat(), pos.getDepth(), fw.getColor(), lbl);
+						} catch (final ParseException e) {
+							MWC.Utilities.Errors.Trace.trace(e);
+						}
+					}
+
+					if (fw.getLabelShowing()) {
+						final String str = DebriefFormatDateTime.toStringHiRes(fw.getTime());
+						writeText(out, pos.getLong(), pos.getLat(), pos.getDepth(), str, fw.getColor());
+					}
+
+				}
 			}
-          }
 
-          if (fw.getLabelShowing())
-          {
-            final String str = DebriefFormatDateTime.toStringHiRes(fw.getTime());
-            writeText(out, pos.getLong(), pos.getLat(), pos.getDepth(), str, fw.getColor());
-          }
+		}
 
+		// now draw the line connectors
+		num = _theData.size();
+		for (int i = 0; i < num; i++) {
+			final Layer l = _theData.elementAt(i);
+			final Enumeration<Editable> iter = l.elements();
+			int len = 0;
+			while (iter.hasMoreElements()) {
+				final Object oj = iter.nextElement();
 
-        }
-      }
+				if (oj instanceof MWC.GenericData.WatchableList) {
+					// just check that we haven't got any dangling Fix lines
+					// waiting to be finished
+					if (len > 0) {
+						// we have clearly written some fixes to the file, write the footer
+						writeLineFooter(out, len);
+						len = 0;
+					}
 
-    }
+					final MWC.GenericData.WatchableList tw = (MWC.GenericData.WatchableList) oj;
+					final java.awt.Color col = tw.getColor();
+					writeLineHeader(out, col);
+				}
 
-    // now draw the line connectors
-    num = _theData.size();
-    for (int i = 0; i < num; i++)
-    {
-      final Layer l = (Layer) _theData.elementAt(i);
-      final Enumeration<Editable> iter = l.elements();
-      int len = 0;
-      while (iter.hasMoreElements())
-      {
-        final Object oj = iter.nextElement();
+				if (oj instanceof Debrief.Wrappers.FixWrapper) {
+					len++;
+					final Debrief.Wrappers.FixWrapper fw = (Debrief.Wrappers.FixWrapper) oj;
+					final WorldLocation pos = fw.getLocation();
 
-        if (oj instanceof MWC.GenericData.WatchableList)
-        {
-          // just check that we haven't got any dangling Fix lines
-          // waiting to be finished
-          if (len > 0)
-          {
-            // we have clearly written some fixes to the file, write the footer
-            writeLineFooter(out, len);
-            len = 0;
-          }
+					writeLineEntry(out, pos.getLong(), pos.getLat(), pos.getDepth());
+				}
+			}
 
-          final MWC.GenericData.WatchableList tw = (MWC.GenericData.WatchableList) oj;
-          final java.awt.Color col = tw.getColor();
-          writeLineHeader(out, col);
-        }
+			if (len > 0) {
+				// we have clearly written some fixes to the file, write the footer
+				writeLineFooter(out, len);
+			}
 
-        if (oj instanceof Debrief.Wrappers.FixWrapper)
-        {
-          len++;
-          final Debrief.Wrappers.FixWrapper fw = (Debrief.Wrappers.FixWrapper) oj;
-          final WorldLocation pos = fw.getLocation();
-
-          writeLineEntry(out, pos.getLong(), pos.getLat(), pos.getDepth());
-        }
-      }
-
-      if (len > 0)
-      {
-        // we have clearly written some fixes to the file, write the footer
-        writeLineFooter(out, len);
-      }
-
-
-    }
-  }
+		}
+	}
 
 }

@@ -18,9 +18,9 @@ import org.eclipse.swt.widgets.Control;
 
 /**
  * Shake effect (like login failure on Mac OSX)
- * 
+ *
  * @author Nicolas Richeton
- * 
+ *
  */
 public class Shake extends AbstractEffect {
 
@@ -32,11 +32,11 @@ public class Shake extends AbstractEffect {
 	 * @param onStop
 	 * @param onCancel
 	 */
-	public static void shake(AnimationRunner runner, Control w, int duration,
-			IMovement movement, Runnable onStop, Runnable onCancel) {
-		IEffect effect = new Shake(w, w.getLocation(), new Point(w
-				.getLocation().x + 10, w.getLocation().y + 10), duration,
-				movement, onStop, onCancel);
+	@Deprecated
+	public static void shake(final AnimationRunner runner, final Control w, final int duration,
+			final IMovement movement, final Runnable onStop, final Runnable onCancel) {
+		final IEffect effect = new Shake(w, w.getLocation(), new Point(w.getLocation().x + 10, w.getLocation().y + 10),
+				duration, movement, onStop, onCancel);
 		runner.runEffect(effect);
 	}
 
@@ -44,9 +44,8 @@ public class Shake extends AbstractEffect {
 
 	Control control = null;
 
-	public Shake(Control control, Point src, Point dest,
-			long lengthMilli, IMovement movement, Runnable onStop,
-			Runnable onCancel) {
+	public Shake(final Control control, final Point src, final Point dest, final long lengthMilli,
+			final IMovement movement, final Runnable onStop, final Runnable onCancel) {
 		super(lengthMilli, movement, onStop, onCancel);
 		this.src = src;
 		this.dest = dest;
@@ -56,10 +55,10 @@ public class Shake extends AbstractEffect {
 		easingFunction.init(0, 1, (int) lengthMilli);
 	}
 
+	@Override
 	public void applyEffect(final long currentTime) {
 		if (!control.isDisposed()) {
-			control.setLocation((int) (src.x - diff.x
-					* easingFunction.getValue(currentTime)), src.y);
+			control.setLocation((int) (src.x - diff.x * easingFunction.getValue(currentTime)), src.y);
 		}
 	}
 }

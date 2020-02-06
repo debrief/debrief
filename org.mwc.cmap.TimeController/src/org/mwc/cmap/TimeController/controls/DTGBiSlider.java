@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.cmap.TimeController.controls;
@@ -20,10 +20,6 @@ import java.util.Date;
 
 import org.eclipse.swt.widgets.Composite;
 
-import MWC.GenericData.HiResDate;
-import MWC.GenericData.TimePeriod;
-import MWC.Utilities.TextFormatting.FormatRNDateTime;
-
 import com.borlander.rac353542.bislider.BiSlider;
 import com.borlander.rac353542.bislider.BiSliderDataModel;
 import com.borlander.rac353542.bislider.BiSliderFactory;
@@ -32,11 +28,13 @@ import com.borlander.rac353542.bislider.DefaultBiSliderUIModel;
 import com.borlander.rac353542.bislider.cdata.CalendarDateSuite;
 import com.borlander.rac353542.bislider.cdata.CalendarDateSuite.CalendarDateModel;
 
-public class DTGBiSlider
-{
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
+import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
-	public static interface DoFineControl
-	{
+public class DTGBiSlider {
+
+	public static interface DoFineControl {
 		public void adjust(boolean isMax);
 	}
 
@@ -56,8 +54,8 @@ public class DTGBiSlider
 	HiResDate _maxVal;
 
 	/**
-	 * the step size we apply to the slider (the size of the smallest increment,
-	 * in millis)
+	 * the step size we apply to the slider (the size of the smallest increment, in
+	 * millis)
 	 */
 	long _stepSize = 1000 * 60;
 
@@ -67,14 +65,13 @@ public class DTGBiSlider
 
 	/**
 	 * constructor - get things going
-	 * 
+	 *
 	 * @param fineControl
-	 * 
+	 *
 	 * @param parent
 	 * @param style
 	 */
-	public DTGBiSlider(final Composite parentControl, final DoFineControl fineControl)
-	{
+	public DTGBiSlider(final Composite parentControl, final DoFineControl fineControl) {
 
 		// sort out some demo dates
 		final Calendar calendar = Calendar.getInstance();
@@ -97,8 +94,7 @@ public class DTGBiSlider
 
 		// sort out the data model
 		final CalendarDateSuite suite = new CalendarDateSuite();
-		_dateModel = suite.createDataModel(yearAgo, yearFromNow, threeMonthesAgo,
-				fourMonthesFromNow);
+		_dateModel = suite.createDataModel(yearAgo, yearFromNow, threeMonthesAgo, fourMonthesFromNow);
 		// _dateModel.setSegmentCount(3);
 		// _dateModel.setSegmentLength(1000* 60 * 60);
 
@@ -113,10 +109,9 @@ public class DTGBiSlider
 		_uiModel.setNonLabelInsets(20);
 
 		// update the UI labels
-		_uiModel.setLabelProvider(new BiSliderLabelProvider()
-		{
-			public String getLabel(final double value)
-			{
+		_uiModel.setLabelProvider(new BiSliderLabelProvider() {
+			@Override
+			public String getLabel(final double value) {
 				// ok, convert to date
 				final long millis = (long) value;
 				final String res = FormatRNDateTime.toMediumString(millis);
@@ -125,16 +120,14 @@ public class DTGBiSlider
 		});
 
 		// now some date fiddling
-		_dateModel.addListener(new BiSliderDataModel.Listener()
-		{
+		_dateModel.addListener(new BiSliderDataModel.Listener() {
 			private boolean myInCompositeUpdate;
 
+			@Override
 			public void dataModelChanged(final BiSliderDataModel dataModel,
-					final boolean moreChangesExpectedInNearFuture)
-			{
+					final boolean moreChangesExpectedInNearFuture) {
 				// see if we're already procesing something
-				if (moreChangesExpectedInNearFuture && myInCompositeUpdate)
-				{
+				if (moreChangesExpectedInNearFuture && myInCompositeUpdate) {
 					return;
 				}
 
@@ -142,8 +135,7 @@ public class DTGBiSlider
 				myInCompositeUpdate = moreChangesExpectedInNearFuture;
 
 				// is this a "drop" event
-				if (!moreChangesExpectedInNearFuture)
-				{
+				if (!moreChangesExpectedInNearFuture) {
 					// yes, fire changed event
 					outputValues();
 				}
@@ -151,20 +143,92 @@ public class DTGBiSlider
 		});
 
 		// great, now it's ready for the actual BiSlider control
-		_mySlider = BiSliderFactory.getInstance().createBiSlider(parentControl,
-				_dateModel, _uiModel, fineControl);
+		_mySlider = BiSliderFactory.getInstance().createBiSlider(parentControl, _dateModel, _uiModel, fineControl);
 
 		setShowLabels(false);
 		resetMinMaxPointers();
 	}
 
-	public Composite getControl()
-	{
+	public Composite getControl() {
 		return _mySlider;
 	}
 
-	public void updateOuterRanges(final TimePeriod period)
-	{
+	/**
+	 * the currently indicated time period (or null for no selection)
+	 *
+	 * @return
+	 */
+	public TimePeriod getPeriod() {
+		final TimePeriod res = new TimePeriod.BaseTimePeriod(new HiResDate(_dateModel.getUserMinimumDate()),
+				new HiResDate(_dateModel.getUserMaximumDate()));
+
+		return res;
+	}
+
+	/**
+	 * @return Returns the _stepSize (millis)
+	 */
+	public long getStepSize() {
+		return _stepSize;
+	}
+
+	/**
+	 * ok fire data-changed event
+	 */
+	protected void outputValues() {
+		// ok - determine the times
+		final HiResDate lowDTG = new HiResDate(_dateModel.getUserMinimumDate());
+		final HiResDate highDTG = new HiResDate(_dateModel.getUserMaximumDate());
+
+		// and send out the update
+		rangeChanged(new TimePeriod.BaseTimePeriod(lowDTG, highDTG));
+	}
+
+	public void rangeChanged(final TimePeriod period) {
+		// ok, anybody can over-ride this call if they want to - to inform
+		// themselves what's happening
+	}
+
+	private void redrawInternal() {
+		if (_mySlider != null && !_mySlider.isDisposed()) {
+			_mySlider.redraw();
+		}
+	}
+
+	public void resetMinMaxPointers() {
+		_mySlider.resetMinMaxPointers();
+		redrawInternal();
+
+	}
+
+	public void setSegmentSize(final long size) {
+		_dateModel.setSegmentLength(size);
+	}
+
+	public void setShowLabels(final boolean showLabels) {
+		_mySlider.setShowLabels(showLabels);
+		redrawInternal();
+	}
+
+	/**
+	 * @param size The _stepSize to set (millis)
+	 */
+	public void setStepSize(final long size) {
+		_stepSize = size;
+	}
+
+	/**
+	 * outside object has requested repaint get on with it..
+	 */
+	public void update() {
+		// super.update();
+
+		// and get the widget to repaint
+		_mySlider.update();
+		// repaint();
+	}
+
+	public void updateOuterRanges(final TimePeriod period) {
 
 		_minVal = period.getStartDTG();
 		_maxVal = period.getEndDTG();
@@ -178,98 +242,10 @@ public class DTGBiSlider
 
 	}
 
-	/**
-	 * outside object has requested repaint get on with it..
-	 */
-	public void update()
-	{
-		// super.update();
-
-		// and get the widget to repaint
-		_mySlider.update();
-		// repaint();
-	}
-
-	public void updateSelectedRanges(final HiResDate minSelectedDate,
-			final HiResDate maxSelectedDate)
-	{
+	public void updateSelectedRanges(final HiResDate minSelectedDate, final HiResDate maxSelectedDate) {
 		final Date firstDate = minSelectedDate.getDate();
 		final Date lastDate = maxSelectedDate.getDate();
 		_dateModel.setUserMinimum(firstDate);
 		_dateModel.setUserMaximum(lastDate);
-	}
-
-	/**
-	 * ok fire data-changed event
-	 */
-	protected void outputValues()
-	{
-		// ok - determine the times
-		final HiResDate lowDTG = new HiResDate(_dateModel.getUserMinimumDate());
-		final HiResDate highDTG = new HiResDate(_dateModel.getUserMaximumDate());
-
-		// and send out the update
-		rangeChanged(new TimePeriod.BaseTimePeriod(lowDTG, highDTG));
-	}
-
-	public void rangeChanged(final TimePeriod period)
-	{
-		// ok, anybody can over-ride this call if they want to - to inform
-		// themselves what's happening
-	}
-
-	/**
-	 * @return Returns the _stepSize (millis)
-	 */
-	public long getStepSize()
-	{
-		return _stepSize;
-	}
-
-	/**
-	 * @param size
-	 *          The _stepSize to set (millis)
-	 */
-	public void setStepSize(final long size)
-	{
-		_stepSize = size;
-	}
-
-	public void setSegmentSize(final long size)
-	{
-		_dateModel.setSegmentLength(size);
-	}
-
-	/**
-	 * the currently indicated time period (or null for no selection)
-	 * 
-	 * @return
-	 */
-	public TimePeriod getPeriod()
-	{
-		final TimePeriod res = new TimePeriod.BaseTimePeriod(new HiResDate(
-				_dateModel.getUserMinimumDate()), new HiResDate(
-				_dateModel.getUserMaximumDate()));
-
-		return res;
-	}
-	
-	public void setShowLabels(boolean showLabels) {
-		_mySlider.setShowLabels(showLabels);
-		redrawInternal();
-	}
-
-	private void redrawInternal()
-	{
-		if (_mySlider != null && !_mySlider.isDisposed()) {
-			_mySlider.redraw();
-		}
-	}
-
-	public void resetMinMaxPointers()
-	{
-		_mySlider.resetMinMaxPointers();
-		redrawInternal();
-		
 	}
 }

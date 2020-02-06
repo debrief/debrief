@@ -15,9 +15,9 @@ import org.eclipse.nebula.cwt.animation.movement.IMovement;
 
 /**
  * Abstract implementation for IEffect.
- * 
+ *
  * @author Nicolas Richeton
- * 
+ *
  */
 public abstract class AbstractEffect implements IEffect {
 
@@ -30,8 +30,8 @@ public abstract class AbstractEffect implements IEffect {
 
 	protected IMovement easingFunction;
 
-	public AbstractEffect(long lengthMilli, IMovement movement,
-			Runnable onStop, Runnable onCancel) {
+	public AbstractEffect(final long lengthMilli, final IMovement movement, final Runnable onStop,
+			final Runnable onCancel) {
 		this.length = lengthMilli;
 		easingFunction = movement;
 		this.runnableOnCancel = onCancel;
@@ -40,69 +40,37 @@ public abstract class AbstractEffect implements IEffect {
 
 	/**
 	 * Apply this effect.
-	 * 
+	 *
 	 * @param currentTime
 	 */
 	public abstract void applyEffect(final long currentTime);
 
-	/**
-	 * Run the onCancel runnable if any.
-	 */
-	protected void doCancel() {
-		if (runnableOnCancel != null)
-			runnableOnCancel.run();
-	}
-
-	/**
-	 * Run the onStop runnable if any.
-	 */
-	protected void doStop() {
-		if (runnableOnStop != null)
-			runnableOnStop.run();
-	}
-
-	public long getCurrentTime() {
-		long time = System.currentTimeMillis();
-
-		if (startTime == -1)
-			startTime = time;
-
-		long currentTime = time - startTime;
-
-		if (currentTime > length)
-			currentTime = length;
-
-		return currentTime;
-	}
-
-	/**
-	 * Check if the effect has ended. In that case, start the onStop runnable.
-	 */
-	public void processEnd() {
-		if (done)
-			return;
-
-		if (getCurrentTime() == length) {
-			done = true;
-			doStop();
-		}
-	}
-
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.nebula.cwt.animation.effects.IEffect#cancel()
 	 */
+	@Override
 	public void cancel() {
 		done = true;
 		doCancel();
 	}
 
+	/**
+	 * Run the onCancel runnable if any.
+	 */
+	protected void doCancel() {
+		if (runnableOnCancel != null) {
+			runnableOnCancel.run();
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.nebula.cwt.animation.effects.IEffect#doEffect()
 	 */
+	@Override
 	public void doEffect() {
 		final long currentTime = getCurrentTime();
 
@@ -111,12 +79,52 @@ public abstract class AbstractEffect implements IEffect {
 		processEnd();
 	}
 
+	/**
+	 * Run the onStop runnable if any.
+	 */
+	protected void doStop() {
+		if (runnableOnStop != null) {
+			runnableOnStop.run();
+		}
+	}
+
+	public long getCurrentTime() {
+		final long time = System.currentTimeMillis();
+
+		if (startTime == -1) {
+			startTime = time;
+		}
+
+		long currentTime = time - startTime;
+
+		if (currentTime > length) {
+			currentTime = length;
+		}
+
+		return currentTime;
+	}
+
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.eclipse.nebula.cwt.animation.effects.IEffect#isDone()
 	 */
+	@Override
 	public boolean isDone() {
 		return done;
+	}
+
+	/**
+	 * Check if the effect has ended. In that case, start the onStop runnable.
+	 */
+	public void processEnd() {
+		if (done) {
+			return;
+		}
+
+		if (getCurrentTime() == length) {
+			done = true;
+			doStop();
+		}
 	}
 }

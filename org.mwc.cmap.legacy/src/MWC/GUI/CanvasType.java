@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: CanvasType.java,v $
@@ -142,473 +142,476 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
 /**
- * interface for canvases to implement for plotting commands
- * The CanvasType interface provides all of the drawing operations
- * which may be made onto a scale plot.
- * The drawing functions themselves are in screen coordinates, but
- * convenience functions are provided which convert between screen
- * and data coordinates using the current projection.
- * The CanvasType class has the following responsibilities:
- * <li> Draw primitives to plot </li>
- * <li> Report low-level mouse operations </li>
- * <li> Handle any projection from data to screen coordinates </li>
+ * interface for canvases to implement for plotting commands The CanvasType
+ * interface provides all of the drawing operations which may be made onto a
+ * scale plot. The drawing functions themselves are in screen coordinates, but
+ * convenience functions are provided which convert between screen and data
+ * coordinates using the current projection. The CanvasType class has the
+ * following responsibilities:
+ * <li>Draw primitives to plot</li>
+ * <li>Report low-level mouse operations</li>
+ * <li>Handle any projection from data to screen coordinates</li>
  */
 public interface CanvasType {
-  //////////////////////////////////////
-  // Plain drawing commands
-  //////////////////////////////////////
-  
-  /** interface for classes that are able to provide
-   * screen update information
-   * 
-   * @author ian
-   *
-   */
-  static interface ScreenUpdateProvider
-  {
-    void addScreenUpdateListener(final ScreenUpdateListener listener);
-    void removeScreenUpdateListener(final ScreenUpdateListener listener);    
-  }
-  
-  /** interface for classes that want to know when screen refreshes happen
-   * 
-   * @author ian
-   *
-   */
-  static interface ScreenUpdateListener
-  {
-    void screenUpdated();
-  }
-
-  /** list of line styles to (try to) plot
-   *
-   */
-
-  public static final int SOLID = 0;
-  public static final int DOTTED = 2;
-  public static final int DOT_DASH = 3;
-  public static final int SHORT_DASHES = 4;
-  public static final int LONG_DASHES = 1;
-  public static final int UNCONNECTED = 5;
+	//////////////////////////////////////
+	// Plain drawing commands
+	//////////////////////////////////////
 
 	/**
-   * update the information currently plotted on chart
-   *
-   */
-  public void updateMe();
-  /**
-   * drawOval
-   *
-   * @param x upper left hand corner
-   * @param y upper left hand corner
-   *
-   */
-  public void drawOval( int x, int y, int width, int height );
-  /**
-   * fill an arc on the current destination
-   *
-   * @param x pixels
-   * @param width pixels
-   * @param startAngle degrees
-   *
-   */
-  public void fillArc(int x, int y,
-               int width, int height,
-               int startAngle, int arcAngle);
+	 * marker interface for classes which can provide a multi-line text label
+	 *
+	 */
+	public interface MultiLineTooltipProvider {
+		/**
+		 * get the data name in multi-line format (for tooltips) multi-lines are
+		 * implemented using html line breaks
+		 *
+		 * @return multi-line text label
+		 */
+		public String getMultiLineName();
+	}
 
 	/**
-   * fillOval
-   *
-   * @param x parameter for fillOval
-   *
-   */
-  public void fillOval(int x, int y, int width, int height );
-  /**
-   * drawText
-   *
-   * @param str parameter for drawText
-   *
-   */
-  public void drawText(String str, int x, int y);
-  
-  /**
-   * Draw rotated text
-   *
-   * @param str parameter for drawText
-   *
-   */
-  public void drawText(String str, int x, int y, float rotate);
-  
-  /**
-   * Draw rotated text above/below
-   *
-   * @param str parameter for drawText
-   *
-   */
-  public void drawText(String str, int x, int y, float rotate, boolean above);
-  
-  /**
-   * setColor
-   *
-   * @param theCol parameter for setColor
-   */
-  public void setColor(java.awt.Color theCol);
-  
-  /** set the font for following text
-   * 
-   */
-  public void setFont(java.awt.Font theFont);
+	 * duff implementation of PaintListener, so classes can choose to extend just
+	 * part of the listener interface
+	 */
+	public abstract class PaintAdaptor implements CanvasType.PaintListener {
 
-  /** set the style for the line, using our constants
-   *
-   */
-  public void setLineStyle(int style);
+		/**
+		 * getDataArea
+		 *
+		 * @return the returned WorldArea
+		 */
+		@Override
+		public WorldArea getDataArea() {
+			// return null
+			return null;
+		}
 
-  /** set the width of the line, in pixels
-   *
-   */
-  public void setLineWidth(float width);
+		/**
+		 * getName
+		 *
+		 * @return the returned String
+		 */
+		@Override
+		abstract public String getName();
 
-  /** draw image
-   * @param img the image to draw
-   * @param x the top left coordinate to draw
-   * @param y the top left coordinate to draw
-   * @param width the width of the image to draw
-   * @param height the height of the image to draw
-   * @param observer the observer for this image
-   * @return boolean flag for whether the image was ready for painting
-   *
-   */
-  public boolean drawImage(Image img,
-                                  int x,
-                                  int y,
-                                  int width,
-                                  int height,
-                                  ImageObserver observer);
+		/**
+		 * paintMe
+		 *
+		 * @param dest parameter for paintMe
+		 */
+		@Override
+		public void paintMe(final CanvasType dest) {
+			// do nothing
+		}
 
-  /**
-   * drawLine
-   *
-   * @param startX parameter for drawLine
-   *
-   */
-  public void drawLine(int startX, int startY, int endX, int endY);
+		/**
+		 * resizedEvent
+		 *
+		 * @param theProj parameter for resizedEvent
+		 *
+		 */
+		@Override
+		public void resizedEvent(final MWC.Algorithms.PlainProjection theProj, final java.awt.Dimension newScreenArea) {
+			// do nothing, since we're not really interested
+		}
+	}
 
-  /**
-   * draw a filled polygon
-   *
-   * @param xPoints list of x coordinates
-   * @param yPoints list of y coordinates
-   * @param nPoints length of list
-   */
-  public void fillPolygon(int[] xPoints,
-                          int[] yPoints,
-                          int nPoints);
-
-  /**
-   * drawPolygon
-   *
-   * @param xPoints list of x coordinates
-   * @param yPoints list of y coordinates
-   * @param nPoints length of list
-   */
-  public void drawPolygon(int[] xPoints,
-                          int[] yPoints,
-                          int nPoints);
-
-  /**
-   * drawPolyline
-   *
-   * @param xPoints list of x coordinates
-   * @param yPoints list of y coordinates
-   * @param nPoints length of list
-   */
-  public void drawPolyline(int[] xPoints,
-                          int[] yPoints,
-                          int nPoints);
-  
-
-  /**
-   * drawPolyline
-   *
-   * @param points list of x & y coordinates
-   */
-  public void  drawPolyline(final int[] xPoints);  
-
-  /**
-   * draw an arc on the current destination
-   *
-   * @param x pixels
-   * @param width pixels
-   * @param startAngle degrees
-   *
-   */
-  public void drawArc(int x, int y,
-               int width, int height,
-               int startAngle, int arcAngle);
-  /**
-   * drawRect
-   *
-   * @param x1 parameter for drawRect
-   *
-   */
-  public void drawRect(int x1, int y1, int wid, int height);
 	/**
-   * fillRect
-   *
-   * @param x parameter for fillRect
-   *
-   */
-  public void fillRect(int x, int y, int wid, int height);
-  /**
-   * drawText
-   *
-   * @param theFont parameter for drawText
-   *
-   */
-  public void drawText(java.awt.Font theFont, String theStr, int x, int y);
-  /**
-   * getStringHeight
-   *
-   * @param theFont parameter for getStringHeight
-   * @return the returned int
-   */
-  public int getStringHeight(java.awt.Font theFont);
-  /**
-   * getStringWidth
-   *
-   * @param theFont parameter for getStringWidth
-   *
-   * @return the returned int
-   */
-  public int getStringWidth(java.awt.Font theFont, String theString);
+	 * // support for adding a list of painters to this class
+	 */
+	public interface PaintListener {
+		/**
+		 * give me the data area you require
+		 *
+		 */
+		public WorldArea getDataArea();
 
-  /** get the current line width (when supported)
-   *
-   * @return the width, in pixels
-   */
-  public float getLineWidth();
+		/**
+		 * what is the name of the type of data you plot?
+		 *
+		 */
+		public String getName();
 
-  /**
-   * expose the graphics object, used only for
-   * plotting non-persistent graphics
-   * (temporary lines, etc).
-   *
-   */
-  public java.awt.Graphics getGraphicsTemp();
+		/**
+		 * repaint yourself to this canvas (me)
+		 *
+		 */
+		public void paintMe(CanvasType dest);
 
-  //////////////////////////////////////
-  // start/finish plotting commands
-  //////////////////////////////////////
+		/**
+		 * inform listeners that we have resized. this is especially useful for painters
+		 * which plot static data such as a coastline or grid - it triggers a redraw
+		 * from them
+		 *
+		 */
+		public void resizedEvent(MWC.Algorithms.PlainProjection theProj, java.awt.Dimension newScreenArea);
+	}
 
-  /**
-   * client has finished drawing operation
-   *
-   */
-  public void endDraw(Object theVal);
+	/**
+	 * interface for classes that want to know when screen refreshes happen
+	 *
+	 * @author ian
+	 *
+	 */
+	static interface ScreenUpdateListener {
+		void screenUpdated();
+	}
 
-  /**
-   * client is about to start drawing operation
-   *
-   */
-  public void startDraw(Object theVal);
+	/**
+	 * interface for classes that are able to provide screen update information
+	 *
+	 * @author ian
+	 *
+	 */
+	static interface ScreenUpdateProvider {
+		void addScreenUpdateListener(final ScreenUpdateListener listener);
 
-  //////////////////////////////////////
-  // projection related commands
-  /**
-   * //////////////////////////////////////
-   *
-   */
-  public PlainProjection getProjection();
-  /**
-   * setProjection
-   *
-   * @param val parameter for setProjection
-   */
-  public void setProjection(PlainProjection val);
+		void removeScreenUpdateListener(final ScreenUpdateListener listener);
+	}
 
-  /**
-   *  Convert the location provided to screen coordinates
-   * GOTCHA there's am optimisation in the default projection
-   * where we don't produce a new Point each time, we return
-   * a local working copy.  So, if you're working in code
-   * which requires two Points (drawing a line, for example)
-   * in the creation of one of your points you must use
-   * a copy constructor
-   *
-   */
-  public java.awt.Point toScreen(WorldLocation val);
-  /**
-   * toWorld
-   *
-   * @param val parameter for toWorld
-   * @return the returned WorldLocation
-   */
-  public WorldLocation toWorld(java.awt.Point val);
+	/**
+	 * class to allow provision of a custom tooltip dependent on the mouse position
+	 * provided
+	 */
+	public interface TooltipHandler {
+		/**
+		 * getString
+		 *
+		 * @param loc parameter for getString
+		 *
+		 * @return the returned String
+		 */
+		public String getString(MWC.GenericData.WorldLocation loc, java.awt.Point point);
+	}
 
-  /**
-   * retrieve the full data area, and do a fit to window
-   *
-   */
-  public void rescale();
+	/**
+	 * list of line styles to (try to) plot
+	 *
+	 */
 
-  //////////////////////////////////////
-  // screen layout commands
-  //////////////////////////////////////
+	public static final int SOLID = 0;
+	public static final int DOTTED = 2;
 
-  /**
-   * set/get the background colour
-   *
-   */
-  public java.awt.Color getBackgroundColor();
-  /**
-   * setBackgroundColor
-   *
-   * @param theColor parameter for setBackgroundColor
-   */
-  public void setBackgroundColor(java.awt.Color theColor);
+	public static final int DOT_DASH = 3;
+	public static final int SHORT_DASHES = 4;
+	public static final int LONG_DASHES = 1;
 
-  /**
-   * getSize
-   *
-   * @return the returned java.awt.Dimension
-   */
-  public java.awt.Dimension getSize();
-  /**
-   * addPainter
-   *
-   * @param listener parameter for addPainter
-   */
-  public void addPainter(CanvasType.PaintListener listener);
-  /**
-   * removePainter
-   *
-   * @param listener parameter for removePainter
-   */
-  public void removePainter(CanvasType.PaintListener listener);
-  /**
-   * getPainters
-   *
-   * @return the returned java.util.Enumeration
-   */
-  public java.util.Enumeration<CanvasType.PaintListener> getPainters();
+	public static final int UNCONNECTED = 5;
+
+	/**
+	 * addPainter
+	 *
+	 * @param listener parameter for addPainter
+	 */
+	public void addPainter(CanvasType.PaintListener listener);
+
+	/**
+	 * draw an arc on the current destination
+	 *
+	 * @param x          pixels
+	 * @param width      pixels
+	 * @param startAngle degrees
+	 *
+	 */
+	public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle);
+
+	/**
+	 * draw image
+	 *
+	 * @param img      the image to draw
+	 * @param x        the top left coordinate to draw
+	 * @param y        the top left coordinate to draw
+	 * @param width    the width of the image to draw
+	 * @param height   the height of the image to draw
+	 * @param observer the observer for this image
+	 * @return boolean flag for whether the image was ready for painting
+	 *
+	 */
+	public boolean drawImage(Image img, int x, int y, int width, int height, ImageObserver observer);
+
+	/**
+	 * drawLine
+	 *
+	 * @param startX parameter for drawLine
+	 *
+	 */
+	public void drawLine(int startX, int startY, int endX, int endY);
+
+	/**
+	 * drawOval
+	 *
+	 * @param x upper left hand corner
+	 * @param y upper left hand corner
+	 *
+	 */
+	public void drawOval(int x, int y, int width, int height);
+
+	/**
+	 * drawPolygon
+	 *
+	 * @param xPoints list of x coordinates
+	 * @param yPoints list of y coordinates
+	 * @param nPoints length of list
+	 */
+	public void drawPolygon(int[] xPoints, int[] yPoints, int nPoints);
+
+	/**
+	 * drawPolyline
+	 *
+	 * @param points list of x & y coordinates
+	 */
+	public void drawPolyline(final int[] xPoints);
+
+	/**
+	 * drawPolyline
+	 *
+	 * @param xPoints list of x coordinates
+	 * @param yPoints list of y coordinates
+	 * @param nPoints length of list
+	 */
+	public void drawPolyline(int[] xPoints, int[] yPoints, int nPoints);
+
+	/**
+	 * drawRect
+	 *
+	 * @param x1 parameter for drawRect
+	 *
+	 */
+	public void drawRect(int x1, int y1, int wid, int height);
+
+	/**
+	 * drawText
+	 *
+	 * @param theFont parameter for drawText
+	 *
+	 */
+	public void drawText(java.awt.Font theFont, String theStr, int x, int y);
+
+	/**
+	 * drawText
+	 *
+	 * @param str parameter for drawText
+	 *
+	 */
+	public void drawText(String str, int x, int y);
+
+	/**
+	 * Draw rotated text
+	 *
+	 * @param str parameter for drawText
+	 *
+	 */
+	public void drawText(String str, int x, int y, float rotate);
+
+	/**
+	 * Draw rotated text above/below
+	 *
+	 * @param str parameter for drawText
+	 *
+	 */
+	public void drawText(String str, int x, int y, float rotate, boolean above);
+
+	/**
+	 * client has finished drawing operation
+	 *
+	 */
+	public void endDraw(Object theVal);
+
+	/**
+	 * fill an arc on the current destination
+	 *
+	 * @param x          pixels
+	 * @param width      pixels
+	 * @param startAngle degrees
+	 *
+	 */
+	public void fillArc(int x, int y, int width, int height, int startAngle, int arcAngle);
+
+	/**
+	 * fillOval
+	 *
+	 * @param x parameter for fillOval
+	 *
+	 */
+	public void fillOval(int x, int y, int width, int height);
+
+	/**
+	 * draw a filled polygon
+	 *
+	 * @param xPoints list of x coordinates
+	 * @param yPoints list of y coordinates
+	 * @param nPoints length of list
+	 */
+	public void fillPolygon(int[] xPoints, int[] yPoints, int nPoints);
+
+	/**
+	 * fillRect
+	 *
+	 * @param x parameter for fillRect
+	 *
+	 */
+	public void fillRect(int x, int y, int wid, int height);
+
+	/**
+	 * set/get the background colour
+	 *
+	 */
+	public java.awt.Color getBackgroundColor();
+
+	/**
+	 * expose the graphics object, used only for plotting non-persistent graphics
+	 * (temporary lines, etc).
+	 *
+	 */
+	public java.awt.Graphics getGraphicsTemp();
+
+	/**
+	 * get the current line width (when supported)
+	 *
+	 * @return the width, in pixels
+	 */
+	public float getLineWidth();
+
+	//////////////////////////////////////
+	// start/finish plotting commands
+	//////////////////////////////////////
+
+	/**
+	 * getPainters
+	 *
+	 * @return the returned java.util.Enumeration
+	 */
+	public java.util.Enumeration<CanvasType.PaintListener> getPainters();
+
+	//////////////////////////////////////
+	// projection related commands
+	/**
+	 * //////////////////////////////////////
+	 *
+	 */
+	public PlainProjection getProjection();
+
+	/**
+	 * getSize
+	 *
+	 * @return the returned java.awt.Dimension
+	 */
+	public java.awt.Dimension getSize();
+
+	/**
+	 * getStringHeight
+	 *
+	 * @param theFont parameter for getStringHeight
+	 * @return the returned int
+	 */
+	public int getStringHeight(java.awt.Font theFont);
+
+	/**
+	 * getStringWidth
+	 *
+	 * @param theFont parameter for getStringWidth
+	 *
+	 * @return the returned int
+	 */
+	public int getStringWidth(java.awt.Font theFont, String theString);
+
+	/**
+	 * removePainter
+	 *
+	 * @param listener parameter for removePainter
+	 */
+	public void removePainter(CanvasType.PaintListener listener);
+
+	/**
+	 * retrieve the full data area, and do a fit to window
+	 *
+	 */
+	public void rescale();
+
+	//////////////////////////////////////
+	// screen layout commands
+	//////////////////////////////////////
+
+	/**
+	 * setBackgroundColor
+	 *
+	 * @param theColor parameter for setBackgroundColor
+	 */
+	public void setBackgroundColor(java.awt.Color theColor);
+
+	/**
+	 * setColor
+	 *
+	 * @param theCol parameter for setColor
+	 */
+	public void setColor(java.awt.Color theCol);
+
+	/**
+	 * set the font for following text
+	 *
+	 */
+	public void setFont(java.awt.Font theFont);
+
+	/**
+	 * set the style for the line, using our constants
+	 *
+	 */
+	public void setLineStyle(int style);
+
+	/**
+	 * set the width of the line, in pixels
+	 *
+	 */
+	public void setLineWidth(float width);
+
+	/**
+	 * setProjection
+	 *
+	 * @param val parameter for setProjection
+	 */
+	public void setProjection(PlainProjection val);
 
 	///////////////////////////////////////////////
 	// tooltip handler commands
 	/**
-   * ///////////////////////////////////////////////
-   *
-   */
+	 * ///////////////////////////////////////////////
+	 *
+	 */
 	public void setTooltipHandler(TooltipHandler handler);
 
-  //////////////////////////////////////
-  // listener commands (largely for tools/painters)
-  //////////////////////////////////////
-
-  /**
-   * // support for adding a list of painters to this class
-   */
-  public interface PaintListener{
-    /**
-     * repaint yourself to this canvas (me)
-     *
-     */
-    public void paintMe(CanvasType dest);
-    /**
-     * give me the data area you require
-     *
-     */
-    public WorldArea getDataArea();
-    /**
-     * inform listeners that we have resized.
-     * this is especially useful for painters which plot
-     * static data such as a coastline or grid - it
-     * triggers a redraw from them
-     *
-     */
-    public void resizedEvent(MWC.Algorithms.PlainProjection theProj,
-                             java.awt.Dimension newScreenArea);
-    /**
-     * what is the name of the type of data you plot?
-     *
-     */
-    public String getName();
-  }
-
-  /**
-   * duff implementation of PaintListener, so classes can choose to
-   * extend just part of the listener interface
-   */
-  public abstract class PaintAdaptor implements CanvasType.PaintListener{
-
-    /**
-     * paintMe
-     *
-     * @param dest parameter for paintMe
-     */
-    public void paintMe(final CanvasType dest)
-    {
-      // do nothing
-    }
-
-    /**
-     * getDataArea
-     *
-     * @return the returned WorldArea
-     */
-    public WorldArea getDataArea()
-    {
-      // return null
-      return null;
-    }
-
-    /**
-     * resizedEvent
-     *
-     * @param theProj parameter for resizedEvent
-     *
-     */
-    public void resizedEvent(final MWC.Algorithms.PlainProjection theProj, final java.awt.Dimension newScreenArea)
-    {
-      // do nothing, since we're not really interested
-    }
-
-    /**
-     * getName
-     *
-     * @return the returned String
-     */
-    abstract public String getName();
-  }
+	//////////////////////////////////////
+	// listener commands (largely for tools/painters)
+	//////////////////////////////////////
 
 	/**
-   * class to allow provision of a custom tooltip dependent on the
-   * mouse position provided
-   */
-	public interface TooltipHandler
-	{
-		/**
-     * getString
-     *
-     * @param loc parameter for getString
-     *
-     * @return the returned String
-     */
-    public String getString(MWC.GenericData.WorldLocation loc,
-														java.awt.Point point);
-	}
+	 * client is about to start drawing operation
+	 *
+	 */
+	public void startDraw(Object theVal);
 
-  /** marker interface for classes which can provide a multi-line text label
-   *
-   */
-  public interface MultiLineTooltipProvider
-  {
-    /** get the data name in multi-line format (for tooltips)
-     * multi-lines are implemented using html line breaks
-     *
-     * @return multi-line text label
-     */
-    public String getMultiLineName();
-  }
+	/**
+	 * Convert the location provided to screen coordinates GOTCHA there's am
+	 * optimisation in the default projection where we don't produce a new Point
+	 * each time, we return a local working copy. So, if you're working in code
+	 * which requires two Points (drawing a line, for example) in the creation of
+	 * one of your points you must use a copy constructor
+	 *
+	 */
+	public java.awt.Point toScreen(WorldLocation val);
+
+	/**
+	 * toWorld
+	 *
+	 * @param val parameter for toWorld
+	 * @return the returned WorldLocation
+	 */
+	public WorldLocation toWorld(java.awt.Point val);
+
+	/**
+	 * update the information currently plotted on chart
+	 *
+	 */
+	public void updateMe();
 }
-

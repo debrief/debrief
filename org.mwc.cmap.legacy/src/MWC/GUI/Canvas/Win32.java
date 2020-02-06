@@ -1,21 +1,22 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.Canvas;
 
 // Copyright MWC 1999, Debrief 3 Project
+
 // $RCSfile: Win32.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -60,88 +61,90 @@ package MWC.GUI.Canvas;
 // Initial revision
 //
 
+public class Win32 {
+	/**
+	 * @dl.struct()
+	 */
+	public static class METAFILEPICT {
+		public int mm;
+		public int xExt;
+		public int yExt;
+		public int hMF;
+	}
 
-public class Win32
-{
-  /**
-   * @dl.import("GDI32", auto) 
-   */
-  //CS-IGNORE:ON FINAL_PARAMETERS
-  public static native int CopyMetaFile(int anonymous0, String anonymous1);
+	public static final int GMEM_MOVEABLE = 0x0002;
 
-  /**
-   * @dl.import("USER32",auto) 
-   */
-  public static native int SetClipboardData(int uFormat, int hMem);
+	public static final int MM_ANISOTROPIC = 8;
 
-  /**
-   * @dl.import("KERNEL32",auto) 
-   */
-  public static native int GlobalLock(int hMem);
-
-  /**
-   * @dl.import("KERNEL32",auto) 
-   */
-  public static native int GlobalAlloc(int uFlags, int dwBytes);
-
-  /**
-   * @dl.import("USER32",auto) 
-   */
-  public static native boolean CloseClipboard();
-
-  /**
-   * @dl.import("KERNEL32",auto) 
-   */
-  public static native int GlobalUnlock(int hMem);
-
-  /**
-   * @dl.import("USER32",auto) 
-   */
-  public static native boolean OpenClipboard(int hWndNewOwner);
-
-  /**
-   * @dl.import("kernel32",auto) 
-   */
-  public static native boolean CopyMemory(int addr, METAFILEPICT mp, int size);
-  //CS-IGNORE:OFF FINAL_PARAMETERS
-  /**
-   * @dl.import("USER32",auto) 
-   */
-  public static native boolean EmptyClipboard();
-  public static final int GMEM_MOVEABLE = 0x0002;
-  /**
-   * @dl.struct() 
-   */
-  public static class METAFILEPICT
-  {
-    public int mm;
-    public int xExt;
-    public int yExt;
-    public int hMF;
-  }
-
-  /**
-   * @dl.import("GDI32", auto) 
-   */
-//CS-IGNORE:ON FINAL_PARAMETERS
-  public static native int CreateMetaFile(String anonymous0);
-
-  /**
-   * @dl.import("GDI32",auto) 
-   */
-  public static native int SetMapMode(int anonymous0, int anonymous1);
-
-  /**
-   * @dl.import("GDI32",auto) 
-   */
-  public static native boolean LineTo(int anonymous0, int anonymous1, int anonymous2);
-
-  /**
-   * @dl.import("GDI32",auto) 
-   */
-  public static native int CloseMetaFile(int anonymous0);
-  public static final int MM_ANISOTROPIC = 8;
-  public static final int CF_METAFILEPICT = 3;
+	public static final int CF_METAFILEPICT = 3;
 //CS-IGNORE:OFF FINAL_PARAMETERS
-	
+
+	/**
+	 * @dl.import("USER32",auto)
+	 */
+	public static native boolean CloseClipboard();
+
+	/**
+	 * @dl.import("GDI32",auto)
+	 */
+	public static native int CloseMetaFile(int anonymous0);
+
+	/**
+	 * @dl.import("kernel32",auto)
+	 */
+	public static native boolean CopyMemory(int addr, METAFILEPICT mp, int size);
+
+	/**
+	 * @dl.import("GDI32", auto)
+	 */
+	// CS-IGNORE:ON FINAL_PARAMETERS
+	public static native int CopyMetaFile(int anonymous0, String anonymous1);
+
+	/**
+	 * @dl.import("GDI32", auto)
+	 */
+//CS-IGNORE:ON FINAL_PARAMETERS
+	public static native int CreateMetaFile(String anonymous0);
+
+	// CS-IGNORE:OFF FINAL_PARAMETERS
+	/**
+	 * @dl.import("USER32",auto)
+	 */
+	public static native boolean EmptyClipboard();
+
+	/**
+	 * @dl.import("KERNEL32",auto)
+	 */
+	public static native int GlobalAlloc(int uFlags, int dwBytes);
+
+	/**
+	 * @dl.import("KERNEL32",auto)
+	 */
+	public static native int GlobalLock(int hMem);
+
+	/**
+	 * @dl.import("KERNEL32",auto)
+	 */
+	public static native int GlobalUnlock(int hMem);
+
+	/**
+	 * @dl.import("GDI32",auto)
+	 */
+	public static native boolean LineTo(int anonymous0, int anonymous1, int anonymous2);
+
+	/**
+	 * @dl.import("USER32",auto)
+	 */
+	public static native boolean OpenClipboard(int hWndNewOwner);
+
+	/**
+	 * @dl.import("USER32",auto)
+	 */
+	public static native int SetClipboardData(int uFormat, int hMem);
+
+	/**
+	 * @dl.import("GDI32",auto)
+	 */
+	public static native int SetMapMode(int anonymous0, int anonymous1);
+
 }

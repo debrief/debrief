@@ -1,33 +1,75 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.asset.vesselmonitor.views;
 
-import java.text.*;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowData;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 
 import ASSET.Models.Movement.SimpleDemandedStatus;
-import ASSET.Participants.*;
+import ASSET.Participants.DemandedStatus;
+import ASSET.Participants.Status;
 import MWC.GenericData.WorldSpeed;
 
-public class StatusIndicator extends org.eclipse.swt.widgets.Composite
-{
+public class StatusIndicator extends org.eclipse.swt.widgets.Composite {
+	/**
+	 * Auto-generated main method to display this org.eclipse.swt.widgets.Composite
+	 * inside a new Shell.
+	 */
+	public static void main(final String[] args) {
+		showGUI();
+	}
+
+	/**
+	 * Auto-generated method to display this org.eclipse.swt.widgets.Composite
+	 * inside a new Shell.
+	 */
+	public static void showGUI() {
+		final Display display = Display.getDefault();
+		final Shell shell = new Shell(display);
+		final StatusIndicator inst = new StatusIndicator(shell, SWT.NULL);
+		final Point size = inst.getSize();
+		shell.setLayout(new FillLayout());
+		shell.layout();
+		if (size.x == 0 && size.y == 0) {
+			inst.pack();
+			shell.pack();
+		} else {
+			final Rectangle shellBounds = shell.computeTrim(0, 0, size.x, size.y);
+			shell.setSize(shellBounds.width, shellBounds.height);
+		}
+		shell.open();
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch())
+				display.sleep();
+		}
+	}
+
 	private Group MonitorGroup;
 
 	private Label courseLbl;
@@ -58,63 +100,31 @@ public class StatusIndicator extends org.eclipse.swt.widgets.Composite
 
 	private Label depthLbl;
 
-	/**
-	 * Auto-generated main method to display this
-	 * org.eclipse.swt.widgets.Composite inside a new Shell.
-	 */
-	public static void main(final String[] args)
-	{
-		showGUI();
-	}
+	private final NumberFormat _format = new DecimalFormat("0.0");
 
-	/**
-	 * Auto-generated method to display this org.eclipse.swt.widgets.Composite
-	 * inside a new Shell.
-	 */
-	public static void showGUI()
-	{
-		final Display display = Display.getDefault();
-		final Shell shell = new Shell(display);
-		final StatusIndicator inst = new StatusIndicator(shell, SWT.NULL);
-		final Point size = inst.getSize();
-		shell.setLayout(new FillLayout());
-		shell.layout();
-		if (size.x == 0 && size.y == 0)
-		{
-			inst.pack();
-			shell.pack();
-		}
-		else
-		{
-			final Rectangle shellBounds = shell.computeTrim(0, 0, size.x, size.y);
-			shell.setSize(shellBounds.width, shellBounds.height);
-		}
-		shell.open();
-		while (!shell.isDisposed())
-		{
-			if (!display.readAndDispatch())
-				display.sleep();
-		}
-	}
-
-	public StatusIndicator(final org.eclipse.swt.widgets.Composite parent, final int style)
-	{
+	public StatusIndicator(final org.eclipse.swt.widgets.Composite parent, final int style) {
 		super(parent, style);
 		initGUI();
 	}
 
-	public void setName(final String val)
-	{
-		if (!this.isDisposed())
-		{
-			nameLabel.setText(val);
-		}
+	private String formatMe(final double val) {
+		return _format.format(val);
 	}
 
-	private void initGUI()
-	{
-		try
-		{
+	public Label getCurCourse() {
+		return curCourse;
+	}
+
+	public Label getCurDepth() {
+		return curDepth;
+	}
+
+	public Label getCurSpeed() {
+		return curSpeed;
+	}
+
+	private void initGUI() {
+		try {
 			final RowLayout thisLayout = new RowLayout(org.eclipse.swt.SWT.VERTICAL);
 			thisLayout.type = SWT.VERTICAL;
 			thisLayout.wrap = false;
@@ -224,59 +234,36 @@ public class StatusIndicator extends org.eclipse.swt.widgets.Composite
 				}
 			}
 			this.layout();
-		}
-		catch (final Exception e)
-		{
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public Label getCurCourse()
-	{
-		return curCourse;
-	}
-
-	public Label getCurSpeed()
-	{
-		return curSpeed;
-	}
-
-	public Label getCurDepth()
-	{
-		return curDepth;
-	}
-
-	public void setStatus(final Status newStatus)
-	{
-		curSpeed.setText(formatMe(newStatus.getSpeed().getValueIn(WorldSpeed.Kts)) + " kts");
-		curCourse.setText("" + formatMe(newStatus.getCourse()) + "degs");
-		curDepth.setText("" + formatMe(newStatus.getLocation().getDepth()) + "");
-	}
-
-	private final NumberFormat _format = new DecimalFormat("0.0");
-
-	private String formatMe(final double val)
-	{
-		return _format.format(val);
-	}
-
-	public void setDecision(final String description, final DemandedStatus dem_status)
-	{
+	public void setDecision(final String description, final DemandedStatus dem_status) {
 		// sort out what we know
-		if (dem_status instanceof SimpleDemandedStatus)
-		{
+		if (dem_status instanceof SimpleDemandedStatus) {
 			final SimpleDemandedStatus sds = (SimpleDemandedStatus) dem_status;
 			demSpeedLbl.setText("" + formatMe(sds.getSpeed()) + " kts");
 			demCourseLbl.setText("" + formatMe(sds.getCourse()) + " degs");
 			demDepthLbl.setText("" + formatMe(sds.getHeight()) + " m");
-		}
-		else
-		{
+		} else {
 			demSpeedLbl.setText("n/a");
 			demCourseLbl.setText("n/a");
 			demDepthLbl.setText("n/a");
 		}
 		statusLbl.setText(description);
+	}
+
+	public void setName(final String val) {
+		if (!this.isDisposed()) {
+			nameLabel.setText(val);
+		}
+	}
+
+	public void setStatus(final Status newStatus) {
+		curSpeed.setText(formatMe(newStatus.getSpeed().getValueIn(WorldSpeed.Kts)) + " kts");
+		curCourse.setText("" + formatMe(newStatus.getCourse()) + "degs");
+		curDepth.setText("" + formatMe(newStatus.getLocation().getDepth()) + "");
 	}
 
 }

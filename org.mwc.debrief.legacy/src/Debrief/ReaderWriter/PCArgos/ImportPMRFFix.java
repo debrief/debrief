@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: ImportPMRFFix.java,v $
@@ -70,101 +70,115 @@ import MWC.TacticalData.Fix;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
-/** import a fix from a line of text (in PCArgos format)
+/**
+ * import a fix from a line of text (in PCArgos format)
  */
-final class ImportPMRFFix extends AbstractPlainLineImporter
-{
+final class ImportPMRFFix extends AbstractPlainLineImporter {
 
-	/** header information necessary for range data offsets
+	/**
+	 * keep track of DTG header lines (since some lines omit this)
+	 */
+	static long _lastDTG;
+	/**
+	 * the (-ve) time interval we see to decide that a successive data point is in
+	 * fact from the previous day
+	 */
+	private final static long NEXT_DAY_INTERVAL = 1 * 60 * 60 * 1000; // 1 hours in millis
+	/**
+	 * header information necessary for range data offsets
 	 */
 	private WorldLocation _origin = null;
 	private long _dtg = 0;
+
 	private Hashtable<String, Fix> _lastPoints = null;
+
 	private long _freq = 0;
 
-	/** keep track of DTG header lines (since some lines omit this)
+	/**
+	 * indicate if you can export this type of object
+	 *
+	 * @param val the object to test
+	 * @return boolean saying whether you can do it
 	 */
-	static long _lastDTG;
-
-  /** the (-ve) time interval we see to decide that a successive data point is in fact
-   * from the previous day
-   */
-  private final static long NEXT_DAY_INTERVAL = 1 * 60 * 60 * 1000; // 1 hours in millis
-
-	/** initialise our parameters
-	 */
-	public final void setParameters(final WorldLocation origin,
-														final long DTG,
-														final Hashtable<String, Fix> lastPoints,
-														final long freq)
-	{
-		_origin = origin;
-		_dtg = DTG;
-		_lastPoints = lastPoints;
-		_freq = freq;
+	@Override
+	public final boolean canExportThis(final Object val) {
+		return false;
 	}
-	
-	
-  /**
-   */
-	public final Object readThisLine(final String theLine)
-	{
 
-    // declare local variables
-    WorldLocation theLoc;
+	/**
+	 * export the specified shape as a string
+	 *
+	 * @return the shape in String form
+	 * @param theWrapper the Shape we are exporting
+	 */
+	@Override
+	public final String exportThis(final MWC.GUI.Plottable theWrapper) {
+		return null;
+	}
+
+	@Override
+	public final String getYourType() {
+		return null;
+	}
+
+	/**
+	   */
+	@Override
+	public final Object readThisLine(final String theLine) {
+
+		// declare local variables
+		WorldLocation theLoc;
 		double x;
 		double y;
 		double z;
 
 		final StringTokenizer st = new StringTokenizer(theLine);
-		
+
 		// find out which type of line this is.
 		final int fields = st.countTokens();
-		
-		if(fields == 13)
-		{
-			
+
+		if (fields == 13) {
+
 			// this is a header line, which includes the DTG
-			// 2 0 72000 36000 2001001 -331.67 40823.67 -180.67 -182.39 -3.15 -3.43 0.04 8.28			
-			
+			// 2 0 72000 36000 2001001 -331.67 40823.67 -180.67 -182.39 -3.15 -3.43 0.04
+			// 8.28
+
 			// extract the DTG info
 			st.nextToken(); // the 2
-			st.nextToken();  // the 0
+			st.nextToken(); // the 0
 			final String seconds = st.nextToken(); // the elapsed seconds
-			
+
 			// extract secs from this
 			long elapsed = Long.valueOf(seconds).longValue();
-			
+
 			// convert this value to millis
 			elapsed *= 1000;
-			
+
 			// add these secs to the DTG (we will use this for this fix, and for
 			// subsequent "short" lines
 			long this_time = _dtg + elapsed;
-			
-			
+
 			// see if we have passed through midnight, i.e. if
 			// the elapsed time has decreased
-			if((_lastDTG - this_time) > NEXT_DAY_INTERVAL)
-			{
-				// ooh, we must have stepped back in time.  No, let's assume
+			if ((_lastDTG - this_time) > NEXT_DAY_INTERVAL) {
+				// ooh, we must have stepped back in time. No, let's assume
 				// that this new DTG is for the next day, by adding
 				// 24 hours (as millis) to the dtg
 
-        // move the date offset to the next day
-        _dtg += 1 * 24 * 60 * 60 * 1000;
+				// move the date offset to the next day
+				_dtg += 1 * 24 * 60 * 60 * 1000;
 
-        // and recalculate this time
-        this_time = _dtg + elapsed;
+				// and recalculate this time
+				this_time = _dtg + elapsed;
 			}
-			
+
 			// ok, our time value is now valid
 			_lastDTG = this_time;
-			
+
 			st.nextToken(); // the other elapsed time
 
-		}				
-		
+		}
+
 		// get the track name
 		final String trk = st.nextToken();
 
@@ -172,96 +186,69 @@ final class ImportPMRFFix extends AbstractPlainLineImporter
 		// find out if we are interested in this data point
 		///////////////////////////////////////////////////
 		// what is the last dtg for this track?
-		final Fix fx = (Fix)_lastPoints.get(trk);
-		if(fx != null)
-		{
+		final Fix fx = _lastPoints.get(trk);
+		if (fx != null) {
 			// get the time
 			final long lastDTG = fx.getTime().getMicros() / 1000;
-				
+
 			// are we too soon?
-			if(_lastDTG < lastDTG + _freq)
-			{
+			if (_lastDTG < lastDTG + _freq) {
 				// yes, return
 				return null;
 			}
 			// no, continue
-		}
-		else
-		{
+		} else {
 			// this is the first item we have found for this track, use it
-		}		
+		}
 
 		//////////////////////////////////////////////
 		// back on the rest of the track
 		//////////////////////////////////////////////
-		
+
 		final String theX = st.nextToken();
 		final String theY = st.nextToken();
 		st.nextToken();
 		final String theZ = st.nextToken();
 
-		try
-		{
+		try {
 			x = MWCXMLReader.readThisDouble(theX);
 			y = MWCXMLReader.readThisDouble(theY);
 			z = MWCXMLReader.readThisDouble(theZ);
-		
+
 			// convert the z from feet to yards
 			z = z / 3;
 
-		
 			// calc the bearing
-			final double brg = Math.atan2(x,y); //@@ IM experimenting!!
-			final double rng = Math.sqrt(x*x + y*y);
+			final double brg = Math.atan2(x, y); // @@ IM experimenting!!
+			final double rng = Math.sqrt(x * x + y * y);
 			final WorldVector offset = new WorldVector(brg, MWC.Algorithms.Conversions.Yds2Degs(rng), z);
 			theLoc = _origin.add(offset);
-	
+
 			// create the fix ready to store it
 			final HiResDate dtg = new HiResDate(_lastDTG, 0);
 			final Fix res = new Fix(dtg, theLoc, 0.0, 0.0);
-		
+
 			final ReplayFix rf = new ReplayFix();
 			rf.theFix = res;
 			rf.theTrackName = trk;
 			rf.theSymbology = "@@";
-        
+
 			return rf;
-		}
-		catch(final ParseException pe)
-		{
-			MWC.Utilities.Errors.Trace.trace(pe,
-					"Whilst reading PMRFix coordinates");
+		} catch (final ParseException pe) {
+			MWC.Utilities.Errors.Trace.trace(pe, "Whilst reading PMRFix coordinates");
 			return null;
 		}
-  }
-  public final String getYourType(){
-    return null;
-  }
-	
-	/** export the specified shape as a string
-	 * @return the shape in String form
-	 * @param theWrapper the Shape we are exporting
-	 */	
-	public final String exportThis(final MWC.GUI.Plottable theWrapper)
-	{
-		return null;
 	}
 
-	/** indicate if you can export this type of object
-	 * @param val the object to test
-	 * @return boolean saying whether you can do it
+	/**
+	 * initialise our parameters
 	 */
-	public final boolean canExportThis(final Object val)
-	{
-		return false;
+	public final void setParameters(final WorldLocation origin, final long DTG, final Hashtable<String, Fix> lastPoints,
+			final long freq) {
+		_origin = origin;
+		_dtg = DTG;
+		_lastPoints = lastPoints;
+		_freq = freq;
 	}
-	
+
 }
-
-
-
-
-
-
-
-

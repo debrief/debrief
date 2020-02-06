@@ -1,19 +1,21 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package ASSET.Models.Decision.Conditions;
+
+import java.util.Vector;
 
 import ASSET.Models.Detection.DetectionList;
 import ASSET.Participants.Status;
@@ -23,237 +25,212 @@ import MWC.GUI.Editable;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 
-import java.util.Vector;
-
 /**
- * condition which is successful when the scenario is equal or after the indicated time
+ * condition which is successful when the scenario is equal or after the
+ * indicated time
  */
 
-public class OrCondition extends Condition.CoreCondition
-{
-  ////////////////////////////////////////////////////
-  // member objects
-  ////////////////////////////////////////////////////
+public class OrCondition extends Condition.CoreCondition {
+	////////////////////////////////////////////////////
+	// member objects
+	////////////////////////////////////////////////////
 
-  /**
-   * the list of conditions we are after
-   */
-  private Vector<Condition> _myConditions;
+	//////////////////////////////////////////////////
+	// property testing
+	//////////////////////////////////////////////////
+	public static class Or2Test extends SupportTesting.EditableTesting {
+		/**
+		 * get an object which we can test
+		 *
+		 * @return Editable object which we can check the properties for
+		 */
+		@Override
+		public Editable getEditable() {
+			return new OrCondition();
+		}
+	}
 
-  ////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////
+	////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////
 
+	/**
+	 * ************************************************* editor support
+	 * *************************************************
+	 */
 
-  /**
-   *
-   */
-  protected OrCondition()
-  {
-    super("OR condition");
-  }
+	static public class OrConditionInfo extends Editable.EditorType {
 
-  protected void addCondition(final Condition newCondition)
-  {
-    if (_myConditions == null)
-      _myConditions = new Vector<Condition>(0, 1);
+		/**
+		 * constructor for editable details of a set of Layers
+		 *
+		 * @param data the Layers themselves
+		 */
+		public OrConditionInfo(final OrCondition data) {
+			super(data, data.getName(), "OR condition");
+		}
 
-    _myConditions.add(newCondition);
-  }
+		/**
+		 * editable GUI properties for our participant
+		 *
+		 * @return property descriptions
+		 */
+		@Override
+		public java.beans.PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final java.beans.PropertyDescriptor[] res = { prop("Name", "the name of this condition"), };
+				return res;
+			} catch (final java.beans.IntrospectionException e) {
+				return super.getPropertyDescriptors();
+			}
+		}
+	}
 
-  ////////////////////////////////////////////////////
-  // condition fields
-  ////////////////////////////////////////////////////
+	/**
+	 * ************************************************* testing
+	 * *************************************************
+	 */
+	public static class OrTest extends SupportTesting.EditableTesting {
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-  public Object test(final Status status,
-                     final DetectionList detections,
-                     final long time, ScenarioActivityMonitor monitor)
-  {
+		public OrTest(final String name) {
+			super(name);
+		}
 
-    Object res = null;
+		/**
+		 * get an object which we can test
+		 *
+		 * @return Editable object which we can check the properties for
+		 */
+		@Override
+		public Editable getEditable() {
+			return new OrCondition();
+		}
 
-    // pass through the conditions
-    for (int i = 0; i < _myConditions.size(); i++)
-    {
-      final Condition condition = (Condition) _myConditions.elementAt(i);
-      res = condition.test(status, detections, time, null);
-      if (res != null)
-        break;
-    }
+		public void testIt() {
+			// build it
 
-    return res;
-  }
+			// create our real conditions
 
-  /**
-   * restart the condition
-   */
-  public void restart()
-  {
-    // ignore, we don't bother it
-  }
+			// time elapsed first
+			final TimePoint tpa = new TimePoint(2000);
+			final TimePoint tpb = new TimePoint(3000);
 
-  ////////////////////////////////////////////////////
-  // editor fields
-  ////////////////////////////////////////////////////
+			// now for the location
+			final Location theLoc = new Location(new WorldLocation(1, 1, 1), new WorldDistance(4, WorldDistance.DEGS));
+			theLoc.setSucceedIfCloser(false);
 
-  /**
-   * whether there is any edit information for this item
-   * this is a convenience function to save creating the EditorType data
-   * first
-   *
-   * @return yes/no
-   */
-  public boolean hasEditor()
-  {
-    return true;
-  }
+			// build up the condition
+			final OrCondition or = new OrCondition();
+			or.addCondition(tpb);
+			or.addCondition(theLoc);
 
-  /**
-   * get the editor for this item
-   *
-   * @return the BeanInfo data for this editable object
-   */
-  public Editable.EditorType getInfo()
-  {
-    if (_myEditor == null)
-      _myEditor = new OrConditionInfo(this);
+			// and now the test
+			final Status newStat = new Status(12, 300);
+			newStat.setLocation(new WorldLocation(2, 2, 2));
 
-    return _myEditor;
-  }
+			Object res = or.test(newStat, null, 300, null);
+			// check it failed
+			assertNull("no tests passed", res);
 
-  /**
-   * *************************************************
-   * editor support
-   * *************************************************
-   */
+			// see if we pass the first time test
+			newStat.setTime(3200);
+			res = or.test(newStat, null, 3200, null);
+			// check it failed
+			assertNotNull("passed time test", res);
 
-  static public class OrConditionInfo extends Editable.EditorType
-  {
+			// check the correct time was identified
+			java.util.Date val = (java.util.Date) res;
+			assertEquals("correct time returned", val.getTime(), 3000);
 
+			or.addCondition(tpa);
+			newStat.setTime(3200);
+			res = or.test(newStat, null, 3200, null);
+			// check it failed
+			assertNotNull("passed time test", res);
 
-    /**
-     * constructor for editable details of a set of Layers
-     *
-     * @param data the Layers themselves
-     */
-    public OrConditionInfo(final OrCondition data)
-    {
-      super(data, data.getName(), "OR condition");
-    }
+			// check that we didn't continue through the tests
+			val = (java.util.Date) res;
+			assertEquals("correct time returned", val.getTime(), 3000);
 
-    /**
-     * editable GUI properties for our participant
-     *
-     * @return property descriptions
-     */
-    public java.beans.PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try
-      {
-        final java.beans.PropertyDescriptor[] res = {
-          prop("Name", "the name of this condition"),
-        };
-        return res;
-      }
-      catch (java.beans.IntrospectionException e)
-      {
-        return super.getPropertyDescriptors();
-      }
-    }
-  }
+		}
 
+	}
 
-  /**
-   * *************************************************
-   * testing
-   * *************************************************
-   */
-  public static class OrTest extends SupportTesting.EditableTesting
-  {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+	////////////////////////////////////////////////////
+	// condition fields
+	////////////////////////////////////////////////////
 
-    public OrTest(final String name)
-    {
-      super(name);
-    }
+	/**
+	 * the list of conditions we are after
+	 */
+	private Vector<Condition> _myConditions;
 
+	/**
+	 *
+	 */
+	protected OrCondition() {
+		super("OR condition");
+	}
 
-    /**
-     * get an object which we can test
-     *
-     * @return Editable object which we can check the properties for
-     */
-    public Editable getEditable()
-    {
-      return new OrCondition();
-    }
+	////////////////////////////////////////////////////
+	// editor fields
+	////////////////////////////////////////////////////
 
-    public void testIt()
-    {
-      // build it
+	protected void addCondition(final Condition newCondition) {
+		if (_myConditions == null)
+			_myConditions = new Vector<Condition>(0, 1);
 
-      // create our real conditions
+		_myConditions.add(newCondition);
+	}
 
-      // time elapsed first
-      final TimePoint tpa = new TimePoint(2000);
-      final TimePoint tpb = new TimePoint(3000);
+	/**
+	 * get the editor for this item
+	 *
+	 * @return the BeanInfo data for this editable object
+	 */
+	@Override
+	public Editable.EditorType getInfo() {
+		if (_myEditor == null)
+			_myEditor = new OrConditionInfo(this);
 
-      // now for the location
-      final Location theLoc = new Location(new WorldLocation(1, 1, 1), new WorldDistance(4, WorldDistance.DEGS));
-      theLoc.setSucceedIfCloser(false);
+		return _myEditor;
+	}
 
-      // build up the condition
-      final OrCondition or = new OrCondition();
-      or.addCondition(tpb);
-      or.addCondition(theLoc);
+	/**
+	 * whether there is any edit information for this item this is a convenience
+	 * function to save creating the EditorType data first
+	 *
+	 * @return yes/no
+	 */
+	@Override
+	public boolean hasEditor() {
+		return true;
+	}
 
-      // and now the test
-      final Status newStat = new Status(12, 300);
-      newStat.setLocation(new WorldLocation(2, 2, 2));
+	/**
+	 * restart the condition
+	 */
+	@Override
+	public void restart() {
+		// ignore, we don't bother it
+	}
 
-      Object res = or.test(newStat, null, 300, null);
-      // check it failed
-      assertNull("no tests passed", res);
+	@Override
+	public Object test(final Status status, final DetectionList detections, final long time,
+			final ScenarioActivityMonitor monitor) {
 
-      // see if we pass the first time test
-      newStat.setTime(3200);
-      res = or.test(newStat, null, 3200, null);
-      // check it failed
-      assertNotNull("passed time test", res);
+		Object res = null;
 
-      // check the correct time was identified
-      java.util.Date val = (java.util.Date) res;
-      assertEquals("correct time returned", val.getTime(), 3000);
+		// pass through the conditions
+		for (int i = 0; i < _myConditions.size(); i++) {
+			final Condition condition = _myConditions.elementAt(i);
+			res = condition.test(status, detections, time, null);
+			if (res != null)
+				break;
+		}
 
-      or.addCondition(tpa);
-      newStat.setTime(3200);
-      res = or.test(newStat, null, 3200, null);
-      // check it failed
-      assertNotNull("passed time test", res);
-
-      // check that we didn't continue through the tests
-      val = (java.util.Date) res;
-      assertEquals("correct time returned", val.getTime(), 3000);
-
-    }
-
-  }
-
-  //////////////////////////////////////////////////
-  // property testing
-  //////////////////////////////////////////////////
-  public static class Or2Test extends SupportTesting.EditableTesting
-  {
-    /**
-     * get an object which we can test
-     *
-     * @return Editable object which we can check the properties for
-     */
-    public Editable getEditable()
-    {
-      return new OrCondition();
-    }
-  }
-
+		return res;
+	}
 
 }

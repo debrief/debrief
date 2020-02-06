@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: SwingToolbarButton.java,v $
@@ -85,8 +85,6 @@
 
 package MWC.GUI.Tools.Swing;
 
-
-
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -97,127 +95,120 @@ import javax.swing.JButton;
 
 import MWC.GUI.Tool;
 
-/** extension of Swing button, to create one which implements one
- * of our Debrief tools
+/**
+ * extension of Swing button, to create one which implements one of our Debrief
+ * tools
  */
-public class SwingToolbarButton extends JButton implements ActionListener
-{
+public class SwingToolbarButton extends JButton implements ActionListener {
 
-  /////////////////////////////////////////////////////////
-  // member variables
-  /////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////
+	// member variables
+	/////////////////////////////////////////////////////////
 
-  /**
-	 * 
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	protected Tool _theTool;
 
-	/** flag to indicate if we are currently processing this button or not
+	/**
+	 * flag to indicate if we are currently processing this button or not
 	 */
 	protected boolean _running = false;
 
-  /////////////////////////////////////////////////////////
-  // constructor
-  /////////////////////////////////////////////////////////
-  /** convenience constructor, calls normal one
-   */
-  public SwingToolbarButton(final Tool theTool){
-    this(theTool.getLabel(), theTool);
-  }
+	public SwingToolbarButton(final String theLabel, final Tool theTool) {
+		super(theLabel);
+		formatMe(theTool);
+		setPreferredSize(getMinimumSize());
+	}
 
-	/** constructor for if we don't have an image (don't show label)
+	/////////////////////////////////////////////////////////
+	// constructor
+	/////////////////////////////////////////////////////////
+	/**
+	 * convenience constructor, calls normal one
 	 */
-	public SwingToolbarButton(final Tool theTool, final ImageIcon icon)
-	{
- 	  super(icon);
+	public SwingToolbarButton(final Tool theTool) {
+		this(theTool.getLabel(), theTool);
+	}
+
+	/**
+	 * constructor for if we don't have an image (don't show label)
+	 */
+	public SwingToolbarButton(final Tool theTool, final ImageIcon icon) {
+		super(icon);
 		formatMe(theTool);
-    setPreferredSize(getMinimumSize());
-  }
+		setPreferredSize(getMinimumSize());
+	}
 
-  public java.awt.Dimension getPreferredSize()
-  {
-    return getMinimumSize();
-  }
+	/**
+	 * callback function for a button being pressed
+	 */
+	@Override
+	public void actionPerformed(final java.awt.event.ActionEvent e) {
+		if (!_running) {
+			_running = true;
 
-  public SwingToolbarButton(final String theLabel, final Tool theTool){
-    super(theLabel);
-		formatMe(theTool);
-    setPreferredSize(getMinimumSize());
-  }
+			// catch any exceptions, so that we are
+			// not left in the "running" state
+			try {
+				_theTool.execute();
+			} catch (final Throwable ex) {
+				MWC.Utilities.Errors.Trace.trace(ex, "Problem with button press: " + this.getText());
+			}
 
-	private void formatMe(final Tool theTool)
-	{
-    _theTool = theTool;
-    this.addActionListener(this);
+			_running = false;
+		} else {
+//			System.out.println("Skipping event");
+		}
+	}
+
+	private void formatMe(final Tool theTool) {
+		_theTool = theTool;
+		this.addActionListener(this);
 		this.setToolTipText(theTool.getLabel());
-    this.setName(theTool.getLabel());
+		this.setName(theTool.getLabel());
 		this.setBorderPainted(false);
 		this.setRolloverEnabled(true);
-		this.addMouseListener(new MouseAdapter(){
-			public void mouseEntered(final MouseEvent e)
-			{
+		this.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(final MouseEvent e) {
 				setBorderPainted(true);
 			}
-			public void mouseExited(final MouseEvent e)
-			{
+
+			@Override
+			public void mouseExited(final MouseEvent e) {
 				setBorderPainted(false);
 			}
-			});
+		});
 
 		// try to handle the icon not being found
 		final Icon ic = this.getIcon();
-		if(ic != null)
-		{
+		if (ic != null) {
 			// check if icon available
-			final ImageIcon ii = (ImageIcon)ic;
-			if(ii.getImageLoadStatus() == java.awt.MediaTracker.ERRORED)
-			{
+			final ImageIcon ii = (ImageIcon) ic;
+			if (ii.getImageLoadStatus() == java.awt.MediaTracker.ERRORED) {
 				this.setIcon(null);
 				this.setText(theTool.getLabel());
 			}
 		}
 	}
 
+	/////////////////////////////////////////////////////////
+	// member functions
+	/////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////////////////////
-  // member functions
-  /////////////////////////////////////////////////////////
+	@Override
+	public java.awt.Dimension getPreferredSize() {
+		return getMinimumSize();
+	}
 
-  /** callback function for a button being pressed
-   */
-	public void actionPerformed(final java.awt.event.ActionEvent e)
-	{
-		if(!_running)
-		{
-			_running = true;
-
-
-			// catch any exceptions, so that we are
-			// not left in the "running" state
-			try
-			{
-				_theTool.execute();
-			}
-			catch(final Throwable ex)
-			{
-                MWC.Utilities.Errors.Trace.trace(ex, "Problem with button press: " + this.getText());
-			}
-
-			_running = false;
-		}
-		else
-		{
-//			System.out.println("Skipping event");
-		}
-  }
-
-
-  /** return the tool for this button
-   */
-  protected Tool getTool(){
-    return _theTool;
-  }
+	/**
+	 * return the tool for this button
+	 */
+	protected Tool getTool() {
+		return _theTool;
+	}
 
 }

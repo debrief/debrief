@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: SymbolFactory.java,v $
@@ -123,529 +123,456 @@
 package MWC.GUI.Shapes.Symbols;
 
 /**
- * note Currently using Factory. Potentially switch to Abstract Factory, only reading in required
- * shapes from file as they are used patterns Factory (just receive name of shape, let classes
- * produce actual shape)
+ * note Currently using Factory. Potentially switch to Abstract Factory, only
+ * reading in required shapes from file as they are used patterns Factory (just
+ * receive name of shape, let classes produce actual shape)
  */
-public final class SymbolFactory
-{
+public final class SymbolFactory {
 
-  public static final String KINGPIN = "Kingpin";
+	/**
+	 * ************************************************* testing
+	 * *************************************************
+	 */
+	public static class SymFactoryTest extends junit.framework.TestCase {
 
-  public static final String BARRA = "Barra";
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-  public static final String LOFAR = "Lofar";
+		public SymFactoryTest(final String val) {
+			super(val);
+		}
 
-  public static final String DIFAR = "Difar";
+		/**
+		 * test the string swapping
+		 */
+		public void testFindFromChar() {
+			final String cA = "A";
+			final String ps = SymbolFactory.createSymbolFromId(cA);
+			assertEquals("aircraft symbol returned", ps, AIRCRAFT);
 
-  public static final String ACTIVE = "Active";
+			String newChar = SymbolFactory.findIdForSymbolType(AIRCRAFT);
+			assertEquals("correct sym found", newChar, cA);
 
-  public static final String HIDAR = "Hidar";
+			newChar = SymbolFactory.findIdForSymbolType("AIRCRAFT");
+			assertEquals("correct sym found", newChar, cA);
 
-  public static final String MPA = "MPA";
+		}
 
-  public static final String DESTROYER = "Destroyer";
+		/**
+		 * Testing string swapping for SVG symbols
+		 */
+		public void testSVGFromChar() {
+			final String torpedoCharacter = "s";
+			final String torpedoSymbolGenerated = SymbolFactory.createSymbolFromId(torpedoCharacter);
+			final String expectedTorpedoSymbol = SVG_FORMAT_PREFIX + ":torpedo";
+			assertEquals("Torpedo symbol returned", torpedoSymbolGenerated, expectedTorpedoSymbol);
 
-  public static final String UNKNOWN = "Unknown";
+			final String torpedoCharacterGenerated = SymbolFactory.findIdForSymbolType(expectedTorpedoSymbol);
+			assertEquals("correct symbol found", torpedoCharacter, torpedoCharacterGenerated);
+		}
 
-  public static final String TROOP_CARRIER = "Troop_Carrier";
+	}
 
-  public static final String CRUISER = "Cruiser";
+	public static final String KINGPIN = "Kingpin";
 
-  public static final String CARRIER = "Carrier";
+	public static final String BARRA = "Barra";
 
-  public static final String TA_FRIGATE = "TA Frigate";
+	public static final String LOFAR = "Lofar";
 
-  public static final String MINESWEEPER = "Minesweeper";
+	public static final String DIFAR = "Difar";
 
-  public static final String FRIGATE = "Frigate";
+	public static final String ACTIVE = "Active";
 
-  public static final String AIRCRAFT = "Aircraft";
+	public static final String HIDAR = "Hidar";
 
-  public static final String HELICOPTER = "Helicopter";
+	public static final String MPA = "MPA";
 
-  public static final String FILLED_CIRCLE = "FilledCircle";
+	public static final String DESTROYER = "Destroyer";
 
-  public static final String FILLED_SQUARE = "FilledSquare";
+	public static final String UNKNOWN = "Unknown";
 
-  public static final String FISHING_VESSEL = "Fishing_Vessel";
+	public static final String TROOP_CARRIER = "Troop_Carrier";
 
-  public static final String SCALED_FRIGATE = "ScaledFrigate";
+	public static final String CRUISER = "Cruiser";
 
-  public static final String TORPEDO = "Torpedo";
+	public static final String CARRIER = "Carrier";
 
-  public static final String SCALED_SUBMARINE = "ScaledSubmarine";
+	public static final String TA_FRIGATE = "TA Frigate";
 
-  public static final String SQUARE = "Square";
+	public static final String MINESWEEPER = "Minesweeper";
 
-  public static final String CIRCLE = "Circle";
+	public static final String FRIGATE = "Frigate";
 
-  public static final String CROSS = "Cross";
+	public static final String AIRCRAFT = "Aircraft";
 
-  public static final String REFERENCE_POSITION = "Reference Position";
+	public static final String HELICOPTER = "Helicopter";
 
-  public static final String WRECK = "Wreck";
+	public static final String FILLED_CIRCLE = "FilledCircle";
 
-  public static final String DATUM = "Datum";
+	public static final String FILLED_SQUARE = "FilledSquare";
 
-  public static final String MERCHANT = "Merchant";
+	public static final String FISHING_VESSEL = "Fishing_Vessel";
 
-  public static final String SUBMARINE = "Submarine";
+	public static final String SCALED_FRIGATE = "ScaledFrigate";
 
-  public static final String DEFAULT_SYMBOL_TYPE = "S";
+	public static final String TORPEDO = "Torpedo";
 
-  /**
-   * Where we are going to store the icons
-   */
-  public static final String SVG_FOLDER = "svg_symbols";
+	public static final String SCALED_SUBMARINE = "ScaledSubmarine";
 
-  /**
-   * Value to be used in the custom format SVG_FORMAT_PREFIX:<File Name>
-   */
-  public static final String SVG_FORMAT_PREFIX = "svg";
+	public static final String SQUARE = "Square";
 
-  public static final String SVG_EXTENSION = ".svg";
+	public static final String CIRCLE = "Circle";
 
-  public static final String SVG_INDEX = "merchant,fishing,pleasure_craft,"
-      + "coastguard_law_enforcement,friend_surface,friend_subsurface,neutral_air,"
-      + "neutral_surface,neutral_subsurface,enemy_air,enemy_surface,enemy_subsurface,"
-      + "unknown_air,unknown_surface,unknown_subsurface,buoy_1,buoy_2,missile,"
-      + "torpedo,generic_arrow,drop_point,splash_point,vector_1,vector_2,"
-      + "anomaly,bottomed_mine,cleared,countermeasure,decoy,decoy_aw,"
-      + "decoy_uw,enemy_subsurface"
-      + ",flagged_marker,floating_mine,friend_air,"
-      + "highlights_1,highlights_2,jammer,mine_like_object,moored_mine,"
-      + "tagged_marker,torpedo,uav_1,uav_2,usv_1,"
-      + "usv_2,usv_3,usv_4,usv_5,wreck,xxx_contact";
-
-  /**
-   */
-  private static SymbolFactory _theFactory;
-  /**
-   * String[] _theList
-   */
-  private static String[] _theList;
-  /**
-   * the list of names of buoys
-   */
-  private static String[] _theBuoyList;
-  /**
-   * the list of names of vessels
-   */
-  private static String[] _theVesselList;
-  /**
-   * list with the svg names with the following format. svg:Cruiser
-   */
-  private static String[] _theSVGList;
-  /**
-   * java.util.HashMap _theSymbols
-   */
-  private java.util.HashMap<String, PlainSymbol> _theSymbols;
-
-  /**
-   * the list of one character identifiers used for import/export to/from Replay File Format
-   */
-  private static java.util.HashMap<String, String> _theVesselIds;
-
-  //////////////////////////////////////////////////
-  // constructor
-  /**
-   * //////////////////////////////////////////////////
-   */
-  private SymbolFactory()
-  {
-  }
-
-  //////////////////////////////////////////////////
-  // static functions
-  //////////////////////////////////////////////////
-
-  /**
-   * create a symbol using the given identifier, else return null
-   */
-  static public PlainSymbol createSymbol(final String symbolType)
-  {
-
-    if (symbolType == null)
-      return null;
-
-    // check we have our factory
-    checkFactory();
-
-    // get the class for this symbonPointsl
-    PlainSymbol symClass = _theFactory._theSymbols.get(symbolType);
-
-    // did we find it?
-    if (symClass == null)
-    {
-      // ok, try it the long way
-      final java.util.Iterator<String> it = _theFactory._theSymbols.keySet()
-          .iterator();
-      while (it.hasNext())
-      {
-        final String thisKey = (String) it.next();
-        if (thisKey != null)
-        {
-          if (thisKey.toUpperCase().equals(symbolType.toUpperCase()))
-          {
-            symClass = _theFactory._theSymbols.get(thisKey);
-            break;
-          }
-        }
-      }
-    }
-
-    PlainSymbol res = null;
-    if (symClass != null)
-    {
-      try
-      {
-        res = symClass.create();
-      }
-      catch (final Exception ill)
-      {
-        //
-        MWC.Utilities.Errors.Trace.trace(ill,
-            "Failed to create new symbol, unable to create new instance");
-      }
-    }
-    else
-    {
-      MWC.Utilities.Errors.Trace.trace("Failed to create symbol, string type:"
-          + symbolType + " not found");
-    }
-
-    return res;
-  }
-
-  /**
-   * create a symbol using the given identifier, else return null
-   */
-  static public String createSymbolFromId(final String charAsString)
-  {
-    String res = null;
-
-    // check we have our factory
-    checkFactory();
-
-    // ok, try it the long way
-    final java.util.Iterator<String> it = _theVesselIds.values().iterator();
-    final java.util.Iterator<String> keyIterator = _theVesselIds.keySet()
-        .iterator();
-    while (it.hasNext())
-    {
-      final String thisKey = (String) it.next();
-      final String thisSymbolName = (String) keyIterator.next();
-
-      if (thisKey != null && thisKey.equals(charAsString))
-      {
-        res = thisSymbolName;
-        break;
-      }
-    }
-
-    return res;
-  }
-
-  public static String findIdForSymbolType(final String type)
-  {
-    String res = null;
-
-    checkFactory();
-
-    // first try using the default case
-    res = (String) _theVesselIds.get(type);
-
-    // do we need to try a case-insensitive comparison
-    if (res == null)
-    {
-      final String typeUpper = type.toUpperCase();
-      final java.util.Iterator<String> iter = _theVesselIds.keySet().iterator();
-      while (iter.hasNext())
-      {
-        final String thisKey = (String) iter.next();
-        if (thisKey.toUpperCase().equals(typeUpper))
-        {
-          res = findIdForSymbolType(thisKey);
-          break;
-        }
-      }
-    }
-
-    return res;
-  }
-
-  /**
-   * return a list of symbols available
-   */
-  static public String[] getSymbolList()
-  {
-    checkFactory();
-
-    return _theList;
-  }
-
-  /**
-   * return a list of buoy symbols available
-   */
-  static public String[] getBuoySymbolList()
-  {
-    checkFactory();
-
-    return _theBuoyList;
-  }
-
-  /**
-   * return a list of buoy symbols available
-   */
-  static public String[] getVesselSymbolList()
-  {
-    checkFactory();
-
-    return _theVesselList;
-  }
-
-  /**
-   * return a list of SVG icons available
-   */
-  static public String[] getSVGList()
-  {
-    checkFactory();
-
-    return _theSVGList;
-  }
-
-  /**
-   * checkFactory
-   */
-  static private void checkFactory()
-  {
-    if (_theFactory == null)
-    {
-      _theFactory = new SymbolFactory();
-      _theFactory._theSymbols = new java.util.HashMap<String, PlainSymbol>();
-
-      /////////////////////////////////////////
-      // first the vessels
-      /////////////////////////////////////////
-      final java.util.HashMap<String, PlainSymbol> vessels =
-          new java.util.HashMap<String, PlainSymbol>();
-      vessels.put(HELICOPTER,
-          new MWC.GUI.Shapes.Symbols.Vessels.HelicopterSym());
-      vessels.put(AIRCRAFT, new MWC.GUI.Shapes.Symbols.Vessels.AircraftSym());
-      vessels.put("ScaledAmphib",
-          new MWC.GUI.Shapes.Symbols.Vessels.ScaledAmphibSym());
-      vessels.put("ScaledContainer",
-          new MWC.GUI.Shapes.Symbols.Vessels.ScaledContainerSym());
-      vessels.put(SCALED_FRIGATE,
-          new MWC.GUI.Shapes.Symbols.Vessels.ScaledFrigateSym());
-      vessels.put("ScaledLPG",
-          new MWC.GUI.Shapes.Symbols.Vessels.ScaledLPGSym());
-      vessels.put("ScaledMerchant",
-          new MWC.GUI.Shapes.Symbols.Vessels.ScaledMerchantSym());
-      vessels.put(SCALED_SUBMARINE,
-          new MWC.GUI.Shapes.Symbols.Vessels.ScaledSubmarineSym());
-      vessels.put("ScaledVessel",
-          new MWC.GUI.Shapes.Symbols.Vessels.ScaledVesselSym());
-      vessels.put(SUBMARINE, new MWC.GUI.Shapes.Symbols.Vessels.SubmergedSub());
-      vessels.put("Missile", new MWC.GUI.Shapes.Symbols.Vessels.UnknownSym(
-          "Missile"));
-      vessels.put(TORPEDO, new MWC.GUI.Shapes.Symbols.Vessels.UnknownSym(
-          TORPEDO));
-      vessels.put(CARRIER,
-          new MWC.GUI.Shapes.Symbols.Vessels.AircraftCarrierSym());
-      vessels.put(CRUISER, new MWC.GUI.Shapes.Symbols.Vessels.CruiserSym());
-      vessels.put(DESTROYER, new MWC.GUI.Shapes.Symbols.Vessels.DestroyerSym());
-      vessels.put(FRIGATE, new MWC.GUI.Shapes.Symbols.Vessels.FrigateSym());
-      vessels.put(TA_FRIGATE,
-          new MWC.GUI.Shapes.Symbols.Vessels.TAFrigateSym());
-      vessels.put(FISHING_VESSEL,
-          new MWC.GUI.Shapes.Symbols.Vessels.FishingVesselSym());
-      vessels.put(MERCHANT, new MWC.GUI.Shapes.Symbols.Vessels.MerchantSym());
-      vessels.put(UNKNOWN, new MWC.GUI.Shapes.Symbols.Vessels.UnknownSym());
-      vessels.put(MINESWEEPER,
-          new MWC.GUI.Shapes.Symbols.Vessels.MinesweeperSym());
-      vessels.put(TROOP_CARRIER,
-          new MWC.GUI.Shapes.Symbols.Vessels.TroopCarrierSym());
-
-      vessels.put("Oiler",
-          new MWC.GUI.Shapes.Symbols.Vessels.FishingVesselSym());
-
-      // add some other (A SSET related) items
-      vessels.put(MPA, new MWC.GUI.Shapes.Symbols.Vessels.AircraftSym(MPA));
-
-      _theVesselIds = new java.util.HashMap<String, String>();
-      _theVesselIds.put(UNKNOWN, "@");
-      _theVesselIds.put(AIRCRAFT, "A");
-      _theVesselIds.put(CARRIER, "C");
-      _theVesselIds.put(DESTROYER, "D");
-      _theVesselIds.put(FILLED_SQUARE, "E");
-      _theVesselIds.put(FRIGATE, "F");
-      _theVesselIds.put(FILLED_CIRCLE, "G");
-      _theVesselIds.put(HELICOPTER, "H");
-      _theVesselIds.put(CROSS, "I");
-      _theVesselIds.put(SQUARE, "J");
-      _theVesselIds.put(DATUM, "K");
-      _theVesselIds.put(REFERENCE_POSITION, "L");
-      _theVesselIds.put(MERCHANT, "M");
-      _theVesselIds.put(MINESWEEPER, "N");
-      _theVesselIds.put(TORPEDO, "P");
-      _theVesselIds.put(CIRCLE, "Q");
-      _theVesselIds.put(TROOP_CARRIER, "R");
-      _theVesselIds.put(SUBMARINE, "S");
-      _theVesselIds.put(TA_FRIGATE, "T");
-      _theVesselIds.put(CRUISER, "U");
-      _theVesselIds.put(FISHING_VESSEL, "V");
-      _theVesselIds.put(WRECK, "W");
-
-      final String[] svgIconsName = SVG_INDEX.split(",");
-      // Since we have the SVG Icons properly ordered,
-      // we can just add the reserved character
-      for (char c = 'a'; c <= 'x'; c++)
-      {
-        final String completeName = SVG_FORMAT_PREFIX + ":" + svgIconsName[c
-            - 'a'];
-        _theVesselIds.put(completeName, c + "");
-      }
-
-      // and the buoys
-      _theVesselIds.put(ACTIVE, "0");
-      _theVesselIds.put(DIFAR, "1");
-      _theVesselIds.put(LOFAR, "2");
-      _theVesselIds.put(BARRA, "3");
-      _theVesselIds.put(HIDAR, "4");
-      _theVesselIds.put(KINGPIN, "5");
-
-      /////////////////////////////////////////
-      // now the buoys
-      /////////////////////////////////////////
-      final java.util.HashMap<String, PlainSymbol> buoys =
-          new java.util.HashMap<String, PlainSymbol>();
-      buoys.put(ACTIVE, new MWC.GUI.Shapes.Symbols.Buoys.ActiveSym());
-      buoys.put(DIFAR, new MWC.GUI.Shapes.Symbols.Buoys.DifarSym());
-      buoys.put(LOFAR, new MWC.GUI.Shapes.Symbols.Buoys.LofarSym(LOFAR));
-      buoys.put(BARRA, new MWC.GUI.Shapes.Symbols.Buoys.BarraSym());
-      buoys.put(KINGPIN, new MWC.GUI.Shapes.Symbols.Buoys.KingpinSym());
-      buoys.put(HIDAR, new MWC.GUI.Shapes.Symbols.Buoys.HidarSym());
-      buoys.put(SQUARE, new MWC.GUI.Shapes.Symbols.Geog.SquareSymbol());
-
-      // just put in the difar sym as a general sonar buoy symbol
-      buoys.put("Sonar_Buoy", new MWC.GUI.Shapes.Symbols.Buoys.LofarSym(
-          "Sonar_Buoy"));
-
-      /////////////////////////////////////////
-      // Now we add the svg items.
-      /////////////////////////////////////////
-      final java.util.HashMap<String, PlainSymbol> svgIcons =
-          new java.util.HashMap<>();
-      for (String fileName : svgIconsName)
-      {
-        final String completeName = SVG_FORMAT_PREFIX + ":" + fileName;
-        svgIcons.put(completeName, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(
-            completeName));
-      }
-
-      /////////////////////////////////////////
-      // put the other assorted items directly into the main list
-      /////////////////////////////////////////
-      _theFactory._theSymbols.put(FILLED_SQUARE,
-          new MWC.GUI.Shapes.Symbols.Geog.FilledSquareSymbol());
-      _theFactory._theSymbols.put(FILLED_CIRCLE,
-          new MWC.GUI.Shapes.Symbols.Geog.FilledCircleSymbol());
-      _theFactory._theSymbols.put(SQUARE,
-          new MWC.GUI.Shapes.Symbols.Geog.SquareSymbol());
-      _theFactory._theSymbols.put(CIRCLE,
-          new MWC.GUI.Shapes.Symbols.Geog.CircleSymbol());
-      _theFactory._theSymbols.put(CROSS,
-          new MWC.GUI.Shapes.Symbols.Geog.CrossSymbol());
-      _theFactory._theSymbols.put(REFERENCE_POSITION,
-          new MWC.GUI.Shapes.Symbols.Geog.ReferenceSym());
-      _theFactory._theSymbols.put(WRECK,
-          new MWC.GUI.Shapes.Symbols.Geog.WreckSym());
-      _theFactory._theSymbols.put(DATUM,
-          new MWC.GUI.Shapes.Symbols.Geog.DatumSym());
-
-      // put the sub-lists into the main list
-      _theFactory._theSymbols.putAll(vessels);
-      _theFactory._theSymbols.putAll(buoys);
-      _theFactory._theSymbols.putAll(svgIcons);
-
-      // collate list of symbol names from our list
-      final String[] sampler = new String[]
-      {"dummy1"};
-
-      // convert the big vector to the list
-      java.util.SortedSet<String> sortedKeys = new java.util.TreeSet<String>(
-          _theFactory._theSymbols.keySet());
-      _theList = (String[]) sortedKeys.toArray(sampler);
-
-      // now convert the vessel vector to the list
-      sortedKeys = new java.util.TreeSet<String>(vessels.keySet());
-      _theVesselList = (String[]) sortedKeys.toArray(sampler);
-
-      // now convert the buoy vector to the list
-      sortedKeys = new java.util.TreeSet<String>(buoys.keySet());
-      _theBuoyList = (String[]) sortedKeys.toArray(sampler);
-
-      // now convert the svg icons to the list
-      sortedKeys = new java.util.TreeSet<String>(svgIcons.keySet());
-      _theSVGList = (String[]) sortedKeys.toArray(sampler);
-    }
-  }
-
-  //////////////////////////////////////////////////
-  // member functions
-  //////////////////////////////////////////////////
-
-  /**
-   * ************************************************* testing
-   * *************************************************
-   */
-  public static class SymFactoryTest extends junit.framework.TestCase
-  {
-
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-    public SymFactoryTest(final String val)
-    {
-      super(val);
-    }
-
-    /**
-     * test the string swapping
-     */
-    public void testFindFromChar()
-    {
-      final String cA = "A";
-      final String ps = SymbolFactory.createSymbolFromId(cA);
-      assertEquals("aircraft symbol returned", ps, AIRCRAFT);
-
-      String newChar = SymbolFactory.findIdForSymbolType(AIRCRAFT);
-      assertEquals("correct sym found", newChar, cA);
-
-      newChar = SymbolFactory.findIdForSymbolType("AIRCRAFT");
-      assertEquals("correct sym found", newChar, cA);
-
-    }
-
-    /**
-     * Testing string swapping for SVG symbols
-     */
-    public void testSVGFromChar()
-    {
-      final String torpedoCharacter = "s";
-      final String torpedoSymbolGenerated = SymbolFactory.createSymbolFromId(
-          torpedoCharacter);
-      final String expectedTorpedoSymbol = SVG_FORMAT_PREFIX + ":torpedo";
-      assertEquals("Torpedo symbol returned", torpedoSymbolGenerated,
-          expectedTorpedoSymbol);
-
-      final String torpedoCharacterGenerated = SymbolFactory
-          .findIdForSymbolType(expectedTorpedoSymbol);
-      assertEquals("correct symbol found", torpedoCharacter,
-          torpedoCharacterGenerated);
-    }
-
-  }
+	public static final String CROSS = "Cross";
+
+	public static final String REFERENCE_POSITION = "Reference Position";
+
+	public static final String WRECK = "Wreck";
+
+	public static final String DATUM = "Datum";
+
+	public static final String MERCHANT = "Merchant";
+
+	public static final String SUBMARINE = "Submarine";
+
+	public static final String DEFAULT_SYMBOL_TYPE = "S";
+
+	/**
+	 * Where we are going to store the icons
+	 */
+	public static final String SVG_FOLDER = "svg_symbols";
+
+	/**
+	 * Value to be used in the custom format SVG_FORMAT_PREFIX:<File Name>
+	 */
+	public static final String SVG_FORMAT_PREFIX = "svg";
+
+	public static final String SVG_EXTENSION = ".svg";
+
+	public static final String SVG_INDEX = "merchant,fishing,pleasure_craft,"
+			+ "coastguard_law_enforcement,friend_surface,friend_subsurface,neutral_air,"
+			+ "neutral_surface,neutral_subsurface,enemy_air,enemy_surface,enemy_subsurface,"
+			+ "unknown_air,unknown_surface,unknown_subsurface,buoy_1,buoy_2,missile,"
+			+ "torpedo,generic_arrow,drop_point,splash_point,vector_1,vector_2,"
+			+ "anomaly,bottomed_mine,cleared,countermeasure,decoy,decoy_aw," + "decoy_uw,enemy_subsurface"
+			+ ",flagged_marker,floating_mine,friend_air,"
+			+ "highlights_1,highlights_2,jammer,mine_like_object,moored_mine,"
+			+ "tagged_marker,torpedo,uav_1,uav_2,usv_1," + "usv_2,usv_3,usv_4,usv_5,wreck,xxx_contact";
+	/**
+	 */
+	private static SymbolFactory _theFactory;
+	/**
+	 * String[] _theList
+	 */
+	private static String[] _theList;
+	/**
+	 * the list of names of buoys
+	 */
+	private static String[] _theBuoyList;
+	/**
+	 * the list of names of vessels
+	 */
+	private static String[] _theVesselList;
+	/**
+	 * list with the svg names with the following format. svg:Cruiser
+	 */
+	private static String[] _theSVGList;
+
+	/**
+	 * the list of one character identifiers used for import/export to/from Replay
+	 * File Format
+	 */
+	private static java.util.HashMap<String, String> _theVesselIds;
+
+	/**
+	 * checkFactory
+	 */
+	static private void checkFactory() {
+		if (_theFactory == null) {
+			_theFactory = new SymbolFactory();
+			_theFactory._theSymbols = new java.util.HashMap<String, PlainSymbol>();
+
+			/////////////////////////////////////////
+			// first the vessels
+			/////////////////////////////////////////
+			final java.util.HashMap<String, PlainSymbol> vessels = new java.util.HashMap<String, PlainSymbol>();
+			vessels.put(HELICOPTER, new MWC.GUI.Shapes.Symbols.Vessels.HelicopterSym());
+			vessels.put(AIRCRAFT, new MWC.GUI.Shapes.Symbols.Vessels.AircraftSym());
+			vessels.put("ScaledAmphib", new MWC.GUI.Shapes.Symbols.Vessels.ScaledAmphibSym());
+			vessels.put("ScaledContainer", new MWC.GUI.Shapes.Symbols.Vessels.ScaledContainerSym());
+			vessels.put(SCALED_FRIGATE, new MWC.GUI.Shapes.Symbols.Vessels.ScaledFrigateSym());
+			vessels.put("ScaledLPG", new MWC.GUI.Shapes.Symbols.Vessels.ScaledLPGSym());
+			vessels.put("ScaledMerchant", new MWC.GUI.Shapes.Symbols.Vessels.ScaledMerchantSym());
+			vessels.put(SCALED_SUBMARINE, new MWC.GUI.Shapes.Symbols.Vessels.ScaledSubmarineSym());
+			vessels.put("ScaledVessel", new MWC.GUI.Shapes.Symbols.Vessels.ScaledVesselSym());
+			vessels.put(SUBMARINE, new MWC.GUI.Shapes.Symbols.Vessels.SubmergedSub());
+			vessels.put("Missile", new MWC.GUI.Shapes.Symbols.Vessels.UnknownSym("Missile"));
+			vessels.put(TORPEDO, new MWC.GUI.Shapes.Symbols.Vessels.UnknownSym(TORPEDO));
+			vessels.put(CARRIER, new MWC.GUI.Shapes.Symbols.Vessels.AircraftCarrierSym());
+			vessels.put(CRUISER, new MWC.GUI.Shapes.Symbols.Vessels.CruiserSym());
+			vessels.put(DESTROYER, new MWC.GUI.Shapes.Symbols.Vessels.DestroyerSym());
+			vessels.put(FRIGATE, new MWC.GUI.Shapes.Symbols.Vessels.FrigateSym());
+			vessels.put(TA_FRIGATE, new MWC.GUI.Shapes.Symbols.Vessels.TAFrigateSym());
+			vessels.put(FISHING_VESSEL, new MWC.GUI.Shapes.Symbols.Vessels.FishingVesselSym());
+			vessels.put(MERCHANT, new MWC.GUI.Shapes.Symbols.Vessels.MerchantSym());
+			vessels.put(UNKNOWN, new MWC.GUI.Shapes.Symbols.Vessels.UnknownSym());
+			vessels.put(MINESWEEPER, new MWC.GUI.Shapes.Symbols.Vessels.MinesweeperSym());
+			vessels.put(TROOP_CARRIER, new MWC.GUI.Shapes.Symbols.Vessels.TroopCarrierSym());
+
+			vessels.put("Oiler", new MWC.GUI.Shapes.Symbols.Vessels.FishingVesselSym());
+
+			// add some other (A SSET related) items
+			vessels.put(MPA, new MWC.GUI.Shapes.Symbols.Vessels.AircraftSym(MPA));
+
+			_theVesselIds = new java.util.HashMap<String, String>();
+			_theVesselIds.put(UNKNOWN, "@");
+			_theVesselIds.put(AIRCRAFT, "A");
+			_theVesselIds.put(CARRIER, "C");
+			_theVesselIds.put(DESTROYER, "D");
+			_theVesselIds.put(FILLED_SQUARE, "E");
+			_theVesselIds.put(FRIGATE, "F");
+			_theVesselIds.put(FILLED_CIRCLE, "G");
+			_theVesselIds.put(HELICOPTER, "H");
+			_theVesselIds.put(CROSS, "I");
+			_theVesselIds.put(SQUARE, "J");
+			_theVesselIds.put(DATUM, "K");
+			_theVesselIds.put(REFERENCE_POSITION, "L");
+			_theVesselIds.put(MERCHANT, "M");
+			_theVesselIds.put(MINESWEEPER, "N");
+			_theVesselIds.put(TORPEDO, "P");
+			_theVesselIds.put(CIRCLE, "Q");
+			_theVesselIds.put(TROOP_CARRIER, "R");
+			_theVesselIds.put(SUBMARINE, "S");
+			_theVesselIds.put(TA_FRIGATE, "T");
+			_theVesselIds.put(CRUISER, "U");
+			_theVesselIds.put(FISHING_VESSEL, "V");
+			_theVesselIds.put(WRECK, "W");
+
+			final String[] svgIconsName = SVG_INDEX.split(",");
+			// Since we have the SVG Icons properly ordered,
+			// we can just add the reserved character
+			for (char c = 'a'; c <= 'x'; c++) {
+				final String completeName = SVG_FORMAT_PREFIX + ":" + svgIconsName[c - 'a'];
+				_theVesselIds.put(completeName, c + "");
+			}
+
+			// and the buoys
+			_theVesselIds.put(ACTIVE, "0");
+			_theVesselIds.put(DIFAR, "1");
+			_theVesselIds.put(LOFAR, "2");
+			_theVesselIds.put(BARRA, "3");
+			_theVesselIds.put(HIDAR, "4");
+			_theVesselIds.put(KINGPIN, "5");
+
+			/////////////////////////////////////////
+			// now the buoys
+			/////////////////////////////////////////
+			final java.util.HashMap<String, PlainSymbol> buoys = new java.util.HashMap<String, PlainSymbol>();
+			buoys.put(ACTIVE, new MWC.GUI.Shapes.Symbols.Buoys.ActiveSym());
+			buoys.put(DIFAR, new MWC.GUI.Shapes.Symbols.Buoys.DifarSym());
+			buoys.put(LOFAR, new MWC.GUI.Shapes.Symbols.Buoys.LofarSym(LOFAR));
+			buoys.put(BARRA, new MWC.GUI.Shapes.Symbols.Buoys.BarraSym());
+			buoys.put(KINGPIN, new MWC.GUI.Shapes.Symbols.Buoys.KingpinSym());
+			buoys.put(HIDAR, new MWC.GUI.Shapes.Symbols.Buoys.HidarSym());
+			buoys.put(SQUARE, new MWC.GUI.Shapes.Symbols.Geog.SquareSymbol());
+
+			// just put in the difar sym as a general sonar buoy symbol
+			buoys.put("Sonar_Buoy", new MWC.GUI.Shapes.Symbols.Buoys.LofarSym("Sonar_Buoy"));
+
+			/////////////////////////////////////////
+			// Now we add the svg items.
+			/////////////////////////////////////////
+			final java.util.HashMap<String, PlainSymbol> svgIcons = new java.util.HashMap<>();
+			for (final String fileName : svgIconsName) {
+				final String completeName = SVG_FORMAT_PREFIX + ":" + fileName;
+				svgIcons.put(completeName, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(completeName));
+			}
+
+			/////////////////////////////////////////
+			// put the other assorted items directly into the main list
+			/////////////////////////////////////////
+			_theFactory._theSymbols.put(FILLED_SQUARE, new MWC.GUI.Shapes.Symbols.Geog.FilledSquareSymbol());
+			_theFactory._theSymbols.put(FILLED_CIRCLE, new MWC.GUI.Shapes.Symbols.Geog.FilledCircleSymbol());
+			_theFactory._theSymbols.put(SQUARE, new MWC.GUI.Shapes.Symbols.Geog.SquareSymbol());
+			_theFactory._theSymbols.put(CIRCLE, new MWC.GUI.Shapes.Symbols.Geog.CircleSymbol());
+			_theFactory._theSymbols.put(CROSS, new MWC.GUI.Shapes.Symbols.Geog.CrossSymbol());
+			_theFactory._theSymbols.put(REFERENCE_POSITION, new MWC.GUI.Shapes.Symbols.Geog.ReferenceSym());
+			_theFactory._theSymbols.put(WRECK, new MWC.GUI.Shapes.Symbols.Geog.WreckSym());
+			_theFactory._theSymbols.put(DATUM, new MWC.GUI.Shapes.Symbols.Geog.DatumSym());
+
+			// put the sub-lists into the main list
+			_theFactory._theSymbols.putAll(vessels);
+			_theFactory._theSymbols.putAll(buoys);
+			_theFactory._theSymbols.putAll(svgIcons);
+
+			// collate list of symbol names from our list
+			final String[] sampler = new String[] { "dummy1" };
+
+			// convert the big vector to the list
+			java.util.SortedSet<String> sortedKeys = new java.util.TreeSet<String>(_theFactory._theSymbols.keySet());
+			_theList = sortedKeys.toArray(sampler);
+
+			// now convert the vessel vector to the list
+			sortedKeys = new java.util.TreeSet<String>(vessels.keySet());
+			_theVesselList = sortedKeys.toArray(sampler);
+
+			// now convert the buoy vector to the list
+			sortedKeys = new java.util.TreeSet<String>(buoys.keySet());
+			_theBuoyList = sortedKeys.toArray(sampler);
+
+			// now convert the svg icons to the list
+			sortedKeys = new java.util.TreeSet<String>(svgIcons.keySet());
+			_theSVGList = sortedKeys.toArray(sampler);
+		}
+	}
+
+	//////////////////////////////////////////////////
+	// static functions
+	//////////////////////////////////////////////////
+
+	/**
+	 * create a symbol using the given identifier, else return null
+	 */
+	static public PlainSymbol createSymbol(final String symbolType) {
+
+		if (symbolType == null)
+			return null;
+
+		// check we have our factory
+		checkFactory();
+
+		// get the class for this symbonPointsl
+		PlainSymbol symClass = _theFactory._theSymbols.get(symbolType);
+
+		// did we find it?
+		if (symClass == null) {
+			// ok, try it the long way
+			final java.util.Iterator<String> it = _theFactory._theSymbols.keySet().iterator();
+			while (it.hasNext()) {
+				final String thisKey = it.next();
+				if (thisKey != null) {
+					if (thisKey.toUpperCase().equals(symbolType.toUpperCase())) {
+						symClass = _theFactory._theSymbols.get(thisKey);
+						break;
+					}
+				}
+			}
+		}
+
+		PlainSymbol res = null;
+		if (symClass != null) {
+			try {
+				res = symClass.create();
+			} catch (final Exception ill) {
+				//
+				MWC.Utilities.Errors.Trace.trace(ill, "Failed to create new symbol, unable to create new instance");
+			}
+		} else {
+			MWC.Utilities.Errors.Trace.trace("Failed to create symbol, string type:" + symbolType + " not found");
+		}
+
+		return res;
+	}
+
+	/**
+	 * create a symbol using the given identifier, else return null
+	 */
+	static public String createSymbolFromId(final String charAsString) {
+		String res = null;
+
+		// check we have our factory
+		checkFactory();
+
+		// ok, try it the long way
+		final java.util.Iterator<String> it = _theVesselIds.values().iterator();
+		final java.util.Iterator<String> keyIterator = _theVesselIds.keySet().iterator();
+		while (it.hasNext()) {
+			final String thisKey = it.next();
+			final String thisSymbolName = keyIterator.next();
+
+			if (thisKey != null && thisKey.equals(charAsString)) {
+				res = thisSymbolName;
+				break;
+			}
+		}
+
+		return res;
+	}
+
+	public static String findIdForSymbolType(final String type) {
+		String res = null;
+
+		checkFactory();
+
+		// first try using the default case
+		res = _theVesselIds.get(type);
+
+		// do we need to try a case-insensitive comparison
+		if (res == null) {
+			final String typeUpper = type.toUpperCase();
+			final java.util.Iterator<String> iter = _theVesselIds.keySet().iterator();
+			while (iter.hasNext()) {
+				final String thisKey = iter.next();
+				if (thisKey.toUpperCase().equals(typeUpper)) {
+					res = findIdForSymbolType(thisKey);
+					break;
+				}
+			}
+		}
+
+		return res;
+	}
+
+	/**
+	 * return a list of buoy symbols available
+	 */
+	static public String[] getBuoySymbolList() {
+		checkFactory();
+
+		return _theBuoyList;
+	}
+
+	/**
+	 * return a list of SVG icons available
+	 */
+	static public String[] getSVGList() {
+		checkFactory();
+
+		return _theSVGList;
+	}
+
+	/**
+	 * return a list of symbols available
+	 */
+	static public String[] getSymbolList() {
+		checkFactory();
+
+		return _theList;
+	}
+
+	/**
+	 * return a list of buoy symbols available
+	 */
+	static public String[] getVesselSymbolList() {
+		checkFactory();
+
+		return _theVesselList;
+	}
+
+	/**
+	 * java.util.HashMap _theSymbols
+	 */
+	private java.util.HashMap<String, PlainSymbol> _theSymbols;
+
+	//////////////////////////////////////////////////
+	// member functions
+	//////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////
+	// constructor
+	/**
+	 * //////////////////////////////////////////////////
+	 */
+	private SymbolFactory() {
+	}
 
 }

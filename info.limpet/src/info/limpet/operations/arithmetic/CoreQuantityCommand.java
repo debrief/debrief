@@ -1,27 +1,18 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 package info.limpet.operations.arithmetic;
-
-import info.limpet.IContext;
-import info.limpet.IDocument;
-import info.limpet.IStoreGroup;
-import info.limpet.IStoreItem;
-import info.limpet.impl.Document;
-import info.limpet.impl.NumberDocument;
-import info.limpet.operations.AbstractCommand;
-import info.limpet.operations.CollectionComplianceTests;
 
 import java.util.Iterator;
 import java.util.List;
@@ -34,217 +25,194 @@ import org.eclipse.january.dataset.IDataset;
 import org.eclipse.january.metadata.AxesMetadata;
 import org.eclipse.january.metadata.internal.AxesMetadataImpl;
 
-public abstract class CoreQuantityCommand extends AbstractCommand
-{
+import info.limpet.IContext;
+import info.limpet.IDocument;
+import info.limpet.IStoreGroup;
+import info.limpet.IStoreItem;
+import info.limpet.impl.Document;
+import info.limpet.impl.NumberDocument;
+import info.limpet.operations.AbstractCommand;
+import info.limpet.operations.CollectionComplianceTests;
 
-  private final CollectionComplianceTests aTests =
-      new CollectionComplianceTests();
+public abstract class CoreQuantityCommand extends AbstractCommand {
 
-  public CoreQuantityCommand(final String title, final String description,
-      final IStoreGroup store, final boolean canUndo, final boolean canRedo,
-      final List<IStoreItem> inputs, final IContext context)
-  {
-    super(title, description, store, canUndo, canRedo, inputs, context);
-  }
+	private final CollectionComplianceTests aTests = new CollectionComplianceTests();
 
-  /**
-   * empty the contents of any results collections
-   * 
-   * @param outputs
-   */
-  protected void clearOutputs(final List<Document<?>> outputs)
-  {
-    // clear out the lists, first
-    final Iterator<Document<?>> iter = outputs.iterator();
-    while (iter.hasNext())
-    {
-      final Document<?> qC = iter.next();
-      qC.clearQuiet();
-    }
-  }
+	public CoreQuantityCommand(final String title, final String description, final IStoreGroup store,
+			final boolean canUndo, final boolean canRedo, final List<IStoreItem> inputs, final IContext context) {
+		super(title, description, store, canUndo, canRedo, inputs, context);
+	}
 
-  /**
-   * for binary operations we act on a set of inputs, so, if one has changed then we will
-   * recalculate all of them.
-   */
-  @Override
-  protected void recalculate(final IStoreItem subject)
-  {
-    // get the existing name
-    final Document<?> outDoc = getOutputs().get(0);
-    final String oldName = outDoc.getName();
+	protected void assignOutputIndices(final IDataset output, final Dataset outputIndices) {
+		if (outputIndices != null) {
+			// now insert the new one
+			final AxesMetadata am = new AxesMetadataImpl();
+			am.initialize(1);
+			am.setAxis(0, outputIndices);
+			output.addMetadata(am);
+		}
+	}
 
-    // calculate the results
-    final IDataset newSet = performCalc();
+	/**
+	 * empty the contents of any results collections
+	 *
+	 * @param outputs
+	 */
+	protected void clearOutputs(final List<Document<?>> outputs) {
+		// clear out the lists, first
+		final Iterator<Document<?>> iter = outputs.iterator();
+		while (iter.hasNext()) {
+			final Document<?> qC = iter.next();
+			qC.clearQuiet();
+		}
+	}
 
-    // and restore the name
-    newSet.setName(oldName);
+	@Override
+	public void execute() {
+		// sort out the output unit
+		final Unit<?> unit = getUnits();
 
-    // store the new dataset
-    outDoc.setDataset(newSet);
+		// also sort out the output's index units
+		final Unit<?> indexUnits = getIndexUnits();
 
-    // and share the good news
-    outDoc.fireDataChanged();
-  }
+		// start adding values.
+		final IDataset dataset = performCalc();
 
-  protected Dataset findIndexDataset()
-  {
-    Dataset ds = null;
-    for (final IStoreItem inp : getInputs())
-    {
-      final Document<?> doc = (Document<?>) inp;
-      if (doc.size() > 1 && doc.isIndexed())
-      {
-        final IDataset dataset = doc.getDataset();
-        final AxesMetadata axes = dataset.getFirstMetadata(AxesMetadata.class);
-        if (axes != null)
-        {
-          final DoubleDataset ds1 = (DoubleDataset) axes.getAxis(0)[0];
-          ds = ds1;
-          break;
-        }
-      }
-    }
+		// store the name
+		dataset.setName(generateName());
 
-    return ds;
-  }
+		// ok, wrap the dataset
+		final NumberDocument output = new NumberDocument((DoubleDataset) dataset, this, unit);
 
-  protected void assignOutputIndices(final IDataset output,
-      final Dataset outputIndices)
-  {
-    if (outputIndices != null)
-    {
-      // now insert the new one
-      final AxesMetadata am = new AxesMetadataImpl();
-      am.initialize(1);
-      am.setAxis(0, outputIndices);
-      output.addMetadata(am);
-    }
-  }
+		// and the index units
+		storeIndexUnits(output, indexUnits);
 
-  /**
-   * what are the units for the resulting data?
-   * 
-   * @return
-   */
-  protected abstract Unit<?> getUnits();
+		// do any extra tidying, if necessary
+		tidyOutput(output);
 
-  public CollectionComplianceTests getATests()
-  {
-    return aTests;
-  }
+		// and fire out the update
+		output.fireDataChanged();
 
-  /**
-   * what are the units for the index?
-   * 
-   * @return
-   */
-  protected Unit<?> getIndexUnits()
-  {
-    final Unit<?> res;
+		// store the output
+		super.addOutput(output);
 
-    // ok. are they both indexed?
-    if (getATests().allEqualIndexed(getInputs()))
-    {
-      // ok, that's easy
-      final Document<?> doc = (Document<?>) getInputs().get(0);
-      res = doc.getIndexUnits();
-    }
-    else if (getATests().hasIndexed(getInputs()))
-    {
-      Unit<?> firstIndexed = null;
-      // ok, find the series with an index
-      for (final IStoreItem s : getInputs())
-      {
-        final Document<?> doc = (Document<?>) s;
-        if (doc.isIndexed())
-        {
-          final Unit<?> thisIndexUnits = doc.getIndexUnits();
-          if (thisIndexUnits != null)
-          {
-            firstIndexed = thisIndexUnits;
-            break;
-          }
-        }
-      }
-      res = firstIndexed;
-    }
-    else
-    {
-      res = null;
-    }
+		// tell each series that we're a dependent
+		final Iterator<IStoreItem> iter = getInputs().iterator();
+		while (iter.hasNext()) {
+			final IStoreItem sItem = iter.next();
+			if (sItem instanceof IDocument) {
+				final IDocument<?> iCollection = (IDocument<?>) sItem;
+				iCollection.addDependent(this);
+			}
+		}
 
-    return res;
-  }
+		// ok, done
+		getStore().add(output);
+	}
 
-  protected void storeIndexUnits(final NumberDocument output,
-      final Unit<?> indexUnits)
-  {
-    if (output.isIndexed())
-    {
-      output.setIndexUnits(indexUnits);
-    }
-  }
+	protected Dataset findIndexDataset() {
+		Dataset ds = null;
+		for (final IStoreItem inp : getInputs()) {
+			final Document<?> doc = (Document<?>) inp;
+			if (doc.size() > 1 && doc.isIndexed()) {
+				final IDataset dataset = doc.getDataset();
+				final AxesMetadata axes = dataset.getFirstMetadata(AxesMetadata.class);
+				if (axes != null) {
+					final DoubleDataset ds1 = (DoubleDataset) axes.getAxis(0)[0];
+					ds = ds1;
+					break;
+				}
+			}
+		}
 
-  protected void tidyOutput(final NumberDocument output)
-  {
-    // we don't need to do anything
-  }
+		return ds;
+	}
 
-  abstract protected String generateName();
+	abstract protected String generateName();
 
-  /**
-   * ok, do the calculation
-   * 
-   * @return
-   */
-  abstract protected IDataset performCalc();
+	public CollectionComplianceTests getATests() {
+		return aTests;
+	}
 
-  @Override
-  public void execute()
-  {
-    // sort out the output unit
-    final Unit<?> unit = getUnits();
+	/**
+	 * what are the units for the index?
+	 *
+	 * @return
+	 */
+	protected Unit<?> getIndexUnits() {
+		final Unit<?> res;
 
-    // also sort out the output's index units
-    final Unit<?> indexUnits = getIndexUnits();
+		// ok. are they both indexed?
+		if (getATests().allEqualIndexed(getInputs())) {
+			// ok, that's easy
+			final Document<?> doc = (Document<?>) getInputs().get(0);
+			res = doc.getIndexUnits();
+		} else if (getATests().hasIndexed(getInputs())) {
+			Unit<?> firstIndexed = null;
+			// ok, find the series with an index
+			for (final IStoreItem s : getInputs()) {
+				final Document<?> doc = (Document<?>) s;
+				if (doc.isIndexed()) {
+					final Unit<?> thisIndexUnits = doc.getIndexUnits();
+					if (thisIndexUnits != null) {
+						firstIndexed = thisIndexUnits;
+						break;
+					}
+				}
+			}
+			res = firstIndexed;
+		} else {
+			res = null;
+		}
 
-    // start adding values.
-    final IDataset dataset = performCalc();
+		return res;
+	}
 
-    // store the name
-    dataset.setName(generateName());
+	/**
+	 * what are the units for the resulting data?
+	 *
+	 * @return
+	 */
+	protected abstract Unit<?> getUnits();
 
-    // ok, wrap the dataset
-    final NumberDocument output =
-        new NumberDocument((DoubleDataset) dataset, this, unit);
+	/**
+	 * ok, do the calculation
+	 *
+	 * @return
+	 */
+	abstract protected IDataset performCalc();
 
-    // and the index units
-    storeIndexUnits(output, indexUnits);
+	/**
+	 * for binary operations we act on a set of inputs, so, if one has changed
+	 * then we will recalculate all of them.
+	 */
+	@Override
+	protected void recalculate(final IStoreItem subject) {
+		// get the existing name
+		final Document<?> outDoc = getOutputs().get(0);
+		final String oldName = outDoc.getName();
 
-    // do any extra tidying, if necessary
-    tidyOutput(output);
+		// calculate the results
+		final IDataset newSet = performCalc();
 
-    // and fire out the update
-    output.fireDataChanged();
+		// and restore the name
+		newSet.setName(oldName);
 
-    // store the output
-    super.addOutput(output);
+		// store the new dataset
+		outDoc.setDataset(newSet);
 
-    // tell each series that we're a dependent
-    final Iterator<IStoreItem> iter = getInputs().iterator();
-    while (iter.hasNext())
-    {
-      final IStoreItem sItem = iter.next();
-      if (sItem instanceof IDocument)
-      {
-        final IDocument<?> iCollection = (IDocument<?>) sItem;
-        iCollection.addDependent(this);
-      }
-    }
+		// and share the good news
+		outDoc.fireDataChanged();
+	}
 
-    // ok, done
-    getStore().add(output);
-  }
+	protected void storeIndexUnits(final NumberDocument output, final Unit<?> indexUnits) {
+		if (output.isIndexed()) {
+			output.setIndexUnits(indexUnits);
+		}
+	}
+
+	protected void tidyOutput(final NumberDocument output) {
+		// we don't need to do anything
+	}
 
 }

@@ -18,63 +18,63 @@ public class VStackLayout extends VLayout {
 
 	private VControl defaultControl;
 	private VControl topControl;
-	
+
 	@Override
-	protected Point computeSize(VPanel panel, int wHint, int hHint, boolean flushCache) {
-		if(topControl == null) {
-			VControl[] children = panel.getChildren();
-			if(children.length > 0) {
+	protected Point computeSize(final VPanel panel, final int wHint, final int hHint, final boolean flushCache) {
+		if (topControl == null) {
+			final VControl[] children = panel.getChildren();
+			if (children.length > 0) {
 				topControl = children[0];
 			}
 		}
-		if(topControl != null) {
+		if (topControl != null) {
 			return topControl.computeSize(wHint, hHint);
 		}
-		return new Point(0,0);
+		return new Point(0, 0);
 	}
 
 	@Override
-	protected void layout(VPanel panel, boolean flushCache) {
-		if(topControl == null) {
-			VControl[] children = panel.getChildren();
-			if(children.length > 0) {
+	protected void layout(final VPanel panel, final boolean flushCache) {
+		if (topControl == null) {
+			final VControl[] children = panel.getChildren();
+			if (children.length > 0) {
 				topControl = children[0];
 			}
 		}
-		if(topControl != null) {
-			Rectangle bounds = panel.getBounds();
+		if (topControl != null) {
+			final Rectangle bounds = panel.getBounds();
 			topControl.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
 		}
 	}
 
-	public void setDefault(VControl control, boolean override) {
-		if(override || defaultControl == null) {
+	public void setDefault(final VControl control, final boolean override) {
+		if (override || defaultControl == null) {
 			defaultControl = control;
 		}
 	}
-	
-	public void setTopControl(VControl control) {
+
+	public void setTopControl(final VControl control) {
 		setTopControl(control, 0);
 	}
-	
-	public void setTopControl(VControl control, int duration) {
-		if(defaultControl == null) {
+
+	public void setTopControl(VControl control, final int duration) {
+		if (defaultControl == null) {
 			defaultControl = control;
 		}
-		if(control == null) {
+		if (control == null) {
 			control = defaultControl;
 		}
 
-		if(control != topControl) {
-			VPanel parent = control.getParent();
-			for(VControl child : parent.getChildren()) {
-				if(child != control && child != topControl) {
+		if (control != topControl) {
+			final VPanel parent = control.getParent();
+			for (final VControl child : parent.getChildren()) {
+				if (child != control && child != topControl) {
 					child.setVisible(false);
 				}
 			}
 
-			if(topControl != null) {
-				if(duration > 0) {
+			if (topControl != null) {
+				if (duration > 0) {
 					control.moveBelow(topControl);
 					topControl.setVisible(false, duration);
 					control.setVisible(true, duration);
@@ -83,11 +83,11 @@ public class VStackLayout extends VLayout {
 					control.setVisible(true);
 				}
 			}
-	
+
 			topControl = control;
 
 			parent.layout(true);
 		}
 	}
-	
+
 }

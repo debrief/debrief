@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: FormatTracks.java,v $
@@ -76,160 +76,136 @@ import MWC.Utilities.TextFormatting.GMTDateFormat;
 /**
  * class to apply default formatting to a set of tracks
  */
-public final class FormatTracks implements ImportReplay.LayersFormatter
-{
+public final class FormatTracks implements ImportReplay.LayersFormatter {
 
-  /**
-   * const to represent a day in millis
-   */
-  @SuppressWarnings("unused")
-  private static final long _day = 24 * 60 * 60 * 1000;
-  
-  /** const to represent a 6 hour period in millis
-   * 
-   */
-  private static final long _6hour = 6 * 60 * 60 * 1000;
+	/**
+	 * const to represent a day in millis
+	 */
+	@SuppressWarnings("unused")
+	private static final long _day = 24 * 60 * 60 * 1000;
 
-  /**
-   * do the formatting for this particular track
-   * 
-   */
+	/**
+	 * const to represent a 6 hour period in millis
+	 *
+	 */
+	private static final long _6hour = 6 * 60 * 60 * 1000;
 
-  /**
-   * do the formatting for this particular track
-   * 
-   * @param track
-   *          the track to reformat
-   * @param dayFormat
-   *          the day format to use
-   * @param normalFormat
-   *          the normal format to use
-   */
-  private static void formatThisTrack(final TrackWrapper track)
-  {
-    try
-    {
-      final SimpleDateFormat dayFormat =
-          new GMTDateFormat(DateFormatPropertyEditor.DATE_FORMAT);
-      final SimpleDateFormat normalFormat =
-          new GMTDateFormat(DateFormatPropertyEditor.TIME_FORMAT);
+	/**
+	 * do the formatting for this particular track
+	 *
+	 */
 
-      // the last hour we stamped
-      long lastStamp = -1;
+	/**
+	 * do the formatting for this particular track
+	 *
+	 * @param track        the track to reformat
+	 * @param dayFormat    the day format to use
+	 * @param normalFormat the normal format to use
+	 */
+	private static void formatThisTrack(final TrackWrapper track) {
+		try {
+			final SimpleDateFormat dayFormat = new GMTDateFormat(DateFormatPropertyEditor.DATE_FORMAT);
+			final SimpleDateFormat normalFormat = new GMTDateFormat(DateFormatPropertyEditor.TIME_FORMAT);
 
-      // right, get the tarck segments in the track
-      final Enumeration<Editable> iter = track.elements();
+			// the last hour we stamped
+			long lastStamp = -1;
 
-      // working values
-      final Date worker = new Date();
-      String thisLabel = null;
+			// right, get the tarck segments in the track
+			final Enumeration<Editable> iter = track.elements();
 
-      // loop through the segments
-      while (iter.hasMoreElements())
-      {
-        final Object next = iter.nextElement();
+			// working values
+			final Date worker = new Date();
+			String thisLabel = null;
 
-        // right, this is prob a track segment. have a look at it
-        if (next instanceof TrackSegment)
-        {
-          final TrackSegment thisSeg = (TrackSegment) next;
-          final Enumeration<Editable> items = thisSeg.elements();
+			// loop through the segments
+			while (iter.hasMoreElements()) {
+				final Object next = iter.nextElement();
 
-          // ok, loop through the segment
-          while (items.hasMoreElements())
-          {
-            final Object item = items.nextElement();
-            if (item instanceof FixWrapper)
-            {
-              final FixWrapper fw = (FixWrapper) item;
+				// right, this is prob a track segment. have a look at it
+				if (next instanceof TrackSegment) {
+					final TrackSegment thisSeg = (TrackSegment) next;
+					final Enumeration<Editable> items = thisSeg.elements();
 
-              // does this fix already have a label? if so, we'll leave it
-              if (!fw.getUserLabelSupplied())
-              {
-                final long thisTime = fw.getTime().getDate().getTime();
+					// ok, loop through the segment
+					while (items.hasMoreElements()) {
+						final Object item = items.nextElement();
+						if (item instanceof FixWrapper) {
+							final FixWrapper fw = (FixWrapper) item;
 
-                // update the time
-                worker.setTime(thisTime);
+							// does this fix already have a label? if so, we'll leave it
+							if (!fw.getUserLabelSupplied()) {
+								final long thisTime = fw.getTime().getDate().getTime();
 
-                // is this the first element?
-                if (lastStamp == -1)
-                {
-                  // show the days anyway
-                  thisLabel = dayFormat.format(worker);
+								// update the time
+								worker.setTime(thisTime);
 
-                  // ok, done
-                  lastStamp = thisTime / _6hour;
-                }
-                else
-                {
-                  // find the last hour stamp before this time
-                  final long hour = thisTime / _6hour;
+								// is this the first element?
+								if (lastStamp == -1) {
+									// show the days anyway
+									thisLabel = dayFormat.format(worker);
 
-                  if (hour > lastStamp)
-                  {
-                    lastStamp = hour;
-                    thisLabel = dayFormat.format(worker);
-                  }
-                  else
-                  {
-                    thisLabel = normalFormat.format(worker);
-                  }
-                }
-                fw.setLabel(thisLabel);
-              }
-            } // whether this was a fix
-          }
-        }
+									// ok, done
+									lastStamp = thisTime / _6hour;
+								} else {
+									// find the last hour stamp before this time
+									final long hour = thisTime / _6hour;
 
-      }
-    }
-    catch (final Exception e)
-    {
-      MWC.Utilities.Errors.Trace.trace(e,
-          "Failed whilst setting default formatting for track:"
-              + track.getName());
-    }
-  }
+									if (hour > lastStamp) {
+										lastStamp = hour;
+										thisLabel = dayFormat.format(worker);
+									} else {
+										thisLabel = normalFormat.format(worker);
+									}
+								}
+								fw.setLabel(thisLabel);
+							}
+						} // whether this was a fix
+					}
+				}
 
-  /**
-   * apply formatting to this track according to our default styles
-   * 
-   * @param theTrack
-   *          the track to be reformatted
-   */
-  public static void formatTrack(final TrackWrapper theTrack)
-  {
-    // and format it
-    formatThisTrack(theTrack);
-  }
+			}
+		} catch (final Exception e) {
+			MWC.Utilities.Errors.Trace.trace(e,
+					"Failed whilst setting default formatting for track:" + track.getName());
+		}
+	}
 
-  /**
-   * have a go at setting the detault time/date values for imported tracks
-   */
-  public final void formatLayers(final List<Layer> newLayers)
-  {
-   // Application.logStack2(Application.WARNING, "Format tracks called, poss from Import Replay");
-    
-    // have we received valid data?
-    if (newLayers == null)
-      return;
+	/**
+	 * apply formatting to this track according to our default styles
+	 *
+	 * @param theTrack the track to be reformatted
+	 */
+	public static void formatTrack(final TrackWrapper theTrack) {
+		// and format it
+		formatThisTrack(theTrack);
+	}
 
-    Iterator<Layer> iter = newLayers.iterator();
-    while (iter.hasNext())
-    {
-      Layer thisL = (Layer) iter.next();
+	/**
+	 * have a go at setting the detault time/date values for imported tracks
+	 */
+	@Override
+	public final void formatLayers(final List<Layer> newLayers) {
+		// Application.logStack2(Application.WARNING, "Format tracks called, poss from
+		// Import Replay");
 
-      // is this a track?
-      if (thisL instanceof Debrief.Wrappers.TrackWrapper)
-      {
-        // yes, go for it!
-        final Debrief.Wrappers.TrackWrapper thisTrack = (TrackWrapper) thisL;
+		// have we received valid data?
+		if (newLayers == null)
+			return;
 
-        // now, apply the formatting to this track
-        formatThisTrack(thisTrack);
-      }
-    }
+		final Iterator<Layer> iter = newLayers.iterator();
+		while (iter.hasNext()) {
+			final Layer thisL = iter.next();
 
-  }
+			// is this a track?
+			if (thisL instanceof Debrief.Wrappers.TrackWrapper) {
+				// yes, go for it!
+				final Debrief.Wrappers.TrackWrapper thisTrack = (TrackWrapper) thisL;
+
+				// now, apply the formatting to this track
+				formatThisTrack(thisTrack);
+			}
+		}
+
+	}
 
 }

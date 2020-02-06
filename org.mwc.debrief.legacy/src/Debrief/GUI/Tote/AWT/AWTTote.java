@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: AWTTote.java,v $
@@ -101,237 +101,234 @@
 
 package Debrief.GUI.Tote.AWT;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Button;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Enumeration;
 
-import Debrief.Tools.Tote.*;
+import Debrief.Tools.Tote.toteCalculation;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.AWT.AWTPropertiesPanel;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 
-/** AWT implementation of a tote 
- * */
-public final class AWTTote extends Debrief.GUI.Tote.AnalysisTote
-{
-  private final Panel _thePanel;
-  private final AWTPropertiesPanel _theParent;
-  
-  private final Panel _theStatus;
-  private final Panel _theTote;
-  private final Panel _toteHolder;
-  
-  public AWTTote(final AWTPropertiesPanel theTabPanel,
-                 final MWC.GUI.Layers theData, final ToolParent theParent)
-  {
-		super(theData);
-		
-    // store the parent
-    _theParent = theTabPanel;
-
-    
-    // create the panel we represent
-    _thePanel = new Panel();
-    _thePanel.setName("Tote");
-    _thePanel.setLayout(new BorderLayout());
-
-    // create the central tote portion
-    _toteHolder = new Panel();
-    _toteHolder.setLayout(new BorderLayout());
-    _theTote = new Panel();
-    _toteHolder.add("North", _theTote);
-    _thePanel.add("Center", _toteHolder);
-    
-    // create the status panel
-    _theStatus = new Panel();
-    _thePanel.add("South", _theStatus);
-    
-    // create the stepping control
-    final AWTStepControl aw = new AWTStepControl(theTabPanel, theParent);
-    _thePanel.add("North", aw.getPanel());
-    setStepper(aw);
-
-  }
-  
-  public final java.awt.Container getPanel(){
-    return _thePanel;
-  }
-
-  
-
-  protected final void updateToteMembers()
-  {
-    // check we can do it properly
-    if(_thePrimary == null)
-      return;
-    
-    // we must now build up our grid of information
-    
-    // clear the current list of members
-    super._theCalculations.removeAllElements();
-    
-    // and delete them from our panels
-    _theTote.removeAll();
-    
-    // calculate the size that we need
-    final int wid = 1 +  // label
-              1 +  // primary
-              super._theSecondary.size() +  // secondaries
-              1;   // units
-    
-    // now do our grid
-    _theTote.setLayout(new GridLayout(0, wid));
-    
-    // and now add the members (going across first)
-    _theTote.add(new Label("  "));
-    _theTote.add(new Label(_thePrimary.getName(), Label.CENTER));
-    final Enumeration<WatchableList> iter2 = _theSecondary.elements();
-    while(iter2.hasMoreElements())
-    {
-      final WatchableList w = (WatchableList) iter2.nextElement();
-      _theTote.add(new Label(w.getName(), Label.CENTER));
-    }
-    _theTote.add(new Label("  "));
-    
-    // and now the data for each row
-    final Enumeration<Class<?>> iter = _theCalculationTypes.elements();
-    while(iter.hasMoreElements())
-    {
-      final Class<?> cl = (Class<?>)iter.nextElement();
-      try
-      {
-        final toteCalculation tc = (toteCalculation)cl.newInstance();
-        
-        // title
-        _theTote.add(new Label(tc.getTitle(), Label.RIGHT));
-        
-        // primary
-        final calcHolder cp = new calcHolder(tc, _thePrimary.getName());
-        _theCalculations.addElement(cp);
-        _theTote.add(cp);
-        
-        // secondaries
-        final Enumeration<WatchableList> secs = _theSecondary.elements();
-        while(secs.hasMoreElements())
-        {
-          final WatchableList wl = (WatchableList)secs.nextElement();
-          final toteCalculation ts = (toteCalculation)cl.newInstance();
-          final calcHolder ch = new calcHolder(ts, wl.getName());
-          _theCalculations.addElement(ch);
-          _theTote.add(ch);
-        }
-        
-        _theTote.add(new Label(tc.getUnits()));
-      }
-      catch(final Exception e)
-      {
-        MWC.Utilities.Errors.Trace.trace(e);
-      }
-
-    }
-
-    // put on the list of remove buttons
-    _theTote.add(new Label("  "));
-    _theTote.add(new Label("  "));
-    final Enumeration<WatchableList> secs2 = _theSecondary.elements();
-    while(secs2.hasMoreElements())
-    {
-      final WatchableList l = (WatchableList)secs2.nextElement();
-      _theTote.add(new removeMe(l));
-    }
-    
-    // and the figures
-    updateToteInformation();
-    
-    _theParent.doLayout();
-    
-  }
-
-    
-  ////////////////////////////////////////////////////////////
-  // nested class to put a calculation into a label
-  ////////////////////////////////////////////////////////////
-  static final class calcHolder extends Label implements toteCalculation
-  {
-    /**
-		 * 
-		 */
+/**
+ * AWT implementation of a tote
+ */
+public final class AWTTote extends Debrief.GUI.Tote.AnalysisTote {
+	////////////////////////////////////////////////////////////
+	// nested class to put a calculation into a label
+	////////////////////////////////////////////////////////////
+	static final class calcHolder extends Label implements toteCalculation {
+		/**
+			 *
+			 */
 		private static final long serialVersionUID = 1L;
 		final toteCalculation _myCalc;
-    final String _myName;
-    public calcHolder(final toteCalculation calc, final String name)
-    {
-      _myCalc = calc;
-      _myName = name;
-      setText("---");
-    }
+		final String _myName;
 
-    public final double calculate(final Watchable primary,final Watchable secondary,final HiResDate thisTime)
-    {
-      return _myCalc.calculate(secondary, primary, thisTime);
-    }
-    
-    public final String update(final Watchable primary,final Watchable secondary,final HiResDate thisTime)
-    {
-      final String val = " " + _myCalc.update(primary, secondary, thisTime);
-      setText(val);
-      return val;
-    }
+		public calcHolder(final toteCalculation calc, final String name) {
+			_myCalc = calc;
+			_myName = name;
+			setText("---");
+		}
 
-    public final void setPattern(final java.text.NumberFormat format)
-    {
-      _myCalc.setPattern(format);
-    }
+		@Override
+		public final double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime) {
+			return _myCalc.calculate(secondary, primary, thisTime);
+		}
 
-    public final String getTitle()
-    {
-      return _myCalc.getTitle();
-    }
+		@Override
+		public final String getTitle() {
+			return _myCalc.getTitle();
+		}
 
-    public final String getUnits()
-    {
-      return _myCalc.getUnits();
-    }
+		@Override
+		public final String getUnits() {
+			return _myCalc.getUnits();
+		}
 
-    public final void paint(final Graphics p1)
-    {
-      super.paint(p1);
-      final Dimension sz = this.getSize();
-      p1.drawRect(1,1,sz.width-2, sz.height-2);
-    }
-
-    /** does this calculation require special bearing handling (prevent wrapping through 360 degs)
-     *
-     */
-    public final boolean isWrappableData() {
-      return false;
-    }
-  }
-  
-  ////////////////////////////////////////////////////
-  // nested class for button to remove a tote participant
-  ////////////////////////////////////////////////////
-  final class removeMe extends Button implements ActionListener
-  {
-    /**
-		 * 
+		/**
+		 * does this calculation require special bearing handling (prevent wrapping
+		 * through 360 degs)
+		 *
 		 */
+		@Override
+		public final boolean isWrappableData() {
+			return false;
+		}
+
+		@Override
+		public final void paint(final Graphics p1) {
+			super.paint(p1);
+			final Dimension sz = this.getSize();
+			p1.drawRect(1, 1, sz.width - 2, sz.height - 2);
+		}
+
+		@Override
+		public final void setPattern(final java.text.NumberFormat format) {
+			_myCalc.setPattern(format);
+		}
+
+		@Override
+		public final String update(final Watchable primary, final Watchable secondary, final HiResDate thisTime) {
+			final String val = " " + _myCalc.update(primary, secondary, thisTime);
+			setText(val);
+			return val;
+		}
+	}
+
+	////////////////////////////////////////////////////
+	// nested class for button to remove a tote participant
+	////////////////////////////////////////////////////
+	final class removeMe extends Button implements ActionListener {
+		/**
+			 *
+			 */
 		private static final long serialVersionUID = 1L;
 		final WatchableList _thisL;
-    public removeMe(final WatchableList theList)
-    {
-      super("remove");
-      _thisL = theList;
-      this.addActionListener(this);
-    }
-    
-    public final void actionPerformed(final ActionEvent e)
-    {
-      removeParticipant(_thisL);
-    }
-    
-  }
-  
+
+		public removeMe(final WatchableList theList) {
+			super("remove");
+			_thisL = theList;
+			this.addActionListener(this);
+		}
+
+		@Override
+		public final void actionPerformed(final ActionEvent e) {
+			removeParticipant(_thisL);
+		}
+
+	}
+
+	private final Panel _thePanel;
+	private final AWTPropertiesPanel _theParent;
+	private final Panel _theStatus;
+
+	private final Panel _theTote;
+
+	private final Panel _toteHolder;
+
+	public AWTTote(final AWTPropertiesPanel theTabPanel, final MWC.GUI.Layers theData, final ToolParent theParent) {
+		super(theData);
+
+		// store the parent
+		_theParent = theTabPanel;
+
+		// create the panel we represent
+		_thePanel = new Panel();
+		_thePanel.setName("Tote");
+		_thePanel.setLayout(new BorderLayout());
+
+		// create the central tote portion
+		_toteHolder = new Panel();
+		_toteHolder.setLayout(new BorderLayout());
+		_theTote = new Panel();
+		_toteHolder.add("North", _theTote);
+		_thePanel.add("Center", _toteHolder);
+
+		// create the status panel
+		_theStatus = new Panel();
+		_thePanel.add("South", _theStatus);
+
+		// create the stepping control
+		final AWTStepControl aw = new AWTStepControl(theTabPanel, theParent);
+		_thePanel.add("North", aw.getPanel());
+		setStepper(aw);
+
+	}
+
+	@Override
+	public final java.awt.Container getPanel() {
+		return _thePanel;
+	}
+
+	@Override
+	protected final void updateToteMembers() {
+		// check we can do it properly
+		if (_thePrimary == null)
+			return;
+
+		// we must now build up our grid of information
+
+		// clear the current list of members
+		super._theCalculations.removeAllElements();
+
+		// and delete them from our panels
+		_theTote.removeAll();
+
+		// calculate the size that we need
+		final int wid = 1 + // label
+				1 + // primary
+				super._theSecondary.size() + // secondaries
+				1; // units
+
+		// now do our grid
+		_theTote.setLayout(new GridLayout(0, wid));
+
+		// and now add the members (going across first)
+		_theTote.add(new Label("  "));
+		_theTote.add(new Label(_thePrimary.getName(), Label.CENTER));
+		final Enumeration<WatchableList> iter2 = _theSecondary.elements();
+		while (iter2.hasMoreElements()) {
+			final WatchableList w = iter2.nextElement();
+			_theTote.add(new Label(w.getName(), Label.CENTER));
+		}
+		_theTote.add(new Label("  "));
+
+		// and now the data for each row
+		final Enumeration<Class<?>> iter = _theCalculationTypes.elements();
+		while (iter.hasMoreElements()) {
+			final Class<?> cl = iter.nextElement();
+			try {
+				final toteCalculation tc = (toteCalculation) cl.newInstance();
+
+				// title
+				_theTote.add(new Label(tc.getTitle(), Label.RIGHT));
+
+				// primary
+				final calcHolder cp = new calcHolder(tc, _thePrimary.getName());
+				_theCalculations.addElement(cp);
+				_theTote.add(cp);
+
+				// secondaries
+				final Enumeration<WatchableList> secs = _theSecondary.elements();
+				while (secs.hasMoreElements()) {
+					final WatchableList wl = secs.nextElement();
+					final toteCalculation ts = (toteCalculation) cl.newInstance();
+					final calcHolder ch = new calcHolder(ts, wl.getName());
+					_theCalculations.addElement(ch);
+					_theTote.add(ch);
+				}
+
+				_theTote.add(new Label(tc.getUnits()));
+			} catch (final Exception e) {
+				MWC.Utilities.Errors.Trace.trace(e);
+			}
+
+		}
+
+		// put on the list of remove buttons
+		_theTote.add(new Label("  "));
+		_theTote.add(new Label("  "));
+		final Enumeration<WatchableList> secs2 = _theSecondary.elements();
+		while (secs2.hasMoreElements()) {
+			final WatchableList l = secs2.nextElement();
+			_theTote.add(new removeMe(l));
+		}
+
+		// and the figures
+		updateToteInformation();
+
+		_theParent.doLayout();
+
+	}
+
 }

@@ -4,67 +4,62 @@ package ASSET.Util.XML.Control.Observers;
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 import ASSET.Scenario.Observers.CoreObserver;
 import ASSET.Scenario.Observers.RecordToFileObserverType;
-import ASSET.Scenario.Observers.Recording.CSVTrackObserver;
 import ASSET.Scenario.Observers.ScenarioObserver;
+import ASSET.Scenario.Observers.Recording.CSVTrackObserver;
 
-abstract class CSVTrackObserverHandler extends CoreFileObserverHandler
-{
+abstract class CSVTrackObserverHandler extends CoreFileObserverHandler {
 
-  private final static String type = "CSVTrackObserver";
+	private final static String type = "CSVTrackObserver";
 
-  public CSVTrackObserverHandler()
-  {
-    super(type);
+	static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc) {
+		// create ourselves
+		final org.w3c.dom.Element thisPart = doc.createElement(type);
 
-  }
+		// get data item
+		final RecordToFileObserverType bb = (RecordToFileObserverType) toExport;
 
-  public void elementClosed()
-  {
-    // create ourselves
-    final CoreObserver timeO = new CSVTrackObserver(_directory, _fileName, false, _name, _isActive);
+		// output the parent attrbutes
+		CoreFileObserverHandler.exportThis(bb, thisPart);
 
-    setObserver(timeO);
+		// output it's attributes
 
-    // and reset
-    super.elementClosed();
-  }
+		// output it's attributes
+		parent.appendChild(thisPart);
 
+	}
 
-  abstract public void setObserver(ScenarioObserver obs);
+	public CSVTrackObserverHandler() {
+		super(type);
 
-  static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
-                                final org.w3c.dom.Document doc)
-  {
-    // create ourselves
-    final org.w3c.dom.Element thisPart = doc.createElement(type);
+	}
 
-    // get data item
-    final RecordToFileObserverType bb = (RecordToFileObserverType) toExport;
+	@Override
+	public void elementClosed() {
+		// create ourselves
+		final CoreObserver timeO = new CSVTrackObserver(_directory, _fileName, false, _name, _isActive);
 
-    // output the parent attrbutes
-    CoreFileObserverHandler.exportThis(bb, thisPart);
+		setObserver(timeO);
 
-    // output it's attributes
+		// and reset
+		super.elementClosed();
+	}
 
-
-    // output it's attributes
-    parent.appendChild(thisPart);
-
-  }
-
+	@Override
+	abstract public void setObserver(ScenarioObserver obs);
 
 }

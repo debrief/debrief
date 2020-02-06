@@ -1,21 +1,22 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.debrief.core.editors.painters.snail;
 
 // Copyright MWC 1999, Debrief 3 Project
+
 // $RCSfile: SnailDrawSWTFix.java,v $
 // @author $Author$
 // @version $Revision$
@@ -29,7 +30,6 @@ package org.mwc.debrief.core.editors.painters.snail;
 // Revision 1.1  2005/07/04 07:45:51  Ian.Mayo
 // Initial snail implementation
 //
-
 
 import java.awt.Color;
 import java.awt.Point;
@@ -58,244 +58,280 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
+public final class SnailDrawSWTFix implements drawSWTHighLight, Editable {
 
-public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
-{
+	public static final class SnailFixPainterInfo extends Editable.EditorType {
 
-	/** keep a copy of the track plotter we are using
+		public SnailFixPainterInfo(final SnailDrawSWTFix data) {
+			super(data, "Snail Painter", "");
+		}
+
+		@Override
+		public final PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final PropertyDescriptor[] res = {
+						displayProp("LinkPositions", "Link positions", "whether to join the points in the trail",
+								Editable.EditorType.VISIBILITY),
+						displayProp("PlotTrackName", "Plot track name", "whether to plot the name of the track",
+								Editable.EditorType.VISIBILITY),
+						displayProp("FadePoints", "Fade points", "whether the trails should fade to black",
+								Editable.EditorType.FORMAT),
+						displayProp("PointSize", "Point size", "the size of the points in the trail",
+								Editable.EditorType.FORMAT),
+						displayProp("TrailLength", "Trail length", "the length of trail to draw",
+								Editable.EditorType.TEMPORAL),
+						displayProp("VectorStretch", "Vector stretch",
+								"how far to stretch the speed vector (pixels per knot)", Editable.EditorType.FORMAT), };
+
+				res[5].setPropertyEditorClass(FractionPropertyEditor.class);
+
+				return res;
+			} catch (final Exception e) {
+				MWC.Utilities.Errors.Trace.trace(e);
+				return super.getPropertyDescriptors();
+			}
+
+		}
+
+	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	static public final class testMe extends junit.framework.TestCase {
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public testMe(final String val) {
+			super(val);
+		}
+
+		public final void testMyParams() {
+			Editable ed = new SnailDrawSWTFix("testing");
+			Editable.editableTesterSupport.testParams(ed, this);
+			ed = null;
+		}
+	}
+
+	/**
+	 * keep a copy of the track plotter we are using
 	 */
 	private final SnailDrawSWTTrack _trackPlotter = new SnailDrawSWTTrack();
 
-	/** keep a copy of the requested point size
+	/**
+	 * keep a copy of the requested point size
 	 */
-  private int _pointSize;
+	private int _pointSize;
 
-	/** do we draw in the track/vessel name?
+	/**
+	 * do we draw in the track/vessel name?
 	 */
-  private boolean _plotName;
+	private boolean _plotName;
 
-	/** the 'stretch' factor to put on the speed vector (factor to apply to the speed vector, in pixels)
+	/**
+	 * the 'stretch' factor to put on the speed vector (factor to apply to the speed
+	 * vector, in pixels)
 	 */
-  private double _vectorStretch;
+	private double _vectorStretch;
 
-  /** our editor
-   */
-  transient private Editable.EditorType _myEditor = null;
+	/**
+	 * our editor
+	 */
+	transient private Editable.EditorType _myEditor = null;
 
-  /** the name we display when shown in an editor
-   *  (which may initially be Snail or Relative)
-   */
-  private final String _myName;
+	/**
+	 * the name we display when shown in an editor (which may initially be Snail or
+	 * Relative)
+	 */
+	private final String _myName;
 
-  /*******************************************************
-   * constructor
-   ******************************************************/
-  public SnailDrawSWTFix(final String name)
-  {
-    _myName = name;
-  }
+	/*******************************************************
+	 * constructor
+	 ******************************************************/
+	public SnailDrawSWTFix(final String name) {
+		_myName = name;
+	}
 
-  ///////////////////////////////////
-  // member functions
-  //////////////////////////////////
-	public final java.awt.Rectangle drawMe(final MWC.Algorithms.PlainProjection proj,
-																	 final CanvasType dest,
-																	 final WatchableList list,
-																	 final Watchable watch,
-																	 final SnailHighlighter parent,
-																	 HiResDate dtg,
-                                   final java.awt.Color backColor)
-	{
-	  
-    Rectangle thisR = null;
+	@Override
+	public final boolean canPlot(final Watchable wt) {
+		boolean res = false;
 
-    // special handling for if we have null DTG (such as at start of processing)
-    if(dtg == null)
-    {
-      return thisR;
-    }
-    
-    // get a pointer to the fix
-		FixWrapper fix = (FixWrapper)watch;
+		if (wt instanceof Debrief.Wrappers.FixWrapper) {
+			res = true;
+		}
+		return res;
+	}
+
+	///////////////////////////////////
+	// member functions
+	//////////////////////////////////
+	@Override
+	public final java.awt.Rectangle drawMe(final MWC.Algorithms.PlainProjection proj, final CanvasType dest,
+			final WatchableList list, final Watchable watch, final SnailHighlighter parent, HiResDate dtg,
+			final java.awt.Color backColor) {
+
+		Rectangle thisR = null;
+
+// special handling for if we have null DTG (such as at start of processing)
+		if (dtg == null) {
+			return thisR;
+		}
+
+// get a pointer to the fix
+		FixWrapper fix = (FixWrapper) watch;
 		final WatchableList trk = fix.getTrackWrapper();
-		
-		if(trk == null)
-		{
-		  System.out.println("here");
+
+		if (trk == null) {
+			System.out.println("here");
 		}
-		
-		if(!trk.getVisible())
-		{
-		  return thisR;
+
+		if (!trk.getVisible()) {
+			return thisR;
 		}
-		
-    // trim to visible period if its a track
-    final TimePeriod visP;
-    if(trk instanceof LightweightTrackWrapper)
-    {
-      LightweightTrackWrapper ft = (LightweightTrackWrapper) trk;
-      visP = ft.getVisiblePeriod();
-    }
-    else
-    {
-      visP = null;
-    }
-    
-    if (visP != null && !visP.contains(dtg))
-    {
-      // ok, before or after?
-      if (visP.getStartDTG().greaterThan(dtg))
-      {
-        dtg = visP.getStartDTG();
-        fix = (FixWrapper) trk.getNearestTo(dtg)[0];
-      }
-      else if (visP.getEndDTG().lessThan(dtg))
-      {
-        dtg = visP.getEndDTG();
-        fix = (FixWrapper) trk.getNearestTo(dtg)[0];
-      }
-    } 
+
+// trim to visible period if its a track
+		final TimePeriod visP;
+		if (trk instanceof LightweightTrackWrapper) {
+			final LightweightTrackWrapper ft = (LightweightTrackWrapper) trk;
+			visP = ft.getVisiblePeriod();
+		} else {
+			visP = null;
+		}
+
+		if (visP != null && !visP.contains(dtg)) {
+			// ok, before or after?
+			if (visP.getStartDTG().greaterThan(dtg)) {
+				dtg = visP.getStartDTG();
+				fix = (FixWrapper) trk.getNearestTo(dtg)[0];
+			} else if (visP.getEndDTG().lessThan(dtg)) {
+				dtg = visP.getEndDTG();
+				fix = (FixWrapper) trk.getNearestTo(dtg)[0];
+			}
+		}
 
 		// get the colour of the track
 		final Color col = fix.getColor();
 		dest.setColor(col);
 
-    // produce the centre point
-    final Point centre = new Point(proj.toScreen(fix.getLocation()));
+// produce the centre point
+		final Point centre = new Point(proj.toScreen(fix.getLocation()));
 
-    // see if we are in symbol plotting mode
-    final SWTPlotHighlighter thisHighlighter = parent.getCurrentPrimaryHighlighter ();
-    if(thisHighlighter instanceof SWTSymbolHighlighter)
-    {
-      // just plot away!
-      thisHighlighter.highlightIt(proj, dest, list, fix, false);
+// see if we are in symbol plotting mode
+		final SWTPlotHighlighter thisHighlighter = parent.getCurrentPrimaryHighlighter();
+		if (thisHighlighter instanceof SWTSymbolHighlighter) {
+			// just plot away!
+			thisHighlighter.highlightIt(proj, dest, list, fix, false);
 
-      // work out the area covered
-      final WorldArea wa = fix.getBounds();
-      final WorldLocation tl = wa.getTopLeft();
-      final WorldLocation br = wa.getBottomRight();
-      final Point pTL = new Point(proj.toScreen(tl));
-      final Point pBR = new Point(proj.toScreen(br));
-      final Rectangle thisArea = new java.awt.Rectangle(pTL);
-      thisArea.add(pBR);
-      thisR = thisArea;
+			// work out the area covered
+			final WorldArea wa = fix.getBounds();
+			final WorldLocation tl = wa.getTopLeft();
+			final WorldLocation br = wa.getBottomRight();
+			final Point pTL = new Point(proj.toScreen(tl));
+			final Point pBR = new Point(proj.toScreen(br));
+			final Rectangle thisArea = new java.awt.Rectangle(pTL);
+			thisArea.add(pBR);
+			thisR = thisArea;
 
-    }
-    else
-    {
-      // plot the pointy vector thingy
+		} else {
+			// plot the pointy vector thingy
 
-      // get the current area of the watchable
-      final WorldArea wa = fix.getBounds();
-      // convert to screen coordinates
-      final Point tl = new Point(proj.toScreen(wa.getTopLeft()));
-      final Point br = new Point(proj.toScreen(wa.getBottomRight()));
+			// get the current area of the watchable
+			final WorldArea wa = fix.getBounds();
+			// convert to screen coordinates
+			final Point tl = new Point(proj.toScreen(wa.getTopLeft()));
+			final Point br = new Point(proj.toScreen(wa.getBottomRight()));
 
-      final int mySize = _pointSize;
+			final int mySize = _pointSize;
 
-      // get the width
-      final int x = tl.x - mySize;
-      final int y = tl.y - mySize;
-      final int wid = (br.x - tl.x) + mySize * 2;
-      final int ht = (br.y - tl.y) + mySize * 2;
+			// get the width
+			final int x = tl.x - mySize;
+			final int y = tl.y - mySize;
+			final int wid = (br.x - tl.x) + mySize * 2;
+			final int ht = (br.y - tl.y) + mySize * 2;
 
-      // represent this area as a rectangle
-      thisR = new Rectangle(x, y, wid, ht);
+			// represent this area as a rectangle
+			thisR = new Rectangle(x, y, wid, ht);
 
-      // plot the rectangle anyway
- //     dest.drawOval(x , y, wid, ht);
+			// plot the rectangle anyway
+			// dest.drawOval(x , y, wid, ht);
 
-      // get the fix to draw itself
+			// get the fix to draw itself
 
-      // create our own canvas object (don't bother - do it all from the Track, so we know
-      // the correct size of the resulting object
+			// create our own canvas object (don't bother - do it all from the Track, so we
+			// know
+			// the correct size of the resulting object
 //      final CanvasAdaptor cad = new CanvasAdaptor(proj, dest);
 
-      // and do the paint
-   //   fix.paintMe(cad);
+			// and do the paint
+			// fix.paintMe(cad);
 
-      // and now plot the vector
-      final double crse = fix.getCourse();
-      final double spd = fix.getSpeed();
-      
-      // see if there is a custom override for this track
-      final double vectorStretch;
-      
-      if(trk instanceof TrackWrapper)
-      {
-        TrackWrapper tw = (TrackWrapper) trk;
-            final double trackStretch = tw.getCustomVectorStretch();
-        if(trackStretch != 0)
-        {
-          vectorStretch = trackStretch;
-        }
-        else
-        {
-          vectorStretch = getVectorStretch();
-        }
-      }
-      else
-      {
-        vectorStretch = getVectorStretch();
-      }
+			// and now plot the vector
+			final double crse = fix.getCourse();
+			final double spd = fix.getSpeed();
 
-      //
-      final int dx = (int)(Math.sin(crse) * mySize * spd * vectorStretch);
-      final int dy = (int)(Math.cos(crse) * mySize * spd * vectorStretch);
+			// see if there is a custom override for this track
+			final double vectorStretch;
 
+			if (trk instanceof TrackWrapper) {
+				final TrackWrapper tw = (TrackWrapper) trk;
+				final double trackStretch = tw.getCustomVectorStretch();
+				if (trackStretch != 0) {
+					vectorStretch = trackStretch;
+				} else {
+					vectorStretch = getVectorStretch();
+				}
+			} else {
+				vectorStretch = getVectorStretch();
+			}
 
-      // produce the end of the stick (just to establish the length in data units)
-      final Point p2 = new Point(centre.x + dx, centre.y - dy);
+			//
+			final int dx = (int) (Math.sin(crse) * mySize * spd * vectorStretch);
+			final int dy = (int) (Math.cos(crse) * mySize * spd * vectorStretch);
 
-      // how long is the stalk in data units?
-      final WorldLocation w3 = proj.toWorld(p2);
-      final double len = w3.rangeFrom(fix.getLocation());
+			// produce the end of the stick (just to establish the length in data units)
+			final Point p2 = new Point(centre.x + dx, centre.y - dy);
 
-      // now sort out the real end of this stalk
-      final WorldLocation stalkEnd = fix.getLocation().add(new WorldVector(crse, len, 0));
-      // and get this in screen coordinates
-      final Point pStalkEnd = proj.toScreen(stalkEnd);
+			// how long is the stalk in data units?
+			final WorldLocation w3 = proj.toWorld(p2);
+			final double len = w3.rangeFrom(fix.getLocation());
 
-      // and plot the stalk itself
-      dest.drawLine(centre.x, centre.y, pStalkEnd.x, pStalkEnd.y);
+			// now sort out the real end of this stalk
+			final WorldLocation stalkEnd = fix.getLocation().add(new WorldVector(crse, len, 0));
+			// and get this in screen coordinates
+			final Point pStalkEnd = proj.toScreen(stalkEnd);
 
-      // extend the area covered to include the stick
-      thisR.add(p2);
+			// and plot the stalk itself
+			dest.drawLine(centre.x, centre.y, pStalkEnd.x, pStalkEnd.y);
 
-    }
+			// extend the area covered to include the stick
+			thisR.add(p2);
+
+		}
 
 		// draw the trailing dots
-		final java.awt.Rectangle dotsArea = _trackPlotter.drawMe(proj,
-																											 dest,
-																											 fix,
-																											 parent,
-																											 dtg,
-                                                       backColor);
-		
+		final java.awt.Rectangle dotsArea = _trackPlotter.drawMe(proj, dest, fix, parent, dtg, backColor);
+
 		// extend the rectangle, if necesary
-		if(dotsArea != null)
+		if (dotsArea != null)
 			thisR.add(dotsArea);
 
 		// plot the track name
-		if(getPlotTrackName())
-		{
+		if (getPlotTrackName()) {
 			final String msg = fix.getTrackWrapper().getName();
-			
+
 			final WorldLocation fixLoc = fix.getFixLocation();
 			final TextLabel trkName = new TextLabel(fixLoc, msg);
 			trkName.setColor(col);
 			// position the track name according to how it's specified in the parent track
-			WatchableList wList = fix.getTrackWrapper();
-			if(wList instanceof TrackWrapper)
-			{
-			  TrackWrapper parentT = (TrackWrapper) wList;
-	      trkName.setRelativeLocation(parentT.getNameLocation());
-	      trkName.paint(dest);
+			final WatchableList wList = fix.getTrackWrapper();
+			if (wList instanceof TrackWrapper) {
+				final TrackWrapper parentT = (TrackWrapper) wList;
+				trkName.setRelativeLocation(parentT.getNameLocation());
+				trkName.paint(dest);
 			}
 
 			// use the coordinates to indicate how much of the plot has been repainted
 			final Point p2 = dest.toScreen(trkName.getAnchor());
-			
+
 			// shift the centre point across a bit
 			p2.translate(5, 0);
 
@@ -313,189 +349,117 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
 		return thisR;
 	}
 
-	public final boolean canPlot(final Watchable wt)
-	{
-		boolean res = false;
-
-		if(wt instanceof Debrief.Wrappers.FixWrapper)
-		{
-			res = true;
-		}
-		return res;
+	public final boolean getFadePoints() {
+		return _trackPlotter.getFadePoints();
 	}
 
-  public final String getName()
-  {
-    return _myName;
-  }
+	@Override
+	public final Editable.EditorType getInfo() {
+		if (_myEditor == null)
+			_myEditor = new SnailFixPainterInfo(this);
 
-  public final String toString()
-  {
-    return getName();
-  }
+		return _myEditor;
+	}
 
-  public final boolean hasEditor()
-  {
-    return true;
-  }
+	//////////////////////////////////////////////////////////
+	// accessors for editable parameters
+	/////////////////////////////////////////////////////////
 
-  public final Editable.EditorType getInfo()
-  {
-    if(_myEditor == null)
-      _myEditor = new SnailFixPainterInfo(this);
+	public final boolean getLinkPositions() {
+		return _trackPlotter.getJoinPositions();
+	}
 
-    return _myEditor;
-  }
+	@Override
+	public final String getName() {
+		return _myName;
+	}
 
-  //////////////////////////////////////////////////////////
-  // accessors for editable parameters
-  /////////////////////////////////////////////////////////
-
-
-  public final void setLinkPositions(final boolean val)
-  {
-    _trackPlotter.setJoinPositions(val);
-  }
-
-  public final boolean getLinkPositions()
-  {
-    return  _trackPlotter.getJoinPositions();
-  }
-
-  public final void setFadePoints(final boolean val)
-  {
-    _trackPlotter.setFadePoints(val);
-  }
-
-  public final boolean getFadePoints()
-  {
-    return _trackPlotter.getFadePoints();
-  }
-
-  /** point size of symbols (pixels)
-   */
-  public final BoundedInteger getPointSize()
-  {
-    return new BoundedInteger(_trackPlotter.getPointSize(),
-															1,
-															20);
-  }
-
-  /** length of trail to plot
-   */
-  public final Duration getTrailLength()
-  {
-    return new Duration(_trackPlotter.getTrailLength().longValue(), Duration.MICROSECONDS);
-  }
-
-  /** size of points to draw (pixels)
-   */
-  public final void setPointSize(final BoundedInteger val)
-  {
-
-    _trackPlotter.setPointSize(val.getCurrent());
-		_pointSize = val.getCurrent();
-  }
-
-  /** size of points to draw (pixels) - convenience method used for XML persistence
-   */
-  public final void setPointSize(final int val)
-  {
-
-    _trackPlotter.setPointSize(val);
-		_pointSize = val;
-  }
-
-  /** length of trail to draw
-   */
-  public final void setTrailLength(final Duration len)
-  {
-    _trackPlotter.setTrailLength((long)len.getValueIn(Duration.MICROSECONDS));
-  }
-
-	/** whether to plot in the name of the vessel
+	/**
+	 * whether to plot in the name of the vessel
 	 */
-	public final boolean getPlotTrackName()
-	{
+	public final boolean getPlotTrackName() {
 		return _plotName;
 	}
 
-	/** whether to plot in the name of the vessel
+	/**
+	 * point size of symbols (pixels)
 	 */
-	public final void setPlotTrackName(final boolean val)
-	{
-		_plotName = val;
+	public final BoundedInteger getPointSize() {
+		return new BoundedInteger(_trackPlotter.getPointSize(), 1, 20);
 	}
 
-	/** how much to stretch the vector
+	/**
+	 * length of trail to plot
 	 */
-	public final void setVectorStretch(final double val)
-	{
-		_vectorStretch = val;
+	public final Duration getTrailLength() {
+		return new Duration(_trackPlotter.getTrailLength().longValue(), Duration.MICROSECONDS);
 	}
 
-	/** how much to stretch the vector
+	/**
+	 * how much to stretch the vector
 	 */
-	public final double getVectorStretch()
-	{
+	public final double getVectorStretch() {
 		return _vectorStretch;
 	}
 
-
-  //////////////////////////////////////////////////////////
-  // nested editable class
-  /////////////////////////////////////////////////////////
-
-  public static final class SnailFixPainterInfo extends Editable.EditorType
-  {
-
-    public SnailFixPainterInfo(final SnailDrawSWTFix data)
-    {
-      super(data, "Snail Painter", "");
-    }
-
-    public final PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try{
-        final PropertyDescriptor[] res={
-          displayProp("LinkPositions", "Link positions", "whether to join the points in the trail", Editable.EditorType.VISIBILITY),
-          displayProp("PlotTrackName", "Plot track name", "whether to plot the name of the track", Editable.EditorType.VISIBILITY),
-          displayProp("FadePoints", "Fade points", "whether the trails should fade to black", Editable.EditorType.FORMAT),
-          displayProp("PointSize", "Point size", "the size of the points in the trail", Editable.EditorType.FORMAT),
-          displayProp("TrailLength", "Trail length", "the length of trail to draw", Editable.EditorType.TEMPORAL),
-          displayProp("VectorStretch", "Vector stretch", "how far to stretch the speed vector (pixels per knot)", Editable.EditorType.FORMAT),
-        };
-
-        res[5].setPropertyEditorClass(FractionPropertyEditor.class);
-
-        return res;
-      }
-      catch(final Exception e)
-      {
-        MWC.Utilities.Errors.Trace.trace(e);
-        return super.getPropertyDescriptors();
-      }
-
-    }
-
+	@Override
+	public final boolean hasEditor() {
+		return true;
 	}
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  static public final class testMe extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE  = "UNIT";
-    public testMe(final String val)
-    {
-      super(val);
-    }
-    public final void testMyParams()
-    {
-      Editable ed = new SnailDrawSWTFix("testing");
-      Editable.editableTesterSupport.testParams(ed, this);
-      ed = null;
-    }
-  }
-}
+	public final void setFadePoints(final boolean val) {
+		_trackPlotter.setFadePoints(val);
+	}
 
+	public final void setLinkPositions(final boolean val) {
+		_trackPlotter.setJoinPositions(val);
+	}
+
+	/**
+	 * whether to plot in the name of the vessel
+	 */
+	public final void setPlotTrackName(final boolean val) {
+		_plotName = val;
+	}
+
+	/**
+	 * size of points to draw (pixels)
+	 */
+	public final void setPointSize(final BoundedInteger val) {
+
+		_trackPlotter.setPointSize(val.getCurrent());
+		_pointSize = val.getCurrent();
+	}
+
+	/**
+	 * size of points to draw (pixels) - convenience method used for XML persistence
+	 */
+	public final void setPointSize(final int val) {
+
+		_trackPlotter.setPointSize(val);
+		_pointSize = val;
+	}
+
+	/**
+	 * length of trail to draw
+	 */
+	public final void setTrailLength(final Duration len) {
+		_trackPlotter.setTrailLength((long) len.getValueIn(Duration.MICROSECONDS));
+	}
+
+	//////////////////////////////////////////////////////////
+	// nested editable class
+	/////////////////////////////////////////////////////////
+
+	/**
+	 * how much to stretch the vector
+	 */
+	public final void setVectorStretch(final double val) {
+		_vectorStretch = val;
+	}
+
+	@Override
+	public final String toString() {
+		return getName();
+	}
+}

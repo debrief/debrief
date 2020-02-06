@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: AWTChart.java,v $
@@ -99,9 +99,8 @@
 // Initial revision
 //
 
-
 package MWC.GUI.Chart.AWT;
-                
+
 import java.awt.Component;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -112,119 +111,107 @@ import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Canvas.AWT.AWTCanvas;
 
+/**
+ * The Chart is a canvas placed in a panel. the majority of functionality is
+ * contained in the PlainChart parent class, only the raw comms is in this
+ * class. This is configured by setting the listeners to the chart/panel to be
+ * the listener functions defined in the parent.
+ *
+ */
+final public class AWTChart extends PlainChart {
 
-/** The Chart is a canvas placed in a panel.
-  * the majority of functionality is contained
-  * in the PlainChart parent class, only the 
-  * raw comms is in this class.
-  * This is configured by setting the listeners to the 
-  * chart/panel to be the listener functions defined in
-  * the parent.
-  *
-  */
- final public class AWTChart extends PlainChart{
-  
-  /**
-	 * 
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	/////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
 
-  private final AWTCanvas _theCanvas;
-  
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
+	private final AWTCanvas _theCanvas;
 
-  public AWTChart(final Layers theLayers){
-    super(theLayers);
-    _theCanvas = new AWTCanvas();
-    _theCanvas.setProjection(new MWC.Algorithms.Projections.FlatProjection());
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+
+	public AWTChart(final Layers theLayers) {
+		super(theLayers);
+		_theCanvas = new AWTCanvas();
+		_theCanvas.setProjection(new MWC.Algorithms.Projections.FlatProjection());
 //    _theCanvas.setProjection(new MWC.Algorithms.Projections.Mercator2());
 //    _theCanvas.setProjection(new MWC.Algorithms.Projections.JMapTransformMercator());
 //    _theCanvas.setProjection(new MWC.Algorithms.Projections.SysMercator());
 //    _theCanvas.setProjection(new MWC.Algorithms.Projections.OpenMercator());
-    
-    // add us as a painter to the canvas
-    _theCanvas.addPainter(this);
-    
-    // catch any resize events
-    _theCanvas.addComponentListener(new ComponentAdapter(){
-      public void componentResized(final ComponentEvent e){
-        canvasResized();   
-      }
-      });
 
-    _theCanvas.getProjection().setScreenArea(_theCanvas.getSize());
-    
-    _theCanvas.addMouseMotionListener(this);
-    _theCanvas.addMouseListener(this);
-    
-  }
-  
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+		// add us as a painter to the canvas
+		_theCanvas.addPainter(this);
 
-  /** repaint the indicated layer
-   *
-   */
-  @Override
-  public void update(final HasEditables changedLayer)
-  {
-    update();
-  }
+		// catch any resize events
+		_theCanvas.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(final ComponentEvent e) {
+				canvasResized();
+			}
+		});
 
-  public java.awt.Dimension getScreenSize(){
-    // get the current size of the canvas
-    return _theCanvas.getSize();
-  }
-  
-  public Component getPanel(){
-    return _theCanvas;
-  }  
+		_theCanvas.getProjection().setScreenArea(_theCanvas.getSize());
 
-  public void update()
-  {
-    _theCanvas.updateMe();
-  }
+		_theCanvas.addMouseMotionListener(this);
+		_theCanvas.addMouseListener(this);
 
-  public void rescale()
-  {
-    // do a rescale
-    _theCanvas.rescale();
-    
-    // trigger a redraw of the canvas
-    _theCanvas.updateMe();
-  }
-  
-  public void repaint()
-  {
-    _theCanvas.repaint();
-  }
-  
-	public void repaintNow(final java.awt.Rectangle rect)
-	{
+	}
+
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+
+	@Override
+	public CanvasType getCanvas() {
+		return _theCanvas;
+	}
+
+	@Override
+	public Component getPanel() {
+		return _theCanvas;
+	}
+
+	@Override
+	public java.awt.Dimension getScreenSize() {
+		// get the current size of the canvas
+		return _theCanvas.getSize();
+	}
+
+	@Override
+	public void repaint() {
+		_theCanvas.repaint();
+	}
+
+	@Override
+	public void repaintNow(final java.awt.Rectangle rect) {
 		repaint();
 	}
-	
-	
-  public CanvasType getCanvas(){
-    return _theCanvas;
-  }
+
+	@Override
+	public void rescale() {
+		// do a rescale
+		_theCanvas.rescale();
+
+		// trigger a redraw of the canvas
+		_theCanvas.updateMe();
+	}
+
+	@Override
+	public void update() {
+		_theCanvas.updateMe();
+	}
+
+	/**
+	 * repaint the indicated layer
+	 *
+	 */
+	@Override
+	public void update(final HasEditables changedLayer) {
+		update();
+	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-

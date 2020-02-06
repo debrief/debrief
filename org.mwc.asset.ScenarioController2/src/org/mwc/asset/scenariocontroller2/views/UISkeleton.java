@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package org.mwc.asset.scenariocontroller2.views;
@@ -44,14 +44,12 @@ import org.eclipse.swt.widgets.TabItem;
  * PURCHASED FOR THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED LEGALLY FOR
  * ANY CORPORATE OR COMMERCIAL PURPOSE.
  */
-public class UISkeleton extends org.eclipse.swt.widgets.Composite
-{
+public class UISkeleton extends org.eclipse.swt.widgets.Composite {
 	/**
-	 * Auto-generated main method to display this
-	 * org.eclipse.swt.widgets.Composite inside a new Shell.
+	 * Auto-generated main method to display this org.eclipse.swt.widgets.Composite
+	 * inside a new Shell.
 	 */
-	public static void main(final String[] args)
-	{
+	public static void main(final String[] args) {
 		showGUI();
 	}
 
@@ -59,27 +57,22 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite
 	 * Auto-generated method to display this org.eclipse.swt.widgets.Composite
 	 * inside a new Shell.
 	 */
-	public static void showGUI()
-	{
+	public static void showGUI() {
 		final Display display = Display.getDefault();
 		final Shell shell = new Shell(display);
 		final UISkeleton inst = new UISkeleton(shell, SWT.NULL);
 		final Point size = inst.getSize();
 		shell.setLayout(new FillLayout());
 		shell.layout();
-		if (size.x == 0 && size.y == 0)
-		{
+		if (size.x == 0 && size.y == 0) {
 			inst.pack();
 			shell.pack();
-		}
-		else
-		{
+		} else {
 			final Rectangle shellBounds = shell.computeTrim(0, 0, size.x, size.y);
 			shell.setSize(shellBounds.width, shellBounds.height);
 		}
 		shell.open();
-		while (!shell.isDisposed())
-		{
+		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch())
 				display.sleep();
 		}
@@ -100,36 +93,29 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite
 
 	private Composite multiRunBtnHolder;
 
-	public UISkeleton(final org.eclipse.swt.widgets.Composite parent, final int style)
-	{
+	public UISkeleton(final org.eclipse.swt.widgets.Composite parent, final int style) {
 		super(parent, style);
 		initGUI();
 	}
 
-	public Composite getControl()
-	{
+	public void addGenerateListener(final SelectionListener listener) {
+		doGenerateButton.addSelectionListener(listener);
+	}
+
+	public void addRunAllListener(final SelectionListener listener) {
+		runBtn.addSelectionListener(listener);
+	}
+
+	public Composite getControl() {
 		return this;
 	}
 
-	public void setControl(final String text)
-	{
-		controlVal.setText(text);
-	}
-
-	public Composite getMultiTableHolder()
-	{
+	public Composite getMultiTableHolder() {
 		return multiTableHolder;
 	}
 
-	public void setScenario(final String text)
-	{
-		scenarioVal.setText(text);
-	}
-
-	private void initGUI()
-	{
-		try
-		{
+	private void initGUI() {
+		try {
 			final FormLayout thisLayout = new FormLayout();
 			this.setLayout(thisLayout);
 			this.setSize(217, 163);
@@ -194,16 +180,14 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite
 						multipleTab.setControl(composite2);
 						{
 							multiRunBtnHolder = new Composite(composite2, SWT.NONE);
-							final RowLayout multiRunBtnHolderLayout = new RowLayout(
-									org.eclipse.swt.SWT.HORIZONTAL);
+							final RowLayout multiRunBtnHolderLayout = new RowLayout(org.eclipse.swt.SWT.HORIZONTAL);
 							multiRunBtnHolderLayout.fill = true;
 							final GridData multiRunBtnHolderLData = new GridData();
 							multiRunBtnHolderLData.grabExcessHorizontalSpace = true;
 							multiRunBtnHolder.setLayoutData(multiRunBtnHolderLData);
 							multiRunBtnHolder.setLayout(multiRunBtnHolderLayout);
 							{
-								doGenerateButton = new Button(multiRunBtnHolder, SWT.PUSH
-										| SWT.CENTER);
+								doGenerateButton = new Button(multiRunBtnHolder, SWT.PUSH | SWT.CENTER);
 								doGenerateButton.setText("Generate");
 							}
 							{
@@ -231,31 +215,25 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite
 				scenarioTabs.setSelection(1);
 			}
 			this.layout();
-		}
-		catch (final Exception e)
-		{
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void addGenerateListener(final SelectionListener listener)
-	{
-		doGenerateButton.addSelectionListener(listener);
+	public void setControl(final String text) {
+		controlVal.setText(text);
 	}
 
-	public void addRunAllListener(final SelectionListener listener)
-	{
-		runBtn.addSelectionListener(listener);
+	public void setGenerateEnabled(final boolean b) {
+		doGenerateButton.setEnabled(b);
 	}
 
-	public void setRunAllEnabled(final boolean b)
-	{
+	public void setRunAllEnabled(final boolean b) {
 		runBtn.setEnabled(b);
 	}
 
-	public void setGenerateEnabled(final boolean b)
-	{
-		doGenerateButton.setEnabled(b);
+	public void setScenario(final String text) {
+		scenarioVal.setText(text);
 	}
 
 }

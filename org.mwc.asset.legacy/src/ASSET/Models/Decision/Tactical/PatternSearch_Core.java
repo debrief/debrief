@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package ASSET.Models.Decision.Tactical;
@@ -34,9 +34,26 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldPath;
 import MWC.GenericData.WorldSpeed;
 
-public abstract class PatternSearch_Core extends CoreDecision implements
-		DecisionType.Paintable
-{
+public abstract class PatternSearch_Core extends CoreDecision implements DecisionType.Paintable {
+
+	/**
+	 * store the supplied point in our route, assigning the search height if we have
+	 * one
+	 *
+	 * @param searchHeight    the (optional) height to search at
+	 * @param currentLocation the location to store
+	 * @param route           the route containing the points
+	 */
+	protected static void addPointToRoute(final WorldDistance searchHeight, final WorldLocation currentLocation,
+			final WorldPath route) {
+		// insert the start datum
+		// do we have a height?
+		if (searchHeight != null) {
+			// yes, store it.
+			currentLocation.setDepth(-searchHeight.getValueIn(WorldDistance.METRES));
+		}
+		route.addPoint(currentLocation);
+	}
 
 	/**
 	 * whether we've finished yet or not.
@@ -50,69 +67,68 @@ public abstract class PatternSearch_Core extends CoreDecision implements
 	 * the (optional) height to conduct search at
 	 */
 	protected WorldDistance _searchHeight;
+
 	/**
 	 * the (optional) speed to conduct search at
 	 */
 	protected WorldSpeed _searchSpeed;
 
+	protected EditorType _myEditor;
+
 	/**
-	 * store the supplied point in our route, assigning the search height if we
-	 * have one
-	 * 
-	 * @param searchHeight
-	 *          the (optional) height to search at
-	 * @param currentLocation
-	 *          the location to store
-	 * @param route
-	 *          the route containing the points
+	 * the start point for the search
 	 */
-	protected static void addPointToRoute(final WorldDistance searchHeight,
-			WorldLocation currentLocation, final WorldPath route)
-	{
-		// insert the start datum
-		// do we have a height?
-		if (searchHeight != null)
-		{
-			// yes, store it.
-			currentLocation.setDepth(-searchHeight.getValueIn(WorldDistance.METRES));
-		}
-		route.addPoint(currentLocation);
+	protected WorldLocation _myOrigin;
+
+	/**
+	 * the track spacing
+	 */
+	protected WorldDistance _trackSpacing;
+
+	/**
+	 * the dimensions of the area
+	 */
+	protected WorldDistance _width;
+	protected WorldDistance _height;
+
+	public PatternSearch_Core(final String name, final WorldLocation myOrigin, final WorldDistance searchHeight,
+			final WorldSpeed searchSpeed, final WorldDistance trackSpacing, final WorldDistance height,
+			final WorldDistance width) {
+		super(name);
+		_myOrigin = myOrigin;
+		_searchHeight = searchHeight;
+		_searchSpeed = searchSpeed;
+		_trackSpacing = trackSpacing;
+		_height = height;
+		_width = width;
 	}
+
+	protected abstract WorldPath createSearchRoute(WorldLocation currentLocation);
 
 	/**
 	 * decide the course of action to take, or return null to no be used
-	 * 
-	 * @param status
-	 *          the current status of the participant
-	 * @param chars
-	 *          the movement chars for this participant
-	 * @param demStatus
-	 *          the current demanded status
-	 * @param detections
-	 *          the current list of detections for this participant
-	 * @param monitor
-	 *          the object which handles weapons release/detonation
-	 * @param newTime
-	 *          the time this decision is to be made
+	 *
+	 * @param status     the current status of the participant
+	 * @param chars      the movement chars for this participant
+	 * @param demStatus  the current demanded status
+	 * @param detections the current list of detections for this participant
+	 * @param monitor    the object which handles weapons release/detonation
+	 * @param newTime    the time this decision is to be made
 	 */
-	public final DemandedStatus decide(final Status status,
-			MovementCharacteristics chars, final DemandedStatus demStatus,
-			final DetectionList detections, final ScenarioActivityMonitor monitor,
-			final long newTime)
-	{
+	@Override
+	public final DemandedStatus decide(final Status status, final MovementCharacteristics chars,
+			final DemandedStatus demStatus, final DetectionList detections, final ScenarioActivityMonitor monitor,
+			final long newTime) {
 		HighLevelDemandedStatus res = null;
 
 		String myActivity = null;
 
 		// have we finished yet?
-		if (!_finished)
-		{
+		if (!_finished) {
 			// no, have we defined our route yet?
-			if (_myRoute == null)
-			{
+			if (_myRoute == null) {
 				// ok, do we have an origin?
-				if (getOrigin() == null)
-				{
+				if (getOrigin() == null) {
 					// ok, initialise with our current location
 					setOrigin(status.getLocation());
 				}
@@ -126,8 +142,7 @@ public abstract class PatternSearch_Core extends CoreDecision implements
 			}
 
 			// so, we now have our route. Has it finished yet?
-			if (_myRoute.isFinished())
-			{
+			if (_myRoute.isFinished()) {
 				// done
 				res = null;
 
@@ -140,43 +155,31 @@ public abstract class PatternSearch_Core extends CoreDecision implements
 
 				myActivity = null;
 
-			}
-			else
-			{
+			} else {
 				// ok - still going, ask the transitter what it wants to do
-				res = (HighLevelDemandedStatus) _myRoute.decide(status, chars,
-						demStatus, detections, monitor, newTime);
+				res = (HighLevelDemandedStatus) _myRoute.decide(status, chars, demStatus, detections, monitor, newTime);
 
 				// do we have an intended path?
-				if (res != null)
-				{
+				if (res != null) {
 
 					// aah, do we have a search speed?
-					if (getSearchSpeed() != null)
-					{
+					if (getSearchSpeed() != null) {
 						res.setSpeed(getSearchSpeed());
 					}
 				}
 
 				// just double-check if we have now finished.
-				if (res == null)
-				{
+				if (res == null) {
 					myActivity = _myRoute.getActivity();
 					_finished = true;
-				}
-				else
-				{
+				} else {
 					myActivity = getDescriptor() + ":";
 
 					// have we been interrupted?
-					if (_myRoute.getVisitor().hasBeenInterrupted())
-					{
+					if (_myRoute.getVisitor().hasBeenInterrupted()) {
 						myActivity += " Resuming from interruption";
-					}
-					else
-					{
-						myActivity += "Heading for point:"
-								+ (_myRoute.getCurrentDestinationIndex());
+					} else {
+						myActivity += "Heading for point:" + (_myRoute.getCurrentDestinationIndex());
 
 					}
 				}
@@ -190,119 +193,32 @@ public abstract class PatternSearch_Core extends CoreDecision implements
 
 	protected abstract String getDescriptor();
 
-	protected abstract WorldPath createSearchRoute(WorldLocation currentLocation);
+	public final boolean getFinished() {
+		return _finished;
+	}
 
-	protected EditorType _myEditor;
-	/**
-	 * the start point for the search
-	 */
-	protected WorldLocation _myOrigin;
-	/**
-	 * the track spacing
-	 */
-	protected WorldDistance _trackSpacing;
-	/**
-	 * the dimensions of the area
-	 */
-	protected WorldDistance _width;
-	protected WorldDistance _height;
-
-	/**
-	 * reset this decision model
-	 */
-	public final void restart()
-	{
-
-		// forget that we were in a cycle
-		_finished = false;
-
-		// and clear the route
-		_myRoute = null;
+	public WorldDistance getHeight() {
+		return _height;
 	}
 
 	/**
-	 * indicate to this model that its execution has been interrupted by another
-	 * (prob higher priority) model
-	 * 
-	 * @param currentStatus
+	 * get the editor for this item
+	 *
+	 * @return the BeanInfo data for this editable object
 	 */
-	public void interrupted(Status currentStatus)
-	{
-		// hey, we may be resuming this behaviour from another location.
-		// We need to forget the current path to the next target so that it gets
-		// recalculated
-		_myRoute.getVisitor().routeInterrupted(currentStatus);
-	}
+	@Override
+	abstract public EditorType getInfo();
 
-	public final WorldLocation getOrigin()
-	{
+	public final WorldLocation getOrigin() {
 		return _myOrigin;
 	}
 
 	/**
-	 * set the start location for this manoeuvre (or supply null to use the
-	 * platform location when tactic first called)
-	 * 
-	 * @param _myOrigin
-	 */
-	public final void setOrigin(final WorldLocation _myOrigin)
-	{
-		this._myOrigin = _myOrigin;
-	}
-
-	public final boolean getFinished()
-	{
-		return _finished;
-	}
-
-	/**
-	 * return the (optional) height to search at
-	 * 
-	 * @return the height.
-	 */
-	public WorldDistance getSearchHeight()
-	{
-		return _searchHeight;
-	}
-
-	/**
-	 * set the (optional) height to search at
-	 * 
-	 * @param searchHeight
-	 *          search height
-	 */
-	public void setSearchHeight(WorldDistance searchHeight)
-	{
-		_searchHeight = searchHeight;
-	}
-
-	/**
-	 * the (optional) search speed
-	 * 
-	 * @return
-	 */
-	public WorldSpeed getSearchSpeed()
-	{
-		return _searchSpeed;
-	}
-
-	/**
-	 * the (optional) search speed
-	 * 
-	 * @param searchSpeed
-	 */
-	public void setSearchSpeed(WorldSpeed searchSpeed)
-	{
-		this._searchSpeed = searchSpeed;
-	}
-
-	/**
 	 * retrieve the points we intend to travel through
-	 * 
+	 *
 	 * @return
 	 */
-	public final WorldPath getRoute()
-	{
+	public final WorldPath getRoute() {
 		WorldPath res = null;
 		if (_myRoute != null)
 			res = _myRoute.getDestinations();
@@ -310,64 +226,44 @@ public abstract class PatternSearch_Core extends CoreDecision implements
 	}
 
 	/**
-	 * set the points we intend to travel through
-	 * 
-	 * @param thePath
-	 *          the path to follow
+	 * return the (optional) height to search at
+	 *
+	 * @return the height.
 	 */
-	public final void setRoute(WorldPath thePath)
-	{
-		_myRoute.setDestinations(thePath);
-	}
-
-	public PatternSearch_Core(String name, WorldLocation myOrigin,
-			WorldDistance searchHeight, WorldSpeed searchSpeed,
-			WorldDistance trackSpacing, WorldDistance height, WorldDistance width)
-	{
-		super(name);
-		_myOrigin = myOrigin;
-		_searchHeight = searchHeight;
-		_searchSpeed = searchSpeed;
-		_trackSpacing = trackSpacing;
-		_height = height;
-		_width = width;
+	public WorldDistance getSearchHeight() {
+		return _searchHeight;
 	}
 
 	/**
-	 * whether there is any edit information for this item this is a convenience
-	 * function to save creating the EditorType data first
-	 * 
-	 * @return yes/no
+	 * the (optional) search speed
+	 *
+	 * @return
 	 */
-	public boolean hasEditor()
-	{
-		return true;
+	public WorldSpeed getSearchSpeed() {
+		return _searchSpeed;
 	}
 
-	/**
-	 * get the editor for this item
-	 * 
-	 * @return the BeanInfo data for this editable object
-	 */
-	abstract public EditorType getInfo();
+	public final WorldDistance getTrackSpacing() {
+		return _trackSpacing;
+	}
 
 	/**
 	 * get the version details for this model.
-	 * 
+	 *
 	 * <pre>
 	 * $Log: LadderSearch.java,v $
 	 * Revision 1.2  2006/09/11 09:36:04  Ian.Mayo
 	 * Fix dodgy accessor
-	 * 
+	 *
 	 * Revision 1.1  2006/08/08 14:21:34  Ian.Mayo
 	 * Second import
-	 * 
+	 *
 	 * Revision 1.1  2006/08/07 12:25:43  Ian.Mayo
 	 * First versions
-	 * 
+	 *
 	 * Revision 1.16  2004/11/25 14:29:29  Ian.Mayo
 	 * Handle switch to hi-res dates
-	 * 
+	 *
 	 * Revision 1.15  2004/11/03 09:54:50  Ian.Mayo
 	 * Allow search speed to be set
 	 * <p/>
@@ -428,88 +324,140 @@ public abstract class PatternSearch_Core extends CoreDecision implements
 	 * <p/>
 	 * </pre>
 	 */
-	public String getVersion()
-	{
+	@Override
+	public String getVersion() {
 		return "$Date: 2010-10-28 11:43:11 +0100 (Thu, 28 Oct 2010) $";
 	}
 
-	public WorldDistance getWidth()
-	{
+	public WorldDistance getWidth() {
 		return _width;
 	}
 
-	public void setWidth(WorldDistance width)
-	{
-		this._width = width;
+	/**
+	 * whether there is any edit information for this item this is a convenience
+	 * function to save creating the EditorType data first
+	 *
+	 * @return yes/no
+	 */
+	@Override
+	public boolean hasEditor() {
+		return true;
 	}
 
-	public WorldDistance getHeight()
-	{
-		return _height;
-	}
-
-	public void setHeight(WorldDistance height)
-	{
-		this._height = height;
-	}
-
-	public final WorldDistance getTrackSpacing()
-	{
-		return _trackSpacing;
-	}
-
-	public final void setTrackSpacing(final WorldDistance _trackSpacing)
-	{
-		this._trackSpacing = _trackSpacing;
+	/**
+	 * indicate to this model that its execution has been interrupted by another
+	 * (prob higher priority) model
+	 *
+	 * @param currentStatus
+	 */
+	@Override
+	public void interrupted(final Status currentStatus) {
+		// hey, we may be resuming this behaviour from another location.
+		// We need to forget the current path to the next target so that it gets
+		// recalculated
+		_myRoute.getVisitor().routeInterrupted(currentStatus);
 	}
 
 	@Override
-	public void paint(CanvasType dest)
-	{
+	public void paint(final CanvasType dest) {
 		// ok, do we have a route?
-		if (_myRoute != null)
-		{
+		if (_myRoute != null) {
 			// does it have any points?
-			if (_myRoute.getDestinations().getPoints().size() > 0)
-			{
+			if (_myRoute.getDestinations().getPoints().size() > 0) {
 				// ok, make it a feint line
 				dest.setLineStyle(CanvasType.SHORT_DASHES);
 
 				// ok, go for it
-				Iterator<WorldLocation> pts = _myRoute.getDestinations().getPoints()
-						.iterator();
+				final Iterator<WorldLocation> pts = _myRoute.getDestinations().getPoints().iterator();
 				Point lastP = null;
-				while (pts.hasNext())
-				{
-					WorldLocation thisP = pts.next();
-					Point pt = dest.toScreen(thisP);
+				while (pts.hasNext()) {
+					final WorldLocation thisP = pts.next();
+					final Point pt = dest.toScreen(thisP);
 
-					if (lastP != null)
-					{
+					if (lastP != null) {
 						dest.drawLine(lastP.x, lastP.y, pt.x, pt.y);
 					}
 
 					// is this the current target?
 					boolean painted = false;
-					int index = _myRoute.getCurrentDestinationIndex();
-					if (index != HighLevelDemandedStatus.PATH_COMPLETE)
-					{
-						WorldLocation tgt = _myRoute.getDestinations().getLocationAt(index);
-						if (tgt.equals(thisP))
-						{
+					final int index = _myRoute.getCurrentDestinationIndex();
+					if (index != HighLevelDemandedStatus.PATH_COMPLETE) {
+						final WorldLocation tgt = _myRoute.getDestinations().getLocationAt(index);
+						if (tgt.equals(thisP)) {
 							// shade it in solid
 							dest.fillRect(pt.x - 3, pt.y - 3, 7, 7);
 							painted = true;
 						}
 					}
-					if (!painted)
-					{
+					if (!painted) {
 						dest.drawRect(pt.x - 3, pt.y - 3, 7, 7);
 					}
 					lastP = new Point(pt);
 				}
 			}
 		}
+	}
+
+	/**
+	 * reset this decision model
+	 */
+	@Override
+	public final void restart() {
+
+		// forget that we were in a cycle
+		_finished = false;
+
+		// and clear the route
+		_myRoute = null;
+	}
+
+	public void setHeight(final WorldDistance height) {
+		this._height = height;
+	}
+
+	/**
+	 * set the start location for this manoeuvre (or supply null to use the platform
+	 * location when tactic first called)
+	 *
+	 * @param _myOrigin
+	 */
+	public final void setOrigin(final WorldLocation _myOrigin) {
+		this._myOrigin = _myOrigin;
+	}
+
+	/**
+	 * set the points we intend to travel through
+	 *
+	 * @param thePath the path to follow
+	 */
+	public final void setRoute(final WorldPath thePath) {
+		_myRoute.setDestinations(thePath);
+	}
+
+	/**
+	 * set the (optional) height to search at
+	 *
+	 * @param searchHeight search height
+	 */
+	public void setSearchHeight(final WorldDistance searchHeight) {
+		_searchHeight = searchHeight;
+	}
+
+	/**
+	 * the (optional) search speed
+	 *
+	 * @param searchSpeed
+	 */
+	public void setSearchSpeed(final WorldSpeed searchSpeed) {
+		this._searchSpeed = searchSpeed;
+	}
+
+	public final void setTrackSpacing(final WorldDistance _trackSpacing) {
+		this._trackSpacing = _trackSpacing;
+	}
+
+	public void setWidth(final WorldDistance width) {
+		this._width = width;
 	}
 
 }

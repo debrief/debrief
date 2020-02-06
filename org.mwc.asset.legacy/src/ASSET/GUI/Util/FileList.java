@@ -1,127 +1,137 @@
 
 package ASSET.GUI.Util;
 
+import java.awt.BorderLayout;
+import java.awt.datatransfer.StringSelection;
+import java.awt.dnd.DragGestureEvent;
+import java.awt.dnd.DragGestureListener;
+import java.awt.dnd.DragSource;
+import java.awt.dnd.DragSourceDragEvent;
+import java.awt.dnd.DragSourceDropEvent;
+import java.awt.dnd.DragSourceEvent;
+import java.awt.dnd.DragSourceListener;
+import java.io.File;
+import java.io.FilenameFilter;
+
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
+import javax.swing.JList;
+import javax.swing.JPanel;
 
-import javax.swing.*;
-import java.awt.dnd.*;
-import java.awt.*;
-import java.awt.datatransfer.*;
-import java.io.*;
-
-public class FileList extends JPanel implements FilenameFilter , DragGestureListener, DragSourceListener
-{
-  /**
-	 * 
+public class FileList extends JPanel implements FilenameFilter, DragGestureListener, DragSourceListener {
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	private JList _myList = new JList();
-  private String _myDirectory;
+	static private final String file_separator = System.getProperty("file.separator");
+	private final JList _myList = new JList();
 
-//  private DragSource dragSource = new DragSource();
-//  private DragGestureRecognizer recogniser =
-//      dragSource.createDefaultDragGestureRecognizer(_myList, DnDConstants.ACTION_COPY_OR_MOVE, this);
+	// private DragSource dragSource = new DragSource();
+	// private DragGestureRecognizer recogniser =
+	// dragSource.createDefaultDragGestureRecognizer(_myList,
+	// DnDConstants.ACTION_COPY_OR_MOVE, this);
 
-  static private final String file_separator = System.getProperty("file.separator");
+	private final String _myDirectory;
 
-  final private String _mySuffix;
+	final private String _mySuffix;
 
-  public FileList(final String directory, final String title, final String suffix)
-  {
-    // store the directory
-    _myDirectory = directory;
+	public FileList(final String directory, final String title, final String suffix) {
+		// store the directory
+		_myDirectory = directory;
 
-    if(suffix != null)
-      _mySuffix = suffix;
-    else
-      _mySuffix = "xml";
+		if (suffix != null)
+			_mySuffix = suffix;
+		else
+			_mySuffix = "xml";
 
+		// set the name of the tab
+		setName(title);
 
-    // set the name of the tab
-    setName(title);
+		// initialise the form
+		initForm();
 
-    // initialise the form
-    initForm();
+		// and refresh the list
+		refreshForm();
+	}
 
-    // and refresh the list
-    refreshForm();
-  }
+	@Override
+	public boolean accept(final File dir, final String name) {
+		return name.toLowerCase().endsWith(_mySuffix);
+	}
 
-  private void initForm()
-  {
-    // create list object
-    this.setLayout(new BorderLayout());
-    this.add(_myList, BorderLayout.CENTER);
-  }
+	@Override
+	public void dragDropEnd(final DragSourceDropEvent dsde) {
+	}
 
-  private void refreshForm()
-  {
-    // create the file
-    final File _myDir = new File(_myDirectory);
+	@Override
+	public void dragEnter(final DragSourceDragEvent dsde) {
+	}
 
-    final String[] fList = _myDir.list(this);
+	@Override
+	public void dragExit(final DragSourceEvent dse) {
+	}
 
-    _myList.removeAll();
+	@Override
+	public void dragGestureRecognized(final DragGestureEvent dge) {
+		String sel = getCurrentItem() + "." + _mySuffix;
+		// append our file suffix
+		sel = _myDirectory + file_separator + sel;
 
-    final java.util.Vector<String> vec = new java.util.Vector<String>(0,1);
+		dge.startDrag(DragSource.DefaultCopyDrop, new StringSelection(sel), this);
+	}
 
-    // check we've received data
-    if(fList != null)
-    {
+	@Override
+	public void dragOver(final DragSourceDragEvent dsde) {
+	}
 
-      // step through, but removing suffix
-      for(int i=0;i<fList.length; i++)
-      {
-        String str = fList[i];
-        str = str.substring(0, str.length()-4);
-        vec.addElement(str);
-      }
+	@Override
+	public void dropActionChanged(final DragSourceDragEvent dsde) {
+	}
 
-      _myList.setListData(vec);
-    }
-  }
+	private String getCurrentItem() {
+		return (String) _myList.getSelectedValue();
+	}
 
-  private String getCurrentItem()
-  {
-    return (String)_myList.getSelectedValue();
-  }
+	private void initForm() {
+		// create list object
+		this.setLayout(new BorderLayout());
+		this.add(_myList, BorderLayout.CENTER);
+	}
 
-  public boolean accept(File dir, final String name)
-  {
-    return  name.toLowerCase().endsWith(_mySuffix);
-  }
+	private void refreshForm() {
+		// create the file
+		final File _myDir = new File(_myDirectory);
 
-  public void dragGestureRecognized(final DragGestureEvent dge)
-   {
-      String sel = getCurrentItem() + "." + _mySuffix;
-      // append our file suffix
-      sel = _myDirectory + file_separator + sel;
+		final String[] fList = _myDir.list(this);
 
-      dge.startDrag(DragSource.DefaultCopyDrop, new StringSelection(sel), this);
-   }
+		_myList.removeAll();
 
-  public void dragDropEnd(DragSourceDropEvent dsde)
-   { }
-  public void dragEnter(DragSourceDragEvent dsde)
-    { }
-  public void dragExit(DragSourceEvent dse)
-   {  }
-  public void dragOver(DragSourceDragEvent dsde)
-   {  }
-  public void dropActionChanged(DragSourceDragEvent dsde)
-   {  }
+		final java.util.Vector<String> vec = new java.util.Vector<String>(0, 1);
+
+		// check we've received data
+		if (fList != null) {
+
+			// step through, but removing suffix
+			for (int i = 0; i < fList.length; i++) {
+				String str = fList[i];
+				str = str.substring(0, str.length() - 4);
+				vec.addElement(str);
+			}
+
+			_myList.setListData(vec);
+		}
+	}
 
 }

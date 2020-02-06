@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: SwingFile.java,v $
@@ -95,43 +95,94 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
-/** AWT implementation of getting a file
+/**
+ * AWT implementation of getting a file
  */
-public class SwingFile implements MWC.GUI.Dialogs.DialogFactory.FileGetter
-{
+public class SwingFile implements MWC.GUI.Dialogs.DialogFactory.FileGetter {
 
-  private static EFileChooser _myChooser = null;
+	protected class TextFilter extends javax.swing.filechooser.FileFilter {
+		protected String _myName;
+		/**
+		 * string containing the suffixes we accept - they are comma-separated
+		 *
+		 */
+		protected String _myType;
 
-	public File[] getExistingFile(final String filter,
-																final String description,
-																final String lastDirectory)
-	{
+		/**
+		 * constructor
+		 *
+		 * @param myName the name of this file type
+		 * @param myType a comma-separated list of suffixes we accept
+		 */
+		public TextFilter(final String myName, final String myType) {
+			_myName = myName;
+			_myType = myType.toUpperCase();
+		}
 
-    if(_myChooser == null)
-	    _myChooser = new EFileChooser();
+		@Override
+		public boolean accept(final java.io.File p1) {
+			boolean accept = p1.isDirectory();
 
-	  final JFileChooser jf = _myChooser;
+			if (!accept) {
+				final String suffix = getSuffix(p1.getPath());
+				if (suffix != null) {
+					// does our list of suffixes contain this characters?
+					final int index = _myType.indexOf(suffix.toUpperCase());
+
+					// find out if it was found
+					if (index != -1)
+						accept = true;
+					else
+						accept = false;
+				}
+			}
+			return accept;
+		}
+
+		@Override
+		public String getDescription() {
+			return _myName;
+		}
+
+		private String getSuffix(final String s) {
+			String suffix = null;
+			final int i = s.lastIndexOf(".");
+			if (i > 0 && i < s.length() - 1) {
+				suffix = s.substring(i + 1).toLowerCase();
+			}
+			return suffix;
+		}
+	}
+
+	private static EFileChooser _myChooser = null;
+
+	@Override
+	public File[] getExistingFile(final String filter, final String description, final String lastDirectory) {
+
+		if (_myChooser == null)
+			_myChooser = new EFileChooser();
+
+		final JFileChooser jf = _myChooser;
 
 		// allow multiple selections
 		jf.setMultiSelectionEnabled(true);
 
-    if (filter != null)
-    {
-      jf.resetChoosableFileFilters();
-      jf.setFileFilter(new TextFilter(description, filter));
-      // don't allow file filter to be used, since the importer falls over.
-      // we expect
-      jf.setAcceptAllFileFilterUsed(false);
-    }
+		if (filter != null) {
+			jf.resetChoosableFileFilters();
+			jf.setFileFilter(new TextFilter(description, filter));
+			// don't allow file filter to be used, since the importer falls over.
+			// we expect
+			jf.setAcceptAllFileFilterUsed(false);
+		}
 
-    // check that we know of an existing last directory, and that it isn't zero length
-		if(lastDirectory != null)
-      if(lastDirectory.length() > 0)
-			  jf.setCurrentDirectory(new File(lastDirectory));
+// check that we know of an existing last directory, and that it isn't zero length
+		if (lastDirectory != null)
+			if (lastDirectory.length() > 0)
+				jf.setCurrentDirectory(new File(lastDirectory));
 
 		File[] res = null;
 
-    // try to set as modal
+// try to set as modal
 
 		final int state = jf.showOpenDialog(null);
 
@@ -140,127 +191,53 @@ public class SwingFile implements MWC.GUI.Dialogs.DialogFactory.FileGetter
 
 		final File theFile = jf.getSelectedFile();
 
-		if(state == JFileChooser.APPROVE_OPTION)
-		{
-			if(files != null)
-			{
-				if(files.length > 0)
-				{
+		if (state == JFileChooser.APPROVE_OPTION) {
+			if (files != null) {
+				if (files.length > 0) {
 					res = files;
-				}
-				else
-				{
-					res = new File[]{theFile};
+				} else {
+					res = new File[] { theFile };
 				}
 			}
-		}
-		else if(state == JFileChooser.CANCEL_OPTION)
-		{
+		} else if (state == JFileChooser.CANCEL_OPTION) {
 			res = null;
 		}
 
-    // have a go at storing the new entries
-    EFileChooser.saveDirectoryEntries();
+// have a go at storing the new entries
+		EFileChooser.saveDirectoryEntries();
 
 		return res;
-  }
+	}
 
-  public java.io.File getNewFile(final String filter,
-																final String description,
-																final String lastDirectory){
-    if(_myChooser == null)
-      _myChooser = new EFileChooser();
+	@Override
+	public java.io.File getNewFile(final String filter, final String description, final String lastDirectory) {
+		if (_myChooser == null)
+			_myChooser = new EFileChooser();
 
-	  final JFileChooser jf = _myChooser;
+		final JFileChooser jf = _myChooser;
 		java.io.File res = null;
 
-		if(filter != null){
+		if (filter != null) {
 			jf.setFileFilter(new TextFilter(description, filter));
 			jf.setSelectedFile(new File(filter));
 		}
 
-		if(lastDirectory != null)
+		if (lastDirectory != null)
 			jf.setCurrentDirectory(new File(lastDirectory));
-
-
 
 		final int state = jf.showSaveDialog(null);
 		final java.io.File fl = jf.getSelectedFile();
 
-		if(fl != null &&
-			 state == JFileChooser.APPROVE_OPTION)
-		{
+		if (fl != null && state == JFileChooser.APPROVE_OPTION) {
 			res = fl;
-		}
-		else if(state == JFileChooser.CANCEL_OPTION)
-		{
+		} else if (state == JFileChooser.CANCEL_OPTION) {
 			res = null;
 		}
 
-    // have a go at storing the new entries
-    EFileChooser.saveDirectoryEntries();
+		// have a go at storing the new entries
+		EFileChooser.saveDirectoryEntries();
 
 		return res;
-  }
-
-
-	protected class TextFilter extends javax.swing.filechooser.FileFilter
-	{
-		protected String _myName;
-    /** string containing the suffixes we accept - they are comma-separated
-     *
-     */
-		protected String _myType;
-
-    /** constructor
-     *  @param myName the name of this file type
-     *  @param myType a comma-separated list of suffixes we accept
-     */
-		public TextFilter(final String myName,
-											final String myType)
-		{
-			_myName = myName;
-			_myType =  myType.toUpperCase();
-		}
-
-		public boolean accept(final java.io.File p1)
-		{
-			boolean accept = p1.isDirectory();
-
-			if(!accept)
-			{
-				final String suffix = getSuffix(p1.getPath());
-				if(suffix != null)
-				{
-          // does our list of suffixes contain this characters?
-          final int index = _myType.indexOf(suffix.toUpperCase());
-
-          // find out if it was found
-          if(index != -1)
-            accept =  true;
-          else
-            accept =  false;
-				}
-			}
-			return accept;
-		}
-
-
-		private String getSuffix(final String s)
-		{
-			String suffix = null;
-			final int i = s.lastIndexOf(".");
-			if(i>0 && i < s.length() - 1)
-			{
-				suffix = s.substring(i+1).toLowerCase();
-			}
-			return suffix;
-		}
-
-		public String getDescription()
-		{
-			return _myName;
-		}
 	}
 
 }

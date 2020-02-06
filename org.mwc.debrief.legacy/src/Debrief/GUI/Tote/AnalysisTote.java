@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: AnalysisTote.java,v $
@@ -183,596 +183,548 @@
 // Initial revision
 //
 
-
 package Debrief.GUI.Tote;
 
-import Debrief.Tools.Tote.Calculations.*;
+import java.awt.Container;
+import java.util.Enumeration;
+import java.util.Vector;
+
 import Debrief.Tools.Tote.toteCalculation;
+import Debrief.Tools.Tote.Calculations.atbCalc;
+import Debrief.Tools.Tote.Calculations.bearingCalc;
+import Debrief.Tools.Tote.Calculations.bearingRateCalc;
+import Debrief.Tools.Tote.Calculations.courseCalc;
+import Debrief.Tools.Tote.Calculations.depthCalc;
+import Debrief.Tools.Tote.Calculations.rangeCalc;
+import Debrief.Tools.Tote.Calculations.relBearingCalc;
+import Debrief.Tools.Tote.Calculations.speedCalc;
+import Debrief.Tools.Tote.Calculations.timeSecsCalc;
 import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.Pane;
+import MWC.GUI.Plottable;
+import MWC.GUI.StepperListener;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 
-import java.awt.*;
-import java.util.Enumeration;
-import java.util.Vector;
-
 /**
  * parent class for analysis totes
  */
-abstract public class AnalysisTote implements Pane,
-  StepperListener,
-  MWC.Algorithms.PlainProjection.RelativeProjectionParent,
-  MWC.GUI.Layers.DataListener
-{
-
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  /**
-   * the primary track we are watching
-   */
-  protected WatchableList _thePrimary;
-
-  /**
-   * the list of secondary tracks we are watching
-   */
-  protected final Vector<WatchableList> _theSecondary;
-
-  /**
-   * the stepping control we are watching
-   */
-  protected StepControl _theStepper;
-
-  /**
-   * the current time
-   */
-  private HiResDate _theCurrentTime;
-
-  /**
-   * the list of types of calculations we want to do
-   */
-  protected final Vector<Class<?>> _theCalculationTypes;
-
-  /**
-   * the list of calculations we are actually doing
-   */
-  protected final Vector<toteCalculation> _theCalculations;
-
-  /**
-   * the current set of data (used for auto assignment of tracks)
-   */
-  private Layers _theData;
-
-
-  /**
-   * set a limit for the maximum number of secondary tracks we will plot
-   */
-  private static final int MAX_SECONDARIES = 10;
-
-  /**
-   * and the message to display
-   */
-  private static final String MAX_MESSAGE = "Too many tracks.  Only the first " + MAX_SECONDARIES + " secondary tracks have been assigned";
-
-
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  public AnalysisTote(final Layers theData)
-  {
-    _theSecondary = new Vector<WatchableList>(0, 1);
-
-    _theCalculationTypes = new Vector<Class<?>>(0, 1);
-
-    _theCalculations = new Vector<toteCalculation>(0, 1);
-
-    addCalculations();
-
-    _theData = theData;
-
-    _theData.addDataReformattedListener(this);
-  }
-
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
-
-  private void addCalculations()
-  {
-    _theCalculationTypes.addElement(rangeCalc.class);
-    _theCalculationTypes.addElement(bearingCalc.class);
-    _theCalculationTypes.addElement(relBearingCalc.class);
-    _theCalculationTypes.addElement(atbCalc.class);
-    _theCalculationTypes.addElement(speedCalc.class);
-    _theCalculationTypes.addElement(courseCalc.class);
-    _theCalculationTypes.addElement(depthCalc.class);
-    _theCalculationTypes.addElement(bearingRateCalc.class);
-    _theCalculationTypes.addElement(timeSecsCalc.class);
-
-  }
-
-  /**
-   * work through out items, and update the calculations to reflect the new "time" selected
-   */
-  protected void updateToteInformation()
-  {
-
-    // check that we've got a primary
-    if (_thePrimary == null)
-      return;
-
-    // so, we the calculations have been added to the tote list
-    // in order going across the page
-
-    // get the primary ready,
-    Watchable[] list = _thePrimary.getNearestTo(_theCurrentTime);
-    Watchable pw = null;
-    if (list.length > 0)
-      pw = list[0];
-
-    // prepare the list of secondary watchables
-    final Vector<Watchable> secWatch = new Vector<Watchable>(0, 1);
-    final Enumeration<WatchableList> secs = _theSecondary.elements();
-    while (secs.hasMoreElements())
-    {
-      final WatchableList wl = (WatchableList) secs.nextElement();
-
-      list = wl.getNearestTo(_theCurrentTime);
-
-      Watchable nearest = null;
-      if (list.length > 0)
-        nearest = list[0];
-      secWatch.addElement(nearest);
-    }
-
-    // get our list of calcs to be updated
-    final Enumeration<toteCalculation> calcLabels = _theCalculations.elements();
-
-    // so, we have to go across the table first
-    while (calcLabels.hasMoreElements())
-    {
-
-      // primary first
-      toteCalculation tc = (toteCalculation) calcLabels.nextElement();
-
-      // special case - where there is only one secondary track, let the primary
-      // track show data relative to it
-      Watchable nearSec = null;
-      if (_theSecondary.size() == 1)
-      {
-        final WatchableList secV = (WatchableList) _theSecondary.get(0);
-        final Watchable[] nearSecs = secV.getNearestTo(_theCurrentTime);
-        if (nearSecs.length > 0)
-        {
-          nearSec = nearSecs[0];
-        }
-      }
-      else
-      {
-        nearSec = pw;
-      }
-
-      tc.update(nearSec, pw, _theCurrentTime);
-
-      // and the secondaries
-      for (int i = 0; i < _theSecondary.size(); i++)
-      {
-
-        tc = (toteCalculation) calcLabels.nextElement();
-        final Watchable nearestSecondary = (Watchable) secWatch.elementAt(i);
-        tc.update(pw, nearestSecondary, _theCurrentTime);
-      }
-    }
-
-  }
-
-  /**
-   * get the primary track for this tote
-   */
-  public final WatchableList getPrimary()
-  {
-    return _thePrimary;
-  }
-
-  /**
-   * assign the primary track for the tote
-   */
-  public final void setPrimary(final WatchableList theList)
-  {
-    final WatchableList oldP = _thePrimary;
-    
-    _thePrimary = theList;
-    
-    // check it's not null
-    if (_thePrimary != null)
-    {
-      /**
-       * see if this item is time related
-       */
-      final HiResDate val = theList.getStartDTG();
-      if (val != null)
-      {
-        _theStepper.addParticipant(theList, theList.getStartDTG(), theList
-            .getEndDTG());
-      }
-    }
-    
-    if(oldP != null)
-    {
-      // hey, we've lost hte primary. also remove it as a participant
-
-      // update the time period of the stepper
-      _theStepper.removeParticpant(oldP);
-    }
-    
-    updateToteMembers();
-
-    // hmm, do we have a current time?
-    final HiResDate cTime = getStepper().getCurrentTime();
-    if(cTime != null)
-    {
-    	// yup, go for it.
-    	getStepper().changeTime(cTime);
-    }
-  }
-
-  /**
-   * return the list of secondary tracks for the tote
-   */
-  public final Vector<WatchableList> getSecondary()
-  {
-    return _theSecondary;
-  }
-
-  /**
-   * assign the secondary track for the tote
-   */
-  public final void setSecondary(final WatchableList theList)
-  {
-    // check that this list isn't our primary track
-    if (theList == _thePrimary)
-      return;
-
-    // add to our list of secondary items
-    _theSecondary.addElement(theList);
-
-    /** see if this item is time related
-     */
-    final HiResDate val = theList.getStartDTG();
-    if (val != null)
-    {
-      _theStepper.addParticipant(theList,
-                                 theList.getStartDTG(),
-                                 theList.getEndDTG());
-    }
-    updateToteMembers();
-    
-    // hmm, do we have a current time?
-    final HiResDate cTime = getStepper().getCurrentTime();
-    if(cTime != null)
-    {
-    	// yup, go for it.
-    	getStepper().changeTime(cTime);
-    }
-  }
-
-  /**
-   * assign the secondary track for the tote
-   */
-  public final void removeParticipant(final WatchableList theList)
-  {
-    // there isn't a remove button for the primary track,
-    // so the user must have clicked on the secondary
-    _theSecondary.removeElement(theList);
-
-    // update the time period of the stepper
-    _theStepper.removeParticpant(theList);
-
-    // and update the screen
-    updateToteMembers();
-  }
-
-  /**
-   * set the step-producer which we are listening to
-   */
-  protected final void setStepper(final StepControl stepper)
-  {
-    _theStepper = stepper;
-    stepper.addStepperListener(this);
-  }
-
-  /**
-   * rebuild the list of members of the tote
-   */
-  abstract protected void updateToteMembers();
-
-  public final void steppingModeChanged(final boolean on)
-  {
-    // not really interested, to be honest
-  }
-  
-  @Override
-  public void reset()
-  {
-    // don't worry about it, ignore
-  }
-
-  public final void newTime(final HiResDate oldDTG, final HiResDate newDTG, final CanvasType canvas)
-  {
-    _theCurrentTime = newDTG;
-    updateToteInformation();
-  }
-
-  // data called from the Pane parent
-  public final void update()
-  {
-    updateToteInformation();
-  }
-
-  public final StepControl getStepper()
-  {
-    return _theStepper;
-  }
-
-  /**
-   * retrieve the GUI component implementing this tote
-   */
-  abstract public Container getPanel();
-
-  /**
-   * return the current time
-   */
-  public final HiResDate getCurrentTime()
-  {
-    return _theCurrentTime;
-  }
-
-  
-  public Layers getData()
-  {
-    return _theData;
-  }
-
-  /**
-   * @param list             the list of items to process
-   * @param onlyAssignTracks whether only TrackWrapper items should be placed on the list
-   */
-  private void processWatchableList(final WatchableList list, final boolean onlyAssignTracks)
-  {
-    // check this isn't the primary
-    if (list != getPrimary())
-    {
-      final WatchableList w = (WatchableList) list;
-      // see if we need a primary setting
-      if (getPrimary() == null)
-      {
-        if (w.getVisible())
-          if ((!onlyAssignTracks) || (onlyAssignTracks) && (w instanceof TrackWrapper))
-            setPrimary(w);
-      }
-      else
-      {
-
-        boolean haveAlready = false;
-
-        // check that this isn't one of our secondaries
-        final Enumeration<WatchableList> secs = _theSecondary.elements();
-        while (secs.hasMoreElements())
-        {
-          final WatchableList secW = (WatchableList) secs.nextElement();
-          if (secW == w)
-          {
-            // don't bother with it, we've got it already
-            haveAlready = true;
-            continue;
-          }
-        }
-
-        if (!haveAlready)
-        {
-          if (w.getVisible())
-            if ((!onlyAssignTracks) || (onlyAssignTracks) && (w instanceof TrackWrapper))
-              setSecondary(w);
-        }
-      }
-
-    }
-
-  }
-
-
-  /**
-   * automatically pass through the data, and automatically assign the relevant watchable items to primary, secondary,
-   * etc.
-   *
-   * @param onlyAssignTracks - as we scan through the layers, only put TrackWrappers onto the tote
-   */
-  public final void assignWatchables(final boolean onlyAssignTracks)
-  {
-    // check we have some data to search
-    if (_theData != null)
-    {
-
-      // pass through the data to find the WatchableLists
-      for (int l = 0; l < _theData.size(); l++)
-      {
-        final Layer layer = _theData.elementAt(l);
-
-        if (layer instanceof WatchableList)
-        {
-          // have we got our full set of secondarires yet?
-          if (this._theSecondary.size() >= MAX_SECONDARIES)
-          {
-            MWC.GUI.Dialogs.DialogFactory.showMessage("Secondary limit reached", MAX_MESSAGE);
-            return;
-          }
-
-          processWatchableList((WatchableList) layer, onlyAssignTracks);
-        }
-        else
-        {
-          final Enumeration<Editable> iter = layer.elements();
-          while (iter.hasMoreElements())
-          {
-            final Plottable p = (Plottable) iter.nextElement();
-            if (p instanceof WatchableList)
-            {
-
-              // have we got our full set of secondarires yet?
-              if (this._theSecondary.size() >= MAX_SECONDARIES)
-              {
-                MWC.GUI.Dialogs.DialogFactory.showMessage("Secondary limit reached", MAX_MESSAGE);
-                return;
-              }
-
-              processWatchableList((WatchableList) p, onlyAssignTracks);
-            }
-          }
-        }
-      }
-    }
-  }
-
-  /**
-   * get ready to close
-   */
-  public void closeMe()
-  {
-    // remove the secondaries
-    final Enumeration<WatchableList> iter = _theSecondary.elements();
-    while (iter.hasMoreElements())
-    {
-      final WatchableList wl = (WatchableList) iter.nextElement();
-      removeParticipant(wl);
-    }
-
-    // lastly remove the primary
-    if (getPrimary() != null)
-      removeParticipant(getPrimary());
-
-    // clear the GUI
-    updateToteMembers();
-
-    // stop listening for data reformatting
-    _theData.removeDataReformattedListener(this);
-
-    // ditch the stepper
-    _theStepper.closeMe();
-
-    // and the local parameters
-    _theCalculations.clear();
-    _theCalculationTypes.clear();
-    _theData = null;
-    _thePrimary = null;
-    _theSecondary.clear();
-    _theStepper = null;
-  }
-  
-  public void clear()
-  {
-    _thePrimary = null;
-    _theSecondary.clear();
-    updateToteMembers();
-  }
-
-  /////////////////////////////////////////////////////////////////
-  // accessor methods to fulfil responsiblities of RelativeProjectionParent
-  /////////////////////////////////////////////////////////////////
-  /**
-   * return the current DTG
-   */
-  private HiResDate getDTG()
-  {
-    return _theCurrentTime;
-  }
-
-  /**
-   * accessor method for the current highlighter (retrieve it from the stepper)
-   */
-  public final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter getCurrentHighlighter()
-  {
-    return _theStepper.getCurrentHighlighter();
-  }
-
-  public final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter getDefaultHighlighter()
-  {
-    return _theStepper.getDefaultHighlighter();
-  }
-
-
-  private Watchable getCurrentPrimary()
-  {
-    Watchable res = null;
-
-    if (_thePrimary != null)
-    {
-      final Watchable[] list = _thePrimary.getNearestTo(getDTG());
-      if (list.length > 0)
-        res = list[0];
-    }
-
-    return res;
-  }
-
-  /**
-   * return the current heading
-   */
-  public final double getHeading()
-  {
-    double res = 0;
-    final Watchable cur = getCurrentPrimary();
-    if (cur != null)
-    {
-      res = cur.getCourse();
-    }
-    return res;
-  }
-
-  /**
-   * return the current origin for the plot
-   */
-  public final MWC.GenericData.WorldLocation getLocation()
-  {
-    MWC.GenericData.WorldLocation res = null;
-    final Watchable cur = getCurrentPrimary();
-    if (cur != null)
-    {
-      res = cur.getBounds().getCentre();
-    }
-    return res;
-  }
-
-  /**
-   * some part of the data has been modified (not necessarily formatting though)
-   *
-   * @param theData the Layers containing the item of data which has been modified
-   */
-  public final void dataModified(final Layers theData, final Layer changedLayer)
-  {
-  }
-
-  /**
-   * a new piece of data has been edited
-   *
-   * @param theData the Layers which have had something edited
-   */
-  public final void dataExtended(final Layers theData)
-  {
-  }
-
-  /**
-   * some kind of formatting has been applied
-   *
-   * @param theData the Layers containing the data which has been reformatted
-   */
-  public final void dataReformatted(final Layers theData, final Layer changedLayer)
-  {
-    // we should redraw the tote members, to that any colour changes can be reflectedd
-    updateToteMembers();
-  }
+abstract public class AnalysisTote implements Pane, StepperListener,
+		MWC.Algorithms.PlainProjection.RelativeProjectionParent, MWC.GUI.Layers.DataListener {
+
+	/**
+	 * set a limit for the maximum number of secondary tracks we will plot
+	 */
+	private static final int MAX_SECONDARIES = 10;
+
+	/**
+	 * and the message to display
+	 */
+	private static final String MAX_MESSAGE = "Too many tracks.  Only the first " + MAX_SECONDARIES
+			+ " secondary tracks have been assigned";
+
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+	/**
+	 * the primary track we are watching
+	 */
+	protected WatchableList _thePrimary;
+
+	/**
+	 * the list of secondary tracks we are watching
+	 */
+	protected final Vector<WatchableList> _theSecondary;
+
+	/**
+	 * the stepping control we are watching
+	 */
+	protected StepControl _theStepper;
+
+	/**
+	 * the current time
+	 */
+	private HiResDate _theCurrentTime;
+
+	/**
+	 * the list of types of calculations we want to do
+	 */
+	protected final Vector<Class<?>> _theCalculationTypes;
+
+	/**
+	 * the list of calculations we are actually doing
+	 */
+	protected final Vector<toteCalculation> _theCalculations;
+
+	/**
+	 * the current set of data (used for auto assignment of tracks)
+	 */
+	private Layers _theData;
+
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	public AnalysisTote(final Layers theData) {
+		_theSecondary = new Vector<WatchableList>(0, 1);
+
+		_theCalculationTypes = new Vector<Class<?>>(0, 1);
+
+		_theCalculations = new Vector<toteCalculation>(0, 1);
+
+		addCalculations();
+
+		_theData = theData;
+
+		_theData.addDataReformattedListener(this);
+	}
+
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+
+	private void addCalculations() {
+		_theCalculationTypes.addElement(rangeCalc.class);
+		_theCalculationTypes.addElement(bearingCalc.class);
+		_theCalculationTypes.addElement(relBearingCalc.class);
+		_theCalculationTypes.addElement(atbCalc.class);
+		_theCalculationTypes.addElement(speedCalc.class);
+		_theCalculationTypes.addElement(courseCalc.class);
+		_theCalculationTypes.addElement(depthCalc.class);
+		_theCalculationTypes.addElement(bearingRateCalc.class);
+		_theCalculationTypes.addElement(timeSecsCalc.class);
+
+	}
+
+	/**
+	 * automatically pass through the data, and automatically assign the relevant
+	 * watchable items to primary, secondary, etc.
+	 *
+	 * @param onlyAssignTracks - as we scan through the layers, only put
+	 *                         TrackWrappers onto the tote
+	 */
+	public final void assignWatchables(final boolean onlyAssignTracks) {
+		// check we have some data to search
+		if (_theData != null) {
+
+			// pass through the data to find the WatchableLists
+			for (int l = 0; l < _theData.size(); l++) {
+				final Layer layer = _theData.elementAt(l);
+
+				if (layer instanceof WatchableList) {
+					// have we got our full set of secondarires yet?
+					if (this._theSecondary.size() >= MAX_SECONDARIES) {
+						MWC.GUI.Dialogs.DialogFactory.showMessage("Secondary limit reached", MAX_MESSAGE);
+						return;
+					}
+
+					processWatchableList((WatchableList) layer, onlyAssignTracks);
+				} else {
+					final Enumeration<Editable> iter = layer.elements();
+					while (iter.hasMoreElements()) {
+						final Plottable p = (Plottable) iter.nextElement();
+						if (p instanceof WatchableList) {
+
+							// have we got our full set of secondarires yet?
+							if (this._theSecondary.size() >= MAX_SECONDARIES) {
+								MWC.GUI.Dialogs.DialogFactory.showMessage("Secondary limit reached", MAX_MESSAGE);
+								return;
+							}
+
+							processWatchableList((WatchableList) p, onlyAssignTracks);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	public void clear() {
+		_thePrimary = null;
+		_theSecondary.clear();
+		updateToteMembers();
+	}
+
+	/**
+	 * get ready to close
+	 */
+	public void closeMe() {
+		// remove the secondaries
+		final Enumeration<WatchableList> iter = _theSecondary.elements();
+		while (iter.hasMoreElements()) {
+			final WatchableList wl = iter.nextElement();
+			removeParticipant(wl);
+		}
+
+		// lastly remove the primary
+		if (getPrimary() != null)
+			removeParticipant(getPrimary());
+
+		// clear the GUI
+		updateToteMembers();
+
+		// stop listening for data reformatting
+		_theData.removeDataReformattedListener(this);
+
+		// ditch the stepper
+		_theStepper.closeMe();
+
+		// and the local parameters
+		_theCalculations.clear();
+		_theCalculationTypes.clear();
+		_theData = null;
+		_thePrimary = null;
+		_theSecondary.clear();
+		_theStepper = null;
+	}
+
+	/**
+	 * a new piece of data has been edited
+	 *
+	 * @param theData the Layers which have had something edited
+	 */
+	@Override
+	public final void dataExtended(final Layers theData) {
+	}
+
+	/**
+	 * some part of the data has been modified (not necessarily formatting though)
+	 *
+	 * @param theData the Layers containing the item of data which has been modified
+	 */
+	@Override
+	public final void dataModified(final Layers theData, final Layer changedLayer) {
+	}
+
+	/**
+	 * some kind of formatting has been applied
+	 *
+	 * @param theData the Layers containing the data which has been reformatted
+	 */
+	@Override
+	public final void dataReformatted(final Layers theData, final Layer changedLayer) {
+		// we should redraw the tote members, to that any colour changes can be
+		// reflectedd
+		updateToteMembers();
+	}
+
+	/**
+	 * accessor method for the current highlighter (retrieve it from the stepper)
+	 */
+	public final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter getCurrentHighlighter() {
+		return _theStepper.getCurrentHighlighter();
+	}
+
+	private Watchable getCurrentPrimary() {
+		Watchable res = null;
+
+		if (_thePrimary != null) {
+			final Watchable[] list = _thePrimary.getNearestTo(getDTG());
+			if (list.length > 0)
+				res = list[0];
+		}
+
+		return res;
+	}
+
+	/**
+	 * return the current time
+	 */
+	public final HiResDate getCurrentTime() {
+		return _theCurrentTime;
+	}
+
+	public Layers getData() {
+		return _theData;
+	}
+
+	public final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter getDefaultHighlighter() {
+		return _theStepper.getDefaultHighlighter();
+	}
+
+	/////////////////////////////////////////////////////////////////
+	// accessor methods to fulfil responsiblities of RelativeProjectionParent
+	/////////////////////////////////////////////////////////////////
+	/**
+	 * return the current DTG
+	 */
+	private HiResDate getDTG() {
+		return _theCurrentTime;
+	}
+
+	/**
+	 * return the current heading
+	 */
+	@Override
+	public final double getHeading() {
+		double res = 0;
+		final Watchable cur = getCurrentPrimary();
+		if (cur != null) {
+			res = cur.getCourse();
+		}
+		return res;
+	}
+
+	/**
+	 * return the current origin for the plot
+	 */
+	@Override
+	public final MWC.GenericData.WorldLocation getLocation() {
+		MWC.GenericData.WorldLocation res = null;
+		final Watchable cur = getCurrentPrimary();
+		if (cur != null) {
+			res = cur.getBounds().getCentre();
+		}
+		return res;
+	}
+
+	/**
+	 * retrieve the GUI component implementing this tote
+	 */
+	abstract public Container getPanel();
+
+	/**
+	 * get the primary track for this tote
+	 */
+	public final WatchableList getPrimary() {
+		return _thePrimary;
+	}
+
+	/**
+	 * return the list of secondary tracks for the tote
+	 */
+	public final Vector<WatchableList> getSecondary() {
+		return _theSecondary;
+	}
+
+	public final StepControl getStepper() {
+		return _theStepper;
+	}
+
+	@Override
+	public final void newTime(final HiResDate oldDTG, final HiResDate newDTG, final CanvasType canvas) {
+		_theCurrentTime = newDTG;
+		updateToteInformation();
+	}
+
+	/**
+	 * @param list             the list of items to process
+	 * @param onlyAssignTracks whether only TrackWrapper items should be placed on
+	 *                         the list
+	 */
+	private void processWatchableList(final WatchableList list, final boolean onlyAssignTracks) {
+		// check this isn't the primary
+		if (list != getPrimary()) {
+			final WatchableList w = list;
+			// see if we need a primary setting
+			if (getPrimary() == null) {
+				if (w.getVisible())
+					if ((!onlyAssignTracks) || (onlyAssignTracks) && (w instanceof TrackWrapper))
+						setPrimary(w);
+			} else {
+
+				boolean haveAlready = false;
+
+				// check that this isn't one of our secondaries
+				final Enumeration<WatchableList> secs = _theSecondary.elements();
+				while (secs.hasMoreElements()) {
+					final WatchableList secW = secs.nextElement();
+					if (secW == w) {
+						// don't bother with it, we've got it already
+						haveAlready = true;
+						continue;
+					}
+				}
+
+				if (!haveAlready) {
+					if (w.getVisible())
+						if ((!onlyAssignTracks) || (onlyAssignTracks) && (w instanceof TrackWrapper))
+							setSecondary(w);
+				}
+			}
+
+		}
+
+	}
+
+	/**
+	 * assign the secondary track for the tote
+	 */
+	public final void removeParticipant(final WatchableList theList) {
+		// there isn't a remove button for the primary track,
+		// so the user must have clicked on the secondary
+		_theSecondary.removeElement(theList);
+
+		// update the time period of the stepper
+		_theStepper.removeParticpant(theList);
+
+		// and update the screen
+		updateToteMembers();
+	}
+
+	@Override
+	public void reset() {
+		// don't worry about it, ignore
+	}
+
+	/**
+	 * assign the primary track for the tote
+	 */
+	public final void setPrimary(final WatchableList theList) {
+		final WatchableList oldP = _thePrimary;
+
+		_thePrimary = theList;
+
+		// check it's not null
+		if (_thePrimary != null) {
+			/**
+			 * see if this item is time related
+			 */
+			final HiResDate val = theList.getStartDTG();
+			if (val != null) {
+				_theStepper.addParticipant(theList, theList.getStartDTG(), theList.getEndDTG());
+			}
+		}
+
+		if (oldP != null) {
+			// hey, we've lost hte primary. also remove it as a participant
+
+			// update the time period of the stepper
+			_theStepper.removeParticpant(oldP);
+		}
+
+		updateToteMembers();
+
+		// hmm, do we have a current time?
+		final HiResDate cTime = getStepper().getCurrentTime();
+		if (cTime != null) {
+			// yup, go for it.
+			getStepper().changeTime(cTime);
+		}
+	}
+
+	/**
+	 * assign the secondary track for the tote
+	 */
+	public final void setSecondary(final WatchableList theList) {
+		// check that this list isn't our primary track
+		if (theList == _thePrimary)
+			return;
+
+		// add to our list of secondary items
+		_theSecondary.addElement(theList);
+
+		/**
+		 * see if this item is time related
+		 */
+		final HiResDate val = theList.getStartDTG();
+		if (val != null) {
+			_theStepper.addParticipant(theList, theList.getStartDTG(), theList.getEndDTG());
+		}
+		updateToteMembers();
+
+		// hmm, do we have a current time?
+		final HiResDate cTime = getStepper().getCurrentTime();
+		if (cTime != null) {
+			// yup, go for it.
+			getStepper().changeTime(cTime);
+		}
+	}
+
+	/**
+	 * set the step-producer which we are listening to
+	 */
+	protected final void setStepper(final StepControl stepper) {
+		_theStepper = stepper;
+		stepper.addStepperListener(this);
+	}
+
+	@Override
+	public final void steppingModeChanged(final boolean on) {
+		// not really interested, to be honest
+	}
+
+	// data called from the Pane parent
+	@Override
+	public final void update() {
+		updateToteInformation();
+	}
+
+	/**
+	 * work through out items, and update the calculations to reflect the new "time"
+	 * selected
+	 */
+	protected void updateToteInformation() {
+
+		// check that we've got a primary
+		if (_thePrimary == null)
+			return;
+
+		// so, we the calculations have been added to the tote list
+		// in order going across the page
+
+		// get the primary ready,
+		Watchable[] list = _thePrimary.getNearestTo(_theCurrentTime);
+		Watchable pw = null;
+		if (list.length > 0)
+			pw = list[0];
+
+		// prepare the list of secondary watchables
+		final Vector<Watchable> secWatch = new Vector<Watchable>(0, 1);
+		final Enumeration<WatchableList> secs = _theSecondary.elements();
+		while (secs.hasMoreElements()) {
+			final WatchableList wl = secs.nextElement();
+
+			list = wl.getNearestTo(_theCurrentTime);
+
+			Watchable nearest = null;
+			if (list.length > 0)
+				nearest = list[0];
+			secWatch.addElement(nearest);
+		}
+
+		// get our list of calcs to be updated
+		final Enumeration<toteCalculation> calcLabels = _theCalculations.elements();
+
+		// so, we have to go across the table first
+		while (calcLabels.hasMoreElements()) {
+
+			// primary first
+			toteCalculation tc = calcLabels.nextElement();
+
+			// special case - where there is only one secondary track, let the primary
+			// track show data relative to it
+			Watchable nearSec = null;
+			if (_theSecondary.size() == 1) {
+				final WatchableList secV = _theSecondary.get(0);
+				final Watchable[] nearSecs = secV.getNearestTo(_theCurrentTime);
+				if (nearSecs.length > 0) {
+					nearSec = nearSecs[0];
+				}
+			} else {
+				nearSec = pw;
+			}
+
+			tc.update(nearSec, pw, _theCurrentTime);
+
+			// and the secondaries
+			for (int i = 0; i < _theSecondary.size(); i++) {
+
+				tc = calcLabels.nextElement();
+				final Watchable nearestSecondary = secWatch.elementAt(i);
+				tc.update(pw, nearestSecondary, _theCurrentTime);
+			}
+		}
+
+	}
+
+	/**
+	 * rebuild the list of members of the tote
+	 */
+	abstract protected void updateToteMembers();
 
 }
-
-

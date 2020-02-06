@@ -1,21 +1,22 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.Properties.AWT;
 
 // Copyright MWC 1999, Debrief 3 Project
+
 // $RCSfile: AWTWorldLocationPropertyEditor.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -60,7 +61,6 @@ package MWC.GUI.Properties.AWT;
 // made into instantiations of generic editors
 //
 
-
 import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Label;
@@ -72,88 +72,77 @@ import MWC.GUI.PlainChart;
 import MWC.GUI.Properties.WorldLocationPropertyEditor;
 import MWC.GenericData.WorldLocation;
 
-public class AWTWorldLocationPropertyEditor extends
-					WorldLocationPropertyEditor
-{
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  Label _theLabel;
-  Panel _theHolder;
-  Button _selectBtn;
+public class AWTWorldLocationPropertyEditor extends WorldLocationPropertyEditor {
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+	Label _theLabel;
+	Panel _theHolder;
+	Button _selectBtn;
 	Button _editBtn;
-  
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
 
-  public java.awt.Component getCustomEditor()
-  {
-		final Panel btnHolder = new Panel();
-		
-    _theHolder = new Panel();
-    _theHolder.setLayout(new BorderLayout());
-    _theLabel = new Label("    ");
-    _theHolder.add("Center",_theLabel);
-		_editBtn = new Button("Edit");
-    _editBtn.addActionListener(this);		
-		btnHolder.add(_editBtn);
-    _selectBtn = new Button("Select Point");
-    _selectBtn.addActionListener(this);
-		btnHolder.add(_selectBtn);
-    _theHolder.add("East", btnHolder);
-    resetData();
-    return _theHolder;
-  }
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
 
-  public void actionPerformed(final ActionEvent p1)
-  {
-		if(p1.getSource() == _selectBtn)
-		{
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+
+	@Override
+	public void actionPerformed(final ActionEvent p1) {
+		if (p1.getSource() == _selectBtn) {
 			_selectBtn.setLabel("Dbl-click chart");
 			_theChart.addCursorDblClickedListener(this);
-		}
-		else if(p1.getSource() == _editBtn)
-		{
+		} else if (p1.getSource() == _editBtn) {
 			_myVal = MWC.GUI.Properties.AWT.AWTWorldLocationEditor.doEdit(_myVal);
-			
+
 			// and redisplay the results
 			resetData();
 		}
-  }
+	}
 
-	
-  protected void resetData()
-  {
-    if(_theLabel != null)
-    { 
-      if(_myVal != null)
-        _theLabel.setText(MWC.Utilities.TextFormatting.BriefFormatLocation.toString(_myVal));
-      else
-        _theLabel.setText("Blank");
-    }
-  }
-	
-  public void cursorDblClicked(final PlainChart theChart, 
-                               final WorldLocation theLocation, 
-                               final Point thePoint)
-  {    
-    final double dp = _myVal.getDepth();
-    _myVal = theLocation;
-    _myVal.setDepth(dp);
-    resetData();
-    _theChart.removeCursorDblClickedListener(this);
-    _selectBtn.setLabel("Select Point");
-  }
+	@Override
+	public void cursorDblClicked(final PlainChart theChart, final WorldLocation theLocation, final Point thePoint) {
+		final double dp = _myVal.getDepth();
+		_myVal = theLocation;
+		_myVal.setDepth(dp);
+		resetData();
+		_theChart.removeCursorDblClickedListener(this);
+		_selectBtn.setLabel("Select Point");
+	}
 
+	public void doClose() {
+		_theChart.removeCursorDblClickedListener(this);
+	}
 
-  public void doClose()
-  {
-    _theChart.removeCursorDblClickedListener(this);
-  }
+	@Override
+	public java.awt.Component getCustomEditor() {
+		final Panel btnHolder = new Panel();
+
+		_theHolder = new Panel();
+		_theHolder.setLayout(new BorderLayout());
+		_theLabel = new Label("    ");
+		_theHolder.add("Center", _theLabel);
+		_editBtn = new Button("Edit");
+		_editBtn.addActionListener(this);
+		btnHolder.add(_editBtn);
+		_selectBtn = new Button("Select Point");
+		_selectBtn.addActionListener(this);
+		btnHolder.add(_selectBtn);
+		_theHolder.add("East", btnHolder);
+		resetData();
+		return _theHolder;
+	}
+
+	@Override
+	protected void resetData() {
+		if (_theLabel != null) {
+			if (_myVal != null)
+				_theLabel.setText(MWC.Utilities.TextFormatting.BriefFormatLocation.toString(_myVal));
+			else
+				_theLabel.setText("Blank");
+		}
+	}
 
 }

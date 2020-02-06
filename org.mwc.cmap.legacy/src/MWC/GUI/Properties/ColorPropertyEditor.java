@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package MWC.GUI.Properties;
@@ -95,241 +95,221 @@ import java.util.Vector;
 /**
  * class providing GUI-independent editing of colours
  */
-public class ColorPropertyEditor extends PropertyEditorSupport
-{
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  /**
-   * current value
-   */
-  protected Color _theColor;
+public class ColorPropertyEditor extends PropertyEditorSupport {
+	/**
+	 * inner class, which contains a colour together with its name
+	 */
+	public static class NamedColor {
+		/**
+		 * name of this colour
+		 */
+		final public String name;
+		/**
+		 * colour of this colour
+		 */
+		final Color color;
 
-  /**
-   * list of values to choose from
-   */
-  protected static Vector<NamedColor> _theColors;
+		/**
+		 * constructor, sets member values
+		 *
+		 * @param theName  name to use
+		 * @param theColor colour to use
+		 */
+		public NamedColor(final String theName, final Color theColor) {
+			name = theName;
+			color = theColor;
+		}
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  /**
-   * constructor, which initialises the list of colours
-   */
-  public ColorPropertyEditor()
-  {
-    if (_theColors == null)
-      _theColors = createColors();
-  }
+		/**
+		 * get the current colour
+		 *
+		 * @return the color
+		 */
+		public Color getColor() {
+			return color;
+		}
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+		/**
+		 * return the current colour as a String
+		 *
+		 * @return name of this colour
+		 */
+		@Override
+		public String toString() {
+			return name;
+		}
 
+	}
 
-  /**
-   * initialise the list of colours
-   */
-  public static Vector<NamedColor> createColors()
-  {
-    final Vector<NamedColor> theColors = new Vector<NamedColor>();
-    theColors.addElement(new NamedColor("Red", DebriefColors.RED));
-    theColors.addElement(new NamedColor("Blue", DebriefColors.BLUE));
-    theColors.addElement(new NamedColor("Green", DebriefColors.GREEN));
-    
-    theColors.addElement(new NamedColor("Yellow", DebriefColors.YELLOW));
-    theColors.addElement(new NamedColor("Magenta", DebriefColors.MAGENTA));
-    theColors.addElement(new NamedColor("Purple", DebriefColors.PURPLE));
-    theColors.addElement(new NamedColor("Orange", DebriefColors.ORANGE));
-    theColors.addElement(new NamedColor("Brown", DebriefColors.BROWN));
-    theColors.addElement(new NamedColor("Cyan", DebriefColors.CYAN));
-    theColors.addElement(new NamedColor("Light Green", DebriefColors.LIGHT_GREEN));
-    theColors.addElement(new NamedColor("Gold", DebriefColors.GOLD));
-    theColors.addElement(new NamedColor("Pink", DebriefColors.PINK));
-    theColors.addElement(new NamedColor("Light Grey", DebriefColors.LIGHT_GRAY));
-    theColors.addElement(new NamedColor("Grey", DebriefColors.GRAY));
-    theColors.addElement(new NamedColor("Dark Grey", DebriefColors.DARK_GRAY));
-    theColors.addElement(new NamedColor("White", DebriefColors.WHITE));
-    theColors.addElement(new NamedColor("Black", DebriefColors.BLACK));
-    theColors.addElement(new NamedColor("Medium Blue", DebriefColors.MEDIUM_BLUE));
-    theColors.addElement(new NamedColor("Dark Blue", DebriefColors.DARK_BLUE));
+	/**
+	 * list of values to choose from
+	 */
+	protected static Vector<NamedColor> _theColors;
 
-    return theColors;
-  }
+	/**
+	 * initialise the list of colours
+	 */
+	public static Vector<NamedColor> createColors() {
+		final Vector<NamedColor> theColors = new Vector<NamedColor>();
+		theColors.addElement(new NamedColor("Red", DebriefColors.RED));
+		theColors.addElement(new NamedColor("Blue", DebriefColors.BLUE));
+		theColors.addElement(new NamedColor("Green", DebriefColors.GREEN));
 
+		theColors.addElement(new NamedColor("Yellow", DebriefColors.YELLOW));
+		theColors.addElement(new NamedColor("Magenta", DebriefColors.MAGENTA));
+		theColors.addElement(new NamedColor("Purple", DebriefColors.PURPLE));
+		theColors.addElement(new NamedColor("Orange", DebriefColors.ORANGE));
+		theColors.addElement(new NamedColor("Brown", DebriefColors.BROWN));
+		theColors.addElement(new NamedColor("Cyan", DebriefColors.CYAN));
+		theColors.addElement(new NamedColor("Light Green", DebriefColors.LIGHT_GREEN));
+		theColors.addElement(new NamedColor("Gold", DebriefColors.GOLD));
+		theColors.addElement(new NamedColor("Pink", DebriefColors.PINK));
+		theColors.addElement(new NamedColor("Light Grey", DebriefColors.LIGHT_GRAY));
+		theColors.addElement(new NamedColor("Grey", DebriefColors.GRAY));
+		theColors.addElement(new NamedColor("Dark Grey", DebriefColors.DARK_GRAY));
+		theColors.addElement(new NamedColor("White", DebriefColors.WHITE));
+		theColors.addElement(new NamedColor("Black", DebriefColors.BLACK));
+		theColors.addElement(new NamedColor("Medium Blue", DebriefColors.MEDIUM_BLUE));
+		theColors.addElement(new NamedColor("Dark Blue", DebriefColors.DARK_BLUE));
 
-  /**
-   * update the current value
-   *
-   * @param p1 colour to use
-   */
-  public void setValue(final Object p1)
-  {
-    if (p1 instanceof Color)
-    {
-      _theColor = (Color) p1;
-    }
-  }
+		return theColors;
+	}
 
-  /**
-   * find the current value as a named colour
-   *
-   * @return current NamedColor
-   */
-  protected NamedColor getNamedColor()
-  {
-    NamedColor res = null;
-    final Enumeration<NamedColor> enumer = _theColors.elements();
-    while (enumer.hasMoreElements())
-    {
-      final NamedColor cl = (NamedColor) enumer.nextElement();
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-      if (cl.color.equals(_theColor))
-      {
-      	// cool, found it
-        res = cl;
-        break;
-      }
-    }
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+	/**
+	 * current value
+	 */
+	protected Color _theColor;
 
-    // are we still trying to find a color?
-    if(res == null)
-    {
-    	res = new NamedColor("Custom", _theColor);
-    }
-    
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	/**
+	 * constructor, which initialises the list of colours
+	 */
+	public ColorPropertyEditor() {
+		if (_theColors == null)
+			_theColors = createColors();
+	}
 
-    return res;
-  }
+	/**
+	 * get the current colour as a text string
+	 *
+	 * @return current colour as a string
+	 */
+	@Override
+	public String getAsText() {
+		String res = null;
 
-  /**
-   * whether we can provide a custom editor component
-   *
-   * @return yes, of course
-   */
-  public boolean supportsCustomEditor()
-  {
-    return false;
-  }
+		// try to get the name of the current colour
+		final NamedColor val = getNamedColor();
+		// did we find it
+		if (val != null)
+			res = val.name;
 
-  /**
-   * get the current colour as a text string
-   *
-   * @return current colour as a string
-   */
-  public String getAsText()
-  {
-    String res = null;
+		return res;
+	}
 
-    // try to get the name of the current colour
-    final NamedColor val = getNamedColor();
-    // did we find it
-    if (val != null)
-      res = val.name;
+	/**
+	 * find the current value as a named colour
+	 *
+	 * @return current NamedColor
+	 */
+	protected NamedColor getNamedColor() {
+		NamedColor res = null;
+		final Enumeration<NamedColor> enumer = _theColors.elements();
+		while (enumer.hasMoreElements()) {
+			final NamedColor cl = enumer.nextElement();
 
-    return res;
-  }
+			if (cl.color.equals(_theColor)) {
+				// cool, found it
+				res = cl;
+				break;
+			}
+		}
 
-  /**
-   * get the list of colours as a String array - used to populate a menu box
-   *
-   * @return String list of colours
-   */
-  public String[] getTags()
-  {
-    final int num = _theColors.size();
-    final String res[] = new String[num];
-    for (int i = 0; i < num; i++)
-    {
-      final NamedColor cl = (NamedColor) _theColors.elementAt(i);
-      res[i] = cl.name;
-    }
+		// are we still trying to find a color?
+		if (res == null) {
+			res = new NamedColor("Custom", _theColor);
+		}
 
-    return res;
-  }
+		return res;
+	}
 
-  /**
-   * user has selected one of the String tags, update accordingly
-   *
-   * @param p1 new value as String
-   */
-  public void setAsText(final String p1)
-  {
-    final Enumeration<NamedColor> enumer = _theColors.elements();
-    while (enumer.hasMoreElements())
-    {
-      final NamedColor cl = (NamedColor) enumer.nextElement();
-      if (cl.name.equals(p1))
-      {
-        setValue(cl.color);
-        break;
-      }
-    }
-  }
+	/**
+	 * get the list of colours as a String array - used to populate a menu box
+	 *
+	 * @return String list of colours
+	 */
+	@Override
+	public String[] getTags() {
+		final int num = _theColors.size();
+		final String res[] = new String[num];
+		for (int i = 0; i < num; i++) {
+			final NamedColor cl = _theColors.elementAt(i);
+			res[i] = cl.name;
+		}
 
+		return res;
+	}
 
-  /**
-   * return the current colour
-   *
-   * @return current (selected) colour
-   */
-  public Object getValue()
-  {
-    return _theColor;
-  }
+	/**
+	 * return the current colour
+	 *
+	 * @return current (selected) colour
+	 */
+	@Override
+	public Object getValue() {
+		return _theColor;
+	}
 
-  ////////////////////////////////////////////////////////////////////
-  // nested classes
-  ////////////////////////////////////////////////////////////////////
+	/**
+	 * user has selected one of the String tags, update accordingly
+	 *
+	 * @param p1 new value as String
+	 */
+	@Override
+	public void setAsText(final String p1) {
+		final Enumeration<NamedColor> enumer = _theColors.elements();
+		while (enumer.hasMoreElements()) {
+			final NamedColor cl = enumer.nextElement();
+			if (cl.name.equals(p1)) {
+				setValue(cl.color);
+				break;
+			}
+		}
+	}
 
-  /**
-   * inner class, which contains a colour together with its name
-   */
-  public static class NamedColor
-  {
-    /**
-     * name of this colour
-     */
-    final public String name;
-    /**
-     * colour of this colour
-     */
-    final Color color;
+	/**
+	 * update the current value
+	 *
+	 * @param p1 colour to use
+	 */
+	@Override
+	public void setValue(final Object p1) {
+		if (p1 instanceof Color) {
+			_theColor = (Color) p1;
+		}
+	}
 
-    /**
-     * constructor, sets member values
-     *
-     * @param theName  name to use
-     * @param theColor colour to use
-     */
-    public NamedColor(final String theName,
-                      final Color theColor)
-    {
-      name = theName;
-      color = theColor;
-    }
+	////////////////////////////////////////////////////////////////////
+	// nested classes
+	////////////////////////////////////////////////////////////////////
 
-    /**
-     * return the current colour as a String
-     *
-     * @return name of this colour
-     */
-    public String toString()
-    {
-      return name;
-    }
-
-    /**
-     * get the current colour
-     *
-     * @return the color
-     */
-    public Color getColor()
-    {
-      return color;
-    }
-
-  }
+	/**
+	 * whether we can provide a custom editor component
+	 *
+	 * @return yes, of course
+	 */
+	@Override
+	public boolean supportsCustomEditor() {
+		return false;
+	}
 
 }
-

@@ -28,20 +28,19 @@ public class Resize extends AbstractEffect {
 	 * @param onStop
 	 * @param onCancel
 	 */
-	public static void resize(AnimationRunner runner, Control w, int x, int y,
-			int duration, IMovement movement, Runnable onStop, Runnable onCancel) {
-		Point oldSize = w.getSize();
-		IEffect effect = new Resize(w, oldSize, new Point(x, y),
-				duration, movement, onStop, onCancel);
+	@Deprecated
+	public static void resize(final AnimationRunner runner, final Control w, final int x, final int y,
+			final int duration, final IMovement movement, final Runnable onStop, final Runnable onCancel) {
+		final Point oldSize = w.getSize();
+		final IEffect effect = new Resize(w, oldSize, new Point(x, y), duration, movement, onStop, onCancel);
 		runner.runEffect(effect);
 	}
 
 	Point src, dest, diff;
 	Control control = null;
 
-	public Resize(Control control, Point src, Point dest,
-			long lengthMilli, IMovement movement, Runnable onStop,
-			Runnable onCancel) {
+	public Resize(final Control control, final Point src, final Point dest, final long lengthMilli,
+			final IMovement movement, final Runnable onStop, final Runnable onCancel) {
 		super(lengthMilli, movement, onStop, onCancel);
 
 		this.src = src;
@@ -53,12 +52,11 @@ public class Resize extends AbstractEffect {
 		this.control = control;
 	}
 
+	@Override
 	public void applyEffect(final long currentTime) {
 		if (!control.isDisposed()) {
-			control.setSize((int) (src.x + diff.x
-					* easingFunction.getValue((int) currentTime)),
-					(int) (src.y + diff.y
-							* easingFunction.getValue((int) currentTime)));
+			control.setSize((int) (src.x + diff.x * easingFunction.getValue((int) currentTime)),
+					(int) (src.y + diff.y * easingFunction.getValue((int) currentTime)));
 		}
 	}
 

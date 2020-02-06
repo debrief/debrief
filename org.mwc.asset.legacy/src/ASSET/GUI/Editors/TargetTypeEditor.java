@@ -4,16 +4,16 @@ package ASSET.GUI.Editors;
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 import java.beans.PropertyEditorSupport;
 import java.util.Collection;
@@ -21,58 +21,54 @@ import java.util.Iterator;
 
 import ASSET.Models.Decision.TargetType;
 
-abstract public class TargetTypeEditor extends
-           PropertyEditorSupport  {
+abstract public class TargetTypeEditor extends PropertyEditorSupport {
 
-  TargetType _myType;
+	TargetType _myType;
 
-  abstract protected void setText(String val);
+	@Override
+	abstract public java.awt.Component getCustomEditor();
 
-  abstract public java.awt.Component getCustomEditor();
+	@Override
+	public Object getValue() {
+		return _myType;
+	}
 
-  public void setValue(final Object p1)
-  {
-    if(p1 instanceof TargetType)
-    {
-      _myType = (TargetType)p1;
+	void resetData() {
+		if (_myType == null)
+			return;
 
-      resetData();
-    }
-    else
-      return;
-  }
+		// get our categories
+		final Collection<String> coll = _myType.getTargets();
 
-  public boolean supportsCustomEditor()
-  {
-    return true;
-  }
+		if (coll == null)
+			return;
 
-  public Object getValue()
-  {
-    return _myType;
-  }
+		final Iterator<String> it = coll.iterator();
 
-  void resetData()
-  {
-    if(_myType == null)
-      return;
+		String types = "";
+		while (it.hasNext()) {
+			final String thisType = it.next();
+			types += thisType + ", ";
+		}
 
-    // get our categories
-    final Collection<String> coll = _myType.getTargets();
+		setText(types);
+	}
 
-    if(coll == null)
-      return;
+	abstract protected void setText(String val);
 
-    final Iterator<String> it = coll.iterator();
+	@Override
+	public void setValue(final Object p1) {
+		if (p1 instanceof TargetType) {
+			_myType = (TargetType) p1;
 
-    String types = "";
-    while (it.hasNext())
-    {
-      final String thisType = (String) it.next();
-      types += thisType + ", ";
-    }
+			resetData();
+		} else
+			return;
+	}
 
-    setText(types);
-  }
+	@Override
+	public boolean supportsCustomEditor() {
+		return true;
+	}
 
 }

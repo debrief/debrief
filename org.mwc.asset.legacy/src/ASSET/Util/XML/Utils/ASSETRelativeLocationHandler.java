@@ -1,109 +1,101 @@
 
 package ASSET.Util.XML.Utils;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 
 /**
  * Class which is able to store a location expressed in relative terms
  */
-abstract public class ASSETRelativeLocationHandler extends MWCXMLReader
-{
-  private final static String type = "relativeLocation";
-  private final static String NORTH = "North";
-  private final static String EAST = "East";
-  private final static String HEIGHT = "Height";
-  WorldDistance _north;
-  WorldDistance _east;
-  WorldDistance _height;
+abstract public class ASSETRelativeLocationHandler extends MWCXMLReader {
+	private final static String type = "relativeLocation";
+	private final static String NORTH = "North";
+	private final static String EAST = "East";
+	private final static String HEIGHT = "Height";
 
+	public static void exportLocation(final WorldLocation loc, final Element parent, final Document doc) {
+		final Element eLoc = doc.createElement(type);
+		eLoc.setAttribute(NORTH, writeThisLong(MWC.Algorithms.Conversions.Degs2m(loc.getLat())));
+		eLoc.setAttribute(EAST, writeThisLong(MWC.Algorithms.Conversions.Degs2m(loc.getLong())));
 
-  public ASSETRelativeLocationHandler()
-  {
-    this(type);
-  }
+		// now output the depth
+		final WorldDistance depth = new WorldDistance(-loc.getDepth(), WorldDistance.METRES);
+		WorldDistanceHandler.exportDistance(HEIGHT, depth, eLoc, doc);
 
-  public ASSETRelativeLocationHandler(String theType)
-  {
-    // inform our parent what type of class we are
-    super(theType);
+		parent.appendChild(eLoc);
+	}
 
-    addHandler(new WorldDistanceHandler(NORTH)
-    {
-      public void setWorldDistance(WorldDistance res)
-      {
-        _north = res;
-      }
-    });
+	WorldDistance _north;
+	WorldDistance _east;
 
-    addHandler(new WorldDistanceHandler(EAST)
-    {
-      public void setWorldDistance(WorldDistance res)
-      {
-        _east = res;
-      }
-    });
+	WorldDistance _height;
 
+	public ASSETRelativeLocationHandler() {
+		this(type);
+	}
 
-    addHandler(new WorldDistanceHandler(HEIGHT)
-    {
-      public void setWorldDistance(WorldDistance res)
-      {
-        _height = res;
-      }
-    });
-  }
+	public ASSETRelativeLocationHandler(final String theType) {
+		// inform our parent what type of class we are
+		super(theType);
 
-  public void elementClosed()
-  {
-    WorldLocation res;
+		addHandler(new WorldDistanceHandler(NORTH) {
+			@Override
+			public void setWorldDistance(final WorldDistance res) {
+				_north = res;
+			}
+		});
 
-    if (_height != null)
-      res = new WorldLocation.LocalLocation(_north, _east, _height);
-    else
-      res = new WorldLocation.LocalLocation(_north, _east, 0);
+		addHandler(new WorldDistanceHandler(EAST) {
+			@Override
+			public void setWorldDistance(final WorldDistance res) {
+				_east = res;
+			}
+		});
 
-    setLocation(res);
+		addHandler(new WorldDistanceHandler(HEIGHT) {
+			@Override
+			public void setWorldDistance(final WorldDistance res) {
+				_height = res;
+			}
+		});
+	}
 
-    _height = null;
-    _north = null;
-    _east = null;
-  }
+	@Override
+	public void elementClosed() {
+		WorldLocation res;
 
-  abstract public void setLocation(WorldLocation res);
+		if (_height != null)
+			res = new WorldLocation.LocalLocation(_north, _east, _height);
+		else
+			res = new WorldLocation.LocalLocation(_north, _east, 0);
 
-  public static void exportLocation(WorldLocation loc, Element parent, Document doc)
-  {
-    Element eLoc = doc.createElement(type);
-    eLoc.setAttribute(NORTH, writeThisLong(MWC.Algorithms.Conversions.Degs2m(loc.getLat())));
-    eLoc.setAttribute(EAST, writeThisLong(MWC.Algorithms.Conversions.Degs2m(loc.getLong())));
+		setLocation(res);
 
-    // now output the depth
-    WorldDistance depth = new WorldDistance(-loc.getDepth(), WorldDistance.METRES);
-    WorldDistanceHandler.exportDistance(HEIGHT, depth, eLoc, doc);
+		_height = null;
+		_north = null;
+		_east = null;
+	}
 
-    parent.appendChild(eLoc);
-  }
+	abstract public void setLocation(WorldLocation res);
 
 }

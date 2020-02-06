@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package Debrief.GUI.Tote;
@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 // Copyright MWC 1999, Debrief 3 Project
+
 // $RCSfile: RightClickEditToteAdaptor.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.3 $
@@ -86,7 +87,6 @@ import java.awt.event.ActionListener;
 // Initial revision
 //
 
-
 import Debrief.Wrappers.BuoyPatternWrapper;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.LabelWrapper;
@@ -97,168 +97,142 @@ import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Chart.RightClickEdit;
 import MWC.GenericData.WatchableList;
 
-public final class RightClickEditToteAdaptor implements RightClickEdit.PlottableMenuCreator
-{
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  private final AnalysisTote _theTote;
+public final class RightClickEditToteAdaptor implements RightClickEdit.PlottableMenuCreator {
+	static final class DoSetPrimary implements ActionListener {
+		private AnalysisTote _myTote;
+		private WatchableList _myList;
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  public RightClickEditToteAdaptor(final AnalysisTote theTote)
-  {
-    _theTote = theTote;
-  }
+		public DoSetPrimary(final AnalysisTote tote, final WatchableList list) {
+			_myTote = tote;
+			_myList = list;
+		}
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+		@Override
+		public final void actionPerformed(final ActionEvent e) {
+			_myTote.setPrimary(_myList);
+			_myTote = null;
+			_myList = null;
+		}
+	}
 
-  public final void createMenu(final javax.swing.JPopupMenu menu,
-                               final Editable data,
-                               final Point thePoint,
-                               final PropertiesPanel thePanel,
-                               final Layer theParent,
-                               final Layers theData, final Layer updateLayer)
-  {
-    WatchableList wl = null;
-    WatchableList buoy = null;
-    WatchableList buoyF = null;
+	static final class DoSetSecondary implements ActionListener {
+		private AnalysisTote _myTote;
+		private WatchableList _myList;
 
-    boolean addedMenuItem = false;
+		public DoSetSecondary(final AnalysisTote tote, final WatchableList list) {
+			_myTote = tote;
+			_myList = list;
+		}
 
+		@Override
+		public final void actionPerformed(final ActionEvent e) {
+			_myTote.setSecondary(_myList);
+			_myTote = null;
+			_myList = null;
+		}
+	}
 
-    // see what kind of object has been clicked on
-    if (data instanceof FixWrapper)
-    {
-      final FixWrapper fw = (FixWrapper) data;
-      wl = fw.getTrackWrapper();
-    }
-    else if (data instanceof LabelWrapper)
-    {
-      // this may be a buoyfield, have a look at the parent
-      final LabelWrapper lw = (LabelWrapper) data;
-      final Editable ed = lw.getParent();
-      if (ed == null)
-      {
-        // this is a plain symbol, without a parent
-        wl = lw;
-      }
-      else
-      {
-        if (ed instanceof BuoyPatternWrapper)
-        {
-          // so, yes it is a buoyfield, better remember this!
-          final BuoyPatternWrapper bw = (BuoyPatternWrapper) ed;
-          buoyF = bw;
-          buoy = lw;
-        }
-      }
-    }
-    else if (data instanceof BuoyPatternWrapper)
-    {
-      buoyF = (BuoyPatternWrapper) data;
-    }
-    else if (data instanceof WatchableList)
-    {
-      wl = (WatchableList) data;
-    }
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-    // sort out the plain items first
-    if (wl != null)
-    {
-      // and add our new wonder item
-      final javax.swing.JMenuItem setPri = new javax.swing.JMenuItem("Set Primary Track");
-      setPri.addActionListener(new DoSetPrimary(_theTote, wl));
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+	private final AnalysisTote _theTote;
 
-      final javax.swing.JMenuItem setSec = new javax.swing.JMenuItem("Set Secondary Track");
-      setSec.addActionListener(new DoSetSecondary(_theTote, wl));
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	public RightClickEditToteAdaptor(final AnalysisTote theTote) {
+		_theTote = theTote;
+	}
 
-      menu.add(setPri);
-      menu.add(setSec);
+	@Override
+	public final void createMenu(final javax.swing.JPopupMenu menu, final Editable data, final Point thePoint,
+			final PropertiesPanel thePanel, final Layer theParent, final Layers theData, final Layer updateLayer) {
+		WatchableList wl = null;
+		WatchableList buoy = null;
+		WatchableList buoyF = null;
 
-      addedMenuItem = true;
-    }
+		boolean addedMenuItem = false;
 
-    // now sort out the buoyfield related items
-    // first the individual buoy
-    if (buoy != null)
-    {
-      // and add our new wonder item
-      final javax.swing.JMenuItem setPri2 = new javax.swing.JMenuItem("Set Buoy as Primary Track");
-      setPri2.addActionListener(new DoSetPrimary(_theTote, wl));
+		// see what kind of object has been clicked on
+		if (data instanceof FixWrapper) {
+			final FixWrapper fw = (FixWrapper) data;
+			wl = fw.getTrackWrapper();
+		} else if (data instanceof LabelWrapper) {
+			// this may be a buoyfield, have a look at the parent
+			final LabelWrapper lw = (LabelWrapper) data;
+			final Editable ed = lw.getParent();
+			if (ed == null) {
+				// this is a plain symbol, without a parent
+				wl = lw;
+			} else {
+				if (ed instanceof BuoyPatternWrapper) {
+					// so, yes it is a buoyfield, better remember this!
+					final BuoyPatternWrapper bw = (BuoyPatternWrapper) ed;
+					buoyF = bw;
+					buoy = lw;
+				}
+			}
+		} else if (data instanceof BuoyPatternWrapper) {
+			buoyF = (BuoyPatternWrapper) data;
+		} else if (data instanceof WatchableList) {
+			wl = (WatchableList) data;
+		}
 
-      final javax.swing.JMenuItem setSec2 = new javax.swing.JMenuItem("Set Buoy as Secondary Track");
-      setSec2.addActionListener(new DoSetSecondary(_theTote, wl));
+		// sort out the plain items first
+		if (wl != null) {
+			// and add our new wonder item
+			final javax.swing.JMenuItem setPri = new javax.swing.JMenuItem("Set Primary Track");
+			setPri.addActionListener(new DoSetPrimary(_theTote, wl));
 
-      menu.add(setPri2);
-      menu.add(setSec2);
+			final javax.swing.JMenuItem setSec = new javax.swing.JMenuItem("Set Secondary Track");
+			setSec.addActionListener(new DoSetSecondary(_theTote, wl));
 
-      addedMenuItem = true;
-    }
+			menu.add(setPri);
+			menu.add(setSec);
 
-    // now the field itself
-    if (buoyF != null)
-    {
-      // and add our new wonder item
-      final javax.swing.JMenuItem setPri3 = new javax.swing.JMenuItem("Set BuoyField as Primary Track");
-      setPri3.addActionListener(new DoSetPrimary(_theTote, wl));
+			addedMenuItem = true;
+		}
 
-      final javax.swing.JMenuItem setSec3 = new javax.swing.JMenuItem("Set BuoyField as Secondary Track");
-      setSec3.addActionListener(new DoSetSecondary(_theTote, wl));
+		// now sort out the buoyfield related items
+		// first the individual buoy
+		if (buoy != null) {
+			// and add our new wonder item
+			final javax.swing.JMenuItem setPri2 = new javax.swing.JMenuItem("Set Buoy as Primary Track");
+			setPri2.addActionListener(new DoSetPrimary(_theTote, wl));
 
-      menu.add(setPri3);
-      menu.add(setSec3);
+			final javax.swing.JMenuItem setSec2 = new javax.swing.JMenuItem("Set Buoy as Secondary Track");
+			setSec2.addActionListener(new DoSetSecondary(_theTote, wl));
 
-      addedMenuItem = true;
+			menu.add(setPri2);
+			menu.add(setSec2);
 
-    }
+			addedMenuItem = true;
+		}
 
-    // add a separator if we've added any items
-    if (addedMenuItem)
-      menu.addSeparator();
+		// now the field itself
+		if (buoyF != null) {
+			// and add our new wonder item
+			final javax.swing.JMenuItem setPri3 = new javax.swing.JMenuItem("Set BuoyField as Primary Track");
+			setPri3.addActionListener(new DoSetPrimary(_theTote, wl));
 
-  }
+			final javax.swing.JMenuItem setSec3 = new javax.swing.JMenuItem("Set BuoyField as Secondary Track");
+			setSec3.addActionListener(new DoSetSecondary(_theTote, wl));
 
-  static final class DoSetPrimary implements ActionListener
-  {
-    private AnalysisTote _myTote;
-    private WatchableList _myList;
+			menu.add(setPri3);
+			menu.add(setSec3);
 
-    public DoSetPrimary(final AnalysisTote tote, final WatchableList list)
-    {
-      _myTote = tote;
-      _myList = list;
-    }
+			addedMenuItem = true;
 
-    public final void actionPerformed(final ActionEvent e)
-    {
-      _myTote.setPrimary(_myList);
-      _myTote = null;
-      _myList = null;
-    }
-  }
+		}
 
-  static final class DoSetSecondary implements ActionListener
-  {
-    private AnalysisTote _myTote;
-    private WatchableList _myList;
+		// add a separator if we've added any items
+		if (addedMenuItem)
+			menu.addSeparator();
 
-    public DoSetSecondary(final AnalysisTote tote, final WatchableList list)
-    {
-      _myTote = tote;
-      _myList = list;
-    }
-
-    public final void actionPerformed(final ActionEvent e)
-    {
-      _myTote.setSecondary(_myList);
-      _myTote = null;
-      _myList = null;
-    }
-  }
-
+	}
 
 }

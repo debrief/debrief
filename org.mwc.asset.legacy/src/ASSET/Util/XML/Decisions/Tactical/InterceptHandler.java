@@ -1,88 +1,81 @@
 
 package ASSET.Util.XML.Decisions.Tactical;
 
+import ASSET.Models.Decision.TargetType;
+
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 import ASSET.Models.Decision.Tactical.Intercept;
-import ASSET.Models.Decision.TargetType;
 import ASSET.Util.XML.Decisions.Util.TargetTypeHandler;
 
-abstract public class InterceptHandler extends CoreDecisionHandler
-{
+abstract public class InterceptHandler extends CoreDecisionHandler {
 
-  private final static String type = "Intercept";
-  private final static String TARGET_TYPE = "TargetType";
-  private final static String SPEED_CHANGE_ALLLOWED = "AllowSpeedchange";
+	private final static String type = "Intercept";
+	private final static String TARGET_TYPE = "TargetType";
+	private final static String SPEED_CHANGE_ALLLOWED = "AllowSpeedchange";
 
-  TargetType _myTargetType;
-  boolean _allowSpeedChange;
+	static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc) {
+		// create ourselves
+		final org.w3c.dom.Element element = doc.createElement(type);
 
+		// get data item
+		final Intercept bb = (Intercept) toExport;
 
-  public InterceptHandler()
-  {
-    super(type);
+		// parent attributes first
+		CoreDecisionHandler.exportThis(bb, element, doc);
 
-    addHandler(new TargetTypeHandler(TARGET_TYPE)
-    {
-      public void setTargetType(final TargetType type)
-      {
-        _myTargetType = type;
-      }
-    });
-    addAttributeHandler(new HandleBooleanAttribute(SPEED_CHANGE_ALLLOWED)
-    {
-      public void setValue(String name, boolean value)
-      {
-        _allowSpeedChange = value;
-      }
-    });
-  }
+		// output it's attributes
+		TargetTypeHandler.exportThis(TARGET_TYPE, bb.getTargetType(), element, doc);
+		element.setAttribute(SPEED_CHANGE_ALLLOWED, writeThis(bb.getSpeedChangeAllowed()));
 
+		parent.appendChild(element);
 
-  public void elementClosed()
-  {
-    final Intercept tr = new Intercept(_myTargetType, _allowSpeedChange);
+	}
 
-    super.setAttributes(tr);
+	TargetType _myTargetType;
 
-    setModel(tr);
-  }
+	boolean _allowSpeedChange;
 
+	public InterceptHandler() {
+		super(type);
 
-  abstract public void setModel(ASSET.Models.DecisionType dec);
+		addHandler(new TargetTypeHandler(TARGET_TYPE) {
+			@Override
+			public void setTargetType(final TargetType type) {
+				_myTargetType = type;
+			}
+		});
+		addAttributeHandler(new HandleBooleanAttribute(SPEED_CHANGE_ALLLOWED) {
+			@Override
+			public void setValue(final String name, final boolean value) {
+				_allowSpeedChange = value;
+			}
+		});
+	}
 
-  static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
-                                final org.w3c.dom.Document doc)
-  {
-    // create ourselves
-    final org.w3c.dom.Element element = doc.createElement(type);
+	@Override
+	public void elementClosed() {
+		final Intercept tr = new Intercept(_myTargetType, _allowSpeedChange);
 
-    // get data item
-    final Intercept bb = (Intercept) toExport;
+		super.setAttributes(tr);
 
-    // parent attributes first
-    CoreDecisionHandler.exportThis(bb, element, doc);
+		setModel(tr);
+	}
 
-    // output it's attributes
-    TargetTypeHandler.exportThis(TARGET_TYPE, bb.getTargetType(), element, doc);
-    element.setAttribute(SPEED_CHANGE_ALLLOWED, writeThis(bb.getSpeedChangeAllowed()));
-
-    parent.appendChild(element);
-
-  }
-
+	abstract public void setModel(ASSET.Models.DecisionType dec);
 
 }

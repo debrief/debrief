@@ -1,23 +1,24 @@
 
 package ASSET.Util.XML.Decisions;
 
+import ASSET.Models.Decision.TargetType;
+
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 import ASSET.Models.Decision.Movement.Evade;
-import ASSET.Models.Decision.TargetType;
 import ASSET.Util.XML.Decisions.Tactical.CoreDecisionHandler;
 import MWC.GenericData.Duration;
 import MWC.GenericData.WorldDistance;
@@ -26,97 +27,87 @@ import MWC.Utilities.ReaderWriter.XML.Util.DurationHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldSpeedHandler;
 
-abstract public class EvadeHandler extends CoreDecisionHandler
-{
+abstract public class EvadeHandler extends CoreDecisionHandler {
 
-  private final static String type = "Evade";
+	private final static String type = "Evade";
 
-  private final static String HEIGHT = "FleeHeight";
-  private final static String SPEED = "FleeSpeed";
+	private final static String HEIGHT = "FleeHeight";
+	private final static String SPEED = "FleeSpeed";
 
-  Duration _fleePeriod;
-  WorldSpeed _fleeSpeed;
-  WorldDistance _fleeHeight;
-  TargetType _myTargetType;
+	static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc) {
+		// create ourselves
+		final org.w3c.dom.Element thisPart = doc.createElement(type);
 
+		// get data item
+		final ASSET.Models.Decision.Movement.Evade bb = (ASSET.Models.Decision.Movement.Evade) toExport;
 
-  public EvadeHandler()
-  {
-    super(type);
+		// first the parent
+		CoreDecisionHandler.exportThis(bb, thisPart, doc);
 
-    addHandler(new WorldDistanceHandler(HEIGHT)
-    {
-      public void setWorldDistance(WorldDistance res)
-      {
-        _fleeHeight = res;
-      }
-    });
+		// output it's attributes
+		DurationHandler.exportDuration(bb.getFleePeriod(), thisPart, doc);
+		ASSET.Util.XML.Decisions.Util.TargetTypeHandler.exportThis(bb.getTargetType(), thisPart, doc);
 
-    addHandler(new WorldSpeedHandler(SPEED)
-    {
-      public void setSpeed(WorldSpeed res)
-      {
-        _fleeSpeed = res;
-      }
-    });
+		WorldSpeedHandler.exportSpeed(SPEED, bb.getFleeSpeed(), thisPart, doc);
+		WorldDistanceHandler.exportDistance(HEIGHT, bb.getFleeHeight(), thisPart, doc);
 
-    addHandler(new ASSET.Util.XML.Decisions.Util.TargetTypeHandler()
-    {
-      public void setTargetType(final ASSET.Models.Decision.TargetType type)
-      {
-        _myTargetType = type;
-      }
-    });
-    addHandler(new DurationHandler()
-    {
-      public void setDuration(Duration res)
-      {
-        _fleePeriod = res;
-      }
-    });
-  }
+		parent.appendChild(thisPart);
 
+	}
 
-  public void elementClosed()
-  {
-    final Evade ev = new Evade(_fleePeriod, _fleeSpeed, _fleeHeight, _myTargetType);
+	Duration _fleePeriod;
+	WorldSpeed _fleeSpeed;
+	WorldDistance _fleeHeight;
 
-    super.setAttributes(ev);
+	TargetType _myTargetType;
 
-    // finally output it
-    setModel(ev);
+	public EvadeHandler() {
+		super(type);
 
-    _fleePeriod = null;
-    _fleeSpeed = null;
-    _fleeHeight = null;
-    _myTargetType = null;
-  }
+		addHandler(new WorldDistanceHandler(HEIGHT) {
+			@Override
+			public void setWorldDistance(final WorldDistance res) {
+				_fleeHeight = res;
+			}
+		});
 
-  abstract public void setModel(ASSET.Models.DecisionType dec);
+		addHandler(new WorldSpeedHandler(SPEED) {
+			@Override
+			public void setSpeed(final WorldSpeed res) {
+				_fleeSpeed = res;
+			}
+		});
 
+		addHandler(new ASSET.Util.XML.Decisions.Util.TargetTypeHandler() {
+			@Override
+			public void setTargetType(final ASSET.Models.Decision.TargetType type) {
+				_myTargetType = type;
+			}
+		});
+		addHandler(new DurationHandler() {
+			@Override
+			public void setDuration(final Duration res) {
+				_fleePeriod = res;
+			}
+		});
+	}
 
-  static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
-                                final org.w3c.dom.Document doc)
-  {
-    // create ourselves
-    final org.w3c.dom.Element thisPart = doc.createElement(type);
+	@Override
+	public void elementClosed() {
+		final Evade ev = new Evade(_fleePeriod, _fleeSpeed, _fleeHeight, _myTargetType);
 
-    // get data item
-    final ASSET.Models.Decision.Movement.Evade bb = (ASSET.Models.Decision.Movement.Evade) toExport;
+		super.setAttributes(ev);
 
-    // first the parent
-    CoreDecisionHandler.exportThis(bb, thisPart, doc);
+		// finally output it
+		setModel(ev);
 
-    // output it's attributes
-    DurationHandler.exportDuration(bb.getFleePeriod(), thisPart, doc);
-    ASSET.Util.XML.Decisions.Util.TargetTypeHandler.exportThis(bb.getTargetType(), thisPart, doc);
+		_fleePeriod = null;
+		_fleeSpeed = null;
+		_fleeHeight = null;
+		_myTargetType = null;
+	}
 
-    WorldSpeedHandler.exportSpeed(SPEED, bb.getFleeSpeed(), thisPart, doc);
-    WorldDistanceHandler.exportDistance(HEIGHT, bb.getFleeHeight(), thisPart, doc);
-
-    parent.appendChild(thisPart);
-
-  }
-
+	abstract public void setModel(ASSET.Models.DecisionType dec);
 
 }

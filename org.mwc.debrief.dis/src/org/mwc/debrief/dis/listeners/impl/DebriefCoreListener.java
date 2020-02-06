@@ -10,126 +10,109 @@ import MWC.GUI.Layers.INewItemListener;
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.DebriefColors;
 
-public class DebriefCoreListener
-{
-  protected final java.awt.Color[] defaultColors = new java.awt.Color[]
-  {DebriefColors.RED, DebriefColors.GREEN, DebriefColors.BLUE,
-      DebriefColors.CYAN, DebriefColors.MAGENTA, DebriefColors.ORANGE,
-      DebriefColors.PINK};
-  
-  protected final IDISContext _context;
+public class DebriefCoreListener {
+	/**
+	 * helper interface, that provides the data for adding new items
+	 *
+	 * @author ian
+	 *
+	 */
+	public static interface ListenerHelper {
+		/**
+		 * create the parent item
+		 *
+		 * @return
+		 */
+		Plottable createItem();
 
-  public DebriefCoreListener(IDISContext context)
-  {
-    _context = context;
-  }
+		/**
+		 * create the parent layer
+		 *
+		 * @return
+		 */
+		Layer createLayer();
+	}
 
-  /**
-   * get the default color for this name
-   * 
-   * @param name
-   * @return
-   */
-  protected Color colorFor(short exerciseId, String name)
-  {
-    Color res;
-    
-    Layer layer = _context.findLayer(exerciseId, name);
-    
-    if(layer != null && layer instanceof TrackWrapper)
-    {
-      TrackWrapper track = (TrackWrapper) layer;
-      res = track.getColor();
-    }
-    else
-    {
-      // ok, get the hashmap
-      int index = Math.abs(name.hashCode()) % defaultColors.length;
-      res = defaultColors[index];
-    }
-    
-    return res;
-    
-  }
+	protected final java.awt.Color[] defaultColors = new java.awt.Color[] { DebriefColors.RED, DebriefColors.GREEN,
+			DebriefColors.BLUE, DebriefColors.CYAN, DebriefColors.MAGENTA, DebriefColors.ORANGE, DebriefColors.PINK };
 
-  /**
-   * helper interface, that provides the data for adding new items
-   * 
-   * @author ian
-   * 
-   */
-  public static interface ListenerHelper
-  {
-    /**
-     * create the parent layer
-     * 
-     * @return
-     */
-    Layer createLayer();
+	protected final IDISContext _context;
 
-    /**
-     * create the parent item
-     * 
-     * @return
-     */
-    Plottable createItem();
-  }
+	public DebriefCoreListener(final IDISContext context) {
+		_context = context;
+	}
 
-  protected Layer
-      getLayer(short exerciseId, String name, ListenerHelper helper)
-  {
-    // find the narratives layer
-    Layer nLayer = _context.findLayer(exerciseId, name);
-    if (nLayer == null)
-    {
-      nLayer = helper.createLayer();
-      nLayer.setName(name);
+	/**
+	 * add this item to the layer with the specified name
+	 *
+	 * @param eid
+	 * @param layerName
+	 * @param item
+	 */
+	protected void addNewItem(final short eid, final String layerName, final ListenerHelper helper) {
+		final Layer destination = getLayer(eid, layerName, helper);
 
-      // and store it
-      _context.addThisLayer(nLayer);
+		final Plottable item = helper.createItem();
 
-      // share the news
-      Iterator<INewItemListener> iter = _context.getNewItemListeners();
-      if(iter != null)
-      {
-        while (iter.hasNext())
-        {
-          Layers.INewItemListener newI = (Layers.INewItemListener) iter.next();
-          newI.newItem(nLayer, null, null);
-        }
-      }
-    }
-    return nLayer;
-  }
+		destination.add(item);
 
-  /**
-   * add this item to the layer with the specified name
-   * 
-   * @param eid
-   * @param layerName
-   * @param item
-   */
-  protected void addNewItem(short eid, String layerName, ListenerHelper helper)
-  {
-    final Layer destination = getLayer(eid, layerName, helper);
+		final Layer finalLayer = destination;
 
-    Plottable item = helper.createItem();
+		// should we try any formatting?
+		final Iterator<INewItemListener> iter = _context.getNewItemListeners();
+		if (iter != null) {
+			while (iter.hasNext()) {
+				final Layers.INewItemListener newI = iter.next();
+				newI.newItem(finalLayer, item, null);
+			}
+		}
 
-    destination.add(item);
+	}
 
-    final Layer finalLayer = destination;
+	/**
+	 * get the default color for this name
+	 *
+	 * @param name
+	 * @return
+	 */
+	protected Color colorFor(final short exerciseId, final String name) {
+		Color res;
 
-    // should we try any formatting?
-    Iterator<INewItemListener> iter = _context.getNewItemListeners();
-    if (iter != null)
-    {
-      while (iter.hasNext())
-      {
-        Layers.INewItemListener newI = (Layers.INewItemListener) iter.next();
-        newI.newItem(finalLayer, item, null);
-      }
-    }
+		final Layer layer = _context.findLayer(exerciseId, name);
 
-  }
+		if (layer != null && layer instanceof TrackWrapper) {
+			final TrackWrapper track = (TrackWrapper) layer;
+			res = track.getColor();
+		} else {
+			// ok, get the hashmap
+			final int index = Math.abs(name.hashCode()) % defaultColors.length;
+			res = defaultColors[index];
+		}
+
+		return res;
+
+	}
+
+	protected Layer getLayer(final short exerciseId, final String name, final ListenerHelper helper) {
+		// find the narratives layer
+		Layer nLayer = _context.findLayer(exerciseId, name);
+		if (nLayer == null) {
+			nLayer = helper.createLayer();
+			nLayer.setName(name);
+
+			// and store it
+			_context.addThisLayer(nLayer);
+
+			// share the news
+			final Iterator<INewItemListener> iter = _context.getNewItemListeners();
+			if (iter != null) {
+				while (iter.hasNext()) {
+					final Layers.INewItemListener newI = iter.next();
+					newI.newItem(nLayer, null, null);
+				}
+			}
+		}
+		return nLayer;
+	}
 
 }

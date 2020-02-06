@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 // $RCSfile: SwingToggleButton.java,v $
@@ -73,7 +73,6 @@
 
 package MWC.GUI.Tools.Swing;
 
-
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -81,92 +80,100 @@ import java.awt.event.MouseEvent;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JCheckBox;
 import javax.swing.JToggleButton;
+import javax.swing.SwingConstants;
 import javax.swing.border.CompoundBorder;
 
 import MWC.GUI.Tool;
 
-/** extension of Swing button, to create one which implements one
- * of our Debrief tools
+/**
+ * extension of Swing button, to create one which implements one of our Debrief
+ * tools
  */
-public class SwingToggleButton extends JToggleButton implements ActionListener
-{
+public class SwingToggleButton extends JToggleButton implements ActionListener {
 
-  /////////////////////////////////////////////////////////
-  // member variables
-  /////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////
+	// member variables
+	/////////////////////////////////////////////////////////
 
-  /**
-	 * 
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	protected Tool _theTool;
 
+	public SwingToggleButton(final String theLabel, final Tool theTool) {
+		super(theLabel);
+		formatMe(theTool);
 
-  /////////////////////////////////////////////////////////
-  // constructor
-  /////////////////////////////////////////////////////////
-  /** convenience constructor, calls normal one
-   */
-  public SwingToggleButton(final Tool theTool)
-  {
-    this(theTool.getLabel(), theTool);
-  }
+	}
 
-  public SwingToggleButton(final String theLabel, final Tool theTool)
-  {
-    super(theLabel);
-    formatMe(theTool);
+	/////////////////////////////////////////////////////////
+	// constructor
+	/////////////////////////////////////////////////////////
+	/**
+	 * convenience constructor, calls normal one
+	 */
+	public SwingToggleButton(final Tool theTool) {
+		this(theTool.getLabel(), theTool);
+	}
 
-  }
+	/**
+	 * constructor for if we don't have an image (don't show label)
+	 */
+	public SwingToggleButton(final Tool theTool, final ImageIcon icon) {
+		super(icon);
+		formatMe(theTool);
+		setPreferredSize(getMinimumSize());
+	}
 
-  /** constructor for if we don't have an image (don't show label)
-   */
-  public SwingToggleButton(final Tool theTool, final ImageIcon icon)
-  {
-    super(icon);
-    formatMe(theTool);
-    setPreferredSize(getMinimumSize());
-  }
+	/**
+	 * callback function for a button being pressed
+	 */
+	@Override
+	public void actionPerformed(final java.awt.event.ActionEvent e) {
+		/**
+		 * check that we have a tool declared
+		 */
+		if (_theTool != null)
+			_theTool.execute();
+	}
 
+	/////////////////////////////////////////////////////////
+	// member functions
+	/////////////////////////////////////////////////////////
 
-  private void formatMe(final Tool theTool)
-  {
-    _theTool = theTool;
-    this.addActionListener(this);
-    this.setToolTipText(theTool.getLabel());
-    this.setBorderPainted(false);
-    this.setRolloverEnabled(true);
-    this.setHorizontalAlignment(JCheckBox.CENTER);
+	private void formatMe(final Tool theTool) {
+		_theTool = theTool;
+		this.addActionListener(this);
+		this.setToolTipText(theTool.getLabel());
+		this.setBorderPainted(false);
+		this.setRolloverEnabled(true);
+		this.setHorizontalAlignment(SwingConstants.CENTER);
 
-    setBorder(new CompoundBorder(BorderFactory.createEtchedBorder(),
-                                 BorderFactory.createEmptyBorder(1,1,1,1)));
+		setBorder(new CompoundBorder(BorderFactory.createEtchedBorder(), BorderFactory.createEmptyBorder(1, 1, 1, 1)));
 
-    this.addMouseListener(new MouseAdapter()
-    {
-      public void mouseEntered(final MouseEvent e)
-      {
-        setBorderPainted(true);
-      }
+		this.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(final MouseEvent e) {
+				setBorderPainted(true);
+			}
 
-      public void mouseExited(final MouseEvent e)
-      {
-        setBorderPainted(false);
-      }
-    });
+			@Override
+			public void mouseExited(final MouseEvent e) {
+				setBorderPainted(false);
+			}
+		});
 
-    // try to handle the icon not being found
-    final Icon ic = this.getIcon();
-    if (ic != null)
-    {
-      // check if icon available
-      final ImageIcon ii = (ImageIcon) ic;
-      if (ii.getImageLoadStatus() == java.awt.MediaTracker.ERRORED)
-      {
-        this.setIcon(null);
-        this.setText(theTool.getLabel());
-      }
+		// try to handle the icon not being found
+		final Icon ic = this.getIcon();
+		if (ic != null) {
+			// check if icon available
+			final ImageIcon ii = (ImageIcon) ic;
+			if (ii.getImageLoadStatus() == java.awt.MediaTracker.ERRORED) {
+				this.setIcon(null);
+				this.setText(theTool.getLabel());
+			}
 //      else
 //      {
 //        // try to set the other icon, if we can
@@ -179,27 +186,13 @@ public class SwingToggleButton extends JToggleButton implements ActionListener
 //          super.setSelectedIcon(new ImageIcon(getClass().getClassLoader().getResource(selectedIconName)));
 //        }
 //      }
-    }
-  }
+		}
+	}
 
-  /////////////////////////////////////////////////////////
-  // member functions
-  /////////////////////////////////////////////////////////
-
-  /** callback function for a button being pressed
-   */
-  public void actionPerformed(final java.awt.event.ActionEvent e)
-  {
-    /** check that we have a tool declared
-     */
-    if (_theTool != null)
-      _theTool.execute();
-  }
-
-  /** return the tool for this button
-   */
-  protected Tool getTool()
-  {
-    return _theTool;
-  }
+	/**
+	 * return the tool for this button
+	 */
+	protected Tool getTool() {
+		return _theTool;
+	}
 }

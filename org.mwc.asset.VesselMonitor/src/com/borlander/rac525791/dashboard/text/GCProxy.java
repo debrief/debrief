@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package com.borlander.rac525791.dashboard.text;
@@ -22,14 +22,6 @@ import org.eclipse.swt.widgets.Shell;
 
 public class GCProxy {
 	private GC myGC;
-	
-	public Point getExtent(String text, Font font){
-		return getGC(font).stringExtent(text);
-	}
-	
-	public int getAverageCharWidth(Font font){
-		return getGC(font).getFontMetrics().getAverageCharWidth();
-	}
 
 	public void dispose() {
 		if (myGC != null) {
@@ -38,13 +30,21 @@ public class GCProxy {
 		}
 	}
 
-	private GC getGC(Font font) {
+	public int getAverageCharWidth(final Font font) {
+		return getGC(font).getFontMetrics().getAverageCharWidth();
+	}
+
+	public Point getExtent(final String text, final Font font) {
+		return getGC(font).stringExtent(text);
+	}
+
+	private GC getGC(final Font font) {
 		if (myGC == null || myGC.isDisposed()) {
 			myGC = new GC(new Shell());
-	//		System.out.println("creating new GC");
+			// System.out.println("creating new GC");
 		}
 		myGC.setFont(font);
 		return myGC;
 	}
-	
+
 }

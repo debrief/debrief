@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
- *  
+ *
  * (C) 2000-2020, Deep Blue C Technology Ltd
- *  
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the Eclipse Public License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
 package ASSET.Models.Decision.Tactical;
@@ -120,233 +120,115 @@ import MWC.GenericData.WorldSpeed;
  * Class implementing a saw search pattern around an initial datum. The search
  * is conducted in a defined box
  */
-public final class PatternSearch_Saw extends PatternSearch_Core implements
-		Serializable
-{
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	// ////////////////////////////////////////////////
-	// member variables
-	// ////////////////////////////////////////////////
-
-	/**
-	 * the name of this behaviour
-	 */
-	static final String SAW_SEARCH = "Performing saw search";
-
-	// ////////////////////////////////////////////////
-	// constructor
-	// ////////////////////////////////////////////////
-
-	/**
-	 * conduct a saw search
-	 * 
-	 * @param myOrigin
-	 *          the starting point
-	 * @param trackSpacing
-	 *          how far apart to make the legs
-	 * @param searchHeight
-	 *          the (optional) height/depth to conduct saw at
-	 * @param searchSpeed
-	 *          the (optional) height/depth to conduct saw at
-	 * @param name
-	 *          the name for this saw search behaviour
-	 * @param height
-	 *          the height of the search area
-	 * @param width
-	 *          the width of the search area
-	 */
-	public PatternSearch_Saw(final WorldLocation myOrigin,
-			final WorldDistance trackSpacing, final WorldDistance searchHeight,
-			final WorldSpeed searchSpeed, final String name, WorldDistance height,
-			WorldDistance width)
-	{
-		super(name, myOrigin, searchHeight, searchSpeed, trackSpacing, height,
-				width);
-		_finished = false;
-	}
-
-	public EditorType getInfo()
-	{
-		if (_myEditor == null)
-			_myEditor = new SawSearchInfo(this);
-
-		return _myEditor;
-	}
-
-	// ////////////////////////////////////////////////
-	// decision options
-	// ////////////////////////////////////////////////
-
-	/**
-	 * create the area search path as a route
-	 * 
-	 * @param maxLegs
-	 *          the maximum number of legs to fly
-	 * @param origin
-	 *          the start datum
-	 * @param trackSpacing
-	 *          the spacing between loops of the spiral
-	 * @return a path containing the route to fly
-	 */
-	protected WorldPath createSearchRoute(WorldLocation currentLocation)
-	{
-		final WorldPath route = new WorldPath();
-
-		double _heightDegs = _height.getValueIn(WorldDistance.DEGS);
-		double _widthDegs = _width.getValueIn(WorldDistance.DEGS);
-
-		double t, b, l, r, s;
-		b = getOrigin().getLat();
-		t = b + _heightDegs;
-		l = getOrigin().getLong();
-		r = l + _widthDegs;
-		s = _trackSpacing.getValueIn(WorldDistance.DEGS);
-
-		WorldLocation newP;
-
-		// do we need to navigate to the start point?
-		if ((currentLocation != null) && !getOrigin().equals(currentLocation))
-		{
-			newP = new WorldLocation(getOrigin());
-			addPointToRoute(_searchHeight, newP, route);
-		}
-
-		while (b <= t - 2 * s)
-		{
-			b = b + s;
-			newP = new WorldLocation(b, r, 0);
-			addPointToRoute(_searchHeight, newP, route);
-			b = b + s;
-			newP = new WorldLocation(b, l, 0);
-			addPointToRoute(_searchHeight, newP, route);
-		}
-
-		return route;
-	}
-
-	// ////////////////////////////////////////////////
-	// property editing
-	// ////////////////////////////////////////////////
+public final class PatternSearch_Saw extends PatternSearch_Core implements Serializable {
 
 	// ////////////////////////////////////////////////
 	// editable properties
 	// ////////////////////////////////////////////////
-	static public class SawSearchInfo extends EditorType
-	{
+	static public class SawSearchInfo extends EditorType {
 		/**
 		 * constructor for editable details of a set of Layers
-		 * 
-		 * @param data
-		 *          the Layers themselves
+		 *
+		 * @param data the Layers themselves
 		 */
-		public SawSearchInfo(final PatternSearch_Core data)
-		{
+		public SawSearchInfo(final PatternSearch_Core data) {
 			super(data, data.getName(), "Edit");
 		}
 
 		/**
 		 * editable GUI properties for our participant
-		 * 
+		 *
 		 * @return property descriptions
 		 */
-		public PropertyDescriptor[] getPropertyDescriptors()
-		{
-			try
-			{
-				final PropertyDescriptor[] res =
-				{ prop("Name", "the name of this search behaviour"),
+		@Override
+		public PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final PropertyDescriptor[] res = { prop("Name", "the name of this search behaviour"),
 						prop("Origin", "the origin for this search"),
 						prop("Route", "the series of points comprising the saw search"),
 						prop("Width", "the width of the area to search"),
 						prop("Height", "the height of the area to search"),
-						prop("SearchHeight", "the height to search at"),
-						prop("SearchSpeed", "the speed to search at"),
+						prop("SearchHeight", "the height to search at"), prop("SearchSpeed", "the speed to search at"),
 						prop("TrackSpacing", "how far apart to make each leg"), };
 				return res;
-			}
-			catch (IntrospectionException e)
-			{
+			} catch (final IntrospectionException e) {
 				e.printStackTrace();
 				return super.getPropertyDescriptors();
 			}
 		}
 	}
 
-	// //////////////////////////////////////////////////////////
-	// model support
-	// //////////////////////////////////////////////////////////
+	// ////////////////////////////////////////////////
+	// member variables
+	// ////////////////////////////////////////////////
 
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	// testing for this class
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	public static final class SawTest extends SupportTesting.EditableTesting
-	{
+	public static final class SawTest extends SupportTesting.EditableTesting {
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public static void outputPoints(final WorldPath path) {
+			final Collection<WorldLocation> pts = path.getPoints();
+			final Iterator<WorldLocation> iter = pts.iterator();
+			while (iter.hasNext()) {
+				final WorldLocation pt = iter.next();
+				System.err.println(pt.getLong() + "," + pt.getLat());
+			}
+		}
+
 		private EarthModel _oldModel;
 
-		public SawTest(final String s)
-		{
+		public SawTest(final String s) {
 			super(s);
 
 		}
 
+		/**
+		 * get an object which we can test
+		 *
+		 * @return Editable object which we can check the properties for
+		 */
 		@Override
-		protected void setUp() throws Exception
-		{
+		public Editable getEditable() {
+			final PatternSearch_Core ladder = new PatternSearch_Saw(new WorldLocation(1, 1, 1),
+					new WorldDistance(20, WorldDistance.KM), null, null, "test search",
+					new WorldDistance(160, WorldDistance.KM), new WorldDistance(160, WorldDistance.KM));
+			final WorldPath route = ladder.createSearchRoute(null);
+
+			// and put it into a route
+			ladder._myRoute = new TransitWaypoint(route, null, false, new OnTopWaypoint());
+
+			// we need t
+			return ladder;
+		}
+
+		@Override
+		protected void setUp() throws Exception {
 			super.setUp();
 
 			_oldModel = WorldLocation.getModel();
 
 			// store the model we're expecting
-			MWC.GenericData.WorldLocation
-					.setModel(new MWC.Algorithms.EarthModels.CompletelyFlatEarth());
+			MWC.GenericData.WorldLocation.setModel(new MWC.Algorithms.EarthModels.CompletelyFlatEarth());
 
 		}
 
 		@Override
-		protected void tearDown() throws Exception
-		{
+		protected void tearDown() throws Exception {
 			super.tearDown();
 
 			// restore the previous model
 			WorldLocation.setModel(_oldModel);
 		}
 
-		/**
-		 * get an object which we can test
-		 * 
-		 * @return Editable object which we can check the properties for
-		 */
-		public Editable getEditable()
-		{
-			PatternSearch_Core ladder = new PatternSearch_Saw(new WorldLocation(1, 1,
-					1), new WorldDistance(20, WorldDistance.KM), null, null,
-					"test search", new WorldDistance(160, WorldDistance.KM),
+		public final void testCreateRoute() {
+			final PatternSearch_Core ladder = new PatternSearch_Saw(null, new WorldDistance(20, WorldDistance.KM), null,
+					null, "test search", new WorldDistance(160, WorldDistance.KM),
 					new WorldDistance(160, WorldDistance.KM));
-			final WorldPath route = ladder.createSearchRoute(null);
-
-			// and put it into a route
-			ladder._myRoute = new TransitWaypoint(route, null, false,
-					new OnTopWaypoint());
-
-			// we need t
-			return ladder;
-		}
-
-		public final void testCreateRoute()
-		{
-			PatternSearch_Core ladder = new PatternSearch_Saw(null,
-					new WorldDistance(20, WorldDistance.KM), null, null, "test search",
-					new WorldDistance(160, WorldDistance.KM), new WorldDistance(160,
-							WorldDistance.KM));
 
 			// ok. now go for it
-			Status origin = new Status(1, 0);
+			final Status origin = new Status(1, 0);
 			origin.setLocation(SupportTesting.createLocation(0, 0));
 			origin.setCourse(90);
 			origin.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
@@ -355,49 +237,31 @@ public final class PatternSearch_Saw extends PatternSearch_Core implements
 			// and look at the resulting ladder
 			assertNotNull("ladder created", ladder._myRoute);
 
-			TransitWaypoint route = ladder._myRoute;
-			WorldPath path = route.getDestinations();
+			final TransitWaypoint route = ladder._myRoute;
+			final WorldPath path = route.getDestinations();
 			outputPoints(path);
 			assertNotNull("waypoints created", path);
 
 			assertEquals("path of correct length", 6, path.size());
 
-			assertEquals("first point right", " x,159999,y,19999",
-					SupportTesting.toXYString(path.getLocationAt(0)));
-			assertEquals("second point right", " x,0,y,39999",
-					SupportTesting.toXYString(path.getLocationAt(1)));
-			assertEquals("5th point right", " x,0,y,119999",
-					SupportTesting.toXYString(path.getLocationAt(5)));
+			assertEquals("first point right", " x,159999,y,19999", SupportTesting.toXYString(path.getLocationAt(0)));
+			assertEquals("second point right", " x,0,y,39999", SupportTesting.toXYString(path.getLocationAt(1)));
+			assertEquals("5th point right", " x,0,y,119999", SupportTesting.toXYString(path.getLocationAt(5)));
 		}
 
-		public static void outputPoints(WorldPath path)
-		{
-			Collection<WorldLocation> pts = path.getPoints();
-			Iterator<WorldLocation> iter = pts.iterator();
-			while (iter.hasNext())
-			{
-				WorldLocation pt = iter.next();
-				System.err.println(pt.getLong() + "," + pt.getLat());
-			}
-		}
+		public final void testSpeed() {
+			final WorldLocation originLoc = new WorldLocation(75, 0, 0);
 
-		public final void testSpeed()
-		{
-			WorldLocation originLoc = new WorldLocation(75, 0, 0);
-
-			PatternSearch_Core ladder = new PatternSearch_Saw(null,
-					new WorldDistance(20, WorldDistance.KM), new WorldDistance(200,
-							WorldDistance.METRES), new WorldSpeed(120, WorldSpeed.Kts),
-					"test search", new WorldDistance(160, WorldDistance.KM),
-					new WorldDistance(160, WorldDistance.KM));
+			final PatternSearch_Core ladder = new PatternSearch_Saw(null, new WorldDistance(20, WorldDistance.KM),
+					new WorldDistance(200, WorldDistance.METRES), new WorldSpeed(120, WorldSpeed.Kts), "test search",
+					new WorldDistance(160, WorldDistance.KM), new WorldDistance(160, WorldDistance.KM));
 
 			// and now the helo
-			Helo merlin = new Helo(12);
+			final Helo merlin = new Helo(12);
 			merlin.setMovementChars(HeloMovementCharacteristics.getSampleChars());
-			merlin.setCategory(new Category(Category.Force.BLUE,
-					Category.Environment.AIRBORNE, Category.Type.HELO));
-			Status start = new Status(12, TimePeriod.INVALID_TIME);
-			WorldLocation origin = originLoc;
+			merlin.setCategory(new Category(Category.Force.BLUE, Category.Environment.AIRBORNE, Category.Type.HELO));
+			final Status start = new Status(12, TimePeriod.INVALID_TIME);
+			final WorldLocation origin = originLoc;
 			origin.setDepth(-500);
 			start.setLocation(origin);
 			start.setSpeed(new WorldSpeed(140, WorldSpeed.Kts));
@@ -412,23 +276,114 @@ public final class PatternSearch_Saw extends PatternSearch_Core implements
 			cs.step();
 
 			// now run through to completion
-			while (cs.getTime() < 5400000)
-			{
+			while (cs.getTime() < 5400000) {
 				cs.step();
 			}
 
 			// dro.tearDown(cs);
 			// tpo.tearDown(cs);
-			assertEquals("at demanded speed", 120, merlin.getStatus().getSpeed()
-					.getValueIn(WorldSpeed.Kts), 0.001);
+			assertEquals("at demanded speed", 120, merlin.getStatus().getSpeed().getValueIn(WorldSpeed.Kts), 0.001);
 
 		}
 	}
 
+	// ////////////////////////////////////////////////
+	// constructor
+	// ////////////////////////////////////////////////
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * the name of this behaviour
+	 */
+	static final String SAW_SEARCH = "Performing saw search";
+
+	// ////////////////////////////////////////////////
+	// decision options
+	// ////////////////////////////////////////////////
+
+	/**
+	 * conduct a saw search
+	 *
+	 * @param myOrigin     the starting point
+	 * @param trackSpacing how far apart to make the legs
+	 * @param searchHeight the (optional) height/depth to conduct saw at
+	 * @param searchSpeed  the (optional) height/depth to conduct saw at
+	 * @param name         the name for this saw search behaviour
+	 * @param height       the height of the search area
+	 * @param width        the width of the search area
+	 */
+	public PatternSearch_Saw(final WorldLocation myOrigin, final WorldDistance trackSpacing,
+			final WorldDistance searchHeight, final WorldSpeed searchSpeed, final String name,
+			final WorldDistance height, final WorldDistance width) {
+		super(name, myOrigin, searchHeight, searchSpeed, trackSpacing, height, width);
+		_finished = false;
+	}
+
+	// ////////////////////////////////////////////////
+	// property editing
+	// ////////////////////////////////////////////////
+
+	/**
+	 * create the area search path as a route
+	 *
+	 * @param maxLegs      the maximum number of legs to fly
+	 * @param origin       the start datum
+	 * @param trackSpacing the spacing between loops of the spiral
+	 * @return a path containing the route to fly
+	 */
 	@Override
-	protected String getDescriptor()
-	{
+	protected WorldPath createSearchRoute(final WorldLocation currentLocation) {
+		final WorldPath route = new WorldPath();
+
+		final double _heightDegs = _height.getValueIn(WorldDistance.DEGS);
+		final double _widthDegs = _width.getValueIn(WorldDistance.DEGS);
+
+		double t, b, l, r, s;
+		b = getOrigin().getLat();
+		t = b + _heightDegs;
+		l = getOrigin().getLong();
+		r = l + _widthDegs;
+		s = _trackSpacing.getValueIn(WorldDistance.DEGS);
+
+		WorldLocation newP;
+
+		// do we need to navigate to the start point?
+		if ((currentLocation != null) && !getOrigin().equals(currentLocation)) {
+			newP = new WorldLocation(getOrigin());
+			addPointToRoute(_searchHeight, newP, route);
+		}
+
+		while (b <= t - 2 * s) {
+			b = b + s;
+			newP = new WorldLocation(b, r, 0);
+			addPointToRoute(_searchHeight, newP, route);
+			b = b + s;
+			newP = new WorldLocation(b, l, 0);
+			addPointToRoute(_searchHeight, newP, route);
+		}
+
+		return route;
+	}
+
+	// //////////////////////////////////////////////////////////
+	// model support
+	// //////////////////////////////////////////////////////////
+
+	@Override
+	protected String getDescriptor() {
 		return SAW_SEARCH;
+	}
+
+	@Override
+	public EditorType getInfo() {
+		if (_myEditor == null)
+			_myEditor = new SawSearchInfo(this);
+
+		return _myEditor;
 	}
 
 }
