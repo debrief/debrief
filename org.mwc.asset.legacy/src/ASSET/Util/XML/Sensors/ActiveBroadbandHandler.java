@@ -3,15 +3,20 @@ package ASSET.Util.XML.Sensors;
 
 import ASSET.Models.SensorType;
 
-/**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:
- *
- * @author
- * @version 1.0
- */
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *  
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *  
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *  
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *******************************************************************************/
 
 
 public abstract class ActiveBroadbandHandler extends BroadbandHandler

@@ -1,66 +1,18 @@
 
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
- *
- *    (C) 2000-2014, PlanetMayo Ltd
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
-
- */// Copyright MWC 1999, Debrief 3 Project
-// $RCSfile: CircleSymbol.java,v $
-// @author $Author: Ian.Mayo $
-// @version $Revision: 1.2 $
-// $Log: CircleSymbol.java,v $
-// Revision 1.2  2004/05/25 15:37:43  Ian.Mayo
-// Commit updates from home
-//
-// Revision 1.1.1.1  2004/03/04 20:31:23  ian
-// no message
-//
-// Revision 1.1.1.1  2003/07/17 10:07:36  Ian.Mayo
-// Initial import
-//
-// Revision 1.3  2003-01-31 11:31:21+00  ian_mayo
-// Provide methods to return shape as set of lines
-//
-// Revision 1.2  2002-05-28 09:25:55+01  ian_mayo
-// after switch to new system
-//
-// Revision 1.1  2002-05-28 09:14:19+01  ian_mayo
-// Initial revision
-//
-// Revision 1.1  2002-04-11 14:00:59+01  ian_mayo
-// Initial revision
-//
-// Revision 1.0  2001-07-17 08:43:12+01  administrator
-// Initial revision
-//
-// Revision 1.1  2001-01-16 19:29:41+00  novatech
-// Initial revision
-//
-
-
-package MWC.GUI.Shapes.Symbols.Geog;
-
-import java.awt.geom.Point2D;
-import java.util.Vector;
-
-import MWC.GUI.CanvasType;
-import MWC.GUI.Shapes.Symbols.PlainSymbol;
-import MWC.GenericData.WorldLocation;
-
-public class CircleSymbol extends PlainSymbol
-{
-  /**
- * // keep track of versions
- */
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *  
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *  
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *  
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *******************************************************************************/
   static final long serialVersionUID = 1;
 
   /**

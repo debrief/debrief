@@ -297,10 +297,20 @@ public final class ImportNarrative2 extends AbstractPlainLineImporter
 
   }
 
-  /*
-   * Copyright 2010 Oliver C Dodd http://01001111.net Licensed under the MIT license:
-   * http://www.opensource.org/licenses/mit-license.php
-   */
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *  
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *  
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *  
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *******************************************************************************/
   public static class LoremIpsum
   {
 

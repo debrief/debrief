@@ -1,55 +1,20 @@
 
 package ASSET.Util.XML.Decisions;
 
-/**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:
- * @author
- * @version 1.0
- * Log:
- *   $Log: RectangleWanderHandler.java,v $
- *   Revision 1.2  2006/09/11 15:15:49  Ian.Mayo
- *   Tidy to better reflect schema
- *
- *   Revision 1.1  2006/08/08 14:22:48  Ian.Mayo
- *   Second import
- *
- *   Revision 1.1  2006/08/07 12:26:57  Ian.Mayo
- *   First versions
- *
- *   Revision 1.4  2004/10/21 10:05:54  Ian.Mayo
- *   If depth isn't provided, set the depth range of target area to be huge
- *
- *   Revision 1.3  2004/08/20 13:33:26  Ian.Mayo
- *   Implement inspection recommendations to overcome hidden parent objects, let CoreDecision handle the activity bits.
- *
- *   Revision 1.2  2004/08/17 14:54:45  Ian.Mayo
- *   Refactor to introduce parent handler class capable of storing name & isActive flag
- *
- *   Revision 1.1  2004/05/24 16:12:56  Ian.Mayo
- *   Commit updates from home
- *
- *   Revision 1.2  2004/03/04 22:32:21  ian
- *   Minor tidying
- *
- *   Revision 1.1.1.1  2004/03/04 20:30:59  ian
- *   no message
- *
- *   Revision 1.6  2003/09/19 13:38:47  Ian.Mayo
- *   Switch to Speed and Distance objects instead of just doubles
- *
- *   Revision 1.5  2003/09/18 10:36:21  Ian.Mayo
- *   Reflect new location stucture
- *
- *   Revision 1.4  2003/09/11 13:48:02  Ian.Mayo
- *   Reflect moving decision models
- *
- *   Revision 1.3  2003/09/04 13:30:45  Ian.Mayo
- *   Reflect new Wander getter/setters
- *
- */
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *  
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *  
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *  
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *******************************************************************************/
 
 import ASSET.Models.Decision.Movement.RectangleWander;
 import ASSET.Util.XML.Decisions.Tactical.CoreDecisionHandler;

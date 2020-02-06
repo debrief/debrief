@@ -1,17 +1,4 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
- *
- *    (C) 2000-2014, PlanetMayo Ltd
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- */
+
 package MWC.GenericData;
 
 import java.awt.geom.Point2D;
@@ -328,20 +315,20 @@ public class WorldLocation implements Serializable, Cloneable
    */
   private static WorldVector _myWorldVector = new WorldVector(0, 0, 0);
 
-  /**
-   * algorithm taken from DistancePoint.java DistancePointSegmentExample, calculate distance to line
-   * Copyright (C) 2008 Pieter Iserbyt <pieter.iserbyt@gmail.com> Alogrithm found via Stack Overflow
-   * page at: http: //stackoverflow.com/questions/849211/shortest-distance-between-a-point-
-   * and-a-line-segment
-   * 
-   * @param lineStart
-   *          point (in degs) for line start
-   * @param lineEnd
-   *          point (in degs) for line end
-   * @param tgtPoint
-   *          point (in degs) for point of interest
-   * @return distance in degs from line to point
-   */
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *  
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *  
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *  
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *******************************************************************************/
   private static double distanceToSegment(final Point2D lineStart,
       final Point2D lineEnd, final Point2D tgtPoint)
   {

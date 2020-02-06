@@ -482,88 +482,18 @@ Viewpoint {
 
 
 
-/*
-
-WorldInfo {
-   title "Floppy's VRML97 Tutorial Example 1"
-   info ["(C) Copyright 1999 Vapour Technology"
-         "vrmlguide@vapourtech.com"]
-}
-
-
-
-Shape {
-   appearance Appearance {
-      material Material {
-         emissiveColor 0 0 1
-      }
-   }
-   geometry IndexedLineSet {
-      coord Coordinate {
-         point [
-            -2 4 3, -12.5 1.5 12.5,
-            2 4 2, 12.5 1.5 12.5,
-            2 4 -2, 12.5 1.5 -12.5,
-            -2 4 -2, -12.5 1.5 -12.5
-         ]
-      }
-      coordIndex [
-         0 1 -1
-         1 2 -1
-         2 3 -1
-         3 4 -1
-         4 5 -1
-         5 6 -1
-         6 7 -1
-         7 8 -1
-
-      ]
-   }
-}
-
-
-Transform {
-translation -11593 11891 0
-children
-Shape{ appearance Appearance {
-		material Material { diffuseColor 0.0 0.0 1.0 }}
-			geometry Text {
-	string ["VRML","SIM","97"]
-	length []
-	maxExtent 0.0}}}
-
-
-
-
-Transform {
-  translation -11.593733333333335 11.890286111111111 0.0
-  children
-	Shape{ appearance AppAppearance {
-    material Material { diffuseColor 0.0 0.0 1.0 }}
-    		geometry Box{}}}
-
-
-
-Shape{
-	geometry Box{size 10 0.1 0.1}
-}
-Shape{
-	geometry Box{size 0.1 10 0.1}
-}
-
-Shape{
-	geometry Box{size 0.1 0.1 10}
-}
-
-Transform {
-translation -549.482 6615.059 0.000
-children
-Shape{ appearance Appearance {
-		material Material { diffuseColor 1.0 1.0 1.0 }}
-			geometry Box{size 155.773 0.8 0.8}}}
-			geometry Box{size 0.8 55.964  0.8}}}
-			geometry Box{size 0.8 0.8 31.300}}}
-
-
-	*/
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *  
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *  
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *  
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *******************************************************************************/
 }
