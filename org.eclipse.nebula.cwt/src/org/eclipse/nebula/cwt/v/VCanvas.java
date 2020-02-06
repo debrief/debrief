@@ -16,9 +16,9 @@ import org.eclipse.swt.widgets.Composite;
 
 public class VCanvas extends Canvas {
 
-	private final VPanel panel;
-
-	public VCanvas(final Composite parent, final int style) {
+	private VPanel panel;
+	
+	public VCanvas(Composite parent, int style) {
 		super(parent, style);
 		panel = new VPanel(this, SWT.NONE);
 	}

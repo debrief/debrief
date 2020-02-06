@@ -14,7 +14,7 @@ package org.eclipse.nebula.cwt.animation.movement;
 /**
  * Implementation of a linear movement. The object will move at a constant
  * speed.
- *
+ * 
  * @author Nicolas Richeton
  */
 public class LinearInOut extends AbstractMovement {
@@ -23,21 +23,19 @@ public class LinearInOut extends AbstractMovement {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see org.sharemedia.gui.viewers.impl.gl.IMovement#getValue(int)
 	 */
-	@Override
-	public double getValue(final double step) {
+	public double getValue(double step) {
 		return min + increment * step;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see org.sharemedia.gui.viewers.impl.gl.IMovement#init(float, float, int)
 	 */
-	@Override
-	public void init(final double min, final double max, final int steps) {
+	public void init(double min, double max, int steps) {
 		increment = (max - min) / steps;
 		super.init(min, max, steps);
 	}

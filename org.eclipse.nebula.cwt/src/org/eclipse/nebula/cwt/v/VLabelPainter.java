@@ -19,20 +19,20 @@ import org.eclipse.swt.widgets.Event;
 public class VLabelPainter extends VControlPainter {
 
 	@Override
-	public void paintContent(final VControl control, final Event e) {
-		if (control.hasStyle(SWT.SEPARATOR)) {
-			final Display display = control.getDisplay();
-			final Rectangle bounds = control.getBounds();
-			if (control.hasStyle(SWT.HORIZONTAL)) {
+	public void paintContent(VControl control, Event e) {
+		if(control.hasStyle(SWT.SEPARATOR)) {
+			Display display = control.getDisplay();
+			Rectangle bounds = control.getBounds();
+			if(control.hasStyle(SWT.HORIZONTAL)) {
 				e.gc.setForeground(display.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
-				e.gc.drawLine(bounds.x - 1, bounds.y, bounds.x + bounds.width, bounds.y);
+				e.gc.drawLine(bounds.x-1, bounds.y, bounds.x+bounds.width, bounds.y);
 				e.gc.setForeground(display.getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
-				e.gc.drawLine(bounds.x + 1, bounds.y + 1, bounds.x + bounds.width - 2, bounds.y + 1);
+				e.gc.drawLine(bounds.x+1, bounds.y+1, bounds.x+bounds.width-2, bounds.y+1);
 			} else {
 				e.gc.setForeground(display.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
-				e.gc.drawLine(bounds.x, bounds.y - 1, bounds.x, bounds.y + bounds.height);
+				e.gc.drawLine(bounds.x, bounds.y-1, bounds.x, bounds.y+bounds.height);
 				e.gc.setForeground(display.getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
-				e.gc.drawLine(bounds.x + 1, bounds.y + 1, bounds.x + 1, bounds.y + bounds.height - 2);
+				e.gc.drawLine(bounds.x+1, bounds.y+1, bounds.x+1, bounds.y+bounds.height-2);
 			}
 		} else {
 			super.paintContent(control, e);

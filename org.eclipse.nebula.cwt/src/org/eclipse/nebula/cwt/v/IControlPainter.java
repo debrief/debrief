@@ -16,11 +16,11 @@ import org.eclipse.swt.widgets.Event;
 public interface IControlPainter {
 
 	public abstract void dispose();
-
+	
 	public abstract void paintBackground(VControl control, Event e);
-
+	
 	public abstract void paintBorders(VControl control, Event e);
-
+	
 	public abstract void paintContent(VControl control, Event e);
-
+	
 }

@@ -27,28 +27,29 @@ class SvgTransform {
 		data = new float[] { 1, 0, 0, 1, 0, 0 };
 	}
 
-	float[] apply(final float x, final float y) {
-		final float[] v = new float[2];
+	float[] apply(float x, float y) {
+		float[] v = new float[2];
 		v[0] = data[0] * x + data[2] * y + data[4];
 		v[1] = data[1] * x + data[3] * y + data[5];
 		return v;
 	}
 
 	boolean isIdentity() {
-		return data.length == 6 && data[0] == 1 && data[1] == 0 && data[2] == 0 && data[3] == 1 && data[4] == 0
-				&& data[5] == 0;
+		return data.length == 6 && data[0] == 1 && data[1] == 0 && data[2] == 0
+				&& data[3] == 1 && data[4] == 0 && data[5] == 0;
 	}
 
-	void scale(final float s) {
+	void scale(float s) {
 		scale(s, s);
 	}
 
-	void scale(final float x, final float y) {
+	void scale(float x, float y) {
 		data[0] = x;
 		data[3] = y;
 	}
 
-	void setData(final Type type, final String[] sa) {
+	
+	void setData(Type type, String[] sa) {
 		data = new float[] { 1, 0, 0, 1, 0, 0 };
 		switch (type) {
 		case Matrix: {
@@ -73,7 +74,7 @@ class SvgTransform {
 			break;
 		}
 		case Rotate: {
-			final float angle = Float.parseFloat(sa[0]);
+			float angle = Float.parseFloat(sa[0]);
 			data[0] = (float) cos(toRadians(angle));
 			data[1] = (float) sin(toRadians(angle));
 			data[2] = (float) -sin(toRadians(angle));
@@ -95,12 +96,12 @@ class SvgTransform {
 		}
 	}
 
-	void skew(final float x, final float y) {
+	void skew(float x, float y) {
 		data[2] = x;
 		data[1] = y;
 	}
-
-	void translate(final float x, final float y) {
+	
+	void translate(float x, float y) {
 		data[4] = x;
 		data[5] = y;
 	}

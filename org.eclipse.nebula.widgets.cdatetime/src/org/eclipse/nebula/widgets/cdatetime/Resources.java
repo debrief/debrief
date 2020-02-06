@@ -17,9 +17,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.Map.Entry;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -30,11 +30,10 @@ import org.eclipse.swt.widgets.Listener;
 class Resources {
 
 	private static Listener disposeListener = new Listener() {
-		@Override
-		public void handleEvent(final Event event) {
-			final List<String> invalids = new ArrayList<String>();
-			for (final Entry<String, Image> entry : images.entrySet()) {
-				final Image img = entry.getValue();
+		public void handleEvent(Event event) {
+			List<String> invalids = new ArrayList<String>();
+			for (Entry<String, Image> entry : images.entrySet()) {
+				Image img = entry.getValue();
 				if (event.display == img.getDevice()) {
 					invalids.add(entry.getKey());
 					if (!img.isDisposed()) {
@@ -42,7 +41,7 @@ class Resources {
 					}
 				}
 			}
-			for (final String key : invalids) {
+			for (String key : invalids) {
 				images.remove(key);
 			}
 		}
@@ -53,20 +52,21 @@ class Resources {
 	public static final String ICON_BULLET = "bullet.png";
 	public static final String ICON_CALENDAR_CLOCK = "dateclock.png";
 
-	private static final String BUNDLE_NAME = Resources.class.getPackage().getName() + ".messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = Resources.class.getPackage()
+			.getName() + ".messages"; //$NON-NLS-1$
 
 	private static ResourceBundle defaultBundle;
 	private static final Map<Locale, ResourceBundle> bundles = new HashMap<Locale, ResourceBundle>();
 
 	private static final Map<String, Image> images = new HashMap<String, Image>();
 
-	private static String getDefaultString(final String key) {
+	private static String getDefaultString(String key) {
 		if (defaultBundle == null) {
 			defaultBundle = ResourceBundle.getBundle(BUNDLE_NAME);
 		}
 		try {
 			return defaultBundle.getString(key);
-		} catch (final MissingResourceException e) {
+		} catch (MissingResourceException e) {
 			return '!' + key + '!';
 		}
 	}
@@ -79,44 +79,44 @@ class Resources {
 		return getImage(ICON_CALENDAR);
 	}
 
-	/**
-	 * @return
-	 */
-	public static Image getIconCalendarClock() {
-		return getImage(ICON_CALENDAR_CLOCK);
-	}
-
 	public static Image getIconClock() {
 		return getImage(ICON_CLOCK);
 	}
 
-	private static Image getImage(final String name) {
+	private static Image getImage(String name) {
 		Image img = images.get(name);
 		if (img == null || img.isDisposed()) {
-			final Display display = Display.getDefault();
+			Display display = Display.getDefault();
 			display.addListener(SWT.Dispose, disposeListener);
-			final InputStream inputStream = Resources.class.getResourceAsStream(name);
+			InputStream inputStream = Resources.class.getResourceAsStream(name);
 			img = new Image(display, inputStream);
 			images.put(name, img);
 		}
 		return img;
 	}
 
-	public static String getString(final String key) {
+	public static String getString(String key) {
 		return getString(key, Locale.getDefault());
 	}
 
-	public static String getString(final String key, final Locale locale) {
-		ResourceBundle bundle = bundles.get(locale);
+	public static String getString(String key, Locale locale) {
+		ResourceBundle bundle = (ResourceBundle) bundles.get(locale);
 		if (bundle == null) {
 			bundle = ResourceBundle.getBundle(BUNDLE_NAME, locale);
-			bundles.put(locale, bundle);
+			bundles.put(locale, bundle); 
 		}
 		try {
 			return bundle.getString(key);
-		} catch (final MissingResourceException e) {
-			return getDefaultString(key);
+		} catch (MissingResourceException e) {
+			return getDefaultString(key);  
 		}
+	}
+
+	/**
+	 * @return
+	 */
+	public static Image getIconCalendarClock() {
+		return getImage(ICON_CALENDAR_CLOCK);
 	}
 
 }

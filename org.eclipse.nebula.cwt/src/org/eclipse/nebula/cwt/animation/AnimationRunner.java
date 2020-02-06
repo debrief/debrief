@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Display;
 
 /**
  * An animation runner which can run only one effect at the same time.
- *
+ * 
  * @author Nicolas Richeton
  */
 public class AnimationRunner {
@@ -38,11 +38,23 @@ public class AnimationRunner {
 	/**
 	 * Create a new animation runner, which can run only one effect at the same
 	 * time.
-	 *
-	 * @param framerate the animation framerate.
+	 * 
+	 * @param framerate
+	 *            the animation framerate.
 	 */
-	public AnimationRunner(final int framerate) {
+	public AnimationRunner(int framerate) {
 		delay = 1000 / framerate;
+	}
+
+	/**
+	 * Start a new effect, cancelling the previous one if any.
+	 * 
+	 * @param effect
+	 */
+	public void runEffect(IEffect effect) {
+		cancel();
+		this.effect = effect;
+		startEffect();
 	}
 
 	/**
@@ -56,25 +68,12 @@ public class AnimationRunner {
 		}
 	}
 
-	/**
-	 * Start a new effect, cancelling the previous one if any.
-	 *
-	 * @param effect
-	 */
-	public void runEffect(final IEffect effect) {
-		cancel();
-		this.effect = effect;
-		startEffect();
-	}
-
 	private void startEffect() {
-		if (running) {
+		if (running)
 			return;
-		}
 
 		running = true;
 		Display.getCurrent().syncExec(new Runnable() {
-			@Override
 			public void run() {
 				if (!effect.isDone()) {
 					Display.getCurrent().timerExec(delay, this);

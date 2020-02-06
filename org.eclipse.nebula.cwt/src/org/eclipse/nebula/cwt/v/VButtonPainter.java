@@ -11,6 +11,7 @@
 
 package org.eclipse.nebula.cwt.v;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -23,12 +24,32 @@ import org.eclipse.swt.widgets.Event;
  */
 public class VButtonPainter extends VControlPainter {
 
+	@Override
+	public void paintBackground(VControl control, Event e) {
+		VButton button = (VButton) control;
+		if (button.hasState(VControl.STATE_ACTIVE | VControl.STATE_SELECTED)) {
+			if (e.gc.getAlpha() == 255) {
+				doPaintBackground(e.gc, button.bounds, button.getState());
+			} else {
+				Image img = new Image(e.display, new Rectangle(0, 0,
+						button.bounds.width, button.bounds.height));
+				GC gc = new GC(img);
+				doPaintBackground(gc, img.getBounds(), button.getState());
+				e.gc.drawImage(img, button.bounds.x, button.bounds.y);
+				gc.dispose();
+				img.dispose();
+			}
+		} else {
+			super.paintBackground(control, e);
+		}
+	}
+
 	/**
 	 * @param gc
 	 * @param bounds
 	 * @param state
 	 */
-	private void doPaintBackground(final GC gc, final Rectangle bounds, final int state) {
+	private void doPaintBackground(GC gc, Rectangle bounds, int state) {
 		Color outline = null, bkBlue = null;
 
 		if ((state & VControl.STATE_SELECTED) == VControl.STATE_SELECTED) {
@@ -48,25 +69,6 @@ public class VButtonPainter extends VControlPainter {
 
 			outline.dispose();
 			bkBlue.dispose();
-		}
-	}
-
-	@Override
-	public void paintBackground(final VControl control, final Event e) {
-		final VButton button = (VButton) control;
-		if (button.hasState(VControl.STATE_ACTIVE | VControl.STATE_SELECTED)) {
-			if (e.gc.getAlpha() == 255) {
-				doPaintBackground(e.gc, button.bounds, button.getState());
-			} else {
-				final Image img = new Image(e.display, new Rectangle(0, 0, button.bounds.width, button.bounds.height));
-				final GC gc = new GC(img);
-				doPaintBackground(gc, img.getBounds(), button.getState());
-				e.gc.drawImage(img, button.bounds.x, button.bounds.y);
-				gc.dispose();
-				img.dispose();
-			}
-		} else {
-			super.paintBackground(control, e);
 		}
 	}
 }

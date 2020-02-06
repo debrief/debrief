@@ -35,55 +35,55 @@ import org.eclipse.swt.widgets.Listener;
 
 public class CDatePanel extends Composite {
 
-	private final VPanel panel;
+	private VPanel panel;
 	private VPanel header;
-	private final VPanel body;
-	private final List<VNative<CDateTime>> pickers;
+	private VPanel body;
+	private List<VNative<CDateTime>> pickers;
 	private int headerSize;
 	private int pickerSize;
 
-	private final CDateTimeBuilder builder;
-	private final CDateTimePainter painter;
+	private CDateTimeBuilder builder;
+	private CDateTimePainter painter;
 
-	private final Locale locale;
+	private Locale locale;
 	private TimeZone timezone;
-	private final Calendar calendar;
+	private Calendar calendar;
 
-	private final SelectionAdapter listener = new SelectionAdapter() {
+	private SelectionAdapter listener = new SelectionAdapter() {
 		@Override
-		public void widgetDefaultSelected(final SelectionEvent e) {
-			final CDateTime cdt = (CDateTime) e.widget;
-			for (final VNative<CDateTime> picker : pickers) {
-				if (picker.getControl() != e.widget) {
+		public void widgetDefaultSelected(SelectionEvent e) {
+			CDateTime cdt = (CDateTime) e.widget;
+			for(VNative<CDateTime> picker : pickers) {
+				if(picker.getControl() != e.widget) {
 					picker.getControl().setSelection(cdt.getSelection());
 				}
 			}
 		}
 	};
 
-	public CDatePanel(final Composite parent, final int style) {
+	public CDatePanel(Composite parent, int style) {
 		super(parent, style);
 
 		panel = new VPanel(this, SWT.NONE);
-
+		
 		locale = Locale.getDefault();
 		try {
 			timezone = TimeZone.getDefault();
-		} catch (final Exception e) {
+		} catch(Exception e) {
 			timezone = TimeZone.getTimeZone("GMT");
 		}
 		calendar = Calendar.getInstance(this.timezone, this.locale);
 		calendar.setTime(new Date());
 
 		builder = new CDateTimeBuilder();
-		builder.setHeader(Header.Month().align(SWT.RIGHT, SWT.FILL, true).readOnly(),
-				Header.Year().align(SWT.LEFT, SWT.FILL, true).readOnly());
+		builder.setHeader(Header.Month().align(SWT.RIGHT, SWT.FILL, true).readOnly(), Header.Year().align(SWT.LEFT,
+				SWT.FILL, true).readOnly());
 		builder.setBody(Body.Days().compact());
 
 		painter = new CDateTimePainter() {
 			@Override
-			protected void paintDayPanelBorders(final VControl control, final Event e) {
-				final Rectangle r = control.getBounds();
+			protected void paintDayPanelBorders(VControl control, Event e) {
+				Rectangle r = control.getBounds();
 				e.gc.setForeground(e.display.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
 				e.gc.drawLine(r.x, r.y, r.x, r.y + r.height - 1);
 				e.gc.drawLine(r.x + r.width - 1, r.y, r.x + r.width - 1, r.y + r.height - 1);
@@ -94,13 +94,13 @@ public class CDatePanel extends Composite {
 		pickers = new ArrayList<VNative<CDateTime>>();
 		pickerSize = -1;
 
-		final VGridLayout layout = new VGridLayout();
+		VGridLayout layout = new VGridLayout();
 		layout.verticalSpacing = 2;
 		panel.setLayout(layout);
 
 		createHeader();
 
-		final VLabel sep = new VLabel(panel, SWT.HORIZONTAL | SWT.SEPARATOR);
+		VLabel sep = new VLabel(panel, SWT.HORIZONTAL | SWT.SEPARATOR);
 		sep.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 
 		body = new VPanel(panel, SWT.NONE);
@@ -108,18 +108,17 @@ public class CDatePanel extends Composite {
 		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		body.addListener(SWT.Resize, new Listener() {
-			@Override
-			public void handleEvent(final Event event) {
+			public void handleEvent(Event event) {
 				handleResize();
 			}
 		});
 	}
 
 	private void addMonth() {
-		final VNative<CDateTime> picker = VNative.create(CDateTime.class, body, CDT.MULTI | CDT.SIMPLE);
+		VNative<CDateTime> picker = VNative.create(CDateTime.class, body, CDT.MULTI | CDT.SIMPLE);
 		picker.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-		final CDateTime cdt = picker.getControl();
+		CDateTime cdt = picker.getControl();
 		cdt.setBuilder(builder);
 		cdt.setPainter(painter);
 		cdt.setPattern("MMMM d yyyy");
@@ -132,10 +131,10 @@ public class CDatePanel extends Composite {
 
 		updateMonths();
 	}
-
+	
 	private void createHeader() {
 		header = new VPanel(panel, SWT.NONE);
-		final VGridLayout layout = new VGridLayout(3, true);
+		VGridLayout layout = new VGridLayout(3, true);
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
 		header.setLayout(layout);
@@ -145,8 +144,7 @@ public class CDatePanel extends Composite {
 		b.setFill(getDisplay().getSystemColor(SWT.COLOR_GRAY));
 		b.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 		b.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(final Event event) {
+			public void handleEvent(Event event) {
 				calendar.add(Calendar.MONTH, -1);
 				updateMonths();
 			}
@@ -156,8 +154,7 @@ public class CDatePanel extends Composite {
 		b.setText("Today");
 		b.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		b.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(final Event event) {
+			public void handleEvent(Event event) {
 				calendar.setTimeInMillis(System.currentTimeMillis());
 				updateMonths();
 			}
@@ -167,8 +164,7 @@ public class CDatePanel extends Composite {
 		b.setFill(getDisplay().getSystemColor(SWT.COLOR_GRAY));
 		b.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 		b.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(final Event event) {
+			public void handleEvent(Event event) {
 				calendar.add(Calendar.MONTH, 1);
 				updateMonths();
 			}
@@ -182,37 +178,37 @@ public class CDatePanel extends Composite {
 	}
 
 	private void handleResize() {
-		if (pickerSize == -1) {
+		if(pickerSize == -1) {
 			setMonthCount(1);
 			pickerSize = pickers.get(0).computeSize(-1, -1).y;
 		}
 
-		final int height = getClientArea().height;
-		final int count = (int) Math.ceil((double) (height - headerSize) / pickerSize);
+		int height = getClientArea().height;
+		int count = (int) Math.ceil((double) (height - headerSize) / pickerSize);
 
 		setMonthCount(count);
 	}
 
 	private void removeMonth() {
-		if (!pickers.isEmpty()) {
-			final VNative<CDateTime> picker = pickers.remove(pickers.size() - 1);
+		if(!pickers.isEmpty()) {
+			VNative<CDateTime> picker = pickers.remove(pickers.size() - 1);
 			picker.dispose();
 		}
 	}
 
-	public void setMonthCount(final int count) {
-		while (count > pickers.size()) {
+	public void setMonthCount(int count) {
+		while(count > pickers.size()) {
 			addMonth();
 		}
-		while (count < pickers.size()) {
+		while(count < pickers.size()) {
 			removeMonth();
 		}
 	}
 
 	private void updateMonths() {
-		final Calendar tmpcal = Calendar.getInstance(timezone, locale);
+		Calendar tmpcal = Calendar.getInstance(timezone, locale);
 		tmpcal.setTime(calendar.getTime());
-		for (final VNative<CDateTime> picker : pickers) {
+		for(VNative<CDateTime> picker : pickers) {
 			picker.getControl().show(tmpcal.getTime());
 			tmpcal.add(Calendar.MONTH, 1);
 		}

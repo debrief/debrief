@@ -25,11 +25,11 @@ public class Header {
 	static final int MONTH = 5;
 	static final int YEAR = 6;
 	static final int TIME = 7;
-
+	
 	public static Header DateNow() {
 		return new Header(DATE_NOW, Calendar.YEAR, Calendar.MONTH);
 	}
-
+	
 	public static Header Month() {
 		return new Header(MONTH, Calendar.MONTH);
 	}
@@ -37,23 +37,23 @@ public class Header {
 	public static Header MonthNext() {
 		return new Header(MONTH_NEXT, Calendar.MONTH);
 	}
-
+	
 	public static Header MonthPrev() {
 		return new Header(MONTH_PREV, Calendar.MONTH);
 	}
-
+	
 	public static Header Time() {
 		return new Header(TIME, Calendar.HOUR, Calendar.HOUR_OF_DAY, Calendar.MINUTE);
 	}
-
+	
 	public static Header Year() {
 		return new Header(YEAR, Calendar.YEAR);
 	}
-
+	
 	public static Header YearNext() {
 		return new Header(YEAR_NEXT, Calendar.YEAR);
 	}
-
+	
 	public static Header YearPrev() {
 		return new Header(YEAR_PREV, Calendar.YEAR);
 	}
@@ -64,24 +64,24 @@ public class Header {
 	int alignment = SWT.FILL;
 	boolean grab = false;
 	boolean readOnly = false;
-
-	private Header(final int type, final int... field) {
+	
+	private Header(int type, int... field) {
 		this.type = type;
 		this.fields = field;
 	}
-
-	public Header align(final int alignment) {
+	
+	public Header align(int alignment) {
 		this.alignment = alignment;
 		return this;
 	}
-
-	public Header align(final int textAlignment, final int controlAlignment, final boolean grab) {
+	
+	public Header align(int textAlignment, int controlAlignment, boolean grab) {
 		this.textAlignment = textAlignment;
 		this.alignment = controlAlignment;
 		this.grab = grab;
 		return this;
 	}
-
+	
 	public Header grab() {
 		grab = true;
 		return this;

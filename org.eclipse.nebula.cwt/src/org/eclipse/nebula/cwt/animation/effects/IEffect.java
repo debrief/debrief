@@ -13,11 +13,6 @@ package org.eclipse.nebula.cwt.animation.effects;
 
 public interface IEffect {
 	/**
-	 * Set the effect as done and run the cancel runnable.
-	 */
-	public void cancel();
-
-	/**
 	 * Apply effect to the target according to the current time.
 	 */
 	public void doEffect();
@@ -26,4 +21,9 @@ public interface IEffect {
 	 * @return true if the effect as already reached its end.
 	 */
 	public boolean isDone();
+
+	/**
+	 * Set the effect as done and run the cancel runnable.
+	 */
+	public void cancel();
 }

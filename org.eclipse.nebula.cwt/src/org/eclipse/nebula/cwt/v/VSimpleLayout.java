@@ -16,25 +16,25 @@ import org.eclipse.swt.graphics.Point;
 public class VSimpleLayout extends VLayout {
 
 	@Override
-	protected Point computeSize(final VPanel panel, final int wHint, final int hHint, final boolean flushCache) {
-		final Point size = new Point(panel.marginLeft + panel.marginRight, panel.marginTop + panel.marginBottom);
-
-		final VControl[] children = panel.getChildren();
-		if (children.length > 0) {
-			final Point childSize = children[0].computeSize(wHint, hHint, flushCache);
+	protected Point computeSize(VPanel panel, int wHint, int hHint, boolean flushCache) {
+		Point size = new Point(panel.marginLeft+panel.marginRight, panel.marginTop+panel.marginBottom);
+		
+		VControl[] children = panel.getChildren();
+		if(children.length > 0) {
+			Point childSize = children[0].computeSize(wHint, hHint, flushCache);
 			size.x += childSize.x;
 			size.y += childSize.y;
 		}
-
+		
 		return size;
 	}
 
 	@Override
-	protected void layout(final VPanel panel, final boolean flushCache) {
-		final VControl[] children = panel.getChildren();
-		if (children.length > 0) {
+	protected void layout(VPanel panel, boolean flushCache) {
+		VControl[] children = panel.getChildren();
+		if(children.length > 0) {
 			children[0].setBounds(panel.getClientArea());
-			if (children[0] instanceof VPanel) {
+			if(children[0] instanceof VPanel) {
 				((VPanel) children[0]).layout(flushCache);
 			}
 		}

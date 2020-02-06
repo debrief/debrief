@@ -38,7 +38,7 @@ class SvgGradient extends SvgElement {
 	float[] data;
 	String linkId;
 	List<SvgGradientStop> stops;
-
+	
 	GC gc;
 	float[] bounds;
 	Pattern pattern;
@@ -46,20 +46,20 @@ class SvgGradient extends SvgElement {
 	int spreadMethod = PAD;
 	SvgTransform transform;
 
-	SvgGradient(final SvgContainer container, final String id) {
+	SvgGradient(SvgContainer container, String id) {
 		super(container, id);
 		stops = new ArrayList<SvgGradientStop>();
 	}
 
-	public void apply(final boolean foreground) {
-		final SvgGradientStop[] stops = getStops();
-		if (stops.length == 1) {
+	public void apply(boolean foreground) {
+		SvgGradientStop[] stops = getStops();
+		if(stops.length == 1) {
 			apply(gc, stops[0], foreground);
-		} else if (stops.length > 1) {
-			if (pattern == null) {
-				apply(gc, stops[stops.length - 1], foreground);
+		} else if(stops.length > 1) {
+			if(pattern == null) {
+				apply(gc, stops[stops.length-1], foreground);
 			} else {
-				if (foreground) {
+				if(foreground) {
 					gc.setForegroundPattern(pattern);
 				} else {
 					gc.setBackgroundPattern(pattern);
@@ -67,40 +67,40 @@ class SvgGradient extends SvgElement {
 			}
 		}
 	}
-
-	private void apply(final GC gc, final SvgGradientStop stop, final boolean foreground) {
-		final Color c = createColor(gc, stop.color);
-		if (foreground) {
+	
+	private void apply(GC gc, SvgGradientStop stop, boolean foreground) {
+		Color c = createColor(gc, stop.color);
+		if(foreground) {
 			gc.setForeground(c);
 		} else {
 			gc.setBackground(c);
 		}
 		c.dispose();
-		gc.setAlpha((int) (255 * stop.opacity));
+		gc.setAlpha((int)(255 * stop.opacity));
 	}
 
-	public void create(final SvgShape shape, final GC gc) {
+	public void create(SvgShape shape, GC gc) {
 		this.gc = gc;
-		if (boundingBox) {
+		if(boundingBox) {
 			bounds = shape.getBounds();
 		} else {
 			bounds = shape.getViewport();
 		}
 		try {
-			final Class<?> c = Class.forName("org.eclipse.nebula.cwt.SwtAdapter"); //$NON-NLS-1$
-			final Method m = c.getMethod("createPattern", SvgGradient.class); //$NON-NLS-1$
+			Class<?> c = Class.forName("org.eclipse.nebula.cwt.SwtAdapter"); //$NON-NLS-1$
+			Method m = c.getMethod("createPattern", SvgGradient.class); //$NON-NLS-1$
 			pattern = (Pattern) m.invoke(c, this);
-		} catch (final Exception e) {
+		} catch(Exception e) {
 			System.out.println("Could not create pattern - fragment must be missing"); //$NON-NLS-1$
 		}
 	}
 
-	private Color createColor(final GC gc, final int color) {
+	private Color createColor(GC gc, int color) {
 		return new Color(gc.getDevice(), color >> 16, (color & 0x00FF00) >> 8, color & 0x0000FF);
 	}
 
 	public void dispose() {
-		if (pattern != null) {
+		if(pattern != null) {
 			gc.setBackgroundPattern(null);
 			pattern.dispose();
 		}
@@ -110,11 +110,11 @@ class SvgGradient extends SvgElement {
 	}
 
 	public SvgGradientStop[] getStops() {
-		if (linkId != null) {
-			final Object def = getFragment().getElement(linkId);
-			if (def instanceof SvgGradient) {
-				final SvgGradientStop[] linkStops = ((SvgGradient) def).getStops();
-				if (linkStops.length > 0) {
+		if(linkId != null) {
+			Object def = getFragment().getElement(linkId);
+			if(def instanceof SvgGradient) {
+				SvgGradientStop[] linkStops = ((SvgGradient) def).getStops();
+				if(linkStops.length > 0) {
 					return linkStops;
 				}
 			}
@@ -126,34 +126,34 @@ class SvgGradient extends SvgElement {
 		return transform;
 	}
 
-	void setLinkId(final String id) {
-		if (id != null && id.length() > 2 && '#' == id.charAt(0)) {
+	void setLinkId(String id) {
+		if(id != null && id.length() > 2 && '#' == id.charAt(0)) {
 			linkId = id.substring(1);
 		} else {
 			linkId = null;
 		}
 	}
-
-	void setSpreadMethod(final String s) {
-		if (s != null) {
-			if ("pad".equals(s)) { //$NON-NLS-1$
+	
+	void setSpreadMethod(String s) {
+		if(s != null) {
+			if("pad".equals(s)) { //$NON-NLS-1$
 				spreadMethod = PAD;
-			} else if ("reflect".equals(s)) { //$NON-NLS-1$
+			} else if("reflect".equals(s)) { //$NON-NLS-1$
 				spreadMethod = REFLECT;
-			} else if ("repeat".equals(s)) { //$NON-NLS-1$
+			} else if("repeat".equals(s)) { //$NON-NLS-1$
 				spreadMethod = REPEAT;
 			}
 		}
 	}
-
-	void setTransform(final SvgTransform transform) {
+	
+	void setTransform(SvgTransform transform) {
 		this.transform = transform;
 	}
-
-	void setUnits(final String s) {
-		if (s != null) {
+	
+	void setUnits(String s) {
+		if(s != null) {
 			boundingBox = "objectBoundingBox".equals(s); //$NON-NLS-1$
 		}
 	}
-
+	
 }

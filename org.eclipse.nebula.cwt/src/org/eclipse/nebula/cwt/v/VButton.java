@@ -22,87 +22,16 @@ public class VButton extends VControl {
 	boolean paintInactive = false;
 	private boolean armed = false;
 
-	public VButton(final VPanel panel, final int style) {
+	public VButton(VPanel panel, int style) {
 		super(panel, style);
-		if (!hasStyle(SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) {
+		if(!hasStyle(SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) {
 			setStyle(SWT.PUSH, true);
 		}
-
+		
 		setPainter(new VButtonPainter());
-
+		
 		addListener(SWT.MouseDown);
 		addListener(SWT.MouseUp);
-	}
-
-	@Override
-	protected void filterEvent(final Event event) {
-		if (hasState(STATE_ACTIVE)) {
-			switch (event.type) {
-			case SWT.MouseDown:
-				setFocus();
-
-				if (event.button != 1) {
-					break;
-				}
-
-				if (hasStyle(SWT.PUSH)) {
-					if (setState(STATE_SELECTED, true)) {
-						redraw();
-					}
-					armed = true;
-				} else {
-					setState(STATE_SELECTED, !hasState(STATE_SELECTED));
-
-					final Event e = new Event();
-					e.type = SWT.Selection;
-					e.data = VButton.this;
-					e.button = event.button;
-					e.detail = event.detail;
-					e.display = event.display;
-					e.gc = event.gc;
-					e.height = event.height;
-					e.stateMask = event.stateMask;
-					e.time = event.time;
-					e.width = event.width;
-					e.x = event.x;
-					e.y = event.y;
-
-					notifyListeners(SWT.Selection, e);
-
-					redraw();
-				}
-				break;
-			case SWT.MouseUp:
-				if (event.button != 1) {
-					break;
-				}
-
-				if (hasStyle(SWT.PUSH)) {
-					if (setState(STATE_SELECTED, false)) {
-						redraw();
-					}
-				}
-				if (armed) {
-					final Event e = new Event();
-					e.type = SWT.Selection;
-					e.data = VButton.this;
-					e.button = event.button;
-					e.detail = event.detail;
-					e.display = event.display;
-					e.gc = event.gc;
-					e.height = event.height;
-					e.stateMask = event.stateMask;
-					e.time = event.time;
-					e.width = event.width;
-					e.x = event.x;
-					e.y = event.y;
-
-					notifyListeners(SWT.Selection, e);
-				}
-				armed = false;
-				break;
-			}
-		}
 	}
 
 	public boolean getNativeBackground() {
@@ -118,17 +47,87 @@ public class VButton extends VControl {
 		return VControl.Type.Button;
 	}
 
-	public void setPaintInactive(final boolean paintInactive) {
+	protected void filterEvent(Event event) {
+		if(hasState(STATE_ACTIVE)) {
+			switch(event.type) {
+			case SWT.MouseDown:
+				setFocus();
+				
+				if(event.button != 1) {
+					break;
+				}
+	
+				if(hasStyle(SWT.PUSH)) {
+					if(setState(STATE_SELECTED, true)) {
+						redraw();
+					}
+					armed = true;
+				} else {
+					setState(STATE_SELECTED, !hasState(STATE_SELECTED));
+	
+					Event e = new Event();
+					e.type = SWT.Selection;
+					e.data = VButton.this;
+					e.button = event.button;
+					e.detail = event.detail;
+					e.display = event.display;
+					e.gc = event.gc;
+					e.height = event.height;
+					e.stateMask = event.stateMask;
+					e.time = event.time;
+					e.width = event.width;
+					e.x = event.x;
+					e.y = event.y;
+	
+					notifyListeners(SWT.Selection, e);
+					
+					redraw();
+				}
+				break;
+			case SWT.MouseUp:
+				if(event.button != 1) {
+					break;
+				}
+	
+				if(hasStyle(SWT.PUSH)) {
+					if(setState(STATE_SELECTED, false)) {
+						redraw();
+					}
+				}
+				if(armed) {
+					Event e = new Event();
+					e.type = SWT.Selection;
+					e.data = VButton.this;
+					e.button = event.button;
+					e.detail = event.detail;
+					e.display = event.display;
+					e.gc = event.gc;
+					e.height = event.height;
+					e.stateMask = event.stateMask;
+					e.time = event.time;
+					e.width = event.width;
+					e.x = event.x;
+					e.y = event.y;
+	
+					notifyListeners(SWT.Selection, e);
+				}
+				armed = false;
+				break;
+			}
+		}
+	}
+
+	public void setPaintInactive(boolean paintInactive) {
 		this.paintInactive = paintInactive;
 	}
 
-	public void setPaintNative(final boolean paintNative) {
+	public void setPaintNative(boolean paintNative) {
 		this.paintNative = paintNative;
 	}
 
-	public void setSelection(final boolean select) {
-		if (!hasStyle(SWT.PUSH)) {
-			if (setState(STATE_SELECTED, select)) {
+	public void setSelection(boolean select) {
+		if(!hasStyle(SWT.PUSH)) {
+			if(setState(STATE_SELECTED, select)) {
 				redraw();
 			}
 		}

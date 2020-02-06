@@ -19,19 +19,20 @@ public class Body {
 	static final int MONTHS = 1;
 	static final int YEARS = 2;
 	static final int TIME = 3;
-
+	
+	
 	public static Body Days() {
 		return new Body(DAYS, Calendar.DATE);
 	}
-
+	
 	public static Body Months() {
 		return new Body(MONTHS, Calendar.MONTH);
 	}
-
+	
 	public static Body Time() {
 		return new Body(TIME, Calendar.HOUR, Calendar.HOUR_OF_DAY, Calendar.MINUTE);
 	}
-
+	
 	public static Body Years() {
 		return new Body(YEARS, Calendar.YEAR);
 	}
@@ -42,7 +43,7 @@ public class Body {
 	boolean newColumn = false;
 	boolean compact = false;
 
-	private Body(final int type, final int... fields) {
+	private Body(int type, int... fields) {
 		this.type = type;
 		this.fields = fields;
 	}
@@ -51,13 +52,13 @@ public class Body {
 		this.compact = true;
 		return this;
 	}
-
+	
 	public Body newColumn() {
 		this.newColumn = true;
 		return this;
 	}
 
-	public Body spacedAt(final int spacing) {
+	public Body spacedAt(int spacing) {
 		this.spacing = spacing;
 		return this;
 	}

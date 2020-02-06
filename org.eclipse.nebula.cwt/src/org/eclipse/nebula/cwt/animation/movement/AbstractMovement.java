@@ -13,7 +13,7 @@ package org.eclipse.nebula.cwt.animation.movement;
 
 /**
  * Abstract implementation of IMovement.
- *
+ * 
  * @author Nicolas Richeton
  */
 public abstract class AbstractMovement implements IMovement {
@@ -24,20 +24,18 @@ public abstract class AbstractMovement implements IMovement {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see org.eclipse.nebula.cwt.animation.movement.IMovement#getValue(double)
 	 */
-	@Override
 	public abstract double getValue(double step);
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see org.eclipse.nebula.cwt.animation.movement.IMovement#init(double, double,
 	 * int)
 	 */
-	@Override
-	public void init(final double minValue, final double maxValue, final int steps) {
+	public void init(double minValue, double maxValue, int steps) {
 		this.min = minValue;
 		this.max = maxValue;
 		this.duration = steps;

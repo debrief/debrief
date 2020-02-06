@@ -10,6 +10,7 @@
  *****************************************************************************/
 package org.eclipse.nebula.cwt.svg;
 
+
 class SvgGradientStop extends SvgElement {
 
 	/**
@@ -18,25 +19,25 @@ class SvgGradientStop extends SvgElement {
 	Float offset;
 	Integer color;
 	Float opacity;
-
-	SvgGradientStop(final SvgGradient gradient, final String id) {
+	
+	SvgGradientStop(SvgGradient gradient, String id) {
 		super(gradient.getContainer(), id);
 	}
-
+	
 	int alpha() {
 		return (int) (255 * opacity);
 	}
-
+	
 	int blue() {
 		return color & 0x0000FF;
 	}
-
+	
 	int green() {
 		return (color & 0x00FF00) >> 8;
 	}
-
+	
 	int red() {
 		return color >> 16;
 	}
-
+	
 }

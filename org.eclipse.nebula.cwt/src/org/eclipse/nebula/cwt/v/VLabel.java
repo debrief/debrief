@@ -16,32 +16,36 @@ import org.eclipse.swt.graphics.Point;
 
 public class VLabel extends VControl {
 
-	public VLabel(final VPanel panel, final int style) {
+	public VLabel(VPanel panel, int style) {
 		super(panel, style | SWT.NO_FOCUS);
-		if (hasStyle(SWT.SEPARATOR)) {
+		if(hasStyle(SWT.SEPARATOR)) {
 			setMargins(0, 0);
 		}
 		setPainter(new VLabelPainter());
 	}
-
+	
 	@Override
-	public Point computeSize(final int wHint, final int hHint, final boolean changed) {
-		if (hasStyle(SWT.SEPARATOR)) {
-			return new Point(2, 2);
+	public Point computeSize(int wHint, int hHint, boolean changed) {
+		if(hasStyle(SWT.SEPARATOR)) {
+			return new Point(2,2);
 		} else {
 			return super.computeSize(wHint, hHint, changed);
 		}
 	}
-
+	
 	@Override
 	public Type getType() {
 		return VControl.Type.Label;
 	}
 
 	@Override
-	public void setBounds(final int x, final int y, final int width, final int height) {
-		super.setBounds(x, y, (hasStyle(SWT.SEPARATOR) && !hasStyle(SWT.HORIZONTAL)) ? 2 : width,
-				(hasStyle(SWT.SEPARATOR) && hasStyle(SWT.HORIZONTAL)) ? 2 : height);
+	public void setBounds(int x, int y, int width, int height) {
+		super.setBounds(
+				x,
+				y,
+				(hasStyle(SWT.SEPARATOR) && !hasStyle(SWT.HORIZONTAL)) ? 2 : width,
+				(hasStyle(SWT.SEPARATOR) && hasStyle(SWT.HORIZONTAL)) ? 2 : height
+			);
 	}
 
 }

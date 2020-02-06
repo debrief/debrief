@@ -10,27 +10,28 @@
  *******************************************************************************/
 package org.eclipse.nebula.cwt.animation.movement;
 
+
 /**
  * This is not an easing equation. This movement goes from f(0)=0 to f(t)=0 with
  * intermediate values between -amplitude and amplitude an decreasing with time.
- *
+ * 
  * @author Nicolas Richeton
- *
+ * 
  */
 public class SinusDecreaseVariation extends AbstractMovement {
 
 	int variations = 1;
 	double amplitude;
 
-	public SinusDecreaseVariation(final int nb, final double amplitude) {
+	public SinusDecreaseVariation(int nb, double amplitude) {
 		super();
 		variations = nb;
 		this.amplitude = amplitude;
 	}
 
-	@Override
-	public double getValue(final double step) {
-		return amplitude * (1 - step / duration) * Math.sin(step / duration * Math.PI * variations);
+	
+	public double getValue(double step) {
+		return amplitude * (1 - step / duration) * Math.sin(step / duration * Math.PI * (double) variations);
 	}
 
 }

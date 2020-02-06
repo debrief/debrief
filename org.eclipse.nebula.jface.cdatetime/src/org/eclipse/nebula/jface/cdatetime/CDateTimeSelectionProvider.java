@@ -17,81 +17,73 @@ import org.eclipse.swt.widgets.Composite;
 
 public class CDateTimeSelectionProvider implements ISelectionProvider, SelectionListener {
 
-	private final CDateTime cdt;
-	private final ListenerList selectionChangedListeners = new ListenerList(ListenerList.IDENTITY);
-
-	public CDateTimeSelectionProvider(final CDateTime cdt) {
+	private CDateTime cdt;
+	private ListenerList selectionChangedListeners = new ListenerList(ListenerList.IDENTITY);
+	
+	public CDateTimeSelectionProvider(CDateTime cdt) {
 		this.cdt = cdt;
 		cdt.addSelectionListener(this);
 	}
 
-	public CDateTimeSelectionProvider(final Composite parent, final int style) {
+	public CDateTimeSelectionProvider(Composite parent, int style) {
 		cdt = new CDateTime(parent, style);
 		cdt.addSelectionListener(this);
 	}
-
-	@Override
-	public void addSelectionChangedListener(final ISelectionChangedListener listener) {
+	
+	public void addSelectionChangedListener(ISelectionChangedListener listener) {
 		selectionChangedListeners.add(listener);
 	}
 
-	/**
-	 * Notifies any selection changed listeners that the viewer's selection has
-	 * changed. Only listeners registered at the time this method is called are
-	 * notified.
-	 *
-	 * @param event a selection changed event
-	 *
-	 * @see ISelectionChangedListener#selectionChanged
-	 */
-	private void fireSelectionChanged(final SelectionChangedEvent event) {
-		final Object[] listeners = selectionChangedListeners.getListeners();
-		for (int i = 0; i < listeners.length; ++i) {
-			final ISelectionChangedListener l = (ISelectionChangedListener) listeners[i];
-			SafeRunnable.run(new SafeRunnable() {
-				@Override
-				public void run() {
-					l.selectionChanged(event);
-				}
-			});
-		}
-	}
+    /**
+     * Notifies any selection changed listeners that the viewer's selection has changed.
+     * Only listeners registered at the time this method is called are notified.
+     *
+     * @param event a selection changed event
+     *
+     * @see ISelectionChangedListener#selectionChanged
+     */
+    private void fireSelectionChanged(final SelectionChangedEvent event) {
+        Object[] listeners = selectionChangedListeners.getListeners();
+        for (int i = 0; i < listeners.length; ++i) {
+            final ISelectionChangedListener l = (ISelectionChangedListener) listeners[i];
+            SafeRunnable.run(new SafeRunnable() {
+                public void run() {
+                    l.selectionChanged(event);
+                }
+            });
+        }
+    }
 
-	public CDateTime getCDateTime() {
+    public CDateTime getCDateTime() {
 		return cdt;
 	}
-
-	@Override
+	
 	public ISelection getSelection() {
 		return new StructuredSelection(cdt.getSelection());
 	}
 
-	@Override
-	public void removeSelectionChangedListener(final ISelectionChangedListener listener) {
+	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
 		selectionChangedListeners.remove(listener);
 	}
 
-	@Override
-	public void setSelection(final ISelection selection) {
-		if (!selection.isEmpty() && (selection instanceof IStructuredSelection)) {
-			final Object obj = ((IStructuredSelection) selection).getFirstElement();
-			if (obj instanceof Date) {
+	public void setSelection(ISelection selection) {
+		if(!selection.isEmpty() && (selection instanceof IStructuredSelection)) {
+			Object obj = ((IStructuredSelection) selection).getFirstElement();
+			if(obj instanceof Date) {
 				cdt.setSelection((Date) obj);
 			}
 		}
 	}
 
-	@Override
-	public void widgetDefaultSelected(final SelectionEvent event) {
-		final IStructuredSelection sel = new StructuredSelection(cdt.getSelection());
-		final SelectionChangedEvent sce = new SelectionChangedEvent(this, sel);
+	public void widgetDefaultSelected(SelectionEvent event) {
+		IStructuredSelection sel = new StructuredSelection(cdt.getSelection());
+		SelectionChangedEvent sce = new SelectionChangedEvent(this, sel);
 		fireSelectionChanged(sce);
 	}
 
-	@Override
-	public void widgetSelected(final SelectionEvent event) {
-		final IStructuredSelection sel = new StructuredSelection(cdt.getSelection());
-		final SelectionChangedEvent e = new SelectionChangedEvent(this, sel);
+	public void widgetSelected(SelectionEvent event) {
+		IStructuredSelection sel = new StructuredSelection(cdt.getSelection());
+		SelectionChangedEvent e = new SelectionChangedEvent(this, sel);
 		fireSelectionChanged(e);
 	}
 

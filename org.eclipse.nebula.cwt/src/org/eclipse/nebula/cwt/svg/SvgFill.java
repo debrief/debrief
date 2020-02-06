@@ -16,20 +16,19 @@ class SvgFill extends SvgPaint {
 
 	Integer rule = null;
 
-	SvgFill(final SvgGraphic parent) {
+	SvgFill(SvgGraphic parent) {
 		super(parent);
 	}
-
-	@Override
+	
 	void apply() {
-		if (paintServer != null) {
+		if(paintServer != null) {
 			paintServer.apply(false);
 		} else {
-			final Color c = new Color(gc.getDevice(), color >> 16, (color & 0x00FF00) >> 8, color & 0x0000FF);
+			Color c = new Color(gc.getDevice(), color >> 16, (color & 0x00FF00) >> 8, color & 0x0000FF);
 			gc.setBackground(c);
 			c.dispose();
 			gc.setFillRule(rule);
-			gc.setAlpha((int) (255 * opacity));
+			gc.setAlpha((int)(255 * opacity));
 		}
 	}
 

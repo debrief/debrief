@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 class SvgColors {
-
+	
 	private static final Map<String, Integer> colors = new HashMap<String, Integer>(147);
 	static {
 		colors.put("aliceblue", 0xf0f8ff); //$NON-NLS-1$
@@ -166,14 +166,14 @@ class SvgColors {
 		colors.put("yellowgreen", 0x9acd32); //$NON-NLS-1$
 	}
 
-	static boolean contains(final String color) {
+	static boolean contains(String color) {
 		return colors.containsKey(color);
 	}
 
-	static int get(final String color) {
+	static int get(String color) {
 		return colors.get(color);
 	}
-
+	
 	private SvgColors() {
 		// class should never be instantiated
 	}

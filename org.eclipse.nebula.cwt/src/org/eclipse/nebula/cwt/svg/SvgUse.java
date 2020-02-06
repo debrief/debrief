@@ -16,10 +16,8 @@ import org.eclipse.swt.graphics.GC;
  * An SvgUse is an svg graphical element that uses another, previously defined
  * graphical element to paint to the graphics context with its own set of styles
  * and transforms.
- * <p>
- * See also: <a href=
- * "http://www.w3.org/TR/SVG/struct.html#UseElement">http://www.w3.org/TR/SVG/struct.html#UseElement</a>
- * </p>
+ * <p>See also:
+ * <a href="http://www.w3.org/TR/SVG/struct.html#UseElement">http://www.w3.org/TR/SVG/struct.html#UseElement</a></p>
  */
 public class SvgUse extends SvgGraphic {
 
@@ -28,44 +26,41 @@ public class SvgUse extends SvgGraphic {
 	float y;
 	Float w;
 	Float h;
-
-	SvgUse(final SvgContainer container, final String id) {
+	
+	SvgUse(SvgContainer container, String id) {
 		super(container, id);
 	}
 
-	@Override
-	public void apply(final GC gc) {
-		final SvgGraphic graphic = getGraphic();
-		if (graphic != null) {
+	public void apply(GC gc) {
+		SvgGraphic graphic = getGraphic();
+		if(graphic != null) {
 			// TODO: proxy container?
-			final SvgContainer c = graphic.getContainer();
+			SvgContainer c = graphic.getContainer();
 			graphic.setContainer(getContainer());
 			graphic.apply(gc);
 			graphic.setContainer(c);
 		}
 	}
 
-	@Override
 	SvgFill getFill() {
-		final SvgGraphic graphic = getGraphic();
-		if (graphic != null) {
+		SvgGraphic graphic = getGraphic();
+		if(graphic != null) {
 			return graphic.getFill();
 		}
 		return null;
 	}
-
+	
 	private SvgGraphic getGraphic() {
-		final Object def = getFragment().getElement(linkId);
-		if (def instanceof SvgGraphic) {
+		Object def = getFragment().getElement(linkId);
+		if(def instanceof SvgGraphic) {
 			return (SvgGraphic) def;
 		}
 		return null;
 	}
 
-	@Override
 	SvgStroke getStroke() {
-		final SvgGraphic graphic = getGraphic();
-		if (graphic != null) {
+		SvgGraphic graphic = getGraphic();
+		if(graphic != null) {
 			return graphic.getStroke();
 		}
 		return null;

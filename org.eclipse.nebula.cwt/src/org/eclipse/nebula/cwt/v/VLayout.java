@@ -16,7 +16,7 @@ import org.eclipse.swt.graphics.Point;
 public abstract class VLayout {
 
 	protected abstract Point computeSize(VPanel panel, int wHint, int hHint, boolean flushCache);
-
+	
 	protected abstract void layout(VPanel panel, boolean flushCache);
 
 }
