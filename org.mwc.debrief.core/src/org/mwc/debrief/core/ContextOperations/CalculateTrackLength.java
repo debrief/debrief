@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.debrief.core.ContextOperations;
 
 import java.awt.datatransfer.Clipboard;
@@ -57,202 +58,172 @@ import MWC.GenericData.WorldLocation;
 /**
  * @author ian.mayo
  */
-public class CalculateTrackLength implements RightClickContextItemGenerator
-{
+public class CalculateTrackLength implements RightClickContextItemGenerator {
 
-  /**
-   * @param parent
-   * @param theLayers
-   * @param parentLayers
-   * @param subjects
-   */
-  public void generate(final IMenuManager parent, final Layers theLayers,
-      final Layer[] parentLayers, final Editable[] subjects)
-  {
-    TrackWrapper subject = null;
+	private static class CalculateTrackLengthOperation extends CMAPOperation {
 
-    // we're only going to work with two or more items
-    if (subjects.length == 1)
-    {
-      Editable item = subjects[0];
-      if (item instanceof TrackWrapper)
-      {
-        subject = (TrackWrapper) item;
-      }
-    }
+		/**
+		 * the parent to update on completion
+		 */
+		private final TrackWrapper _subject;
 
-    // ok, is it worth going for?
-    if (subject != null)
-    {
+		public CalculateTrackLengthOperation(final String title, final TrackWrapper subject) {
+			super(title);
+			_subject = subject;
+		}
 
-      // right,stick in a separator
-      parent.add(new Separator());
+		@Override
+		public boolean canRedo() {
+			return false;
+		}
 
-      final String theTitle = "Calculate track length (visible positions)";
-      final TrackWrapper finalItem = subject;
+		@Override
+		public boolean canUndo() {
+			return false;
+		}
 
-      // create this operation
-      final Action doMerge = new Action(theTitle)
-      {
-        public void run()
-        {
-          final IUndoableOperation theAction =
-              new CalculateTrackLengthOperation(theTitle, finalItem);
+		@Override
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
+			// get the positions
+			final Enumeration<Editable> positions = _subject.getPositionIterator();
 
-          CorePlugin.run(theAction);
-        }
-      };
-      parent.add(doMerge);
-    }
-  }
+			double distanceDegs = 0;
+			WorldLocation lastLoc = null;
 
-  private static class CalculateTrackLengthOperation extends CMAPOperation
-  {
+			// get distance frmm previous
+			while (positions.hasMoreElements()) {
+				final FixWrapper thisF = (FixWrapper) positions.nextElement();
+				if (thisF.getVisible()) {
+					if (lastLoc != null) {
+						// distance
+						distanceDegs += thisF.getLocation().subtract(lastLoc).getRange();
+					}
+					// remember the location
+					lastLoc = thisF.getLocation();
+				}
+			}
 
-    /**
-     * the parent to update on completion
-     */
-    private final TrackWrapper _subject;
+			// convert to current units
+			final rangeCalc calc = new rangeCalc();
+			final String units = calc.getUnits();
+			final double range = rangeCalc.convertRange(distanceDegs, units);
 
-    public CalculateTrackLengthOperation(final String title,
-        final TrackWrapper subject)
-    {
-      super(title);
-      _subject = subject;
-    }
+			final DecimalFormat df = new DecimalFormat("0.0000");
+			final String res = df.format(range) + " " + units;
 
-    public IStatus
-        execute(final IProgressMonitor monitor, final IAdaptable info)
-            throws ExecutionException
-    {
-      // get the positions
-      Enumeration<Editable> positions = _subject.getPositionIterator();
+			// and show the message dialog
+			final Shell shell = Display.getDefault().getActiveShell();
 
-      double distanceDegs = 0;
-      WorldLocation lastLoc = null;
+			final Dialog dlg = new LengthDialog(shell, res, _subject.getName());
+			dlg.open();
 
-      // get distance frmm previous
-      while (positions.hasMoreElements())
-      {
-        FixWrapper thisF = (FixWrapper) positions.nextElement();
-        if (thisF.getVisible())
-        {
-          if (lastLoc != null)
-          {
-            // distance
-            distanceDegs += thisF.getLocation().subtract(lastLoc).getRange();
-          }
-          // remember the location
-          lastLoc = thisF.getLocation();
-        }
-      }
+			// return CANCEL so this event doesn't get put onto the undo buffer,
+			// and unnecessarily block the undo queue
+			return Status.CANCEL_STATUS;
+		}
 
-      // convert to current units
-      rangeCalc calc = new rangeCalc();
-      String units = calc.getUnits();
-      double range = rangeCalc.convertRange(distanceDegs, units);
+		@Override
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
+			CorePlugin.logError(IStatus.INFO, "Undo not relevant to calculate track length", null);
+			return null;
+		}
+	}
 
-      DecimalFormat df = new DecimalFormat("0.0000");
-      String res = df.format(range) + " " + units;
+	public static class LengthDialog extends Dialog implements ClipboardOwner {
 
-      // and show the message dialog
-      final Shell shell = Display.getDefault().getActiveShell();
+		private final String _dist;
+		private final String _track;
 
-      Dialog dlg = new LengthDialog(shell, res, _subject.getName());
-      dlg.open();
+		public LengthDialog(final Shell parentShell, final String res, final String track) {
+			super(parentShell);
+			_dist = res;
+			_track = track;
+		}
 
-      // return CANCEL so this event doesn't get put onto the undo buffer,
-      // and unnecessarily block the undo queue
-      return Status.CANCEL_STATUS;
-    }
+		// overriding this methods allows you to set the
+		// title of the custom dialog
+		@Override
+		protected void configureShell(final Shell newShell) {
+			super.configureShell(newShell);
+			newShell.setText("Calculate track length");
+		}
 
-    @Override
-    public boolean canRedo()
-    {
-      return false;
-    }
+		@Override
+		protected Control createDialogArea(final Composite parent) {
+			final Composite container = (Composite) super.createDialogArea(parent);
+			final Label label = new Label(container, SWT.NONE);
+			label.setText("Length of track " + _track + " is " + _dist);
+			final Button button = new Button(container, SWT.PUSH);
+			button.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+			button.setText("Copy to clipboard");
+			final ClipboardOwner owner = this;
+			button.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(final SelectionEvent e) {
+					final Clipboard clip = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
 
-    @Override
-    public boolean canUndo()
-    {
-      return false;
-    }
+					// put the string in a holder
+					final StringSelection sel = new java.awt.datatransfer.StringSelection(_dist);
 
-    @Override
-    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
-        throws ExecutionException
-    {
-      CorePlugin.logError(Status.INFO,
-          "Undo not relevant to calculate track length", null);
-      return null;
-    }
-  }
+					// and put it on the clipboard
+					clip.setContents(sel, owner);
+				}
+			});
 
-  public static class LengthDialog extends Dialog implements ClipboardOwner
-  {
+			return container;
+		}
 
-    private final String _dist;
-    private final String _track;
+		@Override
+		protected Point getInitialSize() {
+			return new Point(450, 200);
+		}
 
-    public LengthDialog(Shell parentShell, String res, String track)
-    {
-      super(parentShell);
-      _dist = res;
-      _track = track;
-    }
+		@Override
+		public void lostOwnership(final Clipboard clipboard, final Transferable contents) {
+			// don't worrh - it doesn't matter to us
+		}
 
-    @Override
-    protected Control createDialogArea(Composite parent)
-    {
-      Composite container = (Composite) super.createDialogArea(parent);
-      Label label = new Label(container, SWT.NONE);
-      label.setText("Length of track " + _track + " is " + _dist);
-      Button button = new Button(container, SWT.PUSH);
-      button
-          .setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-      button.setText("Copy to clipboard");
-      final ClipboardOwner owner = this;
-      button.addSelectionListener(new SelectionAdapter()
-      {
-        @Override
-        public void widgetSelected(SelectionEvent e)
-        {
-          final Clipboard clip =
-              java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
+	}
 
-          // put the string in a holder
-          final StringSelection sel =
-              new java.awt.datatransfer.StringSelection(_dist);
+	/**
+	 * @param parent
+	 * @param theLayers
+	 * @param parentLayers
+	 * @param subjects
+	 */
+	@Override
+	public void generate(final IMenuManager parent, final Layers theLayers, final Layer[] parentLayers,
+			final Editable[] subjects) {
+		TrackWrapper subject = null;
 
-          // and put it on the clipboard
-          clip.setContents(sel, owner);
-        }
-      });
+		// we're only going to work with two or more items
+		if (subjects.length == 1) {
+			final Editable item = subjects[0];
+			if (item instanceof TrackWrapper) {
+				subject = (TrackWrapper) item;
+			}
+		}
 
-      return container;
-    }
+		// ok, is it worth going for?
+		if (subject != null) {
 
-    // overriding this methods allows you to set the
-    // title of the custom dialog
-    @Override
-    protected void configureShell(Shell newShell)
-    {
-      super.configureShell(newShell);
-      newShell.setText("Calculate track length");
-    }
+			// right,stick in a separator
+			parent.add(new Separator());
 
-    @Override
-    protected Point getInitialSize()
-    {
-      return new Point(450, 200);
-    }
+			final String theTitle = "Calculate track length (visible positions)";
+			final TrackWrapper finalItem = subject;
 
-    @Override
-    public void lostOwnership(Clipboard clipboard, Transferable contents)
-    {
-      // don't worrh - it doesn't matter to us
-    }
+			// create this operation
+			final Action doMerge = new Action(theTitle) {
+				@Override
+				public void run() {
+					final IUndoableOperation theAction = new CalculateTrackLengthOperation(theTitle, finalItem);
 
-  }
+					CorePlugin.run(theAction);
+				}
+			};
+			parent.add(doMerge);
+		}
+	}
 
 }

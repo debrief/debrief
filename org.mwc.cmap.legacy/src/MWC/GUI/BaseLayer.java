@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: BaseLayer.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.10 $
@@ -148,27 +149,84 @@ import java.util.Enumeration;
 
 /**
  * this class is a collection of objects which may be plotted to a Chart
- * 
+ *
  * @version $Revision: 1.10 $
  * @see Plottables
  * @see Plottable
  */
-public class BaseLayer extends Plottables implements Layer, SupportsPropertyListeners
-{
+public class BaseLayer extends Plottables implements Layer, SupportsPropertyListeners {
 
-	/** marker interface for layers that implement their own getRange(), and where
-	 * our processing should not inspect the children
-	 * @author ian
-	 *
-	 */
-	public static interface ProvidesRange
-	{
-		
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	static public class BaseLayerTest extends junit.framework.TestCase {
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public BaseLayerTest(final String val) {
+			super(val);
+		}
+
+		public void testMyParams() {
+			MWC.GUI.Editable ed = new BaseLayer();
+			editableTesterSupport.testParams(ed, this);
+			ed = null;
+		}
 	}
-	
+
 	// ///////////////////////////////////////////////////////////
 	// member variables
 	// //////////////////////////////////////////////////////////
+
+	// ////////////////////////////////////////////////////
+	// bean info for this class
+	// ///////////////////////////////////////////////////
+	public class LayerInfo extends Editable.EditorType {
+
+		public LayerInfo(final BaseLayer data) {
+			super(data, data.getName(), "");
+		}
+
+		@Override
+		@SuppressWarnings("rawtypes")
+		public MethodDescriptor[] getMethodDescriptors() {
+			// just add the reset color field first
+			final Class c = BaseLayer.class;
+			final MethodDescriptor mds[] = { method(c, "exportShape", null, "Export Shape"),
+					method(c, "hideChildren", null, "Hide All Children"),
+					method(c, "revealChildren", null, "Reveal All Children") };
+			return mds;
+		}
+
+		@Override
+		public PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final PropertyDescriptor[] res = { prop("Visible", "the Layer visibility", VISIBILITY),
+						prop("Name", "the name of the Layer", FORMAT),
+						displayProp("LineThickness", "Line thickness", "the thickness of lines in this layer", FORMAT),
+						expertProp("Buffered", "whether to double-buffer Layer. ('Yes' for better performance)",
+								FORMAT), };
+
+				res[2].setPropertyEditorClass(MWC.GUI.Properties.LineWidthPropertyEditor.class);
+
+				return res;
+
+			} catch (final IntrospectionException e) {
+				return super.getPropertyDescriptors();
+			}
+		}
+
+	}
+
+	/**
+	 * marker interface for layers that implement their own getRange(), and where
+	 * our processing should not inspect the children
+	 *
+	 * @author ian
+	 *
+	 */
+	public static interface ProvidesRange {
+
+	}
 
 	/**
 	 * store the serial version of the file
@@ -176,13 +234,18 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 	static final long serialVersionUID = -4744521439513494065L;
 
 	/**
+	 * the name of the visibility change event
+	 */
+	final public static String VISIBILITY_CHANGE = "VISIBILITY_CHANGE";
+
+	/**
 	 * our editor
 	 */
 	transient protected Editable.EditorType _myEditor;
 
 	/**
-	 * whether this layer is a candidate for being buffered when plotted i.e. is
-	 * it likely to contain very complex data (such as VPF plots)
+	 * whether this layer is a candidate for being buffered when plotted i.e. is it
+	 * likely to contain very complex data (such as VPF plots)
 	 */
 	private boolean _bufferMe = false;
 
@@ -191,6 +254,10 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 	 */
 	private int _lineWidth;
 
+	// ///////////////////////////////////////////////////////////
+	// constructor
+	// //////////////////////////////////////////////////////////
+
 	/**
 	 * property change support for the base layer
 	 */
@@ -198,102 +265,174 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 
 	/**
 	 * whether my children have their own order
-	 * 
+	 *
 	 */
 	private final boolean _orderedChildren;
 
 	/**
-	 * the name of the visibility change event
-	 */
-	final public static String VISIBILITY_CHANGE = "VISIBILITY_CHANGE";
-
-	// ///////////////////////////////////////////////////////////
-	// constructor
-	// //////////////////////////////////////////////////////////
-
-	/**
 	 * create a base layer
 	 */
-	public BaseLayer()
-	{
+	public BaseLayer() {
 		// this layer isn't ordered by default
 		this(false);
-	}
-
-	/**
-	 * indicate whether our children have a native order
-	 * 
-	 * @param orderedChildren
-	 */
-	public BaseLayer(final boolean orderedChildren)
-	{
-		_orderedChildren = orderedChildren;
-
-		// initialise the property change support
-		_propSupport = getProperties();
-	}
-	
-	/** double-check we have properties, they're a
-	 * transient object that may not be present for new layers
-	 * 
-	 * @return
-	 */
-	final PropertyChangeSupport getProperties()
-	{
-	  if(_propSupport == null)
-	  {
-	    _propSupport = new PropertyChangeSupport(this);
-	  }
-	  return _propSupport;
 	}
 
 	// ///////////////////////////////////////////////////////////
 	// member functions
 	// //////////////////////////////////////////////////////////
 
+	/**
+	 * indicate whether our children have a native order
+	 *
+	 * @param orderedChildren
+	 */
+	public BaseLayer(final boolean orderedChildren) {
+		_orderedChildren = orderedChildren;
+
+		// initialise the property change support
+		_propSupport = getProperties();
+	}
+
 	@Override
-	public void add(final Editable thePlottable)
-	{
+	public void add(final Editable thePlottable) {
 		if (thePlottable instanceof NotInBaseLayer)
 			throw new RuntimeException("Can't hold such item: " + thePlottable.getClass() + "!");
 		else
 			super.add(thePlottable);
 	}
 
-	/** whether this type of BaseLayer is able to have shapes added to it
-	 * 
-	 * @return
-	 */
-	public boolean canTakeShapes()
-	{
-		return true;
+	@Override
+	public void addPropertyChangeListener(final PropertyChangeListener listener) {
+		getProperties().addPropertyChangeListener(listener);
 	}
-	
-	public void append(final Layer other)
-	{
-		if (other instanceof BaseLayer)
-		{
+
+	@Override
+	public void addPropertyChangeListener(final String property, final PropertyChangeListener listener) {
+		getProperties().addPropertyChangeListener(property, listener);
+	}
+
+	@Override
+	public void append(final Layer other) {
+		if (other instanceof BaseLayer) {
 			final BaseLayer bl = (BaseLayer) other;
 			super.append(bl);
 		}
 	}
 
+	/**
+	 * whether this type of BaseLayer is able to have shapes added to it
+	 *
+	 * @return
+	 */
+	public boolean canTakeShapes() {
+		return true;
+	}
+
+	private void doHideChildren(final boolean b) {
+		final Enumeration<Editable> iter = this.elements();
+		while (iter.hasMoreElements()) {
+			final Plottable thisE = (Plottable) iter.nextElement();
+			thisE.setVisible(!b);
+		}
+	}
+
 	@Override
+	public Enumeration<Editable> elements() {
+		return super.elements();
+	}
+
+	@Override
+	public void exportShape() {
+		MWC.Utilities.ReaderWriter.ImportManager.exportThis(";;Layer: " + getName());
+
+		// go through the layer, exporting each plottable, if it will.
+		final Enumeration<Editable> enumer = this.elements();
+		while (enumer.hasMoreElements()) {
+			final Editable pl = enumer.nextElement();
+			if (pl instanceof Exportable) {
+				final Exportable e = (Exportable) pl;
+				e.exportThis();
+			}
+		}
+	}
+
+	/**
+	 * find the named object in this layer
+	 *
+	 * @param theTrackName
+	 * @return
+	 */
+	public Editable find(final String subject) {
+		final Enumeration<Editable> ele = elements();
+		while (ele.hasMoreElements()) {
+			final Editable next = ele.nextElement();
+			if (next.getName().equals(subject)) {
+				return next;
+			}
+		}
+
+		return null;
+	}
+
+	@Override
+	public void firePropertyChange(final String propertyChanged, final Object oldValue, final Object newValue) {
+		getProperties().firePropertyChange(propertyChanged, oldValue, newValue);
+	}
+
+	@Override
+	public Editable.EditorType getInfo() {
+		if (_myEditor == null)
+			_myEditor = new LayerInfo(this);
+
+		return _myEditor;
+	}
+
+	// ////////////////////////////////////////////////
+	// override the set vis method, so we can fire our event
+	// ////////////////////////////////////////////////
+
+	/**
+	 * the line thickness (convenience wrapper around width)
+	 *
+	 * @return
+	 */
+	@Override
+	public int getLineThickness() {
+		return _lineWidth;
+	}
+
+	/**
+	 * double-check we have properties, they're a transient object that may not be
+	 * present for new layers
+	 *
+	 * @return
+	 */
+	final PropertyChangeSupport getProperties() {
+		if (_propSupport == null) {
+			_propSupport = new PropertyChangeSupport(this);
+		}
+		return _propSupport;
+	}
+
+	@Override
+	public boolean hasEditor() {
+		return true;
+	}
+
+	/**
+	 * determine whether my children have their own order that should be used rather
+	 * than just their name.
+	 *
+	 * @return yes/no.
+	 */
+	@Override
+	public boolean hasOrderedChildren() {
+		return _orderedChildren;
+	}
+
 	@FireReformatted
-	public void setName(final String theName)
-	{
-		super.setName(theName);
-		
-		// special handling.  If this the chart features layer, we will double-buffer it, so VPF redraws
-		// more quickly
-	  // Time Display requires painting
-		//
-		// NOTE - SPECIAL HANDLING: on linux the transparent buffer image isn't actually
-		// transparent. To be fixed.
-		final boolean isLinux = System.getProperty("os.name").toLowerCase().contains("linux");
-		
-		if(!isLinux && theName.equals(Layers.CHART_FEATURES))
-			setBuffered(true);
+	public void hideChildren() {
+		doHideChildren(true);
 	}
 
 	/**
@@ -301,40 +440,17 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 	 * contain very complex data which is worth keeping in a buffer, instead of
 	 * painting it fresh each time)
 	 */
-	public boolean isBuffered()
-	{
+	public boolean isBuffered() {
 		// we were getting wierd fuzzy outlines for double-buffered plot items.
 		// Experiment with not double-buffering
 		return _bufferMe;
 	}
 
 	/**
-	 * specify whether this layer is a candidate for being buffered by the
-	 * graphics engine
-	 */
-	public void setBuffered(final boolean bufferMe)
-	{
-		this._bufferMe = bufferMe;
-	}
-
-	public boolean hasEditor()
-	{
-		return true;
-	}
-
-	public Editable.EditorType getInfo()
-	{
-		if (_myEditor == null)
-			_myEditor = new LayerInfo(this);
-
-		return _myEditor;
-	}
-
-	/**
 	 * paint this list to the canvas
 	 */
-	public void paint(final CanvasType dest)
-	{
+	@Override
+	public void paint(final CanvasType dest) {
 		// ok, sort out the thickness
 		final float oldThick = dest.getLineWidth();
 		dest.setLineWidth(_lineWidth);
@@ -346,223 +462,66 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 		dest.setLineWidth((int) oldThick);
 	}
 
-	/**
-	 * the line thickness (convenience wrapper around width)
-	 * 
-	 * @return
-	 */
-	public int getLineThickness()
-	{
-		return _lineWidth;
+	@Override
+	public void removePropertyChangeListener(final PropertyChangeListener listener) {
+		getProperties().removePropertyChangeListener(listener);
 	}
 
-	/**
-	 * the line thickness (convenience wrapper around width)
-	 */
-	public void setLineThickness(final int val)
-	{
-		_lineWidth = val;
+	@Override
+	public void removePropertyChangeListener(final String property, final PropertyChangeListener listener) {
+		getProperties().removePropertyChangeListener(property, listener);
 	}
-
-	public Enumeration<Editable> elements()
-	{
-		return super.elements();
-	}
-
-	// ////////////////////////////////////////////////
-	// override the set vis method, so we can fire our event
-	// ////////////////////////////////////////////////
-
-	/**
-	 * set the visible flag for this layer
-	 */
-	public void setVisible(final boolean visible)
-	{
-		super.setVisible(visible);
-
-		// and now fire the event
-		getProperties().firePropertyChange(VISIBILITY_CHANGE, !visible, visible);
-	}
-
-	@FireReformatted
-	public void hideChildren()
-	{
-		doHideChildren(true);
-	}
-
-	@FireReformatted
-	public void revealChildren()
-	{
-		doHideChildren(false);
-	}
-
-	private void doHideChildren(final boolean b)
-	{
-		final Enumeration<Editable> iter = this.elements();
-		while (iter.hasMoreElements())
-		{
-			final Plottable thisE = (Plottable) iter.nextElement();
-			thisE.setVisible(!b);
-		}
-	}
-
-	public void exportShape()
-	{
-		MWC.Utilities.ReaderWriter.ImportManager
-				.exportThis(";;Layer: " + getName());
-
-		// go through the layer, exporting each plottable, if it will.
-		final Enumeration<Editable> enumer = this.elements();
-		while (enumer.hasMoreElements())
-		{
-			final Editable pl = (Editable) enumer.nextElement();
-			if (pl instanceof Exportable)
-			{
-				final Exportable e = (Exportable) pl;
-				e.exportThis();
-			}
-		}
-	}
-	
-  public void firePropertyChange(final String propertyChanged, final Object oldValue,
-			final Object newValue)
-	{
-    getProperties().firePropertyChange(propertyChanged, oldValue, newValue);
-	}
-
-
-	// ////////////////////////////////////////////////////
-	// bean info for this class
-	// ///////////////////////////////////////////////////
-	public class LayerInfo extends Editable.EditorType
-	{
-
-		public LayerInfo(final BaseLayer data)
-		{
-			super(data, data.getName(), "");
-		}
-
-		public PropertyDescriptor[] getPropertyDescriptors()
-		{
-			try
-			{
-				final PropertyDescriptor[] res =
-				{
-						prop("Visible", "the Layer visibility", VISIBILITY),
-						prop("Name", "the name of the Layer", FORMAT),
-						displayProp("LineThickness", "Line thickness", "the thickness of lines in this layer",
-								FORMAT),
-						expertProp("Buffered", "whether to double-buffer Layer. ('Yes' for better performance)", FORMAT), };
-
-				res[2]
-						.setPropertyEditorClass(MWC.GUI.Properties.LineWidthPropertyEditor.class);
-
-				return res;
-
-			}
-			catch (final IntrospectionException e)
-			{
-				return super.getPropertyDescriptors();
-			}
-		}
-
-		@SuppressWarnings("rawtypes")
-		public MethodDescriptor[] getMethodDescriptors()
-		{
-			// just add the reset color field first
-			final Class c = BaseLayer.class;
-			final MethodDescriptor mds[] =
-			{ method(c, "exportShape", null, "Export Shape"),
-					method(c, "hideChildren", null, "Hide All Children"),
-					method(c, "revealChildren", null, "Reveal All Children") };
-			return mds;
-		}
-
-	}
-
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public class BaseLayerTest extends junit.framework.TestCase
-	{
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public BaseLayerTest(final String val)
-		{
-			super(val);
-		}
-
-		public void testMyParams()
-		{
-			MWC.GUI.Editable ed = new BaseLayer();
-			editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-	}
-
-	/**
-	 * determine whether my children have their own order that should be used
-	 * rather than just their name.
-	 * 
-	 * @return yes/no.
-	 */
-	public boolean hasOrderedChildren()
-	{
-		return _orderedChildren;
-	}
-	
 
 	// ////////////////////////////////////////////////
 	// property change support
 	// ////////////////////////////////////////////////
 
+	@FireReformatted
+	public void revealChildren() {
+		doHideChildren(false);
+	}
 
-	@Override
-	public void addPropertyChangeListener(final String property,
-			final PropertyChangeListener listener)
-	{
-	  getProperties().addPropertyChangeListener(property, listener);
+	/**
+	 * specify whether this layer is a candidate for being buffered by the graphics
+	 * engine
+	 */
+	public void setBuffered(final boolean bufferMe) {
+		this._bufferMe = bufferMe;
+	}
+
+	/**
+	 * the line thickness (convenience wrapper around width)
+	 */
+	public void setLineThickness(final int val) {
+		_lineWidth = val;
 	}
 
 	@Override
-	public void addPropertyChangeListener(final PropertyChangeListener listener)
-	{
-	  getProperties().addPropertyChangeListener(listener);
+	@FireReformatted
+	public void setName(final String theName) {
+		super.setName(theName);
+
+		// special handling. If this the chart features layer, we will double-buffer it,
+		// so VPF redraws
+		// more quickly
+		// Time Display requires painting
+		//
+		// NOTE - SPECIAL HANDLING: on linux the transparent buffer image isn't actually
+		// transparent. To be fixed.
+		final boolean isLinux = System.getProperty("os.name").toLowerCase().contains("linux");
+
+		if (!isLinux && theName.equals(Layers.CHART_FEATURES))
+			setBuffered(true);
 	}
 
+	/**
+	 * set the visible flag for this layer
+	 */
 	@Override
-	public void removePropertyChangeListener(final PropertyChangeListener listener)
-	{
-	  getProperties().removePropertyChangeListener(listener);
-	}
+	public void setVisible(final boolean visible) {
+		super.setVisible(visible);
 
-	@Override
-	public void removePropertyChangeListener(final String property,
-			final PropertyChangeListener listener)
-	{
-	  getProperties().removePropertyChangeListener(property, listener);
+		// and now fire the event
+		getProperties().firePropertyChange(VISIBILITY_CHANGE, !visible, visible);
 	}
-	
-
-  /** find the named object in this layer
-   * 
-   * @param theTrackName
-   * @return
-   */
-  public Editable find(final String subject)
-  {
-    final Enumeration<Editable> ele = elements();
-    while(ele.hasMoreElements())
-    {
-      final Editable next = ele.nextElement();
-      if(next.getName().equals(subject))
-      {
-        return next;
-      }
-    }
-    
-    return null;
-  }
 }
-
-

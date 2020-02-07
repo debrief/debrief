@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.cmap.plotViewer.actions;
 
 import org.eclipse.swt.graphics.Cursor;
@@ -29,17 +30,71 @@ import MWC.GUI.Tools.Action;
 /**
  * @author ian.mayo
  */
-abstract public class CoreDragAction extends CoreEditorAction
-{
+abstract public class CoreDragAction extends CoreEditorAction {
 	/**
-	 * retrieve an instance of our dragger
-	 * 
-	 * @return
+	 * embed switching drag mode into an action, so we can reverse it
+	 *
+	 * @author ian.mayo
+	 *
 	 */
-	abstract public SWTChart.PlotMouseDragger getDragMode();
+	public static class SwitchModeAction implements Action {
+		/**
+		 * the editor we're controlling
+		 *
+		 */
+		private final SWTChart _editor;
 
-	protected void execute()
-	{
+		/**
+		 * the mode we're switching to
+		 *
+		 */
+		private final SWTChart.PlotMouseDragger _newMode;
+
+		public SwitchModeAction(final SWTChart.PlotMouseDragger newMode, final SWTChart editor) {
+			_editor = editor;
+			_newMode = newMode;
+		}
+
+		@Override
+		public void execute() {
+			_editor.setDragMode(_newMode);
+
+			final IEditorReference[] editorReferences = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+					.getActivePage().getEditorReferences();
+			for (final IEditorReference editorReference : editorReferences) {
+				final IEditorPart editorPart = editorReference.getEditor(false);
+				if (editorPart instanceof IChartBasedEditor) {
+					final IChartBasedEditor editor = (IChartBasedEditor) editorPart;
+					final SWTChart chart = editor.getChart();
+					if (chart != null) {
+						chart.setDragMode(_newMode);
+					}
+				}
+			}
+
+			// ok - store the mode in the core editor
+			PlotViewerPlugin.setCurrentMode(_newMode);
+		}
+
+		@Override
+		public boolean isRedoable() {
+			return false;
+		}
+
+		@Override
+		public boolean isUndoable() {
+			return false;
+		}
+
+		@Override
+		public void undo() {
+			// don't bother = we're not undo-able
+		}
+
+	}
+
+	@Override
+	protected void execute() {
 		// find out what the current dragger is
 		final PlainChart chrs = getChart();
 		final SWTChart myChart = (SWTChart) chrs;
@@ -53,8 +108,7 @@ abstract public class CoreDragAction extends CoreEditorAction
 		final SWTChart.PlotMouseDragger newMode = getDragMode();
 
 		// create the action
-		final CoreDragAction.SwitchModeAction theAction = new CoreDragAction.SwitchModeAction(
-				newMode, myChart);
+		final CoreDragAction.SwitchModeAction theAction = new CoreDragAction.SwitchModeAction(newMode, myChart);
 
 		// initialise the cursor
 		final Cursor normalCursor = newMode.getNormalCursor();
@@ -68,66 +122,9 @@ abstract public class CoreDragAction extends CoreEditorAction
 	}
 
 	/**
-	 * embed switching drag mode into an action, so we can reverse it
-	 * 
-	 * @author ian.mayo
-	 * 
+	 * retrieve an instance of our dragger
+	 *
+	 * @return
 	 */
-	public static class SwitchModeAction implements Action
-	{
-		/**
-		 * the editor we're controlling
-		 * 
-		 */
-		private final SWTChart _editor;
-
-		/**
-		 * the mode we're switching to
-		 * 
-		 */
-		private final SWTChart.PlotMouseDragger _newMode;
-
-		public SwitchModeAction(final SWTChart.PlotMouseDragger newMode,
-				final SWTChart editor)
-		{
-			_editor = editor;
-			_newMode = newMode;
-		}
-
-		public boolean isUndoable()
-		{
-			return false;
-		}
-
-		public boolean isRedoable()
-		{
-			return false;
-		}
-
-		public void undo()
-		{
-			// don't bother = we're not undo-able
-		}
-
-		public void execute()
-		{
-			_editor.setDragMode(_newMode);
-			
-			IEditorReference[] editorReferences = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getEditorReferences();
-			for (IEditorReference editorReference:editorReferences) {
-				IEditorPart editorPart = editorReference.getEditor(false);
-				if (editorPart instanceof IChartBasedEditor) {
-					IChartBasedEditor editor = (IChartBasedEditor) editorPart;
-					SWTChart chart = editor.getChart();
-					if (chart != null) {
-						chart.setDragMode(_newMode);
-					}
-				}
-			}
-
-			// ok - store the mode in the core editor
-			PlotViewerPlugin.setCurrentMode(_newMode);
-		}
-
-	}
+	abstract public SWTChart.PlotMouseDragger getDragMode();
 }

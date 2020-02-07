@@ -1,57 +1,31 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
- *
- *    (C) 2000-2014, PlanetMayo Ltd
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+
 package ASSET.Util.XML.Decisions;
 
-/**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:
- * @author
- * @version 1.0
- */
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 
 import ASSET.Models.Decision.CoreDecision;
 import ASSET.Models.Decision.Terminate;
 import ASSET.Util.XML.Decisions.Tactical.CoreDecisionHandler;
 
-abstract public class TerminateHandler extends CoreDecisionHandler
-{
+abstract public class TerminateHandler extends CoreDecisionHandler {
 
 	private final static String type = "Terminate";
 
-	public TerminateHandler()
-	{
-		super(type);
-	}
-
-	public void elementClosed()
-	{
-		final CoreDecision ev = new Terminate();
-
-		super.setAttributes(ev);
-
-		// finally output it
-		setModel(ev);
-	}
-
-	abstract public void setModel(ASSET.Models.DecisionType dec);
-
-	static public void exportThis(final Object toExport,
-			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
-	{
+	static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc) {
 		// create ourselves
 		final org.w3c.dom.Element thisPart = doc.createElement(type);
 
@@ -64,5 +38,21 @@ abstract public class TerminateHandler extends CoreDecisionHandler
 		parent.appendChild(thisPart);
 
 	}
+
+	public TerminateHandler() {
+		super(type);
+	}
+
+	@Override
+	public void elementClosed() {
+		final CoreDecision ev = new Terminate();
+
+		super.setAttributes(ev);
+
+		// finally output it
+		setModel(ev);
+	}
+
+	abstract public void setModel(ASSET.Models.DecisionType dec);
 
 }

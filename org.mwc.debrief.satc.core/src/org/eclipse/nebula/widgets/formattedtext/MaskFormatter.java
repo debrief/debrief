@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.eclipse.nebula.widgets.formattedtext;
 
 import org.eclipse.swt.SWT;
@@ -21,9 +22,10 @@ import org.eclipse.swt.events.VerifyEvent;
  * This class provides formatting of <code>String</code> values in a
  * <code>FormattedText</code>.
  * <p>
- * 
+ *
  * <h4>Pattern Characters</h4>
- * <table border=0 cellspacing=3 cellpadding=0 summary="Chart shows pattern letters, date/time component, presentation, and examples.">
+ * <table border=0 cellspacing=3 cellpadding=0 summary="Chart shows pattern
+ * letters, date/time component, presentation, and examples.">
  * <tr bgcolor="#ccccff">
  * <th align=left>Symbol</th>
  * <th align=left>Meaning</th>
@@ -46,13 +48,11 @@ import org.eclipse.swt.events.VerifyEvent;
  * </tr>
  * </table>
  * All other characters are considered as separators.
- * 
- * <h4>Examples</h4>
- * <code>newFormatter("(###) UUU-AAAA");</code><br>
+ *
+ * <h4>Examples</h4> <code>newFormatter("(###) UUU-AAAA");</code><br>
  * <code>setValue("123aBcDeF");</code> -> will display as "(123) ABC-DeF".
  */
-public class MaskFormatter extends AbstractFormatter
-{
+public class MaskFormatter extends AbstractFormatter {
 	private static final char P_DIGIT = '#';
 	private static final char P_ALPHANUM = 'A';
 	private static final char P_UPPERCASE = 'U';
@@ -69,28 +69,21 @@ public class MaskFormatter extends AbstractFormatter
 
 	/**
 	 * Constructs a new instance with the given edit mask.
-	 * 
-	 * @param editPattern
-	 *          edit mask
+	 *
+	 * @param editPattern edit mask
 	 */
-	public MaskFormatter(String editPattern)
-	{
+	public MaskFormatter(final String editPattern) {
 		if (editPattern == null)
 			SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		this.editPattern = editPattern;
 
 		// Initializes the buffer with the formatting characters
 		editValue = new StringBuffer(editPattern.length());
-		for (int i = 0; i < editPattern.length(); i++)
-		{
-			char c = editPattern.charAt(i);
-			if (c != P_DIGIT && c != P_ALPHANUM && c != P_UPPERCASE
-					&& c != P_LOWERCASE)
-			{
+		for (int i = 0; i < editPattern.length(); i++) {
+			final char c = editPattern.charAt(i);
+			if (c != P_DIGIT && c != P_ALPHANUM && c != P_UPPERCASE && c != P_LOWERCASE) {
 				editValue.append(c);
-			}
-			else
-			{
+			} else {
 				editValue.append(SPACE);
 				positions++;
 			}
@@ -100,22 +93,15 @@ public class MaskFormatter extends AbstractFormatter
 	/**
 	 * Clear a part of the edition cache. Mask characters are preserved in their
 	 * positions.
-	 * 
-	 * @param start
-	 *          beginning index
-	 * @param len
-	 *          length of portion to clear
+	 *
+	 * @param start beginning index
+	 * @param len   length of portion to clear
 	 */
-	protected void clearText(int start, int len)
-	{
-		for (int i = start; i < start + len && i < editValue.length(); i++)
-		{
-			char c = editPattern.charAt(i);
-			if (c == P_DIGIT || c == P_ALPHANUM || c == P_UPPERCASE
-					|| c == P_LOWERCASE)
-			{
-				if (editValue.charAt(i) != SPACE)
-				{
+	protected void clearText(final int start, final int len) {
+		for (int i = start; i < start + len && i < editValue.length(); i++) {
+			final char c = editPattern.charAt(i);
+			if (c == P_DIGIT || c == P_ALPHANUM || c == P_UPPERCASE || c == P_LOWERCASE) {
+				if (editValue.charAt(i) != SPACE) {
 					count--;
 				}
 				editValue.setCharAt(i, SPACE);
@@ -126,50 +112,44 @@ public class MaskFormatter extends AbstractFormatter
 	/**
 	 * Returns the current value formatted for display.
 	 * <p>
-	 * There is no difference in this formatter between edit and display values.
-	 * So this method returns the edit string.
-	 * 
+	 * There is no difference in this formatter between edit and display values. So
+	 * this method returns the edit string.
+	 *
 	 * @return display string
 	 * @see ITextFormatter#getDisplayString()
 	 */
 	@Override
-	public String getDisplayString()
-	{
+	public String getDisplayString() {
 		return getEditString();
 	}
 
 	/**
 	 * Returns the current value formatted for editing. This method is called by
-	 * <code>FormattedText</code> when the <code>Text</code> widget gains focus.
-	 * The value returned is the content of the StringBuilder
-	 * <code>editValue</code> used as cache.
-	 * 
+	 * <code>FormattedText</code> when the <code>Text</code> widget gains focus. The
+	 * value returned is the content of the StringBuilder <code>editValue</code>
+	 * used as cache.
+	 *
 	 * @return edit string
 	 * @see ITextFormatter#getEditString()
 	 */
 	@Override
-	public String getEditString()
-	{
+	public String getEditString() {
 		return editValue.toString();
 	}
 
 	/**
 	 * Returns the current value. The value returned is the content of the edit
 	 * cache without any mask characters.
-	 * 
+	 *
 	 * @return current string value
 	 * @see ITextFormatter#getValue()
 	 */
 	@Override
-	public Object getValue()
-	{
-		StringBuffer value = new StringBuffer(editValue.length());
-		for (int i = 0; i < editValue.length(); i++)
-		{
-			char c = editPattern.charAt(i);
-			if (c == P_DIGIT || c == P_ALPHANUM || c == P_UPPERCASE
-					|| c == P_LOWERCASE)
-			{
+	public Object getValue() {
+		final StringBuffer value = new StringBuffer(editValue.length());
+		for (int i = 0; i < editValue.length(); i++) {
+			final char c = editPattern.charAt(i);
+			if (c == P_DIGIT || c == P_ALPHANUM || c == P_UPPERCASE || c == P_LOWERCASE) {
 				value.append(editValue.charAt(i));
 			}
 		}
@@ -180,12 +160,11 @@ public class MaskFormatter extends AbstractFormatter
 	 * Returns the type of value this {@link ITextFormatter} handles, i.e. returns
 	 * in {@link #getValue()}.<br>
 	 * A MaskFormatter always returns a String value.
-	 * 
+	 *
 	 * @return The value type.
 	 */
 	@Override
-	public Class getValueType()
-	{
+	public Class getValueType() {
 		return String.class;
 	}
 
@@ -193,83 +172,61 @@ public class MaskFormatter extends AbstractFormatter
 	 * Inserts a sequence of characters in the edit buffer. The current content of
 	 * the buffer is override. The new position of the cursor is computed and
 	 * returned. Mask characters are preserved in their positions.
-	 * 
-	 * @param txt
-	 *          String of characters to insert
-	 * @param start
-	 *          Starting position of insertion
+	 *
+	 * @param txt   String of characters to insert
+	 * @param start Starting position of insertion
 	 * @return New position of the cursor
 	 */
-	protected int insertText(String txt, int start)
-	{
+	protected int insertText(final String txt, final int start) {
 		int i = start, j = 0;
 		char p, c, o;
 
-		while (i < editPattern.length() && j < txt.length())
-		{
+		while (i < editPattern.length() && j < txt.length()) {
 			p = editPattern.charAt(i);
 			c = txt.charAt(j);
 			o = editValue.charAt(i);
-			switch (p)
-			{
+			switch (p) {
 			case P_DIGIT:
-				if (Character.isDigit(c))
-				{
+				if (Character.isDigit(c)) {
 					editValue.setCharAt(i, c);
-				}
-				else
-				{
+				} else {
 					SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 				}
 				break;
 			case P_UPPERCASE:
-				if (Character.isLetterOrDigit(c))
-				{
+				if (Character.isLetterOrDigit(c)) {
 					editValue.setCharAt(i, Character.toUpperCase(c));
-				}
-				else
-				{
+				} else {
 					SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 				}
 				break;
 			case P_LOWERCASE:
-				if (Character.isLetterOrDigit(c))
-				{
+				if (Character.isLetterOrDigit(c)) {
 					editValue.setCharAt(i, Character.toLowerCase(c));
-				}
-				else
-				{
+				} else {
 					SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 				}
 				break;
 			case P_ALPHANUM:
-				if (Character.isLetterOrDigit(c))
-				{
+				if (Character.isLetterOrDigit(c)) {
 					editValue.setCharAt(i, c);
-				}
-				else
-				{
+				} else {
 					SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 				}
 				break;
 			default: // Separator
-				if (p != c)
-				{
-					if (Character.isLetterOrDigit(c))
-					{
+				if (p != c) {
+					if (Character.isLetterOrDigit(c)) {
 						i++;
 						continue;
-					}
-					else
-					{
+					} else {
 						SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 					}
 				}
 				o = '*';
 				break;
 			}
-			if (o == SPACE && c != SPACE)
-			{
+			if (o == SPACE && c != SPACE) {
 				count++;
 			}
 			i++;
@@ -281,53 +238,43 @@ public class MaskFormatter extends AbstractFormatter
 	/**
 	 * Returns <code>true</code> if current edited value is empty, else returns
 	 * <code>false</code>.<br>
-	 * A value is considered as empty in a MaskFormatter if the edit buffer
-	 * contains no characters except the mask characters.
-	 * 
+	 * A value is considered as empty in a MaskFormatter if the edit buffer contains
+	 * no characters except the mask characters.
+	 *
 	 * @return true if empty, else false
 	 */
 	@Override
-	public boolean isEmpty()
-	{
+	public boolean isEmpty() {
 		return count == 0;
 	}
 
 	/**
 	 * Returns <code>true</code> if current edited value is valid, else returns
 	 * <code>false</code>. An empty value is considered as valid.
-	 * 
+	 *
 	 * @return true if valid, else false
 	 * @see ITextFormatter#isValid()
 	 */
 	@Override
-	public boolean isValid()
-	{
+	public boolean isValid() {
 		return (count == 0 || count == positions);
 	}
 
 	/**
 	 * Sets the value to edit. The value provided must be a <code>String</code>.
-	 * 
-	 * @param value
-	 *          string value
-	 * @throws IllegalArgumentException
-	 *           if not a string
+	 *
+	 * @param value string value
+	 * @throws IllegalArgumentException if not a string
 	 * @see ITextFormatter#setValue(java.lang.Object)
 	 */
 	@Override
-	public void setValue(Object value)
-	{
-		if (value instanceof String)
-		{
+	public void setValue(final Object value) {
+		if (value instanceof String) {
 			insertText((String) value, 0);
 			updateText(editValue.toString(), 0);
-		}
-		else if (value == null)
-		{
+		} else if (value == null) {
 			clearText(0, editValue.length());
-		}
-		else
-		{
+		} else {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
 	}
@@ -335,47 +282,36 @@ public class MaskFormatter extends AbstractFormatter
 	/**
 	 * Handles a <code>VerifyEvent</code> sent when the text is about to be
 	 * modified. This method is the entry point of all operations of formatting.
-	 * 
+	 *
 	 * @see org.eclipse.swt.events.VerifyListener#verifyText(org.eclipse.swt.events.VerifyEvent)
 	 */
 	@Override
-	public void verifyText(VerifyEvent e)
-	{
-		if (ignore)
-		{
+	public void verifyText(final VerifyEvent e) {
+		if (ignore) {
 			return;
 		}
 		e.doit = false;
-		if (e.keyCode == SWT.BS || e.keyCode == SWT.DEL)
-		{
+		if (e.keyCode == SWT.BS || e.keyCode == SWT.DEL) {
 			// Clears
 			clearText(e.start, (e.end > e.start) ? e.end - e.start : 1);
 			updateText(editValue.toString(), e.start);
-		}
-		else
-		{
+		} else {
 			// Inserts
 			int p;
-			try
-			{
+			try {
 				p = insertText(e.text, e.start);
-				if (e.end - e.start > e.text.length())
-				{
-					clearText(e.start + e.text.length(),
-							e.end - e.start - e.text.length());
+				if (e.end - e.start > e.text.length()) {
+					clearText(e.start + e.text.length(), e.end - e.start - e.text.length());
 				}
-			}
-			catch (IllegalArgumentException iae)
-			{
+			} catch (final IllegalArgumentException iae) {
 				beep();
 				p = e.start;
 			}
 
 			// Computes new position of the cursor
 			char c;
-			while (p < editPattern.length() && (c = editPattern.charAt(p)) != P_DIGIT
-					&& c != P_ALPHANUM && c != P_UPPERCASE && c != P_LOWERCASE)
-			{
+			while (p < editPattern.length() && (c = editPattern.charAt(p)) != P_DIGIT && c != P_ALPHANUM
+					&& c != P_UPPERCASE && c != P_LOWERCASE) {
 				p++;
 			}
 

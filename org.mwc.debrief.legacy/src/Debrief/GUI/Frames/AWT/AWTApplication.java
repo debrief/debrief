@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: AWTApplication.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -97,107 +98,122 @@
 
 package Debrief.GUI.Frames.AWT;
 
+import java.awt.BorderLayout;
+import java.awt.Button;
+import java.awt.CardLayout;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Menu;
+import java.awt.MenuBar;
+import java.awt.MenuItem;
+import java.awt.MenuShortcut;
+import java.awt.Panel;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
 
-import MWC.GUI.*;
-import MWC.GUI.Tools.AWT.*;
-import Debrief.GUI.Frames.*;
-import java.awt.*;
-import java.awt.event.*;
-
+import Debrief.GUI.Frames.Application;
+import Debrief.GUI.Frames.Session;
+import MWC.GUI.Tool;
+import MWC.GUI.Toolbar;
+import MWC.GUI.Tools.AWT.AWTMenuItem;
 
 /** an AWT implementation of our class */
 public final class AWTApplication extends Application {
 
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
 
-  /** the menubar for the application
-   */
-  private java.awt.MenuBar theMenuBar;
+	/**
+	 * the menubar for the application
+	 */
+	private java.awt.MenuBar theMenuBar;
 
-  /** copy of the window menu
-   */
-  private java.awt.Menu theWindowMenu;
+	/**
+	 * copy of the window menu
+	 */
+	private java.awt.Menu theWindowMenu;
 
-  /** the frame in use
-   */
-  private java.awt.Frame theFrame;
+	/**
+	 * the frame in use
+	 */
+	private java.awt.Frame theFrame;
 
-  /** the 'stack' of sessions we are maintaining
-   */
-  java.awt.CardLayout theCards;
+	/**
+	 * the 'stack' of sessions we are maintaining
+	 */
+	java.awt.CardLayout theCards;
 
-  /** the Centre portion of the frame, carrying the sessions
-   */
-  java.awt.Panel theMainBit;
+	/**
+	 * the Centre portion of the frame, carrying the sessions
+	 */
+	java.awt.Panel theMainBit;
 
-  /** remember the old cursor, for when we switch to another one
-   */
-  private java.awt.Cursor _theOldCursor;
+	/**
+	 * remember the old cursor, for when we switch to another one
+	 */
+	private java.awt.Cursor _theOldCursor;
 
-  /** keep track of the undo/redo menu items, since we need to update them
-   */
+	/**
+	 * keep track of the undo/redo menu items, since we need to update them
+	 */
 //  private java.awt.MenuItem _theUndoItem;
 //  private java.awt.MenuItem _theRedoItem;
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
 
-  /** create the AWT Toolbar, set it in the parent application*/
-  @SuppressWarnings("deprecation")
-	public AWTApplication(){
-    // create the parent first
-    super();
+	/** create the AWT Toolbar, set it in the parent application */
+	@SuppressWarnings("deprecation")
+	public AWTApplication() {
+		// create the parent first
+		super();
 
-    // create the GUI bits
-    initForm();
+		// create the GUI bits
+		initForm();
 
-    // now setup the menus
-    buildTheInterface();
+		// now setup the menus
+		buildTheInterface();
 
-    // now fill in the window menu
-    refreshWindowMenu();
+		// now fill in the window menu
+		refreshWindowMenu();
 
-    // add the window menu, now that we know that the other menus
-    // have been added
-    final Menu helpMen = new Menu("Help");
-    helpMen.add(new MenuItem("About"));
-    theMenuBar.setHelpMenu(helpMen);
-
+		// add the window menu, now that we know that the other menus
+		// have been added
+		final Menu helpMen = new Menu("Help");
+		helpMen.add(new MenuItem("About"));
+		theMenuBar.setHelpMenu(helpMen);
 
 //IM    d3.setVisible(true);
 
-    try
-    {
-      // load the coastline data in the background
-      new MWC.GUI.Chart.Painters.CoastPainter();
+		try {
+			// load the coastline data in the background
+			new MWC.GUI.Chart.Painters.CoastPainter();
 
-      // IM  Thread.sleep(3000);
+			// IM Thread.sleep(3000);
 
-    }
-    catch(final Exception e)
-    {
-    }
+		} catch (final Exception e) {
+		}
 
 //IM    d3.dispose();
 
-    try
-    {
-      Thread.sleep(100);
-    }
-    catch(final Exception e)
-    {
-    }
+		try {
+			Thread.sleep(100);
+		} catch (final Exception e) {
+		}
 
-    theFrame.show();
+		theFrame.show();
 
-  }
+	}
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
 //
 //  public java.awt.Component getFrame()
@@ -205,278 +221,258 @@ public final class AWTApplication extends Application {
 //    return theFrame;
 //  }
 
-
-  public final Session getCurrentSession(){
-    // get the session currently 'on top'
-    Session res = null;
-
-    // we have to go through the panels in the main bit,
-    // and return the one which is visible
-    for(int i=0; i<theMainBit.getComponentCount();i++){
-      final Component thisSess = theMainBit.getComponent(i);
-      if(thisSess.isVisible())
-      {
-        res = getSessionNamed(thisSess.getName());
-        break;
-      }
-    }
-
-    // so, we've either got the top (visible) session, or we're returning null.
-    return res;
-  }
-
-
-  /** add the session passed in, to include adding it to our stack
-   */
-  public final void newSession(final Session theSession){
-
-    // see if we are being passed a null parameter,
-    // if so, we are to create a fresh session
-	Session session = theSession;
-    if(session == null){
-      session = new AWTSession(this, getClipboard());
-      // : implement choice of type of view to put into session
-    }
-
-    final AWTSession aws = (AWTSession) session;
-
-    // pass the session to the parent
-    super.newSession(session);
-
-    // add the session to our 'stack'
-    theMainBit.add(session.getName(), aws.getPanel());
-    theCards.next(theMainBit);
-
-    // make sure it's on display
-    showSession(session);
-
-    // and refresh the window list
-    refreshWindowMenu();
-  }
-
-
-  /** fill in the UI details
-   */
-  private void initForm(){
-    // create the frame
-    theFrame = new Frame("Debrief 3");
-    theFrame.addWindowListener(new WindowAdapter(){
-      public void windowClosing(final java.awt.event.WindowEvent e){
-      System.exit(0); }});
-
-    // do the layout
-    theFrame.setLayout(new BorderLayout());
-
-    // create the components
-    final MWC.GUI.Tools.AWT.AWTToolbar theToolbar =
-      new MWC.GUI.Tools.AWT.AWTToolbar(AWTToolbar.HORIZONTAL);
-
-    // pass the toolbar back to the parent
-    setToolbar(theToolbar);
-
-    // and the panel
-    final Panel topSection = new Panel();
-    topSection.setLayout(new BorderLayout());
-    theMenuBar = new MenuBar();
-    theFrame.setMenuBar(theMenuBar);
-
-    // create the 'card' layout manager
-    theCards = new CardLayout();
-    theMainBit = new Panel(theCards);
-    theMainBit.setSize(200,200);
-
-    // add them
-    theFrame.add("North", theToolbar);
-    theFrame.add("Center", theMainBit);
-    final Button testBtn = new Button("test");
-    testBtn.addActionListener(new ActionListener(){
-      public void actionPerformed(final ActionEvent e){
-        doTest();
-      }
-      });
-    theFrame.add("South", testBtn);
-
-    // tidy up
-
-    final Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-
-    theFrame.setSize((int)(dim.width * 0.6),
-                     (int)(dim.height * 0.6));
-    final Dimension sz = theFrame.getSize();
-    theFrame.setLocation((dim.width - sz.width)/2,
-                         (dim.height - sz.height)/2);
-
-
-
-    theFrame.doLayout();
-
-  }
-
-
-  /** set the title bar text to parameter
-   * @param theStr to assign to title bar of frame
-   */
-  protected final void setTitleName(final String theStr){
-    theFrame.setTitle("Debrief: " + theStr);
-  }
-
-
-  private void addMenu(final String theTitle)
-  {
-    theMenuBar.add(new Menu(theTitle));
-  }
-
-  protected final void addMenuSeparator(final String theMenu){
-    final Menu mn = getMenu(theMenu);
-    mn.addSeparator();
-  }
-
-  private Menu getMenu(final String theMenu){
-    Menu res = null;
-
-    // find this menu.
-    boolean foundIt = false;
-    final int menuCount = theMenuBar.getMenuCount();
-
-    // step through menus
-    for(int i=0; i<menuCount; i++){
-
-      // does this name match?
-      final Menu mu = theMenuBar.getMenu(i);
-
-      if(mu.getLabel().equals(theMenu)){
-
-        foundIt = true;
-        res = mu;
-
-        break;
-      }
-    }
-
-    if(! foundIt){
-      // can't find it, we'll have to add it
-      addMenu(theMenu);
-
-      // now retrieve it
-      res = getMenu(theMenu);
-    }
-
-    // return our result
-    return res;
-  }
-
-  protected final void addMenuItem(final String theMenu,
-                             final String theLabel,
-                             final Tool theTool,
-                             final MenuShortcut theShortCut)
-  {
-    // create the new item
-    final AWTMenuItem res = new AWTMenuItem(theLabel, theTool);
-
-    if(theShortCut != null){
-      res.setShortcut(theShortCut);
-    }
-
-    // get its memu
-    final Menu thisMenu = getMenu(theMenu);
-
-    // add to this item
-    thisMenu.add(res);
-  }
-
-
-  protected final void closeSessionGUI(final Session theSession)
-  {
-    final AWTSession theSess = (AWTSession)theSession;
-
-    // first remove from the card layout
-    theCards.removeLayoutComponent(theSess.getPanel());
-
-    // now remove the panel for the indicated session
-    theMainBit.remove(theSess.getPanel());
-
-    // close the pane
-    theSess.getPanel().setVisible(false);
-
-    // and refresh the window list
-    refreshWindowMenu();
-  }
-
-
-  void doTest(){
-    theCards.next(theMainBit);
-
-    MWC.GUI.Dialogs.DialogFactory.showMessage("title", "msg");
-  }
-
-  protected final void showSession(final Session theSession){
-    theCards.show(theMainBit, theSession.getName());
-
-    setTitleName(theSession.getName());
-  }
-
-  private void refreshWindowMenu(){
-    // refresh the list of files contained on this menu
-
-    if(theWindowMenu == null){
-      theWindowMenu = new Menu("Window");
-      theMenuBar.add(theWindowMenu);
-    }
-
-    // clear the menu
-    theWindowMenu.removeAll();
-
-    // now add the items we know about
-    for(int i=0; i<theMainBit.getComponentCount();i++){
-      final String thisItem = theMainBit.getComponent(i).getName();
-      final MenuItem mn = new MenuItem(thisItem);
-      mn.addActionListener(new ActionListener(){
-        public void actionPerformed(final ActionEvent e){
-          theCards.show(theMainBit, thisItem);
-          setTitleName(thisItem);
-        }
-        });
-      theWindowMenu.add(mn);
-    }
-  }
-
-  public final void setCursor(final int theCursor)
-  {
-    _theOldCursor = theFrame.getCursor();
-    theFrame.setCursor(new Cursor(theCursor));
-  }
-
-  public final void restoreCursor(){
-    theFrame.setCursor(_theOldCursor);
-  }
-
-  public final Session createSession(){
-    return new AWTSession(this, getClipboard());
-  }
-  
-
-  @Override
-  public void logStack(int status, String text)
-  {
-    logError(status, "Stack requested:" + text, null);
-  }
+	private void addMenu(final String theTitle) {
+		theMenuBar.add(new Menu(theTitle));
+	}
+
+	@Override
+	protected final void addMenuItem(final String theMenu, final String theLabel, final Tool theTool,
+			final MenuShortcut theShortCut) {
+		// create the new item
+		final AWTMenuItem res = new AWTMenuItem(theLabel, theTool);
+
+		if (theShortCut != null) {
+			res.setShortcut(theShortCut);
+		}
+
+		// get its memu
+		final Menu thisMenu = getMenu(theMenu);
+
+		// add to this item
+		thisMenu.add(res);
+	}
+
+	@Override
+	protected final void addMenuSeparator(final String theMenu) {
+		final Menu mn = getMenu(theMenu);
+		mn.addSeparator();
+	}
+
+	@Override
+	protected final void closeSessionGUI(final Session theSession) {
+		final AWTSession theSess = (AWTSession) theSession;
+
+		// first remove from the card layout
+		theCards.removeLayoutComponent(theSess.getPanel());
+
+		// now remove the panel for the indicated session
+		theMainBit.remove(theSess.getPanel());
+
+		// close the pane
+		theSess.getPanel().setVisible(false);
+
+		// and refresh the window list
+		refreshWindowMenu();
+	}
+
+	@Override
+	public final Session createSession() {
+		return new AWTSession(this, getClipboard());
+	}
+
+	void doTest() {
+		theCards.next(theMainBit);
+
+		MWC.GUI.Dialogs.DialogFactory.showMessage("title", "msg");
+	}
+
+	@Override
+	public final Session getCurrentSession() {
+		// get the session currently 'on top'
+		Session res = null;
+
+		// we have to go through the panels in the main bit,
+		// and return the one which is visible
+		for (int i = 0; i < theMainBit.getComponentCount(); i++) {
+			final Component thisSess = theMainBit.getComponent(i);
+			if (thisSess.isVisible()) {
+				res = getSessionNamed(thisSess.getName());
+				break;
+			}
+		}
+
+		// so, we've either got the top (visible) session, or we're returning null.
+		return res;
+	}
+
+	private Menu getMenu(final String theMenu) {
+		Menu res = null;
+
+		// find this menu.
+		boolean foundIt = false;
+		final int menuCount = theMenuBar.getMenuCount();
+
+		// step through menus
+		for (int i = 0; i < menuCount; i++) {
+
+			// does this name match?
+			final Menu mu = theMenuBar.getMenu(i);
+
+			if (mu.getLabel().equals(theMenu)) {
+
+				foundIt = true;
+				res = mu;
+
+				break;
+			}
+		}
+
+		if (!foundIt) {
+			// can't find it, we'll have to add it
+			addMenu(theMenu);
+
+			// now retrieve it
+			res = getMenu(theMenu);
+		}
+
+		// return our result
+		return res;
+	}
+
+	/**
+	 * fill in the UI details
+	 */
+	private void initForm() {
+		// create the frame
+		theFrame = new Frame("Debrief 3");
+		theFrame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(final java.awt.event.WindowEvent e) {
+				System.exit(0);
+			}
+		});
+
+		// do the layout
+		theFrame.setLayout(new BorderLayout());
+
+		// create the components
+		final MWC.GUI.Tools.AWT.AWTToolbar theToolbar = new MWC.GUI.Tools.AWT.AWTToolbar(Toolbar.HORIZONTAL);
+
+		// pass the toolbar back to the parent
+		setToolbar(theToolbar);
+
+		// and the panel
+		final Panel topSection = new Panel();
+		topSection.setLayout(new BorderLayout());
+		theMenuBar = new MenuBar();
+		theFrame.setMenuBar(theMenuBar);
+
+		// create the 'card' layout manager
+		theCards = new CardLayout();
+		theMainBit = new Panel(theCards);
+		theMainBit.setSize(200, 200);
+
+		// add them
+		theFrame.add("North", theToolbar);
+		theFrame.add("Center", theMainBit);
+		final Button testBtn = new Button("test");
+		testBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				doTest();
+			}
+		});
+		theFrame.add("South", testBtn);
+
+		// tidy up
+
+		final Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+
+		theFrame.setSize((int) (dim.width * 0.6), (int) (dim.height * 0.6));
+		final Dimension sz = theFrame.getSize();
+		theFrame.setLocation((dim.width - sz.width) / 2, (dim.height - sz.height) / 2);
+
+		theFrame.doLayout();
+
+	}
+
+	@Override
+	public void logStack(final int status, final String text) {
+		logError(status, "Stack requested:" + text, null);
+	}
+
+	/**
+	 * add the session passed in, to include adding it to our stack
+	 */
+	@Override
+	public final void newSession(final Session theSession) {
+
+		// see if we are being passed a null parameter,
+		// if so, we are to create a fresh session
+		Session session = theSession;
+		if (session == null) {
+			session = new AWTSession(this, getClipboard());
+			// : implement choice of type of view to put into session
+		}
+
+		final AWTSession aws = (AWTSession) session;
+
+		// pass the session to the parent
+		super.newSession(session);
+
+		// add the session to our 'stack'
+		theMainBit.add(session.getName(), aws.getPanel());
+		theCards.next(theMainBit);
+
+		// make sure it's on display
+		showSession(session);
+
+		// and refresh the window list
+		refreshWindowMenu();
+	}
+
+	private void refreshWindowMenu() {
+		// refresh the list of files contained on this menu
+
+		if (theWindowMenu == null) {
+			theWindowMenu = new Menu("Window");
+			theMenuBar.add(theWindowMenu);
+		}
+
+		// clear the menu
+		theWindowMenu.removeAll();
+
+		// now add the items we know about
+		for (int i = 0; i < theMainBit.getComponentCount(); i++) {
+			final String thisItem = theMainBit.getComponent(i).getName();
+			final MenuItem mn = new MenuItem(thisItem);
+			mn.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(final ActionEvent e) {
+					theCards.show(theMainBit, thisItem);
+					setTitleName(thisItem);
+				}
+			});
+			theWindowMenu.add(mn);
+		}
+	}
+
+	@Override
+	public final void restoreCursor() {
+		theFrame.setCursor(_theOldCursor);
+	}
+
+	@Override
+	public final void setCursor(final int theCursor) {
+		_theOldCursor = theFrame.getCursor();
+		theFrame.setCursor(new Cursor(theCursor));
+	}
+
+	/**
+	 * set the title bar text to parameter
+	 *
+	 * @param theStr to assign to title bar of frame
+	 */
+	@Override
+	protected final void setTitleName(final String theStr) {
+		theFrame.setTitle("Debrief: " + theStr);
+	}
+
+	@Override
+	protected final void showSession(final Session theSession) {
+		theCards.show(theMainBit, theSession.getName());
+
+		setTitleName(theSession.getName());
+	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

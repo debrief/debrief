@@ -1,114 +1,98 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
- *
- *    (C) 2000-2014, PlanetMayo Ltd
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+
 package ASSET.Util.XML.Decisions.Responses;
 
-/**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:
- * @author
- * @version 1.0
- */
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 
 import ASSET.Models.Decision.Responses.ChangeSensorLineUp;
 import ASSET.Models.Decision.Responses.Response;
 import ASSET.Models.Environment.EnvironmentType;
 
-public class ChangeSensorLineUpHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
-  {
+public class ChangeSensorLineUpHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader {
 
-  private final static String type = "ChangeSensorLineUp";
+	private final static String type = "ChangeSensorLineUp";
 
-  private final static String MEDIUM = "Medium";
-  private final static String SWITCH_ON = "SwitchOn";
+	private final static String MEDIUM = "Medium";
+	private final static String SWITCH_ON = "SwitchOn";
 
-  int _medium;
-  String _name;
-  boolean _switchOn;
+	public static EnvironmentType.MediumPropertyEditor _myEditor = new EnvironmentType.MediumPropertyEditor();
 
-  public static EnvironmentType.MediumPropertyEditor _myEditor =
-    new EnvironmentType.MediumPropertyEditor();
+	static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc) {
+		// create ourselves
+		final org.w3c.dom.Element thisPart = doc.createElement(type);
 
+		// get data item
+		final ChangeSensorLineUp bb = (ChangeSensorLineUp) toExport;
 
-  public ChangeSensorLineUpHandler()
-  {
-    super("ChangeSensorLineUp");
+		// output it's attributes
+		thisPart.setAttribute("Name", bb.getName());
+		thisPart.setAttribute(SWITCH_ON, writeThis(bb.getSwitchOn()));
 
-    addAttributeHandler(new HandleAttribute("Name")
-    {
-      public void setValue(String name, final String val)
-      {
-        _name = val;
-      }
-    });
+		_myEditor.setIndex(bb.getMedium());
+		thisPart.setAttribute(MEDIUM, _myEditor.getAsText());
 
-    addAttributeHandler(new HandleAttribute(MEDIUM)
-    {
-      public void setValue(String name, final String val)
-      {
-        _myEditor.setValue(val);
-        _medium = _myEditor.getIndex();
-      }
-    });
-    addAttributeHandler(new HandleBooleanAttribute(SWITCH_ON)
-    {
-      public void setValue(String name, final boolean val)
-      {
-        _switchOn = val;
-      }
-    });
+		parent.appendChild(thisPart);
 
-  }
+	}
 
+	int _medium;
 
-  public void elementClosed()
-  {
-    final Response ml = new ASSET.Models.Decision.Responses.ChangeSensorLineUp(_medium, _switchOn);
-    ml.setName(_name);
+	String _name;
 
-    // finally output it
-    setResponse(ml);
+	boolean _switchOn;
 
-    // and reset
-    _name = null;
-  }
+	public ChangeSensorLineUpHandler() {
+		super("ChangeSensorLineUp");
 
-  public void setResponse(Response dec)
-  {
-  }
+		addAttributeHandler(new HandleAttribute("Name") {
+			@Override
+			public void setValue(final String name, final String val) {
+				_name = val;
+			}
+		});
 
-  static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
-                                final org.w3c.dom.Document doc)
-  {
-    // create ourselves
-    final org.w3c.dom.Element thisPart = doc.createElement(type);
+		addAttributeHandler(new HandleAttribute(MEDIUM) {
+			@Override
+			public void setValue(final String name, final String val) {
+				_myEditor.setValue(val);
+				_medium = _myEditor.getIndex();
+			}
+		});
+		addAttributeHandler(new HandleBooleanAttribute(SWITCH_ON) {
+			@Override
+			public void setValue(final String name, final boolean val) {
+				_switchOn = val;
+			}
+		});
 
-    // get data item
-    final ChangeSensorLineUp bb = (ChangeSensorLineUp) toExport;
+	}
 
-    // output it's attributes
-    thisPart.setAttribute("Name", bb.getName());
-    thisPart.setAttribute(SWITCH_ON, writeThis(bb.getSwitchOn()));
+	@Override
+	public void elementClosed() {
+		final Response ml = new ASSET.Models.Decision.Responses.ChangeSensorLineUp(_medium, _switchOn);
+		ml.setName(_name);
 
-    _myEditor.setIndex(bb.getMedium());
-    thisPart.setAttribute(MEDIUM, _myEditor.getAsText());
+		// finally output it
+		setResponse(ml);
 
-    parent.appendChild(thisPart);
+		// and reset
+		_name = null;
+	}
 
-  }
-
+	public void setResponse(final Response dec) {
+	}
 
 }

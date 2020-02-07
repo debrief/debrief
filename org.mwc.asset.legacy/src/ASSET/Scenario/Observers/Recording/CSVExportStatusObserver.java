@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package ASSET.Scenario.Observers.Recording;
 
 import java.io.IOException;
@@ -27,234 +28,201 @@ import MWC.GUI.Editable;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldSpeed;
 
-public class CSVExportStatusObserver extends RecordStatusToFileObserverType
-{
-  /**
-   * ************************************************************ member variables
-   * *************************************************************
-   */
-  protected boolean _haveOutputPositions = false;
+public class CSVExportStatusObserver extends RecordStatusToFileObserverType {
+	static public class DebriefReplayInfo extends MWC.GUI.Editable.EditorType {
 
-  private ArrayList<Integer> _recordedDetections = new ArrayList<Integer>();
+		/**
+		 * constructor for editable details of a set of Layers
+		 *
+		 * @param data the Layers themselves
+		 */
+		public DebriefReplayInfo(final CSVExportStatusObserver data) {
+			super(data, data.getName(), "Edit");
+		}
 
-  private String _subjectName;
+		/**
+		 * editable GUI properties for our participant
+		 *
+		 * @return property descriptions
+		 */
+		@Override
+		public java.beans.PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final java.beans.PropertyDescriptor[] res = {
+						prop("Directory", "The directory to place Debrief data-files"),
+						prop("Active", "Whether this observer is active"), };
 
-  /***************************************************************
-   * constructor
-   ***************************************************************/
+				return res;
+			} catch (final java.beans.IntrospectionException e) {
+				return super.getPropertyDescriptors();
+			}
+		}
 
-  /**
-   * create a new monitor
-   * 
-   * @param directoryName
-   *          the directory to output the plots to
-   * @param recordDetections
-   *          whether to record detections
-   */
-  public CSVExportStatusObserver(final String directoryName,
-      final String fileName, final TargetType subjectToTrack,
-      final String observerName, boolean isActive, String subjectName)
-  {
-    super(directoryName, fileName, false, false, true, subjectToTrack,
-        observerName, isActive);
+	}
 
-    _subjectName = subjectName;
-  }
+	/**
+	 * ************************************************************ member variables
+	 * *************************************************************
+	 */
+	protected boolean _haveOutputPositions = false;
 
-  /**
-   * ************************************************************ member methods
-   * *************************************************************
-   */
+	private final ArrayList<Integer> _recordedDetections = new ArrayList<Integer>();
 
-  public String writeDetailsToBuffer(final MWC.GenericData.WorldLocation loc,
-      final ASSET.Participants.Status stat, final NetworkParticipant pt,
-      long newTime)
-  {
+	/***************************************************************
+	 * constructor
+	 ***************************************************************/
 
-    StringBuffer buff = new StringBuffer();
+	private final String _subjectName;
 
-    long theTime = stat.getTime();
+	/**
+	 * create a new monitor
+	 *
+	 * @param directoryName    the directory to output the plots to
+	 * @param recordDetections whether to record detections
+	 */
+	public CSVExportStatusObserver(final String directoryName, final String fileName, final TargetType subjectToTrack,
+			final String observerName, final boolean isActive, final String subjectName) {
+		super(directoryName, fileName, false, false, true, subjectToTrack, observerName, isActive);
 
-    if (theTime == TimePeriod.INVALID_TIME)
-      theTime = newTime;
+		_subjectName = subjectName;
+	}
 
-    final String dateStr =
-        MWC.Utilities.TextFormatting.FullFormatDateTime.toISOString(theTime);
+	/**
+	 * ok, create the property editor for this class
+	 *
+	 * @return the custom editor
+	 */
+	@Override
+	protected Editable.EditorType createEditor() {
+		return new CSVExportStatusObserver.DebriefReplayInfo(this);
+	}
 
-    // _os.write("Date, Lat, Long, Course (Degs), Speed (m/s)");
-    DecimalFormat threeDP = new DecimalFormat("0.###");
-    DecimalFormat sixDP = new DecimalFormat("0.######");
+	/**
+	 * determine the normal suffix for this file type
+	 */
+	@Override
+	protected String getMySuffix() {
+		return "csv";
+	}
 
-    buff.append(dateStr);
-    buff.append(", ");
-    buff.append(sixDP.format(loc.getLat()));
-    buff.append(", ");
-    buff.append(sixDP.format(loc.getLong()));
-    buff.append(", ");
-    buff.append(threeDP.format(stat.getCourse()));
-    buff.append(", ");
-    buff.append(threeDP.format(stat.getSpeed().getValueIn(WorldSpeed.M_sec)));
-    buff.append(System.getProperty("line.separator"));
+	@Override
+	protected String newName(final String name) {
+		return name + "_" + MWC.Utilities.TextFormatting.DebriefFormatDateTime.toString(System.currentTimeMillis())
+				+ ".csv";
+	}
 
-    return buff.toString();
-  }
+	@Override
+	public void restart(final ScenarioType scenario) {
+		super.restart(scenario);
 
-  @Override
-  public void restart(ScenarioType scenario)
-  {
-    super.restart(scenario);
+		// and clear the stored detections
+		_recordedDetections.clear();
+	}
 
-    // and clear the stored detections
-    _recordedDetections.clear();
-  }
+	/**
+	 * output the build details to file
+	 */
+	@Override
+	protected void writeBuildDate(final String theBuildDate) throws IOException {
+	}
 
-  public void writeThesePositionDetails(
-      final MWC.GenericData.WorldLocation loc,
-      final ASSET.Participants.Status stat, final ASSET.ParticipantType pt,
-      long newTime)
-  {
-    // just double check this is us
-    if (_subjectName == null
-        || (_subjectName != null && _subjectName.equals(pt.getName())))
-    {
-      // make a note that we've output some track positions now
-      // (and are now happy to output sensor data)
-      _haveOutputPositions = true;
+	/**
+	 * ************************************************************ member methods
+	 * *************************************************************
+	 */
 
-      String res = writeDetailsToBuffer(loc, stat, pt, newTime);
-      writeToFile(res);
-    }
-  }
+	public String writeDetailsToBuffer(final MWC.GenericData.WorldLocation loc, final ASSET.Participants.Status stat,
+			final NetworkParticipant pt, final long newTime) {
 
-  /**
-   * write this text to our stream
-   * 
-   * @param msg
-   *          the string to write
-   */
-  private void writeToFile(String msg)
-  {
-    if (msg != null)
-    {
-      try
-      {
-        if (_os == null)
-          super.createOutputFile();
+		final StringBuffer buff = new StringBuffer();
 
-        _os.write(msg);
-        _os.flush();
-      }
-      catch (IOException e)
-      {
-        e.printStackTrace();
-      }
-    }
-  }
+		long theTime = stat.getTime();
 
-  /**
-   * ok, create the property editor for this class
-   * 
-   * @return the custom editor
-   */
-  protected Editable.EditorType createEditor()
-  {
-    return new CSVExportStatusObserver.DebriefReplayInfo(this);
-  }
+		if (theTime == TimePeriod.INVALID_TIME)
+			theTime = newTime;
 
-  protected String newName(final String name)
-  {
-    return name
-        + "_"
-        + MWC.Utilities.TextFormatting.DebriefFormatDateTime.toString(System
-            .currentTimeMillis()) + ".csv";
-  }
+		final String dateStr = MWC.Utilities.TextFormatting.FullFormatDateTime.toISOString(theTime);
 
-  /**
-   * determine the normal suffix for this file type
-   */
-  protected String getMySuffix()
-  {
-    return "csv";
-  }
+		// _os.write("Date, Lat, Long, Course (Degs), Speed (m/s)");
+		final DecimalFormat threeDP = new DecimalFormat("0.###");
+		final DecimalFormat sixDP = new DecimalFormat("0.######");
 
-  /**
-   * write out the file header details for this scenario
-   * 
-   * @param title
-   *          the scenario we're describing
-   * @throws IOException
-   */
+		buff.append(dateStr);
+		buff.append(", ");
+		buff.append(sixDP.format(loc.getLat()));
+		buff.append(", ");
+		buff.append(sixDP.format(loc.getLong()));
+		buff.append(", ");
+		buff.append(threeDP.format(stat.getCourse()));
+		buff.append(", ");
+		buff.append(threeDP.format(stat.getSpeed().getValueIn(WorldSpeed.M_sec)));
+		buff.append(System.getProperty("line.separator"));
 
-  protected void writeFileHeaderDetails(final String title, long currentDTG)
-      throws IOException
-  {
-    _os.write("Time, Lat, Long, Course (Degs), Speed (M/Sec)");
+		return buff.toString();
+	}
 
-    // end the line
-    _os.write(System.getProperty("line.separator"));
-  }
+	/**
+	 * write out the file header details for this scenario
+	 *
+	 * @param title the scenario we're describing
+	 * @throws IOException
+	 */
 
-  /**
-   * output the build details to file
-   */
-  protected void writeBuildDate(String theBuildDate) throws IOException
-  {
-  }
+	@Override
+	protected void writeFileHeaderDetails(final String title, final long currentDTG) throws IOException {
+		_os.write("Time, Lat, Long, Course (Degs), Speed (M/Sec)");
 
-  // ////////////////////////////////////////////////////////////////////
-  // editable properties
-  // ////////////////////////////////////////////////////////////////////
+		// end the line
+		_os.write(System.getProperty("line.separator"));
+	}
 
-  static public class DebriefReplayInfo extends MWC.GUI.Editable.EditorType
-  {
+	@Override
+	protected void writeTheseDetectionDetails(final ParticipantType pt, final DetectionList detections,
+			final long dtg) {
+		// TODO Auto-generated method stub
 
-    /**
-     * constructor for editable details of a set of Layers
-     * 
-     * @param data
-     *          the Layers themselves
-     */
-    public DebriefReplayInfo(final CSVExportStatusObserver data)
-    {
-      super(data, data.getName(), "Edit");
-    }
+	}
 
-    /**
-     * editable GUI properties for our participant
-     * 
-     * @return property descriptions
-     */
-    public java.beans.PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try
-      {
-        final java.beans.PropertyDescriptor[] res =
-            {prop("Directory", "The directory to place Debrief data-files"),
-                prop("Active", "Whether this observer is active"),};
+	// ////////////////////////////////////////////////////////////////////
+	// editable properties
+	// ////////////////////////////////////////////////////////////////////
 
-        return res;
-      }
-      catch (java.beans.IntrospectionException e)
-      {
-        return super.getPropertyDescriptors();
-      }
-    }
+	@Override
+	public void writeThesePositionDetails(final MWC.GenericData.WorldLocation loc, final ASSET.Participants.Status stat,
+			final ASSET.ParticipantType pt, final long newTime) {
+		// just double check this is us
+		if (_subjectName == null || (_subjectName != null && _subjectName.equals(pt.getName()))) {
+			// make a note that we've output some track positions now
+			// (and are now happy to output sensor data)
+			_haveOutputPositions = true;
 
-  }
+			final String res = writeDetailsToBuffer(loc, stat, pt, newTime);
+			writeToFile(res);
+		}
+	}
 
-  @Override
-  protected void writeTheseDetectionDetails(ParticipantType pt,
-      DetectionList detections, long dtg)
-  {
-    // TODO Auto-generated method stub
+	@Override
+	protected void writeThisDecisionDetail(final NetworkParticipant pt, final String activity, final long dtg) {
+		// TODO Auto-generated method stub
 
-  }
+	}
 
-  @Override
-  protected void writeThisDecisionDetail(NetworkParticipant pt,
-      String activity, long dtg)
-  {
-    // TODO Auto-generated method stub
+	/**
+	 * write this text to our stream
+	 *
+	 * @param msg the string to write
+	 */
+	private void writeToFile(final String msg) {
+		if (msg != null) {
+			try {
+				if (_os == null)
+					super.createOutputFile();
 
-  }
+				_os.write(msg);
+				_os.flush();
+			} catch (final IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }

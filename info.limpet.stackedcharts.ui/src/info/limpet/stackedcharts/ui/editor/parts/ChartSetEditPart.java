@@ -1,9 +1,18 @@
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 package info.limpet.stackedcharts.ui.editor.parts;
-
-import info.limpet.stackedcharts.model.Chart;
-import info.limpet.stackedcharts.model.ChartSet;
-import info.limpet.stackedcharts.model.Orientation;
-import info.limpet.stackedcharts.model.StackedchartsPackage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,152 +27,133 @@ import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 
-public class ChartSetEditPart extends AbstractGraphicalEditPart
-{
-  /**
-   * Wraps the charts, so that they are displayed in a separate container and not together with the
-   * shared axis.
-   */
-  public static class ChartsWrapper
-  {
-    private final List<Chart> charts;
+import info.limpet.stackedcharts.model.Chart;
+import info.limpet.stackedcharts.model.ChartSet;
+import info.limpet.stackedcharts.model.Orientation;
+import info.limpet.stackedcharts.model.StackedchartsPackage;
 
-    public ChartsWrapper(List<Chart> charts)
-    {
-      this.charts = charts;
-    }
+public class ChartSetEditPart extends AbstractGraphicalEditPart {
+	public class ChartSetAdapter implements Adapter {
 
-    public List<Chart> getCharts()
-    {
-      return charts;
-    }
-  }
+		@Override
+		public Notifier getTarget() {
+			return getModel();
+		}
 
-  public static class ChartSetWrapper
-  {
-    private final ChartSet charts;
+		@Override
+		public boolean isAdapterForType(final Object type) {
+			return type.equals(ChartSet.class);
+		}
 
-    public ChartSetWrapper(ChartSet charts)
-    {
-      this.charts = charts;
-    }
+		@Override
+		public void notifyChanged(final Notification notification) {
+			final int featureId = notification.getFeatureID(StackedchartsPackage.class);
+			switch (featureId) {
+			case StackedchartsPackage.CHART_SET__CHARTS:
+				refreshChildren();
+				break;
+			case StackedchartsPackage.CHART_SET__ORIENTATION:
+				refresh();
+				break;
+			}
+		}
 
-    public ChartSet getcChartSet()
-    {
-      return charts;
-    }
-  }
+		@Override
+		public void setTarget(final Notifier newTarget) {
+			// Do nothing.
+		}
+	}
 
-  @Override
-  protected void refreshVisuals()
-  {
-    GridLayout layoutManager = (GridLayout) getFigure().getLayoutManager();
+	public static class ChartSetWrapper {
+		private final ChartSet charts;
 
-    layoutManager.numColumns =
-        getChartSet().getOrientation() == Orientation.HORIZONTAL
-            ? getModelChildren().size() : 1;
-    layoutManager.invalidate();
-  }
+		public ChartSetWrapper(final ChartSet charts) {
+			this.charts = charts;
+		}
 
-  private ChartSetAdapter adapter = new ChartSetAdapter();
+		public ChartSet getcChartSet() {
+			return charts;
+		}
+	}
 
-  @Override
-  public void activate()
-  {
-    super.activate();
-    getChartSet().eAdapters().add(adapter);
-  }
+	/**
+	 * Wraps the charts, so that they are displayed in a separate container and not
+	 * together with the shared axis.
+	 */
+	public static class ChartsWrapper {
+		private final List<Chart> charts;
 
-  @Override
-  public void deactivate()
-  {
-    getChartSet().eAdapters().remove(adapter);
-    super.deactivate();
-  }
+		public ChartsWrapper(final List<Chart> charts) {
+			this.charts = charts;
+		}
 
-  ChartSet getChartSet()
-  {
-    return (ChartSet) getModel();
-  }
+		public List<Chart> getCharts() {
+			return charts;
+		}
+	}
 
-  @Override
-  protected IFigure createFigure()
-  {
-    RectangleFigure rectangle = new RectangleFigure();
-    rectangle.setOutline(false);
-    GridLayout gridLayout = new GridLayout();
-    gridLayout.marginHeight = 10;
-    gridLayout.marginWidth = 10;
-    rectangle.setLayoutManager(gridLayout);
-    rectangle.setBackgroundColor(Display.getDefault().getSystemColor(
-        SWT.COLOR_WIDGET_BACKGROUND));
+	private final ChartSetAdapter adapter = new ChartSetAdapter();
 
-    return rectangle;
-  }
+	@Override
+	public void activate() {
+		super.activate();
+		getChartSet().eAdapters().add(adapter);
+	}
 
-  @Override
-  protected void createEditPolicies()
-  {
-  }
+	@Override
+	protected void createEditPolicies() {
+	}
 
-  @Override
-  public ChartSet getModel()
-  {
-    return (ChartSet) super.getModel();
-  }
+	@Override
+	protected IFigure createFigure() {
+		final RectangleFigure rectangle = new RectangleFigure();
+		rectangle.setOutline(false);
+		final GridLayout gridLayout = new GridLayout();
+		gridLayout.marginHeight = 10;
+		gridLayout.marginWidth = 10;
+		rectangle.setLayoutManager(gridLayout);
+		rectangle.setBackgroundColor(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 
-  public class ChartSetAdapter implements Adapter
-  {
+		return rectangle;
+	}
 
-    @Override
-    public void notifyChanged(Notification notification)
-    {
-      int featureId = notification.getFeatureID(StackedchartsPackage.class);
-      switch (featureId)
-      {
-      case StackedchartsPackage.CHART_SET__CHARTS:
-        refreshChildren();
-        break;
-      case StackedchartsPackage.CHART_SET__ORIENTATION:
-        refresh();
-        break;
-      }
-    }
+	@Override
+	public void deactivate() {
+		getChartSet().eAdapters().remove(adapter);
+		super.deactivate();
+	}
 
-    @Override
-    public Notifier getTarget()
-    {
-      return getModel();
-    }
+	ChartSet getChartSet() {
+		return getModel();
+	}
 
-    @Override
-    public void setTarget(Notifier newTarget)
-    {
-      // Do nothing.
-    }
+	@Override
+	public ChartSet getModel() {
+		return (ChartSet) super.getModel();
+	}
 
-    @Override
-    public boolean isAdapterForType(Object type)
-    {
-      return type.equals(ChartSet.class);
-    }
-  }
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	protected List getModelChildren() {
+		// 2 model children - the charts, displayed in a separate container and the
+		// shared (independent
+		// axis) shown on the bottom
+		final List modelChildren = new ArrayList<>();
+		final ChartSet chartSet = getModel();
+		modelChildren.add(new ChartSetWrapper(chartSet));
+		modelChildren.add(new ChartsWrapper(chartSet.getCharts()));
 
-  @SuppressWarnings(
-  {"rawtypes", "unchecked"})
-  @Override
-  protected List getModelChildren()
-  {
-    // 2 model children - the charts, displayed in a separate container and the shared (independent
-    // axis) shown on the bottom
-    List modelChildren = new ArrayList<>();
-    ChartSet chartSet = getModel();
-    modelChildren.add(new ChartSetWrapper(chartSet));
-    modelChildren.add(new ChartsWrapper(chartSet.getCharts()));
+		final boolean horizontal = chartSet.getOrientation() == Orientation.HORIZONTAL;
+		modelChildren.add(horizontal ? 1 : modelChildren.size(), chartSet.getSharedAxis());
+		return modelChildren;
+	}
 
-    boolean horizontal = chartSet.getOrientation() == Orientation.HORIZONTAL;
-    modelChildren.add(horizontal ? 1 : modelChildren.size(), chartSet
-        .getSharedAxis());
-    return modelChildren;
-  }
+	@Override
+	protected void refreshVisuals() {
+		final GridLayout layoutManager = (GridLayout) getFigure().getLayoutManager();
+
+		layoutManager.numColumns = getChartSet().getOrientation() == Orientation.HORIZONTAL ? getModelChildren().size()
+				: 1;
+		layoutManager.invalidate();
+	}
 }

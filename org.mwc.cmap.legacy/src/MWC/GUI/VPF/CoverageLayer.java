@@ -1,20 +1,22 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.GUI.VPF;
 
 // Copyright MWC 1999, Debrief 3 Project
+
 // $RCSfile: CoverageLayer.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.6 $
@@ -74,7 +76,6 @@ package MWC.GUI.VPF;
 // Initial revision
 //
 
-
 import java.awt.Dimension;
 import java.awt.Point;
 import java.beans.IntrospectionException;
@@ -83,411 +84,352 @@ import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-import MWC.GUI.CanvasType;
-import MWC.GUI.Editable;
-import MWC.GenericData.WorldLocation;
-
 import com.bbn.openmap.layer.vpf.CoverageAttributeTable;
 import com.bbn.openmap.layer.vpf.CoverageTable;
 import com.bbn.openmap.layer.vpf.LibrarySelectionTable;
 import com.bbn.openmap.layer.vpf.VPFFeatureGraphicWarehouse;
 import com.bbn.openmap.layer.vpf.VPFGraphicWarehouse;
 
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GenericData.WorldLocation;
 
-public class CoverageLayer extends MWC.GUI.BaseLayer
-{
+public class CoverageLayer extends MWC.GUI.BaseLayer {
 
-  ///////////////////////////////////////////////////
-  // member variables
-  ///////////////////////////////////////////////////
+	///////////////////////////////////////////////////
+	// member variables
+	///////////////////////////////////////////////////
 
-  /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	/////////////////////////////////
+	// a specific instance of coverage layer which plots data which has
+	// been read from a reference directory
+	/////////////////////////////////
+	public static class ReferenceCoverageLayer extends CoverageLayer {
+		//
+		public class FeaturePainterInfo extends Editable.EditorType implements Serializable {
 
-	/**
-   * the library selection table we view
-   */
-  transient LibrarySelectionTable _myLST = null;
+			/**
+				 *
+				 */
+			private static final long serialVersionUID = 1L;
 
-  /**
-   * the graphic warehouse, which does the plotting for us
-   */
-  DebriefFeatureWarehouse _myWarehouse;
+			public FeaturePainterInfo(final ReferenceCoverageLayer data) {
+				super(data, data.getName(), "");
+			}
 
-  /**
-   * the type of coverage we are plotting
-   */
-  private String _myType = null;
+			@Override
+			public PropertyDescriptor[] getPropertyDescriptors() {
+				try {
+					final PropertyDescriptor[] res = { prop("Color", "the Color to draw this Feature"),
+							prop("Visible", "whether this feature is visible"),
+							displayProp("DrawText", "Draw text", "whether to draw text"),
+							displayProp("DrawLine", "Draw line", "whether to paint lines"), };
 
-  /**
-   * the list of features which we pass to the painter
-   */
-  private Hashtable<String, FeaturePainter> _myFeatureHash;
+					return res;
+				} catch (final IntrospectionException e) {
+					return super.getPropertyDescriptors();
+				}
+			}
+		}
 
-
-
-  ///////////////////////////////////////////////////
-  // constructor
-  ///////////////////////////////////////////////////
-
-  public CoverageLayer(final LibrarySelectionTable LST,
-                       final VPFGraphicWarehouse warehouse,
-                       final String coverageType)
-  {
-    _myType = coverageType;
-
-    setVisible(false);
-
-    // store the other data
-    _myWarehouse = (DebriefFeatureWarehouse) warehouse;
-    _myLST = LST;
-
-    try
-    {
-      if (_myLST != null)
-        setName(_myLST.getDescription(_myType));
-    }
-    catch (final Exception fe)
-    {
-      fe.printStackTrace();
-    }
-  }
-
-
-  @SuppressWarnings({ "rawtypes" })
-	public CoverageLayer(final LibrarySelectionTable LST,
-                       final VPFGraphicWarehouse warehouse,
-                       final String coverageType,
-                       final CoverageAttributeTable cat)
-  {
-
-    this(LST, warehouse, coverageType);
-
-    // we now pass through the coverages, adding a feature painter for each layer
-    // now get the features inside this coverage
-    final CoverageTable ct = cat.getCoverageTable(_myType);
-
-    // get the list of features in this coverage
-    final Hashtable hash = ct.getFeatureTypeInfo();
-
-    try
-    {
-      final Enumeration enumer = hash.keys();
-      while (enumer.hasMoreElements())
-      {
-        final String thisFeature = (String) enumer.nextElement();
-
-        final String description = _myLST.getDescription(thisFeature);
-        final FeaturePainter fp = new FeaturePainter(thisFeature, description);
-        this.add(fp);
-      }
-    }
-    catch (final Exception e)
-    {
-      e.printStackTrace();
-    }
-  }
-
-  /**
-   * get the coverage type
-   */
-  public String getType()
-  {
-    return _myType;
-  }
-
-  /**
-   * set the library selection table, to allow deferred creation
-   */
-  public void setLST(final LibrarySelectionTable lst)
-  {
-    _myLST = lst;
-  }
-
-  /**
-   * set the description of this coverage
-   */
-  public void setDescription(final String desc)
-  {
-    setName(desc);
-  }
-
-	/** whether this type of BaseLayer is able to have shapes added to it
-	 * 
-	 * @return
-	 */
-	@Override
-	public boolean canTakeShapes()
-	{
-		return false;
-	}
-  /**
-   * accessor to get the list of features we want to plot
-   */
-  protected Hashtable<String, FeaturePainter> getFeatureHash()
-  {
-    if (_myFeatureHash == null)
-    {
-      _myFeatureHash = new Hashtable<String, FeaturePainter>();
-      final Enumeration<Editable> enumer = this.elements();
-      while (enumer.hasMoreElements())
-      {
-        final FeaturePainter fp = (FeaturePainter) enumer.nextElement();
-        _myFeatureHash.put(fp.getFeatureType(), fp);
-      }
-    }
-
-    return _myFeatureHash;
-  }
-
-  public void paint(final CanvasType g)
-  {
-
-    // check we are visible
-    if (!getVisible())
-      return;
-
-    if (_myLST == null)    	
-    {
-   		System.err.println("No LST for:" + _myType);
-    }
-    else
-    {
-      final float oldWid = g.getLineWidth();
-      g.setLineWidth(this.getLineThickness());
-      
-      final MWC.GenericData.WorldArea area = g.getProjection().getVisibleDataArea();
-
-      // check that an area has been created
-      if (area == null)
-        return;
-
-      // get the feature list
-      final Hashtable<String, FeaturePainter> _myFeatures = getFeatureHash();
-
-      // put our data into the warehouse
-      _myWarehouse.setCurrentFeatures(_myFeatures);
-
-      _myWarehouse.setCanvas(g);
-
-      // SPECIAL PROCESSING
-      // we determine the bounds of the visible area, but on occasion the perspective
-      // means that areas further from the equator are shown on the plot but they're
-      // outside what's described as the visible area.  So, ensure the bounds rectangle
-      // represents the outer corners of the area
-      
-      // top left
-      final Dimension scr = g.getProjection().getScreenArea();
-      final WorldLocation tl2 = new WorldLocation(g.getProjection().toWorld(new Point(0, 0)));
-      final WorldLocation tl2a = new WorldLocation(g.getProjection().toWorld(new Point(0, scr.height)));
-      tl2.setLong(Math.min(tl2.getLong(), tl2a.getLong()));
-      tl2.setLat(tl2.getLat());
-      
-      // bottom right
-      final WorldLocation br2 = new WorldLocation(g.getProjection().toWorld(new Point(scr.width,  0)));
-      final WorldLocation br2a = new WorldLocation(g.getProjection().toWorld(new Point(scr.width,  scr.height)));
-      br2.setLong(Math.max(br2.getLong(), br2a.getLong()));
-      br2.setLat(br2a.getLat());
-      
-      // put the coordinates into bbn objects
-      final com.bbn.openmap.LatLonPoint tlp = new com.bbn.openmap.LatLonPoint(tl2.getLat(), tl2.getLong());
-      final com.bbn.openmap.LatLonPoint brp = new com.bbn.openmap.LatLonPoint(br2.getLat(), br2.getLong());
-
-      // how many yards wide is this?
-      final int data_wid = (int) MWC.Algorithms.Conversions.Degs2Yds(area.getWidth());
-
-      final java.awt.Dimension dim = g.getProjection().getScreenArea();
-
-      // catch the occasional error we get when first paining a new layer
-      try
-      {
-        // and start the repaint
-        doDraw(_myLST, data_wid, dim.width, dim.height, _myType, _myWarehouse, tlp, brp);
-      }
-      catch (final java.lang.NullPointerException ne)
-      {
-        MWC.Utilities.Errors.Trace.trace("Error painting VPF for first time", false);
-      }
-      
-      g.setLineWidth(oldWid);
-    }
-
-  }
-
-
-  /**
-   * paint operation, used to hide whether this class does a drawTile, or a drawFeature
-   */
-  protected void doDraw(final LibrarySelectionTable lst,
-                        final int scale,
-                        final int screenwidth,
-                        final int screenheight,
-                        final String covname,
-                        final VPFFeatureGraphicWarehouse warehouse,
-                        final com.bbn.openmap.LatLonPoint ll1, final com.bbn.openmap.LatLonPoint ll2)
-  {
-    lst.drawFeatures(scale, screenwidth, screenheight, covname, warehouse, ll1, ll2);
-  }
-
-
-  /////////////////////////////////
-  // a specific instance of coverage layer which plots data which has
-  // been read from a reference directory
-  /////////////////////////////////
-  public static class ReferenceCoverageLayer extends CoverageLayer
-  {
-    /**
-		 * 
-		 */
+		/**
+			 *
+			 */
 		private static final long serialVersionUID = 1L;
 
 		/**
-     * the feature list we want to plot
-     */
-    FeaturePainter _myFeature;
+		 * the feature list we want to plot
+		 */
+		FeaturePainter _myFeature;
 
-    transient private Editable.EditorType _myEditor1;
+		transient private Editable.EditorType _myEditor1;
 
-    /**
-     * the name of this feature
-     */
-    private final String _featureType;
+		/**
+		 * the name of this feature
+		 */
+		private final String _featureType;
 
-    /**
-     * whether to draw lines for this feature
-     */
-    private boolean _drawLine = true;
+		/**
+		 * whether to draw lines for this feature
+		 */
+		private boolean _drawLine = true;
 
-    /**
-     * whether to draw text for this feature
-     */
-    private boolean _drawText = true;
+		/**
+		 * whether to draw text for this feature
+		 */
+		private boolean _drawText = true;
 
-    public ReferenceCoverageLayer(final LibrarySelectionTable LST,
-                                  final VPFGraphicWarehouse warehouse,
-                                  final String coverageType,
-                                  final String featureType,
-                                  final String description,
-                                  final FeaturePainter theFeature)
-    {
-      super(LST, warehouse, coverageType);
+		public ReferenceCoverageLayer(final LibrarySelectionTable LST, final VPFGraphicWarehouse warehouse,
+				final String coverageType, final String featureType, final String description,
+				final FeaturePainter theFeature) {
+			super(LST, warehouse, coverageType);
 
-      _myFeature = theFeature;
-      _featureType = featureType;
+			_myFeature = theFeature;
+			_featureType = featureType;
 
-      setName(description);
-    }
+			setName(description);
+		}
 
-    /**
-     * accessor to get the list of features we want to plot
-     */
-    protected Hashtable<String, FeaturePainter> getFeatureHash()
-    {
-      final Hashtable<String, FeaturePainter> res = new Hashtable<String, FeaturePainter>();
-      res.put(_featureType, _myFeature);
-      return res;
-    }
+		/**
+		 * paint operation, used to hide whether this class does a drawTile, or a
+		 * drawFeature
+		 */
+		@Override
+		protected void doDraw(final LibrarySelectionTable lst, final int scale, final int screenwidth,
+				final int screenheight, final String covname, final VPFFeatureGraphicWarehouse warehouse,
+				final com.bbn.openmap.LatLonPoint ll1, final com.bbn.openmap.LatLonPoint ll2) {
+			// set the painting characteristics in the painting warehouse
+			super._myWarehouse.setCoastlinePainting(new Boolean(_drawText), new Boolean(_drawLine));
 
-    public Editable.EditorType getInfo()
-    {
-      if (_myEditor1 == null)
-        _myEditor1 = new FeaturePainterInfo(this);
+			// draw tile by tile
+			lst.drawTile(scale, screenwidth, screenheight, covname, warehouse, ll1, ll2);
 
-      return _myEditor1;
-    }
+			// clear the painting characteristics in the painting warehouse
+			super._myWarehouse.setCoastlinePainting(null, null);
 
-    public java.awt.Color getColor()
-    {
-      return _myFeature.getColor();
-    }
+		}
 
-    public void setColor(final java.awt.Color color)
-    {
-      _myFeature.setColor(color);
-    }
+		public java.awt.Color getColor() {
+			return _myFeature.getColor();
+		}
 
-    public boolean getDrawText()
-    {
-      return _drawText;
-    }
+		public boolean getDrawLine() {
+			return _drawLine;
+		}
 
-    public void setDrawText(final boolean val)
-    {
-      _drawText = val;
-    }
+		public boolean getDrawText() {
+			return _drawText;
+		}
 
-    public boolean getDrawLine()
-    {
-      return _drawLine;
-    }
+		/**
+		 * accessor to get the list of features we want to plot
+		 */
+		@Override
+		protected Hashtable<String, FeaturePainter> getFeatureHash() {
+			final Hashtable<String, FeaturePainter> res = new Hashtable<String, FeaturePainter>();
+			res.put(_featureType, _myFeature);
+			return res;
+		}
 
-    public void setDrawLine(final boolean val)
-    {
-      _drawLine = val;
-    }
+		@Override
+		public Editable.EditorType getInfo() {
+			if (_myEditor1 == null)
+				_myEditor1 = new FeaturePainterInfo(this);
 
-    /**
-     * paint operation, used to hide whether this class does a drawTile, or a drawFeature
-     */
-    protected void doDraw(final LibrarySelectionTable lst,
-                          final int scale,
-                          final int screenwidth,
-                          final int screenheight,
-                          final String covname,
-                          final VPFFeatureGraphicWarehouse warehouse,
-                          final com.bbn.openmap.LatLonPoint ll1, final com.bbn.openmap.LatLonPoint ll2)
-    {
-      // set the painting characteristics in the painting warehouse
-      super._myWarehouse.setCoastlinePainting(new Boolean(_drawText), new Boolean(_drawLine));
+			return _myEditor1;
+		}
 
-      // draw tile by tile
-      lst.drawTile(scale, screenwidth, screenheight, covname, warehouse, ll1, ll2);
+		public void setColor(final java.awt.Color color) {
+			_myFeature.setColor(color);
+		}
 
-      // clear the painting characteristics in the painting warehouse
-      super._myWarehouse.setCoastlinePainting(null, null);
+		public void setDrawLine(final boolean val) {
+			_drawLine = val;
+		}
 
-    }
+		public void setDrawText(final boolean val) {
+			_drawText = val;
+		}
 
-    //
-    public class FeaturePainterInfo extends Editable.EditorType implements Serializable
-    {
+	}
 
-      /**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
+	/**
+		 *
+		 */
+	private static final long serialVersionUID = 1L;
 
-			public FeaturePainterInfo(final ReferenceCoverageLayer data)
-      {
-        super(data, data.getName(), "");
-      }
+	/**
+	 * the library selection table we view
+	 */
+	transient LibrarySelectionTable _myLST = null;
 
-      public PropertyDescriptor[] getPropertyDescriptors()
-      {
-        try
-        {
-          final PropertyDescriptor[] res = {
-            prop("Color", "the Color to draw this Feature"),
-            prop("Visible", "whether this feature is visible"),
-            displayProp("DrawText", "Draw text", "whether to draw text"),
-            displayProp("DrawLine", "Draw line", "whether to paint lines"),
-          };
+	/**
+	 * the graphic warehouse, which does the plotting for us
+	 */
+	DebriefFeatureWarehouse _myWarehouse;
 
-          return res;
-        }
-        catch (final IntrospectionException e)
-        {
-          return super.getPropertyDescriptors();
-        }
-      }
-    }
+	/**
+	 * the type of coverage we are plotting
+	 */
+	private String _myType = null;
 
-  }
+	///////////////////////////////////////////////////
+	// constructor
+	///////////////////////////////////////////////////
+
+	/**
+	 * the list of features which we pass to the painter
+	 */
+	private Hashtable<String, FeaturePainter> _myFeatureHash;
+
+	public CoverageLayer(final LibrarySelectionTable LST, final VPFGraphicWarehouse warehouse,
+			final String coverageType) {
+		_myType = coverageType;
+
+		setVisible(false);
+
+		// store the other data
+		_myWarehouse = (DebriefFeatureWarehouse) warehouse;
+		_myLST = LST;
+
+		try {
+			if (_myLST != null)
+				setName(_myLST.getDescription(_myType));
+		} catch (final Exception fe) {
+			fe.printStackTrace();
+		}
+	}
+
+	@SuppressWarnings({ "rawtypes" })
+	public CoverageLayer(final LibrarySelectionTable LST, final VPFGraphicWarehouse warehouse,
+			final String coverageType, final CoverageAttributeTable cat) {
+
+		this(LST, warehouse, coverageType);
+
+		// we now pass through the coverages, adding a feature painter for each layer
+		// now get the features inside this coverage
+		final CoverageTable ct = cat.getCoverageTable(_myType);
+
+		// get the list of features in this coverage
+		final Hashtable hash = ct.getFeatureTypeInfo();
+
+		try {
+			final Enumeration enumer = hash.keys();
+			while (enumer.hasMoreElements()) {
+				final String thisFeature = (String) enumer.nextElement();
+
+				final String description = _myLST.getDescription(thisFeature);
+				final FeaturePainter fp = new FeaturePainter(thisFeature, description);
+				this.add(fp);
+			}
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * whether this type of BaseLayer is able to have shapes added to it
+	 *
+	 * @return
+	 */
+	@Override
+	public boolean canTakeShapes() {
+		return false;
+	}
+
+	/**
+	 * paint operation, used to hide whether this class does a drawTile, or a
+	 * drawFeature
+	 */
+	protected void doDraw(final LibrarySelectionTable lst, final int scale, final int screenwidth,
+			final int screenheight, final String covname, final VPFFeatureGraphicWarehouse warehouse,
+			final com.bbn.openmap.LatLonPoint ll1, final com.bbn.openmap.LatLonPoint ll2) {
+		lst.drawFeatures(scale, screenwidth, screenheight, covname, warehouse, ll1, ll2);
+	}
+
+	/**
+	 * accessor to get the list of features we want to plot
+	 */
+	protected Hashtable<String, FeaturePainter> getFeatureHash() {
+		if (_myFeatureHash == null) {
+			_myFeatureHash = new Hashtable<String, FeaturePainter>();
+			final Enumeration<Editable> enumer = this.elements();
+			while (enumer.hasMoreElements()) {
+				final FeaturePainter fp = (FeaturePainter) enumer.nextElement();
+				_myFeatureHash.put(fp.getFeatureType(), fp);
+			}
+		}
+
+		return _myFeatureHash;
+	}
+
+	/**
+	 * get the coverage type
+	 */
+	public String getType() {
+		return _myType;
+	}
+
+	@Override
+	public void paint(final CanvasType g) {
+
+		// check we are visible
+		if (!getVisible())
+			return;
+
+		if (_myLST == null) {
+			System.err.println("No LST for:" + _myType);
+		} else {
+			final float oldWid = g.getLineWidth();
+			g.setLineWidth(this.getLineThickness());
+
+			final MWC.GenericData.WorldArea area = g.getProjection().getVisibleDataArea();
+
+			// check that an area has been created
+			if (area == null)
+				return;
+
+			// get the feature list
+			final Hashtable<String, FeaturePainter> _myFeatures = getFeatureHash();
+
+			// put our data into the warehouse
+			_myWarehouse.setCurrentFeatures(_myFeatures);
+
+			_myWarehouse.setCanvas(g);
+
+			// SPECIAL PROCESSING
+			// we determine the bounds of the visible area, but on occasion the perspective
+			// means that areas further from the equator are shown on the plot but they're
+			// outside what's described as the visible area. So, ensure the bounds rectangle
+			// represents the outer corners of the area
+
+			// top left
+			final Dimension scr = g.getProjection().getScreenArea();
+			final WorldLocation tl2 = new WorldLocation(g.getProjection().toWorld(new Point(0, 0)));
+			final WorldLocation tl2a = new WorldLocation(g.getProjection().toWorld(new Point(0, scr.height)));
+			tl2.setLong(Math.min(tl2.getLong(), tl2a.getLong()));
+			tl2.setLat(tl2.getLat());
+
+			// bottom right
+			final WorldLocation br2 = new WorldLocation(g.getProjection().toWorld(new Point(scr.width, 0)));
+			final WorldLocation br2a = new WorldLocation(g.getProjection().toWorld(new Point(scr.width, scr.height)));
+			br2.setLong(Math.max(br2.getLong(), br2a.getLong()));
+			br2.setLat(br2a.getLat());
+
+			// put the coordinates into bbn objects
+			final com.bbn.openmap.LatLonPoint tlp = new com.bbn.openmap.LatLonPoint(tl2.getLat(), tl2.getLong());
+			final com.bbn.openmap.LatLonPoint brp = new com.bbn.openmap.LatLonPoint(br2.getLat(), br2.getLong());
+
+			// how many yards wide is this?
+			final int data_wid = (int) MWC.Algorithms.Conversions.Degs2Yds(area.getWidth());
+
+			final java.awt.Dimension dim = g.getProjection().getScreenArea();
+
+			// catch the occasional error we get when first paining a new layer
+			try {
+				// and start the repaint
+				doDraw(_myLST, data_wid, dim.width, dim.height, _myType, _myWarehouse, tlp, brp);
+			} catch (final java.lang.NullPointerException ne) {
+				MWC.Utilities.Errors.Trace.trace("Error painting VPF for first time", false);
+			}
+
+			g.setLineWidth(oldWid);
+		}
+
+	}
+
+	/**
+	 * set the description of this coverage
+	 */
+	public void setDescription(final String desc) {
+		setName(desc);
+	}
+
+	/**
+	 * set the library selection table, to allow deferred creation
+	 */
+	public void setLST(final LibrarySelectionTable lst) {
+		_myLST = lst;
+	}
 
 }
-
-
-
-

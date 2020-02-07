@@ -1,58 +1,104 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package ASSET.Util.XML.Utils.LookupEnvironment;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Vector;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import ASSET.Models.Sensor.Lookup.LookupSensor;
-import ASSET.Models.Sensor.Lookup.LookupSensor.*;
+import ASSET.Models.Sensor.Lookup.LookupSensor.IntegerTargetTypeLookup;
+import ASSET.Models.Sensor.Lookup.LookupSensor.NamedList;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
-
-import java.util.*;
-
-import org.w3c.dom.*;
 
 /**
  * Created by IntelliJ IDEA. User: Ian.Mayo Date: 26-Oct-2004 Time: 09:29:10 To
  * change this template use File | Settings | File Templates.
  */
-abstract public class IntegerTargetTypeLookupHandler extends MWCXMLReader
-{
+abstract public class IntegerTargetTypeLookupHandler extends MWCXMLReader {
 	public static final String DATUM = "TargetAspectDatum";
 
 	private static final String UNKNOWN_TYPE = "UnknownType";
+
+	public static void exportThis(final String target_sea_state_set, final String target_sea_state_datum,
+			final String[] sea_state_headings, final IntegerTargetTypeLookup states, final Element envElement,
+			final Document doc) {
+		// ok, put us into the element
+		final org.w3c.dom.Element itt = doc.createElement(target_sea_state_set);
+
+		// get on with the name attribute
+		final Double unknown = states.getUnknownResult();
+		if (unknown != null)
+			itt.setAttribute(UNKNOWN_TYPE, writeThis(unknown.doubleValue()));
+
+		// now the matrix of sea states
+		final Collection<String> keys = states.getNames();
+		for (final Iterator<String> iter = keys.iterator(); iter.hasNext();) {
+			final String thisN = iter.next();
+
+			// ok, cycle through the sea states for this participant
+			final NamedList thisList = states.getThisSeries(thisN);
+			exportThisSeries(thisN, target_sea_state_datum, thisList, sea_state_headings, itt, doc);
+		}
+
+		envElement.appendChild(itt);
+	}
+
+	private static void exportThisSeries(final String name, final String target_sea_state_datum,
+			final NamedList thisList, final String[] sea_state_headings, final Element itt, final Document doc) {
+		// ok, put us into the element
+		final org.w3c.dom.Element datum = doc.createElement(target_sea_state_datum);
+
+		datum.setAttribute("Type", name);
+
+		// and step through its values
+		final Collection<Double> indices = thisList.getValues();
+		int ctr = 0;
+		for (final Iterator<Double> iter = indices.iterator(); iter.hasNext();) {
+			final Double val = iter.next();
+			if (val != null) {
+				datum.setAttribute(sea_state_headings[ctr], writeThis(val.doubleValue()));
+				ctr++;
+			} else
+				break;
+		}
+
+		itt.appendChild(datum);
+	}
 
 	Vector<NamedList> _myDatums = null;
 
 	Double _defaultValue;
 
-	public IntegerTargetTypeLookupHandler(final String myType, final String mySubType,
-			final String[] myHeadings)
-	{
+	public IntegerTargetTypeLookupHandler(final String myType, final String mySubType, final String[] myHeadings) {
 		super(myType);
 
-		addHandler(new TargetIntegerDatumHandler(mySubType, myHeadings)
-		{
-			public void setDatum(LookupSensor.NamedList value)
-			{
+		addHandler(new TargetIntegerDatumHandler(mySubType, myHeadings) {
+			@Override
+			public void setDatum(final LookupSensor.NamedList value) {
 				addDatum(value);
 			}
 		});
 
-		addAttributeHandler(new HandleDoubleAttribute(UNKNOWN_TYPE)
-		{
-			public void setValue(String name, double value)
-			{
+		addAttributeHandler(new HandleDoubleAttribute(UNKNOWN_TYPE) {
+			@Override
+			public void setValue(final String name, final double value) {
 				_defaultValue = new Double(value);
 			}
 		});
@@ -61,21 +107,20 @@ abstract public class IntegerTargetTypeLookupHandler extends MWCXMLReader
 
 	/**
 	 * store this new datum
-	 * 
+	 *
 	 * @param value
 	 */
-	void addDatum(LookupSensor.NamedList value)
-	{
+	void addDatum(final LookupSensor.NamedList value) {
 		if (_myDatums == null)
 			_myDatums = new Vector<LookupSensor.NamedList>(1, 1);
 		_myDatums.add(value);
 	}
 
-	public void elementClosed()
-	{
+	@Override
+	public void elementClosed() {
 
-		LookupSensor.IntegerTargetTypeLookup res = new LookupSensor.IntegerTargetTypeLookup(
-				_myDatums, _defaultValue);
+		final LookupSensor.IntegerTargetTypeLookup res = new LookupSensor.IntegerTargetTypeLookup(_myDatums,
+				_defaultValue);
 
 		// and store it
 		setLookup(res);
@@ -86,62 +131,9 @@ abstract public class IntegerTargetTypeLookupHandler extends MWCXMLReader
 
 	/**
 	 * pass details back to calling class
-	 * 
+	 *
 	 * @param val
 	 */
 	abstract public void setLookup(LookupSensor.IntegerTargetTypeLookup val);
-
-	public static void exportThis(String target_sea_state_set,
-			String target_sea_state_datum, String[] sea_state_headings,
-			IntegerTargetTypeLookup states, Element envElement, Document doc)
-	{
-		// ok, put us into the element
-		org.w3c.dom.Element itt = doc.createElement(target_sea_state_set);
-
-		// get on with the name attribute
-		Double unknown = states.getUnknownResult();
-		if (unknown != null)
-			itt.setAttribute(UNKNOWN_TYPE, writeThis(unknown.doubleValue()));
-
-		// now the matrix of sea states
-		Collection<String> keys = states.getNames();
-		for (Iterator<String> iter = keys.iterator(); iter.hasNext();)
-		{
-			String thisN = (String)iter.next();
-
-			// ok, cycle through the sea states for this participant
-			NamedList thisList = states.getThisSeries(thisN);
-			exportThisSeries(thisN, target_sea_state_datum, thisList, sea_state_headings, itt,
-					doc);
-		}
-
-		envElement.appendChild(itt);
-	}
-
-	private static void exportThisSeries(String name, String target_sea_state_datum,
-			NamedList thisList, String[] sea_state_headings, Element itt, Document doc)
-	{
-		// ok, put us into the element
-		org.w3c.dom.Element datum = doc.createElement(target_sea_state_datum);
-		
-		datum.setAttribute("Type", name);
-		
-		// and step through its values
-		Collection<Double> indices = thisList.getValues();
-		int ctr = 0;
-		for (Iterator<Double> iter = indices.iterator(); iter.hasNext();)
-		{
-			Double val = (Double) iter.next();
-			if (val != null)
-			{
-				datum.setAttribute(sea_state_headings[ctr], writeThis(val.doubleValue()));
-				ctr++;
-			}
-			else
-				break;
-		}
-
-		itt.appendChild(datum);
-	}
 
 }

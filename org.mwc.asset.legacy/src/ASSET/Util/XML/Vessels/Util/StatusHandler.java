@@ -1,28 +1,20 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
- *
- *    (C) 2000-2014, PlanetMayo Ltd
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+
 package ASSET.Util.XML.Vessels.Util;
 
-/**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:
- * @author
- * @version 1.0
- */
-
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 
 import java.text.ParseException;
 
@@ -32,120 +24,105 @@ import MWC.GenericData.WorldSpeed;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldSpeedHandler;
 
-abstract public class StatusHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
-  {
+abstract public class StatusHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader {
 
-  private final static String type = "Status";
+	private final static String type = "Status";
 
-  double _myCourse;
-  WorldSpeed _mySpeed;
-  double _myFuel;
-  long _myTime = -1;
-  int _myId;
-  MWC.GenericData.WorldLocation _myLoc;
+	static public void exportThis(final ASSET.Participants.Status toExport, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc) {
 
-  public StatusHandler()
-  {
-    super(type);
+		// create the element
+		final org.w3c.dom.Element stat = doc.createElement(type);
 
-    super.addAttributeHandler(new HandleAttribute("Course")
-    {
-      public void setValue(String name, final String val)
-      {
-        try 
-        {
-			_myCourse = MWCXMLReader.readThisDouble(val);
-		} 
-        catch (final ParseException e) 
-        {
-        	 MWC.Utilities.Errors.Trace.trace(e);
-		}
-      }
-    });
+		// set the attributes
+		stat.setAttribute("Id", writeThis(toExport.getId()));
+		stat.setAttribute("Course", writeThis(toExport.getCourse()));
+		stat.setAttribute("Fuel", writeThis(toExport.getFuelLevel()));
+		stat.setAttribute("Time", writeThisInXML(new java.util.Date(toExport.getTime())));
+		ASSETLocationHandler.exportLocation(toExport.getLocation(), "Location", stat, doc);
+		WorldSpeedHandler.exportSpeed(toExport.getSpeed(), stat, doc);
 
-    addHandler(new WorldSpeedHandler()
-    {
-      public void setSpeed(WorldSpeed res)
-      {
-        _mySpeed = res;
-      }
-    });
-    super.addAttributeHandler(new HandleAttribute("Fuel")
-    {
-      public void setValue(String name, final String val)
-      {
-        try 
-        {
-			_myFuel = MWCXMLReader.readThisDouble(val);
-		} 
-        catch (final ParseException e) 
-        {
-        	 MWC.Utilities.Errors.Trace.trace(e);
-		}
-      }
-    });
-    super.addAttributeHandler(new HandleAttribute("Id")
-    {
-      public void setValue(String name, final String val)
-      {
-        _myId = Integer.parseInt(val);
-      }
-    });
-    addAttributeHandler(new HandleDateTimeAttribute("Time")
-    {
-      public void setValue(String name, final long value)
-      {
-        _myTime = value;
-      }
-    });
-    addHandler(new ASSETLocationHandler("Location")
-    {
-      public void setLocation(final MWC.GenericData.WorldLocation res)
-      {
-        _myLoc = res;
-      }
-    });
+		// add to parent
+		parent.appendChild(stat);
 
-  }
+	}
 
-  public void elementClosed()
-  {
-    // create the category
-    final Status stat = new Status(_myId, _myTime);
-    stat.setCourse(_myCourse);
-    stat.setSpeed(_mySpeed);
-    stat.setFuelLevel(_myFuel);
-    stat.setLocation(_myLoc);
+	double _myCourse;
+	WorldSpeed _mySpeed;
+	double _myFuel;
+	long _myTime = -1;
+	int _myId;
 
-    setStatus(stat);
+	MWC.GenericData.WorldLocation _myLoc;
 
-    // and reset
-    _myTime = -1;
-    _mySpeed = null;
-    _myLoc = null;
-  }
+	public StatusHandler() {
+		super(type);
 
-  abstract public void setStatus(ASSET.Participants.Status stat);
+		super.addAttributeHandler(new HandleAttribute("Course") {
+			@Override
+			public void setValue(final String name, final String val) {
+				try {
+					_myCourse = MWCXMLReader.readThisDouble(val);
+				} catch (final ParseException e) {
+					MWC.Utilities.Errors.Trace.trace(e);
+				}
+			}
+		});
 
-  static public void exportThis(final ASSET.Participants.Status toExport, final org.w3c.dom.Element parent,
-                                final org.w3c.dom.Document doc)
-  {
+		addHandler(new WorldSpeedHandler() {
+			@Override
+			public void setSpeed(final WorldSpeed res) {
+				_mySpeed = res;
+			}
+		});
+		super.addAttributeHandler(new HandleAttribute("Fuel") {
+			@Override
+			public void setValue(final String name, final String val) {
+				try {
+					_myFuel = MWCXMLReader.readThisDouble(val);
+				} catch (final ParseException e) {
+					MWC.Utilities.Errors.Trace.trace(e);
+				}
+			}
+		});
+		super.addAttributeHandler(new HandleAttribute("Id") {
+			@Override
+			public void setValue(final String name, final String val) {
+				_myId = Integer.parseInt(val);
+			}
+		});
+		addAttributeHandler(new HandleDateTimeAttribute("Time") {
+			@Override
+			public void setValue(final String name, final long value) {
+				_myTime = value;
+			}
+		});
+		addHandler(new ASSETLocationHandler("Location") {
+			@Override
+			public void setLocation(final MWC.GenericData.WorldLocation res) {
+				_myLoc = res;
+			}
+		});
 
-    // create the element
-    final org.w3c.dom.Element stat = doc.createElement(type);
+	}
 
-    // set the attributes
-    stat.setAttribute("Id", writeThis(toExport.getId()));
-    stat.setAttribute("Course", writeThis(toExport.getCourse()));
-    stat.setAttribute("Fuel", writeThis(toExport.getFuelLevel()));
-    stat.setAttribute("Time", writeThisInXML(new java.util.Date(toExport.getTime())));
-    ASSETLocationHandler.exportLocation(toExport.getLocation(), "Location", stat, doc);
-    WorldSpeedHandler.exportSpeed(toExport.getSpeed(), stat, doc);
+	@Override
+	public void elementClosed() {
+		// create the category
+		final Status stat = new Status(_myId, _myTime);
+		stat.setCourse(_myCourse);
+		stat.setSpeed(_mySpeed);
+		stat.setFuelLevel(_myFuel);
+		stat.setLocation(_myLoc);
 
+		setStatus(stat);
 
-    // add to parent
-    parent.appendChild(stat);
+		// and reset
+		_myTime = -1;
+		_mySpeed = null;
+		_myLoc = null;
+	}
 
-  }
+	abstract public void setStatus(ASSET.Participants.Status stat);
 
 }

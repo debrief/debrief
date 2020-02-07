@@ -1,20 +1,22 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.GUI.Properties.Swing;
 
 // Copyright MWC 1999, Debrief 3 Project
+
 // $RCSfile: SwingWorldSpeedPropertyEditor.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.1 $
@@ -53,7 +55,6 @@ package MWC.GUI.Properties.Swing;
 // Remove scrap lines
 //
 
-
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -68,221 +69,211 @@ import javax.swing.JTextField;
 
 import MWC.GenericData.WorldSpeed;
 
-public class SwingWorldSpeedPropertyEditor extends
-  MWC.GUI.Properties.WorldSpeedPropertyEditor implements FocusListener, ActionListener
-{
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
+public class SwingWorldSpeedPropertyEditor extends MWC.GUI.Properties.WorldSpeedPropertyEditor
+		implements FocusListener, ActionListener {
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
 
-  /**
-   * field to edit the distance
-   */
-  JTextField _theSpeed;
+	/**
+	 * field to edit the distance
+	 */
+	JTextField _theSpeed;
 
-  /**
-   * combo-box to select the units
-   */
-  @SuppressWarnings("rawtypes")
+	/**
+	 * combo-box to select the units
+	 */
+	@SuppressWarnings("rawtypes")
 	JComboBox _theUnits;
 
-  /**
-   * panel to hold everything
-   */
-  JPanel _theHolder;
+	/**
+	 * panel to hold everything
+	 */
+	JPanel _theHolder;
 
-  /**
-   * the former units used
-   */
-  int _oldUnits = -1;
+	/**
+	 * the former units used
+	 */
+	int _oldUnits = -1;
 
-  /**
-   * the formatting object used to write to screen
-   */
-  protected DecimalFormat _formatter1 = new DecimalFormat("0.######");
+	/**
+	 * the formatting object used to write to screen
+	 */
+	protected DecimalFormat _formatter1 = new DecimalFormat("0.######");
 
-  /**
-   * property change support for objects which want to listen to us changing
-   */
-  protected java.beans.PropertyChangeSupport _pSupport = new java.beans.PropertyChangeSupport(this);
+	/**
+	 * property change support for objects which want to listen to us changing
+	 */
+	protected java.beans.PropertyChangeSupport _pSupport = new java.beans.PropertyChangeSupport(this);
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-  /**
-   * build the editor
-   */
-  @SuppressWarnings({ "unchecked", "rawtypes" })
-	public Component getCustomEditor()
-  {
-    _theHolder = new JPanel();
+	/**
+	 * the combo box label has been changed
+	 */
+	@Override
+	public void actionPerformed(final ActionEvent e) {
+		// what are the new units?
+		final int newUnits = this._theUnits.getSelectedIndex();
 
-    final BorderLayout bl1 = new BorderLayout();
-    bl1.setVgap(0);
-    bl1.setHgap(0);
-    final BorderLayout bl2 = new BorderLayout();
-    bl2.setVgap(0);
-    bl2.setHgap(0);
+		try {
 
-    final JPanel lPanel = new JPanel();
-    lPanel.setLayout(bl1);
-    final JPanel rPanel = new JPanel();
-    rPanel.setLayout(bl2);
+			// convert to a new distance
+			final double newDist = WorldSpeed.convert(_oldUnits, newUnits, getSpeed());
 
-    _theHolder.setLayout(new BorderLayout());
-    _theSpeed = new JTextField();
-    _theSpeed.setToolTipText("the Speed");
-    _theSpeed.setColumns(_numColumns);
-    _theUnits = new JComboBox(WorldSpeed.UnitLabels);
-    _theUnits.setToolTipText("the Units");
-    _theHolder.add("Center", _theSpeed);
-    _theHolder.add("East", _theUnits);
+			// and remember the units
+			_oldUnits = newUnits;
 
-    // get the fields to select the full text when they're selected
-    _theSpeed.addFocusListener(this);
-    _theUnits.addActionListener(this);
+			// and put the correct data in the distance
+			setSpeed(newDist);
+		} catch (final java.text.ParseException pe) {
+			MWC.Utilities.Errors.Trace.trace(pe, "Whilst trying to read Speed value");
+		}
 
-    resetData();
-    return _theHolder;
-  }
+		// ok, now fire an update
+		_pSupport.firePropertyChange("Combo", -1, newUnits);
+	}
 
-  /**
-   * update the GUI, following a new value assignment
-   */
-  protected void updateGUI()
-  {
+	////////////////////////////////////////////////////
+	// property change support
+	////////////////////////////////////////////////////
+	@Override
+	public void addPropertyChangeListener(final java.beans.PropertyChangeListener listener) {
+		_pSupport.addPropertyChangeListener(listener);
+	}
 
-  }
+	/**
+	 * Invoked when a component gains the keyboard focus.
+	 */
+	@Override
+	public void focusGained(final FocusEvent e) {
+		final Component c = e.getComponent();
+		if (c instanceof JTextField) {
+			final JTextField jt = (JTextField) c;
+			jt.setSelectionStart(0);
+			jt.setSelectionEnd(jt.getText().length());
+		}
+	}
 
-  /**
-   * get the date text as a string
-   */
-  protected double getSpeed() throws java.text.ParseException
-  {
-    final double val = _formatter1.parse(_theSpeed.getText()).doubleValue();
-    return val;
-  }
+	/**
+	 * Invoked when a component loses the keyboard focus.
+	 */
+	@Override
+	public void focusLost(final FocusEvent e) {
+		final Component c = e.getComponent();
+		if (c instanceof JTextField) {
+			final JTextField jt = (JTextField) c;
+			jt.setSelectionStart(0);
+			jt.setSelectionEnd(jt.getText().length());
+			_pSupport.firePropertyChange("Text", null, jt.getText());
+		}
+	}
 
-  /**
-   * get the date text as a string
-   */
-  protected int getUnits()
-  {
-    return _theUnits.getSelectedIndex();
-  }
+	/**
+	 * build the editor
+	 */
+	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Component getCustomEditor() {
+		_theHolder = new JPanel();
 
-  /**
-   * set the date text in string form
-   */
-  protected void setSpeed(final double val)
-  {
-    if (_theHolder != null)
-    {
-      _theSpeed.setText(_formatter1.format(val));
-    }
-  }
+		final BorderLayout bl1 = new BorderLayout();
+		bl1.setVgap(0);
+		bl1.setHgap(0);
+		final BorderLayout bl2 = new BorderLayout();
+		bl2.setVgap(0);
+		bl2.setHgap(0);
 
-  /**
-   * set the time text in string form
-   */
-  protected void setUnits(final int val)
-  {
-    if (_theHolder != null)
-    {
-      // temporarily stop listening to the combo box
-      _theUnits.removeActionListener(this);
+		final JPanel lPanel = new JPanel();
+		lPanel.setLayout(bl1);
+		final JPanel rPanel = new JPanel();
+		rPanel.setLayout(bl2);
 
-      // select this item in the combo box
-      _theUnits.setSelectedIndex(val);
+		_theHolder.setLayout(new BorderLayout());
+		_theSpeed = new JTextField();
+		_theSpeed.setToolTipText("the Speed");
+		_theSpeed.setColumns(_numColumns);
+		_theUnits = new JComboBox(WorldSpeed.UnitLabels);
+		_theUnits.setToolTipText("the Units");
+		_theHolder.add("Center", _theSpeed);
+		_theHolder.add("East", _theUnits);
 
-      // continue listening to the combo box
-      _theUnits.addActionListener(this);
+		// get the fields to select the full text when they're selected
+		_theSpeed.addFocusListener(this);
+		_theUnits.addActionListener(this);
 
-      // remember the units
-      _oldUnits = val;
-    }
-  }
+		resetData();
+		return _theHolder;
+	}
 
-  /////////////////////////////
-  // focus listener support classes
-  /////////////////////////////
+	/**
+	 * get the date text as a string
+	 */
+	@Override
+	protected double getSpeed() throws java.text.ParseException {
+		final double val = _formatter1.parse(_theSpeed.getText()).doubleValue();
+		return val;
+	}
 
+	/////////////////////////////
+	// focus listener support classes
+	/////////////////////////////
 
-  /**
-   * Invoked when a component gains the keyboard focus.
-   */
-  public void focusGained(final FocusEvent e)
-  {
-    final Component c = e.getComponent();
-    if (c instanceof JTextField)
-    {
-      final JTextField jt = (JTextField) c;
-      jt.setSelectionStart(0);
-      jt.setSelectionEnd(jt.getText().length());
-    }
-  }
+	/**
+	 * get the date text as a string
+	 */
+	@Override
+	protected int getUnits() {
+		return _theUnits.getSelectedIndex();
+	}
 
-  /**
-   * Invoked when a component loses the keyboard focus.
-   */
-  public void focusLost(final FocusEvent e)
-  {
-    final Component c = e.getComponent();
-    if (c instanceof JTextField)
-    {
-      final JTextField jt = (JTextField) c;
-      jt.setSelectionStart(0);
-      jt.setSelectionEnd(jt.getText().length());
-      _pSupport.firePropertyChange("Text", null, jt.getText());
-    }
-  }
+	@Override
+	public void removePropertyChangeListener(final java.beans.PropertyChangeListener listener) {
+		_pSupport.removePropertyChangeListener(listener);
+	}
 
-  /**
-   * the combo box label has been changed
-   */
-  public void actionPerformed(final ActionEvent e)
-  {
-    // what are the new units?
-    final int newUnits = this._theUnits.getSelectedIndex();
+	/**
+	 * set the date text in string form
+	 */
+	@Override
+	protected void setSpeed(final double val) {
+		if (_theHolder != null) {
+			_theSpeed.setText(_formatter1.format(val));
+		}
+	}
 
-    try
-    {
+	/**
+	 * set the time text in string form
+	 */
+	@Override
+	protected void setUnits(final int val) {
+		if (_theHolder != null) {
+			// temporarily stop listening to the combo box
+			_theUnits.removeActionListener(this);
 
-      // convert to a new distance
-      final double newDist = WorldSpeed.convert(_oldUnits, newUnits, getSpeed());
+			// select this item in the combo box
+			_theUnits.setSelectedIndex(val);
 
-      // and remember the units
-      _oldUnits = newUnits;
+			// continue listening to the combo box
+			_theUnits.addActionListener(this);
 
-      // and put the correct data in the distance
-      setSpeed(newDist);
-    }
-    catch (final java.text.ParseException pe)
-    {
-      MWC.Utilities.Errors.Trace.trace(pe, "Whilst trying to read Speed value");
-    }
+			// remember the units
+			_oldUnits = val;
+		}
+	}
 
-    // ok, now fire an update
-    _pSupport.firePropertyChange("Combo", -1, newUnits);
-  }
+	/**
+	 * update the GUI, following a new value assignment
+	 */
+	@Override
+	protected void updateGUI() {
 
-  ////////////////////////////////////////////////////
-  // property change support
-  ////////////////////////////////////////////////////
-  public void addPropertyChangeListener(final java.beans.PropertyChangeListener listener)
-  {
-    _pSupport.addPropertyChangeListener(listener);
-  }
-
-  public void removePropertyChangeListener(final java.beans.PropertyChangeListener listener)
-  {
-    _pSupport.removePropertyChangeListener(listener);
-  }
-
+	}
 
 }

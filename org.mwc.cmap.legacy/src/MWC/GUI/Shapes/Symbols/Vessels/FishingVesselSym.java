@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: FishingVesselSym.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -52,54 +53,40 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.WorldLocation;
 
-public class FishingVesselSym extends ScreenScaledSym
-{
+public class FishingVesselSym extends ScreenScaledSym {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
-	{
-		// override the scale values
-		super.setScaleVal(1);
-		super.paint(dest, theLocation, direction);
+	public PlainSymbol create() {
+		return new FishingVesselSym();
 	}
 
-  @Override
-  public PlainSymbol create()
-  {
-    return new FishingVesselSym();
-  }
-  
-	protected Vector<double[][]> getCoords()
-	{
+	@Override
+	protected Vector<double[][]> getCoords() {
 		final Vector<double[][]> hullLines = new Vector<double[][]>();
 
-		hullLines.add(new double[][]
-		{
-		{ -9, -4 },
-		{ 9, -4 },
-		{ 8.9, -1.45 },
-		{ 7.91, 0.3 },
-		{ 6.74, 1.1 },
-		{ 4.08, 3.41 },
-		{ 0, 4.02 },
-		{ -4.08, 3.41 },
-		{-6.74, 1.1 },
-		{ -7.91, 0.3 },
-		{ -8.9, -1.45 },
-		{ -9, -4 } });
+		hullLines.add(
+				new double[][] { { -9, -4 }, { 9, -4 }, { 8.9, -1.45 }, { 7.91, 0.3 }, { 6.74, 1.1 }, { 4.08, 3.41 },
+						{ 0, 4.02 }, { -4.08, 3.41 }, { -6.74, 1.1 }, { -7.91, 0.3 }, { -8.9, -1.45 }, { -9, -4 } });
 
 		return hullLines;
 
 	}
 
-	public String getType()
-	{
+	@Override
+	public String getType() {
 		return "Fishing_Vessel";
+	}
+
+	@Override
+	public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction) {
+		// override the scale values
+		super.setScaleVal(1);
+		super.paint(dest, theLocation, direction);
 	}
 
 }

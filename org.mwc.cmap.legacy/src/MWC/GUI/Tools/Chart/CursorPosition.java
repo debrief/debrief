@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.GUI.Tools.Chart;
 
 // Copyright MWC 1999, Debrief 3 Project
@@ -71,35 +72,33 @@ import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GenericData.WorldLocation;
 
-abstract public class CursorPosition implements PlainChart.ChartCursorMovedListener, Serializable
-{
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  
-  /**
-	 * 
+abstract public class CursorPosition implements PlainChart.ChartCursorMovedListener, Serializable {
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  public CursorPosition(final PlainChart theChart){
-    theChart.addCursorMovedListener(this);
-  }
-  
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	public CursorPosition(final PlainChart theChart) {
+		theChart.addCursorMovedListener(this);
+	}
 
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-  public void cursorMoved(final WorldLocation thePos, final boolean dragging, final Layers theData)
-  {
-    
-    final String res = MWC.Utilities.TextFormatting.BriefFormatLocation.toString(thePos);
-    setText(res);
-  }
-	
+	@Override
+	public void cursorMoved(final WorldLocation thePos, final boolean dragging, final Layers theData) {
+
+		final String res = MWC.Utilities.TextFormatting.BriefFormatLocation.toString(thePos);
+		setText(res);
+	}
+
 	abstract public void setText(String theVal);
 }

@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: SymbolScalePropertyEditor.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -50,107 +51,79 @@
 // Initial revision
 //
 
-
-
 package MWC.GUI.Shapes.Symbols;
 
 import java.beans.PropertyEditorSupport;
 
-public class SymbolScalePropertyEditor extends PropertyEditorSupport
-{
+public class SymbolScalePropertyEditor extends PropertyEditorSupport {
 
-  // publicly accessable values used for setting scale from code
-  final public static double SMALL = 0.75;
-  final public static double MEDIUM = 1.25;
-  final public static double LARGE = 2.5;
-  final public static double HUGE = 4;
+	// publicly accessable values used for setting scale from code
+	final public static double SMALL = 0.75;
+	final public static double MEDIUM = 1.25;
+	final public static double LARGE = 2.5;
+	final public static double HUGE = 4;
 
-  protected Double _mySize;
+	protected Double _mySize;
 
-  private final String stringTags[] =
-  {
-                     "Small",
-                     "Medium",
-                     "Large",
-                     "Huge"};
+	private final String stringTags[] = { "Small", "Medium", "Large", "Huge" };
 
-  private final double sizes[] =
-  {
-    SMALL,
-    MEDIUM,
-    LARGE,
-    HUGE
-  };
+	private final double sizes[] = { SMALL, MEDIUM, LARGE, HUGE };
 
+	@Override
+	public String getAsText() {
+		String res = null;
+		final double current = _mySize.doubleValue();
+		for (int i = 0; i < sizes.length; i++) {
+			final double v = sizes[i];
+			if (v == current) {
+				res = stringTags[i];
+			}
 
-  public String[] getTags()
-  {
-    return stringTags;
-  }
+		}
 
-  public Object getValue()
-  {
-    return _mySize;
-  }
+		return res;
+	}
 
+	@Override
+	public String[] getTags() {
+		return stringTags;
+	}
 
+	@Override
+	public Object getValue() {
+		return _mySize;
+	}
 
-  public void setValue(final Object p1)
-  {
-    if(p1 instanceof Double)
-    {
-      _mySize = (Double)p1;
-    }
-    if(p1 instanceof String)
-    {
-      final String val = (String) p1;
-      setAsText(val);
-    }
-  }
+	@Override
+	public void setAsText(final String val) {
+		String theVal = val;
+		// handle our two "old" values, Tiny is now small, and regular is now medium
+		if (theVal.equals("Tiny")) {
+			theVal = "Small";
+		} else {
+			if (theVal.equals("Regular")) {
+				theVal = "Medium";
+			}
+		}
 
-  public void setAsText(final String val)
-  {
-	String theVal = val;
-    // handle our two "old" values, Tiny is now small, and regular is now medium
-    if(theVal.equals("Tiny"))
-    {
-      theVal = "Small";
-    }
-    else
-    {
-      if(theVal.equals("Regular"))
-      {
-        theVal = "Medium";
-      }
-    }
+		for (int i = 0; i < stringTags.length; i++) {
+			final String thisS = stringTags[i];
+			if (thisS.equals(theVal)) {
+				_mySize = new Double(sizes[i]);
+				break;
+			}
+		}
 
-    for(int i=0;i<stringTags.length;i++)
-    {
-      final String thisS = stringTags[i];
-      if(thisS.equals(theVal))
-      {
-        _mySize = new Double(sizes[i]);
-        break;
-      }
-    }
+	}
 
-  }
-
-  public String getAsText()
-  {
-    String res = null;
-    final double current = _mySize.doubleValue();
-    for(int i=0;i<sizes.length;i++)
-    {
-      final double v = sizes[i];
-      if(v == current)
-      {
-        res = stringTags[i];
-      }
-
-    }
-
-    return res;
-  }
+	@Override
+	public void setValue(final Object p1) {
+		if (p1 instanceof Double) {
+			_mySize = (Double) p1;
+		}
+		if (p1 instanceof String) {
+			final String val = (String) p1;
+			setAsText(val);
+		}
+	}
 }
-

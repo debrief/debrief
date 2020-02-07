@@ -1,104 +1,101 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package ASSET.GUI.Workbench;
 
-import ASSET.GUI.Core.CoreGUISwing;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Vector;
 
-public class LoadedWorkbench
-{
-  ////////////////////////////////////////////////////
-  // member objects
-  ////////////////////////////////////////////////////
-  //  static private final String MY_SCENARIO = "D:\\Dev\\Asset\\src\\test_data\\force_prot_scenario.xml";
-  static private final String MY_SCENARIO = "c:\\temp\\andy_tactic\\ssn_run1.xml";
+import javax.swing.JFrame;
+import javax.swing.WindowConstants;
 
-  static private final String MY_OBSERVERS = "c:\\temp\\andy_tactic\\ssn_observers.xml";
+import ASSET.GUI.Core.CoreGUISwing;
 
+public class LoadedWorkbench {
+	////////////////////////////////////////////////////
+	// member objects
+	////////////////////////////////////////////////////
+	// static private final String MY_SCENARIO =
+	//////////////////////////////////////////////////// "D:\\Dev\\Asset\\src\\test_data\\force_prot_scenario.xml";
+	static private final String MY_SCENARIO = "c:\\temp\\andy_tactic\\ssn_run1.xml";
 
-  ////////////////////////////////////////////////////
-  // member constructor
-  ////////////////////////////////////////////////////
-  
-  ////////////////////////////////////////////////////
-  // member methods
-  ////////////////////////////////////////////////////
+	static private final String MY_OBSERVERS = "c:\\temp\\andy_tactic\\ssn_observers.xml";
 
+	////////////////////////////////////////////////////
+	// member constructor
+	////////////////////////////////////////////////////
 
-  public static void main(String[] args)
-  {
-    //    try{
-    //    UIManager.setLookAndFeel(new com.incors.plaf.kunststoff.KunststoffLookAndFeel());
-    //    }catch(UnsupportedLookAndFeelException e)
-    //    {
-    //      e.printStackTrace();
-    //    }
+	////////////////////////////////////////////////////
+	// member methods
+	////////////////////////////////////////////////////
 
-    // create the interface
-    final JFrame parent = new JFrame("Loaded session");
+	public static void main(final String[] args) {
+		// try{
+		// UIManager.setLookAndFeel(new
+		// com.incors.plaf.kunststoff.KunststoffLookAndFeel());
+		// }catch(UnsupportedLookAndFeelException e)
+		// {
+		// e.printStackTrace();
+		// }
 
-    parent.setSize(1100, 600);
-    parent.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		// create the interface
+		final JFrame parent = new JFrame("Loaded session");
 
-    // open the splash screen
-    CoreGUISwing.showSplash(parent, "images/WorkBenchLogo.gif");
+		parent.setSize(1100, 600);
+		parent.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-    // create the tool-parent
-    final CoreGUISwing.ASSETParent pr = new CoreGUISwing.ASSETParent(parent);
+		// open the splash screen
+		CoreGUISwing.showSplash(parent, "images/WorkBenchLogo.gif");
 
-    // create the workbench
-    final WorkBenchGUI viewer = new WorkBenchGUI(pr);
+		// create the tool-parent
+		final CoreGUISwing.ASSETParent pr = new CoreGUISwing.ASSETParent(parent);
 
-    // collate the parent
-    parent.getContentPane().setLayout(new BorderLayout());
-    parent.getContentPane().add("Center", viewer.getPanel());
-    parent.doLayout();
+		// create the workbench
+		final WorkBenchGUI viewer = new WorkBenchGUI(pr);
 
-    parent.setVisible(true);
+		// collate the parent
+		parent.getContentPane().setLayout(new BorderLayout());
+		parent.getContentPane().add("Center", viewer.getPanel());
+		parent.doLayout();
 
-    // finally load the data
+		parent.setVisible(true);
 
-    // put the datafile into a vector
-    Vector<File> theScenarios = new Vector<File>();
-    theScenarios.add(new File(MY_SCENARIO));
+		// finally load the data
 
+		// put the datafile into a vector
+		final Vector<File> theScenarios = new Vector<File>();
+		theScenarios.add(new File(MY_SCENARIO));
 
-    Vector<File> theControls = new Vector<File>();
-    theControls.add(new File(MY_OBSERVERS));
+		final Vector<File> theControls = new Vector<File>();
+		theControls.add(new File(MY_OBSERVERS));
 
-    // load the data
-    try
-    {
-      viewer.scenarioDropped(theScenarios);
-      viewer.observerDropped(theControls);
+		// load the data
+		try {
+			viewer.scenarioDropped(theScenarios);
+			viewer.observerDropped(theControls);
 
-    }
-    catch (FileNotFoundException e)
-    {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-    }
+		} catch (final FileNotFoundException e) {
+			e.printStackTrace(); // To change body of catch statement use File | Settings | File
+									// Templates.
+		}
 
-    // trigger a fit-to-win
-    viewer.FitToWin();
+		// trigger a fit-to-win
+		viewer.FitToWin();
 
-  }
-
+	}
 
 }

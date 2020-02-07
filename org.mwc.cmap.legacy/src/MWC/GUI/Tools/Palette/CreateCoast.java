@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: CreateCoast.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.3 $
@@ -60,18 +61,19 @@ package MWC.GUI.Tools.Palette;
 
 import MWC.GUI.Chart.Painters.CoastPainter;
 
-public class CreateCoast extends PlainCreate
-{
-	public CreateCoast(final MWC.GUI.ToolParent theParent,
-										final MWC.GUI.Properties.PropertiesPanel thePanel,
-										final MWC.GUI.Layers theData,
-                    final BoundsProvider bounds)
-	{
+public class CreateCoast extends PlainCreate {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public CreateCoast(final MWC.GUI.ToolParent theParent, final MWC.GUI.Properties.PropertiesPanel thePanel,
+			final MWC.GUI.Layers theData, final BoundsProvider bounds) {
 		super(theParent, thePanel, theData, bounds, "Coast", "images/coast_add.png");
 	}
 
-	protected MWC.GUI.Plottable createItem()
-	{
+	@Override
+	protected MWC.GUI.Plottable createItem() {
 		return new CoastPainter(getParent());
 	}
 }

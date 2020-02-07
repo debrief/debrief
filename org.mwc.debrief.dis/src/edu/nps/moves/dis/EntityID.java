@@ -1,188 +1,193 @@
 package edu.nps.moves.dis;
 
-import java.util.*;
-import java.io.*;
-import edu.nps.moves.disenum.*;
-import edu.nps.moves.disutil.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
 
 /**
- * Each entity in a given DIS simulation application shall be given an entity identifier number unique to all  other entities in that application. This identifier number is valid for the duration of the exercise; however,  entity identifier numbers may be reused when all possible numbers have been exhausted. No entity shall  have an entity identifier number of NO_ENTITY, ALL_ENTITIES, or RQST_ASSIGN_ID. The entity iden-  tifier number need not be registered or retained for future exercises. The entity identifier number shall be  specified by a 16-bit unsigned integer.  An entity identifier number equal to zero with valid site and application identification shall address a  simulation application. An entity identifier number equal to ALL_ENTITIES shall mean all entities within  the specified site and application. An entity identifier number equal to RQST_ASSIGN_ID allows the  receiver of the create entity to define the entity identifier number of the new entity.
+ * Each entity in a given DIS simulation application shall be given an entity
+ * identifier number unique to all other entities in that application. This
+ * identifier number is valid for the duration of the exercise; however, entity
+ * identifier numbers may be reused when all possible numbers have been
+ * exhausted. No entity shall have an entity identifier number of NO_ENTITY,
+ * ALL_ENTITIES, or RQST_ASSIGN_ID. The entity iden- tifier number need not be
+ * registered or retained for future exercises. The entity identifier number
+ * shall be specified by a 16-bit unsigned integer. An entity identifier number
+ * equal to zero with valid site and application identification shall address a
+ * simulation application. An entity identifier number equal to ALL_ENTITIES
+ * shall mean all entities within the specified site and application. An entity
+ * identifier number equal to RQST_ASSIGN_ID allows the receiver of the create
+ * entity to define the entity identifier number of the new entity.
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class EntityID extends Object implements Serializable
-{
-   /** The site ID */
-   protected int  site;
+public class EntityID extends Object implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   /** The application ID */
-   protected int  application;
+	/** The site ID */
+	protected int site;
 
-   /** the entity ID */
-   protected int  entity;
+	/** The application ID */
+	protected int application;
 
+	/** the entity ID */
+	protected int entity;
 
-/** Constructor */
- public EntityID()
- {
- }
+	/** Constructor */
+	public EntityID() {
+	}
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-   marshalSize = marshalSize + 2;  // site
-   marshalSize = marshalSize + 2;  // application
-   marshalSize = marshalSize + 2;  // entity
+		if (this == obj) {
+			return true;
+		}
 
-   return marshalSize;
-}
+		if (obj == null) {
+			return false;
+		}
 
+		if (getClass() != obj.getClass())
+			return false;
 
-public void setSite(int pSite)
-{ site = pSite;
-}
+		return equalsImpl(obj);
+	}
 
-public int getSite()
-{ return site; 
-}
+	/**
+	 * Compare all fields that contribute to the state, ignoring transient and
+	 * static fields, for <code>this</code> and the supplied object
+	 *
+	 * @param obj the object to compare to
+	 * @return true if the objects are equal, false otherwise.
+	 */
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-public void setApplication(int pApplication)
-{ application = pApplication;
-}
+		if (!(obj instanceof EntityID))
+			return false;
 
-public int getApplication()
-{ return application; 
-}
+		final EntityID rhs = (EntityID) obj;
 
-public void setEntity(int pEntity)
-{ entity = pEntity;
-}
+		if (!(site == rhs.site))
+			ivarsEqual = false;
+		if (!(application == rhs.application))
+			ivarsEqual = false;
+		if (!(entity == rhs.entity))
+			ivarsEqual = false;
 
-public int getEntity()
-{ return entity; 
-}
+		return ivarsEqual;
+	}
 
+	public int getApplication() {
+		return application;
+	}
 
-public void marshal(DataOutputStream dos)
-{
-    try 
-    {
-       dos.writeShort( (int)site);
-       dos.writeShort( (int)application);
-       dos.writeShort( (int)entity);
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+	public int getEntity() {
+		return entity;
+	}
 
-public void unmarshal(DataInputStream dis)
-{
-    try 
-    {
-       site = (int)dis.readUnsignedShort();
-       application = (int)dis.readUnsignedShort();
-       entity = (int)dis.readUnsignedShort();
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
+		marshalSize = marshalSize + 2; // site
+		marshalSize = marshalSize + 2; // application
+		marshalSize = marshalSize + 2; // entity
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
-       buff.putShort( (short)site);
-       buff.putShort( (short)application);
-       buff.putShort( (short)entity);
-    } // end of marshal method
+		return marshalSize;
+	}
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       site = (short)(buff.getShort() & 0xFFFF);
-       application = (short)(buff.getShort() & 0xFFFF);
-       entity = (short)(buff.getShort() & 0xFFFF);
- } // end of unmarshal method 
+	public int getSite() {
+		return site;
+	}
 
+	/**
+	 * Override of base class hashCode. This is convienent to use when looking up
+	 * entities in a hash table. It uses the application and entity IDs to fill out
+	 * the 32 bits. The idea is to get a "pretty close" to unique hashcode for each
+	 * entity ID in 32 bits, and the best way to do that is leave out the site ID
+	 * while keeping the rest, which tends to be more unique.
+	 */
+	@Override
+	public int hashCode() {
+		int hashcode = application;
+		hashcode = hashcode << 16;
+		hashcode = hashcode + entity;
+		return hashcode;
+	}
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+	public void marshal(final DataOutputStream dos) {
+		try {
+			dos.writeShort(site);
+			dos.writeShort(application);
+			dos.writeShort(entity);
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
-    if(this == obj){
-      return true;
-    }
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	public void marshal(final java.nio.ByteBuffer buff) {
+		buff.putShort((short) site);
+		buff.putShort((short) application);
+		buff.putShort((short) entity);
+	} // end of marshal method
 
-    if(obj == null){
-       return false;
-    }
+	public void setApplication(final int pApplication) {
+		application = pApplication;
+	}
 
-    if(getClass() != obj.getClass())
-        return false;
+	public void setEntity(final int pEntity) {
+		entity = pEntity;
+	}
 
-    return equalsImpl(obj);
- }
+	public void setSite(final int pSite) {
+		site = pSite;
+	}
 
- /**
-  * Compare all fields that contribute to the state, ignoring
- transient and static fields, for <code>this</code> and the supplied object
-  * @param obj the object to compare to
-  * @return true if the objects are equal, false otherwise.
-  */
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
+	public void unmarshal(final DataInputStream dis) {
+		try {
+			site = dis.readUnsignedShort();
+			application = dis.readUnsignedShort();
+			entity = dis.readUnsignedShort();
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
-    if(!(obj instanceof EntityID))
-        return false;
-
-     final EntityID rhs = (EntityID)obj;
-
-     if( ! (site == rhs.site)) ivarsEqual = false;
-     if( ! (application == rhs.application)) ivarsEqual = false;
-     if( ! (entity == rhs.entity)) ivarsEqual = false;
-
-    return ivarsEqual;
- }
-
-/**
- * Override of base class hashCode. This is convienent to use when looking up entities in
- * a hash table. It uses the application and entity IDs to fill out the 32 bits. The idea
- * is to get a "pretty close" to unique hashcode for each entity ID in 32 bits, and the
- * best way to do that is leave out the site ID while keeping the rest, which tends to
- * be more unique.
- */
- @Override
- public int hashCode()
- {
-     int hashcode = application; 
-     hashcode = hashcode << 16;
-     hashcode = hashcode + entity;
-     return hashcode;
- }
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		site = (short) (buff.getShort() & 0xFFFF);
+		application = (short) (buff.getShort() & 0xFFFF);
+		entity = (short) (buff.getShort() & 0xFFFF);
+	} // end of unmarshal method
 
 } // end of class

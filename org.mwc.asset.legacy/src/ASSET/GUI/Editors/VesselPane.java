@@ -1,20 +1,8 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
- *
- *    (C) 2000-2014, PlanetMayo Ltd
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+
 package ASSET.GUI.Editors;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
 
 import javax.swing.BorderFactory;
 
@@ -25,252 +13,240 @@ import ASSET.Participants.Status;
 import MWC.GUI.Properties.Swing.SwingPropertiesPanel;
 import MWC.GUI.Tools.Swing.MyMetalToolBarUI;
 
-/**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:
- * @author
- * @version 1.0
- */
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 
 public class VesselPane extends MWC.GUI.Properties.Swing.SwingCustomEditor
-      implements MWC.GUI.Properties.NoEditorButtons,
-                 ASSET.Participants.ParticipantMovedListener,
-                 java.awt.event.ActionListener,
-                 MyMetalToolBarUI.ToolbarOwner
-{
+		implements MWC.GUI.Properties.NoEditorButtons, ASSET.Participants.ParticipantMovedListener,
+		java.awt.event.ActionListener, MyMetalToolBarUI.ToolbarOwner {
 
-  /**
-	 * 
+	//////////////////////////////////////////////////////////////////////
+	// custom editor which shows current list of detections
+	//////////////////////////////////////////////////////////////////////
+	public static class DetectionViewerHolder extends MWC.GUI.Editable.EditorType {
+
+		/**
+		 * constructor for editable details of a set of Layers
+		 *
+		 * @param data the Layers themselves
+		 */
+		public DetectionViewerHolder(final NetworkParticipant data) {
+			super(data, data.getName(), "View ");
+		}
+
+		/**
+		 * return a description of this bean, also specifies the custom editor we use
+		 *
+		 * @return the BeanDescriptor
+		 */
+		@Override
+		public java.beans.BeanDescriptor getBeanDescriptor() {
+			// final java.beans.BeanDescriptor bp = new
+			// java.beans.BeanDescriptor(ASSET.ParticipantType.class,
+			// ASSET.GUI.Editors.GraphicDetectionViewer.class);
+			// bp.setDisplayName(super.getData().toString());
+			return null;
+		}
+
+	}
+
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	
-	static final public String GUI        = "GUI";
-  static final public String STATUS     = "STATUS";
-  static final public String DEM_STATUS = "DEM_STATUS";
-  static final public String DETECTIONS = "DETECTIONS";
-  static final public String MOVEMENT   = "MOVEMENT";
-  static final public String SENSORS    = "SENSORS";
-  static final public String DECISION   = "DECISION";
-  static final public String RADIATED_NOISE   = "RADIATED_NOISE";
+	static final public String GUI = "GUI";
+	static final public String STATUS = "STATUS";
+	static final public String DEM_STATUS = "DEM_STATUS";
+	static final public String DETECTIONS = "DETECTIONS";
+	static final public String MOVEMENT = "MOVEMENT";
+	static final public String SENSORS = "SENSORS";
+	static final public String DECISION = "DECISION";
 
-//  private ScenarioLayer.ParticipantListener _myWrapper = null;
+	// private ScenarioLayer.ParticipantListener _myWrapper = null;
 
-  private ASSET.ParticipantType _myParticipant = null;
+	static final public String RADIATED_NOISE = "RADIATED_NOISE";
 
-  private ASSET.GUI.Editors.VesselPaneGUI _myGUI = new ASSET.GUI.Editors.VesselPaneGUI();
+	private ASSET.ParticipantType _myParticipant = null;
 
-  /** we hold our own tabbed panel
-   *
-   */
-  private SwingPropertiesPanel _myPanel = null;
+	private final ASSET.GUI.Editors.VesselPaneGUI _myGUI = new ASSET.GUI.Editors.VesselPaneGUI();
 
-  //////////////////////////////////////////////////////////////////////
-  // GUI components
-  //////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////
+	// GUI components
+	//////////////////////////////////////////////////////////////////////
 
-  //////////////////////////////////////////////////////////////////////
-  // member functions
-  //////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////
+	// member functions
+	//////////////////////////////////////////////////////////////////////
 
-  public boolean supportsCustomEditor()
-  {
-    return true;
-  }
+	/**
+	 * we hold our own tabbed panel
+	 *
+	 */
+	private SwingPropertiesPanel _myPanel = null;
 
-  /** support the restart event
-   *
-   */
-  public void restart(ScenarioType scenario)
-  {
-    updateForm();
-  }
+	@Override
+	public void actionPerformed(final java.awt.event.ActionEvent ae) {
+		final String type = ae.getActionCommand();
+		if (type == VesselPane.STATUS) {
+			// wrap the participant
+			final ASSET.GUI.Editors.VesselStatusEditor vg = new ASSET.GUI.Editors.VesselStatusEditor(_myParticipant);
+			_myPanel.addEditor(vg.getInfo(), null);
+		}
+		if (type == VesselPane.DECISION) {
+			// wrap the participant
+			final ASSET.Models.DecisionType decider = _myParticipant.getDecisionModel();
+			if (decider.hasEditor())
+				_myPanel.addEditor(decider.getInfo(), null);
+		}
+		if (type == VesselPane.DETECTIONS) {
+			// wrap the participant
+			_myPanel.addEditor(new DetectionViewerHolder(_myParticipant), null);
+		}
+		if (type == VesselPane.MOVEMENT) {
+			// wrap the participant
+			_myPanel.addEditor(_myParticipant.getMovementChars().getInfo(), null);
+		}
+		if (type == VesselPane.RADIATED_NOISE) {
+			// wrap the participant
+			_myPanel.addEditor(_myParticipant.getRadiatedChars().getInfo(), null);
+		}
+		if (type == VesselPane.SENSORS) {
+			// wrap the participant
+			_myPanel.addEditor(_myParticipant.getSensorFit().getInfo(), null);
+		}
+	}
 
-  public void setObject(final Object value)
-  {
-    setValue(value);
-  }
+	/**
+	 * the form has closed, stop listening
+	 *
+	 */
+	@Override
+	public void doClose() {
+		super.doClose();
 
-  private void setValue(final Object value)
-  {
-    // initialise our participant
-    _myParticipant = null;
+		// stop listening
+		if (_myParticipant != null) {
+			_myParticipant.removeParticipantMovedListener(this);
+		}
 
-    //
-    if(value instanceof ScenarioParticipantWrapper)
-    {
+	}
 
-      // remember this participant
-      final ScenarioParticipantWrapper wrapper = (ScenarioParticipantWrapper)value;
+	/**
+	 * provide a getName() method which will be called to provide an id name for any
+	 * properties panel which get dragged out
+	 *
+	 * @return the name of this vessel
+	 */
+	@Override
+	public String getName() {
+		return _myGUI.getName();
+	}
 
-      // listen to movements of the participant
-      _myParticipant =  wrapper.getParticipant();
+	private void initForm() {
+		this.setLayout(new BorderLayout());
 
+		// get the panel, as a Swing component
+		final SwingPropertiesPanel pp = (SwingPropertiesPanel) this.getPanel();
 
-    }  else if (value instanceof ASSET.GUI.SuperSearch.Plotters.SSGuiSupport.ParticipantListener)
-    {
-      final ASSET.GUI.SuperSearch.Plotters.SSGuiSupport.ParticipantListener list =
-       (ASSET.GUI.SuperSearch.Plotters.SSGuiSupport.ParticipantListener) value;
+		// produce the panel
+		_myPanel = new SwingPropertiesPanel(_theLayers, pp.getBuffer(), pp.getToolParent(), this);
 
-      _myParticipant = list.getParticipant();
+		_myPanel.setBorder(BorderFactory.createMatteBorder(3, 3, 3, 3, Color.darkGray));
 
-    }
+		// ok, add the vessel status viewer
+		_myPanel.add(_myGUI);
 
-    if(_myParticipant != null)
-    {
+		// and disply the new properties panel
+		this.add(_myPanel, BorderLayout.CENTER);
+	}
 
-      // build the form
-      initForm();
+	/**
+	 * this participant has moved
+	 *
+	 */
+	@Override
+	public void moved(final Status newStatus) {
+		updateForm();
+	}
 
-      _myParticipant.addParticipantMovedListener(this);
+	/**
+	 * support the restart event
+	 *
+	 */
+	@Override
+	public void restart(final ScenarioType scenario) {
+		updateForm();
+	}
 
-      // perform the update
-      updateForm();
+	@Override
+	public void setObject(final Object value) {
+		setValue(value);
+	}
 
-      // does this vessel use fuel?
-      if(_myParticipant.getMovementChars().getFuelUsageRate()  > 0)
-      {
-        _myGUI.showFuel(true);
-      }
-      else
-        _myGUI.showFuel(false);
+	private void setValue(final Object value) {
+		// initialise our participant
+		_myParticipant = null;
 
-      // listen to the pane's events
-      _myGUI.addActionListener(this);
+		//
+		if (value instanceof ScenarioParticipantWrapper) {
 
-      // and tell the GUI it's name
-      _myGUI.setVesselName(_myParticipant.getName());
-    }
+			// remember this participant
+			final ScenarioParticipantWrapper wrapper = (ScenarioParticipantWrapper) value;
 
-  }
+			// listen to movements of the participant
+			_myParticipant = wrapper.getParticipant();
 
+		} else if (value instanceof ASSET.GUI.SuperSearch.Plotters.SSGuiSupport.ParticipantListener) {
+			final ASSET.GUI.SuperSearch.Plotters.SSGuiSupport.ParticipantListener list = (ASSET.GUI.SuperSearch.Plotters.SSGuiSupport.ParticipantListener) value;
 
-  private void initForm(){
-    this.setLayout(new BorderLayout());
+			_myParticipant = list.getParticipant();
 
-    // get the panel, as a Swing component
-    SwingPropertiesPanel pp = (SwingPropertiesPanel)this.getPanel();
+		}
 
-    // produce the panel
-    _myPanel = new SwingPropertiesPanel(_theLayers, pp.getBuffer(), pp
-        .getToolParent(), this);
+		if (_myParticipant != null) {
 
-    _myPanel.setBorder(BorderFactory.createMatteBorder(3,3,3,3, Color.darkGray));
+			// build the form
+			initForm();
 
-    // ok, add the vessel status viewer
-    _myPanel.add(_myGUI);
+			_myParticipant.addParticipantMovedListener(this);
 
-    // and disply the new properties panel
-    this.add(_myPanel, BorderLayout.CENTER);
-  }
+			// perform the update
+			updateForm();
 
-  /** provide a getName() method which will be called to provide an id name
-   * for any properties panel which get dragged out
-   * @return the name of this vessel
-   */
-  public String getName()
-  {
-    return _myGUI.getName();
-  }
+			// does this vessel use fuel?
+			if (_myParticipant.getMovementChars().getFuelUsageRate() > 0) {
+				_myGUI.showFuel(true);
+			} else
+				_myGUI.showFuel(false);
 
-  private void updateForm()
-  {
-    _myGUI.setStatus(_myParticipant.getStatus());
-    _myGUI.setDemandedStatus(_myParticipant.getDemandedStatus());
-    _myGUI.setActivity(_myParticipant.getActivity());
-  }
+			// listen to the pane's events
+			_myGUI.addActionListener(this);
 
-  public void actionPerformed(final java.awt.event.ActionEvent ae)
-  {
-    final String type = ae.getActionCommand();
-    if(type == VesselPane.STATUS)
-    {
-      // wrap the participant
-      final ASSET.GUI.Editors.VesselStatusEditor vg = new ASSET.GUI.Editors.VesselStatusEditor(_myParticipant);
-      _myPanel.addEditor(vg.getInfo(), null);
-    }
-    if(type == VesselPane.DECISION)
-    {
-      // wrap the participant
-      final ASSET.Models.DecisionType decider = _myParticipant.getDecisionModel();
-      if(decider.hasEditor())
-        _myPanel.addEditor(decider.getInfo(), null);
-    }
-    if(type == VesselPane.DETECTIONS)
-    {
-      // wrap the participant
-      _myPanel.addEditor(new DetectionViewerHolder(_myParticipant), null);
-    }
-    if(type == VesselPane.MOVEMENT)
-    {
-      // wrap the participant
-      _myPanel.addEditor(_myParticipant.getMovementChars().getInfo(), null);
-    }
-    if(type == VesselPane.RADIATED_NOISE)
-    {
-      // wrap the participant
-      _myPanel.addEditor(_myParticipant.getRadiatedChars().getInfo(), null);
-    }
-    if(type == VesselPane.SENSORS)
-    {
-      // wrap the participant
-      _myPanel.addEditor(_myParticipant.getSensorFit().getInfo(), null);
-    }
-  }
+			// and tell the GUI it's name
+			_myGUI.setVesselName(_myParticipant.getName());
+		}
 
-  //////////////////////////////////////////////////////////////////////
-  // custom editor which shows current list of detections
-  //////////////////////////////////////////////////////////////////////
-  public static class DetectionViewerHolder extends MWC.GUI.Editable.EditorType
-  {
+	}
 
-  /** constructor for editable details of a set of Layers
-   * @param data the Layers themselves
-   */
-    public DetectionViewerHolder(final NetworkParticipant data)
-    {
-      super(data, data.getName(), "View ");
-    }
+	public boolean supportsCustomEditor() {
+		return true;
+	}
 
-
-  /** return a description of this bean, also specifies the custom editor we use
-   * @return the BeanDescriptor
-   */
-    public java.beans.BeanDescriptor getBeanDescriptor()
-    {
-//      final java.beans.BeanDescriptor bp = new java.beans.BeanDescriptor(ASSET.ParticipantType.class,
-//                                             ASSET.GUI.Editors.GraphicDetectionViewer.class);
-//      bp.setDisplayName(super.getData().toString());
-      return null;
-    }
-
-
-  }
-
-  /** this participant has moved
-   *
-   */
-  public void moved(Status newStatus)
-  {
-     updateForm();
-  }
-
-  /** the form has closed, stop listening
-   *
-   */
-  public void doClose()
-  {
-    super.doClose();
-
-    // stop listening
-    if(_myParticipant != null)
-    {
-      _myParticipant.removeParticipantMovedListener(this);
-    }
-
-  }
-
+	private void updateForm() {
+		_myGUI.setStatus(_myParticipant.getStatus());
+		_myGUI.setDemandedStatus(_myParticipant.getDemandedStatus());
+		_myGUI.setActivity(_myParticipant.getActivity());
+	}
 
 }

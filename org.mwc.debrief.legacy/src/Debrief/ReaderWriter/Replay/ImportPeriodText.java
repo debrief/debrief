@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: ImportPeriodText.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.3 $
@@ -82,191 +83,169 @@ import MWC.Utilities.TextFormatting.DebriefFormatLocation;
 /**
  * class to parse a label from a line of text
  */
-final class ImportPeriodText extends AbstractPlainLineImporter
-{
-  /**
-   * the type for this string
-   */
-  private final String _myType = ";PERIODTEXT:";
+final class ImportPeriodText extends AbstractPlainLineImporter {
+	/**
+	 * the type for this string
+	 */
+	private final String _myType = ";PERIODTEXT:";
 
-  /**
-   * read in this string and return a Label
-   * @throws ParseException 
-   */
-  public final Object readThisLine(final String theLine) throws ParseException
-  {
+	/**
+	 * indicate if you can export this type of object
+	 *
+	 * @param val the object to test
+	 * @return boolean saying whether you can do it
+	 */
+	@Override
+	public final boolean canExportThis(final Object val) {
+		boolean res = false;
 
-    // get a stream from the string
-    final StringTokenizer st = new StringTokenizer(theLine);
+		if (val instanceof LabelWrapper) {
+			// also see if there is just the start time specified
+			final LabelWrapper lw = (LabelWrapper) val;
 
-    // declare local variables
-    WorldLocation theLoc;
-    double latDeg, longDeg, latMin, longMin;
-    char latHem, longHem;
-    double latSec, longSec;
-    String theText = null;
-    String dateStr;
-    HiResDate theDate = null;
-    HiResDate theOtherDate = null;
-    double theDepth = 0d;
+			// does it have a time period?
+			if ((lw.getTimePeriod() != null) && (lw.getTimePeriod().getStartDTG() != null)) {
+				// yes, this is a label with only the start time specified,
+				// we can export it
+				res = true;
+			}
+		}
 
-    // skip the comment identifier
-    st.nextToken();
+		return res;
 
-    // start with the symbology
-    symbology = st.nextToken();
+	}
 
-    // combine the date, a space, and the time
-    final String dateToken = st.nextToken();
-    final String timeToken = st.nextToken();
+	/**
+	 * export the specified shape as a string
+	 *
+	 * @param theWrapper the Shape we are exporting
+	 * @return the shape in String form
+	 */
+	@Override
+	public final String exportThis(final MWC.GUI.Plottable theWrapper) {
+		final LabelWrapper theLabel = (LabelWrapper) theWrapper;
 
-    // and extract the date
-    theDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
+		String line = null;
 
-    // combine the date, a space, and the time
-    dateStr = st.nextToken() + " " + st.nextToken();
+		final TimePeriod theTime = theLabel.getTimePeriod();
 
-    // and extract the date
-    theOtherDate = DebriefFormatDateTime.parseThis(dateStr);
+		line = _myType + " " + ImportReplay.replaySymbolFor(theLabel.getColor(), theLabel.getSymbolType());
+		line = line + " " + DebriefFormatDateTime.toStringHiRes(theTime.getStartDTG());
+		line = line + " " + DebriefFormatDateTime.toStringHiRes(theTime.getEndDTG());
+		line = line + " " + DebriefFormatLocation.toString(theLabel.getLocation());
+		line = line + " " + theLabel.getLabel();
 
-    // now the location
-    try
-    {
-      latDeg = MWCXMLReader.readThisDouble(st.nextToken());
-      latMin = MWCXMLReader.readThisDouble(st.nextToken());
-      latSec = MWCXMLReader.readThisDouble(st.nextToken());
+		return line;
+	}
 
-      /**
-       * now, we may have trouble here, since there may not be a space between the hemisphere
-       * character and a 3-digit latitude value - so BE CAREFUL
-       */
-      final String vDiff = st.nextToken();
-      if (vDiff.length() > 3)
-      {
-        // hmm, they are combined
-        latHem = vDiff.charAt(0);
-        final String secondPart = vDiff.substring(1, vDiff.length());
-        longDeg = MWCXMLReader.readThisDouble(secondPart);
-      }
-      else
-      {
-        // they are separate, so only the hem is in this one
-        latHem = vDiff.charAt(0);
-        longDeg = MWCXMLReader.readThisDouble(st.nextToken());
-      }
-      longMin = MWCXMLReader.readThisDouble(st.nextToken());
-      longSec = MWCXMLReader.readThisDouble(st.nextToken());
-      longHem = st.nextToken().charAt(0);
+	/**
+	 * determine the identifier returning this type of annotation
+	 */
+	@Override
+	public final String getYourType() {
+		return _myType;
+	}
 
-      final String depthStr = st.nextToken();
-      try
-      {
-        theDepth = MWCXMLReader.readThisDouble(depthStr);
-      }
-      catch (final ParseException e)
-      {
-        // hey, it didn't contain a double, just use it as a text string
-        theText = depthStr;
-      }
+	/**
+	 * read in this string and return a Label
+	 *
+	 * @throws ParseException
+	 */
+	@Override
+	public final Object readThisLine(final String theLine) throws ParseException {
 
-      if (st.hasMoreTokens())
-      {
-        // if we haven't read in part of the message already, read in the remainder
-        if (theText != null)
-        {
-          // and now read in the remainder of the line, and append to the message
-          theText += " " + st.nextToken("\r").trim();
-        }
-        else
-        {
-          // and now read in the message, we have already read the depth
-          theText = st.nextToken("\r").trim();
-        }
-      }
+		// get a stream from the string
+		final StringTokenizer st = new StringTokenizer(theLine);
 
-      // create the tactical data
-      theLoc = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg,
-          longMin, longSec, longHem, theDepth);
+		// declare local variables
+		WorldLocation theLoc;
+		double latDeg, longDeg, latMin, longMin;
+		char latHem, longHem;
+		double latSec, longSec;
+		String theText = null;
+		String dateStr;
+		HiResDate theDate = null;
+		HiResDate theOtherDate = null;
+		double theDepth = 0d;
 
-      // create the fix ready to store it
-      final LabelWrapper lw = new LabelWrapper(theText, theLoc, ImportReplay
-          .replayColorFor(symbology), theDate, theOtherDate);
+		// skip the comment identifier
+		st.nextToken();
 
-      final String symType = ImportReplay.replayTrackSymbolFor(symbology);
-      lw.setSymbolType(symType);
+		// start with the symbology
+		symbology = st.nextToken();
 
-      return lw;
-    }
-    catch (final ParseException pe)
-    {
-      MWC.Utilities.Errors.Trace.trace(pe, "Whilst import PeriodText");
-      return null;
-    }
-  }
+		// combine the date, a space, and the time
+		final String dateToken = st.nextToken();
+		final String timeToken = st.nextToken();
 
-  /**
-   * determine the identifier returning this type of annotation
-   */
-  public final String getYourType()
-  {
-    return _myType;
-  }
+		// and extract the date
+		theDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
 
-  /**
-   * export the specified shape as a string
-   *
-   * @param theWrapper
-   *          the Shape we are exporting
-   * @return the shape in String form
-   */
-  public final String exportThis(final MWC.GUI.Plottable theWrapper)
-  {
-    final LabelWrapper theLabel = (LabelWrapper) theWrapper;
+		// combine the date, a space, and the time
+		dateStr = st.nextToken() + " " + st.nextToken();
 
-    String line = null;
+		// and extract the date
+		theOtherDate = DebriefFormatDateTime.parseThis(dateStr);
 
-    final TimePeriod theTime = theLabel.getTimePeriod();
+		// now the location
+		try {
+			latDeg = MWCXMLReader.readThisDouble(st.nextToken());
+			latMin = MWCXMLReader.readThisDouble(st.nextToken());
+			latSec = MWCXMLReader.readThisDouble(st.nextToken());
 
-    line = _myType + " " + ImportReplay.replaySymbolFor(theLabel.getColor(),
-        theLabel.getSymbolType());
-    line = line + " " + DebriefFormatDateTime.toStringHiRes(theTime
-        .getStartDTG());
-    line = line + " " + DebriefFormatDateTime.toStringHiRes(theTime
-        .getEndDTG());
-    line = line + " " + DebriefFormatLocation.toString(theLabel.getLocation());
-    line = line + " " + theLabel.getLabel();
+			/**
+			 * now, we may have trouble here, since there may not be a space between the
+			 * hemisphere character and a 3-digit latitude value - so BE CAREFUL
+			 */
+			final String vDiff = st.nextToken();
+			if (vDiff.length() > 3) {
+				// hmm, they are combined
+				latHem = vDiff.charAt(0);
+				final String secondPart = vDiff.substring(1, vDiff.length());
+				longDeg = MWCXMLReader.readThisDouble(secondPart);
+			} else {
+				// they are separate, so only the hem is in this one
+				latHem = vDiff.charAt(0);
+				longDeg = MWCXMLReader.readThisDouble(st.nextToken());
+			}
+			longMin = MWCXMLReader.readThisDouble(st.nextToken());
+			longSec = MWCXMLReader.readThisDouble(st.nextToken());
+			longHem = st.nextToken().charAt(0);
 
-    return line;
-  }
+			final String depthStr = st.nextToken();
+			try {
+				theDepth = MWCXMLReader.readThisDouble(depthStr);
+			} catch (final ParseException e) {
+				// hey, it didn't contain a double, just use it as a text string
+				theText = depthStr;
+			}
 
-  /**
-   * indicate if you can export this type of object
-   *
-   * @param val
-   *          the object to test
-   * @return boolean saying whether you can do it
-   */
-  public final boolean canExportThis(final Object val)
-  {
-    boolean res = false;
+			if (st.hasMoreTokens()) {
+				// if we haven't read in part of the message already, read in the remainder
+				if (theText != null) {
+					// and now read in the remainder of the line, and append to the message
+					theText += " " + st.nextToken("\r").trim();
+				} else {
+					// and now read in the message, we have already read the depth
+					theText = st.nextToken("\r").trim();
+				}
+			}
 
-    if (val instanceof LabelWrapper)
-    {
-      // also see if there is just the start time specified
-      final LabelWrapper lw = (LabelWrapper) val;
+			// create the tactical data
+			theLoc = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg, longMin, longSec, longHem, theDepth);
 
-      // does it have a time period?
-      if ((lw.getTimePeriod() != null) && (lw.getTimePeriod()
-          .getStartDTG() != null))
-      {
-        // yes, this is a label with only the start time specified,
-        // we can export it
-        res = true;
-      }
-    }
+			// create the fix ready to store it
+			final LabelWrapper lw = new LabelWrapper(theText, theLoc, ImportReplay.replayColorFor(symbology), theDate,
+					theOtherDate);
 
-    return res;
+			final String symType = ImportReplay.replayTrackSymbolFor(symbology);
+			lw.setSymbolType(symType);
 
-  }
+			return lw;
+		} catch (final ParseException pe) {
+			MWC.Utilities.Errors.Trace.trace(pe, "Whilst import PeriodText");
+			return null;
+		}
+	}
 
 }

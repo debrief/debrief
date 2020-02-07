@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: EarthModel.java,v $
 // $Author: Ian.Mayo $
 // $Log: EarthModel.java,v $
@@ -69,34 +70,25 @@
 
 package MWC.Algorithms;
 
-
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
-public interface EarthModel
-{
-  //////////////////////////////////////////////////
-  // constructor
-  //////////////////////////////////////////////////
+public interface EarthModel {
+	//////////////////////////////////////////////////
+	// constructor
+	//////////////////////////////////////////////////
 
-  //////////////////////////////////////////////////
-  // member functions
-  //////////////////////////////////////////////////
-  public double rangeBetween(WorldLocation from,
-                             WorldLocation to);
+	public WorldLocation add(WorldLocation base, WorldVector delta);
 
-  public double bearingBetween(WorldLocation from,
-                               WorldLocation to);
+	public double bearingBetween(WorldLocation from, WorldLocation to);
 
-  public WorldLocation add(WorldLocation base,
-                           WorldVector delta);
+	//////////////////////////////////////////////////
+	// member functions
+	//////////////////////////////////////////////////
+	public double rangeBetween(WorldLocation from, WorldLocation to);
 
-	public WorldVector subtract(WorldLocation from,
-															WorldLocation to);
+	public WorldVector subtract(WorldLocation from, WorldLocation to);
 
-  public WorldVector subtract(WorldLocation from,
-                              WorldLocation to,
-                              WorldVector res);
-
+	public WorldVector subtract(WorldLocation from, WorldLocation to, WorldVector res);
 
 }

@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: CruiserSym.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -52,56 +53,40 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.WorldLocation;
 
-public class CruiserSym extends ScreenScaledSym
-{
+public class CruiserSym extends ScreenScaledSym {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
-	{
-		super.paint(dest, theLocation, direction);
+	public PlainSymbol create() {
+		return new CruiserSym();
 	}
-	
-  @Override
-  public PlainSymbol create()
-  {
-    return new CruiserSym();
-  }
 
-	protected Vector<double[][]> getCoords()
-	{
+	@Override
+	protected Vector<double[][]> getCoords() {
 		final Vector<double[][]> hullLines = new Vector<double[][]>();
 
 		// outer line
-		hullLines.add(new double[][]
-		{
-		{ -7, 0 },
-		{ 0, -10 },
-		{ 7, 0 },
-		{ 0, 3.8 },
-		{ -7, 0 },
-		{ 7, 0 } });
+		hullLines.add(new double[][] { { -7, 0 }, { 0, -10 }, { 7, 0 }, { 0, 3.8 }, { -7, 0 }, { 7, 0 } });
 
 		// now the cross
-		hullLines.add(new double[][]
-		{
-		{ -1, -3 },
-		{ 0, -4 },
-		{ 1, -3 },
-		{ 0, -2 },
-		{ -1, -3 } });
+		hullLines.add(new double[][] { { -1, -3 }, { 0, -4 }, { 1, -3 }, { 0, -2 }, { -1, -3 } });
 
 		return hullLines;
 
 	}
 
-	public String getType()
-	{
+	@Override
+	public String getType() {
 		return "Cruiser";
+	}
+
+	@Override
+	public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction) {
+		super.paint(dest, theLocation, direction);
 	}
 
 }

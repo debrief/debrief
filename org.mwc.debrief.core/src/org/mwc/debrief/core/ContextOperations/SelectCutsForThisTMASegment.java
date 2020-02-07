@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 package org.mwc.debrief.core.ContextOperations;
 
 import java.util.ArrayList;
@@ -31,147 +45,123 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GenericData.TimePeriod;
 
-public class SelectCutsForThisTMASegment extends ShowCutsForThisTMASegment
-{
-  private static class SelectCutsOperation extends CMAPOperation
-  {
-    final private Map<SensorWrapper, ArrayList<TimePeriod>> _periods;
-    final private Layers _theLayers;
+public class SelectCutsForThisTMASegment extends ShowCutsForThisTMASegment {
+	private static class SelectCutsOperation extends CMAPOperation {
+		final private Map<SensorWrapper, ArrayList<TimePeriod>> _periods;
+		final private Layers _theLayers;
 
-    public SelectCutsOperation(Layers theLayers,
-        Map<SensorWrapper, ArrayList<TimePeriod>> periods)
-    {
-      super("Select sensor cuts for selected segment(s)");
-      _periods = periods;
-      _theLayers = theLayers;
-    }
+		public SelectCutsOperation(final Layers theLayers, final Map<SensorWrapper, ArrayList<TimePeriod>> periods) {
+			super("Select sensor cuts for selected segment(s)");
+			_periods = periods;
+			_theLayers = theLayers;
+		}
 
-    @Override
-    public IStatus
-        execute(final IProgressMonitor monitor, final IAdaptable info)
-            throws ExecutionException
-    {
-      Set<SensorWrapper> sensors = _periods.keySet();
+		@Override
+		public boolean canExecute() {
+			return true;
+		}
 
-      List<EditableWrapper> selection = new ArrayList<EditableWrapper>();
+		@Override
+		public boolean canRedo() {
+			return false;
+		}
 
-      // start off by hiding all cuts, for all sensors (not just selected ones)
-      Iterator<SensorWrapper> sIter = sensors.iterator();
-      while (sIter.hasNext())
-      {
-        SensorWrapper sensorWrapper = (SensorWrapper) sIter.next();
+		@Override
+		public boolean canUndo() {
+			return false;
+		}
 
-        // get the data
-        ArrayList<TimePeriod> list = _periods.get(sensorWrapper);
+		@Override
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
+			final Set<SensorWrapper> sensors = _periods.keySet();
 
-        Enumeration<Editable> cIter = sensorWrapper.elements();
-        while (cIter.hasMoreElements())
-        {
-          SensorContactWrapper thisS =
-              (SensorContactWrapper) cIter.nextElement();
+			final List<EditableWrapper> selection = new ArrayList<EditableWrapper>();
 
-          // loop through the periods
-          Iterator<TimePeriod> pIter = list.iterator();
-          while (pIter.hasNext())
-          {
-            if (pIter.next().contains(thisS.getDTG()))
-            {
-              final EditableWrapper track =
-                  new EditableWrapper(thisS.getSensor().getHost(), null, _theLayers);
-              final EditableWrapper sList = new
-                  EditableWrapper(thisS.getSensor().getHost().getSensors(), track, _theLayers);
-              final EditableWrapper parentP =
-                  new EditableWrapper(thisS.getSensor(), sList, _theLayers);
-              final EditableWrapper wrapped =
-                  new EditableWrapper(thisS, parentP, _theLayers);
+			// start off by hiding all cuts, for all sensors (not just selected ones)
+			final Iterator<SensorWrapper> sIter = sensors.iterator();
+			while (sIter.hasNext()) {
+				final SensorWrapper sensorWrapper = sIter.next();
 
-              selection.add(wrapped);
-            }
-          }
-        }
-      }
+				// get the data
+				final ArrayList<TimePeriod> list = _periods.get(sensorWrapper);
 
-      if (selection.size() > 0)
-      {
-        // ok, get the editor
-        final IWorkbench wb = PlatformUI.getWorkbench();
-        final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-        final IWorkbenchPage page = win.getActivePage();
-        final IEditorPart editor = page.getActiveEditor();
+				final Enumeration<Editable> cIter = sensorWrapper.elements();
+				while (cIter.hasMoreElements()) {
+					final SensorContactWrapper thisS = (SensorContactWrapper) cIter.nextElement();
 
-        IContentOutlinePage outline =
-            (IContentOutlinePage) editor.getAdapter(IContentOutlinePage.class);
-        if (outline != null)
-        {
-          // now set the selection
-          IStructuredSelection str = new StructuredSelection(selection);
+					// loop through the periods
+					final Iterator<TimePeriod> pIter = list.iterator();
+					while (pIter.hasNext()) {
+						if (pIter.next().contains(thisS.getDTG())) {
+							final EditableWrapper track = new EditableWrapper(thisS.getSensor().getHost(), null,
+									_theLayers);
+							final EditableWrapper sList = new EditableWrapper(thisS.getSensor().getHost().getSensors(),
+									track, _theLayers);
+							final EditableWrapper parentP = new EditableWrapper(thisS.getSensor(), sList, _theLayers);
+							final EditableWrapper wrapped = new EditableWrapper(thisS, parentP, _theLayers);
 
-          outline.setSelection(str);
+							selection.add(wrapped);
+						}
+					}
+				}
+			}
 
-          // see uf we can expand the selection
-          if (outline instanceof PlotOutlinePage)
-          {
-            PlotOutlinePage plotOutline = (PlotOutlinePage) outline;
-            EditableWrapper ew = (EditableWrapper) str.getFirstElement();
-            plotOutline.editableSelected(str, ew);
-          }
-        }
-      }
+			if (selection.size() > 0) {
+				// ok, get the editor
+				final IWorkbench wb = PlatformUI.getWorkbench();
+				final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+				final IWorkbenchPage page = win.getActivePage();
+				final IEditorPart editor = page.getActiveEditor();
 
-      return Status.OK_STATUS;
-    }
+				final IContentOutlinePage outline = editor.getAdapter(IContentOutlinePage.class);
+				if (outline != null) {
+					// now set the selection
+					final IStructuredSelection str = new StructuredSelection(selection);
 
-    @Override
-    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
-        throws ExecutionException
-    {
-      return Status.OK_STATUS;
-    }
+					outline.setSelection(str);
 
-    @Override
-    public IStatus redo(IProgressMonitor monitor, IAdaptable info)
-        throws ExecutionException
-    {
-      return Status.OK_STATUS;
-    }
+					// see uf we can expand the selection
+					if (outline instanceof PlotOutlinePage) {
+						final PlotOutlinePage plotOutline = (PlotOutlinePage) outline;
+						final EditableWrapper ew = (EditableWrapper) str.getFirstElement();
+						plotOutline.editableSelected(str, ew);
+					}
+				}
+			}
 
-    @Override
-    public boolean canExecute()
-    {
-      return true;
-    }
+			return Status.OK_STATUS;
+		}
 
-    @Override
-    public boolean canRedo()
-    {
-      return false;
-    }
+		@Override
+		public IStatus redo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
+			return Status.OK_STATUS;
+		}
 
-    @Override
-    public boolean canUndo()
-    {
-      return false;
-    }
+		@Override
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
+			return Status.OK_STATUS;
+		}
 
-  }
+	}
 
-  protected String getTitlePrefix()
-  {
-    return "Select sensor cuts for selected ";
-  }
+	/**
+	 * move the operation generation to a method, so it can be overwritten (in
+	 * testing)
+	 *
+	 *
+	 * @param theLayers
+	 * @param suitableSegments
+	 * @param commonParent
+	 * @return
+	 */
+	@Override
+	protected IUndoableOperation getOperation(final Layers theLayers,
+			final Map<SensorWrapper, ArrayList<TimePeriod>> periods) {
+		return new SelectCutsOperation(theLayers, periods);
+	}
 
-  /**
-   * move the operation generation to a method, so it can be overwritten (in testing)
-   * 
-   * 
-   * @param theLayers
-   * @param suitableSegments
-   * @param commonParent
-   * @return
-   */
-  protected IUndoableOperation getOperation(Layers theLayers,
-      Map<SensorWrapper, ArrayList<TimePeriod>> periods)
-  {
-    return new SelectCutsOperation(theLayers, periods);
-  }
+	@Override
+	protected String getTitlePrefix() {
+		return "Select sensor cuts for selected ";
+	}
 }

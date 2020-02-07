@@ -75,9 +75,8 @@ public class AISBaseStation implements IAISMessage, IAISDecodable, Cloneable {
 	 * @param latitude
 	 * @param deviceType
 	 */
-	public AISBaseStation(int msgId, int repeatIndicator, int mmsi,
-			Timestamp msgTimestamp, double longitude, double latitude,
-			int deviceType) {
+	public AISBaseStation(final int msgId, final int repeatIndicator, final int mmsi, final Timestamp msgTimestamp,
+			final double longitude, final double latitude, final int deviceType) {
 		this.msgId = msgId;
 		this.repeatIndicator = repeatIndicator;
 		this.mmsi = mmsi;
@@ -87,30 +86,112 @@ public class AISBaseStation implements IAISMessage, IAISDecodable, Cloneable {
 		this.deviceType = deviceType;
 	}
 
-	/**
-	 * Simple getter for MSG ID
-	 *
-	 * @return msgid
-	 */
-	public int getMsgId() {
-		return msgId;
+	@Override
+	public AISBaseStation clone() {
+		try {
+			return (AISBaseStation) super.clone();
+		}
+
+		catch (final CloneNotSupportedException e) {
+			// this shouldn't happen, since we are Cloneable
+			throw new InternalError();
+		}
 	}
 
 	/**
-	 * Simple getter for repeat indicator
+	 * Parse decoded bytes for the base station data
 	 *
-	 * @return repeatIndicator
+	 * Message 4, base station report, ITU-R M.1371-1
+	 *
+	 * @param decBytes
+	 * @throws AISParseException
 	 */
-	public int getRepeatIndicator() {
-		return repeatIndicator;
+	@Override
+	public IAISMessage decode(final String decBytes) throws AISParseException {
+
+		if (decBytes.length() < 168)
+			throw new AISParseException(AISParseException.NOT_CONSISTENT_DECODED_STRING);
+
+		/* Base Station Report message ID, bits 0-5 */
+		this.msgId = AISDecoder.getDecValueByBinStr(decBytes.substring(0, 6), false);
+
+		/* repeat indicator, bits 6-7 */
+		this.repeatIndicator = AISDecoder.getDecValueByBinStr(decBytes.substring(6, 8), false);
+
+		/* mmsi, bits 8-37 */
+		this.mmsi = AISDecoder.getDecValueByBinStr(decBytes.substring(8, 38), false);
+
+		/* year, bits 38-51 */
+		final int year = AISDecoder.getDecValueByBinStr(decBytes.substring(38, 52), false);
+
+		/* month, bits 52-55 */
+		final int month = AISDecoder.getDecValueByBinStr(decBytes.substring(52, 56), false);
+
+		/* day, bits 56-60 */
+		final int day = AISDecoder.getDecValueByBinStr(decBytes.substring(56, 61), false);
+
+		/* hour, bits 61-65 */
+		final int hour = AISDecoder.getDecValueByBinStr(decBytes.substring(61, 66), false);
+
+		/* minute, bits 66-71 */
+		final int minute = AISDecoder.getDecValueByBinStr(decBytes.substring(66, 72), false);
+
+		/* second, bits 72-77 */
+		final int second = AISDecoder.getDecValueByBinStr(decBytes.substring(72, 78), false);
+
+		final Calendar cal = Calendar.getInstance();// TimeZone.getTimeZone("UTC"));
+		cal.clear();
+		cal.set(year, month - 1, day, hour, minute, second);
+		this.msgTimestamp = new Timestamp(cal.getTimeInMillis());
+
+		// bit 78 - position accuracy won't be read.
+
+		/* longitude, bits 79-106 */
+		final int longitudeHour = AISDecoder.getDecValueByBinStr(decBytes.substring(79, 107), true);
+
+		this.longitude = longitudeHour / 600000.0;
+
+		if (this.longitude > 180.0 || this.longitude < -180.0)
+			throw new AISParseException(AISParseException.LONGITUDE_OUT_OF_RANGE + " " + longitude);
+
+		/* latitude, bits 107-133 */
+		final int latitudeHour = AISDecoder.getDecValueByBinStr(decBytes.substring(107, 134), true);
+		this.latitude = latitudeHour / 600000.0;
+
+		if (this.latitude > 90.0 || this.latitude < -90.0)
+			throw new AISParseException(AISParseException.LATITUDE_OUT_OF_RANGE + " " + latitude);
+
+		/* device type, bits 134-137 */
+		this.deviceType = AISDecoder.getDecValueByBinStr(decBytes.substring(134, 138), false);
+
+		// TODO: implement the rest bits
+		return this;
 	}
 
-	public int getMmsi() {
-		return mmsi;
+	@Override
+	public boolean equals(final Object o) {
+		if (o == null)
+			return false;
+		if (o == this)
+			return true;
+		if (!o.getClass().equals(o.getClass()))
+			return false;
+
+		final AISBaseStation that = (AISBaseStation) o;
+		final boolean same = this.msgId == that.msgId && this.repeatIndicator == that.repeatIndicator
+				&& this.mmsi == that.mmsi && this.msgTimestamp.equals(that.msgTimestamp)
+				&& this.latitude == that.latitude && this.longitude == that.longitude
+				&& this.deviceType == that.deviceType;
+		return same;
 	}
 
-	public Timestamp getTimestamp() {
-		return msgTimestamp;
+	/**
+	 * Simple getter for device type.
+	 *
+	 * @return deviceType
+	 */
+	public int getDeviceType() {
+		return deviceType;
 	}
 
 	/**
@@ -131,143 +212,30 @@ public class AISBaseStation implements IAISMessage, IAISDecodable, Cloneable {
 		return longitude;
 	}
 
-	/**
-	 * Simple getter for device type.
-	 *
-	 * @return deviceType
-	 */
-	public int getDeviceType() {
-		return deviceType;
-	}
-
-	@Override
-	public String toString() {
-		StringBuffer sBuffer = new StringBuffer();
-		sBuffer.append("AISBaseStation\n");
-		sBuffer.append("MSGID\t\t" + this.msgId + "\n");
-		sBuffer.append("REPEAT IND\t" + this.repeatIndicator + "\n");
-		sBuffer.append("MMSI\t\t" + this.mmsi + "\n");
-		sBuffer.append("UTC TIMESTAMP\t" + this.msgTimestamp + "\n");
-		sBuffer.append("LONGITUDE\t" + this.longitude + "\n");
-		sBuffer.append("LATITUDE\t" + this.latitude + "\n");
-		sBuffer.append("DEVICE\t\t" + this.deviceType + "\n");
-		return sBuffer.toString();
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (o == null)
-			return false;
-		if (o == this)
-			return true;
-		if (!o.getClass().equals(o.getClass()))
-			return false;
-
-		AISBaseStation that = (AISBaseStation) o;
-		boolean same = this.msgId == that.msgId
-				&& this.repeatIndicator == that.repeatIndicator
-				&& this.mmsi == that.mmsi
-				&& this.msgTimestamp.equals(that.msgTimestamp)
-				&& this.latitude == that.latitude
-				&& this.longitude == that.longitude
-				&& this.deviceType == that.deviceType;
-		return same;
-	}
-
-	@Override
-	public AISBaseStation clone() {
-		try {
-			return (AISBaseStation) super.clone();
-		}
-
-		catch (CloneNotSupportedException e) {
-			// this shouldn't happen, since we are Cloneable
-			throw new InternalError();
-		}
+	public int getMmsi() {
+		return mmsi;
 	}
 
 	/**
-	 * Parse decoded bytes for the base station data
+	 * Simple getter for MSG ID
 	 *
-	 * Message 4, base station report, ITU-R M.1371-1
-	 *
-	 * @param decBytes
-	 * @throws AISParseException
+	 * @return msgid
 	 */
-	public IAISMessage decode(String decBytes) throws AISParseException {
+	public int getMsgId() {
+		return msgId;
+	}
 
-		if (decBytes.length() < 168)
-			throw new AISParseException(
-					AISParseException.NOT_CONSISTENT_DECODED_STRING);
+	/**
+	 * Simple getter for repeat indicator
+	 *
+	 * @return repeatIndicator
+	 */
+	public int getRepeatIndicator() {
+		return repeatIndicator;
+	}
 
-		/* Base Station Report message ID, bits 0-5 */
-		this.msgId = AISDecoder.getDecValueByBinStr(decBytes.substring(0, 6),
-				false);
-		
-		/* repeat indicator, bits 6-7 */
-		this.repeatIndicator = AISDecoder.getDecValueByBinStr(
-				decBytes.substring(6, 8), false);
-
-		/* mmsi, bits 8-37 */
-		this.mmsi = AISDecoder.getDecValueByBinStr(decBytes.substring(8, 38),
-				false);
-
-		/* year, bits 38-51 */
-		int year = AISDecoder.getDecValueByBinStr(decBytes.substring(38, 52),
-				false);
-
-		/* month, bits 52-55 */
-		int month = AISDecoder.getDecValueByBinStr(decBytes.substring(52, 56),
-				false);
-
-		/* day, bits 56-60 */
-		int day = AISDecoder.getDecValueByBinStr(decBytes.substring(56, 61),
-				false);
-
-		/* hour, bits 61-65 */
-		int hour = AISDecoder.getDecValueByBinStr(decBytes.substring(61, 66),
-				false);
-
-		/* minute, bits 66-71 */
-		int minute = AISDecoder.getDecValueByBinStr(decBytes.substring(66, 72),
-				false);
-
-		/* second, bits 72-77 */
-		int second = AISDecoder.getDecValueByBinStr(decBytes.substring(72, 78),
-				false);
-
-		Calendar cal = Calendar.getInstance();// TimeZone.getTimeZone("UTC"));
-		cal.clear();
-		cal.set(year, month - 1, day, hour, minute, second);
-		this.msgTimestamp = new Timestamp(cal.getTimeInMillis());
-
-		// bit 78 - position accuracy won't be read.
-
-		/* longitude, bits 79-106 */
-		int longitudeHour = AISDecoder.getDecValueByBinStr(
-				decBytes.substring(79, 107), true);
-
-		this.longitude = longitudeHour / 600000.0;
-
-		if (this.longitude > 180.0 || this.longitude < -180.0)
-			throw new AISParseException(
-					AISParseException.LONGITUDE_OUT_OF_RANGE + " " + longitude);
-
-		/* latitude, bits 107-133 */
-		int latitudeHour = AISDecoder.getDecValueByBinStr(
-				decBytes.substring(107, 134), true);
-		this.latitude = latitudeHour / 600000.0;
-
-		if (this.latitude > 90.0 || this.latitude < -90.0)
-			throw new AISParseException(AISParseException.LATITUDE_OUT_OF_RANGE
-					+ " " + latitude);
-
-		/* device type, bits 134-137 */
-		this.deviceType = AISDecoder.getDecValueByBinStr(
-				decBytes.substring(134, 138), false);
-
-		// TODO: implement the rest bits
-		return this;
+	public Timestamp getTimestamp() {
+		return msgTimestamp;
 	}
 
 	@Override
@@ -282,9 +250,22 @@ public class AISBaseStation implements IAISMessage, IAISDecodable, Cloneable {
 		result = prime * result + mmsi;
 		result = prime * result + msgId;
 		result = prime * result + repeatIndicator;
-		result = prime * result
-				+ (msgTimestamp == null ? 0 : msgTimestamp.hashCode());
+		result = prime * result + (msgTimestamp == null ? 0 : msgTimestamp.hashCode());
 		return result;
+	}
+
+	@Override
+	public String toString() {
+		final StringBuffer sBuffer = new StringBuffer();
+		sBuffer.append("AISBaseStation\n");
+		sBuffer.append("MSGID\t\t" + this.msgId + "\n");
+		sBuffer.append("REPEAT IND\t" + this.repeatIndicator + "\n");
+		sBuffer.append("MMSI\t\t" + this.mmsi + "\n");
+		sBuffer.append("UTC TIMESTAMP\t" + this.msgTimestamp + "\n");
+		sBuffer.append("LONGITUDE\t" + this.longitude + "\n");
+		sBuffer.append("LATITUDE\t" + this.latitude + "\n");
+		sBuffer.append("DEVICE\t\t" + this.deviceType + "\n");
+		return sBuffer.toString();
 	}
 
 }

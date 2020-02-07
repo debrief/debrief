@@ -1,205 +1,203 @@
 package edu.nps.moves.dis;
 
-import java.util.*;
-import java.io.*;
-import edu.nps.moves.disenum.*;
-import edu.nps.moves.disutil.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
 
 /**
- * Section 5.2.7. Specifies the type of muntion fired, the type of warhead, the         type of fuse, the number of rounds fired, and the rate at which the roudns are fired in         rounds per minute.
+ * Section 5.2.7. Specifies the type of muntion fired, the type of warhead, the
+ * type of fuse, the number of rounds fired, and the rate at which the roudns
+ * are fired in rounds per minute.
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class BurstDescriptor extends Object implements Serializable
-{
-   /** What munition was used in the burst */
-   protected EntityType  munition = new EntityType(); 
+public class BurstDescriptor extends Object implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   /** type of warhead */
-   protected int  warhead;
+	/** What munition was used in the burst */
+	protected EntityType munition = new EntityType();
 
-   /** type of fuse used */
-   protected int  fuse;
+	/** type of warhead */
+	protected int warhead;
 
-   /** how many of the munition were fired */
-   protected int  quantity;
+	/** type of fuse used */
+	protected int fuse;
 
-   /** rate at which the munition was fired */
-   protected int  rate;
+	/** how many of the munition were fired */
+	protected int quantity;
 
+	/** rate at which the munition was fired */
+	protected int rate;
 
-/** Constructor */
- public BurstDescriptor()
- {
- }
+	/** Constructor */
+	public BurstDescriptor() {
+	}
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-   marshalSize = marshalSize + munition.getMarshalledSize();  // munition
-   marshalSize = marshalSize + 2;  // warhead
-   marshalSize = marshalSize + 2;  // fuse
-   marshalSize = marshalSize + 2;  // quantity
-   marshalSize = marshalSize + 2;  // rate
+		if (this == obj) {
+			return true;
+		}
 
-   return marshalSize;
-}
+		if (obj == null) {
+			return false;
+		}
 
+		if (getClass() != obj.getClass())
+			return false;
 
-public void setMunition(EntityType pMunition)
-{ munition = pMunition;
-}
+		return equalsImpl(obj);
+	}
 
-public EntityType getMunition()
-{ return munition; 
-}
+	/**
+	 * Compare all fields that contribute to the state, ignoring transient and
+	 * static fields, for <code>this</code> and the supplied object
+	 *
+	 * @param obj the object to compare to
+	 * @return true if the objects are equal, false otherwise.
+	 */
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-public void setWarhead(int pWarhead)
-{ warhead = pWarhead;
-}
+		if (!(obj instanceof BurstDescriptor))
+			return false;
 
-public int getWarhead()
-{ return warhead; 
-}
+		final BurstDescriptor rhs = (BurstDescriptor) obj;
 
-public void setFuse(int pFuse)
-{ fuse = pFuse;
-}
+		if (!(munition.equals(rhs.munition)))
+			ivarsEqual = false;
+		if (!(warhead == rhs.warhead))
+			ivarsEqual = false;
+		if (!(fuse == rhs.fuse))
+			ivarsEqual = false;
+		if (!(quantity == rhs.quantity))
+			ivarsEqual = false;
+		if (!(rate == rhs.rate))
+			ivarsEqual = false;
 
-public int getFuse()
-{ return fuse; 
-}
+		return ivarsEqual;
+	}
 
-public void setQuantity(int pQuantity)
-{ quantity = pQuantity;
-}
+	public int getFuse() {
+		return fuse;
+	}
 
-public int getQuantity()
-{ return quantity; 
-}
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
-public void setRate(int pRate)
-{ rate = pRate;
-}
+		marshalSize = marshalSize + munition.getMarshalledSize(); // munition
+		marshalSize = marshalSize + 2; // warhead
+		marshalSize = marshalSize + 2; // fuse
+		marshalSize = marshalSize + 2; // quantity
+		marshalSize = marshalSize + 2; // rate
 
-public int getRate()
-{ return rate; 
-}
+		return marshalSize;
+	}
 
+	public EntityType getMunition() {
+		return munition;
+	}
 
-public void marshal(DataOutputStream dos)
-{
-    try 
-    {
-       munition.marshal(dos);
-       dos.writeShort( (short)warhead);
-       dos.writeShort( (short)fuse);
-       dos.writeShort( (short)quantity);
-       dos.writeShort( (short)rate);
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+	public int getQuantity() {
+		return quantity;
+	}
 
-public void unmarshal(DataInputStream dis)
-{
-    try 
-    {
-       munition.unmarshal(dis);
-       warhead = (int)dis.readUnsignedShort();
-       fuse = (int)dis.readUnsignedShort();
-       quantity = (int)dis.readUnsignedShort();
-       rate = (int)dis.readUnsignedShort();
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+	public int getRate() {
+		return rate;
+	}
 
+	public int getWarhead() {
+		return warhead;
+	}
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
-       munition.marshal(buff);
-       buff.putShort( (short)warhead);
-       buff.putShort( (short)fuse);
-       buff.putShort( (short)quantity);
-       buff.putShort( (short)rate);
-    } // end of marshal method
+	public void marshal(final DataOutputStream dos) {
+		try {
+			munition.marshal(dos);
+			dos.writeShort((short) warhead);
+			dos.writeShort((short) fuse);
+			dos.writeShort((short) quantity);
+			dos.writeShort((short) rate);
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       munition.unmarshal(buff);
-       warhead = (int)(buff.getShort() & 0xFFFF);
-       fuse = (int)(buff.getShort() & 0xFFFF);
-       quantity = (int)(buff.getShort() & 0xFFFF);
-       rate = (int)(buff.getShort() & 0xFFFF);
- } // end of unmarshal method 
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	public void marshal(final java.nio.ByteBuffer buff) {
+		munition.marshal(buff);
+		buff.putShort((short) warhead);
+		buff.putShort((short) fuse);
+		buff.putShort((short) quantity);
+		buff.putShort((short) rate);
+	} // end of marshal method
 
+	public void setFuse(final int pFuse) {
+		fuse = pFuse;
+	}
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+	public void setMunition(final EntityType pMunition) {
+		munition = pMunition;
+	}
 
-    if(this == obj){
-      return true;
-    }
+	public void setQuantity(final int pQuantity) {
+		quantity = pQuantity;
+	}
 
-    if(obj == null){
-       return false;
-    }
+	public void setRate(final int pRate) {
+		rate = pRate;
+	}
 
-    if(getClass() != obj.getClass())
-        return false;
+	public void setWarhead(final int pWarhead) {
+		warhead = pWarhead;
+	}
 
-    return equalsImpl(obj);
- }
+	public void unmarshal(final DataInputStream dis) {
+		try {
+			munition.unmarshal(dis);
+			warhead = dis.readUnsignedShort();
+			fuse = dis.readUnsignedShort();
+			quantity = dis.readUnsignedShort();
+			rate = dis.readUnsignedShort();
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
- /**
-  * Compare all fields that contribute to the state, ignoring
- transient and static fields, for <code>this</code> and the supplied object
-  * @param obj the object to compare to
-  * @return true if the objects are equal, false otherwise.
-  */
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
-
-    if(!(obj instanceof BurstDescriptor))
-        return false;
-
-     final BurstDescriptor rhs = (BurstDescriptor)obj;
-
-     if( ! (munition.equals( rhs.munition) )) ivarsEqual = false;
-     if( ! (warhead == rhs.warhead)) ivarsEqual = false;
-     if( ! (fuse == rhs.fuse)) ivarsEqual = false;
-     if( ! (quantity == rhs.quantity)) ivarsEqual = false;
-     if( ! (rate == rhs.rate)) ivarsEqual = false;
-
-    return ivarsEqual;
- }
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		munition.unmarshal(buff);
+		warhead = buff.getShort() & 0xFFFF;
+		fuse = buff.getShort() & 0xFFFF;
+		quantity = buff.getShort() & 0xFFFF;
+		rate = buff.getShort() & 0xFFFF;
+	} // end of unmarshal method
 } // end of class

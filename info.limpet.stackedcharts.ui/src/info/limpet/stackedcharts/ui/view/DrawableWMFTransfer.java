@@ -1,6 +1,18 @@
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 package info.limpet.stackedcharts.ui.view;
-
-import info.limpet.stackedcharts.ui.editor.Activator;
 
 import java.awt.Dimension;
 import java.awt.datatransfer.DataFlavor;
@@ -20,125 +32,94 @@ import org.freehep.graphicsio.emf.EMFGraphics2D;
 import org.freehep.graphicsio.pdf.PDFGraphics2D;
 import org.jfree.ui.Drawable;
 
-public class DrawableWMFTransfer implements Transferable
-{
+import info.limpet.stackedcharts.ui.editor.Activator;
 
-  public static final DataFlavor EMF_FLAVOR = new DataFlavor("image/emf",
-      "Enhanced Meta File");
+public class DrawableWMFTransfer implements Transferable {
 
-  static
-  {
-    // EMF graphics clipboard format
-    try
-    {
-      final SystemFlavorMap sfm =
-          (SystemFlavorMap) SystemFlavorMap.getDefaultFlavorMap();
-      sfm.addFlavorForUnencodedNative("ENHMETAFILE", EMF_FLAVOR);// seems to be a key command!!
-      sfm.addUnencodedNativeForFlavor(EMF_FLAVOR, "ENHMETAFILE");// seems to be a key command!!
-    }
-    catch (final Exception e)
-    {
-      System.err.println("[WMFTransfer,static initializer] Error "
-          + e.getClass().getName() + ", " + e.getMessage());
-    }
-  }
+	public static final DataFlavor EMF_FLAVOR = new DataFlavor("image/emf", "Enhanced Meta File");
 
-  public static final DataFlavor PDF_FLAVOR = new DataFlavor("application/pdf",
-      "PDF");
+	static {
+		// EMF graphics clipboard format
+		try {
+			final SystemFlavorMap sfm = (SystemFlavorMap) SystemFlavorMap.getDefaultFlavorMap();
+			sfm.addFlavorForUnencodedNative("ENHMETAFILE", EMF_FLAVOR);// seems to be a key command!!
+			sfm.addUnencodedNativeForFlavor(EMF_FLAVOR, "ENHMETAFILE");// seems to be a key command!!
+		} catch (final Exception e) {
+			System.err.println(
+					"[WMFTransfer,static initializer] Error " + e.getClass().getName() + ", " + e.getMessage());
+		}
+	}
 
-  static
-  {
-    // PDF graphics clipboard format
-    try
-    {
-      final SystemFlavorMap sfm =
-          (SystemFlavorMap) SystemFlavorMap.getDefaultFlavorMap();
-      sfm.addFlavorForUnencodedNative("PDF", PDF_FLAVOR);// seems to be a key command!!
-      sfm.addUnencodedNativeForFlavor(PDF_FLAVOR, "PDF");// seems to be a key command!!
-    }
-    catch (final Exception e)
-    {
-      System.err.println("[PDFTransfer,static initializer] Error "
-          + e.getClass().getName() + ", " + e.getMessage());
-    }
-  }
+	public static final DataFlavor PDF_FLAVOR = new DataFlavor("application/pdf", "PDF");
 
-  private static DataFlavor[] supportedFlavors =
-  {EMF_FLAVOR, PDF_FLAVOR};
+	static {
+		// PDF graphics clipboard format
+		try {
+			final SystemFlavorMap sfm = (SystemFlavorMap) SystemFlavorMap.getDefaultFlavorMap();
+			sfm.addFlavorForUnencodedNative("PDF", PDF_FLAVOR);// seems to be a key command!!
+			sfm.addUnencodedNativeForFlavor(PDF_FLAVOR, "PDF");// seems to be a key command!!
+		} catch (final Exception e) {
+			System.err.println(
+					"[PDFTransfer,static initializer] Error " + e.getClass().getName() + ", " + e.getMessage());
+		}
+	}
 
-  private final Drawable _drawable;
+	private static DataFlavor[] supportedFlavors = { EMF_FLAVOR, PDF_FLAVOR };
 
-  private final Rectangle _bounds;
+	private final Drawable _drawable;
 
-  public DrawableWMFTransfer(final Drawable drawable, final Rectangle bounds)
-  {
-    _drawable = drawable;
-    _bounds = bounds;
-  }
+	private final Rectangle _bounds;
 
-  @Override
-  public Object getTransferData(final DataFlavor flavor)
-      throws UnsupportedFlavorException, IOException
-  {
-    if (flavor.equals(EMF_FLAVOR))
-    {
-      Activator.getDefault().getLog().log(
-          new Status(IStatus.INFO, "Mime type image/emf requested", null));
-      final ByteArrayOutputStream out = new ByteArrayOutputStream();
+	public DrawableWMFTransfer(final Drawable drawable, final Rectangle bounds) {
+		_drawable = drawable;
+		_bounds = bounds;
+	}
 
-      final EMFGraphics2D g2d =
-          new EMFGraphics2D(out, new Dimension(_bounds.width, _bounds.height));
-      g2d.startExport();
-      _drawable.draw(g2d, new Rectangle2D.Double(0, 0, _bounds.width,
-          _bounds.height));
+	@Override
+	public Object getTransferData(final DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+		if (flavor.equals(EMF_FLAVOR)) {
+			Activator.getDefault().getLog().log(new Status(IStatus.INFO, "Mime type image/emf requested", null));
+			final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-      // Cleanup
-      g2d.endExport();
+			final EMFGraphics2D g2d = new EMFGraphics2D(out, new Dimension(_bounds.width, _bounds.height));
+			g2d.startExport();
+			_drawable.draw(g2d, new Rectangle2D.Double(0, 0, _bounds.width, _bounds.height));
 
-      return new ByteArrayInputStream(out.toByteArray());
-    }
-    else if (flavor.equals(PDF_FLAVOR))
-    {
-      Activator.getDefault().getLog()
-          .log(
-              new Status(IStatus.INFO, "Mime type application/pdf requested",
-                  null));
-      final ByteArrayOutputStream out = new ByteArrayOutputStream();
+			// Cleanup
+			g2d.endExport();
 
-      final PDFGraphics2D g2d =
-          new PDFGraphics2D(out, new Dimension(_bounds.width, _bounds.height));
-      final UserProperties properties = new UserProperties();
-      properties.setProperty(PDFGraphics2D.PAGE_SIZE,
-          PDFGraphics2D.CUSTOM_PAGE_SIZE);
-      properties.setProperty(PDFGraphics2D.CUSTOM_PAGE_SIZE,
-          new java.awt.Dimension(_bounds.width, _bounds.height));
-      g2d.setProperties(properties);
-      g2d.startExport();
-      _drawable.draw(g2d, new Rectangle2D.Double(0, 0, _bounds.width,
-          _bounds.height));
+			return new ByteArrayInputStream(out.toByteArray());
+		} else if (flavor.equals(PDF_FLAVOR)) {
+			Activator.getDefault().getLog().log(new Status(IStatus.INFO, "Mime type application/pdf requested", null));
+			final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-      // Cleanup
-      g2d.endExport();
-      return new ByteArrayInputStream(out.toByteArray());
-    }
-    else
-      throw new UnsupportedFlavorException(flavor);
-  }
+			final PDFGraphics2D g2d = new PDFGraphics2D(out, new Dimension(_bounds.width, _bounds.height));
+			final UserProperties properties = new UserProperties();
+			properties.setProperty(PDFGraphics2D.PAGE_SIZE, PDFGraphics2D.CUSTOM_PAGE_SIZE);
+			properties.setProperty(PDFGraphics2D.CUSTOM_PAGE_SIZE,
+					new java.awt.Dimension(_bounds.width, _bounds.height));
+			g2d.setProperties(properties);
+			g2d.startExport();
+			_drawable.draw(g2d, new Rectangle2D.Double(0, 0, _bounds.width, _bounds.height));
 
-  @Override
-  public DataFlavor[] getTransferDataFlavors()
-  {
-    return supportedFlavors;
-  }
+			// Cleanup
+			g2d.endExport();
+			return new ByteArrayInputStream(out.toByteArray());
+		} else
+			throw new UnsupportedFlavorException(flavor);
+	}
 
-  @Override
-  public boolean isDataFlavorSupported(final DataFlavor flavor)
-  {
-    for (final DataFlavor f : supportedFlavors)
-    {
-      if (f.equals(flavor))
-        return true;
-    }
-    return false;
-  }
+	@Override
+	public DataFlavor[] getTransferDataFlavors() {
+		return supportedFlavors;
+	}
+
+	@Override
+	public boolean isDataFlavorSupported(final DataFlavor flavor) {
+		for (final DataFlavor f : supportedFlavors) {
+			if (f.equals(flavor))
+				return true;
+		}
+		return false;
+	}
 }

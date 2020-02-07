@@ -1,294 +1,297 @@
 package edu.nps.moves.dis;
 
-import java.util.*;
-import java.io.*;
-import edu.nps.moves.disenum.*;
-import edu.nps.moves.disutil.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Section 5.3.12.13: A request for one or more records of data from an entity. COMPLETE
+ * Section 5.3.12.13: A request for one or more records of data from an entity.
+ * COMPLETE
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class RecordQueryReliablePdu extends SimulationManagementWithReliabilityFamilyPdu implements Serializable
-{
-   /** request ID */
-   protected long  requestID;
+public class RecordQueryReliablePdu extends SimulationManagementWithReliabilityFamilyPdu implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   /** level of reliability service used for this transaction */
-   protected short  requiredReliabilityService;
+	/** request ID */
+	protected long requestID;
 
-   /** padding. The spec is unclear and contradictory here. */
-   protected int  pad1;
+	/** level of reliability service used for this transaction */
+	protected short requiredReliabilityService;
 
-   /** padding */
-   protected short  pad2;
+	/** padding. The spec is unclear and contradictory here. */
+	protected int pad1;
 
-   /** event type */
-   protected int  eventType;
+	/** padding */
+	protected short pad2;
 
-   /** time */
-   protected long  time;
+	/** event type */
+	protected int eventType;
 
-   /** numberOfRecords */
-   protected long  numberOfRecords;
+	/** time */
+	protected long time;
 
-   /** record IDs */
-   protected List< FourByteChunk > recordIDs = new ArrayList< FourByteChunk >(); 
+	/** numberOfRecords */
+	protected long numberOfRecords;
 
-/** Constructor */
- public RecordQueryReliablePdu()
- {
-    setPduType( (short)65 );
- }
+	/** record IDs */
+	protected List<FourByteChunk> recordIDs = new ArrayList<FourByteChunk>();
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+	/** Constructor */
+	public RecordQueryReliablePdu() {
+		setPduType((short) 65);
+	}
 
-   marshalSize = super.getMarshalledSize();
-   marshalSize = marshalSize + 4;  // requestID
-   marshalSize = marshalSize + 1;  // requiredReliabilityService
-   marshalSize = marshalSize + 2;  // pad1
-   marshalSize = marshalSize + 1;  // pad2
-   marshalSize = marshalSize + 2;  // eventType
-   marshalSize = marshalSize + 4;  // time
-   marshalSize = marshalSize + 4;  // numberOfRecords
-   for(int idx=0; idx < recordIDs.size(); idx++)
-   {
-        FourByteChunk listElement = recordIDs.get(idx);
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-   }
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-   return marshalSize;
-}
+		if (this == obj) {
+			return true;
+		}
 
+		if (obj == null) {
+			return false;
+		}
 
-public void setRequestID(long pRequestID)
-{ requestID = pRequestID;
-}
+		if (getClass() != obj.getClass())
+			return false;
 
-public long getRequestID()
-{ return requestID; 
-}
+		return equalsImpl(obj);
+	}
 
-public void setRequiredReliabilityService(short pRequiredReliabilityService)
-{ requiredReliabilityService = pRequiredReliabilityService;
-}
+	@Override
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-public short getRequiredReliabilityService()
-{ return requiredReliabilityService; 
-}
+		if (!(obj instanceof RecordQueryReliablePdu))
+			return false;
 
-public void setPad1(int pPad1)
-{ pad1 = pPad1;
-}
+		final RecordQueryReliablePdu rhs = (RecordQueryReliablePdu) obj;
 
-public int getPad1()
-{ return pad1; 
-}
+		if (!(requestID == rhs.requestID))
+			ivarsEqual = false;
+		if (!(requiredReliabilityService == rhs.requiredReliabilityService))
+			ivarsEqual = false;
+		if (!(pad1 == rhs.pad1))
+			ivarsEqual = false;
+		if (!(pad2 == rhs.pad2))
+			ivarsEqual = false;
+		if (!(eventType == rhs.eventType))
+			ivarsEqual = false;
+		if (!(time == rhs.time))
+			ivarsEqual = false;
+		if (!(numberOfRecords == rhs.numberOfRecords))
+			ivarsEqual = false;
 
-public void setPad2(short pPad2)
-{ pad2 = pPad2;
-}
+		for (int idx = 0; idx < recordIDs.size(); idx++) {
+			if (!(recordIDs.get(idx).equals(rhs.recordIDs.get(idx))))
+				ivarsEqual = false;
+		}
 
-public short getPad2()
-{ return pad2; 
-}
+		return ivarsEqual && super.equalsImpl(rhs);
+	}
 
-public void setEventType(int pEventType)
-{ eventType = pEventType;
-}
+	public int getEventType() {
+		return eventType;
+	}
 
-public int getEventType()
-{ return eventType; 
-}
+	@Override
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
-public void setTime(long pTime)
-{ time = pTime;
-}
+		marshalSize = super.getMarshalledSize();
+		marshalSize = marshalSize + 4; // requestID
+		marshalSize = marshalSize + 1; // requiredReliabilityService
+		marshalSize = marshalSize + 2; // pad1
+		marshalSize = marshalSize + 1; // pad2
+		marshalSize = marshalSize + 2; // eventType
+		marshalSize = marshalSize + 4; // time
+		marshalSize = marshalSize + 4; // numberOfRecords
+		for (int idx = 0; idx < recordIDs.size(); idx++) {
+			final FourByteChunk listElement = recordIDs.get(idx);
+			marshalSize = marshalSize + listElement.getMarshalledSize();
+		}
 
-public long getTime()
-{ return time; 
-}
+		return marshalSize;
+	}
 
-public long getNumberOfRecords()
-{ return (long)recordIDs.size();
-}
+	public long getNumberOfRecords() {
+		return recordIDs.size();
+	}
 
-/** Note that setting this value will not change the marshalled value. The list whose length this describes is used for that purpose.
- * The getnumberOfRecords method will also be based on the actual list length rather than this value. 
- * The method is simply here for java bean completeness.
- */
-public void setNumberOfRecords(long pNumberOfRecords)
-{ numberOfRecords = pNumberOfRecords;
-}
+	public int getPad1() {
+		return pad1;
+	}
 
-public void setRecordIDs(List<FourByteChunk> pRecordIDs)
-{ recordIDs = pRecordIDs;
-}
+	public short getPad2() {
+		return pad2;
+	}
 
-public List<FourByteChunk> getRecordIDs()
-{ return recordIDs; }
+	public List<FourByteChunk> getRecordIDs() {
+		return recordIDs;
+	}
 
+	public long getRequestID() {
+		return requestID;
+	}
 
-public void marshal(DataOutputStream dos)
-{
-    super.marshal(dos);
-    try 
-    {
-       dos.writeInt( (int)requestID);
-       dos.writeByte( (byte)requiredReliabilityService);
-       dos.writeShort( (short)pad1);
-       dos.writeByte( (byte)pad2);
-       dos.writeShort( (short)eventType);
-       dos.writeInt( (int)time);
-       dos.writeInt( (int)recordIDs.size());
+	public short getRequiredReliabilityService() {
+		return requiredReliabilityService;
+	}
 
-       for(int idx = 0; idx < recordIDs.size(); idx++)
-       {
-            FourByteChunk aFourByteChunk = recordIDs.get(idx);
-            aFourByteChunk.marshal(dos);
-       } // end of list marshalling
+	public long getTime() {
+		return time;
+	}
 
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+	@Override
+	public void marshal(final DataOutputStream dos) {
+		super.marshal(dos);
+		try {
+			dos.writeInt((int) requestID);
+			dos.writeByte((byte) requiredReliabilityService);
+			dos.writeShort((short) pad1);
+			dos.writeByte((byte) pad2);
+			dos.writeShort((short) eventType);
+			dos.writeInt((int) time);
+			dos.writeInt(recordIDs.size());
 
-public void unmarshal(DataInputStream dis)
-{
-     super.unmarshal(dis);
+			for (int idx = 0; idx < recordIDs.size(); idx++) {
+				final FourByteChunk aFourByteChunk = recordIDs.get(idx);
+				aFourByteChunk.marshal(dos);
+			} // end of list marshalling
 
-    try 
-    {
-       requestID = dis.readInt();
-       requiredReliabilityService = (short)dis.readUnsignedByte();
-       pad1 = (int)dis.readUnsignedShort();
-       pad2 = (short)dis.readUnsignedByte();
-       eventType = (int)dis.readUnsignedShort();
-       time = dis.readInt();
-       numberOfRecords = dis.readInt();
-       for(int idx = 0; idx < numberOfRecords; idx++)
-       {
-           FourByteChunk anX = new FourByteChunk();
-           anX.unmarshal(dis);
-           recordIDs.add(anX);
-       }
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	@Override
+	public void marshal(final java.nio.ByteBuffer buff) {
+		super.marshal(buff);
+		buff.putInt((int) requestID);
+		buff.put((byte) requiredReliabilityService);
+		buff.putShort((short) pad1);
+		buff.put((byte) pad2);
+		buff.putShort((short) eventType);
+		buff.putInt((int) time);
+		buff.putInt(recordIDs.size());
 
+		for (int idx = 0; idx < recordIDs.size(); idx++) {
+			final FourByteChunk aFourByteChunk = recordIDs.get(idx);
+			aFourByteChunk.marshal(buff);
+		} // end of list marshalling
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
-       super.marshal(buff);
-       buff.putInt( (int)requestID);
-       buff.put( (byte)requiredReliabilityService);
-       buff.putShort( (short)pad1);
-       buff.put( (byte)pad2);
-       buff.putShort( (short)eventType);
-       buff.putInt( (int)time);
-       buff.putInt( (int)recordIDs.size());
+	} // end of marshal method
 
-       for(int idx = 0; idx < recordIDs.size(); idx++)
-       {
-            FourByteChunk aFourByteChunk = (FourByteChunk)recordIDs.get(idx);
-            aFourByteChunk.marshal(buff);
-       } // end of list marshalling
+	public void setEventType(final int pEventType) {
+		eventType = pEventType;
+	}
 
-    } // end of marshal method
+	/**
+	 * Note that setting this value will not change the marshalled value. The list
+	 * whose length this describes is used for that purpose. The getnumberOfRecords
+	 * method will also be based on the actual list length rather than this value.
+	 * The method is simply here for java bean completeness.
+	 */
+	public void setNumberOfRecords(final long pNumberOfRecords) {
+		numberOfRecords = pNumberOfRecords;
+	}
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       super.unmarshal(buff);
+	public void setPad1(final int pPad1) {
+		pad1 = pPad1;
+	}
 
-       requestID = buff.getInt();
-       requiredReliabilityService = (short)(buff.get() & 0xFF);
-       pad1 = (int)(buff.getShort() & 0xFFFF);
-       pad2 = (short)(buff.get() & 0xFF);
-       eventType = (int)(buff.getShort() & 0xFFFF);
-       time = buff.getInt();
-       numberOfRecords = buff.getInt();
-       for(int idx = 0; idx < numberOfRecords; idx++)
-       {
-            FourByteChunk anX = new FourByteChunk();
-            anX.unmarshal(buff);
-            recordIDs.add(anX);
-       }
+	public void setPad2(final short pPad2) {
+		pad2 = pPad2;
+	}
 
- } // end of unmarshal method 
+	public void setRecordIDs(final List<FourByteChunk> pRecordIDs) {
+		recordIDs = pRecordIDs;
+	}
 
+	public void setRequestID(final long pRequestID) {
+		requestID = pRequestID;
+	}
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+	public void setRequiredReliabilityService(final short pRequiredReliabilityService) {
+		requiredReliabilityService = pRequiredReliabilityService;
+	}
 
-    if(this == obj){
-      return true;
-    }
+	public void setTime(final long pTime) {
+		time = pTime;
+	}
 
-    if(obj == null){
-       return false;
-    }
+	@Override
+	public void unmarshal(final DataInputStream dis) {
+		super.unmarshal(dis);
 
-    if(getClass() != obj.getClass())
-        return false;
+		try {
+			requestID = dis.readInt();
+			requiredReliabilityService = (short) dis.readUnsignedByte();
+			pad1 = dis.readUnsignedShort();
+			pad2 = (short) dis.readUnsignedByte();
+			eventType = dis.readUnsignedShort();
+			time = dis.readInt();
+			numberOfRecords = dis.readInt();
+			for (int idx = 0; idx < numberOfRecords; idx++) {
+				final FourByteChunk anX = new FourByteChunk();
+				anX.unmarshal(dis);
+				recordIDs.add(anX);
+			}
 
-    return equalsImpl(obj);
- }
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
-@Override
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	@Override
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		super.unmarshal(buff);
 
-    if(!(obj instanceof RecordQueryReliablePdu))
-        return false;
+		requestID = buff.getInt();
+		requiredReliabilityService = (short) (buff.get() & 0xFF);
+		pad1 = buff.getShort() & 0xFFFF;
+		pad2 = (short) (buff.get() & 0xFF);
+		eventType = buff.getShort() & 0xFFFF;
+		time = buff.getInt();
+		numberOfRecords = buff.getInt();
+		for (int idx = 0; idx < numberOfRecords; idx++) {
+			final FourByteChunk anX = new FourByteChunk();
+			anX.unmarshal(buff);
+			recordIDs.add(anX);
+		}
 
-     final RecordQueryReliablePdu rhs = (RecordQueryReliablePdu)obj;
-
-     if( ! (requestID == rhs.requestID)) ivarsEqual = false;
-     if( ! (requiredReliabilityService == rhs.requiredReliabilityService)) ivarsEqual = false;
-     if( ! (pad1 == rhs.pad1)) ivarsEqual = false;
-     if( ! (pad2 == rhs.pad2)) ivarsEqual = false;
-     if( ! (eventType == rhs.eventType)) ivarsEqual = false;
-     if( ! (time == rhs.time)) ivarsEqual = false;
-     if( ! (numberOfRecords == rhs.numberOfRecords)) ivarsEqual = false;
-
-     for(int idx = 0; idx < recordIDs.size(); idx++)
-     {
-        if( ! ( recordIDs.get(idx).equals(rhs.recordIDs.get(idx)))) ivarsEqual = false;
-     }
-
-
-    return ivarsEqual && super.equalsImpl(rhs);
- }
+	} // end of unmarshal method
 } // end of class

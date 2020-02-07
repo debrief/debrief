@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package Debrief.GUI.Tote.Painters;
 
 // Copyright MWC 1999, Debrief 3 Project
@@ -88,94 +89,84 @@ import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 
-
-/** class to handle drawing a buoy pattern when we're in snail mode
+/**
+ * class to handle drawing a buoy pattern when we're in snail mode
  *
  */
-public final class SnailDrawBuoyPattern implements SnailPainter.drawHighLight, Editable
-{
+public final class SnailDrawBuoyPattern implements SnailPainter.drawHighLight, Editable {
 
-  ///////////////////////////////////
-  // member functions
-  //////////////////////////////////
-	public final java.awt.Rectangle drawMe(final MWC.Algorithms.PlainProjection proj,
-																	 final java.awt.Graphics dest,
-																	 final WatchableList list,
-																	 final Watchable watch,
-																	 final SnailPainter parent,
-																	 final HiResDate dtg,
-                                   final java.awt.Color backColor)
-	{
-    Rectangle thisR = null;
-
-    dest.setXORMode(backColor);
-
-    // get a pointer to the fix
-		final BuoyPatternWrapper.BuoyPatternAdaptor adaptor = (BuoyPatternWrapper.BuoyPatternAdaptor)watch;
-
-    final BuoyPatternWrapper pattern = adaptor.getPattern();
-
-    // get the current area of the watchable
-    final WorldArea wa = watch.getBounds();
-    // convert to screen coordinates
-    final Point tl = new Point(proj.toScreen(wa.getTopLeft()));
-    final Point br = new Point(proj.toScreen(wa.getBottomRight()));
-
-    // create our own canvas object
-    final CanvasAdaptor cad = new CanvasAdaptor(proj, dest);
-
-    // and do the paint
-    pattern.paint(cad);
-
-    // extend the area covered to include the stick
-
-    thisR =  new Rectangle(tl);
-    thisR.add(br);
-
-		return thisR;
-	}
-
-	public final boolean canPlot(final Watchable wt)
-	{
+	@Override
+	public final boolean canPlot(final Watchable wt) {
 		boolean res = false;
 
-		if(wt instanceof Debrief.Wrappers.BuoyPatternWrapper.BuoyPatternAdaptor)
-		{
+		if (wt instanceof Debrief.Wrappers.BuoyPatternWrapper.BuoyPatternAdaptor) {
 			res = true;
 		}
 		return res;
 	}
 
+	///////////////////////////////////
+	// member functions
+	//////////////////////////////////
+	@Override
+	public final java.awt.Rectangle drawMe(final MWC.Algorithms.PlainProjection proj, final java.awt.Graphics dest,
+			final WatchableList list, final Watchable watch, final SnailPainter parent, final HiResDate dtg,
+			final java.awt.Color backColor) {
+		Rectangle thisR = null;
 
+		dest.setXORMode(backColor);
 
-  public final String getName()
-  {
-    return "Snail Buoypattern Plotter";
-  }
+		// get a pointer to the fix
+		final BuoyPatternWrapper.BuoyPatternAdaptor adaptor = (BuoyPatternWrapper.BuoyPatternAdaptor) watch;
 
-  public final String toString()
-  {
-    return getName();
-  }
+		final BuoyPatternWrapper pattern = adaptor.getPattern();
 
-  public final boolean hasEditor()
-  {
-    return false;
-  }
+		// get the current area of the watchable
+		final WorldArea wa = watch.getBounds();
+		// convert to screen coordinates
+		final Point tl = new Point(proj.toScreen(wa.getTopLeft()));
+		final Point br = new Point(proj.toScreen(wa.getBottomRight()));
 
-  public final Editable.EditorType getInfo()
-  {
-    return null;
-  }
+		// create our own canvas object
+		final CanvasAdaptor cad = new CanvasAdaptor(proj, dest);
 
-  //////////////////////////////////////////////////////////
-  // accessors for editable parameters
-  /////////////////////////////////////////////////////////
+		// and do the paint
+		pattern.paint(cad);
 
-  //////////////////////////////////////////////////////////
-  // nested editable class
-  /////////////////////////////////////////////////////////
+		// extend the area covered to include the stick
 
+		thisR = new Rectangle(tl);
+		thisR.add(br);
+
+		return thisR;
+	}
+
+	@Override
+	public final Editable.EditorType getInfo() {
+		return null;
+	}
+
+	@Override
+	public final String getName() {
+		return "Snail Buoypattern Plotter";
+	}
+
+	@Override
+	public final boolean hasEditor() {
+		return false;
+	}
+
+	@Override
+	public final String toString() {
+		return getName();
+	}
+
+	//////////////////////////////////////////////////////////
+	// accessors for editable parameters
+	/////////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////////
+	// nested editable class
+	/////////////////////////////////////////////////////////
 
 }
-

@@ -1,17 +1,17 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 package org.mwc.debrief.core.loaders;
 
 import java.io.BufferedReader;
@@ -48,300 +48,241 @@ import junit.framework.TestCase;
 /**
  * @author ian.mayo
  */
-public class UK_CSV_Loader extends CoreLoader
-{
+public class UK_CSV_Loader extends CoreLoader {
 
-  public final static class TestLogImport extends TestCase
-  {
+	public final static class TestLogImport extends TestCase {
 
-    public void testGetName() throws ParseException
-    {
-      final String line =
-          "22.1862861, -21.6978806,19951212T050000Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.7000,2.0000,0.0,Remote,Low,UNIT ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long s.  I'll 'll duplicate to get more content.\"\r\n";
-      final String name = UK_CSV_Loader.getName(line);
-      assertEquals("Correct name", "NELSON", name);
-    }
+		boolean tripped = false;
 
-    public void testImport() throws ParseException
-    {
+		public void testGetName() throws ParseException {
+			final String line = "22.1862861, -21.6978806,19951212T050000Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.7000,2.0000,0.0,Remote,Low,UNIT ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long s.  I'll 'll duplicate to get more content.\"\r\n";
+			final String name = UK_CSV_Loader.getName(line);
+			assertEquals("Correct name", "NELSON", name);
+		}
 
-      final String testInput = "# UK TRACK EXCHANGE FORMAT, V1.0\r\n"
-          + "# Lat,Long,DTG,UnitName,CaseNumber,Type,Flag,Sensor,MajorAxis,SemiMajorAxis,SemiMinorAxis,Course,Speed,Depth,Likelihood,Confidence,SuppliedBy,Provenance,InfoCutoffDate,Purpose,Classification,DistributionStatement\r\n"
-          + "22.1862861, -21.6978806,19951212T050000Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.7000,2.0000,0.0,Remote,Low,UNIT ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long s.  I'll 'll duplicate to get more content.\"\r\n"
-          + "22.1862722, -21.7008278,19951212T050100Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.7000,2.0000,0.0,Remote,Low,UNIT ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long more content. Quite a more content.\"\r\n"
-          + "22.1862528, -21.7041139,19951212T050200Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.9000,2.0000,0.0,Remote,Low,UNIT ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long sentuite a cate to get more content.\"\r\n"
-          + "22.1862528, -21.707575,19951212T050300Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,268.7000,2.0000,0.0,Remote,Low,UNIT ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long senttent. Quite a long sentence decontent.\"";
+		public void testImport() throws ParseException {
 
-      final InputStream stream = new java.io.ByteArrayInputStream(testInput
-          .getBytes(Charset.forName("UTF-8")));
+			final String testInput = "# UK TRACK EXCHANGE FORMAT, V1.0\r\n"
+					+ "# Lat,Long,DTG,UnitName,CaseNumber,Type,Flag,Sensor,MajorAxis,SemiMajorAxis,SemiMinorAxis,Course,Speed,Depth,Likelihood,Confidence,SuppliedBy,Provenance,InfoCutoffDate,Purpose,Classification,DistributionStatement\r\n"
+					+ "22.1862861, -21.6978806,19951212T050000Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.7000,2.0000,0.0,Remote,Low,UNIT ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long s.  I'll 'll duplicate to get more content.\"\r\n"
+					+ "22.1862722, -21.7008278,19951212T050100Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.7000,2.0000,0.0,Remote,Low,UNIT ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long more content. Quite a more content.\"\r\n"
+					+ "22.1862528, -21.7041139,19951212T050200Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.9000,2.0000,0.0,Remote,Low,UNIT ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long sentuite a cate to get more content.\"\r\n"
+					+ "22.1862528, -21.707575,19951212T050300Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,268.7000,2.0000,0.0,Remote,Low,UNIT ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long senttent. Quite a long sentence decontent.\"";
 
-      final Layers layers = new Layers();
+			final InputStream stream = new java.io.ByteArrayInputStream(testInput.getBytes(Charset.forName("UTF-8")));
 
-      assertEquals("layers empty", 0, layers.size());
+			final Layers layers = new Layers();
 
-      UK_CSV_Loader.importThis(layers,"test_file.csv", stream);
+			assertEquals("layers empty", 0, layers.size());
 
-      assertEquals("layers not empty", 1, layers.size());
+			UK_CSV_Loader.importThis(layers, "test_file.csv", stream);
 
-      final TrackWrapper track = (TrackWrapper) layers.findLayer("NELSON");
-      assertNotNull("found track", track);
+			assertEquals("layers not empty", 1, layers.size());
 
-      assertEquals("all points", 4, track.numFixes());
-    }
+			final TrackWrapper track = (TrackWrapper) layers.findLayer("NELSON");
+			assertNotNull("found track", track);
 
-    boolean tripped = false;
+			assertEquals("all points", 4, track.numFixes());
+		}
 
-    public void testSingleLineBad1() throws ParseException
-    {
-      final String line =
-          "22.18a62861, -21.6978806,19951212T050000Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.7000,2.0000,0.0,Remote,Low,UNIT ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long s.  I'll 'll duplicate to get more content.\"\r\n";
+		public void testSingleLine() throws ParseException {
+			final String line = "22.1862861, -21.6978806,19951212T050000Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.7000,2.0000,0.0,Remote,Low,UNIT ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long s.  I'll 'll duplicate to get more content.\"\r\n";
+			final FixWrapper fix = UK_CSV_Loader.readLine(line);
+			assertNotNull(fix);
 
-      FixWrapper fix = null;
-      try
-      {
-        fix = UK_CSV_Loader.readLine(line);
-      }
-      catch (NumberFormatException e)
-      {
-        tripped = true;
-      }
-      assertNull("didn't manage to produce fix", fix);
-      assertTrue("parse exception thrown", tripped);
-    }
+			// test the params
+			assertEquals("lat", 22.1862861, fix.getLocation().getLat());
+			assertEquals("lon", -21.6978806, fix.getLocation().getLong());
+			assertEquals("depth", 0d, fix.getLocation().getDepth());
+			assertEquals("date", 818744400000L, fix.getDTG().getDate().getTime());
+			assertEquals("course", 269.7, fix.getCourseDegs());
+			assertEquals("speed", new WorldSpeed(2, WorldSpeed.M_sec).getValueIn(WorldSpeed.Kts), fix.getSpeed(),
+					0.001);
+		}
 
-    public void testSingleLineBad2() throws ParseException
-    {
-      final String line = "22.1862861, -21.6978806,19951212T050000Z";
+		public void testSingleLineBad1() throws ParseException {
+			final String line = "22.18a62861, -21.6978806,19951212T050000Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.7000,2.0000,0.0,Remote,Low,UNIT ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long s.  I'll 'll duplicate to get more content.\"\r\n";
 
-      tripped = false;
-      FixWrapper fix = null;
-      try
-      {
-        fix = UK_CSV_Loader.readLine(line);
-      }
-      catch (ArrayIndexOutOfBoundsException e)
-      {
-        tripped = true;
-      }
-      assertNull("didn't manage to produce fix", fix);
-      assertTrue("parse exception thrown", tripped);
-    }
+			FixWrapper fix = null;
+			try {
+				fix = UK_CSV_Loader.readLine(line);
+			} catch (final NumberFormatException e) {
+				tripped = true;
+			}
+			assertNull("didn't manage to produce fix", fix);
+			assertTrue("parse exception thrown", tripped);
+		}
 
-    public void testSingleLine() throws ParseException
-    {
-      final String line =
-          "22.1862861, -21.6978806,19951212T050000Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.7000,2.0000,0.0,Remote,Low,UNIT ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long s.  I'll 'll duplicate to get more content.\"\r\n";
-      final FixWrapper fix = UK_CSV_Loader.readLine(line);
-      assertNotNull(fix);
+		public void testSingleLineBad2() throws ParseException {
+			final String line = "22.1862861, -21.6978806,19951212T050000Z";
 
-      // test the params
-      assertEquals("lat", 22.1862861, fix.getLocation().getLat());
-      assertEquals("lon", -21.6978806, fix.getLocation().getLong());
-      assertEquals("depth", 0d, fix.getLocation().getDepth());
-      assertEquals("date", 818744400000L, fix.getDTG().getDate().getTime());
-      assertEquals("course", 269.7, fix.getCourseDegs());
-      assertEquals("speed", new WorldSpeed(2, WorldSpeed.M_sec).getValueIn(
-          WorldSpeed.Kts), fix.getSpeed(), 0.001);
-    }
-  }
+			tripped = false;
+			FixWrapper fix = null;
+			try {
+				fix = UK_CSV_Loader.readLine(line);
+			} catch (final ArrayIndexOutOfBoundsException e) {
+				tripped = true;
+			}
+			assertNull("didn't manage to produce fix", fix);
+			assertTrue("parse exception thrown", tripped);
+		}
+	}
 
-  private static TrackWrapper createParentTrack(final Layers theLayers,
-      final String thisLine) throws ParseException
-  {
-    TrackWrapper tw;
-    String trackName = getName(thisLine);
+	private static TrackWrapper createParentTrack(final Layers theLayers, final String thisLine) throws ParseException {
+		TrackWrapper tw;
+		String trackName = getName(thisLine);
 
-    final Layer matchingLayer = theLayers.findLayer(trackName);
+		final Layer matchingLayer = theLayers.findLayer(trackName);
 
-    // is this name already in use?
-    if (matchingLayer != null)
-    {
-      // oops, there's already a track/layer with this name. create
-      // another
-      trackName = trackName + "_" + (int) (Math.random() * 1000);
-    }
+		// is this name already in use?
+		if (matchingLayer != null) {
+			// oops, there's already a track/layer with this name. create
+			// another
+			trackName = trackName + "_" + (int) (Math.random() * 1000);
+		}
 
-    // ok, create the track
-    tw = new TrackWrapper();
+		// ok, create the track
+		tw = new TrackWrapper();
 
-    // give it the name
-    tw.setName(trackName);
+		// give it the name
+		tw.setName(trackName);
 
-    // set the default color
-    tw.setColor(DebriefColors.BLUE);
-    return tw;
-  }
+		// set the default color
+		tw.setColor(DebriefColors.BLUE);
+		return tw;
+	}
 
-  private static Date dateFor(final String date) throws ParseException
-  {
-    final DateFormat sdf = new GMTDateFormat("yyyyMMdd'T'HHmmss'Z'",
-        Locale.ENGLISH);
-    return sdf.parse(date);
-  }
+	private static Date dateFor(final String date) throws ParseException {
+		final DateFormat sdf = new GMTDateFormat("yyyyMMdd'T'HHmmss'Z'", Locale.ENGLISH);
+		return sdf.parse(date);
+	}
 
-  private static String getName(final String thisLine) throws ParseException
-  {
-    // ok, segment the line
-    final String[] blocks = thisLine.split(",");
-    final String name = blocks[3];
-    return name;
-  }
+	private static String getName(final String thisLine) throws ParseException {
+		// ok, segment the line
+		final String[] blocks = thisLine.split(",");
+		final String name = blocks[3];
+		return name;
+	}
 
-  /**
-   * import data from this stream
-   *
-   * @param theLayers
-   */
-  private final static void importThis(final Layers theLayers,
-      final String fName, final java.io.InputStream is)
-  {
-    // declare linecounter
-    int lineCounter = 0;
-    TrackWrapper tw = null;
-    final Reader reader = new InputStreamReader(is);
-    final BufferedReader br = new BufferedReader(reader);
-    try
-    {
-      if (is.available() > 0)
-      {
+	/**
+	 * import data from this stream
+	 *
+	 * @param theLayers
+	 */
+	private final static void importThis(final Layers theLayers, final String fName, final java.io.InputStream is) {
+		// declare linecounter
+		int lineCounter = 0;
+		TrackWrapper tw = null;
+		final Reader reader = new InputStreamReader(is);
+		final BufferedReader br = new BufferedReader(reader);
+		try {
+			if (is.available() > 0) {
 
-        // ok, we know we have a header line, so skip it.
-        br.readLine();
-        br.readLine();
+				// ok, we know we have a header line, so skip it.
+				br.readLine();
+				br.readLine();
 
-        final long start = System.currentTimeMillis();
+				final long start = System.currentTimeMillis();
 
-        // loop through the lines
-        while (br.read() != -1)
-        {
-          final String thisLine = br.readLine();
+				// loop through the lines
+				while (br.read() != -1) {
+					final String thisLine = br.readLine();
 
-          // keep line counter (use it for error reporting)
-          lineCounter++;
+					// keep line counter (use it for error reporting)
+					lineCounter++;
 
-          // catch import problems
-          final FixWrapper fw = readLine(thisLine);
+					// catch import problems
+					final FixWrapper fw = readLine(thisLine);
 
-          if (fw != null)
-          {
-            // ok, add the fix.
+					if (fw != null) {
+						// ok, add the fix.
 
-            // have we created a parent track yet?
-            if (tw == null)
-            {
-              // sort out the track
-              tw = createParentTrack(theLayers, thisLine);
+						// have we created a parent track yet?
+						if (tw == null) {
+							// sort out the track
+							tw = createParentTrack(theLayers, thisLine);
 
-              // store it
-              theLayers.addThisLayer(tw);
-            }
+							// store it
+							theLayers.addThisLayer(tw);
+						}
 
-            // now add the fix
-            tw.addFix(fw);
-          }
-        }
-        final long end = System.currentTimeMillis();
-        System.out.print(" |Elapsed:" + (end - start) + " ");
-      }
-    }
-    catch (final IOException fe)
-    {
-      DebriefPlugin.logError(IStatus.INFO, "Trouble creating input stream for "
-          + fName, fe);
-    }
-    catch (final ParseException e)
-    {
-      DebriefPlugin.logError(IStatus.INFO, "Date parse exception reading line "
-          + lineCounter + " in " + fName, e);
-    }
-    catch (final NumberFormatException e)
-    {
-      CorePlugin.showMessage("Import CSV",
-          "Incorrectly formatter number at line " + lineCounter);
-      DebriefPlugin.logError(IStatus.INFO,
-          "Number format exception reading line " + lineCounter + " in "
-              + fName, e);
-    }
-    finally
-    {
-      try
-      {
-        br.close();
-      }
-      catch (final IOException e)
-      {
-        DebriefPlugin.logError(IStatus.INFO, "Buffer close problem:" + fName,
-            e);
-      }
-      try
-      {
-        is.close();
-      }
-      catch (final IOException e)
-      {
-        DebriefPlugin.logError(IStatus.INFO, "Buffer close problem:" + fName,
-            e);
-      }
-    }
-  }
+						// now add the fix
+						tw.addFix(fw);
+					}
+				}
+				final long end = System.currentTimeMillis();
+				System.out.print(" |Elapsed:" + (end - start) + " ");
+			}
+		} catch (final IOException fe) {
+			DebriefPlugin.logError(IStatus.INFO, "Trouble creating input stream for " + fName, fe);
+		} catch (final ParseException e) {
+			DebriefPlugin.logError(IStatus.INFO, "Date parse exception reading line " + lineCounter + " in " + fName,
+					e);
+		} catch (final NumberFormatException e) {
+			CorePlugin.showMessage("Import CSV", "Incorrectly formatter number at line " + lineCounter);
+			DebriefPlugin.logError(IStatus.INFO, "Number format exception reading line " + lineCounter + " in " + fName,
+					e);
+		} finally {
+			try {
+				br.close();
+			} catch (final IOException e) {
+				DebriefPlugin.logError(IStatus.INFO, "Buffer close problem:" + fName, e);
+			}
+			try {
+				is.close();
+			} catch (final IOException e) {
+				DebriefPlugin.logError(IStatus.INFO, "Buffer close problem:" + fName, e);
+			}
+		}
+	}
 
-  private static FixWrapper readLine(final String thisLine)
-      throws ParseException, NumberFormatException
-  {
-    // sample line
-    // final String line = "22.1862861,
-    // -21.6978806,19951212T050000Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.7000,2.0000,0.0,Remote,Low,UNIT
-    // ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long s. I'll 'll duplicate to get more
-    // content.\"\r\n";
+	private static FixWrapper readLine(final String thisLine) throws ParseException, NumberFormatException {
+		// sample line
+		// final String line = "22.1862861,
+		// -21.6978806,19951212T050000Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.7000,2.0000,0.0,Remote,Low,UNIT
+		// ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long s. I'll 'll
+		// duplicate to get more
+		// content.\"\r\n";
 
-    // ok, segment the line
-    final String[] blocks = thisLine.split(",");
-    final Date date = dateFor(blocks[2]);
-    final double lat = Double.parseDouble(blocks[0]);
-    final double lon = Double.parseDouble(blocks[1]);
-    final double courseDegs = Double.parseDouble(blocks[11]);
-    final double speedM_Sec = Double.parseDouble(blocks[12]);
-    final WorldSpeed speed = new WorldSpeed(speedM_Sec, WorldSpeed.M_sec);
+		// ok, segment the line
+		final String[] blocks = thisLine.split(",");
+		final Date date = dateFor(blocks[2]);
+		final double lat = Double.parseDouble(blocks[0]);
+		final double lon = Double.parseDouble(blocks[1]);
+		final double courseDegs = Double.parseDouble(blocks[11]);
+		final double speedM_Sec = Double.parseDouble(blocks[12]);
+		final WorldSpeed speed = new WorldSpeed(speedM_Sec, WorldSpeed.M_sec);
 
-    final Fix theFix = new Fix(new HiResDate(date), new WorldLocation(lat, lon,
-        0), Conversions.Degs2Rads(courseDegs), speed.getValueIn(
-            WorldSpeed.ft_sec) / 3d);
-    final FixWrapper res = new FixWrapper(theFix);
+		final Fix theFix = new Fix(new HiResDate(date), new WorldLocation(lat, lon, 0),
+				Conversions.Degs2Rads(courseDegs), speed.getValueIn(WorldSpeed.ft_sec) / 3d);
+		final FixWrapper res = new FixWrapper(theFix);
 
-    // reset the name (to put the time in as a label)
-    res.resetName();
+		// reset the name (to put the time in as a label)
+		res.resetName();
 
-    return res;
-  }
+		return res;
+	}
 
-  public UK_CSV_Loader()
-  {
-    super("CSV Track format", "csv");
-  }
+	public UK_CSV_Loader() {
+		super("CSV Track format", "csv");
+	}
 
-  @Override
-  protected IRunnableWithProgress getImporter(final IAdaptable target,
-      final Layers theLayers, final InputStream inputStream,
-      final String fileName)
-  {
-    return new IRunnableWithProgress()
-    {
-      @Override
-      public void run(final IProgressMonitor pm)
-      {
-        try
-        {
-          // ok, go for it.
-          importThis(theLayers, fileName, inputStream);
-        }
-        catch (final RuntimeException e)
-        {
-          CorePlugin.showMessage("Import CSV Track file", "Failed to read:"
-              + fileName + ". Please see error log.");
-          DebriefPlugin.logError(IStatus.ERROR, "Problem loading log:" + fileName,
-              e);
-        }      }
-    };
-  }
+	@Override
+	protected IRunnableWithProgress getImporter(final IAdaptable target, final Layers theLayers,
+			final InputStream inputStream, final String fileName) {
+		return new IRunnableWithProgress() {
+			@Override
+			public void run(final IProgressMonitor pm) {
+				try {
+					// ok, go for it.
+					importThis(theLayers, fileName, inputStream);
+				} catch (final RuntimeException e) {
+					CorePlugin.showMessage("Import CSV Track file",
+							"Failed to read:" + fileName + ". Please see error log.");
+					DebriefPlugin.logError(IStatus.ERROR, "Problem loading log:" + fileName, e);
+				}
+			}
+		};
+	}
 
 }

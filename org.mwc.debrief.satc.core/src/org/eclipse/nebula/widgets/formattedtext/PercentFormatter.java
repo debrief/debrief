@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.eclipse.nebula.widgets.formattedtext;
 
 import java.util.Locale;
@@ -25,8 +26,7 @@ import org.eclipse.swt.SWT;
  * symbol in the suffix area. - convert the number value in a percent : multiply
  * by 100 on setValue() and divide by 100 on getValue().
  */
-public class PercentFormatter extends NumberFormatter
-{
+public class PercentFormatter extends NumberFormatter {
 	/**
 	 * Constructs a new instance with all defaults :
 	 * <ul>
@@ -35,75 +35,60 @@ public class PercentFormatter extends NumberFormatter
 	 * <li>default locale</li>
 	 * </ul>
 	 */
-	public PercentFormatter()
-	{
+	public PercentFormatter() {
 		super();
 	}
 
 	/**
 	 * Constructs a new instance with default edit and display masks for the given
 	 * locale.
-	 * 
-	 * @param loc
-	 *          locale
+	 *
+	 * @param loc locale
 	 */
-	public PercentFormatter(Locale loc)
-	{
+	public PercentFormatter(final Locale loc) {
 		super(loc);
 	}
 
 	/**
-	 * Constructs a new instance with the given edit mask. Display mask is
-	 * identical to the edit mask, and locale is the default one.
-	 * 
-	 * @param editPattern
-	 *          edit mask
+	 * Constructs a new instance with the given edit mask. Display mask is identical
+	 * to the edit mask, and locale is the default one.
+	 *
+	 * @param editPattern edit mask
 	 */
-	public PercentFormatter(String editPattern)
-	{
+	public PercentFormatter(final String editPattern) {
 		super(editPattern);
 	}
 
 	/**
 	 * Constructs a new instance with the given edit mask and locale. Display mask
 	 * is identical to the edit mask.
-	 * 
-	 * @param editPattern
-	 *          edit mask
-	 * @param loc
-	 *          locale
+	 *
+	 * @param editPattern edit mask
+	 * @param loc         locale
 	 */
-	public PercentFormatter(String editPattern, Locale loc)
-	{
+	public PercentFormatter(final String editPattern, final Locale loc) {
 		super(editPattern, loc);
 	}
 
 	/**
 	 * Constructs a new instance with the given edit and display masks. Uses the
 	 * default locale.
-	 * 
-	 * @param editPattern
-	 *          edit mask
-	 * @param displayPattern
-	 *          display mask
+	 *
+	 * @param editPattern    edit mask
+	 * @param displayPattern display mask
 	 */
-	public PercentFormatter(String editPattern, String displayPattern)
-	{
+	public PercentFormatter(final String editPattern, final String displayPattern) {
 		super(editPattern, displayPattern);
 	}
 
 	/**
 	 * Constructs a new instance with the given masks and locale.
-	 * 
-	 * @param editPattern
-	 *          edit mask
-	 * @param displayPattern
-	 *          display mask
-	 * @param loc
-	 *          locale
+	 *
+	 * @param editPattern    edit mask
+	 * @param displayPattern display mask
+	 * @param loc            locale
 	 */
-	public PercentFormatter(String editPattern, String displayPattern, Locale loc)
-	{
+	public PercentFormatter(final String editPattern, final String displayPattern, final Locale loc) {
 		super(editPattern, displayPattern, loc);
 	}
 
@@ -112,69 +97,55 @@ public class PercentFormatter extends NumberFormatter
 	 * <code>Number</code>. If the buffer is flagged as modified, the value is
 	 * recalculated by parsing with the <code>nfEdit</code> initialized with the
 	 * edit pattern. If the number is not valid, returns <code>null</code>.
-	 * 
+	 *
 	 * @return current number value if valid, <code>null</code> else
 	 * @see ITextFormatter#getValue()
 	 */
 	@Override
-	public Object getValue()
-	{
+	public Object getValue() {
 		Number val = (Number) super.getValue();
-		if (val != null)
-		{
+		if (val != null) {
 			val = new Double(val.doubleValue() / 100);
 		}
 		return val;
 	}
 
 	/**
-	 * Sets the patterns and initializes the technical attributes used to manage
-	 * the operations.
+	 * Sets the patterns and initializes the technical attributes used to manage the
+	 * operations.
 	 * <p>
-	 * Override the NumberFormatter implementation to add the percent symbol to
-	 * the masks.
-	 * 
-	 * @param edit
-	 *          edit pattern
-	 * @param display
-	 *          display pattern
-	 * @param loc
-	 *          Locale to use
-	 * @throws IllegalArgumentException
-	 *           if a pattern is invalid
+	 * Override the NumberFormatter implementation to add the percent symbol to the
+	 * masks.
+	 *
+	 * @param edit    edit pattern
+	 * @param display display pattern
+	 * @param loc     Locale to use
+	 * @throws IllegalArgumentException if a pattern is invalid
 	 * @see com.wdev91.comp4swt.core.NumberFormatter#setPatterns(java.lang.String,
 	 *      java.lang.String, java.util.Locale)
 	 */
 	@Override
-	protected void setPatterns(String edit, String display, Locale loc)
-	{
+	protected void setPatterns(final String edit, final String display, final Locale loc) {
 		super.setPatterns(edit, display, loc);
 		setSuffix(EMPTY + symbols.getPercent());
 	}
 
 	/**
-	 * Sets the value to edit. The value provided must be a <code>Number</code>.
-	 * The value provided is multiplied by 100.
-	 * 
-	 * @param value
-	 *          number value
-	 * @throws IllegalArgumentException
-	 *           if not a number
+	 * Sets the value to edit. The value provided must be a <code>Number</code>. The
+	 * value provided is multiplied by 100.
+	 *
+	 * @param value number value
+	 * @throws IllegalArgumentException if not a number
 	 * @see ITextFormatter#setValue(java.lang.Object)
 	 */
 	@Override
-	public void setValue(Object value)
-	{
-		if (value != null)
-		{
-			if (!(value instanceof Number))
-			{
+	public void setValue(final Object value) {
+		if (value != null) {
+			if (!(value instanceof Number)) {
 				SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, "Value must be a Number"); //$NON-NLS-1$
 			}
 			super.setValue(new Double(((Number) value).doubleValue() * 100));
-		}
-		else
-		{
+		} else {
 			super.setValue(value);
 		}
 	}

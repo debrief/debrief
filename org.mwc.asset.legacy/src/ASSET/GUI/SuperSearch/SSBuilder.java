@@ -1,273 +1,265 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package ASSET.GUI.SuperSearch;
 
-import MWC.GUI.DragDrop.FileDropSupport;
-import MWC.GUI.*;
-import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
-
-import java.util.Vector;
-import java.util.Iterator;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
+import java.util.Iterator;
+import java.util.Vector;
+
+import org.xml.sax.SAXException;
 
 import ASSET.ParticipantType;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Util.XML.Control.Observers.ObserverListHandler;
-import ASSET.Util.XML.ASSETReaderWriter;
-import org.xml.sax.SAXException;
+import MWC.GUI.BaseLayer;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.Plottable;
+import MWC.GUI.DragDrop.FileDropSupport;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReaderWriter;
 
-public class SSBuilder
-{
-  /***************************************************************
-   *  member variables
-   ***************************************************************/
+public class SSBuilder {
+	/***************************************************************
+	 * member variables
+	 ***************************************************************/
 
-  /** name of the observers layer
-   *
-   */
-  private final static String OBSERVER_NAME = "Observers";
+	/**
+	 * name of the observers layer
+	 *
+	 */
+	private final static String OBSERVER_NAME = "Observers";
 
-  /** the template for our SSKs
-   *
-   */
-  String _templateFile = null;
+	/**
+	 * the template for our SSKs
+	 *
+	 */
+	String _templateFile = null;
 
-  /** the control file for generating the scenario
-   *
-   */
-  String _controlFile = null;
+	/**
+	 * the control file for generating the scenario
+	 *
+	 */
+	String _controlFile = null;
 
-  /** the file dropper for the template file
-   *
-   */
-  MWC.GUI.DragDrop.FileDropSupport _templateDropper = null;
+	/**
+	 * the file dropper for the template file
+	 *
+	 */
+	MWC.GUI.DragDrop.FileDropSupport _templateDropper = null;
 
-  /** the file dropper for the control file
-   *
-   */
-  MWC.GUI.DragDrop.FileDropSupport _controlDropper = null;
+	/**
+	 * the file dropper for the control file
+	 *
+	 */
+	MWC.GUI.DragDrop.FileDropSupport _controlDropper = null;
 
-  /** the file dropper for the blue files
-   *
-   */
-  MWC.GUI.DragDrop.FileDropSupport _blueDropper = null;
+	/**
+	 * the file dropper for the blue files
+	 *
+	 */
+	MWC.GUI.DragDrop.FileDropSupport _blueDropper = null;
 
-  /** the scenario we're managing
-   *
-   */
-  ASSET.Scenario.MultiForceScenario _myScenario = null;
+	/**
+	 * the scenario we're managing
+	 *
+	 */
+	ASSET.Scenario.MultiForceScenario _myScenario = null;
 
-  /** to handle our listener
-   *
-   */
-  private java.beans.PropertyChangeListener _listener;
+	/**
+	 * to handle our listener
+	 *
+	 */
+	private java.beans.PropertyChangeListener _listener;
 
-  /** the layers we are editing
-   *
-   */
-  Layers _theData;
+	/**
+	 * the layers we are editing
+	 *
+	 */
+	Layers _theData;
 
-  /***************************************************************
-   *  constructor
-   ***************************************************************/
-  public SSBuilder(final ASSET.Scenario.MultiForceScenario scenario, final Layers theData)
-  {
-    _myScenario = scenario;
-    _theData = theData;
+	/***************************************************************
+	 * constructor
+	 ***************************************************************/
+	public SSBuilder(final ASSET.Scenario.MultiForceScenario scenario, final Layers theData) {
+		_myScenario = scenario;
+		_theData = theData;
 
-    // listen out for templates being dropped
-    _templateDropper = new FileDropSupport();
-    _templateDropper.setFileDropListener(new FileDropSupport.FileDropListener()
-    {
-      public void FilesReceived(final Vector<File> files)
-      {
-        final File fl = (File)files.firstElement();
-        setTemplateFile(fl.getPath());
-      }
-    }, ".XML");
+		// listen out for templates being dropped
+		_templateDropper = new FileDropSupport();
+		_templateDropper.setFileDropListener(new FileDropSupport.FileDropListener() {
+			@Override
+			public void FilesReceived(final Vector<File> files) {
+				final File fl = files.firstElement();
+				setTemplateFile(fl.getPath());
+			}
+		}, ".XML");
 
-    // listen out for templates being dropped
-    _controlDropper = new FileDropSupport();
-    _controlDropper.setFileDropListener(new FileDropSupport.FileDropListener()
-    {
-      public void FilesReceived(final Vector<File> files)
-      {
-        // extract the first file
-        final File fl = (File)files.firstElement();
+		// listen out for templates being dropped
+		_controlDropper = new FileDropSupport();
+		_controlDropper.setFileDropListener(new FileDropSupport.FileDropListener() {
+			@Override
+			public void FilesReceived(final Vector<File> files) {
+				// extract the first file
+				final File fl = files.firstElement();
 
-        // extract the list of observers
-        createObservers(fl.getPath());
+				// extract the list of observers
+				createObservers(fl.getPath());
 
-        // pass the control details on to the scenario builder
-        setControlFile(fl.getPath());
-      }
-    }, ".XML");
+				// pass the control details on to the scenario builder
+				setControlFile(fl.getPath());
+			}
+		}, ".XML");
 
-    // listen out for blue vessels being dropped
-    _blueDropper = new FileDropSupport();
-    _blueDropper.setFileDropListener(new FileDropSupport.FileDropListener()
-    {
-      public void FilesReceived(final Vector<File> files)
-      {
-        final Iterator<File> it = files.iterator();
-        while (it.hasNext())
-        {
-          final File thisFile = (File) it.next();
-          addBlueFile(thisFile.getPath());
-        }
-      }
-    }, ".XML");
+		// listen out for blue vessels being dropped
+		_blueDropper = new FileDropSupport();
+		_blueDropper.setFileDropListener(new FileDropSupport.FileDropListener() {
+			@Override
+			public void FilesReceived(final Vector<File> files) {
+				final Iterator<File> it = files.iterator();
+				while (it.hasNext()) {
+					final File thisFile = it.next();
+					addBlueFile(thisFile.getPath());
+				}
+			}
+		}, ".XML");
 
+	}
 
+	/***************************************************************
+	 * member methods
+	 ***************************************************************/
 
-  }
+	/**
+	 * add a blue participant
+	 *
+	 */
+	void addBlueFile(final String val) {
+		// read in this participant
+		try {
+			final ParticipantType newPart = ASSET.Util.XML.ASSETReaderWriter.importParticipant(val,
+					new java.io.FileInputStream(val));
 
-  /***************************************************************
-   *  member methods
-   ***************************************************************/
+			if (newPart != null) {
+				// update the time to match the scenario
+				newPart.getStatus().setTime(_myScenario.getTime());
 
-  /** sort out the list of observers
-   *
-   */
-  void createObservers(final String file)
-  {
-    // get the list of observers
-    final MWCXMLReader mxr = new ObserverListHandler()
-    {
-      public void setObserverList(final Vector<ScenarioObserver> list)
-      {
-        // add these observers, initialising them as we go
-        final Iterator<ScenarioObserver> ii = list.iterator();
-        while (ii.hasNext())
-        {
-          final ScenarioObserver observer = (ScenarioObserver) ii.next();
-          observer.setup(_myScenario);
+				// and add to the scenario
+				_myScenario.addBlueParticipant(0, newPart);
+			}
+		} catch (final java.io.FileNotFoundException fe) {
+			fe.printStackTrace();
+		}
 
-          // is this observer a Editable?
-          if(observer instanceof Plottable)
-          {
-            final Plottable thisEditor = (Plottable)observer;
+		// inform the listener
+		_listener.propertyChange(new PropertyChangeEvent(this, "blue", null, null));
+	}
 
-            // add to the layers
-            Layer observerLayer = _theData.findLayer(OBSERVER_NAME);
+	/**
+	 * sort out the list of observers
+	 *
+	 */
+	void createObservers(final String file) {
+		// get the list of observers
+		final MWCXMLReader mxr = new ObserverListHandler() {
+			@Override
+			public void setObserverList(final Vector<ScenarioObserver> list) {
+				// add these observers, initialising them as we go
+				final Iterator<ScenarioObserver> ii = list.iterator();
+				while (ii.hasNext()) {
+					final ScenarioObserver observer = ii.next();
+					observer.setup(_myScenario);
 
-            // do we have the layer?
-            if(observerLayer == null)
-            {
-              // no, create it
-              observerLayer = new BaseLayer();
-              observerLayer.setName(OBSERVER_NAME);
-              _theData.addThisLayer(observerLayer);
-            }
+					// is this observer a Editable?
+					if (observer instanceof Plottable) {
+						final Plottable thisEditor = observer;
 
-            // and add this observer
-            observerLayer.add(thisEditor);
+						// add to the layers
+						Layer observerLayer = _theData.findLayer(OBSERVER_NAME);
 
-          }
-        }
+						// do we have the layer?
+						if (observerLayer == null) {
+							// no, create it
+							observerLayer = new BaseLayer();
+							observerLayer.setName(OBSERVER_NAME);
+							_theData.addThisLayer(observerLayer);
+						}
 
-      }
-    };
+						// and add this observer
+						observerLayer.add(thisEditor);
 
-    try
-    {
-      mxr.reportNotHandledErrors(false);
-      ASSETReaderWriter.importThis(mxr, file, new java.io.FileInputStream(file));
-    }
-    catch (SAXException e)
-    {
-      e.printStackTrace();
-    }
-    catch (FileNotFoundException e)
-    {
-      e.printStackTrace();
-    }
-  }
+					}
+				}
 
-  /** record the template file
-   *
-   */
-  void setTemplateFile(final String val)
-  {
-    _templateFile = val;
+			}
+		};
 
-    // inform the listener
-    _listener.propertyChange(new PropertyChangeEvent(this, "template", null, null));
-  }
+		try {
+			mxr.reportNotHandledErrors(false);
+			MWCXMLReaderWriter.importThis(mxr, file, new java.io.FileInputStream(file));
+		} catch (final SAXException e) {
+			e.printStackTrace();
+		} catch (final FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
 
-  /** record the control file
-   *
-   */
-  void setControlFile(final String val)
-  {
-    _controlFile = val;
+	/**
+	 * do the build operatoin
+	 *
+	 */
+	void doBuild() {
+		if ((_templateFile == null) || (_controlFile == null)) {
+			MWC.Utilities.Errors.Trace.trace("Control or template file not set");
+			return;
+		}
 
-    // inform the listener
-    _listener.propertyChange(new PropertyChangeEvent(this, "control", null, null));
-  }
+		_myScenario.createRedForce(_templateFile, _controlFile);
+	}
 
-  /** add a blue participant
-   *
-   */
-  void addBlueFile(final String val)
-  {
-    // read in this participant
-    try
-    {
-      final ParticipantType newPart = ASSET.Util.XML.ASSETReaderWriter.importParticipant(val, new java.io.FileInputStream(val));
+	/**
+	 * record the control file
+	 *
+	 */
+	void setControlFile(final String val) {
+		_controlFile = val;
 
-      if(newPart != null)
-      {
-        // update the time to match the scenario
-        newPart.getStatus().setTime(_myScenario.getTime());
+		// inform the listener
+		_listener.propertyChange(new PropertyChangeEvent(this, "control", null, null));
+	}
 
-        // and add to the scenario
-        _myScenario.addBlueParticipant(0, newPart);
-      }
-    }
-    catch(java.io.FileNotFoundException fe)
-    {
-      fe.printStackTrace();
-    }
+	/**
+	 * assign our listener
+	 *
+	 */
+	public void setListener(final PropertyChangeListener listener) {
+		_listener = listener;
+	}
 
-    // inform the listener
-    _listener.propertyChange(new PropertyChangeEvent(this, "blue", null, null));
-  }
+	/**
+	 * record the template file
+	 *
+	 */
+	void setTemplateFile(final String val) {
+		_templateFile = val;
 
-  /** do the build operatoin
-   *
-   */
-  void doBuild()
-  {
-    if((_templateFile == null) || (_controlFile == null))
-    {
-      MWC.Utilities.Errors.Trace.trace("Control or template file not set");
-      return;
-    }
-
-    _myScenario.createRedForce(_templateFile, _controlFile);
-  }
-
-  /** assign our listener
-   *
-   */
-  public void setListener(final PropertyChangeListener listener)
-  {
-    _listener = listener;
-  }
+		// inform the listener
+		_listener.propertyChange(new PropertyChangeEvent(this, "template", null, null));
+	}
 }

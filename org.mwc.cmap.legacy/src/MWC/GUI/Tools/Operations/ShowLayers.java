@@ -1,20 +1,22 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.GUI.Tools.Operations;
 
 // Copyright MWC 1999
+
 // $RCSfile: ShowLayers.java,v $
 // $Author: Ian.Mayo $
 // $Log: ShowLayers.java,v $
@@ -49,67 +51,69 @@ package MWC.GUI.Tools.Operations;
 // initial version
 //
 
-
 import MWC.GUI.Editable;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.PlainTool;
 
+public class ShowLayers extends PlainTool {
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
 
- public class ShowLayers extends PlainTool
-{
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-  MWC.GUI.Properties.PropertiesPanel _theProperties;
+	MWC.GUI.Properties.PropertiesPanel _theProperties;
 
-  MWC.GUI.Layers _theData;
+	MWC.GUI.Layers _theData;
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  /** ShowLayers an existing data file
-   * @param theParent parent application, where we can show the busy cursor
-   * @param theLabel the label to put on the button
-   * @param theSuffix file suffix for type of file we are importing
-   * @param theDescription textual description of file type
-   */
-  public ShowLayers(final ToolParent theParent,
-              final String theLabel,
-              final MWC.GUI.Properties.PropertiesPanel thePanel,
-              final MWC.GUI.Layers theData){
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	/**
+	 * ShowLayers an existing data file
+	 *
+	 * @param theParent      parent application, where we can show the busy cursor
+	 * @param theLabel       the label to put on the button
+	 * @param theSuffix      file suffix for type of file we are importing
+	 * @param theDescription textual description of file type
+	 */
+	public ShowLayers(final ToolParent theParent, final String theLabel,
+			final MWC.GUI.Properties.PropertiesPanel thePanel, final MWC.GUI.Layers theData) {
 
-    super(theParent, theLabel, "images/layer_mgr.png");
+		super(theParent, theLabel, "images/layer_mgr.png");
 
-    // store the properties window, it's the destination we have to use
-    _theProperties = thePanel;
+		// store the properties window, it's the destination we have to use
+		_theProperties = thePanel;
 
-    // store the layers, it's what we have to show
-    _theData = theData;
+		// store the layers, it's what we have to show
+		_theData = theData;
 
-  }
+	}
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-  /** collate the data ready to perform the operations
-   */
-  public Action getData()
-  {
+	/**
+	 * collate the data ready to perform the operations
+	 */
+	@Override
+	public Action getData() {
 
-    final Action res = null;
+		final Action res = null;
 
-    final Editable.EditorType et = _theData.getInfo();
-    // is this projection editable?
-    if(et != null)
-    {
-      _theProperties.addEditor(et, null);
-    }
+		final Editable.EditorType et = _theData.getInfo();
+		// is this projection editable?
+		if (et != null) {
+			_theProperties.addEditor(et, null);
+		}
 
-    // return the product
-    return res;
-  }
+		// return the product
+		return res;
+	}
 
 }

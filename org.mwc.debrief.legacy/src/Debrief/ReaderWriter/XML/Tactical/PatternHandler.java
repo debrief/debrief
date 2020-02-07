@@ -1,18 +1,22 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package Debrief.ReaderWriter.XML.Tactical;
+
+import org.w3c.dom.Element;
+import org.xml.sax.Attributes;
 
 // Copyright MWC 2001, Debrief 3 Project
 // $RCSfile: PatternHandler.java,v $
@@ -72,198 +76,169 @@ package Debrief.ReaderWriter.XML.Tactical;
 //
 
 import Debrief.Wrappers.LabelWrapper;
+import MWC.GUI.Editable;
+import MWC.GenericData.HiResDate;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.TimeRangeHandler;
-import MWC.GUI.Editable;
-import MWC.GenericData.HiResDate;
-import org.w3c.dom.Element;
-import org.xml.sax.Attributes;
 
+public final class PatternHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader {
 
-public final class PatternHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
-{
+	/**
+	 * class which contains list of textual representations of label locations
+	 */
+	static final MWC.GUI.Properties.LocationPropertyEditor lp = new MWC.GUI.Properties.LocationPropertyEditor();
 
-  private final MWC.GUI.Layers _theLayers;
+	public static void exportTrack(final Debrief.Wrappers.BuoyPatternWrapper pattern, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc) {
 
-  // our "working" track
-  Debrief.Wrappers.BuoyPatternWrapper _myPattern;
+		/*
+		 * <!ELEMENT pattern (colour, timeRange?, font?,((textlabel)*))> <!ATTLIST
+		 * pattern Name CDATA #REQUIRED Visible (TRUE|FALSE) "TRUE" NameVisible
+		 * (TRUE|FALSE) "TRUE" NameLocation (Top|Left|Bottom|Centre|Right) "Right" >
+		 */
 
-  /**
-   * class which contains list of textual representations of label locations
-   */
-  static final MWC.GUI.Properties.LocationPropertyEditor lp
-    = new MWC.GUI.Properties.LocationPropertyEditor();
+		final Element fld = doc.createElement("pattern");
+		fld.setAttribute("Name", pattern.getName());
+		fld.setAttribute("Visible", writeThis(pattern.getVisible()));
+		fld.setAttribute("NameVisible", writeThis(pattern.getNameVisible()));
+		lp.setValue(pattern.getNameLocation());
+		fld.setAttribute("NameLocation", lp.getAsText());
+		fld.setAttribute("BuoySymbolType", pattern.getBuoySymbolType());
+		fld.setAttribute("BuoySymbolSize", writeThis(pattern.getBuoySymbolSize()));
+		ColourHandler.exportColour(pattern.getColor(), fld, doc);
 
-  public PatternHandler(final MWC.GUI.Layers theLayers)
-  {
-    // inform our parent what type of class we are
-    super("pattern");
+		// sort out the time range, if it looks like we have any time data
+		if (pattern.getStartDTG() != null) {
+			TimeRangeHandler.exportThis(pattern.getStartDTG(), pattern.getEndDTG(), fld, doc);
+		}
 
-    // store the layers object, so that we can add ourselves to it
-    _theLayers = theLayers;
+		// and the font
+		final java.awt.Font theFont = pattern.getFont();
+		if (theFont != null) {
+			FontHandler.exportFont(theFont, fld, doc);
+		}
 
-    addHandler(new ColourHandler()
-    {
-      public void setColour(final java.awt.Color res)
-      {
-        _myPattern.setColor(res);
-        _myPattern.setBuoyColor(res);
-      }
-    });
-    addHandler(new Debrief.ReaderWriter.XML.Shapes.LabelHandler()
-    {
-      public void addPlottable(final MWC.GUI.Plottable plottable)
-      {
-        addThis(plottable);
-      }
-    });
-    addHandler(new FontHandler()
-    {
-      public void setFont(final java.awt.Font font)
-      {
-        _myPattern.setFont(font);
-      }
-    });
-    addAttributeHandler(new HandleAttribute("Name")
-    {
-      public void setValue(final String name, final String val)
-      {
-        _myPattern.setName(fromXML(val));
-      }
-    });
-    addAttributeHandler(new HandleBooleanAttribute("Visible")
-    {
-      public void setValue(final String name, final boolean val)
-      {
-        _myPattern.setVisible(val);
-      }
-    });
-    addAttributeHandler(new HandleBooleanAttribute("NameVisible")
-    {
-      public void setValue(final String name, final boolean val)
-      {
-        _myPattern.setNameVisible(val);
-      }
-    });
-    addAttributeHandler(new HandleAttribute("NameLocation")
-    {
-      public void setValue(final String name, final String val)
-      {
-        lp.setAsText(val);
-        _myPattern.setNameLocation((Integer) lp.getValue());
-      }
-    });
-    addHandler(new TimeRangeHandler()
-    {
-      public void setTimeRange(final HiResDate start, final HiResDate end)
-      {
-        _myPattern.setStartDTG(start);
-        _myPattern.setEndDTG(end);
-      }
-    });
-    addAttributeHandler(new HandleAttribute("BuoySymbolType")
-    {
-      public void setValue(final String name, final String val)
-      {
-        _myPattern.setBuoySymbolType(val);
-      }
-    });
-    addAttributeHandler(new HandleAttribute("BuoySymbolSize")
-    {
-      public void setValue(final String name, final String val)
-      {
-        try
-        {
-          _myPattern.setBuoySymbolSize(readThisDouble(val));
-        }
-        catch (final java.text.ParseException pe)
-        {
-          MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:" + name + " value is:" + val);
-        }
+		// now the points
+		final java.util.Enumeration<Editable> iter = pattern.elements();
+		while (iter.hasMoreElements()) {
+			final MWC.GUI.Plottable pl = (MWC.GUI.Plottable) iter.nextElement();
+			// make use of the static method in the DebriefLayerHandler which handles all
+			// sorts of plottables
+			Debrief.ReaderWriter.XML.DebriefLayerHandler.exportThisDebriefItem(pl, fld, doc);
+		}
 
-      }
-    });
+		parent.appendChild(fld);
 
-  }
+	}
 
-  // this is one of ours, so get on with it!
-  protected final void handleOurselves(final String name, final Attributes attributes)
-  {
-    _myPattern = new Debrief.Wrappers.BuoyPatternWrapper();
+	private final MWC.GUI.Layers _theLayers;
 
-    super.handleOurselves(name, attributes);
+	// our "working" track
+	Debrief.Wrappers.BuoyPatternWrapper _myPattern;
 
-  }
+	public PatternHandler(final MWC.GUI.Layers theLayers) {
+		// inform our parent what type of class we are
+		super("pattern");
 
-  void addThis(final MWC.GUI.Plottable val)
-  {
-    _myPattern.add(val);
-    // if this is a LabelWrapper, we need to set it's parent
-    if (val instanceof LabelWrapper)
-    {
-      final LabelWrapper lw = (LabelWrapper) val;
-      lw.setParent(_myPattern);
-    }
-  }
+		// store the layers object, so that we can add ourselves to it
+		_theLayers = theLayers;
 
-  public final void elementClosed()
-  {
-    // our layer is complete, add it to the parent!
-    _theLayers.addThisLayerAllowDuplication(_myPattern);
+		addHandler(new ColourHandler() {
+			@Override
+			public void setColour(final java.awt.Color res) {
+				_myPattern.setColor(res);
+				_myPattern.setBuoyColor(res);
+			}
+		});
+		addHandler(new Debrief.ReaderWriter.XML.Shapes.LabelHandler() {
+			@Override
+			public void addPlottable(final MWC.GUI.Plottable plottable) {
+				addThis(plottable);
+			}
+		});
+		addHandler(new FontHandler() {
+			@Override
+			public void setFont(final java.awt.Font font) {
+				_myPattern.setFont(font);
+			}
+		});
+		addAttributeHandler(new HandleAttribute("Name") {
+			@Override
+			public void setValue(final String name, final String val) {
+				_myPattern.setName(fromXML(val));
+			}
+		});
+		addAttributeHandler(new HandleBooleanAttribute("Visible") {
+			@Override
+			public void setValue(final String name, final boolean val) {
+				_myPattern.setVisible(val);
+			}
+		});
+		addAttributeHandler(new HandleBooleanAttribute("NameVisible") {
+			@Override
+			public void setValue(final String name, final boolean val) {
+				_myPattern.setNameVisible(val);
+			}
+		});
+		addAttributeHandler(new HandleAttribute("NameLocation") {
+			@Override
+			public void setValue(final String name, final String val) {
+				lp.setAsText(val);
+				_myPattern.setNameLocation((Integer) lp.getValue());
+			}
+		});
+		addHandler(new TimeRangeHandler() {
+			@Override
+			public void setTimeRange(final HiResDate start, final HiResDate end) {
+				_myPattern.setStartDTG(start);
+				_myPattern.setEndDTG(end);
+			}
+		});
+		addAttributeHandler(new HandleAttribute("BuoySymbolType") {
+			@Override
+			public void setValue(final String name, final String val) {
+				_myPattern.setBuoySymbolType(val);
+			}
+		});
+		addAttributeHandler(new HandleAttribute("BuoySymbolSize") {
+			@Override
+			public void setValue(final String name, final String val) {
+				try {
+					_myPattern.setBuoySymbolSize(readThisDouble(val));
+				} catch (final java.text.ParseException pe) {
+					MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:" + name + " value is:" + val);
+				}
 
-    _myPattern = null;
-  }
+			}
+		});
 
-  public static void exportTrack(final Debrief.Wrappers.BuoyPatternWrapper pattern, final org.w3c.dom.Element parent,
-                                 final org.w3c.dom.Document doc)
-  {
+	}
 
-    /*
-    <!ELEMENT pattern (colour, timeRange?, font?,((textlabel)*))>
-    <!ATTLIST pattern
-      Name CDATA #REQUIRED
-      Visible (TRUE|FALSE) "TRUE"
-      NameVisible (TRUE|FALSE) "TRUE"
-      NameLocation (Top|Left|Bottom|Centre|Right) "Right"
-    >
-    */
+	void addThis(final MWC.GUI.Plottable val) {
+		_myPattern.add(val);
+		// if this is a LabelWrapper, we need to set it's parent
+		if (val instanceof LabelWrapper) {
+			final LabelWrapper lw = (LabelWrapper) val;
+			lw.setParent(_myPattern);
+		}
+	}
 
-    final Element fld = doc.createElement("pattern");
-    fld.setAttribute("Name", pattern.getName());
-    fld.setAttribute("Visible", writeThis(pattern.getVisible()));
-    fld.setAttribute("NameVisible", writeThis(pattern.getNameVisible()));
-    lp.setValue(pattern.getNameLocation());
-    fld.setAttribute("NameLocation", lp.getAsText());
-    fld.setAttribute("BuoySymbolType", pattern.getBuoySymbolType());
-    fld.setAttribute("BuoySymbolSize", writeThis(pattern.getBuoySymbolSize()));
-    ColourHandler.exportColour(pattern.getColor(), fld, doc);
+	@Override
+	public final void elementClosed() {
+		// our layer is complete, add it to the parent!
+		_theLayers.addThisLayerAllowDuplication(_myPattern);
 
-    // sort out the time range, if it looks like we have any time data
-    if (pattern.getStartDTG() != null)
-    {
-      TimeRangeHandler.exportThis(pattern.getStartDTG(), pattern.getEndDTG(), fld, doc);
-    }
+		_myPattern = null;
+	}
 
-    // and the font
-    final java.awt.Font theFont = pattern.getFont();
-    if (theFont != null)
-    {
-      FontHandler.exportFont(theFont, fld, doc);
-    }
+	// this is one of ours, so get on with it!
+	@Override
+	protected final void handleOurselves(final String name, final Attributes attributes) {
+		_myPattern = new Debrief.Wrappers.BuoyPatternWrapper();
 
-    // now the points
-    final java.util.Enumeration<Editable> iter = pattern.elements();
-    while (iter.hasMoreElements())
-    {
-      final MWC.GUI.Plottable pl = (MWC.GUI.Plottable) iter.nextElement();
-      // make use of the static method in the DebriefLayerHandler which handles all sorts of plottables
-      Debrief.ReaderWriter.XML.DebriefLayerHandler.exportThisDebriefItem(pl, fld, doc);
-    }
+		super.handleOurselves(name, attributes);
 
-    parent.appendChild(fld);
-
-  }
-
+	}
 
 }

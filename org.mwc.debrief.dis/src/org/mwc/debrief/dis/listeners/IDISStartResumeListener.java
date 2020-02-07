@@ -1,6 +1,5 @@
 package org.mwc.debrief.dis.listeners;
 
-public interface IDISStartResumeListener
-{
-  void add(final long time, final short eid, long replication);
+public interface IDISStartResumeListener {
+	void add(final long time, final short eid, long replication);
 }

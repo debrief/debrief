@@ -1,20 +1,22 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.GUI.Properties.Swing;
 
 // Copyright MWC 1999, Debrief 3 Project
+
 // $RCSfile: SwingPropertiesPanel.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.3 $
@@ -118,7 +120,6 @@ package MWC.GUI.Properties.Swing;
 // further introduction of SWING components
 //
 
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Iterator;
@@ -140,387 +141,352 @@ import MWC.GUI.Undo.UndoBuffer;
 /**
  * Class which implements Swing version of a properties panel
  */
-public class SwingPropertiesPanel extends SwingTabPanel implements PropertiesPanel, PropertyChangeListener
-{
-  /**
-	 * 
+public class SwingPropertiesPanel extends SwingTabPanel implements PropertiesPanel, PropertyChangeListener {
+	/**
+	 * ************************************************************** support for
+	 * the closeable window interface
+	 * **************************************************************
+	 */
+	abstract static public class CloseableJPanel extends JPanel {
+
+		/**
+			 *
+			 */
+		private static final long serialVersionUID = 1L;
+		/**
+		 * list of objects which want to know if/when we close (in particular toolbars
+		 * when we are already closing)
+		 */
+		private Vector<ClosingEventListener> _closeListeners;
+
+		/**
+		 * let somebody listen to us
+		 */
+		public void addClosingListener(final SwingPropertiesPanel.ClosingEventListener listener) {
+			if (_closeListeners == null)
+				_closeListeners = new Vector<ClosingEventListener>(1, 1);
+
+			_closeListeners.add(listener);
+		}
+
+		// closing - inform the listeners
+		public void doClose() {
+			// if we have any other closing listeners, tell them we are closing
+			if (_closeListeners != null) {
+				final Iterator<ClosingEventListener> it = _closeListeners.iterator();
+				while (it.hasNext()) {
+					final SwingPropertiesPanel.ClosingEventListener listener = it.next();
+					listener.isClosing();
+				}
+
+				// and empty ourselves out
+				_closeListeners.removeAllElements();
+				_closeListeners = null;
+
+			}
+		}
+
+		/**
+		 * let somebody stop listening to us
+		 */
+		public void removeClosingListener(final SwingPropertiesPanel.ClosingEventListener listener) {
+			_closeListeners.remove(listener);
+		}
+
+		// somebody is telling us to close - to be added by the implementing class
+		abstract public void triggerClose();
+	}
+
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * ************************************************************** event to
+	 * indicate that this panel is about to close
+	 * **************************************************************
+	 */
+	public static interface ClosingEventListener {
+		public void isClosing();
+	}
+
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * the buffer to store the undo operations
+	 */
+	UndoBuffer _theBuffer;
+
+	/**
+	 * list of objects we are currently editing, so that we can highlight their page
+	 * instead of opening a new one
+	 */
+	java.util.Hashtable<Object, JPanel> _myPanels = new java.util.Hashtable<Object, JPanel>();
+
+	/**
+	 * the toolparent we supply to any new panels
+	 */
+	MWC.GUI.ToolParent _theToolParent;
+
+	/**
+	 * the name of the session we read from, for when the toolbar floats
+	 */
+	private final MyMetalToolBarUI.ToolbarOwner _owner;
+
+	private final Layers _theLayers;
+
 	/////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-
-  /**
-   * the buffer to store the undo operations
-   */
-  UndoBuffer _theBuffer;
-
-  /**
-   * list of objects we are currently editing, so that
-   * we can highlight their page instead of opening a new one
-   */
-  java.util.Hashtable<Object, JPanel> _myPanels = new java.util.Hashtable<Object, JPanel>();
-
-  /**
-   * the toolparent we supply to any new panels
-   */
-  MWC.GUI.ToolParent _theToolParent;
-
-  /**
-   * the name of the session we read from, for when the toolbar floats
-   */
-  private final MyMetalToolBarUI.ToolbarOwner _owner;
-
-  private final Layers _theLayers;
-
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  /**
-   * Constructor for SwingPropertiesPanel
-   *
-   * @param theChart      the chart we are editing
-   * @param theUndoBuffer buffer to store the undo commands
-   */
-  public SwingPropertiesPanel(final Layers theLayers,
-                              final UndoBuffer theUndoBuffer,
-                              final MWC.GUI.ToolParent theToolParent,
-                              final MyMetalToolBarUI.ToolbarOwner owner)
-  {
-    super();
-    _theLayers = theLayers;
-    _theBuffer = theUndoBuffer;
-    _theToolParent = theToolParent;
-    _owner = owner;
-  }
-
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
-  public void closeMe()
-  {
-    // clear our local data
-    _myPanels.clear();
-    _theBuffer.close();
-
-    // and the objects
-    _theBuffer = null;
-    _theToolParent = null;
-    _myPanels = null;
-
-    // and the parent
-    super.closeMe();
-  }
-
-  public void remove(final Object thisItem)
-  {
-    final java.awt.Component comp = _myPanels.get(thisItem);
-    remove(comp);
-  }
-
-
-  /**
-   * remove the indicated page from this tabbed panel.
-   * Also remove it from the list we are keeping
-   *
-   * @param thePage the page to be removed
-   */
-  public void remove(final java.awt.Component thePage)
-  {
-    // remove this panel
-    super.remove(thePage);
-
-    // also remove it from our list
-    final java.util.Enumeration<Object> enumer = _myPanels.keys();
-    while (enumer.hasMoreElements())
-    {
-      final Object oj = enumer.nextElement();
-      final JPanel jp = _myPanels.get(oj);
-
-      if (jp.equals(thePage))
-      {
-        // now, it seems that since we started to allow floating properties pages, the first
-        // remove operation doesn't always work.  Accordingly we use another remove operation
-        // which uses the component which got returned from the "Add" operation
-        super.remove(jp);
-
-        _myPanels.remove(oj);
-
-        break;
-      }
-    }
-  }
-
-  /**
-   * put the specified panel to the top of the stack
-   *
-   * @param thePanel the panel to put to the top
-   */
-  public void show(final JPanel thePanel)
-  {
-    // do we hold this?
-    final int index = super.indexOfComponent(thePanel);
-
-    if (index == -1)
-    {
-      this.add(thePanel);
-    }
-    else
-      this.setSelectedComponent(thePanel);
-  }
-
-  /**
-   * We have been asked to show this editor.  First see if we have it open already
-   * (by examining the data object), then either show the existing one, or open
-   * a fresh one
-   *
-   * @param theInfo the EditableInfo for this object
-   */
-  public void addConstructor(final Editable.EditorType theInfo, final Layer parentLayer)
-  {
-    // see if we already have this editor open
-
-    JPanel thePanel = _myPanels.get(theInfo.getData());
-    if (thePanel == null)
-    {
-      final SwingPropertyEditor2 ap = new SwingPropertyEditor2(theInfo,
-                                                         this,
-                                                         _theLayers,
-                                                         _theToolParent,
-                                                         parentLayer,
-                                                         null);
-
-      // set the name of the "build" button
-      ap.setNames("Build", null, null);
-
-
-      thePanel = (JPanel) ap.getPanel();
-      this.addTab(theInfo.getName(), thePanel);
-
-      // also remember this object
-      _myPanels.put(theInfo.getData(), thePanel);
-
-    }
-
-    // just show it anyway
-    this.setSelectedComponent(thePanel);
-
-  }
-
-  /**
-   * We have been asked to show this editor.  First see if we have it open already
-   * (by examining the data object), then either show the existing one, or open
-   * a fresh one
-   *
-   * @param theInfo the EditableInfo for this object
-   */
-  public void addEditor(final Editable.EditorType theInfo, final Layer parentLayer)
-  {
-    // see if we already have this editor open
-
-    JPanel thePanel = _myPanels.get(theInfo.getData());
-    if (thePanel == null)
-    {
-      final SwingPropertyEditor2 ap = new SwingPropertyEditor2(theInfo,
-                                                         this,
-                                                         _theLayers,
-                                                         _theToolParent,
-                                                         parentLayer,
-                                                         null);
-
-      thePanel = (JPanel) ap.getPanel();
-      thePanel.setName(theInfo.getDisplayName());
-
-      final JPanel destination = addThisInToolbar(thePanel);
-
-      // also remember this object
-      _myPanels.put(theInfo.getData(), destination);
-
-      // store the holder in the panel, so that we can correctly select it
-      thePanel = destination;
-
-      // now, listen out for the name of the panel changing - we are removed as listener by the SwingPropertyEditor
-      // in it's close operation
-      theInfo.addPropertyChangeListener(this);
-
-    }
-
-    // just show it anyway
-    this.setSelectedComponent(thePanel);
-
-  }
-
-  /**
-   * method to add the indicated panel inside a floatable toolbar, and adding the initial
-   * component itself to our list of panels (so that they can be deleted)
-   */
-  public JPanel addThisPanel(final java.awt.Component thePanel)
-  {
-    final JPanel inserted = addThisInToolbar(thePanel);
-    _myPanels.put(thePanel, inserted);
-    return inserted;
-  }
-
-  protected JPanel addThisInToolbar(final java.awt.Component thePanel)
-  {
-    final JToolBar jt = new JToolBar();
-    jt.setUI(new MWC.GUI.Tools.Swing.MyMetalToolBarUI(_owner));
-    jt.setLayout(new java.awt.GridLayout(1, 0));
-    jt.setFloatable(true);
-    jt.add(thePanel);
-    jt.setName(thePanel.getName());
-
-    // create a panel to contain the toolbar
-    final JPanel theHolder = new JPanel();
-    theHolder.setLayout(new java.awt.BorderLayout());
-    theHolder.add("Center", jt);
-
-    this.addTabPanel(thePanel.getName(), true, theHolder);
-
-    this.setSelectedComponent(theHolder);
-
-    return theHolder;
-  }
-
-
-  /**
-   * Update the chart
-   */
-  public void doApply()
-  {
-    if (_theLayers != null)
-      _theLayers.fireModified(null);
-  }
-
-  /**
-   * provide the calling class with our undo buffer
-   *
-   * @return the undo buffer for this Session
-   */
-  public UndoBuffer getBuffer()
-  {
-    return _theBuffer;
-  }
-
-  public ToolParent getToolParent()
-  {
-    return _theToolParent;
-  }
-
-  public MyMetalToolBarUI.ToolbarOwner getOwner()
-  {
-    return _owner;
-  }
-
-
-  /**
-   * a property has changed - if it's the name, then change the name of that panel
-   */
-  public void propertyChange(final PropertyChangeEvent evt)
-  {
-    if (evt.getPropertyName().equals("Name"))
-    {
-      final PlainPropertyEditor.PropertyChangeAction pa = (PlainPropertyEditor.PropertyChangeAction) evt.getSource();
-      final Object source = pa.getData();
-      final JPanel panel = _myPanels.get(source);
-      final String newName = (String) evt.getNewValue();
-
-      if (panel != null)
-      {
-        panel.setName(newName);
-      }
-
-      final int index = this.indexOfComponent(panel);
-      if (index != -1)
-      {
-        this.setTitleAt(index, newName);
-      }
-    }
-    // find the panel with the old name
-  }
-
-
-  /** add a new page to us - one which is not an editor (such as the tote)
-   * @param p1 the panel to add
-   * @return the container for the panel
-   */
-  /*	public java.awt.Component add(java.awt.Component p1)
-    {
-      java.awt.Component res = super.add(p1);
-      this.setSelectedComponent(res);
-      return res;
-    }*/
-
-
-  /**
-   * **************************************************************
-   * event to indicate that this panel is about to close
-   * **************************************************************
-   */
-  public static interface ClosingEventListener
-  {
-    public void isClosing();
-  }
-
-  /**
-   * **************************************************************
-   * support for the closeable window interface
-   * **************************************************************
-   */
-  abstract static public class CloseableJPanel extends JPanel
-  {
-
-    /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		/**
-     * list of objects which want to know if/when we close (in particular toolbars when we are already closing)
-     */
-    private Vector<ClosingEventListener> _closeListeners;
-
-    /**
-     * let somebody listen to us
-     */
-    public void addClosingListener(final SwingPropertiesPanel.ClosingEventListener listener)
-    {
-      if (_closeListeners == null)
-        _closeListeners = new Vector<ClosingEventListener>(1, 1);
-
-      _closeListeners.add(listener);
-    }
-
-    /**
-     * let somebody stop listening to us
-     */
-    public void removeClosingListener(final SwingPropertiesPanel.ClosingEventListener listener)
-    {
-      _closeListeners.remove(listener);
-    }
-
-    // somebody is telling us to close - to be added by the implementing class
-    abstract public void triggerClose();
-
-    // closing - inform the listeners
-    public void doClose()
-    {
-      // if we have any other closing listeners, tell them we are closing
-      if (_closeListeners != null)
-      {
-        final Iterator<ClosingEventListener> it = _closeListeners.iterator();
-        while (it.hasNext())
-        {
-          final SwingPropertiesPanel.ClosingEventListener listener = it.next();
-          listener.isClosing();
-        }
-
-        // and empty ourselves out
-        _closeListeners.removeAllElements();
-        _closeListeners = null;
-
-      }
-    }
-  }
+	// constructor
+	////////////////////////////////////////////////////////////
+	/**
+	 * Constructor for SwingPropertiesPanel
+	 *
+	 * @param theChart      the chart we are editing
+	 * @param theUndoBuffer buffer to store the undo commands
+	 */
+	public SwingPropertiesPanel(final Layers theLayers, final UndoBuffer theUndoBuffer,
+			final MWC.GUI.ToolParent theToolParent, final MyMetalToolBarUI.ToolbarOwner owner) {
+		super();
+		_theLayers = theLayers;
+		_theBuffer = theUndoBuffer;
+		_theToolParent = theToolParent;
+		_owner = owner;
+	}
+
+	/**
+	 * We have been asked to show this editor. First see if we have it open already
+	 * (by examining the data object), then either show the existing one, or open a
+	 * fresh one
+	 *
+	 * @param theInfo the EditableInfo for this object
+	 */
+	@Override
+	public void addConstructor(final Editable.EditorType theInfo, final Layer parentLayer) {
+		// see if we already have this editor open
+
+		JPanel thePanel = _myPanels.get(theInfo.getData());
+		if (thePanel == null) {
+			final SwingPropertyEditor2 ap = new SwingPropertyEditor2(theInfo, this, _theLayers, _theToolParent,
+					parentLayer, null);
+
+			// set the name of the "build" button
+			ap.setNames("Build", null, null);
+
+			thePanel = (JPanel) ap.getPanel();
+			this.addTab(theInfo.getName(), thePanel);
+
+			// also remember this object
+			_myPanels.put(theInfo.getData(), thePanel);
+
+		}
+
+		// just show it anyway
+		this.setSelectedComponent(thePanel);
+
+	}
+
+	/**
+	 * We have been asked to show this editor. First see if we have it open already
+	 * (by examining the data object), then either show the existing one, or open a
+	 * fresh one
+	 *
+	 * @param theInfo the EditableInfo for this object
+	 */
+	@Override
+	public void addEditor(final Editable.EditorType theInfo, final Layer parentLayer) {
+		// see if we already have this editor open
+
+		JPanel thePanel = _myPanels.get(theInfo.getData());
+		if (thePanel == null) {
+			final SwingPropertyEditor2 ap = new SwingPropertyEditor2(theInfo, this, _theLayers, _theToolParent,
+					parentLayer, null);
+
+			thePanel = (JPanel) ap.getPanel();
+			thePanel.setName(theInfo.getDisplayName());
+
+			final JPanel destination = addThisInToolbar(thePanel);
+
+			// also remember this object
+			_myPanels.put(theInfo.getData(), destination);
+
+			// store the holder in the panel, so that we can correctly select it
+			thePanel = destination;
+
+			// now, listen out for the name of the panel changing - we are removed as
+			// listener by the SwingPropertyEditor
+			// in it's close operation
+			theInfo.addPropertyChangeListener(this);
+
+		}
+
+		// just show it anyway
+		this.setSelectedComponent(thePanel);
+
+	}
+
+	protected JPanel addThisInToolbar(final java.awt.Component thePanel) {
+		final JToolBar jt = new JToolBar();
+		jt.setUI(new MWC.GUI.Tools.Swing.MyMetalToolBarUI(_owner));
+		jt.setLayout(new java.awt.GridLayout(1, 0));
+		jt.setFloatable(true);
+		jt.add(thePanel);
+		jt.setName(thePanel.getName());
+
+		// create a panel to contain the toolbar
+		final JPanel theHolder = new JPanel();
+		theHolder.setLayout(new java.awt.BorderLayout());
+		theHolder.add("Center", jt);
+
+		this.addTabPanel(thePanel.getName(), true, theHolder);
+
+		this.setSelectedComponent(theHolder);
+
+		return theHolder;
+	}
+
+	/**
+	 * method to add the indicated panel inside a floatable toolbar, and adding the
+	 * initial component itself to our list of panels (so that they can be deleted)
+	 */
+	public JPanel addThisPanel(final java.awt.Component thePanel) {
+		final JPanel inserted = addThisInToolbar(thePanel);
+		_myPanels.put(thePanel, inserted);
+		return inserted;
+	}
+
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+	@Override
+	public void closeMe() {
+		// clear our local data
+		_myPanels.clear();
+		_theBuffer.close();
+
+		// and the objects
+		_theBuffer = null;
+		_theToolParent = null;
+		_myPanels = null;
+
+		// and the parent
+		super.closeMe();
+	}
+
+	/**
+	 * Update the chart
+	 */
+	public void doApply() {
+		if (_theLayers != null)
+			_theLayers.fireModified(null);
+	}
+
+	/**
+	 * provide the calling class with our undo buffer
+	 *
+	 * @return the undo buffer for this Session
+	 */
+	@Override
+	public UndoBuffer getBuffer() {
+		return _theBuffer;
+	}
+
+	public MyMetalToolBarUI.ToolbarOwner getOwner() {
+		return _owner;
+	}
+
+	public ToolParent getToolParent() {
+		return _theToolParent;
+	}
+
+	/**
+	 * a property has changed - if it's the name, then change the name of that panel
+	 */
+	@Override
+	public void propertyChange(final PropertyChangeEvent evt) {
+		if (evt.getPropertyName().equals("Name")) {
+			final PlainPropertyEditor.PropertyChangeAction pa = (PlainPropertyEditor.PropertyChangeAction) evt
+					.getSource();
+			final Object source = pa.getData();
+			final JPanel panel = _myPanels.get(source);
+			final String newName = (String) evt.getNewValue();
+
+			if (panel != null) {
+				panel.setName(newName);
+			}
+
+			final int index = this.indexOfComponent(panel);
+			if (index != -1) {
+				this.setTitleAt(index, newName);
+			}
+		}
+		// find the panel with the old name
+	}
+
+	/**
+	 * remove the indicated page from this tabbed panel. Also remove it from the
+	 * list we are keeping
+	 *
+	 * @param thePage the page to be removed
+	 */
+	@Override
+	public void remove(final java.awt.Component thePage) {
+		// remove this panel
+		super.remove(thePage);
+
+		// also remove it from our list
+		final java.util.Enumeration<Object> enumer = _myPanels.keys();
+		while (enumer.hasMoreElements()) {
+			final Object oj = enumer.nextElement();
+			final JPanel jp = _myPanels.get(oj);
+
+			if (jp.equals(thePage)) {
+				// now, it seems that since we started to allow floating properties pages, the
+				// first
+				// remove operation doesn't always work. Accordingly we use another remove
+				// operation
+				// which uses the component which got returned from the "Add" operation
+				super.remove(jp);
+
+				_myPanels.remove(oj);
+
+				break;
+			}
+		}
+	}
+
+	/**
+	 * add a new page to us - one which is not an editor (such as the tote)
+	 *
+	 * @param p1 the panel to add
+	 * @return the container for the panel
+	 */
+	/*
+	 * public java.awt.Component add(java.awt.Component p1) { java.awt.Component res
+	 * = super.add(p1); this.setSelectedComponent(res); return res; }
+	 */
+
+	@Override
+	public void remove(final Object thisItem) {
+		final java.awt.Component comp = _myPanels.get(thisItem);
+		remove(comp);
+	}
+
+	/**
+	 * put the specified panel to the top of the stack
+	 *
+	 * @param thePanel the panel to put to the top
+	 */
+	public void show(final JPanel thePanel) {
+		// do we hold this?
+		final int index = super.indexOfComponent(thePanel);
+
+		if (index == -1) {
+			this.add(thePanel);
+		} else
+			this.setSelectedComponent(thePanel);
+	}
 
 }

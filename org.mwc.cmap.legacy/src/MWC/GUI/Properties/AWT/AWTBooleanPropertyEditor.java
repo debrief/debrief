@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.GUI.Properties.AWT;
 
 // Copyright MWC 1999, Debrief 3 Project
@@ -64,67 +65,63 @@ import java.awt.Checkbox;
 import java.awt.Panel;
 import java.beans.PropertyEditorSupport;
 
-public class AWTBooleanPropertyEditor extends 
-           PropertyEditorSupport 
-{
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  boolean _myVal;
-  Checkbox _theBox;
-  Panel _theHolder;
-  
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+public class AWTBooleanPropertyEditor extends PropertyEditorSupport {
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+	boolean _myVal;
+	Checkbox _theBox;
+	Panel _theHolder;
 
-  /** indicate that we can't just be painted, we've got to be edited
-   */
-  public boolean isPaintable()
-  {
-    return false;
-  }
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
 
-  public java.awt.Component getCustomEditor()
-  {
-    _theHolder = new Panel();
-    _theHolder.setLayout(new BorderLayout());
-    _theBox = new Checkbox();
-    _theHolder.add("West", _theBox);
-    resetData();
-    return _theHolder;
-  }
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-  public void setValue(final Object p1)
-  {
-    if(p1 instanceof Boolean)
-    {
-      final Boolean val = (Boolean)p1;
-      _myVal = val.booleanValue();
-    }
-    else
-      return;
-  }
+	@Override
+	public java.awt.Component getCustomEditor() {
+		_theHolder = new Panel();
+		_theHolder.setLayout(new BorderLayout());
+		_theBox = new Checkbox();
+		_theHolder.add("West", _theBox);
+		resetData();
+		return _theHolder;
+	}
 
-  public boolean supportsCustomEditor()
-  {
-    return true;
-  }
+	@Override
+	public Object getValue() {
+		final Boolean val = new Boolean(_theBox.getState());
+		return val;
+	}
 
-  public Object getValue()
-  {
-    final Boolean val = new Boolean(_theBox.getState());
-    return val;
-  }
+	/**
+	 * indicate that we can't just be painted, we've got to be edited
+	 */
+	@Override
+	public boolean isPaintable() {
+		return false;
+	}
 
-  public void resetData()
-  {
-    if(_theBox != null)
-      _theBox.setState(_myVal);
-  }
-  
+	public void resetData() {
+		if (_theBox != null)
+			_theBox.setState(_myVal);
+	}
+
+	@Override
+	public void setValue(final Object p1) {
+		if (p1 instanceof Boolean) {
+			final Boolean val = (Boolean) p1;
+			_myVal = val.booleanValue();
+		} else
+			return;
+	}
+
+	@Override
+	public boolean supportsCustomEditor() {
+		return true;
+	}
+
 }

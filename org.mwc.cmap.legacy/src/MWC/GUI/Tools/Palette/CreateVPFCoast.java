@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: CreateVPFCoast.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -51,70 +52,63 @@ package MWC.GUI.Tools.Palette;
 
 import MWC.GUI.VPF.LibraryLayer;
 
-public class CreateVPFCoast extends PlainCreate
-{
-  /** the property name used to store the vpf coastline
-   *
-   */
-  public static final String COAST_PROPERTY = "VPF_COAST_DIR";
+public class CreateVPFCoast extends PlainCreate {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-  /** the default path we use for the data path
-   *
-   */
-  public static final String COAST_PATH_DEFAULT = "c://vp//vmaplv0";
+	/**
+	 * the property name used to store the vpf coastline
+	 *
+	 */
+	public static final String COAST_PROPERTY = "VPF_COAST_DIR";
 
-  public CreateVPFCoast(final MWC.GUI.ToolParent theParent,
-                        final MWC.GUI.Properties.PropertiesPanel thePanel,
-                        final MWC.GUI.Layers theData,
-                        final BoundsProvider theChart,
-                        final String theName,
-                        final String thePath)
-  {
-    super(theParent, thePanel, theData, theChart, theName, thePath);
-  }
+	/**
+	 * the default path we use for the data path
+	 *
+	 */
+	public static final String COAST_PATH_DEFAULT = "c://vp//vmaplv0";
 
-	public CreateVPFCoast(final MWC.GUI.ToolParent theParent,
-                        final MWC.GUI.Properties.PropertiesPanel thePanel,
-                        final MWC.GUI.Layers theData,
-                        final BoundsProvider theChart)
-	{
+	public CreateVPFCoast(final MWC.GUI.ToolParent theParent, final MWC.GUI.Properties.PropertiesPanel thePanel,
+			final MWC.GUI.Layers theData, final BoundsProvider theChart) {
 		this(theParent, thePanel, theData, theChart, "Coast", "images/coast.png");
 	}
 
-  protected String getMyPath()
-  {
-    String res =  getParent().getProperty(COAST_PROPERTY);
-    if(res == null)
-      res = COAST_PATH_DEFAULT;
-    return res;
-  }
+	public CreateVPFCoast(final MWC.GUI.ToolParent theParent, final MWC.GUI.Properties.PropertiesPanel thePanel,
+			final MWC.GUI.Layers theData, final BoundsProvider theChart, final String theName, final String thePath) {
+		super(theParent, thePanel, theData, theChart, theName, thePath);
+	}
 
-  protected MWC.GUI.Plottable getMyLayer(final String path)
-  {
-    MWC.GUI.Plottable res = null;
-    try
-    {
-      // create the coverage layer for the coastline
-      res = LibraryLayer.createReferenceLayer(path);
-    }
-    catch(final Exception e)
-    {
-      MWC.Utilities.Errors.Trace.trace(e, "Unable to create VPF coastline");
-    }
-    return res;
-  }
+	@Override
+	protected MWC.GUI.Plottable createItem() {
+		MWC.GUI.Plottable cl = null;
 
-	protected MWC.GUI.Plottable createItem()
-	{
-    MWC.GUI.Plottable cl = null;
+// try and retrieve the path to the coast line directory
+		final String path = getMyPath();
 
-    // try and retrieve the path to the coast line directory
-    final String path = getMyPath();
+// try to build the layer
+		cl = getMyLayer(path);
 
-    // try to build the layer
-    cl = getMyLayer(path);
+// and return the data
+		return cl;
+	}
 
-    // and return the data
-    return cl;
+	protected MWC.GUI.Plottable getMyLayer(final String path) {
+		MWC.GUI.Plottable res = null;
+		try {
+			// create the coverage layer for the coastline
+			res = LibraryLayer.createReferenceLayer(path);
+		} catch (final Exception e) {
+			MWC.Utilities.Errors.Trace.trace(e, "Unable to create VPF coastline");
+		}
+		return res;
+	}
+
+	protected String getMyPath() {
+		String res = getParent().getProperty(COAST_PROPERTY);
+		if (res == null)
+			res = COAST_PATH_DEFAULT;
+		return res;
 	}
 }

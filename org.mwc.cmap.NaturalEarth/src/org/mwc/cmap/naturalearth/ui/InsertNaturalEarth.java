@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.cmap.naturalearth.ui;
 
 import org.eclipse.core.commands.AbstractHandler;
@@ -31,47 +32,38 @@ import MWC.GUI.Layers;
 /**
  * @author ian.mayo
  */
-public class InsertNaturalEarth extends AbstractHandler
-{
+public class InsertNaturalEarth extends AbstractHandler {
 
-  public Layers getLayers()
-  {
-    final Layers[] answer = new Layers[1];
-    Display.getDefault().syncExec(new Runnable()
-    {
-      @Override
-      public void run()
-      {
-        // nope, better generate it
-        final IWorkbench wb = PlatformUI.getWorkbench();
-        final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-        final IWorkbenchPage page = win.getActivePage();
-        IEditorPart editor = page.getActiveEditor();
-        answer[0] = (Layers) editor.getAdapter(Layers.class);
-      }
-    });
-    return answer[0];
-  }
+	@Override
+	public Object execute(final ExecutionEvent event) throws ExecutionException {
+		// check if we have a data path, and check it exists
+		if (!NELayer.hasGoodPath()) {
+			System.err.println("Don't have good path assigned");
+		} else {
+			final Layers layers = getLayers();
+			if (layers != null) {
+				//
+				final NELayer ne = new NELayer(Activator.getDefault().getDefaultStyleSet());
+				layers.addThisLayer(ne);
+			}
+		}
 
-  @Override
-  public Object execute(ExecutionEvent event) throws ExecutionException
-  {
-    // check if we have a data path, and check it exists
-    if (!NELayer.hasGoodPath())
-    {
-      System.err.println("Don't have good path assigned");
-    }
-    else
-    {
-      Layers layers = getLayers();
-      if (layers != null)
-      {
-        //
-        NELayer ne = new NELayer(Activator.getDefault().getDefaultStyleSet());
-        layers.addThisLayer(ne);
-      }
-    }
+		return null;
+	}
 
-    return null;
-  }
+	public Layers getLayers() {
+		final Layers[] answer = new Layers[1];
+		Display.getDefault().syncExec(new Runnable() {
+			@Override
+			public void run() {
+				// nope, better generate it
+				final IWorkbench wb = PlatformUI.getWorkbench();
+				final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+				final IWorkbenchPage page = win.getActivePage();
+				final IEditorPart editor = page.getActiveEditor();
+				answer[0] = editor.getAdapter(Layers.class);
+			}
+		});
+		return answer[0];
+	}
 }

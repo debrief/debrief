@@ -1,174 +1,172 @@
 package edu.nps.moves.dis7;
 
-import java.util.*;
-import java.io.*;
-import edu.nps.moves.disenum.*;
-import edu.nps.moves.disutil.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
 
 /**
  * Section 7.5.2. Create a new entity. COMPLETE
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class CreateEntityPdu extends SimulationManagementFamilyPdu implements Serializable
-{
-   /** Identifier for the request */
-   protected EntityID  originatingID = new EntityID(); 
+public class CreateEntityPdu extends SimulationManagementFamilyPdu implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   /** Identifier for the request */
-   protected EntityID  receivingID = new EntityID(); 
+	/** Identifier for the request */
+	protected EntityID originatingID = new EntityID();
 
-   /** Identifier for the request.  See 6.2.75 */
-   protected long  requestID;
+	/** Identifier for the request */
+	protected EntityID receivingID = new EntityID();
 
+	/** Identifier for the request. See 6.2.75 */
+	protected long requestID;
 
-/** Constructor */
- public CreateEntityPdu()
- {
-    setPduType( (short)11 );
- }
+	/** Constructor */
+	public CreateEntityPdu() {
+		setPduType((short) 11);
+	}
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-   marshalSize = super.getMarshalledSize();
-   marshalSize = marshalSize + originatingID.getMarshalledSize();  // originatingID
-   marshalSize = marshalSize + receivingID.getMarshalledSize();  // receivingID
-   marshalSize = marshalSize + 4;  // requestID
+		if (this == obj) {
+			return true;
+		}
 
-   return marshalSize;
-}
+		if (obj == null) {
+			return false;
+		}
 
+		if (getClass() != obj.getClass())
+			return false;
 
-public void setOriginatingID(EntityID pOriginatingID)
-{ originatingID = pOriginatingID;
-}
+		return equalsImpl(obj);
+	}
 
-public EntityID getOriginatingID()
-{ return originatingID; 
-}
+	@Override
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-public void setReceivingID(EntityID pReceivingID)
-{ receivingID = pReceivingID;
-}
+		if (!(obj instanceof CreateEntityPdu))
+			return false;
 
-public EntityID getReceivingID()
-{ return receivingID; 
-}
+		final CreateEntityPdu rhs = (CreateEntityPdu) obj;
 
-public void setRequestID(long pRequestID)
-{ requestID = pRequestID;
-}
+		if (!(originatingID.equals(rhs.originatingID)))
+			ivarsEqual = false;
+		if (!(receivingID.equals(rhs.receivingID)))
+			ivarsEqual = false;
+		if (!(requestID == rhs.requestID))
+			ivarsEqual = false;
 
-public long getRequestID()
-{ return requestID; 
-}
+		return ivarsEqual && super.equalsImpl(rhs);
+	}
 
+	@Override
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
-public void marshal(DataOutputStream dos)
-{
-    super.marshal(dos);
-    try 
-    {
-       originatingID.marshal(dos);
-       receivingID.marshal(dos);
-       dos.writeInt( (int)requestID);
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+		marshalSize = super.getMarshalledSize();
+		marshalSize = marshalSize + originatingID.getMarshalledSize(); // originatingID
+		marshalSize = marshalSize + receivingID.getMarshalledSize(); // receivingID
+		marshalSize = marshalSize + 4; // requestID
 
-public void unmarshal(DataInputStream dis)
-{
-     super.unmarshal(dis);
+		return marshalSize;
+	}
 
-    try 
-    {
-       originatingID.unmarshal(dis);
-       receivingID.unmarshal(dis);
-       requestID = dis.readInt();
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+	public EntityID getOriginatingID() {
+		return originatingID;
+	}
 
+	public EntityID getReceivingID() {
+		return receivingID;
+	}
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
-       super.marshal(buff);
-       originatingID.marshal(buff);
-       receivingID.marshal(buff);
-       buff.putInt( (int)requestID);
-    } // end of marshal method
+	public long getRequestID() {
+		return requestID;
+	}
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       super.unmarshal(buff);
+	@Override
+	public void marshal(final DataOutputStream dos) {
+		super.marshal(dos);
+		try {
+			originatingID.marshal(dos);
+			receivingID.marshal(dos);
+			dos.writeInt((int) requestID);
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
-       originatingID.unmarshal(buff);
-       receivingID.unmarshal(buff);
-       requestID = buff.getInt();
- } // end of unmarshal method 
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	@Override
+	public void marshal(final java.nio.ByteBuffer buff) {
+		super.marshal(buff);
+		originatingID.marshal(buff);
+		receivingID.marshal(buff);
+		buff.putInt((int) requestID);
+	} // end of marshal method
 
+	public void setOriginatingID(final EntityID pOriginatingID) {
+		originatingID = pOriginatingID;
+	}
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+	public void setReceivingID(final EntityID pReceivingID) {
+		receivingID = pReceivingID;
+	}
 
-    if(this == obj){
-      return true;
-    }
+	public void setRequestID(final long pRequestID) {
+		requestID = pRequestID;
+	}
 
-    if(obj == null){
-       return false;
-    }
+	@Override
+	public void unmarshal(final DataInputStream dis) {
+		super.unmarshal(dis);
 
-    if(getClass() != obj.getClass())
-        return false;
+		try {
+			originatingID.unmarshal(dis);
+			receivingID.unmarshal(dis);
+			requestID = dis.readInt();
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
-    return equalsImpl(obj);
- }
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	@Override
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		super.unmarshal(buff);
 
-@Override
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
-
-    if(!(obj instanceof CreateEntityPdu))
-        return false;
-
-     final CreateEntityPdu rhs = (CreateEntityPdu)obj;
-
-     if( ! (originatingID.equals( rhs.originatingID) )) ivarsEqual = false;
-     if( ! (receivingID.equals( rhs.receivingID) )) ivarsEqual = false;
-     if( ! (requestID == rhs.requestID)) ivarsEqual = false;
-
-    return ivarsEqual && super.equalsImpl(rhs);
- }
+		originatingID.unmarshal(buff);
+		receivingID.unmarshal(buff);
+		requestID = buff.getInt();
+	} // end of unmarshal method
 } // end of class

@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: ReferenceSym.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.3 $
@@ -73,183 +74,155 @@ import MWC.GUI.Editable;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.WorldLocation;
 
-public class ReferenceSym extends PlainSymbol
-{
+public class ReferenceSym extends PlainSymbol {
 
-  ////////////////////////////////
-  // member objects
-  ////////////////////////////////
+	////////////////////////////////
+	// member objects
+	////////////////////////////////
 
-  /**
-	 * 
+	//////////////////////////////////////////////////////
+	// bean info for this class
+	/////////////////////////////////////////////////////
+	public class referenceInfo extends Editable.EditorType {
+
+		public referenceInfo(final ReferenceSym data, final String theName) {
+			super(data, theName, "");
+		}
+
+		@Override
+		public PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final PropertyDescriptor[] res = {
+						displayProp("ReferenceLeftLabel", "Reference left label",
+								"the left-hand label for reference position"),
+						displayProp("ReferenceRightLabel", "Reference right label",
+								"the right-hand label for reference position"), };
+
+				return res;
+
+			} catch (final IntrospectionException e) {
+				return super.getPropertyDescriptors();
+			}
+		}
+
+	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	static public class ReferenceTest extends junit.framework.TestCase {
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public ReferenceTest(final String val) {
+			super(val);
+		}
+
+		public void testMyParams() {
+			MWC.GUI.Editable ed = new ReferenceSym();
+			editableTesterSupport.testParams(ed, this);
+			ed = null;
+		}
+	}
+
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
-
 	private static java.awt.Font _myFont = Defaults.getFont();
+	private String _leftLabel = "A";
 
-  @Override
-  public PlainSymbol create()
-  {
-    return new ReferenceSym();
-  }
+	private String _rightLabel = "A";
 
-  private String _leftLabel = "A";
-  private String _rightLabel = "A";
+	/**
+	 * our editor
+	 */
+	transient private Editable.EditorType _myEditor = null;
 
-  /**
-   * our editor
-   */
-  transient private Editable.EditorType _myEditor = null;
+	@Override
+	public PlainSymbol create() {
+		return new ReferenceSym();
+	}
 
-  public java.awt.Dimension getBounds()
-  {
-    // sort out the size of the symbol at the current scale factor
-    final java.awt.Dimension res = new java.awt.Dimension((int) (6 * getScaleVal()), (int) (6 * getScaleVal()));
-    return res;
-  }
+	@Override
+	public java.awt.Dimension getBounds() {
+		// sort out the size of the symbol at the current scale factor
+		final java.awt.Dimension res = new java.awt.Dimension((int) (6 * getScaleVal()), (int) (6 * getScaleVal()));
+		return res;
+	}
 
-  public void paint(final CanvasType dest, final WorldLocation centre)
-  {
-    paint(dest, centre, 0.0);
-  }
+	@Override
+	public Editable.EditorType getInfo() {
+		if (_myEditor == null)
+			_myEditor = new referenceInfo(this, this.getName());
 
+		return _myEditor;
+	}
 
-  public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
-  {
+	public String getReferenceLeftLabel() {
+		return _leftLabel;
+	}
 
-    // set the colour
-    dest.setColor(getColor());
+	public String getReferenceRightLabel() {
+		return _rightLabel;
+	}
 
-    // create our centre point
-    final java.awt.Point centre = dest.toScreen(theLocation);
-    
-    // handle unable to gen screen coords (if off visible area)
-    if(centre == null)
-      return;
+	@Override
+	public String getType() {
+		return "Reference Position";
+	}
 
-    final int wid = (int) (6 * getScaleVal());
-    final int wid_2 = (int) (wid / 2d);
-    final int wid_4 = (int) (wid / 4d);
-    final int wid_8 = (int) (wid / 8d);
+	////////////////////////////////////////////
+	// editable support
+	////////////////////////////////////////////
+	@Override
+	public boolean hasEditor() {
+		return true;
+	}
 
-    // start with the centre object
-    dest.drawLine(centre.x - wid_2, centre.y, centre.x + wid_2, centre.y);
-    dest.drawLine(centre.x, centre.y - wid_4, centre.x, centre.y + wid_4);
+	@Override
+	public void paint(final CanvasType dest, final WorldLocation centre) {
+		paint(dest, centre, 0.0);
+	}
 
-    if (showSimplifiedSymbol())
-    {
-      // ignore the letter
-    }
-    else
-    {
-      // now the letters
-      final int charWid = dest.getStringWidth(_myFont, _leftLabel);
-      dest.drawText(_myFont, _leftLabel, centre.x - wid_8 - charWid, centre.y - wid_8);
-      dest.drawText(_myFont, _rightLabel, centre.x + wid_8, centre.y - wid_8);
-    }
+	@Override
+	public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction) {
 
-  }
+		// set the colour
+		dest.setColor(getColor());
 
-  public String getType()
-  {
-    return "Reference Position";
-  }
+		// create our centre point
+		final java.awt.Point centre = dest.toScreen(theLocation);
 
+		// handle unable to gen screen coords (if off visible area)
+		if (centre == null)
+			return;
 
-  public Editable.EditorType getInfo()
-  {
-    if (_myEditor == null)
-      _myEditor = new referenceInfo(this, this.getName());
+		final int wid = (int) (6 * getScaleVal());
+		final int wid_2 = (int) (wid / 2d);
+		final int wid_4 = (int) (wid / 4d);
+		final int wid_8 = (int) (wid / 8d);
 
-    return _myEditor;
-  }
+		// start with the centre object
+		dest.drawLine(centre.x - wid_2, centre.y, centre.x + wid_2, centre.y);
+		dest.drawLine(centre.x, centre.y - wid_4, centre.x, centre.y + wid_4);
 
-  public void setReferenceLeftLabel(final String val)
-  {
-    _leftLabel = val;
-  }
+		if (showSimplifiedSymbol()) {
+			// ignore the letter
+		} else {
+			// now the letters
+			final int charWid = dest.getStringWidth(_myFont, _leftLabel);
+			dest.drawText(_myFont, _leftLabel, centre.x - wid_8 - charWid, centre.y - wid_8);
+			dest.drawText(_myFont, _rightLabel, centre.x + wid_8, centre.y - wid_8);
+		}
 
-  public String getReferenceLeftLabel()
-  {
-    return _leftLabel;
-  }
+	}
 
-  public void setReferenceRightLabel(final String val)
-  {
-    _rightLabel = val;
-  }
+	public void setReferenceLeftLabel(final String val) {
+		_leftLabel = val;
+	}
 
-  public String getReferenceRightLabel()
-  {
-    return _rightLabel;
-  }
-
-
-  ////////////////////////////////////////////
-  // editable support
-  ////////////////////////////////////////////
-  public boolean hasEditor()
-  {
-    return true;
-  }
-
-  //////////////////////////////////////////////////////
-  // bean info for this class
-  /////////////////////////////////////////////////////
-  public class referenceInfo extends Editable.EditorType
-  {
-
-    public referenceInfo(final ReferenceSym data,
-                         final String theName)
-    {
-      super(data, theName, "");
-    }
-
-
-    public PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try
-      {
-        final PropertyDescriptor[] res = {
-          displayProp("ReferenceLeftLabel", "Reference left label", "the left-hand label for reference position"),
-          displayProp("ReferenceRightLabel", "Reference right label", "the right-hand label for reference position"),
-        };
-
-        return res;
-
-      }
-      catch (final IntrospectionException e)
-      {
-        return super.getPropertyDescriptors();
-      }
-    }
-
-
-  }
-
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  static public class ReferenceTest extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-    public ReferenceTest(final String val)
-    {
-      super(val);
-    }
-
-    public void testMyParams()
-    {
-      MWC.GUI.Editable ed = new ReferenceSym();
-      editableTesterSupport.testParams(ed, this);
-      ed = null;
-    }
-  }
+	public void setReferenceRightLabel(final String val) {
+		_rightLabel = val;
+	}
 }
-
-
-
-

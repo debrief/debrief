@@ -1,17 +1,17 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 
 package ASSET;
 
@@ -24,214 +24,220 @@ import ASSET.Participants.Status;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 
-public interface ParticipantType extends ParticipantDetectedListener, SensorDataProvider, NetworkParticipant
-{
+public interface ParticipantType extends ParticipantDetectedListener, SensorDataProvider, NetworkParticipant {
 
-  public void addParticipantMovedListener(ASSET.Participants.ParticipantMovedListener listener);
+	/**
+	 * listeners which hear when a participant either is using a different behaviour
+	 * to the previous step, or if the behaviour stays the same but is returning a
+	 * different activity message.
+	 *
+	 * @param listener the listener to add/remove
+	 */
+	public void addParticipantDecidedListener(ASSET.Participants.ParticipantDecidedListener listener);
 
-  public void removeParticipantMovedListener(ASSET.Participants.ParticipantMovedListener listener);
-  
-  
-  /** find the range of this participant from the specified location (which allows us to have a participant that
-   * has an area, not just a point
-   */
-  public WorldDistance rangeFrom(WorldLocation point);
+	public void addParticipantMovedListener(ASSET.Participants.ParticipantMovedListener listener);
 
-  /**
-   * listeners which hear when a participant either is using a different behaviour to the previous step,
-   * or if the behaviour stays the same but is returning a different activity message.
-   *
-   * @param listener the listener to add/remove
-   */
-  public void addParticipantDecidedListener(ASSET.Participants.ParticipantDecidedListener listener);
+	/**
+	 * add a sensor to this participant
+	 */
+	public void addSensor(ASSET.Models.SensorType sensor);
 
-  /**
-   * listeners which hear when a participant either is using a different behaviour to the previous step,
-   * or if the behaviour stays the same but is returning a different activity message.
-   *
-   * @param listener the listener to add/remove
-   */
-  public void removeParticipantDecidedListener(ASSET.Participants.ParticipantDecidedListener listener);
+	/**
+	 * perform the decision portion of the step
+	 */
+	public void doDecision(long oldTime, long newTime, ASSET.ScenarioType scenario);
 
-  /**
-   * the name of this participant
-   */
-  public void setName(String val);
+	/**
+	 * perform the detection portion of the step
+	 */
+	public void doDetection(long oldtime, long newTime, ASSET.ScenarioType scenario);
 
-  /**
-   * the demanded status of this participant
-   */
-  public DemandedStatus getDemandedStatus();
+	/**
+	 * perform the movement portion of the step
+	 */
+	public void doMovement(long oldtime, long newTime, ASSET.ScenarioType scenario);
 
-  /**
-   * perform the decision portion of the step
-   */
-  public void doDecision(long oldTime, long newTime, ASSET.ScenarioType scenario);
+	/**
+	 * whether this participant is alive yet
+	 *
+	 * @return
+	 */
+	public abstract boolean getAlive();
 
-  /**
-   * perform the movement portion of the step
-   */
-  public void doMovement(long oldtime, long newTime, ASSET.ScenarioType scenario);
+	/**
+	 * get the decision model for this participant
+	 */
+	public ASSET.Models.DecisionType getDecisionModel();
 
-  /**
-   * perform the detection portion of the step
-   */
-  public void doDetection(long oldtime, long newTime, ASSET.ScenarioType scenario);
+	/**
+	 * the demanded status of this participant
+	 */
+	public DemandedStatus getDemandedStatus();
 
+	/**
+	 * the movement characteristics for this participant
+	 */
+	public ASSET.Models.Movement.MovementCharacteristics getMovementChars();
 
-  /**
-   * reset, to go back to the initial state
-   */
-  public void restart(ScenarioType scenario);
+	/**
+	 * the movement characteristics for this participant
+	 */
+	public ASSET.Models.MovementType getMovementModel();
 
-  /**
-   * the movement characteristics for this participant
-   */
-  public ASSET.Models.Movement.MovementCharacteristics getMovementChars();
+	/**
+	 * find the list of current detections
+	 */
+	public ASSET.Models.Detection.DetectionList getNewDetections();
 
-  /**
-   * find the list of current detections
-   */
-  public ASSET.Models.Detection.DetectionList getNewDetections();
+	/**
+	 * find out how many sensors there are
+	 */
+	public int getNumSensors();
 
-  /**
-   * the movement characteristics for this participant
-   */
-  public ASSET.Models.MovementType getMovementModel();
+	/**
+	 * whether to paint decisions if this participant is shown graphically
+	 *
+	 * @param paintDecisions
+	 */
+	public boolean getPaintDecisions();
 
-  /**
-   * the energy radiation characteristics for this participant
-   */
-  public ASSET.Models.Vessels.Radiated.RadiatedCharacteristics getRadiatedChars();
+	/**
+	 * the energy radiation characteristics for this participant
+	 */
+	public ASSET.Models.Vessels.Radiated.RadiatedCharacteristics getRadiatedChars();
 
-  /**
-   * the self noise characteristics characteristics for this participant
-   */
-  public ASSET.Models.Vessels.Radiated.RadiatedCharacteristics getSelfNoise();
+	/**
+	 * get the radiated noise of this participant in this bearing in this medium
+	 */
+	double getRadiatedNoiseFor(int medium, double brg_degs);
 
-  /**
-   * get the radiated noise of this participant in this bearing in this medium
-   */
-  double getRadiatedNoiseFor(int medium, double brg_degs);
+	/**
+	 * the self noise characteristics characteristics for this participant
+	 */
+	public ASSET.Models.Vessels.Radiated.RadiatedCharacteristics getSelfNoise();
 
-  /**
-   * get the radiated noise of this participant in this bearing in this medium
-   */
-  double getSelfNoiseFor(int medium, double brg_degs);
+	/**
+	 * get the radiated noise of this participant in this bearing in this medium
+	 */
+	double getSelfNoiseFor(int medium, double brg_degs);
 
-  /**
-   * set the decision model for this participant
-   */
-  public void setDecisionModel(ASSET.Models.DecisionType decision);
+	/**
+	 * get a specific sensor
+	 */
+	public ASSET.Models.SensorType getSensorAt(int index);
 
-  /**
-   * get the decision model for this participant
-   */
-  public ASSET.Models.DecisionType getDecisionModel();
+	/**
+	 * get the sensors for this participant
+	 *
+	 * @return
+	 */
+	public SensorList getSensorFit();
 
-  /**
-   * find out how many sensors there are
-   */
-  public int getNumSensors();
-
-  /**
-   * get a specific sensor
-   */
-  public ASSET.Models.SensorType getSensorAt(int index);
-
-  /**
-   * set the movement model for this participant
-   */
-  public void setMovementModel(ASSET.Models.MovementType movement);
-
-  /**
-   * add a sensor to this participant
-   */
-  public void addSensor(ASSET.Models.SensorType sensor);
-
-  /**
-   * set the category
-   */
-  public void setCategory(Category val);
-
-  /**
-   * set the initial status
-   */
-  public void setInitialStatus(Status val);
-
-  /**
-   * set the status
-   */
-  public void setStatus(Status _myStatus);
-
-  /**
-   * set the demanded status for this participant
-   */
-  public void setDemandedStatus(DemandedStatus _myDemandedStatus);
-
-  /**
-   * set the sensor fit
-   */
-  public void setSensorFit(ASSET.Models.Sensor.SensorList _mySensorList);
-
-  /**
-   * set the movement characteristics
-   */
-  public void setMovementChars(ASSET.Models.Movement.MovementCharacteristics moveChars);
-
-  /**
-   * set the radiated noise characteristics
-   */
-  public void setRadiatedChars(ASSET.Models.Vessels.Radiated.RadiatedCharacteristics radChars);
-
-  /**
-   * set the self noise characteristics
-   */
-  public void setSelfNoise(ASSET.Models.Vessels.Radiated.RadiatedCharacteristics radChars);
-
-  /**
-   * get the sensors for this participant
-   *
-   * @return
-   */
-  public SensorList getSensorFit();
-
-  /**
-   * find out if this participant radiates this type of noise
-   *
-   * @param medium the medium we're looking for
-   * @return yes/no
-   */
-  boolean radiatesThisNoise(int medium);
-
-  /** whether to paint decisions if this participant is shown graphically
-   * 
-   * @param paintDecisions
-   */
-	public  void setPaintDecisions(boolean paintDecisions);
-
-  /** whether to paint decisions if this participant is shown graphically
-   * 
-   * @param paintDecisions
-   */
-	public  boolean getPaintDecisions();
-
-	/** whether this participant is alive yet
-	 * 
+	/**
+	 * whether this participant is alive yet
+	 *
 	 * @return
 	 */
 	public abstract boolean isAlive();
-	
-	/** whether this participant is alive yet
-	 * 
+
+	/**
+	 * find out if this participant radiates this type of noise
+	 *
+	 * @param medium the medium we're looking for
+	 * @return yes/no
+	 */
+	boolean radiatesThisNoise(int medium);
+
+	/**
+	 * find the range of this participant from the specified location (which allows
+	 * us to have a participant that has an area, not just a point
+	 */
+	public WorldDistance rangeFrom(WorldLocation point);
+
+	/**
+	 * listeners which hear when a participant either is using a different behaviour
+	 * to the previous step, or if the behaviour stays the same but is returning a
+	 * different activity message.
+	 *
+	 * @param listener the listener to add/remove
+	 */
+	public void removeParticipantDecidedListener(ASSET.Participants.ParticipantDecidedListener listener);
+
+	public void removeParticipantMovedListener(ASSET.Participants.ParticipantMovedListener listener);
+
+	/**
+	 * reset, to go back to the initial state
+	 */
+	@Override
+	public void restart(ScenarioType scenario);
+
+	/**
+	 * whether this participant is alive yet
+	 *
 	 * @return
 	 */
 	public abstract void setAlive(boolean val);
 
-	/** whether this participant is alive yet
-	 * 
-	 * @return
+	/**
+	 * set the category
 	 */
-	public abstract boolean getAlive();
+	public void setCategory(Category val);
+
+	/**
+	 * set the decision model for this participant
+	 */
+	public void setDecisionModel(ASSET.Models.DecisionType decision);
+
+	/**
+	 * set the demanded status for this participant
+	 */
+	public void setDemandedStatus(DemandedStatus _myDemandedStatus);
+
+	/**
+	 * set the initial status
+	 */
+	public void setInitialStatus(Status val);
+
+	/**
+	 * set the movement characteristics
+	 */
+	public void setMovementChars(ASSET.Models.Movement.MovementCharacteristics moveChars);
+
+	/**
+	 * set the movement model for this participant
+	 */
+	public void setMovementModel(ASSET.Models.MovementType movement);
+
+	/**
+	 * the name of this participant
+	 */
+	public void setName(String val);
+
+	/**
+	 * whether to paint decisions if this participant is shown graphically
+	 *
+	 * @param paintDecisions
+	 */
+	public void setPaintDecisions(boolean paintDecisions);
+
+	/**
+	 * set the radiated noise characteristics
+	 */
+	public void setRadiatedChars(ASSET.Models.Vessels.Radiated.RadiatedCharacteristics radChars);
+
+	/**
+	 * set the self noise characteristics
+	 */
+	public void setSelfNoise(ASSET.Models.Vessels.Radiated.RadiatedCharacteristics radChars);
+
+	/**
+	 * set the sensor fit
+	 */
+	public void setSensorFit(ASSET.Models.Sensor.SensorList _mySensorList);
+
+	/**
+	 * set the status
+	 */
+	public void setStatus(Status _myStatus);
 
 }

@@ -14,6 +14,9 @@
  *****************************************************************************/
 package info.limpet.operations.admin;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import info.limpet.ICommand;
 import info.limpet.IContext;
 import info.limpet.IOperation;
@@ -22,101 +25,78 @@ import info.limpet.IStoreItem;
 import info.limpet.impl.StoreGroup;
 import info.limpet.operations.AbstractCommand;
 
-import java.util.ArrayList;
-import java.util.List;
+public class AddLayerOperation implements IOperation {
 
-public class AddLayerOperation implements IOperation
-{
+	protected static class AddLayerCommand extends AbstractCommand {
+		private IStoreGroup _group;
 
-  @Override
-  public List<ICommand> actionsFor(
-      List<IStoreItem> selection, IStoreGroup destination, IContext context)
-  {
-    List<ICommand> res =
-        new ArrayList<ICommand>();
+		public AddLayerCommand(final String title, final IStoreGroup store, final IContext context) {
+			super(title, "Add a new layer", store, false, false, null, context);
+		}
 
-    // note: we don't do "applies to" - we apply to everything
+		public AddLayerCommand(final String title, final IStoreGroup group, final IStoreGroup store,
+				final IContext context) {
+			this(title, store, context);
+			_group = group;
+		}
 
-    final String thisTitle = "Add new folder";
-    // hmm, see if a group has been selected
-    ICommand newC = null;
-    if (selection.size() == 1)
-    {
-      IStoreItem first = selection.get(0);
-      if (first instanceof IStoreGroup)
-      {
-        IStoreGroup group = (IStoreGroup) first;
-        newC = new AddLayerCommand(thisTitle, group, destination, context);
-      }
-    }
+		@Override
+		public void execute() {
+			// get the String
+			final String string = getOutputName();
 
-    if (newC == null)
-    {
-      newC = new AddLayerCommand(thisTitle, destination, context);
-    }
+			if (string != null) {
+				final IStoreGroup newGroup = new StoreGroup(string);
 
-    if (newC != null)
-    {
-      res.add(newC);
-    }
+				if (_group != null) {
+					_group.add(newGroup);
+				} else {
+					getStore().add(newGroup);
 
-    return res;
-  }
+				}
+			} else {
+				super.execute();
+			}
+		}
 
-  protected static class AddLayerCommand extends AbstractCommand
-  {
-    private IStoreGroup _group;
+		protected String getOutputName() {
+			return getContext().getInput("Add layer", "Provide name for new folder", "");
+		}
 
-    public AddLayerCommand(String title, IStoreGroup store, IContext context)
-    {
-      super(title, "Add a new layer", store, false, false, null, context);
-    }
+		@Override
+		protected void recalculate(final IStoreItem subject) {
+			// don't worry
+		}
 
-    public AddLayerCommand(String title, IStoreGroup group, IStoreGroup store,
-        IContext context)
-    {
-      this(title, store, context);
-      _group = group;
-    }
+	}
 
-    @Override
-    public void execute()
-    {
-      // get the String
-      String string = getOutputName();
+	@Override
+	public List<ICommand> actionsFor(final List<IStoreItem> selection, final IStoreGroup destination,
+			final IContext context) {
+		final List<ICommand> res = new ArrayList<ICommand>();
 
-      if (string != null)
-      {
-        IStoreGroup newGroup = new StoreGroup(string);
+		// note: we don't do "applies to" - we apply to everything
 
-        if (_group != null)
-        {
-          _group.add(newGroup);
-        }
-        else
-        {
-          getStore().add(newGroup);
+		final String thisTitle = "Add new folder";
+		// hmm, see if a group has been selected
+		ICommand newC = null;
+		if (selection.size() == 1) {
+			final IStoreItem first = selection.get(0);
+			if (first instanceof IStoreGroup) {
+				final IStoreGroup group = (IStoreGroup) first;
+				newC = new AddLayerCommand(thisTitle, group, destination, context);
+			}
+		}
 
-        }
-      }
-      else
-      {
-    	  super.execute();
-      }
-    }
+		if (newC == null) {
+			newC = new AddLayerCommand(thisTitle, destination, context);
+		}
 
-    @Override
-    protected void recalculate(IStoreItem subject)
-    {
-      // don't worry
-    }
+		if (newC != null) {
+			res.add(newC);
+		}
 
-    protected String getOutputName()
-    {
-      return getContext().getInput("Add layer", "Provide name for new folder",
-          "");
-    }
-
-  }
+		return res;
+	}
 
 }

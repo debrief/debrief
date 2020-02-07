@@ -1,30 +1,33 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.cmap.core.editor_views;
 
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.mwc.cmap.core.CorePlugin;
 
-public abstract class PolygonEditorControl extends
-		org.eclipse.swt.widgets.Composite implements SelectionListener
-{
+public abstract class PolygonEditorControl extends org.eclipse.swt.widgets.Composite implements SelectionListener {
 	private Composite topHolder;
 	private Composite btnHolder;
 	public ListViewer pointList2;
@@ -68,9 +71,7 @@ public abstract class PolygonEditorControl extends
 	// }
 	// }
 
-	public PolygonEditorControl(final org.eclipse.swt.widgets.Composite parent,
-			final int style)
-	{
+	public PolygonEditorControl(final org.eclipse.swt.widgets.Composite parent, final int style) {
 		super(parent, style);
 		initGUI();
 		{
@@ -84,15 +85,12 @@ public abstract class PolygonEditorControl extends
 		}
 	}
 
-	private void initGUI()
-	{
-		try
-		{
+	private void initGUI() {
+		try {
 			this.setLayout(new GridLayout());
 			{
 				topHolder = new Composite(this, SWT.NONE);
-				final FillLayout topHolderLayout = new FillLayout(
-						org.eclipse.swt.SWT.HORIZONTAL);
+				final FillLayout topHolderLayout = new FillLayout(org.eclipse.swt.SWT.HORIZONTAL);
 				final GridData topHolderLData = new GridData();
 				topHolderLData.horizontalAlignment = GridData.FILL;
 				topHolderLData.grabExcessHorizontalSpace = true;
@@ -170,11 +168,8 @@ public abstract class PolygonEditorControl extends
 				editorPanel.setText("here goes the point editor details");
 			}
 			this.layout();
-		}
-		catch (final Exception e)
-		{
-			CorePlugin.logError(Status.ERROR,
-					"Problem layout out Polygon editor gui", e);
+		} catch (final Exception e) {
+			CorePlugin.logError(IStatus.ERROR, "Problem layout out Polygon editor gui", e);
 
 		}
 	}

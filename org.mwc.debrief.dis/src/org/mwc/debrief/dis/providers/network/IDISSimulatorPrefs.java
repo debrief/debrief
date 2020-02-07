@@ -1,6 +1,5 @@
 package org.mwc.debrief.dis.providers.network;
 
-public interface IDISSimulatorPrefs
-{
-  String getExePath();
+public interface IDISSimulatorPrefs {
+	String getExePath();
 }

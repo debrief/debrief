@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.GUI.RubberBanding;
 
 // Copyright MWC 1999, Debrief 3 Project
@@ -58,34 +59,38 @@ import java.awt.Graphics;
 
 import MWC.GUI.Rubberband;
 
+public class RubberbandDrag extends Rubberband {
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
 
-public class RubberbandDrag extends Rubberband
-{
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  
-  /**
-	 * 
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
+
 	/////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
 	public RubberbandDrag() {
 	}
-  public RubberbandDrag(final Component component) {
-      super(component);
-  }  
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
-  public void drawLast(final Graphics graphics) {
 
-      graphics.drawRect(lastPt.x-3, lastPt.y-3, 7, 7);
-  }
-  public void drawNext(final Graphics graphics) {
+	public RubberbandDrag(final Component component) {
+		super(component);
+	}
 
-      graphics.drawRect(stretchedPt.x-3, stretchedPt.y-3, 7, 7);
-  }
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+	@Override
+	public void drawLast(final Graphics graphics) {
+
+		graphics.drawRect(lastPt.x - 3, lastPt.y - 3, 7, 7);
+	}
+
+	@Override
+	public void drawNext(final Graphics graphics) {
+
+		graphics.drawRect(stretchedPt.x - 3, stretchedPt.y - 3, 7, 7);
+	}
 }

@@ -1,9 +1,18 @@
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 package info.limpet.stackedcharts.ui.editor.parts;
-
-import info.limpet.stackedcharts.model.Chart;
-import info.limpet.stackedcharts.model.ChartSet;
-import info.limpet.stackedcharts.model.Orientation;
-import info.limpet.stackedcharts.ui.editor.parts.ChartEditPart.ChartPanePosition;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,92 +24,80 @@ import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 
-public class ChartPaneEditPart extends AbstractGraphicalEditPart
-{
+import info.limpet.stackedcharts.model.Chart;
+import info.limpet.stackedcharts.model.ChartSet;
+import info.limpet.stackedcharts.model.Orientation;
+import info.limpet.stackedcharts.ui.editor.parts.ChartEditPart.ChartPanePosition;
 
-  public static class AxisLandingPad
-  {
-    final Chart chart;
-    final ChartEditPart.ChartPanePosition pos;
+public class ChartPaneEditPart extends AbstractGraphicalEditPart {
 
-    public AxisLandingPad(final Chart chart,
-        final ChartEditPart.ChartPanePosition pos)
-    {
-      this.chart = chart;
-      this.pos = pos;
-    }
+	public static class AxisLandingPad {
+		final Chart chart;
+		final ChartEditPart.ChartPanePosition pos;
 
-    public Chart getChart()
-    {
-      return chart;
-    }
+		public AxisLandingPad(final Chart chart, final ChartEditPart.ChartPanePosition pos) {
+			this.chart = chart;
+			this.pos = pos;
+		}
 
-    public ChartEditPart.ChartPanePosition getPos()
-    {
-      return pos;
-    }
-  }
+		public Chart getChart() {
+			return chart;
+		}
 
-  @Override
-  protected void createEditPolicies()
-  {
-  }
+		public ChartEditPart.ChartPanePosition getPos() {
+			return pos;
+		}
+	}
 
-  @Override
-  protected IFigure createFigure()
-  {
-    final RectangleFigure figure = new RectangleFigure();
-    figure.setOutline(false);
-    final GridLayout layoutManager = new GridLayout();
-    // zero margin, in order to connect the dependent axes to the shared one
-    layoutManager.marginHeight = 0;
-    layoutManager.marginWidth = 0;
-    figure.setLayoutManager(layoutManager);
-    return figure;
-  }
+	@Override
+	protected void createEditPolicies() {
+	}
 
-  @SuppressWarnings("rawtypes")
-  @Override
-  protected List getModelChildren()
-  {
-    final Chart chart = (Chart) getParent().getModel();
+	@Override
+	protected IFigure createFigure() {
+		final RectangleFigure figure = new RectangleFigure();
+		figure.setOutline(false);
+		final GridLayout layoutManager = new GridLayout();
+		// zero margin, in order to connect the dependent axes to the shared one
+		layoutManager.marginHeight = 0;
+		layoutManager.marginWidth = 0;
+		figure.setLayoutManager(layoutManager);
+		return figure;
+	}
 
-    final ChartEditPart.ChartPanePosition pos = (ChartPanePosition) getModel();
-    switch (pos)
-    {
-    case MIN:
-      return chart.getMinAxes().size() == 0 ? Arrays.asList(new AxisLandingPad(
-          chart, pos)) : chart.getMinAxes();
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected List getModelChildren() {
+		final Chart chart = (Chart) getParent().getModel();
 
-    case MAX:
-      return chart.getMaxAxes().size() == 0 ? Arrays.asList(new AxisLandingPad(
-          chart, pos)) : chart.getMaxAxes();
-    }
+		final ChartEditPart.ChartPanePosition pos = (ChartPanePosition) getModel();
+		switch (pos) {
+		case MIN:
+			return chart.getMinAxes().size() == 0 ? Arrays.asList(new AxisLandingPad(chart, pos)) : chart.getMinAxes();
 
-    return Arrays.asList();
-  }
+		case MAX:
+			return chart.getMaxAxes().size() == 0 ? Arrays.asList(new AxisLandingPad(chart, pos)) : chart.getMaxAxes();
+		}
 
-  @Override
-  protected void refreshVisuals()
-  {
-    final ChartEditPart.ChartPanePosition pos = (ChartPanePosition) getModel();
-    final IFigure figure = getFigure();
-    
-    ChartSet chartSet = ((Chart)getParent().getModel()).getParent();
-    boolean vertical = chartSet.getOrientation() == Orientation.VERTICAL;
-    
-    if (pos == ChartPanePosition.MIN)
-    {
-      ((GraphicalEditPart) getParent()).setLayoutConstraint(this, figure,
-          vertical ? BorderLayout.LEFT : BorderLayout.BOTTOM);
-    }
-    else
-    {
-      ((GraphicalEditPart) getParent()).setLayoutConstraint(this, figure,
-          vertical ? BorderLayout.RIGHT : BorderLayout.TOP);
-    }
+		return Arrays.asList();
+	}
 
-    ((GridLayout) getFigure().getLayoutManager()).numColumns =
-        vertical ? getModelChildren().size() : 1;
-  }
+	@Override
+	protected void refreshVisuals() {
+		final ChartEditPart.ChartPanePosition pos = (ChartPanePosition) getModel();
+		final IFigure figure = getFigure();
+
+		final ChartSet chartSet = ((Chart) getParent().getModel()).getParent();
+		final boolean vertical = chartSet.getOrientation() == Orientation.VERTICAL;
+
+		if (pos == ChartPanePosition.MIN) {
+			((GraphicalEditPart) getParent()).setLayoutConstraint(this, figure,
+					vertical ? BorderLayout.LEFT : BorderLayout.BOTTOM);
+		} else {
+			((GraphicalEditPart) getParent()).setLayoutConstraint(this, figure,
+					vertical ? BorderLayout.RIGHT : BorderLayout.TOP);
+		}
+
+		((GridLayout) getFigure().getLayoutManager()).numColumns = vertical ? getModelChildren().size() : 1;
+	}
 }

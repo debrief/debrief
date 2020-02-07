@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.GUI.Chart.Painters;
 
 // Copyright MWC 1999, Debrief 3 Project
@@ -89,62 +90,55 @@ import MWC.GUI.Plottable;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Chart.RightClickEdit;
 
-public class RightClickEditGridPainterAdaptor extends RightClickEdit.BaseMenuCreator implements Serializable
-{
-	
-	
-  /////////////////////////////////////////////////////////////
-  // member data
-  ////////////////////////////////////////////////////////////
+public class RightClickEditGridPainterAdaptor extends RightClickEdit.BaseMenuCreator implements Serializable {
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// member data
+	////////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
 
-  /**
-	 * 
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public void createMenu(final javax.swing.JPopupMenu menu,
-                         final java.awt.Point thePoint,
-                         final MWC.GUI.CanvasType theCanvas,
-                         final MWC.GUI.Properties.PropertiesPanel thePanel,
-                         final Layers theData)
-  {
-    // also show the editors for any screen decorations
-    final Layer decorations = theData.findLayer("Decorations");
-    final PropertiesPanel _thePanel = thePanel;
-    if (decorations != null)
-    {
-      final Enumeration<Editable> decs = decorations.elements();
-      while (decs.hasMoreElements())
-      {
-        final Plottable p = (Plottable) decs.nextElement();
-        final Editable.EditorType ped = p.getInfo();
-        if (ped != null)
-        {
-          final javax.swing.JMenuItem pmi = new javax.swing.JMenuItem("Edit " + ped.getBeanDescriptor().getDisplayName());
-          pmi.addActionListener(new ActionListener()
-          {
-            public void actionPerformed(final ActionEvent e)
-            {
-              _thePanel.addEditor(ped, decorations);
-            }
-          });
+	@Override
+	public void createMenu(final javax.swing.JPopupMenu menu, final java.awt.Point thePoint,
+			final MWC.GUI.CanvasType theCanvas, final MWC.GUI.Properties.PropertiesPanel thePanel,
+			final Layers theData) {
+		// also show the editors for any screen decorations
+		final Layer decorations = theData.findLayer("Decorations");
+		final PropertiesPanel _thePanel = thePanel;
+		if (decorations != null) {
+			final Enumeration<Editable> decs = decorations.elements();
+			while (decs.hasMoreElements()) {
+				final Plottable p = (Plottable) decs.nextElement();
+				final Editable.EditorType ped = p.getInfo();
+				if (ped != null) {
+					final javax.swing.JMenuItem pmi = new javax.swing.JMenuItem(
+							"Edit " + ped.getBeanDescriptor().getDisplayName());
+					pmi.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(final ActionEvent e) {
+							_thePanel.addEditor(ped, decorations);
+						}
+					});
 
-          menu.add(pmi);
+					menu.add(pmi);
 
-          // finally add the other editors
-          super.createAdditionalItems(menu, thePanel, (Editable) ped.getData(), theData);
+					// finally add the other editors
+					super.createAdditionalItems(menu, thePanel, (Editable) ped.getData(), theData);
 
-        }
-      }
-    }
+				}
+			}
+		}
 
-  }
+	}
 }

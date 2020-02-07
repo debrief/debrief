@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package Debrief.Tools.Tote.Calculations;
 
 // Copyright MWC 1999, Debrief 3 Project
@@ -67,70 +68,66 @@ package Debrief.Tools.Tote.Calculations;
 // Revision 1.1  1999-08-26 10:02:58+01  administrator
 // Initial revision
 //
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
-import java.text.*;
-
-import Debrief.Tools.Tote.*;
+import Debrief.Tools.Tote.toteCalculation;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 
-abstract public class plainCalc implements toteCalculation
-{
-  protected static final String NOT_APPLICABLE = " ";
+abstract public class plainCalc implements toteCalculation {
+	protected static final String NOT_APPLICABLE = " ";
 	/////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  NumberFormat _myPattern;
-  private final String _myTitle;
-  private String _myUnits;
-  
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  public plainCalc(final NumberFormat pattern,
-                   final String myTitle,
-                   final String myUnits)
-  {
-    _myPattern = pattern;
-    _myTitle = myTitle;
-    _myUnits = myUnits;
-  }
-  
-  public plainCalc(final String myTitle,
-                   final String myUnits)
-  {
-    this(new DecimalFormat("000"), myTitle, myUnits);
-  }
-  
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+	NumberFormat _myPattern;
+	private final String _myTitle;
+	private String _myUnits;
 
-  abstract public String update(Watchable primary, Watchable secondary, HiResDate time);
-  abstract public double calculate(Watchable primary, Watchable secondary, HiResDate thisTime);
-  
-  public String getTitle()
-  {
-    return _myTitle;
-  }
-  
-  public final void setPattern(final NumberFormat format)
-  {
-    _myPattern = format;
-  }
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	public plainCalc(final NumberFormat pattern, final String myTitle, final String myUnits) {
+		_myPattern = pattern;
+		_myTitle = myTitle;
+		_myUnits = myUnits;
+	}
 
-  public void setUnits(final String units)
-  {
-    this._myUnits = units;
-  }
+	public plainCalc(final String myTitle, final String myUnits) {
+		this(new DecimalFormat("000"), myTitle, myUnits);
+	}
 
-  public String getUnits()
-  {
-    return _myUnits;
-  }
-  
-  public String toString()
-  {
-    return getTitle();
-  }
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+
+	@Override
+	abstract public double calculate(Watchable primary, Watchable secondary, HiResDate thisTime);
+
+	@Override
+	public String getTitle() {
+		return _myTitle;
+	}
+
+	@Override
+	public String getUnits() {
+		return _myUnits;
+	}
+
+	@Override
+	public final void setPattern(final NumberFormat format) {
+		_myPattern = format;
+	}
+
+	public void setUnits(final String units) {
+		this._myUnits = units;
+	}
+
+	@Override
+	public String toString() {
+		return getTitle();
+	}
+
+	@Override
+	abstract public String update(Watchable primary, Watchable secondary, HiResDate time);
 }

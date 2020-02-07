@@ -35,7 +35,6 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-
 /**
  * This class represents an AIS position report
  *
@@ -44,7 +43,6 @@ import java.util.TimeZone;
  *
  */
 public class AISPositionExtB extends AISPositionB {
-
 
 	/** name of the vessel */
 	private String name;
@@ -94,12 +92,11 @@ public class AISPositionExtB extends AISPositionB {
 	 * @param msgSrc
 	 * @param msgTimestamp
 	 */
-	public AISPositionExtB(int msgId, int mmsi, double sog, double longitude,
-			double latitude, double cog, int trueHeading, String name,
-			int shipType, int dimensionA, int dimensionB, int dimensionC,
-			int dimensionD, int countryId, int msgSrc, Timestamp msgTimestamp) {
-		super(msgId, mmsi, sog, longitude, latitude, cog, trueHeading,
-				msgTimestamp);
+	public AISPositionExtB(final int msgId, final int mmsi, final double sog, final double longitude,
+			final double latitude, final double cog, final int trueHeading, final String name, final int shipType,
+			final int dimensionA, final int dimensionB, final int dimensionC, final int dimensionD, final int countryId,
+			final int msgSrc, final Timestamp msgTimestamp) {
+		super(msgId, mmsi, sog, longitude, latitude, cog, trueHeading, msgTimestamp);
 		this.name = name;
 		this.shipType = shipType;
 		this.dimensionA = dimensionA;
@@ -107,100 +104,6 @@ public class AISPositionExtB extends AISPositionB {
 		this.dimensionC = dimensionC;
 		this.dimensionD = dimensionD;
 		this.countryId = countryId;
-	}
-
-	public int getCountryId() {
-		return countryId;
-	}
-
-	public void setCountryId(int countryId) {
-		this.countryId = countryId;
-	}
-
-	public int getDimensionA() {
-		return dimensionA;
-	}
-
-	public void setDimensionA(int dimensionA) {
-		this.dimensionA = dimensionA;
-	}
-
-	public int getDimensionB() {
-		return dimensionB;
-	}
-
-	public void setDimensionB(int dimensionB) {
-		this.dimensionB = dimensionB;
-	}
-
-	public int getDimensionC() {
-		return dimensionC;
-	}
-
-	public void setDimensionC(int dimensionC) {
-		this.dimensionC = dimensionC;
-	}
-
-	public int getDimensionD() {
-		return dimensionD;
-	}
-
-	public void setDimensionD(int dimensionD) {
-		this.dimensionD = dimensionD;
-	}
-
-	public int getMsgSrc() {
-		return msgSrc;
-	}
-
-	public void setMsgSrc(int msgSrc) {
-		this.msgSrc = msgSrc;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	@Override
-	public String toString() {
-		StringBuffer sbuffer = new StringBuffer();
-		sbuffer.append("AISPositionExtB\n");
-		sbuffer.append(super.toString());
-		sbuffer.append("AISPositionExtB\n");
-		sbuffer.append("NAME\t\t" + this.name + "\n");
-		sbuffer.append("SHIPTYPE\t" + this.shipType + "\n");
-		sbuffer.append("DIMA\t\t" + this.dimensionA + "\n");
-		sbuffer.append("DIMB\t\t" + this.dimensionB + "\n");
-		sbuffer.append("DIMC\t\t" + this.dimensionC + "\n");
-		sbuffer.append("DIMD\t\t" + this.dimensionD + "\n");
-		sbuffer.append("COUNTRYID\t" + this.countryId + "\n");
-		sbuffer.append("MSGSRC\t\t" + this.msgSrc + "\n");
-		return sbuffer.toString();
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (o == null)
-			return false;
-		if (o == this)
-			return true;
-		if (!o.getClass().equals(o.getClass()))
-			return false;
-
-		AISPositionExtB that = (AISPositionExtB) o;
-
-		boolean same = super.equals(that) && this.shipType == that.shipType
-				&& this.dimensionA == that.dimensionA
-				&& this.dimensionB == that.dimensionB
-				&& this.dimensionC == that.dimensionC
-				&& this.dimensionD == that.dimensionD
-				&& this.countryId == that.countryId;
-
-		return same;
 	}
 
 	@Override
@@ -220,59 +123,47 @@ public class AISPositionExtB extends AISPositionB {
 	 * @throws AISParseException
 	 */
 	@Override
-	public IAISMessage decode(String decBytes) throws AISParseException {
+	public IAISMessage decode(final String decBytes) throws AISParseException {
 
 		if (decBytes.length() < 301)
-			throw new AISParseException(
-					AISParseException.NOT_CONSISTENT_DECODED_STRING);
+			throw new AISParseException(AISParseException.NOT_CONSISTENT_DECODED_STRING);
 		/* Possition Reports Message ID 19 bits 0-5 */
-		this.msgId = AISDecoder.getDecValueByBinStr(decBytes.substring(0, 6),
-				false);
+		this.msgId = AISDecoder.getDecValueByBinStr(decBytes.substring(0, 6), false);
 
 		/* User ID mmsi bits 8-37 */
-		this.mmsi = AISDecoder.getDecValueByBinStr(decBytes.substring(8, 38),
-				false);
+		this.mmsi = AISDecoder.getDecValueByBinStr(decBytes.substring(8, 38), false);
 
 		/* Speed over ground bits 46-55 - 10 bits */
-		this.sog = AISDecoder.getDecValueByBinStr(decBytes.substring(46, 56),
-				false) / 10.0;
+		this.sog = AISDecoder.getDecValueByBinStr(decBytes.substring(46, 56), false) / 10.0;
 
 		/* Longitude bits 57-84 */
-		int longitudeHour = AISDecoder.getDecValueByBinStr(
-				decBytes.substring(57, 85), true);
+		final int longitudeHour = AISDecoder.getDecValueByBinStr(decBytes.substring(57, 85), true);
 		this.longitude = longitudeHour / 600000.0;
 
 		if (this.longitude > 180.0 || this.longitude < -180.0)
-			throw new AISParseException(
-					AISParseException.LONGITUDE_OUT_OF_RANGE + " " + longitude);
+			throw new AISParseException(AISParseException.LONGITUDE_OUT_OF_RANGE + " " + longitude);
 
 		/* Latitude bits 85-111 */
-		int latitudeHour = AISDecoder.getDecValueByBinStr(
-				decBytes.substring(85, 112), true);
+		final int latitudeHour = AISDecoder.getDecValueByBinStr(decBytes.substring(85, 112), true);
 		this.latitude = latitudeHour / 600000.0;
 
 		if (this.latitude > 90.0 || this.latitude < -90.0)
-			throw new AISParseException(AISParseException.LATITUDE_OUT_OF_RANGE
-					+ " " + latitude);
+			throw new AISParseException(AISParseException.LATITUDE_OUT_OF_RANGE + " " + latitude);
 
 		/* COG bits 112-123 */
-		this.cog = AISDecoder.getDecValueByBinStr(decBytes.substring(112, 124),
-				false) / 10.0;
+		this.cog = AISDecoder.getDecValueByBinStr(decBytes.substring(112, 124), false) / 10.0;
 
 		/* true heading bits 124-132 */
-		this.trueHeading = AISDecoder.getDecValueByBinStr(
-				decBytes.substring(124, 133), false);
+		this.trueHeading = AISDecoder.getDecValueByBinStr(decBytes.substring(124, 133), false);
 
 		/* Name bits 143-262 - 120 bits */
-		this.name = AISDecoder.getDecStringFrom6BitStr(decBytes.substring(143,
-				263));
+		this.name = AISDecoder.getDecStringFrom6BitStr(decBytes.substring(143, 263));
 
 		// Type of ship and cargo type bits 263-270 - 8 bits
 
-		this.shipType = AISDecoder.getDecValueByBinStr(
-				decBytes.substring(263, 271), false);
+		this.shipType = AISDecoder.getDecValueByBinStr(decBytes.substring(263, 271), false);
 
-		String mmsiStr = Integer.toString(this.mmsi);
+		final String mmsiStr = Integer.toString(this.mmsi);
 		if (!(mmsiStr.length() < 3)) {
 			this.countryId = Integer.valueOf(mmsiStr.substring(0, 3));
 		} else {
@@ -280,14 +171,10 @@ public class AISPositionExtB extends AISPositionB {
 		}
 
 		/* Dimension/reference for position bits 271-300 - 30 bits */
-		this.dimensionA = AISDecoder.getDecValueByBinStr(
-				decBytes.substring(271, 280), false);
-		this.dimensionB = AISDecoder.getDecValueByBinStr(
-				decBytes.substring(280, 289), false);
-		this.dimensionC = AISDecoder.getDecValueByBinStr(
-				decBytes.substring(289, 295), false);
-		this.dimensionD = AISDecoder.getDecValueByBinStr(
-				decBytes.substring(295, 301), false);
+		this.dimensionA = AISDecoder.getDecValueByBinStr(decBytes.substring(271, 280), false);
+		this.dimensionB = AISDecoder.getDecValueByBinStr(decBytes.substring(280, 289), false);
+		this.dimensionC = AISDecoder.getDecValueByBinStr(decBytes.substring(289, 295), false);
+		this.dimensionD = AISDecoder.getDecValueByBinStr(decBytes.substring(295, 301), false);
 
 //		int length = dimensionA + dimensionB;
 //		int width = dimensionC + dimensionD;
@@ -295,10 +182,101 @@ public class AISPositionExtB extends AISPositionB {
 		// TODO: impelemt the rest bits
 		// TODO: implement vesselType, cargoType, countryId, msgSrc
 
-		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		final Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		this.msgTimestamp = new Timestamp(cal.getTimeInMillis());
 
 		return this;
+	}
+
+	@Override
+	public boolean equals(final Object o) {
+		if (o == null)
+			return false;
+		if (o == this)
+			return true;
+		if (!o.getClass().equals(o.getClass()))
+			return false;
+
+		final AISPositionExtB that = (AISPositionExtB) o;
+
+		final boolean same = super.equals(that) && this.shipType == that.shipType && this.dimensionA == that.dimensionA
+				&& this.dimensionB == that.dimensionB && this.dimensionC == that.dimensionC
+				&& this.dimensionD == that.dimensionD && this.countryId == that.countryId;
+
+		return same;
+	}
+
+	public int getCountryId() {
+		return countryId;
+	}
+
+	public int getDimensionA() {
+		return dimensionA;
+	}
+
+	public int getDimensionB() {
+		return dimensionB;
+	}
+
+	public int getDimensionC() {
+		return dimensionC;
+	}
+
+	public int getDimensionD() {
+		return dimensionD;
+	}
+
+	public int getMsgSrc() {
+		return msgSrc;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setCountryId(final int countryId) {
+		this.countryId = countryId;
+	}
+
+	public void setDimensionA(final int dimensionA) {
+		this.dimensionA = dimensionA;
+	}
+
+	public void setDimensionB(final int dimensionB) {
+		this.dimensionB = dimensionB;
+	}
+
+	public void setDimensionC(final int dimensionC) {
+		this.dimensionC = dimensionC;
+	}
+
+	public void setDimensionD(final int dimensionD) {
+		this.dimensionD = dimensionD;
+	}
+
+	public void setMsgSrc(final int msgSrc) {
+		this.msgSrc = msgSrc;
+	}
+
+	public void setName(final String name) {
+		this.name = name;
+	}
+
+	@Override
+	public String toString() {
+		final StringBuffer sbuffer = new StringBuffer();
+		sbuffer.append("AISPositionExtB\n");
+		sbuffer.append(super.toString());
+		sbuffer.append("AISPositionExtB\n");
+		sbuffer.append("NAME\t\t" + this.name + "\n");
+		sbuffer.append("SHIPTYPE\t" + this.shipType + "\n");
+		sbuffer.append("DIMA\t\t" + this.dimensionA + "\n");
+		sbuffer.append("DIMB\t\t" + this.dimensionB + "\n");
+		sbuffer.append("DIMC\t\t" + this.dimensionC + "\n");
+		sbuffer.append("DIMD\t\t" + this.dimensionD + "\n");
+		sbuffer.append("COUNTRYID\t" + this.countryId + "\n");
+		sbuffer.append("MSGSRC\t\t" + this.msgSrc + "\n");
+		return sbuffer.toString();
 	}
 
 }

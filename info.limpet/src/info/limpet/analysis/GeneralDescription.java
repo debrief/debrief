@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 /*****************************************************************************
  *  Limpet - the Lightweight InforMation ProcEssing Toolkit
  *  http://limpet.info
@@ -14,11 +28,6 @@
  *****************************************************************************/
 package info.limpet.analysis;
 
-import info.limpet.IDocument;
-import info.limpet.IStoreItem;
-import info.limpet.impl.SampleData;
-import info.limpet.operations.CollectionComplianceTests;
-
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,151 +39,121 @@ import javax.measure.unit.Unit;
 
 import org.eclipse.january.dataset.DoubleDataset;
 
-public abstract class GeneralDescription extends CoreAnalysis
-{
+import info.limpet.IDocument;
+import info.limpet.IStoreItem;
+import info.limpet.impl.SampleData;
+import info.limpet.operations.CollectionComplianceTests;
 
-  public GeneralDescription()
-  {
-    super("General Description");
-  }
+public abstract class GeneralDescription extends CoreAnalysis {
 
-  private interface INumberFormatter
-  {
-    String format(double value);
-  }
+	private interface INumberFormatter {
+		String format(double value);
+	}
 
-  private class MilliFormatter implements INumberFormatter
-  {
-    private SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
+	private class MilliFormatter implements INumberFormatter {
+		private final SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
 
-    @Override
-    public String format(double value)
-    {
-      return sdf.format(new Date((long) value));
-    }
-  }
+		@Override
+		public String format(final double value) {
+			return sdf.format(new Date((long) value));
+		}
+	}
 
-  private class SecondFormatter implements INumberFormatter
-  {
-    private SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
+	private class NumberFormatter implements INumberFormatter {
+		@Override
+		public String format(final double value) {
+			return "" + (int) value;
+		}
+	}
 
-    @Override
-    public String format(double value)
-    {
-      return sdf.format(new Date((long) (value / 1000d)));
-    }
-  }
+	private class SecondFormatter implements INumberFormatter {
+		private final SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
 
-  private class NumberFormatter implements INumberFormatter
-  {
-    @Override
-    public String format(double value)
-    {
-      return "" + (int) value;
-    }
-  }
+		@Override
+		public String format(final double value) {
+			return sdf.format(new Date((long) (value / 1000d)));
+		}
+	}
 
-  private final CollectionComplianceTests aTests =
-      new CollectionComplianceTests();
+	private final CollectionComplianceTests aTests = new CollectionComplianceTests();
 
-  @Override
-  public void analyse(List<IStoreItem> selection)
-  {
-    List<String> titles = new ArrayList<String>();
-    List<String> values = new ArrayList<String>();
+	public GeneralDescription() {
+		super("General Description");
+	}
 
-    // check compatibility
-    if (appliesTo(selection) && selection.size() == 1)
-    {
-      // ok, let's go for it.
-      for (Iterator<IStoreItem> iter = selection.iterator(); iter.hasNext();)
-      {
-        IDocument<?> thisC = (IDocument<?>) iter.next();
+	@Override
+	public void analyse(final List<IStoreItem> selection) {
+		final List<String> titles = new ArrayList<String>();
+		final List<String> values = new ArrayList<String>();
 
-        // ok, avoid threading issues by extracting some items
-        final DoubleDataset index =
-            thisC.isIndexed() ? thisC.getIndexValues().clone() : null;
+		// check compatibility
+		if (appliesTo(selection) && selection.size() == 1) {
+			// ok, let's go for it.
+			for (final Iterator<IStoreItem> iter = selection.iterator(); iter.hasNext();) {
+				final IDocument<?> thisC = (IDocument<?>) iter.next();
 
-        titles.add("Collection");
-        values.add(thisC.getName());
-        titles.add("Size");
-        values.add("" + thisC.size());
-        titles.add("Quantity");
-        values.add("" + thisC.isQuantity());
-        titles.add("Indexed");
-        values.add("" + thisC.isIndexed());
-        if (thisC.isIndexed())
-        {
-          titles.add("Index units");
-          final Unit<?> indexUnits = thisC.getIndexUnits();
-          if (indexUnits == null)
-          {
-            System.err.println(thisC + " is missing index units");
-            values.add("MISSING");
-          }
-          else
-          {
-            values.add("" + thisC.getIndexUnits().toString());
-          }
+				// ok, avoid threading issues by extracting some items
+				final DoubleDataset index = thisC.isIndexed() ? thisC.getIndexValues().clone() : null;
 
-          // check it has data
-          if (thisC.size() > 0)
-          {
-            if (aTests.allOneDim(selection))
-            {
-              final double lower = index.get(0);
-              final double upper = index.get(thisC.size() - 1);
-              final INumberFormatter formatter;
-              if (indexUnits != null)
-              {
-                // have a go at the index range
-                if (indexUnits.equals(SI.SECOND))
-                {
-                  formatter = new SecondFormatter();
-                }
-                else if (indexUnits.equals(SampleData.MILLIS))
-                {
-                  formatter = new MilliFormatter();
-                }
-                else
-                {
-                  formatter = new NumberFormatter();
-                }
-              }
-              else
-              {
-                formatter = new NumberFormatter();
-              }
+				titles.add("Collection");
+				values.add(thisC.getName());
+				titles.add("Size");
+				values.add("" + thisC.size());
+				titles.add("Quantity");
+				values.add("" + thisC.isQuantity());
+				titles.add("Indexed");
+				values.add("" + thisC.isIndexed());
+				if (thisC.isIndexed()) {
+					titles.add("Index units");
+					final Unit<?> indexUnits = thisC.getIndexUnits();
+					if (indexUnits == null) {
+						System.err.println(thisC + " is missing index units");
+						values.add("MISSING");
+					} else {
+						values.add("" + thisC.getIndexUnits().toString());
+					}
 
-              titles.add("Index range");
-              values.add(formatter.format(lower) + "-"
-                  + formatter.format(upper));
-            }
-            else if (aTests.allTwoDim(selection))
-            {
-              // ok, ouput the index ranges for the two dimensions
-            }
-            else
-            {
-              // TODO: we need to output the index ranges for multi-dim datasets
-            }
-          }
-        }
-      }
-    }
+					// check it has data
+					if (thisC.size() > 0) {
+						if (aTests.allOneDim(selection)) {
+							final double lower = index.get(0);
+							final double upper = index.get(thisC.size() - 1);
+							final INumberFormatter formatter;
+							if (indexUnits != null) {
+								// have a go at the index range
+								if (indexUnits.equals(SI.SECOND)) {
+									formatter = new SecondFormatter();
+								} else if (indexUnits.equals(SampleData.MILLIS)) {
+									formatter = new MilliFormatter();
+								} else {
+									formatter = new NumberFormatter();
+								}
+							} else {
+								formatter = new NumberFormatter();
+							}
 
-    if (titles.size() > 0)
-    {
-      presentResults(titles, values);
-    }
+							titles.add("Index range");
+							values.add(formatter.format(lower) + "-" + formatter.format(upper));
+						} else if (aTests.allTwoDim(selection)) {
+							// ok, ouput the index ranges for the two dimensions
+						} else {
+							// TODO: we need to output the index ranges for
+							// multi-dim datasets
+						}
+					}
+				}
+			}
+		}
 
-  }
+		if (titles.size() > 0) {
+			presentResults(titles, values);
+		}
 
-  private boolean appliesTo(List<IStoreItem> selection)
-  {
-    return aTests.allCollections(selection);
-  }
+	}
 
-  protected abstract void presentResults(List<String> titles,
-      List<String> values);
+	private boolean appliesTo(final List<IStoreItem> selection) {
+		return aTests.allCollections(selection);
+	}
+
+	protected abstract void presentResults(List<String> titles, List<String> values);
 }

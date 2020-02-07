@@ -1,277 +1,283 @@
 package edu.nps.moves.dis;
 
-import java.util.*;
-import java.io.*;
-import edu.nps.moves.disenum.*;
-import edu.nps.moves.disutil.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Section 5.3.11.1: Information about environmental effects and processes. This requires manual cleanup. the environmental        record is variable, as is the padding. UNFINISHED
+ * Section 5.3.11.1: Information about environmental effects and processes. This
+ * requires manual cleanup. the environmental record is variable, as is the
+ * padding. UNFINISHED
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class EnvironmentalProcessPdu extends SyntheticEnvironmentFamilyPdu implements Serializable
-{
-   /** Environmental process ID */
-   protected EntityID  environementalProcessID = new EntityID(); 
+public class EnvironmentalProcessPdu extends SyntheticEnvironmentFamilyPdu implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   /** Environment type */
-   protected EntityType  environmentType = new EntityType(); 
+	/** Environmental process ID */
+	protected EntityID environementalProcessID = new EntityID();
 
-   /** model type */
-   protected short  modelType;
+	/** Environment type */
+	protected EntityType environmentType = new EntityType();
 
-   /** Environment status */
-   protected short  environmentStatus;
+	/** model type */
+	protected short modelType;
 
-   /** number of environment records  */
-   protected short  numberOfEnvironmentRecords;
+	/** Environment status */
+	protected short environmentStatus;
 
-   /** PDU sequence number for the environmentla process if pdu sequencing required */
-   protected int  sequenceNumber;
+	/** number of environment records */
+	protected short numberOfEnvironmentRecords;
 
-   /** environemt records */
-   protected List< Environment > environmentRecords = new ArrayList< Environment >(); 
+	/**
+	 * PDU sequence number for the environmentla process if pdu sequencing required
+	 */
+	protected int sequenceNumber;
 
-/** Constructor */
- public EnvironmentalProcessPdu()
- {
-    setPduType( (short)41 );
- }
+	/** environemt records */
+	protected List<Environment> environmentRecords = new ArrayList<Environment>();
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+	/** Constructor */
+	public EnvironmentalProcessPdu() {
+		setPduType((short) 41);
+	}
 
-   marshalSize = super.getMarshalledSize();
-   marshalSize = marshalSize + environementalProcessID.getMarshalledSize();  // environementalProcessID
-   marshalSize = marshalSize + environmentType.getMarshalledSize();  // environmentType
-   marshalSize = marshalSize + 1;  // modelType
-   marshalSize = marshalSize + 1;  // environmentStatus
-   marshalSize = marshalSize + 1;  // numberOfEnvironmentRecords
-   marshalSize = marshalSize + 2;  // sequenceNumber
-   for(int idx=0; idx < environmentRecords.size(); idx++)
-   {
-        Environment listElement = environmentRecords.get(idx);
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-   }
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-   return marshalSize;
-}
+		if (this == obj) {
+			return true;
+		}
 
+		if (obj == null) {
+			return false;
+		}
 
-public void setEnvironementalProcessID(EntityID pEnvironementalProcessID)
-{ environementalProcessID = pEnvironementalProcessID;
-}
+		if (getClass() != obj.getClass())
+			return false;
 
-public EntityID getEnvironementalProcessID()
-{ return environementalProcessID; 
-}
+		return equalsImpl(obj);
+	}
 
-public void setEnvironmentType(EntityType pEnvironmentType)
-{ environmentType = pEnvironmentType;
-}
+	@Override
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-public EntityType getEnvironmentType()
-{ return environmentType; 
-}
+		if (!(obj instanceof EnvironmentalProcessPdu))
+			return false;
 
-public void setModelType(short pModelType)
-{ modelType = pModelType;
-}
+		final EnvironmentalProcessPdu rhs = (EnvironmentalProcessPdu) obj;
 
-public short getModelType()
-{ return modelType; 
-}
+		if (!(environementalProcessID.equals(rhs.environementalProcessID)))
+			ivarsEqual = false;
+		if (!(environmentType.equals(rhs.environmentType)))
+			ivarsEqual = false;
+		if (!(modelType == rhs.modelType))
+			ivarsEqual = false;
+		if (!(environmentStatus == rhs.environmentStatus))
+			ivarsEqual = false;
+		if (!(numberOfEnvironmentRecords == rhs.numberOfEnvironmentRecords))
+			ivarsEqual = false;
+		if (!(sequenceNumber == rhs.sequenceNumber))
+			ivarsEqual = false;
 
-public void setEnvironmentStatus(short pEnvironmentStatus)
-{ environmentStatus = pEnvironmentStatus;
-}
+		for (int idx = 0; idx < environmentRecords.size(); idx++) {
+			if (!(environmentRecords.get(idx).equals(rhs.environmentRecords.get(idx))))
+				ivarsEqual = false;
+		}
 
-public short getEnvironmentStatus()
-{ return environmentStatus; 
-}
+		return ivarsEqual && super.equalsImpl(rhs);
+	}
 
-public short getNumberOfEnvironmentRecords()
-{ return (short)environmentRecords.size();
-}
+	public EntityID getEnvironementalProcessID() {
+		return environementalProcessID;
+	}
 
-/** Note that setting this value will not change the marshalled value. The list whose length this describes is used for that purpose.
- * The getnumberOfEnvironmentRecords method will also be based on the actual list length rather than this value. 
- * The method is simply here for java bean completeness.
- */
-public void setNumberOfEnvironmentRecords(short pNumberOfEnvironmentRecords)
-{ numberOfEnvironmentRecords = pNumberOfEnvironmentRecords;
-}
+	public List<Environment> getEnvironmentRecords() {
+		return environmentRecords;
+	}
 
-public void setSequenceNumber(int pSequenceNumber)
-{ sequenceNumber = pSequenceNumber;
-}
+	public short getEnvironmentStatus() {
+		return environmentStatus;
+	}
 
-public int getSequenceNumber()
-{ return sequenceNumber; 
-}
+	public EntityType getEnvironmentType() {
+		return environmentType;
+	}
 
-public void setEnvironmentRecords(List<Environment> pEnvironmentRecords)
-{ environmentRecords = pEnvironmentRecords;
-}
+	@Override
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
-public List<Environment> getEnvironmentRecords()
-{ return environmentRecords; }
+		marshalSize = super.getMarshalledSize();
+		marshalSize = marshalSize + environementalProcessID.getMarshalledSize(); // environementalProcessID
+		marshalSize = marshalSize + environmentType.getMarshalledSize(); // environmentType
+		marshalSize = marshalSize + 1; // modelType
+		marshalSize = marshalSize + 1; // environmentStatus
+		marshalSize = marshalSize + 1; // numberOfEnvironmentRecords
+		marshalSize = marshalSize + 2; // sequenceNumber
+		for (int idx = 0; idx < environmentRecords.size(); idx++) {
+			final Environment listElement = environmentRecords.get(idx);
+			marshalSize = marshalSize + listElement.getMarshalledSize();
+		}
 
+		return marshalSize;
+	}
 
-public void marshal(DataOutputStream dos)
-{
-    super.marshal(dos);
-    try 
-    {
-       environementalProcessID.marshal(dos);
-       environmentType.marshal(dos);
-       dos.writeByte( (byte)modelType);
-       dos.writeByte( (byte)environmentStatus);
-       dos.writeByte( (byte)environmentRecords.size());
-       dos.writeShort( (short)sequenceNumber);
+	public short getModelType() {
+		return modelType;
+	}
 
-       for(int idx = 0; idx < environmentRecords.size(); idx++)
-       {
-            Environment aEnvironment = environmentRecords.get(idx);
-            aEnvironment.marshal(dos);
-       } // end of list marshalling
+	public short getNumberOfEnvironmentRecords() {
+		return (short) environmentRecords.size();
+	}
 
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+	public int getSequenceNumber() {
+		return sequenceNumber;
+	}
 
-public void unmarshal(DataInputStream dis)
-{
-     super.unmarshal(dis);
+	@Override
+	public void marshal(final DataOutputStream dos) {
+		super.marshal(dos);
+		try {
+			environementalProcessID.marshal(dos);
+			environmentType.marshal(dos);
+			dos.writeByte((byte) modelType);
+			dos.writeByte((byte) environmentStatus);
+			dos.writeByte((byte) environmentRecords.size());
+			dos.writeShort((short) sequenceNumber);
 
-    try 
-    {
-       environementalProcessID.unmarshal(dis);
-       environmentType.unmarshal(dis);
-       modelType = (short)dis.readUnsignedByte();
-       environmentStatus = (short)dis.readUnsignedByte();
-       numberOfEnvironmentRecords = (short)dis.readUnsignedByte();
-       sequenceNumber = (int)dis.readUnsignedShort();
-       for(int idx = 0; idx < numberOfEnvironmentRecords; idx++)
-       {
-           Environment anX = new Environment();
-           anX.unmarshal(dis);
-           environmentRecords.add(anX);
-       }
+			for (int idx = 0; idx < environmentRecords.size(); idx++) {
+				final Environment aEnvironment = environmentRecords.get(idx);
+				aEnvironment.marshal(dos);
+			} // end of list marshalling
 
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	@Override
+	public void marshal(final java.nio.ByteBuffer buff) {
+		super.marshal(buff);
+		environementalProcessID.marshal(buff);
+		environmentType.marshal(buff);
+		buff.put((byte) modelType);
+		buff.put((byte) environmentStatus);
+		buff.put((byte) environmentRecords.size());
+		buff.putShort((short) sequenceNumber);
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
-       super.marshal(buff);
-       environementalProcessID.marshal(buff);
-       environmentType.marshal(buff);
-       buff.put( (byte)modelType);
-       buff.put( (byte)environmentStatus);
-       buff.put( (byte)environmentRecords.size());
-       buff.putShort( (short)sequenceNumber);
+		for (int idx = 0; idx < environmentRecords.size(); idx++) {
+			final Environment aEnvironment = environmentRecords.get(idx);
+			aEnvironment.marshal(buff);
+		} // end of list marshalling
 
-       for(int idx = 0; idx < environmentRecords.size(); idx++)
-       {
-            Environment aEnvironment = (Environment)environmentRecords.get(idx);
-            aEnvironment.marshal(buff);
-       } // end of list marshalling
+	} // end of marshal method
 
-    } // end of marshal method
+	public void setEnvironementalProcessID(final EntityID pEnvironementalProcessID) {
+		environementalProcessID = pEnvironementalProcessID;
+	}
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       super.unmarshal(buff);
+	public void setEnvironmentRecords(final List<Environment> pEnvironmentRecords) {
+		environmentRecords = pEnvironmentRecords;
+	}
 
-       environementalProcessID.unmarshal(buff);
-       environmentType.unmarshal(buff);
-       modelType = (short)(buff.get() & 0xFF);
-       environmentStatus = (short)(buff.get() & 0xFF);
-       numberOfEnvironmentRecords = (short)(buff.get() & 0xFF);
-       sequenceNumber = (int)(buff.getShort() & 0xFFFF);
-       for(int idx = 0; idx < numberOfEnvironmentRecords; idx++)
-       {
-            Environment anX = new Environment();
-            anX.unmarshal(buff);
-            environmentRecords.add(anX);
-       }
+	public void setEnvironmentStatus(final short pEnvironmentStatus) {
+		environmentStatus = pEnvironmentStatus;
+	}
 
- } // end of unmarshal method 
+	public void setEnvironmentType(final EntityType pEnvironmentType) {
+		environmentType = pEnvironmentType;
+	}
 
+	public void setModelType(final short pModelType) {
+		modelType = pModelType;
+	}
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+	/**
+	 * Note that setting this value will not change the marshalled value. The list
+	 * whose length this describes is used for that purpose. The
+	 * getnumberOfEnvironmentRecords method will also be based on the actual list
+	 * length rather than this value. The method is simply here for java bean
+	 * completeness.
+	 */
+	public void setNumberOfEnvironmentRecords(final short pNumberOfEnvironmentRecords) {
+		numberOfEnvironmentRecords = pNumberOfEnvironmentRecords;
+	}
 
-    if(this == obj){
-      return true;
-    }
+	public void setSequenceNumber(final int pSequenceNumber) {
+		sequenceNumber = pSequenceNumber;
+	}
 
-    if(obj == null){
-       return false;
-    }
+	@Override
+	public void unmarshal(final DataInputStream dis) {
+		super.unmarshal(dis);
 
-    if(getClass() != obj.getClass())
-        return false;
+		try {
+			environementalProcessID.unmarshal(dis);
+			environmentType.unmarshal(dis);
+			modelType = (short) dis.readUnsignedByte();
+			environmentStatus = (short) dis.readUnsignedByte();
+			numberOfEnvironmentRecords = (short) dis.readUnsignedByte();
+			sequenceNumber = dis.readUnsignedShort();
+			for (int idx = 0; idx < numberOfEnvironmentRecords; idx++) {
+				final Environment anX = new Environment();
+				anX.unmarshal(dis);
+				environmentRecords.add(anX);
+			}
 
-    return equalsImpl(obj);
- }
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
-@Override
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	@Override
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		super.unmarshal(buff);
 
-    if(!(obj instanceof EnvironmentalProcessPdu))
-        return false;
+		environementalProcessID.unmarshal(buff);
+		environmentType.unmarshal(buff);
+		modelType = (short) (buff.get() & 0xFF);
+		environmentStatus = (short) (buff.get() & 0xFF);
+		numberOfEnvironmentRecords = (short) (buff.get() & 0xFF);
+		sequenceNumber = buff.getShort() & 0xFFFF;
+		for (int idx = 0; idx < numberOfEnvironmentRecords; idx++) {
+			final Environment anX = new Environment();
+			anX.unmarshal(buff);
+			environmentRecords.add(anX);
+		}
 
-     final EnvironmentalProcessPdu rhs = (EnvironmentalProcessPdu)obj;
-
-     if( ! (environementalProcessID.equals( rhs.environementalProcessID) )) ivarsEqual = false;
-     if( ! (environmentType.equals( rhs.environmentType) )) ivarsEqual = false;
-     if( ! (modelType == rhs.modelType)) ivarsEqual = false;
-     if( ! (environmentStatus == rhs.environmentStatus)) ivarsEqual = false;
-     if( ! (numberOfEnvironmentRecords == rhs.numberOfEnvironmentRecords)) ivarsEqual = false;
-     if( ! (sequenceNumber == rhs.sequenceNumber)) ivarsEqual = false;
-
-     for(int idx = 0; idx < environmentRecords.size(); idx++)
-     {
-        if( ! ( environmentRecords.get(idx).equals(rhs.environmentRecords.get(idx)))) ivarsEqual = false;
-     }
-
-
-    return ivarsEqual && super.equalsImpl(rhs);
- }
+	} // end of unmarshal method
 } // end of class

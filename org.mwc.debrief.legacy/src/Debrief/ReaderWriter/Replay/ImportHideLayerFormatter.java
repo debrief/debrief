@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: ImportTimeText.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.3 $
@@ -68,147 +69,130 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
 
 import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.Formatters.HideLayerFormatListener;
 import MWC.GUI.PlainWrapper;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
+import junit.framework.TestCase;
 
 /**
  * class to parse a label from a line of text
  */
-final class ImportHideLayerFormatter extends AbstractPlainLineImporter
-{
+final class ImportHideLayerFormatter extends AbstractPlainLineImporter {
 
-  /*
-   * example: ;FORMAT_FIX: 10_sec_sym SYMBOL NULL NULL TRUE 600000
-   */
+	/*
+	 * example: ;FORMAT_FIX: 10_sec_sym SYMBOL NULL NULL TRUE 600000
+	 */
 
-  /**
-   * the type for this string
-   */
-  private final String _myType = ";FORMAT_LAYER_HIDE:";
+	public static class TestMe extends TestCase {
+		@Test
+		public void testRead() {
+			/*
+			 * example:
+			 */
 
-  /**
-   * read in this string and return a Label
-   */
-  public final Object readThisLine(final String theLine)
-  {
+			final ImportHideLayerFormatter iff = new ImportHideLayerFormatter();
+			HideLayerFormatListener res = (HideLayerFormatListener) iff
+					.readThisLine(";FORMAT_LAYER_HIDE: \"format name\" \"layer a name1\" layer_name2");
+			assertNotNull(res);
+			assertEquals("has correct name", "format name", res.getName());
+			assertEquals("has correct freq", 2, res.getLayers().length);
 
-    // get a stream from the string
-    final StringTokenizer st = new StringTokenizer(theLine);
+			res = (HideLayerFormatListener) iff.readThisLine(";FORMAT_LAYER_HIDE: format_name");
+			assertNotNull(res);
+			assertEquals("has correct name", "format_name", res.getName());
+			assertEquals("has correct freq", 0, res.getLayers().length);
 
-    // declare local variables
-    String formatName;
-    List<String> trackNames = new ArrayList<String>();
+		}
+	}
 
-    // skip the comment identifier
-    st.nextToken();
+	/**
+	 * the type for this string
+	 */
+	private final String _myType = ";FORMAT_LAYER_HIDE:";
 
-    formatName = checkForQuotedName(st).trim();
+	/**
+	 * indicate if you can export this type of object
+	 *
+	 * @param val the object to test
+	 * @return boolean saying whether you can do it
+	 */
+	@Override
+	public final boolean canExportThis(final Object val) {
+		boolean res = false;
 
-    while (st.hasMoreElements())
-    {
-      String nextItem = checkForQuotedName(st).trim();
-      if (nextItem != null && nextItem.length() > 0)
-      {
-        trackNames.add(nextItem);
-      }
-    }
+		if (val instanceof LabelWrapper) {
+			// also see if there is just the start time specified
+			final LabelWrapper lw = (LabelWrapper) val;
+			if ((lw.getStartDTG() != null) && (lw.getEndDTG() == null)) {
+				// yes, this is a label with only the start time specified,
+				// we can export it
+				res = true;
+			}
+		}
+		return res;
+	}
 
-    String[] names = trackNames.toArray(new String[]
-    {});
+	/**
+	 * export the specified shape as a string
+	 *
+	 * @return the shape in String form
+	 * @param theWrapper the Shape we are exporting
+	 */
+	@Override
+	public final String exportThis(final MWC.GUI.Plottable theWrapper) {
+		final LabelWrapper theLabel = (LabelWrapper) theWrapper;
 
-    PlainWrapper cif = new HideLayerFormatListener(formatName, names);
+		String line = null;
 
-    return cif;
-  }
+		line = _myType + " BB ";
+		line = line + MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(theLabel.getLocation());
 
-  /**
-   * determine the identifier returning this type of annotation
-   */
-  public final String getYourType()
-  {
-    return _myType;
-  }
+		line = line + theLabel.getLabel();
 
-  /**
-   * export the specified shape as a string
-   * 
-   * @return the shape in String form
-   * @param theWrapper
-   *          the Shape we are exporting
-   */
-  public final String exportThis(final MWC.GUI.Plottable theWrapper)
-  {
-    final LabelWrapper theLabel = (LabelWrapper) theWrapper;
+		return line;
+	}
 
-    String line = null;
+	/**
+	 * determine the identifier returning this type of annotation
+	 */
+	@Override
+	public final String getYourType() {
+		return _myType;
+	}
 
-    line = _myType + " BB ";
-    line =
-        line
-            + MWC.Utilities.TextFormatting.DebriefFormatLocation
-                .toString(theLabel.getLocation());
+	/**
+	 * read in this string and return a Label
+	 */
+	@Override
+	public final Object readThisLine(final String theLine) {
 
-    line = line + theLabel.getLabel();
+		// get a stream from the string
+		final StringTokenizer st = new StringTokenizer(theLine);
 
-    return line;
-  }
+		// declare local variables
+		String formatName;
+		final List<String> trackNames = new ArrayList<String>();
 
-  /**
-   * indicate if you can export this type of object
-   * 
-   * @param val
-   *          the object to test
-   * @return boolean saying whether you can do it
-   */
-  public final boolean canExportThis(final Object val)
-  {
-    boolean res = false;
+		// skip the comment identifier
+		st.nextToken();
 
-    if (val instanceof LabelWrapper)
-    {
-      // also see if there is just the start time specified
-      final LabelWrapper lw = (LabelWrapper) val;
-      if ((lw.getStartDTG() != null) && (lw.getEndDTG() == null))
-      {
-        // yes, this is a label with only the start time specified,
-        // we can export it
-        res = true;
-      }
-    }
-    return res;
-  }
+		formatName = checkForQuotedName(st).trim();
 
-  public static class TestMe extends TestCase
-  {
-    @Test
-    public void testRead()
-    {
-      /*
-       * example:
-       */
+		while (st.hasMoreElements()) {
+			final String nextItem = checkForQuotedName(st).trim();
+			if (nextItem != null && nextItem.length() > 0) {
+				trackNames.add(nextItem);
+			}
+		}
 
-      ImportHideLayerFormatter iff = new ImportHideLayerFormatter();
-      HideLayerFormatListener res =
-          (HideLayerFormatListener) iff
-              .readThisLine(";FORMAT_LAYER_HIDE: \"format name\" \"layer a name1\" layer_name2");
-      assertNotNull(res);
-      assertEquals("has correct name", "format name", res.getName());
-      assertEquals("has correct freq", 2, res.getLayers().length);
+		final String[] names = trackNames.toArray(new String[] {});
 
-      res =
-          (HideLayerFormatListener) iff
-              .readThisLine(";FORMAT_LAYER_HIDE: format_name");
-      assertNotNull(res);
-      assertEquals("has correct name", "format_name", res.getName());
-      assertEquals("has correct freq", 0, res.getLayers().length);
+		final PlainWrapper cif = new HideLayerFormatListener(formatName, names);
 
-    }
-  }
+		return cif;
+	}
 
 }

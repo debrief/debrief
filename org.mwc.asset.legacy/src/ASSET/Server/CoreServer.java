@@ -1,296 +1,285 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 
 package ASSET.Server;
-
-import ASSET.ScenarioType;
-import ASSET.ServerType;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
+import ASSET.ScenarioType;
+import ASSET.ServerType;
+
 /**
  * The real implementation of a server
  */
-public class CoreServer implements ServerType
-{
+public class CoreServer implements ServerType {
 
-  ////////////////////////////////////////////////////////////////////////
-  // member objects
-  ////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////
+	// member objects
+	////////////////////////////////////////////////////////////////////////
 
-  /**
-   */
-  private HashMap<Integer, ScenarioType> _myScenarios;
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	public static class ServerTest extends junit.framework.TestCase {
+		protected class createList implements ScenarioCreatedListener {
+			@Override
+			public void scenarioCreated(final int index) {
+				createdCounter++;
+			}
 
-  /**
-   * our list of listeners
-   */
-  private Vector<ScenarioCreatedListener> _myCreatedListeners;
+			@Override
+			public void scenarioDestroyed(final int index) {
+				destroyedCounter++;
+			}
 
-  ////////////////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////////////////
+		}
 
-  ////////////////////////////////////////////////////////////////////////
-  // methods
-  ////////////////////////////////////////////////////////////////////////
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+		protected int createdCounter = 0;
 
-  /**
-   * add object as a listener for this type of event
-   */
-  public void addScenarioCreatedListener(final ScenarioCreatedListener listener)
-  {
-    // check we have the list
-    if (_myCreatedListeners == null)
-      _myCreatedListeners = new Vector<ScenarioCreatedListener>(0, 1);
+		protected int destroyedCounter = 0;
 
-    // add this listener
-    _myCreatedListeners.add(listener);
-  }
+		public ServerTest(final String val) {
+			super(val);
+		}
 
-  /**
-   * remove listener for this type of event
-   */
-  public void removeScenarioCreatedListener(final ScenarioCreatedListener listener)
-  {
-    _myCreatedListeners.remove(listener);
-  }
+		public void testScenarios() {
+			// create server
+			final ServerType srv = new CoreServer();
 
-  /**
-   * fire the scenario created/destroyed event
-   */
-  private void fireCreatedDestroyed(final boolean created, final int index)
-  {
-    if (_myCreatedListeners == null)
-      return;
+			// add as listener
+			final createList cl = new createList();
+			srv.addScenarioCreatedListener(cl);
 
-    final Iterator<ScenarioCreatedListener> it = _myCreatedListeners.iterator();
-    while (it.hasNext())
-    {
-      final ScenarioCreatedListener list = (ScenarioCreatedListener) it.next();
-      if (created)
-        list.scenarioCreated(index);
-      else
-        list.scenarioDestroyed(index);
-    }
-  }
+			// create new scenarios
+			int s2 = srv.createNewScenario("scrap A");
+			s2 = srv.createNewScenario("scrap");
 
-  /**
-   * Return a particular scenario - so that the scenario can be controlled directly.  Listeners added/removed. Participants added/removed, etc.
-   */
-  public ScenarioType getThisScenario(final int id)
-  {
-    ScenarioType res = null;
-    if (_myScenarios != null)
-      res = (ScenarioType) _myScenarios.get(new Integer(id));
+			// now stop listening for these events
+			srv.removeScenarioCreatedListener(cl);
 
-    return res;
-  }
+			// add another, which we shouldn't hear about
+			final int s3 = srv.createNewScenario("scrap");
 
-  /**
-   * Provide a list of id numbers of scenarios we contain
-   *
-   * @return list of ids of scenarios we contain
-   */
-  public Integer[] getListOfScenarios()
-  {
-    Integer[] res = new Integer[0];
+			// check events got fired
+			assertEquals("count of created events (one ignored)", createdCounter, 2);
+			assertEquals("count of destroyed events", destroyedCounter, 0);
 
-    if (_myScenarios != null)
-    {
-      final java.util.Collection<Integer> vals = _myScenarios.keySet();
-      res = vals.toArray(res);
-    }
+			// get list of scenarios
+			final Integer[] res = srv.getListOfScenarios();
 
-    return res;
-  }
+			assertEquals("Number of scenarios", res.length, 3);
 
-  /**
-   * destroy a scenario (calls the close() method on the scenario, which triggers the close)
-   */
-  public void closeScenario(final int index)
-  {
-    // check we have the scenario
-    final ScenarioType sc = (ScenarioType) _myScenarios.get(new Integer(index));
+			// get specific scenarios
+			final ScenarioType sc2 = srv.getThisScenario(s2);
+			assertTrue("scenario returned", sc2 != null);
 
-    if (sc != null)
-    {
-      sc.close();
-      _myScenarios.remove(new Integer(index));
-    }
+			if (sc2 == null)
+				return;
 
-    // fire the destroyed event
-    fireCreatedDestroyed(false, index);
+			// make edits
+			sc2.setName("scenario 2");
+			sc2.setStepTime(1000);
+			final ScenarioType sc3 = srv.getThisScenario(s3);
+			sc3.setName("scenario 3");
 
-  }
+			// re-retrieve this scenario to check we're getting the correct one
+			final ScenarioType sc2a = srv.getThisScenario(s2);
+			assertEquals("correct name", sc2a.getName(), "scenario 2");
+			assertEquals("correct step", sc2a.getStepTime(), 1000);
 
-  /**
-   * Create a new scenario.  The external client can then request the scenario itself to perform any edits
-   *
-   * @param scenario_type the type of scenario the client wants
-   * @return the id of the new scenario
-   */
-  public int createNewScenario(final String scenario_type)
-  {
-    // what we should do, is to create the scenario from the scenario type name,
-    // using the specified scenario_type in the classloader
+			// check invalid scenario indices
+			ScenarioType dd = srv.getThisScenario(1000);
+			assertEquals("invalid index", dd, null);
+			dd = srv.getThisScenario(0);
+			assertEquals("invalid index", dd, null);
 
-    ScenarioType newS = null;
+			// listen to the events again
+			srv.addScenarioCreatedListener(cl);
 
-    // check out which type we want
-    if (scenario_type.equals(ASSET.Scenario.MultiForceScenario.TYPE))
-    {
-      newS = new ASSET.Scenario.MultiForceScenario();
-    }
-    else
-    {
-      newS = new ASSET.Scenario.CoreScenario();
-    }
+			// try to destroy a scenario (valid)
+			srv.closeScenario(s2);
 
+			assertEquals("after destruction", destroyedCounter, 1);
 
-    if (_myScenarios == null)
-      _myScenarios = new java.util.HashMap<Integer, ScenarioType>();
+			// is it still there?
+			dd = srv.getThisScenario(s2);
+			assertEquals("destroyed scenario", null, dd);
 
-    // get the id
-    final int id = getId();
+			dd = srv.getThisScenario(0);
+			assertEquals("destroyed scenario", null, dd);
 
-    // store it in our list
-    _myScenarios.put(new Integer(id), newS);
+			dd = srv.getThisScenario(10000);
+			assertEquals("destroyed scenario", null, dd);
 
-    // fire new scenario event
-    fireCreatedDestroyed(true, id);
+		}
+	}
 
-    // return it's index
-    return id;
-  }
+	/**
+	 * create new, unique id for this participant
+	 */
+	private static int getId() {
+		return ASSET.Util.IdNumber.generateInt();
+	}
 
-  /**
-   * create new, unique id for this participant
-   */
-  private static int getId()
-  {
-    return ASSET.Util.IdNumber.generateInt();
-  }
+	////////////////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////////////////
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  public static class ServerTest extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
-    protected int createdCounter = 0;
-    protected  int destroyedCounter = 0;
+	////////////////////////////////////////////////////////////////////////
+	// methods
+	////////////////////////////////////////////////////////////////////////
 
-    public ServerTest(final String val)
-    {
-      super(val);
-    }
+	public static void main(final String[] args) {
+		final ServerTest ts = new ServerTest("trial");
+		ts.testScenarios();
+	}
 
-    protected class createList implements ScenarioCreatedListener
-    {
-      public void scenarioCreated(int index)
-      {
-        createdCounter++;
-      }
+	/**
+	 */
+	private HashMap<Integer, ScenarioType> _myScenarios;
 
-      public void scenarioDestroyed(int index)
-      {
-        destroyedCounter++;
-      }
+	/**
+	 * our list of listeners
+	 */
+	private Vector<ScenarioCreatedListener> _myCreatedListeners;
 
-    }
+	/**
+	 * add object as a listener for this type of event
+	 */
+	@Override
+	public void addScenarioCreatedListener(final ScenarioCreatedListener listener) {
+		// check we have the list
+		if (_myCreatedListeners == null)
+			_myCreatedListeners = new Vector<ScenarioCreatedListener>(0, 1);
 
-    public void testScenarios()
-    {
-      // create server
-      final ServerType srv = new CoreServer();
+		// add this listener
+		_myCreatedListeners.add(listener);
+	}
 
-      // add as listener
-      final createList cl = new createList();
-      srv.addScenarioCreatedListener(cl);
+	/**
+	 * destroy a scenario (calls the close() method on the scenario, which triggers
+	 * the close)
+	 */
+	@Override
+	public void closeScenario(final int index) {
+		// check we have the scenario
+		final ScenarioType sc = _myScenarios.get(new Integer(index));
 
-      // create new scenarios
-      int s2 = srv.createNewScenario("scrap A");
-      s2 = srv.createNewScenario("scrap");
+		if (sc != null) {
+			sc.close();
+			_myScenarios.remove(new Integer(index));
+		}
 
-      // now stop listening for these events
-      srv.removeScenarioCreatedListener(cl);
+		// fire the destroyed event
+		fireCreatedDestroyed(false, index);
 
-      // add another, which we shouldn't hear about
-      final int s3 = srv.createNewScenario("scrap");
+	}
 
-      // check events got fired
-      assertEquals("count of created events (one ignored)", createdCounter, 2);
-      assertEquals("count of destroyed events", destroyedCounter, 0);
+	/**
+	 * Create a new scenario. The external client can then request the scenario
+	 * itself to perform any edits
+	 *
+	 * @param scenario_type the type of scenario the client wants
+	 * @return the id of the new scenario
+	 */
+	@Override
+	public int createNewScenario(final String scenario_type) {
+		// what we should do, is to create the scenario from the scenario type name,
+		// using the specified scenario_type in the classloader
 
-      // get list of scenarios
-      final Integer[] res = srv.getListOfScenarios();
+		ScenarioType newS = null;
 
-      assertEquals("Number of scenarios", res.length, 3);
+		// check out which type we want
+		if (scenario_type.equals(ASSET.Scenario.MultiForceScenario.TYPE)) {
+			newS = new ASSET.Scenario.MultiForceScenario();
+		} else {
+			newS = new ASSET.Scenario.CoreScenario();
+		}
 
-      // get specific scenarios
-      final ScenarioType sc2 = srv.getThisScenario(s2);
-      assertTrue("scenario returned", sc2 != null);
+		if (_myScenarios == null)
+			_myScenarios = new java.util.HashMap<Integer, ScenarioType>();
 
-      if(sc2 == null)
-      	return;
-      
-      // make edits
-      sc2.setName("scenario 2");
-      sc2.setStepTime(1000);
-      final ScenarioType sc3 = srv.getThisScenario(s3);
-      sc3.setName("scenario 3");
+		// get the id
+		final int id = getId();
 
-      // re-retrieve this scenario to check we're getting the correct one
-      final ScenarioType sc2a = srv.getThisScenario(s2);
-      assertEquals("correct name", sc2a.getName(), "scenario 2");
-      assertEquals("correct step", sc2a.getStepTime(), 1000);
+		// store it in our list
+		_myScenarios.put(new Integer(id), newS);
 
-      // check invalid scenario indices
-      ScenarioType dd = srv.getThisScenario(1000);
-      assertEquals("invalid index", dd, null);
-      dd = srv.getThisScenario(0);
-      assertEquals("invalid index", dd, null);
+		// fire new scenario event
+		fireCreatedDestroyed(true, id);
 
-      // listen to the events again
-      srv.addScenarioCreatedListener(cl);
+		// return it's index
+		return id;
+	}
 
-      // try to destroy a scenario (valid)
-      srv.closeScenario(s2);
+	/**
+	 * fire the scenario created/destroyed event
+	 */
+	private void fireCreatedDestroyed(final boolean created, final int index) {
+		if (_myCreatedListeners == null)
+			return;
 
-      assertEquals("after destruction", destroyedCounter, 1);
+		final Iterator<ScenarioCreatedListener> it = _myCreatedListeners.iterator();
+		while (it.hasNext()) {
+			final ScenarioCreatedListener list = it.next();
+			if (created)
+				list.scenarioCreated(index);
+			else
+				list.scenarioDestroyed(index);
+		}
+	}
 
-      // is it still there?
-      dd = srv.getThisScenario(s2);
-      assertEquals("destroyed scenario", null, dd);
+	/**
+	 * Provide a list of id numbers of scenarios we contain
+	 *
+	 * @return list of ids of scenarios we contain
+	 */
+	@Override
+	public Integer[] getListOfScenarios() {
+		Integer[] res = new Integer[0];
 
-      dd = srv.getThisScenario(0);
-      assertEquals("destroyed scenario", null, dd);
+		if (_myScenarios != null) {
+			final java.util.Collection<Integer> vals = _myScenarios.keySet();
+			res = vals.toArray(res);
+		}
 
-      dd = srv.getThisScenario(10000);
-      assertEquals("destroyed scenario", null, dd);
+		return res;
+	}
 
-    }
-  }
+	/**
+	 * Return a particular scenario - so that the scenario can be controlled
+	 * directly. Listeners added/removed. Participants added/removed, etc.
+	 */
+	@Override
+	public ScenarioType getThisScenario(final int id) {
+		ScenarioType res = null;
+		if (_myScenarios != null)
+			res = _myScenarios.get(new Integer(id));
 
-  public static void main(String[] args)
-  {
-    final ServerTest ts = new ServerTest("trial");
-    ts.testScenarios();
-  }
+		return res;
+	}
+
+	/**
+	 * remove listener for this type of event
+	 */
+	@Override
+	public void removeScenarioCreatedListener(final ScenarioCreatedListener listener) {
+		_myCreatedListeners.remove(listener);
+	}
 
 }

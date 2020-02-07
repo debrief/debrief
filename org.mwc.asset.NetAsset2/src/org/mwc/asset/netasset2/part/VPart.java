@@ -1,23 +1,24 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.asset.netasset2.part;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
 
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -39,12 +40,11 @@ import org.mwc.cmap.gridharness.data.WorldSpeed;
 
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
-public class VPart extends Composite implements IVPartControl, IVPartMovement
-{
-	DecimalFormat df2 = new DecimalFormat("0.00");
-	DecimalFormat df0 = new DecimalFormat("0");
-
+public class VPart extends Composite implements IVPartControl, IVPartMovement {
 	private static final String PENDING = "[Pending]";
+	DecimalFormat df2 = new DecimalFormat("0.00");
+
+	DecimalFormat df0 = new DecimalFormat("0");
 	private final Group grpState;
 	private final Text demCourse;
 	private final Label actCourse;
@@ -58,28 +58,23 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 
 	/**
 	 * Create the composite.
-	 * 
+	 *
 	 * @param parent
 	 * @param style
 	 */
-	public VPart(final Composite parent, final int style)
-	{
+	public VPart(final Composite parent, final int style) {
 		super(parent, style);
 		setLayout(new FormLayout());
 
-		final KeyListener enterListener = new KeyListener()
-		{
+		final KeyListener enterListener = new KeyListener() {
 
 			@Override
-			public void keyPressed(final KeyEvent e)
-			{
+			public void keyPressed(final KeyEvent e) {
 			}
 
 			@Override
-			public void keyReleased(final KeyEvent e)
-			{
-				if (e.keyCode == 13)
-				{
+			public void keyReleased(final KeyEvent e) {
+				if (e.keyCode == 13) {
 					fireDemStatus();
 				}
 			}
@@ -130,10 +125,9 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 		incCrse.setFont(SWTResourceManager.getFont("Lucida Grande", 6, SWT.NORMAL));
 		incCrse.setBounds(40, 0, 15, 15);
 		incCrse.setText("+");
-		incCrse.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(final SelectionEvent e)
-			{
+		incCrse.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
 				crseChange(5);
 			}
 		});
@@ -142,10 +136,9 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 		decCrse.setText("-");
 		decCrse.setFont(SWTResourceManager.getFont("Lucida Grande", 6, SWT.NORMAL));
 		decCrse.setBounds(40, 16, 15, 15);
-		decCrse.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(final SelectionEvent e)
-			{
+		decCrse.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
 				crseChange(-5);
 			}
 		});
@@ -169,10 +162,9 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 		incSpd.setFont(SWTResourceManager.getFont("Lucida Grande", 6, SWT.NORMAL));
 		incSpd.setBounds(40, 0, 15, 15);
 		incSpd.setText("+");
-		incSpd.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(final SelectionEvent e)
-			{
+		incSpd.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
 				spdChange(2);
 			}
 		});
@@ -181,10 +173,9 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 		decSpd.setText("-");
 		decSpd.setFont(SWTResourceManager.getFont("Lucida Grande", 6, SWT.NORMAL));
 		decSpd.setBounds(40, 16, 15, 15);
-		decSpd.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(final SelectionEvent e)
-			{
+		decSpd.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
 				spdChange(-2);
 			}
 		});
@@ -205,27 +196,23 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 		demDepth.addKeyListener(enterListener);
 
 		final Button incDepth = new Button(demD, SWT.FLAT | SWT.CENTER);
-		incDepth
-				.setFont(SWTResourceManager.getFont("Lucida Grande", 6, SWT.NORMAL));
+		incDepth.setFont(SWTResourceManager.getFont("Lucida Grande", 6, SWT.NORMAL));
 		incDepth.setBounds(40, 0, 15, 15);
 		incDepth.setText("+");
-		incDepth.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(final SelectionEvent e)
-			{
+		incDepth.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
 				depthChange(2);
 			}
 		});
 
 		final Button decDepth = new Button(demD, SWT.FLAT | SWT.CENTER);
 		decDepth.setText("-");
-		decDepth
-				.setFont(SWTResourceManager.getFont("Lucida Grande", 6, SWT.NORMAL));
+		decDepth.setFont(SWTResourceManager.getFont("Lucida Grande", 6, SWT.NORMAL));
 		decDepth.setBounds(40, 16, 15, 15);
-		decDepth.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(final SelectionEvent e)
-			{
+		decDepth.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
 				depthChange(-2);
 			}
 		});
@@ -241,26 +228,27 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 
 		newState = new Button(grpState, SWT.FLAT);
 		newState.setText("Submit");
-		newState.addSelectionListener(new SelectionAdapter()
-		{
+		newState.addSelectionListener(new SelectionAdapter() {
 
 			@Override
-			public void widgetSelected(final SelectionEvent e)
-			{
-				fireDemStatus();
+			public void widgetDefaultSelected(final SelectionEvent e) {
 			}
 
 			@Override
-			public void widgetDefaultSelected(final SelectionEvent e)
-			{
+			public void widgetSelected(final SelectionEvent e) {
+				fireDemStatus();
 			}
 		});
 
 		// super.setEnabled(false);
 	}
 
-	protected void crseChange(final float delta)
-	{
+	@Override
+	protected void checkSubclass() {
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	protected void crseChange(final float delta) {
 		// get teh course
 		Float cF = Float.parseFloat(demCourse.getText());
 		cF += delta;
@@ -275,22 +263,7 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 		fireDemStatus();
 	}
 
-	protected void spdChange(final float delta)
-	{
-		// get teh course
-		Float cF = Float.parseFloat(demSpeed.getText());
-		cF += delta;
-
-		// put back in +ve speeds
-		if (cF < 0)
-			cF = 0f;
-
-		demSpeed.setText("" + cF);
-		fireDemStatus();
-	}
-
-	protected void depthChange(final float delta)
-	{
+	protected void depthChange(final float delta) {
 		// get teh course
 		Float cF = Float.parseFloat(demDepth.getText());
 		cF += delta;
@@ -299,105 +272,92 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 		fireDemStatus();
 	}
 
-	private void fireDemStatus()
-	{
-		if (_listener != null)
-		{
-			try
-			{
-			_listener.demanded( MWCXMLReader.readThisDouble(getDemCourse()),
-					 MWCXMLReader.readThisDouble(getDemSpeed()), 
-					 MWCXMLReader.readThisDouble(getDemDepth()));
+	private void fireDemStatus() {
+		if (_listener != null) {
+			try {
+				_listener.demanded(MWCXMLReader.readThisDouble(getDemCourse()),
+						MWCXMLReader.readThisDouble(getDemSpeed()), MWCXMLReader.readThisDouble(getDemDepth()));
+			} catch (final ParseException pe) {
+				Activator.logError(IStatus.ERROR, "Invalid Dem numeric format", null);
 			}
-			catch(final ParseException pe)
-			{
-				Activator.logError(Status.ERROR, "Invalid Dem numeric format",
-						null);
-			}
-		}
-		else
-		{
-			Activator.logError(Status.WARNING, "No dem status listener declared",
-					null);
+		} else {
+			Activator.logError(IStatus.WARNING, "No dem status listener declared", null);
 		}
 	}
 
 	@Override
-	protected void checkSubclass()
-	{
-		// Disable the check that prevents subclassing of SWT components
+	public String getDemCourse() {
+		return demCourse.getText();
 	}
 
-	private void setActSpeed(final double speedKts)
-	{
-		if (!actSpeed.isDisposed())
-		{
-			final String spd = df2.format(speedKts);
+	@Override
+	public String getDemDepth() {
+		return demDepth.getText();
+	}
 
-			actSpeed.setText(spd + "kts");
-			if (demSpeed.getText().equals(""))
-			{
-				demSpeed.setText(df0.format(speedKts));
+	@Override
+	public String getDemSpeed() {
+		return demSpeed.getText();
+	}
+
+	@Override
+	public void moved(final ASSET.Participants.Status status) {
+		Display.getDefault().asyncExec(new Runnable() {
+
+			@Override
+			public void run() {
+				setActCourse(status.getCourse());
+				setActSpeed(status.getSpeed().getValueIn(WorldSpeed.Kts));
+				setActDepth(status.getLocation().getDepth());
 			}
-		}
+		});
 	}
 
-	private void setActCourse(final double course)
-	{
-		if (!actCourse.isDisposed())
-		{
+	private void setActCourse(final double course) {
+		if (!actCourse.isDisposed()) {
 			final String crse = df0.format(course);
 
 			actCourse.setText(crse + "\u00B0");
-			if (demCourse.getText().equals(""))
-			{
+			if (demCourse.getText().equals("")) {
 				demCourse.setText(crse);
 			}
 		}
 	}
 
-	private void setActDepth(final double depthM)
-	{
-		if (!actDepth.isDisposed())
-		{
+	private void setActDepth(final double depthM) {
+		if (!actDepth.isDisposed()) {
 			final String dpth = df2.format(depthM);
 
 			actDepth.setText(dpth + "m");
-			if (demDepth.getText().equals(""))
-			{
+			if (demDepth.getText().equals("")) {
 				demDepth.setText(df0.format(depthM));
 			}
 		}
 	}
 
-	@Override
-	public String getDemSpeed()
-	{
-		return demSpeed.getText();
+	private void setActSpeed(final double speedKts) {
+		if (!actSpeed.isDisposed()) {
+			final String spd = df2.format(speedKts);
+
+			actSpeed.setText(spd + "kts");
+			if (demSpeed.getText().equals("")) {
+				demSpeed.setText(df0.format(speedKts));
+			}
+		}
 	}
 
 	@Override
-	public String getDemCourse()
-	{
-		return demCourse.getText();
+	public void setDemStatusListener(final NewDemStatus newDemStatus) {
+		_listener = newDemStatus;
 	}
 
 	@Override
-	public String getDemDepth()
-	{
-		return demDepth.getText();
-	}
-
-	public void setEnabled(final boolean val)
-	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
+	public void setEnabled(final boolean val) {
+		Display.getDefault().asyncExec(new Runnable() {
 
 			@Override
-			public void run()
-			{
-				if (!demCourse.isDisposed())
-				{
+			public void run() {
+				if (!demCourse.isDisposed()) {
 					demCourse.setEnabled(val);
 					demSpeed.setEnabled(val);
 					demDepth.setEnabled(val);
@@ -410,16 +370,12 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 	}
 
 	@Override
-	public void setParticipant(final String name)
-	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
+	public void setParticipant(final String name) {
+		Display.getDefault().asyncExec(new Runnable() {
 
 			@Override
-			public void run()
-			{
-				if (!partName.isDisposed())
-				{
+			public void run() {
+				if (!partName.isDisposed()) {
 					partName.setText(name);
 					demCourse.setText("");
 					demSpeed.setText("");
@@ -430,25 +386,16 @@ public class VPart extends Composite implements IVPartControl, IVPartMovement
 
 	}
 
-	@Override
-	public void setDemStatusListener(final NewDemStatus newDemStatus)
-	{
-		_listener = newDemStatus;
-	}
+	protected void spdChange(final float delta) {
+		// get teh course
+		Float cF = Float.parseFloat(demSpeed.getText());
+		cF += delta;
 
-	@Override
-	public void moved(final ASSET.Participants.Status status)
-	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
+		// put back in +ve speeds
+		if (cF < 0)
+			cF = 0f;
 
-			@Override
-			public void run()
-			{
-				setActCourse(status.getCourse());
-				setActSpeed(status.getSpeed().getValueIn(WorldSpeed.Kts));
-				setActDepth(status.getLocation().getDepth());
-			}
-		});
+		demSpeed.setText("" + cF);
+		fireDemStatus();
 	}
 }

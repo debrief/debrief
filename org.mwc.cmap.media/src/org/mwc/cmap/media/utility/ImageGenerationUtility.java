@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.cmap.media.utility;
 
 import java.awt.Color;
@@ -31,33 +32,70 @@ import javax.imageio.ImageIO;
 import org.mwc.cmap.media.PlanetmayoFormats;
 
 public class ImageGenerationUtility {
+	public static void main(final String[] args) {
+		final ImageGenerationUtility utility = new ImageGenerationUtility();
+		if (args.length == 0) {
+			utility.printHelp();
+			return;
+		}
+		try {
+			utility.parseCommandLine(args);
+			utility.validate();
+			utility.generateImages();
+		} catch (final Exception ex) {
+			System.out.println("Error: " + ex.getMessage());
+			System.out.println("---------------------------------------------------------");
+			utility.printHelp();
+		}
+	}
+
 	private String imageFormat;
 	private String targetFolder;
 	private String backgroundImageFile;
+
 	private String startTimestampStr;
-	
 	private int timeInterval = -1;
 	private int width = -1;
 	private int height = -1;
 	private int number = -1;
 	private int fontSize = 30;
-	private Date startTimestamp;	
+	private Date startTimestamp;
+
 	private boolean random;
-	
-	private BufferedImage backgroundImage;	
-	
+
+	private BufferedImage backgroundImage;
+
 	public ImageGenerationUtility() {
-		
+
 	}
-	
-	private String getArg(String[] args, int i) {
+
+	public void generateImages() throws Exception {
+		long current = 0;
+		final SimpleDateFormat timeFormat = PlanetmayoFormats.getInstance().getTimeFormat();
+		for (int i = 0; i < number; i++) {
+			final Date currentDate = new Date(startTimestamp.getTime() + current);
+			final String fileName = PlanetmayoFormats.getInstance().encodeDateInFileName(currentDate, imageFormat);
+
+			final BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+			final Graphics2D graphics = image.createGraphics();
+			graphics.drawImage(backgroundImage, 0, 0, width, height, 0, 0, backgroundImage.getWidth(),
+					backgroundImage.getHeight(), null);
+			graphics.setColor(Color.BLACK);
+			graphics.setFont(new Font(graphics.getFont().getFamily(), Font.BOLD, fontSize));
+			graphics.drawString(timeFormat.format(currentDate), width / 2 - 50, height / 2 - 10);
+			ImageIO.write(image, imageFormat, new File(targetFolder, fileName));
+			current += (random ? ((Math.random() * (timeInterval - 1.0)) + 1) : timeInterval) * 1000;
+		}
+	}
+
+	private String getArg(final String[] args, final int i) {
 		if (i >= args.length) {
 			return null;
 		}
 		return args[i];
 	}
-	
-	public void parseCommandLine(String[] args) {
+
+	public void parseCommandLine(final String[] args) {
 		int inc = 0;
 		for (int i = 0; i < args.length; i += inc) {
 			inc = 1;
@@ -84,14 +122,14 @@ public class ImageGenerationUtility {
 			if ("-n".equals(args[i])) {
 				number = Integer.valueOf(getArg(args, i + 1));
 				inc++;
-			}	
+			}
 			if ("-i".equals(args[i])) {
 				timeInterval = Integer.valueOf(getArg(args, i + 1));
 				inc++;
-			}				
+			}
 			if ("-r".equals(args[i])) {
 				random = true;
-			}	
+			}
 			if ("-sd".equals(args[i])) {
 				startTimestampStr = getArg(args, i + 1);
 				inc++;
@@ -99,10 +137,28 @@ public class ImageGenerationUtility {
 			if ("-fs".equals(args[i])) {
 				fontSize = Integer.valueOf(getArg(args, i + 1));
 				inc++;
-			}				
+			}
 		}
 	}
-	
+
+	public void printHelp() {
+		System.out.println("Usage: java -jar generate-images.jar <args>[1..n] ");
+		System.out.println("\t-t <folder name> - target folder (required)");
+		System.out.println("\t-f <format name> - format name 'png', 'jpg' or 'tif' (required)");
+		System.out.println("\t-n <number> - number of generated images (required >= 1)");
+		System.out.println("\t-w <width> - width of generated images (required >= 100)");
+		System.out.println("\t-h <height> - height of generated images (required >= 100)");
+		System.out.println("\t-i <seconds> - time interval between images (required >= 1)");
+		System.out.println(
+				"\t-sd \"<date in format yyyy-MM-dd hh:mm:ss>\" - date and time of first generated image (default: current date time)");
+		System.out.println("\t-b <filename> - background image, if filename = 'screen' it captures current screenshot");
+		System.out.println("\t-r - random interval");
+		System.out.println("\t-fs <font size> - font size to write timestamp (default: 30)");
+		System.out.println();
+		System.out.println(
+				"Example: java -jar generate-images.jar -t ./images -f png -n 30 -w 1024 -h 768 -i 10 -sd \"2011-02-04 15:00:00\"");
+	}
+
 	public void validate() throws Exception {
 		if (width == -1) {
 			throw new Exception("Width must be specified");
@@ -115,28 +171,29 @@ public class ImageGenerationUtility {
 		}
 		if (height < 100) {
 			throw new Exception("Height must be at least 100 pixels");
-		}		
+		}
 		if (number == -1) {
 			throw new Exception("Number of images must be specified");
 		}
 		if (number < 1) {
 			throw new Exception("Number of images must be greater or equals 1");
-		}		
+		}
 		if (imageFormat == null) {
 			throw new Exception("Image format must be specified");
 		}
 		imageFormat = imageFormat.toLowerCase();
-		if (! (imageFormat.equals("png") || imageFormat.equals("jpg") || imageFormat.equals("jpeg") || imageFormat.equals("tif") || imageFormat.equals("tiff"))) {
+		if (!(imageFormat.equals("png") || imageFormat.equals("jpg") || imageFormat.equals("jpeg")
+				|| imageFormat.equals("tif") || imageFormat.equals("tiff"))) {
 			throw new Exception("Image format " + imageFormat + " isn't support");
 		}
 		if (targetFolder == null) {
 			throw new Exception("Target folder must be specified");
 		}
-		File file = new File(targetFolder);
+		final File file = new File(targetFolder);
 		file.mkdirs();
-		if (! file.isDirectory()) {
+		if (!file.isDirectory()) {
 			throw new Exception("Target folder must be folder");
-		}		
+		}
 		if (timeInterval == -1) {
 			throw new Exception("Time interval must be specified");
 		}
@@ -145,16 +202,16 @@ public class ImageGenerationUtility {
 		}
 		if (fontSize < 1) {
 			throw new Exception("Font size must be greater than 0");
-		}		
+		}
 		if (backgroundImageFile == null) {
 			backgroundImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-			Graphics2D graphics2d = backgroundImage.createGraphics();
+			final Graphics2D graphics2d = backgroundImage.createGraphics();
 			graphics2d.setColor(Color.WHITE);
 			graphics2d.setBackground(Color.WHITE);
 			graphics2d.fillRect(0, 0, width, height);
 		} else {
 			if (backgroundImageFile.equals("screen")) {
-				Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+				final Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
 				backgroundImage = new Robot().createScreenCapture(new Rectangle(size));
 			} else {
 				backgroundImage = ImageIO.read(new File(backgroundImageFile));
@@ -164,58 +221,6 @@ public class ImageGenerationUtility {
 			startTimestamp = PlanetmayoFormats.getInstance().getDateFormat().parse(startTimestampStr);
 		} else {
 			startTimestamp = new Date();
-		}
-	}
-	
-	public void printHelp() {
-		System.out.println("Usage: java -jar generate-images.jar <args>[1..n] ");
-		System.out.println("\t-t <folder name> - target folder (required)");
-		System.out.println("\t-f <format name> - format name 'png', 'jpg' or 'tif' (required)");
-		System.out.println("\t-n <number> - number of generated images (required >= 1)");
-		System.out.println("\t-w <width> - width of generated images (required >= 100)");
-		System.out.println("\t-h <height> - height of generated images (required >= 100)");
-		System.out.println("\t-i <seconds> - time interval between images (required >= 1)");
-		System.out.println("\t-sd \"<date in format yyyy-MM-dd hh:mm:ss>\" - date and time of first generated image (default: current date time)");
-		System.out.println("\t-b <filename> - background image, if filename = 'screen' it captures current screenshot");
-		System.out.println("\t-r - random interval");
-		System.out.println("\t-fs <font size> - font size to write timestamp (default: 30)");		
-		System.out.println();
-		System.out.println("Example: java -jar generate-images.jar -t ./images -f png -n 30 -w 1024 -h 768 -i 10 -sd \"2011-02-04 15:00:00\"");
-	}
-	
-	public void generateImages() throws Exception {
-		long current = 0;
-		final SimpleDateFormat timeFormat = PlanetmayoFormats.getInstance().getTimeFormat();
-		for (int i = 0; i < number; i++) {
-			Date currentDate = new Date(startTimestamp.getTime() + current);
-			String fileName = PlanetmayoFormats.getInstance().encodeDateInFileName(currentDate, imageFormat);
-			
-			BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-			Graphics2D graphics = image.createGraphics();
-			graphics.drawImage(backgroundImage, 0, 0, width, height, 0, 0, backgroundImage.getWidth(), backgroundImage.getHeight(), null);
-			graphics.setColor(Color.BLACK);
-			graphics.setFont(new Font(graphics.getFont().getFamily(), Font.BOLD, fontSize));
-			graphics.drawString(timeFormat.format(currentDate), width / 2 - 50, height / 2 - 10);			
-			ImageIO.write(image, imageFormat, new File(targetFolder, fileName));
-			current += (random ? ((Math.random() * (timeInterval - 1.0)) + 1) : timeInterval) * 1000;
-		}
-	}
-	
-	
-	public static void main(String[] args) {
-		ImageGenerationUtility utility = new ImageGenerationUtility();
-		if (args.length == 0) {
-			utility.printHelp();
-			return;
-		}
-		try {
-			utility.parseCommandLine(args);
-			utility.validate();
-			utility.generateImages();
-		} catch (Exception ex) {
-			System.out.println("Error: " + ex.getMessage());
-			System.out.println("---------------------------------------------------------");
-			utility.printHelp();
 		}
 	}
 }

@@ -1,191 +1,190 @@
 package edu.nps.moves.dis;
 
-import java.util.*;
-import java.io.*;
-import edu.nps.moves.disenum.*;
-import edu.nps.moves.disutil.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 5.2.44: Grid data record, representation 0
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class GridAxisRecordRepresentation0 extends GridAxisRecord implements Serializable
-{
-   /** number of bytes of environmental state data */
-   protected int  numberOfBytes;
+public class GridAxisRecordRepresentation0 extends GridAxisRecord implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   /** variable length variablelist of data parameters ^^^this is wrong--need padding as well */
-   protected List< OneByteChunk > dataValues = new ArrayList< OneByteChunk >(); 
+	/** number of bytes of environmental state data */
+	protected int numberOfBytes;
 
-/** Constructor */
- public GridAxisRecordRepresentation0()
- {
- }
+	/**
+	 * variable length variablelist of data parameters ^^^this is wrong--need
+	 * padding as well
+	 */
+	protected List<OneByteChunk> dataValues = new ArrayList<OneByteChunk>();
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+	/** Constructor */
+	public GridAxisRecordRepresentation0() {
+	}
 
-   marshalSize = super.getMarshalledSize();
-   marshalSize = marshalSize + 2;  // numberOfBytes
-   for(int idx=0; idx < dataValues.size(); idx++)
-   {
-        OneByteChunk listElement = dataValues.get(idx);
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-   }
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-   return marshalSize;
-}
+		if (this == obj) {
+			return true;
+		}
 
+		if (obj == null) {
+			return false;
+		}
 
-public int getNumberOfBytes()
-{ return (int)dataValues.size();
-}
+		if (getClass() != obj.getClass())
+			return false;
 
-/** Note that setting this value will not change the marshalled value. The list whose length this describes is used for that purpose.
- * The getnumberOfBytes method will also be based on the actual list length rather than this value. 
- * The method is simply here for java bean completeness.
- */
-public void setNumberOfBytes(int pNumberOfBytes)
-{ numberOfBytes = pNumberOfBytes;
-}
+		return equalsImpl(obj);
+	}
 
-public void setDataValues(List<OneByteChunk> pDataValues)
-{ dataValues = pDataValues;
-}
+	@Override
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-public List<OneByteChunk> getDataValues()
-{ return dataValues; }
+		if (!(obj instanceof GridAxisRecordRepresentation0))
+			return false;
 
+		final GridAxisRecordRepresentation0 rhs = (GridAxisRecordRepresentation0) obj;
 
-public void marshal(DataOutputStream dos)
-{
-    super.marshal(dos);
-    try 
-    {
-       dos.writeShort( (short)dataValues.size());
+		if (!(numberOfBytes == rhs.numberOfBytes))
+			ivarsEqual = false;
 
-       for(int idx = 0; idx < dataValues.size(); idx++)
-       {
-            OneByteChunk aOneByteChunk = dataValues.get(idx);
-            aOneByteChunk.marshal(dos);
-       } // end of list marshalling
+		for (int idx = 0; idx < dataValues.size(); idx++) {
+			if (!(dataValues.get(idx).equals(rhs.dataValues.get(idx))))
+				ivarsEqual = false;
+		}
 
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+		return ivarsEqual && super.equalsImpl(rhs);
+	}
 
-public void unmarshal(DataInputStream dis)
-{
-     super.unmarshal(dis);
+	public List<OneByteChunk> getDataValues() {
+		return dataValues;
+	}
 
-    try 
-    {
-       numberOfBytes = (int)dis.readUnsignedShort();
-       for(int idx = 0; idx < numberOfBytes; idx++)
-       {
-           OneByteChunk anX = new OneByteChunk();
-           anX.unmarshal(dis);
-           dataValues.add(anX);
-       }
+	@Override
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+		marshalSize = super.getMarshalledSize();
+		marshalSize = marshalSize + 2; // numberOfBytes
+		for (int idx = 0; idx < dataValues.size(); idx++) {
+			final OneByteChunk listElement = dataValues.get(idx);
+			marshalSize = marshalSize + listElement.getMarshalledSize();
+		}
 
+		return marshalSize;
+	}
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
-       super.marshal(buff);
-       buff.putShort( (short)dataValues.size());
+	public int getNumberOfBytes() {
+		return dataValues.size();
+	}
 
-       for(int idx = 0; idx < dataValues.size(); idx++)
-       {
-            OneByteChunk aOneByteChunk = (OneByteChunk)dataValues.get(idx);
-            aOneByteChunk.marshal(buff);
-       } // end of list marshalling
+	@Override
+	public void marshal(final DataOutputStream dos) {
+		super.marshal(dos);
+		try {
+			dos.writeShort((short) dataValues.size());
 
-    } // end of marshal method
+			for (int idx = 0; idx < dataValues.size(); idx++) {
+				final OneByteChunk aOneByteChunk = dataValues.get(idx);
+				aOneByteChunk.marshal(dos);
+			} // end of list marshalling
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       super.unmarshal(buff);
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
-       numberOfBytes = (int)(buff.getShort() & 0xFFFF);
-       for(int idx = 0; idx < numberOfBytes; idx++)
-       {
-            OneByteChunk anX = new OneByteChunk();
-            anX.unmarshal(buff);
-            dataValues.add(anX);
-       }
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	@Override
+	public void marshal(final java.nio.ByteBuffer buff) {
+		super.marshal(buff);
+		buff.putShort((short) dataValues.size());
 
- } // end of unmarshal method 
+		for (int idx = 0; idx < dataValues.size(); idx++) {
+			final OneByteChunk aOneByteChunk = dataValues.get(idx);
+			aOneByteChunk.marshal(buff);
+		} // end of list marshalling
 
+	} // end of marshal method
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+	public void setDataValues(final List<OneByteChunk> pDataValues) {
+		dataValues = pDataValues;
+	}
 
-    if(this == obj){
-      return true;
-    }
+	/**
+	 * Note that setting this value will not change the marshalled value. The list
+	 * whose length this describes is used for that purpose. The getnumberOfBytes
+	 * method will also be based on the actual list length rather than this value.
+	 * The method is simply here for java bean completeness.
+	 */
+	public void setNumberOfBytes(final int pNumberOfBytes) {
+		numberOfBytes = pNumberOfBytes;
+	}
 
-    if(obj == null){
-       return false;
-    }
+	@Override
+	public void unmarshal(final DataInputStream dis) {
+		super.unmarshal(dis);
 
-    if(getClass() != obj.getClass())
-        return false;
+		try {
+			numberOfBytes = dis.readUnsignedShort();
+			for (int idx = 0; idx < numberOfBytes; idx++) {
+				final OneByteChunk anX = new OneByteChunk();
+				anX.unmarshal(dis);
+				dataValues.add(anX);
+			}
 
-    return equalsImpl(obj);
- }
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
-@Override
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	@Override
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		super.unmarshal(buff);
 
-    if(!(obj instanceof GridAxisRecordRepresentation0))
-        return false;
+		numberOfBytes = buff.getShort() & 0xFFFF;
+		for (int idx = 0; idx < numberOfBytes; idx++) {
+			final OneByteChunk anX = new OneByteChunk();
+			anX.unmarshal(buff);
+			dataValues.add(anX);
+		}
 
-     final GridAxisRecordRepresentation0 rhs = (GridAxisRecordRepresentation0)obj;
-
-     if( ! (numberOfBytes == rhs.numberOfBytes)) ivarsEqual = false;
-
-     for(int idx = 0; idx < dataValues.size(); idx++)
-     {
-        if( ! ( dataValues.get(idx).equals(rhs.dataValues.get(idx)))) ivarsEqual = false;
-     }
-
-
-    return ivarsEqual && super.equalsImpl(rhs);
- }
+	} // end of unmarshal method
 } // end of class

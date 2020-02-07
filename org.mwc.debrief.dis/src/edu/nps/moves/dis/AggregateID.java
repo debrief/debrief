@@ -1,171 +1,167 @@
 package edu.nps.moves.dis;
 
-import java.util.*;
-import java.io.*;
-import edu.nps.moves.disenum.*;
-import edu.nps.moves.disutil.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
 
 /**
- * Section 5.2.36. Each agregate in a given simulation app is given an aggregate identifier number unique for all other aggregates in that app and in that exercise. The id is valid for the duration of the the exercise.
+ * Section 5.2.36. Each agregate in a given simulation app is given an aggregate
+ * identifier number unique for all other aggregates in that app and in that
+ * exercise. The id is valid for the duration of the the exercise.
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class AggregateID extends Object implements Serializable
-{
-   /** The site ID */
-   protected int  site;
+public class AggregateID extends Object implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   /** The application ID */
-   protected int  application;
+	/** The site ID */
+	protected int site;
 
-   /** the aggregate ID */
-   protected int  aggregateID;
+	/** The application ID */
+	protected int application;
 
+	/** the aggregate ID */
+	protected int aggregateID;
 
-/** Constructor */
- public AggregateID()
- {
- }
+	/** Constructor */
+	public AggregateID() {
+	}
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-   marshalSize = marshalSize + 2;  // site
-   marshalSize = marshalSize + 2;  // application
-   marshalSize = marshalSize + 2;  // aggregateID
+		if (this == obj) {
+			return true;
+		}
 
-   return marshalSize;
-}
+		if (obj == null) {
+			return false;
+		}
 
+		if (getClass() != obj.getClass())
+			return false;
 
-public void setSite(int pSite)
-{ site = pSite;
-}
+		return equalsImpl(obj);
+	}
 
-public int getSite()
-{ return site; 
-}
+	/**
+	 * Compare all fields that contribute to the state, ignoring transient and
+	 * static fields, for <code>this</code> and the supplied object
+	 *
+	 * @param obj the object to compare to
+	 * @return true if the objects are equal, false otherwise.
+	 */
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-public void setApplication(int pApplication)
-{ application = pApplication;
-}
+		if (!(obj instanceof AggregateID))
+			return false;
 
-public int getApplication()
-{ return application; 
-}
+		final AggregateID rhs = (AggregateID) obj;
 
-public void setAggregateID(int pAggregateID)
-{ aggregateID = pAggregateID;
-}
+		if (!(site == rhs.site))
+			ivarsEqual = false;
+		if (!(application == rhs.application))
+			ivarsEqual = false;
+		if (!(aggregateID == rhs.aggregateID))
+			ivarsEqual = false;
 
-public int getAggregateID()
-{ return aggregateID; 
-}
+		return ivarsEqual;
+	}
 
+	public int getAggregateID() {
+		return aggregateID;
+	}
 
-public void marshal(DataOutputStream dos)
-{
-    try 
-    {
-       dos.writeShort( (short)site);
-       dos.writeShort( (short)application);
-       dos.writeShort( (short)aggregateID);
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+	public int getApplication() {
+		return application;
+	}
 
-public void unmarshal(DataInputStream dis)
-{
-    try 
-    {
-       site = (int)dis.readUnsignedShort();
-       application = (int)dis.readUnsignedShort();
-       aggregateID = (int)dis.readUnsignedShort();
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
+		marshalSize = marshalSize + 2; // site
+		marshalSize = marshalSize + 2; // application
+		marshalSize = marshalSize + 2; // aggregateID
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
-       buff.putShort( (short)site);
-       buff.putShort( (short)application);
-       buff.putShort( (short)aggregateID);
-    } // end of marshal method
+		return marshalSize;
+	}
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       site = (int)(buff.getShort() & 0xFFFF);
-       application = (int)(buff.getShort() & 0xFFFF);
-       aggregateID = (int)(buff.getShort() & 0xFFFF);
- } // end of unmarshal method 
+	public int getSite() {
+		return site;
+	}
 
+	public void marshal(final DataOutputStream dos) {
+		try {
+			dos.writeShort((short) site);
+			dos.writeShort((short) application);
+			dos.writeShort((short) aggregateID);
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	public void marshal(final java.nio.ByteBuffer buff) {
+		buff.putShort((short) site);
+		buff.putShort((short) application);
+		buff.putShort((short) aggregateID);
+	} // end of marshal method
 
-    if(this == obj){
-      return true;
-    }
+	public void setAggregateID(final int pAggregateID) {
+		aggregateID = pAggregateID;
+	}
 
-    if(obj == null){
-       return false;
-    }
+	public void setApplication(final int pApplication) {
+		application = pApplication;
+	}
 
-    if(getClass() != obj.getClass())
-        return false;
+	public void setSite(final int pSite) {
+		site = pSite;
+	}
 
-    return equalsImpl(obj);
- }
+	public void unmarshal(final DataInputStream dis) {
+		try {
+			site = dis.readUnsignedShort();
+			application = dis.readUnsignedShort();
+			aggregateID = dis.readUnsignedShort();
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
- /**
-  * Compare all fields that contribute to the state, ignoring
- transient and static fields, for <code>this</code> and the supplied object
-  * @param obj the object to compare to
-  * @return true if the objects are equal, false otherwise.
-  */
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
-
-    if(!(obj instanceof AggregateID))
-        return false;
-
-     final AggregateID rhs = (AggregateID)obj;
-
-     if( ! (site == rhs.site)) ivarsEqual = false;
-     if( ! (application == rhs.application)) ivarsEqual = false;
-     if( ! (aggregateID == rhs.aggregateID)) ivarsEqual = false;
-
-    return ivarsEqual;
- }
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		site = buff.getShort() & 0xFFFF;
+		application = buff.getShort() & 0xFFFF;
+		aggregateID = buff.getShort() & 0xFFFF;
+	} // end of unmarshal method
 } // end of class

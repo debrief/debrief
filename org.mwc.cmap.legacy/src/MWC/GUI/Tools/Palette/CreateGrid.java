@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: CreateGrid.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -57,18 +58,19 @@ package MWC.GUI.Tools.Palette;
 
 import MWC.GUI.Chart.Painters.GridPainter;
 
-public class CreateGrid extends PlainCreate
-{
-	public CreateGrid(final MWC.GUI.ToolParent theParent,
-										final MWC.GUI.Properties.PropertiesPanel thePanel,
-										final MWC.GUI.Layers theData,
-										final BoundsProvider theBounds)
-	{
+public class CreateGrid extends PlainCreate {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public CreateGrid(final MWC.GUI.ToolParent theParent, final MWC.GUI.Properties.PropertiesPanel thePanel,
+			final MWC.GUI.Layers theData, final BoundsProvider theBounds) {
 		super(theParent, thePanel, theData, theBounds, "Grid", "images/grid_add.png");
 	}
 
-	protected MWC.GUI.Plottable createItem()
-	{
+	@Override
+	protected MWC.GUI.Plottable createItem() {
 		return new GridPainter();
 	}
 }

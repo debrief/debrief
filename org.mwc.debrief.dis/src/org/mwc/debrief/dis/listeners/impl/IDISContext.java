@@ -6,81 +6,84 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers.INewItemListener;
 import MWC.GUI.Plottable;
 
-public interface IDISContext
-{
+public interface IDISContext {
 
-  /**
-   * whether a new plot should be created for each new replication
-   * 
-   * @return
-   */
-  boolean getUseNewPlot();
+	/**
+	 * store this new layer
+	 *
+	 * @param layer
+	 */
+	void addThisLayer(Layer layer);
 
-  /**
-   * whether a UI should update on each new data item
-   * 
-   * @return
-   */
-  boolean getLiveUpdates();
+	/**
+	 * find the specified track for this exercise
+	 *
+	 * @param exerciseId
+	 * @param theName
+	 * @return
+	 */
+	Layer findLayer(short exerciseId, String theName);
 
-  /**
-   * store this new layer
-   * 
-   * @param layer
-   */
-  void addThisLayer(Layer layer);
+	/**
+	 * trigger a screen update
+	 *
+	 * @param newItem
+	 * @param layer
+	 */
+	void fireUpdate(Plottable newItem, Layer layer);
 
-  /**
-   * whether the user wants the Debrief plot to resize to show visible data
-   * 
-   * @return
-   */
-  boolean getFitToData();
-  
-  /** resize the plot to view all data
-   * 
-   */
-  void zoomToFit();
-  
+	/**
+	 * whether the user wants the Debrief plot to resize to show visible data
+	 *
+	 * @return
+	 */
+	boolean getFitToData();
 
-  /** move the display time forward
-   * 
-   * @param time
-   */
-  public void setNewTime(long time);
+	/**
+	 * whether a UI should update on each new data item
+	 *
+	 * @return
+	 */
+	boolean getLiveUpdates();
 
-  /**
-   * trigger a screen update
-   * 
-   * @param newItem
-   * @param layer
-   */
-  void fireUpdate(Plottable newItem, Layer layer);
+	/**
+	 * get iterator, so we can work through the new item listeners
+	 *
+	 * @return
+	 */
+	Iterator<INewItemListener> getNewItemListeners();
 
-  /**
-   * find the specified track for this exercise
-   * 
-   * @param exerciseId
-   * @param theName
-   * @return
-   */
-  Layer findLayer(short exerciseId, String theName);
+	/**
+	 * whether a new plot should be created for each new replication
+	 *
+	 * @return
+	 */
+	boolean getUseNewPlot();
 
-  /** get iterator, so we can work through the new item listeners
-   * 
-   * @return
-   */
-  Iterator<INewItemListener> getNewItemListeners();
+	/**
+	 * mark the scenario complete. Any new data will go into a new layer
+	 *
+	 */
+	void scenarioComplete();
 
-  /** mark the scenario complete. Any new data will go into a new layer
-   * 
-   */
-  void scenarioComplete();
+	/**
+	 * move the display time forward
+	 *
+	 * @param time
+	 */
+	public void setNewTime(long time);
 
-  /** record the counter for the new replication
-   * 
-   * @param replicationCounter
-   */
-  void setReplicationId(long replicationCounter);
-  
+	/**
+	 * record the counter for the new replication
+	 *
+	 * @param replicationCounter
+	 */
+	void setReplicationId(long replicationCounter);
+
+	/**
+	 * resize the plot to view all data
+	 *
+	 */
+	void zoomToFit();
+
 }

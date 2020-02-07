@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: PlainView.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -71,54 +72,37 @@
 // Initial revision
 //
 
-
 package Debrief.GUI.Views;
 
 import MWC.GUI.ToolParent;
 
-/** blank class which acts as parent to the different types
- * of view which may be displayed/constructed within the application
+/**
+ * blank class which acts as parent to the different types of view which may be
+ * displayed/constructed within the application
  */
 abstract public class PlainView {
 
-  final ToolParent _theParent;
-  private String _name="blank";
+	final ToolParent _theParent;
+	private String _name = "blank";
 
-  /** list of panes contained in this view*/
+	/** list of panes contained in this view */
 
-  public PlainView(final String theName, final ToolParent theParent){
-    _name = theName;
-    _theParent = theParent;
-  }
+	public PlainView(final String theName, final ToolParent theParent) {
+		_name = theName;
+		_theParent = theParent;
+	}
 
-  public final String getName(){
-    return _name;
-  }
-
-  public final ToolParent getParent()
-  {
-    return _theParent;
-  }
-
-  abstract public void update();
-  abstract public void rescale();
 	abstract public void close();
+
+	public final String getName() {
+		return _name;
+	}
+
+	public final ToolParent getParent() {
+		return _theParent;
+	}
+
+	abstract public void rescale();
+
+	abstract public void update();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

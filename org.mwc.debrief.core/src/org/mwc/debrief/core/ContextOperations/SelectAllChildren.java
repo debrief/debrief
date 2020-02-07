@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 /*
  *    Debrief - the Open Source Maritime Analysis Application
  *    http://debrief.info
@@ -59,489 +73,384 @@ import MWC.TacticalData.NarrativeWrapper;
  * @author ian.mayo
  *
  */
-public class SelectAllChildren implements RightClickContextItemGenerator
-{
-  private static class SelectInfillsOperation extends SelectChildrenOperation
-  {
-    public SelectInfillsOperation(final Layers theLayers,
-        final SegmentList selected)
-    {
-      super(theLayers, selected);
-    }
+public class SelectAllChildren implements RightClickContextItemGenerator {
+	private static class SelectChildrenAtFrequencyOperation extends SelectChildrenOperation {
+		private final long _interval;
 
-    @Override
-    protected List<EditableWrapper> itemsFor(final HasEditables parent)
-    {
-      final List<EditableWrapper> res = new ArrayList<>();
-      
-      final Enumeration<Editable> segs = parent.elements();
-      while(segs.hasMoreElements())
-      {
-        final TrackSegment seg = (TrackSegment) segs.nextElement();
-        if(seg instanceof DynamicInfillSegment)
-        {
-          // produce the top level item
-          final EditableWrapper track = new EditableWrapper(seg.getWrapper(), null,
-              _theLayers);
-          
-          // and now wrap this segment
-          final EditableWrapper segment = new EditableWrapper(seg, track,
-              _theLayers);
+		public SelectChildrenAtFrequencyOperation(final Layers theLayers, final HasEditables selected,
+				final long interval) {
+			super(theLayers, selected);
+			_interval = interval;
+		}
 
-          res.add(segment);
-        }
-      }
+		@Override
+		protected List<EditableWrapper> itemsFor(final HasEditables parent) {
+			final List<EditableWrapper> res = new ArrayList<>();
 
-      return res;
-    }
-  }
+			final TrackSegment wrap = (TrackSegment) parent;
+			final EditableWrapper track = new EditableWrapper(wrap.getWrapper(), null, _theLayers);
+			final EditableWrapper segment = new EditableWrapper(wrap, track, _theLayers);
 
-  private static class SelectChildrenOperation extends CMAPOperation
-  {
-    final private HasEditables _hasEditables;
-    protected final Layers _theLayers;
+			final Enumeration<Editable> items = wrap.elements();
+			long lastStamp = -1;
+			while (items.hasMoreElements()) {
+				final Editable item = items.nextElement();
 
-    public SelectChildrenOperation(final Layers theLayers,
-        final HasEditables selected)
-    {
-      super("Select all children");
-      _hasEditables = selected;
-      _theLayers = theLayers;
-    }
+				final FixWrapper fix = (FixWrapper) item;
+				final long time = fix.getDateTimeGroup().getDate().getTime();
 
-    @Override
-    public boolean canExecute()
-    {
-      return true;
-    }
+				// is this the first element?
+				if (lastStamp == -1) {
+					// wrap the fix
+					res.add(new EditableWrapper(item, segment, _theLayers));
 
-    @Override
-    public boolean canRedo()
-    {
-      return false;
-    }
+					// remember how many intervals there have been
+					lastStamp = time / _interval;
+				} else {
+					// find the new number of intervals
+					final long hour = time / _interval;
 
-    @Override
-    public boolean canUndo()
-    {
-      return false;
-    }
+					// have we passed a new interval?
+					if (hour > lastStamp) {
+						// store this new interval
+						lastStamp = hour;
 
-    @Override
-    public IStatus execute(final IProgressMonitor monitor,
-        final IAdaptable info) throws ExecutionException
-    {
-      final List<EditableWrapper> selection = itemsFor(_hasEditables);
+						// wrap the fix
+						res.add(new EditableWrapper(item, segment, _theLayers));
+					}
+				}
+			}
+			return res;
+		}
+	}
 
-      if (selection != null && selection.size() > 0)
-      {
-        // ok, get the editor
-        final IWorkbench wb = PlatformUI.getWorkbench();
-        final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-        final IWorkbenchPage page = win.getActivePage();
-        final IEditorPart editor = page.getActiveEditor();
+	private static class SelectChildrenOperation extends CMAPOperation {
+		private final static List<EditableWrapper> storeThese(final Layer wrap, final EditableWrapper thisList,
+				final Layers theLayers) {
+			final List<EditableWrapper> res = new ArrayList<EditableWrapper>();
+			final Enumeration<Editable> items = wrap.elements();
+			while (items.hasMoreElements()) {
+				final Editable item = items.nextElement();
+				res.add(new EditableWrapper(item, thisList, theLayers));
+			}
+			return res;
+		}
 
-        if (editor != null)
-        {
-          final IContentOutlinePage outline = (IContentOutlinePage) editor
-              .getAdapter(IContentOutlinePage.class);
-          if (outline != null)
-          {
-            // now set the selection
-            final IStructuredSelection str = new StructuredSelection(selection);
+		final private HasEditables _hasEditables;
 
-            outline.setSelection(str);
-          }
-        }
-      }
+		protected final Layers _theLayers;
 
-      return Status.OK_STATUS;
-    }
+		public SelectChildrenOperation(final Layers theLayers, final HasEditables selected) {
+			super("Select all children");
+			_hasEditables = selected;
+			_theLayers = theLayers;
+		}
 
-    protected List<EditableWrapper> itemsFor(final HasEditables parent)
-    {
-      final List<EditableWrapper> res;
-      if (parent instanceof TacticalDataWrapper)
-      {
-        final TacticalDataWrapper wrap = (TacticalDataWrapper) parent;
-        final EditableWrapper track = new EditableWrapper(wrap.getHost(), null,
-            _theLayers);
-        final EditableWrapper thisList = new EditableWrapper(wrap, track,
-            _theLayers);
+		@Override
+		public boolean canExecute() {
+			return true;
+		}
 
-        // and remember them
-        res = storeThese(wrap, thisList, _theLayers);
-      }
-      else if (parent instanceof BaseLayer)
-      {
-        final BaseLayer wrap = (BaseLayer) parent;
-        final EditableWrapper track = new EditableWrapper(wrap, null,
-            _theLayers);
-        final EditableWrapper thisList = new EditableWrapper(wrap, track,
-            _theLayers);
+		@Override
+		public boolean canRedo() {
+			return false;
+		}
 
-        // and remember them
-        res = storeThese(wrap, thisList, _theLayers);
-      }
-      else if (parent instanceof TrackSegment)
-      {
-        final TrackSegment wrap = (TrackSegment) parent;
-        final EditableWrapper track = new EditableWrapper(wrap.getWrapper(),
-            null, _theLayers);
-        final EditableWrapper thisList = new EditableWrapper(wrap, track,
-            _theLayers);
+		@Override
+		public boolean canUndo() {
+			return false;
+		}
 
-        // and remember them
-        res = storeThese(wrap, thisList, _theLayers);
-      }
-      else if (parent instanceof SegmentList)
-      {
-        final SegmentList wrap = (SegmentList) parent;
-        final EditableWrapper track = new EditableWrapper(wrap.getWrapper(),
-            null, _theLayers);
-        final EditableWrapper segList = new EditableWrapper(wrap.getWrapper()
-            .getSegments(), track, _theLayers);
-        final EditableWrapper thisList = new EditableWrapper(wrap, segList,
-            _theLayers);
+		@Override
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
+			final List<EditableWrapper> selection = itemsFor(_hasEditables);
 
-        // and remember them
-        res = storeThese(wrap, thisList, _theLayers);
-      }
-      else if (parent instanceof NarrativeWrapper)
-      {
-        final NarrativeWrapper wrap = (NarrativeWrapper) parent;
-        final EditableWrapper track = new EditableWrapper(wrap, null,
-            _theLayers);
-        final EditableWrapper thisList = new EditableWrapper(wrap, track,
-            _theLayers);
+			if (selection != null && selection.size() > 0) {
+				// ok, get the editor
+				final IWorkbench wb = PlatformUI.getWorkbench();
+				final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+				final IWorkbenchPage page = win.getActivePage();
+				final IEditorPart editor = page.getActiveEditor();
 
-        // and remember them
-        res = storeThese(wrap, thisList, _theLayers);
-      }
-      else if (parent instanceof Layer)
-      {
-        // we've handled all of the specific ones, we can
-        // afford to be a bit more relaxed now.
-        final Layer wrap = (Layer) parent;
-        final EditableWrapper track = new EditableWrapper(wrap, null,
-            _theLayers);
-        final EditableWrapper thisList = new EditableWrapper(wrap, track,
-            _theLayers);
+				if (editor != null) {
+					final IContentOutlinePage outline = editor.getAdapter(IContentOutlinePage.class);
+					if (outline != null) {
+						// now set the selection
+						final IStructuredSelection str = new StructuredSelection(selection);
 
-        // and remember them
-        res = storeThese(wrap, thisList, _theLayers);
-      }
-      else
-      {
-        System.out.println("not handling:" + parent.getClass());
-        res = null;
-      }
-      return res;
-    }
+						outline.setSelection(str);
+					}
+				}
+			}
 
-    private final static List<EditableWrapper> storeThese(final Layer wrap,
-        final EditableWrapper thisList, final Layers theLayers)
-    {
-      final List<EditableWrapper> res = new ArrayList<EditableWrapper>();
-      final Enumeration<Editable> items = wrap.elements();
-      while (items.hasMoreElements())
-      {
-        final Editable item = items.nextElement();
-        res.add(new EditableWrapper(item, thisList, theLayers));
-      }
-      return res;
-    }
+			return Status.OK_STATUS;
+		}
 
-    @Override
-    public IStatus redo(final IProgressMonitor monitor, final IAdaptable info)
-        throws ExecutionException
-    {
-      return Status.OK_STATUS;
-    }
+		protected List<EditableWrapper> itemsFor(final HasEditables parent) {
+			final List<EditableWrapper> res;
+			if (parent instanceof TacticalDataWrapper) {
+				final TacticalDataWrapper wrap = (TacticalDataWrapper) parent;
+				final EditableWrapper track = new EditableWrapper(wrap.getHost(), null, _theLayers);
+				final EditableWrapper thisList = new EditableWrapper(wrap, track, _theLayers);
 
-    @Override
-    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
-        throws ExecutionException
-    {
-      return Status.OK_STATUS;
-    }
+				// and remember them
+				res = storeThese(wrap, thisList, _theLayers);
+			} else if (parent instanceof BaseLayer) {
+				final BaseLayer wrap = (BaseLayer) parent;
+				final EditableWrapper track = new EditableWrapper(wrap, null, _theLayers);
+				final EditableWrapper thisList = new EditableWrapper(wrap, track, _theLayers);
 
-  }
+				// and remember them
+				res = storeThese(wrap, thisList, _theLayers);
+			} else if (parent instanceof TrackSegment) {
+				final TrackSegment wrap = (TrackSegment) parent;
+				final EditableWrapper track = new EditableWrapper(wrap.getWrapper(), null, _theLayers);
+				final EditableWrapper thisList = new EditableWrapper(wrap, track, _theLayers);
 
-  private static class SelectChildrenAtFrequencyOperation extends
-      SelectChildrenOperation
-  {
-    private final long _interval;
+				// and remember them
+				res = storeThese(wrap, thisList, _theLayers);
+			} else if (parent instanceof SegmentList) {
+				final SegmentList wrap = (SegmentList) parent;
+				final EditableWrapper track = new EditableWrapper(wrap.getWrapper(), null, _theLayers);
+				final EditableWrapper segList = new EditableWrapper(wrap.getWrapper().getSegments(), track, _theLayers);
+				final EditableWrapper thisList = new EditableWrapper(wrap, segList, _theLayers);
 
-    public SelectChildrenAtFrequencyOperation(final Layers theLayers,
-        final HasEditables selected, final long interval)
-    {
-      super(theLayers, selected);
-      _interval = interval;
-    }
+				// and remember them
+				res = storeThese(wrap, thisList, _theLayers);
+			} else if (parent instanceof NarrativeWrapper) {
+				final NarrativeWrapper wrap = (NarrativeWrapper) parent;
+				final EditableWrapper track = new EditableWrapper(wrap, null, _theLayers);
+				final EditableWrapper thisList = new EditableWrapper(wrap, track, _theLayers);
 
-    @Override
-    protected List<EditableWrapper> itemsFor(final HasEditables parent)
-    {
-      final List<EditableWrapper> res = new ArrayList<>();
+				// and remember them
+				res = storeThese(wrap, thisList, _theLayers);
+			} else if (parent instanceof Layer) {
+				// we've handled all of the specific ones, we can
+				// afford to be a bit more relaxed now.
+				final Layer wrap = (Layer) parent;
+				final EditableWrapper track = new EditableWrapper(wrap, null, _theLayers);
+				final EditableWrapper thisList = new EditableWrapper(wrap, track, _theLayers);
 
-      final TrackSegment wrap = (TrackSegment) parent;
-      final EditableWrapper track = new EditableWrapper(wrap.getWrapper(), null,
-          _theLayers);
-      final EditableWrapper segment = new EditableWrapper(wrap, track,
-          _theLayers);
+				// and remember them
+				res = storeThese(wrap, thisList, _theLayers);
+			} else {
+				System.out.println("not handling:" + parent.getClass());
+				res = null;
+			}
+			return res;
+		}
 
-      final Enumeration<Editable> items = wrap.elements();
-      long lastStamp = -1;
-      while (items.hasMoreElements())
-      {
-        final Editable item = items.nextElement();
+		@Override
+		public IStatus redo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
+			return Status.OK_STATUS;
+		}
 
-        final FixWrapper fix = (FixWrapper) item;
-        final long time = fix.getDateTimeGroup().getDate().getTime();
+		@Override
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
+			return Status.OK_STATUS;
+		}
 
-        // is this the first element?
-        if (lastStamp == -1)
-        {
-          // wrap the fix
-          res.add(new EditableWrapper(item, segment, _theLayers));
+	}
 
-          // remember how many intervals there have been
-          lastStamp = time / _interval;
-        }
-        else
-        {
-          // find the new number of intervals
-          final long hour = time / _interval;
+	private static class SelectInfillsOperation extends SelectChildrenOperation {
+		public SelectInfillsOperation(final Layers theLayers, final SegmentList selected) {
+			super(theLayers, selected);
+		}
 
-          // have we passed a new interval?
-          if (hour > lastStamp)
-          {
-            // store this new interval
-            lastStamp = hour;
+		@Override
+		protected List<EditableWrapper> itemsFor(final HasEditables parent) {
+			final List<EditableWrapper> res = new ArrayList<>();
 
-            // wrap the fix
-            res.add(new EditableWrapper(item, segment, _theLayers));
-          }
-        }
-      }
-      return res;
-    }
-  }
+			final Enumeration<Editable> segs = parent.elements();
+			while (segs.hasMoreElements()) {
+				final TrackSegment seg = (TrackSegment) segs.nextElement();
+				if (seg instanceof DynamicInfillSegment) {
+					// produce the top level item
+					final EditableWrapper track = new EditableWrapper(seg.getWrapper(), null, _theLayers);
 
+					// and now wrap this segment
+					final EditableWrapper segment = new EditableWrapper(seg, track, _theLayers);
 
-  /**
-   * @param parent
-   * @param theLayers
-   * @param parentLayers
-   * @param subjects
-   */
-  @Override
-  public void generate(final IMenuManager parent, final Layers theLayers,
-      final Layer[] parentLayers, final Editable[] subjects)
-  {
+					res.add(segment);
+				}
+			}
 
-    // so, see if it's something we can do business with
-    if (subjects.length == 1)
-    {
+			return res;
+		}
+	}
 
-      final Editable selected = subjects[0];
+	/**
+	 * does this list contain any dynamic infills?
+	 *
+	 * @param segments
+	 * @return
+	 */
+	private static boolean hasInfills(final SegmentList segments) {
+		final Enumeration<Editable> segs = segments.elements();
+		while (segs.hasMoreElements()) {
+			final TrackSegment seg = (TrackSegment) segs.nextElement();
+			if (seg instanceof DynamicInfillSegment) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-      // does it have any children?
-      if (selected instanceof HasEditables)
-      {
-        // ok, generate the select- all operation
-        final IUndoableOperation action = getOperation(theLayers,
-            (HasEditables) selected);
+	private static TimePeriod timePeriodFor(final Editable selected) {
+		TimePeriod res;
+		if (selected instanceof TrackSegment) {
+			final TrackSegment track = (TrackSegment) selected;
+			res = new TimePeriod.BaseTimePeriod(track.startDTG(), track.endDTG());
+		} else {
+			res = null;
+		}
 
-        // and now wrap it in an action
-        final Action doIt = new Action("Select all Children")
-        {
-          @Override
-          public void run()
-          {
-            runIt(action);
-          }
-        };
-        doIt.setImageDescriptor(DebriefPlugin.getImageDescriptor(
-            "icons/16/show.png"));
+		return res;
+	}
 
-        // ok, go for it
-        parent.add(doIt);
+	/**
+	 * @param parent
+	 * @param theLayers
+	 * @param parentLayers
+	 * @param subjects
+	 */
+	@Override
+	public void generate(final IMenuManager parent, final Layers theLayers, final Layer[] parentLayers,
+			final Editable[] subjects) {
 
-        // now for the time-related children
+		// so, see if it's something we can do business with
+		if (subjects.length == 1) {
 
-        // are the children time-stamped?
-        final TimePeriod coverage = timePeriodFor(selected);
-        if (coverage != null)
-        {
-          // ok, create the children at freq action
+			final Editable selected = subjects[0];
 
-          // and the new drop-down list of interpolation frequencies
-          final MenuManager newMenu = new MenuManager(
-              "Select child elements with this interval");
+			// does it have any children?
+			if (selected instanceof HasEditables) {
+				// ok, generate the select- all operation
+				final IUndoableOperation action = getOperation(theLayers, (HasEditables) selected);
 
-          // commented out, API not present indigo
-          // newMenu.setImageDescriptor(DebriefPlugin.getImageDescriptor(
-          // "icons/16/show.png"));
-          
-          
+				// and now wrap it in an action
+				final Action doIt = new Action("Select all Children") {
+					@Override
+					public void run() {
+						runIt(action);
+					}
+				};
+				doIt.setImageDescriptor(DebriefPlugin.getImageDescriptor("icons/16/show.png"));
 
-          /**
-           * the list of tags shown in the drop-down list
-           */
-          final String stringTags[] =
-          {"5 Mins", "15 Mins", "30 Mins", "60 Mins", "2 Hours", "6 Hours",
-              "12 Hours", "24 Hours", "48 Hours", "72 Hours"};
+				// ok, go for it
+				parent.add(doIt);
 
-          /**
-           * the values to use for the tags in the list
-           */
-          final long freqs[] =
-          {TimeFrequencyPropertyEditor._5_MINS,
-              TimeFrequencyPropertyEditor._15_MINS,
-              TimeFrequencyPropertyEditor._30_MINS,
-              TimeFrequencyPropertyEditor._60_MINS, 2
-                  * TimeFrequencyPropertyEditor._60_MINS, 6
-                      * TimeFrequencyPropertyEditor._60_MINS, 12
-                          * TimeFrequencyPropertyEditor._60_MINS, 24
-                              * TimeFrequencyPropertyEditor._60_MINS, 48
-                                  * TimeFrequencyPropertyEditor._60_MINS, 72
-                                      * TimeFrequencyPropertyEditor._60_MINS};
-          
+				// now for the time-related children
 
-          for (int i = 0; i < freqs.length; i++)
-          {
-            // convert from microseconds to milliseconds
-            final long thisLen = freqs[i] / 1000;
+				// are the children time-stamped?
+				final TimePeriod coverage = timePeriodFor(selected);
+				if (coverage != null) {
+					// ok, create the children at freq action
 
-            if (thisLen < coverage.getExtent())
-            {
-              final IUndoableOperation op = getTimedOperation(theLayers,
-                  (HasEditables) selected, thisLen);
-              // create the new menu item
-              final Action selectItem = new Action(stringTags[i])
-              {
-                @Override
-                public void run()
-                {
-                  runIt(op);
-                }
-              };
+					// and the new drop-down list of interpolation frequencies
+					final MenuManager newMenu = new MenuManager("Select child elements with this interval");
 
-              newMenu.add(selectItem);
-            }
-          }
-          parent.add(newMenu);
-        }
+					// commented out, API not present indigo
+					// newMenu.setImageDescriptor(DebriefPlugin.getImageDescriptor(
+					// "icons/16/show.png"));
 
-        // also offer to select infills, if it's a composite track with infills
-        if (selected instanceof SegmentList)
-        {
-          SegmentList segments = (SegmentList) selected;
-          if (hasInfills(segments))
-          {
-            final IUndoableOperation op = new SelectInfillsOperation(theLayers,
-                segments);
-            // create the new menu item
-            final Action selectItem = new Action(
-                "Select infills segments in this track")
-            {
-              @Override
-              public void run()
-              {
-                runIt(op);
-              }
-            };
-            
-            // give the item a dynamic infill icon
-            selectItem.setImageDescriptor(DebriefPlugin.getImageDescriptor(
-                "icons/16/track_segment.png"));
+					/**
+					 * the list of tags shown in the drop-down list
+					 */
+					final String stringTags[] = { "5 Mins", "15 Mins", "30 Mins", "60 Mins", "2 Hours", "6 Hours",
+							"12 Hours", "24 Hours", "48 Hours", "72 Hours" };
 
-            parent.add(selectItem);
-          }
-        }
+					/**
+					 * the values to use for the tags in the list
+					 */
+					final long freqs[] = { TimeFrequencyPropertyEditor._5_MINS, TimeFrequencyPropertyEditor._15_MINS,
+							TimeFrequencyPropertyEditor._30_MINS, TimeFrequencyPropertyEditor._60_MINS,
+							2 * TimeFrequencyPropertyEditor._60_MINS, 6 * TimeFrequencyPropertyEditor._60_MINS,
+							12 * TimeFrequencyPropertyEditor._60_MINS, 24 * TimeFrequencyPropertyEditor._60_MINS,
+							48 * TimeFrequencyPropertyEditor._60_MINS, 72 * TimeFrequencyPropertyEditor._60_MINS };
 
-      }
-    }
-  }
+					for (int i = 0; i < freqs.length; i++) {
+						// convert from microseconds to milliseconds
+						final long thisLen = freqs[i] / 1000;
 
-  /**
-   * does this list contain any dynamic infills?
-   * 
-   * @param segments
-   * @return
-   */
-  private static boolean hasInfills(final SegmentList segments)
-  {
-    final Enumeration<Editable> segs = segments.elements();
-    while (segs.hasMoreElements())
-    {
-      final TrackSegment seg = (TrackSegment) segs.nextElement();
-      if (seg instanceof DynamicInfillSegment)
-      {
-        return true;
-      }
-    }
-    return false;
-  }
+						if (thisLen < coverage.getExtent()) {
+							final IUndoableOperation op = getTimedOperation(theLayers, (HasEditables) selected,
+									thisLen);
+							// create the new menu item
+							final Action selectItem = new Action(stringTags[i]) {
+								@Override
+								public void run() {
+									runIt(op);
+								}
+							};
 
-  /**
-   * move the operation generation to a method, so it can be overwritten (in testing)
-   *
-   *
-   * @param theLayers
-   * @param suitableSegments
-   * @param commonParent
-   * @return
-   */
-  protected IUndoableOperation getOperation(final Layers theLayers,
-      final HasEditables selected)
-  {
-    return new SelectChildrenOperation(theLayers, selected);
-  }
+							newMenu.add(selectItem);
+						}
+					}
+					parent.add(newMenu);
+				}
 
-  /**
-   * move the operation generation to a method, so it can be overwritten (in testing)
-   *
-   *
-   * @param theLayers
-   * @param suitableSegments
-   * @param commonParent
-   * @return
-   */
-  protected IUndoableOperation getTimedOperation(final Layers theLayers,
-      final HasEditables selected, final long interval)
-  {
-    return new SelectChildrenAtFrequencyOperation(theLayers, selected,
-        interval);
-  }
+				// also offer to select infills, if it's a composite track with infills
+				if (selected instanceof SegmentList) {
+					final SegmentList segments = (SegmentList) selected;
+					if (hasInfills(segments)) {
+						final IUndoableOperation op = new SelectInfillsOperation(theLayers, segments);
+						// create the new menu item
+						final Action selectItem = new Action("Select infills segments in this track") {
+							@Override
+							public void run() {
+								runIt(op);
+							}
+						};
 
-  /**
-   * put the operation firer onto the undo history. We've refactored this into a separate method so
-   * testing classes don't have to simulate the CorePlugin
-   *
-   * @param operation
-   */
-  protected void runIt(final IUndoableOperation operation)
-  {
-    CorePlugin.run(operation);
-  }
+						// give the item a dynamic infill icon
+						selectItem.setImageDescriptor(DebriefPlugin.getImageDescriptor("icons/16/track_segment.png"));
 
-  private static TimePeriod timePeriodFor(final Editable selected)
-  {
-    TimePeriod res;
-    if (selected instanceof TrackSegment)
-    {
-      final TrackSegment track = (TrackSegment) selected;
-      res = new TimePeriod.BaseTimePeriod(track.startDTG(), track.endDTG());
-    }
-    else
-    {
-      res = null;
-    }
+						parent.add(selectItem);
+					}
+				}
 
-    return res;
-  }
+			}
+		}
+	}
+
+	/**
+	 * move the operation generation to a method, so it can be overwritten (in
+	 * testing)
+	 *
+	 *
+	 * @param theLayers
+	 * @param suitableSegments
+	 * @param commonParent
+	 * @return
+	 */
+	protected IUndoableOperation getOperation(final Layers theLayers, final HasEditables selected) {
+		return new SelectChildrenOperation(theLayers, selected);
+	}
+
+	/**
+	 * move the operation generation to a method, so it can be overwritten (in
+	 * testing)
+	 *
+	 *
+	 * @param theLayers
+	 * @param suitableSegments
+	 * @param commonParent
+	 * @return
+	 */
+	protected IUndoableOperation getTimedOperation(final Layers theLayers, final HasEditables selected,
+			final long interval) {
+		return new SelectChildrenAtFrequencyOperation(theLayers, selected, interval);
+	}
+
+	/**
+	 * put the operation firer onto the undo history. We've refactored this into a
+	 * separate method so testing classes don't have to simulate the CorePlugin
+	 *
+	 * @param operation
+	 */
+	protected void runIt(final IUndoableOperation operation) {
+		CorePlugin.run(operation);
+	}
 
 }

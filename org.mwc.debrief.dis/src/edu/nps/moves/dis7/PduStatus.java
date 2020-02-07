@@ -1,137 +1,129 @@
 package edu.nps.moves.dis7;
 
-import java.util.*;
-import java.io.*;
-import edu.nps.moves.disenum.*;
-import edu.nps.moves.disutil.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
 
 /**
- * PDU Status. These are a series of bit fields. Represented here as just a byte. Section 6.2.67
+ * PDU Status. These are a series of bit fields. Represented here as just a
+ * byte. Section 6.2.67
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class PduStatus extends Object implements Serializable
-{
-   /** Bit fields. The semantics of the bit fields depend on the PDU type */
-   protected short  pduStatus = (short)0;
+public class PduStatus extends Object implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	/** Bit fields. The semantics of the bit fields depend on the PDU type */
+	protected short pduStatus = (short) 0;
 
+	/** Constructor */
+	public PduStatus() {
+	}
 
-/** Constructor */
- public PduStatus()
- {
- }
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+		if (this == obj) {
+			return true;
+		}
 
-   marshalSize = marshalSize + 1;  // pduStatus
+		if (obj == null) {
+			return false;
+		}
 
-   return marshalSize;
-}
+		if (getClass() != obj.getClass())
+			return false;
 
+		return equalsImpl(obj);
+	}
 
-public void setPduStatus(short pPduStatus)
-{ pduStatus = pPduStatus;
-}
+	/**
+	 * Compare all fields that contribute to the state, ignoring transient and
+	 * static fields, for <code>this</code> and the supplied object
+	 *
+	 * @param obj the object to compare to
+	 * @return true if the objects are equal, false otherwise.
+	 */
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-public short getPduStatus()
-{ return pduStatus; 
-}
+		if (!(obj instanceof PduStatus))
+			return false;
 
+		final PduStatus rhs = (PduStatus) obj;
 
-public void marshal(DataOutputStream dos)
-{
-    try 
-    {
-       dos.writeByte( (byte)pduStatus);
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+		if (!(pduStatus == rhs.pduStatus))
+			ivarsEqual = false;
 
-public void unmarshal(DataInputStream dis)
-{
-    try 
-    {
-       pduStatus = (short)dis.readUnsignedByte();
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+		return ivarsEqual;
+	}
 
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
-       buff.put( (byte)pduStatus);
-    } // end of marshal method
+		marshalSize = marshalSize + 1; // pduStatus
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       pduStatus = (short)(buff.get() & 0xFF);
- } // end of unmarshal method 
+		return marshalSize;
+	}
 
+	public short getPduStatus() {
+		return pduStatus;
+	}
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+	public void marshal(final DataOutputStream dos) {
+		try {
+			dos.writeByte((byte) pduStatus);
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
-    if(this == obj){
-      return true;
-    }
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	public void marshal(final java.nio.ByteBuffer buff) {
+		buff.put((byte) pduStatus);
+	} // end of marshal method
 
-    if(obj == null){
-       return false;
-    }
+	public void setPduStatus(final short pPduStatus) {
+		pduStatus = pPduStatus;
+	}
 
-    if(getClass() != obj.getClass())
-        return false;
+	public void unmarshal(final DataInputStream dis) {
+		try {
+			pduStatus = (short) dis.readUnsignedByte();
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
-    return equalsImpl(obj);
- }
-
- /**
-  * Compare all fields that contribute to the state, ignoring
- transient and static fields, for <code>this</code> and the supplied object
-  * @param obj the object to compare to
-  * @return true if the objects are equal, false otherwise.
-  */
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
-
-    if(!(obj instanceof PduStatus))
-        return false;
-
-     final PduStatus rhs = (PduStatus)obj;
-
-     if( ! (pduStatus == rhs.pduStatus)) ivarsEqual = false;
-
-    return ivarsEqual;
- }
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		pduStatus = (short) (buff.get() & 0xFF);
+	} // end of unmarshal method
 } // end of class

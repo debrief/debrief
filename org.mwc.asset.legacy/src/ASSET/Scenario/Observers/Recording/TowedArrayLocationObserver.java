@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package ASSET.Scenario.Observers.Recording;
 
 import java.io.IOException;
@@ -38,342 +39,290 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /**
  * record the probable location of array elements
- * 
+ *
  * @author ian
- * 
+ *
  */
-public class TowedArrayLocationObserver extends RecordStatusToFileObserverType
-{
-  /***************************************************************
-   * member variables
-   ***************************************************************/
-  final private HashMap<String, TrackWrapper> _trackList =
-      new HashMap<String, TrackWrapper>();
-  final private List<Double> _offsets;
-  final private String _messageName;
-  final private String _sensorName;
-  final private double _defaultDepth;
+public class TowedArrayLocationObserver extends RecordStatusToFileObserverType {
+	public static enum RecorderType {
+		HDG_DEPTH, LOC_RELATIVE, LOC_ABS
+	}
 
-  final private RecorderType _recorderType;
+	static public class TowedArrayLocationObserverInfo extends Editable.EditorType {
 
-  public static enum RecorderType
-  {
-    HDG_DEPTH, LOC_RELATIVE, LOC_ABS
-  }
+		/**
+		 * constructor for editable details of a set of Layers
+		 *
+		 * @param data the Layers themselves
+		 */
+		public TowedArrayLocationObserverInfo(final TowedArrayLocationObserver data) {
+			super(data, data.getName(), "Edit");
+		}
 
-  /***************************************************************
-   * constructor
-   ***************************************************************/
-  /**
-   * create a new monitor
-   * 
-   * @param directoryName
-   *          the directory to output the plots to
-   * @param defaultDepth
-   * @param recordDetections
-   *          whether to record detections
-   */
-  public TowedArrayLocationObserver(final String directoryName,
-      final String fileName, final TargetType subjectType,
-      final String observerName, final boolean isActive,
-      final List<Double> offsets, final RecorderType recorderType,
-      final String messageName, final double defaultDepth,
-      final String sensorName)
-  {
-    super(directoryName, fileName, false, false, true, subjectType,
-        observerName, isActive);
+		/**
+		 * editable GUI properties for our participant
+		 *
+		 * @return property descriptions
+		 */
+		@Override
+		public java.beans.PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final java.beans.PropertyDescriptor[] res = {
+						prop("Directory", "The directory to place Debrief data-files"),
+						prop("Active", "Whether this observer is active"), };
 
-    // store the list of offsets
-    _offsets = offsets;
+				return res;
+			} catch (final java.beans.IntrospectionException e) {
+				return super.getPropertyDescriptors();
+			}
+		}
 
-    _defaultDepth = defaultDepth;
-    _sensorName = sensorName;
-    _recorderType = recorderType;
-    _messageName = messageName;
-  }
+	}
 
-  /**
-   * ************************************************************ member methods
-   * *************************************************************
-   */
+	/***************************************************************
+	 * member variables
+	 ***************************************************************/
+	final private HashMap<String, TrackWrapper> _trackList = new HashMap<String, TrackWrapper>();
+	final private List<Double> _offsets;
+	final private String _messageName;
 
-  public void writeThesePositionDetails(
-      MWC.GenericData.WorldLocation platformLocation,
-      final ASSET.Participants.Status stat, final ASSET.ParticipantType pt,
-      long newTime)
-  {
-    final String ptName = pt.getName();
-    final HiResDate debTime = new HiResDate(newTime);
+	final private String _sensorName;
 
-    // find this track
-    TrackWrapper track = _trackList.get(ptName);
-    if (track == null)
-    {
-      track = new TrackWrapper();
-      track.setName(ptName);
-      _trackList.put(ptName, track);
-    }
+	final private double _defaultDepth;
 
-    // find the last position in the track
-    Watchable[] lastItems = track.getNearestTo(track.getEndDTG(), false);
-    WorldLocation lastLoc = null;
-    double lastDepth = _defaultDepth;
-    if (lastItems != null)
-    {
-      if (lastItems.length > 0)
-      {
-        Watchable lastItem = lastItems[0];
-        lastLoc = lastItem.getLocation();
-        lastDepth = lastLoc.getDepth();
-      }
-    }
+	final private RecorderType _recorderType;
 
-    // sort out the heading for the item
-    final double bearingRads;
-    if (lastLoc != null)
-    {
-      bearingRads = platformLocation.subtract(lastLoc).getBearing();
-    }
-    else
-    {
-      bearingRads = 0d;
-    }
+	/***************************************************************
+	 * constructor
+	 ***************************************************************/
+	/**
+	 * create a new monitor
+	 *
+	 * @param directoryName    the directory to output the plots to
+	 * @param defaultDepth
+	 * @param recordDetections whether to record detections
+	 */
+	public TowedArrayLocationObserver(final String directoryName, final String fileName, final TargetType subjectType,
+			final String observerName, final boolean isActive, final List<Double> offsets,
+			final RecorderType recorderType, final String messageName, final double defaultDepth,
+			final String sensorName) {
+		super(directoryName, fileName, false, false, true, subjectType, observerName, isActive);
 
-    // add the new fix to the track
-    Fix newFix = new Fix(debTime, platformLocation, bearingRads, 4d);
+		// store the list of offsets
+		_offsets = offsets;
 
-    final double randomDepth = lastDepth + Math.random() * 1d;
+		_defaultDepth = defaultDepth;
+		_sensorName = sensorName;
+		_recorderType = recorderType;
+		_messageName = messageName;
+	}
 
-    newFix.getLocation().setDepth(randomDepth);
-    FixWrapper wrapper = new FixWrapper(newFix);
-    track.addFix(wrapper);
+	/**
+	 * determine the normal suffix for this file type
+	 */
+	@Override
+	protected String getMySuffix() {
+		return "dsf";
+	}
 
-    final StringBuffer theseValues = new StringBuffer();
+	@Override
+	protected String newName(final String name) {
+		return "res_" + name + "_"
+				+ MWC.Utilities.TextFormatting.DebriefFormatDateTime.toString(System.currentTimeMillis()) + ".csv";
+	}
 
-    DecimalFormat df = new DecimalFormat("0.00");
-    
-    // SPECIAL CASE: for an 8 element array, we need to prepend 4 zero pairs
-    if(_offsets.size() == 8 && _recorderType == RecorderType.HDG_DEPTH)
-    {
-      theseValues.append(" 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ");
-    }
+	@Override
+	protected void performSetupProcessing(final ScenarioType scenario) {
+		// ok, let the parent do its stuff
+		super.performSetupProcessing(scenario);
 
+		// clear our set of tracks
+		_trackList.clear();
+	}
 
-    // ok, see if we are ready to sort out the array locations
-    for (Double thisO : _offsets)
-    {
-      ArrayLength sensorOffset = new ArrayLength(-thisO);
+	@Override
+	protected void writeBuildDate(final String details) throws IOException {
+		_os.write(";; ASSET build:," + details + System.getProperty("line.separator"));
+	}
 
-      // get the backtrace to this distance
-      FixWrapper pos = track.getBacktraceTo(debTime, sensorOffset, true);
-      if (pos != null)
-      {
-        final WorldLocation aLoc = pos.getLocation();
-        final double depthM = pos.getDepth();
+	/**
+	 * write out the file header details for this scenario
+	 *
+	 * @param title the scenario we're describing
+	 * @throws IOException
+	 */
 
-        // ok, output the relevant data
-        switch (_recorderType)
-        {
-        case HDG_DEPTH:
-          // get the heading and depth
-          double hdgDegs = pos.getCourseDegs();
-          theseValues.append("" + df.format(depthM) + " " + df.format(hdgDegs)
-              + " ");
-          break;
-        case LOC_ABS:
-          theseValues.append("" + aLoc.getLat() + " " + aLoc.getLong() + " "
-              + df.format(depthM));
-          break;
-        case LOC_RELATIVE:
-          // ok, we need an offset here
-          WorldVector offset = aLoc.subtract(platformLocation);
+	@Override
+	protected void writeFileHeaderDetails(final String title, final long currentDTG) throws IOException {
+		_os.write(";; ASSET Output recorded at:," + new java.util.Date() + ", name:," + title);
+		_os.write("" + System.getProperty("line.separator"));
+		_os.write(";; See Debrief reference document for file formats");
+		_os.write("" + System.getProperty("line.separator"));
+	}
 
-          // ok, we need to convert to metres
-          double rangeM =
-              new WorldDistance(offset.getRange(), WorldDistance.DEGS)
-                  .getValueIn(WorldDistance.METRES);
+	/**
+	 * write these detections to file
+	 *
+	 * @param pt         the participant we're on about
+	 * @param detections the current set of detections
+	 * @param dtg        the dtg at which the detections were observed
+	 */
+	@Override
+	protected void writeTheseDetectionDetails(final ParticipantType pt, final DetectionList detections,
+			final long dtg) {
+		throw new UnsupportedOperationException("Method not implemented");
+	}
 
-          // and the two components
-          double xDelta = rangeM * Math.sin(offset.getBearing());
-          double yDelta = rangeM * Math.cos(offset.getBearing());
+	/**
+	 * ************************************************************ member methods
+	 * *************************************************************
+	 */
 
-          theseValues.append(df.format(xDelta) + " " + df.format(yDelta) + " "
-              + depthM);
-          // create xy from this
-          break;
-        }
+	@Override
+	public void writeThesePositionDetails(final MWC.GenericData.WorldLocation platformLocation,
+			final ASSET.Participants.Status stat, final ASSET.ParticipantType pt, final long newTime) {
+		final String ptName = pt.getName();
+		final HiResDate debTime = new HiResDate(newTime);
 
-      }
-    }
-    
-    // SPECIAL CASE: for an 4 element array, we need to append 8 zero pairs
-    if(_offsets.size() == 4 && _recorderType == RecorderType.HDG_DEPTH)
-    {
-      theseValues.append("0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ");
-    }
+		// find this track
+		TrackWrapper track = _trackList.get(ptName);
+		if (track == null) {
+			track = new TrackWrapper();
+			track.setName(ptName);
+			_trackList.put(ptName, track);
+		}
 
-    // do we have anything to output?
-    if (theseValues.length() > 0)
-    {
-      // ok, go for it.
-      final StringBuffer buff = new StringBuffer();
+		// find the last position in the track
+		final Watchable[] lastItems = track.getNearestTo(track.getEndDTG(), false);
+		WorldLocation lastLoc = null;
+		double lastDepth = _defaultDepth;
+		if (lastItems != null) {
+			if (lastItems.length > 0) {
+				final Watchable lastItem = lastItems[0];
+				lastLoc = lastItem.getLocation();
+				lastDepth = lastLoc.getDepth();
+			}
+		}
 
-      // dtg
-      final String dtg = DebriefFormatDateTime.toString(newTime);
+		// sort out the heading for the item
+		final double bearingRads;
+		if (lastLoc != null) {
+			bearingRads = platformLocation.subtract(lastLoc).getBearing();
+		} else {
+			bearingRads = 0d;
+		}
 
-      // message type
-      buff.append(";");
-      buff.append(_messageName);
-      buff.append(": ");
-      buff.append(dtg);
-      buff.append(" ");
-      buff.append(pt.getName());
-      buff.append(" ");
-      buff.append(_sensorName);
-      buff.append(" ");
-      buff.append(theseValues.toString());
+		// add the new fix to the track
+		final Fix newFix = new Fix(debTime, platformLocation, bearingRads, 4d);
 
-      final String res = buff.toString();
+		final double randomDepth = lastDepth + Math.random() * 1d;
 
-      if (res != null)
-      {
-        try
-        {
-          _os.write(res);
-          _os.write("" + System.getProperty("line.separator"));
-          _os.flush();
-        }
-        catch (Exception e)
-        {
-          e.printStackTrace();
-        }
-      }
-    }
+		newFix.getLocation().setDepth(randomDepth);
+		final FixWrapper wrapper = new FixWrapper(newFix);
+		track.addFix(wrapper);
 
-  }
+		final StringBuffer theseValues = new StringBuffer();
 
-  @Override
-  protected void performSetupProcessing(ScenarioType scenario)
-  {
-    // ok, let the parent do its stuff
-    super.performSetupProcessing(scenario);
+		final DecimalFormat df = new DecimalFormat("0.00");
 
-    // clear our set of tracks
-    _trackList.clear();
-  }
+		// SPECIAL CASE: for an 8 element array, we need to prepend 4 zero pairs
+		if (_offsets.size() == 8 && _recorderType == RecorderType.HDG_DEPTH) {
+			theseValues.append(" 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ");
+		}
 
-  /**
-   * write the current decision description to file
-   * 
-   * @param pt
-   *          the participant we're looking at
-   * @param activity
-   *          a description of the current activity
-   * @param dtg
-   *          the dtg at which the description was recorded
-   */
-  protected void writeThisDecisionDetail(NetworkParticipant pt,
-      String activity, long dtg)
-  {
-    // To change body of implemented methods use File | Settings | File Templates.
-  }
+		// ok, see if we are ready to sort out the array locations
+		for (final Double thisO : _offsets) {
+			final ArrayLength sensorOffset = new ArrayLength(-thisO);
 
-  /**
-   * write these detections to file
-   * 
-   * @param pt
-   *          the participant we're on about
-   * @param detections
-   *          the current set of detections
-   * @param dtg
-   *          the dtg at which the detections were observed
-   */
-  protected void writeTheseDetectionDetails(ParticipantType pt,
-      DetectionList detections, long dtg)
-  {
-    throw new UnsupportedOperationException("Method not implemented");
-  }
+			// get the backtrace to this distance
+			final FixWrapper pos = track.getBacktraceTo(debTime, sensorOffset, true);
+			if (pos != null) {
+				final WorldLocation aLoc = pos.getLocation();
+				final double depthM = pos.getDepth();
 
-  protected String newName(final String name)
-  {
-    return "res_"
-        + name
-        + "_"
-        + MWC.Utilities.TextFormatting.DebriefFormatDateTime.toString(System
-            .currentTimeMillis()) + ".csv";
-  }
+				// ok, output the relevant data
+				switch (_recorderType) {
+				case HDG_DEPTH:
+					// get the heading and depth
+					final double hdgDegs = pos.getCourseDegs();
+					theseValues.append("" + df.format(depthM) + " " + df.format(hdgDegs) + " ");
+					break;
+				case LOC_ABS:
+					theseValues.append("" + aLoc.getLat() + " " + aLoc.getLong() + " " + df.format(depthM));
+					break;
+				case LOC_RELATIVE:
+					// ok, we need an offset here
+					final WorldVector offset = aLoc.subtract(platformLocation);
 
-  /**
-   * determine the normal suffix for this file type
-   */
-  protected String getMySuffix()
-  {
-    return "dsf";
-  }
+					// ok, we need to convert to metres
+					final double rangeM = new WorldDistance(offset.getRange(), WorldDistance.DEGS)
+							.getValueIn(WorldDistance.METRES);
 
-  /**
-   * write out the file header details for this scenario
-   * 
-   * @param title
-   *          the scenario we're describing
-   * @throws IOException
-   */
+					// and the two components
+					final double xDelta = rangeM * Math.sin(offset.getBearing());
+					final double yDelta = rangeM * Math.cos(offset.getBearing());
 
-  protected void writeFileHeaderDetails(final String title, long currentDTG)
-      throws IOException
-  {
-    _os.write(";; ASSET Output recorded at:," + new java.util.Date()
-        + ", name:," + title);
-    _os.write("" + System.getProperty("line.separator"));
-    _os.write(";; See Debrief reference document for file formats");
-    _os.write("" + System.getProperty("line.separator"));
-  }
+					theseValues.append(df.format(xDelta) + " " + df.format(yDelta) + " " + depthM);
+					// create xy from this
+					break;
+				}
 
-  protected void writeBuildDate(String details) throws IOException
-  {
-    _os.write(";; ASSET build:," + details
-        + System.getProperty("line.separator"));
-  }
+			}
+		}
 
-  // ////////////////////////////////////////////////////////////////////
-  // editable properties
-  // ////////////////////////////////////////////////////////////////////
+		// SPECIAL CASE: for an 4 element array, we need to append 8 zero pairs
+		if (_offsets.size() == 4 && _recorderType == RecorderType.HDG_DEPTH) {
+			theseValues.append("0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 ");
+		}
 
-  static public class TowedArrayLocationObserverInfo extends
-      Editable.EditorType
-  {
+		// do we have anything to output?
+		if (theseValues.length() > 0) {
+			// ok, go for it.
+			final StringBuffer buff = new StringBuffer();
 
-    /**
-     * constructor for editable details of a set of Layers
-     * 
-     * @param data
-     *          the Layers themselves
-     */
-    public TowedArrayLocationObserverInfo(final TowedArrayLocationObserver data)
-    {
-      super(data, data.getName(), "Edit");
-    }
+			// dtg
+			final String dtg = DebriefFormatDateTime.toString(newTime);
 
-    /**
-     * editable GUI properties for our participant
-     * 
-     * @return property descriptions
-     */
-    public java.beans.PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try
-      {
-        final java.beans.PropertyDescriptor[] res =
-            {prop("Directory", "The directory to place Debrief data-files"),
-                prop("Active", "Whether this observer is active"),};
+			// message type
+			buff.append(";");
+			buff.append(_messageName);
+			buff.append(": ");
+			buff.append(dtg);
+			buff.append(" ");
+			buff.append(pt.getName());
+			buff.append(" ");
+			buff.append(_sensorName);
+			buff.append(" ");
+			buff.append(theseValues.toString());
 
-        return res;
-      }
-      catch (java.beans.IntrospectionException e)
-      {
-        return super.getPropertyDescriptors();
-      }
-    }
+			final String res = buff.toString();
 
-  }
+			if (res != null) {
+				try {
+					_os.write(res);
+					_os.write("" + System.getProperty("line.separator"));
+					_os.flush();
+				} catch (final Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+	}
+
+	// ////////////////////////////////////////////////////////////////////
+	// editable properties
+	// ////////////////////////////////////////////////////////////////////
+
+	/**
+	 * write the current decision description to file
+	 *
+	 * @param pt       the participant we're looking at
+	 * @param activity a description of the current activity
+	 * @param dtg      the dtg at which the description was recorded
+	 */
+	@Override
+	protected void writeThisDecisionDetail(final NetworkParticipant pt, final String activity, final long dtg) {
+		// To change body of implemented methods use File | Settings | File Templates.
+	}
 }

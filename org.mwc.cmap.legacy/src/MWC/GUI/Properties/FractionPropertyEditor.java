@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: FractionPropertyEditor.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -59,98 +60,61 @@
 // Initial revision
 //
 
-
 package MWC.GUI.Properties;
 
 import java.beans.PropertyEditorSupport;
 
-public class FractionPropertyEditor extends PropertyEditorSupport
-{
+public class FractionPropertyEditor extends PropertyEditorSupport {
 
-  protected Double _myFrac;
+	protected Double _myFrac;
 
-  private final String stringTags[] =
-  {
-     "0 - reset",
-     "1/100",
-     "1/50",
-     "1/10",
-     "1/5",
-     "1",
-     "5",
-     "10",
-     "50",
-     "100"};
+	private final String stringTags[] = { "0 - reset", "1/100", "1/50", "1/10", "1/5", "1", "5", "10", "50", "100" };
 
-  private final double vals[] =
-  {
-       0,
-       0.01,
-       0.02,
-       0.1,
-       0.2,
-       1,
-       5,
-       10,
-       50,
-       100
-    };
+	private final double vals[] = { 0, 0.01, 0.02, 0.1, 0.2, 1, 5, 10, 50, 100 };
 
+	@Override
+	public String getAsText() {
+		String res = null;
+		final double current = _myFrac.doubleValue();
+		for (int i = 0; i < vals.length; i++) {
+			final double v = vals[i];
+			if (v == current) {
+				res = stringTags[i];
+			}
 
+		}
 
-  public String[] getTags()
-  {
-    return stringTags;
-  }
+		return res;
+	}
 
-  public Object getValue()
-  {
-    return _myFrac;
-  }
+	@Override
+	public String[] getTags() {
+		return stringTags;
+	}
 
+	@Override
+	public Object getValue() {
+		return _myFrac;
+	}
 
+	@Override
+	public void setAsText(final String val) {
+		for (int i = 0; i < stringTags.length; i++) {
+			final String thisS = stringTags[i];
+			if (thisS.equals(val)) {
+				_myFrac = new Double(vals[i]);
+			}
+		}
 
-  public void setValue(final Object p1)
-  {
-    if(p1 instanceof Double)
-    {
-      _myFrac = (Double)p1;
-    }
-    else if(p1 instanceof String)
-    {
-      final String val = (String) p1;
-      setAsText(val);
-    }
-  }
+	}
 
-  public void setAsText(final String val)
-  {
-    for(int i=0;i<stringTags.length;i++)
-    {
-      final String thisS = stringTags[i];
-      if(thisS.equals(val))
-      {
-        _myFrac = new Double(vals[i]);
-      }
-    }
-
-  }
-
-  public String getAsText()
-  {
-    String res = null;
-    final double current = _myFrac.doubleValue();
-    for(int i=0;i<vals.length;i++)
-    {
-      final double v = vals[i];
-      if(v == current)
-      {
-        res = stringTags[i];
-      }
-
-    }
-
-    return res;
-  }
+	@Override
+	public void setValue(final Object p1) {
+		if (p1 instanceof Double) {
+			_myFrac = (Double) p1;
+		} else if (p1 instanceof String) {
+			final String val = (String) p1;
+			setAsText(val);
+		}
+	}
 }
-

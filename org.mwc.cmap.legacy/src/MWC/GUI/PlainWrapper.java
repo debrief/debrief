@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: PlainWrapper.java,v $
 // @author $Author: ian.mayo $
 // @version $Revision: 1.7 $
@@ -158,354 +159,319 @@ import java.lang.annotation.Annotation;
 import MWC.GenericData.WorldArea;
 
 /**
- * This class shows all the responsibilities of the wrapper items. In particular the fact that the
- * data items should be able to describe themselves, and create/fill which shows/describes the raw
- * data
+ * This class shows all the responsibilities of the wrapper items. In particular
+ * the fact that the data items should be able to describe themselves, and
+ * create/fill which shows/describes the raw data
  */
-abstract public class PlainWrapper implements Plottable, Serializable,
-    Exportable, SupportsPropertyListeners, Renamable
-{
+abstract public class PlainWrapper
+		implements Plottable, Serializable, Exportable, SupportsPropertyListeners, Renamable {
 
-  // ///////////////////////////////////////////////////////////
-  // member variables
-  // //////////////////////////////////////////////////////////
+	// ///////////////////////////////////////////////////////////
+	// member variables
+	// //////////////////////////////////////////////////////////
 
-  public static interface InterpolatedData
-  {
-  }
+	public static interface InterpolatedData {
+	}
 
-  /**
-   * property name to indicate that the text in the label has changed
-   *
-   */
-  public static final String TEXT_CHANGED = "TEXT_CHANGE";
+	/**
+	 * property name to indicate that the text in the label has changed
+	 *
+	 */
+	public static final String TEXT_CHANGED = "TEXT_CHANGE";
 
-  /**
-   * the name of the property change event to fire should this object get moved
-   *
-   */
-  public static final String LOCATION_CHANGED = "LOCATION_CHANGED";
+	/**
+	 * the name of the property change event to fire should this object get moved
+	 *
+	 */
+	public static final String LOCATION_CHANGED = "LOCATION_CHANGED";
 
-  /**
-   * the name of the property change event to fire should this object have its colour changed
-   *
-   */
-  public static final String COLOR_CHANGED = "COLOR_CHANGED";
+	/**
+	 * the name of the property change event to fire should this object have its
+	 * colour changed
+	 *
+	 */
+	public static final String COLOR_CHANGED = "COLOR_CHANGED";
 
-  /**
-   * the name of the property change event to fire should this object change its visibility
-   *
-   */
-  public static final String VISIBILITY_CHANGED = "VISIBILITY_CHANGED";
+	/**
+	 * the name of the property change event to fire should this object change its
+	 * visibility
+	 *
+	 */
+	public static final String VISIBILITY_CHANGED = "VISIBILITY_CHANGED";
 
-  // keep track of versions
-  static final long serialVersionUID = 1;
+	// keep track of versions
+	static final long serialVersionUID = 1;
 
-  /**
-   * convenience function, for determining if object has fire extended annotation
-   *
-   * @param ann
-   *          set of annotations for an object
-   * @return yes/no
-   */
-  public static boolean hasFireExtendedAnnotation(final Annotation[] ann)
-  {
-    if (ann != null)
-    {
-      for (final Annotation thisA : ann)
-      {
-        if (thisA.annotationType().equals(FireExtended.class))
-        {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
+	/**
+	 * convenience function, for determining if object has fire extended annotation
+	 *
+	 * @param ann set of annotations for an object
+	 * @return yes/no
+	 */
+	public static boolean hasFireExtendedAnnotation(final Annotation[] ann) {
+		if (ann != null) {
+			for (final Annotation thisA : ann) {
+				if (thisA.annotationType().equals(FireExtended.class)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
-  /**
-   * convenience function, for determining if object has fire reformatted annotation
-   *
-   * @param ann
-   *          set of annotations for an object
-   * @return yes/no
-   */
-  public static boolean hasFireReformattedAnnotation(final Annotation[] ann)
-  {
-    if (ann != null)
-    {
-      for (final Annotation thisA : ann)
-      {
-        if (thisA.annotationType().equals(FireReformatted.class))
-        {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
+	/**
+	 * convenience function, for determining if object has fire reformatted
+	 * annotation
+	 *
+	 * @param ann set of annotations for an object
+	 * @return yes/no
+	 */
+	public static boolean hasFireReformattedAnnotation(final Annotation[] ann) {
+		if (ann != null) {
+			for (final Annotation thisA : ann) {
+				if (thisA.annotationType().equals(FireReformatted.class)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
-  private java.awt.Color _theColor = Color.yellow;
+	private java.awt.Color _theColor = Color.yellow;
 
-  /**
-   * (optional) comment field
-   *
-   */
-  private String _theComment;
+	/**
+	 * (optional) comment field
+	 *
+	 */
+	private String _theComment;
 
-  /**
-   * whether this shape is visible
-   *
-   */
-  private boolean _visible;
+	/**
+	 * whether this shape is visible
+	 *
+	 */
+	private boolean _visible;
 
-  // ///////////////////////////////////////////////////////////
-  // member functions
-  // //////////////////////////////////////////////////////////
+	// ///////////////////////////////////////////////////////////
+	// member functions
+	// //////////////////////////////////////////////////////////
 
-  /**
-   * provide support for property changes, should we require it
-   *
-   */
-  private transient java.beans.PropertyChangeSupport _pSupport = null;
+	/**
+	 * provide support for property changes, should we require it
+	 *
+	 */
+	private transient java.beans.PropertyChangeSupport _pSupport = null;
 
-  // ///////////////////////////////////////////////////////////
-  // constructor
-  // //////////////////////////////////////////////////////////
-  protected PlainWrapper()
-  {
-    _visible = true;
-  }
+	// ///////////////////////////////////////////////////////////
+	// constructor
+	// //////////////////////////////////////////////////////////
+	protected PlainWrapper() {
+		_visible = true;
+	}
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see
-   * MWC.GUI.SupportsPropertyListeners#addPropertyChangeListener(java.beans.PropertyChangeListener)
-   */
-  @Override
-  public void addPropertyChangeListener(
-      final java.beans.PropertyChangeListener listener)
-  {
-    // add to our list
-    getSupport().addPropertyChangeListener(listener);
-  }
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see MWC.GUI.SupportsPropertyListeners#addPropertyChangeListener(java.beans.
+	 * PropertyChangeListener)
+	 */
+	@Override
+	public void addPropertyChangeListener(final java.beans.PropertyChangeListener listener) {
+		// add to our list
+		getSupport().addPropertyChangeListener(listener);
+	}
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see MWC.GUI.SupportsPropertyListeners#addPropertyChangeListener(java.lang.String,
-   * java.beans.PropertyChangeListener)
-   */
-  @Override
-  public void addPropertyChangeListener(final String property,
-      final java.beans.PropertyChangeListener listener)
-  {
-    // add to our list
-    getSupport().addPropertyChangeListener(property, listener);
-  }
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * MWC.GUI.SupportsPropertyListeners#addPropertyChangeListener(java.lang.String,
+	 * java.beans.PropertyChangeListener)
+	 */
+	@Override
+	public void addPropertyChangeListener(final String property, final java.beans.PropertyChangeListener listener) {
+		// add to our list
+		getSupport().addPropertyChangeListener(property, listener);
+	}
 
-  /**
-   * instruct this object to clear itself out, ready for ditching
-   *
-   */
-  public void closeMe()
-  {
-    _pSupport = null;
-    _theColor = null;
-  }
+	/**
+	 * instruct this object to clear itself out, ready for ditching
+	 *
+	 */
+	public void closeMe() {
+		_pSupport = null;
+		_theColor = null;
+	}
 
-  @Override
-  public int compareTo(final Plottable arg0)
-  {
-    // just do idiot check
-    if ((getName() != null) && (arg0.getName() != null) && (!getName().equals(
-        arg0.getName())))
-    {
-      return getName().compareTo(arg0.getName());
-    }
-    else
-    {
-      final int res;
-      final int myCode = hashCode();
-      final int otherCode = arg0.hashCode();
-      if (myCode < otherCode)
-        res = -1;
-      else if (myCode > otherCode)
-        res = 1;
-      else
-        res = 0;
-      return res;
-    }
-  }
+	@Override
+	public int compareTo(final Plottable arg0) {
+		// just do idiot check
+		if ((getName() != null) && (arg0.getName() != null) && (!getName().equals(arg0.getName()))) {
+			return getName().compareTo(arg0.getName());
+		} else {
+			final int res;
+			final int myCode = hashCode();
+			final int otherCode = arg0.hashCode();
+			if (myCode < otherCode)
+				res = -1;
+			else if (myCode > otherCode)
+				res = 1;
+			else
+				res = 0;
+			return res;
+		}
+	}
 
-  // //////////////////////////////////////////////////
-  // export this shape
-  // /////////////////////////////////////////////////
-  @Override
-  public void exportThis()
-  {
-    // ok, export it.
-    MWC.Utilities.ReaderWriter.ImportManager.exportThis(this);
-  }
+	// //////////////////////////////////////////////////
+	// export this shape
+	// /////////////////////////////////////////////////
+	@Override
+	public void exportThis() {
+		// ok, export it.
+		MWC.Utilities.ReaderWriter.ImportManager.exportThis(this);
+	}
 
-  @Override
-  public void firePropertyChange(final String propertyChanged,
-      final Object oldValue, final Object newValue)
-  {
-    getSupport().firePropertyChange(propertyChanged, oldValue, newValue);
-  }
+	@Override
+	public void firePropertyChange(final String propertyChanged, final Object oldValue, final Object newValue) {
+		getSupport().firePropertyChange(propertyChanged, oldValue, newValue);
+	}
 
-  /**
-   * find the data area occupied by this item
-   */
-  @Override
-  abstract public WorldArea getBounds();
+	/**
+	 * find the data area occupied by this item
+	 */
+	@Override
+	abstract public WorldArea getBounds();
 
-  public java.awt.Color getColor()
-  {
-    return _theColor;
-  }
+	public java.awt.Color getColor() {
+		return _theColor;
+	}
 
-  public String getComment()
-  {
-    return _theComment;
-  }
+	public String getComment() {
+		return _theComment;
+	}
 
-  /**
-   * get the editing information for this type
-   */
-  @Override
-  public Editable.EditorType getInfo()
-  {
-    return null;
-  }
+	/**
+	 * get the editing information for this type
+	 */
+	@Override
+	public Editable.EditorType getInfo() {
+		return null;
+	}
 
-  /**
-   * get the name of this object
-   *
-   */
-  @Override
-  abstract public String getName();
+	/**
+	 * get the name of this object
+	 *
+	 */
+	@Override
+	abstract public String getName();
 
-  public java.beans.PropertyChangeSupport getSupport()
-  {
-    if (_pSupport == null)
-      _pSupport = new java.beans.PropertyChangeSupport(this);
+	public java.beans.PropertyChangeSupport getSupport() {
+		if (_pSupport == null)
+			_pSupport = new java.beans.PropertyChangeSupport(this);
 
-    return _pSupport;
-  }
+		return _pSupport;
+	}
 
-  /**
-   * it this item currently visible?
-   */
-  @Override
-  final public boolean getVisible()
-  {
-    return _visible;
-  }
+	/**
+	 * it this item currently visible?
+	 */
+	@Override
+	final public boolean getVisible() {
+		return _visible;
+	}
 
-  /**
-   * whether there is any edit information for this item this is a convenience function to save
-   * creating the EditorType data first
-   *
-   * @return yes/no
-   */
-  @Override
-  abstract public boolean hasEditor();
+	/**
+	 * whether there is any edit information for this item this is a convenience
+	 * function to save creating the EditorType data first
+	 *
+	 * @return yes/no
+	 */
+	@Override
+	abstract public boolean hasEditor();
 
-  @Override
-  public abstract void paint(CanvasType dest);
+	@Override
+	public abstract void paint(CanvasType dest);
 
-  /**
-   * Determine how far away we are from this point or return INVALID_RANGE if it can't be calculated
-   *
-   * @return distance in floating point degrees
-   */
-  @Override
-  public double rangeFrom(final MWC.GenericData.WorldLocation other)
-  {
-    return INVALID_RANGE;
-  }
+	/**
+	 * Determine how far away we are from this point or return INVALID_RANGE if it
+	 * can't be calculated
+	 *
+	 * @return distance in floating point degrees
+	 */
+	@Override
+	public double rangeFrom(final MWC.GenericData.WorldLocation other) {
+		return INVALID_RANGE;
+	}
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see MWC.GUI.SupportsPropertyListeners#removePropertyChangeListener(java.beans.
-   * PropertyChangeListener)
-   */
-  @Override
-  public void removePropertyChangeListener(
-      final java.beans.PropertyChangeListener listener)
-  {
-    getSupport().removePropertyChangeListener(listener);
-  }
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * MWC.GUI.SupportsPropertyListeners#removePropertyChangeListener(java.beans.
+	 * PropertyChangeListener)
+	 */
+	@Override
+	public void removePropertyChangeListener(final java.beans.PropertyChangeListener listener) {
+		getSupport().removePropertyChangeListener(listener);
+	}
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see MWC.GUI.SupportsPropertyListeners#removePropertyChangeListener(java.lang.String,
-   * java.beans.PropertyChangeListener)
-   */
-  @Override
-  public void removePropertyChangeListener(final String property,
-      final java.beans.PropertyChangeListener listener)
-  {
-    getSupport().removePropertyChangeListener(property, listener);
-  }
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * MWC.GUI.SupportsPropertyListeners#removePropertyChangeListener(java.lang.
+	 * String, java.beans.PropertyChangeListener)
+	 */
+	@Override
+	public void removePropertyChangeListener(final String property, final java.beans.PropertyChangeListener listener) {
+		getSupport().removePropertyChangeListener(property, listener);
+	}
 
-  /**
-   * update the color for this item
-   *
-   * @param theColor
-   */
-  @FireReformatted
-  public void setColor(final java.awt.Color theColor)
-  {
-    // do we need to change?
-    if (theColor != _theColor)
-    {
-      // store the old colour
-      final Color oldCol = _theColor;
+	/**
+	 * update the color for this item
+	 *
+	 * @param theColor
+	 */
+	@FireReformatted
+	public void setColor(final java.awt.Color theColor) {
+		// do we need to change?
+		if (theColor != _theColor) {
+			// store the old colour
+			final Color oldCol = _theColor;
 
-      // update the value
-      setColorQuiet(theColor);
+			// update the value
+			setColorQuiet(theColor);
 
-      // and inform the listeners
-      getSupport().firePropertyChange(COLOR_CHANGED, oldCol, theColor);
-    }
-  }
+			// and inform the listeners
+			getSupport().firePropertyChange(COLOR_CHANGED, oldCol, theColor);
+		}
+	}
 
-  protected void setColorQuiet(final Color theColor)
-  {
-    // do the update
-    _theColor = theColor;
-  }
+	protected void setColorQuiet(final Color theColor) {
+		// do the update
+		_theColor = theColor;
+	}
 
-  public void setComment(final String comment)
-  {
-    _theComment = comment;
-  }
+	public void setComment(final String comment) {
+		_theComment = comment;
+	}
 
-  /**
-   * specify is this object is visible
-   */
-  @Override
-  @FireReformatted
-  final public void setVisible(final boolean val)
-  {
-    // is this a different value?
-    if (val != _visible)
-    {
-      // store the old vis
-      final boolean oldVis = _visible;
+	/**
+	 * specify is this object is visible
+	 */
+	@Override
+	@FireReformatted
+	final public void setVisible(final boolean val) {
+		// is this a different value?
+		if (val != _visible) {
+			// store the old vis
+			final boolean oldVis = _visible;
 
-      // do the update
-      _visible = val;
+			// do the update
+			_visible = val;
 
-      // and inform the listeners, if we need to
-      getSupport().firePropertyChange(VISIBILITY_CHANGED, oldVis, val);
-    }
-  }
+			// and inform the listeners, if we need to
+			getSupport().firePropertyChange(VISIBILITY_CHANGED, oldVis, val);
+		}
+	}
 
 }
