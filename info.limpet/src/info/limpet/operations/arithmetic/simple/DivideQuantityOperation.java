@@ -20,6 +20,7 @@ import java.util.List;
 import javax.measure.unit.Unit;
 
 import org.eclipse.january.dataset.Dataset;
+import org.eclipse.january.dataset.Maths;
 
 import info.limpet.ICommand;
 import info.limpet.IContext;
@@ -59,7 +60,7 @@ public class DivideQuantityOperation extends BinaryQuantityOperation {
 			return new InterpolatedMaths.IOperationPerformer() {
 				@Override
 				public Dataset perform(final Dataset a, final Dataset b, final Dataset o) {
-					return GeneratedMaths.divide(a, b, o);
+					return Maths.divide(a, b, o);
 				}
 			};
 		}

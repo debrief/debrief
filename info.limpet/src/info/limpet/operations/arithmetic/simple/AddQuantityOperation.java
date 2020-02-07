@@ -22,6 +22,7 @@ import javax.measure.unit.Unit;
 import org.eclipse.january.dataset.Dataset;
 import org.eclipse.january.dataset.DatasetFactory;
 import org.eclipse.january.dataset.DoubleDataset;
+import org.eclipse.january.dataset.Maths;
 
 import info.limpet.ICommand;
 import info.limpet.IContext;
@@ -83,20 +84,20 @@ public class AddQuantityOperation extends BulkQuantityOperation {
 			// ok, convert them to alog
 			final Dataset aNon = toNonLog(a);
 			final Dataset bNon = toNonLog(b);
-			final Dataset sum = GeneratedMaths.add(aNon, bNon);
+			final Dataset sum = Maths.add(aNon, bNon);
 			final Dataset res = toLog(sum);
 			return res;
 		}
 
 		private Dataset toLog(final Dataset sum) {
-			final Dataset log10 = GeneratedMaths.log10(sum);
-			final Dataset times10 = GeneratedMaths.multiply(log10, 10);
+			final Dataset log10 = Maths.log10(sum);
+			final Dataset times10 = Maths.multiply(log10, 10);
 			return times10;
 		}
 
 		private Dataset toNonLog(final Dataset d) {
-			final Dataset div10 = GeneratedMaths.divide(d, 10);
-			final Dataset raised = GeneratedMaths.power(10, div10);
+			final Dataset div10 = Maths.divide(d, 10);
+			final Dataset raised = Maths.power(10, div10);
 			return raised;
 		}
 	}
@@ -104,7 +105,7 @@ public class AddQuantityOperation extends BulkQuantityOperation {
 	private static class PowerAdder implements InterpolatedMaths.IOperationPerformer {
 		@Override
 		public Dataset perform(final Dataset a, final Dataset b, final Dataset o) {
-			final Dataset res = GeneratedMaths.add(a, b, o);
+			final Dataset res = Maths.add(a, b, o);
 			return res;
 		}
 	};

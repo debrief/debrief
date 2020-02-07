@@ -20,6 +20,7 @@ import java.util.List;
 import javax.measure.unit.Unit;
 
 import org.eclipse.january.dataset.Dataset;
+import org.eclipse.january.dataset.Maths;
 
 import info.limpet.ICommand;
 import info.limpet.IContext;
@@ -38,7 +39,7 @@ public class SubtractQuantityOperation extends BinaryQuantityOperation {
 			final Dataset aNon = toNonLog(a);
 			final Dataset bNon = toNonLog(b);
 
-			final Dataset sum = GeneratedMaths.subtract(aNon, bNon);
+			final Dataset sum = Maths.subtract(aNon, bNon);
 
 			final Dataset res = toLog(sum);
 
@@ -47,14 +48,14 @@ public class SubtractQuantityOperation extends BinaryQuantityOperation {
 		}
 
 		private Dataset toLog(final Dataset sum) {
-			final Dataset log10 = GeneratedMaths.log10(sum);
-			final Dataset times10 = GeneratedMaths.multiply(log10, 10);
+			final Dataset log10 = Maths.log10(sum);
+			final Dataset times10 = Maths.multiply(log10, 10);
 			return times10;
 		}
 
 		private Dataset toNonLog(final Dataset d) {
-			final Dataset div10 = GeneratedMaths.divide(d, 10);
-			final Dataset raised = GeneratedMaths.power(10, div10);
+			final Dataset div10 = Maths.divide(d, 10);
+			final Dataset raised = Maths.power(10, div10);
 			return raised;
 		}
 	}
@@ -62,7 +63,7 @@ public class SubtractQuantityOperation extends BinaryQuantityOperation {
 	private static class PowerPerformer implements InterpolatedMaths.IOperationPerformer {
 		@Override
 		public Dataset perform(final Dataset a, final Dataset b, final Dataset o) {
-			return GeneratedMaths.subtract(a, b, o);
+			return Maths.subtract(a, b, o);
 		}
 	};
 

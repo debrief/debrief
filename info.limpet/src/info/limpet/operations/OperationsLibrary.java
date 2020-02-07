@@ -168,7 +168,7 @@ public class OperationsLibrary {
 		arithmetic.add(new UnitaryAngleOperation("Sin") {
 			@Override
 			public Dataset calculate(final Dataset input) {
-				return GeneratedMaths.sin(input);
+				return Maths.sin(input);
 			}
 
 			@Override
@@ -179,7 +179,7 @@ public class OperationsLibrary {
 		arithmetic.add(new UnitaryAngleOperation("Cos") {
 			@Override
 			public Dataset calculate(final Dataset input) {
-				return GeneratedMaths.cos(input);
+				return Maths.cos(input);
 			}
 
 			@Override
@@ -190,7 +190,7 @@ public class OperationsLibrary {
 		arithmetic.add(new UnitaryAngleOperation("Tan") {
 			@Override
 			public Dataset calculate(final Dataset input) {
-				return GeneratedMaths.tan(input);
+				return Maths.tan(input);
 			}
 
 			@Override
@@ -206,7 +206,7 @@ public class OperationsLibrary {
 
 			@Override
 			public Dataset calculate(final Dataset input) {
-				return GeneratedMaths.divide(1, input);
+				return Maths.divide(1, input);
 			}
 
 			@Override
@@ -222,7 +222,7 @@ public class OperationsLibrary {
 
 			@Override
 			public Dataset calculate(final Dataset input) {
-				return GeneratedMaths.sqrt(input);
+				return Maths.sqrt(input);
 			}
 
 			@Override
@@ -238,7 +238,7 @@ public class OperationsLibrary {
 
 			@Override
 			public Dataset calculate(final Dataset input) {
-				return GeneratedMaths.square(input);
+				return Maths.square(input);
 			}
 
 			@Override
@@ -254,7 +254,7 @@ public class OperationsLibrary {
 
 			@Override
 			public Dataset calculate(final Dataset input) {
-				return GeneratedMaths.log(input);
+				return Maths.log(input);
 			}
 
 			@Override
