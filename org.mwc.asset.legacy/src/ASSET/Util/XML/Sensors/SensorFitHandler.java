@@ -74,13 +74,13 @@ abstract public class SensorFitHandler extends MWC.Utilities.ReaderWriter.XML.MW
 				BistaticReceiverHandler.exportThis(sensor, sens, doc);
 			}
 			if (sensor instanceof OpticLookupSensor) {
-				CoreLookupSensorHandler.exportThis(sensor, sens, doc);
+				OpticLookupSensorHandler.exportThis(sensor, sens, doc);
 			}
 			if (sensor instanceof MADLookupSensor) {
-				CoreLookupSensorHandler.exportThis(sensor, sens, doc);
+				MADLookupSensorHandler.exportThis(sensor, sens, doc);
 			}
 			if (sensor instanceof RadarLookupSensor) {
-				CoreLookupSensorHandler.exportThis(sensor, sens, doc);
+				RadarLookupSensorHandler.exportThis(sensor, sens, doc);
 			}
 		}
 
