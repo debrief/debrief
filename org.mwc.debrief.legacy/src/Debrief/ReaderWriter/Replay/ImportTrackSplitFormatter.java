@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: ImportTimeText.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.3 $
@@ -79,114 +80,101 @@ import junit.framework.TestCase;
 /**
  * class to parse a label from a line of text
  */
-final class ImportTrackSplitFormatter extends AbstractPlainLineImporter
-{
+final class ImportTrackSplitFormatter extends AbstractPlainLineImporter {
 
-  /*
-   * example: ;SPLIT_TRACK: One_Hour 3600000 TRACK_NAME TRACK_TWO ... example: ;SPLIT_TRACK:
-   * One_Hour 3600000
-   */
+	/*
+	 * example: ;SPLIT_TRACK: One_Hour 3600000 TRACK_NAME TRACK_TWO ... example:
+	 * ;SPLIT_TRACK: One_Hour 3600000
+	 */
 
-  public static class TestMe extends TestCase
-  {
-    @Test
-    public void testRead()
-    {
-      /*
-       * example:
-       */
+	public static class TestMe extends TestCase {
+		@Test
+		public void testRead() {
+			/*
+			 * example:
+			 */
 
-      final ImportTrackSplitFormatter iff = new ImportTrackSplitFormatter();
-      SliceTrackFormatListener res = (SliceTrackFormatListener) iff
-          .readThisLine(";SPLIT_TRACK: One_Hour 3600000");
-      assertNotNull(res);
-      assertEquals("correct name", "One_Hour", res.getName());
-      assertEquals("correct period", 3600000, res.getIntervalMillis());
+			final ImportTrackSplitFormatter iff = new ImportTrackSplitFormatter();
+			SliceTrackFormatListener res = (SliceTrackFormatListener) iff
+					.readThisLine(";SPLIT_TRACK: One_Hour 3600000");
+			assertNotNull(res);
+			assertEquals("correct name", "One_Hour", res.getName());
+			assertEquals("correct period", 3600000, res.getIntervalMillis());
 
-      res = (SliceTrackFormatListener) iff.readThisLine(
-          ";SPLIT_TRACK: One_Second 1000");
-      assertNotNull(res);
-      assertEquals("One_Second", res.getName());
-      assertEquals("correct period", 1000, res.getIntervalMillis());
+			res = (SliceTrackFormatListener) iff.readThisLine(";SPLIT_TRACK: One_Second 1000");
+			assertNotNull(res);
+			assertEquals("One_Second", res.getName());
+			assertEquals("correct period", 1000, res.getIntervalMillis());
 
-    }
-  }
+		}
+	}
 
-  /**
-   * the type for this string
-   */
-  private final String _myType = ";SPLIT_TRACK:";
+	/**
+	 * the type for this string
+	 */
+	private final String _myType = ";SPLIT_TRACK:";
 
-  /**
-   * indicate if you can export this type of object
-   *
-   * @param val
-   *          the object to test
-   * @return boolean saying whether you can do it
-   */
-  @Override
-  public final boolean canExportThis(final Object val)
-  {
-    return false;
-  }
+	/**
+	 * indicate if you can export this type of object
+	 *
+	 * @param val the object to test
+	 * @return boolean saying whether you can do it
+	 */
+	@Override
+	public final boolean canExportThis(final Object val) {
+		return false;
+	}
 
-  /**
-   * export the specified shape as a string
-   *
-   * @return the shape in String form
-   * @param theWrapper
-   *          the Shape we are exporting
-   */
-  @Override
-  public final String exportThis(final MWC.GUI.Plottable theWrapper)
-  {
-    throw new NotImplementedException("We don't export these to REP format");
-  }
+	/**
+	 * export the specified shape as a string
+	 *
+	 * @return the shape in String form
+	 * @param theWrapper the Shape we are exporting
+	 */
+	@Override
+	public final String exportThis(final MWC.GUI.Plottable theWrapper) {
+		throw new NotImplementedException("We don't export these to REP format");
+	}
 
-  /**
-   * determine the identifier returning this type of annotation
-   */
-  @Override
-  public final String getYourType()
-  {
-    return _myType;
-  }
+	/**
+	 * determine the identifier returning this type of annotation
+	 */
+	@Override
+	public final String getYourType() {
+		return _myType;
+	}
 
-  /**
-   * read in this string and return a Label
-   */
-  @Override
-  public final Object readThisLine(final String theLine)
-  {
+	/**
+	 * read in this string and return a Label
+	 */
+	@Override
+	public final Object readThisLine(final String theLine) {
 
-    // get a stream from the string
-    final StringTokenizer st = new StringTokenizer(theLine);
+		// get a stream from the string
+		final StringTokenizer st = new StringTokenizer(theLine);
 
-    // declare local variables
-    String formatName;
-    String periodToken;
-    final List<String> trackNames = new ArrayList<String>();
+		// declare local variables
+		String formatName;
+		String periodToken;
+		final List<String> trackNames = new ArrayList<String>();
 
-    // skip the comment identifier
-    st.nextToken();
+		// skip the comment identifier
+		st.nextToken();
 
-    formatName = checkForQuotedName(st).trim();
-    periodToken = st.nextToken();
-    final long period = Long.parseLong(periodToken);
+		formatName = checkForQuotedName(st).trim();
+		periodToken = st.nextToken();
+		final long period = Long.parseLong(periodToken);
 
-    while (st.hasMoreElements())
-    {
-      final String nextItem = checkForQuotedName(st).trim();
-      if (nextItem != null && nextItem.length() > 0)
-      {
-        trackNames.add(nextItem);
-      }
-    }
+		while (st.hasMoreElements()) {
+			final String nextItem = checkForQuotedName(st).trim();
+			if (nextItem != null && nextItem.length() > 0) {
+				trackNames.add(nextItem);
+			}
+		}
 
-    final INewItemListener cif = new SliceTrackFormatListener(formatName,
-        period, trackNames);
+		final INewItemListener cif = new SliceTrackFormatListener(formatName, period, trackNames);
 
-    return cif;
-  }
+		return cif;
+	}
 
 }

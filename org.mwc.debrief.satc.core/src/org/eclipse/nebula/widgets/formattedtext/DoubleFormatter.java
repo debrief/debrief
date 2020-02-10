@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.eclipse.nebula.widgets.formattedtext;
 
 import java.util.Locale;
@@ -20,40 +21,33 @@ import java.util.Locale;
  * This class provides formatting of <code>Double</code> values in a
  * <code>FormattedText</code>.
  * <p>
- * 
+ *
  * NumberFormatter returns different numeric types based on the current value in
  * the Text field. DoubleFormatter is an override of NumberFormatter allowing to
  * guaranty to always return Double values (Number.doubleValue()).
  */
-public class DoubleFormatter extends NumberFormatter
-{
-	public DoubleFormatter()
-	{
+public class DoubleFormatter extends NumberFormatter {
+	public DoubleFormatter() {
 		super();
 	}
 
-	public DoubleFormatter(Locale loc)
-	{
+	public DoubleFormatter(final Locale loc) {
 		super(loc);
 	}
 
-	public DoubleFormatter(String editPattern)
-	{
+	public DoubleFormatter(final String editPattern) {
 		super(editPattern);
 	}
 
-	public DoubleFormatter(String editPattern, Locale loc)
-	{
+	public DoubleFormatter(final String editPattern, final Locale loc) {
 		super(editPattern, loc);
 	}
 
-	public DoubleFormatter(String editPattern, String displayPattern)
-	{
+	public DoubleFormatter(final String editPattern, final String displayPattern) {
 		super(editPattern, displayPattern);
 	}
 
-	public DoubleFormatter(String editPattern, String displayPattern, Locale loc)
-	{
+	public DoubleFormatter(final String editPattern, final String displayPattern, final Locale loc) {
 		super(editPattern, displayPattern, loc);
 	}
 
@@ -62,16 +56,14 @@ public class DoubleFormatter extends NumberFormatter
 	 * <code>Double</code>. If the buffer is flagged as modified, the value is
 	 * recalculated by parsing with the <code>nfEdit</code> initialized with the
 	 * edit pattern. If the number is not valid, returns <code>null</code>.
-	 * 
+	 *
 	 * @return current number value if valid, <code>null</code> else
 	 * @see ITextFormatter#getValue()
 	 */
 	@Override
-	public Object getValue()
-	{
-		Object value = super.getValue();
-		if (value instanceof Number)
-		{
+	public Object getValue() {
+		final Object value = super.getValue();
+		if (value instanceof Number) {
 			return new Double(((Number) value).doubleValue());
 		}
 		return super.getValue();
@@ -81,12 +73,11 @@ public class DoubleFormatter extends NumberFormatter
 	 * Returns the type of value this {@link ITextFormatter} handles, i.e. returns
 	 * in {@link #getValue()}.<br>
 	 * A DoubleFormatter always returns a Double value.
-	 * 
+	 *
 	 * @return The value type.
 	 */
 	@Override
-	public Class getValueType()
-	{
+	public Class getValueType() {
 		return Double.class;
 	}
 }

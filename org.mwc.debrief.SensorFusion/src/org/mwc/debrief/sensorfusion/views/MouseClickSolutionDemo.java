@@ -1,18 +1,20 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.debrief.sensorfusion.views;
+
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 
@@ -37,105 +39,9 @@ import org.jfree.ui.RefineryUtilities;
 
 public class MouseClickSolutionDemo extends ApplicationFrame {
 
-	/**
-    *
-    */
-	private static final long serialVersionUID = 1L;
-
-	/**
-	 * @param title
-	 *            the frame title.
-	 */
-	public MouseClickSolutionDemo(final String title) {
-		super(title);
-
-		final TimeSeries s1 = new TimeSeries("Series to click");
-		s1.add(new Month(2, 2001), 181.8);
-		s1.add(new Month(3, 2001), 167.3);
-		s1.add(new Month(4, 2001), 153.8);
-		s1.add(new Month(5, 2001), 167.6);
-		s1.add(new Month(6, 2001), 152.8);
-		s1.add(new Month(7, 2001), 148.3);
-		s1.add(new Month(8, 2001), 153.9);
-		s1.add(new Month(9, 2001), 142.7);
-		s1.add(new Month(10, 2001), 123.2);
-
-		final TimeSeriesCollection dataset = new TimeSeriesCollection();
-		dataset.addSeries(s1);
-
-		final JFreeChart chart = ChartFactory.createTimeSeriesChart(
-				"[Alt]-click to switch orientation", // title
-				"Time axis", // x-axis label
-				"Value axis", // y-axis label
-				dataset, // data
-				false, // create legend?
-				false, // generate tooltips?
-				false // generate URLs?
-				);
-
-		//FIX IS HERE
-		fixProblem(chart);
-
-		final ChartPanel chartPanel = new ChartPanel(chart);
-
-		chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
-
-		chartPanel.addChartMouseListener(new ChartMouseListener() {
-			public void chartMouseMoved(final ChartMouseEvent arg0) {
-			}
-
-			public void chartMouseClicked(final ChartMouseEvent arg0) {
-				System.out.println("clicked on:" + arg0.getEntity());
-
-				if (arg0.getTrigger().isAltDown()) {
-					if (chart.getXYPlot().getOrientation() == PlotOrientation.HORIZONTAL)
-						chart.getXYPlot().setOrientation(
-								PlotOrientation.VERTICAL);
-					else
-						chart.getXYPlot().setOrientation(
-								PlotOrientation.HORIZONTAL);
-				}
-			}
-		});
-		setContentPane(chartPanel);
-	}
-
-	private void fixProblem(final JFreeChart chart) {
-		if (chart.getPlot() instanceof XYPlot) {
-			final XYPlot plot = (XYPlot) chart.getPlot();
-			fixProblem(plot);
-		}
-	}
-
-	private void fixProblem(final XYPlot plot) {
-		for (int i = 0; i < plot.getRendererCount(); i++) {
-			final XYItemRenderer renderer = plot.getRenderer(i);
-			final XYItemRenderer fixed = XYLineAndShapeRendererFix
-					.newFixedVersion(renderer);
-			if (renderer != fixed) {
-				plot.setRenderer(i, fixed);
-			}
-		}
-	}
-
-	/**
-	 * Starting point for the demonstration application.
-	 * 
-	 * @param args
-	 *            ignored.
-	 */
-	public static void main(final String[] args) {
-		final MouseClickSolutionDemo demo = new MouseClickSolutionDemo(
-				"Time Series Demo 1");
-		demo.pack();
-		RefineryUtilities.centerFrameOnScreen(demo);
-		demo.setVisible(true);
-	}
-
-	public static class XYLineAndShapeRendererFix extends
-			XYLineAndShapeRenderer {
+	public static class XYLineAndShapeRendererFix extends XYLineAndShapeRenderer {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -148,15 +54,13 @@ public class MouseClickSolutionDemo extends ApplicationFrame {
 				return renderer;
 			}
 			if (renderer.getClass() != XYLineAndShapeRenderer.class) {
-				System.err
-						.println("I can't fix subclass of the XYLineAndShapeRenderer: "
-								+ renderer.getClass()
-								+ ", you need to make similar fix yourself");
+				System.err.println("I can't fix subclass of the XYLineAndShapeRenderer: " + renderer.getClass()
+						+ ", you need to make similar fix yourself");
 				return renderer;
 			}
 			final XYLineAndShapeRenderer broken = (XYLineAndShapeRenderer) renderer;
-			final XYLineAndShapeRendererFix fixed = new XYLineAndShapeRendererFix(
-					broken.getBaseLinesVisible(), broken.getBaseShapesVisible());
+			final XYLineAndShapeRendererFix fixed = new XYLineAndShapeRendererFix(broken.getBaseLinesVisible(),
+					broken.getBaseShapesVisible());
 
 			// those are only fields set in ChartFactory#createTimeSeriesChart
 			// you may need to set other fields if you use different
@@ -172,9 +76,8 @@ public class MouseClickSolutionDemo extends ApplicationFrame {
 		}
 
 		@Override
-		protected void addEntity(final EntityCollection entities, final Shape area,
-				final XYDataset dataset, final int series, final int item, final double entityX,
-				final double entityY) {
+		protected void addEntity(final EntityCollection entities, final Shape area, final XYDataset dataset,
+				final int series, final int item, final double entityX, final double entityY) {
 			if (!getItemCreateEntity(series, item)) {
 				return;
 			}
@@ -194,9 +97,98 @@ public class MouseClickSolutionDemo extends ApplicationFrame {
 			if (getURLGenerator() != null) {
 				url = getURLGenerator().generateURL(dataset, series, item);
 			}
-			final XYItemEntity entity = new XYItemEntity(hotspot, dataset, series,
-					item, tip, url);
+			final XYItemEntity entity = new XYItemEntity(hotspot, dataset, series, item, tip, url);
 			entities.add(entity);
+		}
+	}
+
+	/**
+	*
+	*/
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Starting point for the demonstration application.
+	 *
+	 * @param args ignored.
+	 */
+	public static void main(final String[] args) {
+		final MouseClickSolutionDemo demo = new MouseClickSolutionDemo("Time Series Demo 1");
+		demo.pack();
+		RefineryUtilities.centerFrameOnScreen(demo);
+		demo.setVisible(true);
+	}
+
+	/**
+	 * @param title the frame title.
+	 */
+	public MouseClickSolutionDemo(final String title) {
+		super(title);
+
+		final TimeSeries s1 = new TimeSeries("Series to click");
+		s1.add(new Month(2, 2001), 181.8);
+		s1.add(new Month(3, 2001), 167.3);
+		s1.add(new Month(4, 2001), 153.8);
+		s1.add(new Month(5, 2001), 167.6);
+		s1.add(new Month(6, 2001), 152.8);
+		s1.add(new Month(7, 2001), 148.3);
+		s1.add(new Month(8, 2001), 153.9);
+		s1.add(new Month(9, 2001), 142.7);
+		s1.add(new Month(10, 2001), 123.2);
+
+		final TimeSeriesCollection dataset = new TimeSeriesCollection();
+		dataset.addSeries(s1);
+
+		final JFreeChart chart = ChartFactory.createTimeSeriesChart("[Alt]-click to switch orientation", // title
+				"Time axis", // x-axis label
+				"Value axis", // y-axis label
+				dataset, // data
+				false, // create legend?
+				false, // generate tooltips?
+				false // generate URLs?
+		);
+
+		// FIX IS HERE
+		fixProblem(chart);
+
+		final ChartPanel chartPanel = new ChartPanel(chart);
+
+		chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
+
+		chartPanel.addChartMouseListener(new ChartMouseListener() {
+			@Override
+			public void chartMouseClicked(final ChartMouseEvent arg0) {
+				System.out.println("clicked on:" + arg0.getEntity());
+
+				if (arg0.getTrigger().isAltDown()) {
+					if (chart.getXYPlot().getOrientation() == PlotOrientation.HORIZONTAL)
+						chart.getXYPlot().setOrientation(PlotOrientation.VERTICAL);
+					else
+						chart.getXYPlot().setOrientation(PlotOrientation.HORIZONTAL);
+				}
+			}
+
+			@Override
+			public void chartMouseMoved(final ChartMouseEvent arg0) {
+			}
+		});
+		setContentPane(chartPanel);
+	}
+
+	private void fixProblem(final JFreeChart chart) {
+		if (chart.getPlot() instanceof XYPlot) {
+			final XYPlot plot = (XYPlot) chart.getPlot();
+			fixProblem(plot);
+		}
+	}
+
+	private void fixProblem(final XYPlot plot) {
+		for (int i = 0; i < plot.getRendererCount(); i++) {
+			final XYItemRenderer renderer = plot.getRenderer(i);
+			final XYItemRenderer fixed = XYLineAndShapeRendererFix.newFixedVersion(renderer);
+			if (renderer != fixed) {
+				plot.setRenderer(i, fixed);
+			}
 		}
 	}
 

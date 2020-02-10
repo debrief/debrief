@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: AnalysisView.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.13 $
@@ -357,9 +358,7 @@ import MWC.GenericData.WorldVector;
 /**
  * a screen layout which represents screen panes necessary for analysis
  */
-abstract public class AnalysisView extends PlainView implements
-		MWC.GUI.DragDrop.FileDropSupport.FileDropListener
-{
+abstract public class AnalysisView extends PlainView implements MWC.GUI.DragDrop.FileDropSupport.FileDropListener {
 
 	// /////////////////////////////////////////////
 	// member variables
@@ -398,21 +397,18 @@ abstract public class AnalysisView extends PlainView implements
 	// /////////////////////////////////////////////
 	/**
 	 * constructor for this class
-	 * 
-	 * @param theParent
-	 *          a parent class which will show busy cursors
-	 * @param theSession
-	 *          the session which contains the data for this view
+	 *
+	 * @param theParent  a parent class which will show busy cursors
+	 * @param theSession the session which contains the data for this view
 	 */
-	public AnalysisView(final ToolParent theParent, final Session theSession)
-	{
+	public AnalysisView(final ToolParent theParent, final Session theSession) {
 		super("Analysis View", theParent);
 		_theTools = new Vector<MenuItemInfo>(0, 1);
 		_theSession = theSession;
 
 		/**
-		 * note, we don't register an interest with the data for our parent session,
-		 * we leave that to the actual panes we contain
+		 * note, we don't register an interest with the data for our parent session, we
+		 * leave that to the actual panes we contain
 		 */
 		_dropSupport.setFileDropListener(this, ".REP,.XML,.DSF,.DTF");
 
@@ -426,116 +422,46 @@ abstract public class AnalysisView extends PlainView implements
 	 * member method to create a toolbar button for this tool, it is intended that
 	 * this class be overridden within more able GUI environments (in Swing we
 	 * should have a tabbed interface)
-	 * 
-	 * @param item
-	 *          the description of this tool
+	 *
+	 * @param item the description of this tool
 	 */
-	protected void addThisTool(final MenuItemInfo item)
-	{
+	protected void addThisTool(final MenuItemInfo item) {
 		// see if this is an action button, or it toggles as part of a group
-		if (item.getToggleGroup() == null)
-		{
-			_theToolbar.addTool(item.getTool(), item.getShortCut(),
-					item.getMnemonic());
+		if (item.getToggleGroup() == null) {
+			_theToolbar.addTool(item.getTool(), item.getShortCut(), item.getMnemonic());
+		} else {
+			_theToolbar.addToggleTool(item.getMenuName(), item.getTool(), item.getShortCut(), item.getMnemonic());
 		}
-		else
-		{
-			_theToolbar.addToggleTool(item.getMenuName(), item.getTool(),
-					item.getShortCut(), item.getMnemonic());
-		}
-	}
-
-	/**
-	 * <code>buildTheInterface</code> puts the bits together
-	 */
-	protected final void buildTheInterface()
-	{
-
-		// we've had to do this here, so that we know we've foudn the chart
-		addTools();
-
-		// retrieve the tools for this interface
-		final Enumeration<MenuItemInfo> iter = getTools();
-
-		while (iter.hasMoreElements())
-		{
-			final MenuItemInfo thisItem = iter.nextElement();
-
-			addThisTool(thisItem);
-		}
-
-		// setup our double-click editor
-		// and add our dbl click listener
-		getChart().addCursorDblClickedListener(new DblClickEdit(getProperties()));
-
-		// create our right click editor, and add it's helpers
-		final RightClickEdit rc = new RightClickEdit(getProperties());
-		rc.addMenuCreator(new MWC.Algorithms.Editors.ProjectionEditPopupMenuAdaptor());
-		rc.addMenuCreator(new MWC.GUI.LayerManager.EditLayersPopupMenuAdaptor());
-		rc.addMenuCreator(new MWC.GUI.Canvas.EditCanvasPopupMenuAdaptor(getChart()
-				.getCanvas()));
-
-		_toteAdapter = new Debrief.GUI.Tote.RightClickEditToteAdaptor(_theTote);
-		rc.addPlottableMenuCreator(_toteAdapter, _theProperties);
-
-		// keep local reference to the right-clicker, to overcome a memory leak
-		_rightClicker = new RightClickCutCopyAdaptor(_theSession.getClipboard(),
-				_theSession.getUndoBuffer());
-		rc.addPlottableMenuCreator(_rightClicker, _theProperties);
-		rc.addPlottableMenuCreator(
-				new RightClickPasteAdaptor(_theSession.getClipboard()), _theProperties);
-
-		// we also want to try to give these properties to the layers object, so
-		// that it can be edited
-		// properly by the right-clicking in the Layer Manager
-		_theSession.getData().setEditor(rc);
-
-		// and add our right-click editor
-		getChart().addRightClickListener(rc);
-
-	}
-
-	/**
-	 * return the tools we have created
-	 */
-	private Enumeration<MenuItemInfo> getTools()
-	{
-		return _theTools.elements();
 	}
 
 	/**
 	 * build the list of tools necessary for this type of view
 	 */
-	private void addTools()
-	{
-	  
-    final BoundsProvider bounds = new BoundsProvider()
-    {
-      @Override
-      public WorldArea getViewport()
-      {
-        return _theChart.getCanvas().getProjection().getVisibleDataArea();
-      }
+	private void addTools() {
 
-      @Override
-      public WorldArea getBounds()
-      {
-        return _theChart.getDataArea();
-      }
-    };
+		final BoundsProvider bounds = new BoundsProvider() {
+			@Override
+			public WorldArea getBounds() {
+				return _theChart.getDataArea();
+			}
 
-		_theTools.addElement(new MenuItemInfo("File", null, "Save",
-				new SavePlotXML(_theParent, _theSession), null, ' '));
-		_theTools.addElement(new MenuItemInfo("File", null, "Save As",
-				new SavePlotAsXML(_theParent, _theSession), null, ' '));
+			@Override
+			public WorldArea getViewport() {
+				return _theChart.getCanvas().getProjection().getVisibleDataArea();
+			}
+		};
+
+		_theTools.addElement(
+				new MenuItemInfo("File", null, "Save", new SavePlotXML(_theParent, _theSession), null, ' '));
+		_theTools.addElement(
+				new MenuItemInfo("File", null, "Save As", new SavePlotAsXML(_theParent, _theSession), null, ' '));
 		_theTools.addElement(new MenuItemInfo("File", null, "Save WMF",
-				new WriteMetafile(_theParent, _theChart, _theSession.getData()), null,
-				' '));
+				new WriteMetafile(_theParent, _theChart, _theSession.getData()), null, ' '));
 		// _theTools.addElement(new MenuItemInfo(null, "Copy to clipboard", new
 		// WriteClipboard(_theParent, _theChart, _theSession.getData()), null,
 		// ' '));
-		_theTools.addElement(new MenuItemInfo("File", null, "Import",
-				new ImportData2(_theParent, null, _theSession), null, ' '));
+		_theTools.addElement(
+				new MenuItemInfo("File", null, "Import", new ImportData2(_theParent, null, _theSession), null, ' '));
 //		_theTools.addElement(new MenuItemInfo("File", null, "Import Range",
 //				new ImportRangeData(_theParent, _theProperties, _theSession.getData()),
 //				null, 'G'));
@@ -554,8 +480,7 @@ abstract public class AnalysisView extends PlainView implements
 //			// e.printStackTrace();
 //		}
 
-		_theTools.addElement(new MenuItemInfo("View", null, "Repaint", new Repaint(
-				_theParent, _theChart), null, 'R'));
+		_theTools.addElement(new MenuItemInfo("View", null, "Repaint", new Repaint(_theParent, _theChart), null, 'R'));
 
 		// ////////////////////////
 		// second row
@@ -563,79 +488,80 @@ abstract public class AnalysisView extends PlainView implements
 
 		// _theTools.addElement(new MenuItemInfo(null, "Print Chart", new
 		// PrintChart(_theParent, _theChart), null, 'f'));
-		_theTools.addElement(new MenuItemInfo("View", null, "Fit", new FitToWin(
-				_theParent, _theChart){
+		_theTools.addElement(new MenuItemInfo("View", null, "Fit", new FitToWin(_theParent, _theChart) {
 
-          @Override
-          public void execute()
-          {
-            super.execute();
-            // force screen redraw
-            _theChart.canvasResized();
-          }}, null, 'f'));
-		_theTools.addElement(new MenuItemInfo("View", "Drag", "Pan", new Pan(
-				_theChart, _theParent, null), null, 'P'));
-		_theTools.addElement(new MenuItemInfo("View", "Drag", "Rng Brg",
-				new RangeBearing(_theChart, _theParent, getStatusBar()){
+			/**
+					 *
+					 */
+			private static final long serialVersionUID = 1L;
 
-          /**
-           * 
-           */
-          private static final long serialVersionUID = 1L;
+			@Override
+			public void execute() {
+				super.execute();
+				// force screen redraw
+				_theChart.canvasResized();
+			}
+		}, null, 'f'));
+		_theTools.addElement(new MenuItemInfo("View", "Drag", "Pan", new Pan(_theChart, _theParent, null), null, 'P'));
+		_theTools.addElement(
+				new MenuItemInfo("View", "Drag", "Rng Brg", new RangeBearing(_theChart, _theParent, getStatusBar()) {
 
-          @Override
-          public void areaSelected(WorldLocation theLocation, Point thePoint)
-          {
-            super.areaSelected(theLocation, thePoint);
-            
-            // force redraw
-            getChart().repaint();
-          }}, null, 'B'));
-		_theTools.addElement(new MenuItemInfo("View", "Drag", "Zoom", new ZoomIn(
-				_theChart, _theParent){
+					/**
+					 *
+					 */
+					private static final long serialVersionUID = 1L;
 
-          /**
-           * 
-           */
-          private static final long serialVersionUID = 1L;
+					@Override
+					public void areaSelected(final WorldLocation theLocation, final Point thePoint) {
+						super.areaSelected(theLocation, thePoint);
 
-          @Override
-          public void areaSelected(WorldLocation theLocation, Point thePoint)
-          {
-            super.areaSelected(theLocation, thePoint);
-            // force screen redraw
-            this.getChart().canvasResized();
-          }}, null, 'I'));
-		_theTools.addElement(new MenuItemInfo("View", null, "Zoom Out",
-				new ZoomOut(_theParent, _theChart){
+						// force redraw
+						getChart().repaint();
+					}
+				}, null, 'B'));
+		_theTools.addElement(new MenuItemInfo("View", "Drag", "Zoom", new ZoomIn(_theChart, _theParent) {
 
-      @Override
-      public void execute()
-      {
-        super.execute();
-        // force screen redraw
-        _theChart.canvasResized();
-      }}, new java.awt.MenuShortcut(
-						java.awt.event.KeyEvent.VK_SUBTRACT), 'O'));
+			/**
+			 *
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void areaSelected(final WorldLocation theLocation, final Point thePoint) {
+				super.areaSelected(theLocation, thePoint);
+				// force screen redraw
+				this.getChart().canvasResized();
+			}
+		}, null, 'I'));
+		_theTools.addElement(new MenuItemInfo("View", null, "Zoom Out", new ZoomOut(_theParent, _theChart) {
+
+			/**
+						 *
+						 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void execute() {
+				super.execute();
+				// force screen redraw
+				_theChart.canvasResized();
+			}
+		}, new java.awt.MenuShortcut(java.awt.event.KeyEvent.VK_SUBTRACT), 'O'));
 
 		// //////////////////////////////////////////////////////////
 		// now the decorations
 		// //////////////////////////////////////////////////////////
 		// find the decorations layer
-		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
-				"Create Scale", new CreateScale(_theParent, _theProperties, 
-						_theSession.getData(), bounds), null, ' '));
+		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null, "Create Scale",
+				new CreateScale(_theParent, _theProperties, _theSession.getData(), bounds), null, ' '));
 
-		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
-				"Create Grid", new CreateGrid(_theParent, _theProperties,
-						_theSession.getData(), bounds), null, ' '));
-		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
-				"Create Local Grid", new CreateLocalGrid(_theParent, _theProperties,
-						_theSession.getData(), bounds), null, ' '));
+		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null, "Create Grid",
+				new CreateGrid(_theParent, _theProperties, _theSession.getData(), bounds), null, ' '));
+		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null, "Create Local Grid",
+				new CreateLocalGrid(_theParent, _theProperties, _theSession.getData(), bounds), null, ' '));
 
-		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
-				"Create Coast", new CreateCoast(_theParent, _theProperties,
-						_theSession.getData(), bounds), null, ' '));
+		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null, "Create Coast",
+				new CreateCoast(_theParent, _theProperties, _theSession.getData(), bounds), null, ' '));
 		// let's not read in the VPF reference layer, since we can't get OpenMap
 		// code to read
 		// it in from the jar file.
@@ -644,12 +570,10 @@ abstract public class AnalysisView extends PlainView implements
 		 * "Create VPF Coast", new CreateVPFCoast(_theParent, _theProperties, decs,
 		 * _theChart),null, ' ' ));
 		 */
-		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
-				"Create VPF Layers", new CreateVPFLayers(_theParent, _theProperties,
-						_theSession.getData(), bounds), null, ' '));
-		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
-				"Create ETOPO Bathy", new CreateTOPO(_theParent, _theProperties,
-						_theSession.getData(), bounds), null, ' '));
+		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null, "Create VPF Layers",
+				new CreateVPFLayers(_theParent, _theProperties, _theSession.getData(), bounds), null, ' '));
+		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null, "Create ETOPO Bathy",
+				new CreateTOPO(_theParent, _theProperties, _theSession.getData(), bounds), null, ' '));
 //		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
 //				"Create Buoy Pattern",
 //				new Debrief.Tools.Palette.BuoyPatterns.CreateBuoyPattern(_theParent,
@@ -659,161 +583,153 @@ abstract public class AnalysisView extends PlainView implements
 		// now the shape creators
 		// //////////////////////////////////////////////////////////
 
-		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create Label",
-				new CreateLabel(_theParent, _theProperties, _theSession.getData(),
-				    bounds, "Label", "images/label_add.png"), null, ' '));
-		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create Ellipse",
-				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-					 "Ellipse", "images/ellipse_add.png", bounds)
-				{
-					protected ShapeWrapper getShape(final WorldLocation centre)
-					{
-						return new ShapeWrapper("new ellipse", new EllipseShape(centre, 0,
-								new WorldDistance(0, WorldDistance.DEGS), new WorldDistance(0,
-										WorldDistance.DEGS)), DebriefColors.RED, null);
-					}
-				}, null, ' '));
+		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create Label", new CreateLabel(_theParent,
+				_theProperties, _theSession.getData(), bounds, "Label", "images/label_add.png"), null, ' '));
+		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create Ellipse", new CreateShape(_theParent,
+				_theProperties, _theSession.getData(), "Ellipse", "images/ellipse_add.png", bounds) {
+			/**
+			 *
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected ShapeWrapper getShape(final WorldLocation centre) {
+				return new ShapeWrapper("new ellipse", new EllipseShape(centre, 0,
+						new WorldDistance(0, WorldDistance.DEGS), new WorldDistance(0, WorldDistance.DEGS)),
+						DebriefColors.RED, null);
+			}
+		}, null, ' '));
 		// rectangle
-		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create Rectangle",
-				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-						"Rectangle", "images/rectangle_add.png", bounds)
-				{
-					protected ShapeWrapper getShape(final WorldLocation centre)
-					{
-						return new ShapeWrapper("new rectangle", new RectangleShape(centre,
-								centre.add(new WorldVector(MWC.Algorithms.Conversions
-										.Degs2Rads(45), 0.05, 0))), DebriefColors.RED, null);
-					}
-				}, null, ' '));
+		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create Rectangle", new CreateShape(_theParent,
+				_theProperties, _theSession.getData(), "Rectangle", "images/rectangle_add.png", bounds) {
+			/**
+			 *
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected ShapeWrapper getShape(final WorldLocation centre) {
+				return new ShapeWrapper("new rectangle",
+						new RectangleShape(centre,
+								centre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(45), 0.05, 0))),
+						DebriefColors.RED, null);
+			}
+		}, null, ' '));
 
 		// arc
-		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create arc",
-				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-						"Arc", "images/arc_add.png", bounds)
-				{
-					protected ShapeWrapper getShape(final WorldLocation centre)
-					{
-						return new ShapeWrapper("new arc", new ArcShape(centre,
-								new WorldDistance(4000, WorldDistance.YARDS), 135, 90, true,
-								false), DebriefColors.RED, null);
-					}
-				}, null, ' ')); // circle
-		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create circle",
-				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-						"Circle", "images/circle_add.png", bounds)
-				{
-					protected ShapeWrapper getShape(final WorldLocation centre)
-					{
-						return new ShapeWrapper("new circle",
-								new CircleShape(centre, 4000), DebriefColors.RED, null);
-					}
-				}, null, ' '));
+		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create arc", new CreateShape(_theParent, _theProperties,
+				_theSession.getData(), "Arc", "images/arc_add.png", bounds) {
+			/**
+			 *
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected ShapeWrapper getShape(final WorldLocation centre) {
+				return new ShapeWrapper("new arc",
+						new ArcShape(centre, new WorldDistance(4000, WorldDistance.YARDS), 135, 90, true, false),
+						DebriefColors.RED, null);
+			}
+		}, null, ' ')); // circle
+		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create circle", new CreateShape(_theParent,
+				_theProperties, _theSession.getData(), "Circle", "images/circle_add.png", bounds) {
+			/**
+			 *
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected ShapeWrapper getShape(final WorldLocation centre) {
+				return new ShapeWrapper("new circle", new CircleShape(centre, 4000), DebriefColors.RED, null);
+			}
+		}, null, ' '));
 		// line
-		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create line",
-				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-						"Line", "images/line_add.png", bounds)
-				{
-					protected ShapeWrapper getShape(final WorldLocation centre)
-					{
-						return new ShapeWrapper("new line", new LineShape(centre, centre
-								.add(new WorldVector(
-										MWC.Algorithms.Conversions.Degs2Rads(45.0), 0.05, 0))),
-										DebriefColors.RED, null);
-					}
-				}, null, ' '));
+		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create line", new CreateShape(_theParent,
+				_theProperties, _theSession.getData(), "Line", "images/line_add.png", bounds) {
+			/**
+			 *
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected ShapeWrapper getShape(final WorldLocation centre) {
+				return new ShapeWrapper("new line",
+						new LineShape(centre,
+								centre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(45.0), 0.05, 0))),
+						DebriefColors.RED, null);
+			}
+		}, null, ' '));
 
 		// line
-		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create polygon",
-				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-						"Polygon", "images/polygon_add.png", bounds)
-				{
-					protected ShapeWrapper getShape(final WorldLocation centre)
-					{
-						return new ShapeWrapper("new polygon", new PolygonShape(null), DebriefColors.RED,
-								null);
-					}
-				}, null, ' '));
+		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create polygon", new CreateShape(_theParent,
+				_theProperties, _theSession.getData(), "Polygon", "images/polygon_add.png", bounds) {
+			/**
+			 *
+			 */
+			private static final long serialVersionUID = 1L;
 
-	}
-
-	protected final void setChart(final PlainChart theChart)
-	{
-		_theChart = theChart;
-	}
-
-	protected final void setTote(final AnalysisTote theTote)
-	{
-		_theTote = theTote;
-	}
-
-	protected final void setToolbar(final Toolbar theToolbar)
-	{
-		_theToolbar = theToolbar;
-	}
-
-	public final AnalysisTote getTote()
-	{
-		return _theTote;
-	}
-
-	protected final void setProperties(final PropertiesPanel theProperties)
-	{
-		_theProperties = theProperties;
-	}
-
-	protected final void setStatusBar(final StatusBar theBar)
-	{
-		_theStatusBar = theBar;
-	}
-
-	private StatusBar getStatusBar()
-	{
-		return _theStatusBar;
-	}
-
-	private PropertiesPanel getProperties()
-	{
-		return _theProperties;
-	}
-
-	/**
-	 * data has been modified, update panes as necesary
-	 */
-	public final void update()
-	{
-		// check they are valid
-		if (_theChart != null)
-			_theChart.update();
-		if (_theTote != null)
-			_theTote.update();
+			@Override
+			protected ShapeWrapper getShape(final WorldLocation centre) {
+				return new ShapeWrapper("new polygon", new PolygonShape(null), DebriefColors.RED, null);
+			}
+		}, null, ' '));
 
 	}
 
 	/**
-	 * data has been modified, update panes as necesary
+	 * <code>buildTheInterface</code> puts the bits together
 	 */
-	public final void rescale()
-	{
-		// check they are valid
-		if (_theChart != null)
-			_theChart.rescale();
-	}
+	protected final void buildTheInterface() {
 
-	public final PlainChart getChart()
-	{
-		return _theChart;
+		// we've had to do this here, so that we know we've foudn the chart
+		addTools();
+
+		// retrieve the tools for this interface
+		final Enumeration<MenuItemInfo> iter = getTools();
+
+		while (iter.hasMoreElements()) {
+			final MenuItemInfo thisItem = iter.nextElement();
+
+			addThisTool(thisItem);
+		}
+
+		// setup our double-click editor
+		// and add our dbl click listener
+		getChart().addCursorDblClickedListener(new DblClickEdit(getProperties()));
+
+		// create our right click editor, and add it's helpers
+		final RightClickEdit rc = new RightClickEdit(getProperties());
+		rc.addMenuCreator(new MWC.Algorithms.Editors.ProjectionEditPopupMenuAdaptor());
+		rc.addMenuCreator(new MWC.GUI.LayerManager.EditLayersPopupMenuAdaptor());
+		rc.addMenuCreator(new MWC.GUI.Canvas.EditCanvasPopupMenuAdaptor(getChart().getCanvas()));
+
+		_toteAdapter = new Debrief.GUI.Tote.RightClickEditToteAdaptor(_theTote);
+		rc.addPlottableMenuCreator(_toteAdapter, _theProperties);
+
+		// keep local reference to the right-clicker, to overcome a memory leak
+		_rightClicker = new RightClickCutCopyAdaptor(_theSession.getClipboard(), _theSession.getUndoBuffer());
+		rc.addPlottableMenuCreator(_rightClicker, _theProperties);
+		rc.addPlottableMenuCreator(new RightClickPasteAdaptor(_theSession.getClipboard()), _theProperties);
+
+		// we also want to try to give these properties to the layers object, so
+		// that it can be edited
+		// properly by the right-clicking in the Layer Manager
+		_theSession.getData().setEditor(rc);
+
+		// and add our right-click editor
+		getChart().addRightClickListener(rc);
+
 	}
 
 	/**
 	 * get ready to close, set all local references to null, to assist garbage
 	 * collection
 	 */
-	public void close()
-	{
+	@Override
+	public void close() {
 		// we'll also try to remove all of the tools
 		final Enumeration<MenuItemInfo> iter = _theTools.elements();
-		while (iter.hasMoreElements())
-		{
+		while (iter.hasMoreElements()) {
 			final MenuItemInfo mn = iter.nextElement();
 			mn.close();
 		}
@@ -823,8 +739,7 @@ abstract public class AnalysisView extends PlainView implements
 		_toteAdapter = null;
 
 		// clear the file drop listener
-		if (_dropSupport != null)
-		{
+		if (_dropSupport != null) {
 			_dropSupport.removeComponent(getChart().getPanel());
 			_dropSupport.removeFileDropListener(this);
 		}
@@ -835,8 +750,7 @@ abstract public class AnalysisView extends PlainView implements
 		_theChart.close();
 		_theChart = null;
 
-		if (_theTote != null)
-		{
+		if (_theTote != null) {
 			_theTote.closeMe();
 			_theTote = null;
 		}
@@ -850,49 +764,28 @@ abstract public class AnalysisView extends PlainView implements
 
 	}
 
-	protected final void finalize()
-	{
-		try
-		{
-			super.finalize();
-		}
-		catch (final Throwable t)
-		{
-			t.printStackTrace();
-		}
-	}
-
 	/**
 	 * process this list of file
-	 * 
-	 * @param files
-	 *          the list of files
+	 *
+	 * @param files the list of files
 	 */
-	public final void FilesReceived(final java.util.Vector<File> files)
-	{
+	@Override
+	public final void FilesReceived(final java.util.Vector<File> files) {
 		// get our layers object
 		// Layers newLayers = new Layers();
 		final Layers newLayers = _theSession.getData();
 
 		_theParent.setCursor(java.awt.Cursor.WAIT_CURSOR);
 
-		java.io.File[] theFiles = new java.io.File[]
-		{ null };
-		theFiles = (java.io.File[]) files.toArray(theFiles);
+		java.io.File[] theFiles = new java.io.File[] { null };
+		theFiles = files.toArray(theFiles);
 
 		// ok, go for it!
 		final MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller caller = new MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller(
-				theFiles, newLayers)
-		{
-			// handle the completion of each file
-			public void fileFinished(final java.io.File fName, final Layers newData)
-			{
-			}
-
+				theFiles, newLayers) {
 			// handle completion of the full import process
-			public void allFilesFinished(final java.io.File[] fNames,
-					final Layers newData)
-			{
+			@Override
+			public void allFilesFinished(final java.io.File[] fNames, final Layers newData) {
 				// _theSession.getData().addThis(newData);
 
 				_theSession.getData().fireExtended();
@@ -905,10 +798,9 @@ abstract public class AnalysisView extends PlainView implements
 				// Putting
 				// them into invokeLater triggers the refresh after the current
 				// processing is complete
-				javax.swing.SwingUtilities.invokeLater(new Runnable()
-				{
-					public void run()
-					{
+				javax.swing.SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
 						_theChart.rescale();
 						_theChart.update();
 					}
@@ -917,10 +809,90 @@ abstract public class AnalysisView extends PlainView implements
 				// and clear the busy flag
 				_theParent.restoreCursor();
 			}
+
+			// handle the completion of each file
+			@Override
+			public void fileFinished(final java.io.File fName, final Layers newData) {
+			}
 		};
 
 		// ok, get going!
 		caller.start();
+
+	}
+
+	@Override
+	protected final void finalize() {
+		try {
+			super.finalize();
+		} catch (final Throwable t) {
+			t.printStackTrace();
+		}
+	}
+
+	public final PlainChart getChart() {
+		return _theChart;
+	}
+
+	private PropertiesPanel getProperties() {
+		return _theProperties;
+	}
+
+	private StatusBar getStatusBar() {
+		return _theStatusBar;
+	}
+
+	/**
+	 * return the tools we have created
+	 */
+	private Enumeration<MenuItemInfo> getTools() {
+		return _theTools.elements();
+	}
+
+	public final AnalysisTote getTote() {
+		return _theTote;
+	}
+
+	/**
+	 * data has been modified, update panes as necesary
+	 */
+	@Override
+	public final void rescale() {
+		// check they are valid
+		if (_theChart != null)
+			_theChart.rescale();
+	}
+
+	protected final void setChart(final PlainChart theChart) {
+		_theChart = theChart;
+	}
+
+	protected final void setProperties(final PropertiesPanel theProperties) {
+		_theProperties = theProperties;
+	}
+
+	protected final void setStatusBar(final StatusBar theBar) {
+		_theStatusBar = theBar;
+	}
+
+	protected final void setToolbar(final Toolbar theToolbar) {
+		_theToolbar = theToolbar;
+	}
+
+	protected final void setTote(final AnalysisTote theTote) {
+		_theTote = theTote;
+	}
+
+	/**
+	 * data has been modified, update panes as necesary
+	 */
+	@Override
+	public final void update() {
+		// check they are valid
+		if (_theChart != null)
+			_theChart.update();
+		if (_theTote != null)
+			_theTote.update();
 
 	}
 

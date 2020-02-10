@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.cmap.gridharness.data;
 
 /**
@@ -21,7 +22,7 @@ package org.mwc.cmap.gridharness.data;
  * While we assume that {@link WorldDistance} substitutes the public API and
  * can't be changed, we will provide static migration methods that allows to
  * convert instances between {@link WorldDistance} and {@link WorldDistance2}
- * 
+ *
  * @see WorldSpeed2
  */
 public class WorldDistance2 extends AbstractValueInUnits {
@@ -54,39 +55,6 @@ public class WorldDistance2 extends AbstractValueInUnits {
 		DISTANCE_UNITS.freeze();
 	}
 
-	public WorldDistance2() {
-		super(DISTANCE_UNITS);
-	}
-
-	public WorldDistance2(final WorldDistance2 copy) {
-		this();
-		setValues(copy.getValueIn(METRES), METRES);
-	}
-
-	public WorldDistance2(final double value, final UnitsSet.Unit units) {
-		this();
-		setValues(value, units);
-	}
-	
-	public WorldDistance2 makeCopy() {
-		return new WorldDistance2(this);
-	}
-
-	public static WorldDistance2 wrap(final WorldDistance legacyDistance) {
-		final WorldDistance2 result = new WorldDistance2();
-		result.setValues(legacyDistance.getValueIn(WorldDistance.METRES), METRES);
-		return result;
-	}
-
-	public static WorldDistance unwrap(final WorldDistance2 distance) {
-		final WorldDistance result = new WorldDistance(distance.getValueIn(METRES), WorldDistance.METRES);
-		return result;
-	}
-
-	//Well, thats basically it, the whole code below is provided as a migration helper only
-	//The only reason it is here is to allow simple migration, 
-	//say by just global search/replace WorldDistance to WorldDistance2
-
 	/**
 	 * perform a units conversion
 	 */
@@ -102,18 +70,6 @@ public class WorldDistance2 extends AbstractValueInUnits {
 	}
 
 	/**
-	 * get the index for this type of unit
-	 * <p>
-	 * NOTE: there are no "indices" anymore, we assume that this method may be
-	 * used in client code to obtain the units from label first and the then get
-	 * the value in this units. This calling sequence will work without
-	 * syntactical changes.
-	 */
-	static public UnitsSet.Unit getUnitIndexFor(final String units) {
-		return DISTANCE_UNITS.findUnit(units);
-	}
-
-	/**
 	 * get the SI units for this type
 	 */
 	public static UnitsSet.Unit getSIUnits() {
@@ -121,11 +77,58 @@ public class WorldDistance2 extends AbstractValueInUnits {
 	}
 
 	/**
-	 * method to find the smallest set of units which will show the indicated
-	 * value as a whole or 1/2 value
+	 * get the index for this type of unit
+	 * <p>
+	 * NOTE: there are no "indices" anymore, we assume that this method may be used
+	 * in client code to obtain the units from label first and the then get the
+	 * value in this units. This calling sequence will work without syntactical
+	 * changes.
+	 */
+	static public UnitsSet.Unit getUnitIndexFor(final String units) {
+		return DISTANCE_UNITS.findUnit(units);
+	}
+
+	/**
+	 * method to find the smallest set of units which will show the indicated value
+	 * as a whole or 1/2 value
 	 */
 	static public UnitsSet.Unit selectUnitsFor(final double millis) {
 		return DISTANCE_UNITS.selectUnitsFor(millis);
+	}
+
+	public static WorldDistance unwrap(final WorldDistance2 distance) {
+		final WorldDistance result = new WorldDistance(distance.getValueIn(METRES), WorldDistance.METRES);
+		return result;
+	}
+
+	// Well, thats basically it, the whole code below is provided as a migration
+	// helper only
+	// The only reason it is here is to allow simple migration,
+	// say by just global search/replace WorldDistance to WorldDistance2
+
+	public static WorldDistance2 wrap(final WorldDistance legacyDistance) {
+		final WorldDistance2 result = new WorldDistance2();
+		result.setValues(legacyDistance.getValueIn(WorldDistance.METRES), METRES);
+		return result;
+	}
+
+	public WorldDistance2() {
+		super(DISTANCE_UNITS);
+	}
+
+	public WorldDistance2(final double value, final UnitsSet.Unit units) {
+		this();
+		setValues(value, units);
+	}
+
+	public WorldDistance2(final WorldDistance2 copy) {
+		this();
+		setValues(copy.getValueIn(METRES), METRES);
+	}
+
+	@Override
+	public WorldDistance2 makeCopy() {
+		return new WorldDistance2(this);
 	}
 
 }

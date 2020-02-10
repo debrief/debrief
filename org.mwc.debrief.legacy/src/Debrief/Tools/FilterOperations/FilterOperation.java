@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package Debrief.Tools.FilterOperations;
 
 import MWC.GenericData.HiResDate;
@@ -50,28 +51,31 @@ import MWC.GenericData.WatchableList;
 // added VCS headers
 //
 
-
-/** interface defining behaviour triggered from TimeFilter tote panel
+/**
+ * interface defining behaviour triggered from TimeFilter tote panel
  */
-public interface FilterOperation extends MWC.GUI.Tool
-{
-	/** return the description for this operation
+public interface FilterOperation extends MWC.GUI.Tool {
+	/**
+	 * return the description for this operation
 	 */
 	public String getDescription();
-	
-	/** specify the time period selected by the user
+
+	/**
+	 * the user has pressed RESET whilst this button is pressed
+	 *
+	 * @param startTime the new start time
+	 * @param endTime   the new end time
+	 */
+	public void resetMe(HiResDate startTime, HiResDate endTime);
+
+	/**
+	 * specify the time period selected by the user
 	 */
 	public void setPeriod(HiResDate startDTG, HiResDate finishDTG);
-	
-	/** specify the tracks (or watchable lists) selected by the user
+
+	/**
+	 * specify the tracks (or watchable lists) selected by the user
 	 */
 	public void setTracks(java.util.Vector<WatchableList> selectedTracks);
-
-  /** the user has pressed RESET whilst this button is pressed
-   *
-   * @param startTime the new start time
-   * @param endTime the new end time
-   */
-  public void resetMe(HiResDate startTime, HiResDate endTime);
 
 }

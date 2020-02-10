@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 package org.mwc.cmap.NarrativeViewer2;
 
 import java.util.List;
@@ -25,118 +39,102 @@ import ca.odell.glazedlists.TransformedList;
 
 /**
  * The body layer stack for the viewer.
- * 
+ *
  * @param <T>
  */
-public class BodyLayerStack<T> extends AbstractLayerTransform
-{
+public class BodyLayerStack<T> extends AbstractLayerTransform {
 
-  private final SortedList<T> sortedList;
-  private final FilterList<T> filterList;
+	private final SortedList<T> sortedList;
+	private final FilterList<T> filterList;
 
-  private final ListDataProvider<T> bodyDataProvider;
+	private final ListDataProvider<T> bodyDataProvider;
 
-  private final GlazedListsEventLayer<T> glazedListsEventLayer;
-  private final ColumnReorderLayer columnReorderLayer;
-  private final ColumnHideShowLayer columnHideShowLayer;
-  private final SelectionLayer selectionLayer;
-  private final ViewportLayer viewportLayer;
+	private final GlazedListsEventLayer<T> glazedListsEventLayer;
+	private final ColumnReorderLayer columnReorderLayer;
+	private final ColumnHideShowLayer columnHideShowLayer;
+	private final SelectionLayer selectionLayer;
+	private final ViewportLayer viewportLayer;
 
-  private final AggregateConfigLabelAccumulator accumulator;
-  private DataLayer bodyDataLayer;
+	private final AggregateConfigLabelAccumulator accumulator;
+	private final DataLayer bodyDataLayer;
 
-  public BodyLayerStack(final List<T> values,
-      final IColumnPropertyAccessor<T> columnPropertyAccessor)
-  {
-    // wrapping of the list to show into GlazedLists
-    // see http://publicobject.com/glazedlists/ for further information
-    final EventList<T> eventList = GlazedLists.eventList(values);
-    final TransformedList<T, T> rowObjectsGlazedList =
-        GlazedLists.threadSafeList(eventList);
+	public BodyLayerStack(final List<T> values, final IColumnPropertyAccessor<T> columnPropertyAccessor) {
+		// wrapping of the list to show into GlazedLists
+		// see http://publicobject.com/glazedlists/ for further information
+		final EventList<T> eventList = GlazedLists.eventList(values);
+		final TransformedList<T, T> rowObjectsGlazedList = GlazedLists.threadSafeList(eventList);
 
-    // use the SortedList constructor with 'null' for the Comparator
-    // because the Comparator will be set by configuration
-    this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
-    // wrap the SortedList with the FilterList
-    this.filterList = new FilterList<T>(getSortedList());
+		// use the SortedList constructor with 'null' for the Comparator
+		// because the Comparator will be set by configuration
+		this.sortedList = new SortedList<T>(rowObjectsGlazedList, null);
+		// wrap the SortedList with the FilterList
+		this.filterList = new FilterList<T>(getSortedList());
 
-    this.bodyDataProvider =
-        new ListDataProvider<T>(this.filterList, columnPropertyAccessor);
-    bodyDataLayer = new DataLayer(this.bodyDataProvider);
+		this.bodyDataProvider = new ListDataProvider<T>(this.filterList, columnPropertyAccessor);
+		bodyDataLayer = new DataLayer(this.bodyDataProvider);
 
-    accumulator = new AggregateConfigLabelAccumulator();
-    accumulator.add(new ColumnLabelAccumulator(bodyDataProvider));
-    bodyDataLayer.setConfigLabelAccumulator(accumulator);
+		accumulator = new AggregateConfigLabelAccumulator();
+		accumulator.add(new ColumnLabelAccumulator(bodyDataProvider));
+		bodyDataLayer.setConfigLabelAccumulator(accumulator);
 
-    // width configuration - last column should take remaining space
-    bodyDataLayer.setColumnWidthByPosition(0, 100);
-    bodyDataLayer.setColumnWidthByPosition(1, 100);
-    bodyDataLayer.setColumnWidthByPosition(2, 100);
-    bodyDataLayer.setColumnPercentageSizing(3, true);
-    bodyDataLayer.setColumnsResizableByDefault(true);
+		// width configuration - last column should take remaining space
+		bodyDataLayer.setColumnWidthByPosition(0, 100);
+		bodyDataLayer.setColumnWidthByPosition(1, 100);
+		bodyDataLayer.setColumnWidthByPosition(2, 100);
+		bodyDataLayer.setColumnPercentageSizing(3, true);
+		bodyDataLayer.setColumnsResizableByDefault(true);
 
-    // layer for event handling of GlazedLists and PropertyChanges
-    glazedListsEventLayer =
-        new GlazedListsEventLayer<T>(bodyDataLayer, this.filterList);
+		// layer for event handling of GlazedLists and PropertyChanges
+		glazedListsEventLayer = new GlazedListsEventLayer<T>(bodyDataLayer, this.filterList);
 
-    this.columnReorderLayer = new ColumnReorderLayer(glazedListsEventLayer);
-    this.columnHideShowLayer = new ColumnHideShowLayer(this.columnReorderLayer);
-    this.selectionLayer = new SelectionLayer(this.columnHideShowLayer);
-    this.viewportLayer = new ViewportLayer(this.selectionLayer);
+		this.columnReorderLayer = new ColumnReorderLayer(glazedListsEventLayer);
+		this.columnHideShowLayer = new ColumnHideShowLayer(this.columnReorderLayer);
+		this.selectionLayer = new SelectionLayer(this.columnHideShowLayer);
+		this.viewportLayer = new ViewportLayer(this.selectionLayer);
 
-    addConfiguration(new DefaultEditBindings());
-    addConfiguration(new DefaultEditConfiguration());
+		addConfiguration(new DefaultEditBindings());
+		addConfiguration(new DefaultEditConfiguration());
 
-    setUnderlyingLayer(viewportLayer);
-  }
+		setUnderlyingLayer(viewportLayer);
+	}
 
-  public void addConfigLabelAccumulator(final IConfigLabelAccumulator cla)
-  {
-    accumulator.add(cla);
-  }
+	public void addConfigLabelAccumulator(final IConfigLabelAccumulator cla) {
+		accumulator.add(cla);
+	}
 
-  public ListDataProvider<T> getBodyDataProvider()
-  {
-    return this.bodyDataProvider;
-  }
+	public DataLayer getBodyDataLayer() {
+		return bodyDataLayer;
+	}
 
-  public ColumnHideShowLayer getColumnHideShowLayer()
-  {
-    return this.columnHideShowLayer;
-  }
+	public ListDataProvider<T> getBodyDataProvider() {
+		return this.bodyDataProvider;
+	}
 
-  public ColumnReorderLayer getColumnReorderLayer()
-  {
-    return this.columnReorderLayer;
-  }
+	public ColumnHideShowLayer getColumnHideShowLayer() {
+		return this.columnHideShowLayer;
+	}
 
-  public FilterList<T> getFilterList()
-  {
-    return this.filterList;
-  }
+	public ColumnReorderLayer getColumnReorderLayer() {
+		return this.columnReorderLayer;
+	}
 
-  public GlazedListsEventLayer<T> getGlazedListsEventLayer()
-  {
-    return this.glazedListsEventLayer;
-  }
+	public FilterList<T> getFilterList() {
+		return this.filterList;
+	}
 
-  public SelectionLayer getSelectionLayer()
-  {
-    return this.selectionLayer;
-  }
-  
-  public DataLayer getBodyDataLayer()
-  {
-    return bodyDataLayer;
-  }
+	public GlazedListsEventLayer<T> getGlazedListsEventLayer() {
+		return this.glazedListsEventLayer;
+	}
 
-  public SortedList<T> getSortedList()
-  {
-    return this.sortedList;
-  }
+	public SelectionLayer getSelectionLayer() {
+		return this.selectionLayer;
+	}
 
-  public ViewportLayer getViewportLayer()
-  {
-    return this.viewportLayer;
-  }
+	public SortedList<T> getSortedList() {
+		return this.sortedList;
+	}
+
+	public ViewportLayer getViewportLayer() {
+		return this.viewportLayer;
+	}
 }

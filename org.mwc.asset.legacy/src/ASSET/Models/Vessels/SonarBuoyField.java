@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package ASSET.Models.Vessels;
 
 import ASSET.ScenarioType;
@@ -26,8 +27,7 @@ import MWC.GenericData.WorldLocation;
 /**
  * Created by IntelliJ IDEA
  */
-public class SonarBuoyField extends CoreParticipant
-{
+public class SonarBuoyField extends CoreParticipant {
 	// ////////////////////////////////////////////////
 	// member variables
 	// ////////////////////////////////////////////////
@@ -37,26 +37,25 @@ public class SonarBuoyField extends CoreParticipant
 	// ////////////////////////////////////////////////
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * the area covered by this buoy field
-	 * 
+	 *
 	 */
-	private WorldArea _myCoverage;
+	private final WorldArea _myCoverage;
 
 	private TimePeriod _myPeriod;
 
 	/**
 	 * normal constructor
-	 * 
+	 *
 	 * @param coverage
-	 * 
+	 *
 	 */
-	public SonarBuoyField(final int id, WorldArea coverage)
-	{
+	public SonarBuoyField(final int id, final WorldArea coverage) {
 		// create the participant bits
 		super(id, null, null, null);
 
@@ -71,34 +70,57 @@ public class SonarBuoyField extends CoreParticipant
 	// member methods
 	// ////////////////////////////////////////////////
 
-	/**
-	 * return what this participant is currently doing
-	 * 
-	 */
-	public String getActivity()
-	{
-		return "Active";
+	@Override
+	public void doDetection(final long oldtime, final long newTime, final ScenarioType scenario) {
+		// aaah, are we active?
+		if (isActiveAt(newTime))
+			super.doDetection(oldtime, newTime, scenario);
 	}
 
 	@Override
-	public void setStatus(Status val)
-	{
-		if (val != null)
-		{
-			super.setStatus(val);
-		}
-		else
-		{
-			super.setStatus(new Status(0, 0));
-		}
+	public void doMovement(final long oldtime, final long newTime, final ScenarioType scenario) {
+		super.doMovement(oldtime, newTime, scenario);
+
+		// update our status
+		this.getStatus().setTime(newTime);
+	}
+
+	/**
+	 * return what this participant is currently doing
+	 *
+	 */
+	@Override
+	public String getActivity() {
+		return "Active";
+	}
+
+	public WorldArea getCoverage() {
+		return _myCoverage;
+	}
+
+	public TimePeriod getTimePeriod() {
+		return _myPeriod;
+	}
+
+	/**
+	 * convenience funtion for if we're currently active
+	 *
+	 * @param newTime current time
+	 * @return yes/no
+	 */
+	public boolean isActiveAt(final long newTime) {
+		boolean res = true;
+		if (_myPeriod != null)
+			res = _myPeriod.contains(new HiResDate(newTime));
+		return res;
 	}
 
 	/**
 	 * the range calculation goes from our area, not just a single point
-	 * 
+	 *
 	 */
-	public WorldDistance rangeFrom(WorldLocation point)
-	{
+	@Override
+	public WorldDistance rangeFrom(final WorldLocation point) {
 		double dist = 0;
 
 		// right, measure the distance from the sides
@@ -107,49 +129,17 @@ public class SonarBuoyField extends CoreParticipant
 		return new WorldDistance(dist, WorldDistance.DEGS);
 	}
 
-	public WorldArea getCoverage()
-	{
-		return _myCoverage;
-	}
-
 	@Override
-	public void doDetection(long oldtime, long newTime, ScenarioType scenario)
-	{
-		// aaah, are we active?
-		if (isActiveAt(newTime))
-			super.doDetection(oldtime, newTime, scenario);
+	public void setStatus(final Status val) {
+		if (val != null) {
+			super.setStatus(val);
+		} else {
+			super.setStatus(new Status(0, 0));
+		}
 	}
 
-	/** convenience funtion for if we're currently active
-	 * 
-	 * @param newTime current time
-	 * @return yes/no
-	 */
-	public boolean isActiveAt(long newTime)
-	{
-		boolean res = true;
-		if(_myPeriod != null)
-			res = _myPeriod.contains(new HiResDate(newTime));
-		return res;
-	}
-
-	@Override
-	public void doMovement(long oldtime, long newTime, ScenarioType scenario)
-	{
-		super.doMovement(oldtime, newTime, scenario);
-
-		// update our status
-		this.getStatus().setTime(newTime);
-	}
-
-	public void setTimePeriod(TimePeriod period)
-	{
+	public void setTimePeriod(final TimePeriod period) {
 		_myPeriod = period;
-	}
-
-	public TimePeriod getTimePeriod()
-	{
-		return _myPeriod;
 	}
 
 }

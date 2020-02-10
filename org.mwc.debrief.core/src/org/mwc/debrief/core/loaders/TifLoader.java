@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.debrief.core.loaders;
 
 import java.io.File;
@@ -35,65 +36,52 @@ import it.geosolutions.imageio.stream.input.spi.URLImageInputStreamSpi;
 /**
  * @author ian.mayo
  */
-public class TifLoader extends CoreLoader
-{
+public class TifLoader extends CoreLoader {
 
-  public TifLoader()
-  {
-    super(".tif", ".tif");
+	public TifLoader() {
+		super(".tif", ".tif");
 
-    registerUrlServiceProvider();
-  }
+		registerUrlServiceProvider();
+	}
 
-  private void registerUrlServiceProvider()
-  {
-    boolean isRegistered = false;
-    // Ensure that the provider is present
-    try
-    {
-      Iterator<ImageInputStreamSpi> iter = IIORegistry.getDefaultInstance()
-          .getServiceProviders(ImageInputStreamSpi.class, true);
+	@Override
+	protected IRunnableWithProgress getImporter(final IAdaptable target, final Layers theLayers,
+			final InputStream inputStream, final String fileName) {
+		return new IRunnableWithProgress() {
+			@Override
+			public void run(final IProgressMonitor pm) {
+				// create a layer name from the filename
+				final File tmpFile = new File(fileName);
+				final String layerName = tmpFile.getName();
 
-      while (iter.hasNext() && !isRegistered)
-      {
-        ImageInputStreamSpi stream = iter.next();
-        if (URLImageInputStreamSpi.class.equals(stream.getClass()))
-        {
-          isRegistered = true;
-        }
-      }
+				// ok - get loading going
+				final ExternallyManagedDataLayer dl = new ExternallyManagedDataLayer(ChartBoundsWrapper.WORLDIMAGE_TYPE,
+						layerName, fileName);
+				theLayers.addThisLayer(dl);
+			}
+		};
+	}
 
-      if (!isRegistered)
-      {
-        IIORegistry.getDefaultInstance().registerServiceProvider(
-            new URLImageInputStreamSpi(), ImageInputStreamSpi.class);
-      }
-    }
-    catch (IllegalArgumentException e)
-    {
-      Application.logError2(ToolParent.WARNING,
-          "Failure in service registration", e);
-    }
-  }
+	private void registerUrlServiceProvider() {
+		boolean isRegistered = false;
+		// Ensure that the provider is present
+		try {
+			final Iterator<ImageInputStreamSpi> iter = IIORegistry.getDefaultInstance()
+					.getServiceProviders(ImageInputStreamSpi.class, true);
 
-  @Override
-  protected IRunnableWithProgress getImporter(final IAdaptable target,
-      final Layers theLayers, final InputStream inputStream,
-      final String fileName)
-  {
-    return new IRunnableWithProgress()
-    {
-      public void run(final IProgressMonitor pm)
-      {
-        // create a layer name from the filename
-        File tmpFile = new File(fileName);
-        String layerName = tmpFile.getName();
+			while (iter.hasNext() && !isRegistered) {
+				final ImageInputStreamSpi stream = iter.next();
+				if (URLImageInputStreamSpi.class.equals(stream.getClass())) {
+					isRegistered = true;
+				}
+			}
 
-        // ok - get loading going
-        final ExternallyManagedDataLayer dl = new ExternallyManagedDataLayer(
-            ChartBoundsWrapper.WORLDIMAGE_TYPE, layerName, fileName);
-        theLayers.addThisLayer(dl);
-      }
-    };
-  }
+			if (!isRegistered) {
+				IIORegistry.getDefaultInstance().registerServiceProvider(new URLImageInputStreamSpi(),
+						ImageInputStreamSpi.class);
+			}
+		} catch (final IllegalArgumentException e) {
+			Application.logError2(ToolParent.WARNING, "Failure in service registration", e);
+		}
+	}
 }

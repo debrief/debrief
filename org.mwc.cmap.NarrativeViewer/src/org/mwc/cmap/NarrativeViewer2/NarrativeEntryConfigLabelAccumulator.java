@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 package org.mwc.cmap.NarrativeViewer2;
 
 import java.util.ArrayList;
@@ -14,56 +28,46 @@ import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.swt.graphics.Color;
 
 /**
- * {@link IConfigLabelAccumulator} that is used to attach labels according to the source value of a
- * narrative entry. Needs to be set to the body DataLayer in order to avoid index-position
- * transformations.
+ * {@link IConfigLabelAccumulator} that is used to attach labels according to
+ * the source value of a narrative entry. Needs to be set to the body DataLayer
+ * in order to avoid index-position transformations.
  */
-public class NarrativeEntryConfigLabelAccumulator implements
-    IConfigLabelAccumulator
-{
+public class NarrativeEntryConfigLabelAccumulator implements IConfigLabelAccumulator {
 
-  private final IRowDataProvider<INatEntry> dataProvider;
-  private final IConfigRegistry configRegistry;
+	private final IRowDataProvider<INatEntry> dataProvider;
+	private final IConfigRegistry configRegistry;
 
-  // track which sources we have registered
-  private final List<String> processedSources = new ArrayList<String>();
+	// track which sources we have registered
+	private final List<String> processedSources = new ArrayList<String>();
 
-  public NarrativeEntryConfigLabelAccumulator(
-      final IRowDataProvider<INatEntry> dataProvider,
-      final IConfigRegistry configRegistry)
-  {
-    this.dataProvider = dataProvider;
-    this.configRegistry = configRegistry;
-  }
+	public NarrativeEntryConfigLabelAccumulator(final IRowDataProvider<INatEntry> dataProvider,
+			final IConfigRegistry configRegistry) {
+		this.dataProvider = dataProvider;
+		this.configRegistry = configRegistry;
+	}
 
-  @Override
-  public void accumulateConfigLabels(final LabelStack configLabels,
-      final int columnPosition, final int rowPosition)
-  {
-    final INatEntry entry = dataProvider.getRowObject(rowPosition);
-    final String uName = entry.getName().toUpperCase();
+	@Override
+	public void accumulateConfigLabels(final LabelStack configLabels, final int columnPosition, final int rowPosition) {
+		final INatEntry entry = dataProvider.getRowObject(rowPosition);
+		final String uName = entry.getName().toUpperCase();
 
-    // tell this cell that it has a style label to apply
-    configLabels.addLabel(uName);
+		// tell this cell that it has a style label to apply
+		configLabels.addLabel(uName);
 
-    // have we already processed it?
-    if (!processedSources.contains(uName))
-    {
-      // generate a style with this name
-      registerStylesForSource(configRegistry, uName, entry.getColor());
+		// have we already processed it?
+		if (!processedSources.contains(uName)) {
+			// generate a style with this name
+			registerStylesForSource(configRegistry, uName, entry.getColor());
 
-      // remember the fact that we've created it
-      processedSources.add(uName);
-    }
-  }
+			// remember the fact that we've created it
+			processedSources.add(uName);
+		}
+	}
 
-  private void registerStylesForSource(final IConfigRegistry configRegistry,
-      final String source, final Color color)
-  {
-    // ok, generate it
-    final Style style = new Style();
-    style.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, color);
-    configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
-        style, DisplayMode.NORMAL, source);
-  }
+	private void registerStylesForSource(final IConfigRegistry configRegistry, final String source, final Color color) {
+		// ok, generate it
+		final Style style = new Style();
+		style.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, color);
+		configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, style, DisplayMode.NORMAL, source);
+	}
 }

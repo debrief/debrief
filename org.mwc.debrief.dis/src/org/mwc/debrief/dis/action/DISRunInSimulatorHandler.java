@@ -14,25 +14,25 @@ import org.mwc.debrief.dis.ui.views.DisListenerView;
 
 public class DISRunInSimulatorHandler extends AbstractHandler {
 
-  @Override
-  public Object execute(ExecutionEvent event) throws ExecutionException {
-    IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-    DisListenerView view = null;
-    try {
-      IStructuredSelection selection = (IStructuredSelection) window.getSelectionService().getSelection();
-      Object firstElement = selection.getFirstElement();
-      if (firstElement instanceof IResource) {
-        IResource resource = (IResource) firstElement;
-        if (resource.getFileExtension().equals("inp")) {
-          String filePath = resource.getLocation().toOSString();
-          view = (DisListenerView) window.getActivePage().showView(CorePlugin.DIS_LISTENER_VIEW);
-          view.doLaunch(filePath);
-        }
-      }
-    } catch (PartInitException e) {
-      DisActivator.log(e);
-    }
-    return view;
-  }
+	@Override
+	public Object execute(final ExecutionEvent event) throws ExecutionException {
+		final IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		DisListenerView view = null;
+		try {
+			final IStructuredSelection selection = (IStructuredSelection) window.getSelectionService().getSelection();
+			final Object firstElement = selection.getFirstElement();
+			if (firstElement instanceof IResource) {
+				final IResource resource = (IResource) firstElement;
+				if (resource.getFileExtension().equals("inp")) {
+					final String filePath = resource.getLocation().toOSString();
+					view = (DisListenerView) window.getActivePage().showView(CorePlugin.DIS_LISTENER_VIEW);
+					view.doLaunch(filePath);
+				}
+			}
+		} catch (final PartInitException e) {
+			DisActivator.log(e);
+		}
+		return view;
+	}
 
 }

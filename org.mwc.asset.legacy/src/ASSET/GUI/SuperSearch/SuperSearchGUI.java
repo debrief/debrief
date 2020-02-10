@@ -1,22 +1,24 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package ASSET.GUI.SuperSearch;
 
 import java.awt.Color;
 
 import javax.swing.JFrame;
+import javax.swing.WindowConstants;
 
 import ASSET.ScenarioType;
 import ASSET.GUI.Core.CoreGUISwing;
@@ -25,207 +27,215 @@ import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.MenuItemInfo;
 import MWC.GUI.Tools.PlainTool;
 
-public class SuperSearchGUI extends CoreGUISwing
-{
-  /***************************************************************
-   *  member variables
-   ***************************************************************/
+public class SuperSearchGUI extends CoreGUISwing {
+	/***************************************************************
+	 * member variables
+	 ***************************************************************/
 
-  /**
-   * our super search object
-   */
-  CoreSuperSearch _searcher;
+	public static void main(final String[] args) {
+		// try{
+		// UIManager.setLookAndFeel(new
+		// com.incors.plaf.kunststoff.KunststoffLookAndFeel());
+		// }catch(javax.swing.UnsupportedLookAndFeelException e)
+		// {
+		// e.printStackTrace();
+		// }
 
-  /***************************************************************
-   *  constructor
-   ***************************************************************/
-  /**
-   * constructor, of course
-   *
-   * @param theParent the toolparent = where we control the cursor from
-   */
-  private SuperSearchGUI(final CoreGUISwing.ASSETParent theParent)
-  {
-    super(theParent);
+		// create the interface
+		final JFrame parent = new JFrame("ASSET SuperSearch");
 
-  }
-  /***************************************************************
-   *  member methods
-   ***************************************************************/
-  /**
-   * allow our child classes to add new gui components
-   */
-  protected void addUniqueComponents(CoreGUISwing.MyToolbarHolder assetHolder)
-  {
-    /////////////////////////////////////////////////
-    // ASSET bits
-    /////////////////////////////////////////////////
-    final SSBuilderSwing ssb = new SSBuilderSwing(_searcher._myScenario, super._theData);
-    _theProperties.add(ssb);
+		// open the splash screen
+		CoreGUISwing.showSplash(parent, "images/SuperSearchLogo.gif");
 
-  }
+		// initialise the interface
+		parent.setSize(900, 500);
+		parent.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-  /**
-   * extra call to allow any CoreGUI-level components the be initialised before we
-   * start creating the GUI components
-   */
-  protected void constructorSteps()
-  {
-    _searcher = new CoreSuperSearch();
+		// and create the other parent
+		final CoreGUISwing.ASSETParent pr = new CoreGUISwing.ASSETParent(parent);
 
-    setupScenario();
-  }
+		final SuperSearchGUI viewer = new SuperSearchGUI(pr);
 
-  /**
-   * setup the scenario
-   */
-  private void setupScenario()
-  {
-    _searcher._myScenario.setTime(0);
-    _searcher._myScenario.setScenarioStepTime(60000);
-    _searcher._myScenario.setStepTime(0);
-    
-    final Layers localData = _theData;
+		parent.getContentPane().setLayout(new java.awt.BorderLayout());
+		parent.getContentPane().add("Center", viewer.getPanel());
 
-    // connect the layers to the scenario
-    _searcher.addScenarioSteppedListener(new ASSET.Scenario.ScenarioSteppedListener()
-    {
-      @SuppressWarnings("synthetic-access")
-			public void step(ScenarioType scenario, final long time)
-      {
-        if (_searcher != null)
-        {
-        	localData.fireModified(_searcher.getDataLayer());
-        }
-        else
-        	localData.fireModified(null);
+		parent.setVisible(true);
 
-        // update the clock
-        setTime(MWC.Utilities.TextFormatting.FullFormatDateTime.toString(time));
-      }
+	}
 
-      @SuppressWarnings("synthetic-access")
-			public void restart(ScenarioType scenario)
-      {
-        // reset the data
-      	localData.fireModified(null);
+	/**
+	 * our super search object
+	 */
+	CoreSuperSearch _searcher;
 
-        // and reset the time
-        setTime("------");
-      }
-    });
+	/***************************************************************
+	 * constructor
+	 ***************************************************************/
+	/**
+	 * constructor, of course
+	 *
+	 * @param theParent the toolparent = where we control the cursor from
+	 */
+	private SuperSearchGUI(final CoreGUISwing.ASSETParent theParent) {
+		super(theParent);
 
+	}
 
-  }
+	/***************************************************************
+	 * member methods
+	 ***************************************************************/
+	/**
+	 * allow our child classes to add new gui components
+	 */
+	@Override
+	protected void addUniqueComponents(final CoreGUISwing.MyToolbarHolder assetHolder) {
+		/////////////////////////////////////////////////
+		// ASSET bits
+		/////////////////////////////////////////////////
+		final SSBuilderSwing ssb = new SSBuilderSwing(_searcher._myScenario, super._theData);
+		_theProperties.add(ssb);
 
+	}
 
-  /**
-   * build the list of ASSET-related tools
-   */
-  protected void addUniqueTools()
-  {
+	/**
+	 * build the list of ASSET-related tools
+	 */
+	@Override
+	protected void addUniqueTools() {
 
-    _theTools.addElement(new MenuItemInfo("ASSET", null, "Step",
-        new PlainTool(_theParent, "Step", "images/VCRForward.gif")
-        {
-          public Action getData()
-          {
-            _searcher._myScenario.step();
-            return null;
-          }
-        }, null, 't'));
+		_theTools.addElement(
+				new MenuItemInfo("ASSET", null, "Step", new PlainTool(_theParent, "Step", "images/VCRForward.gif") {
+					/**
+					 *
+					 */
+					private static final long serialVersionUID = 1L;
 
-    _theTools.addElement(new MenuItemInfo("ASSET", "StartStop", "Start",
-        new PlainTool(_theParent, "Start", "images/VCRFastForward.gif")
-        {
-          public Action getData()
-          {
-            _searcher._myScenario.start();
-            return null;
-          }
-        }, null, 'a'));
+					@Override
+					public Action getData() {
+						_searcher._myScenario.step();
+						return null;
+					}
+				}, null, 't'));
 
+		_theTools.addElement(new MenuItemInfo("ASSET", "StartStop", "Start",
+				new PlainTool(_theParent, "Start", "images/VCRFastForward.gif") {
+					/**
+					 *
+					 */
+					private static final long serialVersionUID = 1L;
 
-    _theTools.addElement(new MenuItemInfo("ASSET", "StartStop", "Stop",
-        new PlainTool(_theParent, "Stop", "images/VCRPause.gif")
-        {
-          public Action getData()
-          {
-            _searcher._myScenario.stop("User triggered");
-            return null;
-          }
-        }, null, 'o'));
+					@Override
+					public Action getData() {
+						_searcher._myScenario.start();
+						return null;
+					}
+				}, null, 'a'));
 
-    _theTools.addElement(new MenuItemInfo("ASSET", null, "Exit",
-        new PlainTool(_theParent, "Exit", "images/VCRStop.gif")
-        {
-          public Action getData()
-          {
-            System.exit(0);
-            return null;
-          }
-        }, null, 'x'));
-    // start with the chart
-    //   final MWC.GUI.Chart.Painters.GridPainter grid = new MWC.GUI.Chart.Painters.GridPainter();
-//    grid.setDelta(new MWC.GenericData.WorldDistance(15, WorldDistance.NM));
-//    final MWC.GUI.Layer decs = _theData.findLayer("Decs");
-//    decs.add(grid);
+		_theTools.addElement(new MenuItemInfo("ASSET", "StartStop", "Stop",
+				new PlainTool(_theParent, "Stop", "images/VCRPause.gif") {
+					/**
+					 *
+					 */
+					private static final long serialVersionUID = 1L;
 
-    // give the chart an area
-//    getChart().getCanvas().getProjection().setDataArea(new WorldArea(new WorldLocation(2,2,0),
-    //                                                                   new WorldLocation(0,0,0)));
+					@Override
+					public Action getData() {
+						_searcher._myScenario.stop("User triggered");
+						return null;
+					}
+				}, null, 'o'));
 
-    // add the chart plotter
-    _theData.addThisLayer(_searcher._guiSupport);
+		_theTools.addElement(
+				new MenuItemInfo("ASSET", null, "Exit", new PlainTool(_theParent, "Exit", "images/VCRStop.gif") {
+					/**
+					 *
+					 */
+					private static final long serialVersionUID = 1L;
 
+					@Override
+					public Action getData() {
+						System.exit(0);
+						return null;
+					}
+				}, null, 'x'));
+		// start with the chart
+		// final MWC.GUI.Chart.Painters.GridPainter grid = new
+		// MWC.GUI.Chart.Painters.GridPainter();
+		// grid.setDelta(new MWC.GenericData.WorldDistance(15, WorldDistance.NM));
+		// final MWC.GUI.Layer decs = _theData.findLayer("Decs");
+		// decs.add(grid);
 
-    getChart().getCanvas().setBackgroundColor(new Color(108, 150, 184));
+		// give the chart an area
+		// getChart().getCanvas().getProjection().setDataArea(new WorldArea(new
+		// WorldLocation(2,2,0),
+		// new WorldLocation(0,0,0)));
 
-    // connect the scenario stepping to the chart repainting
-//    _searcher.addScenarioSteppedListener(new ASSET.Scenario.ScenarioSteppedListener()
-//    {public void step(long newTime)
-//      {
-//        getChart().update();
-//      }
-//    public void restart(){;}});
+		// add the chart plotter
+		_theData.addThisLayer(_searcher._guiSupport);
 
-    // have a go at our "removed" listener
- //   final TargetType watch = new TargetType(Category.Force.BLUE);
-  //  final TargetType target = new TargetType(Category.Force.RED);
+		getChart().getCanvas().setBackgroundColor(new Color(108, 150, 184));
 
-  }
+		// connect the scenario stepping to the chart repainting
+		// _searcher.addScenarioSteppedListener(new
+		// ASSET.Scenario.ScenarioSteppedListener()
+		// {public void step(long newTime)
+		// {
+		// getChart().update();
+		// }
+		// public void restart(){;}});
 
+		// have a go at our "removed" listener
+		// final TargetType watch = new TargetType(Category.Force.BLUE);
+		// final TargetType target = new TargetType(Category.Force.RED);
 
-  public static void main(String[] args)
-  {
-//    try{
-//    UIManager.setLookAndFeel(new com.incors.plaf.kunststoff.KunststoffLookAndFeel());
-//    }catch(javax.swing.UnsupportedLookAndFeelException e)
-//    {
-//      e.printStackTrace();
-//    }
+	}
 
+	/**
+	 * extra call to allow any CoreGUI-level components the be initialised before we
+	 * start creating the GUI components
+	 */
+	@Override
+	protected void constructorSteps() {
+		_searcher = new CoreSuperSearch();
 
-    // create the interface
-    final JFrame parent = new JFrame("ASSET SuperSearch");
+		setupScenario();
+	}
 
-    // open the splash screen
-    CoreGUISwing.showSplash(parent, "images/SuperSearchLogo.gif");
+	/**
+	 * setup the scenario
+	 */
+	private void setupScenario() {
+		_searcher._myScenario.setTime(0);
+		_searcher._myScenario.setScenarioStepTime(60000);
+		_searcher._myScenario.setStepTime(0);
 
-    // initialise the interface
-    parent.setSize(900, 500);
-    parent.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+		final Layers localData = _theData;
 
-    // and create the other parent
-    final CoreGUISwing.ASSETParent pr = new CoreGUISwing.ASSETParent(parent);
+		// connect the layers to the scenario
+		_searcher.addScenarioSteppedListener(new ASSET.Scenario.ScenarioSteppedListener() {
+			@Override
+			@SuppressWarnings("synthetic-access")
+			public void restart(final ScenarioType scenario) {
+				// reset the data
+				localData.fireModified(null);
 
-    final SuperSearchGUI viewer = new SuperSearchGUI(pr);
+				// and reset the time
+				setTime("------");
+			}
 
-    parent.getContentPane().setLayout(new java.awt.BorderLayout());
-    parent.getContentPane().add("Center", viewer.getPanel());
+			@Override
+			@SuppressWarnings("synthetic-access")
+			public void step(final ScenarioType scenario, final long time) {
+				if (_searcher != null) {
+					localData.fireModified(_searcher.getDataLayer());
+				} else
+					localData.fireModified(null);
 
-    parent.setVisible(true);
+				// update the clock
+				setTime(MWC.Utilities.TextFormatting.FullFormatDateTime.toString(time));
+			}
+		});
 
-  }
+	}
 
 }

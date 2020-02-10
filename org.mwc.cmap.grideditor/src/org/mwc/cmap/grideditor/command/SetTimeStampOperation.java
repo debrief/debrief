@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.cmap.grideditor.command;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -23,6 +24,32 @@ import MWC.GenericData.HiResDate;
 
 public class SetTimeStampOperation extends AbstractGridEditorOperation {
 
+	protected static class ElementHasTimeStampState implements EnvironmentState {
+
+		private final HiResDate myTimeStamp;
+
+		private final TimeStampedDataItem myItem;
+
+		public ElementHasTimeStampState(final TimeStampedDataItem item) {
+			myItem = item;
+			myTimeStamp = item.getDTG();
+		}
+
+		public TimeStampedDataItem getItem() {
+			return myItem;
+		}
+
+		public HiResDate getTimeStamp() {
+			return myTimeStamp;
+		}
+
+		@Override
+		public boolean isCompatible(final OperationEnvironment environment) {
+			return myTimeStamp.equals(environment.getSubject().getDTG());
+		}
+
+	}
+
 	private final boolean myFireRefresh;
 
 	private final HiResDate myNewTimeStamp;
@@ -31,7 +58,8 @@ public class SetTimeStampOperation extends AbstractGridEditorOperation {
 		this(environment, newTimeStamp, true);
 	}
 
-	public SetTimeStampOperation(final OperationEnvironment environment, final HiResDate newTimeStamp, final boolean fireRefresh) {
+	public SetTimeStampOperation(final OperationEnvironment environment, final HiResDate newTimeStamp,
+			final boolean fireRefresh) {
 		super("Setting TimeStamp", environment);
 		myNewTimeStamp = newTimeStamp;
 		myFireRefresh = fireRefresh;
@@ -46,7 +74,8 @@ public class SetTimeStampOperation extends AbstractGridEditorOperation {
 	}
 
 	@Override
-	protected EnvironmentState doExecute(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
+	protected EnvironmentState doExecute(final IProgressMonitor monitor, final IAdaptable info)
+			throws ExecutionException {
 		final TimeStampedDataItem subject = getOperationEnvironment().getSubject();
 		subject.setDTG(myNewTimeStamp);
 		final EnvironmentState resultState = new ElementHasTimeStampState(subject);
@@ -69,31 +98,6 @@ public class SetTimeStampOperation extends AbstractGridEditorOperation {
 	@Override
 	protected ElementHasTimeStampState getStateBeforeFirstRun() {
 		return (ElementHasTimeStampState) super.getStateBeforeFirstRun();
-	}
-
-	protected static class ElementHasTimeStampState implements EnvironmentState {
-
-		private final HiResDate myTimeStamp;
-
-		private final TimeStampedDataItem myItem;
-
-		public ElementHasTimeStampState(final TimeStampedDataItem item) {
-			myItem = item;
-			myTimeStamp = item.getDTG();
-		}
-
-		public boolean isCompatible(final OperationEnvironment environment) {
-			return myTimeStamp.equals(environment.getSubject().getDTG());
-		}
-
-		public HiResDate getTimeStamp() {
-			return myTimeStamp;
-		}
-
-		public TimeStampedDataItem getItem() {
-			return myItem;
-		}
-
 	}
 
 }

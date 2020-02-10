@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.asset.comms.restlet.test;
 
 import java.util.Vector;
@@ -29,17 +30,15 @@ import ASSET.Scenario.CoreScenario;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 
-public class MockHost extends BaseHost
-{
-	CoreScenario _myScenario;
+public class MockHost extends BaseHost {
 	private static int _ctr = 0;
-
 	public static int SCENARIO_ID = 512;
+
 	public static int PLAT1_ID = 33;
 	public static int PLAT2_ID = 44;
+	CoreScenario _myScenario;
 
-	public MockHost()
-	{
+	public MockHost() {
 		_myScenario = new CoreScenario();
 		_myScenario.setName("Scenario_" + ++_ctr);
 		_myScenario.setScenarioStepTime(60 * 1000);
@@ -51,7 +50,7 @@ public class MockHost extends BaseHost
 		final Wander wander2 = new Wander("just wander around 3");
 		wander2.setOrigin(new WorldLocation(0.04, 0.05, 0));
 		wander2.setRange(new WorldDistance(12, WorldDistance.NM));
-		
+
 		final Status curStat = new Status(12, 0);
 		curStat.setLocation(new WorldLocation(0, 0, 0));
 		final DemandedStatus demStat = null;
@@ -61,8 +60,7 @@ public class MockHost extends BaseHost
 
 		final Status otherStat = new Status(curStat);
 		otherStat.setLocation(new WorldLocation(0.1, 0.2, 0));
-		final Surface _platform2 = new Surface(PLAT2_ID, otherStat, demStat,
-				"Platform One");
+		final Surface _platform2 = new Surface(PLAT2_ID, otherStat, demStat, "Platform One");
 		_platform2.setDecisionModel(wander2);
 		_platform2.setMovementChars(SurfaceMovementCharacteristics.getSampleChars());
 
@@ -70,15 +68,14 @@ public class MockHost extends BaseHost
 		_myScenario.addParticipant(_platform2.getId(), _platform2);
 	}
 
-
-	public ScenarioType getScenario(final int scenarioId)
-	{
+	@Override
+	public ScenarioType getScenario(final int scenarioId) {
 		return _myScenario;
 	}
 
-	public Vector<Scenario> getScenarios()
-	{
-		final Vector<Scenario> res = new Vector<Scenario>(0,1);
+	@Override
+	public Vector<Scenario> getScenarios() {
+		final Vector<Scenario> res = new Vector<Scenario>(0, 1);
 		res.add(new Scenario(_myScenario.getName(), SCENARIO_ID));
 		return res;
 	}

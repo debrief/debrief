@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.cmap.NarrativeViewer.filter.ui;
 
 import java.util.Collection;
@@ -38,231 +39,189 @@ import org.mwc.cmap.NarrativeViewer.ColumnFilter;
 import MWC.TacticalData.IRollingNarrativeProvider;
 import MWC.TacticalData.NarrativeEntry;
 
-public class FilterDialog extends Dialog
-{
+public class FilterDialog extends Dialog {
 
-  private static final int ITEM_LIST_WIDTH = 150;
-  private static final int ITEM_LIST_HEIGHT = 200;
-  private static final int MOVE_BUTTON_WIDTH = 30;
-  private static final int MOVE_BUTTON_HEIGHT = 20;
+	private static final int ITEM_LIST_WIDTH = 150;
+	private static final int ITEM_LIST_HEIGHT = 200;
+	private static final int MOVE_BUTTON_WIDTH = 30;
+	private static final int MOVE_BUTTON_HEIGHT = 20;
 
-  private final String myCaption;
-  private final Collection<String> myItemsToSelect;
-  private final Collection<String> mySelectedItems;
+	private final String myCaption;
+	private final Collection<String> myItemsToSelect;
+	private final Collection<String> mySelectedItems;
 
-  private final ColumnFilter myFilter;
+	private final ColumnFilter myFilter;
 
-  private List myItemsToSelectList;
-  private List mySelectedItemsList;
+	private List myItemsToSelectList;
+	private List mySelectedItemsList;
 
-  public FilterDialog(final Shell parent,
-      final IRollingNarrativeProvider dataSource, final Column column)
-  {
-    super(parent);
-    myCaption = "Filter by: " + column.getColumnName();
-    myFilter = column.getFilter();
+	public FilterDialog(final Shell parent, final IRollingNarrativeProvider dataSource, final Column column) {
+		super(parent);
+		myCaption = "Filter by: " + column.getColumnName();
+		myFilter = column.getFilter();
 
-    // note: we use TreeSet for the two collections, since it naturally
-    // sorts the strings into Alphabetical order
-    mySelectedItems = new TreeSet<String>(myFilter.getAllowedValues());
-    myItemsToSelect = new TreeSet<String>();
+		// note: we use TreeSet for the two collections, since it naturally
+		// sorts the strings into Alphabetical order
+		mySelectedItems = new TreeSet<String>(myFilter.getAllowedValues());
+		myItemsToSelect = new TreeSet<String>();
 
-    // check we have some data
-    if (dataSource != null)
-    {
-      for (final NarrativeEntry entry : dataSource
-          .getNarrativeHistory(new String[]
-          {}))
-      {
-        final String nextValue = myFilter.getFilterValue(entry);
-        // check that we have a value for this entry
-        if (nextValue != null)
-        {
-          if (!mySelectedItems.contains(nextValue))
-          {
-            myItemsToSelect.add(nextValue);
-          }
-        }
-      }
-    }
-  }
+		// check we have some data
+		if (dataSource != null) {
+			for (final NarrativeEntry entry : dataSource.getNarrativeHistory(new String[] {})) {
+				final String nextValue = myFilter.getFilterValue(entry);
+				// check that we have a value for this entry
+				if (nextValue != null) {
+					if (!mySelectedItems.contains(nextValue)) {
+						myItemsToSelect.add(nextValue);
+					}
+				}
+			}
+		}
+	}
 
-  @Override
-  protected Control createContents(final Composite parent)
-  {
-    getShell().setText(myCaption);
-    return super.createContents(parent);
-  }
+	void addAll() {
+		moveAll(myItemsToSelect, mySelectedItems, myItemsToSelectList, mySelectedItemsList);
+	}
 
-  @Override
-  protected Control createDialogArea(final Composite parent)
-  {
-    final Composite dialogArea1 = (Composite) super.createDialogArea(parent);
-    dialogArea1.setLayout(new GridLayout(3, false));
-    
-    Label lab1 = new Label(dialogArea1, SWT.NONE);
-    lab1.setText("Available items:");
-    lab1 = new Label(dialogArea1, SWT.NONE);
-    lab1.setText(" ");
-    lab1 = new Label(dialogArea1, SWT.NONE);
-    lab1.setText("Show entries matching:");
+	void addOne() {
+		moveOne(myItemsToSelect, mySelectedItems, myItemsToSelectList, mySelectedItemsList);
+	}
 
-    myItemsToSelectList = createItemsList(dialogArea1, myItemsToSelect);
+	public void commitFilterChanges() {
+		myFilter.setAllowedValues(mySelectedItems);
+	}
 
-    final Composite moveButtonsBar = new Composite(dialogArea1, SWT.NONE);
-    moveButtonsBar.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false,
-        false));
-    moveButtonsBar.setLayout(new GridLayout(1, true));
+	@Override
+	protected Control createContents(final Composite parent) {
+		getShell().setText(myCaption);
+		return super.createContents(parent);
+	}
 
-    createMoveButton(moveButtonsBar, ">", new SelectionAdapter()
-    {
-      @Override
-      public void widgetSelected(final SelectionEvent e)
-      {
-        addOne();
-      }
-    });
-    createMoveButton(moveButtonsBar, "<", new SelectionAdapter()
-    {
-      @Override
-      public void widgetSelected(final SelectionEvent e)
-      {
-        removeOne();
-      }
-    });
-    createMoveButton(moveButtonsBar, ">>", new SelectionAdapter()
-    {
-      @Override
-      public void widgetSelected(final SelectionEvent e)
-      {
-        addAll();
-      }
-    });
-    createMoveButton(moveButtonsBar, "<<", new SelectionAdapter()
-    {
-      @Override
-      public void widgetSelected(final SelectionEvent e)
-      {
-        removeAll();
-      }
-    });
+	@Override
+	protected Control createDialogArea(final Composite parent) {
+		final Composite dialogArea1 = (Composite) super.createDialogArea(parent);
+		dialogArea1.setLayout(new GridLayout(3, false));
 
-    mySelectedItemsList = createItemsList(dialogArea1, mySelectedItems);
+		Label lab1 = new Label(dialogArea1, SWT.NONE);
+		lab1.setText("Available items:");
+		lab1 = new Label(dialogArea1, SWT.NONE);
+		lab1.setText(" ");
+		lab1 = new Label(dialogArea1, SWT.NONE);
+		lab1.setText("Show entries matching:");
 
-    // add double-click jumping for the lists
-    myItemsToSelectList.addMouseListener(new MouseAdapter()
-    {
-      public void mouseDoubleClick(final MouseEvent e)
-      {
-        super.mouseDoubleClick(e);
-        // and handle it
-        addOne();
-      }
-    });
-    mySelectedItemsList.addMouseListener(new MouseAdapter()
-    {
-      public void mouseDoubleClick(final MouseEvent e)
-      {
-        super.mouseDoubleClick(e);
-        // and handle it
-        removeOne();
-      }
-    });
+		myItemsToSelectList = createItemsList(dialogArea1, myItemsToSelect);
 
-    return dialogArea1;
-  }
+		final Composite moveButtonsBar = new Composite(dialogArea1, SWT.NONE);
+		moveButtonsBar.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+		moveButtonsBar.setLayout(new GridLayout(1, true));
 
-  void addOne()
-  {
-    moveOne(myItemsToSelect, mySelectedItems, myItemsToSelectList,
-        mySelectedItemsList);
-  }
+		createMoveButton(moveButtonsBar, ">", new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				addOne();
+			}
+		});
+		createMoveButton(moveButtonsBar, "<", new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				removeOne();
+			}
+		});
+		createMoveButton(moveButtonsBar, ">>", new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				addAll();
+			}
+		});
+		createMoveButton(moveButtonsBar, "<<", new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				removeAll();
+			}
+		});
 
-  void removeOne()
-  {
-    moveOne(mySelectedItems, myItemsToSelect, mySelectedItemsList,
-        myItemsToSelectList);
-  }
+		mySelectedItemsList = createItemsList(dialogArea1, mySelectedItems);
 
-  private void moveOne(final Collection<String> itemsFrom,
-      final Collection<String> itemsTo, final List listForm, final List listTo)
-  {
-    if (listForm.getSelectionIndex() == -1)
-    {
-      return;
-    }
-    final String movedItem = listForm.getItem(listForm.getSelectionIndex());
+		// add double-click jumping for the lists
+		myItemsToSelectList.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDoubleClick(final MouseEvent e) {
+				super.mouseDoubleClick(e);
+				// and handle it
+				addOne();
+			}
+		});
+		mySelectedItemsList.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDoubleClick(final MouseEvent e) {
+				super.mouseDoubleClick(e);
+				// and handle it
+				removeOne();
+			}
+		});
 
-    itemsTo.add(movedItem);
-    int i = 0;
-    for (final String selectedItem : itemsTo)
-    {
-      if (selectedItem == movedItem)
-      {
-        listTo.add(movedItem, i);
-        break;
-      }
-      i++;
-    }
+		return dialogArea1;
+	}
 
-    itemsFrom.remove(movedItem);
-    listForm.remove(listForm.getSelectionIndex());
-  }
+	private List createItemsList(final Composite parent, final Iterable<String> items) {
+		final List result = new List(parent, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+		result.setLayoutData(new GridData(ITEM_LIST_WIDTH, ITEM_LIST_HEIGHT));
+		for (final String item : items) {
+			result.add(item);
+		}
 
-  void addAll()
-  {
-    moveAll(myItemsToSelect, mySelectedItems, myItemsToSelectList,
-        mySelectedItemsList);
-  }
+		return result;
+	}
 
-  void removeAll()
-  {
-    moveAll(mySelectedItems, myItemsToSelect, mySelectedItemsList,
-        myItemsToSelectList);
-  }
+	private Button createMoveButton(final Composite parent, final String caption,
+			final SelectionListener selectionListener) {
+		final Button result = new Button(parent, SWT.PUSH);
+		result.setText(caption);
+		result.setLayoutData(new GridData(MOVE_BUTTON_WIDTH, MOVE_BUTTON_HEIGHT));
+		result.addSelectionListener(selectionListener);
+		return result;
+	}
 
-  private void moveAll(final Collection<String> itemsFrom,
-      final Collection<String> itemsTo, final List listForm, final List listTo)
-  {
-    itemsTo.addAll(itemsFrom);
-    itemsFrom.clear();
+	private void moveAll(final Collection<String> itemsFrom, final Collection<String> itemsTo, final List listForm,
+			final List listTo) {
+		itemsTo.addAll(itemsFrom);
+		itemsFrom.clear();
 
-    listForm.removeAll();
+		listForm.removeAll();
 
-    listTo.removeAll();
-    for (final String item : itemsTo)
-    {
-      listTo.add(item);
-    }
-  }
+		listTo.removeAll();
+		for (final String item : itemsTo) {
+			listTo.add(item);
+		}
+	}
 
-  private List createItemsList(final Composite parent,
-      final Iterable<String> items)
-  {
-    final List result =
-        new List(parent, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-    result.setLayoutData(new GridData(ITEM_LIST_WIDTH, ITEM_LIST_HEIGHT));
-    for (final String item : items)
-    {
-      result.add(item);
-    }
+	private void moveOne(final Collection<String> itemsFrom, final Collection<String> itemsTo, final List listForm,
+			final List listTo) {
+		if (listForm.getSelectionIndex() == -1) {
+			return;
+		}
+		final String movedItem = listForm.getItem(listForm.getSelectionIndex());
 
-    return result;
-  }
+		itemsTo.add(movedItem);
+		int i = 0;
+		for (final String selectedItem : itemsTo) {
+			if (selectedItem == movedItem) {
+				listTo.add(movedItem, i);
+				break;
+			}
+			i++;
+		}
 
-  private Button createMoveButton(final Composite parent, final String caption,
-      final SelectionListener selectionListener)
-  {
-    final Button result = new Button(parent, SWT.PUSH);
-    result.setText(caption);
-    result.setLayoutData(new GridData(MOVE_BUTTON_WIDTH, MOVE_BUTTON_HEIGHT));
-    result.addSelectionListener(selectionListener);
-    return result;
-  }
+		itemsFrom.remove(movedItem);
+		listForm.remove(listForm.getSelectionIndex());
+	}
 
-  public void commitFilterChanges()
-  {
-    myFilter.setAllowedValues(mySelectedItems);
-  }
+	void removeAll() {
+		moveAll(mySelectedItems, myItemsToSelect, mySelectedItemsList, myItemsToSelectList);
+	}
+
+	void removeOne() {
+		moveOne(mySelectedItems, myItemsToSelect, mySelectedItemsList, myItemsToSelectList);
+	}
 
 }

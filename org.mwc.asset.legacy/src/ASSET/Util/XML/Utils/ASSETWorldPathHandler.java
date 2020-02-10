@@ -1,89 +1,74 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
- *
- *    (C) 2000-2014, PlanetMayo Ltd
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+
 package ASSET.Util.XML.Utils;
 
-/**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:
- * @author
- * @version 1.0
- */
+import java.util.Iterator;
+
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldPath;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
-import java.util.Iterator;
+abstract public class ASSETWorldPathHandler extends MWCXMLReader {
 
-abstract public class ASSETWorldPathHandler extends MWCXMLReader
-{
+	static final private String type = "WorldPath";
+	static final private String POINT = "Point";
 
-  static final private String type = "WorldPath";
-  static final private String POINT = "Point";
+	public static void exportThis(final WorldPath path, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc) {
+		final org.w3c.dom.Element eLoc = doc.createElement(type);
 
-  private WorldPath _myPath;
+		// step through the list
+		final Iterator<WorldLocation> it = path.getPoints().iterator();
 
-  public ASSETWorldPathHandler()
-  {
-    super("WorldPath");
+		while (it.hasNext()) {
+			final WorldLocation wl = it.next();
+			ASSETLocationHandler.exportLocation(wl, POINT, eLoc, doc);
+		}
 
-    addHandler(new ASSETLocationHandler(POINT)
-    {
-      public void setLocation(WorldLocation res)
-      {
-        addThis(res);
-      }
-    });
+		parent.appendChild(eLoc);
+	}
 
-  }
+	private WorldPath _myPath;
 
-  public void addThis(WorldLocation res)
-  {
-    if (_myPath == null)
-      _myPath = new WorldPath();
+	public ASSETWorldPathHandler() {
+		super("WorldPath");
 
-    _myPath.addPoint(res);
-  }
+		addHandler(new ASSETLocationHandler(POINT) {
+			@Override
+			public void setLocation(final WorldLocation res) {
+				addThis(res);
+			}
+		});
 
-  public void elementClosed()
-  {
-    setPath(_myPath);
-    _myPath = null;
-  }
+	}
 
-  abstract public void setPath(WorldPath path);
+	public void addThis(final WorldLocation res) {
+		if (_myPath == null)
+			_myPath = new WorldPath();
 
+		_myPath.addPoint(res);
+	}
 
-  public static void exportThis(WorldPath path, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
-  {
-    org.w3c.dom.Element eLoc = doc.createElement(type);
+	@Override
+	public void elementClosed() {
+		setPath(_myPath);
+		_myPath = null;
+	}
 
-    // step through the list
-    Iterator<WorldLocation> it = path.getPoints().iterator();
-
-    while (it.hasNext())
-    {
-      WorldLocation wl = (WorldLocation) it.next();
-      ASSETLocationHandler.exportLocation(wl, POINT, eLoc, doc);
-    }
-
-
-    parent.appendChild(eLoc);
-  }
-
+	abstract public void setPath(WorldPath path);
 
 }

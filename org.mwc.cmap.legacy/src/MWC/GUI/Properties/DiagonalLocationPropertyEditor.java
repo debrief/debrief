@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.GUI.Properties;
 
 // Copyright MWC 1999, Debrief 3 Project
@@ -61,98 +62,84 @@ package MWC.GUI.Properties;
 
 import java.beans.PropertyEditorSupport;
 
-public class DiagonalLocationPropertyEditor extends PropertyEditorSupport
-{
+public class DiagonalLocationPropertyEditor extends PropertyEditorSupport {
 
-  final static public int TOP_LEFT = 0;
-  final static public int TOP_RIGHT = 1;
-  final static public int BOTTOM_LEFT = 2;
-  final static public int BOTTOM_RIGHT = 3;
+	final static public int TOP_LEFT = 0;
+	final static public int TOP_RIGHT = 1;
+	final static public int BOTTOM_LEFT = 2;
+	final static public int BOTTOM_RIGHT = 3;
 
-  protected Integer _myDiagonalLocation;
+	protected Integer _myDiagonalLocation;
 
-  public String[] getTags()
-  {
-    final String tags[] = {"Top Left",
-                     "Top Right",
-                     "Bottom Left",
-                     "Bottom Right"};
-    return tags;
-  }
+	public String getAsAbbreviatedText() {
+		String res = null;
+		switch (_myDiagonalLocation.intValue()) {
+		case (TOP_LEFT):
+			res = "TopLeft";
+			break;
+		case (BOTTOM_LEFT):
+			res = "BottomLeft";
+			break;
+		case (TOP_RIGHT):
+			res = "TopRight";
+			break;
+		case (BOTTOM_RIGHT):
+			res = "BottomRight";
+			break;
+		}
+		return res;
+	}
 
-  public Object getValue()
-  {
-    return _myDiagonalLocation;
-  }
+	@Override
+	public String getAsText() {
+		String res = null;
+		switch (_myDiagonalLocation.intValue()) {
+		case (TOP_LEFT):
+			res = "Top Left";
+			break;
+		case (BOTTOM_LEFT):
+			res = "Bottom Left";
+			break;
+		case (TOP_RIGHT):
+			res = "Top Right";
+			break;
+		case (BOTTOM_RIGHT):
+			res = "Bottom Right";
+			break;
+		}
+		return res;
+	}
 
+	@Override
+	public String[] getTags() {
+		final String tags[] = { "Top Left", "Top Right", "Bottom Left", "Bottom Right" };
+		return tags;
+	}
 
+	@Override
+	public Object getValue() {
+		return _myDiagonalLocation;
+	}
 
-  public void setValue(final Object p1)
-  {
-    if(p1 instanceof Integer)
-    {
-      _myDiagonalLocation = (Integer)p1;
-    }
-    else if(p1 instanceof String)
-    {
-      final String val = (String) p1;
-      setAsText(val);
-    }
-  }
+	@Override
+	public void setAsText(final String val) {
+		if (val.equals("Top Left") || val.equals("TopLeft"))
+			_myDiagonalLocation = new Integer(TOP_LEFT);
+		if (val.equals("Bottom Left") || val.equals("BottomLeft"))
+			_myDiagonalLocation = new Integer(BOTTOM_LEFT);
+		if (val.equals("Top Right") || val.equals("TopRight"))
+			_myDiagonalLocation = new Integer(TOP_RIGHT);
+		if (val.equals("Bottom Right") || val.equals("BottomRight"))
+			_myDiagonalLocation = new Integer(BOTTOM_RIGHT);
+	}
 
-  public void setAsText(final String val)
-  {
-    if(val.equals("Top Left")||val.equals("TopLeft"))
-      _myDiagonalLocation = new Integer(TOP_LEFT);
-    if(val.equals("Bottom Left")||val.equals("BottomLeft"))
-      _myDiagonalLocation = new Integer(BOTTOM_LEFT);
-    if(val.equals("Top Right")||val.equals("TopRight"))
-      _myDiagonalLocation = new Integer(TOP_RIGHT);
-    if(val.equals("Bottom Right")||val.equals("BottomRight"))
-      _myDiagonalLocation = new Integer(BOTTOM_RIGHT);
-  }
-
-  public String getAsAbbreviatedText()
-  {
-    String res = null;
-    switch(_myDiagonalLocation.intValue())
-    {
-    case(TOP_LEFT):
-      res = "TopLeft";
-      break;
-    case(BOTTOM_LEFT):
-      res = "BottomLeft";
-      break;
-    case(TOP_RIGHT):
-      res = "TopRight";
-      break;
-    case(BOTTOM_RIGHT):
-      res = "BottomRight";
-      break;
-    }
-    return res;
-  }
-
-
-  public String getAsText()
-  {
-    String res = null;
-    switch(_myDiagonalLocation.intValue())
-    {
-    case(TOP_LEFT):
-      res = "Top Left";
-      break;
-    case(BOTTOM_LEFT):
-      res = "Bottom Left";
-      break;
-    case(TOP_RIGHT):
-      res = "Top Right";
-      break;
-    case(BOTTOM_RIGHT):
-      res = "Bottom Right";
-      break;
-    }
-    return res;
-  }
+	@Override
+	public void setValue(final Object p1) {
+		if (p1 instanceof Integer) {
+			_myDiagonalLocation = (Integer) p1;
+		} else if (p1 instanceof String) {
+			final String val = (String) p1;
+			setAsText(val);
+		}
+	}
 }
-

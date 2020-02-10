@@ -1,17 +1,4 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
- *
- *    (C) 2000-2014, PlanetMayo Ltd
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+
 package ASSET.Models;
 
 import ASSET.Models.Detection.DetectionList;
@@ -21,130 +8,127 @@ import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
 import MWC.GenericData.WorldDistance;
 
-/**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application http://debrief.info
  *
- * @author
- * @version 1.0
- */
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 
-public interface SensorType extends MWC.GUI.Editable, SensorDataProvider
-{
+public interface SensorType extends MWC.GUI.Editable, SensorDataProvider {
 
-  /**
-   * see if we detect any other vessels
-   *
-   * @param environment        the environment we're living in
-   * @param existingDetections the existing set of detections
-   * @param ownship            ourselves
-   * @param scenario           the scenario we live in
-   * @param time               the current DTG
-   */
-  public void detects(final ASSET.Models.Environment.EnvironmentType environment,
-                      final DetectionList existingDetections,
-                      final ASSET.ParticipantType ownship,
-                      final ASSET.ScenarioType scenario,
-                      long time);
+	public static interface ActiveSensor {
 
-  /**
-   * the estimated range for a detection of this type (where applicable)
-   */
-  public WorldDistance getEstimatedRange();
+		/**
+		 * get the source level
+		 *
+		 * @return the source level (in relevant units)
+		 */
+		public double getSourceLevel();
+	}
 
+	/**
+	 * allow somebody to start listening to the components of our calculation
+	 *
+	 * @param listener
+	 */
+	public void addSensorCalculationListener(java.beans.PropertyChangeListener listener);
 
-  /**
-   * get the name of this sensor
-   */
-  public String getName();
-  
-  /** set the name of this sensor
-   * 
-   */
-  public void setName(String name);
+	/**
+	 * see if we detect any other vessels
+	 *
+	 * @param environment        the environment we're living in
+	 * @param existingDetections the existing set of detections
+	 * @param ownship            ourselves
+	 * @param scenario           the scenario we live in
+	 * @param time               the current DTG
+	 */
+	public void detects(final ASSET.Models.Environment.EnvironmentType environment,
+			final DetectionList existingDetections, final ASSET.ParticipantType ownship,
+			final ASSET.ScenarioType scenario, long time);
 
-  /**
-   * get the id of this sensor
-   */
-  public int getId();
+	/**
+	 * the estimated range for a detection of this type (where applicable)
+	 */
+	public WorldDistance getEstimatedRange();
 
-  /**
-   * restart this sensors
-   */
-  public void restart();
+	/**
+	 * get the id of this sensor
+	 */
+	public int getId();
 
-  /**
-   * the type of medium we look at
-   *
-   * @return the id of the medium
-   * @see ASSET.Models.Environment.EnvironmentType
-   */
-  public int getMedium();
+	/**
+	 * the type of medium we look at
+	 *
+	 * @return the id of the medium
+	 * @see ASSET.Models.Environment.EnvironmentType
+	 */
+	public int getMedium();
 
+	/**
+	 * get the name of this sensor
+	 */
+	@Override
+	public String getName();
 
-  /**
-   * if this sensor has a dynamic behaviour, update it according to the demanded status
-   *
-   * @param myDemandedStatus
-   * @param myStatus
-   * @param newTime
-   */
-  void update(DemandedStatus myDemandedStatus,
-              Status myStatus,
-              long newTime);
+	/**
+	 * handle the demanded change in sensor lineup
+	 *
+	 * @param status
+	 */
+	public void inform(DemandedSensorStatus status);
 
-  /**
-   * handle the demanded change in sensor lineup
-   *
-   * @param status
-   */
-  public void inform(DemandedSensorStatus status);
+	/**
+	 * determine the state of this sensor
+	 *
+	 * @return yes/no for if it's working
+	 */
+	public boolean isWorking();
 
-  /**
-   * control the state of this sensor
-   *
-   * @param switchOn whether to switch it on or off.
-   */
-  public void setWorking(boolean switchOn);
+	/**
+	 * remove a calculation listener
+	 *
+	 * @param listener
+	 */
+	public void removeSensorCalculationListener(java.beans.PropertyChangeListener listener);
 
-  /**
-   * determine the state of this sensor
-   *
-   * @return yes/no for if it's working
-   */
-  public boolean isWorking();
+	/**
+	 * restart this sensors
+	 */
+	public void restart();
 
-  /**
-   * allow somebody to start listening to the components of our calculation
-   *
-   * @param listener
-   */
-  public void addSensorCalculationListener(java.beans.PropertyChangeListener listener);
+	/**
+	 * set the name of this sensor
+	 *
+	 */
+	public void setName(String name);
 
-  /**
-   * remove a calculation listener
-   *
-   * @param listener
-   */
-  public void removeSensorCalculationListener(java.beans.PropertyChangeListener listener);
+	/**
+	 * control the state of this sensor
+	 *
+	 * @param switchOn whether to switch it on or off.
+	 */
+	public void setWorking(boolean switchOn);
 
+	////////////////////////////////////////////////////
+	// interface used for active sensors
+	////////////////////////////////////////////////////
 
-  ////////////////////////////////////////////////////
-  // interface used for active sensors
-  ////////////////////////////////////////////////////
-
-  public static interface ActiveSensor
-  {
-  	
-    /**
-     * get the source level
-     *
-     * @return the source level (in relevant units)
-     */
-    public double getSourceLevel();
-  }
-
+	/**
+	 * if this sensor has a dynamic behaviour, update it according to the demanded
+	 * status
+	 *
+	 * @param myDemandedStatus
+	 * @param myStatus
+	 * @param newTime
+	 */
+	void update(DemandedStatus myDemandedStatus, Status myStatus, long newTime);
 
 }

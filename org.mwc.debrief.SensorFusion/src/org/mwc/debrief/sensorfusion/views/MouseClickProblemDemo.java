@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.debrief.sensorfusion.views;
 
 import org.jfree.chart.ChartFactory;
@@ -26,20 +27,29 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
 
-public class MouseClickProblemDemo extends ApplicationFrame
-{
+public class MouseClickProblemDemo extends ApplicationFrame {
 
 	/**
-	 * 
-	 */	
+	 *
+	 */
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * @param title
-	 *          the frame title.
+	 * Starting point for the demonstration application.
+	 *
+	 * @param args ignored.
 	 */
-	public MouseClickProblemDemo(final String title)
-	{
+	public static void main(final String[] args) {
+		final MouseClickProblemDemo demo = new MouseClickProblemDemo("Time Series Demo 1");
+		demo.pack();
+		RefineryUtilities.centerFrameOnScreen(demo);
+		demo.setVisible(true);
+	}
+
+	/**
+	 * @param title the frame title.
+	 */
+	public MouseClickProblemDemo(final String title) {
 		super(title);
 
 		final TimeSeries s1 = new TimeSeries("Series to click");
@@ -56,54 +66,37 @@ public class MouseClickProblemDemo extends ApplicationFrame
 		final TimeSeriesCollection dataset = new TimeSeriesCollection();
 		dataset.addSeries(s1);
 
-		final JFreeChart chart = ChartFactory.createTimeSeriesChart(
-				"[Alt]-click to switch orientation", // title
+		final JFreeChart chart = ChartFactory.createTimeSeriesChart("[Alt]-click to switch orientation", // title
 				"Time axis", // x-axis label
 				"Value axis", // y-axis label
 				dataset, // data
 				false, // create legend?
 				false, // generate tooltips?
 				false // generate URLs?
-				);
-		
+		);
+
 		final ChartPanel chartPanel = new ChartPanel(chart);
 
 		chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
 
-		chartPanel.addChartMouseListener(new ChartMouseListener()
-		{
-			public void chartMouseMoved(final ChartMouseEvent arg0)
-			{
-			}
-
-			public void chartMouseClicked(final ChartMouseEvent arg0)
-			{
+		chartPanel.addChartMouseListener(new ChartMouseListener() {
+			@Override
+			public void chartMouseClicked(final ChartMouseEvent arg0) {
 				System.out.println("clicked on:" + arg0.getEntity());
-				
-				if(arg0.getTrigger().isAltDown())
-				{
-					if(chart.getXYPlot().getOrientation() == PlotOrientation.HORIZONTAL)
+
+				if (arg0.getTrigger().isAltDown()) {
+					if (chart.getXYPlot().getOrientation() == PlotOrientation.HORIZONTAL)
 						chart.getXYPlot().setOrientation(PlotOrientation.VERTICAL);
 					else
 						chart.getXYPlot().setOrientation(PlotOrientation.HORIZONTAL);
 				}
 			}
+
+			@Override
+			public void chartMouseMoved(final ChartMouseEvent arg0) {
+			}
 		});
 		setContentPane(chartPanel);
-	}
-
-	/**
-	 * Starting point for the demonstration application.
-	 * 
-	 * @param args
-	 *          ignored.
-	 */
-	public static void main(final String[] args)
-	{
-		final MouseClickProblemDemo demo = new MouseClickProblemDemo("Time Series Demo 1");
-		demo.pack();
-		RefineryUtilities.centerFrameOnScreen(demo);
-		demo.setVisible(true);
 	}
 
 }

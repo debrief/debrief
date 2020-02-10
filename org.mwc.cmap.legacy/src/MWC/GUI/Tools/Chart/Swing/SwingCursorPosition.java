@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.GUI.Tools.Chart.Swing;
 
 // Copyright MWC 1999, Debrief 3 Project
@@ -56,31 +57,29 @@ package MWC.GUI.Tools.Chart.Swing;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Tools.Chart.CursorPosition;
 
-public class SwingCursorPosition extends CursorPosition
-{
-  /**
-	 * 
+public class SwingCursorPosition extends CursorPosition {
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	/////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  protected javax.swing.JLabel _myOutput;
-  
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  public SwingCursorPosition(final PlainChart theChart,
-													 final java.awt.Component theLabel){
+	// member variables
+	////////////////////////////////////////////////////////////
+	protected javax.swing.JLabel _myOutput;
+
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	public SwingCursorPosition(final PlainChart theChart, final java.awt.Component theLabel) {
 		super(theChart);
 		_myOutput = (javax.swing.JLabel) theLabel;
-  }
-  
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
-	public void setText(final String val)
-	{
+	}
+
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+	@Override
+	public void setText(final String val) {
 		_myOutput.setText(val);
 	}
 }

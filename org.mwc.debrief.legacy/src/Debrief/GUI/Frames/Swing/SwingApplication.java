@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: SwingApplication.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.7 $
@@ -208,9 +209,7 @@
 // Revision 1.1  1999-10-12 15:34:25+01  ian_mayo
 // Initial revision
 
-
 package Debrief.GUI.Frames.Swing;
-
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -249,800 +248,712 @@ import MWC.GUI.Tool;
 import MWC.GUI.Toolbar;
 import MWC.GUI.Tools.Swing.SwingMenuItem;
 
-public final class SwingApplication extends Application
-{
+public final class SwingApplication extends Application {
 
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
 
-  /**
-   * when we are cascading windows, this is the offset we apply
-   */
-  private static final int FRAME_OFFSET = 20;
+	static final class imageDesktop extends JDesktopPane {
+		// store the version id - to tidy thing up
+		static final long serialVersionUID = 42L;
 
-  /**
-   * the menubar for the application
-   */
-  private javax.swing.JMenuBar theMenuBar;
+		// store the image
+		private Image _icon;
+		private int _iHeight = -1;
+		private int _iWidth = -1;
+		final private String imageName;
 
-  /**
-   * copy of the window menu
-   */
-  private javax.swing.JMenu theWindowMenu;
+		public imageDesktop(final String imageFileName) {
+			imageName = imageFileName;
 
-  /**
-   * the parent application
-   */
-  private javax.swing.JFrame theFrame;
+			super.setBackground(new Color(184, 184, 184));
 
-  /**
-   * the frame in use
-   */
-  private JDesktopPane theDesktop;
+			this.setBorder(BorderFactory.createTitledBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED),
+					"From Deep Blue C Ltd (www.DeepBlueC.com)", TitledBorder.RIGHT, TitledBorder.ABOVE_BOTTOM,
+					this.getFont(), Color.darkGray));
 
-  /**
-   * remember the file menu, we use it for the MRU stuff
-   */
-  private javax.swing.JMenu _fileMenu;
+			// load the image
+			if (imageName != null) {
+				// first try to get the URL of the image
+				final java.lang.ClassLoader loader = getClass().getClassLoader();
+				if (loader != null) {
+					final java.net.URL imLoc = loader.getResource(imageName);
+					if (imLoc != null) {
+						final ImageIcon im = new ImageIcon(imLoc);
+						_icon = im.getImage();
+					} else {
+						MWC.Utilities.Errors.Trace.trace("SwingApplication: loader didn't work", false);
+					}
+				} else {
+					MWC.Utilities.Errors.Trace.trace("Failed to load image:" + imageName);
+				}
+			}
+		}
 
-  /**
-   * where the file name is
-   */
-  private static final String IMAGE_FILE_NAME = "images/debrief_legacy.png";
+		@Override
+		public final void paint(final Graphics g) {
+			super.paint(g);
+			// are there any frames open?
+			if (getAllFrames().length == 0) {
+				if (_icon == null) {
+					// first try to get the URL of the image
+					final java.lang.ClassLoader loader = getClass().getClassLoader();
+					if (loader != null) {
+						final java.net.URL imLoc = loader.getResource(imageName);
+						if (imLoc != null) {
+							final ImageIcon im = new ImageIcon(imLoc);
+							_icon = im.getImage();
+						} else {
+							System.out.println("loader still didn't work for:" + imageName);
+						}
+					}
+				}
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
+				// check our icon got loaded
+				if (_icon != null) {
+					// do we know the sizes?
+					if (_iHeight == -1) {
+						_iHeight = _icon.getHeight(this);
+						_iWidth = _icon.getWidth(this);
+					}
 
-  /**
-   * create the Swing Toolbar, set it in the parent application
-   */
-  public SwingApplication()
-  {
-    // create the parent first
-    super();
+					// sort out the window size
+					final int ht = this.getHeight();
+					final int wid = this.getWidth();
 
-    // create the GUI bits
-    initForm();
+					// sort out the image location
+					final int xLoc = (wid - _iWidth) / 2;
+					final int yLoc = (ht - _iHeight) / 2;
 
-    // tell the dialog factory to create the correct type of dialogs
-    MWC.GUI.Dialogs.DialogFactory.useSwing(true);
+					// // fill in our background colour first
+					// Color backCol = new Color(184,184,184);
+					// g.setColor(backCol);
+					// g.fillRect(0,0,wid,ht);
 
-    // now setup the menus
-    buildTheInterface();
+					// put the image in the centre
+					g.drawImage(_icon, xLoc, yLoc, this);
+				}
 
-    // now fill in the window menu
-    refreshWindowMenu();
+			}
+		}
+	}
 
-    // store our swing-specific property editor
-    java.beans.PropertyEditorManager.registerEditor(Color.class,
-                      MWC.GUI.Properties.Swing.ColorPropertyEditor.class);
+	/**
+	 * when we are cascading windows, this is the offset we apply
+	 */
+	private static final int FRAME_OFFSET = 20;
 
+	/**
+	 * where the file name is
+	 */
+	private static final String IMAGE_FILE_NAME = "images/debrief_legacy.png";
 
-    try
-    {
-      // load the coastline data in the background
-      new MWC.GUI.Chart.Painters.CoastPainter(this);
-    }
-    catch (final Exception e)
-    {
-    }
+	/**
+	 * the menubar for the application
+	 */
+	private javax.swing.JMenuBar theMenuBar;
 
-    /** lastly do the help menu, so that we know it's the last item on the
-     * menu bar
-     */
-    doHelpMenu();
+	/**
+	 * copy of the window menu
+	 */
+	private javax.swing.JMenu theWindowMenu;
 
-    theFrame.setVisible(true);
+	/**
+	 * the parent application
+	 */
+	private javax.swing.JFrame theFrame;
 
-    // also sort out the MRU
-    _mru = new MWC.GUI.Dialogs.MruMenuManager(_fileMenu, 7, 10, _appProps, "MRU");
+	/**
+	 * the frame in use
+	 */
+	private JDesktopPane theDesktop;
 
-    // let the parent class finish itself off by hand.
-    completeInitialisation();
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
 
-    // make the tooltips stay open for longer.  This is only really so that we show our new multi-line
-    // tooltips for a reasonable period when shown over the chart
-    ToolTipManager.sharedInstance().setDismissDelay(10000);
+	/**
+	 * remember the file menu, we use it for the MRU stuff
+	 */
+	private javax.swing.JMenu _fileMenu;
 
-  }
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	/**
+	 * create the Swing Toolbar, set it in the parent application
+	 */
+	public SwingApplication() {
+		// create the parent first
+		super();
 
-  public final Session getCurrentSession()
-  {
-    // get the session currently 'on top'
-    Session res = null;
+		// create the GUI bits
+		initForm();
 
-    final int high = theDesktop.highestLayer();
-    final Component[] lst = theDesktop.getComponentsInLayer(high);
-    final int len = lst.length;
+		// tell the dialog factory to create the correct type of dialogs
+		MWC.GUI.Dialogs.DialogFactory.useSwing(true);
 
-    // we have to go through the panels in the main bit,
-    // and return the one which is visible
+		// now setup the menus
+		buildTheInterface();
+
+		// now fill in the window menu
+		refreshWindowMenu();
+
+		// store our swing-specific property editor
+		java.beans.PropertyEditorManager.registerEditor(Color.class,
+				MWC.GUI.Properties.Swing.ColorPropertyEditor.class);
+
+		try {
+			// load the coastline data in the background
+			new MWC.GUI.Chart.Painters.CoastPainter(this);
+		} catch (final Exception e) {
+		}
+
+		/**
+		 * lastly do the help menu, so that we know it's the last item on the menu bar
+		 */
+		doHelpMenu();
+
+		theFrame.setVisible(true);
+
+		// also sort out the MRU
+		_mru = new MWC.GUI.Dialogs.MruMenuManager(_fileMenu, 7, 10, _appProps, "MRU");
+
+		// let the parent class finish itself off by hand.
+		completeInitialisation();
+
+		// make the tooltips stay open for longer. This is only really so that we show
+		// our new multi-line
+		// tooltips for a reasonable period when shown over the chart
+		ToolTipManager.sharedInstance().setDismissDelay(10000);
+
+	}
+
+	private void addMenu(final String theTitle) {
+		final JMenu newMen = new JMenu(theTitle);
+		theMenuBar.add(newMen);
+
+		// see if this was the file menu
+		if (theTitle.equals("File"))
+			_fileMenu = newMen;
+
+		// have a go at creating the mnemonic for this menu
+		final char first = theTitle.charAt(0);
+		newMen.setMnemonic(first);
+
+	}
+
+	@Override
+	protected final void addMenuItem(final String theMenu, final String theLabel, final Tool theTool,
+			final MenuShortcut theShortCut) {
+		// create the new item
+		final SwingMenuItem res = new SwingMenuItem(theLabel, theTool);
+
+		if (theShortCut != null) {
+			res.setAccelerator(KeyStroke.getKeyStroke(theShortCut.getKey(), java.awt.Event.CTRL_MASK));
+
+			res.setMnemonic(theLabel.charAt(0));
+		}
+
+		// get its memu
+		final JMenu thisMenu = getMenu(theMenu);
+
+		// add to this item
+		thisMenu.add(res);
+	}
+
+	@Override
+	protected final void addMenuSeparator(final String theMenu) {
+		final JMenu mn = getMenu(theMenu);
+		mn.addSeparator();
+	}
+
+	/**
+	 * cascade the current set of windows taken from article at:
+	 * http://www.javaworld.com/javaworld/jw-05-2001/jw-0525-mdi_p.html
+	 */
+	void cascadeWindows() {
+		int x = 0;
+		int y = 0;
+		final JInternalFrame[] allFrames = theDesktop.getAllFrames();
+		final int frameHeight = (theDesktop.getBounds().height - 5) - allFrames.length * FRAME_OFFSET;
+		final int frameWidth = (theDesktop.getBounds().width - 5) - allFrames.length * FRAME_OFFSET;
+		for (int i = allFrames.length - 1; i >= 0; i--) {
+			allFrames[i].setSize(frameWidth, frameHeight);
+			allFrames[i].setLocation(x, y);
+			x = x + FRAME_OFFSET;
+			y = y + FRAME_OFFSET;
+		}
+	}
+
+	@Override
+	protected final void closeSessionGUI(final Session theSession) {
+		SwingSession theSess = (SwingSession) theSession;
+
+		// get a pointer to the interface
+		JInternalFrame jc = theSess.getPanel();
+
+		// remove from the desktop
+		theDesktop.remove(jc);
+
+		// close the pane
+		jc.setVisible(false);
+
+		// try to delete it
+		jc.dispose();
+
+		// and refresh the window list
+		refreshWindowMenu();
+
+		// and refresh the pane
+		theFrame.repaint();
+
+		// and delete temp variables
+		theSess = null;
+		jc = null;
+	}
+
+	@Override
+	public final Session createSession() {
+		return new SwingSession(this, getClipboard(), super.getNewSessionName());
+	}
+
+	/**
+	 * create the help menu, plus it's commands
+	 */
+	private void doHelpMenu() {
+		////////////////////////////////////////////////////////
+		// help menus
+		////////////////////////////////////////////////////////
+		// add the window menu, now that we know that the other menus
+		// have been added
+		final JMenu helpMen = new JMenu("Help");
+		helpMen.setMnemonic('H');
+
+		// handle the about bit
+		final JMenuItem aboutMn = new JMenuItem("About");
+		aboutMn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				helpAbout();
+			}
+		});
+
+		// handle the contents bit
+		final JMenuItem contentsMn = new JMenuItem("Contents");
+		contentsMn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				helpContents();
+			}
+		});
+
+		helpMen.add(contentsMn);
+		helpMen.add(aboutMn);
+
+		// do the menu. Note that the "addHelpMenu" command isn't working under Swing
+		theMenuBar.add(helpMen);
+
+	}
+
+	@Override
+	public final Session getCurrentSession() {
+		// get the session currently 'on top'
+		Session res = null;
+
+		final int high = theDesktop.highestLayer();
+		final Component[] lst = theDesktop.getComponentsInLayer(high);
+		final int len = lst.length;
+
+		// we have to go through the panels in the main bit,
+		// and return the one which is visible
 //    for (int i = 0; i < len; i++)
-      for (final int i = 0; i < len;)
-    {
-      final Component cp = lst[i];
-      final JInternalFrame jf = (JInternalFrame) cp;
-      res = getSessionNamed(jf.getName());
-      break;
-    }
-
-    // so, we've either got the top (visible) session, or we're returning null.
-    return res;
-  }
-
-
-  /**
-   * add the session passed in, to include adding it to our stack
-   */
-  public final void newSession(final Session theSession)
-  {
-
-    // see if we are being passed a null parameter,
-    // if so, we are to create a fresh session
-	Session session = theSession;
-    if (session == null)
-    {
-      session = new SwingSession(this, getClipboard(), super.getNewSessionName());
-    }
-
-    SwingSession aws = (SwingSession) session;
-
-    // pass the session to the parent
-    super.newSession(session);
-
-
-    // see if we've already been loaded
-    boolean foundIt = false;
-    for (int i = 0; i < theDesktop.getComponentCount(); i++)
-    {
-      final Component comp = theDesktop.getComponent(i);
-      if (comp == aws.getPanel())
-      {
-        foundIt = true;
-        break;
-      }
-    }
-
-    if (!foundIt)
-    {
-      // add the session to our 'stack'
-      theDesktop.add(aws.getPanel());
-
-      try
-      {
-        aws.getPanel().setMaximum(true);
-      }
-      catch (final java.beans.PropertyVetoException e)
-      {
-        MWC.Utilities.Errors.Trace.trace(e);
-      }
-
-      // bring this new panel to the front and show it
-      aws.getPanel().show();
-
-
-      // tell the desktop that things have changed
-      theDesktop.revalidate();
-
-      // and try to trigger resize events
-      final Debrief.GUI.Views.Swing.SwingAnalysisView sc = (Debrief.GUI.Views.Swing.SwingAnalysisView) aws.getCurrentView();
-
-      // just check that the open failed
-      if (sc == null)
-        return;
-
-
-      final java.awt.Dimension scrSize = sc.getChart().getScreenSize();
-      sc.getChart().getCanvas().getProjection().setScreenArea(scrSize);
-
-      // and refresh the window list
-      refreshWindowMenu();
-      // clear temp values
-      aws = null;
-    }
-  }
-
-
-  /**
-   * fill in the UI details
-   */
-  private void initForm()
-  {
-
-    theFrame = new JFrame(getName() + " (" + Debrief.GUI.VersionInfo.getVersion() + ")");
-
-
-    theFrame.addWindowListener(new WindowAdapter()
-    {
-      public void windowClosing(final java.awt.event.WindowEvent e)
-      {
-        exit();
-      }
-    });
-
-    // try to give the application an icon
-    final java.net.URL iconURL = getClass().getClassLoader().getResource("images/icon.png");
-    if (iconURL != null)
-    {
-      final ImageIcon myIcon = new ImageIcon(iconURL);
-      if (myIcon != null)
-        theFrame.setIconImage(myIcon.getImage());
-    }
-
-    theDesktop = new imageDesktop(IMAGE_FILE_NAME);
-    theFrame.getContentPane().add(theDesktop, BorderLayout.CENTER);
-
-    // create the components
-    final MWC.GUI.Tools.Swing.SwingToolbar theToolbar =
-      new MWC.GUI.Tools.Swing.SwingToolbar(Toolbar.HORIZONTAL, "Application", null);
-
-    // pass the toolbar back to the parent
-    setToolbar(theToolbar);
-
-    // and the panel
-    final JPanel topSection = new JPanel();
-    topSection.setLayout(new BorderLayout());
-    theMenuBar = new JMenuBar();
-    theFrame.setJMenuBar(theMenuBar);
-
-    // add them
-    theFrame.getContentPane().add("North", theToolbar);
-
-    // tidy up
-
-    final Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-
-    theFrame.setSize((int) (dim.width * 0.6),
-                     (int) (dim.height * 0.6));
-    final Dimension sz = theFrame.getSize();
-    theFrame.setLocation((dim.width - sz.width) / 2,
-                         (dim.height - sz.height) / 2);
-
-    // implement drag/drop support
-    _dropSupport.addComponent(theToolbar);
-    _dropSupport.addComponent(theFrame);
-    _dropSupport.addComponent(theMenuBar);
-
-    // do any final re-arranging
-    theFrame.doLayout();
-
-  }
-
-  /**
-   * create the help menu, plus it's commands
-   */
-  private void doHelpMenu()
-  {
-    ////////////////////////////////////////////////////////
-    // help menus
-    ////////////////////////////////////////////////////////
-    // add the window menu, now that we know that the other menus
-    // have been added
-    final JMenu helpMen = new JMenu("Help");
-    helpMen.setMnemonic('H');
-
-    // handle the about bit
-    final JMenuItem aboutMn = new JMenuItem("About");
-    aboutMn.addActionListener(new ActionListener()
-    {
-      public void actionPerformed(final ActionEvent e)
-      {
-        helpAbout();
-      }
-    });
-
-    // handle the contents bit
-    final JMenuItem contentsMn = new JMenuItem("Contents");
-    contentsMn.addActionListener(new ActionListener()
-    {
-      public void actionPerformed(final ActionEvent e)
-      {
-        helpContents();
-      }
-    });
-
-    helpMen.add(contentsMn);
-    helpMen.add(aboutMn);
-
-    // do the menu.  Note that the "addHelpMenu" command isn't working under Swing
-    theMenuBar.add(helpMen);
-
-  }
-
-  /**
-   * set the title bar text to parameter
-   *
-   * @param theStr to assign to title bar of frame
-   */
-  protected final void setTitleName(final String theStr)
-  {
-    theFrame.setTitle("Debrief : " + theStr);
-  }
-
-
-  private void addMenu(final String theTitle)
-  {
-    final JMenu newMen = new JMenu(theTitle);
-    theMenuBar.add(newMen);
-
-    // see if this was the file menu
-    if (theTitle.equals("File"))
-      _fileMenu = newMen;
-
-    // have a go at creating the mnemonic for this menu
-    final char first = theTitle.charAt(0);
-    newMen.setMnemonic(first);
-
-  }
-
-  protected final void addMenuSeparator(final String theMenu)
-  {
-    final JMenu mn = getMenu(theMenu);
-    mn.addSeparator();
-  }
-
-  private JMenu getMenu(final String theMenu)
-  {
-    JMenu res = null;
-
-    // find this menu.
-    boolean foundIt = false;
-    final int menuCount = theMenuBar.getMenuCount();
-
-    // step through menus
-    for (int i = 0; i < menuCount; i++)
-    {
-
-      // does this name match?
-      final JMenu mu = theMenuBar.getMenu(i);
-
-      if (mu.getText().equals(theMenu))
-      {
-
-        foundIt = true;
-        res = mu;
-
-        break;
-      }
-    }
-
-    if (!foundIt)
-    {
-      // can't find it, we'll have to add it
-      addMenu(theMenu);
-
-      // now retrieve it
-      res = getMenu(theMenu);
-    }
-
-    // return our result
-    return res;
-  }
-
-  protected final void addMenuItem(final String theMenu,
-                                   final String theLabel,
-                                   final Tool theTool,
-                                   final MenuShortcut theShortCut)
-  {
-    // create the new item
-    final SwingMenuItem res = new SwingMenuItem(theLabel, theTool);
-
-    if (theShortCut != null)
-    {
-      res.setAccelerator(KeyStroke.getKeyStroke(theShortCut.getKey(),
-                                                java.awt.Event.CTRL_MASK));
-
-      res.setMnemonic(theLabel.charAt(0));
-    }
-
-    // get its memu
-    final JMenu thisMenu = getMenu(theMenu);
-
-    // add to this item
-    thisMenu.add(res);
-  }
-
-
-  protected final void closeSessionGUI(final Session theSession)
-  {
-    SwingSession theSess = (SwingSession) theSession;
-
-    // get a pointer to the interface
-    JInternalFrame jc = theSess.getPanel();
-
-    // remove from the desktop
-    theDesktop.remove(jc);
-
-    // close the pane
-    jc.setVisible(false);
-
-    // try to delete it
-    jc.dispose();
-
-    // and refresh the window list
-    refreshWindowMenu();
-
-    // and refresh the pane
-    theFrame.repaint();
-
-    // and delete temp variables
-    theSess = null;
-    jc = null;
-  }
-
-  public final void showSession(final Session theSession)
-  {
-    setTitleName(theSession.getName());
-  }
-
-  void refreshWindowMenu()
-  {
-    // refresh the list of files contained on this menu
-
-
-    if (theWindowMenu == null)
-    {
-      theWindowMenu = new JMenu("Window");
-      theWindowMenu.setMnemonic('W');
-      theMenuBar.add(theWindowMenu);
-    }
-
-    // clear the menu
-    theWindowMenu.removeAll();
-
-    // put in the refresh button
-    final JMenuItem refresh = new JMenuItem("Refresh window list");
-    theWindowMenu.add(refresh);
-    theWindowMenu.add(new JSeparator());
-    refresh.addActionListener(new ActionListener()
-    {
-      public void actionPerformed(final ActionEvent e)
-      {
-        refreshWindowMenu();
-      }
-    });
-
-    // put in the cascade button
-    final JMenuItem cascade = new JMenuItem("Cascade", KeyEvent.VK_C);
-    cascade.setAccelerator(KeyStroke.getKeyStroke(new MenuShortcut(KeyEvent.VK_C).getKey(),
-                                                  java.awt.Event.CTRL_MASK));
-    theWindowMenu.add(cascade);
-    cascade.addActionListener(new ActionListener()
-    {
-      public void actionPerformed(final ActionEvent e)
-      {
-        cascadeWindows();
-      }
-    });
-
-    // put in the tile button
-    final JMenuItem tile = new JMenuItem("Tile", KeyEvent.VK_T);
-    tile.setAccelerator(KeyStroke.getKeyStroke(new MenuShortcut(KeyEvent.VK_T).getKey(),
-                                               java.awt.Event.CTRL_MASK));
-    theWindowMenu.add(tile);
-    theWindowMenu.add(new JSeparator());
-    tile.addActionListener(new ActionListener()
-    {
-      public void actionPerformed(final ActionEvent e)
-      {
-        tileWindows();
-      }
-    });
-
-    // put in the tile button
-    final JMenuItem next = new JMenuItem("Next Window", KeyEvent.VK_N);
-    next.setAccelerator(KeyStroke.getKeyStroke(new MenuShortcut(KeyEvent.VK_F6).getKey(),
-                                               java.awt.Event.CTRL_MASK));
-    theWindowMenu.add(next);
-    theWindowMenu.add(new JSeparator());
-    next.addActionListener(new ActionListener()
-    {
-      public void actionPerformed(final ActionEvent e)
-      {
-        selectNextWindow();
-      }
-    });
-
-
-    final JInternalFrame[] frames = theDesktop.getAllFrames();
-    for (int i = 0; i < frames.length; i++)
-    {
-      final JInternalFrame thisFrame = frames[i];
-      final String name = thisFrame.getName();
-      final JMenuItem mn = new JMenuItem(name);
-      mn.addActionListener(new ActionListener()
-      {
-        public void actionPerformed(final ActionEvent e)
-        {
-          thisFrame.setVisible(true);
-          thisFrame.moveToFront();
-        }
-      });
-
-      theWindowMenu.add(mn);
-    }
-
-  }
-
-  void selectNextWindow()
-  {
-    final JInternalFrame[] frames = theDesktop.getAllFrames();
-
-    // check that there is more than one window open
-    if (frames.length > 1)
-    {
-
-      final Session currSess = this.getCurrentSession();
-
-      final TreeMap<String, JInternalFrame> sList = new TreeMap<String, JInternalFrame>();
-
-      // collate a list of frames, in alphabetical order
-      for (int i = 0; i < frames.length; i++)
-      {
-        final String thisName = frames[i].getName();
-        sList.put(thisName, frames[i]);
-      }
-
-      // did we find it?
-      boolean found_frame = false;
-
-      // did we set the new frame?
-      boolean set_new_frame = false;
-
-      // pass through the list to see if it's this one
-      final Iterator<String> theFrames = sList.keySet().iterator();
-      while (theFrames.hasNext())
-      {
-        final String thisFrame = (String) theFrames.next();
-        if (thisFrame.equals(currSess.getName()))
-        {
-          // hey, this is our one!
-          found_frame = true;
-        }
-        else
-        {
-          // we're not looking at the target one
-
-          if (found_frame == true)
-          {
-            // ok, we must be after our target
-            final JInternalFrame jf = (JInternalFrame) sList.get(thisFrame);
-            jf.setVisible(true);
-            jf.moveToFront();
-            set_new_frame = true;
-            break;
-          }
-          else
-          {
-            // oh well, we haven't found our one yet
-          }
-        }
-      }
-      // did we find a new target frame?
-      if (!set_new_frame)
-      {
-        // just set the first, since we must have found the last one
-        final JInternalFrame jf = (JInternalFrame) sList.get(sList.firstKey());
-        jf.setVisible(true);
-        jf.moveToFront();
-      }
-    } // whether we have enough frames
-  }
-
-  /**
-   * cascade the current set of windows taken from article at: http://www.javaworld.com/javaworld/jw-05-2001/jw-0525-mdi_p.html
-   */
-  void cascadeWindows()
-  {
-    int x = 0;
-    int y = 0;
-    final JInternalFrame[] allFrames = theDesktop.getAllFrames();
-    final int frameHeight = (theDesktop.getBounds().height - 5) - allFrames.length * FRAME_OFFSET;
-    final int frameWidth = (theDesktop.getBounds().width - 5) - allFrames.length * FRAME_OFFSET;
-    for (int i = allFrames.length - 1; i >= 0; i--)
-    {
-      allFrames[i].setSize(frameWidth, frameHeight);
-      allFrames[i].setLocation(x, y);
-      x = x + FRAME_OFFSET;
-      y = y + FRAME_OFFSET;
-    }
-  }
-
-  /**
-   * cascade the current set of windows taken from article at: http://www.javaworld.com/javaworld/jw-05-2001/jw-0525-mdi_p.html
-   */
-  void tileWindows()
-  {
-    final java.awt.Component[] allFrames = theDesktop.getAllFrames();
-
-    int y = 0;
-
-    // how many columns do we want?
-    if (allFrames.length <= 3)
-    {
-      final int frameHeight = theDesktop.getBounds().height / allFrames.length;
-
-      // 3 frames or less, show them as one column
-      for (int i = 0; i < allFrames.length; i++)
-      {
-        allFrames[i].setSize(theDesktop.getBounds().width, frameHeight);
-        allFrames[i].setLocation(0, y);
-        y = y + frameHeight;
-      }
-    }
-    else
-    {
-      // 4 frames or more, show them as two columns
-      final int doubleFrameWidth = theDesktop.getBounds().width / 2;
-
-      // are there an odd number of frames?
-
-      final int frameHeight;
-      if ((allFrames.length % 2) == 1)
-        frameHeight = theDesktop.getBounds().height / ((allFrames.length + 1) / 2);
-      else
-        frameHeight = theDesktop.getBounds().height / (allFrames.length / 2);
-
-
-      for (int i = 0; i < allFrames.length; i++)
-      {
-
-        allFrames[i].setSize(doubleFrameWidth, frameHeight);
-
-        // is this an odd frame?
-        if ((i % 2) == 1)
-        {
-          allFrames[i].setLocation(doubleFrameWidth + 1, y);
-          y = y + frameHeight;
-        }
-        else
-        {
-          allFrames[i].setLocation(0, y);
-        }
-      }
-
-    }
-
-  }
-
-  public final void setCursor(final int theCursor)
-  {
-    theFrame.getContentPane().setCursor(new Cursor(theCursor));
-  }
-
-  public final void restoreCursor()
-  {
-    theFrame.getContentPane().setCursor(null);
-  }
-
-  public final Session createSession()
-  {
-    return new SwingSession(this, getClipboard(), super.getNewSessionName());
-  }
-
-  void helpAbout()
-  {
-    // show the help text
-    String msg = getName() + ", from Deep Blue C Ltd";
-    msg += System.getProperties().getProperty("line.separator");
-    msg += "Build date: " + Debrief.GUI.VersionInfo.getVersion();
-
-    AboutDialog.showIt(theFrame, getName(), msg);
-
-  }
-
-  static final class imageDesktop extends JDesktopPane
-  {
-    // store the version id - to tidy thing up
-    static final long serialVersionUID = 42L;
-    
-    // store the image
-    private Image _icon;
-    private int _iHeight = -1;
-    private int _iWidth = -1;
-    final private String imageName;
-
-    public imageDesktop(final String imageFileName)
-    {
-      imageName = imageFileName;
-
-      super.setBackground(new Color(184, 184, 184));
-
-      this.setBorder(BorderFactory.createTitledBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED),
-                                                      "From Deep Blue C Ltd (www.DeepBlueC.com)",
-                                                      TitledBorder.RIGHT, TitledBorder.ABOVE_BOTTOM, this.getFont(), Color.darkGray));
-
-      // load the image
-      if (imageName != null)
-      {
-        // first try to get the URL of the image
-        final java.lang.ClassLoader loader = getClass().getClassLoader();
-        if (loader != null)
-        {
-          final java.net.URL imLoc = loader.getResource(imageName);
-          if (imLoc != null)
-          {
-            final ImageIcon im = new ImageIcon(imLoc);
-            _icon = im.getImage();
-          }
-          else
-          {
-            MWC.Utilities.Errors.Trace.trace("SwingApplication: loader didn't work", false);
-          }
-        }
-        else
-        {
-          MWC.Utilities.Errors.Trace.trace("Failed to load image:" + imageName);
-        }
-      }
-    }
-
-    public final void paint(final Graphics g)
-    {
-      super.paint(g);
-      // are there any frames open?
-      if (getAllFrames().length == 0)
-      {
-        if (_icon == null)
-        {
-          // first try to get the URL of the image
-          final java.lang.ClassLoader loader = getClass().getClassLoader();
-          if (loader != null)
-          {
-            final java.net.URL imLoc = loader.getResource(imageName);
-            if (imLoc != null)
-            {
-              final ImageIcon im = new ImageIcon(imLoc);
-              _icon = im.getImage();
-            }
-            else
-            {
-              System.out.println("loader still didn't work for:" + imageName);
-            }
-          }
-        }
-
-        // check our icon got loaded
-        if (_icon != null)
-        {
-          // do we know the sizes?
-          if (_iHeight == -1)
-          {
-            _iHeight = _icon.getHeight(this);
-            _iWidth = _icon.getWidth(this);
-          }
-
-          // sort out the window size
-          final int ht = this.getHeight();
-          final int wid = this.getWidth();
-
-          // sort out the image location
-          final int xLoc = (wid - _iWidth) / 2;
-          final int yLoc = (ht - _iHeight) / 2;
-
-          //          // fill in our background colour first
-          //          Color backCol = new Color(184,184,184);
-          //          g.setColor(backCol);
-          //          g.fillRect(0,0,wid,ht);
-
-          // put the image in the centre
-          g.drawImage(_icon, xLoc, yLoc, this);
-        }
-
-      }
-    }
-  }
-
-  @Override
-  public void logStack(int status, String text)
-  {
-    logError(status, "Stack requested:" + text, null);
-  }
+		for (final int i = 0; i < len;) {
+			final Component cp = lst[i];
+			final JInternalFrame jf = (JInternalFrame) cp;
+			res = getSessionNamed(jf.getName());
+			break;
+		}
+
+		// so, we've either got the top (visible) session, or we're returning null.
+		return res;
+	}
+
+	private JMenu getMenu(final String theMenu) {
+		JMenu res = null;
+
+		// find this menu.
+		boolean foundIt = false;
+		final int menuCount = theMenuBar.getMenuCount();
+
+		// step through menus
+		for (int i = 0; i < menuCount; i++) {
+
+			// does this name match?
+			final JMenu mu = theMenuBar.getMenu(i);
+
+			if (mu.getText().equals(theMenu)) {
+
+				foundIt = true;
+				res = mu;
+
+				break;
+			}
+		}
+
+		if (!foundIt) {
+			// can't find it, we'll have to add it
+			addMenu(theMenu);
+
+			// now retrieve it
+			res = getMenu(theMenu);
+		}
+
+		// return our result
+		return res;
+	}
+
+	void helpAbout() {
+		// show the help text
+		String msg = getName() + ", from Deep Blue C Ltd";
+		msg += System.getProperties().getProperty("line.separator");
+		msg += "Build date: " + Debrief.GUI.VersionInfo.getVersion();
+
+		AboutDialog.showIt(theFrame, getName(), msg);
+
+	}
+
+	/**
+	 * fill in the UI details
+	 */
+	private void initForm() {
+
+		theFrame = new JFrame(getName() + " (" + Debrief.GUI.VersionInfo.getVersion() + ")");
+
+		theFrame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(final java.awt.event.WindowEvent e) {
+				exit();
+			}
+		});
+
+		// try to give the application an icon
+		final java.net.URL iconURL = getClass().getClassLoader().getResource("images/icon.png");
+		if (iconURL != null) {
+			final ImageIcon myIcon = new ImageIcon(iconURL);
+			if (myIcon != null)
+				theFrame.setIconImage(myIcon.getImage());
+		}
+
+		theDesktop = new imageDesktop(IMAGE_FILE_NAME);
+		theFrame.getContentPane().add(theDesktop, BorderLayout.CENTER);
+
+		// create the components
+		final MWC.GUI.Tools.Swing.SwingToolbar theToolbar = new MWC.GUI.Tools.Swing.SwingToolbar(Toolbar.HORIZONTAL,
+				"Application", null);
+
+		// pass the toolbar back to the parent
+		setToolbar(theToolbar);
+
+		// and the panel
+		final JPanel topSection = new JPanel();
+		topSection.setLayout(new BorderLayout());
+		theMenuBar = new JMenuBar();
+		theFrame.setJMenuBar(theMenuBar);
+
+		// add them
+		theFrame.getContentPane().add("North", theToolbar);
+
+		// tidy up
+
+		final Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+
+		theFrame.setSize((int) (dim.width * 0.6), (int) (dim.height * 0.6));
+		final Dimension sz = theFrame.getSize();
+		theFrame.setLocation((dim.width - sz.width) / 2, (dim.height - sz.height) / 2);
+
+		// implement drag/drop support
+		_dropSupport.addComponent(theToolbar);
+		_dropSupport.addComponent(theFrame);
+		_dropSupport.addComponent(theMenuBar);
+
+		// do any final re-arranging
+		theFrame.doLayout();
+
+	}
+
+	@Override
+	public void logStack(final int status, final String text) {
+		logError(status, "Stack requested:" + text, null);
+	}
+
+	/**
+	 * add the session passed in, to include adding it to our stack
+	 */
+	@Override
+	public final void newSession(final Session theSession) {
+
+		// see if we are being passed a null parameter,
+		// if so, we are to create a fresh session
+		Session session = theSession;
+		if (session == null) {
+			session = new SwingSession(this, getClipboard(), super.getNewSessionName());
+		}
+
+		SwingSession aws = (SwingSession) session;
+
+		// pass the session to the parent
+		super.newSession(session);
+
+		// see if we've already been loaded
+		boolean foundIt = false;
+		for (int i = 0; i < theDesktop.getComponentCount(); i++) {
+			final Component comp = theDesktop.getComponent(i);
+			if (comp == aws.getPanel()) {
+				foundIt = true;
+				break;
+			}
+		}
+
+		if (!foundIt) {
+			// add the session to our 'stack'
+			theDesktop.add(aws.getPanel());
+
+			try {
+				aws.getPanel().setMaximum(true);
+			} catch (final java.beans.PropertyVetoException e) {
+				MWC.Utilities.Errors.Trace.trace(e);
+			}
+
+			// bring this new panel to the front and show it
+			aws.getPanel().show();
+
+			// tell the desktop that things have changed
+			theDesktop.revalidate();
+
+			// and try to trigger resize events
+			final Debrief.GUI.Views.Swing.SwingAnalysisView sc = (Debrief.GUI.Views.Swing.SwingAnalysisView) aws
+					.getCurrentView();
+
+			// just check that the open failed
+			if (sc == null)
+				return;
+
+			final java.awt.Dimension scrSize = sc.getChart().getScreenSize();
+			sc.getChart().getCanvas().getProjection().setScreenArea(scrSize);
+
+			// and refresh the window list
+			refreshWindowMenu();
+			// clear temp values
+			aws = null;
+		}
+	}
+
+	void refreshWindowMenu() {
+		// refresh the list of files contained on this menu
+
+		if (theWindowMenu == null) {
+			theWindowMenu = new JMenu("Window");
+			theWindowMenu.setMnemonic('W');
+			theMenuBar.add(theWindowMenu);
+		}
+
+		// clear the menu
+		theWindowMenu.removeAll();
+
+		// put in the refresh button
+		final JMenuItem refresh = new JMenuItem("Refresh window list");
+		theWindowMenu.add(refresh);
+		theWindowMenu.add(new JSeparator());
+		refresh.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				refreshWindowMenu();
+			}
+		});
+
+		// put in the cascade button
+		final JMenuItem cascade = new JMenuItem("Cascade", KeyEvent.VK_C);
+		cascade.setAccelerator(
+				KeyStroke.getKeyStroke(new MenuShortcut(KeyEvent.VK_C).getKey(), java.awt.Event.CTRL_MASK));
+		theWindowMenu.add(cascade);
+		cascade.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				cascadeWindows();
+			}
+		});
+
+		// put in the tile button
+		final JMenuItem tile = new JMenuItem("Tile", KeyEvent.VK_T);
+		tile.setAccelerator(KeyStroke.getKeyStroke(new MenuShortcut(KeyEvent.VK_T).getKey(), java.awt.Event.CTRL_MASK));
+		theWindowMenu.add(tile);
+		theWindowMenu.add(new JSeparator());
+		tile.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				tileWindows();
+			}
+		});
+
+		// put in the tile button
+		final JMenuItem next = new JMenuItem("Next Window", KeyEvent.VK_N);
+		next.setAccelerator(
+				KeyStroke.getKeyStroke(new MenuShortcut(KeyEvent.VK_F6).getKey(), java.awt.Event.CTRL_MASK));
+		theWindowMenu.add(next);
+		theWindowMenu.add(new JSeparator());
+		next.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				selectNextWindow();
+			}
+		});
+
+		final JInternalFrame[] frames = theDesktop.getAllFrames();
+		for (int i = 0; i < frames.length; i++) {
+			final JInternalFrame thisFrame = frames[i];
+			final String name = thisFrame.getName();
+			final JMenuItem mn = new JMenuItem(name);
+			mn.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(final ActionEvent e) {
+					thisFrame.setVisible(true);
+					thisFrame.moveToFront();
+				}
+			});
+
+			theWindowMenu.add(mn);
+		}
+
+	}
+
+	@Override
+	public final void restoreCursor() {
+		theFrame.getContentPane().setCursor(null);
+	}
+
+	void selectNextWindow() {
+		final JInternalFrame[] frames = theDesktop.getAllFrames();
+
+		// check that there is more than one window open
+		if (frames.length > 1) {
+
+			final Session currSess = this.getCurrentSession();
+
+			final TreeMap<String, JInternalFrame> sList = new TreeMap<String, JInternalFrame>();
+
+			// collate a list of frames, in alphabetical order
+			for (int i = 0; i < frames.length; i++) {
+				final String thisName = frames[i].getName();
+				sList.put(thisName, frames[i]);
+			}
+
+			// did we find it?
+			boolean found_frame = false;
+
+			// did we set the new frame?
+			boolean set_new_frame = false;
+
+			// pass through the list to see if it's this one
+			final Iterator<String> theFrames = sList.keySet().iterator();
+			while (theFrames.hasNext()) {
+				final String thisFrame = theFrames.next();
+				if (thisFrame.equals(currSess.getName())) {
+					// hey, this is our one!
+					found_frame = true;
+				} else {
+					// we're not looking at the target one
+
+					if (found_frame == true) {
+						// ok, we must be after our target
+						final JInternalFrame jf = sList.get(thisFrame);
+						jf.setVisible(true);
+						jf.moveToFront();
+						set_new_frame = true;
+						break;
+					} else {
+						// oh well, we haven't found our one yet
+					}
+				}
+			}
+			// did we find a new target frame?
+			if (!set_new_frame) {
+				// just set the first, since we must have found the last one
+				final JInternalFrame jf = sList.get(sList.firstKey());
+				jf.setVisible(true);
+				jf.moveToFront();
+			}
+		} // whether we have enough frames
+	}
+
+	@Override
+	public final void setCursor(final int theCursor) {
+		theFrame.getContentPane().setCursor(new Cursor(theCursor));
+	}
+
+	/**
+	 * set the title bar text to parameter
+	 *
+	 * @param theStr to assign to title bar of frame
+	 */
+	@Override
+	protected final void setTitleName(final String theStr) {
+		theFrame.setTitle("Debrief : " + theStr);
+	}
+
+	@Override
+	public final void showSession(final Session theSession) {
+		setTitleName(theSession.getName());
+	}
+
+	/**
+	 * cascade the current set of windows taken from article at:
+	 * http://www.javaworld.com/javaworld/jw-05-2001/jw-0525-mdi_p.html
+	 */
+	void tileWindows() {
+		final java.awt.Component[] allFrames = theDesktop.getAllFrames();
+
+		int y = 0;
+
+		// how many columns do we want?
+		if (allFrames.length <= 3) {
+			final int frameHeight = theDesktop.getBounds().height / allFrames.length;
+
+			// 3 frames or less, show them as one column
+			for (int i = 0; i < allFrames.length; i++) {
+				allFrames[i].setSize(theDesktop.getBounds().width, frameHeight);
+				allFrames[i].setLocation(0, y);
+				y = y + frameHeight;
+			}
+		} else {
+			// 4 frames or more, show them as two columns
+			final int doubleFrameWidth = theDesktop.getBounds().width / 2;
+
+			// are there an odd number of frames?
+
+			final int frameHeight;
+			if ((allFrames.length % 2) == 1)
+				frameHeight = theDesktop.getBounds().height / ((allFrames.length + 1) / 2);
+			else
+				frameHeight = theDesktop.getBounds().height / (allFrames.length / 2);
+
+			for (int i = 0; i < allFrames.length; i++) {
+
+				allFrames[i].setSize(doubleFrameWidth, frameHeight);
+
+				// is this an odd frame?
+				if ((i % 2) == 1) {
+					allFrames[i].setLocation(doubleFrameWidth + 1, y);
+					y = y + frameHeight;
+				} else {
+					allFrames[i].setLocation(0, y);
+				}
+			}
+
+		}
+
+	}
 
 }

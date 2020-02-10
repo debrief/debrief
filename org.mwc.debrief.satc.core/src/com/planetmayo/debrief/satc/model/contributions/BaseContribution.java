@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package com.planetmayo.debrief.satc.model.contributions;
 
 import java.awt.Color;
@@ -26,85 +27,78 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 import com.planetmayo.debrief.satc.model.states.ProblemSpace;
 import com.planetmayo.debrief.satc.model.states.State;
 
-public abstract class BaseContribution extends ModelObject implements
-		Comparable<BaseContribution>
-{
+public abstract class BaseContribution extends ModelObject implements Comparable<BaseContribution> {
+	// custom interface for contributions that have their own color
+	public static interface HasColor {
+		public Color getColor();
+	}
+
 	protected static final int MEASUREMENT_DEFAULT_SCORE = 100;
 	protected static final int FORECAST_DEFAULT_SCORE = 200;
-	protected static final int ANALYST_DEFAULT_SCORE = 300;
-		
-	private static final long serialVersionUID = 1L;
 
+	protected static final int ANALYST_DEFAULT_SCORE = 300;
+
+	private static final long serialVersionUID = 1L;
 	public static final String WEIGHT = "weight";
 	public static final String START_DATE = "startDate";
 	public static final String NAME = "name";
 	public static final String FINISH_DATE = "finishDate";
 	public static final String ACTIVE = "active";
+
 	public static final String ESTIMATE = "estimate";
 
-	/* note: most contributions don't provide a color property
-	 * it's just straight legs, really
+	/*
+	 * note: most contributions don't provide a color property it's just straight
+	 * legs, really
 	 */
 	public static final String COLOR = "COLOR";
 
-
 	public static final String HARD_CONSTRAINTS = "hardConstraint";
-
 	protected String name;
 	protected boolean active = true;
 	private int weight = 5;
 	protected Date startDate;
+
 	protected Date finishDate;
 
-	// custom interface for contributions that have their own color
-	public static interface HasColor
-	{
-		public Color getColor();
-	}
-	
-	protected BaseContribution()
-	{
+	protected BaseContribution() {
 		// give a default name - we can't just rely on the DTG,
 		// because the composite straight leg editor generates
 		// several at once
-		setName("auto_id:" + new Date().getTime() + "+_" + (int)(Math.random() * 1000d));
+		setName("auto_id:" + new Date().getTime() + "+_" + (int) (Math.random() * 1000d));
 	}
 
 	/**
 	 * apply this contribution to the supplied Problem Space
-	 * 
-	 * @param space
-	 *          the object that we're going to bound
+	 *
+	 * @param space the object that we're going to bound
 	 */
-	public abstract void actUpon(ProblemSpace space)
-			throws IncompatibleStateException;
+	public abstract void actUpon(ProblemSpace space) throws IncompatibleStateException;
 
 	/**
-	 * some external factor has changed, that has affected the hard constraints on
-	 * this contribution
+	 * calculate the error value for this particular state
+	 *
+	 * @param thisState
+	 * @return
 	 */
-	public void fireHardConstraintsChange()
-	{
-		firePropertyChange(HARD_CONSTRAINTS, null, this);
+	protected double calcError(final State thisState) {
+		return 0;
 	}
 
 	/**
 	 * generate the error for this route
-	 * 
+	 *
 	 */
-	final public double calculateErrorScoreFor(CoreRoute route)
-	{
+	final public double calculateErrorScoreFor(final CoreRoute route) {
 		double res = 0;
 
 		// make sure we're allowed to calc an error score
 		if (active)
-			if (weight > 0)
-			{
+			if (weight > 0) {
 				// make sure there's something to decide the score on
 				if (route != null)
 					if (route.getStates() != null)
-						if (route.getStates().size() > 0)
-						{
+						if (route.getStates().size() > 0) {
 							res = cumulativeScoreFor(route) / (10 - Math.min(weight, 9));
 						}
 			}
@@ -113,33 +107,72 @@ public abstract class BaseContribution extends ModelObject implements
 	}
 
 	/**
+	 * check if this specified time is between our start/finish times, if we have
+	 * them
+	 *
+	 * @param thisDate the date we're checking
+	 * @return
+	 */
+	protected boolean checkInDatePeriod(final Date thisDate) {
+		final long millis = thisDate.getTime();
+		if (getStartDate() != null && millis < getStartDate().getTime()) {
+			return false;
+		}
+		if (getFinishDate() != null && millis > getFinishDate().getTime()) {
+			return false;
+		}
+		return true;
+	}
+
+	protected int compareEqualClass(final BaseContribution o) {
+		return this.getName().compareTo(o.getName());
+	}
+
+	@Override
+	public int compareTo(final BaseContribution o) {
+		// ok, what type am I?
+		final int myScore = getSortOrder();
+		final int hisScore = o.getSortOrder();
+		if (myScore == hisScore) {
+			// try the class names first, to group them
+			final String myClass = this.getClass().getName();
+			final String hisClass = o.getClass().getName();
+			if (myClass.equals(hisClass)) {
+				// ha-they must be equal, compare the names
+				return compareEqualClass(o);
+			} else {
+				return myClass.compareTo(hisClass);
+			}
+		}
+		return myScore - hisScore;
+	}
+
+	/**
 	 * calculate the cumulative error score for this route
-	 * 
+	 *
 	 * @param route
 	 * @return
 	 */
-	protected double cumulativeScoreFor(CoreRoute route)
-	{
+	protected double cumulativeScoreFor(final CoreRoute route) {
 		double res = 0;
 
 		// ok, go for it
-		ArrayList<State> states = route.getStates();
-		Iterator<State> sIter = states.iterator();
+		final ArrayList<State> states = route.getStates();
+		final Iterator<State> sIter = states.iterator();
 
 		// keep track of how many errors we generate
 		int _errCtr = 0;
-		
+
 		// for forecasts on straight, we re-use the error score,
 		// since it's the same for every state
 		Double wholeLegScore = null;
 
 		// ok. work through the states that comprise this leg
-		while (sIter.hasNext())
-		{
-			State thisState = sIter.next();
+		while (sIter.hasNext()) {
+			final State thisState = sIter.next();
 			double delta = 0;
 
-			Date time = thisState.getTime();
+			final Date time = thisState.getTime();
 
 			// check if our time period relates to this time
 			boolean isValid = true;
@@ -152,21 +185,17 @@ public abstract class BaseContribution extends ModelObject implements
 				if (this.getFinishDate().before(time))
 					isValid = false;
 
-			if (isValid)
-			{
+			if (isValid) {
 				// ok, everything matches up = calculate this error
-				
+
 				// do we have a whole-leg-score?
-				if(wholeLegScore == null)
-				{
+				if (wholeLegScore == null) {
 					// nope, better calculate it.
 					delta = calcError(thisState);
-				}
-				else
-				{
+				} else {
 					delta = wholeLegScore;
 				}
-				
+
 				// store the error against the state
 				thisState.setScore(this, delta);
 
@@ -180,8 +209,7 @@ public abstract class BaseContribution extends ModelObject implements
 				// forecast, then we
 				// only use the one calculation
 				if (route.getType().equals(LegType.STRAIGHT)
-						&& this.getDataType().equals(ContributionDataType.FORECAST))
-				{
+						&& this.getDataType().equals(ContributionDataType.FORECAST)) {
 					wholeLegScore = delta;
 				}
 			}
@@ -193,98 +221,31 @@ public abstract class BaseContribution extends ModelObject implements
 	}
 
 	/**
-	 * calculate the error value for this particular state
-	 * 
-	 * @param thisState
-	 * @return
+	 * some external factor has changed, that has affected the hard constraints on
+	 * this contribution
 	 */
-	protected double calcError(State thisState)
-	{
-		return 0;
-	}
-
-	/**
-	 * are my constraints valid for the supplied period?
-	 * 
-	 * @param route
-	 * @return
-	 */
-	protected boolean validFor(CoreRoute route)
-	{
-		return true;
-	}
-
-	/**
-	 * check if this specified time is between our start/finish times, if we have
-	 * them
-	 * 
-	 * @param thisDate
-	 *          the date we're checking
-	 * @return
-	 */
-	protected boolean checkInDatePeriod(final Date thisDate)
-	{
-		long millis = thisDate.getTime();
-		if (getStartDate() != null && millis < getStartDate().getTime())
-		{
-			return false;
-		}
-		if (getFinishDate() != null && millis > getFinishDate().getTime())
-		{
-			return false;
-		}
-		return true;
-	}
-	
-	protected int compareEqualClass(BaseContribution o) 
-	{
-		return this.getName().compareTo(o.getName());
-	}
-
-	@Override
-	public int compareTo(BaseContribution o)
-	{
-		// ok, what type am I?
-		int myScore = getSortOrder();
-		int hisScore = o.getSortOrder();
-		if (myScore == hisScore)
-		{
-			// try the class names first, to group them
-			String myClass = this.getClass().getName();
-			String hisClass = o.getClass().getName();
-			if (myClass.equals(hisClass))
-			{
-				// ha-they must be equal, compare the names
-				return compareEqualClass(o);
-			}
-			else
-			{
-				return myClass.compareTo(hisClass);
-			}
-		}
-		return myScore - hisScore;
+	public void fireHardConstraintsChange() {
+		firePropertyChange(HARD_CONSTRAINTS, null, this);
 	}
 
 	public abstract ContributionDataType getDataType();
 
-	public Date getFinishDate()
-	{
+	public Date getFinishDate() {
 		return finishDate;
 	}
 
-	public String getName()
-	{
+	public String getName() {
 		return name;
 	}
 
-	/** determine the order in which the contributions are displayed in the View listing
-	 * 
+	/**
+	 * determine the order in which the contributions are displayed in the View
+	 * listing
+	 *
 	 * @return
 	 */
-	protected int getSortOrder()
-	{
-		switch (getDataType())
-		{
+	protected int getSortOrder() {
+		switch (getDataType()) {
 		case MEASUREMENT:
 			return MEASUREMENT_DEFAULT_SCORE;
 		case FORECAST:
@@ -294,53 +255,55 @@ public abstract class BaseContribution extends ModelObject implements
 		}
 	}
 
-	public Date getStartDate()
-	{
+	public Date getStartDate() {
 		return startDate;
 	}
 
-	public int getWeight()
-	{
+	public int getWeight() {
 		return weight;
 	}
 
-	public boolean isActive()
-	{
+	public boolean isActive() {
 		return active;
 	}
 
-	public void setActive(boolean isActive)
-	{
-		boolean oldActive = active;
+	public void setActive(final boolean isActive) {
+		final boolean oldActive = active;
 		this.active = isActive;
 		firePropertyChange(ACTIVE, oldActive, isActive);
 	}
 
-	public void setFinishDate(Date newFinishDate)
-	{
-		Date oldFinishDate = finishDate;
+	public void setFinishDate(final Date newFinishDate) {
+		final Date oldFinishDate = finishDate;
 		this.finishDate = newFinishDate;
 		firePropertyChange(FINISH_DATE, oldFinishDate, newFinishDate);
 	}
 
-	public void setName(String newName)
-	{
-		String oldName = this.name;
+	public void setName(final String newName) {
+		final String oldName = this.name;
 		this.name = newName;
 		firePropertyChange(NAME, oldName, newName);
 	}
 
-	public void setStartDate(Date newStartDate)
-	{
-		Date oldStartDate = startDate;
+	public void setStartDate(final Date newStartDate) {
+		final Date oldStartDate = startDate;
 		this.startDate = newStartDate;
 		firePropertyChange(START_DATE, oldStartDate, newStartDate);
 	}
 
-	public void setWeight(int newWeight)
-	{
-		int oldWeight = weight;
+	public void setWeight(final int newWeight) {
+		final int oldWeight = weight;
 		this.weight = newWeight;
 		firePropertyChange(WEIGHT, oldWeight, newWeight);
+	}
+
+	/**
+	 * are my constraints valid for the supplied period?
+	 *
+	 * @param route
+	 * @return
+	 */
+	protected boolean validFor(final CoreRoute route) {
+		return true;
 	}
 }

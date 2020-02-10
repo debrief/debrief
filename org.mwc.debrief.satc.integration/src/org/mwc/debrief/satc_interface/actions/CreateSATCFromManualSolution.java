@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.debrief.satc_interface.actions;
 
 import java.util.ArrayList;
@@ -43,174 +44,141 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 
-public class CreateSATCFromManualSolution implements
-    RightClickContextItemGenerator
-{
+public class CreateSATCFromManualSolution implements RightClickContextItemGenerator {
 
-  @Override
-  public void generate(IMenuManager parent, final Layers theLayers,
-      Layer[] parentLayers, Editable[] subjects)
-  {
-    ArrayList<RelativeTMASegment> legs = new ArrayList<RelativeTMASegment>();
+	private class StraightLegForecastsFromLegs extends CMAPOperation {
+		private final SATC_Solution _theSolution;
+		private final ArrayList<RelativeTMASegment> _theLegs;
+		private ArrayList<StraightLegForecastContribution> _newLegs;
 
-    // whole solution?
-    if (subjects.length == 1 && subjects[0] instanceof TrackWrapper)
-    {
-      TrackWrapper track = (TrackWrapper) subjects[0];
-      if (track.isTMATrack())
-      {
-        // ok, add the legs
-        SegmentList segs = track.getSegments();
-        Enumeration<Editable> sIter = segs.elements();
-        while (sIter.hasMoreElements())
-        {
-          TrackSegment seg = (TrackSegment) sIter.nextElement();
-          if (seg instanceof RelativeTMASegment)
-          {
-            legs.add((RelativeTMASegment) seg);
-          }
-        }
-      }
-    }
-    else
-    {
-      // loop through legs
+		public StraightLegForecastsFromLegs(final SATC_Solution solution, final String title,
+				final ArrayList<RelativeTMASegment> legs) {
+			super(title);
+			_theSolution = solution;
+			_theLegs = legs;
+		}
 
-      for (int i = 0; i < subjects.length; i++)
-      {
-        Editable thisItem = subjects[i];
-        if (thisItem instanceof RelativeTMASegment)
-        {
-          RelativeTMASegment scw = (RelativeTMASegment) thisItem;
-          legs.add(scw);
-        }
-      }
-    }
+		@Override
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
+			_newLegs = new ArrayList<StraightLegForecastContribution>();
 
-    // ok, is it worth going for?
-    if (legs.size() > 0)
-    {
+			for (final RelativeTMASegment t : _theLegs) {
+				final StraightLegForecastContribution leg = new StraightLegForecastContribution();
+				leg.setStartDate(t.getDTG_Start().getDate());
+				leg.setFinishDate(t.getDTG_End().getDate());
+				leg.setName(t.getName());
+				final FixWrapper firstFix = (FixWrapper) t.getData().iterator().next();
+				leg.setColor(firstFix.getColor());
+				_theSolution.addContribution(leg);
+				_newLegs.add(leg);
+			}
+			return Status.OK_STATUS;
+		}
 
-      parent.add(new Separator());
-      IMenuManager thisMenu = new MenuManager("SemiAuto TMA");
-      parent.add(thisMenu);
+		@Override
+		public IStatus redo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
+			for (final StraightLegForecastContribution e : _newLegs) {
+				_theSolution.addContribution(e);
+			}
+			return Status.OK_STATUS;
+		}
 
-      // right,stick in a separator
-      thisMenu.add(new Separator());
+		@Override
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
+			for (final StraightLegForecastContribution e : _newLegs) {
+				_theSolution.removeContribution(e);
+			}
+			return Status.OK_STATUS;
+		}
+	}
 
-      // see if there's an existing solution in there.
-      ArrayList<SATC_Solution> existingSolutions = findExistingSolutionsIn(theLayers);
+	protected void addItemsTo(final SATC_Solution solution, final MenuManager parent,
+			final ArrayList<RelativeTMASegment> legs) {
+		final String actionTitle = "Generate Straight Leg forecasts for these manual legs";
 
-      if ((existingSolutions != null) && (existingSolutions.size() > 0))
-      {
-        for(SATC_Solution layer: existingSolutions)
-        {
-          // create a top level menu item
-          MenuManager thisD = new MenuManager("Add to " + layer.getName());
-          thisMenu.add(thisD);
+		final Action action = new Action(actionTitle) {
+			@Override
+			public void run() {
+				CorePlugin.run(new StraightLegForecastsFromLegs(solution, actionTitle, legs));
+			}
+		};
+		action.setImageDescriptor(SATC_Interface_Activator.getImageDescriptor("icons/16/leg.png"));
+		parent.add(action);
+	}
 
-          // add the child items
-          addItemsTo(layer, thisD, legs);
-        }
-      }
+	private ArrayList<SATC_Solution> findExistingSolutionsIn(final Layers theLayers) {
+		ArrayList<SATC_Solution> res = null;
 
-    }
-  }
+		final Enumeration<Editable> iter = theLayers.elements();
+		while (iter.hasMoreElements()) {
+			final Editable thisL = iter.nextElement();
+			if (thisL instanceof SATC_Solution) {
+				if (res == null)
+					res = new ArrayList<SATC_Solution>();
 
-  protected void addItemsTo(final SATC_Solution solution,
-      final MenuManager parent, final ArrayList<RelativeTMASegment> legs)
-  {
-    final String actionTitle =
-        "Generate Straight Leg forecasts for these manual legs";
+				res.add((SATC_Solution) thisL);
+			}
+		}
 
-    final Action action = new Action(actionTitle)
-    {
-      @Override
-      public void run()
-      {
-        CorePlugin.run(new StraightLegForecastsFromLegs(solution, actionTitle, legs));
-      }
-    };
-    action.setImageDescriptor(SATC_Interface_Activator
-        .getImageDescriptor("icons/16/leg.png"));
-    parent.add(action);
-  }
+		return res;
+	}
 
-  private ArrayList<SATC_Solution> findExistingSolutionsIn(Layers theLayers)
-  {
-    ArrayList<SATC_Solution> res = null;
+	@Override
+	public void generate(final IMenuManager parent, final Layers theLayers, final Layer[] parentLayers,
+			final Editable[] subjects) {
+		final ArrayList<RelativeTMASegment> legs = new ArrayList<RelativeTMASegment>();
 
-    Enumeration<Editable> iter = theLayers.elements();
-    while (iter.hasMoreElements())
-    {
-      Editable thisL = iter.nextElement();
-      if (thisL instanceof SATC_Solution)
-      {
-        if (res == null)
-          res = new ArrayList<SATC_Solution>();
+		// whole solution?
+		if (subjects.length == 1 && subjects[0] instanceof TrackWrapper) {
+			final TrackWrapper track = (TrackWrapper) subjects[0];
+			if (track.isTMATrack()) {
+				// ok, add the legs
+				final SegmentList segs = track.getSegments();
+				final Enumeration<Editable> sIter = segs.elements();
+				while (sIter.hasMoreElements()) {
+					final TrackSegment seg = (TrackSegment) sIter.nextElement();
+					if (seg instanceof RelativeTMASegment) {
+						legs.add((RelativeTMASegment) seg);
+					}
+				}
+			}
+		} else {
+			// loop through legs
 
-        res.add((SATC_Solution) thisL);
-      }
-    }
+			for (int i = 0; i < subjects.length; i++) {
+				final Editable thisItem = subjects[i];
+				if (thisItem instanceof RelativeTMASegment) {
+					final RelativeTMASegment scw = (RelativeTMASegment) thisItem;
+					legs.add(scw);
+				}
+			}
+		}
 
-    return res;
-  }
+		// ok, is it worth going for?
+		if (legs.size() > 0) {
 
-  private class StraightLegForecastsFromLegs extends CMAPOperation
-  {
-    private final SATC_Solution _theSolution;
-    private final ArrayList<RelativeTMASegment> _theLegs;
-    private ArrayList<StraightLegForecastContribution> _newLegs;
+			parent.add(new Separator());
+			final IMenuManager thisMenu = new MenuManager("SemiAuto TMA");
+			parent.add(thisMenu);
 
-    public StraightLegForecastsFromLegs(SATC_Solution solution, String title,
-        ArrayList<RelativeTMASegment> legs)
-    {
-      super(title);
-      _theSolution = solution;
-      _theLegs = legs;
-    }
+			// right,stick in a separator
+			thisMenu.add(new Separator());
 
-    @Override
-    public IStatus execute(IProgressMonitor monitor, IAdaptable info)
-        throws ExecutionException
-    {
-      _newLegs = new ArrayList<StraightLegForecastContribution>();
-      
-      for(RelativeTMASegment t: _theLegs)
-      {
-        final StraightLegForecastContribution leg = new StraightLegForecastContribution();
-        leg.setStartDate(t.getDTG_Start().getDate());
-        leg.setFinishDate(t.getDTG_End().getDate());
-        leg.setName(t.getName());
-        FixWrapper firstFix = (FixWrapper) t.getData().iterator().next();
-        leg.setColor(firstFix.getColor());
-        _theSolution.addContribution(leg);
-        _newLegs.add(leg);
-      }
-      return Status.OK_STATUS;
-    }
+			// see if there's an existing solution in there.
+			final ArrayList<SATC_Solution> existingSolutions = findExistingSolutionsIn(theLayers);
 
-    @Override
-    public IStatus undo(IProgressMonitor monitor, IAdaptable info)
-        throws ExecutionException
-    {
-      for(StraightLegForecastContribution e: _newLegs)
-      {
-        _theSolution.removeContribution(e);
-      }
-      return Status.OK_STATUS;
-    }
+			if ((existingSolutions != null) && (existingSolutions.size() > 0)) {
+				for (final SATC_Solution layer : existingSolutions) {
+					// create a top level menu item
+					final MenuManager thisD = new MenuManager("Add to " + layer.getName());
+					thisMenu.add(thisD);
 
-    @Override
-    public IStatus redo(IProgressMonitor monitor, IAdaptable info)
-        throws ExecutionException
-    {
-      for(StraightLegForecastContribution e: _newLegs)
-      {
-        _theSolution.addContribution(e);
-      }
-      return Status.OK_STATUS;
-    }
-  }
+					// add the child items
+					addItemsTo(layer, thisD, legs);
+				}
+			}
+
+		}
+	}
 
 }

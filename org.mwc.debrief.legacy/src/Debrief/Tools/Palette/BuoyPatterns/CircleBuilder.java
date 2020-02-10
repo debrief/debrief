@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: CircleBuilder.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -67,230 +68,219 @@
 
 package Debrief.Tools.Palette.BuoyPatterns;
 
-import java.beans.*;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 
-import MWC.GenericData.*;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
-public final class CircleBuilder extends PatternBuilderType
-{
+public final class CircleBuilder extends PatternBuilderType {
 
-  //////////////////////////////////////////
-  // Member variables
-  //////////////////////////////////////////
+	//////////////////////////////////////////
+	// Member variables
+	//////////////////////////////////////////
 
-  /** radius of this barrier (nm)
-   */
-  private double _radius;
+	public final class CircleInfo extends MWC.GUI.Editable.EditorType {
 
-  /** orientation of this barrier (degs)
-   */
-  private double _orientation;
+		public CircleInfo(final CircleBuilder data, final String theName) {
+			super(data, theName, "Circle:");
+		}
 
-  /** direction to lay circle (yes/no)
-   */
-  private boolean _clockwise = true;
+		@Override
+		public final PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final PropertyDescriptor[] myRes = {
+						displayProp("SymbolType", "Symbol type", "the type of symbol plotted for this label"),
+						displayProp("SymbolSize", "Symbol size", "the scale of the symbol"),
+						prop("Duration", "the lifetime of the buoy pattern"),
+						displayProp("PatternName", "Pattern name", "the name of this circle"),
+						displayProp("PatternOrientation", "Pattern orientation",
+								"the orientation of the first point of this circle (degs)"),
+						displayProp("PatternRadius", "Pattern radius", "the radius of this circular pattern"),
+						displayProp("KingpinRange", "Kingpin range", "the range of the kingpin from the jig point"),
+						displayProp("KingpinBearing", "Kingpin bearing",
+								"the bearing of the kingpin from the jig point (degs)"),
+						displayProp("JigPoint", "Jig point", "the jig point for the construction of this circle"),
+						displayProp("NumberOfBuoys", "Number of buoys", "the number of buoys in this circle"),
+						prop("Color", "the default colour for this circle"),
+						displayProp("DateTimeGroup", "DateTime group", "the DTG this pattern starts (DD/MM/YY)"),
+						displayProp("BuoyLabelVisible", "Buoy label visible", "whether the buoy labels are visible"),
+						displayProp("PatternClockwise", "Pattern clockwise", "whether the buoys are laid clockwise") };
+				myRes[0].setPropertyEditorClass(
+						MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor.SymbolFactoryBuoyPropertyEditor.class);
+				myRes[1].setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.class);
 
-  /** our editor
-   */
-  transient private MWC.GUI.Editable.EditorType _myEditor = null;
+				return myRes;
 
-  //////////////////////////////////////////
-  // Constructor
-  //////////////////////////////////////////
-  public CircleBuilder(final WorldLocation centre,
-                        final MWC.GUI.Properties.PropertiesPanel thePanel,
-                        final MWC.GUI.Layers theData)
-  {
-    super(centre, thePanel, theData);
+			} catch (final IntrospectionException e) {
+				// find out which property fell over
+				MWC.Utilities.Errors.Trace.trace(e, "Creating editor for Circle Builder");
 
-    // initialise our variables
-    _radius = 5.0;
-    _orientation = 0.0;
-    setPatternName("blank circle");
+				return super.getPropertyDescriptors();
+			}
+		}
 
-    // and the variables in our parent
-    setKingpinBearing(0.0);
-    setKingpinRange(new WorldDistance(0.0, WorldDistance.DEGS));
-    setNumberOfBuoys(new Integer(12));
+		/**
+		 * method which gets called when all parameters have been updated
+		 */
+		@Override
+		public final void updatesComplete() {
+			// get the builder to build itself
+			create();
 
-  }
+			// inform the parent
+			super.updatesComplete();
+		}
+	}
 
-  //////////////////////////////////////////
-  // Member functions
-  //////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	static public final class testMe extends junit.framework.TestCase {
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-  /** this method is called by the 'Create' function, and it fills in the
-   *  buoys into the correct pattern
-   */
-  protected final void addBuoys(final Debrief.Wrappers.BuoyPatternWrapper pattern)
-  {
-    final WorldLocation centre = getKingpin();
-    final double orient_rads = MWC.Algorithms.Conversions.Degs2Rads(_orientation);
-    final double radius_degs = MWC.Algorithms.Conversions.Nm2Degs(_radius);
+		public testMe(final String val) {
+			super(val);
+		}
 
-    // find out the angle between each buoy
-    double theta = 360.0 / (double)(getNumberOfBuoys().intValue());
-    theta = MWC.Algorithms.Conversions.Degs2Rads(theta);
+		public final void testMyParams() {
+			MWC.GUI.Editable ed = new CircleBuilder(null, null, null);
+			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
+			ed = null;
+		}
+	}
 
-    if(_clockwise)
-    {
-      // do nothing, we're already dropping them in a clockwise direction
-    }
-    else
-    {
-      // reverse the direction we are dropping in
-      theta = -1.0 * theta;
-    }
+	/**
+	 * radius of this barrier (nm)
+	 */
+	private double _radius;
 
-    double currentAngle = orient_rads;
+	/**
+	 * orientation of this barrier (degs)
+	 */
+	private double _orientation;
 
-    for(int i =0;i<getNumberOfBuoys().intValue();i++)
-    {
+	/**
+	 * direction to lay circle (yes/no)
+	 */
+	private boolean _clockwise = true;
 
-      // create the location for this buoy, starting with the correct orientation
-      final WorldVector thisStep = new MWC.GenericData.WorldVector(currentAngle, radius_degs, 0.0);
-      final WorldLocation thisLoc = centre.add(thisStep);
+	//////////////////////////////////////////
+	// Member functions
+	//////////////////////////////////////////
 
-      // create the new symbol
-      final Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("C" + (i + 1),
-                                                  thisLoc,
-                                                    MWC.GUI.Properties.DebriefColors.RED);
+	/**
+	 * our editor
+	 */
+	transient private MWC.GUI.Editable.EditorType _myEditor = null;
 
-      this.formatSymbol(lw, pattern);
+	//////////////////////////////////////////
+	// editable accessor functions
+	//////////////////////////////////////////
 
-      currentAngle += theta;
-    }
-  }
+	//////////////////////////////////////////
+	// Constructor
+	//////////////////////////////////////////
+	public CircleBuilder(final WorldLocation centre, final MWC.GUI.Properties.PropertiesPanel thePanel,
+			final MWC.GUI.Layers theData) {
+		super(centre, thePanel, theData);
 
-  //////////////////////////////////////////
-  // editable accessor functions
-  //////////////////////////////////////////
+		// initialise our variables
+		_radius = 5.0;
+		_orientation = 0.0;
+		setPatternName("blank circle");
 
+		// and the variables in our parent
+		setKingpinBearing(0.0);
+		setKingpinRange(new WorldDistance(0.0, WorldDistance.DEGS));
+		setNumberOfBuoys(new Integer(12));
 
-  public final double getPatternOrientation()
-  {
-    return _orientation;
-  }
+	}
 
-  public final void setPatternOrientation(final double val)
-  {
-    _orientation = val;
-  }
+	/**
+	 * this method is called by the 'Create' function, and it fills in the buoys
+	 * into the correct pattern
+	 */
+	@Override
+	protected final void addBuoys(final Debrief.Wrappers.BuoyPatternWrapper pattern) {
+		final WorldLocation centre = getKingpin();
+		final double orient_rads = MWC.Algorithms.Conversions.Degs2Rads(_orientation);
+		final double radius_degs = MWC.Algorithms.Conversions.Nm2Degs(_radius);
 
-  public final WorldDistance getPatternRadius()
-  {
-    return new WorldDistance(_radius, WorldDistance.NM);
-  }
+		// find out the angle between each buoy
+		double theta = 360.0 / (getNumberOfBuoys().intValue());
+		theta = MWC.Algorithms.Conversions.Degs2Rads(theta);
 
-  public final void setPatternRadius(final WorldDistance val)
-  {
-    _radius = val.getValueIn(WorldDistance.NM);
-  }
+		if (_clockwise) {
+			// do nothing, we're already dropping them in a clockwise direction
+		} else {
+			// reverse the direction we are dropping in
+			theta = -1.0 * theta;
+		}
 
-  public final boolean getPatternClockwise()
-  {
-    return _clockwise;
-  }
+		double currentAngle = orient_rads;
 
-  public final void setPatternClockwise(final boolean val)
-  {
-    _clockwise = val;
-  }
+		for (int i = 0; i < getNumberOfBuoys().intValue(); i++) {
 
+			// create the location for this buoy, starting with the correct orientation
+			final WorldVector thisStep = new MWC.GenericData.WorldVector(currentAngle, radius_degs, 0.0);
+			final WorldLocation thisLoc = centre.add(thisStep);
 
-  /** get the editor for this item
- * @return the BeanInfo data for this editable object
- */
-  public final MWC.GUI.Editable.EditorType getInfo()
-  {
-    if(_myEditor == null)
-      _myEditor = new CircleInfo(this, this.getName());
+			// create the new symbol
+			final Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper("C" + (i + 1), thisLoc,
+					MWC.GUI.Properties.DebriefColors.RED);
 
-    return _myEditor;
-  }
+			this.formatSymbol(lw, pattern);
 
-  public final String toString()
-  {
-    return "Circle Builder";
-  }
+			currentAngle += theta;
+		}
+	}
 
-  //////////////////////////////////////////
-  // editable details
-  //////////////////////////////////////////
+	/**
+	 * get the editor for this item
+	 *
+	 * @return the BeanInfo data for this editable object
+	 */
+	@Override
+	public final MWC.GUI.Editable.EditorType getInfo() {
+		if (_myEditor == null)
+			_myEditor = new CircleInfo(this, this.getName());
 
-  public final class CircleInfo extends MWC.GUI.Editable.EditorType
-  {
+		return _myEditor;
+	}
 
-    public CircleInfo(final CircleBuilder data,
-                   final String theName)
-    {
-      super(data, theName, "Circle:");
-    }
+	public final boolean getPatternClockwise() {
+		return _clockwise;
+	}
 
-    /** method which gets called when all parameters have
-     *  been updated
-     */
-    public final void updatesComplete()
-    {
-      // get the builder to build itself
-      create();
+	public final double getPatternOrientation() {
+		return _orientation;
+	}
 
-      // inform the parent
-      super.updatesComplete();
-    }
+	public final WorldDistance getPatternRadius() {
+		return new WorldDistance(_radius, WorldDistance.NM);
+	}
 
-    public final PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try
-      {
-        final PropertyDescriptor[] myRes=
-        {
-        		displayProp("SymbolType", "Symbol type", "the type of symbol plotted for this label"),
-            displayProp("SymbolSize", "Symbol size", "the scale of the symbol"),
-            prop("Duration", "the lifetime of the buoy pattern"),
-            displayProp("PatternName", "Pattern name", "the name of this circle"),
-            displayProp("PatternOrientation", "Pattern orientation", "the orientation of the first point of this circle (degs)"),
-            displayProp("PatternRadius", "Pattern radius", "the radius of this circular pattern"),
-            displayProp("KingpinRange", "Kingpin range", "the range of the kingpin from the jig point"),
-            displayProp("KingpinBearing", "Kingpin bearing", "the bearing of the kingpin from the jig point (degs)"),
-            displayProp("JigPoint", "Jig point", "the jig point for the construction of this circle"),
-            displayProp("NumberOfBuoys", "Number of buoys", "the number of buoys in this circle"),
-            prop("Color", "the default colour for this circle"),
-            displayProp("DateTimeGroup", "DateTime group", "the DTG this pattern starts (DD/MM/YY)"),
-            displayProp("BuoyLabelVisible", "Buoy label visible", "whether the buoy labels are visible"),
-            displayProp("PatternClockwise", "Pattern clockwise", "whether the buoys are laid clockwise")
-        };
-        myRes[0].setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor.SymbolFactoryBuoyPropertyEditor.class);
-        myRes[1].setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.class);
+	public final void setPatternClockwise(final boolean val) {
+		_clockwise = val;
+	}
 
-        return myRes;
+	public final void setPatternOrientation(final double val) {
+		_orientation = val;
+	}
 
-      }catch(final IntrospectionException e)
-      {
-        // find out which property fell over
-        MWC.Utilities.Errors.Trace.trace(e, "Creating editor for Circle Builder");
+	//////////////////////////////////////////
+	// editable details
+	//////////////////////////////////////////
 
-        return super.getPropertyDescriptors();
-      }
-    }
-  }
+	public final void setPatternRadius(final WorldDistance val) {
+		_radius = val.getValueIn(WorldDistance.NM);
+	}
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  static public final class testMe extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE  = "UNIT";
-    public testMe(final String val)
-    {
-      super(val);
-    }
-    public final void testMyParams()
-    {
-      MWC.GUI.Editable ed = new CircleBuilder(null,null,null);
-      MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
-      ed = null;
-    }
-  }
+	@Override
+	public final String toString() {
+		return "Circle Builder";
+	}
 
 }

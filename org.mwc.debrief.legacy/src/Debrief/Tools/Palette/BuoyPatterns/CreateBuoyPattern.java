@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: CreateBuoyPattern.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.1.1.2 $
@@ -55,186 +56,184 @@
 
 package Debrief.Tools.Palette.BuoyPatterns;
 
-import MWC.GUI.*;
-import MWC.GUI.Tools.*;
-import MWC.GUI.Properties.*;
-import MWC.GenericData.*;
+import MWC.GUI.Layers;
+import MWC.GUI.ToolParent;
+import MWC.GUI.Properties.PropertiesPanel;
+import MWC.GUI.Tools.Action;
+import MWC.GUI.Tools.PlainTool;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
-public final class CreateBuoyPattern extends PlainTool
-{
+public final class CreateBuoyPattern extends PlainTool {
 
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  /** the properties panel
-   */
-  private final PropertiesPanel _thePanel;
+	/**
+	 * get the actual instance of the shape we are creating
+	 *
+	 * @return LabelWrapper containing an instance of the new shape
+	 * @param centre the current centre of the screen, where the shape should be
+	 *               centred
+	 */
+	// abstract protected LabelWrapper getShape(WorldLocation centre);
 
-  /** the layers we are going to drop this shape into
-   */
-  private final Layers _theData;
+	///////////////////////////////////////////////////////
+	// store action information
+	///////////////////////////////////////////////////////
+	protected final class CreateBuoyPatternAction implements Action {
+		/**
+		 * the panel we are going to show the initial editor in
+		 */
+		final PropertiesPanel _thePanel1;
+		final Layers _theLayers;
+		final MWC.GUI.PlainChart _theChart1;
+		final BuoyPatternDirector _theDirector1;
 
-  /** the chart we are using (since want our 'duff' item to appear in the middle)
-   */
-  private final MWC.GUI.PlainChart _theChart;
+		PatternBuilderType _myBuilder;
 
-  /** the buoypattern director I work with
-   */
-  private final BuoyPatternDirector _theDirector;
+		public CreateBuoyPatternAction(final PropertiesPanel thePanel, final Layers theLayers,
+				final MWC.GUI.PlainChart theChart, final BuoyPatternDirector theDirector) {
+			_thePanel1 = thePanel;
+			_theChart1 = theChart;
+			_theDirector1 = theDirector;
+			_theLayers = theLayers;
+		}
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  /** constructor for label
-   * @param theParent parent where we can change cursor
-   * @param thePanel panel
-   */
-  public CreateBuoyPattern(final ToolParent theParent,
-                     final PropertiesPanel thePanel,
-                     final Layers theData,
-                     final MWC.GUI.PlainChart theChart,
-                     final String theName,
-                     final String theImage)
-  {
-    super(theParent, theName, theImage);
+		/**
+		 * make it so!
+		 */
+		@Override
+		public final void execute() {
+			// find the centre of the plot
+			final WorldArea wa = _theChart1.getDataArea();
 
-    _thePanel = thePanel;
-    _theData = theData;
-    _theChart = theChart;
+			// have we actually got data?
+			if (wa == null) {
+				// drop out
+				return;
+			}
 
-    _theDirector = new BuoyPatternDirector();
-  }
+			// retrieve the centre of this area
+			final WorldLocation centre = wa.getCentre();
 
+			// find out which type of shape we want
+			final String selection = getChoice();
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+			// check that the user has entered something
+			if (selection == null) {
+				// oh well, just drop out
+				return;
+			}
 
-  public final Action getData()
-  {
-      return new CreateBuoyPatternAction(_thePanel, _theData, _theChart, _theDirector);
-  }
+			// create the pattern builder, informing it of the Layers object which
+			// it is to insert itself into
+			_myBuilder = _theDirector1.createBuilder(centre, selection, _thePanel1, _theLayers);
 
-  /** get the actual instance of the shape we are creating
-   * @return LabelWrapper containing an instance of the new shape
-   * @param centre the current centre of the screen, where the shape should be centred
-   */
- // abstract protected LabelWrapper getShape(WorldLocation centre);
+			// pass the pattern builder to the property editor
+			_thePanel1.addConstructor(_myBuilder.getInfo(), null);
 
+			// finished.
+		}
 
-  ///////////////////////////////////////////////////////
-  // store action information
-  ///////////////////////////////////////////////////////
-  protected final class CreateBuoyPatternAction implements Action
-  {
-    /** the panel we are going to show the initial editor in
-     */
-    final PropertiesPanel _thePanel1;
-    final Layers _theLayers;
-    final MWC.GUI.PlainChart _theChart1;
-    final BuoyPatternDirector _theDirector1;
+		/**
+		 * specify is this is an operation which can be redone
+		 */
+		@Override
+		public final boolean isRedoable() {
+			return true;
+		}
 
-    PatternBuilderType _myBuilder;
+		/**
+		 * specify is this is an operation which can be undone
+		 */
+		@Override
+		public final boolean isUndoable() {
+			return true;
+		}
 
-    public CreateBuoyPatternAction(final PropertiesPanel thePanel,
-                               final Layers theLayers,
-                               final MWC.GUI.PlainChart theChart,
-                               final BuoyPatternDirector theDirector)
-    {
-      _thePanel1 = thePanel;
-      _theChart1 = theChart;
-      _theDirector1 = theDirector;
-      _theLayers = theLayers;
-    }
+		/**
+		 * return string describing this operation
+		 *
+		 * @return String describing this operation
+		 */
+		@Override
+		public final String toString() {
+			return "New BuoyPattern";
+		}
 
-    /** specify is this is an operation which can be undone
-     */
-    public final boolean isUndoable()
-    {
-      return true;
-    }
+		/**
+		 * take the shape away from the layer
+		 */
+		@Override
+		public final void undo() {
+			// check that we got as far as creating a builder
+			if (_myBuilder != null) {
+				// get the builder to undo the work
+				_myBuilder.undo();
+			}
+		}
+	}
 
-    /** specify is this is an operation which can be redone
-     */
-    public final boolean isRedoable()
-    {
-      return true;
-    }
+	/**
+		 *
+		 */
+	private static final long serialVersionUID = 1L;
 
-    /** return string describing this operation
-     * @return String describing this operation
-     */
-    public final String toString()
-    {
-      return "New BuoyPattern";
-    }
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+	/**
+	 * the properties panel
+	 */
+	private final PropertiesPanel _thePanel;
 
-    /** take the shape away from the layer
-     */
-    public final void undo()
-    {
-      // check that we got as far as creating a builder
-      if(_myBuilder != null)
-      {
-        // get the builder to undo the work
-        _myBuilder.undo();
-      }
-    }
+	/**
+	 * the layers we are going to drop this shape into
+	 */
+	private final Layers _theData;
 
-    /** make it so!
-     */
-    public final void execute()
-    {
-      // find the centre of the plot
-      final WorldArea wa = _theChart1.getDataArea();
+	/**
+	 * the chart we are using (since want our 'duff' item to appear in the middle)
+	 */
+	private final MWC.GUI.PlainChart _theChart;
 
-      // have we actually got data?
-      if(wa == null)
-      {
-        // drop out
-        return;
-      }
+	/**
+	 * the buoypattern director I work with
+	 */
+	private final BuoyPatternDirector _theDirector;
 
-      // retrieve the centre of this area
-      final WorldLocation centre = wa.getCentre();
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-      // find out which type of shape we want
-      final String selection = getChoice();
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	/**
+	 * constructor for label
+	 *
+	 * @param theParent parent where we can change cursor
+	 * @param thePanel  panel
+	 */
+	public CreateBuoyPattern(final ToolParent theParent, final PropertiesPanel thePanel, final Layers theData,
+			final MWC.GUI.PlainChart theChart, final String theName, final String theImage) {
+		super(theParent, theName, theImage);
 
-      // check that the user has entered something
-      if(selection == null)
-      {
-        // oh well, just drop out
-        return;
-      }
+		_thePanel = thePanel;
+		_theData = theData;
+		_theChart = theChart;
 
-      // create the pattern builder, informing it of the Layers object which
-      // it is to insert itself into
-      _myBuilder = _theDirector1.createBuilder(centre,
-                                              selection,
-                                              _thePanel1,
-                                              _theLayers);
+		_theDirector = new BuoyPatternDirector();
+	}
 
-      // pass the pattern builder to the property editor
-      _thePanel1.addConstructor(_myBuilder.getInfo(), null);
+	String getChoice() {
+		final Object[] opts = _theDirector.getPatterns();
+		final String res = (String) javax.swing.JOptionPane.showInputDialog(null, "Which pattern?",
+				"Create Buoy Pattern", javax.swing.JOptionPane.QUESTION_MESSAGE, null, opts, null);
+		return res;
+	}
 
-      // finished.
-    }
-  }
-
-
-  String getChoice()
-  {
-    final Object[] opts = _theDirector.getPatterns();
-    final String res = (String)javax.swing.JOptionPane.showInputDialog(null,
-                                            "Which pattern?",
-                                            "Create Buoy Pattern",
-                                            javax.swing.JOptionPane.QUESTION_MESSAGE,
-                                            null,
-                                            opts,
-                                            null);
-    return res;
-  }
-
+	@Override
+	public final Action getData() {
+		return new CreateBuoyPatternAction(_thePanel, _theData, _theChart, _theDirector);
+	}
 
 }

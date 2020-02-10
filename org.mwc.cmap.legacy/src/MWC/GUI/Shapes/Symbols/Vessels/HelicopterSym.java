@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: HelicopterSym.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -52,76 +53,71 @@ import MWC.GenericData.WorldLocation;
 
 public class HelicopterSym extends PlainSymbol {
 
-  /**
-	 * 
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
-  @Override
-  public PlainSymbol create()
-  {
-    return new HelicopterSym();
-  }
+	@Override
+	public PlainSymbol create() {
+		return new HelicopterSym();
+	}
 
-  public java.awt.Dimension getBounds(){
-    // sort out the size of the symbol at the current scale factor
-    final java.awt.Dimension res = new java.awt.Dimension((int)(2 * 4 * getScaleVal()),(int)( 2 * 4 * getScaleVal()));
-    return res;
-  }
+	@Override
+	public java.awt.Dimension getBounds() {
+		// sort out the size of the symbol at the current scale factor
+		final java.awt.Dimension res = new java.awt.Dimension((int) (2 * 4 * getScaleVal()),
+				(int) (2 * 4 * getScaleVal()));
+		return res;
+	}
 
-  public void paint(final CanvasType dest, final WorldLocation centre)
-  {
-    paint(dest, centre, 0.0);
-  }
+	@Override
+	public String getType() {
+		return "Helicopter";
+	}
 
+	@Override
+	public void paint(final CanvasType dest, final WorldLocation centre) {
+		paint(dest, centre, 0.0);
+	}
 
-  public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
-  {
-    // set the colour
-    dest.setColor(getColor());
+	@Override
+	public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction) {
+		// set the colour
+		dest.setColor(getColor());
 
-    // create our centre point
-    final java.awt.Point centre = dest.toScreen(theLocation);
-    
-    // handle unable to gen screen coords (if off visible area)
-    if(centre == null)
-      return;
+		// create our centre point
+		final java.awt.Point centre = dest.toScreen(theLocation);
 
-    final int wid = (int)(4 * getScaleVal());
+		// handle unable to gen screen coords (if off visible area)
+		if (centre == null)
+			return;
 
-    // start with the centre object
-    dest.drawOval(centre.x - wid/2, centre.y - wid/2, wid, wid);
+		final int wid = (int) (4 * getScaleVal());
 
-    final double theta = MWC.Algorithms.Conversions.Degs2Rads(120.0);
-    double thisAng = MWC.Algorithms.Conversions.Degs2Rads(180);
+		// start with the centre object
+		dest.drawOval(centre.x - wid / 2, centre.y - wid / 2, wid, wid);
 
-    // now for the arcs
-    for(int i=0; i<3;i++)
-    {
-      // the inner end of the arc
+		final double theta = MWC.Algorithms.Conversions.Degs2Rads(120.0);
+		double thisAng = MWC.Algorithms.Conversions.Degs2Rads(180);
 
-      final int deltaX = (int)(Math.sin(thisAng) * wid / 2.0);
-      final int deltaY =(int)(Math.cos(thisAng) * wid / 2.0);
-      final int endX = (int)(Math.sin(thisAng) * wid * 1.5);
-      final int endY = (int)(Math.cos(thisAng) * wid * 1.5);
+		// now for the arcs
+		for (int i = 0; i < 3; i++) {
+			// the inner end of the arc
 
-      // step to the next angle
-      thisAng += theta;
+			final int deltaX = (int) (Math.sin(thisAng) * wid / 2.0);
+			final int deltaY = (int) (Math.cos(thisAng) * wid / 2.0);
+			final int endX = (int) (Math.sin(thisAng) * wid * 1.5);
+			final int endY = (int) (Math.cos(thisAng) * wid * 1.5);
 
-      // and the line
-      dest.drawLine(centre.x + deltaX, centre.y - deltaY, centre.x + endX, centre.y - endY);
+			// step to the next angle
+			thisAng += theta;
 
-    }
+			// and the line
+			dest.drawLine(centre.x + deltaX, centre.y - deltaY, centre.x + endX, centre.y - endY);
 
-  }
+		}
 
-  public String getType()
-  {
-    return "Helicopter";
-  }
+	}
 
 }
-
-
-
-

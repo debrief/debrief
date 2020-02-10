@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.cmap.core.property_support.lengtheditor.views;
 
 import org.eclipse.jface.viewers.ISelection;
@@ -32,9 +33,60 @@ import org.mwc.cmap.core.property_support.lengtheditor.LengthPropertyDescriptor;
 import MWC.GenericData.WorldDistance.ArrayLength;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
+public class TestViewPart extends ViewPart {
 
-public class TestViewPart extends ViewPart
-{
+	private class PropertySource implements IPropertySource {
+
+		@Override
+		public Object getEditableValue() {
+			return myValue.toString();
+		}
+
+		@Override
+		public IPropertyDescriptor[] getPropertyDescriptors() {
+			return DESCRIPTORS;
+		}
+
+		@Override
+		public Object getPropertyValue(final Object id) {
+			if (PROPERTY_ID.equals(id)) {
+				return myValue.toString();
+			}
+			return null;
+		}
+
+		@Override
+		public boolean isPropertySet(final Object id) {
+			return false;
+		}
+
+		@Override
+		public void resetPropertyValue(final Object id) {
+			setNewValue(new ArrayLength(0));
+		}
+
+		@Override
+		public void setPropertyValue(final Object id, final Object value) {
+			if (PROPERTY_ID.equals(id)) {
+				try {
+					if (value instanceof String) {
+						final double thisD = MWCXMLReader.readThisDouble((String) value);
+						setNewValue(new ArrayLength(thisD));
+					} else if (value instanceof ArrayLength)
+						setNewValue((ArrayLength) value);
+				} catch (final Exception e) {
+					// nothing
+				}
+			}
+
+		}
+	}
+
+	private static String PROPERTY_ID = "value";//$NON-NLS-1$
+
+	private static final TextPropertyDescriptor LENGTH_PROP_DESC = new LengthPropertyDescriptor(PROPERTY_ID, "Length");
+
+	private static final IPropertyDescriptor[] DESCRIPTORS = { LENGTH_PROP_DESC };
 
 	// init default value
 	private ArrayLength myValue = new ArrayLength(0);
@@ -44,122 +96,51 @@ public class TestViewPart extends ViewPart
 	private PropertySource myPS;
 
 	@Override
-	public void createPartControl(final Composite parent)
-	{
+	public void createPartControl(final Composite parent) {
 		myLabel = new Label(parent, SWT.NONE);
 		myLabel.setText(myValue.toString());
 	}
 
+	private PropertySource getPropertySource() {
+		if (myPS == null) {
+			myPS = new PropertySource();
+		}
+		return myPS;
+	}
+
 	@Override
-	public void init(final IViewSite site) throws PartInitException
-	{
+	public void init(final IViewSite site) throws PartInitException {
 		super.init(site);
-		getViewSite().setSelectionProvider(new ISelectionProvider()
-		{
+		getViewSite().setSelectionProvider(new ISelectionProvider() {
 
-			public void setSelection(final ISelection selection)
-			{
+			@Override
+			public void addSelectionChangedListener(final ISelectionChangedListener listener) {
 				// nothing
 			}
 
-			public void removeSelectionChangedListener(
-					final ISelectionChangedListener listener)
-			{
-				// nothing
-			}
-
-			public ISelection getSelection()
-			{
+			@Override
+			public ISelection getSelection() {
 				return new StructuredSelection(getPropertySource());
 			}
 
-			public void addSelectionChangedListener(final ISelectionChangedListener listener)
-			{
+			@Override
+			public void removeSelectionChangedListener(final ISelectionChangedListener listener) {
+				// nothing
+			}
+
+			@Override
+			public void setSelection(final ISelection selection) {
 				// nothing
 			}
 		});
 	}
 
 	@Override
-	public void setFocus()
-	{
+	public void setFocus() {
 		myLabel.setFocus();
 	}
 
-	private PropertySource getPropertySource()
-	{
-		if (myPS == null)
-		{
-			myPS = new PropertySource();
-		}
-		return myPS;
-	}
-
-	private static String PROPERTY_ID = "value";//$NON-NLS-1$
-
-	private static final TextPropertyDescriptor LENGTH_PROP_DESC = new LengthPropertyDescriptor(
-			PROPERTY_ID, "Length");
-
-	private static final IPropertyDescriptor[] DESCRIPTORS =
-	{ LENGTH_PROP_DESC };
-
-	private class PropertySource implements IPropertySource
-	{
-
-		public Object getEditableValue()
-		{
-			return myValue.toString();
-		}
-
-		public IPropertyDescriptor[] getPropertyDescriptors()
-		{
-			return DESCRIPTORS;
-		}
-
-		public Object getPropertyValue(final Object id)
-		{
-			if (PROPERTY_ID.equals(id))
-			{
-				return myValue.toString();
-			}
-			return null;
-		}
-
-		public boolean isPropertySet(final Object id)
-		{
-			return false;
-		}
-
-		public void resetPropertyValue(final Object id)
-		{
-			setNewValue(new ArrayLength(0));
-		}
-
-		public void setPropertyValue(final Object id, final Object value)
-		{
-			if (PROPERTY_ID.equals(id))
-			{
-				try
-				{
-					if (value instanceof String)
-					{
-						final double thisD =  MWCXMLReader.readThisDouble((String) value);
-						setNewValue(new ArrayLength(thisD));
-					}
-					else if (value instanceof ArrayLength)
-						setNewValue((ArrayLength) value);
-				}
-				catch (final Exception e)
-				{
-					// nothing
-				}
-			}
-
-		}
-	}
-
-	public void setNewValue(final ArrayLength d)
-	{
+	public void setNewValue(final ArrayLength d) {
 		myValue = d;
 		myLabel.setText(myValue.toString());
 	}

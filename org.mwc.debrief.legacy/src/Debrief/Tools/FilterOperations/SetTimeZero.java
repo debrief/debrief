@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package Debrief.Tools.FilterOperations;
 
 // Copyright MWC 1999, Debrief 3 Project
@@ -98,345 +99,316 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WatchableList;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
-abstract public class SetTimeZero implements FilterOperation
-{
-  private HiResDate _start_time = null;
-  private HiResDate _end_time = null;
-  private java.util.Vector<WatchableList> _theTracks = null;
-
-  private final String _theSeparator = System.getProperties().getProperty("line.separator");
-
-  // the string formatter
-  private final java.text.DecimalFormat decimals = new java.text.DecimalFormat("0");
-
-
-  public final String getDescription()
-  {
-    String res = "2. Select tracks to be updated";
-    res += _theSeparator + "3. Select time-zero (Start slider)";
-    res += _theSeparator + "4. Select extent of time to be updated (Finish slider)";
-    res += _theSeparator + "5. Press 'Apply' button";
-    res += _theSeparator + "6. Dialog boxes will pop up to allow symbol and label frequencies to"
-      + " be specified (in seconds)";
-    res += _theSeparator + 	"====================";
-    res += _theSeparator + 	"This operation displays symbols and labels at specified frequencies, ";
-    res += " together with their elapsed time (in seconds) from a time-zero";
-    return res;
-  }
-
-  public final void setPeriod(final HiResDate startDTG, final HiResDate finishDTG)
-  {
-    _start_time = startDTG;
-    _end_time = finishDTG;
-  }
-
-  public final void setTracks(final java.util.Vector<WatchableList> selectedTracks)
-  {
-    _theTracks = selectedTracks;
-  }
-
-
-  abstract public void setTimeZero(HiResDate newDate);
-
-  /** the user has pressed RESET whilst this button is pressed
-   *
-   * @param startTime the new start time
-   * @param endTime the new end time
-   */
-  public void resetMe(final HiResDate startTime, final HiResDate endTime)
-  {
-    setTimeZero(null);
-  }
-
-  public final void execute()
-  {
-  }
-
-  public final MWC.GUI.Tools.Action getData()
-  {
-    // produce the list of modifications to be made
-    SetTimeAction res = null;
-
-    long symStep = 0;
-    long labStep = 0;
-
-    // check we have some tracks
-    if(_theTracks == null)
-    {
-      MWC.GUI.Dialogs.DialogFactory.showMessage("Set Time Zero", "Please select one or more tracks");
-      return null;
-    }
-
-    // we have remaining questions to find out.
-    // first find out the symbol frequency we want
-    final Double tmpSymStep = MWC.GUI.Dialogs.DialogFactory.getDouble("Set Time Zero",
-                                                               "Enter symbol frequency (seconds)",
-                                                               5);
-
-    if(tmpSymStep == null)
-      return null;
-
-    if(tmpSymStep.doubleValue() == 0)
-      return null;
-
-    // convert to seconds
-    symStep = (long)(tmpSymStep.doubleValue() * 1000 * 1000);
-
-    // now find out the label frequecy
-    final Double tmpLabStep = MWC.GUI.Dialogs.DialogFactory.getDouble("Set Time Zero",
-                                                               "Enter label frequency (seconds)",
-                                                               15);
-
-    if(tmpLabStep == null)
-      return null;
-
-    if(tmpLabStep.doubleValue() == 0)
-      return null;
-
-    // convert to seconds
-    labStep = (long)(tmpLabStep.doubleValue() * 1000 * 1000);
-
-    // make our symbols and labels visible
-    Enumeration<WatchableList> iter = _theTracks.elements();
-    while(iter.hasMoreElements())
-    {
-      final WatchableList wl = (WatchableList)iter.nextElement();
-
-      // is this a track?
-      if(wl instanceof Debrief.Wrappers.TrackWrapper){
-
-        final TrackWrapper tw = (TrackWrapper)wl;
-
-        long this_time = _start_time.getMicros();
-
-        // first pass through, setting the labels visible
-        while(this_time <= _end_time.getMicros())
-        {
-          final MWC.GenericData.Watchable[] list = tw.getNearestTo(new HiResDate(0, this_time));
-          FixWrapper fw = null;
-          if(list.length > 0)
-             fw = (FixWrapper)list[0];
-          if(fw != null)
-          {
-            fw.setLabelShowing(true);
-          }
-
-          // produce the next time step
-          this_time += labStep;
-        }
-
-
-        // now pass through making the symbols visible
-        this_time = _start_time.getMicros();
-
-        // first pass through, setting the symbols visible
-        while(this_time <= _end_time.getMicros())
-        {
-          final MWC.GenericData.Watchable[] list = tw.getNearestTo(new HiResDate(this_time));
-          FixWrapper fw = null;
-          if(list.length > 0)
-             fw = (FixWrapper)list[0];
-
-          if(fw != null)
-          {
-            // and make this symbol visible
-            fw.setSymbolShowing(true);
-          }
-          // produce the next time step
-          this_time += symStep;
-        }
-
-
-      }
-    }
-
-
-    // now change the times of all of the visible labels
-    iter = _theTracks.elements();
-    while(iter.hasMoreElements())
-    {
-      final WatchableList wl = (WatchableList)iter.nextElement();
-
-      // is this a track?
-      if(wl instanceof Debrief.Wrappers.TrackWrapper){
-
-        final TrackWrapper tw = (TrackWrapper)wl;
-
-        // step through the track
-        final Collection<Editable> ss = tw.getItemsBetween(tw.getStartDTG(),
-                                          tw.getEndDTG());
-
-        final Iterator<Editable> it = ss.iterator();
-
-        while(it.hasNext())
-        {
-          final FixWrapper fw = (FixWrapper)it.next();
-
-          // is the label visible for this fix?
-          if(fw.getLabelShowing())
-          {
-            // calculate the new time value
-            final long thisDTG = fw.getTime().getMicros();
-            final long delta = thisDTG - this._start_time.getMicros();
-
-            // convert the delta to seconds
-            final double secs = delta / 1000.0;
-
-            // calculate the new time label
-            String val;
-            if(secs < 0)
-            {
-              // we dont need to include the minus sign, since
-              // it's on the front of the string
-              val="T";
-            }
-            else
-            {
-              val = "T+";
-            }
-
-            val += decimals.format(secs);
-
-            // retrieve the old time label
-            final String oldVal = fw.getName();
-
-            // add this update to our action
-            if(res == null)
-            {
-              res = new SetTimeAction(DebriefFormatDateTime.toStringHiRes(this._start_time),
-                                      this._start_time);
-            }
-
-            res.addAction(fw,
-                          val,
-                          oldVal);
-
-          }
-
-        }
-
-      }
-
-    }
-    // return the new action
-    return res;
-  }
-
-  public final String getLabel()
-  {
-    return "Set time zero";
-  }
-
-  public final String getImage()
-  {
-    return null;
-  }
-
-  public final void actionPerformed(final java.awt.event.ActionEvent p1)
-  {
-
-  }
-
-  public final void close()
-  {
-
-  }
-
-  ///////////////////////////////////////////////////////
-  // store action information
-  ///////////////////////////////////////////////////////
-  final class SetTimeAction implements Action
-  {
-    private final String _theTimeString;
-    private final HiResDate _theTime;
-    private final java.util.Vector<someUpdate> _theChanges;
-
-    public SetTimeAction(final String theTimeString,
-                         final HiResDate theTime)
-    {
-      _theTimeString = theTimeString;
-      _theTime = theTime;
-      _theChanges = new java.util.Vector<someUpdate>(0,1);
-    }
-
-    public final void addAction(final FixWrapper fw,
-                          final String newLabel,
-                          final String oldLabel)
-    {
-      // add the item to our list
-      _theChanges.addElement(new someUpdate(newLabel,
-                                            oldLabel,
-                                            fw));
-    }
-
-    /** specify is this is an operation which can be undone
-     */
-    public final boolean isUndoable()
-    {
-      return true;
-    }
-
-    /** specify is this is an operation which can be redone
-     */
-    public final boolean isRedoable()
-    {
-      return true;
-    }
-
-    /** return string describing this operation
-     * @return String describing this operation
-     */
-    public final String toString()
-    {
-      return "Set times to t0 at " + _theTimeString;
-    }
-
-    /** take the shape away from the layer
-     */
-    public final void undo()
-    {
-      // work back through the list, removing the updates
-      // work through the list, making the changes
-      final Enumeration<someUpdate> iter = _theChanges.elements();
-      while(iter.hasMoreElements())
-      {
-        final someUpdate sm = (someUpdate)iter.nextElement();
-        sm.theFix.setLabel(sm.oldVal);
-      }
-
-      setTimeZero(null);
-    }
-
-    /** make it so!
-     */
-    public final void execute()
-    {
-      // work through the list, making the changes
-      final Enumeration<someUpdate> iter = _theChanges.elements();
-      while(iter.hasMoreElements())
-      {
-        final someUpdate sm = (someUpdate)iter.nextElement();
-        sm.theFix.setLabel(sm.newVal);
-      }
-
-      setTimeZero(_theTime);
-    }
-
-    public final class someUpdate
-    {
-      public final String newVal;
-      public final String oldVal;
-      public final FixWrapper theFix;
-      public someUpdate(final String theNewVal,
-                        final String theOldVal,
-                        final FixWrapper theFixVal)
-      {
-        newVal = theNewVal;
-        oldVal = theOldVal;
-        theFix = theFixVal;
-      }
-    }
-  }
+abstract public class SetTimeZero implements FilterOperation {
+	///////////////////////////////////////////////////////
+	// store action information
+	///////////////////////////////////////////////////////
+	final class SetTimeAction implements Action {
+		public final class someUpdate {
+			public final String newVal;
+			public final String oldVal;
+			public final FixWrapper theFix;
+
+			public someUpdate(final String theNewVal, final String theOldVal, final FixWrapper theFixVal) {
+				newVal = theNewVal;
+				oldVal = theOldVal;
+				theFix = theFixVal;
+			}
+		}
+
+		private final String _theTimeString;
+		private final HiResDate _theTime;
+
+		private final java.util.Vector<someUpdate> _theChanges;
+
+		public SetTimeAction(final String theTimeString, final HiResDate theTime) {
+			_theTimeString = theTimeString;
+			_theTime = theTime;
+			_theChanges = new java.util.Vector<someUpdate>(0, 1);
+		}
+
+		public final void addAction(final FixWrapper fw, final String newLabel, final String oldLabel) {
+			// add the item to our list
+			_theChanges.addElement(new someUpdate(newLabel, oldLabel, fw));
+		}
+
+		/**
+		 * make it so!
+		 */
+		@Override
+		public final void execute() {
+			// work through the list, making the changes
+			final Enumeration<someUpdate> iter = _theChanges.elements();
+			while (iter.hasMoreElements()) {
+				final someUpdate sm = iter.nextElement();
+				sm.theFix.setLabel(sm.newVal);
+			}
+
+			setTimeZero(_theTime);
+		}
+
+		/**
+		 * specify is this is an operation which can be redone
+		 */
+		@Override
+		public final boolean isRedoable() {
+			return true;
+		}
+
+		/**
+		 * specify is this is an operation which can be undone
+		 */
+		@Override
+		public final boolean isUndoable() {
+			return true;
+		}
+
+		/**
+		 * return string describing this operation
+		 *
+		 * @return String describing this operation
+		 */
+		@Override
+		public final String toString() {
+			return "Set times to t0 at " + _theTimeString;
+		}
+
+		/**
+		 * take the shape away from the layer
+		 */
+		@Override
+		public final void undo() {
+			// work back through the list, removing the updates
+			// work through the list, making the changes
+			final Enumeration<someUpdate> iter = _theChanges.elements();
+			while (iter.hasMoreElements()) {
+				final someUpdate sm = iter.nextElement();
+				sm.theFix.setLabel(sm.oldVal);
+			}
+
+			setTimeZero(null);
+		}
+	}
+
+	private HiResDate _start_time = null;
+	private HiResDate _end_time = null;
+
+	private java.util.Vector<WatchableList> _theTracks = null;
+
+	private final String _theSeparator = System.getProperties().getProperty("line.separator");
+
+	// the string formatter
+	private final java.text.DecimalFormat decimals = new java.text.DecimalFormat("0");
+
+	@Override
+	public final void actionPerformed(final java.awt.event.ActionEvent p1) {
+
+	}
+
+	@Override
+	public final void close() {
+
+	}
+
+	@Override
+	public final void execute() {
+	}
+
+	@Override
+	public final MWC.GUI.Tools.Action getData() {
+		// produce the list of modifications to be made
+		SetTimeAction res = null;
+
+		long symStep = 0;
+		long labStep = 0;
+
+		// check we have some tracks
+		if (_theTracks == null) {
+			MWC.GUI.Dialogs.DialogFactory.showMessage("Set Time Zero", "Please select one or more tracks");
+			return null;
+		}
+
+		// we have remaining questions to find out.
+		// first find out the symbol frequency we want
+		final Double tmpSymStep = MWC.GUI.Dialogs.DialogFactory.getDouble("Set Time Zero",
+				"Enter symbol frequency (seconds)", 5);
+
+		if (tmpSymStep == null)
+			return null;
+
+		if (tmpSymStep.doubleValue() == 0)
+			return null;
+
+		// convert to seconds
+		symStep = (long) (tmpSymStep.doubleValue() * 1000 * 1000);
+
+		// now find out the label frequecy
+		final Double tmpLabStep = MWC.GUI.Dialogs.DialogFactory.getDouble("Set Time Zero",
+				"Enter label frequency (seconds)", 15);
+
+		if (tmpLabStep == null)
+			return null;
+
+		if (tmpLabStep.doubleValue() == 0)
+			return null;
+
+		// convert to seconds
+		labStep = (long) (tmpLabStep.doubleValue() * 1000 * 1000);
+
+		// make our symbols and labels visible
+		Enumeration<WatchableList> iter = _theTracks.elements();
+		while (iter.hasMoreElements()) {
+			final WatchableList wl = iter.nextElement();
+
+			// is this a track?
+			if (wl instanceof Debrief.Wrappers.TrackWrapper) {
+
+				final TrackWrapper tw = (TrackWrapper) wl;
+
+				long this_time = _start_time.getMicros();
+
+				// first pass through, setting the labels visible
+				while (this_time <= _end_time.getMicros()) {
+					final MWC.GenericData.Watchable[] list = tw.getNearestTo(new HiResDate(0, this_time));
+					FixWrapper fw = null;
+					if (list.length > 0)
+						fw = (FixWrapper) list[0];
+					if (fw != null) {
+						fw.setLabelShowing(true);
+					}
+
+					// produce the next time step
+					this_time += labStep;
+				}
+
+				// now pass through making the symbols visible
+				this_time = _start_time.getMicros();
+
+				// first pass through, setting the symbols visible
+				while (this_time <= _end_time.getMicros()) {
+					final MWC.GenericData.Watchable[] list = tw.getNearestTo(new HiResDate(this_time));
+					FixWrapper fw = null;
+					if (list.length > 0)
+						fw = (FixWrapper) list[0];
+
+					if (fw != null) {
+						// and make this symbol visible
+						fw.setSymbolShowing(true);
+					}
+					// produce the next time step
+					this_time += symStep;
+				}
+
+			}
+		}
+
+		// now change the times of all of the visible labels
+		iter = _theTracks.elements();
+		while (iter.hasMoreElements()) {
+			final WatchableList wl = iter.nextElement();
+
+			// is this a track?
+			if (wl instanceof Debrief.Wrappers.TrackWrapper) {
+
+				final TrackWrapper tw = (TrackWrapper) wl;
+
+				// step through the track
+				final Collection<Editable> ss = tw.getItemsBetween(tw.getStartDTG(), tw.getEndDTG());
+
+				final Iterator<Editable> it = ss.iterator();
+
+				while (it.hasNext()) {
+					final FixWrapper fw = (FixWrapper) it.next();
+
+					// is the label visible for this fix?
+					if (fw.getLabelShowing()) {
+						// calculate the new time value
+						final long thisDTG = fw.getTime().getMicros();
+						final long delta = thisDTG - this._start_time.getMicros();
+
+						// convert the delta to seconds
+						final double secs = delta / 1000.0;
+
+						// calculate the new time label
+						String val;
+						if (secs < 0) {
+							// we dont need to include the minus sign, since
+							// it's on the front of the string
+							val = "T";
+						} else {
+							val = "T+";
+						}
+
+						val += decimals.format(secs);
+
+						// retrieve the old time label
+						final String oldVal = fw.getName();
+
+						// add this update to our action
+						if (res == null) {
+							res = new SetTimeAction(DebriefFormatDateTime.toStringHiRes(this._start_time),
+									this._start_time);
+						}
+
+						res.addAction(fw, val, oldVal);
+
+					}
+
+				}
+
+			}
+
+		}
+		// return the new action
+		return res;
+	}
+
+	@Override
+	public final String getDescription() {
+		String res = "2. Select tracks to be updated";
+		res += _theSeparator + "3. Select time-zero (Start slider)";
+		res += _theSeparator + "4. Select extent of time to be updated (Finish slider)";
+		res += _theSeparator + "5. Press 'Apply' button";
+		res += _theSeparator + "6. Dialog boxes will pop up to allow symbol and label frequencies to"
+				+ " be specified (in seconds)";
+		res += _theSeparator + "====================";
+		res += _theSeparator + "This operation displays symbols and labels at specified frequencies, ";
+		res += " together with their elapsed time (in seconds) from a time-zero";
+		return res;
+	}
+
+	@Override
+	public final String getImage() {
+		return null;
+	}
+
+	@Override
+	public final String getLabel() {
+		return "Set time zero";
+	}
+
+	/**
+	 * the user has pressed RESET whilst this button is pressed
+	 *
+	 * @param startTime the new start time
+	 * @param endTime   the new end time
+	 */
+	@Override
+	public void resetMe(final HiResDate startTime, final HiResDate endTime) {
+		setTimeZero(null);
+	}
+
+	@Override
+	public final void setPeriod(final HiResDate startDTG, final HiResDate finishDTG) {
+		_start_time = startDTG;
+		_end_time = finishDTG;
+	}
+
+	abstract public void setTimeZero(HiResDate newDate);
+
+	@Override
+	public final void setTracks(final java.util.Vector<WatchableList> selectedTracks) {
+		_theTracks = selectedTracks;
+	}
 
 }
-

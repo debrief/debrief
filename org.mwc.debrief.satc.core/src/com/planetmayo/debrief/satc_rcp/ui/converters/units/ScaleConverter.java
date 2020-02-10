@@ -1,40 +1,35 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package com.planetmayo.debrief.satc_rcp.ui.converters.units;
 
-public class ScaleConverter extends AbstractUnitConverter
-{
+public class ScaleConverter extends AbstractUnitConverter {
 	private final AbstractUnitConverter nested;
 	private final double scale;
-	
-	public ScaleConverter(AbstractUnitConverter nested, double scale)
-	{
+
+	public ScaleConverter(final AbstractUnitConverter nested, final double scale) {
 		super(nested.isModelToUI);
 		this.nested = nested;
 		this.scale = scale;
 	}
 
 	@Override
-	protected Double safeConvert(Number obj)
-	{
-		if (isModelToUI)
-		{
+	protected Double safeConvert(final Number obj) {
+		if (isModelToUI) {
 			return nested.safeConvert(obj.doubleValue()) * scale;
-		}
-		else 
-		{
+		} else {
 			return nested.safeConvert(obj.doubleValue() * scale);
 		}
 	}

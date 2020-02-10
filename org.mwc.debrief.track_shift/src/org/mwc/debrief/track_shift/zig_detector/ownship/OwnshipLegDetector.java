@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 package org.mwc.debrief.track_shift.zig_detector.ownship;
 
 import java.util.ArrayList;
@@ -8,16 +22,14 @@ import org.mwc.debrief.track_shift.zig_detector.Precision;
 import org.mwc.debrief.track_shift.zig_detector.moving_average.CenteredMovingAverage;
 import org.mwc.debrief.track_shift.zig_detector.moving_average.TimeBasedMovingAverage;
 
-
-public class OwnshipLegDetector implements IOwnshipLegDetector
-{
+public class OwnshipLegDetector implements IOwnshipLegDetector {
 
 	private static final int MIN_OWNSHIP_LENGTH = 180000; // 3 minutes
 
 	/**
-	 * slice this data into ownship legs, where the course and speed are
-	 * relatively steady
-	 * 
+	 * slice this data into ownship legs, where the course and speed are relatively
+	 * steady
+	 *
 	 * @param course_degs
 	 * @param speed
 	 * @param bearings
@@ -25,51 +37,48 @@ public class OwnshipLegDetector implements IOwnshipLegDetector
 	 * @return
 	 */
 	@Override
-	public List<LegOfData> identifyOwnshipLegs(final long[] times,
-			final double[] rawSpeeds, final double[] rawCourses,
-			final int minsOfAverage, Precision precision)
-	{
+	public List<LegOfData> identifyOwnshipLegs(final long[] times, final double[] rawSpeeds, final double[] rawCourses,
+			final int minsOfAverage, final Precision precision) {
 
 		// ok, see if we can find the precision
 		final double COURSE_TOLERANCE;
 		final double SPEED_TOLERANCE;
-		
-    switch (precision)
-    {
-    case HIGH:
-      COURSE_TOLERANCE = 0.05; // degs / sec (just a guess!!)
-      SPEED_TOLERANCE = 0.0005; // ms / sec (just a guess!!)
-      break;
-    case MEDIUM:
-      COURSE_TOLERANCE = 0.08; // degs / sec (just a guess!!)
-      SPEED_TOLERANCE = 0.001; // ms / sec (just a guess!!)
-      break;
-    case LOW:
-    default:
-      COURSE_TOLERANCE = 0.2; // degs / sec (just a guess!!)
-      SPEED_TOLERANCE = 0.04; // ms / sec (just a guess!!)
-      break;
-    }		
+
+		switch (precision) {
+		case HIGH:
+			COURSE_TOLERANCE = 0.05; // degs / sec (just a guess!!)
+			SPEED_TOLERANCE = 0.0005; // ms / sec (just a guess!!)
+			break;
+		case MEDIUM:
+			COURSE_TOLERANCE = 0.08; // degs / sec (just a guess!!)
+			SPEED_TOLERANCE = 0.001; // ms / sec (just a guess!!)
+			break;
+		case LOW:
+		default:
+			COURSE_TOLERANCE = 0.2; // degs / sec (just a guess!!)
+			SPEED_TOLERANCE = 0.04; // ms / sec (just a guess!!)
+			break;
+		}
 
 		double lastCourse = 0;
 		double lastSpeed = 0;
 		long lastTime = 0;
 		int avgPeriod = 0;
 
-		// NOTE: we have to handle high and low data-rate ownship tracks, from one second
+		// NOTE: we have to handle high and low data-rate ownship tracks, from one
+		// second
 		// to one minute time intervals.
-		// So, we determine how many time intervals are necessary to provide the 
-		// supplied minsOfAverage data.  But, we also trim this a little,
+		// So, we determine how many time intervals are necessary to provide the
+		// supplied minsOfAverage data. But, we also trim this a little,
 		// so that we can still recognise turns.
-		
+
 		// find out the step interval
-		if (times.length > 2)
-		{
-			long delta = times[1] - times[0];
+		if (times.length > 2) {
+			final long delta = times[1] - times[0];
 			avgPeriod = (int) ((minsOfAverage * 60 * 1000) / (delta));
-			
+
 			// trim the average period - we don't want to let it hide actual features
-			avgPeriod = Math.min(20, avgPeriod); 
+			avgPeriod = Math.min(20, avgPeriod);
 		}
 
 		final List<LegOfData> legs = new ArrayList<LegOfData>();
@@ -78,21 +87,19 @@ public class OwnshipLegDetector implements IOwnshipLegDetector
 		// switch the courses to an n-term moving average
 		final double[] courses = movingAverage(rawCourses, avgPeriod);
 		final double[] speeds = movingAverage(rawSpeeds, avgPeriod);
-		
-		TimeBasedMovingAverage tbm5 = new TimeBasedMovingAverage(5 * 60 * 1000L);
+
+		final TimeBasedMovingAverage tbm5 = new TimeBasedMovingAverage(5 * 60 * 1000L);
 //		TimeBasedMovingAverage tbm3 = new TimeBasedMovingAverage(3 * 60 * 1000L);
 //		TimeBasedMovingAverage tbm8 = new TimeBasedMovingAverage(8 * 60 * 1000L);
 //		TimeBasedMovingAverage tbm11 = new TimeBasedMovingAverage(11 * 60 * 1000L);
-		
-		for (int i = 0; i < times.length; i++)
-		{
+
+		for (int i = 0; i < times.length; i++) {
 			final long thisTime = times[i];
 
 			final double thisSpeed = speeds[i];
 			double thisCourse = courses[i];
 
-			if (i > 0)
-			{
+			if (i > 0) {
 				// here is our time-based averageing algorithm
 //				final double newCourseAvg3 = tbm3.average(thisTime, times, rawCourses);
 				final double newCourseAvg5 = tbm5.average(thisTime, times, rawCourses);
@@ -102,47 +109,38 @@ public class OwnshipLegDetector implements IOwnshipLegDetector
 //				SimpleDateFormat sdf = new SimpleDateFormat("YYYY/MMM/dd hh:mm:ss");
 //				String timeStr = sdf.format(new Date(thisTime));
 //				timeStr = "" + thisTime;
-//				
-//				System.out.println(timeStr + ", " + rawCourses[i] + ", " + thisCourse 
+//
+//				System.out.println(timeStr + ", " + rawCourses[i] + ", " + thisCourse
 //						 + ", " + newCourseAvg3 + ", " + newCourseAvg5+ ", " + newCourseAvg8+ ", " + newCourseAvg11);
 
 				// decide which value to use as average
 				thisCourse = newCourseAvg5;
-				
+
 				// ok, check out the course change rate
 				final double timeStepSecs = (thisTime - lastTime) / 1000d;
-				final double courseRate = Math.abs(thisCourse - lastCourse)
-						/ timeStepSecs;
+				final double courseRate = Math.abs(thisCourse - lastCourse) / timeStepSecs;
 				final double speedRate = Math.abs(thisSpeed - lastSpeed) / timeStepSecs;
 
-
 				// are they out of range
-				if ((courseRate < COURSE_TOLERANCE) && (speedRate < SPEED_TOLERANCE))
-				{
+				if ((courseRate < COURSE_TOLERANCE) && (speedRate < SPEED_TOLERANCE)) {
 					// ok, we're on a new leg - drop the current one
 					legs.get(legs.size() - 1).add(thisTime);
-				}
-				else
-				{
+				} else {
 					// we may be in a turn. create a new leg, if we haven't done
 					// so already
-					if (legs.get(legs.size() - 1).initialised())
-					{
+					if (legs.get(legs.size() - 1).initialised()) {
 						// does this leg have a time
-						long lastRecorded = legs.get(legs.size() - 1).getEnd();
-						if ((thisTime - lastRecorded) > 30 * 1000)
-						{
+						final long lastRecorded = legs.get(legs.size() - 1).getEnd();
+						if ((thisTime - lastRecorded) > 30 * 1000) {
 							// ok, check out the last leg. Was it worthwhile?
-							if(legs.size()>0)
-							{
-								LegOfData previousLeg = legs.get(legs.size()-1);
-								if(previousLeg.getEnd() - previousLeg.getStart() < MIN_OWNSHIP_LENGTH)
-								{
+							if (legs.size() > 0) {
+								final LegOfData previousLeg = legs.get(legs.size() - 1);
+								if (previousLeg.getEnd() - previousLeg.getStart() < MIN_OWNSHIP_LENGTH) {
 									// ok, just ditch it
 									legs.remove(previousLeg);
 								}
 							}
-							
+
 							legs.add(new LegOfData("Leg-" + (legs.size() + 1)));
 						}
 					}
@@ -161,17 +159,15 @@ public class OwnshipLegDetector implements IOwnshipLegDetector
 
 	/**
 	 * create a moving average over the set of dat measurements
-	 * 
+	 *
 	 * @param measurements
 	 * @param period
 	 * @return
 	 */
-	private double[] movingAverage(final double[] measurements, final int period)
-	{
+	private double[] movingAverage(final double[] measurements, final int period) {
 		final double[] res = new double[measurements.length];
 		final CenteredMovingAverage ma = new CenteredMovingAverage(period);
-		for (int j = 0; j < measurements.length; j++)
-		{
+		for (int j = 0; j < measurements.length; j++) {
 			res[j] = ma.average(j, measurements);
 		}
 		return res;

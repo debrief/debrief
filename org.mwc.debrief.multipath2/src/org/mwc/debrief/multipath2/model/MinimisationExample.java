@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.debrief.multipath2.model;
 
 /*
@@ -43,38 +44,34 @@ package org.mwc.debrief.multipath2.model;
  *       using, modifying or distributing this software or its derivatives.
  *
  **********************************************************/
-
-import flanagan.math.*;
+import flanagan.math.Minimisation;
+import flanagan.math.MinimisationFunction;
 
 // Class to evaluate the function z = a + x^2 + 3y^4
 // where a is fixed and the values of x and y
 // (x[0] and x[1] in this method) are the
 // current values in the minimisation method.
-class MinimFunct implements MinimisationFunction
-{
+class MinimFunct implements MinimisationFunction {
 
 	private double a = 0.0D;
 
 	// evaluation function
-	public double function(final double[] x)
-	{
+	@Override
+	public double function(final double[] x) {
 		final double z = a + x[0] * x[0] + 3.0D * Math.pow(x[1], 4);
 		return z;
 	}
 
 	// Method to set a
-	public void setA(final double a)
-	{
+	public void setA(final double a) {
 		this.a = a;
 	}
 }
 
 // Class to demonstrate minimisation method, Minimisation nelderMead
-public class MinimisationExample
-{
+public class MinimisationExample {
 
-	public static void main(final String[] args)
-	{
+	public static void main(final String[] args) {
 
 		// Create instance of Minimisation
 		final Minimisation min = new Minimisation();
@@ -86,12 +83,10 @@ public class MinimisationExample
 		funct.setA(5.0D);
 
 		// initial estimates
-		final double[] start =
-		{ 1.0D, 3.0D };
+		final double[] start = { 1.0D, 3.0D };
 
 		// initial step sizes
-		final double[] step =
-		{ 0.2D, 0.6D };
+		final double[] step = { 0.2D, 0.6D };
 
 		// convergence tolerance
 		final double ftol = 1e-15;

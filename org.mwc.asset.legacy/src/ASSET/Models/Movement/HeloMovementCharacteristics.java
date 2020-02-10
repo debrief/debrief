@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package ASSET.Models.Movement;
 
 import ASSET.Util.SupportTesting;
@@ -70,254 +71,225 @@ import MWC.GenericData.WorldSpeed;
 /**
  * the maneuvering characteristics particular to a helo
  */
-public class HeloMovementCharacteristics extends ThreeDimMovementCharacteristics
-  implements ClimbRateCharacteristics
-{
-  //////////////////////////////////////////////////
-  // member objects
-  //////////////////////////////////////////////////
+public class HeloMovementCharacteristics extends ThreeDimMovementCharacteristics implements ClimbRateCharacteristics {
+	//////////////////////////////////////////////////
+	// member objects
+	//////////////////////////////////////////////////
 
-  /**
-	 * 
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	static public class HeloMoveCharsTest extends SupportTesting.EditableTesting {
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public HeloMoveCharsTest(final String val) {
+			super(val);
+		}
+
+		/**
+		 * get an object which we can test
+		 *
+		 * @return Editable object which we can check the properties for
+		 */
+		@Override
+		public Editable getEditable() {
+			return HeloMovementCharacteristics.getSampleChars();
+		}
+
+		public void testTurningCircle() {
+			double rate = 3;
+			double speed = 60;
+			double circle = HeloMovementCharacteristics._calcTurnCircle(rate, speed);
+			assertEquals("correct turning circle calculated", 2291.831, circle, 0.01);
+
+			rate = 3;
+			speed = 0;
+			circle = HeloMovementCharacteristics._calcTurnCircle(rate, speed);
+			assertEquals("correct turning circle calculated", 2 * _hoverTurnCircle, circle, 0.01);
+
+			rate = 0;
+			speed = 60;
+			circle = HeloMovementCharacteristics._calcTurnCircle(rate, speed);
+			assertEquals("correct turning circle calculated", 2 * _hoverTurnCircle, circle, 0.01);
+
+		}
+
+	}
+
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	/**
-   * the turn rate for this helo (degs/sec)
-   */
-  private double _myTurnRate;
+	 * the turn circle we travel through at zero speed (hover)
+	 */
+	final static private double _hoverTurnCircle = 1;
 
-  /**
-   * the normal climb speed for this helo (m/sec)
-   */
-  private WorldSpeed _defaultClimbSpeed;
+	/**
+	 * static method used to calculate turning circle diameter from angular velocity
+	 * and speed
+	 */
+	protected static double _calcTurnCircle(final double turn_rate_degs_sec, final double speed_m_sec) {
+		// so, the equation for the radius of a turning circle using the turn rate and
+		// speed is
+		//
+		// speed (m/sec) = radius (m) * angular velocity (radians/sec)
+		//
+		// radius = speed / angular velocity
 
-  /**
-   * the normal dive speed for this helo (m/sec)
-   */
-  private WorldSpeed _defaultDiveSpeed;
+		double radius;
 
-  /**
-   * the turn circle we travel through at zero speed (hover)
-   */
-  final static private double _hoverTurnCircle = 1;
+		// just check that we have an angular velocity
+		if (turn_rate_degs_sec == 0) {
+			// MWC.Utilities.Errors.Trace.trace("Invalid turn rate for helo movement",
+			// false);
+			radius = _hoverTurnCircle;
+		} else {
+			if (speed_m_sec != 0d) {
+				// convert to angular velocity in radians
+				final double angular_velocity = MWC.Algorithms.Conversions.Degs2Rads(turn_rate_degs_sec);
 
+				// ok, calc radius of turning circle at this speed
+				radius = speed_m_sec / angular_velocity;
+			} else {
+				// stationary - just return our hover turning circle
+				radius = _hoverTurnCircle;
+			}
 
-  //////////////////////////////////////////////////
-  // constructor
-  //////////////////////////////////////////////////
+		}
+		return radius * 2;
+	}
 
+	/**
+	 * utility generator - used for tests
+	 */
+	public static HeloMovementCharacteristics generateDebug(final String myName, final double accelRate,
+			final double decelRate, final double fuel_usage_rate, final double maxSpeed, final double minSpeed,
+			final double defaultClimbRate, final double defaultDiveRate, final double maxHeight, final double minHeight,
+			final double myTurnRate, final double defaultClimbSpeed, final double defaultDiveSpeed) {
+		return new HeloMovementCharacteristics(myName, new WorldAcceleration(accelRate, WorldAcceleration.M_sec_sec),
+				new WorldAcceleration(decelRate, WorldAcceleration.M_sec_sec), fuel_usage_rate,
+				new WorldSpeed(maxSpeed, WorldSpeed.M_sec), new WorldSpeed(minSpeed, WorldSpeed.M_sec),
+				new WorldSpeed(defaultClimbRate, WorldSpeed.M_sec), new WorldSpeed(defaultDiveRate, WorldSpeed.M_sec),
+				new WorldDistance(maxHeight, WorldDistance.METRES), new WorldDistance(minHeight, WorldDistance.METRES),
+				myTurnRate, new WorldSpeed(defaultClimbSpeed, WorldSpeed.M_sec),
+				new WorldSpeed(defaultDiveSpeed, WorldSpeed.M_sec));
+	}
 
-  /** utility generator - used for tests
-   */
-  public static HeloMovementCharacteristics generateDebug(String myName, double accelRate,
-                                     double decelRate, double fuel_usage_rate,
-                                     double maxSpeed, double minSpeed,
-                                     double defaultClimbRate,
-                                     double defaultDiveRate, double maxHeight,
-                                     double minHeight, double myTurnRate,
-                                     double defaultClimbSpeed, double defaultDiveSpeed)
-  {
-    return new HeloMovementCharacteristics(myName, new WorldAcceleration(accelRate, WorldAcceleration.M_sec_sec),
-         new WorldAcceleration(decelRate, WorldAcceleration.M_sec_sec),
-         fuel_usage_rate,
-         new WorldSpeed(maxSpeed, WorldSpeed.M_sec),
-         new WorldSpeed(minSpeed, WorldSpeed.M_sec),
-         new WorldSpeed(defaultClimbRate, WorldSpeed.M_sec),
-         new WorldSpeed(defaultDiveRate, WorldSpeed.M_sec),
-         new WorldDistance(maxHeight, WorldDistance.METRES),
-         new WorldDistance(minHeight, WorldDistance.METRES), myTurnRate,
-         new WorldSpeed(defaultClimbSpeed, WorldSpeed.M_sec),
-         new WorldSpeed(defaultDiveSpeed, WorldSpeed.M_sec));
-  }
+	//////////////////////////////////////////////////
+	// constructor
+	//////////////////////////////////////////////////
 
+	public static MovementCharacteristics getSampleChars() {
+		final MovementCharacteristics moves = new ASSET.Models.Movement.HeloMovementCharacteristics("merlin",
+				new WorldAcceleration(Math.PI / 40, WorldAcceleration.M_sec_sec),
+				new WorldAcceleration(Math.PI / 40, WorldAcceleration.M_sec_sec), 0,
+				new WorldSpeed(200, WorldSpeed.Kts), new WorldSpeed(20, WorldSpeed.Kts),
+				new WorldSpeed(20, WorldSpeed.Kts), new WorldSpeed(20, WorldSpeed.Kts),
+				new WorldDistance(3000, WorldDistance.YARDS), new WorldDistance(30, WorldDistance.YARDS), 3,
+				new WorldSpeed(20, WorldSpeed.Kts), new WorldSpeed(60, WorldSpeed.Kts));
+		return moves;
 
-  public HeloMovementCharacteristics(String myName, WorldAcceleration accelRate,
-                                     WorldAcceleration decelRate, double fuel_usage_rate,
-                                     WorldSpeed maxSpeed, WorldSpeed minSpeed,
-                                     WorldSpeed defaultClimbRate,
-                                     WorldSpeed defaultDiveRate, WorldDistance maxHeight,
-                                     WorldDistance minHeight, double myTurnRate,
-                                     WorldSpeed defaultClimbSpeed, WorldSpeed defaultDiveSpeed)
-  {
-    super(myName, accelRate, decelRate, fuel_usage_rate, maxSpeed, minSpeed, defaultClimbRate, defaultDiveRate, maxHeight, minHeight);
-    this._myTurnRate = myTurnRate;
-    _defaultClimbSpeed = defaultClimbSpeed;
-    _defaultDiveSpeed = defaultDiveSpeed;
-  }
+	}
 
-  //////////////////////////////////////////////////
-  // member methods
-  //////////////////////////////////////////////////
-  /**
-   * get the turning circle diameter (m) at this speed (in m/sec)
-   */
-  public double getTurningCircleDiameter(double m_sec)
-  {
-    return _calcTurnCircle(_myTurnRate, m_sec);
-  }
+	/**
+	 * the turn rate for this helo (degs/sec)
+	 */
+	private double _myTurnRate;
 
-  public double getTurnRate()
-  {
-    return _myTurnRate;
-  }
+	/**
+	 * the normal climb speed for this helo (m/sec)
+	 */
+	private WorldSpeed _defaultClimbSpeed;
 
-  public void setTurnRate(double myTurnRate_deg_sec)
-  {
-    this._myTurnRate = myTurnRate_deg_sec;
-  }
+	/**
+	 * the normal dive speed for this helo (m/sec)
+	 */
+	private WorldSpeed _defaultDiveSpeed;
 
-  public WorldSpeed getDefaultClimbSpeed()
-  {
-    return _defaultClimbSpeed;
-  }
+	public HeloMovementCharacteristics(final String myName, final WorldAcceleration accelRate,
+			final WorldAcceleration decelRate, final double fuel_usage_rate, final WorldSpeed maxSpeed,
+			final WorldSpeed minSpeed, final WorldSpeed defaultClimbRate, final WorldSpeed defaultDiveRate,
+			final WorldDistance maxHeight, final WorldDistance minHeight, final double myTurnRate,
+			final WorldSpeed defaultClimbSpeed, final WorldSpeed defaultDiveSpeed) {
+		super(myName, accelRate, decelRate, fuel_usage_rate, maxSpeed, minSpeed, defaultClimbRate, defaultDiveRate,
+				maxHeight, minHeight);
+		this._myTurnRate = myTurnRate;
+		_defaultClimbSpeed = defaultClimbSpeed;
+		_defaultDiveSpeed = defaultDiveSpeed;
+	}
 
-  public void setDefaultClimbSpeed(WorldSpeed _defaultClimbSpeed_m_sec)
-  {
-    this._defaultClimbSpeed = _defaultClimbSpeed_m_sec;
-  }
+	/**
+	 * calculate the turn rate at this speed/turning circle
+	 *
+	 * @param curSpeed_m_sec
+	 * @return turn rate (degs/sec)
+	 */
+	@Override
+	public double calculateTurnRate(final double curSpeed_m_sec) {
+		return _myTurnRate;
+	}
 
-  public WorldSpeed getDefaultDiveSpeed()
-  {
-    return _defaultDiveSpeed;
-  }
+	/**
+	 * calculate how long it takes to move to make the specified course change
+	 *
+	 * @param mean_speed         the mean speed through the turn (m/sec)
+	 * @param course_change_degs the change in course required (degs)
+	 * @return the time taken (seconds)
+	 */
+	@Override
+	public double calculateTurnTime(final double mean_speed, final double course_change_degs) {
+		// hey, we can confidently over-ride this method - since we fundamentally work
+		// with turn rates
+		double turn_time;
 
-  public void setDefaultDiveSpeed(WorldSpeed _defaultDiveSpeed_m_sec)
-  {
-    this._defaultDiveSpeed = _defaultDiveSpeed_m_sec;
-  }
+		// calculate the turn time
+		if (_myTurnRate == 0)
+			turn_time = 0;
+		else
+			turn_time = Math.abs(course_change_degs) / _myTurnRate;
 
-  /**
-   * static method used to calculate turning circle diameter from angular velocity and speed
-   */
-  protected static double _calcTurnCircle(double turn_rate_degs_sec,
-                                        double speed_m_sec)
-  {
-    // so, the equation for the radius of a turning circle using the turn rate and speed is
-    //
-    // speed (m/sec) = radius (m) * angular velocity (radians/sec)
-    //
-    // radius = speed / angular velocity
+		return turn_time;
+	}
 
-    double radius;
+	@Override
+	public WorldSpeed getDefaultClimbSpeed() {
+		return _defaultClimbSpeed;
+	}
 
-    // just check that we have an angular velocity
-    if (turn_rate_degs_sec == 0)
-    {
-//      MWC.Utilities.Errors.Trace.trace("Invalid turn rate for helo movement", false);
-      radius = _hoverTurnCircle;
-    }
-    else
-    {
-      if (speed_m_sec != 0d)
-      {
-        // convert to angular velocity in radians
-        double angular_velocity = MWC.Algorithms.Conversions.Degs2Rads(turn_rate_degs_sec);
+	@Override
+	public WorldSpeed getDefaultDiveSpeed() {
+		return _defaultDiveSpeed;
+	}
 
-        // ok, calc radius of turning circle at this speed
-        radius = speed_m_sec / angular_velocity;
-      }
-      else
-      {
-        // stationary - just return our hover turning circle
-        radius = _hoverTurnCircle;
-      }
+	//////////////////////////////////////////////////
+	// member methods
+	//////////////////////////////////////////////////
+	/**
+	 * get the turning circle diameter (m) at this speed (in m/sec)
+	 */
+	@Override
+	public double getTurningCircleDiameter(final double m_sec) {
+		return _calcTurnCircle(_myTurnRate, m_sec);
+	}
 
-    }
-    return radius * 2;
-  }
+	public double getTurnRate() {
+		return _myTurnRate;
+	}
 
-  /**
-   * calculate how long it takes to move to make the specified course change
-   *
-   * @param mean_speed         the mean speed through the turn (m/sec)
-   * @param course_change_degs the change in course required (degs)
-   * @return the time taken (seconds)
-   */
-  public double calculateTurnTime(double mean_speed, double course_change_degs)
-  {
-    // hey, we can confidently over-ride this method - since we fundamentally work with turn rates
-    double turn_time;
+	@Override
+	public void setDefaultClimbSpeed(final WorldSpeed _defaultClimbSpeed_m_sec) {
+		this._defaultClimbSpeed = _defaultClimbSpeed_m_sec;
+	}
 
+	@Override
+	public void setDefaultDiveSpeed(final WorldSpeed _defaultDiveSpeed_m_sec) {
+		this._defaultDiveSpeed = _defaultDiveSpeed_m_sec;
+	}
 
-    // calculate the turn time
-    if (_myTurnRate == 0)
-      turn_time = 0;
-    else
-      turn_time = Math.abs(course_change_degs) / _myTurnRate;
-
-    return turn_time;
-  }
-
-  /**
-   * calculate the turn rate at this speed/turning circle
-   *
-   * @param curSpeed_m_sec
-   * @return turn rate (degs/sec)
-   */
-  public double calculateTurnRate(double curSpeed_m_sec)
-  {
-    return _myTurnRate;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  static public class HeloMoveCharsTest extends SupportTesting.EditableTesting
-  {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-    public HeloMoveCharsTest(final String val)
-    {
-      super(val);
-    }
-
-    /**
-     * get an object which we can test
-     *
-     * @return Editable object which we can check the properties for
-     */
-    public Editable getEditable()
-    {
-      return HeloMovementCharacteristics.getSampleChars();
-    }
-
-    public void testTurningCircle()
-    {
-      double rate = 3;
-      double speed = 60;
-      double circle = HeloMovementCharacteristics._calcTurnCircle(rate, speed);
-      assertEquals("correct turning circle calculated", 2291.831, circle, 0.01);
-
-      rate = 3;
-      speed = 0;
-      circle = HeloMovementCharacteristics._calcTurnCircle(rate, speed);
-      assertEquals("correct turning circle calculated", 2 * _hoverTurnCircle, circle, 0.01);
-
-      rate = 0;
-      speed = 60;
-      circle = HeloMovementCharacteristics._calcTurnCircle(rate, speed);
-      assertEquals("correct turning circle calculated", 2 * _hoverTurnCircle, circle, 0.01);
-
-    }
-
-  }
-
-
-  public static MovementCharacteristics getSampleChars()
-  {
-    MovementCharacteristics moves = new ASSET.Models.Movement.HeloMovementCharacteristics("merlin",
-                                                                                          new WorldAcceleration(Math.PI / 40, WorldAcceleration.M_sec_sec),
-                                                                                          new WorldAcceleration(Math.PI / 40, WorldAcceleration.M_sec_sec),
-                                                                                          0, new WorldSpeed(200, WorldSpeed.Kts), new WorldSpeed(20, WorldSpeed.Kts),
-                                                                                          new WorldSpeed(20, WorldSpeed.Kts), new WorldSpeed(20, WorldSpeed.Kts),
-                                                                                          new WorldDistance(3000, WorldDistance.YARDS),
-                                                                                          new WorldDistance(30, WorldDistance.YARDS),
-                                                                                          3,
-                                                                                          new WorldSpeed(20, WorldSpeed.Kts),
-                                                                                          new WorldSpeed(60, WorldSpeed.Kts));
-    return moves;
-
-  }
+	public void setTurnRate(final double myTurnRate_deg_sec) {
+		this._myTurnRate = myTurnRate_deg_sec;
+	}
 
 }

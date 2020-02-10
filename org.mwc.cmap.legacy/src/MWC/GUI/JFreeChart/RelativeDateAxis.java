@@ -1,17 +1,17 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 
 package MWC.GUI.JFreeChart;
 
@@ -21,8 +21,8 @@ import org.jfree.chart.plot.XYPlot;
 /**
  * A horizontal axis that displays date values.
  * <P>
- * Used in XY plots where the x-values in the dataset are interpreted as milliseconds, encoded in
- * the same way as java.util.Date.
+ * Used in XY plots where the x-values in the dataset are interpreted as
+ * milliseconds, encoded in the same way as java.util.Date.
  * <P>
  * You can also use this axis as the range axis in a HorizontalCategoryPlot.
  *
@@ -31,46 +31,46 @@ import org.jfree.chart.plot.XYPlot;
  *
  * @author DG
  */
-public class RelativeDateAxis extends DateAxis implements CanBeRelativeToTimeStepper{
+public class RelativeDateAxis extends DateAxis implements CanBeRelativeToTimeStepper {
 
-  /**
-	 * 
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	/** A flag indicating whether or not tick labels are drawn vertically. */
- // private boolean verticalTickLabels;
+	// private boolean verticalTickLabels;
 
-  /** whether we are working with relative DTGs (affects label plotting)
-   *
-   */
-  private boolean _relativeTimes = false;
+	/**
+	 * whether we are working with relative DTGs (affects label plotting)
+	 *
+	 */
+	private boolean _relativeTimes = false;
 
-  /** whether we are working with relative times
-   *
-   * @return
-   */
-  public boolean isRelativeTimes()
-  {
-    return _relativeTimes;
-  }
-
-  /** set whether we are working with relative times
-   *
-   * @param relativeTimes
-   */
-  public void setRelativeTimes(final boolean relativeTimes)
-  {
-    _relativeTimes = relativeTimes;
-  }
-
-	public RelativeDateAxis()
-	{
+	public RelativeDateAxis() {
 		super("Time");
 	}
 
-  
-  
+	/**
+	 * whether we are working with relative times
+	 *
+	 * @return
+	 */
+	@Override
+	public boolean isRelativeTimes() {
+		return _relativeTimes;
+	}
+
+	/**
+	 * set whether we are working with relative times
+	 *
+	 * @param relativeTimes
+	 */
+	@Override
+	public void setRelativeTimes(final boolean relativeTimes) {
+		_relativeTimes = relativeTimes;
+	}
+
 //  /**
 //   * Returns true if the tick labels should be rotated to vertical, and false
 //   * for standard horizontal labels.
@@ -93,17 +93,16 @@ public class RelativeDateAxis extends DateAxis implements CanBeRelativeToTimeSte
 //    this.notifyListeners(new AxisChangeEvent(this));
 //  }
 
-
-
-  /**
-   * Translates a date to Java2D coordinates, based on the range displayed by
-   * this axis for the specified data area.
-   *
-   * @param date  the date.
-   * @param dataArea  the rectangle (in Java2D space) where the data is to be plotted.
-   *
-   * @return the horizontal coordinate corresponding to the supplied date.
-   */
+	/**
+	 * Translates a date to Java2D coordinates, based on the range displayed by this
+	 * axis for the specified data area.
+	 *
+	 * @param date     the date.
+	 * @param dataArea the rectangle (in Java2D space) where the data is to be
+	 *                 plotted.
+	 *
+	 * @return the horizontal coordinate corresponding to the supplied date.
+	 */
 //  public double translateDateToJava2D(Date date, Rectangle2D dataArea) {
 //
 //    Range range = getRange();
@@ -197,14 +196,14 @@ public class RelativeDateAxis extends DateAxis implements CanBeRelativeToTimeSte
 //
 //  }
 
-  /**
-   * Recalculates the ticks for the date axis.
-   *
-   * @param g2  the graphics device.
-   * @param drawArea  the area in which the axes and data are to be drawn.
-   * @param plotArea  the area in which the data is to be drawn.
-   *
-   */
+	/**
+	 * Recalculates the ticks for the date axis.
+	 *
+	 * @param g2       the graphics device.
+	 * @param drawArea the area in which the axes and data are to be drawn.
+	 * @param plotArea the area in which the data is to be drawn.
+	 *
+	 */
 //  public void refreshTicks(Graphics2D g2, Rectangle2D drawArea, Rectangle2D plotArea) {
 //
 //    this.ticks.clear();
@@ -272,20 +271,22 @@ public class RelativeDateAxis extends DateAxis implements CanBeRelativeToTimeSte
 //    }
 //
 //  }
-  
-  /**
-   * Draws the axis on a Java 2D graphics device (such as the screen or a printer).
-   *
-   * @param g2  the graphics device.
-   * @param drawArea  the area within which the chart should be drawn.
-   * @param plotArea  the area within which the plot should be drawn (a subset of the drawArea).
-   */
+
+	/**
+	 * Draws the axis on a Java 2D graphics device (such as the screen or a
+	 * printer).
+	 *
+	 * @param g2       the graphics device.
+	 * @param drawArea the area within which the chart should be drawn.
+	 * @param plotArea the area within which the plot should be drawn (a subset of
+	 *                 the drawArea).
+	 */
 //  public void draw(Graphics2D g2, Rectangle2D drawArea, Rectangle2D plotArea) {
-//  	
+//
 //    if (!visible) {
 //      return;
 //    }
-//    
+//
 //    // draw the axis label
 //    if (this.label != null) {
 //      g2.setFont(labelFont);
@@ -341,15 +342,15 @@ public class RelativeDateAxis extends DateAxis implements CanBeRelativeToTimeSte
 //
 //  }
 
-  /**
-   * Returns the height required to draw the axis in the specified draw area.
-   *
-   * @param g2  the graphics device.
-   * @param plot1  the plot that the axis belongs to.
-   * @param drawArea  the area within which the plot should be drawn.
-   *
-   * @return the height.
-   */
+	/**
+	 * Returns the height required to draw the axis in the specified draw area.
+	 *
+	 * @param g2       the graphics device.
+	 * @param plot1    the plot that the axis belongs to.
+	 * @param drawArea the area within which the plot should be drawn.
+	 *
+	 * @return the height.
+	 */
 //  public double reserveHeight(Graphics2D g2, Plot plot1, Rectangle2D drawArea) {
 //
 //    if (!visible) {
@@ -375,16 +376,17 @@ public class RelativeDateAxis extends DateAxis implements CanBeRelativeToTimeSte
 //
 //  }
 
-  /**
-   * Returns area in which the axis will be displayed.
-   *
-   * @param g2  the graphics device.
-   * @param plot1  the plot.
-   * @param drawArea  the drawing area.
-   * @param reservedWidth  the width already reserved for the vertical axis.
-   *
-//   * @return the area to reserve for the horizontal axis.
-//   */
+	/**
+	 * Returns area in which the axis will be displayed.
+	 *
+	 * @param g2            the graphics device.
+	 * @param plot1         the plot.
+	 * @param drawArea      the drawing area.
+	 * @param reservedWidth the width already reserved for the vertical axis.
+	 *
+	 *                      // * @return the area to reserve for the horizontal
+	 *                      axis. //
+	 */
 //  public Rectangle2D reserveAxisArea(Graphics2D g2, Plot plot1,
 //                                     Rectangle2D drawArea, double reservedWidth) {
 //
@@ -418,15 +420,15 @@ public class RelativeDateAxis extends DateAxis implements CanBeRelativeToTimeSte
 //
 //  }
 
-  /**
-   * Selects an appropriate tick value for the axis.  The strategy is to
-   * display as many ticks as possible (selected from an array of 'standard'
-   * tick units) without the labels overlapping.
-   *
-   * @param g2  the graphics device.
-   * @param drawArea  the area in which the plot and axes should be drawn.
-   * @param dataArea  the area defined by the axes.
-   */
+	/**
+	 * Selects an appropriate tick value for the axis. The strategy is to display as
+	 * many ticks as possible (selected from an array of 'standard' tick units)
+	 * without the labels overlapping.
+	 *
+	 * @param g2       the graphics device.
+	 * @param drawArea the area in which the plot and axes should be drawn.
+	 * @param dataArea the area defined by the axes.
+	 */
 //  private void selectAutoTickUnit(Graphics2D g2, Rectangle2D drawArea, Rectangle2D dataArea) {
 //
 //    double zero = translateValueToJava2D(0.0, dataArea);
@@ -455,19 +457,19 @@ public class RelativeDateAxis extends DateAxis implements CanBeRelativeToTimeSte
 //
 //  }
 
-
-  /**
-   * Estimates the maximum width of the tick labels, assuming the specified tick unit is used.
-   * <P>
-   * Rather than computing the string bounds of every tick on the axis, we just look at two
-   * values: the lower bound and the upper bound for the axis.  These two values will usually
-   * be representative.
-   *
-   * @param g2  the graphics device.
-   * @param tickUnit  the tick unit to use for calculation.
-   *
-   * @return the estimated maximum width of the tick labels.
-   */
+	/**
+	 * Estimates the maximum width of the tick labels, assuming the specified tick
+	 * unit is used.
+	 * <P>
+	 * Rather than computing the string bounds of every tick on the axis, we just
+	 * look at two values: the lower bound and the upper bound for the axis. These
+	 * two values will usually be representative.
+	 *
+	 * @param g2       the graphics device.
+	 * @param tickUnit the tick unit to use for calculation.
+	 *
+	 * @return the estimated maximum width of the tick labels.
+	 */
 //  private double estimateMaximumTickLabelWidth(Graphics2D g2, DateTickUnit tickUnit) {
 //
 //    double result = this.tickLabelInsets.left + this.tickLabelInsets.right;
@@ -493,15 +495,16 @@ public class RelativeDateAxis extends DateAxis implements CanBeRelativeToTimeSte
 //
 //  }
 
-  /**
-   * A utility method for determining the height of the tallest tick label.
-   *
-   * @param g2  the graphics device.
-   * @param drawArea  the drawing area.
-   * @param vertical  a flag indicating whether or not the tick labels are rotated to vertical.
-   *
-   * @return the maximum tick label height.
-   */
+	/**
+	 * A utility method for determining the height of the tallest tick label.
+	 *
+	 * @param g2       the graphics device.
+	 * @param drawArea the drawing area.
+	 * @param vertical a flag indicating whether or not the tick labels are rotated
+	 *                 to vertical.
+	 *
+	 * @return the maximum tick label height.
+	 */
 //  private double getMaxTickLabelHeight(Graphics2D g2, Rectangle2D drawArea, boolean vertical) {
 //
 //    Font font = getTickLabelFont();
@@ -526,16 +529,17 @@ public class RelativeDateAxis extends DateAxis implements CanBeRelativeToTimeSte
 //
 //  }
 
-  /**
-   * Returns true if the specified plot is compatible with the axis.
-   * <p>
-   * The HorizontalDateAxis class expects the plot to implement the
-   * HorizontalValuePlot interface.
-   *
-   * @param plot1  the plot.
-   *
-   * @return a flag indicating whether or not the plot is compatible with the axis.
-   */
+	/**
+	 * Returns true if the specified plot is compatible with the axis.
+	 * <p>
+	 * The HorizontalDateAxis class expects the plot to implement the
+	 * HorizontalValuePlot interface.
+	 *
+	 * @param plot1 the plot.
+	 *
+	 * @return a flag indicating whether or not the plot is compatible with the
+	 *         axis.
+	 */
 //  protected boolean isCompatiblePlot(Plot plot1) {
 //    if (plot1 instanceof HorizontalValuePlot) {
 //      return true;

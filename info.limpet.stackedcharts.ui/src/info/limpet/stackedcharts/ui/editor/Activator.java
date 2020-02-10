@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 package info.limpet.stackedcharts.ui.editor;
 
 import org.eclipse.jface.resource.FontRegistry;
@@ -11,82 +25,78 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends AbstractUIPlugin
-{
+public class Activator extends AbstractUIPlugin {
 
-  /**
-   * declare some string constants that we use for a predetermined set of chart fonts
-   * 
-   */
-  public static final String FONT_12 = "FONT_12";
+	/**
+	 * declare some string constants that we use for a predetermined set of chart
+	 * fonts
+	 *
+	 */
+	public static final String FONT_12 = "FONT_12";
 
-  public static final String FONT_10 = "FONT_10";
+	public static final String FONT_10 = "FONT_10";
 
-  public static final String FONT_8 = "FONT_8";
+	public static final String FONT_8 = "FONT_8";
 
-  // The plug-in ID
-  public static final String PLUGIN_ID = "info.limpet.stackedcharts.ui"; //$NON-NLS-1$
+	// The plug-in ID
+	public static final String PLUGIN_ID = "info.limpet.stackedcharts.ui"; //$NON-NLS-1$
 
-  // The shared instance
-  private static Activator plugin;
+	// The shared instance
+	private static Activator plugin;
 
-  /**
-   * our font registry, to reduce object creation
-   * 
-   */
-  private FontRegistry fontReg;
+	/**
+	 * Returns the shared instance
+	 *
+	 * @return the shared instance
+	 */
+	public static Activator getDefault() {
+		return plugin;
+	}
 
-  /**
-   * The constructor
-   */
-  public Activator()
-  {
-  }
+	/**
+	 * our font registry, to reduce object creation
+	 *
+	 */
+	private FontRegistry fontReg;
 
-  public Font getFont(String name)
-  {
-    return fontReg.get(name);
-  }
+	/**
+	 * The constructor
+	 */
+	public Activator() {
+	}
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
-   */
-  public void start(BundleContext context) throws Exception
-  {
-    super.start(context);
-    plugin = this;
-    fontReg = new FontRegistry(Display.getCurrent());
+	public Font getFont(final String name) {
+		return fontReg.get(name);
+	}
 
-    // initialise some fonts
-    fontReg.put(FONT_8, new FontData[]
-    {new FontData("Arial", 8, SWT.None)});
-    fontReg.put(FONT_10, new FontData[]
-    {new FontData("Arial", 10, SWT.None)});
-    fontReg.put(FONT_12, new FontData[]
-    {new FontData("Arial", 12, SWT.None)});
-  }
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.
+	 * BundleContext)
+	 */
+	@Override
+	public void start(final BundleContext context) throws Exception {
+		super.start(context);
+		plugin = this;
+		fontReg = new FontRegistry(Display.getCurrent());
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
-   */
-  public void stop(BundleContext context) throws Exception
-  {
-    plugin = null;
-    super.stop(context);
-  }
+		// initialise some fonts
+		fontReg.put(FONT_8, new FontData[] { new FontData("Arial", 8, SWT.None) });
+		fontReg.put(FONT_10, new FontData[] { new FontData("Arial", 10, SWT.None) });
+		fontReg.put(FONT_12, new FontData[] { new FontData("Arial", 12, SWT.None) });
+	}
 
-  /**
-   * Returns the shared instance
-   * 
-   * @return the shared instance
-   */
-  public static Activator getDefault()
-  {
-    return plugin;
-  }
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
+	 */
+	@Override
+	public void stop(final BundleContext context) throws Exception {
+		plugin = null;
+		super.stop(context);
+	}
 
 }

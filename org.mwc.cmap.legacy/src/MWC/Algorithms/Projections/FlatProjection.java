@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // @Author : Ian Mayo
 // @Project: Debrief 3
 // @File   : FlatProjection.java
@@ -23,55 +24,90 @@ import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 
-import junit.framework.TestCase;
-
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.EarthModels.CompletelyFlatEarth;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
+import junit.framework.TestCase;
 
 /**
  * flat earth projection
  */
-public class FlatProjection extends PlainProjection
-{
+public class FlatProjection extends PlainProjection {
 
 	// //////////////////////////////////////////////////////////////////////////
 	// embedded class, used for editing the projection
 	// //////////////////////////////////////////////////////////////////////////
-	public class FlatProjectionInfo extends Editable.EditorType
-	{
+	public class FlatProjectionInfo extends Editable.EditorType {
 
-		public FlatProjectionInfo(final PlainProjection data)
-		{
+		public FlatProjectionInfo(final PlainProjection data) {
 			super(data, data.getName(), "");
 		}
 
 		@Override
-		public PropertyDescriptor[] getPropertyDescriptors()
-		{
-			try
-			{
-				final PropertyDescriptor[] res =
-				{
+		public PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final PropertyDescriptor[] res = {
 						displayProp("DataBorder", "Data border",
 								"the border around the projection (1.0 is zero border, 1.1 gives 10% border)"),
 						displayProp("ScaleVal", "Scaling factor",
 								"the scaling factor to use (world units/screen units)") };
 
 				return res;
-			}
-			catch (final IntrospectionException e)
-			{
+			} catch (final IntrospectionException e) {
 				return super.getPropertyDescriptors();
 			}
 		}
 	}
 
+	public static class TestFlatProj extends TestCase {
+
+		FlatProjection proj;
+
+		@Override
+		public void setUp() {
+			proj = new FlatProjection();
+			WorldLocation.setModel(new CompletelyFlatEarth());
+
+			final WorldLocation oldTopLeft = new WorldLocation(0, 0, 0);
+			final WorldLocation oldBottomRight = new WorldLocation(10, 10, 0);
+			final WorldArea oldArea = new WorldArea(oldTopLeft, oldBottomRight);
+			proj.setDataArea(oldArea);
+			proj.setScreenArea(new Dimension(10, 10));
+		}
+
+		public void testZoomAreaBottomRightCorner() {
+			final WorldLocation topLeft = new WorldLocation(5, 5, 0);
+			final WorldLocation bottomRight = new WorldLocation(10, 10, 0);
+			final WorldArea area = new WorldArea(topLeft, bottomRight);
+
+			proj.setScaleVal(1);
+			proj.zoom(2, area);
+
+			assertEquals(new WorldLocation(10, -10, 0), proj.getDataArea().getTopLeft());
+			assertEquals(new WorldLocation(-10, 10, 0), proj.getDataArea().getBottomRight());
+		}
+
+		public void testZoomAreaTopLeftCorner() {
+			final WorldLocation topLeft = new WorldLocation(0, 0, 0);
+			final WorldLocation bottomRight = new WorldLocation(5, 5, 0);
+			final WorldArea area = new WorldArea(topLeft, bottomRight);
+			// after 'normalization' in WorldArea constructor
+			// topLeft is 5 (lat), 0 (lon)
+			// bottomRight is 0 (lat), 5 (lon)
+
+			proj.setScaleVal(1);
+			proj.zoom(2, area);
+
+			assertEquals(new WorldLocation(20, 0, 0), proj.getDataArea().getTopLeft());
+			assertEquals(new WorldLocation(0, 20, 0), proj.getDataArea().getBottomRight());
+		}
+	}
+
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	// ////////////////////////////////////////////////
@@ -81,6 +117,7 @@ public class FlatProjection extends PlainProjection
 	 * the bottom left hand corner of the data visible on screen
 	 */
 	protected WorldLocation _dataOrigin;
+
 	protected double _scaleVal;
 
 	protected Point _screenOrigin;
@@ -90,26 +127,24 @@ public class FlatProjection extends PlainProjection
 	 */
 	private final WorldVector _workingVector = new WorldVector(0, 0, 0);
 
+	// ////////////////////////////////////////////////
+	// member functions
+	// ////////////////////////////////////////////////
+
 	/**
 	 * working location object, to reduce object creation ins screen operations
 	 */
 	private final WorldLocation _workingLocation = new WorldLocation(0, 0, 0);
 
 	// ////////////////////////////////////////////////
-	// member functions
-	// ////////////////////////////////////////////////
-
-	// ////////////////////////////////////////////////
 	// constructor
 	// ////////////////////////////////////////////////
-	public FlatProjection()
-	{
+	public FlatProjection() {
 		super("Locally flat-Earth projection");
 	}
 
 	@Override
-	public Editable.EditorType getInfo()
-	{
+	public Editable.EditorType getInfo() {
 		if (_myEditor == null)
 			_myEditor = new FlatProjectionInfo(this);
 
@@ -119,20 +154,17 @@ public class FlatProjection extends PlainProjection
 	/**
 	 * return factor which converts from screen to world units (screen = world /
 	 * scale)
-	 * 
+	 *
 	 */
-	public double getScaleFactor()
-	{
+	public double getScaleFactor() {
 		return _scaleVal;
 	}
 
-	public double getScaleVal()
-	{
+	public double getScaleVal() {
 		return _scaleVal;
 	}
 
-	public void offsetOrigin(final boolean updateDataArea)
-	{
+	public void offsetOrigin(final boolean updateDataArea) {
 		// ensure there's a valid (minimum) value
 		if (_scaleVal < 0.0000002)
 			_scaleVal = 0.0000002;
@@ -143,8 +175,7 @@ public class FlatProjection extends PlainProjection
 
 		// since this changes the data area rectangle, we should ensure that there
 		// is screen data present
-		if ((getScreenArea().width > 0) && (getScreenArea().height > 0))
-		{
+		if ((getScreenArea().width > 0) && (getScreenArea().height > 0)) {
 
 			// create a new offset
 
@@ -160,16 +191,14 @@ public class FlatProjection extends PlainProjection
 			final double edgeX = sWidth / 2.0;
 			final double edgeY = sHeight / 2.0;
 
-			if (updateDataArea)
-			{
+			if (updateDataArea) {
 				// work out the new top left
-				final WorldLocation newTL = new WorldLocation(getDataArea().getTopLeft()
-								.getLat() + edgeY, getDataArea().getTopLeft().getLong() - edgeX, 0);
+				final WorldLocation newTL = new WorldLocation(getDataArea().getTopLeft().getLat() + edgeY,
+						getDataArea().getTopLeft().getLong() - edgeX, 0);
 
 				// and now the new bottom right
-				final WorldLocation newBR = new WorldLocation(getDataArea().getBottomRight()
-								.getLat() - edgeY,
-								getDataArea().getBottomRight().getLong() + edgeX, 0);
+				final WorldLocation newBR = new WorldLocation(getDataArea().getBottomRight().getLat() - edgeY,
+						getDataArea().getBottomRight().getLong() + edgeX, 0);
 
 				// and update the data-area - note we call the parent, not the one in
 				// this class,
@@ -184,8 +213,7 @@ public class FlatProjection extends PlainProjection
 	}
 
 	@Override
-	public void setDataArea(final WorldArea theArea)
-	{
+	public void setDataArea(final WorldArea theArea) {
 		super.setDataArea(theArea);
 
 		this.firePropertyChange(PlainProjection.PAN_EVENT, null, theArea);
@@ -196,19 +224,17 @@ public class FlatProjection extends PlainProjection
 
 	/**
 	 * override the current scale factor
-	 * 
+	 *
 	 * @param scaleVal
 	 */
-	public void setScaleVal(final double scaleVal)
-	{
+	public void setScaleVal(final double scaleVal) {
 		_scaleVal = scaleVal;
 
 		offsetOrigin(true);
 	}
 
 	@Override
-	public void setScreenArea(final java.awt.Dimension theArea)
-	{
+	public void setScreenArea(final java.awt.Dimension theArea) {
 		super.setScreenArea(theArea);
 
 		_screenOrigin = new java.awt.Point(theArea.width / 2, theArea.height / 2);
@@ -218,8 +244,7 @@ public class FlatProjection extends PlainProjection
 	}
 
 	@Override
-	public java.awt.Point toScreen(final WorldLocation val)
-	{
+	public java.awt.Point toScreen(final WorldLocation val) {
 		// Point scrRes;
 
 		// check we've got valid data
@@ -240,22 +265,18 @@ public class FlatProjection extends PlainProjection
 		// {
 
 		// see if we are in relative mode
-		if (super.getPrimaryOriented())
-		{
+		if (super.getPrimaryOriented()) {
 			// check if we have a parent defined
-			if (super._relativePlotter != null)
-			{
+			if (super._relativePlotter != null) {
 				// and the bearing offset
 				bearingOffset = _relativePlotter.getHeading();
 			}
 		}
 
 		// see if we are in relative mode
-		if (super.getPrimaryCentred())
-		{
+		if (super.getPrimaryCentred()) {
 			// check if we have a parent defined
-			if (super._relativePlotter != null)
-			{
+			if (super._relativePlotter != null) {
 				// try to get the origin
 				myOrigin = _relativePlotter.getLocation();
 			}
@@ -299,8 +320,7 @@ public class FlatProjection extends PlainProjection
 	}
 
 	@Override
-	public WorldLocation toWorld(final java.awt.Point val)
-	{
+	public WorldLocation toWorld(final java.awt.Point val) {
 
 		final WorldLocation answer = null;
 		final Point p1 = new Point();
@@ -336,33 +356,26 @@ public class FlatProjection extends PlainProjection
 		WorldLocation myOrigin = null;
 		double bearingOffset = 0.0;
 
-		try
-		{
+		try {
 
 			// see if we are in relative mode
-			if (super.getPrimaryOriented())
-			{
+			if (super.getPrimaryOriented()) {
 				// check if we have a parent defined
-				if (super._relativePlotter != null)
-				{
+				if (super._relativePlotter != null) {
 					// and the bearing offset
 					bearingOffset = _relativePlotter.getHeading();
 				}
 			}
 
 			// see if we are in relative mode
-			if (super.getPrimaryCentred())
-			{
+			if (super.getPrimaryCentred()) {
 				// check if we have a parent defined
-				if (super._relativePlotter != null)
-				{
+				if (super._relativePlotter != null) {
 					// try to get the origin
 					myOrigin = _relativePlotter.getLocation();
 				}
 			}
-		}
-		catch (final NullPointerException npe)
-		{
+		} catch (final NullPointerException npe) {
 			// don't worry - we don't have the necessary data - just do normal
 			// plotting
 		}
@@ -382,18 +395,14 @@ public class FlatProjection extends PlainProjection
 	}
 
 	@Override
-	public void zoom(final double value)
-	{
+	public void zoom(final double value) {
 		// check that we have some data
-		if ((getDataArea() != null) && (getScreenArea() != null))
-		{
+		if ((getDataArea() != null) && (getScreenArea() != null)) {
 
 			// only zoom out if we are not already looking at the full plot
-			if ((getDataArea().getWidth() < 360) || (getDataArea().getHeight() < 180))
-			{
+			if ((getDataArea().getWidth() < 360) || (getDataArea().getHeight() < 180)) {
 
-				if (value == 0)
-				{
+				if (value == 0) {
 					// so, we are doing a fit to window, make it so
 
 					// find the width and height of the data
@@ -401,11 +410,9 @@ public class FlatProjection extends PlainProjection
 					final double thisBorder = getDataBorder();
 
 					// find the x scale factor
-					final double dx = (getDataArea().getWidth() * thisBorder)
-							/ getScreenArea().width;
+					final double dx = (getDataArea().getWidth() * thisBorder) / getScreenArea().width;
 					// find the y scale factor
-					final double dy = (getDataArea().getHeight() * thisBorder)
-							/ getScreenArea().height;
+					final double dy = (getDataArea().getHeight() * thisBorder) / getScreenArea().height;
 
 					// find the maximum of these
 					_scaleVal = Math.max(dx, dy);
@@ -415,9 +422,7 @@ public class FlatProjection extends PlainProjection
 					// the data area
 					offsetOrigin(false);
 
-				}
-				else
-				{
+				} else {
 					_scaleVal = _scaleVal * value;
 
 					// we've been provided with a zoom factor, which will change the data
@@ -432,41 +437,32 @@ public class FlatProjection extends PlainProjection
 			// and fire the zoom event
 			firePropertyChange(PlainProjection.ZOOM_EVENT, null, this);
 
-		}
-		else
-		{
+		} else {
 			// do nothing, since we don't have any data
 		}
 	}
 
-
 	@Override
-	public void zoom(final double value, final WorldArea area)
-	{
+	public void zoom(final double value, final WorldArea area) {
 		// TODO: fix the algorithm so that the test would pass
-		if (getDataArea() == null || getScreenArea() == null)
-		{
+		if (getDataArea() == null || getScreenArea() == null) {
 			return;
 		}
 
 		// only zoom out if we are not already looking at the full plot
-		if ((getDataArea().getWidth() < 360) || (getDataArea().getHeight() < 180))
-		{
+		if ((getDataArea().getWidth() < 360) || (getDataArea().getHeight() < 180)) {
 
-			if (value == 0)
-			{
+			if (value == 0) {
 				// so, we are doing a fit to window, make it so
 
 				// find the width and height of the data
 				// we've got to calculate the new scale
-				double thisBorder = getDataBorder();
+				final double thisBorder = getDataBorder();
 
 				// find the x scale factor
-				double dx = (getDataArea().getWidth() * thisBorder)
-							/ getScreenArea().width;
+				final double dx = (getDataArea().getWidth() * thisBorder) / getScreenArea().width;
 				// find the y scale factor
-				double dy = (getDataArea().getHeight() * thisBorder)
-							/ getScreenArea().height;
+				final double dy = (getDataArea().getHeight() * thisBorder) / getScreenArea().height;
 
 				// find the maximum of these
 				_scaleVal = Math.max(dx, dy);
@@ -475,9 +471,7 @@ public class FlatProjection extends PlainProjection
 				// update the data area
 				offsetOrigin(false);
 
-			}
-			else
-			{
+			} else {
 				_scaleVal = _scaleVal * value;
 
 				final WorldLocation actualCenter = getDataArea().getCentre();
@@ -486,16 +480,14 @@ public class FlatProjection extends PlainProjection
 				final double deltaY = actualCenter.getLong() - desiredCenter.getLong();
 
 				// we've been provided with a zoom factor, which will change the data
-			    // area covered - allow the offsetOrigin to update the data area
+				// area covered - allow the offsetOrigin to update the data area
 				offsetOrigin(true);
 
 				final WorldArea newArea = super.getDataArea();
-				final WorldLocation newTL = new WorldLocation(
-						newArea.getTopLeft().getLat() + deltaX*_scaleVal,
-						newArea.getTopLeft().getLong() + deltaY*_scaleVal, 0);
-				final WorldLocation newBR = new WorldLocation(
-						newArea.getBottomRight().getLat() + deltaX*_scaleVal,
-						newArea.getBottomRight().getLong() + deltaY*_scaleVal, 0);
+				final WorldLocation newTL = new WorldLocation(newArea.getTopLeft().getLat() + deltaX * _scaleVal,
+						newArea.getTopLeft().getLong() + deltaY * _scaleVal, 0);
+				final WorldLocation newBR = new WorldLocation(newArea.getBottomRight().getLat() + deltaX * _scaleVal,
+						newArea.getBottomRight().getLong() + deltaY * _scaleVal, 0);
 				super.setDataArea(new WorldArea(newTL, newBR));
 			}
 
@@ -505,53 +497,5 @@ public class FlatProjection extends PlainProjection
 		firePropertyChange(PlainProjection.ZOOM_EVENT, null, this);
 
 	}
-
-	public static class TestFlatProj extends TestCase
-	{
-
-		FlatProjection proj;
-
-		public void setUp()
-		{
-			proj = new FlatProjection();
-			WorldLocation.setModel(new CompletelyFlatEarth());
-
-			final WorldLocation oldTopLeft = new WorldLocation(0, 0, 0);
-			final WorldLocation oldBottomRight = new WorldLocation(10, 10, 0);
-			final WorldArea oldArea = new WorldArea(oldTopLeft, oldBottomRight);
-			proj.setDataArea(oldArea);
-			proj.setScreenArea(new Dimension(10, 10));
-		}
-
-		public void testZoomAreaTopLeftCorner()
-		{
-			final WorldLocation topLeft = new WorldLocation(0, 0, 0);
-			final WorldLocation bottomRight = new WorldLocation(5, 5, 0);
-			final WorldArea area = new WorldArea(topLeft, bottomRight);
-			// after 'normalization' in WorldArea constructor
-			// topLeft is 5 (lat), 0 (lon)
-			// bottomRight is 0 (lat), 5 (lon)
-
-			proj.setScaleVal(1);
-			proj.zoom(2, area);
-
-			assertEquals(new WorldLocation(20, 0, 0), proj.getDataArea().getTopLeft());
-			assertEquals(new WorldLocation(0, 20, 0), proj.getDataArea().getBottomRight());
-		}
-
-		public void testZoomAreaBottomRightCorner()
-		{
-			final WorldLocation topLeft = new WorldLocation(5, 5, 0);
-			final WorldLocation bottomRight = new WorldLocation(10, 10, 0);
-			final WorldArea area = new WorldArea(topLeft, bottomRight);
-
-			proj.setScaleVal(1);
-			proj.zoom(2, area);
-
-			assertEquals(new WorldLocation(10, -10, 0), proj.getDataArea().getTopLeft());
-			assertEquals(new WorldLocation(-10, 10, 0), proj.getDataArea().getBottomRight());
-		}
-	}
-
 
 }

@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.asset.netasset2.connect;
 
 import java.net.InetAddress;
@@ -43,8 +44,7 @@ import org.mwc.asset.netCore.common.Network;
 import org.mwc.asset.netCore.common.Network.LightParticipant;
 import org.mwc.asset.netCore.common.Network.LightScenario;
 
-public class VConnect extends Composite implements IVConnect
-{
+public class VConnect extends Composite implements IVConnect {
 	private final Table partTable;
 	private final Button btnPing;
 	private final ListViewer listServerViewer;
@@ -59,18 +59,16 @@ public class VConnect extends Composite implements IVConnect
 
 	/**
 	 * Create the composite.
-	 * 
+	 *
 	 * @param parent
 	 * @param style
 	 * @param stringProvider
 	 */
-	public VConnect(final Composite parent, final int style)
-	{
+	public VConnect(final Composite parent, final int style) {
 		this(parent, style, null);
 	}
 
-	public VConnect(final Composite parent, final int style, final StringProvider stringProvider)
-	{
+	public VConnect(final Composite parent, final int style, final StringProvider stringProvider) {
 		super(parent, style);
 		_stringProvider = stringProvider;
 		setLayout(null);
@@ -117,8 +115,7 @@ public class VConnect extends Composite implements IVConnect
 		listServers = listServerViewer.getList();
 		listServers.setBounds(10, 41, 100, 66);
 
-		listScenarioViewer = new ListViewer(grpConnection, SWT.BORDER
-				| SWT.V_SCROLL);
+		listScenarioViewer = new ListViewer(grpConnection, SWT.BORDER | SWT.V_SCROLL);
 		listScenarios = listScenarioViewer.getList();
 		listScenarios.setBounds(116, 41, 130, 66);
 
@@ -137,14 +134,21 @@ public class VConnect extends Composite implements IVConnect
 	}
 
 	@Override
-	protected void checkSubclass()
-	{
-		// Disable the check that prevents subclassing of SWT components
+	public void addDisconnectListener(final ClickHandler handler) {
+		btnDisconnect.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetDefaultSelected(final SelectionEvent e) {
+			}
+
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				handler.clicked();
+			}
+		});
 	}
 
 	@Override
-	public void addManualListener(final ClickHandler handler)
-	{
+	public void addManualListener(final ClickHandler handler) {
 		// btnManual.addSelectionListener(new SelectionListener()
 		// {
 		// public void widgetSelected(SelectionEvent e)
@@ -159,142 +163,10 @@ public class VConnect extends Composite implements IVConnect
 	}
 
 	@Override
-	public void addPingListener(final ClickHandler handler)
-	{
-		btnPing.addSelectionListener(new SelectionListener()
-		{
-			public void widgetSelected(final SelectionEvent e)
-			{
-				handler.clicked();
-			}
-
-			public void widgetDefaultSelected(final SelectionEvent e)
-			{
-			}
-		});
-	}
-
-	@Override
-	public void addDisconnectListener(final ClickHandler handler)
-	{
-		btnDisconnect.addSelectionListener(new SelectionListener()
-		{
-			public void widgetSelected(final SelectionEvent e)
-			{
-				handler.clicked();
-			}
-
-			public void widgetDefaultSelected(final SelectionEvent e)
-			{
-			}
-		});
-	}
-
-	@Override
-	public void addServerListener(final ServerSelected listener)
-	{
-		listServerViewer.addDoubleClickListener(new IDoubleClickListener()
-		{
-			public void doubleClick(final DoubleClickEvent event)
-			{
-				final ISelection sel = event.getSelection();
-				final StructuredSelection ss = (StructuredSelection) sel;
-				final InetAddress address = (InetAddress) ss.getFirstElement();
-				listener.selected(address);
-			}
-		});
-	}
-
-	@Override
-	public void disableServers()
-	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
+	public void addParticipantListener(final ParticipantSelected listener) {
+		partViewer.addDoubleClickListener(new IDoubleClickListener() {
 			@Override
-			public void run()
-			{
-				if (!listServers.isDisposed())
-					listServers.setEnabled(false);
-			}
-		});
-	}
-
-	@Override
-	public void enableServers()
-	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				if (!listServers.isDisposed())
-					listServers.setEnabled(true);
-			}
-		});
-	}
-
-	@Override
-	public void disableScenarios()
-	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				if (!listScenarios.isDisposed())
-					listScenarios.setEnabled(false);
-			}
-		});
-	}
-
-	@Override
-	public void enableScenarios()
-	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				if (!listScenarios.isDisposed())
-					listScenarios.setEnabled(true);
-			}
-		});
-	}
-
-	@Override
-	public void addScenarioListener(final ScenarioSelected listener)
-	{
-		listScenarioViewer.addDoubleClickListener(new IDoubleClickListener()
-		{
-			public void doubleClick(final DoubleClickEvent event)
-			{
-				final ISelection sel = event.getSelection();
-				final StructuredSelection ss = (StructuredSelection) sel;
-				final LightScenario scenario = (LightScenario) ss.getFirstElement();
-				listener.selected(scenario);
-			}
-		});
-	}
-
-	@Override
-	public void setPartContentProvider(final IContentProvider provider)
-	{
-		partViewer.setContentProvider(provider);
-	}
-
-	@Override
-	public void setPartLabelProvider(final IBaseLabelProvider labelProvider)
-	{
-		partViewer.setLabelProvider(labelProvider);
-	}
-
-	@Override
-	public void addParticipantListener(final ParticipantSelected listener)
-	{
-		partViewer.addDoubleClickListener(new IDoubleClickListener()
-		{
-			public void doubleClick(final DoubleClickEvent event)
-			{
+			public void doubleClick(final DoubleClickEvent event) {
 				final ISelection sel = event.getSelection();
 				final StructuredSelection ss = (StructuredSelection) sel;
 				final LightParticipant part = (LightParticipant) ss.getFirstElement();
@@ -304,112 +176,38 @@ public class VConnect extends Composite implements IVConnect
 	}
 
 	@Override
-	public void setParticipants(final Vector<LightParticipant> listOfParticipants)
-	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
+	public void addPingListener(final ClickHandler handler) {
+		btnPing.addSelectionListener(new SelectionListener() {
 			@Override
-			public void run()
-			{
-				partViewer.setInput(listOfParticipants);
+			public void widgetDefaultSelected(final SelectionEvent e) {
+			}
+
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				handler.clicked();
 			}
 		});
 	}
 
 	@Override
-	public void setScenarios(final Vector<LightScenario> results)
-	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
+	public void addScenarioListener(final ScenarioSelected listener) {
+		listScenarioViewer.addDoubleClickListener(new IDoubleClickListener() {
 			@Override
-			public void run()
-			{
-				listScenarioViewer.getList().removeAll();
-				final Iterator<LightScenario> items = results.iterator();
-				while (items.hasNext())
-				{
-					final Network.LightScenario ls = (Network.LightScenario) items.next();
-					listScenarioViewer.add(ls);
-				}
+			public void doubleClick(final DoubleClickEvent event) {
+				final ISelection sel = event.getSelection();
+				final StructuredSelection ss = (StructuredSelection) sel;
+				final LightScenario scenario = (LightScenario) ss.getFirstElement();
+				listener.selected(scenario);
 			}
 		});
 	}
 
 	@Override
-	public void setServers(final java.util.List<InetAddress> adds)
-	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				final Iterator<InetAddress> items = adds.iterator();
-				while (items.hasNext())
-				{
-					final InetAddress inetAddress = (InetAddress) items.next();
-					listServerViewer.add(inetAddress);
-				}
-			}
-		});
-	}
-
-	@Override
-	public void disableParticipants()
-	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				if (!partTable.isDisposed())
-					partTable.setEnabled(false);
-			}
-		});
-	}
-
-	@Override
-	public void enableParticipants()
-	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				if (!partTable.isDisposed())
-					partTable.setEnabled(true);
-			}
-		});
-	}
-
-	@Override
-	public void enableDisconnect()
-	{
-		if (!btnDisconnect.isDisposed())
-			btnDisconnect.setEnabled(true);
-	}
-
-	@Override
-	public void disableDisconnect()
-	{
-		if (!btnDisconnect.isDisposed())
-			btnDisconnect.setEnabled(false);
-	}
-
-	@Override
-	public String getString(final String title, final String message)
-	{
-		return _stringProvider.getString(title, message);
-	}
-
-	@Override
-	public void addSelfHostListener(final BooleanHandler handler)
-	{
-		btnSelfHost.addSelectionListener(new SelectionAdapter()
-		{
+	public void addSelfHostListener(final BooleanHandler handler) {
+		btnSelfHost.addSelectionListener(new SelectionAdapter() {
 
 			@Override
-			public void widgetSelected(final SelectionEvent e)
-			{
+			public void widgetSelected(final SelectionEvent e) {
 				handler.change(btnSelfHost.getSelection());
 			}
 
@@ -417,14 +215,161 @@ public class VConnect extends Composite implements IVConnect
 	}
 
 	@Override
-	public void clearServers()
-	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
+	public void addServerListener(final ServerSelected listener) {
+		listServerViewer.addDoubleClickListener(new IDoubleClickListener() {
 			@Override
-			public void run()
-			{
+			public void doubleClick(final DoubleClickEvent event) {
+				final ISelection sel = event.getSelection();
+				final StructuredSelection ss = (StructuredSelection) sel;
+				final InetAddress address = (InetAddress) ss.getFirstElement();
+				listener.selected(address);
+			}
+		});
+	}
+
+	@Override
+	protected void checkSubclass() {
+		// Disable the check that prevents subclassing of SWT components
+	}
+
+	@Override
+	public void clearServers() {
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
 				listServerViewer.getList().removeAll();
+			}
+		});
+	}
+
+	@Override
+	public void disableDisconnect() {
+		if (!btnDisconnect.isDisposed())
+			btnDisconnect.setEnabled(false);
+	}
+
+	@Override
+	public void disableParticipants() {
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				if (!partTable.isDisposed())
+					partTable.setEnabled(false);
+			}
+		});
+	}
+
+	@Override
+	public void disableScenarios() {
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				if (!listScenarios.isDisposed())
+					listScenarios.setEnabled(false);
+			}
+		});
+	}
+
+	@Override
+	public void disableServers() {
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				if (!listServers.isDisposed())
+					listServers.setEnabled(false);
+			}
+		});
+	}
+
+	@Override
+	public void enableDisconnect() {
+		if (!btnDisconnect.isDisposed())
+			btnDisconnect.setEnabled(true);
+	}
+
+	@Override
+	public void enableParticipants() {
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				if (!partTable.isDisposed())
+					partTable.setEnabled(true);
+			}
+		});
+	}
+
+	@Override
+	public void enableScenarios() {
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				if (!listScenarios.isDisposed())
+					listScenarios.setEnabled(true);
+			}
+		});
+	}
+
+	@Override
+	public void enableServers() {
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				if (!listServers.isDisposed())
+					listServers.setEnabled(true);
+			}
+		});
+	}
+
+	@Override
+	public String getString(final String title, final String message) {
+		return _stringProvider.getString(title, message);
+	}
+
+	@Override
+	public void setPartContentProvider(final IContentProvider provider) {
+		partViewer.setContentProvider(provider);
+	}
+
+	@Override
+	public void setParticipants(final Vector<LightParticipant> listOfParticipants) {
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				partViewer.setInput(listOfParticipants);
+			}
+		});
+	}
+
+	@Override
+	public void setPartLabelProvider(final IBaseLabelProvider labelProvider) {
+		partViewer.setLabelProvider(labelProvider);
+	}
+
+	@Override
+	public void setScenarios(final Vector<LightScenario> results) {
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				listScenarioViewer.getList().removeAll();
+				final Iterator<LightScenario> items = results.iterator();
+				while (items.hasNext()) {
+					final Network.LightScenario ls = items.next();
+					listScenarioViewer.add(ls);
+				}
+			}
+		});
+	}
+
+	@Override
+	public void setServers(final java.util.List<InetAddress> adds) {
+		Display.getDefault().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				final Iterator<InetAddress> items = adds.iterator();
+				while (items.hasNext()) {
+					final InetAddress inetAddress = items.next();
+					listServerViewer.add(inetAddress);
+				}
 			}
 		});
 	}

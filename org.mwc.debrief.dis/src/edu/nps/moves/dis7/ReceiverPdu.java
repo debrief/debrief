@@ -1,208 +1,208 @@
 package edu.nps.moves.dis7;
 
-import java.util.*;
-import java.io.*;
-import edu.nps.moves.disenum.*;
-import edu.nps.moves.disutil.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
 
 /**
- *  Communication of a receiver state. Section 7.7.4 COMPLETE
+ * Communication of a receiver state. Section 7.7.4 COMPLETE
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class ReceiverPdu extends RadioCommunicationsFamilyPdu implements Serializable
-{
-   /** encoding scheme used, and enumeration */
-   protected int  receiverState;
+public class ReceiverPdu extends RadioCommunicationsFamilyPdu implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   /** padding */
-   protected int  padding1;
+	/** encoding scheme used, and enumeration */
+	protected int receiverState;
 
-   /** received power */
-   protected float  receivedPoser;
+	/** padding */
+	protected int padding1;
 
-   /** ID of transmitter */
-   protected EntityID  transmitterEntityId = new EntityID(); 
+	/** received power */
+	protected float receivedPoser;
 
-   /** ID of transmitting radio */
-   protected int  transmitterRadioId;
+	/** ID of transmitter */
+	protected EntityID transmitterEntityId = new EntityID();
 
+	/** ID of transmitting radio */
+	protected int transmitterRadioId;
 
-/** Constructor */
- public ReceiverPdu()
- {
-    setPduType( (short)27 );
- }
+	/** Constructor */
+	public ReceiverPdu() {
+		setPduType((short) 27);
+	}
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-   marshalSize = super.getMarshalledSize();
-   marshalSize = marshalSize + 2;  // receiverState
-   marshalSize = marshalSize + 2;  // padding1
-   marshalSize = marshalSize + 4;  // receivedPoser
-   marshalSize = marshalSize + transmitterEntityId.getMarshalledSize();  // transmitterEntityId
-   marshalSize = marshalSize + 2;  // transmitterRadioId
+		if (this == obj) {
+			return true;
+		}
 
-   return marshalSize;
-}
+		if (obj == null) {
+			return false;
+		}
 
+		if (getClass() != obj.getClass())
+			return false;
 
-public void setReceiverState(int pReceiverState)
-{ receiverState = pReceiverState;
-}
+		return equalsImpl(obj);
+	}
 
-public int getReceiverState()
-{ return receiverState; 
-}
+	@Override
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-public void setPadding1(int pPadding1)
-{ padding1 = pPadding1;
-}
+		if (!(obj instanceof ReceiverPdu))
+			return false;
 
-public int getPadding1()
-{ return padding1; 
-}
+		final ReceiverPdu rhs = (ReceiverPdu) obj;
 
-public void setReceivedPoser(float pReceivedPoser)
-{ receivedPoser = pReceivedPoser;
-}
+		if (!(receiverState == rhs.receiverState))
+			ivarsEqual = false;
+		if (!(padding1 == rhs.padding1))
+			ivarsEqual = false;
+		if (!(receivedPoser == rhs.receivedPoser))
+			ivarsEqual = false;
+		if (!(transmitterEntityId.equals(rhs.transmitterEntityId)))
+			ivarsEqual = false;
+		if (!(transmitterRadioId == rhs.transmitterRadioId))
+			ivarsEqual = false;
 
-public float getReceivedPoser()
-{ return receivedPoser; 
-}
+		return ivarsEqual && super.equalsImpl(rhs);
+	}
 
-public void setTransmitterEntityId(EntityID pTransmitterEntityId)
-{ transmitterEntityId = pTransmitterEntityId;
-}
+	@Override
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
-public EntityID getTransmitterEntityId()
-{ return transmitterEntityId; 
-}
+		marshalSize = super.getMarshalledSize();
+		marshalSize = marshalSize + 2; // receiverState
+		marshalSize = marshalSize + 2; // padding1
+		marshalSize = marshalSize + 4; // receivedPoser
+		marshalSize = marshalSize + transmitterEntityId.getMarshalledSize(); // transmitterEntityId
+		marshalSize = marshalSize + 2; // transmitterRadioId
 
-public void setTransmitterRadioId(int pTransmitterRadioId)
-{ transmitterRadioId = pTransmitterRadioId;
-}
+		return marshalSize;
+	}
 
-public int getTransmitterRadioId()
-{ return transmitterRadioId; 
-}
+	public int getPadding1() {
+		return padding1;
+	}
 
+	public float getReceivedPoser() {
+		return receivedPoser;
+	}
 
-public void marshal(DataOutputStream dos)
-{
-    super.marshal(dos);
-    try 
-    {
-       dos.writeShort( (short)receiverState);
-       dos.writeShort( (short)padding1);
-       dos.writeFloat( (float)receivedPoser);
-       transmitterEntityId.marshal(dos);
-       dos.writeShort( (short)transmitterRadioId);
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+	public int getReceiverState() {
+		return receiverState;
+	}
 
-public void unmarshal(DataInputStream dis)
-{
-     super.unmarshal(dis);
+	public EntityID getTransmitterEntityId() {
+		return transmitterEntityId;
+	}
 
-    try 
-    {
-       receiverState = (int)dis.readUnsignedShort();
-       padding1 = (int)dis.readUnsignedShort();
-       receivedPoser = dis.readFloat();
-       transmitterEntityId.unmarshal(dis);
-       transmitterRadioId = (int)dis.readUnsignedShort();
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+	public int getTransmitterRadioId() {
+		return transmitterRadioId;
+	}
 
+	@Override
+	public void marshal(final DataOutputStream dos) {
+		super.marshal(dos);
+		try {
+			dos.writeShort((short) receiverState);
+			dos.writeShort((short) padding1);
+			dos.writeFloat(receivedPoser);
+			transmitterEntityId.marshal(dos);
+			dos.writeShort((short) transmitterRadioId);
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
-       super.marshal(buff);
-       buff.putShort( (short)receiverState);
-       buff.putShort( (short)padding1);
-       buff.putFloat( (float)receivedPoser);
-       transmitterEntityId.marshal(buff);
-       buff.putShort( (short)transmitterRadioId);
-    } // end of marshal method
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	@Override
+	public void marshal(final java.nio.ByteBuffer buff) {
+		super.marshal(buff);
+		buff.putShort((short) receiverState);
+		buff.putShort((short) padding1);
+		buff.putFloat(receivedPoser);
+		transmitterEntityId.marshal(buff);
+		buff.putShort((short) transmitterRadioId);
+	} // end of marshal method
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       super.unmarshal(buff);
+	public void setPadding1(final int pPadding1) {
+		padding1 = pPadding1;
+	}
 
-       receiverState = (int)(buff.getShort() & 0xFFFF);
-       padding1 = (int)(buff.getShort() & 0xFFFF);
-       receivedPoser = buff.getFloat();
-       transmitterEntityId.unmarshal(buff);
-       transmitterRadioId = (int)(buff.getShort() & 0xFFFF);
- } // end of unmarshal method 
+	public void setReceivedPoser(final float pReceivedPoser) {
+		receivedPoser = pReceivedPoser;
+	}
 
+	public void setReceiverState(final int pReceiverState) {
+		receiverState = pReceiverState;
+	}
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+	public void setTransmitterEntityId(final EntityID pTransmitterEntityId) {
+		transmitterEntityId = pTransmitterEntityId;
+	}
 
-    if(this == obj){
-      return true;
-    }
+	public void setTransmitterRadioId(final int pTransmitterRadioId) {
+		transmitterRadioId = pTransmitterRadioId;
+	}
 
-    if(obj == null){
-       return false;
-    }
+	@Override
+	public void unmarshal(final DataInputStream dis) {
+		super.unmarshal(dis);
 
-    if(getClass() != obj.getClass())
-        return false;
+		try {
+			receiverState = dis.readUnsignedShort();
+			padding1 = dis.readUnsignedShort();
+			receivedPoser = dis.readFloat();
+			transmitterEntityId.unmarshal(dis);
+			transmitterRadioId = dis.readUnsignedShort();
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
-    return equalsImpl(obj);
- }
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	@Override
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		super.unmarshal(buff);
 
-@Override
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
-
-    if(!(obj instanceof ReceiverPdu))
-        return false;
-
-     final ReceiverPdu rhs = (ReceiverPdu)obj;
-
-     if( ! (receiverState == rhs.receiverState)) ivarsEqual = false;
-     if( ! (padding1 == rhs.padding1)) ivarsEqual = false;
-     if( ! (receivedPoser == rhs.receivedPoser)) ivarsEqual = false;
-     if( ! (transmitterEntityId.equals( rhs.transmitterEntityId) )) ivarsEqual = false;
-     if( ! (transmitterRadioId == rhs.transmitterRadioId)) ivarsEqual = false;
-
-    return ivarsEqual && super.equalsImpl(rhs);
- }
+		receiverState = buff.getShort() & 0xFFFF;
+		padding1 = buff.getShort() & 0xFFFF;
+		receivedPoser = buff.getFloat();
+		transmitterEntityId.unmarshal(buff);
+		transmitterRadioId = buff.getShort() & 0xFFFF;
+	} // end of unmarshal method
 } // end of class

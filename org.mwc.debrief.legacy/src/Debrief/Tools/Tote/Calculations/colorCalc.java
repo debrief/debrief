@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package Debrief.Tools.Tote.Calculations;
 
 // Copyright MWC 1999, Debrief 3 Project
@@ -84,59 +85,58 @@ import java.text.DecimalFormat;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 
-public final class colorCalc extends plainCalc
-{
+public final class colorCalc extends plainCalc {
 
+	/**
+	 * colour editor, used to convert a colour to a name
+	 *
+	 */
+	private static MWC.GUI.Properties.ColorPropertyEditor colEditor = null;
 
-  /** colour editor, used to convert a colour to a name
-   *
-   */
-  private static MWC.GUI.Properties.ColorPropertyEditor colEditor = null;
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	public colorCalc() {
+		super(new DecimalFormat("000.0"), "Color", "name");
+	}
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  public colorCalc()
-  {  
-    super(new DecimalFormat("000.0"), "Color", "name");
-  }
-  
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-  public final double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime)
-  {
-    // get the colour
-    final java.awt.Color theCol = primary.getColor();
-    return theCol.getRGB();
-  }
+	@Override
+	public final double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime) {
+		// get the colour
+		final java.awt.Color theCol = primary.getColor();
+		return theCol.getRGB();
+	}
 
+	/**
+	 * does this calculation require special bearing handling (prevent wrapping
+	 * through 360 degs)
+	 *
+	 */
+	@Override
+	public final boolean isWrappableData() {
+		return false;
+	}
 
-  public final String update(final Watchable primary, final Watchable secondary, final HiResDate time)
-  {
+	@Override
+	public final String update(final Watchable primary, final Watchable secondary, final HiResDate time) {
 		// check we have data
-		if(primary == null)
+		if (primary == null)
 			return NOT_APPLICABLE;
 
-    // check we have our colour editor
-    if(colEditor == null)
-    {
-      colEditor = new MWC.GUI.Properties.ColorPropertyEditor();
-    }
+		// check we have our colour editor
+		if (colEditor == null) {
+			colEditor = new MWC.GUI.Properties.ColorPropertyEditor();
+		}
 
-    // get the colour
-    final java.awt.Color theCol = primary.getColor();
+		// get the colour
+		final java.awt.Color theCol = primary.getColor();
 
-    colEditor.setValue(theCol);
+		colEditor.setValue(theCol);
 
-    return colEditor.getAsText() ;
-  }
-
-  /** does this calculation require special bearing handling (prevent wrapping through 360 degs)
-   *
-   */
-  public final boolean isWrappableData() {
-    return false;
-  }
+		return colEditor.getAsText();
+	}
 }

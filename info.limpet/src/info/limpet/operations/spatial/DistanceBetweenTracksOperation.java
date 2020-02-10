@@ -15,11 +15,6 @@
 package info.limpet.operations.spatial;
 
 import static javax.measure.unit.SI.METRE;
-import info.limpet.ICommand;
-import info.limpet.IContext;
-import info.limpet.IDocument;
-import info.limpet.IStoreGroup;
-import info.limpet.IStoreItem;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -27,86 +22,72 @@ import java.util.List;
 
 import javax.measure.quantity.Length;
 
-public class DistanceBetweenTracksOperation extends TwoTrackOperation
-{
+import info.limpet.ICommand;
+import info.limpet.IContext;
+import info.limpet.IDocument;
+import info.limpet.IStoreGroup;
+import info.limpet.IStoreItem;
 
-  private final class DistanceBetweenOperation extends TwoTrackCommand
-  {
-    DistanceBetweenOperation(final List<IStoreItem> selection,
-        final IStoreGroup store, final String title, final String description,
-        final IDocument<?> timeProvider, final IContext context)
-    {
-      super(selection, store, title, description, timeProvider, context, METRE.asType(Length.class));
-    }
+public class DistanceBetweenTracksOperation extends TwoTrackOperation {
 
-    private DistanceBetweenOperation(final List<IStoreItem> selection,
-        final IStoreGroup store, final String title, final String description,
-        final IContext context)
-    {
-      this(selection, store, title, description, null, context);
-    }
+	private final class DistanceBetweenOperation extends TwoTrackCommand {
+		private DistanceBetweenOperation(final List<IStoreItem> selection, final IStoreGroup store, final String title,
+				final String description, final IContext context) {
+			this(selection, store, title, description, null, context);
+		}
 
-    @Override
-    protected void calcAndStore(final IGeoCalculator calc, final Point2D locA,
-        final Point2D locB, final Double time)
-    {
-      // now find the range between them
-      final double thisDist = calc.getDistanceBetween(locA, locB);
+		DistanceBetweenOperation(final List<IStoreItem> selection, final IStoreGroup store, final String title,
+				final String description, final IDocument<?> timeProvider, final IContext context) {
+			super(selection, store, title, description, timeProvider, context, METRE.asType(Length.class));
+		}
 
-      if (time != null)
-      {
-        _builder.add(time, thisDist);
-      }
-      else
-      {
-        _builder.add(thisDist);
-      }
-    }
+		@Override
+		protected void calcAndStore(final IGeoCalculator calc, final Point2D locA, final Point2D locB,
+				final Double time) {
+			// now find the range between them
+			final double thisDist = calc.getDistanceBetween(locA, locB);
 
-    @Override
-    protected String getOutputName()
-    {
-      return getContext().getInput("Distance between tracks",
-          NEW_DATASET_MESSAGE, "Distance between " + super.getSubjectList());
-    }
-  }
+			if (time != null) {
+				_builder.add(time, thisDist);
+			} else {
+				_builder.add(thisDist);
+			}
+		}
 
-  @Override
-  public List<ICommand> actionsFor(final List<IStoreItem> selection,
-      final IStoreGroup destination, final IContext context)
-  {
+		@Override
+		protected String getOutputName() {
+			return getContext().getInput("Distance between tracks", NEW_DATASET_MESSAGE,
+					"Distance between " + super.getSubjectList());
+		}
+	}
 
-    final List<IStoreItem> collatedTracks = getLocationDatasets(selection);
+	@Override
+	public List<ICommand> actionsFor(final List<IStoreItem> selection, final IStoreGroup destination,
+			final IContext context) {
 
-    final List<ICommand> res = new ArrayList<ICommand>();
-    if (appliesTo(collatedTracks))
-    {
-      // ok, are we doing a tempoarl opeartion?
-      if (getATests().suitableForIndexedInterpolation(collatedTracks))
-      {
-        // hmm, find the time provider
-        final IDocument<?> timeProvider =
-            getATests().getLongestIndexedCollection(collatedTracks);
+		final List<IStoreItem> collatedTracks = getLocationDatasets(selection);
 
-        // ok, provide an interpolated action
-        final ICommand newC =
-            new DistanceBetweenOperation(collatedTracks, destination,
-                "Distance between tracks (interpolated)",
-                "Calculate distance between two tracks (interpolated)",
-                timeProvider, context);
-        res.add(newC);
-      }
-      else if (getATests().allEqualLengthOrSingleton(collatedTracks))
-      {
-        // ok, provide an indexed action
-        final ICommand newC =
-            new DistanceBetweenOperation(collatedTracks, destination,
-                "Distance between tracks (indexed)",
-                "Calculate distance between two tracks (indexed)", context);
-        res.add(newC);
-      }
-    }
+		final List<ICommand> res = new ArrayList<ICommand>();
+		if (appliesTo(collatedTracks)) {
+			// ok, are we doing a tempoarl opeartion?
+			if (getATests().suitableForIndexedInterpolation(collatedTracks)) {
+				// hmm, find the time provider
+				final IDocument<?> timeProvider = getATests().getLongestIndexedCollection(collatedTracks);
 
-    return res;
-  }
+				// ok, provide an interpolated action
+				final ICommand newC = new DistanceBetweenOperation(collatedTracks, destination,
+						"Distance between tracks (interpolated)",
+						"Calculate distance between two tracks (interpolated)", timeProvider, context);
+				res.add(newC);
+			} else if (getATests().allEqualLengthOrSingleton(collatedTracks)) {
+				// ok, provide an indexed action
+				final ICommand newC = new DistanceBetweenOperation(collatedTracks, destination,
+						"Distance between tracks (indexed)", "Calculate distance between two tracks (indexed)",
+						context);
+				res.add(newC);
+			}
+		}
+
+		return res;
+	}
 }

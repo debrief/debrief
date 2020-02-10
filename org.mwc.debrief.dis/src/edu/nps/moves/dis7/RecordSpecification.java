@@ -1,189 +1,182 @@
 package edu.nps.moves.dis7;
 
-import java.util.*;
-import java.io.*;
-import edu.nps.moves.disenum.*;
-import edu.nps.moves.disutil.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * This record shall specify the number of record sets contained in the Record Specification record and the record details. Section 6.2.73.
+ * This record shall specify the number of record sets contained in the Record
+ * Specification record and the record details. Section 6.2.73.
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class RecordSpecification extends Object implements Serializable
-{
-   /** The number of record sets */
-   protected long  numberOfRecordSets;
+public class RecordSpecification extends Object implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   /** variable length list record specifications. */
-   protected List< RecordSpecificationElement > recordSets = new ArrayList< RecordSpecificationElement >(); 
+	/** The number of record sets */
+	protected long numberOfRecordSets;
 
-/** Constructor */
- public RecordSpecification()
- {
- }
+	/** variable length list record specifications. */
+	protected List<RecordSpecificationElement> recordSets = new ArrayList<RecordSpecificationElement>();
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+	/** Constructor */
+	public RecordSpecification() {
+	}
 
-   marshalSize = marshalSize + 4;  // numberOfRecordSets
-   for(int idx=0; idx < recordSets.size(); idx++)
-   {
-        RecordSpecificationElement listElement = recordSets.get(idx);
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-   }
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-   return marshalSize;
-}
+		if (this == obj) {
+			return true;
+		}
 
+		if (obj == null) {
+			return false;
+		}
 
-public long getNumberOfRecordSets()
-{ return (long)recordSets.size();
-}
+		if (getClass() != obj.getClass())
+			return false;
 
-/** Note that setting this value will not change the marshalled value. The list whose length this describes is used for that purpose.
- * The getnumberOfRecordSets method will also be based on the actual list length rather than this value. 
- * The method is simply here for java bean completeness.
- */
-public void setNumberOfRecordSets(long pNumberOfRecordSets)
-{ numberOfRecordSets = pNumberOfRecordSets;
-}
+		return equalsImpl(obj);
+	}
 
-public void setRecordSets(List<RecordSpecificationElement> pRecordSets)
-{ recordSets = pRecordSets;
-}
+	/**
+	 * Compare all fields that contribute to the state, ignoring transient and
+	 * static fields, for <code>this</code> and the supplied object
+	 *
+	 * @param obj the object to compare to
+	 * @return true if the objects are equal, false otherwise.
+	 */
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-public List<RecordSpecificationElement> getRecordSets()
-{ return recordSets; }
+		if (!(obj instanceof RecordSpecification))
+			return false;
 
+		final RecordSpecification rhs = (RecordSpecification) obj;
 
-public void marshal(DataOutputStream dos)
-{
-    try 
-    {
-       dos.writeInt( (int)recordSets.size());
+		if (!(numberOfRecordSets == rhs.numberOfRecordSets))
+			ivarsEqual = false;
 
-       for(int idx = 0; idx < recordSets.size(); idx++)
-       {
-            RecordSpecificationElement aRecordSpecificationElement = recordSets.get(idx);
-            aRecordSpecificationElement.marshal(dos);
-       } // end of list marshalling
+		for (int idx = 0; idx < recordSets.size(); idx++) {
+			if (!(recordSets.get(idx).equals(rhs.recordSets.get(idx))))
+				ivarsEqual = false;
+		}
 
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+		return ivarsEqual;
+	}
 
-public void unmarshal(DataInputStream dis)
-{
-    try 
-    {
-       numberOfRecordSets = dis.readInt();
-       for(int idx = 0; idx < numberOfRecordSets; idx++)
-       {
-           RecordSpecificationElement anX = new RecordSpecificationElement();
-           anX.unmarshal(dis);
-           recordSets.add(anX);
-       }
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+		marshalSize = marshalSize + 4; // numberOfRecordSets
+		for (int idx = 0; idx < recordSets.size(); idx++) {
+			final RecordSpecificationElement listElement = recordSets.get(idx);
+			marshalSize = marshalSize + listElement.getMarshalledSize();
+		}
 
+		return marshalSize;
+	}
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
-       buff.putInt( (int)recordSets.size());
+	public long getNumberOfRecordSets() {
+		return recordSets.size();
+	}
 
-       for(int idx = 0; idx < recordSets.size(); idx++)
-       {
-            RecordSpecificationElement aRecordSpecificationElement = (RecordSpecificationElement)recordSets.get(idx);
-            aRecordSpecificationElement.marshal(buff);
-       } // end of list marshalling
+	public List<RecordSpecificationElement> getRecordSets() {
+		return recordSets;
+	}
 
-    } // end of marshal method
+	public void marshal(final DataOutputStream dos) {
+		try {
+			dos.writeInt(recordSets.size());
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       numberOfRecordSets = buff.getInt();
-       for(int idx = 0; idx < numberOfRecordSets; idx++)
-       {
-            RecordSpecificationElement anX = new RecordSpecificationElement();
-            anX.unmarshal(buff);
-            recordSets.add(anX);
-       }
+			for (int idx = 0; idx < recordSets.size(); idx++) {
+				final RecordSpecificationElement aRecordSpecificationElement = recordSets.get(idx);
+				aRecordSpecificationElement.marshal(dos);
+			} // end of list marshalling
 
- } // end of unmarshal method 
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	public void marshal(final java.nio.ByteBuffer buff) {
+		buff.putInt(recordSets.size());
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+		for (int idx = 0; idx < recordSets.size(); idx++) {
+			final RecordSpecificationElement aRecordSpecificationElement = recordSets.get(idx);
+			aRecordSpecificationElement.marshal(buff);
+		} // end of list marshalling
 
-    if(this == obj){
-      return true;
-    }
+	} // end of marshal method
 
-    if(obj == null){
-       return false;
-    }
+	/**
+	 * Note that setting this value will not change the marshalled value. The list
+	 * whose length this describes is used for that purpose. The
+	 * getnumberOfRecordSets method will also be based on the actual list length
+	 * rather than this value. The method is simply here for java bean completeness.
+	 */
+	public void setNumberOfRecordSets(final long pNumberOfRecordSets) {
+		numberOfRecordSets = pNumberOfRecordSets;
+	}
 
-    if(getClass() != obj.getClass())
-        return false;
+	public void setRecordSets(final List<RecordSpecificationElement> pRecordSets) {
+		recordSets = pRecordSets;
+	}
 
-    return equalsImpl(obj);
- }
+	public void unmarshal(final DataInputStream dis) {
+		try {
+			numberOfRecordSets = dis.readInt();
+			for (int idx = 0; idx < numberOfRecordSets; idx++) {
+				final RecordSpecificationElement anX = new RecordSpecificationElement();
+				anX.unmarshal(dis);
+				recordSets.add(anX);
+			}
 
- /**
-  * Compare all fields that contribute to the state, ignoring
- transient and static fields, for <code>this</code> and the supplied object
-  * @param obj the object to compare to
-  * @return true if the objects are equal, false otherwise.
-  */
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
-    if(!(obj instanceof RecordSpecification))
-        return false;
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		numberOfRecordSets = buff.getInt();
+		for (int idx = 0; idx < numberOfRecordSets; idx++) {
+			final RecordSpecificationElement anX = new RecordSpecificationElement();
+			anX.unmarshal(buff);
+			recordSets.add(anX);
+		}
 
-     final RecordSpecification rhs = (RecordSpecification)obj;
-
-     if( ! (numberOfRecordSets == rhs.numberOfRecordSets)) ivarsEqual = false;
-
-     for(int idx = 0; idx < recordSets.size(); idx++)
-     {
-        if( ! ( recordSets.get(idx).equals(rhs.recordSets.get(idx)))) ivarsEqual = false;
-     }
-
-
-    return ivarsEqual;
- }
+	} // end of unmarshal method
 } // end of class

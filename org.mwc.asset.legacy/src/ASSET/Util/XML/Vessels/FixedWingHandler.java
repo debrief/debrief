@@ -1,78 +1,65 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
- *
- *    (C) 2000-2014, PlanetMayo Ltd
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+
 package ASSET.Util.XML.Vessels;
 
 import ASSET.Models.Movement.MovementCharacteristics;
 import ASSET.Models.Vessels.Helo;
 import ASSET.Util.XML.Movement.FixedWingMovementCharsHandler;
+import ASSET.Util.XML.Movement.MovementCharsHandler;
 
-/**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application http://debrief.info
  *
- * @author
- * @version 1.0
- */
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 
-abstract public class FixedWingHandler extends ParticipantHandler
-  {
+abstract public class FixedWingHandler extends ParticipantHandler {
 
-  static private final String myType = "FixedWing";
+	static private final String myType = "FixedWing";
 
-  public FixedWingHandler()
-  {
-    super(myType);
+	static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc) {
+		// create ourselves
+		final org.w3c.dom.Element thisPart = doc.createElement(myType);
 
-    // add handlers for the Helo properties
-    // none in this instance
+		final Helo theHelo = (Helo) toExport;
 
-    addHandler(new FixedWingMovementCharsHandler()
-    {
-      public void setMovement(final MovementCharacteristics chars)
-      {
-        _myMoveChars = chars;
-      }
-    });
+		// export the movement chars
+		final MovementCharacteristics chars = theHelo.getMovementChars();
+		MovementCharsHandler.exportThis(chars, thisPart, doc);
 
+		// and the whole participant
+		ParticipantHandler.exportThis(toExport, thisPart, doc);
 
-  }
+		parent.appendChild(thisPart);
 
-  protected ASSET.ParticipantType getParticipant(final int index)
-  {
-    final Helo thisVessel = new Helo(index);
-    return thisVessel;
-  }
+	}
 
-  static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
-                                final org.w3c.dom.Document doc)
-  {
-    // create ourselves
-    final org.w3c.dom.Element thisPart = doc.createElement(myType);
+	public FixedWingHandler() {
+		super(myType);
 
-    Helo theHelo = (Helo) toExport;
+		// add handlers for the Helo properties
+		// none in this instance
 
-    // export the movement chars
-    MovementCharacteristics chars = theHelo.getMovementChars();
-    FixedWingMovementCharsHandler.exportThis(chars, thisPart, doc);
+		addHandler(new FixedWingMovementCharsHandler() {
+			@Override
+			public void setMovement(final MovementCharacteristics chars) {
+				_myMoveChars = chars;
+			}
+		});
 
-    // and the whole participant
-    ParticipantHandler.exportThis(toExport, thisPart, doc);
+	}
 
-    parent.appendChild(thisPart);
-
-  }
+	@Override
+	protected ASSET.ParticipantType getParticipant(final int index) {
+		final Helo thisVessel = new Helo(index);
+		return thisVessel;
+	}
 }

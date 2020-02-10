@@ -14,6 +14,12 @@
  *****************************************************************************/
 package info.limpet.operations.spatial;
 
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.measure.quantity.Angle;
+
 import info.limpet.ICommand;
 import info.limpet.IContext;
 import info.limpet.IDocument;
@@ -21,114 +27,82 @@ import info.limpet.IStoreGroup;
 import info.limpet.IStoreItem;
 import info.limpet.impl.SampleData;
 
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.List;
+public class BearingBetweenTracksOperation extends TwoTrackOperation {
 
-import javax.measure.quantity.Angle;
+	@Override
+	public List<ICommand> actionsFor(final List<IStoreItem> rawSelection, final IStoreGroup destination,
+			final IContext context) {
+		final List<ICommand> res = new ArrayList<ICommand>();
 
-public class BearingBetweenTracksOperation extends TwoTrackOperation
-{
+		// get some tracks
+		final List<IStoreItem> collatedTracks = getLocationDatasets(rawSelection);
 
-  public List<ICommand> actionsFor(
-      List<IStoreItem> rawSelection, IStoreGroup destination, IContext context)
-  {
-    List<ICommand> res =
-        new ArrayList<ICommand>();
-    
-    // get some tracks
-    List<IStoreItem> collatedTracks = getLocationDatasets(rawSelection);
-    
-    if (appliesTo(collatedTracks))
-    {
-      // ok, are we doing a tempoarl opeartion?
-      if (getATests().suitableForIndexedInterpolation(collatedTracks))
-      {
-        // hmm, find the time provider
-        final IDocument<?> timeProvider =
-            getATests().getLongestIndexedCollection(collatedTracks);
+		if (appliesTo(collatedTracks)) {
+			// ok, are we doing a tempoarl opeartion?
+			if (getATests().suitableForIndexedInterpolation(collatedTracks)) {
+				// hmm, find the time provider
+				final IDocument<?> timeProvider = getATests().getLongestIndexedCollection(collatedTracks);
 
-        ICommand newC =
-            new TwoTrackCommand(collatedTracks, destination,
-                "Bearing between tracks (interpolated)",
-                "Calculate bearing between two tracks (interpolated)",
-                timeProvider, context, SampleData.DEGREE_ANGLE.asType(Angle.class))
-            {
+				final ICommand newC = new TwoTrackCommand(collatedTracks, destination,
+						"Bearing between tracks (interpolated)", "Calculate bearing between two tracks (interpolated)",
+						timeProvider, context, SampleData.DEGREE_ANGLE.asType(Angle.class)) {
 
-              @Override
-              protected String getOutputName()
-              {
-                return getContext().getInput("Generate bearing",
-                    NEW_DATASET_MESSAGE,
-                    "Bearing between " + super.getSubjectList());
-              }
+					@Override
+					protected void calcAndStore(final IGeoCalculator calc, final Point2D locA, final Point2D locB,
+							final Double time) {
+						// now find the range between them
+						double thisDist = calc.getAngleBetween(locA, locB);
 
-              @Override
-              protected void calcAndStore(final IGeoCalculator calc, final Point2D locA,
-                  final Point2D locB, final Double time)
-              {
-                // now find the range between them
-                double thisDist = calc.getAngleBetween(locA, locB);
-                
-                // and correct it
-                if(thisDist < 0)
-                {
-                  thisDist += 360d;
-                }
+						// and correct it
+						if (thisDist < 0) {
+							thisDist += 360d;
+						}
 
-                if (time != null)
-                {
-                  _builder.add(time, thisDist);
-                }
-                else
-                {
-                  _builder.add(thisDist);
-                }
-              }
-            };
+						if (time != null) {
+							_builder.add(time, thisDist);
+						} else {
+							_builder.add(thisDist);
+						}
+					}
 
-        res.add(newC);
-      }
-      else if (getATests().allEqualLengthOrSingleton(collatedTracks))
-      {
-        ICommand newC =
-            new TwoTrackCommand(collatedTracks, destination,
-                "Bearing between tracks (indexed)",
-                "Calculate bearing between two tracks (indexed)", null, context,
-                SampleData.DEGREE_ANGLE.asType(Angle.class))
-            {
+					@Override
+					protected String getOutputName() {
+						return getContext().getInput("Generate bearing", NEW_DATASET_MESSAGE,
+								"Bearing between " + super.getSubjectList());
+					}
+				};
 
-              @Override
-              protected String getOutputName()
-              {
-                return getContext().getInput("Generate bearing",
-                    NEW_DATASET_MESSAGE,
-                    "Bearing between " + super.getSubjectList());
-              }
+				res.add(newC);
+			} else if (getATests().allEqualLengthOrSingleton(collatedTracks)) {
+				final ICommand newC = new TwoTrackCommand(collatedTracks, destination,
+						"Bearing between tracks (indexed)", "Calculate bearing between two tracks (indexed)", null,
+						context, SampleData.DEGREE_ANGLE.asType(Angle.class)) {
 
-              @Override
-              protected void calcAndStore(final IGeoCalculator calc, final Point2D locA,
-                  final Point2D locB, final Double time)
-              {
-                // now find the range between them
-                final double thisDist = calc.getAngleBetween(locA, locB);
+					@Override
+					protected void calcAndStore(final IGeoCalculator calc, final Point2D locA, final Point2D locB,
+							final Double time) {
+						// now find the range between them
+						final double thisDist = calc.getAngleBetween(locA, locB);
 
-                if (time != null)
-                {
-                  _builder.add(time, thisDist);
-                }
-                else
-                {
-                  _builder.add(thisDist);
-                }
-              }
-            };
+						if (time != null) {
+							_builder.add(time, thisDist);
+						} else {
+							_builder.add(thisDist);
+						}
+					}
 
-        res.add(newC);
-      }
-    }
+					@Override
+					protected String getOutputName() {
+						return getContext().getInput("Generate bearing", NEW_DATASET_MESSAGE,
+								"Bearing between " + super.getSubjectList());
+					}
+				};
 
-    return res;
-  }
+				res.add(newC);
+			}
+		}
+
+		return res;
+	}
 
 }

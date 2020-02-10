@@ -1,8 +1,18 @@
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 package info.limpet.impl;
-
-import info.limpet.ICommand;
-import info.limpet.IDocument;
-import info.limpet.IDocumentBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,176 +25,155 @@ import org.eclipse.january.dataset.IDataset;
 import org.eclipse.january.metadata.AxesMetadata;
 import org.eclipse.january.metadata.internal.AxesMetadataImpl;
 
-abstract class CoreDocumentBuilder<T extends Object, D extends IDocument<T>>
-    implements IDocumentBuilder<T>
-{
+import info.limpet.ICommand;
+import info.limpet.IDocument;
+import info.limpet.IDocumentBuilder;
 
-  protected final String _name;
-  private ArrayList<Double> _indices;
-  protected final ICommand _predecessor;
-  protected Unit<?> _indexUnits;
-  protected final List<T> _values = new ArrayList<T>();
+abstract class CoreDocumentBuilder<T extends Object, D extends IDocument<T>> implements IDocumentBuilder<T> {
 
-  public CoreDocumentBuilder(final String name, final ICommand predecessor,
-      final Unit<?> indexUnits)
-  {
-    _name = name;
-    _predecessor = predecessor;
-    _indexUnits = indexUnits;
-  }
-  
-  public List<T> getValues()
-  {
-    return _values;
-  }
+	protected final String _name;
+	private ArrayList<Double> _indices;
+	protected final ICommand _predecessor;
+	protected Unit<?> _indexUnits;
+	protected final List<T> _values = new ArrayList<T>();
 
-  public ArrayList<Double> getIndices()
-  {
-    return _indices;
-  }
-  
-  @Override
-  public void add(final double index, final T value)
-  {
-    // check we know about the index
-    if (_indexUnits == null)
-    {
-      throw new IllegalArgumentException("We don't know index units");
-    }
+	public CoreDocumentBuilder(final String name, final ICommand predecessor, final Unit<?> indexUnits) {
+		_name = name;
+		_predecessor = predecessor;
+		_indexUnits = indexUnits;
+	}
 
-    // sort out the observation
-    add(value);
+	@Override
+	public void add(final double index, final T value) {
+		// check we know about the index
+		if (_indexUnits == null) {
+			throw new IllegalArgumentException("We don't know index units");
+		}
 
-    // and now the index
-    if (_indices == null)
-    {
-      _indices = new ArrayList<Double>();
-    }
+		// sort out the observation
+		add(value);
 
-    _indices.add(index);
-  }
+		// and now the index
+		if (_indices == null) {
+			_indices = new ArrayList<Double>();
+		}
 
-  @Override
-  public void add(final T point)
-  {
-    _values.add(point);
-  }
+		_indices.add(index);
+	}
 
-  /**
-   * remove all data (including indices, if necessary)
-   * 
-   */
-  public void clear()
-  {
-    _values.clear();
+	@Override
+	public void add(final T point) {
+		_values.add(point);
+	}
 
-    if (_indices != null)
-    {
-      _indices.clear();
-      _indices = null;
-    }
-  }
+	/**
+	 * remove all data (including indices, if necessary)
+	 *
+	 */
+	public void clear() {
+		_values.clear();
 
-  /**
-   * do any last modifications to the output document
-   * 
-   * @param res
-   */
-  protected void finishOff(final D res)
-  {
-    // no default processing required
-  }
+		if (_indices != null) {
+			_indices.clear();
+			_indices = null;
+		}
+	}
 
-  /**
-   * get the output dataset
-   * 
-   * @param values
-   * @return
-   */
-  abstract protected IDataset getDataset(List<T> values);
+	/**
+	 * do any last modifications to the output document
+	 *
+	 * @param res
+	 */
+	protected void finishOff(final D res) {
+		// no default processing required
+	}
 
-  /**
-   * get the output document, populated with the output dataset
-   * 
-   * @param dataset
-   * @param predecessor
-   * @return
-   */
-  abstract protected D getDocument(IDataset dataset, ICommand predecessor);
+	/**
+	 * get the output dataset
+	 *
+	 * @param values
+	 * @return
+	 */
+	abstract protected IDataset getDataset(List<T> values);
 
-  /**
-   * get the index units
-   * 
-   * @return
-   */
-  public Unit<?> getIndexUnits()
-  {
-    return _indexUnits;
-  }
+	/**
+	 * get the output document, populated with the output dataset
+	 *
+	 * @param dataset
+	 * @param predecessor
+	 * @return
+	 */
+	abstract protected D getDocument(IDataset dataset, ICommand predecessor);
 
-  /** override the index units
-   * 
-   */
-  public void setIndexUnits(Unit<?> units)
-  {
-    _indexUnits = units;
-    
-    // oh, and clear the indices - we can't use them anyway
-    _indices = null;
-  }
-  
-  @Override
-  public D toDocument()
-  {
-    final D res;
-    if (_values.size() > 0)
-    {
-      // ok, start with the dataset
-      final IDataset dataset = getDataset(_values);
-      dataset.setName(_name);
+	/**
+	 * get the index units
+	 *
+	 * @return
+	 */
+	public Unit<?> getIndexUnits() {
+		return _indexUnits;
+	}
 
-      // do we have any indices to add?
-      if (_indices != null)
-      {
-        // yes, store them
-        final DoubleDataset indexData =
-            (DoubleDataset) DatasetFactory.createFromObject(_indices);
-        final AxesMetadata index = new AxesMetadataImpl();
-        index.initialize(1);
-        index.setAxis(0, indexData);
-        dataset.addMetadata(index);
-      }
+	public ArrayList<Double> getIndices() {
+		return _indices;
+	}
 
-      // get the output document
-      res = getDocument(dataset, _predecessor);
+	public List<T> getValues() {
+		return _values;
+	}
 
-      // do we indices?
-      if (_indices != null)
-      {
-        if (_indexUnits == null)
-        {
-          System.err.println("Setting index, but do not have units");
-        }
+	/**
+	 * override the index units
+	 *
+	 */
+	public void setIndexUnits(final Unit<?> units) {
+		_indexUnits = units;
 
-        // ok, set the index units
-        res.setIndexUnits(_indexUnits);
-      }
-      else
-      {
-        if (_indexUnits != null)
-        {
-          throw new IllegalArgumentException("Have index units, but no index");
-        }
-      }
+		// oh, and clear the indices - we can't use them anyway
+		_indices = null;
+	}
 
-      // ok, any last minute tidying
-      finishOff(res);
-    }
-    else
-    {
-      res = null;
-    }
-    return res;
-  }
+	@Override
+	public D toDocument() {
+		final D res;
+		if (_values.size() > 0) {
+			// ok, start with the dataset
+			final IDataset dataset = getDataset(_values);
+			dataset.setName(_name);
+
+			// do we have any indices to add?
+			if (_indices != null) {
+				// yes, store them
+				final DoubleDataset indexData = (DoubleDataset) DatasetFactory.createFromObject(_indices);
+				final AxesMetadata index = new AxesMetadataImpl();
+				index.initialize(1);
+				index.setAxis(0, indexData);
+				dataset.addMetadata(index);
+			}
+
+			// get the output document
+			res = getDocument(dataset, _predecessor);
+
+			// do we indices?
+			if (_indices != null) {
+				if (_indexUnits == null) {
+					System.err.println("Setting index, but do not have units");
+				}
+
+				// ok, set the index units
+				res.setIndexUnits(_indexUnits);
+			} else {
+				if (_indexUnits != null) {
+					throw new IllegalArgumentException("Have index units, but no index");
+				}
+			}
+
+			// ok, any last minute tidying
+			finishOff(res);
+		} else {
+			res = null;
+		}
+		return res;
+	}
 
 }

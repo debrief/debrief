@@ -1,18 +1,23 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package ASSET.Models.Decision.Tactical;
+
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.io.Serializable;
 
 import ASSET.ParticipantType;
 import ASSET.Models.Decision.CoreDecision;
@@ -26,10 +31,6 @@ import MWC.GUI.Editable;
 import MWC.GenericData.Duration;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
-
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.io.Serializable;
 
 /**
  * PlanetMayo Ltd.  2003
@@ -100,11 +101,125 @@ import java.io.Serializable;
 /**
  * Just hang around for the designated period
  */
-public class DeferredBirth extends CoreDecision implements Serializable
-{
+public class DeferredBirth extends CoreDecision implements Serializable {
+
+	// ////////////////////////////////////////////////
+	// editable properties
+	// ////////////////////////////////////////////////
+	static public class WaitInfo extends EditorType {
+
+		/**
+		 * constructor for editable details of a set of Layers
+		 *
+		 * @param data the Layers themselves
+		 */
+		public WaitInfo(final DeferredBirth data) {
+			super(data, data.getName(), "Edit");
+		}
+
+		/**
+		 * editable GUI properties for our participant
+		 *
+		 * @return property descriptions
+		 */
+		@Override
+		public PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final PropertyDescriptor[] res = { prop("Name", "the name of this decision model"),
+						prop("Duration", "the period to wait for"), };
+				return res;
+			} catch (final IntrospectionException e) {
+				e.printStackTrace();
+				return super.getPropertyDescriptors();
+			}
+		}
+	}
+
+	// ////////////////////////////////////////////////
+	// testing
+	// ////////////////////////////////////////////////
+	static public class WaitTest extends SupportTesting.EditableTesting {
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public WaitTest(final String val) {
+			super(val);
+		}
+
+		/**
+		 * get an object which we can test
+		 *
+		 * @return Editable object which we can check the properties for
+		 */
+		@Override
+		public Editable getEditable() {
+			return new DeferredBirth(null, "my name");
+		}
+
+		// TODO FIX-TEST
+		public void NtestSimple() {
+			final Duration dur = new Duration(12, Duration.SECONDS);
+			final DeferredBirth wt = new DeferredBirth(dur, "do a wait");
+
+			// ok, give it a test.
+			final Status stat = new Status(12, 0);
+			stat.setTime(0);
+			stat.setSpeed(new WorldSpeed(2, WorldSpeed.Kts));
+			stat.setLocation(new WorldLocation(0, 0, 0));
+			DemandedStatus res = new SimpleDemandedStatus(0, stat);
+
+			stat.setTime(stat.getTime() + 1000);
+			final ScenarioActivityMonitor monitor = new ScenarioActivityMonitor() {
+
+				@Override
+				public void createParticipant(final ParticipantType newPart) {
+					// TODO Auto-generated method stub
+
+				}
+
+				@Override
+				public void detonationAt(final int id, final WorldLocation loc, final double power) {
+					// TODO Auto-generated method stub
+
+				}
+
+				@Override
+				public Integer[] getListOfParticipants() {
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				@Override
+				public ParticipantType getThisParticipant(final int id) {
+					// TODO Auto-generated method stub
+					return null;
+				}
+			};
+			res = wt.decide(stat, null, res, null, monitor, stat.getTime());
+
+			// have we set the correct expiry time?
+			assertEquals("correct expiry time set", 13000, wt._expiryTime, 0);
+
+			// are we continuing in state?
+			assertNotNull("returned dem status", res);
+
+			res = wt.decide(stat, null, res, null, null, stat.getTime());
+			stat.setTime(stat.getTime() + 1000);
+
+			res = wt.decide(stat, null, res, null, null, stat.getTime());
+			stat.setTime(stat.getTime() + 10000);
+
+			res = wt.decide(stat, null, res, null, null, stat.getTime());
+			stat.setTime(stat.getTime() + 1000);
+			res = wt.decide(stat, null, res, null, null, stat.getTime());
+			stat.setTime(stat.getTime() + 1000);
+			res = wt.decide(stat, null, res, null, null, stat.getTime());
+			assertNull("dropped out", res);
+
+		}
+	}
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -113,86 +228,75 @@ public class DeferredBirth extends CoreDecision implements Serializable
 	 */
 	private Duration _myDuration;
 
-	/**
-	 * the time at which we finish waiting
-	 */
-	protected long _expiryTime = -1;
-
-	/**
-	 * the previous status for this platform (so we can return to it on
-	 * completion)
-	 * 
-	 */
-	private DemandedStatus _originalStatus;
-
 	// ////////////////////////////////////////////////
 	// constructor
 	// ////////////////////////////////////////////////
 
 	/**
-	 * simple constructor to define essential items
-	 * 
-	 * @param myDuration
-	 *          how long to wait for
-	 * @param myName
-	 *          our name
+	 * the time at which we finish waiting
 	 */
-	public DeferredBirth(Duration myDuration, String myName)
-	{
-		super(myName);
-		this._myDuration = myDuration;
-	}
+	protected long _expiryTime = -1;
 
 	// ////////////////////////////////////////////////
 	// member methods
 	// ////////////////////////////////////////////////
 
 	/**
-	 * decide the course of action to take, or return null to no be used
-	 * 
-	 * @param status
-	 *          the current status of the participant
-	 * @param detections
-	 *          the current list of detections for this participant
-	 * @param monitor
-	 *          the object which handles weapons release/detonation
-	 * @param newTime
-	 *          the time this decision is to be made
+	 * the previous status for this platform (so we can return to it on completion)
+	 *
 	 */
-	public DemandedStatus decide(Status status,
-			ASSET.Models.Movement.MovementCharacteristics chars,
-			DemandedStatus demStatus, DetectionList detections,
-			ScenarioActivityMonitor monitor, long newTime)
-	{
+	private DemandedStatus _originalStatus;
+
+	private EditorType _myEditor;
+
+	/**
+	 * simple constructor to define essential items
+	 *
+	 * @param myDuration how long to wait for
+	 * @param myName     our name
+	 */
+	public DeferredBirth(final Duration myDuration, final String myName) {
+		super(myName);
+		this._myDuration = myDuration;
+	}
+
+	/**
+	 * decide the course of action to take, or return null to no be used
+	 *
+	 * @param status     the current status of the participant
+	 * @param detections the current list of detections for this participant
+	 * @param monitor    the object which handles weapons release/detonation
+	 * @param newTime    the time this decision is to be made
+	 */
+	@Override
+	public DemandedStatus decide(final Status status, final ASSET.Models.Movement.MovementCharacteristics chars,
+			final DemandedStatus demStatus, final DetectionList detections, final ScenarioActivityMonitor monitor,
+			final long newTime) {
 		DemandedStatus res = null;
 
 		String activity = "";
 
 		// get the participant
-		int platformId = status.getId();
+		final int platformId = status.getId();
 
-		if (monitor != null)
-		{
-			ParticipantType thisP = monitor.getThisParticipant(platformId);
+		if (monitor != null) {
+			final ParticipantType thisP = monitor.getThisParticipant(platformId);
 
 			// have we been called yet
-			if (_expiryTime == -1)
-			{
+			if (_expiryTime == -1) {
 				// no, initialise ourseves
 				_expiryTime = newTime + _myDuration.getMillis();
 				_originalStatus = demStatus;
 			}
 
 			// now check whether we have any remaining wait
-			if (newTime >= _expiryTime)
-			{
+			if (newTime >= _expiryTime) {
 				// all done!
 				// restore the prior status
 				res = _originalStatus;
 				_originalStatus = null;
 
-				if (!thisP.getAlive())
-				{
+				if (!thisP.getAlive()) {
 					// set the status as the current time - otherwise we jump forward
 					// absolutely miles
 					thisP.getStatus().setTime(newTime);
@@ -200,9 +304,7 @@ public class DeferredBirth extends CoreDecision implements Serializable
 					// ok, wake it up
 					thisP.setAlive(true);
 				}
-			}
-			else
-			{
+			} else {
 				// just double check it's asleep
 				thisP.setAlive(false);
 				activity = "Still waiting";
@@ -214,122 +316,41 @@ public class DeferredBirth extends CoreDecision implements Serializable
 		return res;
 	}
 
-	/**
-	 * reset this decision model
-	 */
-	public void restart()
-	{
-		_expiryTime = -1;
-	}
-
-	/**
-	 * indicate to this model that its execution has been interrupted by another
-	 * (prob higher priority) model
-	 * 
-	 * @param currentStatus
-	 */
-	public void interrupted(Status currentStatus)
-	{
-		// ignore.
-	}
-
-	public Duration getDuration()
-	{
+	public Duration getDuration() {
 		return _myDuration;
-	}
-
-	public void setDuration(Duration myDuration)
-	{
-		this._myDuration = myDuration;
 	}
 
 	// ////////////////////////////////////////////////
 	// property editing
 	// ////////////////////////////////////////////////
 
-	private EditorType _myEditor;
-
-	/**
-	 * whether there is any edit information for this item this is a convenience
-	 * function to save creating the EditorType data first
-	 * 
-	 * @return yes/no
-	 */
-	public boolean hasEditor()
-	{
-		return true;
-	}
-
 	/**
 	 * get the editor for this item
-	 * 
+	 *
 	 * @return the BeanInfo data for this editable object
 	 */
-	public EditorType getInfo()
-	{
+	@Override
+	public EditorType getInfo() {
 		if (_myEditor == null)
 			_myEditor = new WaitInfo(this);
 
 		return _myEditor;
 	}
 
-	// ////////////////////////////////////////////////
-	// editable properties
-	// ////////////////////////////////////////////////
-	static public class WaitInfo extends EditorType
-	{
-
-		/**
-		 * constructor for editable details of a set of Layers
-		 * 
-		 * @param data
-		 *          the Layers themselves
-		 */
-		public WaitInfo(final DeferredBirth data)
-		{
-			super(data, data.getName(), "Edit");
-		}
-
-		/**
-		 * editable GUI properties for our participant
-		 * 
-		 * @return property descriptions
-		 */
-		public PropertyDescriptor[] getPropertyDescriptors()
-		{
-			try
-			{
-				final PropertyDescriptor[] res =
-				{ prop("Name", "the name of this decision model"),
-						prop("Duration", "the period to wait for"), };
-				return res;
-			}
-			catch (IntrospectionException e)
-			{
-				e.printStackTrace();
-				return super.getPropertyDescriptors();
-			}
-		}
-	}
-
-	// //////////////////////////////////////////////////////////
-	// model support
-	// //////////////////////////////////////////////////////////
-
 	/**
 	 * get the version details for this model.
-	 * 
+	 *
 	 * <pre>
 	 * $Log: Wait.java,v $
 	 * Revision 1.1  2006/08/08 14:21:38  Ian.Mayo
 	 * Second import
-	 * 
+	 *
 	 * Revision 1.1  2006/08/07 12:25:47  Ian.Mayo
 	 * First versions
-	 * 
+	 *
 	 * Revision 1.17  2004/10/28 14:52:43  ian
 	 * Correct how we test for correct elapsed time
-	 * 
+	 *
 	 * Revision 1.16  2004/10/28 13:52:44  ian
 	 * Correct how we check for passage of elapsed time
 	 * <p/>
@@ -368,99 +389,46 @@ public class DeferredBirth extends CoreDecision implements Serializable
 	 * <p/>
 	 * </pre>
 	 */
-	public String getVersion()
-	{
+	@Override
+	public String getVersion() {
 		return "$Date$";
 	}
 
-	// ////////////////////////////////////////////////
-	// testing
-	// ////////////////////////////////////////////////
-	static public class WaitTest extends SupportTesting.EditableTesting
-	{
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+	/**
+	 * whether there is any edit information for this item this is a convenience
+	 * function to save creating the EditorType data first
+	 *
+	 * @return yes/no
+	 */
+	@Override
+	public boolean hasEditor() {
+		return true;
+	}
 
-		public WaitTest(final String val)
-		{
-			super(val);
-		}
+	/**
+	 * indicate to this model that its execution has been interrupted by another
+	 * (prob higher priority) model
+	 *
+	 * @param currentStatus
+	 */
+	@Override
+	public void interrupted(final Status currentStatus) {
+		// ignore.
+	}
 
-		/**
-		 * get an object which we can test
-		 * 
-		 * @return Editable object which we can check the properties for
-		 */
-		public Editable getEditable()
-		{
-			return new DeferredBirth(null, "my name");
-		}
+	// //////////////////////////////////////////////////////////
+	// model support
+	// //////////////////////////////////////////////////////////
 
-		// TODO FIX-TEST
-		public void NtestSimple()
-		{
-			Duration dur = new Duration(12, Duration.SECONDS);
-			DeferredBirth wt = new DeferredBirth(dur, "do a wait");
+	/**
+	 * reset this decision model
+	 */
+	@Override
+	public void restart() {
+		_expiryTime = -1;
+	}
 
-			// ok, give it a test.
-			Status stat = new Status(12, 0);
-			stat.setTime(0);
-			stat.setSpeed(new WorldSpeed(2, WorldSpeed.Kts));
-			stat.setLocation(new WorldLocation(0, 0, 0));
-			DemandedStatus res = new SimpleDemandedStatus(0, stat);
-
-			stat.setTime(stat.getTime() + 1000);
-			ScenarioActivityMonitor monitor = new ScenarioActivityMonitor()
-			{
-
-				@Override
-				public ParticipantType getThisParticipant(int id)
-				{
-					// TODO Auto-generated method stub
-					return null;
-				}
-
-				@Override
-				public Integer[] getListOfParticipants()
-				{
-					// TODO Auto-generated method stub
-					return null;
-				}
-
-				@Override
-				public void detonationAt(int id, WorldLocation loc, double power)
-				{
-					// TODO Auto-generated method stub
-
-				}
-
-				@Override
-				public void createParticipant(ParticipantType newPart)
-				{
-					// TODO Auto-generated method stub
-
-				}
-			};
-			res = wt.decide(stat, null, res, null, monitor, stat.getTime());
-
-			// have we set the correct expiry time?
-			assertEquals("correct expiry time set", 13000, wt._expiryTime, 0);
-
-			// are we continuing in state?
-			assertNotNull("returned dem status", res);
-
-			res = wt.decide(stat, null, res, null, null, stat.getTime());
-			stat.setTime(stat.getTime() + 1000);
-
-			res = wt.decide(stat, null, res, null, null, stat.getTime());
-			stat.setTime(stat.getTime() + 10000);
-
-			res = wt.decide(stat, null, res, null, null, stat.getTime());
-			stat.setTime(stat.getTime() + 1000);
-			res = wt.decide(stat, null, res, null, null, stat.getTime());
-			stat.setTime(stat.getTime() + 1000);
-			res = wt.decide(stat, null, res, null, null, stat.getTime());
-			assertNull("dropped out", res);
-
-		}
+	public void setDuration(final Duration myDuration) {
+		this._myDuration = myDuration;
 	}
 }

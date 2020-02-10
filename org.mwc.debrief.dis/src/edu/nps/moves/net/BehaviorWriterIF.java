@@ -37,35 +37,38 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 /**
- * This interface lets you set up some very general defaults, which
- * will be handled by the concrete implementations.<p>
+ * This interface lets you set up some very general defaults, which will be
+ * handled by the concrete implementations.
+ * <p>
  *
- * In general, you write to a destination. That destination is represented
- * by an IP address and a port.  You can also set a "default destination", where
- * things will go unless you specify otherwise.<p>
+ * In general, you write to a destination. That destination is represented by an
+ * IP address and a port. You can also set a "default destination", where things
+ * will go unless you specify otherwise.
+ * <p>
  *
  * @author DMcG
  * @version $Id:$
  */
 public interface BehaviorWriterIF {
 
-    /** The (rough) size of an ethernet frame */
-    static final int MTU_SIZE = 1500;
+	/** The (rough) size of an ethernet frame */
+	static final int MTU_SIZE = 1500;
 
-    /**
-     * Set the default destination that the plain write(pdu) method
-     * will send data to.
-     *
-     * @param addr first object that describes destination (eg, IP)
-     * @param port second object that describes destination (eg, port number)
-     */
-    void setDefaultDestination(InetAddress addr, int port);
+	/**
+	 * Set the default destination that the plain write(pdu) method will send data
+	 * to.
+	 *
+	 * @param addr first object that describes destination (eg, IP)
+	 * @param port second object that describes destination (eg, port number)
+	 */
+	void setDefaultDestination(InetAddress addr, int port);
 
-    /**
-     * Write PDU information to the default destination.  The user must clear
-     * the buffer if it is desired to be reused.</p>
-     *
-     * @param buffer the DIS PDU infomation to be written
-     */
-    void write(ByteBuffer buffer);
-} 
+	/**
+	 * Write PDU information to the default destination. The user must clear the
+	 * buffer if it is desired to be reused.
+	 * </p>
+	 *
+	 * @param buffer the DIS PDU infomation to be written
+	 */
+	void write(ByteBuffer buffer);
+}

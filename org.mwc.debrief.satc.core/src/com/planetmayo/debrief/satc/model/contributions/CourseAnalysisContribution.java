@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package com.planetmayo.debrief.satc.model.contributions;
 
 import com.planetmayo.debrief.satc.model.VehicleType;
@@ -19,59 +20,29 @@ import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateExcep
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.CourseRange;
 
-public class CourseAnalysisContribution extends
-		BaseAnalysisContribution<CourseRange>
-{
+public class CourseAnalysisContribution extends BaseAnalysisContribution<CourseRange> {
 	private static final long serialVersionUID = 1L;
 
-	public CourseAnalysisContribution()
-	{
+	public CourseAnalysisContribution() {
 		super();
 		setName("Course Analysis");
 	}
 
 	@Override
-	public ContributionDataType getDataType()
-	{
-		return ContributionDataType.ANALYSIS;
-	}
-
-	@Override
-	protected void applyThis(BoundedState state, CourseRange thisState)
-			throws IncompatibleStateException
-	{
+	protected void applyThis(final BoundedState state, final CourseRange thisState) throws IncompatibleStateException {
 		state.constrainTo(thisState);
 	}
 
 	@Override
-	protected CourseRange getRangeFor(BoundedState lastStateWithRange)
-	{
-		return lastStateWithRange.getCourse();
-	}
-
-	@Override
-	protected CourseRange cloneRange(CourseRange thisRange)
-	{
-		return new CourseRange(thisRange);
-	}
-		
-	@Override
-	protected void furtherConstrain(CourseRange currentLegCourse,
-			CourseRange thisRange) throws IncompatibleStateException
-	{
-		currentLegCourse.constrainTo(thisRange);
-	}
-	
-	protected CourseRange calcRelaxedRange(BoundedState lastStateWithRange,
-			VehicleType vType, long millis)
-	{
+	protected CourseRange calcRelaxedRange(final BoundedState lastStateWithRange, final VehicleType vType,
+			long millis) {
 		// just in case we're doing a reverse pass, use the abs millis
 		millis = Math.abs(millis);
-		
-		double maxRate = vType.getMaxTurnRate();
+
+		final double maxRate = vType.getMaxTurnRate();
 
 		// ok, we need to produce a new course constraint
-		CourseRange lastKnown = lastStateWithRange.getCourse();
+		final CourseRange lastKnown = lastStateWithRange.getCourse();
 
 		double newMin, newMax;
 
@@ -97,23 +68,41 @@ public class CourseAnalysisContribution extends
 			turnDelta += Math.PI * 2;
 
 		// how many rads?
-		double maxTurn = maxRate * millis / 1000.0d;
+		final double maxTurn = maxRate * millis / 1000.0d;
 
-		double newDelta = turnDelta + 2 * maxTurn;
-		if (newDelta >= Math.PI * 2)
-		{
+		final double newDelta = turnDelta + 2 * maxTurn;
+		if (newDelta >= Math.PI * 2) {
 			newMin = 0;
 			newMax = Math.PI * 2;
-		}
-		else
-		{
+		} else {
 			newMin = lastKnown.getMin() - maxTurn;
 			newMax = lastKnown.getMax() + maxTurn;
 			if (newMax > Math.PI * 2)
 				newMax -= Math.PI * 2;
 		}
 
-		CourseRange newRange = new CourseRange(newMin, newMax);
+		final CourseRange newRange = new CourseRange(newMin, newMax);
 		return newRange;
+	}
+
+	@Override
+	protected CourseRange cloneRange(final CourseRange thisRange) {
+		return new CourseRange(thisRange);
+	}
+
+	@Override
+	protected void furtherConstrain(final CourseRange currentLegCourse, final CourseRange thisRange)
+			throws IncompatibleStateException {
+		currentLegCourse.constrainTo(thisRange);
+	}
+
+	@Override
+	public ContributionDataType getDataType() {
+		return ContributionDataType.ANALYSIS;
+	}
+
+	@Override
+	protected CourseRange getRangeFor(final BoundedState lastStateWithRange) {
+		return lastStateWithRange.getCourse();
 	}
 }

@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 package info.limpet.stackedcharts.ui.editor.parts;
 
 import org.eclipse.gef.EditPart;
@@ -12,68 +26,43 @@ import info.limpet.stackedcharts.model.ScatterSet;
 import info.limpet.stackedcharts.model.Styling;
 import info.limpet.stackedcharts.ui.editor.parts.ChartEditPart.ScatterSetContainer;
 
-public class StackedChartsEditPartFactory implements EditPartFactory
-{
+public class StackedChartsEditPartFactory implements EditPartFactory {
 
-  @Override
-  public EditPart createEditPart(EditPart context, Object model)
-  {
-    EditPart editPart = null;
+	@Override
+	public EditPart createEditPart(final EditPart context, final Object model) {
+		EditPart editPart = null;
 
-    if (model instanceof ChartSet)
-    {
-      editPart = new ChartSetEditPart();
-    }
-    else if (model instanceof Chart)
-    {
-      editPart = new ChartEditPart();
-    }
-    else if (model instanceof ChartEditPart.ChartPanePosition)
-    {
-      editPart = new ChartPaneEditPart();
-    }
-    else if (model instanceof DependentAxis)
-    {
-      editPart = new AxisEditPart();
-    }
-    else if (model instanceof Dataset)
-    {
-      editPart = new DatasetEditPart();
-    }
-    else if (model instanceof ChartSetEditPart.ChartsWrapper)
-    {
-      editPart = new ChartsPanelEditPart();
-    }
-    else if (model instanceof ChartSetEditPart.ChartSetWrapper)
-    {
-      editPart = new ChartSetHeaderEditPart();
-    }
-    else if (model instanceof ChartPaneEditPart.AxisLandingPad)
-    {
-      editPart = new AxisLandingPadEditPart();
-    }
-    else if (model instanceof IndependentAxis)
-    {
-      editPart = new SharedAxisEditPart();
-    }
-    else if (model instanceof Styling)
-    {
-      editPart = new StylingEditPart();
-    }
-    else if (model instanceof ScatterSetContainer)
-    {
-      editPart = new ScatterSetContainerEditPart();
-    }
-    else if (model instanceof ScatterSet) {
-      editPart = new ScatterSetEditPart();
-    }
+		if (model instanceof ChartSet) {
+			editPart = new ChartSetEditPart();
+		} else if (model instanceof Chart) {
+			editPart = new ChartEditPart();
+		} else if (model instanceof ChartEditPart.ChartPanePosition) {
+			editPart = new ChartPaneEditPart();
+		} else if (model instanceof DependentAxis) {
+			editPart = new AxisEditPart();
+		} else if (model instanceof Dataset) {
+			editPart = new DatasetEditPart();
+		} else if (model instanceof ChartSetEditPart.ChartsWrapper) {
+			editPart = new ChartsPanelEditPart();
+		} else if (model instanceof ChartSetEditPart.ChartSetWrapper) {
+			editPart = new ChartSetHeaderEditPart();
+		} else if (model instanceof ChartPaneEditPart.AxisLandingPad) {
+			editPart = new AxisLandingPadEditPart();
+		} else if (model instanceof IndependentAxis) {
+			editPart = new SharedAxisEditPart();
+		} else if (model instanceof Styling) {
+			editPart = new StylingEditPart();
+		} else if (model instanceof ScatterSetContainer) {
+			editPart = new ScatterSetContainerEditPart();
+		} else if (model instanceof ScatterSet) {
+			editPart = new ScatterSetEditPart();
+		}
 
-    if (editPart != null)
-    {
-      editPart.setModel(model);
-    }
+		if (editPart != null) {
+			editPart.setModel(model);
+		}
 
-    return editPart;
-  }
+		return editPart;
+	}
 
 }

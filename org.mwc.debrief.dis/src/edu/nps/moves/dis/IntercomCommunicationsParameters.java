@@ -1,206 +1,199 @@
 package edu.nps.moves.dis;
 
-import java.util.*;
-import java.io.*;
-import edu.nps.moves.disenum.*;
-import edu.nps.moves.disutil.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * 5.2.46.  Intercom communcations parameters
+ * 5.2.46. Intercom communcations parameters
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class IntercomCommunicationsParameters extends Object implements Serializable
-{
-   /** Type of intercom parameters record */
-   protected int  recordType;
+public class IntercomCommunicationsParameters extends Object implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   /** length of record-specifid field, in octets */
-   protected int  recordLength;
+	/** Type of intercom parameters record */
+	protected int recordType;
 
-   /** variable length variablelist of data parameters  */
-   protected List< OneByteChunk > parameterValues = new ArrayList< OneByteChunk >(); 
+	/** length of record-specifid field, in octets */
+	protected int recordLength;
 
-/** Constructor */
- public IntercomCommunicationsParameters()
- {
- }
+	/** variable length variablelist of data parameters */
+	protected List<OneByteChunk> parameterValues = new ArrayList<OneByteChunk>();
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+	/** Constructor */
+	public IntercomCommunicationsParameters() {
+	}
 
-   marshalSize = marshalSize + 2;  // recordType
-   marshalSize = marshalSize + 2;  // recordLength
-   for(int idx=0; idx < parameterValues.size(); idx++)
-   {
-        OneByteChunk listElement = parameterValues.get(idx);
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-   }
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-   return marshalSize;
-}
+		if (this == obj) {
+			return true;
+		}
 
+		if (obj == null) {
+			return false;
+		}
 
-public void setRecordType(int pRecordType)
-{ recordType = pRecordType;
-}
+		if (getClass() != obj.getClass())
+			return false;
 
-public int getRecordType()
-{ return recordType; 
-}
+		return equalsImpl(obj);
+	}
 
-public int getRecordLength()
-{ return (int)parameterValues.size();
-}
+	/**
+	 * Compare all fields that contribute to the state, ignoring transient and
+	 * static fields, for <code>this</code> and the supplied object
+	 *
+	 * @param obj the object to compare to
+	 * @return true if the objects are equal, false otherwise.
+	 */
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-/** Note that setting this value will not change the marshalled value. The list whose length this describes is used for that purpose.
- * The getrecordLength method will also be based on the actual list length rather than this value. 
- * The method is simply here for java bean completeness.
- */
-public void setRecordLength(int pRecordLength)
-{ recordLength = pRecordLength;
-}
+		if (!(obj instanceof IntercomCommunicationsParameters))
+			return false;
 
-public void setParameterValues(List<OneByteChunk> pParameterValues)
-{ parameterValues = pParameterValues;
-}
+		final IntercomCommunicationsParameters rhs = (IntercomCommunicationsParameters) obj;
 
-public List<OneByteChunk> getParameterValues()
-{ return parameterValues; }
+		if (!(recordType == rhs.recordType))
+			ivarsEqual = false;
+		if (!(recordLength == rhs.recordLength))
+			ivarsEqual = false;
 
+		for (int idx = 0; idx < parameterValues.size(); idx++) {
+			if (!(parameterValues.get(idx).equals(rhs.parameterValues.get(idx))))
+				ivarsEqual = false;
+		}
 
-public void marshal(DataOutputStream dos)
-{
-    try 
-    {
-       dos.writeShort( (short)recordType);
-       dos.writeShort( (short)parameterValues.size());
+		return ivarsEqual;
+	}
 
-       for(int idx = 0; idx < parameterValues.size(); idx++)
-       {
-            OneByteChunk aOneByteChunk = parameterValues.get(idx);
-            aOneByteChunk.marshal(dos);
-       } // end of list marshalling
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+		marshalSize = marshalSize + 2; // recordType
+		marshalSize = marshalSize + 2; // recordLength
+		for (int idx = 0; idx < parameterValues.size(); idx++) {
+			final OneByteChunk listElement = parameterValues.get(idx);
+			marshalSize = marshalSize + listElement.getMarshalledSize();
+		}
 
-public void unmarshal(DataInputStream dis)
-{
-    try 
-    {
-       recordType = (int)dis.readUnsignedShort();
-       recordLength = (int)dis.readUnsignedShort();
-       for(int idx = 0; idx < recordLength; idx++)
-       {
-           OneByteChunk anX = new OneByteChunk();
-           anX.unmarshal(dis);
-           parameterValues.add(anX);
-       }
+		return marshalSize;
+	}
 
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+	public List<OneByteChunk> getParameterValues() {
+		return parameterValues;
+	}
 
+	public int getRecordLength() {
+		return parameterValues.size();
+	}
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
-       buff.putShort( (short)recordType);
-       buff.putShort( (short)parameterValues.size());
+	public int getRecordType() {
+		return recordType;
+	}
 
-       for(int idx = 0; idx < parameterValues.size(); idx++)
-       {
-            OneByteChunk aOneByteChunk = (OneByteChunk)parameterValues.get(idx);
-            aOneByteChunk.marshal(buff);
-       } // end of list marshalling
+	public void marshal(final DataOutputStream dos) {
+		try {
+			dos.writeShort((short) recordType);
+			dos.writeShort((short) parameterValues.size());
 
-    } // end of marshal method
+			for (int idx = 0; idx < parameterValues.size(); idx++) {
+				final OneByteChunk aOneByteChunk = parameterValues.get(idx);
+				aOneByteChunk.marshal(dos);
+			} // end of list marshalling
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       recordType = (int)(buff.getShort() & 0xFFFF);
-       recordLength = (int)(buff.getShort() & 0xFFFF);
-       for(int idx = 0; idx < recordLength; idx++)
-       {
-            OneByteChunk anX = new OneByteChunk();
-            anX.unmarshal(buff);
-            parameterValues.add(anX);
-       }
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
- } // end of unmarshal method 
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	public void marshal(final java.nio.ByteBuffer buff) {
+		buff.putShort((short) recordType);
+		buff.putShort((short) parameterValues.size());
 
+		for (int idx = 0; idx < parameterValues.size(); idx++) {
+			final OneByteChunk aOneByteChunk = parameterValues.get(idx);
+			aOneByteChunk.marshal(buff);
+		} // end of list marshalling
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+	} // end of marshal method
 
-    if(this == obj){
-      return true;
-    }
+	public void setParameterValues(final List<OneByteChunk> pParameterValues) {
+		parameterValues = pParameterValues;
+	}
 
-    if(obj == null){
-       return false;
-    }
+	/**
+	 * Note that setting this value will not change the marshalled value. The list
+	 * whose length this describes is used for that purpose. The getrecordLength
+	 * method will also be based on the actual list length rather than this value.
+	 * The method is simply here for java bean completeness.
+	 */
+	public void setRecordLength(final int pRecordLength) {
+		recordLength = pRecordLength;
+	}
 
-    if(getClass() != obj.getClass())
-        return false;
+	public void setRecordType(final int pRecordType) {
+		recordType = pRecordType;
+	}
 
-    return equalsImpl(obj);
- }
+	public void unmarshal(final DataInputStream dis) {
+		try {
+			recordType = dis.readUnsignedShort();
+			recordLength = dis.readUnsignedShort();
+			for (int idx = 0; idx < recordLength; idx++) {
+				final OneByteChunk anX = new OneByteChunk();
+				anX.unmarshal(dis);
+				parameterValues.add(anX);
+			}
 
- /**
-  * Compare all fields that contribute to the state, ignoring
- transient and static fields, for <code>this</code> and the supplied object
-  * @param obj the object to compare to
-  * @return true if the objects are equal, false otherwise.
-  */
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
-    if(!(obj instanceof IntercomCommunicationsParameters))
-        return false;
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		recordType = buff.getShort() & 0xFFFF;
+		recordLength = buff.getShort() & 0xFFFF;
+		for (int idx = 0; idx < recordLength; idx++) {
+			final OneByteChunk anX = new OneByteChunk();
+			anX.unmarshal(buff);
+			parameterValues.add(anX);
+		}
 
-     final IntercomCommunicationsParameters rhs = (IntercomCommunicationsParameters)obj;
-
-     if( ! (recordType == rhs.recordType)) ivarsEqual = false;
-     if( ! (recordLength == rhs.recordLength)) ivarsEqual = false;
-
-     for(int idx = 0; idx < parameterValues.size(); idx++)
-     {
-        if( ! ( parameterValues.get(idx).equals(rhs.parameterValues.get(idx)))) ivarsEqual = false;
-     }
-
-
-    return ivarsEqual;
- }
+	} // end of unmarshal method
 } // end of class

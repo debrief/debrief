@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Debrief - the Open Source Maritime Analysis Application
+    http://debrief.info
+     
+    (C) 2000-2020, Deep Blue C Technology Ltd
+     
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the Eclipse Public License v1.0
+    (http://www.eclipse.org/legal/epl-v10.html)
+     
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ -->
+
 <Scenario xmlns="http://www.mwc.org/asset" Created="2001-12-12T12:23:00" Name="some test scenario" StartTime="2001-12-12T12:23:00">
   <StepTime Units="seconds" Value="30"/>
   <Environment Name="first test env" SeaState="3" AtmosphericAttenuation="HAZE" LightLevel="DAYLIGHT">

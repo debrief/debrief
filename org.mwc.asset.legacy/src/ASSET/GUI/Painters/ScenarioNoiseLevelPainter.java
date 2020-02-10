@@ -1,18 +1,25 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package ASSET.GUI.Painters;
+
+import java.awt.Color;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.util.Iterator;
+import java.util.Vector;
 
 import ASSET.ScenarioType;
 import ASSET.Models.Environment.CoreEnvironment;
@@ -25,409 +32,375 @@ import ASSET.Participants.Status;
 import ASSET.Scenario.ScenarioSteppedListener;
 import ASSET.Util.SupportTesting;
 import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Layers;
 import MWC.GUI.Chart.Painters.SpatialRasterPainter;
-import MWC.GUI.*;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 
-import java.awt.*;
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.util.Iterator;
-import java.util.Vector;
-
 /**
- * **************************************************************
- * painter support
- * **************************************************************
+ * ************************************************************** painter
+ * support **************************************************************
  */
-public class ScenarioNoiseLevelPainter extends SpatialRasterPainter implements NoiseSource, ScenarioSteppedListener
-{
-  ///////////////////////////////////////////////////
-  // member variables
-  ///////////////////////////////////////////////////
+public class ScenarioNoiseLevelPainter extends SpatialRasterPainter implements NoiseSource, ScenarioSteppedListener {
+	///////////////////////////////////////////////////
+	// member variables
+	///////////////////////////////////////////////////
 
-  /**
-	 * 
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	public static class NoiseLevelTest extends SupportTesting.EditableTesting {
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		/**
+		 * get an object which we can test
+		 *
+		 * @return Editable object which we can check the properties for
+		 */
+		@Override
+		public Editable getEditable() {
+			final StatusProvider sp = new StatusProvider() {
+				@Override
+				public void addScenarioChangeListener(final ScenarioSteppedListener listener) {
+				}
+
+				@Override
+				public Vector<ParticipantStatus> getStatuses(final int theMedium) {
+					return null;
+				}
+
+				@Override
+				public void removeScenarioChangeListener(final ScenarioSteppedListener listener) {
+				}
+			};
+
+			return new ScenarioNoiseLevelPainter(null, sp, 0, null);
+		}
+
+		public void testQuick() {
+			final SSN ssn = new SSN(12);
+			final Status stat = new Status(12, 0);
+			stat.setLocation(new WorldLocation(0, 0, 0));
+			stat.setCourse(0);
+			stat.setSpeed(new WorldSpeed(0, WorldSpeed.M_sec));
+			ssn.setStatus(stat);
+
+			final StatusProvider sp = new StatusProvider() {
+				@Override
+				public void addScenarioChangeListener(final ScenarioSteppedListener listener) {
+				}
+
+				/**
+				 * return a list of ParticipantStatus objects
+				 */
+				@Override
+				public Vector<ParticipantStatus> getStatuses(final int theMedium) {
+					final Vector<ParticipantStatus> res = new Vector<ParticipantStatus>(0, 1);
+					final ParticipantStatus ps = new ParticipantStatus();
+					ps.location = ssn.getStatus().getLocation();
+					ps.sourceLevel = ssn.getRadiatedNoiseFor(EnvironmentType.BROADBAND_PASSIVE, 0);
+					res.add(ps);
+					return res;
+				}
+
+				@Override
+				public void removeScenarioChangeListener(final ScenarioSteppedListener listener) {
+				}
+			};
+
+			final CoreEnvironment cs = new SimpleEnvironment(1, 1, 1);
+
+			final ScenarioNoiseLevelPainter snp = new ScenarioNoiseLevelPainter(cs, sp,
+					EnvironmentType.BROADBAND_PASSIVE, null);
+
+			// over-ride the radiated noise levels
+			ssn.getRadiatedChars().add(ASSET.Models.Environment.EnvironmentType.BROADBAND_PASSIVE,
+					new ASSET.Models.Mediums.BroadbandRadNoise(SSN.DEFAULT_BB_NOISE));
+			ssn.getRadiatedChars().add(ASSET.Models.Environment.EnvironmentType.VISUAL,
+					new ASSET.Models.Mediums.Optic(2, new WorldDistance(2, WorldDistance.METRES)));
+
+			// check that the noise is as expected
+			double thisNoise = snp.getValueAt(ssn.getStatus().getLocation());
+			assertEquals("Default noise at zero speed", SSN.DEFAULT_BB_NOISE, thisNoise, 0.001);
+
+			// over-ride the rad-noise and re-check
+			final double newRadNoise = 150;
+			final BroadbandRadNoise bRad = (BroadbandRadNoise) ssn.getRadiatedChars()
+					.getMedium(new Integer(EnvironmentType.BROADBAND_PASSIVE));
+			bRad.setBaseNoiseLevel(newRadNoise);
+			thisNoise = snp.getValueAt(ssn.getStatus().getLocation());
+			assertEquals("Default noise at zero speed", newRadNoise, thisNoise, 0.001);
+
+		}
+	}
+
+	/**
+	 * class to store the combination of source level and location
+	 */
+	public static class ParticipantStatus {
+		public double sourceLevel;
+		public WorldLocation location;
+	}
+
+	/////////////////////////////////////////////////////////////
+	// info class
+	////////////////////////////////////////////////////////////
+	public class ScenarioNoiseInfo extends MWC.GUI.Editable.EditorType implements java.io.Serializable {
+
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public ScenarioNoiseInfo(final ScenarioNoiseLevelPainter data) {
+			super(data, data.getName(), "Edit");
+		}
+
+		@Override
+		public PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final PropertyDescriptor[] res = { prop("Name", "name of this painter"),
+						prop("Visible", "whether this layer is visible"),
+						prop("BathyRes", "the resolution of the grid plotted"),
+						prop("LiveUpdate", "update after each scenario change"),
+						prop("BackgroundNoise", "the background noise level in this environemnt"), };
+				return res;
+			} catch (final IntrospectionException e) {
+				System.err.println("Problem declaring editable properties:" + e.getMessage());
+				return super.getPropertyDescriptors();
+			}
+		}
+	}
+
+	/**
+	 * ************************************************* interface for classes which
+	 * can provide the list of statuses we plot
+	 * *************************************************
+	 */
+	public static interface StatusProvider {
+		/**
+		 * listen out for status changes
+		 */
+		public void addScenarioChangeListener(ASSET.Scenario.ScenarioSteppedListener listener);
+
+		/**
+		 * return a list of ParticipantStatus objects
+		 */
+		public Vector<ParticipantStatus> getStatuses(int theMedium);
+
+		/**
+		 * stop listening for status changes
+		 */
+		public void removeScenarioChangeListener(ASSET.Scenario.ScenarioSteppedListener listener);
+	}
+
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	/**
-   * the environment we are calculating for
-   */
-  private EnvironmentType _myEnvironment;
+	 * the environment we are calculating for
+	 */
+	private EnvironmentType _myEnvironment;
 
-  /**
-   * the medium we are painting
-   */
-  private int _myMedium;
+	/**
+	 * the medium we are painting
+	 */
+	private int _myMedium;
 
+	/**
+	 * the colour to paint the key
+	 */
+	protected final Color _myColor = Color.darkGray;
 
-  /**
-   * the colour to paint the key
-   */
-  protected final Color _myColor = Color.darkGray;
+	/**
+	 * somebody to tell us where the participants are
+	 */
+	private StatusProvider _provider = null;
 
-  /**
-   * somebody to tell us where the participants are
-   */
-  private StatusProvider _provider = null;
+	/**
+	 * our editor
+	 */
+	private transient ScenarioNoiseInfo _myEditor = null;
 
+	/**
+	 * whether we should re-plot after each scenario movement
+	 */
+	private boolean _liveUpdate = false;
 
-  /**
-   * our editor
-   */
-  private transient ScenarioNoiseInfo _myEditor = null;
+	/**
+	 * the set of layers we are being painted into
+	 */
+	private Layers _theLayers = null;
 
-  /**
-   * whether we should re-plot after each scenario movement
-   */
-  private boolean _liveUpdate = false;
+	/**
+	 * background noise level in this environment
+	 */
+	private double _BackgroundNoiseLevel = 65;
 
-  /**
-   * the set of layers we are being painted into
-   */
-  private Layers _theLayers = null;
+	/**
+	 * ************************************************* * constructor
+	 * **************************************************
+	 */
 
+	public ScenarioNoiseLevelPainter(final EnvironmentType theEnv, final StatusProvider provider, final int medium,
+			final Layers theLayers) {
+		super("Acoustic Painter");
+		new PainterComponent() {
 
-  /**
-   * background noise level in this environment
-   */
-  private double _BackgroundNoiseLevel = 65;
+			@Override
+			protected void assignPixel(final int width, final int thisValue, final int x_coord, final int y_coord) {
 
-  /**
-   * *************************************************
-   * * constructor
-   * **************************************************
-   */
-
-  public ScenarioNoiseLevelPainter(final EnvironmentType theEnv,
-                                   final StatusProvider provider,
-                                   final int medium,
-                                   final Layers theLayers)
-  {
-    super("Acoustic Painter");
-    new PainterComponent(){
-
-			protected void assignPixel(int width, int thisValue, int x_coord, int y_coord)
-			{
-				
 			}
 
-			protected void checkImageValid(int width, int height)
-			{
-				
+			@Override
+			protected void checkImageValid(final int width, final int height) {
+
 			}
 
-			protected void paintTheImage(CanvasType dest, int width, int height, final int alpha)
-			{
-				
-			}
-
-			protected void updatePixelColors(SpatialRasterPainter parent, int width, int height, int min_height, int max_height, CanvasType dest, boolean useNE)
-			{
-				
-			}
-
-			public int convertColor(int red, int green, int blue)
-			{
+			@Override
+			public int convertColor(final int red, final int green, final int blue) {
 				return 0;
-			}};
-    super.setBuffered(true);
-    super.setVisible(false);
-    _myEnvironment = theEnv;
-    _provider = provider;
-    _myMedium = medium;
-    _theLayers = theLayers;
+			}
 
-    // switch off contours
-    super.setContoursVisible(false);
-  }
+			@Override
+			protected void paintTheImage(final CanvasType dest, final int width, final int height, final int alpha) {
 
-  /**
-   * *************************************************
-   * interface for classes which can provide the list
-   * of statuses we plot
-   * *************************************************
-   */
-  public static interface StatusProvider
-  {
-    /**
-     * return a list of ParticipantStatus objects
-     */
-    public Vector<ParticipantStatus> getStatuses(int theMedium);
+			}
 
-    /**
-     * listen out for status changes
-     */
-    public void addScenarioChangeListener(ASSET.Scenario.ScenarioSteppedListener listener);
+			@Override
+			protected void updatePixelColors(final SpatialRasterPainter parent, final int width, final int height,
+					final int min_height, final int max_height, final CanvasType dest, final boolean useNE) {
 
-    /**
-     * stop listening for status changes
-     */
-    public void removeScenarioChangeListener(ASSET.Scenario.ScenarioSteppedListener listener);
-  }
+			}
+		};
+		super.setBuffered(true);
+		super.setVisible(false);
+		_myEnvironment = theEnv;
+		_provider = provider;
+		_myMedium = medium;
+		_theLayers = theLayers;
 
+		// switch off contours
+		super.setContoursVisible(false);
+	}
 
-  /**
-   * *************************************************
-   * * member variables
-   * **************************************************
-   */
+	public BoundedInteger getBackgroundNoise() {
+		return new BoundedInteger((int) _BackgroundNoiseLevel, 0, 150);
+	}
 
-  public void paint(final CanvasType dest)
-  {
-    final Vector<ParticipantStatus> statuses = _provider.getStatuses(_myMedium);
+	@Override
+	public WorldArea getBounds() {
+		final WorldArea res = null;
+		return res;
+	}
 
-    // did we find any?
-    if (statuses.size() > 0)
-      super.paint(dest);
-  }
+	/**
+	 * provide the delta for the data (in degrees)
+	 */
+	@Override
+	public double getGridDelta() {
+		return MWC.Algorithms.Conversions.Nm2Degs(5);
+	}
 
-  public WorldArea getBounds()
-  {
-    final WorldArea res = null;
-    return res;
-  }
+	@Override
+	public Editable.EditorType getInfo() {
+		if (_myEditor == null) {
+			_myEditor = new ScenarioNoiseInfo(this);
+		}
+		return _myEditor;
+	}
 
-  public boolean hasEditor()
-  {
-    return true;
-  }
+	public boolean getLiveUpdate() {
+		return _liveUpdate;
+	}
 
-  public Editable.EditorType getInfo()
-  {
-    if (_myEditor == null)
-    {
-      _myEditor = new ScenarioNoiseInfo(this);
-    }
-    return _myEditor;
-  }
+	@Override
+	public int getValueAt(final WorldLocation location) {
+		double res = 0;
+		final Vector<ParticipantStatus> stats = _provider.getStatuses(_myMedium);
 
-  public boolean getLiveUpdate()
-  {
-    return _liveUpdate;
-  }
+		if (stats != null) {
+			final Iterator<ParticipantStatus> it = stats.iterator();
+			while (it.hasNext()) {
+				final ParticipantStatus ps = it.next();
+				final WorldLocation origin = ps.location;
+				final double sourceLevel = ps.sourceLevel;
 
-  public void setLiveUpdate(final boolean liveUpdate)
-  {
-    this._liveUpdate = liveUpdate;
+				// find out the resultant noise at this point
+				final double resultant = _myEnvironment.getResultantEnergyAt(_myMedium, origin, location, sourceLevel);
 
-    // listen to parent as necessary
-    if (liveUpdate)
-      _provider.addScenarioChangeListener(this);
-    else
-      _provider.removeScenarioChangeListener(this);
-  }
+				// build a cumulative total
+				res = InitialSensor.SensorUtils.powerSum(resultant, res);
+			}
+		}
 
-  public BoundedInteger getBackgroundNoise()
-  {
-    return new BoundedInteger((int) _BackgroundNoiseLevel, 0, 150);
-  }
+		// finally add in the background noise level
+		res = InitialSensor.SensorUtils.powerSum(_BackgroundNoiseLevel, res);
 
-  public void setBackgroundNoise(final BoundedInteger backgroundNoiseLevel)
-  {
-    this._BackgroundNoiseLevel = (double) backgroundNoiseLevel.getCurrent();
-  }
+		return (int) res;
+	}
 
-  /**
-   * provide the delta for the data  (in degrees)
-   */
-  public double getGridDelta()
-  {
-    return MWC.Algorithms.Conversions.Nm2Degs(5);
-  }
+	@Override
+	public boolean hasEditor() {
+		return true;
+	}
 
-  /**
-   * whether the data has been loaded yet
-   */
-  public boolean isDataLoaded()
-  {
-    return true;
-  }
+	/**
+	 * whether the data has been loaded yet
+	 */
+	@Override
+	public boolean isDataLoaded() {
+		return true;
+	}
 
-  public int getValueAt(final WorldLocation location)
-  {
-    double res = 0;
-    final Vector<ParticipantStatus> stats = _provider.getStatuses(_myMedium);
+	/**
+	 * ************************************************* * member variables
+	 * **************************************************
+	 */
 
-    if (stats != null)
-    {
-      final Iterator<ParticipantStatus> it = stats.iterator();
-      while (it.hasNext())
-      {
-        final ParticipantStatus ps = (ParticipantStatus) it.next();
-        final WorldLocation origin = ps.location;
-        final double sourceLevel = ps.sourceLevel;
+	@Override
+	public void paint(final CanvasType dest) {
+		final Vector<ParticipantStatus> statuses = _provider.getStatuses(_myMedium);
 
-        // find out the resultant noise at this point
-        final double resultant = _myEnvironment.getResultantEnergyAt(_myMedium, origin, location, sourceLevel);
+		// did we find any?
+		if (statuses.size() > 0)
+			super.paint(dest);
+	}
 
-        // build a cumulative total
-        res = InitialSensor.SensorUtils.powerSum(resultant, res);
-      }
-    }
+	/**
+	 * the scenario has restarted, reset
+	 */
+	@Override
+	public void restart(final ScenarioType scenario) {
+	}
 
-    // finally add in the background noise level
-    res = InitialSensor.SensorUtils.powerSum(_BackgroundNoiseLevel, res);
+	public void setBackgroundNoise(final BoundedInteger backgroundNoiseLevel) {
+		this._BackgroundNoiseLevel = backgroundNoiseLevel.getCurrent();
+	}
 
-    return (int) res;
-  }
+	public void setLiveUpdate(final boolean liveUpdate) {
+		this._liveUpdate = liveUpdate;
 
-  /**
-   * the scenario has restarted, reset
-   */
-  public void restart(ScenarioType scenario)
-  {
-  }
+		// listen to parent as necessary
+		if (liveUpdate)
+			_provider.addScenarioChangeListener(this);
+		else
+			_provider.removeScenarioChangeListener(this);
+	}
 
-  /**
-   * the scenario has stepped forward
-   */
-  public void step(ScenarioType scenario, long newTime)
-  {
-    // somehow, we have to update ourselves...
-    _theLayers.fireModified(this);
-  }
-
-  /////////////////////////////////////////////////////////////
-  // info class
-  ////////////////////////////////////////////////////////////
-  public class ScenarioNoiseInfo extends MWC.GUI.Editable.EditorType implements java.io.Serializable
-  {
-
-    /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public ScenarioNoiseInfo(final ScenarioNoiseLevelPainter data)
-    {
-      super(data, data.getName(), "Edit");
-    }
-
-    public PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try
-      {
-        final PropertyDescriptor[] res = {
-          prop("Name", "name of this painter"),
-          prop("Visible", "whether this layer is visible"),
-          prop("BathyRes", "the resolution of the grid plotted"),
-          prop("LiveUpdate", "update after each scenario change"),
-          prop("BackgroundNoise", "the background noise level in this environemnt"),
-        };
-        return res;
-      }
-      catch (IntrospectionException e)
-      {
-        System.err.println("Problem declaring editable properties:" + e.getMessage());
-        return super.getPropertyDescriptors();
-      }
-    }
-  }
-
-
-  /**
-   * class to store the combination of source level and location
-   */
-  public static class ParticipantStatus
-  {
-    public double sourceLevel;
-    public WorldLocation location;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  public static class NoiseLevelTest extends SupportTesting.EditableTesting
-  {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-
-    /**
-     * get an object which we can test
-     *
-     * @return Editable object which we can check the properties for
-     */
-    public Editable getEditable()
-    {
-      final StatusProvider sp = new StatusProvider()
-      {
-        public void addScenarioChangeListener(ScenarioSteppedListener listener)
-        {
-        }
-
-        public Vector<ParticipantStatus> getStatuses(int theMedium)
-        {
-          return null;
-        }
-
-        public void removeScenarioChangeListener(ScenarioSteppedListener listener)
-        {
-        }
-      };
-
-      return new ScenarioNoiseLevelPainter(null, sp, 0, null);
-    }
-
-    public void testQuick()
-    {
-      final SSN ssn = new SSN(12);
-      final Status stat = new Status(12, 0);
-      stat.setLocation(new WorldLocation(0, 0, 0));
-      stat.setCourse(0);
-      stat.setSpeed(new WorldSpeed(0, WorldSpeed.M_sec));
-      ssn.setStatus(stat);
-
-      final StatusProvider sp = new StatusProvider()
-      {
-        public void addScenarioChangeListener(ScenarioSteppedListener listener)
-        {
-        }
-
-        /**
-         * return a list of ParticipantStatus objects
-         */
-        public Vector<ParticipantStatus> getStatuses(int theMedium)
-        {
-          final Vector<ParticipantStatus> res = new Vector<ParticipantStatus>(0, 1);
-          final ParticipantStatus ps = new ParticipantStatus();
-          ps.location = ssn.getStatus().getLocation();
-          ps.sourceLevel = ssn.getRadiatedNoiseFor(EnvironmentType.BROADBAND_PASSIVE, 0);
-          res.add(ps);
-          return res;
-        }
-
-        public void removeScenarioChangeListener(ScenarioSteppedListener listener)
-        {
-        }
-      };
-
-      final CoreEnvironment cs = new SimpleEnvironment(1, 1, 1);
-
-      final ScenarioNoiseLevelPainter snp = new ScenarioNoiseLevelPainter(cs, sp, EnvironmentType.BROADBAND_PASSIVE, null);
-
-      // over-ride the radiated noise levels
-      ssn.getRadiatedChars().add(ASSET.Models.Environment.EnvironmentType.BROADBAND_PASSIVE, new ASSET.Models.Mediums.BroadbandRadNoise(SSN.DEFAULT_BB_NOISE));
-      ssn.getRadiatedChars().add(ASSET.Models.Environment.EnvironmentType.VISUAL, new ASSET.Models.Mediums.Optic(2, new WorldDistance(2, WorldDistance.METRES)));
-
-      // check that the noise is as expected
-      double thisNoise = snp.getValueAt(ssn.getStatus().getLocation());
-      assertEquals("Default noise at zero speed", SSN.DEFAULT_BB_NOISE, thisNoise, 0.001);
-
-      // over-ride the rad-noise and re-check
-      final double newRadNoise = 150;
-      final BroadbandRadNoise bRad = (BroadbandRadNoise) ssn.getRadiatedChars().getMedium(new Integer(EnvironmentType.BROADBAND_PASSIVE));
-      bRad.setBaseNoiseLevel(newRadNoise);
-      thisNoise = snp.getValueAt(ssn.getStatus().getLocation());
-      assertEquals("Default noise at zero speed", newRadNoise, thisNoise, 0.001);
-
-
-    }
-  }
+	/**
+	 * the scenario has stepped forward
+	 */
+	@Override
+	public void step(final ScenarioType scenario, final long newTime) {
+		// somehow, we have to update ourselves...
+		_theLayers.fireModified(this);
+	}
 
 }

@@ -1,45 +1,51 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.debrief.gndmanager.Tracks;
 
 import org.bitbucket.es4gwt.shared.elastic.ElasticFacet;
 
 public enum Facet implements ElasticFacet {
 
-	NAME,
-	PLATFORM,
-	PLATFORM_TYPE,
-	SENSOR,
-	SENSOR_TYPE,
-	TRIAL,
-	DATA_TYPE,
-	TYPE,
-	START,
-	END;
+	NAME, PLATFORM, PLATFORM_TYPE, SENSOR, SENSOR_TYPE, TRIAL, DATA_TYPE, TYPE, START, END;
 
 	public static final Facet[] SEARCH_PARAMS = { PLATFORM, PLATFORM_TYPE, SENSOR, SENSOR_TYPE, TRIAL, DATA_TYPE };
 
-	public static final Facet[] RESULTS_FIELDS = {	NAME,
-													PLATFORM,
-													PLATFORM_TYPE,
-													SENSOR,
-													SENSOR_TYPE,
-													TRIAL,
-													TYPE,
-													START,
-													END };
+	public static final Facet[] RESULTS_FIELDS = { NAME, PLATFORM, PLATFORM_TYPE, SENSOR, SENSOR_TYPE, TRIAL, TYPE,
+			START, END };
+
+	public String toDisplayString() {
+		switch (this) {
+		case NAME:
+			return "Name";
+		case PLATFORM:
+			return "Platform";
+		case PLATFORM_TYPE:
+			return "Platform Type";
+		case SENSOR:
+			return "Sensor";
+		case SENSOR_TYPE:
+			return "Sensor Type";
+		case TRIAL:
+			return "Trial";
+		case DATA_TYPE:
+			return "Data Type";
+		default:
+			throw new UnsupportedOperationException("toDisplayString() method is not supported for Facet." + name());
+		}
+	}
 
 	@Override
 	public String toRequestString() {
@@ -72,27 +78,6 @@ public enum Facet implements ElasticFacet {
 	@Override
 	public String toString() {
 		return toRequestString();
-	}
-
-	public String toDisplayString() {
-		switch (this) {
-		case NAME:
-			return "Name";
-		case PLATFORM:
-			return "Platform";
-		case PLATFORM_TYPE:
-			return "Platform Type";
-		case SENSOR:
-			return "Sensor";
-		case SENSOR_TYPE:
-			return "Sensor Type";
-		case TRIAL:
-			return "Trial";
-		case DATA_TYPE:
-			return "Data Type";
-		default:
-			throw new UnsupportedOperationException("toDisplayString() method is not supported for Facet." + name());
-		}
 	}
 
 }

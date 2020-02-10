@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: SwingCanvas.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.10 $
@@ -215,7 +216,6 @@
 // new Swing versions
 //
 
-
 package MWC.GUI.Canvas.Swing;
 
 import java.awt.BasicStroke;
@@ -243,984 +243,886 @@ import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
-
 /**
  * Swing implementation of a canvas.
  */
-public class SwingCanvas extends javax.swing.JComponent
-  implements CanvasType,
-  Editable
-{
+public class SwingCanvas extends javax.swing.JComponent implements CanvasType, Editable {
 
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
 
-	
-	private final Object LOCK = new Object();
-  /**
-	 * 
-	 */
+	//////////////////////////////////////////////////////
+	// bean info for this class
+	/////////////////////////////////////////////////////
+	public final class CanvasInfo extends Editable.EditorType {
+
+		public CanvasInfo(final SwingCanvas data) {
+			super(data, data.toString(), "");
+		}
+
+		@Override
+		public final PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final PropertyDescriptor[] res = {
+						displayProp("BackgroundColor", "Background color", "the background color"),
+						displayProp("LineThickness", "Line thickness", "the line thickness"), };
+
+				return res;
+
+			} catch (final IntrospectionException e) {
+				return super.getPropertyDescriptors();
+			}
+		}
+	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	static public final class CanvasTest extends junit.framework.TestCase {
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public CanvasTest(final String val) {
+			super(val);
+		}
+
+		public final void testMyParams() {
+			final Editable ed = new SwingCanvas(null);
+			Editable.editableTesterSupport.testParams(ed, this);
+		}
+	}
+
+	/**
+		 *
+		 */
 	private static final long serialVersionUID = 1L;
 
 	/**
-   * the projection in use
-   */
-  private PlainProjection _theProjection;
+	 * a list of the line-styles we know about.
+	 */
+	static private java.util.HashMap<Integer, BasicStroke> _myLineStyles = null;
 
-  /**
-   * our graphics object - only valid between 'start' and 'stop'
-   * paint events.
-   */
-  private java.awt.Graphics _theDest = null;
+	/**
+	 * do we anti-alias this font.
+	 *
+	 * @param theFont the font we are looking at
+	 * @return yes/no decision
+	 */
+	private static boolean antiAliasThis(final Font theFont) {
+		boolean res = false;
 
-  /**
-   * the list of registered painters for this canvas.
-   */
-  private Vector<CanvasType.PaintListener> _thePainters;
+		final int size = theFont.getSize();
+		final boolean isBold = theFont.isBold();
 
-  /**
-   * the dimensions of the canvas - we keep our own
-   * track of this in order to handle the number
-   * of resize messages we get.
-   */
-  private java.awt.Dimension _theSize;
+		if (size >= 14) {
+			res = true;
+		} else {
+			if (isBold && (size >= 12)) {
+				res = true;
+			}
+		}
 
-  /**
-   * our double-buffering safe copy.
-   */
-  private transient java.awt.Image _dblBuff;
+		return res;
+	}
 
-  /**
-   * our tool tip handler.
-   */
-  private CanvasType.TooltipHandler _tooltipHandler;
+	/**
+	 * doDecide whether this line thickness could be anti-aliased.
+	 *
+	 * @param width the line width setting
+	 * @return yes/no
+	 */
+	private static boolean antiAliasThisLine(final float width) {
+		boolean res = false;
 
-  /**
-   * our editor.
-   */
-  transient private Editable.EditorType _myEditor;
+		if (width > 1)
+			res = true;
 
-  /**
-   * a list of the line-styles we know about.
-   */
-  static private java.util.HashMap<Integer, BasicStroke> _myLineStyles = null;
+		return res;
+	}
 
-  /**
-   * the current line width.
-   */
-  private float _lineWidth;
+	static synchronized public java.awt.BasicStroke getStrokeFor(final int style) {
+		if (_myLineStyles == null) {
+			_myLineStyles = new java.util.HashMap<Integer, BasicStroke>(5);
+			_myLineStyles.put(new Integer(MWC.GUI.CanvasType.SOLID), new java.awt.BasicStroke(1,
+					java.awt.BasicStroke.CAP_BUTT, java.awt.BasicStroke.JOIN_MITER, 1, new float[] { 5, 0 }, 0));
+			_myLineStyles.put(new Integer(MWC.GUI.CanvasType.DOTTED), new java.awt.BasicStroke(1,
+					java.awt.BasicStroke.CAP_BUTT, java.awt.BasicStroke.JOIN_MITER, 1, new float[] { 2, 6 }, 0));
+			_myLineStyles.put(new Integer(MWC.GUI.CanvasType.DOT_DASH), new java.awt.BasicStroke(1,
+					java.awt.BasicStroke.CAP_BUTT, java.awt.BasicStroke.JOIN_MITER, 1, new float[] { 4, 4, 12, 4 }, 0));
+			_myLineStyles.put(new Integer(MWC.GUI.CanvasType.SHORT_DASHES), new java.awt.BasicStroke(1,
+					java.awt.BasicStroke.CAP_BUTT, java.awt.BasicStroke.JOIN_MITER, 1, new float[] { 6, 6 }, 0));
+			_myLineStyles.put(new Integer(MWC.GUI.CanvasType.LONG_DASHES), new java.awt.BasicStroke(1,
+					java.awt.BasicStroke.CAP_BUTT, java.awt.BasicStroke.JOIN_MITER, 1, new float[] { 12, 6 }, 0));
+			_myLineStyles.put(new Integer(MWC.GUI.CanvasType.UNCONNECTED), new java.awt.BasicStroke(1));
+		}
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
+		return _myLineStyles.get(new Integer(style));
+	}
 
-  /**
-   * default constructor.
-   */
-  public SwingCanvas()
-  {
-    super.setName("Canvas");
+	private final Object LOCK = new Object();
 
-    // start with our background colour
-    setBackgroundColor(DebriefColors.BLACK);
+	/**
+	 * the projection in use
+	 */
+	private PlainProjection _theProjection;
 
-    // initialisation
-    _thePainters = new Vector<CanvasType.PaintListener>(0, 1);
+	/**
+	 * our graphics object - only valid between 'start' and 'stop' paint events.
+	 */
+	private java.awt.Graphics _theDest = null;
 
-    // create our projection
-    _theProjection = new FlatProjection();
+	/**
+	 * the list of registered painters for this canvas.
+	 */
+	private Vector<CanvasType.PaintListener> _thePainters;
 
-    // add handler to catch canvas resizes
-    this.addComponentListener(new ComponentAdapter()
-    {
-      public void componentResized(final ComponentEvent e)
-      {
-        setScreenSize(e.getComponent().getSize());
-      }
-    });
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
 
-    // switch on tooltips for this panel
-    setToolTipText("blank");
-  }
+	/**
+	 * the dimensions of the canvas - we keep our own track of this in order to
+	 * handle the number of resize messages we get.
+	 */
+	private java.awt.Dimension _theSize;
 
-  // constructor taking projection.
-  SwingCanvas(final PlainProjection theProjection)
-  {
-    this();
-    // take copy of projection
-    _theProjection = theProjection;
-  }
+	/**
+	 * our double-buffering safe copy.
+	 */
+	private transient java.awt.Image _dblBuff;
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////////////////////////
-  // projection related
-  ////////////////////////////////////////////////////////////
-  /**
-   * update the projection.
-   */
-  public final void setProjection(final PlainProjection theProjection)
-  {
-    _theProjection = theProjection;
-  }
+	/**
+	 * our tool tip handler.
+	 */
+	private CanvasType.TooltipHandler _tooltipHandler;
 
-  /**
-   * switch anti-aliasing on or off.
-   *
-   * @param val yes/no
-   */
-  private void switchAntiAliasOn(final boolean val)
-  {
-    // ignore this
-    final Graphics2D g2 = (Graphics2D) _theDest;
+	/**
+	 * our editor.
+	 */
+	transient private Editable.EditorType _myEditor;
 
-    if (g2 == null)
-      return;
+	/**
+	 * the current line width.
+	 */
+	private float _lineWidth;
 
-    if (val)
-    {
-      g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                          RenderingHints.VALUE_ANTIALIAS_ON);
-    }
-    else
-    {
-      g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                          RenderingHints.VALUE_ANTIALIAS_OFF);
-    }
+	/**
+	 * default constructor.
+	 */
+	public SwingCanvas() {
+		super.setName("Canvas");
 
-  }
+		// start with our background colour
+		setBackgroundColor(DebriefColors.BLACK);
 
+		// initialisation
+		_thePainters = new Vector<CanvasType.PaintListener>(0, 1);
 
-  /**
-   * get the current projection.
-   */
-  public final PlainProjection getProjection()
-  {
-    return _theProjection;
-  }
+		// create our projection
+		_theProjection = new FlatProjection();
 
-  /**
-   * convenience function.
-   */
-  public final java.awt.Point toScreen(final WorldLocation val)
-  {
-    return _theProjection.toScreen(val);
-  }
+		// add handler to catch canvas resizes
+		this.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(final ComponentEvent e) {
+				setScreenSize(e.getComponent().getSize());
+			}
+		});
 
-  /**
-   * convenience function.
-   */
-  public final WorldLocation toWorld(final java.awt.Point val)
-  {
-    return _theProjection.toWorld(val);
-  }
+		// switch on tooltips for this panel
+		setToolTipText("blank");
+	}
 
-  /**
-   * re-determine the area of data we cover.
-   * then resize to cover it
-   */
-  public final void rescale()
-  {
+	// constructor taking projection.
+	SwingCanvas(final PlainProjection theProjection) {
+		this();
+		// take copy of projection
+		_theProjection = theProjection;
+	}
 
-    // get the data area for the current painters
-    WorldArea theArea = null;
-    final Enumeration<CanvasType.PaintListener> enumer = _thePainters.elements();
-    while (enumer.hasMoreElements())
-    {
-      final CanvasType.PaintListener thisP = (CanvasType.PaintListener) enumer.nextElement();
-      theArea = WorldArea.extend(theArea, thisP.getDataArea());
-    }
+	////////////////////////////////////////////////////////////
+	// painter handling
+	////////////////////////////////////////////////////////////
+	@Override
+	public final void addPainter(final CanvasType.PaintListener listener) {
+		_thePainters.addElement(listener);
+	}
 
-    // check we have found a valid area
-    if (theArea != null)
-    {
-      // so, we now have the data area for everything which
-      // wants to plot to it, give it to the projection
-      _theProjection.setDataArea(theArea);
+	/**
+	 * CanvasType.PaintListener provide close method, clear elements.
+	 */
+	public final void close() {
+		_thePainters.removeAllElements();
+		_thePainters = null;
+		_theProjection = null;
+		_theDest = null;
+		_theSize = null;
+		_dblBuff = null;
+		_tooltipHandler = null;
+	}
 
-      // get the projection to refit-itself
-      _theProjection.zoom(0.0);
-    }
+	@Override
+	public final void drawArc(final int x, final int y, final int width, final int height, final int startAngle,
+			final int arcAngle) {
+		if (_theDest != null) {
+			// doDecide whether to anti-alias this line
+			this.switchAntiAliasOn(SwingCanvas.antiAliasThisLine(this.getLineWidth()));
+		}
 
-  }
+		if (_theDest != null) {
+			_theDest.drawArc(x, y, width, height, startAngle, arcAngle);
+		}
+	}
 
-  /**
-   * handler for a screen resize - inform our projection of the resize
-   * then inform the painters.
-   */
-  void setScreenSize(final java.awt.Dimension p1)
-  {
-    // check if this is a real resize
-    if ((_theSize == null) ||
-      (!_theSize.equals(p1)))
-    {
+	@Override
+	public final boolean drawImage(final Image img, final int x, final int y, final int width, final int height,
+			final ImageObserver observer) {
+		if (_theDest == null)
+			return true;
 
-      // ok, now remember it
-      _theSize = p1;
+		return _theDest.drawImage(img, x, y, width, height, observer);
+	}
 
-      // and pass it onto the projection
-      _theProjection.setScreenArea(p1);
+	@Override
+	public final void drawLine(final int x1, final int y1, final int x2, final int y2) {
+		if (_theDest == null)
+			return;
 
-      // inform our parent
-      super.setSize(p1);
+		// doDecide whether to anti-alias this line
+		this.switchAntiAliasOn(SwingCanvas.antiAliasThisLine(this.getLineWidth()));
 
-      // erase the double buffer,
-      // since it is now invalid
-      _dblBuff = null;
+		// check that the points are vaguely plottable
+		if ((Math.abs(x1) > 9000) || (Math.abs(y1) > 9000) || (Math.abs(x2) > 9000) || (Math.abs(y2) > 9000)) {
+			return;
+		}
 
-      // inform the listeners that we have resized
-      final Enumeration<CanvasType.PaintListener> enumer = _thePainters.elements();
-      while (enumer.hasMoreElements())
-      {
-        final CanvasType.PaintListener thisPainter =
-          (CanvasType.PaintListener) enumer.nextElement();
-        thisPainter.resizedEvent(_theProjection, p1);
-      }
+		// double-check
+		if (_theDest == null)
+			return;
 
-    }
-  }
+		_theDest.drawLine(x1, y1, x2, y2);
+	}
 
+	@Override
+	public final void drawOval(final int x, final int y, final int width, final int height) {
+		if (_theDest != null)
+			this.switchAntiAliasOn(SwingCanvas.antiAliasThisLine(this.getLineWidth()));
 
-  /////////////////////////////////////////////////////////////
-  // graphics plotting related
-  ////////////////////////////////////////////////////////////
-  /**
-   * find out the current metrics.
-   *
-   * @param theFont the font to try
-   * @return the metrics object
-   */
-  public final java.awt.FontMetrics getFontMetrics(final java.awt.Font theFont)
-  {
-    java.awt.FontMetrics res = null;
+		if (_theDest != null)
+			_theDest.drawOval(x, y, width, height);
+	}
 
-    if (_theDest != null)
-    {
-      if (theFont != null)
-        res = _theDest.getFontMetrics(theFont);
-      else
-        res = _theDest.getFontMetrics();
-    }
+	/**
+	 * drawPolygon.
+	 *
+	 * @param xPoints list of x coordinates
+	 * @param yPoints list of y coordinates
+	 * @param nPoints length of list
+	 */
+	@Override
+	public final void drawPolygon(final int[] xPoints, final int[] yPoints, final int nPoints) {
+		if (_theDest == null)
+			return;
 
-    return res;
-  }
+		// doDecide whether to anti-alias this line
+		this.switchAntiAliasOn(SwingCanvas.antiAliasThisLine(this.getLineWidth()));
 
-  public final int getStringHeight(final java.awt.Font theFont)
-  {
-    int res = 0;
-    final java.awt.FontMetrics fm = getFontMetrics(theFont);
-    if (fm != null)
-      res = fm.getHeight();
+		_theDest.drawPolygon(xPoints, yPoints, nPoints);
+	}
 
-    return res;
-  }
-
-  public final int getStringWidth(final java.awt.Font theFont, final String theString)
-  {
-    int res = 0;
-    final java.awt.FontMetrics fm = getFontMetrics(theFont);
-    if (fm != null)
-      res = fm.stringWidth(theString);
-
-    return res;
-  }
-
-
-  /**
-   * ONLY USE THIS FOR NON-PERSISTENT PLOTTING
-   */
-  public final java.awt.Graphics getGraphicsTemp()
-  {
-    java.awt.Graphics res = null;
-    /** if we are in a paint operation already,
-     * return the graphics object, since it may
-     * be a double-buffering image
-     */
-    if (_theDest != null)
-    {
-      res = _theDest.create();  // return a copy, so the user can dispose it
-    }
-    else
-    {
-      if (_dblBuff != null)
-      {
-        res = _dblBuff.getGraphics();
-      }
-      else
-      {
-      }
-    }
-
-    return res;
-  }
-
-  public final void setFont(final java.awt.Font theFont)
-  {
-    //super.setFont(theFont);
-  }
-
-  public final boolean drawImage(final Image img,
-                                 final int x,
-                                 final int y,
-                                 final int width,
-                                 final int height,
-                                 final ImageObserver observer)
-  {
-    if (_theDest == null)
-      return true;
-
-    return _theDest.drawImage(img, x, y, width, height, observer);
-  }
-
-  public final void drawLine(final int x1, final int y1, final int x2, final int y2)
-  {
-    if (_theDest == null)
-      return;
-
-    // doDecide whether to anti-alias this line
-    this.switchAntiAliasOn(SwingCanvas.antiAliasThisLine(this.getLineWidth()));
-
-    // check that the points are vaguely plottable
-    if ((Math.abs(x1) > 9000) || (Math.abs(y1) > 9000) ||
-      (Math.abs(x2) > 9000) || (Math.abs(y2) > 9000))
-    {
-      return;
-    }
-
-    // double-check
-    if (_theDest == null)
-      return;
-
-    _theDest.drawLine(x1, y1, x2, y2);
-  }
-
-  /**
-   * draw a filled polygon
-   *
-   * @param xPoints list of x coordinates
-   * @param yPoints list of y coordinates
-   * @param nPoints length of list
-   */
-  public final void fillPolygon(final int[] xPoints,
-                                final int[] yPoints,
-                                final int nPoints)
-  {
-    if (_theDest == null)
-      return;
-
-    _theDest.fillPolygon(xPoints, yPoints, nPoints);
-  }
-
-  /**
-   * drawPolyline
-   *
-   * @param xPoints list of x coordinates
-   * @param yPoints list of y coordinates
-   * @param nPoints length of list
-   */
-  public final void drawPolyline(final int[] xPoints,
-                                 final int[] yPoints,
-                                 final int nPoints)
-  {
-    if (_theDest == null)
-      return;
-
-    // doDecide whether to anti-alias this line
-    this.switchAntiAliasOn(SwingCanvas.antiAliasThisLine(this.getLineWidth()));
-
-    _theDest.drawPolyline(xPoints, yPoints, nPoints);
-  }
-  
+	@Override
 	final public void drawPolyline(final int[] points) {
 		// get the convenience function to plot this for us
 		CanvasAdaptor.drawPolylineForMe(points, this);
-	} 
-
-  /**
-   * drawPolygon.
-   *
-   * @param xPoints list of x coordinates
-   * @param yPoints list of y coordinates
-   * @param nPoints length of list
-   */
-  public final void drawPolygon(final int[] xPoints,
-                                final int[] yPoints,
-                                final int nPoints)
-  {
-    if (_theDest == null)
-      return;
-
-    // doDecide whether to anti-alias this line
-    this.switchAntiAliasOn(SwingCanvas.antiAliasThisLine(this.getLineWidth()));
-
-    _theDest.drawPolygon(xPoints, yPoints, nPoints);
-  }
-
-
-  public final void drawOval(final int x, final int y, final int width, final int height)
-  {
-    if (_theDest != null)
-      this.switchAntiAliasOn(SwingCanvas.antiAliasThisLine(this.getLineWidth()));
-
-    if (_theDest != null)
-      _theDest.drawOval(x, y, width, height);
-  }
-
-  public final void fillOval(final int x, final int y, final int width, final int height)
-  {
-    if (_theDest != null)
-      _theDest.fillOval(x, y, width, height);
-    //    else
-    //      MWC.Utilities.Errors.Trace.trace("Graphics object not available when painting oval - occasionally happens in first pass", false);
-  }
-
-  public final void setColor(final java.awt.Color theCol)
-  {
-    if (_theDest == null)
-      return;
-
-    _theDest.setColor(theCol);
-  }
-
-  static synchronized public java.awt.BasicStroke getStrokeFor(final int style)
-  {
-    if (_myLineStyles == null)
-    {
-      _myLineStyles = new java.util.HashMap<Integer, BasicStroke>(5);
-      _myLineStyles.put(new Integer(MWC.GUI.CanvasType.SOLID), new java.awt.BasicStroke(1, java.awt.BasicStroke.CAP_BUTT,
-                                                                                        java.awt.BasicStroke.JOIN_MITER, 1, new float[]{5, 0}, 0));
-      _myLineStyles.put(new Integer(MWC.GUI.CanvasType.DOTTED), new java.awt.BasicStroke(1, java.awt.BasicStroke.CAP_BUTT,
-                                                                                         java.awt.BasicStroke.JOIN_MITER, 1, new float[]{2, 6}, 0));
-      _myLineStyles.put(new Integer(MWC.GUI.CanvasType.DOT_DASH), new java.awt.BasicStroke(1, java.awt.BasicStroke.CAP_BUTT,
-                                                                                           java.awt.BasicStroke.JOIN_MITER, 1, new float[]{4, 4, 12, 4}, 0));
-      _myLineStyles.put(new Integer(MWC.GUI.CanvasType.SHORT_DASHES), new java.awt.BasicStroke(1, java.awt.BasicStroke.CAP_BUTT,
-                                                                                               java.awt.BasicStroke.JOIN_MITER, 1, new float[]{6, 6}, 0));
-      _myLineStyles.put(new Integer(MWC.GUI.CanvasType.LONG_DASHES), new java.awt.BasicStroke(1, java.awt.BasicStroke.CAP_BUTT,
-                                                                                              java.awt.BasicStroke.JOIN_MITER, 1, new float[]{12, 6}, 0));
-      _myLineStyles.put(new Integer(MWC.GUI.CanvasType.UNCONNECTED), new java.awt.BasicStroke(1));
-    }
-
-    return (java.awt.BasicStroke) _myLineStyles.get(new Integer(style));
-  }
-
-  public final void setLineStyle(final int style)
-  {
-    final java.awt.BasicStroke stk = getStrokeFor(style);
-    final java.awt.Graphics2D g2 = (java.awt.Graphics2D) _theDest;
-    g2.setStroke(stk);
-  }
-
-  /**
-   * set the width of the line, in pixels
-   */
-  public final void setLineWidth(final float width)
-  {
-    // check we've got a valid width
-    _lineWidth = Math.max(width, 0);
-
-    // are we currently in a plot operation?
-    if (_theDest != null)
-    {
-      // create the stroke
-      final java.awt.BasicStroke stk = new BasicStroke(width);
-      final java.awt.Graphics2D g2 = (java.awt.Graphics2D) _theDest;
-      g2.setStroke(stk);
-    }
-  }
-
-  /**
-   * get the width of the line, in pixels
-   */
-  public final float getLineWidth()
-  {
-    final float res;
-
-    // are we currently in a plot operation?
-    if (_theDest != null)
-    {
-      // create the stroke
-      final java.awt.Graphics2D g2 = (java.awt.Graphics2D) _theDest;
-      final BasicStroke bs = (BasicStroke) g2.getStroke();
-      res = bs.getLineWidth();
-    }
-    else
-    {
-      res = _lineWidth;
-    }
-
-    return res;
-  }
-
-  public final void drawArc(final int x, final int y, final int width, final int height, final int startAngle,
-                            final int arcAngle)
-  {
-    if (_theDest != null)
-    {
-      // doDecide whether to anti-alias this line
-      this.switchAntiAliasOn(SwingCanvas.antiAliasThisLine(this.getLineWidth()));
-    }
-
-    if (_theDest != null)
-    {
-      _theDest.drawArc(x, y, width, height, startAngle, arcAngle);
-    }
-  }
-
-  public final void fillArc(final int x, final int y, final int width, final int height, final int startAngle,
-                            final int arcAngle)
-  {
-    if (_theDest != null)
-      _theDest.fillArc(x, y, width, height, startAngle, arcAngle);
-    //    else
-    //      MWC.Utilities.Errors.Trace.trace("Graphics object not available when painting oval - occasionally happens in first pass", false);
-
-  }
- 
-  public final void startDraw(final Object theVal)
-  {
-    _theDest = (java.awt.Graphics) theVal;
-
-    // set the thickness
-    final BasicStroke bs = new BasicStroke(_lineWidth);
-    final Graphics2D g2 = (Graphics2D) _theDest;
-    g2.setStroke(bs);
-  }
-
-  public final void endDraw(final Object theVal)
-  {
-    _theDest = null;
-  }
-
-  public void drawText(final String theStr, final int x, final int y)
-  {
-    if (_theDest == null)
-      return;
-
-    drawText(_theDest.getFont(), theStr, x, y);
-  }
-
-
-  public void drawText(final java.awt.Font theFont, final String theStr, final int x, final int y)
-  {
-    if (_theDest == null)
-      return;
-
-    // doDecide the anti-alias
-    this.switchAntiAliasOn(SwingCanvas.antiAliasThis(theFont));
-
-    if (_theDest == null)
-      return;
-
-    _theDest.setFont(theFont);
-    _theDest.drawString(theStr, x, y);
-  }
-
-  public final void drawRect(final int x1, final int y1, final int wid, final int height)
-  {
-    if (_theDest == null)
-      return;
-
-    // doDecide whether to anti-alias this line
-    this.switchAntiAliasOn(SwingCanvas.antiAliasThisLine(this.getLineWidth()));
-
-    if (_theDest == null)
-      return;
-
-    _theDest.drawRect(x1, y1, wid, height);
-  }
-
-  public final void fillRect(final int x, final int y, final int wid, final int height)
-  {
-    if (_theDest == null)
-      return;
-
-    _theDest.fillRect(x, y, wid, height);
-  }
-
-  /**
-   * get the current background colour
-   */
-  public final java.awt.Color getBackgroundColor()
-  {
-    return getBackground();
-  }
-
-  /**
-   * set the current background colour, and trigger a screen update
-   */
-  public final void setBackgroundColor(final java.awt.Color theColor)
-  {
-    // set the colour in the parent
-    setBackground(theColor);
-    // invalidate the screen
- //   updateMe();
-  }
-
-  public final BoundedInteger getLineThickness()
-  {
-    return new BoundedInteger((int) this.getLineWidth(), 0, 4);
-  }
-
-  public final void setLineThickness(final BoundedInteger val)
-  {
-    setLineWidth(val.getCurrent());
-  }
-
-
-  ///////////////////////////////////////////////////////////
-  // handle tooltip stuff
-  ///////////////////////////////////////////////////////////
-  public final void setTooltipHandler(final CanvasType.TooltipHandler handler)
-  {
-    _tooltipHandler = handler;
-  }
-
-  /**
-   * get a string describing the current screen & world location
-   */
-  public final String getToolTipText(final MouseEvent p1)
-  {
-    String res = null;
-    if (_tooltipHandler != null)
-    {
-
-      final java.awt.Point pt = p1.getPoint();
-      // check we have a valid projection
-      final java.awt.Dimension dim = getProjection().getScreenArea();
-      if (dim != null)
-      {
-        if (dim.width > 0)
-        {
-          final WorldLocation loc = toWorld(pt);
-          if (loc != null)
-            res = _tooltipHandler.getString(loc, pt);
-        }
-      }
-    }
-
-    return res;
-  }
-
-  ////////////////////////////////////////////////////////////
-  // painter handling
-  ////////////////////////////////////////////////////////////
-  public final void addPainter(final CanvasType.PaintListener listener)
-  {
-    _thePainters.addElement(listener);
-  }
-
-  public final void removePainter(final CanvasType.PaintListener listener)
-  {
-    _thePainters.removeElement(listener);
-  }
-
-  public final Enumeration<CanvasType.PaintListener> getPainters()
-  {
-    return _thePainters.elements();
-  }
-
-
-  //////////////////////////////////////////////////////
-  // screen redraw related
-  //////////////////////////////////////////////////////
-
-  public final void paint(final java.awt.Graphics p1)
-  {
-    // paint code moved to Update function
-    update(p1);
-  }
-
-  /**
-   * screen redraw, just repaint the buffer
-   */
-  public void update(final java.awt.Graphics p1)
-  {
-    // this is a screen redraw, we can just paint in the buffer
-    // (although we may have to redraw it first)
-
-    if (_dblBuff == null)
-    {
-      paintPlot();
-    }
-
-    // and paste the image
-    p1.drawImage(_dblBuff, 0, 0, this);
-
-  }
-
-  /**
-   * method to produce the buffered image - we paint this
-   * buffered image when we get one of the numerous Windows
-   * repaint calls
-   */
-  private void paintPlot()
-  {
-	  synchronized (LOCK)
-	  {
-	
-	    if (_dblBuff == null)
-	    {
-	      // we may need to recreate the image if
-	      // we have just restored this session
-	      final java.awt.Dimension sz = this.getSize();
-	
-	      // check that we are looking at a valid plot (the panel isn't minimised)
-	      if ((sz.width <= 0) || (sz.height <= 0))
-	      {
-	        // don't bother with repaint - there's no plot visible anyway
-	      }
-	      else
-	      {
-	        _dblBuff = createImage(sz.width,
-	                               sz.height);
-	      }
-	
-	      // see if we have a screen size yet - if not we can't create our buffer
-	      if (_dblBuff == null)
-	      {
-	        return;
-	      }
-	
-	    }
-	
-	    // temporarily set the dblBuff object to null,
-	    // to stop anybody borrowing it - and write to a
-	    // temporary buffer
-	    final java.awt.Image tmpBuff = _dblBuff;
-	    _dblBuff = null;
-	
-	
-	    // hey, let's double-buffer it
-	    final java.awt.Graphics g1 = tmpBuff.getGraphics();
-	
-	    // prepare the ground (remember the graphics dest for a start)
-	    startDraw(g1);
-	
-	    // erase background
-	    final java.awt.Dimension sz = this.getSize();
-	    g1.setColor(this.getBackgroundColor());
-	    g1.fillRect(0, 0, sz.width, sz.height);
-	
-	    // do the actual paint
-	    paintIt(this);
-	
-	    // all finished, close it now
-	    endDraw(null);
-	
-	    // and dispose
-	    g1.dispose();
-	
-	    // put the image back in our buffer
-	    _dblBuff = tmpBuff;
-	
 	}
-  }
 
-  /**
-   * the real paint function, called when it's not satisfactory to
-   * just paint in our safe double-buffered image.
-   */
-  public final void paintIt(final CanvasType canvas)
-  {
-    // go through our painters
-    final Enumeration<CanvasType.PaintListener> enumer = _thePainters.elements();
-    while (enumer.hasMoreElements())
-    {
-      final CanvasType.PaintListener thisPainter =
-        (CanvasType.PaintListener) enumer.nextElement();
+	/**
+	 * drawPolyline
+	 *
+	 * @param xPoints list of x coordinates
+	 * @param yPoints list of y coordinates
+	 * @param nPoints length of list
+	 */
+	@Override
+	public final void drawPolyline(final int[] xPoints, final int[] yPoints, final int nPoints) {
+		if (_theDest == null)
+			return;
 
-      if (canvas == null)
-      {
-        System.out.println("Canvas not ready yet");
-      }
-      else
-      {
-        // check the screen has been defined
-        final Dimension area = this.getProjection().getScreenArea();
-        if ((area == null) || (area.getWidth() <= 0) || (area.getHeight() <= 0))
-        {
-          return;
-        }
+		// doDecide whether to anti-alias this line
+		this.switchAntiAliasOn(SwingCanvas.antiAliasThisLine(this.getLineWidth()));
 
-        // it must be ok
-        thisPainter.paintMe(canvas);
-      }
+		_theDest.drawPolyline(xPoints, yPoints, nPoints);
+	}
 
-    }
-  }
+	@Override
+	public final void drawRect(final int x1, final int y1, final int wid, final int height) {
+		if (_theDest == null)
+			return;
 
-  /**
-   * first repaint the plot, then
-   * trigger a screen update
-   */
-  public final void updateMe()
-  {
+		// doDecide whether to anti-alias this line
+		this.switchAntiAliasOn(SwingCanvas.antiAliasThisLine(this.getLineWidth()));
 
-    // reproduce the buffer, since something has clearly changed
-    paintPlot();
+		if (_theDest == null)
+			return;
 
-    // ask the operating system to repaint us when it gets a chance
-    repaint();
-  }
+		_theDest.drawRect(x1, y1, wid, height);
+	}
 
+	@Override
+	public void drawText(final java.awt.Font theFont, final String theStr, final int x, final int y) {
+		if (_theDest == null)
+			return;
 
-  public final void setSize(final int p1, final int p2)
-  {
-    super.setSize(p1, p2);
+		// doDecide the anti-alias
+		this.switchAntiAliasOn(SwingCanvas.antiAliasThis(theFont));
 
-    // reset our double buffer, since we've changed size
-    _dblBuff = null;
-  }
+		if (_theDest == null)
+			return;
 
+		_theDest.setFont(theFont);
+		_theDest.drawString(theStr, x, y);
+	}
 
-  //////////////////////////////////////////////////////
-  // bean/editable methods
-  /////////////////////////////////////////////////////
-  public final Editable.EditorType getInfo()
-  {
-    if (_myEditor == null)
-      _myEditor = new CanvasInfo(this);
+	@Override
+	public void drawText(final String theStr, final int x, final int y) {
+		if (_theDest == null)
+			return;
 
-    return _myEditor;
-  }
+		drawText(_theDest.getFont(), theStr, x, y);
+	}
 
-  public final boolean hasEditor()
-  {
-    return true;
-  }
+	@Override
+	public void drawText(final String str, final int x, final int y, final float rotate) {
 
-  /**CanvasType.PaintListener
-   * provide close method, clear elements.
-   */
-  public final void close()
-  {
-    _thePainters.removeAllElements();
-    _thePainters = null;
-    _theProjection = null;
-    _theDest = null;
-    _theSize = null;
-    _dblBuff = null;
-    _tooltipHandler = null;
-  }
+	}
 
-  /**
-   * return our name (used in editing)
-   */
-  public final String toString()
-  {
-    return "Appearance";
-  }
+	@Override
+	public void drawText(final String str, final int x, final int y, final float rotate, final boolean above) {
 
-  //////////////////////////////////////////////////////
-  // bean info for this class
-  /////////////////////////////////////////////////////
-  public final class CanvasInfo extends Editable.EditorType
-  {
+	}
 
-    public CanvasInfo(final SwingCanvas data)
-    {
-      super(data, data.toString(), "");
-    }
+	@Override
+	public final void endDraw(final Object theVal) {
+		_theDest = null;
+	}
 
-    public final PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try
-      {
-        final PropertyDescriptor[] res = {
-          displayProp("BackgroundColor", "Background color", "the background color"),
-					displayProp("LineThickness", "Line thickness", "the line thickness"),
-        };
+	@Override
+	public final void fillArc(final int x, final int y, final int width, final int height, final int startAngle,
+			final int arcAngle) {
+		if (_theDest != null)
+			_theDest.fillArc(x, y, width, height, startAngle, arcAngle);
+		// else
+		// MWC.Utilities.Errors.Trace.trace("Graphics object not available when painting
+		// oval - occasionally happens in first pass", false);
 
-        return res;
+	}
 
-      }
-      catch (final IntrospectionException e)
-      {
-        return super.getPropertyDescriptors();
-      }
-    }
-  }
+	@Override
+	public final void fillOval(final int x, final int y, final int width, final int height) {
+		if (_theDest != null)
+			_theDest.fillOval(x, y, width, height);
+		// else
+		// MWC.Utilities.Errors.Trace.trace("Graphics object not available when painting
+		// oval - occasionally happens in first pass", false);
+	}
 
-  //////////////////////////////////////////////////
-  // methods to support anti-alias decisions
-  //////////////////////////////////////////////////
+	/**
+	 * draw a filled polygon
+	 *
+	 * @param xPoints list of x coordinates
+	 * @param yPoints list of y coordinates
+	 * @param nPoints length of list
+	 */
+	@Override
+	public final void fillPolygon(final int[] xPoints, final int[] yPoints, final int nPoints) {
+		if (_theDest == null)
+			return;
 
-  /**
-   * do we anti-alias this font.
-   *
-   * @param theFont the font we are looking at
-   * @return yes/no decision
-   */
-  private static boolean antiAliasThis(final Font theFont)
-  {
-    boolean res = false;
+		_theDest.fillPolygon(xPoints, yPoints, nPoints);
+	}
 
-    final int size = theFont.getSize();
-    final boolean isBold = theFont.isBold();
+	@Override
+	public final void fillRect(final int x, final int y, final int wid, final int height) {
+		if (_theDest == null)
+			return;
 
-    if (size >= 14)
-    {
-      res = true;
-    }
-    else
-    {
-      if (isBold && (size >= 12))
-      {
-        res = true;
-      }
-    }
+		_theDest.fillRect(x, y, wid, height);
+	}
 
-    return res;
-  }
+	/**
+	 * get the current background colour
+	 */
+	@Override
+	public final java.awt.Color getBackgroundColor() {
+		return getBackground();
+	}
 
+	/////////////////////////////////////////////////////////////
+	// graphics plotting related
+	////////////////////////////////////////////////////////////
+	/**
+	 * find out the current metrics.
+	 *
+	 * @param theFont the font to try
+	 * @return the metrics object
+	 */
+	@Override
+	public final java.awt.FontMetrics getFontMetrics(final java.awt.Font theFont) {
+		java.awt.FontMetrics res = null;
 
-  /**
-   * doDecide whether this line thickness could be anti-aliased.
-   *
-   * @param width the line width setting
-   * @return yes/no
-   */
-  private static boolean antiAliasThisLine(final float width)
-  {
-    boolean res = false;
+		if (_theDest != null) {
+			if (theFont != null)
+				res = _theDest.getFontMetrics(theFont);
+			else
+				res = _theDest.getFontMetrics();
+		}
 
-    if (width > 1)
-      res = true;
+		return res;
+	}
 
-    return res;
-  }
+	/**
+	 * ONLY USE THIS FOR NON-PERSISTENT PLOTTING
+	 */
+	@Override
+	public final java.awt.Graphics getGraphicsTemp() {
+		java.awt.Graphics res = null;
+		/**
+		 * if we are in a paint operation already, return the graphics object, since it
+		 * may be a double-buffering image
+		 */
+		if (_theDest != null) {
+			res = _theDest.create(); // return a copy, so the user can dispose it
+		} else {
+			if (_dblBuff != null) {
+				res = _dblBuff.getGraphics();
+			} else {
+			}
+		}
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  static public final class CanvasTest extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+		return res;
+	}
 
-    public CanvasTest(final String val)
-    {
-      super(val);
-    }
+	//////////////////////////////////////////////////////
+	// bean/editable methods
+	/////////////////////////////////////////////////////
+	@Override
+	public final Editable.EditorType getInfo() {
+		if (_myEditor == null)
+			_myEditor = new CanvasInfo(this);
 
-    public final void testMyParams()
-    {
-      final Editable ed = new SwingCanvas(null);
-      Editable.editableTesterSupport.testParams(ed, this);
-    }
-  }
+		return _myEditor;
+	}
 
-@Override
-public void drawText(final String str, final int x, final int y, final float rotate) {
-	
-}
+	public final BoundedInteger getLineThickness() {
+		return new BoundedInteger((int) this.getLineWidth(), 0, 4);
+	}
 
-@Override
-public void drawText(String str, int x, int y, float rotate, boolean above)
-{
-	
-}
+	/**
+	 * get the width of the line, in pixels
+	 */
+	@Override
+	public final float getLineWidth() {
+		final float res;
+
+		// are we currently in a plot operation?
+		if (_theDest != null) {
+			// create the stroke
+			final java.awt.Graphics2D g2 = (java.awt.Graphics2D) _theDest;
+			final BasicStroke bs = (BasicStroke) g2.getStroke();
+			res = bs.getLineWidth();
+		} else {
+			res = _lineWidth;
+		}
+
+		return res;
+	}
+
+	@Override
+	public final Enumeration<CanvasType.PaintListener> getPainters() {
+		return _thePainters.elements();
+	}
+
+	/**
+	 * get the current projection.
+	 */
+	@Override
+	public final PlainProjection getProjection() {
+		return _theProjection;
+	}
+
+	@Override
+	public final int getStringHeight(final java.awt.Font theFont) {
+		int res = 0;
+		final java.awt.FontMetrics fm = getFontMetrics(theFont);
+		if (fm != null)
+			res = fm.getHeight();
+
+		return res;
+	}
+
+	@Override
+	public final int getStringWidth(final java.awt.Font theFont, final String theString) {
+		int res = 0;
+		final java.awt.FontMetrics fm = getFontMetrics(theFont);
+		if (fm != null)
+			res = fm.stringWidth(theString);
+
+		return res;
+	}
+
+	/**
+	 * get a string describing the current screen & world location
+	 */
+	@Override
+	public final String getToolTipText(final MouseEvent p1) {
+		String res = null;
+		if (_tooltipHandler != null) {
+
+			final java.awt.Point pt = p1.getPoint();
+			// check we have a valid projection
+			final java.awt.Dimension dim = getProjection().getScreenArea();
+			if (dim != null) {
+				if (dim.width > 0) {
+					final WorldLocation loc = toWorld(pt);
+					if (loc != null)
+						res = _tooltipHandler.getString(loc, pt);
+				}
+			}
+		}
+
+		return res;
+	}
+
+	@Override
+	public final boolean hasEditor() {
+		return true;
+	}
+
+	@Override
+	public final void paint(final java.awt.Graphics p1) {
+		// paint code moved to Update function
+		update(p1);
+	}
+
+	/**
+	 * the real paint function, called when it's not satisfactory to just paint in
+	 * our safe double-buffered image.
+	 */
+	public final void paintIt(final CanvasType canvas) {
+		// go through our painters
+		final Enumeration<CanvasType.PaintListener> enumer = _thePainters.elements();
+		while (enumer.hasMoreElements()) {
+			final CanvasType.PaintListener thisPainter = enumer.nextElement();
+
+			if (canvas == null) {
+				System.out.println("Canvas not ready yet");
+			} else {
+				// check the screen has been defined
+				final Dimension area = this.getProjection().getScreenArea();
+				if ((area == null) || (area.getWidth() <= 0) || (area.getHeight() <= 0)) {
+					return;
+				}
+
+				// it must be ok
+				thisPainter.paintMe(canvas);
+			}
+
+		}
+	}
+
+	/**
+	 * method to produce the buffered image - we paint this buffered image when we
+	 * get one of the numerous Windows repaint calls
+	 */
+	private void paintPlot() {
+		synchronized (LOCK) {
+
+			if (_dblBuff == null) {
+				// we may need to recreate the image if
+				// we have just restored this session
+				final java.awt.Dimension sz = this.getSize();
+
+				// check that we are looking at a valid plot (the panel isn't minimised)
+				if ((sz.width <= 0) || (sz.height <= 0)) {
+					// don't bother with repaint - there's no plot visible anyway
+				} else {
+					_dblBuff = createImage(sz.width, sz.height);
+				}
+
+				// see if we have a screen size yet - if not we can't create our buffer
+				if (_dblBuff == null) {
+					return;
+				}
+
+			}
+
+			// temporarily set the dblBuff object to null,
+			// to stop anybody borrowing it - and write to a
+			// temporary buffer
+			final java.awt.Image tmpBuff = _dblBuff;
+			_dblBuff = null;
+
+			// hey, let's double-buffer it
+			final java.awt.Graphics g1 = tmpBuff.getGraphics();
+
+			// prepare the ground (remember the graphics dest for a start)
+			startDraw(g1);
+
+			// erase background
+			final java.awt.Dimension sz = this.getSize();
+			g1.setColor(this.getBackgroundColor());
+			g1.fillRect(0, 0, sz.width, sz.height);
+
+			// do the actual paint
+			paintIt(this);
+
+			// all finished, close it now
+			endDraw(null);
+
+			// and dispose
+			g1.dispose();
+
+			// put the image back in our buffer
+			_dblBuff = tmpBuff;
+
+		}
+	}
+
+	@Override
+	public final void removePainter(final CanvasType.PaintListener listener) {
+		_thePainters.removeElement(listener);
+	}
+
+	/**
+	 * re-determine the area of data we cover. then resize to cover it
+	 */
+	@Override
+	public final void rescale() {
+
+		// get the data area for the current painters
+		WorldArea theArea = null;
+		final Enumeration<CanvasType.PaintListener> enumer = _thePainters.elements();
+		while (enumer.hasMoreElements()) {
+			final CanvasType.PaintListener thisP = enumer.nextElement();
+			theArea = WorldArea.extend(theArea, thisP.getDataArea());
+		}
+
+		// check we have found a valid area
+		if (theArea != null) {
+			// so, we now have the data area for everything which
+			// wants to plot to it, give it to the projection
+			_theProjection.setDataArea(theArea);
+
+			// get the projection to refit-itself
+			_theProjection.zoom(0.0);
+		}
+
+	}
+
+	/**
+	 * set the current background colour, and trigger a screen update
+	 */
+	@Override
+	public final void setBackgroundColor(final java.awt.Color theColor) {
+		// set the colour in the parent
+		setBackground(theColor);
+		// invalidate the screen
+		// updateMe();
+	}
+
+	//////////////////////////////////////////////////////
+	// screen redraw related
+	//////////////////////////////////////////////////////
+
+	@Override
+	public final void setColor(final java.awt.Color theCol) {
+		if (_theDest == null)
+			return;
+
+		_theDest.setColor(theCol);
+	}
+
+	@Override
+	public final void setFont(final java.awt.Font theFont) {
+		// super.setFont(theFont);
+	}
+
+	@Override
+	public final void setLineStyle(final int style) {
+		final java.awt.BasicStroke stk = getStrokeFor(style);
+		final java.awt.Graphics2D g2 = (java.awt.Graphics2D) _theDest;
+		g2.setStroke(stk);
+	}
+
+	public final void setLineThickness(final BoundedInteger val) {
+		setLineWidth(val.getCurrent());
+	}
+
+	/**
+	 * set the width of the line, in pixels
+	 */
+	@Override
+	public final void setLineWidth(final float width) {
+		// check we've got a valid width
+		_lineWidth = Math.max(width, 0);
+
+		// are we currently in a plot operation?
+		if (_theDest != null) {
+			// create the stroke
+			final java.awt.BasicStroke stk = new BasicStroke(width);
+			final java.awt.Graphics2D g2 = (java.awt.Graphics2D) _theDest;
+			g2.setStroke(stk);
+		}
+	}
+
+	/////////////////////////////////////////////////////////////
+	// projection related
+	////////////////////////////////////////////////////////////
+	/**
+	 * update the projection.
+	 */
+	@Override
+	public final void setProjection(final PlainProjection theProjection) {
+		_theProjection = theProjection;
+	}
+
+	/**
+	 * handler for a screen resize - inform our projection of the resize then inform
+	 * the painters.
+	 */
+	void setScreenSize(final java.awt.Dimension p1) {
+		// check if this is a real resize
+		if ((_theSize == null) || (!_theSize.equals(p1))) {
+
+			// ok, now remember it
+			_theSize = p1;
+
+			// and pass it onto the projection
+			_theProjection.setScreenArea(p1);
+
+			// inform our parent
+			super.setSize(p1);
+
+			// erase the double buffer,
+			// since it is now invalid
+			_dblBuff = null;
+
+			// inform the listeners that we have resized
+			final Enumeration<CanvasType.PaintListener> enumer = _thePainters.elements();
+			while (enumer.hasMoreElements()) {
+				final CanvasType.PaintListener thisPainter = enumer.nextElement();
+				thisPainter.resizedEvent(_theProjection, p1);
+			}
+
+		}
+	}
+
+	@Override
+	public final void setSize(final int p1, final int p2) {
+		super.setSize(p1, p2);
+
+		// reset our double buffer, since we've changed size
+		_dblBuff = null;
+	}
+
+	///////////////////////////////////////////////////////////
+	// handle tooltip stuff
+	///////////////////////////////////////////////////////////
+	@Override
+	public final void setTooltipHandler(final CanvasType.TooltipHandler handler) {
+		_tooltipHandler = handler;
+	}
+
+	@Override
+	public final void startDraw(final Object theVal) {
+		_theDest = (java.awt.Graphics) theVal;
+
+		// set the thickness
+		final BasicStroke bs = new BasicStroke(_lineWidth);
+		final Graphics2D g2 = (Graphics2D) _theDest;
+		g2.setStroke(bs);
+	}
+
+	/**
+	 * switch anti-aliasing on or off.
+	 *
+	 * @param val yes/no
+	 */
+	private void switchAntiAliasOn(final boolean val) {
+		// ignore this
+		final Graphics2D g2 = (Graphics2D) _theDest;
+
+		if (g2 == null)
+			return;
+
+		if (val) {
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		} else {
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+		}
+
+	}
+
+	//////////////////////////////////////////////////
+	// methods to support anti-alias decisions
+	//////////////////////////////////////////////////
+
+	/**
+	 * convenience function.
+	 */
+	@Override
+	public final java.awt.Point toScreen(final WorldLocation val) {
+		return _theProjection.toScreen(val);
+	}
+
+	/**
+	 * return our name (used in editing)
+	 */
+	@Override
+	public final String toString() {
+		return "Appearance";
+	}
+
+	/**
+	 * convenience function.
+	 */
+	@Override
+	public final WorldLocation toWorld(final java.awt.Point val) {
+		return _theProjection.toWorld(val);
+	}
+
+	/**
+	 * screen redraw, just repaint the buffer
+	 */
+	@Override
+	public void update(final java.awt.Graphics p1) {
+		// this is a screen redraw, we can just paint in the buffer
+		// (although we may have to redraw it first)
+
+		if (_dblBuff == null) {
+			paintPlot();
+		}
+
+		// and paste the image
+		p1.drawImage(_dblBuff, 0, 0, this);
+
+	}
+
+	/**
+	 * first repaint the plot, then trigger a screen update
+	 */
+	@Override
+	public final void updateMe() {
+
+		// reproduce the buffer, since something has clearly changed
+		paintPlot();
+
+		// ask the operating system to repaint us when it gets a chance
+		repaint();
+	}
 
 }

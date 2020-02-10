@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.debrief.data_feed.views;
 
 import java.awt.event.ActionEvent;
@@ -21,8 +22,7 @@ import MWC.Utilities.Timer.TimerListener;
 /**
  * @author ian.mayo
  */
-public class DummyDataProvider implements RealTimeProvider, TimerListener
-{
+public class DummyDataProvider implements RealTimeProvider, TimerListener {
 
 	/**
 	 * the automatic timer we are using
@@ -42,8 +42,7 @@ public class DummyDataProvider implements RealTimeProvider, TimerListener
 //
 //	private TrackWrapper _trk;
 
-	public DummyDataProvider()
-	{
+	public DummyDataProvider() {
 
 		/**
 		 * the timer-related settings
@@ -57,8 +56,8 @@ public class DummyDataProvider implements RealTimeProvider, TimerListener
 	/**
 	 * @param host
 	 */
-	public void connect(final LiveFeedViewer host)
-	{
+	@Override
+	public void connect(final LiveFeedViewer host) {
 		_myHost = host;
 
 		_myHost.showMessage("Connecting to dummy");
@@ -75,8 +74,8 @@ public class DummyDataProvider implements RealTimeProvider, TimerListener
 	/**
 	 * @param host
 	 */
-	public void disconnect(final LiveFeedViewer host)
-	{
+	@Override
+	public void disconnect(final LiveFeedViewer host) {
 		_myHost.showMessage("Disconnecting");
 
 		// ok, start the trigger
@@ -94,31 +93,18 @@ public class DummyDataProvider implements RealTimeProvider, TimerListener
 	/**
 	 * @return
 	 */
-	public String getName()
-	{
+	@Override
+	public String getName() {
 		return "Dummy provider";
 	}
 
-	/**
-	 * ok, start auto-stepping forward through the serial
-	 */
-	private void startPlaying()
-	{
-		_theTimer.start();
-	}
+	@Override
+	public void onTime(final ActionEvent event) {
 
-	protected void stopPlaying()
-	{
-		_theTimer.stop();
-	}
-
-	public void onTime(final ActionEvent event)
-	{
-		
 		// this section has been commented out, in respect of the changed
 		// procedure for exporting to file (in which we no longer
 		// receive a copy of the text to export.
-		
+
 //		// ok, fire the new data event
 //		double myCourse = 0;
 //
@@ -165,6 +151,17 @@ public class DummyDataProvider implements RealTimeProvider, TimerListener
 //			_myHost.showMessage("LBL RX");
 //		}
 
+	}
+
+	/**
+	 * ok, start auto-stepping forward through the serial
+	 */
+	private void startPlaying() {
+		_theTimer.start();
+	}
+
+	protected void stopPlaying() {
+		_theTimer.stop();
 	}
 
 }

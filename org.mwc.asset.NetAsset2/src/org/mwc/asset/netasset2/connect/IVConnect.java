@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.asset.netasset2.connect;
 
 import java.net.InetAddress;
@@ -23,39 +24,32 @@ import org.eclipse.jface.viewers.IContentProvider;
 import org.mwc.asset.netCore.common.Network.LightParticipant;
 import org.mwc.asset.netCore.common.Network.LightScenario;
 
-public interface IVConnect
-{
+public interface IVConnect {
 
-	public static interface BooleanHandler
-	{
+	public static interface BooleanHandler {
 		public void change(boolean val);
 	};
 
-	public static interface ClickHandler
-	{
+	public static interface ClickHandler {
 		public void clicked();
 	}
 
-	public static interface ParticipantSelected
-	{
+	public static interface ParticipantSelected {
 		public void selected(LightParticipant participant);
 	}
 
-	public static interface ScenarioSelected
-	{
+	public static interface ScenarioSelected {
 		public void selected(LightScenario scenario);
 	}
 
-	public static interface ServerSelected
-	{
+	public static interface ServerSelected {
 		public void selected(InetAddress address);
 	}
 
-	public static interface StringProvider
-	{
+	public static interface StringProvider {
 		/**
 		 * get a string from the user
-		 * 
+		 *
 		 * @param title
 		 * @param message
 		 * @return
@@ -76,6 +70,8 @@ public interface IVConnect
 	public void addSelfHostListener(final BooleanHandler yesNo);
 
 	void addServerListener(ServerSelected selectionAdapter);
+
+	public void clearServers();
 
 	void disableDisconnect();
 
@@ -104,7 +100,5 @@ public interface IVConnect
 	public void setScenarios(Vector<LightScenario> results);
 
 	void setServers(List<InetAddress> adds);
-
-	public void clearServers();
 
 }

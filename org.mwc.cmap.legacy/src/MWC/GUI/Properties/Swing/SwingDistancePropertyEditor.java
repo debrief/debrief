@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.GUI.Properties.Swing;
 
 // Copyright MWC 1999, Debrief 3 Project
@@ -107,174 +108,176 @@ import javax.swing.JTextField;
 
 import MWC.GenericData.WorldDistance;
 
-public class SwingDistancePropertyEditor extends
-          MWC.GUI.Properties.DistancePropertyEditor implements FocusListener, ActionListener
-{
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
+public class SwingDistancePropertyEditor extends MWC.GUI.Properties.DistancePropertyEditor
+		implements FocusListener, ActionListener {
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
 
-  /** field to edit the distance
-   */
-  JTextField _theDistance;
+	/**
+	 * field to edit the distance
+	 */
+	JTextField _theDistance;
 
-  /** combo-box to select the units
-   */
-  @SuppressWarnings("rawtypes")
+	/**
+	 * combo-box to select the units
+	 */
+	@SuppressWarnings("rawtypes")
 	JComboBox _theUnits;
 
-  /** panel to hold everything
-   */
-  JPanel _theHolder;
+	/**
+	 * panel to hold everything
+	 */
+	JPanel _theHolder;
 
-  /** the former units used
-   *
-   */
-  int _oldUnits = -1;
+	/**
+	 * the former units used
+	 *
+	 */
+	int _oldUnits = -1;
 
-  /** the formatting object used to write to screen
-   *
-   */
-  protected java.text.DecimalFormat _formatter1 = new java.text.DecimalFormat("0.######");
+	/**
+	 * the formatting object used to write to screen
+	 *
+	 */
+	protected java.text.DecimalFormat _formatter1 = new java.text.DecimalFormat("0.######");
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-  /** build the editor
-   */
-  @SuppressWarnings({ "unchecked", "rawtypes" })
-	public java.awt.Component getCustomEditor()
-  {
-    _theHolder = new JPanel();
+	/**
+	 * the combo box label has been changed
+	 *
+	 */
+	@Override
+	public void actionPerformed(final ActionEvent e) {
+		// what are the new units?
+		final int newUnits = this._theUnits.getSelectedIndex();
 
-    final java.awt.BorderLayout bl1 = new java.awt.BorderLayout();
-    bl1.setVgap(0);
-    bl1.setHgap(0);
-    final java.awt.BorderLayout bl2 = new java.awt.BorderLayout();
-    bl2.setVgap(0);
-    bl2.setHgap(0);
+		try {
+			// convert to a new distance
+			final double newDist = WorldDistance.convert(_oldUnits, newUnits, getDistance());
 
-    final JPanel lPanel = new JPanel();
-    lPanel.setLayout(bl1);
-    final JPanel rPanel = new JPanel();
-    rPanel.setLayout(bl2);
+			// and remember the units
+			_oldUnits = newUnits;
+
+			// and put the correct data in the distance
+			setDistance(newDist);
+		} catch (final java.text.ParseException te) {
+			MWC.Utilities.Errors.Trace.trace(te);
+		}
+	}
+
+	/**
+	 * Invoked when a component gains the keyboard focus.
+	 */
+	@Override
+	public void focusGained(final FocusEvent e) {
+		final java.awt.Component c = e.getComponent();
+		if (c instanceof JTextField) {
+			final JTextField jt = (JTextField) c;
+			jt.setSelectionStart(0);
+			jt.setSelectionEnd(jt.getText().length());
+		}
+	}
+
+	/**
+	 * Invoked when a component loses the keyboard focus.
+	 */
+	@Override
+	public void focusLost(final FocusEvent e) {
+	}
+
+	/**
+	 * build the editor
+	 */
+	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public java.awt.Component getCustomEditor() {
+		_theHolder = new JPanel();
+
+		final java.awt.BorderLayout bl1 = new java.awt.BorderLayout();
+		bl1.setVgap(0);
+		bl1.setHgap(0);
+		final java.awt.BorderLayout bl2 = new java.awt.BorderLayout();
+		bl2.setVgap(0);
+		bl2.setHgap(0);
+
+		final JPanel lPanel = new JPanel();
+		lPanel.setLayout(bl1);
+		final JPanel rPanel = new JPanel();
+		rPanel.setLayout(bl2);
 
 		_theHolder.setLayout(new BorderLayout());
 		_theDistance = new JTextField();
-    _theDistance.setToolTipText("the distance");
+		_theDistance.setToolTipText("the distance");
 		_theUnits = new JComboBox(WorldDistance.UnitLabels);
-    _theUnits.setToolTipText("the Units");
-		_theHolder.add("Center",_theDistance);
-		_theHolder.add("East",_theUnits);
+		_theUnits.setToolTipText("the Units");
+		_theHolder.add("Center", _theDistance);
+		_theHolder.add("East", _theUnits);
 
-    // get the fields to select the full text when they're selected
-    _theDistance.addFocusListener(this);
-    _theUnits.addActionListener(this);
+		// get the fields to select the full text when they're selected
+		_theDistance.addFocusListener(this);
+		_theUnits.addActionListener(this);
 
-    resetData();
-    return _theHolder;
-  }
+		resetData();
+		return _theHolder;
+	}
 
-  /** get the date text as a string
-   */
-  protected double getDistance() throws java.text.ParseException
-  {
-    final double val = _formatter1.parse(_theDistance.getText()).doubleValue();
-    return val;
-  }
+	/**
+	 * get the date text as a string
+	 */
+	@Override
+	protected double getDistance() throws java.text.ParseException {
+		final double val = _formatter1.parse(_theDistance.getText()).doubleValue();
+		return val;
+	}
 
-  /** get the date text as a string
-   */
-  protected int getUnits()
-  {
-    return _theUnits.getSelectedIndex();
-  }
+	/////////////////////////////
+	// focus listener support classes
+	/////////////////////////////
 
-  /** set the date text in string form
-   */
-  protected void setDistance(final double val)
-  {
-    if(_theHolder != null)
-    {
-     _theDistance.setText(_formatter1.format(val));
-    }
-  }
+	/**
+	 * get the date text as a string
+	 */
+	@Override
+	protected int getUnits() {
+		return _theUnits.getSelectedIndex();
+	}
 
-  /** set the time text in string form
-   */
-  protected void setUnits(final int val)
-  {
-		if(_theHolder != null)
-		{
-      // temporarily stop listening to the combo box
-      _theUnits.removeActionListener(this);
-
-      // select this item in the combo box
-      _theUnits.setSelectedIndex(val);
-
-      // continue listening to the combo box
-      _theUnits.addActionListener(this);
-
-      // remember the units
-      _oldUnits = val;
+	/**
+	 * set the date text in string form
+	 */
+	@Override
+	protected void setDistance(final double val) {
+		if (_theHolder != null) {
+			_theDistance.setText(_formatter1.format(val));
 		}
-  }
+	}
 
-  /////////////////////////////
-  // focus listener support classes
-  /////////////////////////////
+	/**
+	 * set the time text in string form
+	 */
+	@Override
+	protected void setUnits(final int val) {
+		if (_theHolder != null) {
+			// temporarily stop listening to the combo box
+			_theUnits.removeActionListener(this);
 
+			// select this item in the combo box
+			_theUnits.setSelectedIndex(val);
 
-  /**
-   * Invoked when a component gains the keyboard focus.
-   */
-  public void focusGained(final FocusEvent e)
-  {
-    final java.awt.Component c = e.getComponent();
-    if(c instanceof JTextField)
-    {
-      final JTextField jt = (JTextField)c;
-      jt.setSelectionStart(0);
-      jt.setSelectionEnd(jt.getText().length());
-    }
-  }
+			// continue listening to the combo box
+			_theUnits.addActionListener(this);
 
-  /**
-   * Invoked when a component loses the keyboard focus.
-   */
-  public void focusLost(final FocusEvent e)
-  {
-  }
-
-  /** the combo box label has been changed
-   *
-   */
-  public void actionPerformed(final ActionEvent e)
-  {
-    // what are the new units?
-    final int newUnits = this._theUnits.getSelectedIndex();
-
-    try
-    {
-      // convert to a new distance
-      final double newDist = WorldDistance.convert(_oldUnits, newUnits, getDistance());
-
-      // and remember the units
-      _oldUnits = newUnits;
-
-      // and put the correct data in the distance
-      setDistance(newDist);
-    }
-    catch(final java.text.ParseException te)
-    {
-      MWC.Utilities.Errors.Trace.trace(te);
-    }
-  }
-
+			// remember the units
+			_oldUnits = val;
+		}
+	}
 
 }

@@ -1,21 +1,22 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.debrief.gndmanager.ui;
 
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
@@ -43,75 +44,19 @@ import MWC.TacticalData.temporal.TimeProvider;
 
 /**
  * @author ian.mayo
- * 
+ *
  */
-public class InsertTrackStore extends CoreEditorAction
-{
+public class InsertTrackStore extends CoreEditorAction {
 
 	public static ToolParent _theParent = null;
 
 	/**
-	 * whether this item is a top-level layer
-	 */
-	private final boolean _isTopLevelLayer;
-
-	public InsertTrackStore(final boolean isLayer)
-	{
-		_isTopLevelLayer = isLayer;
-	}
-
-	public InsertTrackStore()
-	{
-		// tell our parent that we want to be inserted as a top-level layer
-		this(true);
-	}
-
-	/**
-	 * @return
-	 */
-	protected Plottable getPlottable(final PlainChart theChart)
-	{
-		final TrackStoreWrapper res = new TrackStoreWrapper(Activator.getDefault().getPreferenceStore().getString(TrackStoreWrapper.COUCHDB_LOCATION),
-				Activator.getDefault().getPreferenceStore().getString(TrackStoreWrapper.ES_LOCATION));
-		
-		// TODO: IAN - set the time period to that currently visible
-		final IChartBasedEditor editor = getEditor();
-		
-		if(editor instanceof EditorPart)
-		{
-			if(editor instanceof IAdaptable)
-			{
-				final IAdaptable ad = (IAdaptable) editor;
-				final TimeProvider prov = (TimeProvider) ad.getAdapter(TimeProvider.class);
-				if(prov != null)
-				{
-					final TimePeriod thePeriod = prov.getPeriod();
-					res.filterListTo(thePeriod.getStartDTG(), thePeriod.getEndDTG());
-				}
-			}
-		}
-		
-		return res;
-	}
-
-	/**
-	 * ok, store who the parent is for the operation
-	 * 
-	 * @param theParent
-	 */
-	public static void init(final ToolParent theParent)
-	{
-		_theParent = theParent;
-	}
-
-	/**
 	 * convenience method to return the centre of hte visible area, at the surface
-	 * 
+	 *
 	 * @param theChart
 	 * @return
 	 */
-	protected static WorldLocation getCentre(final PlainChart theChart)
-	{
+	protected static WorldLocation getCentre(final PlainChart theChart) {
 		// right, what's the area we're looking at
 		final WorldArea wa = theChart.getCanvas().getProjection().getVisibleDataArea();
 
@@ -122,36 +67,128 @@ public class InsertTrackStore extends CoreEditorAction
 	}
 
 	/**
+	 * ok, store who the parent is for the operation
+	 *
+	 * @param theParent
+	 */
+	public static void init(final ToolParent theParent) {
+		_theParent = theParent;
+	}
+
+	/**
+	 * whether this item is a top-level layer
+	 */
+	private final boolean _isTopLevelLayer;
+
+	public InsertTrackStore() {
+		// tell our parent that we want to be inserted as a top-level layer
+		this(true);
+	}
+
+	public InsertTrackStore(final boolean isLayer) {
+		_isTopLevelLayer = isLayer;
+	}
+
+	protected final CreateLabelAction createAction(final PlainChart theChart) {
+		CreateLabelAction res = null;
+		final WorldArea wa = theChart.getDataArea();
+
+		// see if we have an area defined
+		if (wa != null) {
+			// ok, get our layer name
+			final String myLayer = getLayerName();
+
+			// drop out if we don't have a target layer (the user may have cancelled)
+			if (myLayer == null)
+				return null;
+
+			// ok - get the object we're going to insert
+			final Plottable thePlottable = getPlottable(theChart);
+
+			if (thePlottable != null) {
+
+				// lastly, get the data
+				final Layers theData = theChart.getLayers();
+
+				// aah, and the misc layer, in which we will store the shape
+				Layer theLayer = null;
+
+				// hmm, do we want to insert ourselves as a layer?
+				if (!_isTopLevelLayer) {
+					theLayer = theData.findLayer(myLayer);
+
+					// did we find it?
+					if (theLayer == null) {
+						// nope, better create it.
+						theLayer = new BaseLayer();
+						theLayer.setName(myLayer);
+						theData.addThisLayer(theLayer);
+					}
+				}
+
+				// and put it into an action (so we can undo it)
+				res = new PlainCreate.CreateLabelAction(null, theLayer, theChart.getLayers(), thePlottable) {
+
+					@Override
+					public void execute() {
+						// generate the object
+						super.execute();
+
+						// ok, now open the properties window
+						try {
+							PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+									.showView(IPageLayout.ID_PROP_SHEET);
+						} catch (final PartInitException e) {
+							CorePlugin.logError(IStatus.WARNING, "Failed to open properties view", e);
+						}
+
+						// find the editor
+						final IChartBasedEditor editor = getEditor();
+
+						// highlight the editor
+						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+								.activate((IWorkbenchPart) editor);
+
+						// select the shape
+						editor.selectPlottable(_theShape, _theLayer);
+					}
+				};
+			}
+
+		} else {
+			// we haven't got an area, inform the user
+			CorePlugin.showMessage("Create Feature",
+					"Sorry, we can't create a shape until the area is defined.  Try adding a coastline first");
+		}
+
+		return res;
+	}
+
+	/**
 	 * and execute..
 	 */
-	protected void execute()
-	{
+	@Override
+	protected void execute() {
 		final PlainChart theChart = getChart();
-		
+
 		// find out the required time period
 
 		final CreateLabelAction res = createAction(theChart);
 
 		// did we get an action?
-		if (res != null)
-		{
+		if (res != null) {
 			// do we know the layer?
 			Layer layer = res.getLayer();
 
 			// is it null? in which case we're adding a new layer
-			if (layer == null)
-			{
+			if (layer == null) {
 				// try to get the new plottable
 				final Plottable pl = res.getNewFeature();
 				if (pl instanceof Layer)
 					layer = (Layer) pl;
-				else
-				{
-					CorePlugin
-							.logError(
-									Status.ERROR,
-									"WE WERE EXPECTING THE NEW FEATURE TO BE A LAYER - in CoreInsertChartFeature",
-									null);
+				else {
+					CorePlugin.logError(IStatus.ERROR,
+							"WE WERE EXPECTING THE NEW FEATURE TO BE A LAYER - in CoreInsertChartFeature", null);
 				}
 			}
 
@@ -166,102 +203,36 @@ public class InsertTrackStore extends CoreEditorAction
 		}
 	}
 
-	protected final CreateLabelAction createAction(final PlainChart theChart)
-	{
-		CreateLabelAction res = null;
-		final WorldArea wa = theChart.getDataArea();
-
-		// see if we have an area defined
-		if (wa != null)
-		{
-			// ok, get our layer name
-			final String myLayer = getLayerName();
-
-			// drop out if we don't have a target layer (the user may have cancelled)
-			if (myLayer == null)
-				return null;
-
-			// ok - get the object we're going to insert
-			final Plottable thePlottable = getPlottable(theChart);
-
-			if (thePlottable != null)
-			{
-
-				// lastly, get the data
-				final Layers theData = theChart.getLayers();
-
-				// aah, and the misc layer, in which we will store the shape
-				Layer theLayer = null;
-
-				// hmm, do we want to insert ourselves as a layer?
-				if (!_isTopLevelLayer)
-				{
-					theLayer = theData.findLayer(myLayer);
-
-					// did we find it?
-					if (theLayer == null)
-					{
-						// nope, better create it.
-						theLayer = new BaseLayer();
-						theLayer.setName(myLayer);
-						theData.addThisLayer(theLayer);
-					}
-				}
-
-				// and put it into an action (so we can undo it)
-				res = new PlainCreate.CreateLabelAction(null, theLayer,
-						theChart.getLayers(), thePlottable)
-				{
-
-					public void execute()
-					{
-						// generate the object
-						super.execute();
-
-						// ok, now open the properties window
-						try
-						{
-							PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-									.getActivePage().showView(IPageLayout.ID_PROP_SHEET);
-						}
-						catch (final PartInitException e)
-						{
-							CorePlugin.logError(Status.WARNING,
-									"Failed to open properties view", e);
-						}
-
-						// find the editor
-						final IChartBasedEditor editor = getEditor();
-
-						// highlight the editor
-						PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-								.getActivePage().activate((IWorkbenchPart) editor);
-
-						// select the shape
-						editor.selectPlottable(_theShape, _theLayer);
-					}
-				};
-			}
-
-		}
-		else
-		{
-			// we haven't got an area, inform the user
-			CorePlugin
-					.showMessage(
-							"Create Feature",
-							"Sorry, we can't create a shape until the area is defined.  Try adding a coastline first");
-		}
-
-		return res;
+	/**
+	 * @return
+	 */
+	protected String getLayerName() {
+		return "Track Store";
 	}
 
 	/**
 	 * @return
 	 */
-	protected String getLayerName()
-	{
-		return "Track Store";
+	protected Plottable getPlottable(final PlainChart theChart) {
+		final TrackStoreWrapper res = new TrackStoreWrapper(
+				Activator.getDefault().getPreferenceStore().getString(TrackStoreWrapper.COUCHDB_LOCATION),
+				Activator.getDefault().getPreferenceStore().getString(TrackStoreWrapper.ES_LOCATION));
+
+		// TODO: IAN - set the time period to that currently visible
+		final IChartBasedEditor editor = getEditor();
+
+		if (editor instanceof EditorPart) {
+			if (editor instanceof IAdaptable) {
+				final IAdaptable ad = (IAdaptable) editor;
+				final TimeProvider prov = ad.getAdapter(TimeProvider.class);
+				if (prov != null) {
+					final TimePeriod thePeriod = prov.getPeriod();
+					res.filterListTo(thePeriod.getStartDTG(), thePeriod.getEndDTG());
+				}
+			}
+		}
+
+		return res;
 	}
 
 }

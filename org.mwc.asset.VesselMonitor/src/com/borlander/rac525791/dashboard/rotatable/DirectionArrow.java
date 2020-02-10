@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package com.borlander.rac525791.dashboard.rotatable;
 
 import org.eclipse.draw2d.geometry.Point;
@@ -24,17 +25,13 @@ public class DirectionArrow extends CompositeDecoration {
 	private static final Color LIGHT = new Color(null, 255, 50, 50);
 	private static final Color DARK = new Color(null, 200, 0, 0);
 	private static final Color SHADOW = new Color(null, 100, 100, 100);
-	
-	public DirectionArrow(){
-		super(SHADOW, createSmall(), createBig());
-	}
 
-	private static PolygonDecoration createBig(){
-		PointList template = new PointList();
-		template.addPoint(-10, -1); //#0
-		template.addPoint(-49, -2); //#1
-		template.addPoint(-51, -4); //#2
-		template.addPoint(-55, -5); //#3 this is gradient end
+	private static PolygonDecoration createBig() {
+		final PointList template = new PointList();
+		template.addPoint(-10, -1); // #0
+		template.addPoint(-49, -2); // #1
+		template.addPoint(-51, -4); // #2
+		template.addPoint(-55, -5); // #3 this is gradient end
 		template.addPoint(-50, -2);
 		template.addPoint(-50, 2);
 		template.addPoint(-55, 5);
@@ -42,26 +39,30 @@ public class DirectionArrow extends CompositeDecoration {
 		template.addPoint(-49, 2);
 		template.addPoint(-10, 1);
 		template.translate(30, 0);
-		
-		GradientDecoration big = new GradientDecoration();
+
+		final GradientDecoration big = new GradientDecoration();
 		big.setTemplate(template);
 		big.setGradient(0, DARK, 3, LIGHT);
 		return big;
 	}
 
-	private static PolygonDecoration createSmall(){
-		PointList template = new PointList();
+	private static PolygonDecoration createSmall() {
+		final PointList template = new PointList();
 		template.addPoint(0, 0);
 		template.addPoint(-11, -5);
 		template.addPoint(-11, 5);
 		template.addPoint(0, 0);
 		template.translate(30, 0);
-		
-		GradientDecoration small = new GradientDecoration();
+
+		final GradientDecoration small = new GradientDecoration();
 		small.setTemplate(template);
 		small.setGradient(new Point(-6, -2), LIGHT, new Point(-11, 5), DARK);
-		
+
 		return small;
 	}
-	
+
+	public DirectionArrow() {
+		super(SHADOW, createSmall(), createBig());
+	}
+
 }

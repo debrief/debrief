@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: CloseSession.java,v $
 // $Author: Ian.Mayo $
 // $Log: CloseSession.java,v $
@@ -69,29 +70,33 @@
 
 package Debrief.Tools.Operations;
 
-import MWC.GUI.Tools.*;
-import Debrief.GUI.Frames.*;
+import Debrief.GUI.Frames.Application;
+import MWC.GUI.Tools.Action;
+import MWC.GUI.Tools.PlainTool;
 
-public final class CloseSession extends PlainTool
-{
+public final class CloseSession extends PlainTool {
 
-  private final Application _theApplication;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	private final Application _theApplication;
 
-  /** produce the Command item - not necessary, since this is not
-   *  undoable
-   */
-  public final Action getData(){
-    return null;
-  }
+	public CloseSession(final Application theApplication) {
+		super(theApplication, "Close Plot", "images/24/close.png");
+		_theApplication = theApplication;
+	}
 
-  public CloseSession(final Application theApplication){
-    super(theApplication, "Close Plot", "images/24/close.png");
-    _theApplication = theApplication;
-  }
+	@Override
+	public final void execute() {
+		_theApplication.closeSession(_theApplication.getCurrentSession());
+	}
 
-
-  public final void execute()
-  {
-    _theApplication.closeSession(_theApplication.getCurrentSession());
-  }
+	/**
+	 * produce the Command item - not necessary, since this is not undoable
+	 */
+	@Override
+	public final Action getData() {
+		return null;
+	}
 }

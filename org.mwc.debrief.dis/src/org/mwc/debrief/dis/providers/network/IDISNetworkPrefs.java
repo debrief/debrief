@@ -1,8 +1,7 @@
 package org.mwc.debrief.dis.providers.network;
 
-public interface IDISNetworkPrefs
-{
-  String getIPAddress();
+public interface IDISNetworkPrefs {
+	String getIPAddress();
 
-  int getPort();
+	int getPort();
 }

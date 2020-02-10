@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: DatumSym.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -59,103 +60,99 @@ import MWC.GenericData.WorldLocation;
 
 public class DatumSym extends PlainSymbol {
 
-  /**
-	 * 
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
-  public java.awt.Dimension getBounds(){
-    // sort out the size of the symbol at the current scale factor
-    final java.awt.Dimension res = new java.awt.Dimension((int)(6 * getScaleVal()),(int)(6 * getScaleVal()));
-    return res;
-  }
-  
-  @Override
-  public PlainSymbol create()
-  {
-    return new DatumSym();
-  }
+	@Override
+	public PlainSymbol create() {
+		return new DatumSym();
+	}
 
-  public void paint(final CanvasType dest, final WorldLocation centre)
-  {
-    paint(dest, centre, 0.0);
-  }
+	@Override
+	public java.awt.Dimension getBounds() {
+		// sort out the size of the symbol at the current scale factor
+		final java.awt.Dimension res = new java.awt.Dimension((int) (6 * getScaleVal()), (int) (6 * getScaleVal()));
+		return res;
+	}
 
-  /** get this symbol as a sequence of lines.
-   * The
-   *
-   * @return a collection of paths.  Each path is a collection of java.awt.Point objects.
-   */
-  public Vector<Vector<Point2D>> getCoordinates() {
-  	final Vector<Vector<Point2D>> res = new Vector<Vector<Point2D>>(0,1);
+	/**
+	 * get this symbol as a sequence of lines. The
+	 *
+	 * @return a collection of paths. Each path is a collection of java.awt.Point
+	 *         objects.
+	 */
+	@Override
+	public Vector<Vector<Point2D>> getCoordinates() {
+		final Vector<Vector<Point2D>> res = new Vector<Vector<Point2D>>(0, 1);
 
-    // first do the cross
+		// first do the cross
 
-    final Vector<Point2D> line1 = new Vector<Point2D>(0,1);
-    final Vector<Point2D> line2 = new Vector<Point2D>(0,1);
+		final Vector<Point2D> line1 = new Vector<Point2D>(0, 1);
+		final Vector<Point2D> line2 = new Vector<Point2D>(0, 1);
 
-    final int wid = (int)(2 * getScaleVal());
-    line1.add(new Point(-wid, 0));
-    line1.add(new Point(wid, 0));
-    line2.add(new Point(0, -wid));
-    line2.add(new Point(0, wid));
+		final int wid = (int) (2 * getScaleVal());
+		line1.add(new Point(-wid, 0));
+		line1.add(new Point(wid, 0));
+		line2.add(new Point(0, -wid));
+		line2.add(new Point(0, wid));
 
-    res.add(line1);
-    res.add(line2);
+		res.add(line1);
+		res.add(line2);
 
-    // now the circle
-    final Vector<Point2D> circle = new Vector<Point2D>(0,1);
+		// now the circle
+		final Vector<Point2D> circle = new Vector<Point2D>(0, 1);
 
-    // work our way around the circle, adding the pts
+		// work our way around the circle, adding the pts
 
-    final int NUM_SEGMENTS = 30;
-    for (int i=0; i<=NUM_SEGMENTS; i++)
-    {
-      // produce the current bearing
-      final double this_brg = (360.0 / NUM_SEGMENTS * i) / 180.0 * Math.PI;
+		final int NUM_SEGMENTS = 30;
+		for (int i = 0; i <= NUM_SEGMENTS; i++) {
+			// produce the current bearing
+			final double this_brg = (360.0 / NUM_SEGMENTS * i) / 180.0 * Math.PI;
 
-      final Point2D newP = new Point2D.Double(Math.sin(this_brg) * wid, Math.cos(this_brg) * wid);
+			final Point2D newP = new Point2D.Double(Math.sin(this_brg) * wid, Math.cos(this_brg) * wid);
 
-      circle.add(newP);
-    }
+			circle.add(newP);
+		}
 
-    res.add(circle);
+		res.add(circle);
 
+		return res;
+	}
 
-    return res;
-  }
+	@Override
+	public String getType() {
+		return "Datum";
+	}
 
-  public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
-  {
-    // set the colour
-    dest.setColor(getColor());
+	@Override
+	public void paint(final CanvasType dest, final WorldLocation centre) {
+		paint(dest, centre, 0.0);
+	}
 
-    // create our centre point
-    final java.awt.Point centre = dest.toScreen(theLocation);
-    
-    // handle unable to gen screen coords (if off visible area)
-    if(centre == null)
-      return;
+	@Override
+	public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction) {
+		// set the colour
+		dest.setColor(getColor());
 
-    final int wid = (int)(6 * getScaleVal());
-    final int wid_2 = (int)(wid/2d);
+		// create our centre point
+		final java.awt.Point centre = dest.toScreen(theLocation);
 
-    // now the outer circle
-    dest.drawOval(centre.x - wid_2, centre.y - wid_2, wid, wid);
+		// handle unable to gen screen coords (if off visible area)
+		if (centre == null)
+			return;
 
-    // try to sort out the are
-    dest.fillArc(centre.x - wid_2, centre.y - wid_2, wid, wid, 180, 90);
-    dest.fillArc(centre.x - wid_2, centre.y - wid_2, wid, wid, 0, 90);
+		final int wid = (int) (6 * getScaleVal());
+		final int wid_2 = (int) (wid / 2d);
 
-  }
+		// now the outer circle
+		dest.drawOval(centre.x - wid_2, centre.y - wid_2, wid, wid);
 
-  public String getType()
-  {
-    return "Datum";
-  }
+		// try to sort out the are
+		dest.fillArc(centre.x - wid_2, centre.y - wid_2, wid, wid, 180, 90);
+		dest.fillArc(centre.x - wid_2, centre.y - wid_2, wid, wid, 0, 90);
+
+	}
 
 }
-
-
-
-

@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.cmap.media.xuggle.impl;
 
 import java.util.LinkedList;
@@ -29,25 +30,29 @@ import com.xuggle.xuggler.IStreamCoder;
 public class SoundThread extends Thread {
 	private final AudioFormat audioFormat;
 	private final SourceDataLine soundLine;
-	private final boolean blocked;	
+	private final boolean blocked;
 	private final Queue<byte[]> buffers = new LinkedList<byte[]>();
-	
-	private volatile boolean reset; 
-	
-	public SoundThread(IStreamCoder aAudioCoder, boolean blocked) throws LineUnavailableException {
+
+	private volatile boolean reset;
+
+	public SoundThread(final IStreamCoder aAudioCoder, final boolean blocked) throws LineUnavailableException {
 		audioFormat = new AudioFormat(aAudioCoder.getSampleRate(),
-    			(int)IAudioSamples.findSampleBitDepth(aAudioCoder.getSampleFormat()),
-    			aAudioCoder.getChannels(),
-    			true,
-    			false);
-    	DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
-    	soundLine = (SourceDataLine) AudioSystem.getLine(info);
-    	openSoundLine();
-    	this.blocked = blocked;
-    	
-    	setDaemon(true);
-	}	
-	
+				(int) IAudioSamples.findSampleBitDepth(aAudioCoder.getSampleFormat()), aAudioCoder.getChannels(), true,
+				false);
+		final DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
+		soundLine = (SourceDataLine) AudioSystem.getLine(info);
+		openSoundLine();
+		this.blocked = blocked;
+
+		setDaemon(true);
+	}
+
+	private void closeSoundLine() {
+		soundLine.flush();
+		soundLine.drain();
+		soundLine.close();
+	}
+
 	@Override
 	public void interrupt() {
 		if (isAlive()) {
@@ -57,8 +62,13 @@ public class SoundThread extends Thread {
 		}
 	}
 
-	public void play(IAudioSamples samples, boolean notify) {
-		synchronized(buffers) {
+	private void openSoundLine() throws LineUnavailableException {
+		soundLine.open(audioFormat);
+		soundLine.start();
+	}
+
+	public void play(final IAudioSamples samples, final boolean notify) {
+		synchronized (buffers) {
 			if (reset) {
 				return;
 			}
@@ -68,26 +78,15 @@ public class SoundThread extends Thread {
 			}
 		}
 	}
-	
+
 	public void reset() {
-		synchronized(buffers) {
+		synchronized (buffers) {
 			reset = true;
 			buffers.add(new byte[0]);
 			buffers.notify();
 		}
 	}
-	
-	private void closeSoundLine() {
-		soundLine.flush();
-		soundLine.drain();
-		soundLine.close();
-	}
-	
-	private void openSoundLine() throws LineUnavailableException {
-		soundLine.open(audioFormat);
-		soundLine.start();
-	}
-	
+
 	@Override
 	public void run() {
 		try {
@@ -95,7 +94,7 @@ public class SoundThread extends Thread {
 				byte[] buffer;
 				if (isInterrupted()) {
 					break;
-				}				
+				}
 				try {
 					synchronized (buffers) {
 						if (buffers.isEmpty()) {
@@ -106,7 +105,7 @@ public class SoundThread extends Thread {
 							closeSoundLine();
 							try {
 								openSoundLine();
-							} catch (LineUnavailableException ex) {
+							} catch (final LineUnavailableException ex) {
 								ex.printStackTrace();
 								break;
 							}
@@ -118,10 +117,10 @@ public class SoundThread extends Thread {
 							soundLine.write(buffer, 0, buffer.length);
 						}
 					}
-				} catch (InterruptedException ex) {
+				} catch (final InterruptedException ex) {
 					break;
 				}
-				if (! blocked) {
+				if (!blocked) {
 					soundLine.write(buffer, 0, buffer.length);
 				}
 			}

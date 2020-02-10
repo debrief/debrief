@@ -1,19 +1,30 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package Debrief.Tools.FilterOperations;
 
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.swing.JOptionPane;
+
+import Debrief.Tools.Tote.toteCalculation;
 // Copyright MWC 1999, Debrief 3 Project
 // $RCSfile: CopyTimeDataToClipboard.java,v $
 // @author $Author: Ian.Mayo $
@@ -97,267 +108,248 @@ package Debrief.Tools.FilterOperations;
 // Revision 1.2  2000-08-07 14:22:24+01  ian_mayo
 // added VCS headers
 //
-
-import Debrief.Tools.Tote.Calculations.*;
-import Debrief.Tools.Tote.toteCalculation;
+import Debrief.Tools.Tote.Calculations.atbCalc;
+import Debrief.Tools.Tote.Calculations.bearingCalc;
+import Debrief.Tools.Tote.Calculations.bearingRateCalc;
+import Debrief.Tools.Tote.Calculations.colorCalc;
+import Debrief.Tools.Tote.Calculations.courseCalc;
+import Debrief.Tools.Tote.Calculations.depthCalc;
+import Debrief.Tools.Tote.Calculations.plainCalc;
+import Debrief.Tools.Tote.Calculations.rangeCalc;
+import Debrief.Tools.Tote.Calculations.relBearingCalc;
+import Debrief.Tools.Tote.Calculations.speedCalc;
+import Debrief.Tools.Tote.Calculations.tidyTimeCalc;
+import Debrief.Tools.Tote.Calculations.timeCalc;
 import MWC.GUI.Editable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 
-import javax.swing.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
-import java.util.Collection;
-import java.util.Iterator;
+public class CopyTimeDataToClipboard implements FilterOperation, ClipboardOwner {
+	//////////////////////////////////////////////////
+	// member variables
+	//////////////////////////////////////////////////
 
+	private static String tidyUp(final String txt) {
+		return txt.replace('\n', ' ');
+	}
 
-public class CopyTimeDataToClipboard implements FilterOperation, ClipboardOwner
-{
-  //////////////////////////////////////////////////
-  // member variables
-  //////////////////////////////////////////////////
+	/**
+	 * the period this operation covers
+	 */
+	private HiResDate _start_time = null;
 
-  /**
-   * the period this operation covers
-   */
-  private HiResDate _start_time = null;
-  private HiResDate _end_time = null;
+	private HiResDate _end_time = null;
 
-  /**
-   * the tracks we should cover
-   */
-  private java.util.Vector<WatchableList> _theTracks = null;
+	/**
+	 * the tracks we should cover
+	 */
+	private java.util.Vector<WatchableList> _theTracks = null;
 
-  /**
-   * the primary track for the relative parameters
-   */
-  private MWC.GenericData.WatchableList _thePrimary = null;
+	/**
+	 * the primary track for the relative parameters
+	 */
+	private MWC.GenericData.WatchableList _thePrimary = null;
 
-  // the line-break character
-  private final String _theSeparator = "\n";
+	// the line-break character
+	private final String _theSeparator = "\n";
 
-  /**
-   * the tab character
-   */
-  private final char tab = '\t';
+	/**
+	 * the tab character
+	 */
+	private final char tab = '\t';
 
-  /**
-   * the list of calculations we know how to perform
-   */
-  private final java.util.Vector<plainCalc> _theOperations;
+	/**
+	 * the list of calculations we know how to perform
+	 */
+	private final java.util.Vector<plainCalc> _theOperations;
 
-  ///////////////////////////////////////////////////
-  // constructor
-  //////////////////////////////////////////////////
-  public CopyTimeDataToClipboard()
-  {
-    _theOperations = new java.util.Vector<plainCalc>(0, 1);
+	///////////////////////////////////////////////////
+	// constructor
+	//////////////////////////////////////////////////
+	public CopyTimeDataToClipboard() {
+		_theOperations = new java.util.Vector<plainCalc>(0, 1);
 
-    _theOperations.addElement(new timeCalc());
-    _theOperations.addElement(new tidyTimeCalc());
-    _theOperations.addElement(new depthCalc());
-    _theOperations.addElement(new speedCalc());
-    _theOperations.addElement(new courseCalc());
-    _theOperations.addElement(new rangeCalc());
-    _theOperations.addElement(new bearingCalc());
-    _theOperations.addElement(new relBearingCalc());
-    _theOperations.addElement(new atbCalc());
-    _theOperations.addElement(new bearingRateCalc());
-    _theOperations.addElement(new colorCalc());
-  }
+		_theOperations.addElement(new timeCalc());
+		_theOperations.addElement(new tidyTimeCalc());
+		_theOperations.addElement(new depthCalc());
+		_theOperations.addElement(new speedCalc());
+		_theOperations.addElement(new courseCalc());
+		_theOperations.addElement(new rangeCalc());
+		_theOperations.addElement(new bearingCalc());
+		_theOperations.addElement(new relBearingCalc());
+		_theOperations.addElement(new atbCalc());
+		_theOperations.addElement(new bearingRateCalc());
+		_theOperations.addElement(new colorCalc());
+	}
 
-  public final String getDescription()
-  {
-    String res = "2. Select tracks to be recorded";
-    res += _theSeparator + "3. Select time period to cover";
-    res += _theSeparator + "4. Press 'Apply' button";
-    res += _theSeparator + "5. Select primary track when requested";
-    res += _theSeparator + "The data will appear in comma-separated form on the clipboard";
-    return res;
-  }
+	@Override
+	public final void actionPerformed(final java.awt.event.ActionEvent p1) {
 
-  public final void setPeriod(final HiResDate startDTG, final HiResDate finishDTG)
-  {
-    _start_time = startDTG;
-    _end_time = finishDTG;
-  }
+	}
 
-  public final void setTracks(final java.util.Vector<WatchableList> selectedTracks)
-  {
-    _theTracks = selectedTracks;
-  }
+	@Override
+	public final void close() {
 
-  /**
-   * the user has pressed RESET whilst this button is pressed
-   *
-   * @param startTime the new start time
-   * @param endTime   the new end time
-   */
-  public void resetMe(final HiResDate startTime, final HiResDate endTime)
-  {
-  }
+	}
 
-  public final void execute()
-  {
-  }
+	@Override
+	public final void execute() {
+	}
 
-  public WatchableList getPrimary()
-  {
-    WatchableList res = null;
+	@Override
+	public final MWC.GUI.Tools.Action getData() {
+// retrieve the necessary input data
+		_thePrimary = getPrimary();
 
-    // check we have some tracks selected
-    if (_theTracks != null)
-    {
-      final Object[] opts = new Object[_theTracks.size()];
-      _theTracks.copyInto(opts);
-      res = (WatchableList) JOptionPane.showInputDialog(null,
-                                                        "Which is the primary track?",
-                                                        "Copy time variables",
-                                                        JOptionPane.QUESTION_MESSAGE,
-                                                        null,
-                                                        opts,
-                                                        null);
-    }
-    else
-    {
-      MWC.GUI.Dialogs.DialogFactory.showMessage("Track Selector",
-                                                "Please select one or more tracks");
-    }
-    return res;
-  }
+// check it worked
+		if (_thePrimary != null) {
 
-	public final MWC.GUI.Tools.Action getData()
-  {
-    // retrieve the necessary input data
-    _thePrimary = getPrimary();
+			// the big string we are writing into
+			final StringBuffer str = new StringBuffer(2000);
 
-    // check it worked
-    if (_thePrimary != null)
-    {
+			// test string
 
-      // the big string we are writing into
-      final StringBuffer str = new StringBuffer(2000);
+			// produce the header line
+			str.append("Track" + tab);
 
-      // test string
+			final java.util.Enumeration<plainCalc> it = _theOperations.elements();
+			while (it.hasMoreElements()) {
 
-      // produce the header line
-      str.append("Track" + tab);
+				final toteCalculation cl = it.nextElement();
+				str.append(cl.getTitle() + "(" + cl.getUnits() + ")" + tab);
+			}
 
-      final java.util.Enumeration<plainCalc> it = _theOperations.elements();
-      while (it.hasMoreElements())
-      {
+			// add the title for the 'name' column
+			str.append("Name" + tab);
 
-        final toteCalculation cl = it.nextElement();
-        str.append(cl.getTitle() + "(" + cl.getUnits() + ")" + tab);
-      }
+			// add the title for the 'primary' column
+			str.append("PrimaryName" + tab);
 
-      // add the title for the 'name' column
-      str.append("Name" + tab);
+			// and finish the header line
+			str.append(_theSeparator);
 
-      // add the title for the 'primary' column
-      str.append("PrimaryName" + tab);
+			// now produce the rows of data themselves
 
-      // and finish the header line
-      str.append(_theSeparator);
+			// sort the data to the correct time period
+			final java.util.Enumeration<WatchableList> er = _theTracks.elements();
+			while (er.hasMoreElements()) {
+				final WatchableList tw = er.nextElement();
+				final Collection<Editable> ss = tw.getItemsBetween(_start_time, _end_time);
 
-      // now produce the rows of data themselves
+				final Iterator<Editable> ss_it = ss.iterator();
+				while (ss_it.hasNext()) {
+					// put in the boat name
+					str.append(tidyUp(tw.getName()) + tab);
 
-      // sort the data to the correct time period
-      final java.util.Enumeration<WatchableList> er = _theTracks.elements();
-      while (er.hasMoreElements())
-      {
-        final WatchableList tw = er.nextElement();
-        final Collection<Editable> ss = tw.getItemsBetween(_start_time, _end_time);
+					// and move through the fixes in the valid period
+					final Watchable fw = (Watchable) ss_it.next();
 
-        final Iterator<Editable> ss_it = ss.iterator();
-        while (ss_it.hasNext())
-        {
-          // put in the boat name
-          str.append(tidyUp(tw.getName()) + tab);
+					// find the fix on the primary track which is nearest in
+					// time to this one
+					final Watchable[] list = _thePrimary.getNearestTo(fw.getTime());
 
-          // and move through the fixes in the valid period
-          final Watchable fw = (Watchable) ss_it.next();
+					Watchable primary = null;
+					if (list.length > 0)
+						primary = list[0];
 
-          // find the fix on the primary track which is nearest in
-          // time to this one
-          final Watchable[] list = _thePrimary.getNearestTo(fw.getTime());
+					final java.util.Enumeration<plainCalc> ops = _theOperations.elements();
+					while (ops.hasMoreElements()) {
+						final toteCalculation cv = ops.nextElement();
+						str.append(cv.update(primary, fw, fw.getTime()) + tab);
+					}
 
-          Watchable primary = null;
-          if (list.length > 0)
-            primary = list[0];
+					// append the name of the nearest item in this list
+					str.append(tidyUp(fw.getName()) + tab);
 
-          final java.util.Enumeration<plainCalc> ops = _theOperations.elements();
-          while (ops.hasMoreElements())
-          {
-            final toteCalculation cv = ops.nextElement();
-            str.append(cv.update(primary, fw, fw.getTime()) + tab);
-          }
+					// append the name of the primary item we are being calculated against
+					if (primary != null)
+						str.append(primary.getName() + tab);
+					else
+						str.append("n/a" + tab);
 
-          // append the name of the nearest item in this list
-          str.append(tidyUp(fw.getName()) + tab);
+					// and onto the next line
+					str.append(_theSeparator);
+				}
+			}
 
-          // append the name of the primary item we are being calculated against
-          if (primary != null)
-            str.append(primary.getName() + tab);
-          else
-            str.append("n/a" + tab);
+			// create the clipboard buffer
+			final Clipboard clip = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
 
-          // and onto the next line
-          str.append(_theSeparator);
-        }
-      }
+			// put the string in a holder
+			final StringSelection sel = new java.awt.datatransfer.StringSelection(str.toString());
 
-      // create the clipboard buffer
-      final Clipboard clip = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
+			// and put it on the clipboard
+			clip.setContents(sel, this);
 
-      // put the string in a holder
-      final StringSelection sel = new java.awt.datatransfer.StringSelection(str.toString());
+		} // whether a valid value was returned
 
-      // and put it on the clipboard
-      clip.setContents(sel, this);
+// return the new action
+		return null;
+	}
 
-    } // whether a valid value was returned
+	@Override
+	public final String getDescription() {
+		String res = "2. Select tracks to be recorded";
+		res += _theSeparator + "3. Select time period to cover";
+		res += _theSeparator + "4. Press 'Apply' button";
+		res += _theSeparator + "5. Select primary track when requested";
+		res += _theSeparator + "The data will appear in comma-separated form on the clipboard";
+		return res;
+	}
 
-    // return the new action
-    return null;
-  }
+	@Override
+	public final String getImage() {
+		return null;
+	}
 
-  private static String tidyUp(final String txt)
-  {
-  	return txt.replace('\n', ' ');
-  }
-  
-  public final String getLabel()
-  {
-    return "Copy data to the clipboard";
-  }
+	@Override
+	public final String getLabel() {
+		return "Copy data to the clipboard";
+	}
 
-  public final String getImage()
-  {
-    return null;
-  }
+	public WatchableList getPrimary() {
+		WatchableList res = null;
 
-  public final void actionPerformed(final java.awt.event.ActionEvent p1)
-  {
+		// check we have some tracks selected
+		if (_theTracks != null) {
+			final Object[] opts = new Object[_theTracks.size()];
+			_theTracks.copyInto(opts);
+			res = (WatchableList) JOptionPane.showInputDialog(null, "Which is the primary track?",
+					"Copy time variables", JOptionPane.QUESTION_MESSAGE, null, opts, null);
+		} else {
+			MWC.GUI.Dialogs.DialogFactory.showMessage("Track Selector", "Please select one or more tracks");
+		}
+		return res;
+	}
 
-  }
+	@Override
+	public final void lostOwnership(final Clipboard clipboard, final Transferable contents) {
+		// don't bother really
+	}
 
-  public final void close()
-  {
+	/**
+	 * the user has pressed RESET whilst this button is pressed
+	 *
+	 * @param startTime the new start time
+	 * @param endTime   the new end time
+	 */
+	@Override
+	public void resetMe(final HiResDate startTime, final HiResDate endTime) {
+	}
 
-  }
+	@Override
+	public final void setPeriod(final HiResDate startDTG, final HiResDate finishDTG) {
+		_start_time = startDTG;
+		_end_time = finishDTG;
+	}
 
-  ///////////////////////////////////////////////////////
-  // nested classes
-  ///////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////
+	// nested classes
+	///////////////////////////////////////////////////////
 
-
-  public final void lostOwnership(final Clipboard clipboard, final Transferable contents)
-  {
-    // don't bother really
-  }
+	@Override
+	public final void setTracks(final java.util.Vector<WatchableList> selectedTracks) {
+		_theTracks = selectedTracks;
+	}
 }
-

@@ -1,19 +1,19 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
-package org.mwc.cmap.plotViewer.actions;
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 
+package org.mwc.cmap.plotViewer.actions;
 
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
@@ -26,22 +26,20 @@ import MWC.GenericData.WorldArea;
  * @author ian.mayo
  *
  */
-public class FitToWindow extends CoreEditorAction
-{
-	protected void execute()
-	{
+public class FitToWindow extends CoreEditorAction {
+	@Override
+	protected void execute() {
 		final PlainChart theChart = getChart();
 
 		final WorldArea oldArea = new WorldArea(theChart.getCanvas().getProjection().getVisibleDataArea());
-		final Action theAction = 	new MWC.GUI.Tools.Chart.FitToWin.FitToWinAction(theChart, oldArea);
-		
+		final Action theAction = new MWC.GUI.Tools.Chart.FitToWin.FitToWinAction(theChart, oldArea);
+
 		// and wrap it
 		final DebriefActionWrapper daw = new DebriefActionWrapper(theAction, theChart.getLayers(), null);
-		
+
 		// and add it to the clipboard
 		CorePlugin.run(daw);
-	
+
 	}
 
-	
 }

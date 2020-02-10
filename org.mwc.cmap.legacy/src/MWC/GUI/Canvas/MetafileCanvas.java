@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: MetafileCanvas.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.6 $
@@ -140,33 +141,11 @@ import MWC.GUI.Canvas.Metafile.WMF;
 import MWC.GUI.Canvas.Metafile.WMFGraphics;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
-public class MetafileCanvas implements CanvasType, ShapeCanvasType
-{
+public class MetafileCanvas implements CanvasType, ShapeCanvasType {
 
 	// /////////////////////////////////
 	// member variables
 	// ////////////////////////////////
-
-	protected PlainProjection _proj;
-
-	WMF _cachedMetafile;
-
-	WMFGraphics g;
-
-	String _directory;
-
-	// remember the current colour, so we don't needlessly update the colour when
-	// it's already the right one.
-	private Color _currentColor = null;
-
-	// remember the current style, so we don't needlessly update the style when
-	// it's already the right one.
-	private int _lastLineStyle = -10;
-
-	// remember the current pen width r, so we don't needlessly update the width
-	// when
-	// it's already the right one.
-	private float _lastPenWidth = -10;
 
 	private static final boolean DEBUG_OUTPUT = false;
 
@@ -179,38 +158,11 @@ public class MetafileCanvas implements CanvasType, ShapeCanvasType
 	 * the last output filename we used
 	 */
 	private static String _outputFileName = null;
-	
-  
-  /** write to tmp file
-   * 
-   */
-  private boolean _writeToTmpFile = false;	
 
-	// /////////////////////////////////
-	// constructor
-	// ////////////////////////////////
-
-	public MetafileCanvas(final String directory)
-	{
-		if (directory != null)
-		{
-			_directory = directory;
-		}
-	}
-
-
-  public MetafileCanvas()
-  {
-  	this(null);
-  	
-  	_writeToTmpFile = true;
-  }
-  	
 	// /////////////////////////////////
 	// member functions
 	// ////////////////////////////////
-	public static String getFileName()
-	{
+	public static String getFileName() {
 		String name = "d3_";
 		final java.util.Date tNow = new java.util.Date();
 
@@ -221,128 +173,145 @@ public class MetafileCanvas implements CanvasType, ShapeCanvasType
 		return name;
 	}
 
-	public void endDraw(final Object theVal)
-	{
-		// and now save it
-		try
-		{
-			
-    	getOutputFileName();
-
-    	System.out.println("Writing Metafile to:" + _outputFileName);
-    	
-			final java.io.FileOutputStream fo = new FileOutputStream(_outputFileName);
-
-			_cachedMetafile.writeWMF(fo);
-			// wmf.writePlaceableWMF(fo, 5, 5, 200, 200, 200);
-			fo.close();
-		}
-		catch (final java.io.FileNotFoundException f)
-		{
-			MWC.GUI.Dialogs.DialogFactory.showMessage("Write WMF",
-					"Sorry, directory name may be invalid, please check properties");
-			if (DEBUG_OUTPUT)
-				MWC.Utilities.Errors.Trace.trace(f, "Directory not found");
-		}
-		catch (final IOException e)
-		{
-
-			if (DEBUG_OUTPUT)
-				MWC.Utilities.Errors.Trace.trace(e);
-		}
-	}
-
-
-	public boolean isWritable()
-	{
-		FileOutputStream fo = null;
-		
-		try
-		{
-			getOutputFileName();
-			if (_outputFileName != null)
-			{
-					fo = new FileOutputStream(_outputFileName);
-					fo.write(new byte[] { 0 });
-					return true;
-			}
-		}
-		catch (IOException e)
-		{
-			// ignore
-		}
-		finally {
-			if (fo != null)
-			{
-				try
-				{
-					fo.close();
-				}
-				catch (IOException e)
-				{
-					// ignore
-				}
-			}
-
-		}
-		return false;
-	}
-	
-	public String getOutputFileName() throws IOException
-	{
-		if(_writeToTmpFile)
-		{
-			_outputFileName = java.io.File.createTempFile("debrief_plot_", ".wmf").getCanonicalPath();
-		}
-		else
-		{
-			_outputFileName = getFileName();
-			
-		  if(_directory != null)
-		  	_outputFileName = _directory + File.separator + _outputFileName;
-		}
+	/**
+	 * provide the last filename we wrote to
+	 *
+	 * @return the filename
+	 */
+	public static String getLastFileName() {
 		return _outputFileName;
 	}
 
-	public void startDraw(final Object theVal)
-	{
-		// create the metafile
-		_cachedMetafile = new WMF();
-		_lastPlotSize = _proj.getScreenArea();
-		g = new WMFGraphics(_cachedMetafile, _lastPlotSize.width, _lastPlotSize.height);
+	/**
+	 * accessor to get the last screen size plotted
+	 *
+	 * @return
+	 */
+	public static Dimension getLastScreenSize() {
+		return _lastPlotSize;
 	}
 
-	public void updateMe()
-	{
+	protected PlainProjection _proj;
+
+	WMF _cachedMetafile;
+
+	WMFGraphics g;
+
+	String _directory;
+
+	// remember the current colour, so we don't needlessly update the colour when
+// it's already the right one.
+	private Color _currentColor = null;
+
+	// /////////////////////////////////
+	// constructor
+	// ////////////////////////////////
+
+	// remember the current style, so we don't needlessly update the style when
+	// it's already the right one.
+	private int _lastLineStyle = -10;
+
+	// remember the current pen width r, so we don't needlessly update the width
+// when
+// it's already the right one.
+	private float _lastPenWidth = -10;
+
+	/**
+	 * write to tmp file
+	 *
+	 */
+	private boolean _writeToTmpFile = false;
+
+	public MetafileCanvas() {
+		this(null);
+
+		_writeToTmpFile = true;
 	}
 
-	public void drawOval(final int x, final int y, final int width, final int height)
-	{
+	public MetafileCanvas(final String directory) {
+		if (directory != null) {
+			_directory = directory;
+		}
+	}
+
+	@Override
+	public void addPainter(final CanvasType.PaintListener listener) {
+		System.out.println("WARNING - PLOTTING FEATURE NOT IMPLEMENTED (addPainter)");
+	}
+
+	@Override
+	public void drawArc(final int x, final int y, final int width, final int height, final int startAngle,
+			final int arcAngle) {
+		g.drawArc(x, y, width, height, startAngle, arcAngle);
+		if (DEBUG_OUTPUT)
+			MWC.Utilities.Errors.Trace.trace("drawArc");
+	}
+
+	@Override
+	public boolean drawImage(final Image img, final int x, final int y, final int width, final int height,
+			final ImageObserver observer) {
+		if (DEBUG_OUTPUT)
+			MWC.Utilities.Errors.Trace.trace("draw image");
+		return g.drawImage(img, x, y, width, height, observer);
+	}
+
+	@Override
+	public void drawLine(final int x1, final int y1, final int x2, final int y2) {
+		g.drawLine(x1, y1, x2, y2);
+		if (DEBUG_OUTPUT)
+			MWC.Utilities.Errors.Trace.trace("drawLine, x:" + x1 + " y:" + y1 + " wid:" + x2 + " ht:" + y2);
+	}
+
+	@Override
+	public void drawOval(final int x, final int y, final int width, final int height) {
 		g.drawOval(x, y, width, height);
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("drawOval");
 	}
 
-	public void fillOval(final int x, final int y, final int width, final int height)
-	{
-		g.fillOval(x, y, width, height);
+	/**
+	 * drawPolygon
+	 *
+	 * @param xPoints list of x coordinates
+	 * @param yPoints list of y coordinates
+	 * @param nPoints length of list
+	 */
+	@Override
+	public void drawPolygon(final int[] xPoints, final int[] yPoints, final int nPoints) {
+		g.drawPolygon(xPoints, yPoints, nPoints);
 		if (DEBUG_OUTPUT)
-			MWC.Utilities.Errors.Trace.trace("fillOval");
+			MWC.Utilities.Errors.Trace.trace("drawPoly");
 	}
 
-	public void drawText(final String str, final int x, final int y)
-	{
-		// @@@ IM ignore the WMFGraphics method, since it relies on JDK1.2 code
-		// (AttributedIterator)
-		// g.drawString(str, x, y);
-		_cachedMetafile.textOut(x, y, str);
-
-		if (DEBUG_OUTPUT)
-			MWC.Utilities.Errors.Trace.trace("drawText");
+	@Override
+	final public void drawPolyline(final int[] points) {
+		// get the convenience function to plot this for us
+		CanvasAdaptor.drawPolylineForMe(points, this);
 	}
 
-	public void drawText(final java.awt.Font theFont, final String str, final int x, final int y)
-	{
+	/**
+	 * drawPolyline
+	 *
+	 * @param xPoints list of x coordinates
+	 * @param yPoints list of y coordinates
+	 * @param nPoints length of list
+	 */
+	@Override
+	public void drawPolyline(final int[] xPoints, final int[] yPoints, final int nPoints) {
+		g.drawPolyline(xPoints, yPoints, nPoints);
+		if (DEBUG_OUTPUT)
+			MWC.Utilities.Errors.Trace.trace("drawPolyline");
+	}
+
+	@Override
+	public void drawRect(final int x1, final int y1, final int wid, final int height) {
+		g.drawRect(x1, y1, wid, height);
+		if (DEBUG_OUTPUT)
+			MWC.Utilities.Errors.Trace.trace("drawRect");
+	}
+
+	@Override
+	public void drawText(final java.awt.Font theFont, final String str, final int x, final int y) {
 		// remember the current font
 		final java.awt.Font ft = g.getFont();
 
@@ -359,159 +328,200 @@ public class MetafileCanvas implements CanvasType, ShapeCanvasType
 			MWC.Utilities.Errors.Trace.trace("drawText");
 	}
 
-	public void setColor(final java.awt.Color theCol)
-	{
-		// note, we're not using an equals() operator. I ran a check to see if I
-		// needed to use .equals()
-		// but they when the colours were equal() they were actually the same
-		// object. So, this is quicker
-		if (theCol != _currentColor)
-		{
-			g.setColor(theCol);
+	@Override
+	public void drawText(final String str, final int x, final int y) {
+		// @@@ IM ignore the WMFGraphics method, since it relies on JDK1.2 code
+		// (AttributedIterator)
+		// g.drawString(str, x, y);
+		_cachedMetafile.textOut(x, y, str);
+
+		if (DEBUG_OUTPUT)
+			MWC.Utilities.Errors.Trace.trace("drawText");
+	}
+
+	@Override
+	public void drawText(final String str, final int x, final int y, final float rotate) {
+		if (str == null || str.trim().length() == 0) {
+			return;
+		}
+
+		final FontMetrics fontMetrics = g.getFontMetrics();
+		final int distance = (fontMetrics.stringWidth(str)) / 2;
+		final double direction = Math.toRadians(rotate);
+		final int deltaX = (int) (distance * Math.cos(direction));
+		final int deltaY = (int) (distance * Math.sin(direction));
+
+		final int newEscapement = (int) (-rotate * 10);
+		final int old = g.getFontEscapement();
+		g.setFontEscapement(newEscapement);
+		drawText(str, x - deltaX, y - deltaY);
+
+		g.setFontEscapement(old);
+	}
+
+	@Override
+	public void drawText(final String str, final int x, final int y, float rotate, final boolean above) {
+		if (str == null || str.trim().length() == 0) {
+			return;
+		}
+
+		final FontMetrics fontMetrics = g.getFontMetrics();
+		int distance = fontMetrics.getAscent() + fontMetrics.getDescent() + fontMetrics.getLeading();
+		double direction = Math.toRadians(rotate);
+		int deltaX = (int) (distance * Math.cos(direction));
+		int deltaY = (int) (distance * Math.sin(direction));
+		if (!above) {
+			deltaX = -deltaX;
+			deltaY = -deltaY;
+		}
+
+		if (rotate > 180) {
+			rotate -= 180;
+			distance = getStringWidth(g.getFont(), str);
+
+			direction = Math.toRadians(rotate - 90);
+			if (!above) {
+				deltaX = (int) (1.3 * deltaX - (distance * Math.cos(direction)));
+				deltaY = (int) (1.3 * deltaY - (distance * Math.sin(direction)));
+			} else {
+				deltaX -= (int) (0.8 * distance * Math.cos(direction));
+				deltaY -= (int) (0.8 * distance * Math.sin(direction));
+			}
+		}
+		rotate -= 90;
+
+		final int newEscapement = (int) (-rotate * 10);
+		final int old = g.getFontEscapement();
+		g.setFontEscapement(newEscapement);
+		drawText(str, x + deltaX, y + deltaY);
+		// drawText(str, x-deltaX, y-deltaY);
+		// drawRect(x+deltaX, y+deltaY, fontMetrics.stringWidth(str), distance);
+		g.setFontEscapement(old);
+	}
+
+	@Override
+	public void endDraw(final Object theVal) {
+		// and now save it
+		try {
+
+			getOutputFileName();
+
+			System.out.println("Writing Metafile to:" + _outputFileName);
+
+			final java.io.FileOutputStream fo = new FileOutputStream(_outputFileName);
+
+			_cachedMetafile.writeWMF(fo);
+			// wmf.writePlaceableWMF(fo, 5, 5, 200, 200, 200);
+			fo.close();
+		} catch (final java.io.FileNotFoundException f) {
+			MWC.GUI.Dialogs.DialogFactory.showMessage("Write WMF",
+					"Sorry, directory name may be invalid, please check properties");
 			if (DEBUG_OUTPUT)
-				MWC.Utilities.Errors.Trace.trace("setColor");
-			_currentColor = theCol;
+				MWC.Utilities.Errors.Trace.trace(f, "Directory not found");
+		} catch (final IOException e) {
+
+			if (DEBUG_OUTPUT)
+				MWC.Utilities.Errors.Trace.trace(e);
 		}
 	}
 
-	/**
-	 * set the style for the line, using our constants
-	 */
-	public void setLineStyle(final int style)
-	{
-		// only update if we have to
-		if (style != _lastLineStyle)
-		{
-			g.setPenStyle(style);
-			_lastLineStyle = style;
-		}
-	}
-
-	/**
-	 * set the width of the line, in pixels
-	 */
-	public void setLineWidth(final float width)
-	{
-		// only update if we have to
-		if (width != _lastPenWidth)
-		{
-			g.setPenWidth((int) width);
-			_lastPenWidth = width;
-		}
-	}
-
-	/**
-	 * get the current line width (when supported)
-	 * 
-	 * @return the width, in pixels
-	 */
-	public float getLineWidth()
-	{
-		return g.getPenWidth();
-	}
-
-	/**
-	 * draw a filled polygon
-	 * 
-	 * @param xPoints
-	 *          list of x coordinates
-	 * @param yPoints
-	 *          list of y coordinates
-	 * @param nPoints
-	 *          length of list
-	 */
-	public void fillPolygon(final int[] xPoints, final int[] yPoints, final int nPoints)
-	{
-		g.fillPolygon(xPoints, yPoints, nPoints);
-		if (DEBUG_OUTPUT)
-			MWC.Utilities.Errors.Trace.trace("fillPoly");
-	}
-
-	/**
-	 * drawPolygon
-	 * 
-	 * @param xPoints
-	 *          list of x coordinates
-	 * @param yPoints
-	 *          list of y coordinates
-	 * @param nPoints
-	 *          length of list
-	 */
-	public void drawPolygon(final int[] xPoints, final int[] yPoints, final int nPoints)
-	{
-		g.drawPolygon(xPoints, yPoints, nPoints);
-		if (DEBUG_OUTPUT)
-			MWC.Utilities.Errors.Trace.trace("drawPoly");
-	}
-
-	/**
-	 * drawPolyline
-	 * 
-	 * @param xPoints
-	 *          list of x coordinates
-	 * @param yPoints
-	 *          list of y coordinates
-	 * @param nPoints
-	 *          length of list
-	 */
-	public void drawPolyline(final int[] xPoints, final int[] yPoints, final int nPoints)
-	{
-		g.drawPolyline(xPoints, yPoints, nPoints);
-		if (DEBUG_OUTPUT)
-			MWC.Utilities.Errors.Trace.trace("drawPolyline");
-	}
-
-	final public void drawPolyline(final int[] points) {
-		// get the convenience function to plot this for us
-		CanvasAdaptor.drawPolylineForMe(points, this);
-	}
-    
-	public boolean drawImage(final Image img, final int x, final int y, final int width, final int height,
-			final ImageObserver observer)
-	{
-		if (DEBUG_OUTPUT)
-			MWC.Utilities.Errors.Trace.trace("draw image");
-		return g.drawImage(img, x, y, width, height, observer);
-	}
-
-	public void drawLine(final int x1, final int y1, final int x2, final int y2)
-	{
-		g.drawLine(x1, y1, x2, y2);
-		if (DEBUG_OUTPUT)
-			MWC.Utilities.Errors.Trace.trace("drawLine, x:" + x1 + " y:" + y1 + " wid:" + x2
-					+ " ht:" + y2);
-	}
-
-	public void fillArc(final int x, final int y, final int width, final int height, final int startAngle, final int arcAngle)
-	{
+	@Override
+	public void fillArc(final int x, final int y, final int width, final int height, final int startAngle,
+			final int arcAngle) {
 		g.fillArc(x, y, width, height, startAngle, arcAngle);
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("fillArc");
 	}
 
-	public void drawArc(final int x, final int y, final int width, final int height, final int startAngle, final int arcAngle)
-	{
-		g.drawArc(x, y, width, height, startAngle, arcAngle);
+	@Override
+	public void fillOval(final int x, final int y, final int width, final int height) {
+		g.fillOval(x, y, width, height);
 		if (DEBUG_OUTPUT)
-			MWC.Utilities.Errors.Trace.trace("drawArc");
+			MWC.Utilities.Errors.Trace.trace("fillOval");
 	}
 
-	public void drawRect(final int x1, final int y1, final int wid, final int height)
-	{
-		g.drawRect(x1, y1, wid, height);
+	/**
+	 * draw a filled polygon
+	 *
+	 * @param xPoints list of x coordinates
+	 * @param yPoints list of y coordinates
+	 * @param nPoints length of list
+	 */
+	@Override
+	public void fillPolygon(final int[] xPoints, final int[] yPoints, final int nPoints) {
+		g.fillPolygon(xPoints, yPoints, nPoints);
 		if (DEBUG_OUTPUT)
-			MWC.Utilities.Errors.Trace.trace("drawRect");
+			MWC.Utilities.Errors.Trace.trace("fillPoly");
 	}
 
-	public void fillRect(final int x, final int y, final int wid, final int height)
-	{
+	@Override
+	public void fillRect(final int x, final int y, final int wid, final int height) {
 		g.fillRect(x, y, wid, height);
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("fillRect");
 	}
 
-	public int getStringHeight(final java.awt.Font theFont)
-	{
+	@Override
+	public void fillShape(final Shape shape) {
+		g.fillShape(shape);
+	}
+
+	@Override
+	public java.awt.Color getBackgroundColor() {
+		if (DEBUG_OUTPUT)
+			MWC.Utilities.Errors.Trace.trace("getBackgroundColor");
+		return g.getBackgroundColor();
+	}
+
+	@Override
+	public java.awt.Graphics getGraphicsTemp() {
+		if (DEBUG_OUTPUT)
+			MWC.Utilities.Errors.Trace.trace("getGraphicsTemp");
+		// return our internal graphics object
+		return g;
+	}
+
+	/**
+	 * get the current line width (when supported)
+	 *
+	 * @return the width, in pixels
+	 */
+	@Override
+	public float getLineWidth() {
+		return g.getPenWidth();
+	}
+
+	public String getOutputFileName() throws IOException {
+		if (_writeToTmpFile) {
+			_outputFileName = java.io.File.createTempFile("debrief_plot_", ".wmf").getCanonicalPath();
+		} else {
+			_outputFileName = getFileName();
+
+			if (_directory != null)
+				_outputFileName = _directory + File.separator + _outputFileName;
+		}
+		return _outputFileName;
+	}
+
+	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public java.util.Enumeration getPainters() {
+		System.out.println("WARNING - PLOTTING FEATURE NOT IMPLEMENTED (getPainters)");
+		return null;
+	}
+
+	@Override
+	public MWC.Algorithms.PlainProjection getProjection() {
+		return _proj;
+	}
+
+	@Override
+	public java.awt.Dimension getSize() {
+		return null;
+	}
+
+	@Override
+	public int getStringHeight(final java.awt.Font theFont) {
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("getStringHeight");
 		java.awt.FontMetrics fm = null;
@@ -526,13 +536,7 @@ public class MetafileCanvas implements CanvasType, ShapeCanvasType
 	}
 
 	@Override
-	public void setFont(final Font theFont)
-	{
-		g.setFont(theFont);
-	}
-	
-	public int getStringWidth(final java.awt.Font theFont, final String theString)
-	{
+	public int getStringWidth(final java.awt.Font theFont, final String theString) {
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("getStringWidth");
 		java.awt.FontMetrics fm = null;
@@ -543,177 +547,131 @@ public class MetafileCanvas implements CanvasType, ShapeCanvasType
 			fm = g.getFontMetrics();
 
 		int wid = fm.stringWidth(theString);
-		
+
 		// have a go at stretching it by a single character
-		final double newWid = (double)wid / theString.length() * (theString.length()+1);
-		
+		final double newWid = (double) wid / theString.length() * (theString.length() + 1);
+
 		wid = (int) newWid;
-		
+
 		return wid;
 	}
 
-	public java.awt.Graphics getGraphicsTemp()
-	{
-		if (DEBUG_OUTPUT)
-			MWC.Utilities.Errors.Trace.trace("getGraphicsTemp");
-		// return our internal graphics object
-		return g;
+	public boolean isWritable() {
+		FileOutputStream fo = null;
+
+		try {
+			getOutputFileName();
+			if (_outputFileName != null) {
+				fo = new FileOutputStream(_outputFileName);
+				fo.write(new byte[] { 0 });
+				return true;
+			}
+		} catch (final IOException e) {
+			// ignore
+		} finally {
+			if (fo != null) {
+				try {
+					fo.close();
+				} catch (final IOException e) {
+					// ignore
+				}
+			}
+
+		}
+		return false;
 	}
 
-	public MWC.Algorithms.PlainProjection getProjection()
-	{
-		return _proj;
+	@Override
+	public void removePainter(final CanvasType.PaintListener listener) {
+		System.out.println("WARNING - PLOTTING FEATURE NOT IMPLEMENTED");
 	}
 
-	public void setProjection(final MWC.Algorithms.PlainProjection val)
-	{
-		_proj = val;
-	}
-
-	public java.awt.Point toScreen(final MWC.GenericData.WorldLocation val)
-	{
-		return _proj.toScreen(val);
-	}
-
-	public MWC.GenericData.WorldLocation toWorld(final java.awt.Point val)
-	{
-		return _proj.toWorld(val);
-	}
-
-	public void rescale()
-	{
+	@Override
+	public void rescale() {
 		System.out.println("WARNING - PLOTTING FEATURE NOT IMPLEMENTED (rescale)");
 	}
 
-	public java.awt.Color getBackgroundColor()
-	{
-		if (DEBUG_OUTPUT)
-			MWC.Utilities.Errors.Trace.trace("getBackgroundColor");
-		return g.getBackgroundColor();
-	}
-
-	public void setBackgroundColor(final java.awt.Color theColor)
-	{
+	@Override
+	public void setBackgroundColor(final java.awt.Color theColor) {
 		if (DEBUG_OUTPUT)
 			MWC.Utilities.Errors.Trace.trace("setBackgroundColor");
 		g.setBackgroundColor(theColor);
 
 	}
 
-	public void addPainter(final CanvasType.PaintListener listener)
-	{
-		System.out.println("WARNING - PLOTTING FEATURE NOT IMPLEMENTED (addPainter)");
+	@Override
+	public void setColor(final java.awt.Color theCol) {
+		// note, we're not using an equals() operator. I ran a check to see if I
+		// needed to use .equals()
+		// but they when the colours were equal() they were actually the same
+		// object. So, this is quicker
+		if (theCol != _currentColor) {
+			g.setColor(theCol);
+			if (DEBUG_OUTPUT)
+				MWC.Utilities.Errors.Trace.trace("setColor");
+			_currentColor = theCol;
+		}
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public java.util.Enumeration getPainters()
-	{
-		System.out.println("WARNING - PLOTTING FEATURE NOT IMPLEMENTED (getPainters)");
-		return null;
-	}
-
-	public void removePainter(final CanvasType.PaintListener listener)
-	{
-		System.out.println("WARNING - PLOTTING FEATURE NOT IMPLEMENTED");
-	}
-
-	public void setTooltipHandler(final CanvasType.TooltipHandler handler)
-	{
-		System.out.println("WARNING - PLOTTING FEATURE NOT IMPLEMENTED");
-	}
-
-	public java.awt.Dimension getSize()
-	{
-		return null;
+	@Override
+	public void setFont(final Font theFont) {
+		g.setFont(theFont);
 	}
 
 	/**
-	 * provide the last filename we wrote to
-	 * 
-	 * @return the filename
+	 * set the style for the line, using our constants
 	 */
-	public static String getLastFileName()
-	{
-		return _outputFileName;
+	@Override
+	public void setLineStyle(final int style) {
+		// only update if we have to
+		if (style != _lastLineStyle) {
+			g.setPenStyle(style);
+			_lastLineStyle = style;
+		}
 	}
 
 	/**
-	 * accessor to get the last screen size plotted
-	 * 
-	 * @return
+	 * set the width of the line, in pixels
 	 */
-	public static Dimension getLastScreenSize()
-	{
-		return _lastPlotSize;
+	@Override
+	public void setLineWidth(final float width) {
+		// only update if we have to
+		if (width != _lastPenWidth) {
+			g.setPenWidth((int) width);
+			_lastPenWidth = width;
+		}
 	}
 
-
 	@Override
-	public void drawText(final String str, final int x, final int y, final float rotate) {
-		if (str == null || str.trim().length() == 0) {
-			return;
-		}
-		
-		FontMetrics fontMetrics = g.getFontMetrics();		
-		final int distance = (fontMetrics.stringWidth(str))/2;
-		final double direction = Math.toRadians(rotate);
-		int deltaX = (int) (distance * Math.cos(direction));
-		int deltaY = (int) (distance * Math.sin(direction));
-		
-		int newEscapement = (int) (-rotate*10);
-		int old = g.getFontEscapement();
-		g.setFontEscapement(newEscapement);
-		drawText(str, x-deltaX, y-deltaY);
-		
-		g.setFontEscapement(old);
-	}
-	
-	@Override
-	public void drawText(final String str, final int x, final int y, float rotate, boolean above) {
-		if (str == null || str.trim().length() == 0) {
-			return;
-		}
-		
-		FontMetrics fontMetrics = g.getFontMetrics();		
-		int distance = fontMetrics.getAscent() + fontMetrics.getDescent() + fontMetrics.getLeading();
-		double direction = Math.toRadians(rotate);
-		int deltaX = (int) (distance * Math.cos(direction));
-		int deltaY = (int) (distance * Math.sin(direction));
-		if (!above) {
-			deltaX = -deltaX;
-			deltaY = -deltaY;
-		}
-		
-		if (rotate > 180) {
-			rotate -= 180;
-			distance = getStringWidth(g.getFont(), str);
-
-			direction = Math.toRadians(rotate-90);
-			if (!above) {
-				deltaX =  (int) (1.3*deltaX - (distance * Math.cos(direction)));
-				deltaY =  (int) (1.3*deltaY - (distance * Math.sin(direction)));
-			} else {
-				deltaX -= (int) (0.8*distance * Math.cos(direction));
-				deltaY -= (int) (0.8*distance * Math.sin(direction));
-			}
-		}
-		rotate-=90;
-		
-		
-		int newEscapement = (int) (-rotate*10);
-		int old = g.getFontEscapement();
-		g.setFontEscapement(newEscapement);
-		drawText(str, x+deltaX, y+deltaY);
-		//drawText(str, x-deltaX, y-deltaY);
-		//drawRect(x+deltaX, y+deltaY, fontMetrics.stringWidth(str), distance);
-		g.setFontEscapement(old);
+	public void setProjection(final MWC.Algorithms.PlainProjection val) {
+		_proj = val;
 	}
 
+	@Override
+	public void setTooltipHandler(final CanvasType.TooltipHandler handler) {
+		System.out.println("WARNING - PLOTTING FEATURE NOT IMPLEMENTED");
+	}
 
 	@Override
-	public void fillShape(Shape shape)
-	{
-		g.fillShape(shape);
+	public void startDraw(final Object theVal) {
+		// create the metafile
+		_cachedMetafile = new WMF();
+		_lastPlotSize = _proj.getScreenArea();
+		g = new WMFGraphics(_cachedMetafile, _lastPlotSize.width, _lastPlotSize.height);
+	}
+
+	@Override
+	public java.awt.Point toScreen(final MWC.GenericData.WorldLocation val) {
+		return _proj.toScreen(val);
+	}
+
+	@Override
+	public MWC.GenericData.WorldLocation toWorld(final java.awt.Point val) {
+		return _proj.toWorld(val);
+	}
+
+	@Override
+	public void updateMe() {
 	}
 
 	// /////////////////////////////////

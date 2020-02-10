@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.GUI.JFreeChart;
 
 import java.util.Date;
@@ -19,44 +20,43 @@ import java.util.Date;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.data.xy.XYDataset;
 
-/** custom class which shows the date in a tooltip
+/**
+ * custom class which shows the date in a tooltip
  *
  */
-public final class DatedToolTipGenerator extends StandardXYToolTipGenerator
-{
-  /**
-	 * 
+public final class DatedToolTipGenerator extends StandardXYToolTipGenerator {
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	/**
-   * Generates a tool tip text item for a particular item within a series.
-   *
-   * @param data  the dataset.
-   * @param series  the series (zero-based index).
-   * @param item  the item (zero-based index).
-   *
-   * @return the tool tip text.
-   */
-  @SuppressWarnings("unused")
-  public String generateToolTip(final XYDataset data, final int series, final int item)
-  {
-    String result = "|" + data.getSeriesKey(series) + " | ";
-    final Number x = data.getXValue(series, item);
+	 * Generates a tool tip text item for a particular item within a series.
+	 *
+	 * @param data   the dataset.
+	 * @param series the series (zero-based index).
+	 * @param item   the item (zero-based index).
+	 *
+	 * @return the tool tip text.
+	 */
+	@Override
+	@SuppressWarnings("unused")
+	public String generateToolTip(final XYDataset data, final int series, final int item) {
+		String result = "|" + data.getSeriesKey(series) + " | ";
+		final Number x = data.getXValue(series, item);
 
-    // put into Date value
-    final Date newD = new Date(x.longValue());
+		// put into Date value
+		final Date newD = new Date(x.longValue());
 
-    result = result + " DTG: " + newD.toString();
+		result = result + " DTG: " + newD.toString();
 
-    final Number y = data.getYValue(series, item);
-    if (y != null) {
-      result = result + ", value: " + this.getYFormat().format(y);
-    }
-    else {
-      result = result + ", y: null";
-    }
+		final Number y = data.getYValue(series, item);
+		if (y != null) {
+			result = result + ", value: " + this.getYFormat().format(y);
+		} else {
+			result = result + ", y: null";
+		}
 
-    return result;
-  }
+		return result;
+	}
 }
