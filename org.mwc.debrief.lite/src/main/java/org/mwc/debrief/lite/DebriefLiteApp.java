@@ -969,31 +969,36 @@ public class DebriefLiteApp implements FileDropListener {
 	}
 
 	protected void doPaint(final Graphics gc) {
-		final CanvasAdaptor dest;
-		if (gc instanceof Graphics2D) {
-			dest = new ExtendedCanvasAdapter(projection, gc, Color.red);
-		} else {
-			final String s = "Lite rendering is expecting a Graphics2D object";
-			app.logError(ToolParent.ERROR, s, null);
-			throw new IllegalArgumentException(s);
+
+		final double currentArea = mapPane.getMapContent().getViewport().getBounds().getArea();
+
+		if (currentArea < LiteMapPane.MAX_MAP_AREA) {
+			final CanvasAdaptor dest;
+			if (gc instanceof Graphics2D) {
+				dest = new ExtendedCanvasAdapter(projection, gc, Color.red);
+			} else {
+				final String s = "Lite rendering is expecting a Graphics2D object";
+				app.logError(ToolParent.ERROR, s, null);
+				throw new IllegalArgumentException(s);
+			}
+
+			// ok, are we in snail mode?
+			final String current = painterManager.getCurrentPainterObject().toString();
+			if (current.equals(TotePainter.NORMAL_NAME)) {
+				// ok, we need to draw in the layers
+				dest.setLineWidth(2f);
+				dest.startDraw(gc);
+				_theLayers.paint(dest);
+			}
+
+			// and the time marker
+			redoTimePainter(true, dest, _pendingOldTime, _pendingNewTime);
+
+			_pendingNewTime = null;
+			_pendingOldTime = null;
+
+			dest.endDraw(gc);
 		}
-
-		// ok, are we in snail mode?
-		final String current = painterManager.getCurrentPainterObject().toString();
-		if (current.equals(TotePainter.NORMAL_NAME)) {
-			// ok, we need to draw in the layers
-			dest.setLineWidth(2f);
-			dest.startDraw(gc);
-			_theLayers.paint(dest);
-		}
-
-		// and the time marker
-		redoTimePainter(true, dest, _pendingOldTime, _pendingNewTime);
-
-		_pendingNewTime = null;
-		_pendingOldTime = null;
-
-		dest.endDraw(gc);
 	}
 
 	public void exit() {
