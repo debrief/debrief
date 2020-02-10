@@ -61,6 +61,8 @@ public class LiteMapPane extends JMapPane {
 	// Maximum are allowed in the map
 	public static double MAX_MAP_AREA = 2.0E15;
 
+	public static double MAX_WORLD_AREA = 50000.0;
+
 	private static Color getNewColor(final double alpha) {
 		return new Color((int) (255 - alpha * 171), (int) (255 - alpha * 119), (int) (255 - alpha * 57));
 	}

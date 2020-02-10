@@ -759,12 +759,16 @@ public class DebriefLiteApp implements FileDropListener {
 			@Override
 			public void refresh(final StepperListener listener) {
 
-				// and the time marker
-				final Graphics graphics = mapPane.getGraphics();
+				final double currentArea = mapPane.getMapContent().getViewport().getBounds().getArea();
 
-				final CanvasAdaptor adapter = new CanvasAdaptor(projection, graphics, Color.blue);
+				if (currentArea < LiteMapPane.MAX_MAP_AREA) {
+					// and the time marker
+					final Graphics graphics = mapPane.getGraphics();
 
-				listener.newTime(null, timeManager.getTime(), adapter);
+					final CanvasAdaptor adapter = new CanvasAdaptor(projection, graphics, Color.blue);
+
+					listener.newTime(null, timeManager.getTime(), adapter);
+				}
 			}
 		};
 
@@ -1300,43 +1304,47 @@ public class DebriefLiteApp implements FileDropListener {
 
 	private void redoTimePainter(final boolean bigPaint, final CanvasAdaptor dest, final HiResDate oldDTG,
 			final HiResDate newDTG) {
-		final StepperListener current = painterManager.getCurrentPainterObject();
-		final boolean isNormal = current.toString().equals(TotePainter.NORMAL_NAME);
+		final double currentArea = mapPane.getMapContent().getViewport().getBounds().getArea();
 
-		final Color backColor = Color.white;
+		if (currentArea < LiteMapPane.MAX_MAP_AREA) {
+			final StepperListener current = painterManager.getCurrentPainterObject();
+			final boolean isNormal = current.toString().equals(TotePainter.NORMAL_NAME);
 
-		// and the time marker
-		final Graphics graphics = mapPane.getGraphics();
+			final Color backColor = Color.white;
 
-		if (graphics instanceof Graphics2D) {
-			final Graphics2D g2 = (Graphics2D) graphics;
-			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		}
+			// and the time marker
+			final Graphics graphics = mapPane.getGraphics();
 
-		if (bigPaint) {
-			final CanvasType.PaintListener thisPainter = (CanvasType.PaintListener) painterManager
-					.getCurrentPainterObject();
-
-			// it must be ok
-			final CanvasAdaptor adapter = new CanvasAdaptor(projection, dest.getGraphicsTemp(), backColor);
-			thisPainter.paintMe(adapter);
-
-			// also render dynamic layers
-			paintDynamicLayers(adapter);
-		} else {
-			if (!isNormal) {
-				@SuppressWarnings("unused")
-				final SnailPainter2 snail = (SnailPainter2) current;
-				// note: we were over-writing the vector stretch
-				// value, but I can't see why. Comment it out.
-				// snail.setVectorStretch(1d);
+			if (graphics instanceof Graphics2D) {
+				final Graphics2D g2 = (Graphics2D) graphics;
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			}
 
-			final CanvasAdaptor adapter = new CanvasAdaptor(projection, graphics, backColor);
-			painterManager.newTime(oldDTG, newDTG, adapter);
+			if (bigPaint) {
+				final CanvasType.PaintListener thisPainter = (CanvasType.PaintListener) painterManager
+						.getCurrentPainterObject();
 
-			// also render dynamic layers
-			paintDynamicLayers(adapter);
+				// it must be ok
+				final CanvasAdaptor adapter = new CanvasAdaptor(projection, dest.getGraphicsTemp(), backColor);
+				thisPainter.paintMe(adapter);
+
+				// also render dynamic layers
+				paintDynamicLayers(adapter);
+			} else {
+				if (!isNormal) {
+					@SuppressWarnings("unused")
+					final SnailPainter2 snail = (SnailPainter2) current;
+					// note: we were over-writing the vector stretch
+					// value, but I can't see why. Comment it out.
+					// snail.setVectorStretch(1d);
+				}
+
+				final CanvasAdaptor adapter = new CanvasAdaptor(projection, graphics, backColor);
+				painterManager.newTime(oldDTG, newDTG, adapter);
+
+				// also render dynamic layers
+				paintDynamicLayers(adapter);
+			}
 		}
 	}
 

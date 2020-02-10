@@ -78,7 +78,10 @@ public class DragWholeFeatureElementTool extends GenericDragTool {
 	@Override
 	public void onMousePressed(final MapMouseEvent ev) {
 		super.onMousePressed(ev);
-		if (!panning) {
+
+		final double currentArea = _mapPane.getMapContent().getViewport().getBounds().getArea();
+
+		if (currentArea < LiteMapPane.MAX_MAP_AREA && !panning) {
 			panePos = mouseDelta(ev.getPoint());
 
 			final WorldLocation cursorLoc = _projection.toWorld(panePos);

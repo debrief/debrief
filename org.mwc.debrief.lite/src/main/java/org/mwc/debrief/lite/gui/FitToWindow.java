@@ -23,6 +23,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.swing.JMapPane;
+import org.mwc.debrief.lite.map.LiteMapPane;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -49,9 +50,10 @@ public class FitToWindow extends AbstractAction implements CommandAction {
 		if (area != null) {
 			// check it's not the default area that gets returned when
 			// no data is loaded
+
 			if (area.equals(Layers.getDebriefOrigin())) {
 				// ok, don't bother resizing. Leave it as-is
-			} else {
+			} else if (area.getWidth() * area.getHeight() < LiteMapPane.MAX_WORLD_AREA) {
 				// ok, let's introduce a 5% border
 				area.grow(area.getWidth() * 0.05, 0);
 
