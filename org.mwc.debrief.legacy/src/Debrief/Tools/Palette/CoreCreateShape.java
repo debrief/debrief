@@ -107,6 +107,7 @@ public abstract class CoreCreateShape extends PlainTool
     final WorldArea worldArea = getBounds();
     final Action res;
     boolean userSelected = false;
+    addedLayer = null;
     if(worldArea != null)
     {
       // put the label in the centre of the plot (at the surface)
