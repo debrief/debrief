@@ -30,7 +30,7 @@ import javax.swing.JComponent;
 public class ClipboardUtils {
 	public static void copyToClipboard(final JComponent component) {
 		final BufferedImage img = new BufferedImage(component.getWidth(), component.getHeight(),
-				BufferedImage.TYPE_INT_ARGB);
+				BufferedImage.TYPE_INT_RGB);
 		final Graphics g = img.getGraphics();
 		component.paint(g);
 		g.dispose();
