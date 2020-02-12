@@ -79,7 +79,7 @@ public class DragElementTool extends GenericDragTool {
 	public void onMousePressed(final MapMouseEvent ev) {
 		super.onMousePressed(ev);
 
-		if (LiteMapPane.isViewportAcceptable(_mapPane) && !panning) {
+		if (LiteMapPane.isMapViewportAcceptable(_mapPane) && !panning) {
 			panePos = mouseDelta(ev.getPoint());
 
 			final WorldLocation cursorLoc = _projection.toWorld(panePos);

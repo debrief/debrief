@@ -148,7 +148,7 @@ public class GenericDragTool extends CursorTool {
 		// try to determine if we're going over an item, to
 		// change the cursor
 
-		if (LiteMapPane.isViewportAcceptable(_mapPane)) {
+		if (LiteMapPane.isMapViewportAcceptable(_mapPane)) {
 
 			// don't bother if we're already in a pan operation
 			if (!panning && !lastCursor.equals(draggingCursor)) {
