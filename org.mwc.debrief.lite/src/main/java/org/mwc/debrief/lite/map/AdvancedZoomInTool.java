@@ -116,7 +116,7 @@ public class AdvancedZoomInTool extends ZoomInTool {
 				(existingArea.getHeight() * existingArea.getWidth()) / (selectedArea.height * selectedArea.width));
 
 		// only allow zoom out if we're not already too far our
-		if (existingArea.getArea() < 2.0E15) {
+		if (existingArea.getArea() < LiteMapPane.MAX_MAP_AREA) {
 			final double deltaX3 = existingArea.getMaxX() - actualCenter.getX();
 			final double deltaY3 = existingArea.getMinY() - actualCenter.getY();
 
