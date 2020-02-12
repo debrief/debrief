@@ -53,7 +53,7 @@ public class FitToWindow extends AbstractAction implements CommandAction {
 
 			if (area.equals(Layers.getDebriefOrigin())) {
 				// ok, don't bother resizing. Leave it as-is
-			} else if (area.getWidth() * area.getHeight() < LiteMapPane.MAX_WORLD_AREA) {
+			} else if (LiteMapPane.isViewportAcceptable(area)) {
 				// ok, let's introduce a 5% border
 				area.grow(area.getWidth() * 0.05, 0);
 

@@ -43,6 +43,7 @@ import org.opengis.referencing.operation.TransformException;
 
 import Debrief.GUI.Frames.Application;
 import MWC.GUI.ToolParent;
+import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.BriefFormatLocation;
 
@@ -67,6 +68,17 @@ public class LiteMapPane extends JMapPane {
 		return new Color((int) (255 - alpha * 171), (int) (255 - alpha * 119), (int) (255 - alpha * 57));
 	}
 
+	public static boolean isViewportAcceptable(final JMapPane map)
+	{
+		final double currentArea = map.getMapContent().getViewport().getBounds().getArea();
+		return currentArea < LiteMapPane.MAX_MAP_AREA;
+	}
+	
+	public static boolean isViewportAcceptable(final WorldArea area)
+	{
+		return area.getWidth() * area.getHeight() < LiteMapPane.MAX_WORLD_AREA;
+	}
+	
 	/**
 	 * background transparency
 	 *

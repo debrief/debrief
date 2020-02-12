@@ -148,9 +148,7 @@ public class GenericDragTool extends CursorTool {
 		// try to determine if we're going over an item, to
 		// change the cursor
 
-		final double currentArea = _mapPane.getMapContent().getViewport().getBounds().getArea();
-
-		if (currentArea < LiteMapPane.MAX_MAP_AREA) {
+		if (LiteMapPane.isViewportAcceptable(_mapPane)) {
 
 			// don't bother if we're already in a pan operation
 			if (!panning && !lastCursor.equals(draggingCursor)) {
