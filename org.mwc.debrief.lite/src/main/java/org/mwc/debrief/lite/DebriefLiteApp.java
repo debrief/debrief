@@ -758,7 +758,7 @@ public class DebriefLiteApp implements FileDropListener {
 
 			@Override
 			public void refresh(final StepperListener listener) {
-				if (LiteMapPane.isViewportAcceptable(mapPane)) {
+				if (LiteMapPane.isMapViewportAcceptable(mapPane)) {
 					// and the time marker
 					final Graphics graphics = mapPane.getGraphics();
 
@@ -970,7 +970,7 @@ public class DebriefLiteApp implements FileDropListener {
 	}
 
 	protected void doPaint(final Graphics gc) {
-		if (LiteMapPane.isViewportAcceptable(mapPane)) {
+		if (LiteMapPane.isMapViewportAcceptable(mapPane)) {
 			final CanvasAdaptor dest;
 			if (gc instanceof Graphics2D) {
 				dest = new ExtendedCanvasAdapter(projection, gc, Color.red);
@@ -1298,7 +1298,7 @@ public class DebriefLiteApp implements FileDropListener {
 
 	private void redoTimePainter(final boolean bigPaint, final CanvasAdaptor dest, final HiResDate oldDTG,
 			final HiResDate newDTG) {
-		if (LiteMapPane.isViewportAcceptable(mapPane)) {
+		if (LiteMapPane.isMapViewportAcceptable(mapPane)) {
 			final StepperListener current = painterManager.getCurrentPainterObject();
 			final boolean isNormal = current.toString().equals(TotePainter.NORMAL_NAME);
 

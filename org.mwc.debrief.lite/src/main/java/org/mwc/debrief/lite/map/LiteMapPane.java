@@ -68,7 +68,7 @@ public class LiteMapPane extends JMapPane {
 		return new Color((int) (255 - alpha * 171), (int) (255 - alpha * 119), (int) (255 - alpha * 57));
 	}
 
-	public static boolean isViewportAcceptable(final JMapPane map)
+	public static boolean isMapViewportAcceptable(final JMapPane map)
 	{
 		final double currentArea = map.getMapContent().getViewport().getBounds().getArea();
 		return currentArea < LiteMapPane.MAX_MAP_AREA;
