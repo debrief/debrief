@@ -76,6 +76,7 @@ public abstract class CoreCreateShape extends PlainTool {
 	protected Action commonGetData(final GetAction getAction, final PropertiesPanel thePanel) {
 		final WorldArea worldArea = getBounds();
 		final Action res;
+		addedLayer = null;
 		boolean userSelected = false;
 		if (worldArea != null) {
 			// put the label in the centre of the plot (at the surface)
