@@ -278,6 +278,10 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable, Ext
 		return _myLineStyles.get(new Integer(style));
 	}
 
+	private GC buffer;
+
+	private Image bufferImage;
+
 	/**
 	 * remember the background color - SWT has trouble remembering it
 	 */
@@ -292,6 +296,10 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable, Ext
 	 * our graphics object - only valid between 'start' and 'stop' paint events.
 	 */
 	private GC _theDest = null;
+
+	private GC _destBuffered = null;
+
+	private boolean bufferEnabled = false;
 
 	/**
 	 * the list of registered painters for this canvas.
@@ -793,6 +801,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable, Ext
 
 	@Override
 	public final void endDraw(final Object theVal) {
+		flushBuffer();
 		// _theDest = null;
 
 		// and forget the line width
@@ -886,6 +895,20 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable, Ext
 		if (_sg2d != null && shape != null) {
 			_sg2d.fill(shape);
 			_sg2d.draw(shape);
+		}
+	}
+
+	public void flushBuffer() {
+		if (bufferEnabled) {
+			_theDest.dispose();
+			_theDest = _destBuffered;
+			this.drawImage(bufferImage, 0, 1, getSize().width, getSize().height);
+
+			buffer = null;
+
+			bufferImage.dispose();
+
+			bufferEnabled = false;
 		}
 	}
 
@@ -1074,6 +1097,22 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable, Ext
 	@Override
 	public final boolean hasEditor() {
 		return true;
+	}
+
+	public void initializeBuffer() {
+		if (_theDest != null && !bufferEnabled) {
+			final Color foregroundColor = _theDest.getForeground();
+
+			bufferEnabled = true;
+			final ImageData imageData = new ImageData(getSize().width, getSize().height, 24, new PaletteData(0, 0, 0));
+			bufferImage = new Image(_theDest.getDevice(), imageData);
+			buffer = new GC(bufferImage);
+			_destBuffered = _theDest;
+			_theDest = buffer;
+			setBackgroundColor(_backgroundColor);
+
+			_theDest.setForeground(foregroundColor);
+		}
 	}
 
 	@Override
