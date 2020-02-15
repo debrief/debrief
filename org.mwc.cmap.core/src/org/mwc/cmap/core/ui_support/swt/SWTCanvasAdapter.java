@@ -1100,7 +1100,9 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable, Ext
 	}
 
 	public void initializeBuffer() {
-		if (_theDest != null && !bufferEnabled) {
+		final String operSys = System.getProperty("os.name").toLowerCase();
+		final boolean isMacOs = operSys.contains("mac");
+		if (_theDest != null && !bufferEnabled && !isMacOs) {
 			final Color foregroundColor = _theDest.getForeground();
 
 			bufferEnabled = true;
