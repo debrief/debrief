@@ -1091,7 +1091,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener {
 
 		// find out if the value for this parameter is different to the
 		// current one for this object - or if there isn't a current value
-		if (newVal != oldVal && (newVal == null) || ( newVal != oldVal && !newVal.equals(oldVal))) {
+		if (newVal != oldVal && ((newVal == null) || ( !newVal.equals(oldVal)))) {
 			if (newVal == null && HiResDate.class.equals(pei.theDescriptor.getPropertyType())) {
 				JOptionPane.showMessageDialog(_propsPanel,
 						pei.theDescriptor.getDisplayName()
