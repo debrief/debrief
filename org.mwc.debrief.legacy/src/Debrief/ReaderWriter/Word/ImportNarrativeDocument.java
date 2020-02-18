@@ -45,9 +45,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -640,6 +642,10 @@ public class ImportNarrativeDocument {
 				}
 			}
 		}
+	}
+
+	public static interface NarrativeTypeHelper {
+		List<String> getSelectedNarrativeTypes(final Set<String> narrativeTypes);
 	}
 
 	/**
@@ -1246,15 +1252,19 @@ public class ImportNarrativeDocument {
 
 			// ok, get the narrative type
 			final NarrEntry thisN1 = NarrEntry.create(testDate1, 1);
-			assertEquals("year", 116, thisN1.dtg.getDate().getYear());
-			assertEquals("month", 8, thisN1.dtg.getDate().getMonth());
-			assertEquals("day", 16, thisN1.dtg.getDate().getDate());
+			Date date = thisN1.dtg.getDate();
+			Calendar instance = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+			instance.setTime(date);
+			assertEquals("year", 2016, instance.get(Calendar.YEAR));
+			assertEquals("month", 8, instance.get(Calendar.MONTH));
+			assertEquals("day", 16, instance.get(Calendar.DAY_OF_MONTH));
 			// removed the next line - it's failing on the CI build,
 			// because of a timezone difference
-			// assertEquals("hour", 10, thisN1.dtg.getDate().getHours()); // not 9, since
+			
+			assertEquals("hour", 9, instance.get(Calendar.HOUR_OF_DAY)); // not 9, since
 			// we're BST
-			assertEquals("min", 9, thisN1.dtg.getDate().getMinutes());
-			assertEquals("sec", 0, thisN1.dtg.getDate().getSeconds());
+			assertEquals("min", 9, instance.get(Calendar.MINUTE));
+			assertEquals("sec", 0, instance.get(Calendar.SECOND));
 			assertEquals("platform", "HMS NONSUCH", thisN1.platform);
 			assertEquals("content", "SOME COMMENT", thisN1.text);
 
@@ -1262,15 +1272,18 @@ public class ImportNarrativeDocument {
 			final String testDate2 = "161006\tSOME COMMENT 2 ";
 			// ok, get the narrative type
 			final NarrEntry thisN2 = NarrEntry.create(testDate2, 1);
-			assertEquals("year", 116, thisN2.dtg.getDate().getYear());
-			assertEquals("month", 8, thisN2.dtg.getDate().getMonth());
-			assertEquals("day", 16, thisN2.dtg.getDate().getDate());
+			Date date2 = thisN2.dtg.getDate();
+			Calendar instance2 = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+			instance2.setTime(date2);
+			assertEquals("year", 2016, instance2.get(Calendar.YEAR));
+			assertEquals("month", 8, instance2.get(Calendar.MONTH));
+			assertEquals("day", 16, instance2.get(Calendar.DAY_OF_MONTH));
 			// removed the next line - it's failing on the CI build,
 			// because of a timezone difference
-			// assertEquals("hour", 11, thisN2.dtg.getDate().getHours()); // not 10, we're
+			assertEquals("hour", 10, instance2.get(Calendar.HOUR_OF_DAY)); // not 10, we're
 			// BST
-			assertEquals("min", 6, thisN2.dtg.getDate().getMinutes());
-			assertEquals("sec", 0, thisN2.dtg.getDate().getSeconds());
+			assertEquals("min", 6, instance2.get(Calendar.MINUTE));
+			assertEquals("sec", 0, instance2.get(Calendar.SECOND));
 			assertEquals("platform", "HMS NONSUCH", thisN2.platform);
 			assertEquals("content", "SOME COMMENT 2", thisN2.text);
 			assertFalse("flag", thisN2.appendedToPrevious);
@@ -1581,6 +1594,65 @@ public class ImportNarrativeDocument {
 			assertNotNull(narrLayer);
 			assertEquals("have items", 5, narrLayer.size());
 		}
+		
+		public void testImportAllNarrativeTypes() throws Exception
+		{
+			final String testFile = dummy_doc_path;
+			final File testI = new File(testFile);
+			assertTrue(testI.exists());
+
+			final InputStream is = new FileInputStream(testI);
+			Layers tLayers = new Layers();
+			final ImportNarrativeDocument importer = new ImportNarrativeDocument(tLayers);
+			final HWPFDocument doc = new HWPFDocument(is);
+			final ArrayList<String> strings = importFromWord(doc);
+			importer.processThese(strings);
+			final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(LayerHandler.NARRATIVE_LAYER);
+			assertNotNull(narrLayer);
+			assertEquals(narrLayer.size(),13);
+		}
+		
+		public void testImportSelectedNarrativeFCSTypes() throws Exception
+		{
+			final String testFile = valid_doc_path;
+			final File testI = new File(testFile);
+			assertTrue(testI.exists());
+
+			final InputStream is = new FileInputStream(testI);
+			Layers tLayers = new Layers();
+			final ImportNarrativeDocument importer = new ImportNarrativeDocument(tLayers);
+			List<String> selectedTypes = new ArrayList<>();
+			selectedTypes.add("FCS");
+			importer.setSelectedNarrativeTypes(selectedTypes);
+			final HWPFDocument doc = new HWPFDocument(is);
+			final ArrayList<String> strings = importFromWord(doc);
+			importer.processThese(strings);
+			final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(LayerHandler.NARRATIVE_LAYER);
+			assertNotNull(narrLayer);
+			assertEquals(narrLayer.size(),18);
+			
+		}
+		
+		public void testImportSelectedNarrativeNonFCSTypes() throws Exception
+		{
+			final String testFile = dummy_doc_path;
+			final File testI = new File(testFile);
+			assertTrue(testI.exists());
+
+			final InputStream is = new FileInputStream(testI);
+			Layers tLayers = new Layers();
+			final ImportNarrativeDocument importer = new ImportNarrativeDocument(tLayers);
+			List<String> selectedTypes = new ArrayList<>();
+			selectedTypes.add("CAT COMMENT");
+			importer.setSelectedNarrativeTypes(selectedTypes);
+			final HWPFDocument doc = new HWPFDocument(is);
+			final ArrayList<String> strings = importFromWord(doc);
+			importer.processThese(strings);
+			final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(LayerHandler.NARRATIVE_LAYER);
+			assertNotNull(narrLayer);
+			assertEquals(narrLayer.size(),5);
+		}
+		
 
 		@SuppressWarnings("unused")
 		private String messageStr = null;
@@ -1602,6 +1674,7 @@ public class ImportNarrativeDocument {
 				}
 			});
 			setNarrativeHelper(null);
+			setNarrativeTypesHelper(null);
 		}
 	}
 
@@ -1655,6 +1728,7 @@ public class ImportNarrativeDocument {
 	 */
 	private static QuestionHelper questionHelper = null;
 
+	private static NarrativeTypeHelper narrativeTypesHelper = null;
 	private static List<String> SkipNames = null;
 
 	private static TrimNarrativeHelper trimNarrativeHelper = null;
@@ -1920,13 +1994,19 @@ public class ImportNarrativeDocument {
 	 * keep track of the last successfully imported narrative entry if we've just
 	 * received a plain text block, we'll add it to the previous one *
 	 */
-	private NarrativeEntry _lastEntry;
+	private NarrEntry _lastNarrEntry;
 
 	/**
 	 * keep track of track names that we have matched
 	 *
 	 */
 	Map<String, String> nameMatches = new HashMap<String, String>();
+
+	private List<String> selectedNarrativeTypes;
+
+	public void setSelectedNarrativeTypes(List<String> selectedNarrativeTypes) {
+		this.selectedNarrativeTypes = selectedNarrativeTypes;
+	}
 
 	public ImportNarrativeDocument(final Layers target) {
 		_layers = target;
@@ -1951,9 +2031,6 @@ public class ImportNarrativeDocument {
 		}
 
 		final NarrativeEntry ne = new NarrativeEntry(hisTrack, thisN.type, new HiResDate(thisN.dtg), thisN.text);
-
-		// remember that entry, in case we get incomplete text inthe future
-		_lastEntry = ne;
 
 		// try to color the entry
 		final Layer host = _layers.findLayer(trackFor(thisN.platform));
@@ -2109,7 +2186,8 @@ public class ImportNarrativeDocument {
 
 		// see if we have an index for start of records
 		final int START_INDEX = indexOfStart(strings);
-
+		Set<String> types = new HashSet<String>();
+		List<NarrEntry> narrativeEntries = new ArrayList<NarrEntry>();
 		// ok, now we can loop through the strings
 		if (proceed) {
 			int ctr = 0;
@@ -2169,11 +2247,11 @@ public class ImportNarrativeDocument {
 						// hmm, just check if this is an FCS
 
 						// do we have a previous one?
-						if (_lastEntry != null) {
+						if (_lastNarrEntry != null) {
 							final String newText = thisN.text;
 
-							_lastEntry.setEntry(_lastEntry.getEntry() + "\n" + newText);
-
+							_lastNarrEntry.text = _lastNarrEntry.text + "\n" + newText;
+							
 							// ok, keep track of how many times we've appended
 							appendedToPreviousCtr++;
 						}
@@ -2184,53 +2262,71 @@ public class ImportNarrativeDocument {
 						// clear the appended flag
 						appendedToPreviousCtr = 0;
 					}
-
-					// did we process anything?
 					if (thisN.type != null) {
-						// ok, process the entry
-						switch (thisN.type) {
-						case "FCS": {
-							// add a narrative entry
-							addEntry(thisN);
-
-							// create track for this
-							try {
-								addFCS(thisN);
-							} catch (final StringIndexOutOfBoundsException e) {
-								// don't worry about panicking, it may not be an FCS after all
-							} catch (final NumberFormatException e) {
-								// don't worry about panicking, it may not be an FCS after all
-							}
-
-							// ok, take note that we've added something
-							dataAdded = true;
-
-							break;
-						}
-						default: {
-							// ok, just add a narrative entry for anything not recognised
-
-							// add a narrative entry
-							addEntry(thisN);
-
-							// ok, take note that we've added something
-							dataAdded = true;
-
-							break;
-
-						}
-						}
+						types.add(thisN.type);
 					}
+					else {
+						types.add("Empty");
+					}
+					// remember that entry, in case we get incomplete text inthe future
+					_lastNarrEntry = thisN;
+					narrativeEntries.add(thisN);
+						
 				} catch (final Exception e) {
 					logThisError(ToolParent.WARNING, "Failed whilst parsing line:" + text, e);
-
 				}
 			}
+		}
+		if (narrativeTypesHelper != null) {
+			selectedNarrativeTypes = narrativeTypesHelper.getSelectedNarrativeTypes(types);
+			dataAdded = addEntries(narrativeEntries,selectedNarrativeTypes);
+		}
+		else {
+			dataAdded = addEntries(narrativeEntries,selectedNarrativeTypes);
+		}
+		if (dataAdded) {
+			_layers.fireModified(getNarrativeLayer());
+		}
+	}
 
-			if (dataAdded) {
-				_layers.fireModified(getNarrativeLayer());
+	private boolean addEntries(List<NarrEntry> narrativeEntries, List<String> selectedNarrativeTypes) {
+		boolean dataAdded=false;
+		// do this on the selected narratives
+		for (NarrEntry thisN:narrativeEntries) {
+			// did we process anything?
+			if (thisN.type != null && (selectedNarrativeTypes==null || selectedNarrativeTypes.contains(thisN.type))) {
+				// ok, process the entry
+				switch (thisN.type) {
+				case "FCS": {
+					// add a narrative entry
+					addEntry(thisN);
+					// create track for this
+					try {
+						addFCS(thisN);
+					} catch (final StringIndexOutOfBoundsException e) {
+						// don't worry about panicking, it may not be an FCS after all
+					} catch (final NumberFormatException e) {
+						// don't worry about panicking, it may not be an FCS after all
+					}
+				}
+
+				// ok, take note that we've added something
+				dataAdded = true;
+				break;
+				default: {
+					// ok, just add a narrative entry for anything not recognised
+					// add a narrative entry
+					addEntry(thisN);
+					// ok, take note that we've added something
+					dataAdded = true;
+
+					break;
+
+				}
+				}
 			}
 		}
+		return dataAdded;
 	}
 
 	/**
@@ -2371,6 +2467,11 @@ public class ImportNarrativeDocument {
 		}
 
 		return match;
+	}
+
+	public static void setNarrativeTypesHelper(NarrativeTypeHelper narrativeTypesHelper) {
+		ImportNarrativeDocument.narrativeTypesHelper = narrativeTypesHelper;
+
 	}
 
 }

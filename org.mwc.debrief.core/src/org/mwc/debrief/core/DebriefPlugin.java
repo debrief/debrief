@@ -70,6 +70,7 @@ import org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment;
 import org.mwc.debrief.core.preferences.PrefsPage;
 import org.mwc.debrief.core.ui.DebriefImageHelper;
 import org.mwc.debrief.core.ui.ImportNarrativeHelper;
+import org.mwc.debrief.core.ui.ImportNarrativeTypesHelper;
 import org.mwc.debrief.core.ui.SWTEclipseHelper;
 import org.osgi.framework.BundleContext;
 
@@ -77,6 +78,7 @@ import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.Replay.ImportReplay.Runner;
 import Debrief.ReaderWriter.Word.ImportASWDataDocument;
 import Debrief.ReaderWriter.Word.ImportNarrativeDocument;
+import Debrief.ReaderWriter.Word.ImportNarrativeDocument.NarrativeTypeHelper;
 import Debrief.ReaderWriter.XML.extensions.AdditionalDataHandler;
 import Debrief.ReaderWriter.XML.extensions.AdditionalDataHandler.ExportProvider;
 import Debrief.ReaderWriter.ais.AISDecoder;
@@ -472,7 +474,12 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider {
 		ImportASWDataDocument.setQuestionHelper(questionHelper);
 		if (!isRunningTests()) {
 			ImportNarrativeDocument.setNarrativeHelper(new ImportNarrativeHelper());
+			final NarrativeTypeHelper narrativeTypesHelper = new ImportNarrativeTypesHelper();
+			ImportNarrativeDocument.setNarrativeTypesHelper(narrativeTypesHelper);
 		}
+		
+		
+		
 
 		// tell the additional data that we can help
 		AdditionalDataHandler.setExportHelper(new ExportProvider() {
