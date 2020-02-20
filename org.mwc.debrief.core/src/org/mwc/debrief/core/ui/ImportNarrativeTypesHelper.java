@@ -16,7 +16,7 @@ package org.mwc.debrief.core.ui;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
@@ -30,7 +30,7 @@ import Debrief.ReaderWriter.Word.ImportNarrativeDocument.NarrativeTypeHelper;
 public class ImportNarrativeTypesHelper implements NarrativeTypeHelper {
 
 	@Override
-	public List<String> getSelectedNarrativeTypes(final Set<String> narrativeTypes) {
+	public List<String> getSelectedNarrativeTypes(final Map<String,Integer> narrativeTypes) {
 		final Display targetDisplay;
 		final List<String> retVal = new ArrayList<String>();
 		if (Display.getCurrent() == null) {

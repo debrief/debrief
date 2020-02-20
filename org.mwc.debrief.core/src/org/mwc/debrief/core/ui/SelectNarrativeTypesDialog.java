@@ -16,12 +16,14 @@ package org.mwc.debrief.core.ui;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -35,12 +37,11 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class SelectNarrativeTypesDialog extends Dialog {
 
-	private Set<String> types;
+	private Map<String,Integer> types;
 	private Button[] typesCheck;
-	private Button selectAllRadio;
-	private Button deselectAllRadio;
+	private Button selectAllCheck;
 	private List<String> selectedTypes;
-	public SelectNarrativeTypesDialog(Shell parentShell,Set<String> narrativeTypes) {
+	public SelectNarrativeTypesDialog(Shell parentShell,Map<String,Integer> narrativeTypes) {
 		super(parentShell);
 		this.types = narrativeTypes;
 		
@@ -54,56 +55,70 @@ public class SelectNarrativeTypesDialog extends Dialog {
 	
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		Control control =  super.createDialogArea(parent);
-		Composite component = new Composite((Composite)control,SWT.NONE);
-		component.setLayout(new GridLayout());
-		Label lblHeading = new Label(component,SWT.NONE);
+		Composite control =  (Composite)super.createDialogArea(parent);
+		control.setLayout(new GridLayout());
+		Composite headingComposite = new Composite(control,SWT.NONE);
+		Label lblHeading = new Label(headingComposite,SWT.NONE);
+		headingComposite.setLayout(new GridLayout());
 		lblHeading.setText("Select the narrative types to import:");
-		Composite radioGroupComposite = new Composite(component,SWT.NONE);
-		radioGroupComposite.setLayout(new GridLayout(2,true));
-		selectAllRadio = new Button(radioGroupComposite,SWT.RADIO);
-		selectAllRadio.setText("Select All");
-		deselectAllRadio = new Button(radioGroupComposite,SWT.RADIO);
-		deselectAllRadio.setText("Deselect All");
-		Composite typesComposite = new Composite(component,SWT.NONE);
-		typesComposite.setLayout(new GridLayout(1,true));
+		lblHeading.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false));
+		ScrolledComposite scrolledComposite = new ScrolledComposite(control,SWT.V_SCROLL|SWT.BORDER);
+		Composite component = createCheckboxes(scrolledComposite);
+		scrolledComposite.setContent(component);
+		scrolledComposite.setExpandVertical( true );
+		scrolledComposite.setExpandHorizontal(true);
+		scrolledComposite.setMinSize( 250, 250 );
+		scrolledComposite.addListener( SWT.Resize, event -> {
+		      int width = scrolledComposite.getClientArea().width;
+		      scrolledComposite.setMinSize( parent.computeSize( width, SWT.DEFAULT ) );
+		    } );
+		GridData gridData = new GridData( SWT.FILL, SWT.FILL, true, true );
+	    scrolledComposite.setLayoutData( gridData );
+	    
 		
+		selectAllCheck = new Button(control,SWT.CHECK);
+		selectAllCheck.setText("Select All/None");
+		selectAllCheck.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				for(Button button:typesCheck)
+				{
+					button.setSelection(selectAllCheck.getSelection());
+				}
+			}
+		});
+		return control;
+	}
+	
+	
+	private Composite createCheckboxes(Composite scrolledComposite) {
+		Composite component = new Composite(scrolledComposite,SWT.NONE);
+		component.setLayout(new GridLayout());
+		
+		Composite typesComposite = new Composite(component,SWT.NONE);
+		typesComposite.setLayout(new GridLayout(2,true));
 		typesCheck = new Button[types.size()];
 		int i=0;
 		
-		for(String type:types)
+		for(String type:types.keySet())
 		{
-			typesCheck[i]=new Button(component,SWT.CHECK);
-			typesCheck[i].setText(type);
+			typesCheck[i]=new Button(typesComposite,SWT.CHECK);
+			typesCheck[i].setText(type+"("+types.get(type)+")");
+			typesCheck[i].setLayoutData(new GridData(SWT.FILL));
 			i++;
 		}
-		selectAllRadio.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				for(Button button:typesCheck)
-				{
-					button.setSelection(true);
-				}
-			}
-		});
-		deselectAllRadio.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				for(Button button:typesCheck)
-				{
-					button.setSelection(false);
-				}
-			}
-		});
 		return component;
+		
 	}
+
 	@Override
 	protected void okPressed() {
 		selectedTypes = new ArrayList<>();
 		for(Button button:typesCheck)
 		{
 			if(button.getSelection()) {
-				selectedTypes.add(button.getText());
+				String text = button.getText();
+				selectedTypes.add(text.substring(0,text.indexOf("(")));
 			}
 		}
 		super.okPressed();

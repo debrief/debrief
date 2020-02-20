@@ -45,11 +45,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -645,7 +643,7 @@ public class ImportNarrativeDocument {
 	}
 
 	public static interface NarrativeTypeHelper {
-		List<String> getSelectedNarrativeTypes(final Set<String> narrativeTypes);
+		List<String> getSelectedNarrativeTypes(final Map<String,Integer> narrativeTypes);
 	}
 
 	/**
@@ -2157,6 +2155,7 @@ public class ImportNarrativeDocument {
 		if (strings.isEmpty()) {
 			return;
 		}
+		Map<String,Integer> typeVsCount = new HashMap<>();
 		boolean proceed = true;
 		ImportNarrativeEnum whatToImport = null;
 		if (trimNarrativeHelper != null) {
@@ -2186,7 +2185,6 @@ public class ImportNarrativeDocument {
 
 		// see if we have an index for start of records
 		final int START_INDEX = indexOfStart(strings);
-		Set<String> types = new HashSet<String>();
 		List<NarrEntry> narrativeEntries = new ArrayList<NarrEntry>();
 		// ok, now we can loop through the strings
 		if (proceed) {
@@ -2262,11 +2260,19 @@ public class ImportNarrativeDocument {
 						// clear the appended flag
 						appendedToPreviousCtr = 0;
 					}
+					final String type;
 					if (thisN.type != null) {
-						types.add(thisN.type);
+						type=thisN.type;
 					}
 					else {
-						types.add("Empty");
+						type="None";
+					}
+					if(typeVsCount.get(type)==null)
+					{
+						typeVsCount.put(type,Integer.valueOf(1));
+					}
+					else {
+						typeVsCount.put(type,typeVsCount.get(thisN.type)+1);
 					}
 					// remember that entry, in case we get incomplete text inthe future
 					_lastNarrEntry = thisN;
@@ -2278,7 +2284,7 @@ public class ImportNarrativeDocument {
 			}
 		}
 		if (narrativeTypesHelper != null) {
-			selectedNarrativeTypes = narrativeTypesHelper.getSelectedNarrativeTypes(types);
+			selectedNarrativeTypes = narrativeTypesHelper.getSelectedNarrativeTypes(typeVsCount);
 			dataAdded = addEntries(narrativeEntries,selectedNarrativeTypes);
 		}
 		else {
