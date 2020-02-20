@@ -643,7 +643,7 @@ public class ImportNarrativeDocument {
 	}
 
 	public static interface NarrativeTypeHelper {
-		List<String> getSelectedNarrativeTypes(final Map<String,Integer> narrativeTypes);
+		List<String> getSelectedNarrativeTypes(final Map<String, Integer> narrativeTypes);
 	}
 
 	/**
@@ -1258,7 +1258,7 @@ public class ImportNarrativeDocument {
 			assertEquals("day", 16, instance.get(Calendar.DAY_OF_MONTH));
 			// removed the next line - it's failing on the CI build,
 			// because of a timezone difference
-			
+
 			assertEquals("hour", 9, instance.get(Calendar.HOUR_OF_DAY)); // not 9, since
 			// we're BST
 			assertEquals("min", 9, instance.get(Calendar.MINUTE));
@@ -1592,9 +1592,8 @@ public class ImportNarrativeDocument {
 			assertNotNull(narrLayer);
 			assertEquals("have items", 5, narrLayer.size());
 		}
-		
-		public void testImportAllNarrativeTypes() throws Exception
-		{
+
+		public void testImportAllNarrativeTypes() throws Exception {
 			final String testFile = dummy_doc_path;
 			final File testI = new File(testFile);
 			assertTrue(testI.exists());
@@ -1607,11 +1606,10 @@ public class ImportNarrativeDocument {
 			importer.processThese(strings);
 			final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(LayerHandler.NARRATIVE_LAYER);
 			assertNotNull(narrLayer);
-			assertEquals(narrLayer.size(),13);
+			assertEquals(narrLayer.size(), 13);
 		}
-		
-		public void testImportSelectedNarrativeFCSTypes() throws Exception
-		{
+
+		public void testImportSelectedNarrativeFCSTypes() throws Exception {
 			final String testFile = valid_doc_path;
 			final File testI = new File(testFile);
 			assertTrue(testI.exists());
@@ -1627,12 +1625,11 @@ public class ImportNarrativeDocument {
 			importer.processThese(strings);
 			final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(LayerHandler.NARRATIVE_LAYER);
 			assertNotNull(narrLayer);
-			assertEquals(narrLayer.size(),18);
-			
+			assertEquals(narrLayer.size(), 18);
+
 		}
-		
-		public void testImportSelectedNarrativeNonFCSTypes() throws Exception
-		{
+
+		public void testImportSelectedNarrativeNonFCSTypes() throws Exception {
 			final String testFile = dummy_doc_path;
 			final File testI = new File(testFile);
 			assertTrue(testI.exists());
@@ -1648,9 +1645,8 @@ public class ImportNarrativeDocument {
 			importer.processThese(strings);
 			final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(LayerHandler.NARRATIVE_LAYER);
 			assertNotNull(narrLayer);
-			assertEquals(narrLayer.size(),5);
+			assertEquals(narrLayer.size(), 5);
 		}
-		
 
 		@SuppressWarnings("unused")
 		private String messageStr = null;
@@ -2155,7 +2151,7 @@ public class ImportNarrativeDocument {
 		if (strings.isEmpty()) {
 			return;
 		}
-		Map<String,Integer> typeVsCount = new HashMap<>();
+		Map<String, Integer> typeVsCount = new HashMap<>();
 		boolean proceed = true;
 		ImportNarrativeEnum whatToImport = null;
 		if (trimNarrativeHelper != null) {
@@ -2249,7 +2245,7 @@ public class ImportNarrativeDocument {
 							final String newText = thisN.text;
 
 							_lastNarrEntry.text = _lastNarrEntry.text + "\n" + newText;
-							
+
 							// ok, keep track of how many times we've appended
 							appendedToPreviousCtr++;
 						}
@@ -2262,38 +2258,33 @@ public class ImportNarrativeDocument {
 					}
 					final String type;
 					if (thisN.type != null) {
-						type=thisN.type;
+						type = thisN.type;
+					} else {
+						type = "None";
 					}
-					else {
-						type="None";
-					}
-					if(typeVsCount.get(type)==null)
-					{
-						typeVsCount.put(type,Integer.valueOf(1));
-					}
-					else {
-						typeVsCount.put(type,typeVsCount.get(thisN.type)+1);
+					if (typeVsCount.get(type) == null) {
+						typeVsCount.put(type, Integer.valueOf(1));
+					} else {
+						typeVsCount.put(type, typeVsCount.get(type) + 1);
 					}
 					// remember that entry, in case we get incomplete text inthe future
 					_lastNarrEntry = thisN;
 					narrativeEntries.add(thisN);
-						
+
 				} catch (final Exception e) {
 					logThisError(ToolParent.WARNING, "Failed whilst parsing line:" + text, e);
 				}
 			}
 		}
 		if (narrativeTypesHelper != null) {
-			 if(typeVsCount!=null && !typeVsCount.isEmpty()) {
-				 selectedNarrativeTypes = narrativeTypesHelper.getSelectedNarrativeTypes(typeVsCount);
-				 dataAdded = addEntries(narrativeEntries,selectedNarrativeTypes);
-			 }
-			 else {
-				 questionHelper.showMessage("Narrative Types", "No narrative types found, there is nothing to import");
-			 }
-		}
-		else {
-			dataAdded = addEntries(narrativeEntries,selectedNarrativeTypes);
+			if (typeVsCount != null && !typeVsCount.isEmpty()) {
+				selectedNarrativeTypes = narrativeTypesHelper.getSelectedNarrativeTypes(typeVsCount);
+				dataAdded = addEntries(narrativeEntries, selectedNarrativeTypes);
+			} else {
+				questionHelper.showMessage("Narrative Types", "No narrative types found, there is nothing to import");
+			}
+		} else {
+			dataAdded = addEntries(narrativeEntries, selectedNarrativeTypes);
 		}
 		if (dataAdded) {
 			_layers.fireModified(getNarrativeLayer());
@@ -2301,11 +2292,11 @@ public class ImportNarrativeDocument {
 	}
 
 	private boolean addEntries(List<NarrEntry> narrativeEntries, List<String> selectedNarrativeTypes) {
-		boolean dataAdded=false;
+		boolean dataAdded = false;
 		// do this on the selected narratives
-		for (NarrEntry thisN:narrativeEntries) {
+		for (NarrEntry thisN : narrativeEntries) {
 			// did we process anything?
-			if (thisN.type != null && (selectedNarrativeTypes==null || selectedNarrativeTypes.contains(thisN.type))) {
+			if (thisN.type != null && (selectedNarrativeTypes == null || selectedNarrativeTypes.contains(thisN.type))) {
 				// ok, process the entry
 				switch (thisN.type) {
 				case "FCS": {
@@ -2321,9 +2312,9 @@ public class ImportNarrativeDocument {
 					}
 				}
 
-				// ok, take note that we've added something
-				dataAdded = true;
-				break;
+					// ok, take note that we've added something
+					dataAdded = true;
+					break;
 				default: {
 					// ok, just add a narrative entry for anything not recognised
 					// add a narrative entry
