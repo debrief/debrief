@@ -40,7 +40,7 @@ public class SelectNarrativeTypesDialog extends Dialog {
 	private Map<String,Integer> types;
 	private Button[] typesCheck;
 	private Button selectAllCheck;
-	private List<String> selectedTypes;
+	private List<String> selectedTypes = new ArrayList<>();;
 	public SelectNarrativeTypesDialog(Shell parentShell,Map<String,Integer> narrativeTypes) {
 		super(parentShell);
 		this.types = narrativeTypes;
@@ -113,7 +113,6 @@ public class SelectNarrativeTypesDialog extends Dialog {
 
 	@Override
 	protected void okPressed() {
-		selectedTypes = new ArrayList<>();
 		for(Button button:typesCheck)
 		{
 			if(button.getSelection()) {

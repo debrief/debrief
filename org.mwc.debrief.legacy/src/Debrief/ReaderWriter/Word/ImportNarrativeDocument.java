@@ -2284,8 +2284,13 @@ public class ImportNarrativeDocument {
 			}
 		}
 		if (narrativeTypesHelper != null) {
-			selectedNarrativeTypes = narrativeTypesHelper.getSelectedNarrativeTypes(typeVsCount);
-			dataAdded = addEntries(narrativeEntries,selectedNarrativeTypes);
+			 if(typeVsCount!=null && !typeVsCount.isEmpty()) {
+				 selectedNarrativeTypes = narrativeTypesHelper.getSelectedNarrativeTypes(typeVsCount);
+				 dataAdded = addEntries(narrativeEntries,selectedNarrativeTypes);
+			 }
+			 else {
+				 questionHelper.showMessage("Narrative Types", "No narrative types found, there is nothing to import");
+			 }
 		}
 		else {
 			dataAdded = addEntries(narrativeEntries,selectedNarrativeTypes);
