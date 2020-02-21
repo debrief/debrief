@@ -1397,6 +1397,8 @@ public class DebriefLiteApp implements FileDropListener {
 		currentFileName = null;
 		setTitle(defaultTitle);
 
+		setInitialArea(mapPane, geoMapRenderer.getTransform());
+		
 		// also clear the tote
 		theTote.clear();
 
