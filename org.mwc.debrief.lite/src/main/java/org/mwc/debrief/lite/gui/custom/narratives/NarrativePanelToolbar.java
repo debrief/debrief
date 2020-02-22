@@ -164,7 +164,8 @@ public class NarrativePanelToolbar extends JPanel {
 					final Enumeration<Editable> items = narrativeWrapper.elements();
 					while (items.hasMoreElements()) {
 						final Editable thisE = items.nextElement();
-						newEntries.add((NarrativeEntry) thisE);
+						if (((NarrativeEntry)thisE).getVisible())
+							newEntries.add((NarrativeEntry) thisE);
 					}
 					for (final NarrativeEntry currentEntry : _model.getCurrentNarrativeEntries(narrativeWrapper)) {
 						if (!newEntries.contains(currentEntry)) {
@@ -181,7 +182,11 @@ public class NarrativePanelToolbar extends JPanel {
 					final Enumeration<Editable> items = narrativeWrapper.elements();
 					while (items.hasMoreElements()) {
 						final Editable thisE = items.nextElement();
-						toAdd.add((NarrativeEntry) thisE);
+						final NarrativeEntry newEntry = (NarrativeEntry)thisE;
+						if ( newEntry.getVisible() )
+						{
+							toAdd.add((NarrativeEntry) thisE);
+						}
 					}
 
 				}
@@ -311,7 +316,7 @@ public class NarrativePanelToolbar extends JPanel {
 		final Set<NarrativeWrapper> loadedNarratives = new TreeSet<>();
 		while (elem.hasMoreElements()) {
 			final Editable nextItem = elem.nextElement();
-			if (nextItem instanceof NarrativeWrapper) {
+			if (nextItem instanceof NarrativeWrapper && ((NarrativeWrapper) nextItem).getVisible()) {
 				final NarrativeWrapper newNarrative = (NarrativeWrapper) nextItem;
 				loadedNarratives.add(newNarrative);
 				if (!_model.getRegisteredNarrativeWrapper().contains(nextItem)) {
@@ -356,11 +361,13 @@ public class NarrativePanelToolbar extends JPanel {
 				@Override
 				public void dataModified(final Layers theData, final Layer changedLayer) {
 					checkNewNarratives(theData);
+					//notifyListenersStateChanged(changedLayer, NARRATIVES_PROPERTY, null, changedLayer);
 				}
 
 				@Override
 				public void dataReformatted(final Layers theData, final Layer changedLayer) {
 					checkNewNarratives(theData);
+					//notifyListenersStateChanged(changedLayer, NARRATIVES_PROPERTY, null, changedLayer);
 				}
 			};
 			_stepControl.getLayers().addDataExtendedListener(registerNarrativeListener);
