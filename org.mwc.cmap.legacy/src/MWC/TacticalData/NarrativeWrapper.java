@@ -431,6 +431,15 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper
 			// listen for date changes, since we'll have to re-order
 			editable.getInfo().addPropertyChangeListener(NarrativeEntry.DTG, _dateChangeListener);
 
+
+			editable.getInfo().addPropertyChangeListener(new PropertyChangeListener() {
+				
+				@Override
+				public void propertyChange(PropertyChangeEvent evt) {
+					System.out.println("Saul");
+					//notifyListenersStateChanged(editable, NarrativeEntry.VISIBILITY_CHANGE, null, editable);
+				}
+			});
 			_myEntries.add(editable);
 
 			// and inform anybody who happens to be listening

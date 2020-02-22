@@ -158,6 +158,11 @@ public final class NarrativeEntry
 		this._stateListeners.add(listener);
 	}
 	
+	public void removeAllPropertyChangeListeners()
+	{
+		_stateListeners.clear();
+	}
+	
 	private void notifyListenersStateChanged(final Object source, final String property, final Object oldValue,
 			final Object newValue) {
 		if (_notifierEnabled)
@@ -417,9 +422,13 @@ public final class NarrativeEntry
 	@Override
 	@FireReformatted
 	public final void setVisible(final boolean val) {
-		_visible = val;
-		
-		notifyListenersStateChanged(this, VISIBILITY_CHANGE, null, val);
+		if ( val != _visible )
+		{
+			_visible = val;
+			
+			
+			notifyListenersStateChanged(this, VISIBILITY_CHANGE, null, val);
+		}
 	}
 
 	@Override

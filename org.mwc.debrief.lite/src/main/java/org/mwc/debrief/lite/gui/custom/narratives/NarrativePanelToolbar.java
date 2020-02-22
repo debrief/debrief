@@ -124,7 +124,7 @@ public class NarrativePanelToolbar extends JPanel {
 
 		@Override
 		public void propertyChange(final PropertyChangeEvent evt) {
-			if (NARRATIVES_PROPERTY.equals(evt.getPropertyName())) {
+			if (NARRATIVES_PROPERTY.equals(evt.getPropertyName()) || NarrativeEntry.VISIBILITY_CHANGE.equals(evt.getPropertyName())) {
 				updateNarratives(evt.getNewValue());
 			} else if (NARRATIVES_REMOVE_COMPLETE_LAYER.equals(evt.getPropertyName())) {
 				removeCompleteNarrativeLayer((NarrativeWrapper) evt.getNewValue());
@@ -192,12 +192,20 @@ public class NarrativePanelToolbar extends JPanel {
 				}
 
 				for (final NarrativeEntry entry : toAdd) {
+					entry.addPropertyChangeListener(new PropertyChangeListener() {
+						
+						@Override
+						public void propertyChange(PropertyChangeEvent evt) {
+							notifyListenersStateChanged(entry, NARRATIVES_PROPERTY, null, entry);
+						}
+					});
 					final NarrativeEntryItem entryItem = new NarrativeEntryItem(entry, _model);
 					_narrativeListModel.addRow(new NarrativeEntryItem[] { entryItem });
 					_model.registerNewNarrativeEntry(narrativeWrapper, entry);
 
 				}
 				for (final NarrativeEntry entry : toRemove) {
+					entry.removeAllPropertyChangeListeners();
 					for (int i = 0; i < _narrativeListModel.getRowCount(); i++) {
 						final NarrativeEntryItem currentItem = (NarrativeEntryItem) _narrativeListModel.getValueAt(i,
 								0);
@@ -210,6 +218,27 @@ public class NarrativePanelToolbar extends JPanel {
 				// Sort it.
 
 				_narrativeListSorter.sort();
+			}else if (layerChanged instanceof NarrativeEntry)
+			{
+				final NarrativeEntry entry = (NarrativeEntry)layerChanged;
+				if (entry.getVisible())
+				{
+					// We are adding a new narraty entry.
+					final NarrativeEntryItem entryItem = new NarrativeEntryItem(entry, _model);
+					
+					_narrativeListModel.addRow(new NarrativeEntryItem[] { entryItem });
+					_narrativeListSorter.sort();
+				}else
+				{
+					for (int i = 0; i < _narrativeListModel.getRowCount(); i++) {
+						final NarrativeEntryItem currentItem = (NarrativeEntryItem) _narrativeListModel.getValueAt(i,
+								0);
+						if (currentItem.getEntry().equals(entry)) {
+							_narrativeListModel.removeRow(i);
+							break;
+						}
+					}
+				}
 			}
 		}
 	};
@@ -328,6 +357,7 @@ public class NarrativePanelToolbar extends JPanel {
 							notifyListenersStateChanged(nextItem, NARRATIVES_PROPERTY, null, nextItem);
 						}
 					});
+					
 					notifyListenersStateChanged(nextItem, NARRATIVES_PROPERTY, null, nextItem);
 				}
 			}

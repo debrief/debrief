@@ -544,7 +544,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor {
 				final Vector<Layer> res = super.performOperation(operationName);
 
 				if (res != null) {
-					if (res.size() != 0) {
+					if (!res.isEmpty()) {
 						for (final Iterator<Layer> iter = res.iterator(); iter.hasNext();) {
 							final Layer thisL = iter.next();
 							// and update the screen
