@@ -507,7 +507,7 @@ public class DebriefRibbonTimeController {
 						.setOrientation(CommandStripPresentationModel.StripOrientation.HORIZONTAL)
 						.setHorizontalGapScaleFactor(0.8).setVerticalGapScaleFactor(1.4).build());
 		topButtonCommands = commandStripProjection.getContentModel().getCommands();
-		setTopCommandsEnabled(topButtonCommands, false);
+		//setTopCommandsEnabled(topButtonCommands, false);
 		control.addFlowComponent(commandStripProjection);
 		control.addFlowComponent(timeLabelProjection);
 		control.addFlowComponent(formatCommandButton);
@@ -670,6 +670,17 @@ public class DebriefRibbonTimeController {
 		stepControl.getLayers().addDataModifiedListener(updateTimeController);
 		stepControl.getLayers().addDataReformattedListener(updateTimeController);
 
+		DebriefLiteApp.getInstance().addStateListener(new PropertyChangeListener() {
+			@Override
+			public void propertyChange(final PropertyChangeEvent evt) {
+				if (DebriefLiteApp.STATE.equals(evt.getPropertyName())) {
+					final boolean enabled = DebriefLiteApp.ACTIVE_STATE.equals(evt.getNewValue())
+							|| DebriefLiteApp.TIME_ENABLED_STATE.equals(evt.getNewValue());
+					setButtonsEnabled(topButtonCommands, enabled);
+				}
+			}
+		});
+
 		final List<RibbonBandResizePolicy> policies = new ArrayList<>();
 		policies.add(new CoreRibbonResizePolicies.FlowTwoRows(control));
 		control.setResizePolicies(policies);
@@ -819,6 +830,18 @@ public class DebriefRibbonTimeController {
 				rangeDisplayModel.setMaxValueText(" ");
 				rangeDisplayModel.setMinValueText(" ");
 
+			}
+		});
+
+		DebriefLiteApp.getInstance().addStateListener(new PropertyChangeListener() {
+			@Override
+			public void propertyChange(final PropertyChangeEvent evt) {
+				if (DebriefLiteApp.STATE.equals(evt.getPropertyName())) {
+					final boolean enabled = DebriefLiteApp.ACTIVE_STATE.equals(evt.getNewValue())
+							|| DebriefLiteApp.TIME_ENABLED_STATE.equals(evt.getNewValue());
+					filterTimeRangeSlider.setEnabled(enabled);
+					timeFilterRangeModel.setEnabled(enabled);
+				}
 			}
 		});
 		return timePeriod;
