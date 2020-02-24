@@ -40,7 +40,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -1388,7 +1387,7 @@ public class DebriefLiteApp implements FileDropListener {
 		setTitle(defaultTitle);
 
 		setInitialArea(mapPane, geoMapRenderer.getTransform());
-		
+
 		// also clear the tote
 		theTote.clear();
 

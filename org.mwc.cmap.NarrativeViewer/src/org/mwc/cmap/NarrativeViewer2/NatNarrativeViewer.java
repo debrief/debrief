@@ -405,7 +405,8 @@ public class NatNarrativeViewer {
 			final NarrativeEntry[] narrativeHistory = input.getNarrativeHistory(new String[] {});
 			final List<INatEntry> entries = new ArrayList<INatEntry>(narrativeHistory.length);
 			for (final NarrativeEntry narrativeEntry : narrativeHistory) {
-				if (narrativeEntry.getVisible() && (narrativeEntry.getNarrativeWrapper() == null || narrativeEntry.getNarrativeWrapper().getVisible())) {
+				if (narrativeEntry.getVisible() && (narrativeEntry.getNarrativeWrapper() == null
+						|| narrativeEntry.getNarrativeWrapper().getVisible())) {
 					entries.add(new NatEntryProxy(dateFormatter, narrativeEntry));
 				}
 			}

@@ -109,6 +109,8 @@ public final class NarrativeEntry
 
 	static public final String NARRATIVE_LAYER = "Narratives";
 
+	public static String VISIBILITY_CHANGE = "VISIBILITY";
+
 	public static int nullSafeStringComparator(final String one, final String two) {
 		if (one == null ^ two == null) {
 			return (one == null) ? -1 : 1;
@@ -145,10 +147,8 @@ public final class NarrativeEntry
 	 */
 	private transient String _cachedString = null;
 
-	public static String VISIBILITY_CHANGE = "VISIBILITY";
-	
 	private NarrativeWrapper _narrativeWrapper;
-	
+
 	private transient NarrativeEntryInfo _myInfo;
 
 	private Color _color = DEFAULT_COLOR;
@@ -283,13 +283,17 @@ public final class NarrativeEntry
 		return _cachedString;
 	}
 
-	public final String getSource() {
-		return _track;
+	public NarrativeWrapper getNarrativeWrapper() {
+		return _narrativeWrapper;
 	}
 
 	// ///////////////////////////////////////////
 	// member methods to meet requirements of Plottable interface
 	// ///////////////////////////////////////////
+
+	public final String getSource() {
+		return _track;
+	}
 
 	// ///////////////////////////////////////////
 	// accessor methods
@@ -376,6 +380,10 @@ public final class NarrativeEntry
 		clearHash();
 	}
 
+	public void setNarrativeWrapper(final NarrativeWrapper _narrativeWrapper) {
+		this._narrativeWrapper = _narrativeWrapper;
+	}
+
 	@FireReformatted
 	public final void setSource(final String track) {
 		_track = track;
@@ -398,8 +406,7 @@ public final class NarrativeEntry
 	@Override
 	@FireReformatted
 	public final void setVisible(final boolean val) {
-		if ( val != _visible )
-		{
+		if (val != _visible) {
 			_visible = val;
 			this.getInfo().fireChanged(this, VISIBILITY_CHANGE, null, val);
 		}
@@ -408,13 +415,5 @@ public final class NarrativeEntry
 	@Override
 	public final String toString() {
 		return getName();
-	}
-
-	public NarrativeWrapper getNarrativeWrapper() {
-		return _narrativeWrapper;
-	}
-
-	public void setNarrativeWrapper(NarrativeWrapper _narrativeWrapper) {
-		this._narrativeWrapper = _narrativeWrapper;
 	}
 }

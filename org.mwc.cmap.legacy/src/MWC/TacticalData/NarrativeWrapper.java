@@ -111,7 +111,6 @@ import java.text.SimpleDateFormat;
 import java.util.AbstractCollection;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.Vector;
@@ -383,6 +382,8 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper
 
 	private final PropertyChangeListener _dateChangeListener;
 
+	private PropertyChangeListener _narrativeViewerListener;
+
 	/**
 	 * constructor, of course.
 	 *
@@ -424,19 +425,6 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper
 		_myEntries = new ConcurrentSkipListSet<Editable>();
 		_myName = title;
 	}
-	
-	private PropertyChangeListener _narrativeViewerListener;
-
-	
-
-	public void setNarrativeViewerListener(PropertyChangeListener _narrativeViewerListener) {
-		this._narrativeViewerListener = _narrativeViewerListener;
-		for (Editable e : _myEntries)
-		{
-			e.getInfo().removePropertyChangeListener(_narrativeViewerListener);
-			e.getInfo().addPropertyChangeListener(_narrativeViewerListener);
-		}
-	}
 
 	@Override
 	public final void add(final Editable editable) {
@@ -445,11 +433,10 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper
 			// listen for date changes, since we'll have to re-order
 			editable.getInfo().addPropertyChangeListener(NarrativeEntry.DTG, _dateChangeListener);
 
-			if (_narrativeViewerListener != null)
-			{
+			if (_narrativeViewerListener != null) {
 				editable.getInfo().addPropertyChangeListener(_narrativeViewerListener);
 			}
-			((NarrativeEntry)editable).setNarrativeWrapper(this);
+			((NarrativeEntry) editable).setNarrativeWrapper(this);
 			_myEntries.add(editable);
 
 			// and inform anybody who happens to be listening
@@ -718,6 +705,14 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper
 	@Override
 	public final void setName(final String name) {
 		_myName = name;
+	}
+
+	public void setNarrativeViewerListener(final PropertyChangeListener _narrativeViewerListener) {
+		this._narrativeViewerListener = _narrativeViewerListener;
+		for (final Editable e : _myEntries) {
+			e.getInfo().removePropertyChangeListener(_narrativeViewerListener);
+			e.getInfo().addPropertyChangeListener(_narrativeViewerListener);
+		}
 	}
 
 	/**

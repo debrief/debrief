@@ -507,7 +507,7 @@ public class DebriefRibbonTimeController {
 						.setOrientation(CommandStripPresentationModel.StripOrientation.HORIZONTAL)
 						.setHorizontalGapScaleFactor(0.8).setVerticalGapScaleFactor(1.4).build());
 		topButtonCommands = commandStripProjection.getContentModel().getCommands();
-		//setTopCommandsEnabled(topButtonCommands, false);
+		// setTopCommandsEnabled(topButtonCommands, false);
 		control.addFlowComponent(commandStripProjection);
 		control.addFlowComponent(timeLabelProjection);
 		control.addFlowComponent(formatCommandButton);

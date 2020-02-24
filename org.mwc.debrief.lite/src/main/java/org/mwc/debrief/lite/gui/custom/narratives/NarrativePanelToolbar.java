@@ -119,12 +119,13 @@ public class NarrativePanelToolbar extends JPanel {
 			}
 		}
 	};
-	
+
 	private final PropertyChangeListener updatingNarrativesListener = new PropertyChangeListener() {
 
 		@Override
 		public void propertyChange(final PropertyChangeEvent evt) {
-			if (NARRATIVES_PROPERTY.equals(evt.getPropertyName()) || NarrativeEntry.VISIBILITY_CHANGE.equals(evt.getPropertyName())) {
+			if (NARRATIVES_PROPERTY.equals(evt.getPropertyName())
+					|| NarrativeEntry.VISIBILITY_CHANGE.equals(evt.getPropertyName())) {
 				updateNarratives(evt.getSource());
 			} else if (NARRATIVES_REMOVE_COMPLETE_LAYER.equals(evt.getPropertyName())) {
 				removeCompleteNarrativeLayer((NarrativeWrapper) evt.getNewValue());
@@ -164,7 +165,7 @@ public class NarrativePanelToolbar extends JPanel {
 					final Enumeration<Editable> items = narrativeWrapper.elements();
 					while (items.hasMoreElements()) {
 						final Editable thisE = items.nextElement();
-						if (((NarrativeEntry)thisE).getVisible())
+						if (((NarrativeEntry) thisE).getVisible())
 							newEntries.add((NarrativeEntry) thisE);
 					}
 					for (final NarrativeEntry currentEntry : _model.getCurrentNarrativeEntries(narrativeWrapper)) {
@@ -182,9 +183,8 @@ public class NarrativePanelToolbar extends JPanel {
 					final Enumeration<Editable> items = narrativeWrapper.elements();
 					while (items.hasMoreElements()) {
 						final Editable thisE = items.nextElement();
-						final NarrativeEntry newEntry = (NarrativeEntry)thisE;
-						if ( newEntry.getVisible() )
-						{
+						final NarrativeEntry newEntry = (NarrativeEntry) thisE;
+						if (newEntry.getVisible()) {
 							toAdd.add((NarrativeEntry) thisE);
 						}
 					}
@@ -210,24 +210,20 @@ public class NarrativePanelToolbar extends JPanel {
 				// Sort it.
 
 				_narrativeListSorter.sort();
-			}else if (layerChanged instanceof NarrativeEntry)
-			{
-				final NarrativeEntry entry = (NarrativeEntry)layerChanged;
-				if (entry.getVisible() && (entry.getNarrativeWrapper() == null || entry.getNarrativeWrapper().getVisible() ))
-				{
+			} else if (layerChanged instanceof NarrativeEntry) {
+				final NarrativeEntry entry = (NarrativeEntry) layerChanged;
+				if (entry.getVisible()
+						&& (entry.getNarrativeWrapper() == null || entry.getNarrativeWrapper().getVisible())) {
 					// We are adding a new narraty entry.
 					final NarrativeEntryItem entryItem = new NarrativeEntryItem(entry, _model);
-					
+
 					_narrativeListModel.addRow(new NarrativeEntryItem[] { entryItem });
-					if (entry.getNarrativeWrapper() != null)
-					{
+					if (entry.getNarrativeWrapper() != null) {
 						_model.registerNewNarrativeEntry(entry.getNarrativeWrapper(), entry);
 					}
 					_narrativeListSorter.sort();
-				}else
-				{
-					if (entry.getNarrativeWrapper() != null)
-					{
+				} else {
+					if (entry.getNarrativeWrapper() != null) {
 						_model.unregisterNarrativeEntry(entry.getNarrativeWrapper(), entry);
 					}
 					for (int i = 0; i < _narrativeListModel.getRowCount(); i++) {
@@ -351,8 +347,10 @@ public class NarrativePanelToolbar extends JPanel {
 				if (!_model.getRegisteredNarrativeWrapper().contains(nextItem)) {
 					_model.addNarrativeWrapper(newNarrative);
 					newNarrative.setNarrativeViewerListener(updatingNarrativesListener);
-					newNarrative.getSupport().addPropertyChangeListener(NARRATIVES_PROPERTY, updatingNarrativesListener);
-					//newNarrative.getInfo().fireChanged(nextItem, NARRATIVES_PROPERTY, null, nextItem);
+					newNarrative.getSupport().addPropertyChangeListener(NARRATIVES_PROPERTY,
+							updatingNarrativesListener);
+					// newNarrative.getInfo().fireChanged(nextItem, NARRATIVES_PROPERTY, null,
+					// nextItem);
 					newNarrative.getSupport().firePropertyChange(NARRATIVES_PROPERTY, null, nextItem);
 				}
 			}
@@ -386,13 +384,15 @@ public class NarrativePanelToolbar extends JPanel {
 				@Override
 				public void dataModified(final Layers theData, final Layer changedLayer) {
 					checkNewNarratives(theData);
-					//notifyListenersStateChanged(changedLayer, NARRATIVES_PROPERTY, null, changedLayer);
+					// notifyListenersStateChanged(changedLayer, NARRATIVES_PROPERTY, null,
+					// changedLayer);
 				}
 
 				@Override
 				public void dataReformatted(final Layers theData, final Layer changedLayer) {
 					checkNewNarratives(theData);
-					//notifyListenersStateChanged(changedLayer, NARRATIVES_PROPERTY, null, changedLayer);
+					// notifyListenersStateChanged(changedLayer, NARRATIVES_PROPERTY, null,
+					// changedLayer);
 				}
 			};
 			_stepControl.getLayers().addDataExtendedListener(registerNarrativeListener);
