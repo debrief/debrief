@@ -111,6 +111,7 @@ import java.text.SimpleDateFormat;
 import java.util.AbstractCollection;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.Vector;
@@ -426,10 +427,13 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper
 	
 	private PropertyChangeListener _narrativeViewerListener;
 
+	
+
 	public void setNarrativeViewerListener(PropertyChangeListener _narrativeViewerListener) {
 		this._narrativeViewerListener = _narrativeViewerListener;
 		for (Editable e : _myEntries)
 		{
+			e.getInfo().removePropertyChangeListener(_narrativeViewerListener);
 			e.getInfo().addPropertyChangeListener(_narrativeViewerListener);
 		}
 	}

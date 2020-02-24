@@ -219,9 +219,17 @@ public class NarrativePanelToolbar extends JPanel {
 					final NarrativeEntryItem entryItem = new NarrativeEntryItem(entry, _model);
 					
 					_narrativeListModel.addRow(new NarrativeEntryItem[] { entryItem });
+					if (entry.getNarrativeWrapper() != null)
+					{
+						_model.registerNewNarrativeEntry(entry.getNarrativeWrapper(), entry);
+					}
 					_narrativeListSorter.sort();
 				}else
 				{
+					if (entry.getNarrativeWrapper() != null)
+					{
+						_model.unregisterNarrativeEntry(entry.getNarrativeWrapper(), entry);
+					}
 					for (int i = 0; i < _narrativeListModel.getRowCount(); i++) {
 						final NarrativeEntryItem currentItem = (NarrativeEntryItem) _narrativeListModel.getValueAt(i,
 								0);
