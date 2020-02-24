@@ -119,13 +119,13 @@ public class NarrativePanelToolbar extends JPanel {
 			}
 		}
 	};
-
+	
 	private final PropertyChangeListener updatingNarrativesListener = new PropertyChangeListener() {
 
 		@Override
 		public void propertyChange(final PropertyChangeEvent evt) {
 			if (NARRATIVES_PROPERTY.equals(evt.getPropertyName()) || NarrativeEntry.VISIBILITY_CHANGE.equals(evt.getPropertyName())) {
-				updateNarratives(evt.getNewValue());
+				updateNarratives(evt.getSource());
 			} else if (NARRATIVES_REMOVE_COMPLETE_LAYER.equals(evt.getPropertyName())) {
 				removeCompleteNarrativeLayer((NarrativeWrapper) evt.getNewValue());
 			}
@@ -192,20 +192,12 @@ public class NarrativePanelToolbar extends JPanel {
 				}
 
 				for (final NarrativeEntry entry : toAdd) {
-					entry.addPropertyChangeListener(new PropertyChangeListener() {
-						
-						@Override
-						public void propertyChange(PropertyChangeEvent evt) {
-							notifyListenersStateChanged(entry, NARRATIVES_PROPERTY, null, entry);
-						}
-					});
 					final NarrativeEntryItem entryItem = new NarrativeEntryItem(entry, _model);
 					_narrativeListModel.addRow(new NarrativeEntryItem[] { entryItem });
 					_model.registerNewNarrativeEntry(narrativeWrapper, entry);
 
 				}
 				for (final NarrativeEntry entry : toRemove) {
-					entry.removeAllPropertyChangeListeners();
 					for (int i = 0; i < _narrativeListModel.getRowCount(); i++) {
 						final NarrativeEntryItem currentItem = (NarrativeEntryItem) _narrativeListModel.getValueAt(i,
 								0);
@@ -221,7 +213,7 @@ public class NarrativePanelToolbar extends JPanel {
 			}else if (layerChanged instanceof NarrativeEntry)
 			{
 				final NarrativeEntry entry = (NarrativeEntry)layerChanged;
-				if (entry.getVisible())
+				if (entry.getVisible() && (entry.getNarrativeWrapper() == null || entry.getNarrativeWrapper().getVisible() ))
 				{
 					// We are adding a new narraty entry.
 					final NarrativeEntryItem entryItem = new NarrativeEntryItem(entry, _model);
@@ -350,15 +342,10 @@ public class NarrativePanelToolbar extends JPanel {
 				loadedNarratives.add(newNarrative);
 				if (!_model.getRegisteredNarrativeWrapper().contains(nextItem)) {
 					_model.addNarrativeWrapper(newNarrative);
-					newNarrative.getSupport().addPropertyChangeListener(new PropertyChangeListener() {
-
-						@Override
-						public void propertyChange(final PropertyChangeEvent evt) {
-							notifyListenersStateChanged(nextItem, NARRATIVES_PROPERTY, null, nextItem);
-						}
-					});
-					
-					notifyListenersStateChanged(nextItem, NARRATIVES_PROPERTY, null, nextItem);
+					newNarrative.setNarrativeViewerListener(updatingNarrativesListener);
+					newNarrative.getSupport().addPropertyChangeListener(NARRATIVES_PROPERTY, updatingNarrativesListener);
+					//newNarrative.getInfo().fireChanged(nextItem, NARRATIVES_PROPERTY, null, nextItem);
+					newNarrative.getSupport().firePropertyChange(NARRATIVES_PROPERTY, null, nextItem);
 				}
 			}
 		}

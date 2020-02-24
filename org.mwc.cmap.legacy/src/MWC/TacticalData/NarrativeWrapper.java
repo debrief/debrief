@@ -423,6 +423,16 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper
 		_myEntries = new ConcurrentSkipListSet<Editable>();
 		_myName = title;
 	}
+	
+	private PropertyChangeListener _narrativeViewerListener;
+
+	public void setNarrativeViewerListener(PropertyChangeListener _narrativeViewerListener) {
+		this._narrativeViewerListener = _narrativeViewerListener;
+		for (Editable e : _myEntries)
+		{
+			e.getInfo().addPropertyChangeListener(_narrativeViewerListener);
+		}
+	}
 
 	@Override
 	public final void add(final Editable editable) {
@@ -431,15 +441,11 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper
 			// listen for date changes, since we'll have to re-order
 			editable.getInfo().addPropertyChangeListener(NarrativeEntry.DTG, _dateChangeListener);
 
-
-			editable.getInfo().addPropertyChangeListener(new PropertyChangeListener() {
-				
-				@Override
-				public void propertyChange(PropertyChangeEvent evt) {
-					System.out.println("Saul");
-					//notifyListenersStateChanged(editable, NarrativeEntry.VISIBILITY_CHANGE, null, editable);
-				}
-			});
+			if (_narrativeViewerListener != null)
+			{
+				editable.getInfo().addPropertyChangeListener(_narrativeViewerListener);
+			}
+			((NarrativeEntry)editable).setNarrativeWrapper(this);
 			_myEntries.add(editable);
 
 			// and inform anybody who happens to be listening

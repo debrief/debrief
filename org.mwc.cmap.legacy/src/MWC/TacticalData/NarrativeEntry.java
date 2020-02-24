@@ -17,11 +17,8 @@ package MWC.TacticalData;
 
 import java.awt.Color;
 import java.beans.IntrospectionException;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
 
@@ -150,28 +147,7 @@ public final class NarrativeEntry
 
 	public static String VISIBILITY_CHANGE = "VISIBILITY";
 	
-	private boolean _notifierEnabled = true;
-	
-	private final ArrayList<PropertyChangeListener> _stateListeners = new ArrayList<>();
-	
-	public void addPropertyChangeListener(final PropertyChangeListener listener) {
-		this._stateListeners.add(listener);
-	}
-	
-	public void removeAllPropertyChangeListeners()
-	{
-		_stateListeners.clear();
-	}
-	
-	private void notifyListenersStateChanged(final Object source, final String property, final Object oldValue,
-			final Object newValue) {
-		if (_notifierEnabled)
-		{
-			for (final PropertyChangeListener event : _stateListeners) {
-				event.propertyChange(new PropertyChangeEvent(source, property, oldValue, newValue));
-			}
-		}
-	}
+	private NarrativeWrapper _narrativeWrapper;
 	
 	private transient NarrativeEntryInfo _myInfo;
 
@@ -425,9 +401,7 @@ public final class NarrativeEntry
 		if ( val != _visible )
 		{
 			_visible = val;
-			
-			
-			notifyListenersStateChanged(this, VISIBILITY_CHANGE, null, val);
+			this.getInfo().fireChanged(this, VISIBILITY_CHANGE, null, val);
 		}
 	}
 
@@ -436,8 +410,11 @@ public final class NarrativeEntry
 		return getName();
 	}
 
-	public void setEnableNotifer(final boolean newVal)
-	{
-		_notifierEnabled = newVal;
+	public NarrativeWrapper getNarrativeWrapper() {
+		return _narrativeWrapper;
+	}
+
+	public void setNarrativeWrapper(NarrativeWrapper _narrativeWrapper) {
+		this._narrativeWrapper = _narrativeWrapper;
 	}
 }
