@@ -319,6 +319,10 @@ public class ImportNarrativeDocument {
 		}
 	}
 
+	public static interface NarrativeTypeHelper {
+		List<String> getSelectedNarrativeTypes(final Map<String, Integer> narrativeTypes);
+	}
+
 	private static class NarrEntry {
 		/**
 		 * what is the last valid time we have. if time fields are missing we will
@@ -640,10 +644,6 @@ public class ImportNarrativeDocument {
 				}
 			}
 		}
-	}
-
-	public static interface NarrativeTypeHelper {
-		List<String> getSelectedNarrativeTypes(final Map<String, Integer> narrativeTypes);
 	}
 
 	/**
@@ -1239,7 +1239,6 @@ public class ImportNarrativeDocument {
 
 		}
 
-		@SuppressWarnings("deprecation")
 		public static void testParseDate() {
 
 			final String goodDate = "000000";
@@ -1250,8 +1249,8 @@ public class ImportNarrativeDocument {
 
 			// ok, get the narrative type
 			final NarrEntry thisN1 = NarrEntry.create(testDate1, 1);
-			Date date = thisN1.dtg.getDate();
-			Calendar instance = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+			final Date date = thisN1.dtg.getDate();
+			final Calendar instance = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
 			instance.setTime(date);
 			assertEquals("year", 2016, instance.get(Calendar.YEAR));
 			assertEquals("month", 8, instance.get(Calendar.MONTH));
@@ -1270,8 +1269,8 @@ public class ImportNarrativeDocument {
 			final String testDate2 = "161006\tSOME COMMENT 2 ";
 			// ok, get the narrative type
 			final NarrEntry thisN2 = NarrEntry.create(testDate2, 1);
-			Date date2 = thisN2.dtg.getDate();
-			Calendar instance2 = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+			final Date date2 = thisN2.dtg.getDate();
+			final Calendar instance2 = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
 			instance2.setTime(date2);
 			assertEquals("year", 2016, instance2.get(Calendar.YEAR));
 			assertEquals("month", 8, instance2.get(Calendar.MONTH));
@@ -1593,61 +1592,6 @@ public class ImportNarrativeDocument {
 			assertEquals("have items", 5, narrLayer.size());
 		}
 
-		public void testImportAllNarrativeTypes() throws Exception {
-			final String testFile = dummy_doc_path;
-			final File testI = new File(testFile);
-			assertTrue(testI.exists());
-
-			final InputStream is = new FileInputStream(testI);
-			Layers tLayers = new Layers();
-			final ImportNarrativeDocument importer = new ImportNarrativeDocument(tLayers);
-			final HWPFDocument doc = new HWPFDocument(is);
-			final ArrayList<String> strings = importFromWord(doc);
-			importer.processThese(strings);
-			final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(LayerHandler.NARRATIVE_LAYER);
-			assertNotNull(narrLayer);
-			assertEquals(narrLayer.size(), 13);
-		}
-
-		public void testImportSelectedNarrativeFCSTypes() throws Exception {
-			final String testFile = valid_doc_path;
-			final File testI = new File(testFile);
-			assertTrue(testI.exists());
-
-			final InputStream is = new FileInputStream(testI);
-			Layers tLayers = new Layers();
-			final ImportNarrativeDocument importer = new ImportNarrativeDocument(tLayers);
-			List<String> selectedTypes = new ArrayList<>();
-			selectedTypes.add("FCS");
-			importer.setSelectedNarrativeTypes(selectedTypes);
-			final HWPFDocument doc = new HWPFDocument(is);
-			final ArrayList<String> strings = importFromWord(doc);
-			importer.processThese(strings);
-			final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(LayerHandler.NARRATIVE_LAYER);
-			assertNotNull(narrLayer);
-			assertEquals(narrLayer.size(), 18);
-
-		}
-
-		public void testImportSelectedNarrativeNonFCSTypes() throws Exception {
-			final String testFile = dummy_doc_path;
-			final File testI = new File(testFile);
-			assertTrue(testI.exists());
-
-			final InputStream is = new FileInputStream(testI);
-			Layers tLayers = new Layers();
-			final ImportNarrativeDocument importer = new ImportNarrativeDocument(tLayers);
-			List<String> selectedTypes = new ArrayList<>();
-			selectedTypes.add("CAT COMMENT");
-			importer.setSelectedNarrativeTypes(selectedTypes);
-			final HWPFDocument doc = new HWPFDocument(is);
-			final ArrayList<String> strings = importFromWord(doc);
-			importer.processThese(strings);
-			final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(LayerHandler.NARRATIVE_LAYER);
-			assertNotNull(narrLayer);
-			assertEquals(narrLayer.size(), 5);
-		}
-
 		@SuppressWarnings("unused")
 		private String messageStr = null;
 
@@ -1669,6 +1613,61 @@ public class ImportNarrativeDocument {
 			});
 			setNarrativeHelper(null);
 			setNarrativeTypesHelper(null);
+		}
+
+		public void testImportAllNarrativeTypes() throws Exception {
+			final String testFile = dummy_doc_path;
+			final File testI = new File(testFile);
+			assertTrue(testI.exists());
+
+			final InputStream is = new FileInputStream(testI);
+			final Layers tLayers = new Layers();
+			final ImportNarrativeDocument importer = new ImportNarrativeDocument(tLayers);
+			final HWPFDocument doc = new HWPFDocument(is);
+			final ArrayList<String> strings = importFromWord(doc);
+			importer.processThese(strings);
+			final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(LayerHandler.NARRATIVE_LAYER);
+			assertNotNull(narrLayer);
+			assertEquals(narrLayer.size(), 13);
+		}
+
+		public void testImportSelectedNarrativeFCSTypes() throws Exception {
+			final String testFile = valid_doc_path;
+			final File testI = new File(testFile);
+			assertTrue(testI.exists());
+
+			final InputStream is = new FileInputStream(testI);
+			final Layers tLayers = new Layers();
+			final ImportNarrativeDocument importer = new ImportNarrativeDocument(tLayers);
+			final List<String> selectedTypes = new ArrayList<>();
+			selectedTypes.add("FCS");
+			importer.setSelectedNarrativeTypes(selectedTypes);
+			final HWPFDocument doc = new HWPFDocument(is);
+			final ArrayList<String> strings = importFromWord(doc);
+			importer.processThese(strings);
+			final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(LayerHandler.NARRATIVE_LAYER);
+			assertNotNull(narrLayer);
+			assertEquals(narrLayer.size(), 18);
+
+		}
+
+		public void testImportSelectedNarrativeNonFCSTypes() throws Exception {
+			final String testFile = dummy_doc_path;
+			final File testI = new File(testFile);
+			assertTrue(testI.exists());
+
+			final InputStream is = new FileInputStream(testI);
+			final Layers tLayers = new Layers();
+			final ImportNarrativeDocument importer = new ImportNarrativeDocument(tLayers);
+			final List<String> selectedTypes = new ArrayList<>();
+			selectedTypes.add("CAT COMMENT");
+			importer.setSelectedNarrativeTypes(selectedTypes);
+			final HWPFDocument doc = new HWPFDocument(is);
+			final ArrayList<String> strings = importFromWord(doc);
+			importer.processThese(strings);
+			final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(LayerHandler.NARRATIVE_LAYER);
+			assertNotNull(narrLayer);
+			assertEquals(narrLayer.size(), 5);
 		}
 	}
 
@@ -1940,6 +1939,11 @@ public class ImportNarrativeDocument {
 		trimNarrativeHelper = helper;
 	}
 
+	public static void setNarrativeTypesHelper(final NarrativeTypeHelper narrativeTypesHelper) {
+		ImportNarrativeDocument.narrativeTypesHelper = narrativeTypesHelper;
+
+	}
+
 	public static void setQuestionHelper(final QuestionHelper helper) {
 		questionHelper = helper;
 	}
@@ -1998,10 +2002,6 @@ public class ImportNarrativeDocument {
 
 	private List<String> selectedNarrativeTypes;
 
-	public void setSelectedNarrativeTypes(List<String> selectedNarrativeTypes) {
-		this.selectedNarrativeTypes = selectedNarrativeTypes;
-	}
-
 	public ImportNarrativeDocument(final Layers target) {
 		_layers = target;
 
@@ -2013,6 +2013,50 @@ public class ImportNarrativeDocument {
 			SkipNames.add("RNAS");
 			SkipNames.add("HNLMS");
 		}
+	}
+
+	private boolean addEntries(final List<NarrEntry> narrativeEntries, final List<String> selectedNarrativeTypes) {
+		boolean dataAdded = false;
+		// do this on the selected narratives
+		for (final NarrEntry thisN : narrativeEntries) {
+			// did we process anything?
+			if (thisN.type != null && (selectedNarrativeTypes == null || selectedNarrativeTypes.contains(thisN.type))) {
+				// ok, process the entry
+				switch (thisN.type) {
+				case "FCS": {
+					// add a narrative entry
+					addEntry(thisN);
+					// create track for this
+					try {
+						addFCS(thisN);
+					} catch (final StringIndexOutOfBoundsException e) {
+						// don't worry about panicking, it may not be an FCS after all
+					} catch (final NumberFormatException e) {
+						// don't worry about panicking, it may not be an FCS after all
+					}
+				}
+
+					// ok, take note that we've added something
+					dataAdded = true;
+					break;
+				default: {
+					// ok, just add a narrative entry for anything not recognised
+					// add a narrative entry
+					addEntry(thisN);
+					// ok, take note that we've added something
+					dataAdded = true;
+
+					break;
+
+				}
+				}
+			} else if (thisN.platform != null && (thisN.type == null || thisN.type.isBlank())) {
+				addEntry(thisN);
+				// ok, take note that we've added something
+				dataAdded = true;
+			}
+		}
+		return dataAdded;
 	}
 
 	private void addEntry(final NarrEntry thisN) {
@@ -2151,7 +2195,7 @@ public class ImportNarrativeDocument {
 		if (strings.isEmpty()) {
 			return;
 		}
-		Map<String, Integer> typeVsCount = new HashMap<>();
+		final Map<String, Integer> typeVsCount = new HashMap<>();
 		boolean proceed = true;
 		ImportNarrativeEnum whatToImport = null;
 		if (trimNarrativeHelper != null) {
@@ -2181,7 +2225,7 @@ public class ImportNarrativeDocument {
 
 		// see if we have an index for start of records
 		final int START_INDEX = indexOfStart(strings);
-		List<NarrEntry> narrativeEntries = new ArrayList<NarrEntry>();
+		final List<NarrEntry> narrativeEntries = new ArrayList<NarrEntry>();
 		// ok, now we can loop through the strings
 		if (proceed) {
 			int ctr = 0;
@@ -2259,17 +2303,21 @@ public class ImportNarrativeDocument {
 					final String type;
 					if (thisN.type != null) {
 						type = thisN.type;
-					} else {
+					} else if (thisN.platform != null) {
 						type = "None";
-					}
-					if (typeVsCount.get(type) == null) {
-						typeVsCount.put(type, Integer.valueOf(1));
 					} else {
-						typeVsCount.put(type, typeVsCount.get(type) + 1);
+						type = null;
 					}
-					// remember that entry, in case we get incomplete text inthe future
-					_lastNarrEntry = thisN;
-					narrativeEntries.add(thisN);
+					if (type != null) {
+						if (typeVsCount.get(type) == null) {
+							typeVsCount.put(type, Integer.valueOf(1));
+						} else {
+							typeVsCount.put(type, typeVsCount.get(type) + 1);
+						}
+						// remember that entry, in case we get incomplete text inthe future
+						_lastNarrEntry = thisN;
+						narrativeEntries.add(thisN);
+					}
 
 				} catch (final Exception e) {
 					logThisError(ToolParent.WARNING, "Failed whilst parsing line:" + text, e);
@@ -2279,7 +2327,9 @@ public class ImportNarrativeDocument {
 		if (narrativeTypesHelper != null) {
 			if (typeVsCount != null && !typeVsCount.isEmpty()) {
 				selectedNarrativeTypes = narrativeTypesHelper.getSelectedNarrativeTypes(typeVsCount);
-				dataAdded = addEntries(narrativeEntries, selectedNarrativeTypes);
+				if(selectedNarrativeTypes==null || !selectedNarrativeTypes.isEmpty()) {
+					dataAdded = addEntries(narrativeEntries, selectedNarrativeTypes);
+				}
 			} else {
 				questionHelper.showMessage("Narrative Types", "No narrative types found, there is nothing to import");
 			}
@@ -2291,44 +2341,8 @@ public class ImportNarrativeDocument {
 		}
 	}
 
-	private boolean addEntries(List<NarrEntry> narrativeEntries, List<String> selectedNarrativeTypes) {
-		boolean dataAdded = false;
-		// do this on the selected narratives
-		for (NarrEntry thisN : narrativeEntries) {
-			// did we process anything?
-			if (thisN.type != null && (selectedNarrativeTypes == null || selectedNarrativeTypes.contains(thisN.type))) {
-				// ok, process the entry
-				switch (thisN.type) {
-				case "FCS": {
-					// add a narrative entry
-					addEntry(thisN);
-					// create track for this
-					try {
-						addFCS(thisN);
-					} catch (final StringIndexOutOfBoundsException e) {
-						// don't worry about panicking, it may not be an FCS after all
-					} catch (final NumberFormatException e) {
-						// don't worry about panicking, it may not be an FCS after all
-					}
-				}
-
-					// ok, take note that we've added something
-					dataAdded = true;
-					break;
-				default: {
-					// ok, just add a narrative entry for anything not recognised
-					// add a narrative entry
-					addEntry(thisN);
-					// ok, take note that we've added something
-					dataAdded = true;
-
-					break;
-
-				}
-				}
-			}
-		}
-		return dataAdded;
+	public void setSelectedNarrativeTypes(final List<String> selectedNarrativeTypes) {
+		this.selectedNarrativeTypes = selectedNarrativeTypes;
 	}
 
 	/**
@@ -2469,11 +2483,6 @@ public class ImportNarrativeDocument {
 		}
 
 		return match;
-	}
-
-	public static void setNarrativeTypesHelper(NarrativeTypeHelper narrativeTypesHelper) {
-		ImportNarrativeDocument.narrativeTypesHelper = narrativeTypesHelper;
-
 	}
 
 }
