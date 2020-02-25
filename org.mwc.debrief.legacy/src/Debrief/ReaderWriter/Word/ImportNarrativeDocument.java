@@ -670,16 +670,22 @@ public class ImportNarrativeDocument {
 		private final static TrimNarrativeHelper only_in_period = new TrimNarrativeHelper() {
 
 			@Override
-			public ImportNarrativeEnum findWhatToImport() {
-				return ImportNarrativeEnum.TRIMMED_DATA;
+			public NarrativeHelperRetVal findWhatToImport(Map<String,Integer> narrativeTypes) {
+				NarrativeHelperRetVal retVal = new NarrativeHelperRetVal();
+				retVal.narrativeEnum=ImportNarrativeEnum.TRIMMED_DATA;
+				retVal.selectedNarrativeTypes = new ArrayList<>();
+				return retVal;
 			}
 		};
 
 		private final static TrimNarrativeHelper allow_all = new TrimNarrativeHelper() {
 
 			@Override
-			public ImportNarrativeEnum findWhatToImport() {
-				return ImportNarrativeEnum.ALL_DATA;
+			public NarrativeHelperRetVal findWhatToImport(Map<String,Integer> narrativeTypes) {
+				NarrativeHelperRetVal retVal = new NarrativeHelperRetVal();
+				retVal.narrativeEnum=ImportNarrativeEnum.ALL_DATA;
+				retVal.selectedNarrativeTypes = new ArrayList<>();
+				return retVal;
 			}
 		};
 
@@ -1612,7 +1618,6 @@ public class ImportNarrativeDocument {
 				}
 			});
 			setNarrativeHelper(null);
-			setNarrativeTypesHelper(null);
 		}
 
 		public void testImportAllNarrativeTypes() throws Exception {
@@ -1672,7 +1677,7 @@ public class ImportNarrativeDocument {
 	}
 
 	public static interface TrimNarrativeHelper {
-		ImportNarrativeEnum findWhatToImport();
+		NarrativeHelperRetVal findWhatToImport(Map<String,Integer> narrativeTypes);
 	}
 
 	/**
@@ -1721,7 +1726,6 @@ public class ImportNarrativeDocument {
 	 */
 	private static QuestionHelper questionHelper = null;
 
-	private static NarrativeTypeHelper narrativeTypesHelper = null;
 	private static List<String> SkipNames = null;
 
 	private static TrimNarrativeHelper trimNarrativeHelper = null;
@@ -1939,11 +1943,6 @@ public class ImportNarrativeDocument {
 		trimNarrativeHelper = helper;
 	}
 
-	public static void setNarrativeTypesHelper(final NarrativeTypeHelper narrativeTypesHelper) {
-		ImportNarrativeDocument.narrativeTypesHelper = narrativeTypesHelper;
-
-	}
-
 	public static void setQuestionHelper(final QuestionHelper helper) {
 		questionHelper = helper;
 	}
@@ -2015,10 +2014,24 @@ public class ImportNarrativeDocument {
 		}
 	}
 
-	private boolean addEntries(final List<NarrEntry> narrativeEntries, final List<String> selectedNarrativeTypes) {
+	private boolean addEntries(final List<NarrEntry> narrativeEntries, final List<String> selectedNarrativeTypes, TimePeriod outerPeriod) {
 		boolean dataAdded = false;
 		// do this on the selected narratives
 		for (final NarrEntry thisN : narrativeEntries) {
+
+			// do we know the outer time period?
+			if (outerPeriod != null && thisN.dtg != null) {
+				// check it's in the currently loaded time period
+				if (!outerPeriod.contains(thisN.dtg)) {
+     System.out.println(thisN.dtg.getDate() + " is not between " +
+     outerPeriod.getStartDTG().getDate() + " and " + outerPeriod.getEndDTG().getDate());
+
+					// ok, it's not in our period
+					continue;
+				}
+			}
+			
+
 			// did we process anything?
 			if (thisN.type != null && (selectedNarrativeTypes == null || selectedNarrativeTypes.contains(thisN.type))) {
 				// ok, process the entry
@@ -2197,12 +2210,8 @@ public class ImportNarrativeDocument {
 		}
 		final Map<String, Integer> typeVsCount = new HashMap<>();
 		boolean proceed = true;
-		ImportNarrativeEnum whatToImport = null;
-		if (trimNarrativeHelper != null) {
-			whatToImport = trimNarrativeHelper.findWhatToImport();
-		} else {
-			whatToImport = ImportNarrativeEnum.TRIMMED_DATA;
-		}
+		final NarrativeHelperRetVal whatToImport;
+		
 		// keep track of if we've added anything
 		boolean dataAdded = false;
 
@@ -2211,18 +2220,7 @@ public class ImportNarrativeDocument {
 
 		int appendedToPreviousCtr = 0;
 
-		TimePeriod outerPeriod = null;
-
-		// find the outer time period - we only load data into the current time period
-		if (whatToImport == ImportNarrativeEnum.CANCEL) {
-			proceed = false;
-			// if cancelled then do nothing.
-		} else if (whatToImport == ImportNarrativeEnum.ALL_DATA) {
-			outerPeriod = null;
-		} else {
-			outerPeriod = outerPeriodFor(_layers);
-		}
-
+		
 		// see if we have an index for start of records
 		final int START_INDEX = indexOfStart(strings);
 		final List<NarrEntry> narrativeEntries = new ArrayList<NarrEntry>();
@@ -2268,17 +2266,6 @@ public class ImportNarrativeDocument {
 						break;
 					}
 
-					// do we know the outer time period?
-					if (outerPeriod != null && thisN.dtg != null) {
-						// check it's in the currently loaded time period
-						if (!outerPeriod.contains(thisN.dtg)) {
-//             System.out.println(thisN.dtg.getDate() + " is not between " +
-//             outerPeriod.getStartDTG().getDate() + " and " + outerPeriod.getEndDTG().getDate());
-
-							// ok, it's not in our period
-							continue;
-						}
-					}
 
 					// is it just text, that we will append
 					if (thisN.appendedToPrevious && appendedToPreviousCtr < MAX_APPENDED) {
@@ -2324,17 +2311,32 @@ public class ImportNarrativeDocument {
 				}
 			}
 		}
-		if (narrativeTypesHelper != null) {
-			if (typeVsCount != null && !typeVsCount.isEmpty()) {
-				selectedNarrativeTypes = narrativeTypesHelper.getSelectedNarrativeTypes(typeVsCount);
-				if(selectedNarrativeTypes==null || !selectedNarrativeTypes.isEmpty()) {
-					dataAdded = addEntries(narrativeEntries, selectedNarrativeTypes);
+		if (trimNarrativeHelper != null) {
+				whatToImport = trimNarrativeHelper.findWhatToImport(typeVsCount);
+				if(whatToImport.narrativeEnum != ImportNarrativeEnum.CANCEL) {
+					if (typeVsCount != null && !typeVsCount.isEmpty()) {
+						TimePeriod outerPeriod = null;
+
+						// find the outer time period - we only load data into the current time period
+						if (whatToImport.narrativeEnum == ImportNarrativeEnum.CANCEL) {
+							proceed = false;
+							// if cancelled then do nothing.
+						} else if (whatToImport.narrativeEnum == ImportNarrativeEnum.ALL_DATA) {
+							outerPeriod = null;
+						} else {
+							outerPeriod = outerPeriodFor(_layers);
+						}
+
+						selectedNarrativeTypes = whatToImport.selectedNarrativeTypes;
+						if(selectedNarrativeTypes==null || !selectedNarrativeTypes.isEmpty()) {
+							dataAdded = addEntries(narrativeEntries, selectedNarrativeTypes,outerPeriod);
+						}
+					} else {
+						questionHelper.showMessage("Narrative Types", "No narrative types found, there is nothing to import");
+					}
 				}
-			} else {
-				questionHelper.showMessage("Narrative Types", "No narrative types found, there is nothing to import");
-			}
 		} else {
-			dataAdded = addEntries(narrativeEntries, selectedNarrativeTypes);
+			dataAdded = false;
 		}
 		if (dataAdded) {
 			_layers.fireModified(getNarrativeLayer());
@@ -2483,6 +2485,11 @@ public class ImportNarrativeDocument {
 		}
 
 		return match;
+	}
+	public static class NarrativeHelperRetVal
+	{
+		public ImportNarrativeEnum narrativeEnum;
+		public List<String> selectedNarrativeTypes;
 	}
 
 }
