@@ -70,8 +70,6 @@ public class NarrativePanelToolbar extends JPanel {
 
 	public static final String STATE_PROPERTY = "STATE";
 
-	public static final String NARRATIVES_PROPERTY = "NARRATIVES";
-
 	public static final String NARRATIVES_REMOVE_COMPLETE_LAYER = "REMOVE_LAYER";
 
 	private String _state = INACTIVE_STATE;
@@ -158,7 +156,7 @@ public class NarrativePanelToolbar extends JPanel {
 
 		@Override
 		public void propertyChange(final PropertyChangeEvent evt) {
-			if (NARRATIVES_PROPERTY.equals(evt.getPropertyName())
+			if (NarrativeWrapper.NARRATIVES_PROPERTY.equals(evt.getPropertyName())
 					|| NarrativeEntry.VISIBILITY_CHANGE.equals(evt.getPropertyName())) {
 				updateNarratives(evt.getSource());
 			} else if (NARRATIVES_REMOVE_COMPLETE_LAYER.equals(evt.getPropertyName())) {
@@ -358,11 +356,11 @@ public class NarrativePanelToolbar extends JPanel {
 				if (!_model.getRegisteredNarrativeWrapper().contains(nextItem)) {
 					_model.addNarrativeWrapper(newNarrative);
 					newNarrative.setNarrativeViewerListener(updatingNarrativesListener);
-					newNarrative.getSupport().addPropertyChangeListener(NARRATIVES_PROPERTY,
+					newNarrative.getSupport().addPropertyChangeListener(NarrativeWrapper.NARRATIVES_PROPERTY,
 							updatingNarrativesListener);
 					// newNarrative.getInfo().fireChanged(nextItem, NARRATIVES_PROPERTY, null,
 					// nextItem);
-					newNarrative.getSupport().firePropertyChange(NARRATIVES_PROPERTY, null, nextItem);
+					newNarrative.getSupport().firePropertyChange(NarrativeWrapper.NARRATIVES_PROPERTY, null, nextItem);
 				}
 			}
 		}
