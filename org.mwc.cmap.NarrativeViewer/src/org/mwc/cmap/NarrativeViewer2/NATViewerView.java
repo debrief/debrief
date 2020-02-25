@@ -223,11 +223,24 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener, I
 
 	public NATViewerView() {
 		_layerListener = new DataListener() {
+
+			private final PropertyChangeListener _visibilityChangeListener = new PropertyChangeListener() {
+
+				@Override
+				public void propertyChange(final PropertyChangeEvent evt) {
+					_myRollingNarrListener.entryRemoved((NarrativeEntry) evt.getSource());
+				}
+			};
+
 			@Override
 			public void dataExtended(final Layers theData) {
 				// nope, see if there is one
 				final Layer match = theData.findLayer(LayerHandler.NARRATIVE_LAYER);
 
+				// We are sure it is a NarrativeWrapper at this point, but just in case.
+				if (match instanceof NarrativeWrapper) {
+					((NarrativeWrapper) match).setNarrativeViewerListener(_visibilityChangeListener);
+				}
 				// ok, do we already have a narrative?
 				if (_myRollingNarrative == null) {
 					if (match instanceof IRollingNarrativeProvider) {
@@ -869,32 +882,32 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener, I
 
 	protected void setInput(final IRollingNarrativeProvider newNarr) {
 
-		if (newNarr != _myRollingNarrative) {
-			if (_myRollingNarrative != null) {
-				// clear what's displayed
-				myViewer.setInput(null);
+		// if (newNarr != _myRollingNarrative) {
+		if (_myRollingNarrative != null) {
+			// clear what's displayed
+			myViewer.setInput(null);
 
-				// stop listening to old narrative
-				_myRollingNarrative.removeNarrativeListener(IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
-			}
-
-			// ok remember the new provider (even if it's null)
-			_myRollingNarrative = newNarr;
-
-			// is the new one a real object?
-			if (newNarr != null) {
-				// ok, register as a listener
-				_myRollingNarrative.addNarrativeListener(IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
-
-				// also sort out the colors
-				refreshColors();
-
-				// ok - show the narrative. We can't rely on
-				// listening to the rolling narrative, since we
-				// may be switching back to a previous plot.
-				myViewer.setInput(_myRollingNarrative);
-			}
+			// stop listening to old narrative
+			_myRollingNarrative.removeNarrativeListener(IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
 		}
+
+		// ok remember the new provider (even if it's null)
+		_myRollingNarrative = newNarr;
+
+		// is the new one a real object?
+		if (newNarr != null) {
+			// ok, register as a listener
+			_myRollingNarrative.addNarrativeListener(IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
+
+			// also sort out the colors
+			refreshColors();
+
+			// ok - show the narrative. We can't rely on
+			// listening to the rolling narrative, since we
+			// may be switching back to a previous plot.
+			myViewer.setInput(_myRollingNarrative);
+		}
+		// }
 	}
 
 	@Override

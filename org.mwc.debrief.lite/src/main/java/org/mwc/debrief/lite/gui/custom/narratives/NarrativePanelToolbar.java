@@ -70,8 +70,6 @@ public class NarrativePanelToolbar extends JPanel {
 
 	public static final String STATE_PROPERTY = "STATE";
 
-	public static final String NARRATIVES_PROPERTY = "NARRATIVES";
-
 	public static final String NARRATIVES_REMOVE_COMPLETE_LAYER = "REMOVE_LAYER";
 
 	private String _state = INACTIVE_STATE;
@@ -122,10 +120,45 @@ public class NarrativePanelToolbar extends JPanel {
 
 	private final PropertyChangeListener updatingNarrativesListener = new PropertyChangeListener() {
 
+		public void calculateDifferences(final NarrativeWrapper narrativeWrapper, final Set<NarrativeEntry> toRemove,
+				final Set<NarrativeEntry> toAdd) {
+			if (_model.getRegisteredNarrativeWrapper().contains(narrativeWrapper)) {
+				final Set<NarrativeEntry> newEntries = new TreeSet<>();
+				final Enumeration<Editable> items = narrativeWrapper.elements();
+				while (items.hasMoreElements()) {
+					final Editable thisE = items.nextElement();
+					if (((NarrativeEntry) thisE).getVisible())
+						newEntries.add((NarrativeEntry) thisE);
+				}
+				for (final NarrativeEntry currentEntry : _model.getCurrentNarrativeEntries(narrativeWrapper)) {
+					if (!newEntries.contains(currentEntry)) {
+						toRemove.add(currentEntry);
+					}
+				}
+				for (final NarrativeEntry newEntry : newEntries) {
+					if (!_model.getCurrentNarrativeEntries(narrativeWrapper).contains(newEntry)) {
+						toAdd.add(newEntry);
+					}
+				}
+			} else {
+				_model.addNarrativeWrapper(narrativeWrapper);
+				final Enumeration<Editable> items = narrativeWrapper.elements();
+				while (items.hasMoreElements()) {
+					final Editable thisE = items.nextElement();
+					final NarrativeEntry newEntry = (NarrativeEntry) thisE;
+					if (newEntry.getVisible()) {
+						toAdd.add((NarrativeEntry) thisE);
+					}
+				}
+
+			}
+		}
+
 		@Override
 		public void propertyChange(final PropertyChangeEvent evt) {
-			if (NARRATIVES_PROPERTY.equals(evt.getPropertyName())) {
-				updateNarratives(evt.getNewValue());
+			if (NarrativeWrapper.NARRATIVES_PROPERTY.equals(evt.getPropertyName())
+					|| NarrativeEntry.VISIBILITY_CHANGE.equals(evt.getPropertyName())) {
+				updateNarratives(evt.getSource());
 			} else if (NARRATIVES_REMOVE_COMPLETE_LAYER.equals(evt.getPropertyName())) {
 				removeCompleteNarrativeLayer((NarrativeWrapper) evt.getNewValue());
 			}
@@ -152,60 +185,66 @@ public class NarrativePanelToolbar extends JPanel {
 			_model.removeNarrativeWrapper(wrapperRemoved);
 		}
 
+		public void updateNarrativeEntry(final Object layerChanged) {
+			final NarrativeEntry entry = (NarrativeEntry) layerChanged;
+			if (entry.getVisible()
+					&& (entry.getNarrativeWrapper() == null || entry.getNarrativeWrapper().getVisible())) {
+				// We are adding a new narraty entry.
+				final NarrativeEntryItem entryItem = new NarrativeEntryItem(entry, _model);
+
+				_narrativeListModel.addRow(new NarrativeEntryItem[] { entryItem });
+				if (entry.getNarrativeWrapper() != null) {
+					_model.registerNewNarrativeEntry(entry.getNarrativeWrapper(), entry);
+				}
+				_narrativeListSorter.sort();
+			} else {
+				if (entry.getNarrativeWrapper() != null) {
+					_model.unregisterNarrativeEntry(entry.getNarrativeWrapper(), entry);
+				}
+				for (int i = 0; i < _narrativeListModel.getRowCount(); i++) {
+					final NarrativeEntryItem currentItem = (NarrativeEntryItem) _narrativeListModel.getValueAt(i, 0);
+					if (currentItem.getEntry().equals(entry)) {
+						_narrativeListModel.removeRow(i);
+						break;
+					}
+				}
+			}
+		}
+
 		public void updateNarratives(final Object layerChanged) {
 			if (layerChanged instanceof NarrativeWrapper) {
-				final NarrativeWrapper narrativeWrapper = (NarrativeWrapper) layerChanged;
-
-				final Set<NarrativeEntry> toRemove = new TreeSet<>();
-				final Set<NarrativeEntry> toAdd = new TreeSet<>();
-				// Check difference
-				if (_model.getRegisteredNarrativeWrapper().contains(narrativeWrapper)) {
-					final Set<NarrativeEntry> newEntries = new TreeSet<>();
-					final Enumeration<Editable> items = narrativeWrapper.elements();
-					while (items.hasMoreElements()) {
-						final Editable thisE = items.nextElement();
-						newEntries.add((NarrativeEntry) thisE);
-					}
-					for (final NarrativeEntry currentEntry : _model.getCurrentNarrativeEntries(narrativeWrapper)) {
-						if (!newEntries.contains(currentEntry)) {
-							toRemove.add(currentEntry);
-						}
-					}
-					for (final NarrativeEntry newEntry : newEntries) {
-						if (!_model.getCurrentNarrativeEntries(narrativeWrapper).contains(newEntry)) {
-							toAdd.add(newEntry);
-						}
-					}
-				} else {
-					_model.addNarrativeWrapper(narrativeWrapper);
-					final Enumeration<Editable> items = narrativeWrapper.elements();
-					while (items.hasMoreElements()) {
-						final Editable thisE = items.nextElement();
-						toAdd.add((NarrativeEntry) thisE);
-					}
-
-				}
-
-				for (final NarrativeEntry entry : toAdd) {
-					final NarrativeEntryItem entryItem = new NarrativeEntryItem(entry, _model);
-					_narrativeListModel.addRow(new NarrativeEntryItem[] { entryItem });
-					_model.registerNewNarrativeEntry(narrativeWrapper, entry);
-
-				}
-				for (final NarrativeEntry entry : toRemove) {
-					for (int i = 0; i < _narrativeListModel.getRowCount(); i++) {
-						final NarrativeEntryItem currentItem = (NarrativeEntryItem) _narrativeListModel.getValueAt(i,
-								0);
-						if (currentItem.getEntry().equals(entry)) {
-							_narrativeListModel.removeRow(i);
-							break;
-						}
-					}
-				}
-				// Sort it.
-
-				_narrativeListSorter.sort();
+				updateNarrativeWrapper(layerChanged);
+			} else if (layerChanged instanceof NarrativeEntry) {
+				updateNarrativeEntry(layerChanged);
 			}
+		}
+
+		public void updateNarrativeWrapper(final Object layerChanged) {
+			final NarrativeWrapper narrativeWrapper = (NarrativeWrapper) layerChanged;
+
+			final Set<NarrativeEntry> toRemove = new TreeSet<>();
+			final Set<NarrativeEntry> toAdd = new TreeSet<>();
+			// Check difference
+			calculateDifferences(narrativeWrapper, toRemove, toAdd);
+
+			for (final NarrativeEntry entry : toAdd) {
+				final NarrativeEntryItem entryItem = new NarrativeEntryItem(entry, _model);
+				_narrativeListModel.addRow(new NarrativeEntryItem[] { entryItem });
+				_model.registerNewNarrativeEntry(narrativeWrapper, entry);
+
+			}
+			for (final NarrativeEntry entry : toRemove) {
+				for (int i = 0; i < _narrativeListModel.getRowCount(); i++) {
+					final NarrativeEntryItem currentItem = (NarrativeEntryItem) _narrativeListModel.getValueAt(i, 0);
+					if (currentItem.getEntry().equals(entry)) {
+						_narrativeListModel.removeRow(i);
+						break;
+					}
+				}
+			}
+			// Sort it.
+
+			_narrativeListSorter.sort();
 		}
 	};
 
@@ -311,19 +350,17 @@ public class NarrativePanelToolbar extends JPanel {
 		final Set<NarrativeWrapper> loadedNarratives = new TreeSet<>();
 		while (elem.hasMoreElements()) {
 			final Editable nextItem = elem.nextElement();
-			if (nextItem instanceof NarrativeWrapper) {
+			if (nextItem instanceof NarrativeWrapper && ((NarrativeWrapper) nextItem).getVisible()) {
 				final NarrativeWrapper newNarrative = (NarrativeWrapper) nextItem;
 				loadedNarratives.add(newNarrative);
 				if (!_model.getRegisteredNarrativeWrapper().contains(nextItem)) {
 					_model.addNarrativeWrapper(newNarrative);
-					newNarrative.getSupport().addPropertyChangeListener(new PropertyChangeListener() {
-
-						@Override
-						public void propertyChange(final PropertyChangeEvent evt) {
-							notifyListenersStateChanged(nextItem, NARRATIVES_PROPERTY, null, nextItem);
-						}
-					});
-					notifyListenersStateChanged(nextItem, NARRATIVES_PROPERTY, null, nextItem);
+					newNarrative.setNarrativeViewerListener(updatingNarrativesListener);
+					newNarrative.getSupport().addPropertyChangeListener(NarrativeWrapper.NARRATIVES_PROPERTY,
+							updatingNarrativesListener);
+					// newNarrative.getInfo().fireChanged(nextItem, NARRATIVES_PROPERTY, null,
+					// nextItem);
+					newNarrative.getSupport().firePropertyChange(NarrativeWrapper.NARRATIVES_PROPERTY, null, nextItem);
 				}
 			}
 		}
@@ -356,11 +393,15 @@ public class NarrativePanelToolbar extends JPanel {
 				@Override
 				public void dataModified(final Layers theData, final Layer changedLayer) {
 					checkNewNarratives(theData);
+					// notifyListenersStateChanged(changedLayer, NARRATIVES_PROPERTY, null,
+					// changedLayer);
 				}
 
 				@Override
 				public void dataReformatted(final Layers theData, final Layer changedLayer) {
 					checkNewNarratives(theData);
+					// notifyListenersStateChanged(changedLayer, NARRATIVES_PROPERTY, null,
+					// changedLayer);
 				}
 			};
 			_stepControl.getLayers().addDataExtendedListener(registerNarrativeListener);

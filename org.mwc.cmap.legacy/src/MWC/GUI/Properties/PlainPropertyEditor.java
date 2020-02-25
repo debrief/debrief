@@ -422,7 +422,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener {
 				}
 
 				doThis(it.setter, it.data, it.newValue);
-				it.editorInfo.fireChanged(this, it.propertyName, it.oldValue, it.newValue);
+				it.editorInfo.fireChanged(it.data, it.propertyName, it.oldValue, it.newValue);
 				// TODO We are calling it after every change, and we are forcing to update UI
 				// again anda
 				// again.

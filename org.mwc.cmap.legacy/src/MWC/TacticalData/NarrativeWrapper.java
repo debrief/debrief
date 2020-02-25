@@ -339,6 +339,8 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper
 	 */
 	public final static String CONTENTS_CHANGED = "CONTENTS_CHANGED";
 
+	public static final String NARRATIVES_PROPERTY = "NARRATIVES";
+
 	@SuppressWarnings("deprecation")
 	public static NarrativeWrapper createDummyData(final String title, final int len) {
 		final NarrativeWrapper res = new NarrativeWrapper(title);
@@ -381,6 +383,8 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper
 	private transient Vector<INarrativeListener> _myListeners;
 
 	private final PropertyChangeListener _dateChangeListener;
+
+	private PropertyChangeListener _narrativeViewerListener;
 
 	/**
 	 * constructor, of course.
@@ -431,10 +435,14 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper
 			// listen for date changes, since we'll have to re-order
 			editable.getInfo().addPropertyChangeListener(NarrativeEntry.DTG, _dateChangeListener);
 
+			if (_narrativeViewerListener != null) {
+				editable.getInfo().addPropertyChangeListener(_narrativeViewerListener);
+			}
+			((NarrativeEntry) editable).setNarrativeWrapper(this);
 			_myEntries.add(editable);
 
 			// and inform anybody who happens to be listening
-			getSupport().firePropertyChange(CONTENTS_CHANGED, null, this);
+			getSupport().firePropertyChange(NARRATIVES_PROPERTY, null, this);
 
 			// also tell the listeners
 			if (_myListeners != null) {
@@ -664,7 +672,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper
 			_myEntries.remove(editable);
 
 			// and inform anybody who happens to be listening
-			getSupport().firePropertyChange(CONTENTS_CHANGED, null, this);
+			getSupport().firePropertyChange(NARRATIVES_PROPERTY, null, this);
 
 			// stop listening to it
 			editable.getInfo().removePropertyChangeListener(NarrativeEntry.DTG, _dateChangeListener);
@@ -699,6 +707,14 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper
 	@Override
 	public final void setName(final String name) {
 		_myName = name;
+	}
+
+	public void setNarrativeViewerListener(final PropertyChangeListener _narrativeViewerListener) {
+		this._narrativeViewerListener = _narrativeViewerListener;
+		for (final Editable e : _myEntries) {
+			e.getInfo().removePropertyChangeListener(_narrativeViewerListener);
+			e.getInfo().addPropertyChangeListener(_narrativeViewerListener);
+		}
 	}
 
 	/**

@@ -40,7 +40,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -235,17 +234,7 @@ public class DebriefLiteApp implements FileDropListener {
 	public static String state = null;
 	public static boolean collapsedState = false;
 
-	public static PropertyChangeListener enableDisableButtons = new PropertyChangeListener() {
-
-		@Override
-		public void propertyChange(final PropertyChangeEvent evt) {
-			final boolean isActive = ACTIVE_STATE.equals(evt.getNewValue());
-			DebriefRibbonTimeController.setButtonsEnabled(DebriefRibbonTimeController.topButtonCommands, isActive);
-		}
-	};
-
-	private static ArrayList<PropertyChangeListener> stateListeners = new ArrayList<>(
-			Arrays.asList(enableDisableButtons));
+	private static ArrayList<PropertyChangeListener> stateListeners = new ArrayList<>();
 
 	protected static boolean _plotDirty;
 
@@ -1398,7 +1387,7 @@ public class DebriefLiteApp implements FileDropListener {
 		setTitle(defaultTitle);
 
 		setInitialArea(mapPane, geoMapRenderer.getTransform());
-		
+
 		// also clear the tote
 		theTote.clear();
 
