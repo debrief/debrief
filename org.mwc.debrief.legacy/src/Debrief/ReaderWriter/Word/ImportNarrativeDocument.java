@@ -673,7 +673,19 @@ public class ImportNarrativeDocument {
 			public NarrativeHelperRetVal findWhatToImport(Map<String,Integer> narrativeTypes) {
 				NarrativeHelperRetVal retVal = new NarrativeHelperRetVal();
 				retVal.narrativeEnum=ImportNarrativeEnum.TRIMMED_DATA;
+				//retVal.selectedNarrativeTypes = (List<String>)Arrays.asList(narrativeTypes.keySet().toArray(new String[narrativeTypes.size()]));
+				return retVal;
+			}
+		};
+		
+		private final static TrimNarrativeHelper only_selected_types = new TrimNarrativeHelper() {
+
+			@Override
+			public NarrativeHelperRetVal findWhatToImport(Map<String,Integer> narrativeTypes) {
+				NarrativeHelperRetVal retVal = new NarrativeHelperRetVal();
+				retVal.narrativeEnum=ImportNarrativeEnum.ALL_DATA;
 				retVal.selectedNarrativeTypes = new ArrayList<>();
+				retVal.selectedNarrativeTypes.add("CAT COMMENT");
 				return retVal;
 			}
 		};
@@ -684,7 +696,18 @@ public class ImportNarrativeDocument {
 			public NarrativeHelperRetVal findWhatToImport(Map<String,Integer> narrativeTypes) {
 				NarrativeHelperRetVal retVal = new NarrativeHelperRetVal();
 				retVal.narrativeEnum=ImportNarrativeEnum.ALL_DATA;
+				//retVal.selectedNarrativeTypes = (List<String>)Arrays.asList(narrativeTypes.keySet().toArray(new String[narrativeTypes.size()]));
+				return retVal;
+			}
+		};
+		private TrimNarrativeHelper only_fcs_types = new TrimNarrativeHelper() {
+
+			@Override
+			public NarrativeHelperRetVal findWhatToImport(Map<String,Integer> narrativeTypes) {
+				NarrativeHelperRetVal retVal = new NarrativeHelperRetVal();
+				retVal.narrativeEnum=ImportNarrativeEnum.ALL_DATA;
 				retVal.selectedNarrativeTypes = new ArrayList<>();
+				retVal.selectedNarrativeTypes.add("FCS");
 				return retVal;
 			}
 		};
@@ -1600,6 +1623,7 @@ public class ImportNarrativeDocument {
 
 		@SuppressWarnings("unused")
 		private String messageStr = null;
+		
 
 		@Override
 		public void setUp() {
@@ -1644,6 +1668,7 @@ public class ImportNarrativeDocument {
 			final InputStream is = new FileInputStream(testI);
 			final Layers tLayers = new Layers();
 			final ImportNarrativeDocument importer = new ImportNarrativeDocument(tLayers);
+			ImportNarrativeDocument.setNarrativeHelper(only_fcs_types);
 			final List<String> selectedTypes = new ArrayList<>();
 			selectedTypes.add("FCS");
 			importer.setSelectedNarrativeTypes(selectedTypes);
@@ -1664,9 +1689,7 @@ public class ImportNarrativeDocument {
 			final InputStream is = new FileInputStream(testI);
 			final Layers tLayers = new Layers();
 			final ImportNarrativeDocument importer = new ImportNarrativeDocument(tLayers);
-			final List<String> selectedTypes = new ArrayList<>();
-			selectedTypes.add("CAT COMMENT");
-			importer.setSelectedNarrativeTypes(selectedTypes);
+			ImportNarrativeDocument.setNarrativeHelper(only_selected_types);
 			final HWPFDocument doc = new HWPFDocument(is);
 			final ArrayList<String> strings = importFromWord(doc);
 			importer.processThese(strings);
@@ -2023,14 +2046,14 @@ public class ImportNarrativeDocument {
 			if (outerPeriod != null && thisN.dtg != null) {
 				// check it's in the currently loaded time period
 				if (!outerPeriod.contains(thisN.dtg)) {
-     System.out.println(thisN.dtg.getDate() + " is not between " +
-     outerPeriod.getStartDTG().getDate() + " and " + outerPeriod.getEndDTG().getDate());
+					System.out.println(thisN.dtg.getDate() + " is not between " +
+							outerPeriod.getStartDTG().getDate() + " and " + outerPeriod.getEndDTG().getDate());
 
 					// ok, it's not in our period
 					continue;
 				}
 			}
-			
+
 
 			// did we process anything?
 			if (thisN.type != null && (selectedNarrativeTypes == null || selectedNarrativeTypes.contains(thisN.type))) {
@@ -2049,9 +2072,9 @@ public class ImportNarrativeDocument {
 					}
 				}
 
-					// ok, take note that we've added something
-					dataAdded = true;
-					break;
+				// ok, take note that we've added something
+				dataAdded = true;
+				break;
 				default: {
 					// ok, just add a narrative entry for anything not recognised
 					// add a narrative entry
@@ -2328,15 +2351,14 @@ public class ImportNarrativeDocument {
 						}
 
 						selectedNarrativeTypes = whatToImport.selectedNarrativeTypes;
-						if(selectedNarrativeTypes==null || !selectedNarrativeTypes.isEmpty()) {
-							dataAdded = addEntries(narrativeEntries, selectedNarrativeTypes,outerPeriod);
-						}
+						dataAdded = addEntries(narrativeEntries, selectedNarrativeTypes,outerPeriod);
+						
 					} else {
 						questionHelper.showMessage("Narrative Types", "No narrative types found, there is nothing to import");
 					}
 				}
 		} else {
-			dataAdded = false;
+			dataAdded = addEntries(narrativeEntries, null,null);
 		}
 		if (dataAdded) {
 			_layers.fireModified(getNarrativeLayer());
