@@ -666,6 +666,7 @@ public class ImportNarrativeDocument {
 		private final static String no_metadata_path = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/FCS_narrative_no_metadata.doc";
 
 		private final static String ownship_track = "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
+		private final static String ownship_track_test = "../org.mwc.cmap.combined.feature/root_installs/sample_data/boattest.rep";
 
 		private final static TrimNarrativeHelper only_in_period = new TrimNarrativeHelper() {
 
@@ -686,6 +687,17 @@ public class ImportNarrativeDocument {
 				retVal.narrativeEnum=ImportNarrativeEnum.ALL_DATA;
 				retVal.selectedNarrativeTypes = new ArrayList<>();
 				retVal.selectedNarrativeTypes.add("CAT COMMENT");
+				return retVal;
+			}
+		};
+		private final static TrimNarrativeHelper only_selected_trimmed_data_types = new TrimNarrativeHelper() {
+
+			@Override
+			public NarrativeHelperRetVal findWhatToImport(Map<String,Integer> narrativeTypes) {
+				NarrativeHelperRetVal retVal = new NarrativeHelperRetVal();
+				retVal.narrativeEnum=ImportNarrativeEnum.TRIMMED_DATA;
+				retVal.selectedNarrativeTypes = new ArrayList<>();
+				retVal.selectedNarrativeTypes.add("OOW COMMENT");
 				return retVal;
 			}
 		};
@@ -1697,6 +1709,35 @@ public class ImportNarrativeDocument {
 			assertNotNull(narrLayer);
 			assertEquals(narrLayer.size(), 5);
 		}
+		
+		public void testImportSelectedTypesWithOuterPeriod() throws Exception{
+			final Layers tLayers = new Layers();
+
+			// start off with the ownship track
+			final File boatFile = new File(ownship_track_test);
+			assertTrue(boatFile.exists());
+			final InputStream bs = new FileInputStream(boatFile);
+
+			final ImportReplay trackImporter = new ImportReplay();
+			ImportReplay.initialise(new ImportReplay.testImport.TestParent(ImportReplay.IMPORT_AS_OTG, 0L));
+			trackImporter.importThis(ownship_track_test, bs, tLayers);
+
+			assertEquals("read in track", 1, tLayers.size());
+			final String testFile = valid_doc_path;
+			final File testI = new File(testFile);
+			assertTrue(testI.exists());
+
+			final InputStream is = new FileInputStream(testI);
+			final ImportNarrativeDocument importer = new ImportNarrativeDocument(tLayers);
+			ImportNarrativeDocument.setNarrativeHelper(only_selected_trimmed_data_types);
+			final HWPFDocument doc = new HWPFDocument(is);
+			final ArrayList<String> strings = importFromWord(doc);
+			importer.processThese(strings);
+			final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(LayerHandler.NARRATIVE_LAYER);
+			assertNotNull(narrLayer);
+			assertEquals(narrLayer.size(), 285);
+
+		}
 	}
 
 	public static interface TrimNarrativeHelper {
@@ -2046,8 +2087,8 @@ public class ImportNarrativeDocument {
 			if (outerPeriod != null && thisN.dtg != null) {
 				// check it's in the currently loaded time period
 				if (!outerPeriod.contains(thisN.dtg)) {
-					System.out.println(thisN.dtg.getDate() + " is not between " +
-							outerPeriod.getStartDTG().getDate() + " and " + outerPeriod.getEndDTG().getDate());
+//					System.out.println(thisN.dtg.getDate() + " is not between " +
+//							outerPeriod.getStartDTG().getDate() + " and " + outerPeriod.getEndDTG().getDate());
 
 					// ok, it's not in our period
 					continue;
