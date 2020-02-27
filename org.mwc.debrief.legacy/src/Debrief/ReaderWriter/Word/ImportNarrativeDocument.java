@@ -712,6 +712,15 @@ public class ImportNarrativeDocument {
 				return retVal;
 			}
 		};
+		private final static TrimNarrativeHelper cancelled_import = new TrimNarrativeHelper() {
+			
+			@Override
+			public NarrativeHelperRetVal findWhatToImport(Map<String, Integer> narrativeTypes) {
+				NarrativeHelperRetVal retVal = new NarrativeHelperRetVal();
+				retVal.narrativeEnum=ImportNarrativeEnum.CANCEL;
+				return retVal;
+			}
+		};
 		private TrimNarrativeHelper only_fcs_types = new TrimNarrativeHelper() {
 
 			@Override
@@ -1671,6 +1680,22 @@ public class ImportNarrativeDocument {
 			assertNotNull(narrLayer);
 			assertEquals(narrLayer.size(), 13);
 		}
+		
+		public void testCancelImportNarrativeTypes() throws Exception {
+			final String testFile = dummy_doc_path;
+			final File testI = new File(testFile);
+			assertTrue(testI.exists());
+
+			final InputStream is = new FileInputStream(testI);
+			final Layers tLayers = new Layers();
+			final ImportNarrativeDocument importer = new ImportNarrativeDocument(tLayers);
+			ImportNarrativeDocument.setNarrativeHelper(cancelled_import);
+			final HWPFDocument doc = new HWPFDocument(is);
+			final ArrayList<String> strings = importFromWord(doc);
+			importer.processThese(strings);
+			final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(LayerHandler.NARRATIVE_LAYER);
+			assertNull(narrLayer);
+		}
 
 		public void testImportSelectedNarrativeFCSTypes() throws Exception {
 			final String testFile = valid_doc_path;
@@ -2377,6 +2402,7 @@ public class ImportNarrativeDocument {
 		}
 		if (trimNarrativeHelper != null) {
 				whatToImport = trimNarrativeHelper.findWhatToImport(typeVsCount);
+				System.out.println(whatToImport.narrativeEnum);
 				if(whatToImport.narrativeEnum != ImportNarrativeEnum.CANCEL) {
 					if (typeVsCount != null && !typeVsCount.isEmpty()) {
 						TimePeriod outerPeriod = null;
@@ -2397,6 +2423,10 @@ public class ImportNarrativeDocument {
 					} else {
 						questionHelper.showMessage("Narrative Types", "No narrative types found, there is nothing to import");
 					}
+				}
+				else {
+					
+					dataAdded = false;
 				}
 		} else {
 			//if dialog is not displayed then trim to time period. add all entries

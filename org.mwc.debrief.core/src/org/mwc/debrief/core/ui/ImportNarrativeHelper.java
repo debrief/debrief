@@ -67,6 +67,9 @@ public class ImportNarrativeHelper implements TrimNarrativeHelper {
 						}
 						retVal.selectedNarrativeTypes = dialog.getSelectedNarrativeTypes();
 					} 
+					else {
+						retVal.narrativeEnum = dialog.getUserChoice();
+					}
 
 				}
 			});
