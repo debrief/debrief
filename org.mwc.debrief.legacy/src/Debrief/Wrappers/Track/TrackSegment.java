@@ -988,11 +988,11 @@ public class TrackSegment extends BaseItemLayer
 	 */
 	@FireExtended
 	public final void setResampleDataAt(final HiResDate theVal) {
+		this._lastDataFrequency = theVal;
+		
 		if (theVal == null) {
 			return;
 		}
-
-		this._lastDataFrequency = theVal;
 
 		// just check that we're not a TMA segment. We can't do TMA tracks from here
 		// because it's the top level TrackWrapper that is able to re-connect the legs.
