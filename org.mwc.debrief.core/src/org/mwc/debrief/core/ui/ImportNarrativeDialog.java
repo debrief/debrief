@@ -113,8 +113,8 @@ public class ImportNarrativeDialog extends Dialog {
 						.setValue(PreferenceConstants.REUSE_TRIM_NARRATIVES_DIALOG_CHOICE, preference);
 			}
 		});
-		boolean userPreference = CorePlugin.getDefault().getPreferenceStore().getBoolean(PreferenceConstants.REUSE_TRIM_NARRATIVES_DIALOG_CHOICE);
-		_btnLoadedTracks.setSelection(userPreference);
+		preference = CorePlugin.getDefault().getPreferenceStore().getBoolean(PreferenceConstants.REUSE_TRIM_NARRATIVES_DIALOG_CHOICE);
+		_btnLoadedTracks.setSelection(preference);
 		Composite headingComposite = new Composite(control,SWT.NONE);
 		Label lblHeading = new Label(headingComposite,SWT.NONE);
 		headingComposite.setLayout(new GridLayout());
