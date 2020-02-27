@@ -2358,7 +2358,9 @@ public class ImportNarrativeDocument {
 					}
 				}
 		} else {
-			dataAdded = addEntries(narrativeEntries, null,null);
+			//if dialog is not displayed then trim to time period. add all entries
+			TimePeriod outerPeriod = outerPeriodFor(_layers);
+			dataAdded = addEntries(narrativeEntries, null,outerPeriod);
 		}
 		if (dataAdded) {
 			_layers.fireModified(getNarrativeLayer());
