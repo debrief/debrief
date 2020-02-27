@@ -369,7 +369,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 		public Component getTableCellRendererComponent(final JTable p1, final Object p2, final boolean isSelected,
 				final boolean hasFocus, final int p5, final int p6) {
 			final Component res = _theEditorList.get(p2);
-			res.setEnabled(true);
+			
 			return res;
 		}
 	}
@@ -862,6 +862,12 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 		// it later
 		final PropertyEditorItem pei = _theEditors.get(p);
 		pei.theEditorGUI = c;
+		
+		// Check if we are handling a read-only property
+		if (p.getWriteMethod() == null)
+		{
+			c.setEnabled(false);
+		}
 
 		final Vector<Object> v = new Vector<Object>();
 		v.addElement(p);
