@@ -115,12 +115,16 @@ public class TimeFrequencyPropertyEditor extends PropertyEditorSupport {
 		String res = null;
 
 		// check we have a freq
+		// I would consider it as an invalid time instead.
+		// Saul
+		final long current;
 		if (_myFreq == null)
-			return res;
+			current = SHOW_ALL_FREQUENCY;
+		else
+			current = _myFreq.getMicros();
 
 		final long[] freqs = getFreqs();
 		final String[] tags = getTags();
-		final long current = _myFreq.getMicros();
 		for (int i = 0; i < freqs.length; i++) {
 			final long v = freqs[i];
 			if (v == current) {
@@ -173,7 +177,9 @@ public class TimeFrequencyPropertyEditor extends PropertyEditorSupport {
 
 	@Override
 	public void setValue(final Object p1) {
-		if (p1 instanceof HiResDate) {
+		if (p1 == null) {
+			_myFreq = null;
+		} else if (p1 instanceof HiResDate) {
 			_myFreq = new HiResDate((HiResDate) p1);
 		} else if (p1 instanceof String) {
 			final String val = (String) p1;
