@@ -986,9 +986,9 @@ public class DebriefRibbonTimeController {
 
 	}
 
-	private static void setTopCommandsEnabled(final List<Command> commands, final boolean enabled) {
-		commands.forEach(command -> command.setActionEnabled(enabled));
-	}
+	//private static void setTopCommandsEnabled(final List<Command> commands, final boolean enabled) {
+	//	commands.forEach(command -> command.setActionEnabled(enabled));
+	//}
 
 	public static void updatePlayBtnUI(final AbstractCommandButton playCommandButton, final boolean isPlaying) {
 
