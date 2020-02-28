@@ -605,7 +605,7 @@ public class DebriefLiteApp implements FileDropListener {
 			// make the actual change
 			final Vector<Layer> res = super.performOperation(operationName);
 
-			if (res != null && res.size() != 0) {
+			if (res != null && !res.isEmpty()) {
 				for (final Iterator<Layer> iter = res.iterator(); iter.hasNext();) {
 					final Layer thisL = iter.next();
 					// and update the screen
@@ -1207,6 +1207,7 @@ public class DebriefLiteApp implements FileDropListener {
 								if (period != null) {
 									timeManager.setTime(source, period.getStartDTG(), true);
 								}
+								timeManager.firePeriodPropertyChange();
 
 								theTote.assignWatchables(true);
 

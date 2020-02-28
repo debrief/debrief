@@ -738,8 +738,16 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor {
 						// we should also recalculate the time period we cover
 						final TimePeriod timePeriod = getPeriodFor(_myLayers);
 
+						final TimePeriod oldTimePeriod = _timeManager.getPeriod();
 						// and share the good news.
 						_timeManager.setPeriod(this, timePeriod);
+
+						// I am forcing the period refresh in case we have some filter
+						// applied and we import another file with exactly the same period.
+						// Saul
+						if (oldTimePeriod.equals(timePeriod)) {
+							_timeManager.firePeriodPropertyChange();
+						}
 
 						// and tell the track data manager that something's happened. One of
 						// it's
