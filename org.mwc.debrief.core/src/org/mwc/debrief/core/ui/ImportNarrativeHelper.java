@@ -39,42 +39,32 @@ public class ImportNarrativeHelper implements TrimNarrativeHelper {
 	public NarrativeHelperRetVal findWhatToImport(final Map<String,Integer> narrativeTypes) {
 		final Display targetDisplay;
 		final NarrativeHelperRetVal retVal = new NarrativeHelperRetVal();
-//		final boolean reuseChoice = CorePlugin.getDefault().getPreferenceStore()
-//				.getBoolean(PreferenceConstants.REUSE_TRIM_NARRATIVES_DIALOG_CHOICE);
-//		final String defaultChoice = CorePlugin.getDefault().getPreference(PREF_DEF_NARRATIVE_CHOICE);
-//		if (reuseChoice && defaultChoice != null && !defaultChoice.isEmpty()) {
-//			retVal.narrativeEnum = ImportNarrativeEnum.getByName(defaultChoice);
-//			
-//		} else {
-//			final StringBuilder retVal = new StringBuilder();
-			if (Display.getCurrent() == null) {
-				targetDisplay = Display.getDefault();
-			} else {
-				targetDisplay = Display.getCurrent();
-			}
+		if (Display.getCurrent() == null) {
+			targetDisplay = Display.getDefault();
+		} else {
+			targetDisplay = Display.getCurrent();
+		}
 
-			// ok, get the answer
-			targetDisplay.syncExec(new Runnable() {
-				@Override
-				public void run() {
-					final ImportNarrativeDialog dialog = new ImportNarrativeDialog(targetDisplay.getActiveShell(),narrativeTypes);
-					if (dialog.open() == Window.OK) {
-						final ImportNarrativeEnum userChoice = dialog.getUserChoice();
-						retVal.narrativeEnum = userChoice;
-						if (dialog.getPreference()) {
-							CorePlugin.getDefault().getPreferenceStore().setValue(PREF_DEF_NARRATIVE_CHOICE,
-									userChoice.getName());
-						}
-						retVal.selectedNarrativeTypes = dialog.getSelectedNarrativeTypes();
-					} 
-					else {
-						retVal.narrativeEnum = ImportNarrativeEnum.CANCEL;
+		// ok, get the answer
+		targetDisplay.syncExec(new Runnable() {
+			@Override
+			public void run() {
+				final ImportNarrativeDialog dialog = new ImportNarrativeDialog(targetDisplay.getActiveShell(),narrativeTypes);
+				if (dialog.open() == Window.OK) {
+					final ImportNarrativeEnum userChoice = dialog.getUserChoice();
+					retVal.narrativeEnum = userChoice;
+					if (dialog.getPreference()) {
+						CorePlugin.getDefault().getPreferenceStore().setValue(PREF_DEF_NARRATIVE_CHOICE,
+								userChoice.getName());
 					}
-
+					retVal.selectedNarrativeTypes = dialog.getSelectedNarrativeTypes();
+				} 
+				else {
+					retVal.narrativeEnum = ImportNarrativeEnum.CANCEL;
 				}
-			});
-			return retVal;
-//		}
+			}
+		});
+		return retVal;
 	}
 
 }
