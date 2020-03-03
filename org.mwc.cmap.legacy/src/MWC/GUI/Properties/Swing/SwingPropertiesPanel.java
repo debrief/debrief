@@ -407,9 +407,7 @@ public class SwingPropertiesPanel extends SwingTabPanel implements PropertiesPan
 	@Override
 	public void propertyChange(final PropertyChangeEvent evt) {
 		if (evt.getPropertyName().equals("Name")) {
-			final PlainPropertyEditor.PropertyChangeAction pa = (PlainPropertyEditor.PropertyChangeAction) evt
-					.getSource();
-			final Object source = pa.getData();
+			final Object source = evt.getSource();
 			final JPanel panel = _myPanels.get(source);
 			final String newName = (String) evt.getNewValue();
 
