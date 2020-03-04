@@ -132,6 +132,10 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 				if (tNow != null) {
 					final TimePeriod period = _controllablePeriod.getPeriod();
 					if (period != null) {
+						_wholePanel.setEnabled(true);
+
+						// ok, now the user ranges...
+						_dtgRangeSlider.updateSelectedRanges(period.getStartDTG(), period.getEndDTG());
 						if (!period.contains(tNow)) {
 							if (tNow.greaterThan(period.getEndDTG())) {
 								fireNewTime(period.getEndDTG());
