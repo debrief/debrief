@@ -2386,7 +2386,7 @@ public class ImportNarrativeDocument {
 					}
 					if (type != null) {
 						if (typeVsCount.get(type) == null) {
-							typeVsCount.put(type, Integer.valueOf(1));
+							typeVsCount.put(type, 1);
 						} else {
 							typeVsCount.put(type, typeVsCount.get(type) + 1);
 						}

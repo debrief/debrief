@@ -28,11 +28,13 @@ import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.mwc.cmap.core.CorePlugin;
@@ -122,17 +124,21 @@ public class ImportNarrativeDialog extends Dialog {
 		lblHeading.setFont(descriptor.createFont(title.getDisplay()));
 		lblHeading.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false));
 		ScrolledComposite scrolledComposite = new ScrolledComposite(control,SWT.V_SCROLL|SWT.BORDER);
-		Composite component = createCheckboxes(scrolledComposite);
-		scrolledComposite.setContent(component);
 		scrolledComposite.setExpandVertical( true );
 		scrolledComposite.setExpandHorizontal(true);
-		scrolledComposite.setMinSize( 250, 75 );
+		Composite component = createCheckboxes(scrolledComposite);
+		scrolledComposite.setContent(component);
 		scrolledComposite.addListener( SWT.Resize, event -> {
 		      int width = scrolledComposite.getClientArea().width;
-		      scrolledComposite.setMinSize( parent.computeSize( width, SWT.DEFAULT ) );
+		      scrolledComposite.setMinSize( width, computePreferredHeight() );
 		    } );
-		GridData gridData = new GridData( SWT.FILL, SWT.FILL, true, true );
-	    scrolledComposite.setLayoutData( gridData );
+		GridData gridData = new GridData();
+		gridData.horizontalAlignment = SWT.FILL;
+		int prefHeight = computePreferredHeight();
+		gridData.heightHint = prefHeight>250?250:prefHeight+10; 
+		gridData.grabExcessHorizontalSpace=true;
+		gridData.grabExcessVerticalSpace=false;
+		scrolledComposite.setLayoutData( gridData );
 		selectAllCheck = new Button(control,SWT.CHECK);
 		selectAllCheck.setText("Select All/None");
 		selectAllCheck.addSelectionListener(new SelectionAdapter() {
@@ -146,6 +152,13 @@ public class ImportNarrativeDialog extends Dialog {
 		});
 		return control;
 	}
+	
+	private int computePreferredHeight() {
+	    int numberOfLines = typesCheck.length/2+1;
+	    int defaultHorizontalSpacing = 5; 
+	    Point preferredSize = typesCheck[0].computeSize( SWT.DEFAULT, SWT.DEFAULT );
+	    return numberOfLines * ( preferredSize.y + defaultHorizontalSpacing );
+	  }
 	
 	private Composite createCheckboxes(Composite scrolledComposite) {
 		Composite component = new Composite(scrolledComposite,SWT.NONE);
