@@ -2112,14 +2112,10 @@ public class ImportNarrativeDocument {
 			if (outerPeriod != null && thisN.dtg != null) {
 				// check it's in the currently loaded time period
 				if (!outerPeriod.contains(thisN.dtg)) {
-//					System.out.println(thisN.dtg.getDate() + " is not between " +
-//							outerPeriod.getStartDTG().getDate() + " and " + outerPeriod.getEndDTG().getDate());
-
 					// ok, it's not in our period
 					continue;
 				}
 			}
-
 
 			// did we process anything?
 			if (thisN.type != null && (selectedNarrativeTypes == null || selectedNarrativeTypes.contains(thisN.type))) {
@@ -2299,11 +2295,7 @@ public class ImportNarrativeDocument {
 		}
 		final Map<String, Integer> typeVsCount = new HashMap<>();
 		boolean proceed = true;
-		final NarrativeHelperRetVal whatToImport;
 		
-		// keep track of if we've added anything
-		boolean dataAdded = false;
-
 		// maximum number of follow-on-sentences to use
 		final int MAX_APPENDED = 6;
 
@@ -2400,42 +2392,56 @@ public class ImportNarrativeDocument {
 				}
 			}
 		}
+		// keep track of if we've added anything
+		final boolean dataAdded;
+
 		if (trimNarrativeHelper != null) {
-				whatToImport = trimNarrativeHelper.findWhatToImport(typeVsCount);
-				System.out.println(whatToImport.narrativeEnum);
-				if(whatToImport.narrativeEnum != ImportNarrativeEnum.CANCEL) {
-					if (typeVsCount != null && !typeVsCount.isEmpty()) {
-						TimePeriod outerPeriod = null;
-
-						// find the outer time period - we only load data into the current time period
-						if (whatToImport.narrativeEnum == ImportNarrativeEnum.CANCEL) {
-							proceed = false;
-							// if cancelled then do nothing.
-						} else if (whatToImport.narrativeEnum == ImportNarrativeEnum.ALL_DATA) {
-							outerPeriod = null;
-						} else {
-							outerPeriod = outerPeriodFor(_layers);
-						}
-
-						selectedNarrativeTypes = whatToImport.selectedNarrativeTypes;
-						dataAdded = addEntries(narrativeEntries, selectedNarrativeTypes,outerPeriod);
-						
-					} else {
-						questionHelper.showMessage("Narrative Types", "No narrative types found, there is nothing to import");
-					}
-				}
-				else {
-					
-					dataAdded = false;
-				}
+			// ask the user what to do
+			dataAdded = checkWhatToImport(typeVsCount, narrativeEntries);
 		} else {
-			//if dialog is not displayed then trim to time period. add all entries
+			// if dialog is not displayed then trim to time period. add all entries
 			TimePeriod outerPeriod = outerPeriodFor(_layers);
-			dataAdded = addEntries(narrativeEntries, null,outerPeriod);
+			dataAdded = addEntries(narrativeEntries, null, outerPeriod);
 		}
 		if (dataAdded) {
 			_layers.fireModified(getNarrativeLayer());
 		}
+	}
+
+	/** check with the helper function what the user wants to import
+	 * 
+	 * @param typeVsCount types of entry, with count of instances
+	 * @param narrativeEntries list of narratives
+	 * @return
+	 */
+	private boolean checkWhatToImport(final Map<String, Integer> typeVsCount, final List<NarrEntry> narrativeEntries) {
+		final boolean dataAdded;
+		final NarrativeHelperRetVal whatToImport = trimNarrativeHelper.findWhatToImport(typeVsCount);
+		if (whatToImport.narrativeEnum != ImportNarrativeEnum.CANCEL) {
+			if (typeVsCount != null && !typeVsCount.isEmpty()) {
+				final TimePeriod outerPeriod;
+
+				// find the outer time period - we only load data into the current time period
+				if (whatToImport.narrativeEnum == ImportNarrativeEnum.CANCEL) {
+					// if cancelled then do nothing.
+					outerPeriod = null;
+				} else if (whatToImport.narrativeEnum == ImportNarrativeEnum.ALL_DATA) {
+					outerPeriod = null;
+				} else {
+					outerPeriod = outerPeriodFor(_layers);
+				}
+
+				selectedNarrativeTypes = whatToImport.selectedNarrativeTypes;
+				dataAdded = addEntries(narrativeEntries, selectedNarrativeTypes, outerPeriod);
+			} else {
+				questionHelper.showMessage("Narrative Types",
+						"No narrative types found, there is nothing to import");
+				dataAdded = false;
+			}
+		} else {
+			dataAdded = false;
+		}
+		return dataAdded;
 	}
 
 	public void setSelectedNarrativeTypes(final List<String> selectedNarrativeTypes) {
