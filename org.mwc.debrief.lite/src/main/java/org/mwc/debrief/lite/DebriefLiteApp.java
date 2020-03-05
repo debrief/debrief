@@ -1165,6 +1165,12 @@ public class DebriefLiteApp implements FileDropListener {
 
 		// also tell the layers they've been reformatted
 		_theLayers.fireReformatted(null);
+		enableFileCloseButton(true);
+	}
+
+	private void enableFileCloseButton(boolean b) {
+		DebriefRibbonFile.closeButton.getContentModel().setActionEnabled(b);
+		
 	}
 
 	private void handleImportRep(final File[] fList) {
@@ -1354,7 +1360,7 @@ public class DebriefLiteApp implements FileDropListener {
 			DebriefLiteApp.currentFileName = file.getAbsolutePath();
 			DebriefLiteApp.setTitle(file.getName());
 			// setState(ACTIVE_STATE);
-			DebriefRibbonFile.closeButton.getContentModel().setActionEnabled(true);
+			DebriefLiteApp.getInstance().enableFileCloseButton(true);
 		}
 	}
 
