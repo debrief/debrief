@@ -27,14 +27,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.mwc.cmap.core.CorePlugin;
@@ -50,33 +48,20 @@ import Debrief.ReaderWriter.Word.ImportNarrativeDocument.ImportNarrativeEnum;
  */
 public class ImportNarrativeDialog extends Dialog {
 	private Button _btnLoadedTracks;
-	private ImportNarrativeEnum userChoice = ImportNarrativeEnum.ALL_DATA;
 	private boolean preference;
 	private Map<String,Integer> types;
 	private Button[] typesCheck;
 	private Button selectAllCheck;
 	private List<String> selectedTypes = new ArrayList<>();;
 
-	private final SelectionListener selectionListener = new SelectionAdapter() {
-		@Override
-		public void widgetSelected(final SelectionEvent e) {
-			if (_btnLoadedTracks.getSelection()) {
-				userChoice = ImportNarrativeEnum.TRIMMED_DATA;
-			} else {
-				userChoice = ImportNarrativeEnum.ALL_DATA;
-			}
-		}
-	};
-
+	@Override
+	protected boolean isResizable() {
+	    return true;
+	}
+	
 	public ImportNarrativeDialog(final Shell parentShell,Map<String,Integer> narrativeTypes) {
 		super(parentShell);
 		this.types = narrativeTypes;
-	}
-
-	@Override
-	protected void cancelPressed() {
-		userChoice = ImportNarrativeEnum.CANCEL;
-		super.cancelPressed();
 	}
 
 	@Override
@@ -102,9 +87,7 @@ public class ImportNarrativeDialog extends Dialog {
 
 		_btnLoadedTracks = new Button(composite, SWT.CHECK);
 		_btnLoadedTracks.setText("Trim Narrative Entries to the  period of currently loaded tracks");
-		_btnLoadedTracks.addSelectionListener(selectionListener);
-		_btnLoadedTracks.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		
+		_btnLoadedTracks.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));		
 
 		new Label(composite, SWT.NONE).setLayoutData(new GridData(GridData.FILL));
 		_btnLoadedTracks.addSelectionListener(new SelectionAdapter() {
