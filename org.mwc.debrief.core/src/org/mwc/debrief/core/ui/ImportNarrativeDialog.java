@@ -52,7 +52,7 @@ public class ImportNarrativeDialog extends Dialog {
 	private final Map<String, Integer> types;
 	private Button[] typesCheck;
 	private Button selectAllCheck;
-	private final List<String> selectedTypes = new ArrayList<>();;
+	private final List<String> selectedTypes = new ArrayList<>();
 
 	public ImportNarrativeDialog(final Shell parentShell, final Map<String, Integer> narrativeTypes) {
 		super(parentShell);
