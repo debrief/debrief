@@ -49,19 +49,21 @@ import Debrief.ReaderWriter.Word.ImportNarrativeDocument.ImportNarrativeEnum;
 public class ImportNarrativeDialog extends Dialog {
 	private Button _btnLoadedTracks;
 	private boolean preference;
-	private Map<String,Integer> types;
+	private final Map<String, Integer> types;
 	private Button[] typesCheck;
 	private Button selectAllCheck;
-	private List<String> selectedTypes = new ArrayList<>();;
+	private final List<String> selectedTypes = new ArrayList<>();;
 
-	@Override
-	protected boolean isResizable() {
-	    return true;
-	}
-	
-	public ImportNarrativeDialog(final Shell parentShell,Map<String,Integer> narrativeTypes) {
+	public ImportNarrativeDialog(final Shell parentShell, final Map<String, Integer> narrativeTypes) {
 		super(parentShell);
 		this.types = narrativeTypes;
+	}
+
+	private int computePreferredHeight() {
+		final int numberOfLines = typesCheck.length / 2 + 1;
+		final int defaultHorizontalSpacing = 5;
+		final Point preferredSize = typesCheck[0].computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		return numberOfLines * (preferredSize.y + defaultHorizontalSpacing);
 	}
 
 	@Override
@@ -69,6 +71,25 @@ public class ImportNarrativeDialog extends Dialog {
 		newShell.setText("Import Narrative Entries");
 
 		super.configureShell(newShell);
+	}
+
+	private Composite createCheckboxes(final Composite scrolledComposite) {
+		final Composite component = new Composite(scrolledComposite, SWT.NONE);
+		component.setLayout(new GridLayout());
+
+		final Composite typesComposite = new Composite(component, SWT.NONE);
+		typesComposite.setLayout(new GridLayout(2, true));
+		typesCheck = new Button[types.size()];
+		int i = 0;
+
+		for (final String type : types.keySet()) {
+			typesCheck[i] = new Button(typesComposite, SWT.CHECK);
+			typesCheck[i].setText(type + "(" + types.get(type) + ")");
+			typesCheck[i].setLayoutData(new GridData(SWT.FILL));
+			i++;
+		}
+		return component;
+
 	}
 
 	@Override
@@ -87,7 +108,7 @@ public class ImportNarrativeDialog extends Dialog {
 
 		_btnLoadedTracks = new Button(composite, SWT.CHECK);
 		_btnLoadedTracks.setText("Trim Narrative Entries to the  period of currently loaded tracks");
-		_btnLoadedTracks.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));		
+		_btnLoadedTracks.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		new Label(composite, SWT.NONE).setLayoutData(new GridData(GridData.FILL));
 		_btnLoadedTracks.addSelectionListener(new SelectionAdapter() {
@@ -98,93 +119,70 @@ public class ImportNarrativeDialog extends Dialog {
 						.setValue(PreferenceConstants.REUSE_TRIM_NARRATIVES_DIALOG_CHOICE, preference);
 			}
 		});
-		preference = CorePlugin.getDefault().getPreferenceStore().getBoolean(PreferenceConstants.REUSE_TRIM_NARRATIVES_DIALOG_CHOICE);
+		preference = CorePlugin.getDefault().getPreferenceStore()
+				.getBoolean(PreferenceConstants.REUSE_TRIM_NARRATIVES_DIALOG_CHOICE);
 		_btnLoadedTracks.setSelection(preference);
-		Composite headingComposite = new Composite(control,SWT.NONE);
-		Label lblHeading = new Label(headingComposite,SWT.NONE);
+		final Composite headingComposite = new Composite(control, SWT.NONE);
+		final Label lblHeading = new Label(headingComposite, SWT.NONE);
 		headingComposite.setLayout(new GridLayout());
 		lblHeading.setText("Select the narrative types to import:");
 		lblHeading.setFont(descriptor.createFont(title.getDisplay()));
-		lblHeading.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false));
-		ScrolledComposite scrolledComposite = new ScrolledComposite(control,SWT.V_SCROLL|SWT.BORDER);
-		scrolledComposite.setExpandVertical( true );
+		lblHeading.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		final ScrolledComposite scrolledComposite = new ScrolledComposite(control, SWT.V_SCROLL | SWT.BORDER);
+		scrolledComposite.setExpandVertical(true);
 		scrolledComposite.setExpandHorizontal(true);
-		Composite component = createCheckboxes(scrolledComposite);
+		final Composite component = createCheckboxes(scrolledComposite);
 		scrolledComposite.setContent(component);
-		scrolledComposite.addListener( SWT.Resize, event -> {
-		      int width = scrolledComposite.getClientArea().width;
-		      scrolledComposite.setMinSize( width, computePreferredHeight() );
-		    } );
-		GridData gridData = new GridData();
+		scrolledComposite.addListener(SWT.Resize, event -> {
+			final int width = scrolledComposite.getClientArea().width;
+			scrolledComposite.setMinSize(width, computePreferredHeight());
+		});
+		final GridData gridData = new GridData();
 		gridData.horizontalAlignment = SWT.FILL;
-		int prefHeight = computePreferredHeight();
-		gridData.heightHint = prefHeight>250?250:prefHeight+10; 
-		gridData.grabExcessHorizontalSpace=true;
-		gridData.grabExcessVerticalSpace=false;
-		scrolledComposite.setLayoutData( gridData );
-		selectAllCheck = new Button(control,SWT.CHECK);
+		final int prefHeight = computePreferredHeight();
+		gridData.heightHint = prefHeight > 250 ? 250 : prefHeight + 10;
+		gridData.grabExcessHorizontalSpace = true;
+		gridData.grabExcessVerticalSpace = false;
+		scrolledComposite.setLayoutData(gridData);
+		selectAllCheck = new Button(control, SWT.CHECK);
 		selectAllCheck.setText("Select All/None");
 		selectAllCheck.addSelectionListener(new SelectionAdapter() {
 			@Override
-			public void widgetSelected(SelectionEvent e) {
-				for(Button button:typesCheck)
-				{
+			public void widgetSelected(final SelectionEvent e) {
+				for (final Button button : typesCheck) {
 					button.setSelection(selectAllCheck.getSelection());
 				}
 			}
 		});
 		return control;
 	}
-	
-	private int computePreferredHeight() {
-	    int numberOfLines = typesCheck.length/2+1;
-	    int defaultHorizontalSpacing = 5; 
-	    Point preferredSize = typesCheck[0].computeSize( SWT.DEFAULT, SWT.DEFAULT );
-	    return numberOfLines * ( preferredSize.y + defaultHorizontalSpacing );
-	  }
-	
-	private Composite createCheckboxes(Composite scrolledComposite) {
-		Composite component = new Composite(scrolledComposite,SWT.NONE);
-		component.setLayout(new GridLayout());
-		
-		Composite typesComposite = new Composite(component,SWT.NONE);
-		typesComposite.setLayout(new GridLayout(2,true));
-		typesCheck = new Button[types.size()];
-		int i=0;
-		
-		for(String type:types.keySet())
-		{
-			typesCheck[i]=new Button(typesComposite,SWT.CHECK);
-			typesCheck[i].setText(type+"("+types.get(type)+")");
-			typesCheck[i].setLayoutData(new GridData(SWT.FILL));
-			i++;
-		}
-		return component;
-		
-	}
 
 	public boolean getPreference() {
 		return preference;
 	}
 
+	public List<String> getSelectedNarrativeTypes() {
+		return selectedTypes;
+	}
+
 	public ImportNarrativeEnum getUserChoice() {
-		if(preference) {
+		if (preference) {
 			return ImportNarrativeEnum.TRIMMED_DATA;
 		}
 		return ImportNarrativeEnum.ALL_DATA;
 	}
 
-	public List<String> getSelectedNarrativeTypes() {
-		return selectedTypes;
+	@Override
+	protected boolean isResizable() {
+		return true;
 	}
-	
+
 	@Override
 	protected void okPressed() {
-		for(Button button:typesCheck)
-		{
-			if(button.getSelection()) {
-				String text = button.getText();
-				selectedTypes.add(text.substring(0,text.indexOf("(")));
+		for (final Button button : typesCheck) {
+			if (button.getSelection()) {
+				final String text = button.getText();
+				selectedTypes.add(text.substring(0, text.indexOf("(")));
 			}
 		}
 		super.okPressed();
