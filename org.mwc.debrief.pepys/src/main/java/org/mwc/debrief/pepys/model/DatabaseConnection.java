@@ -57,7 +57,7 @@ public class DatabaseConnection {
     public static DatabaseConnection getInstance() throws PropertyVetoException, SQLException {
         if ( INSTANCE == null ){
             INSTANCE = new DatabaseConnection();
-            INSTANCE.initialize("test.db");
+            INSTANCE.initialize("test2.db");
         }
         return INSTANCE;
     }
