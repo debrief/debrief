@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+    Debrief - the Open Source Maritime Analysis Application
+    http://debrief.info
+     
+    (C) 2000-2020, Deep Blue C Technology Ltd
+     
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the Eclipse Public License v1.0
+    (http://www.eclipse.org/legal/epl-v10.html)
+     
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ -->
+
+<project basedir="." default="dist" name="org.mwc.debrief.pepys">
+	<property environment="env" />
+	<property name="org.mwc.cmap.legacy.location" value="../org.mwc.cmap.legacy" />
+	<property name="ECLIPSE_HOME" value="../../.metadata/.plugins/org.eclipse.pde.core/.bundle_pool" />
+	<property name="org.mwc.debrief.legacy.location" value="../org.mwc.debrief.legacy" />
+	<property name="debuglevel" value="source,lines,vars" />
+	<property name="target" value="11" />
+	<property name="source" value="11" />
+	<property name="dist.dir" value="dist"/>
+	<property name="temp.folder" value="temp.folder"/>
+	<path id="Plug-in Dependencies.libraryclasspath" />
+
+	<target name="build.sources" depends="init">
+		<available property="debrief_pepyssrc.zip" file="${build.result.folder}/debrief_pepyssrc.zip"/>
+		<antcall target="debrief_pepyssrc.zip"/>
+	</target>
+	<target name="init">
+		<mkdir dir="target/classes" />
+		<copy includeemptydirs="false" todir="target/classes">
+			<fileset dir="src/main/java">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+	<target name="clean">
+		<delete dir="target/classes" />
+	</target>
+	<target depends="clean" name="cleanall">
+		<delete file="${build.result.folder}/debrief_pepys.jar" />
+		<delete file="debrief_pepys.jar" />
+		<delete file="${plugin.destination}/org.mwc.debrief.pepys_*.jar" />
+		<delete file="${plugin.destination}/org.mwc.debrief.pepys_*.zip" />
+		<delete dir="${temp.folder}" />
+		<delete dir="${dist.dir}" />
+		<delete file="${basedir}/*.jar" />
+	</target>
+
+	<target name="build-subprojects">
+		<ant antfile="build.xml" dir="${org.mwc.cmap.legacy.location}" inheritAll="false" target="cmap_legacy_jar">
+			<propertyset>
+				<propertyref name="build.compiler" />
+			</propertyset>
+		</ant>
+		<ant antfile="build.xml" dir="${org.mwc.debrief.legacy.location}" inheritAll="false" target="debrief_legacy.jar">
+			<propertyset>
+				<propertyref name="build.compiler" />
+			</propertyset>
+		</ant>
+	</target>
+	<target depends="init" name="build-project">
+		<echo message="${ant.project.name}: ${ant.file}" />
+		<javac debug="true" debuglevel="${debuglevel}" destdir="target/classes" includeantruntime="false" source="${source}" target="${target}">
+			<src path="src/main/java" />
+			<classpath refid="org.mwc.debrief.pepys.classpath" />
+		</javac>
+	</target>
+	<target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects" />
+
+	<target name="build.jars" depends="init" description="Compile classes and build nested jars for the plug-in: org.mwc.debrief.pepys.">
+		<delete file="${compilation.problem.marker}" quiet="true" />
+		<available property="debrief_pepys.jar" file="${build.result.folder}/debrief_pepys.jar" />
+		<antcall target="debrief_pepys.jar" />
+	</target>
+
+	<target name="generate" depends="build.jars">
+		<mkdir dir="${dist.dir}" />
+		<property name="debrief-pepys-dist.dir" value="${dist.dir}/debrief-pepys-jar" />
+		<property name="debrief-pepys-lib.dir" value="${debrief-pepys-dist.dir}/lib" />
+		<mkdir dir="${debrief-pepys-dist.dir}" />
+		<mkdir dir="${debrief-pepys-dist.dir}/lib" />
+		<copy todir="${debrief-pepys-dist.dir}" failonerror="true" overwrite="false">
+			<fileset dir="${temp.folder}">
+				<include name="debrief_pepys.jar" />
+			</fileset>
+		</copy>
+		<copy todir="${debrief-pepys-lib.dir}" failonerror="true" overwrite="true">
+			<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar" />
+			<fileset dir="../org.mwc.debrief.legacy/libs" includes="*.jar" />
+			<fileset dir="../org.mwc.cmap.legacy" includes="cmap_legacy.jar" />
+			<fileset dir="../org.mwc.debrief.legacy" includes="debrief_legacy.jar" />
+			<fileset dir="libs" includes="*.jar" />
+		</copy>
+		<zip destfile="${dist.dir}/debrief-pepys-${product.version}.zip">
+			<fileset dir="." includes="data/**/*" />
+			<fileset dir="." includes="*.pdf" />
+			<fileset dir="${debrief-pepys-dist.dir}" includes="**/*" />
+		</zip>
+	</target>
+
+
+	<target name="debrief_pepys.jar" depends="init" unless="debrief_pepys.jar" description="Create jar: org.mwc.debrief.pepys debrief_pepys.jar.">
+		<delete dir="${temp.folder}/debrief_pepys.jar.bin" />
+		<mkdir dir="${temp.folder}/debrief_pepys.jar.bin" />
+		<path id="debrief_pepys.jar.classpath">
+			<pathelement location="../org.mwc.debrief.legacy/cmap_legacy.jar" />
+			<pathelement location="../org.mwc.debrief.legacy/debrief_legacy.jar" />
+			<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar">
+			</fileset>
+			<fileset dir="../org.mwc.debrief.legacy/libs" includes="*.jar">
+			</fileset>
+			<fileset dir="libs" includes="*.jar">
+			</fileset>
+		</path>
+		<!-- compile the source code -->
+		<javac destdir="${temp.folder}/debrief_pepys.jar.bin" failonerror="true">
+			<classpath refid="debrief_pepys.jar.classpath" />
+			<src path="src/" />
+		</javac>
+		<!-- Copy necessary resources -->
+		<copy todir="${temp.folder}/debrief_pepys.jar.bin" failonerror="true" overwrite="false">
+			<fileset dir="src/main/java">
+				<exclude name="**/*.java" />
+				<exclude name="**/package.htm*" />
+			</fileset>
+		</copy>
+		<manifest file="${basedir}/conf/manifest.txt" mode="update">
+			<attribute name="Implementation-Version" value="${product.version}" />
+		</manifest>
+		<jar manifest="${basedir}/conf/manifest.txt" destfile="${temp.folder}/debrief_pepys.jar" basedir="${temp.folder}/debrief_pepys.jar.bin">
+		</jar>
+		<delete dir="${temp.folder}/debrief_pepys.jar.bin" />
+	</target>
+
+	<target name="dist" depends="clean">
+		<ant antfile="build.xml" dir="../org.mwc.cmap.legacy" target="cmap_legacy_jar" inheritAll="false" />
+		<ant antfile="build.xml" dir="../org.mwc.debrief.legacy" target="debrief_legacy.jar" inheritAll="false" />
+		<antcall target="generate" />
+	</target>
+</project>

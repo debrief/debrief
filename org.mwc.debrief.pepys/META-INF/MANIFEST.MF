@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Pepys
+Bundle-SymbolicName: org.mwc.debrief.pepys
+Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: org.mwc.debref.pepys
+Bundle-RequiredExecutionEnvironment: JavaSE-11
