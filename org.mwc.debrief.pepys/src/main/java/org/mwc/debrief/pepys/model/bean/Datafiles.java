@@ -26,71 +26,70 @@ public class Datafiles implements AbstractBean {
 	private String reference;
 	private String url;
 	private Date created_date;
-	
+
 	public Datafiles() {
-		
-	}
 
-	public int getDatafile_id() {
-		return datafile_id;
-	}
-
-	public void setDatafile_id(int datafile_id) {
-		this.datafile_id = datafile_id;
-	}
-
-	public boolean getSimulated() {
-		return simulated;
-	}
-
-	public void setSimulated(boolean simulated) {
-		this.simulated = simulated;
-	}
-	
-	public int getPrivacy_id() {
-		return privacy_id;
-	}
-
-	public void setPrivacy_id(int privacy_id) {
-		this.privacy_id = privacy_id;
-	}
-
-	public int getDatafile_type_id() {
-		return datafile_type_id;
-	}
-
-	public void setDatafile_type_id(int datafile_type_id) {
-		this.datafile_type_id = datafile_type_id;
-	}
-
-	public String getReference() {
-		return reference;
-	}
-
-	public void setReference(String reference) {
-		this.reference = reference;
-	}
-
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
 	}
 
 	public Date getCreated_date() {
 		return created_date;
 	}
 
-	public void setCreated_date(Date created_date) {
-		this.created_date = created_date;
+	public int getDatafile_id() {
+		return datafile_id;
+	}
+
+	public int getDatafile_type_id() {
+		return datafile_type_id;
 	}
 
 	@Override
 	public String getIdField() {
 		return "datafile_id";
 	}
-	
-	
+
+	public int getPrivacy_id() {
+		return privacy_id;
+	}
+
+	public String getReference() {
+		return reference;
+	}
+
+	public boolean getSimulated() {
+		return simulated;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setCreated_date(final Date created_date) {
+		this.created_date = created_date;
+	}
+
+	public void setDatafile_id(final int datafile_id) {
+		this.datafile_id = datafile_id;
+	}
+
+	public void setDatafile_type_id(final int datafile_type_id) {
+		this.datafile_type_id = datafile_type_id;
+	}
+
+	public void setPrivacy_id(final int privacy_id) {
+		this.privacy_id = privacy_id;
+	}
+
+	public void setReference(final String reference) {
+		this.reference = reference;
+	}
+
+	public void setSimulated(final boolean simulated) {
+		this.simulated = simulated;
+	}
+
+	public void setUrl(final String url) {
+		this.url = url;
+	}
+
 }

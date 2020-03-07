@@ -16,5 +16,5 @@
 package org.mwc.debrief.pepys.model.bean;
 
 public interface AbstractBean {
-    public String getIdField();
+	public String getIdField();
 }
