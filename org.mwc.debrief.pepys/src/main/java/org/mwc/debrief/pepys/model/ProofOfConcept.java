@@ -27,7 +27,7 @@ public class ProofOfConcept {
 
 			for (final Object l : list2) {
 				final DatafileTypes datafileTypes = (DatafileTypes) l;
-				System.out.println("DataFileType ID: " + datafileTypes.getDatafile_type_id());
+				System.out.println("DataFileType ID: " + datafileTypes.getDatafile_type_id() + ", " + datafileTypes.getName());
 			}
 
 			for (final Object l : list3) {

@@ -1,12 +1,19 @@
 package org.mwc.debrief.pepys.model.bean;
 
+import java.beans.PropertyVetoException;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.List;
+
+import org.mwc.debrief.pepys.model.DatabaseConnection;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
+import junit.framework.TestCase;
 
 public class States implements AbstractBean {
 
@@ -116,5 +123,26 @@ public class States implements AbstractBean {
 
 	public void setTime(final Timestamp time) {
 		this.time = time;
+	}
+	
+	public static class StatesTest extends TestCase{
+		
+		public void testStatesQuery(){
+			try {
+				final List list = DatabaseConnection.getInstance().listAll(States.class, null);
+				
+				assertTrue("States - database entries", list.size() == 543);
+				
+				final List list2 = DatabaseConnection.getInstance().listAll(States.class, "source_id = 16");
+				
+				assertTrue("States - database entries", list2.size() == 44);
+				
+			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
 	}
 }

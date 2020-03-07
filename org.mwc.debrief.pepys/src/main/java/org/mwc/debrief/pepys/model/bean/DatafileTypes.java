@@ -15,7 +15,15 @@
 
 package org.mwc.debrief.pepys.model.bean;
 
+import java.beans.PropertyVetoException;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
+
+import org.mwc.debrief.pepys.model.DatabaseConnection;
+
+import junit.framework.TestCase;
 
 public class DatafileTypes implements AbstractBean {
 
@@ -56,4 +64,23 @@ public class DatafileTypes implements AbstractBean {
 		this.name = name;
 	}
 
+	public static class DatafileTypesTest extends TestCase{
+		
+		public void testDatafileTypesQuery(){
+			try {
+				final List list = DatabaseConnection.getInstance().listAll(DatafileTypes.class, null);
+				
+				assertTrue("Datafiletypes - database entries", list.size() == 1);
+				
+				final DatafileTypes type = (DatafileTypes) list.get(0);
+				assertTrue("Datafiletypes - database entries", "1".equals(type.getIdField()));
+				assertTrue("Datafiletypes - database entries", "DATAFILE-TYPE-1".equals(type.getName()));
+			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+	}
 }

@@ -15,7 +15,15 @@
 
 package org.mwc.debrief.pepys.model.bean;
 
+import java.beans.PropertyVetoException;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
+
+import org.mwc.debrief.pepys.model.DatabaseConnection;
+
+import junit.framework.TestCase;
 
 public class Datafiles implements AbstractBean {
 
@@ -92,4 +100,31 @@ public class Datafiles implements AbstractBean {
 		this.url = url;
 	}
 
+	public static class DatafilesTest extends TestCase{
+		
+		public void testDatafilesQuery(){
+			try {
+				final List list = DatabaseConnection.getInstance().listAll(Datafiles.class, null);
+				
+				assertTrue("Datafiles - database entries", list.size() == 25);
+				
+				final String [][] datafilesSomeReferences = new String[][] {{"1", "sen_tracks"},
+					{"6", "sen_frig_sensor"}, {"18", "NMEA_bad"}, {"25", "test_land_track"}};
+					
+				for ( Object l : list ) {
+					final Datafiles dataFile = (Datafiles) l;
+					boolean correct = true;
+					for (int i = 0 ; i < datafilesSomeReferences.length; i++) {
+						correct &= !datafilesSomeReferences[0].equals(dataFile.getIdField()) || datafilesSomeReferences[1].equals(dataFile.getReference());
+					}
+					assertTrue("Datafiles - Reference Name",  correct);
+				}
+			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+	}
 }

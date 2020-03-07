@@ -15,7 +15,15 @@
 
 package org.mwc.debrief.pepys.model.bean;
 
+import java.beans.PropertyVetoException;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
+
+import org.mwc.debrief.pepys.model.DatabaseConnection;
+
+import junit.framework.TestCase;
 
 public class Privacies implements AbstractBean {
 
@@ -54,5 +62,25 @@ public class Privacies implements AbstractBean {
 
 	public void setPrivacy_id(final int privacy_id) {
 		this.privacy_id = privacy_id;
+	}
+
+	public static class PrivaciesTest extends TestCase{
+		
+		public void testPrivaciesQuery(){
+			try {
+				final List list = DatabaseConnection.getInstance().listAll(Privacies.class, null);
+				
+				assertTrue("Privacies - database entries", list.size() == 1);
+				
+				final Privacies type = (Privacies) list.get(0);
+				assertTrue("Datafiletypes - database entries", "1".equals(type.getIdField()));
+				assertTrue("Datafiletypes - database entries", "PRIVACY-1".equals(type.getName()));
+			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
 	}
 }
