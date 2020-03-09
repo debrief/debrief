@@ -24,6 +24,6 @@
   </parent>
   <groupId>org.mwc.debrief</groupId>
   <artifactId>org.qinetiq.data_feed</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
   <packaging>eclipse-plugin</packaging>
 </project>
