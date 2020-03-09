@@ -13,3 +13,4 @@ Bundle-ClassPath: libs/c3p0-0.9.5.5.jar,
  .
 Require-Bundle: org.mwc.cmap.legacy;bundle-version="1.0.293",
  org.mwc.debrief.legacy;bundle-version="1.0.432"
+Export-Package: org.mwc.debrief.pepys.model.bean
