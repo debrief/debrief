@@ -15,7 +15,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
 import junit.framework.TestCase;
 
-public class States implements AbstractBean , FilterableBean{
+public class States implements AbstractBean, FilterableBean, TreeStructurable {
 
 	private int state_id;
 	private Timestamp time;
@@ -23,8 +23,8 @@ public class States implements AbstractBean , FilterableBean{
 	private double heading;
 	private double course;
 	private double speed;
-	private double source_id;
-	private double privacy_id;
+	private int source_id;
+	private int privacy_id;
 	private Timestamp created_date;
 	private WorldLocation location;
 
@@ -61,7 +61,7 @@ public class States implements AbstractBean , FilterableBean{
 		return location;
 	}
 
-	public double getPrivacy_id() {
+	public int getPrivacy_id() {
 		return privacy_id;
 	}
 
@@ -69,7 +69,7 @@ public class States implements AbstractBean , FilterableBean{
 		return sensor_id;
 	}
 
-	public double getSource_id() {
+	public int getSource_id() {
 		return source_id;
 	}
 
@@ -101,7 +101,7 @@ public class States implements AbstractBean , FilterableBean{
 		this.location = location;
 	}
 
-	public void setPrivacy_id(final double privacy_id) {
+	public void setPrivacy_id(final int privacy_id) {
 		this.privacy_id = privacy_id;
 	}
 
@@ -109,7 +109,7 @@ public class States implements AbstractBean , FilterableBean{
 		this.sensor_id = sensor_id;
 	}
 
-	public void setSource_id(final double source_id) {
+	public void setSource_id(final int source_id) {
 		this.source_id = source_id;
 	}
 
@@ -124,25 +124,25 @@ public class States implements AbstractBean , FilterableBean{
 	public void setTime(final Timestamp time) {
 		this.time = time;
 	}
-	
-	public static class StatesTest extends TestCase{
-		
-		public void testStatesQuery(){
+
+	public static class StatesTest extends TestCase {
+
+		public void testStatesQuery() {
 			try {
 				final List list = DatabaseConnection.getInstance().listAll(States.class, null);
-				
+
 				assertTrue("States - database entries", list.size() == 543);
-				
+
 				final List list2 = DatabaseConnection.getInstance().listAll(States.class, "source_id = 16");
-				
+
 				assertTrue("States - database entries", list2.size() == 44);
-				
+
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 		}
 	}
 
@@ -154,5 +154,26 @@ public class States implements AbstractBean , FilterableBean{
 	@Override
 	public String getLocationField() {
 		return "location";
+	}
+
+	@Override
+	public int getSource() {
+		return source_id;
+	}
+
+	@Override
+	public String getMeasureName() {
+		return "States";
+	}
+
+	@Override
+	public int getSensor() {
+		return sensor_id;
+	}
+
+	@Override
+	public String getMyName() {
+		// TODO 
+		return state_id + "";
 	}
 }

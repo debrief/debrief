@@ -18,8 +18,14 @@ package org.mwc.debrief.pepys.model;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.beans.PropertyVetoException;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import org.mwc.debrief.pepys.model.tree.TreeBuilder;
+import org.mwc.debrief.pepys.model.tree.TreeNode;
 
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
@@ -27,16 +33,20 @@ import MWC.GenericData.WorldArea;
 public class ModelConfiguration implements AbstractConfiguration {
 
 	private String AREA_PROPERTY = "AREA";
-	
+
 	private String PERIOD_PROPERTY = "PERIOD";
-	
+
+	private String TREE_MODEL = "TREE_MODEL";
+
 	private PropertyChangeSupport _pSupport = null;
-	
+
 	private ArrayList<TypeDomain> currentDatatype = new ArrayList<TypeDomain>();
-	
+
 	private WorldArea currentArea = null;
-	
+
 	private TimePeriod currentPeriod = null;
+
+	private TreeNode treeModel = new TreeNode(TreeNode.NodeType.ROOT, "", null);
 
 	@Override
 	public void addPropertyChangeListener(PropertyChangeListener l) {
@@ -48,7 +58,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	@Override
 	public void removePropertyChangeListener(PropertyChangeListener l) {
-		if (_pSupport !=null ) {
+		if (_pSupport != null) {
 			_pSupport.removePropertyChangeListener(l);
 		}
 	}
@@ -72,9 +82,10 @@ public class ModelConfiguration implements AbstractConfiguration {
 	public void setArea(WorldArea newArea) {
 		final WorldArea oldArea = currentArea;
 		currentArea = newArea;
-		
+
 		if (_pSupport != null) {
-			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, AREA_PROPERTY, oldArea, currentArea);
+			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, AREA_PROPERTY, oldArea,
+					currentArea);
 			_pSupport.firePropertyChange(pce);
 		}
 	}
@@ -88,9 +99,10 @@ public class ModelConfiguration implements AbstractConfiguration {
 	public void setTimePeriod(TimePeriod newPeriod) {
 		final TimePeriod oldPeriod = currentPeriod;
 		currentPeriod = newPeriod;
-		
+
 		if (_pSupport != null) {
-			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, PERIOD_PROPERTY, oldPeriod, currentPeriod);
+			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, PERIOD_PROPERTY, oldPeriod,
+					currentPeriod);
 			_pSupport.firePropertyChange(pce);
 		}
 	}
@@ -101,8 +113,21 @@ public class ModelConfiguration implements AbstractConfiguration {
 	}
 
 	@Override
-	public void apply() {
+	public void apply() throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException {
 		
+		TreeBuilder.buildStructure(this);
+		
+		if (_pSupport != null) {
+			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, TREE_MODEL, null,
+					treeModel);
+			_pSupport.firePropertyChange(pce);
+		}
+	}
+
+	@Override
+	public TreeNode getTreeModel() {
+		return treeModel;
 	}
 
 }

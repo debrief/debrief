@@ -17,7 +17,7 @@ package org.mwc.debrief.pepys.model.bean;
 
 import java.util.Date;
 
-public class Comments implements AbstractBean, FilterableBean{
+public class Comments implements AbstractBean, FilterableBean, TreeStructurable{
 
 	private int comment_id;
 	private int platform_id;
@@ -109,6 +109,26 @@ public class Comments implements AbstractBean, FilterableBean{
 	@Override
 	public String getIdField() {
 		return "comment_id";
+	}
+
+	@Override
+	public int getSource() {
+		return source_id;
+	}
+
+	@Override
+	public String getMeasureName() {
+		return "Comments";
+	}
+
+	@Override
+	public int getSensor() {
+		return -1;
+	}
+
+	@Override
+	public String getMyName() {
+		return content;
 	}
 
 }

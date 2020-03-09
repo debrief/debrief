@@ -2,7 +2,7 @@ package org.mwc.debrief.pepys.model.bean;
 
 import java.util.Date;
 
-public class Sensors implements AbstractBean {
+public class Sensors implements AbstractBean, Comparable<Sensors> {
 	private int sensor_id;
 	private String name;
 	private int sensor_type_id;
@@ -56,6 +56,11 @@ public class Sensors implements AbstractBean {
 	@Override
 	public String getIdField() {
 		return "sensor_id";
+	}
+
+	@Override
+	public int compareTo(Sensors o) {
+		return sensor_id - o.sensor_id;
 	}
 	
 	

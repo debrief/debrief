@@ -17,7 +17,7 @@ package org.mwc.debrief.pepys.model;
 
 import java.util.Collection;
 
-import org.mwc.debrief.pepys.model.bean.DatafileTypes;
+import org.mwc.debrief.pepys.model.tree.TreeNode;
 
 import MWC.GUI.hasPropertyListeners;
 import MWC.GenericData.TimePeriod;
@@ -39,5 +39,7 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 	
 	public TimePeriod getTimePeriod();
 	
-	public void apply();
+	public TreeNode getTreeModel();
+	
+	public void apply() throws Exception;
 }

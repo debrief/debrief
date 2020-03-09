@@ -19,7 +19,7 @@ import java.util.Date;
 
 import MWC.GenericData.WorldLocation;
 
-public class Contacts implements AbstractBean, FilterableBean{
+public class Contacts implements AbstractBean, FilterableBean, TreeStructurable{
 
 	private int contact_id;
 	private String name;
@@ -309,6 +309,28 @@ public class Contacts implements AbstractBean, FilterableBean{
 	@Override
 	public String getLocationField() {
 		return "location";
+	}
+
+	@Override
+	public int getSource() {
+		return source_id;
+	}
+
+	@Override
+	public String getMeasureName() {
+		// TODO Auto-generated method stub
+		return "Contacts";
+	}
+
+	@Override
+	public int getSensor() {
+		// TODO Auto-generated method stub
+		return sensor_id;
+	}
+
+	@Override
+	public String getMyName() {
+		return name;
 	}
 
 }

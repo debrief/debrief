@@ -16,8 +16,10 @@
 package org.mwc.debrief.pepys.model.bean;
 
 public interface TreeStructurable {
-	public String getSource();
-	public String getMeasureName();
-	public String getSensorName();
+	public int getSource();
 	
+	// We could infer it from the classname.
+	public String getMeasureName();
+	public int getSensor();
+	public String getMyName();
 }

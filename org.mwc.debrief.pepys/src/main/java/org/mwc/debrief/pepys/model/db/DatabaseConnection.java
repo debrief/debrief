@@ -94,7 +94,7 @@ public class DatabaseConnection {
 		return query.toString();
 	}
 
-	private String createQueryQueryIDPart(final Class type) throws NoSuchMethodException, SecurityException,
+	private <T> String createQueryQueryIDPart(final Class<T> type) throws NoSuchMethodException, SecurityException,
 			InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		if (AbstractBean.class.isAssignableFrom(type)) {
 			final Constructor constructor = type.getConstructor();
@@ -129,15 +129,15 @@ public class DatabaseConnection {
 		}
 	}
 
-	public List<AbstractBean> listAll(final Class type, final String condition)
+	public <T> List<T> listAll(final Class<T> type, final String condition)
 			throws PropertyVetoException, SQLException, NoSuchMethodException, SecurityException,
 			InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		final Connection connection = pool.getConnection();
-		final List<AbstractBean> ans = new ArrayList<>();
+		final List<T> ans = new ArrayList<>();
 		ResultSet resultSet = null;
 		Statement statement = null;
 		try {
-			final Constructor constructor = type.getConstructor();
+			final Constructor<T> constructor = type.getConstructor();
 			String query = createQuery(type);
 			if (condition != null) {
 				query = query + " WHERE " + condition;
@@ -160,7 +160,7 @@ public class DatabaseConnection {
 			resultSet = statement.executeQuery(query);
 
 			while (resultSet.next()) {
-				final AbstractBean instance = storeFieldValue(type, resultSet, constructor);
+				final T instance = storeFieldValue(type, resultSet, constructor);
 				ans.add(instance);
 			}
 
@@ -178,10 +178,10 @@ public class DatabaseConnection {
 		}
 	}
 
-	public AbstractBean storeFieldValue(final Class type, ResultSet resultSet, final Constructor constructor)
+	public <T> T storeFieldValue(final Class<T> type, ResultSet resultSet, final Constructor<T> constructor)
 			throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException,
 			SQLException {
-		final AbstractBean instance = (AbstractBean) constructor.newInstance();
+		final T instance = constructor.newInstance();
 		final Field[] fields = type.getDeclaredFields();
 		for (final Field field : fields) {
 			final Class fieldType = field.getType();
