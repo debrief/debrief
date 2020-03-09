@@ -12,40 +12,32 @@ import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 
-public class DebriefEventListener extends DebriefCoreListener implements
-    IDISEventListener
-{
+public class DebriefEventListener extends DebriefCoreListener implements IDISEventListener {
 
-  public DebriefEventListener(IDISContext context)
-  {
-    super(context);
-  }
+	public DebriefEventListener(final IDISContext context) {
+		super(context);
+	}
 
-  
-  @Override
-  public void add(final long time, final short eid, long id, final String hisName, final int eType, final String message)
-  {
-    // and the narrative entry
-    addNewItem(eid, LayerHandler.NARRATIVE_LAYER, new ListenerHelper()
-    {
+	@Override
+	public void add(final long time, final short eid, final long id, final String hisName, final int eType,
+			final String message) {
+		// and the narrative entry
+		addNewItem(eid, LayerHandler.NARRATIVE_LAYER, new ListenerHelper() {
 
-      @Override
-      public Layer createLayer()
-      {
-        return new NarrativeWrapper(LayerHandler.NARRATIVE_LAYER);
-      }
+			@Override
+			public Plottable createItem() {
+				final NarrativeEntry newE = new NarrativeEntry(hisName, EventFileListener.eventTypeFor(eType),
+						new HiResDate(time), message);
+				final Color theColor = colorFor(eid, hisName);
+				newE.setColor(theColor);
+				return newE;
+			}
 
-      @Override
-      public Plottable createItem()
-      {
-        NarrativeEntry newE =
-            new NarrativeEntry(hisName, EventFileListener.eventTypeFor(eType), new HiResDate(time),
-                message);
-        Color theColor = colorFor(eid, hisName);
-        newE.setColor(theColor);
-        return newE;
-      }
-    });
-  }
+			@Override
+			public Layer createLayer() {
+				return new NarrativeWrapper(LayerHandler.NARRATIVE_LAYER);
+			}
+		});
+	}
 
 }

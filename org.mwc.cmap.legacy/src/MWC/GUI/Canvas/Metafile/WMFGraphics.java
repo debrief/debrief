@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.GUI.Canvas.Metafile;
 
 // Copyright MWC 1999, Debrief 3 Project
@@ -116,15 +117,19 @@ import MWC.GUI.ToolParent;
 import MWC.GUI.Canvas.CanvasAdaptor;
 import MWC.Utilities.Errors.Trace;
 
-public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType
-{
+public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType {
 
 	// /////////////////////////////////
 	// member variables
 	// ////////////////////////////////
 
-	MWC.Algorithms.PlainProjection _projection;
+	/**
+	 * have our own nice, safe font to save recreating it each time
+	 *
+	 */
+	private static Font _cachedFont = Defaults.getFont();
 
+	MWC.Algorithms.PlainProjection _projection;
 	WMF wmf;
 	Color foreground;
 	Color background;
@@ -137,27 +142,20 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType
 	Image brushpattern;
 	int penhandle;
 	int brushhandle;
+
 	int fonthandle;
 
-	/**
-	 * have our own nice, safe font to save recreating it each time
-	 * 
-	 */
-	private static Font _cachedFont = Defaults.getFont();
-
 	AffineTransform trans = new AffineTransform();
-	
+
 	Shape deviceclip;
 
-	private double flatness = 0.1;
-	
-	public WMFGraphics(final WMF wmf, final int width, final int height)
-	{
+	private final double flatness = 0.1;
+
+	public WMFGraphics(final WMF wmf, final int width, final int height) {
 		this(wmf, width, height, Color.black, Color.white);
 	}
 
-	public WMFGraphics(final WMF wmf, final int width, final int height, final Color color, final Color color_2_)
-	{
+	public WMFGraphics(final WMF wmf, final int width, final int height, final Color color, final Color color_2_) {
 		// font = new Font("Helvetica", 0, 12);
 		font = _cachedFont;
 		penstyle = 0;
@@ -172,97 +170,113 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType
 		reset();
 	}
 
-	public void clearRect(final int i, final int i_3_, final int i_4_, final int i_5_)
-	{
+	@Override
+	public void addPainter(final MWC.GUI.CanvasType.PaintListener listener) {
+	}
+
+	@Override
+	public void clearRect(final int i, final int i_3_, final int i_4_, final int i_5_) {
 		final Color color = foreground;
 		setColor(background);
 		fillRect(i, i_3_, i_4_, i_5_);
 		setColor(color);
 	}
 
-	public void clipRect(final int i, final int i_6_, final int i_7_, final int i_8_)
-	{
+	@Override
+	public void clipRect(final int i, final int i_6_, final int i_7_, final int i_8_) {
 		// System.err.println("clipRect not supported");
 	}
 
+	@Override
 	public void copyArea(final int i, final int i_9_, final int i_10_, final int i_11_, final int i_12_,
-			final int i_13_)
-	{
+			final int i_13_) {
 		// System.err.println("copyArea not supported");
 	}
 
-	public Graphics create()
-	{
+	@Override
+	public Graphics create() {
 		// System.err.println("create not supported");
 		return null;
 	}
 
-	public Graphics create(final int i, final int i_14_, final int i_15_, final int i_16_)
-	{
+	@Override
+	public Graphics create(final int i, final int i_14_, final int i_15_, final int i_16_) {
 		// System.err.println("create not supported");
 		return null;
 	}
 
-	public void deleteGDIObjects()
-	{
+	public void deleteGDIObjects() {
 		wmf.deleteObject(penhandle);
 		wmf.deleteObject(brushhandle);
 		wmf.deleteObject(fonthandle);
 	}
 
-	public void dispose()
-	{
+	@Override
+	public void dispose() {
 		/* empty */
 	}
 
 	/*
-	 * @@@ NOTE, we had to switch around the start & end angle parameters (7 & 8)
-	 * in the call wmf.arc, since they are in a different order to Java
+	 * @@@ NOTE, we had to switch around the start & end angle parameters (7 & 8) in
+	 * the call wmf.arc, since they are in a different order to Java
 	 */
+	@Override
 	public void drawArc(final int x, final int y, final int width, final int height, final int startAngle,
-			final int arcAngle)
-	{
+			final int arcAngle) {
 		final int i_22_ = x + width / 2;
 		final int i_23_ = y + height / 2;
-		wmf.arc(
-				x,
-				y,
-				x + width + 1,
-				y + height + 1,
-				i_22_
-						+ (int) Math.round((double) width
-								* Math
-										.sin(6.283185307179586 * (double) (startAngle + arcAngle + 90) / 360.0)),
-				i_23_
-						+ (int) Math.round((double) height
-								* Math
-										.cos(6.283185307179586 * (double) (startAngle + arcAngle + 90) / 360.0)),
-				i_22_
-						+ (int) Math.round((double) width
-								* Math
-										.sin(6.283185307179586 * (double) (startAngle + 90) / 360.0)),
-				i_23_
-						+ (int) Math.round((double) height
-								* Math
-										.cos(6.283185307179586 * (double) (startAngle + 90) / 360.0)));
+		wmf.arc(x, y, x + width + 1, y + height + 1,
+				i_22_ + (int) Math.round(width * Math.sin(6.283185307179586 * (startAngle + arcAngle + 90) / 360.0)),
+				i_23_ + (int) Math.round(height * Math.cos(6.283185307179586 * (startAngle + arcAngle + 90) / 360.0)),
+				i_22_ + (int) Math.round(width * Math.sin(6.283185307179586 * (startAngle + 90) / 360.0)),
+				i_23_ + (int) Math.round(height * Math.cos(6.283185307179586 * (startAngle + 90) / 360.0)));
 	}
 
-	//CS-IGNORE:ON FINAL_PARAMETERS
-	public boolean drawImage(final Image image, int i, int i_24_, final int i_25_, final int i_26_,
-			int i_27_, int i_28_, final int i_29_, int i_30_, final Color color,
-			final ImageObserver imageobserver)
-	{
+	public void drawDirectedText(final java.awt.Font theFont, final int direction, final String str, final int x,
+			final int y) {
+		final int oldDir = this.getFontEscapement();
+		this.setFontEscapement(direction);
+		this.drawString(str, x, y);
+		this.setFontEscapement(oldDir);
+	}
+
+	@Override
+	public boolean drawImage(final Image image, final int i, final int i_62_, final Color color,
+			final ImageObserver imageobserver) {
+		return drawImage(image, i, i_62_, image.getWidth(imageobserver), image.getHeight(imageobserver), color,
+				imageobserver);
+	}
+
+	@Override
+	public boolean drawImage(final Image image, final int i, final int i_63_, final ImageObserver imageobserver) {
+		return drawImage(image, i, i_63_, image.getWidth(imageobserver), image.getHeight(imageobserver), imageobserver);
+	}
+
+	@Override
+	public boolean drawImage(final Image image, final int i, final int i_56_, final int i_57_, final int i_58_,
+			final Color color, final ImageObserver imageobserver) {
+		return drawImage(image, i, i_56_, i + i_57_, i_56_ + i_58_, 0, 0, image.getWidth(imageobserver),
+				image.getHeight(imageobserver), color, imageobserver);
+	}
+
+	@Override
+	public boolean drawImage(final Image image, final int x, final int y, final int width, final int height,
+			final ImageObserver imageobserver) {
+		return drawImage(image, x, y, x + width, y + height, 0, 0, image.getWidth(imageobserver),
+				image.getHeight(imageobserver), imageobserver);
+	}
+
+	// CS-IGNORE:ON FINAL_PARAMETERS
+	@Override
+	public boolean drawImage(final Image image, int i, int i_24_, final int i_25_, final int i_26_, int i_27_,
+			int i_28_, final int i_29_, int i_30_, final Color color, final ImageObserver imageobserver) {
 		final int im_width = image.getWidth(imageobserver);
 		final int im_height = image.getHeight(imageobserver);
 		final int image_array[] = new int[im_width * im_height];
-		final PixelGrabber pixelgrabber = new PixelGrabber(image, 0, 0, im_width,
-				im_height, image_array, 0, im_width);
-		try
-		{
+		final PixelGrabber pixelgrabber = new PixelGrabber(image, 0, 0, im_width, im_height, image_array, 0, im_width);
+		try {
 			pixelgrabber.grabPixels();
-		}
-		catch (final InterruptedException interruptedexception)
-		{
+		} catch (final InterruptedException interruptedexception) {
 			return false;
 		}
 
@@ -278,8 +292,7 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType
 		i_30_ = im_height - i_28_;
 		i_28_ = im_height - i_37_;
 
-		if ((i_33_ < 0) != (i_35_ < 0))
-		{
+		if ((i_33_ < 0) != (i_35_ < 0)) {
 			flipHorizontal(image_array, im_width, im_height);
 			if (i_35_ < 0)
 				i_27_ = im_width - i_27_;
@@ -287,8 +300,7 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType
 				i_27_ = im_width - i_29_;
 		}
 
-		if (i_33_ < 0)
-		{
+		if (i_33_ < 0) {
 			i = i_25_;
 			if (i_35_ < 0)
 				i_27_ = i_29_;
@@ -298,8 +310,7 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType
 		if (i_35_ < 0)
 			i_35_ = -i_35_;
 
-		if ((i_34_ < 0) != (i_36_ < 0))
-		{
+		if ((i_34_ < 0) != (i_36_ < 0)) {
 			flipVertical(image_array, im_width, im_height);
 			if (i_36_ < 0)
 				i_28_ = im_height - i_28_;
@@ -307,8 +318,7 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType
 				i_28_ = im_height - i_30_;
 		}
 
-		if (i_34_ < 0)
-		{
+		if (i_34_ < 0) {
 			i_24_ = i_26_;
 			if (i_36_ < 0)
 				i_28_ = i_30_;
@@ -319,37 +329,30 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType
 			i_36_ = -i_36_;
 
 		final int i_38_ = color.getRGB();
-		for (int i_39_ = 0; i_39_ < image_array.length; i_39_++)
-		{
+		for (int i_39_ = 0; i_39_ < image_array.length; i_39_++) {
 			if ((image_array[i_39_] & 0xff000000) == 0)
 				image_array[i_39_] = i_38_;
 		}
 
-		wmf.stretchBlt(i, i_24_, i_33_, i_34_, i_27_, i_28_, i_35_, i_36_,
-				0xcc0020, image_array, im_width, im_height);
+		wmf.stretchBlt(i, i_24_, i_33_, i_34_, i_27_, i_28_, i_35_, i_36_, 0xcc0020, image_array, im_width, im_height);
 		return true;
 
-	}//CS-IGNORE:OFF FINAL_PARAMETERS
-	
-	//CS-IGNORE:ON FINAL_PARAMETERS
-	public boolean drawImage(final Image image, int tl_x, int tl_y, final int br_x, final int br_y,
-			int i_43_, int i_44_, final int im_width, int im_height,
-			final ImageObserver imageobserver)
-	{
+	}// CS-IGNORE:OFF FINAL_PARAMETERS
+
+	// CS-IGNORE:ON FINAL_PARAMETERS
+	@Override
+	public boolean drawImage(final Image image, int tl_x, int tl_y, final int br_x, final int br_y, int i_43_,
+			int i_44_, final int im_width, int im_height, final ImageObserver imageobserver) {
 
 		final int im_width2 = image.getWidth(imageobserver);
 		final int im_height2 = image.getHeight(imageobserver);
 		final int is[] = new int[im_width2 * im_height2];
 
-		final PixelGrabber pixelgrabber = new PixelGrabber(image, 0, 0, im_width2,
-				im_height2, is, 0, im_width2);
+		final PixelGrabber pixelgrabber = new PixelGrabber(image, 0, 0, im_width2, im_height2, is, 0, im_width2);
 
-		try
-		{
+		try {
 			pixelgrabber.grabPixels();
-		}
-		catch (final InterruptedException interruptedexception)
-		{
+		} catch (final InterruptedException interruptedexception) {
 			return false;
 		}
 
@@ -365,8 +368,7 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType
 		im_height = im_height2 - i_44_;
 		i_44_ = im_height2 - i_53_;
 
-		if ((im_width3 < 0) != (i_51_ < 0))
-		{
+		if ((im_width3 < 0) != (i_51_ < 0)) {
 			flipHorizontal(is, im_width2, im_height2);
 			if (i_51_ < 0)
 				i_43_ = im_width2 - i_43_;
@@ -374,8 +376,7 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType
 				i_43_ = im_width2 - im_width;
 		}
 
-		if (im_width3 < 0)
-		{
+		if (im_width3 < 0) {
 			tl_x = br_x;
 			if (i_51_ < 0)
 				i_43_ = im_width;
@@ -385,8 +386,7 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType
 		if (i_51_ < 0)
 			i_51_ = -i_51_;
 
-		if (im_height3 < 0 != i_52_ < 0)
-		{
+		if (im_height3 < 0 != i_52_ < 0) {
 			flipVertical(is, im_width2, im_height2);
 			if (i_52_ < 0)
 				i_44_ = im_height2 - i_44_;
@@ -394,8 +394,7 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType
 				i_44_ = im_height2 - im_height;
 		}
 
-		if (im_height3 < 0)
-		{
+		if (im_height3 < 0) {
 			tl_y = br_y;
 			if (i_52_ < 0)
 				i_44_ = im_height;
@@ -407,174 +406,238 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType
 
 		final int[] is_54_ = new int[is.length];
 
-		for (int i_55_ = 0; i_55_ < is.length; i_55_++)
-		{
-			if ((is[i_55_] & 0xff000000) == 0)
-			{
+		for (int i_55_ = 0; i_55_ < is.length; i_55_++) {
+			if ((is[i_55_] & 0xff000000) == 0) {
 				is_54_[i_55_] = -1;
 				is[i_55_] = 0;
-			}
-			else
+			} else
 				is_54_[i_55_] = 0;
 
 		}
 
-		wmf.stretchBlt(tl_x, tl_y, im_width3, im_height3, i_43_, i_44_, i_51_,
-				i_52_, 0x8800c6, is_54_, im_width2, im_height2);
-		wmf.stretchBlt(tl_x, tl_y, im_width3, im_height3, i_43_, i_44_, i_51_,
-				i_52_, 0xee0086, is, im_width2, im_height2);
+		wmf.stretchBlt(tl_x, tl_y, im_width3, im_height3, i_43_, i_44_, i_51_, i_52_, 0x8800c6, is_54_, im_width2,
+				im_height2);
+		wmf.stretchBlt(tl_x, tl_y, im_width3, im_height3, i_43_, i_44_, i_51_, i_52_, 0xee0086, is, im_width2,
+				im_height2);
 		return true;
 	}
-	//CS-IGNORE:OFF FINAL_PARAMETERS
+	// CS-IGNORE:OFF FINAL_PARAMETERS
 
-	public boolean drawImage(final Image image, final int i, final int i_56_, final int i_57_, final int i_58_,
-			final Color color, final ImageObserver imageobserver)
-	{
-		return drawImage(image, i, i_56_, i + i_57_, i_56_ + i_58_, 0, 0,
-				image.getWidth(imageobserver), image.getHeight(imageobserver), color,
-				imageobserver);
-	}
-
-	public boolean drawImage(final Image image, final int x, final int y, final int width, final int height,
-			final ImageObserver imageobserver)
-	{
-		return drawImage(image, x, y, x + width, y + height, 0, 0,
-				image.getWidth(imageobserver), image.getHeight(imageobserver),
-				imageobserver);
-	}
-
-	public boolean drawImage(final Image image, final int i, final int i_62_, final Color color,
-			final ImageObserver imageobserver)
-	{
-		return drawImage(image, i, i_62_, image.getWidth(imageobserver),
-				image.getHeight(imageobserver), color, imageobserver);
-	}
-
-	public boolean drawImage(final Image image, final int i, final int i_63_,
-			final ImageObserver imageobserver)
-	{
-		return drawImage(image, i, i_63_, image.getWidth(imageobserver),
-				image.getHeight(imageobserver), imageobserver);
-	}
-
-	public void drawLine(final int i, final int i_64_, final int i_65_, final int i_66_)
-	{
+	@Override
+	public void drawLine(final int i, final int i_64_, final int i_65_, final int i_66_) {
 		wmf.moveTo(i, i_64_);
 		wmf.lineTo(i_65_, i_66_);
 		wmf.setPixel(i_65_, i_66_, getColor());
 	}
 
-	public void drawOval(final int i, final int i_67_, final int i_68_, final int i_69_)
-	{
+	@Override
+	public void drawOval(final int i, final int i_67_, final int i_68_, final int i_69_) {
 		wmf.ellipse(i, i_67_, i + i_68_ + 1, i_67_ + i_69_ + 1);
 	}
 
-	public void drawPolygon(final int is[], final int is_70_[], final int i)
-	{
+	@Override
+	public void drawPolygon(final int is[], final int is_70_[], final int i) {
 		wmf.polygon(is, is_70_, i);
 	}
 
-	public void drawPolyline(final int[] is, final int[] is_71_, final int i)
-	{
-		wmf.polyline(is, is_71_, i);
-		wmf.setPixel(is[i - 1], is_71_[i - 1], getColor());
-	}
-
-	final public void drawPolyline(final int[] points)
-	{
+	@Override
+	final public void drawPolyline(final int[] points) {
 		// get the convenience function to plot this for us
 		CanvasAdaptor.drawPolylineForMe(points, this);
 	}
 
-	public void drawRect(final int i, final int i_72_, final int i_73_, final int i_74_)
-	{
+	@Override
+	public void drawPolyline(final int[] is, final int[] is_71_, final int i) {
+		wmf.polyline(is, is_71_, i);
+		wmf.setPixel(is[i - 1], is_71_[i - 1], getColor());
+	}
+
+	@Override
+	public void drawRect(final int i, final int i_72_, final int i_73_, final int i_74_) {
 		wmf.rectangle(i, i_72_, i + i_73_ + 1, i_72_ + i_74_ + 1);
-	}
-
-	public void drawRoundRect(final int i, final int i_75_, final int i_76_, final int i_77_, final int i_78_,
-			final int i_79_)
-	{
-		wmf.roundRect(i, i_75_, i + i_76_ + 1, i_75_ + i_77_ + 1, i_78_, i_79_);
-	}
-
-	public void drawString(final String string, final int i, final int i_80_)
-	{
-		wmf.textOut(i, i_80_, string);
 	}
 
 	// #if WIN32
 
 	// #else
 	/*
-	 * public void drawString(java.text.AttributedCharacterIterator iterator, int
-	 * x, int y) { }
+	 * public void drawString(java.text.AttributedCharacterIterator iterator, int x,
+	 * int y) { }
 	 */
 	// #endif
 
+	@Override
+	public void drawRoundRect(final int i, final int i_75_, final int i_76_, final int i_77_, final int i_78_,
+			final int i_79_) {
+		wmf.roundRect(i, i_75_, i + i_76_ + 1, i_75_ + i_77_ + 1, i_78_, i_79_);
+	}
+
+	// /////////////////////////////////
+	// nested classes
+	// ////////////////////////////////
+	@Override
+	public void drawString(final java.text.AttributedCharacterIterator x, final int y, final int z) {
+		// only inserted to keep the compiler happy
+	}
+
+	@Override
+	public void drawString(final String string, final int i, final int i_80_) {
+		wmf.textOut(i, i_80_, string);
+	}
+
+	@Override
+	public void drawText(final java.awt.Font theFont, final String theStr, final int x, final int y) {
+		this.setFont(theFont);
+		drawString(theStr, x, y);
+	}
+
+	@Override
+	public void drawText(final String str, final int x, final int y) {
+		this.drawString(str, x, y);
+	}
+
+	@Override
+	public void drawText(final String str, final int x, final int y, final float rotate) {
+		Trace.getParent().logError(ToolParent.WARNING, "Rotated text not availble for write to metafile", null);
+	}
+
+	@Override
+	public void drawText(final String str, final int x, final int y, final float rotate, final boolean above) {
+
+	}
+
+	/** client has finished drawing operation */
+	@Override
+	public void endDraw(final Object theVal) {
+
+	}
+
+	@Override
 	public void fillArc(final int i, final int i_82_, final int i_83_, final int i_84_, final int i_85_,
-			final int i_86_)
-	{
+			final int i_86_) {
 		setGDIFillBrush();
 		final int i_87_ = i + i_83_ / 2;
 		final int i_88_ = i_82_ + i_84_ / 2;
-		wmf.pie(
-				i,
-				i_82_,
-				i + i_83_ + 1,
-				i_82_ + i_84_ + 1,
-				i_87_
-						+ (int) Math.round((double) i_83_
-								* Math.sin(6.283185307179586 * (double) (i_85_ + 90) / 360.0)),
-				i_88_
-						+ (int) Math.round((double) i_84_
-								* Math.cos(6.283185307179586 * (double) (i_85_ + 90) / 360.0)),
-				i_87_
-						+ (int) Math.round((double) i_83_
-								* Math
-										.sin(6.283185307179586 * (double) (i_85_ + i_86_ + 90) / 360.0)),
-				i_88_
-						+ (int) Math.round((double) i_84_
-								* Math
-										.cos(6.283185307179586 * (double) (i_85_ + i_86_ + 90) / 360.0)));
+		wmf.pie(i, i_82_, i + i_83_ + 1, i_82_ + i_84_ + 1,
+				i_87_ + (int) Math.round(i_83_ * Math.sin(6.283185307179586 * (i_85_ + 90) / 360.0)),
+				i_88_ + (int) Math.round(i_84_ * Math.cos(6.283185307179586 * (i_85_ + 90) / 360.0)),
+				i_87_ + (int) Math.round(i_83_ * Math.sin(6.283185307179586 * (i_85_ + i_86_ + 90) / 360.0)),
+				i_88_ + (int) Math.round(i_84_ * Math.cos(6.283185307179586 * (i_85_ + i_86_ + 90) / 360.0)));
 		setGDIHollowBrush();
 	}
 
-	public void fillOval(final int i, final int i_89_, final int i_90_, final int i_91_)
-	{
+	@Override
+	public void fillOval(final int i, final int i_89_, final int i_90_, final int i_91_) {
 		setGDIFillBrush();
 		drawOval(i, i_89_, i_90_, i_91_);
 		setGDIHollowBrush();
 	}
 
-	public void fillPolygon(final int[] is, final int[] is_92_, final int i)
-	{
+	@Override
+	public void fillPolygon(final int[] is, final int[] is_92_, final int i) {
 		setGDIFillBrush();
 		drawPolygon(is, is_92_, i);
 		setGDIHollowBrush();
 	}
 
-	public void fillRect(final int i, final int i_93_, final int i_94_, final int i_95_)
-	{
+	@Override
+	public void fillRect(final int i, final int i_93_, final int i_94_, final int i_95_) {
 		setGDIFillBrush();
 		drawRect(i, i_93_, i_94_, i_95_);
 		setGDIHollowBrush();
 	}
 
+	@Override
 	public void fillRoundRect(final int i, final int i_96_, final int i_97_, final int i_98_, final int i_99_,
-			final int i_100_)
-	{
+			final int i_100_) {
 		setGDIFillBrush();
 		drawRoundRect(i, i_96_, i_97_, i_98_, i_99_, i_100_);
 		setGDIHollowBrush();
 	}
 
-	private void flipHorizontal(final int is[], final int i, final int i_101_)
-	{
-		for (int i_102_ = 0; i_102_ < i_101_; i_102_++)
-		{
+	public void fillShape(final Shape s) {
+		// apply clipping
+		setClip(null);
+		final Area clipped = new Area(trans.createTransformedShape(s));
+		if (deviceclip != null) {
+			clipped.intersect(new Area(deviceclip));
+		}
+
+		final AffineTransform trans1 = new AffineTransform();
+		final PathIterator path = clipped.getPathIterator(trans1, flatness);
+		if (path.getWindingRule() == PathIterator.WIND_EVEN_ODD) {
+			wmf.setPolyFillMode(WMF.ALTERNATE);
+		} else {
+			wmf.setPolyFillMode(WMF.WINDING);
+		}
+		final int penstyle = getPenStyle();
+		setPenStyle(WMF.PS_NULL);
+		// wmfg.setPenWidth(0);
+		setColor(getColor());
+		final float[] p = new float[6];
+		final Vector<Polygon> polys = new Vector<Polygon>();
+		Polygon poly = null;
+		while (!path.isDone()) {
+			final int style = path.currentSegment(p);
+			switch (style) {
+			case PathIterator.SEG_MOVETO:
+				if (poly != null) {
+					polys.add(poly);
+				}
+				poly = new Polygon();
+				poly.addPoint((int) (p[0] + 0.5), (int) (p[1] + 0.5));
+				break;
+			case PathIterator.SEG_CUBICTO:
+				if (poly != null) {
+					poly.addPoint((int) (p[2] + 0.5), (int) (p[3] + 0.5));
+				}
+				break;
+			case PathIterator.SEG_QUADTO:
+				if (poly != null) {
+					poly.addPoint((int) (p[4] + 0.5), (int) (p[5] + 0.5));
+				}
+				break;
+			case PathIterator.SEG_LINETO:
+				if (poly != null) {
+					poly.addPoint((int) (p[0] + 0.5), (int) (p[1] + 0.5));
+				}
+				break;
+			case PathIterator.SEG_CLOSE:
+				if (poly != null) {
+					polys.add(poly);
+					poly = null;
+				}
+				break;
+			}
+			path.next();
+		}
+		if (poly != null) {
+			polys.add(poly);
+		}
+		final Polygon[] polyarray = new Polygon[polys.size()];
+		int i = 0;
+		for (final Iterator<Polygon> it = polys.iterator(); it.hasNext(); i++) {
+			polyarray[i] = it.next();
+		}
+		// wmfg.setClip(trans.createTransformedShape(getClip()));
+		boolean nopolypoly = false;
+		if (s instanceof Arc2D) {
+			nopolypoly = true;
+		}
+		if (!nopolypoly) {
+			GDIPolyPolygon(polyarray);
+		} else {
+			for (i = 0; i < polyarray.length; i++) {
+				fillPolygon(polyarray[i]);
+			}
+		}
+		setPenStyle(penstyle);
+	}
+
+	private void flipHorizontal(final int is[], final int i, final int i_101_) {
+		for (int i_102_ = 0; i_102_ < i_101_; i_102_++) {
 			final int i_103_ = i_102_ * i_101_;
-			for (int i_104_ = 0; i_104_ < i / 2; i_104_++)
-			{
+			for (int i_104_ = 0; i_104_ < i / 2; i_104_++) {
 				final int i_105_ = is[i_103_ + i_104_];
 				is[i_103_ + i_104_] = is[(i_103_ + i) - 1 - i_104_];
 				is[(i_103_ + i) - 1 - i_104_] = i_105_;
@@ -582,82 +645,142 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType
 		}
 	}
 
-	private void flipVertical(final int[] is, final int i, final int i_106_)
-	{
+	private void flipVertical(final int[] is, final int i, final int i_106_) {
 		final int[] is_107_ = new int[i];
-		for (int i_108_ = 0; i_108_ < i_106_ / 2; i_108_++)
-		{
+		for (int i_108_ = 0; i_108_ < i_106_ / 2; i_108_++) {
 			System.arraycopy(is, i_108_ * i, is_107_, 0, i);
 			System.arraycopy(is, (i_106_ - i_108_ - 1) * i, is, i_108_ * i, i);
 			System.arraycopy(is_107_, 0, is, (i_106_ - i_108_ - 1) * i, i);
 		}
 	}
 
-	public int getBrushFillStyle()
-	{
+	public void GDIPolyPolygon(final Polygon[] polys) {
+		// restoreState();
+		setGDIFillBrush();
+		wmf.polypolygon(polys);
+		setGDIHollowBrush();
+	}
+
+	/**
+	 * set/get the background colour
+	 */
+	@Override
+	public java.awt.Color getBackgroundColor() {
+		return background;
+	}
+
+	public int getBrushFillStyle() {
 		return brushfillstyle;
 	}
 
-	public int getBrushHatch()
-	{
+	public int getBrushHatch() {
 		return brushhatch;
 	}
 
-	public Image getBrushPattern()
-	{
+	public Image getBrushPattern() {
 		return brushpattern;
 	}
 
-	public Shape getClip()
-	{
+	@Override
+	public Shape getClip() {
 		// System.err.println("getClip not supported");
 		return null;
 	}
 
-	public Rectangle getClipBounds()
-	{
+	@Override
+	public Rectangle getClipBounds() {
 		// System.err.println("getClipBounds not supported");
 		return null;
 	}
 
-	public Color getColor()
-	{
+	@Override
+	public Color getColor() {
 		return foreground;
 	}
 
-	public Font getFont()
-	{
+	@Override
+	public Font getFont() {
 		return font;
 	}
 
-	public int getFontEscapement()
-	{
+	public int getFontEscapement() {
 		return fontescapement;
 	}
 
+	@Override
 	@SuppressWarnings("deprecation")
-	public FontMetrics getFontMetrics(final Font font1)
-	{
+	public FontMetrics getFontMetrics(final Font font1) {
 		return Toolkit.getDefaultToolkit().getFontMetrics(font1);
 	}
 
-	public int getPenStyle()
-	{
+	/**
+	 * expose the graphics object, used only for plotting non-persistent graphics
+	 * (temporary lines, etc).
+	 */
+	@Override
+	public java.awt.Graphics getGraphicsTemp() {
+		return null;
+	}
+
+	/**
+	 * get the width of the line, in pixels
+	 *
+	 */
+	@Override
+	public float getLineWidth() {
+		return getPenWidth();
+	}
+
+	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public java.util.Enumeration getPainters() {
+		return null;
+	}
+
+	public int getPenStyle() {
 		return penstyle;
 	}
 
-	public int getPenWidth()
-	{
+	public int getPenWidth() {
 		return penwidth;
 	}
 
-	public WMF getWMF()
-	{
+	@Override
+	public MWC.Algorithms.PlainProjection getProjection() {
+		return _projection;
+	}
+
+	@Override
+	public java.awt.Dimension getSize() {
+		return null;
+	}
+
+	@Override
+	public int getStringHeight(final java.awt.Font theFont) {
+		return 0;
+	}
+
+	@Override
+	public int getStringWidth(final java.awt.Font theFont, final String theString) {
+		return 0;
+	}
+
+	public WMF getWMF() {
 		return wmf;
 	}
 
-	public void reset()
-	{
+	@Override
+	public void removePainter(final MWC.GUI.CanvasType.PaintListener listener) {
+	}
+
+	/**
+	 * retrieve the full data area, and do a fit to window
+	 */
+	@Override
+	public void rescale() {
+	}
+
+	public void reset() {
 		setPenStyle(0);
 		setPenWidth(0);
 		setBrushFillStyle(0);
@@ -665,153 +788,159 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType
 		setFontEscapement(0);
 	}
 
-	public void setBrushFillStyle(final int i)
-	{
+	// /////////////////////////////////
+	// constructor
+	// ////////////////////////////////
+
+	// /////////////////////////////////
+	// member functions
+	// ////////////////////////////////
+
+	@Override
+	public void setBackgroundColor(final java.awt.Color theColor) {
+		background = theColor;
+	}
+
+	public void setBrushFillStyle(final int i) {
 		brushfillstyle = i;
 	}
 
-	public void setBrushHatch(final int i)
-	{
+	public void setBrushHatch(final int i) {
 		brushhatch = i;
 	}
 
-	public void setBrushPattern(final Image image)
-	{
+	public void setBrushPattern(final Image image) {
 		brushpattern = image;
 	}
 
-	public void setClip(final int x, final int i_109_, final int i_110_, final int i_111_)
-	{
+	@Override
+	public void setClip(final int x, final int i_109_, final int i_110_, final int i_111_) {
 		// System.err.println("setClip (coords) not supported");
 	}
 
-	public void setClip(final Shape shape)
-	{
+	@Override
+	public void setClip(final Shape shape) {
 		// if(shape != null)
 		// System.err.println("setClip (shape) not supported:" + shape);
 		// else
 		// System.err.println("resetting clip region (null shape)");
 	}
 
-	public void setColor(final Color color)
-	{
+	@Override
+	public void setColor(final Color color) {
 		foreground = color;
 		setGDIPen();
 		wmf.setTextColor(foreground);
 	}
 
-	public void setFont(final Font font)
-	{
+	public void setDirectedFont(final Font font) {
+		this.font = font;
+	}
+
+	@Override
+	public void setFont(final Font font) {
 		this.font = font;
 		setGDIFont();
 	}
 
-	public void setDirectedFont(final Font font)
-	{
-		this.font = font;
-	}
-
-	public void setFontEscapement(final int i)
-	{
+	public void setFontEscapement(final int i) {
 		fontescapement = i;
 		setGDIFont();
 	}
 
-	public int setGDIFillBrush()
-	{
+	public int setGDIFillBrush() {
 		wmf.deleteObject(brushhandle);
-		if (brushfillstyle == 3)
-		{
-			if (brushpattern != null)
-			{
+		if (brushfillstyle == 3) {
+			if (brushpattern != null) {
 				final int i = brushpattern.getWidth(null);
 				final int i_112_ = brushpattern.getHeight(null);
 				final int[] is = new int[i * i_112_];
-				final PixelGrabber pixelgrabber = new PixelGrabber(brushpattern, 0, 0, i,
-						i_112_, is, 0, i);
-				try
-				{
+				final PixelGrabber pixelgrabber = new PixelGrabber(brushpattern, 0, 0, i, i_112_, is, 0, i);
+				try {
 					pixelgrabber.grabPixels();
 					if ((pixelgrabber.status() & 0x80) != 0)
 						wmf.createBrushIndirect(0, foreground, brushhatch);
 					else
 						wmf.createPatternBrush(is, i, i_112_);
-				}
-				catch (final InterruptedException interruptedexception)
-				{
+				} catch (final InterruptedException interruptedexception) {
 					wmf.createBrushIndirect(0, foreground, brushhatch);
 				}
-			}
-			else
+			} else
 				wmf.createBrushIndirect(0, foreground, brushhatch);
-		}
-		else
+		} else
 			wmf.createBrushIndirect(brushfillstyle, foreground, brushhatch);
 
 		wmf.selectObject(brushhandle);
 		return brushhandle;
 	}
 
-	public int setGDIFont()
-	{
+	public int setGDIFont() {
 		wmf.deleteObject(fonthandle);
 		wmf.createFont(font, fontescapement, false, false);
 		wmf.selectObject(fonthandle);
 		return fonthandle;
 	}
 
-	public int setGDIHollowBrush()
-	{
+	public int setGDIHollowBrush() {
 		wmf.deleteObject(brushhandle);
 		wmf.createBrushIndirect(1, foreground, brushhatch);
 		wmf.selectObject(brushhandle);
 		return brushhandle;
 	}
 
-	public int setGDIPen()
-	{
+	public int setGDIPen() {
 		wmf.deleteObject(penhandle);
 		wmf.createPenIndirect(penstyle, penwidth, foreground);
 		wmf.selectObject(penhandle);
 		return penhandle;
 	}
 
-	public void setPaintMode()
-	{
+	/**
+	 * set the style for the line, using our constants
+	 *
+	 */
+	@Override
+	public void setLineStyle(final int style) {
+		setPenStyle(style);
+	}
+
+	/**
+	 * set the width of the line, in pixels
+	 *
+	 */
+	@Override
+	public void setLineWidth(final float width) {
+		setPenWidth((int) width);
+	}
+
+	@Override
+	public void setPaintMode() {
 		// System.err.println("setPaintMode not supported");
 	}
 
-	public void setPenStyle(final int i)
-	{
+	public void setPenStyle(final int i) {
 		penstyle = i;
 		setGDIPen();
 	}
 
-	public void setPenWidth(final int i)
-	{
+	public void setPenWidth(final int i) {
 		penwidth = i;
 		setGDIPen();
 	}
 
-	public void setWMF(final WMF wmf, final int width, final int height)
-	{
-		this.wmf = wmf;
-		penhandle = this.wmf.createPenIndirect(penstyle, penwidth, foreground);
-		this.wmf.selectObject(penhandle);
-		brushhandle = this.wmf.createBrushIndirect(1, foreground, brushhatch);
-		this.wmf.selectObject(brushhandle);
-		fonthandle = this.wmf.createFont(font, fontescapement, false, false);
-		this.wmf.selectObject(fonthandle);
-		setup(width, height);
+	@Override
+	public void setProjection(final MWC.Algorithms.PlainProjection val) {
+		_projection = val;
 	}
 
-	public void setXORMode(final Color color)
-	{
-		// System.err.println("setXORMode not supported");
+	/**
+	*
+	*/
+	@Override
+	public void setTooltipHandler(final MWC.GUI.CanvasType.TooltipHandler handler) {
 	}
 
-	private void setup(final int width, final int height)
-	{
+	private void setup(final int width, final int height) {
 		wmf.setMapMode(8);
 		wmf.setWindowOrg(0, 0);
 		wmf.setWindowExt(width, height);
@@ -825,277 +954,47 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType
 		wmf.setTextCharacterExtra(0);
 	}
 
-	public void translate(final int i, final int i_115_)
-	{
+	public void setWMF(final WMF wmf, final int width, final int height) {
+		this.wmf = wmf;
+		penhandle = this.wmf.createPenIndirect(penstyle, penwidth, foreground);
+		this.wmf.selectObject(penhandle);
+		brushhandle = this.wmf.createBrushIndirect(1, foreground, brushhatch);
+		this.wmf.selectObject(brushhandle);
+		fonthandle = this.wmf.createFont(font, fontescapement, false, false);
+		this.wmf.selectObject(fonthandle);
+		setup(width, height);
+	}
+
+	@Override
+	public void setXORMode(final Color color) {
+		// System.err.println("setXORMode not supported");
+	}
+
+	/** client is about to start drawing operation */
+	@Override
+	public void startDraw(final Object theVal) {
+	}
+
+	@Override
+	public java.awt.Point toScreen(final MWC.GenericData.WorldLocation val) {
+		return _projection.toScreen(val);
+	}
+
+	@Override
+	public MWC.GenericData.WorldLocation toWorld(final java.awt.Point val) {
+		return _projection.toWorld(val);
+	}
+
+	@Override
+	public void translate(final int i, final int i_115_) {
 		wmf.setWindowOrg(-i, -i_115_);
-	}
-
-	// /////////////////////////////////
-	// constructor
-	// ////////////////////////////////
-
-	// /////////////////////////////////
-	// member functions
-	// ////////////////////////////////
-
-	// /////////////////////////////////
-	// nested classes
-	// ////////////////////////////////
-	public void drawString(final java.text.AttributedCharacterIterator x, final int y, final int z)
-	{
-		// only inserted to keep the compiler happy
-	}
-
-	/**
-	 * set the style for the line, using our constants
-	 * 
-	 */
-	public void setLineStyle(final int style)
-	{
-		setPenStyle(style);
-	}
-
-	/**
-	 * set the width of the line, in pixels
-	 * 
-	 */
-	public void setLineWidth(final float width)
-	{
-		setPenWidth((int) width);
-	}
-
-	/**
-	 * get the width of the line, in pixels
-	 * 
-	 */
-	public float getLineWidth()
-	{
-		return getPenWidth();
-	}
-
-	public java.awt.Dimension getSize()
-	{
-		return null;
 	}
 
 	/**
 	 * update the information currently plotted on chart
 	 */
-	public void updateMe()
-	{
-	}
-
-	public void drawText(final String str, final int x, final int y)
-	{
-		this.drawString(str, x, y);
-	}
-
-	public void drawDirectedText(final java.awt.Font theFont, final int direction,
-			final String str, final int x, final int y)
-	{
-		final int oldDir = this.getFontEscapement();
-		this.setFontEscapement(direction);
-		this.drawString(str, x, y);
-		this.setFontEscapement(oldDir);
-	}
-
-	public void drawText(final java.awt.Font theFont, final String theStr, final int x, final int y)
-	{
-		this.setFont(theFont);
-		drawString(theStr, x, y);
-	}
-
-	public int getStringHeight(final java.awt.Font theFont)
-	{
-		return 0;
-	}
-
-	public int getStringWidth(final java.awt.Font theFont, final String theString)
-	{
-		return 0;
-	}
-
-	/**
-	 * expose the graphics object, used only for plotting non-persistent graphics
-	 * (temporary lines, etc).
-	 */
-	public java.awt.Graphics getGraphicsTemp()
-	{
-		return null;
-	}
-
-	/** client has finished drawing operation */
-	public void endDraw(final Object theVal)
-	{
-
-	}
-
-	/** client is about to start drawing operation */
-	public void startDraw(final Object theVal)
-	{
-	}
-
-	public MWC.Algorithms.PlainProjection getProjection()
-	{
-		return _projection;
-	}
-
-	public void setProjection(final MWC.Algorithms.PlainProjection val)
-	{
-		_projection = val;
-	}
-
-	public java.awt.Point toScreen(final MWC.GenericData.WorldLocation val)
-	{
-		return _projection.toScreen(val);
-	}
-
-	public MWC.GenericData.WorldLocation toWorld(final java.awt.Point val)
-	{
-		return _projection.toWorld(val);
-	}
-
-	/**
-	 * retrieve the full data area, and do a fit to window
-	 */
-	public void rescale()
-	{
-	}
-
-	/**
-	 * set/get the background colour
-	 */
-	public java.awt.Color getBackgroundColor()
-	{
-		return background;
-	}
-
-	public void setBackgroundColor(final java.awt.Color theColor)
-	{
-		background = theColor;
-	}
-
-	public void addPainter(final MWC.GUI.CanvasType.PaintListener listener)
-	{
-	}
-
-	public void removePainter(final MWC.GUI.CanvasType.PaintListener listener)
-	{
-	}
-
-	@SuppressWarnings(
-	{ "unchecked", "rawtypes" })
-	public java.util.Enumeration getPainters()
-	{
-		return null;
-	}
-
-	/**
-   *
-   */
-	public void setTooltipHandler(final MWC.GUI.CanvasType.TooltipHandler handler)
-	{
-	}
-
 	@Override
-	public void drawText(final String str, final int x, final int y, final float rotate)
-	{
-		Trace.getParent().logError(ToolParent.WARNING,
-				"Rotated text not availble for write to metafile", null);
+	public void updateMe() {
 	}
 
-	@Override
-	public void drawText(String str, int x, int y, float rotate, boolean above)
-	{
-		
-	}
-
-	public void fillShape(Shape s) {
-    //apply clipping
-    setClip(null);
-    Area clipped = new Area(trans.createTransformedShape(s));
-    if (deviceclip != null) {
-      clipped.intersect(new Area(deviceclip));
-    }
-    
-    AffineTransform trans1 = new AffineTransform();
-    PathIterator path = clipped.getPathIterator(trans1, flatness);
-    if (path.getWindingRule() == PathIterator.WIND_EVEN_ODD) {
-      wmf.setPolyFillMode(WMF.ALTERNATE);
-    }
-    else {
-      wmf.setPolyFillMode(WMF.WINDING);
-    }
-    int penstyle = getPenStyle();
-    setPenStyle(WMF.PS_NULL);
-    //wmfg.setPenWidth(0);
-    setColor(getColor());
-    float[] p = new float[6];
-    Vector<Polygon> polys = new Vector<Polygon>();
-    Polygon poly = null;
-    while (!path.isDone()) {
-      int style = path.currentSegment(p);
-      switch (style) {
-        case PathIterator.SEG_MOVETO:
-          if (poly != null) {
-            polys.add(poly);
-          }
-          poly = new Polygon();
-          poly.addPoint((int)(p[0] + 0.5), (int)(p[1] + 0.5));
-          break;
-        case PathIterator.SEG_CUBICTO:
-          if (poly != null) {
-            poly.addPoint((int)(p[2] + 0.5), (int)(p[3] + 0.5));
-          }
-          break;
-        case PathIterator.SEG_QUADTO:
-          if (poly != null) {
-            poly.addPoint((int)(p[4] + 0.5), (int)(p[5] + 0.5));
-          }
-          break;
-        case PathIterator.SEG_LINETO:
-          if (poly != null) {
-            poly.addPoint((int)(p[0] + 0.5), (int)(p[1] + 0.5));
-          }
-          break;
-        case PathIterator.SEG_CLOSE:
-          if (poly != null) {
-            polys.add(poly);
-            poly = null;
-          }
-          break;
-      }
-      path.next();
-    }
-    if (poly != null) {
-      polys.add(poly);
-    }
-    Polygon[] polyarray = new Polygon[polys.size()];
-    int i = 0;
-    for (Iterator<Polygon> it = polys.iterator(); it.hasNext(); i++) {
-      polyarray[i] = (Polygon)it.next();
-    }
-    //wmfg.setClip(trans.createTransformedShape(getClip()));
-    boolean nopolypoly = false;
-    if (s instanceof Arc2D) {
-      nopolypoly = true;
-    }
-    if (!nopolypoly) {
-      GDIPolyPolygon(polyarray);
-    }
-    else {
-      for (i = 0; i < polyarray.length; i++) {
-        fillPolygon(polyarray[i]);
-      }
-    }
-    setPenStyle(penstyle);
-  }
-
-	 public void GDIPolyPolygon(Polygon[] polys) {
-     //restoreState();
-     setGDIFillBrush();
-     wmf.polypolygon(polys);
-     setGDIHollowBrush();
-   }
-	
 }

@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: PlainDragTool.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -91,144 +92,133 @@ import MWC.GUI.PlainChart;
 import MWC.GUI.ToolParent;
 import MWC.GenericData.WorldLocation;
 
-/** abstract class for tools which 'watch' the canvas,
- * normally trapping movements
+/**
+ * abstract class for tools which 'watch' the canvas, normally trapping
+ * movements
  */
-abstract public class PlainDragTool extends
-  PlainTool implements PlainChart.ChartDragListener{
+abstract public class PlainDragTool extends PlainTool implements PlainChart.ChartDragListener {
 
-  //////////////////////////////////////////////////
-  // member variables
-  //////////////////////////////////////////////////
+	//////////////////////////////////////////////////
+	// member variables
+	//////////////////////////////////////////////////
 
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-  /**
-   * keep a reference to the chart we are currently 'watching'
-   * */
-  private PlainChart _theChart;
+	/**
+	 * keep a reference to the chart we are currently 'watching'
+	 */
+	private PlainChart _theChart;
 
-  protected WorldLocation _theStart;
-  protected WorldLocation _theEnd;
+	protected WorldLocation _theStart;
+	protected WorldLocation _theEnd;
 
-  protected Point _theStartPoint;
-  protected Point _theEndPoint;
+	protected Point _theStartPoint;
+	protected Point _theEndPoint;
 
-  private boolean _isAlternateDragger;
+	private boolean _isAlternateDragger;
 
-  //////////////////////////////////////////////////
-  // constructor
-  //////////////////////////////////////////////////
+	//////////////////////////////////////////////////
+	// constructor
+	//////////////////////////////////////////////////
 
-  public PlainDragTool(final PlainChart theChart,
-                         final ToolParent theParent,
-                         final String theLabel,
-                         final String theImage)
-  {
-    this(theChart, theParent, theLabel, theImage, false);
-  }
+	public PlainDragTool() {
+		super();
+		// default constructor, for serialisation
+	}
 
-  public PlainDragTool(final PlainChart theChart,
-                         final ToolParent theParent,
-                         final String theLabel,
-                         final String theImage,
-                         final boolean isAlternateDragger){
+	public PlainDragTool(final PlainChart theChart, final ToolParent theParent, final String theLabel,
+			final String theImage) {
+		this(theChart, theParent, theLabel, theImage, false);
+	}
 
-    super(theParent, theLabel, theImage);
+	public PlainDragTool(final PlainChart theChart, final ToolParent theParent, final String theLabel,
+			final String theImage, final boolean isAlternateDragger) {
 
-    // take copy of the chart we are to listen to
-    _theChart = theChart;
+		super(theParent, theLabel, theImage);
 
-    _isAlternateDragger = isAlternateDragger;
-  }
+		// take copy of the chart we are to listen to
+		_theChart = theChart;
 
+		_isAlternateDragger = isAlternateDragger;
+	}
 
+	//////////////////////////////////////////////////
+	// member functions
+	//////////////////////////////////////////////////
 
-  public PlainDragTool()
-  {
-    super();
-    // default constructor, for serialisation
-  }
+	@Override
+	public void areaSelected(final MWC.GenericData.WorldLocation theLocation, final Point thePoint) {
+		_theEnd = new WorldLocation(theLocation);
+		_theEndPoint = thePoint;
+	}
 
+	public void doExecute(final Action theAction) {
+		// start busy
+		setCursor(0);
 
-  //////////////////////////////////////////////////
-  // member functions
-  //////////////////////////////////////////////////
+		// do the action
+		if (theAction != null)
+			theAction.execute();
 
-  public PlainChart getChart(){
-    return _theChart;
-  }
+		// end busy
+		restoreCursor();
 
-  abstract public MWC.GUI.Rubberband getRubberband();
+		if (_theParent != null) {
+			// add to the undo buffer
+			_theParent.addActionToBuffer(theAction);
+		}
+	}
 
-  public void execute(){
+	@Override
+	public void dragging(final WorldLocation theLocation, final Point thePoint) {
+		// don't do anything, really
+	}
 
-    if(_isAlternateDragger)
-    {
-      _theChart.setAlternateChartDragListener(this);
-    }
-    else
-    {
-      // add ourselves as the listener
-      _theChart.setChartDragListener(this);
-    }
+	@Override
+	public void execute() {
 
-  }
+		if (_isAlternateDragger) {
+			_theChart.setAlternateChartDragListener(this);
+		} else {
+			// add ourselves as the listener
+			_theChart.setChartDragListener(this);
+		}
 
+	}
 
-  public void doExecute(final Action theAction){
-    // start busy
-    setCursor(0);
+	public PlainChart getChart() {
+		return _theChart;
+	}
 
-    // do the action
-    if(theAction != null)
-      theAction.execute();
+	@Override
+	abstract public MWC.GUI.Rubberband getRubberband();
 
-    // end busy
-    restoreCursor();
+	public void restoreCursor() {
+		if (_theParent != null)
+			_theParent.restoreCursor();
+	}
 
+	public void setCursor(final int theCursor) {
+		// check we have a parent
+		if (_theParent != null) {
+			if (theCursor == 0)
+				_theParent.setCursor(java.awt.Cursor.WAIT_CURSOR);
+			else
+				_theParent.setCursor(theCursor);
+		}
+	}
 
-    if(_theParent != null)
-    {
-      // add to the undo buffer
-      _theParent.addActionToBuffer(theAction);
-    }
-  }
+	@Override
+	public void startDrag(final MWC.GenericData.WorldLocation theLocation, final Point thePoint) {
+		_theStart = new WorldLocation(theLocation);
+		_theStartPoint = thePoint;
 
+		// start the operation
+		startMotion();
+	}
 
-  public void areaSelected(final MWC.GenericData.WorldLocation theLocation, final Point thePoint){
-    _theEnd = new WorldLocation(theLocation);
-    _theEndPoint = thePoint;
-  }
-
-  abstract public void startMotion();
-
-  public void startDrag(final MWC.GenericData.WorldLocation theLocation, final Point thePoint){
-    _theStart = new WorldLocation(theLocation);
-    _theStartPoint = thePoint;
-
-    // start the operation
-    startMotion();
-  }
-
-
-  public void dragging(final WorldLocation theLocation, final Point thePoint)
-  {
-    // don't do anything, really
-  }
-
-  public void setCursor(final int theCursor){
-    // check we have a parent
-    if(_theParent != null)
-    {
-      if(theCursor == 0)
-        _theParent.setCursor(java.awt.Cursor.WAIT_CURSOR);
-      else
-        _theParent.setCursor(theCursor);
-    }
-  }
-
-  public void restoreCursor(){
-    if(_theParent != null)
-      _theParent.restoreCursor();
-  }
+	abstract public void startMotion();
 }

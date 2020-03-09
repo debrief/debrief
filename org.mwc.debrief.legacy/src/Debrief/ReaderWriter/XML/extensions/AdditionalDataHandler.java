@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 package Debrief.ReaderWriter.XML.extensions;
 
 import java.util.List;
@@ -12,112 +26,94 @@ import MWC.Utilities.ReaderWriter.XML.ISAXImporter;
 import MWC.Utilities.ReaderWriter.XML.ISAXImporter.DataCatcher;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
-abstract public class AdditionalDataHandler extends MWCXMLReader
-{
-  private static final String MY_TYPE = "AdditionalData";
-  
-  private AdditionalData aData = new AdditionalData();
+abstract public class AdditionalDataHandler extends MWCXMLReader {
+	public static interface ExportProvider {
+		public List<IDOMExporter> getExporters();
 
-  
-  public AdditionalDataHandler()
-  {
-    super(MY_TYPE);
-    
-    // ok, now for the child data. See if we have other handlers to declare
-    if(_eHelper != null)
-    {
-      // create helper to store dta
-      final DataCatcher storeMe = new DataCatcher(){
+		public List<ISAXImporter> getImporters();
+	}
 
-        @Override
-        public void storeThis(Object data)
-        {
-          aData.add(data);
-        }
-      };
-      
-      List<ISAXImporter> helpers = _eHelper.getImporters();
-      for(final ISAXImporter t: helpers)
-      {
-        addHandler(t.getHandler(storeMe));
-      }
-    }
-  }
-  
-  
+	private static final String MY_TYPE = "AdditionalData";
 
-  @Override
-  public void elementClosed()
-  {
-    super.elementClosed();
-    
-    // ok, store the data
-    storeData(aData);
-    
-    // now clear it
-    aData = new AdditionalData();
-  }
+	private static ExportProvider _eHelper;
 
-  public static interface ExportProvider
-  {
-    public List<IDOMExporter> getExporters();
-    public List<ISAXImporter> getImporters();
-  }
+	public static void appendChild(final AdditionalProvider holder, final Element parent, final Document doc) {
+		// ok, is there any extra data?
+		final AdditionalData additional = holder.getAdditionalData();
+		if (additional != null) {
+			// do we have any exporters?
+			if (_eHelper != null) {
+				final List<IDOMExporter> exporters = _eHelper.getExporters();
 
-  private static ExportProvider _eHelper;
+				// ok, any children?
+				if (additional.size() > 0) {
+					boolean doneOne = false;
 
-  public static void setExportHelper(ExportProvider helper)
-  {
-    _eHelper = helper;
-  }
-  
-  public static void appendChild(AdditionalProvider holder, Element parent,
-      Document doc)
-  {
-    // ok, is there any extra data?
-    AdditionalData additional = holder.getAdditionalData();
-    if (additional != null)
-    {
-      // do we have any exporters?
-      if (_eHelper != null)
-      {
-        List<IDOMExporter> exporters = _eHelper.getExporters();
+					// ok, we need the placeholder
+					final Element aData = doc.createElement(MY_TYPE);
 
-        // ok, any children?
-        if (additional.size() > 0)
-        {
-          boolean doneOne = false;
+					for (final Object item : additional) {
+						for (final IDOMExporter t : exporters) {
+							if (t.canExportThis(item)) {
+								t.export(item, aData, doc);
 
-          // ok, we need the placeholder
-          Element aData = doc.createElement(MY_TYPE);
+								doneOne = true;
+							}
+						}
+					}
 
-          for (Object item : additional)
-          {
-            for (final IDOMExporter t : exporters)
-            {
-              if (t.canExportThis(item))
-              {
-                t.export(item, aData, doc);
+					// add to parent, if we have anything
+					if (doneOne) {
+						parent.appendChild(aData);
+					}
+				}
+			}
+		}
+	}
 
-                doneOne = true;
-              }
-            }
-          }
+	public static void setExportHelper(final ExportProvider helper) {
+		_eHelper = helper;
+	}
 
-          // add to parent, if we have anything
-          if (doneOne)
-          {
-            parent.appendChild(aData);
-          }
-        }
-      }
-    }
-  }
+	private AdditionalData aData = new AdditionalData();
 
-  /** implementing classes must override this, to store the data
-   * 
-   * @param data
-   */
-  abstract public void storeData(AdditionalData data);
+	public AdditionalDataHandler() {
+		super(MY_TYPE);
+
+		// ok, now for the child data. See if we have other handlers to declare
+		if (_eHelper != null) {
+			// create helper to store dta
+			final DataCatcher storeMe = new DataCatcher() {
+
+				@Override
+				public void storeThis(final Object data) {
+					aData.add(data);
+				}
+			};
+
+			final List<ISAXImporter> helpers = _eHelper.getImporters();
+			for (final ISAXImporter t : helpers) {
+				addHandler(t.getHandler(storeMe));
+			}
+		}
+	}
+
+	@Override
+	public void elementClosed() {
+		super.elementClosed();
+
+		// ok, store the data
+		storeData(aData);
+
+		// now clear it
+		aData = new AdditionalData();
+	}
+
+	/**
+	 * implementing classes must override this, to store the data
+	 *
+	 * @param data
+	 */
+	abstract public void storeData(AdditionalData data);
 
 }

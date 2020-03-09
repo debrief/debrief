@@ -1,228 +1,212 @@
 package edu.nps.moves.dis7;
 
-import java.util.*;
-import java.io.*;
-import edu.nps.moves.disenum.*;
-import edu.nps.moves.disutil.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
 
 /**
- * Non-DIS class, used on SQL databases. This is not in the DIS standard but can be helpful when saving DIS to a SQL database, particularly in Java.
+ * Non-DIS class, used on SQL databases. This is not in the DIS standard but can
+ * be helpful when saving DIS to a SQL database, particularly in Java.
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class PduStream extends Object implements Serializable
-{
-   /** Longish description of this PDU stream */
-   protected byte[]  description = new byte[512]; 
+public class PduStream extends Object implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   /** short description of this PDU stream */
-   protected byte[]  name = new byte[256]; 
+	/** Longish description of this PDU stream */
+	protected byte[] description = new byte[512];
 
-   /** Start time of recording, in Unix time (seconds since epoch) */
-   protected long  startTime;
+	/** short description of this PDU stream */
+	protected byte[] name = new byte[256];
 
-   /** stop time of recording, in Unix time (seconds since epoch) */
-   protected long  stopTime;
+	/** Start time of recording, in Unix time (seconds since epoch) */
+	protected long startTime;
 
+	/** stop time of recording, in Unix time (seconds since epoch) */
+	protected long stopTime;
 
-/** Constructor */
- public PduStream()
- {
- }
+	/** Constructor */
+	public PduStream() {
+	}
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-   marshalSize = marshalSize + 512 * 1;  // description
-   marshalSize = marshalSize + 256 * 1;  // name
-   marshalSize = marshalSize + 8;  // startTime
-   marshalSize = marshalSize + 8;  // stopTime
+		if (this == obj) {
+			return true;
+		}
 
-   return marshalSize;
-}
+		if (obj == null) {
+			return false;
+		}
 
+		if (getClass() != obj.getClass())
+			return false;
 
-public void setDescription(byte[] pDescription)
-{ description = pDescription;
-}
+		return equalsImpl(obj);
+	}
 
-public byte[] getDescription()
-{ return description; }
+	/**
+	 * Compare all fields that contribute to the state, ignoring transient and
+	 * static fields, for <code>this</code> and the supplied object
+	 *
+	 * @param obj the object to compare to
+	 * @return true if the objects are equal, false otherwise.
+	 */
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-public void setName(byte[] pName)
-{ name = pName;
-}
+		if (!(obj instanceof PduStream))
+			return false;
 
-public byte[] getName()
-{ return name; }
+		final PduStream rhs = (PduStream) obj;
 
-public void setStartTime(long pStartTime)
-{ startTime = pStartTime;
-}
+		for (int idx = 0; idx < 512; idx++) {
+			if (!(description[idx] == rhs.description[idx]))
+				ivarsEqual = false;
+		}
 
-public long getStartTime()
-{ return startTime; 
-}
+		for (int idx = 0; idx < 256; idx++) {
+			if (!(name[idx] == rhs.name[idx]))
+				ivarsEqual = false;
+		}
 
-public void setStopTime(long pStopTime)
-{ stopTime = pStopTime;
-}
+		if (!(startTime == rhs.startTime))
+			ivarsEqual = false;
+		if (!(stopTime == rhs.stopTime))
+			ivarsEqual = false;
 
-public long getStopTime()
-{ return stopTime; 
-}
+		return ivarsEqual;
+	}
 
+	public byte[] getDescription() {
+		return description;
+	}
 
-public void marshal(DataOutputStream dos)
-{
-    try 
-    {
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
-       for(int idx = 0; idx < description.length; idx++)
-       {
-           dos.writeByte(description[idx]);
-       } // end of array marshaling
+		marshalSize = marshalSize + 512 * 1; // description
+		marshalSize = marshalSize + 256 * 1; // name
+		marshalSize = marshalSize + 8; // startTime
+		marshalSize = marshalSize + 8; // stopTime
 
+		return marshalSize;
+	}
 
-       for(int idx = 0; idx < name.length; idx++)
-       {
-           dos.writeByte(name[idx]);
-       } // end of array marshaling
+	public byte[] getName() {
+		return name;
+	}
 
-       dos.writeLong( (long)startTime);
-       dos.writeLong( (long)stopTime);
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+	public long getStartTime() {
+		return startTime;
+	}
 
-public void unmarshal(DataInputStream dis)
-{
-    try 
-    {
-       for(int idx = 0; idx < description.length; idx++)
-       {
-                description[idx] = dis.readByte();
-       } // end of array unmarshaling
-       for(int idx = 0; idx < name.length; idx++)
-       {
-                name[idx] = dis.readByte();
-       } // end of array unmarshaling
-       startTime = dis.readLong();
-       stopTime = dis.readLong();
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+	public long getStopTime() {
+		return stopTime;
+	}
 
+	public void marshal(final DataOutputStream dos) {
+		try {
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
+			for (int idx = 0; idx < description.length; idx++) {
+				dos.writeByte(description[idx]);
+			} // end of array marshaling
 
-       for(int idx = 0; idx < description.length; idx++)
-       {
-           buff.put((byte)description[idx]);
-       } // end of array marshaling
+			for (int idx = 0; idx < name.length; idx++) {
+				dos.writeByte(name[idx]);
+			} // end of array marshaling
 
+			dos.writeLong(startTime);
+			dos.writeLong(stopTime);
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
-       for(int idx = 0; idx < name.length; idx++)
-       {
-           buff.put((byte)name[idx]);
-       } // end of array marshaling
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	public void marshal(final java.nio.ByteBuffer buff) {
 
-       buff.putLong( (long)startTime);
-       buff.putLong( (long)stopTime);
-    } // end of marshal method
+		for (int idx = 0; idx < description.length; idx++) {
+			buff.put(description[idx]);
+		} // end of array marshaling
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       for(int idx = 0; idx < description.length; idx++)
-       {
-                description[idx] = buff.get();
-       } // end of array unmarshaling
-       for(int idx = 0; idx < name.length; idx++)
-       {
-                name[idx] = buff.get();
-       } // end of array unmarshaling
-       startTime = buff.getLong();
-       stopTime = buff.getLong();
- } // end of unmarshal method 
+		for (int idx = 0; idx < name.length; idx++) {
+			buff.put(name[idx]);
+		} // end of array marshaling
 
+		buff.putLong(startTime);
+		buff.putLong(stopTime);
+	} // end of marshal method
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+	public void setDescription(final byte[] pDescription) {
+		description = pDescription;
+	}
 
-    if(this == obj){
-      return true;
-    }
+	public void setName(final byte[] pName) {
+		name = pName;
+	}
 
-    if(obj == null){
-       return false;
-    }
+	public void setStartTime(final long pStartTime) {
+		startTime = pStartTime;
+	}
 
-    if(getClass() != obj.getClass())
-        return false;
+	public void setStopTime(final long pStopTime) {
+		stopTime = pStopTime;
+	}
 
-    return equalsImpl(obj);
- }
+	public void unmarshal(final DataInputStream dis) {
+		try {
+			for (int idx = 0; idx < description.length; idx++) {
+				description[idx] = dis.readByte();
+			} // end of array unmarshaling
+			for (int idx = 0; idx < name.length; idx++) {
+				name[idx] = dis.readByte();
+			} // end of array unmarshaling
+			startTime = dis.readLong();
+			stopTime = dis.readLong();
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
- /**
-  * Compare all fields that contribute to the state, ignoring
- transient and static fields, for <code>this</code> and the supplied object
-  * @param obj the object to compare to
-  * @return true if the objects are equal, false otherwise.
-  */
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
-
-    if(!(obj instanceof PduStream))
-        return false;
-
-     final PduStream rhs = (PduStream)obj;
-
-
-     for(int idx = 0; idx < 512; idx++)
-     {
-          if(!(description[idx] == rhs.description[idx])) ivarsEqual = false;
-     }
-
-
-     for(int idx = 0; idx < 256; idx++)
-     {
-          if(!(name[idx] == rhs.name[idx])) ivarsEqual = false;
-     }
-
-     if( ! (startTime == rhs.startTime)) ivarsEqual = false;
-     if( ! (stopTime == rhs.stopTime)) ivarsEqual = false;
-
-    return ivarsEqual;
- }
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		for (int idx = 0; idx < description.length; idx++) {
+			description[idx] = buff.get();
+		} // end of array unmarshaling
+		for (int idx = 0; idx < name.length; idx++) {
+			name[idx] = buff.get();
+		} // end of array unmarshaling
+		startTime = buff.getLong();
+		stopTime = buff.getLong();
+	} // end of unmarshal method
 } // end of class

@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.gnd.demonstrator.views;
 
 import java.sql.DriverManager;
@@ -22,6 +23,7 @@ import java.sql.Statement;
 import java.util.Enumeration;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
@@ -41,39 +43,17 @@ import MWC.GUI.Layers;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.TrackDataProvider;
 
-public class GndDemonstrator extends ViewPart
-{
-	private Action action1;
-	private Action sendToDB;
-	private Action action3;
-	private Action action4;
-
-	/**
-	 * helper application to help track creation/activation of new plots
-	 */
-	private PartMonitor _myPartMonitor;
-
-	/**
-	 * The constructor.
-	 */
-	public GndDemonstrator()
-	{
-	}
-
-	public class GenerateTrack implements RightClickContextItemGenerator
-	{
-		public void generate(final IMenuManager parent, final Layers theLayers,
-				final Layer[] parentLayers, final Editable[] subjects)
-		{
+public class GndDemonstrator extends ViewPart {
+	public class GenerateTrack implements RightClickContextItemGenerator {
+		@Override
+		public void generate(final IMenuManager parent, final Layers theLayers, final Layer[] parentLayers,
+				final Editable[] subjects) {
 			// we're only going to work with one item
-			if (subjects.length > 0)
-			{
-				for (int i=0;i<subjects.length;i++)
-				{
+			if (subjects.length > 0) {
+				for (int i = 0; i < subjects.length; i++) {
 					// is it a track?
 					final Editable thisE = subjects[i];
-					if (thisE instanceof TrackWrapper)
-					{
+					if (thisE instanceof TrackWrapper) {
 						final TrackWrapper thisTrack = (TrackWrapper) thisE;
 
 						// right,stick in a separator
@@ -81,10 +61,9 @@ public class GndDemonstrator extends ViewPart
 
 						// and the new drop-down list of interpolation frequencies
 						// yes, create the action
-						final Action convertToTrack = new Action("Copy to database")
-						{
-							public void run()
-							{
+						final Action convertToTrack = new Action("Copy to database") {
+							@Override
+							public void run() {
 								copyThisTrackToDatabase(thisTrack);
 							}
 						};
@@ -94,93 +73,31 @@ public class GndDemonstrator extends ViewPart
 				}
 			}
 		}
-	}	
-	
+	}
+
+	private Action action1;
+	private Action sendToDB;
+	private Action action3;
+
+	private Action action4;
+
 	/**
-	 * This is a callback that will allow us to create the viewer and initialize
-	 * it.
+	 * helper application to help track creation/activation of new plots
 	 */
-	public void createPartControl(final Composite parent)
-	{
-		makeActions();
-		contributeToActionBars();
+	private PartMonitor _myPartMonitor;
 
-		// declare the part monitor, we use it when we generate actions
-		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
-				.getPartService());
+	int rowCounter = 100;
 
-		// and start listening
-		listenToMyParts();
-		
-		// also tell the layer manager what we're actually capable of
-		RightClickSupport.addRightClickGenerator(new GenerateTrack());
-		
-		
+	protected TrackWrapper _myTrack = null;
+
+	/**
+	 * The constructor.
+	 */
+	public GndDemonstrator() {
 	}
 
-	private void contributeToActionBars()
-	{
-		final IActionBars bars = getViewSite().getActionBars();
-		fillLocalPullDown(bars.getMenuManager());
-		fillLocalToolBar(bars.getToolBarManager());
-	}
-
-	private void fillLocalPullDown(final IMenuManager manager)
-	{
-		manager.add(action1);
-		manager.add(sendToDB);
-		manager.add(action3);
-		manager.add(action4);
-	}
-
-	private void fillLocalToolBar(final IToolBarManager manager)
-	{
-		manager.add(action1);
-		manager.add(sendToDB);
-		manager.add(action3);
-		manager.add(action4);
-	}
-
-	private void makeActions()
-	{
-		action1 = new Action()
-		{
-			public void run()
-			{
-				doConnect();
-			}
-		};
-		action1.setText("Connect");
-
-		sendToDB = new Action("To database", Action.AS_CHECK_BOX)
-		{
-			public void run()
-			{
-				copyThisTrackToDatabase(_myTrack);
-			}
-		};
-		sendToDB.setEnabled(false);
-
-		action3 = new Action("Count rows", Action.AS_PUSH_BUTTON)
-		{
-			public void run()
-			{
-				countData();
-			}
-		};
-		action4 = new Action("Clear db", Action.AS_PUSH_BUTTON)
-		{
-			public void run()
-			{
-				clearDB();
-			}
-		};
-	}
-
-	protected void clearDB()
-	{
-		try
-		{
+	protected void clearDB() {
+		try {
 			final java.sql.Connection conn = getConnection();
 			final Statement s = conn.createStatement();
 			int ctr = 0;
@@ -189,59 +106,19 @@ public class GndDemonstrator extends ViewPart
 			System.out.println("changed " + ctr + " records");
 			s.close();
 			conn.close();
-		}
-		catch (final Exception e)
-		{
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	/**
-	 * Passing the focus request to the viewer's control.
-	 */
-	public void setFocus()
-	{
+	private void contributeToActionBars() {
+		final IActionBars bars = getViewSite().getActionBars();
+		fillLocalPullDown(bars.getMenuManager());
+		fillLocalToolBar(bars.getToolBarManager());
 	}
 
-	private java.sql.Connection getConnection() throws SQLException
-	{
-		java.sql.Connection conn;
-		final String url = "jdbc:postgresql://localhost:5432/postgis";
-		conn = DriverManager.getConnection(url, "postgres", "4pfonmr");
-
-		return conn;
-	}
-
-	private void countData()
-	{
-		try
-		{
-			final java.sql.Connection conn = getConnection();
-			final Statement s = conn.createStatement();
-			final ResultSet r = s.executeQuery("select id, name from roads_geom");
-			int ctr = 0;
-			while (r.next())
-			{
-
-				ctr++;
-			}
-			System.out.println("found " + ctr + " records");
-			s.close();
-			conn.close();
-		}
-		catch (final Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-
-	int rowCounter = 100;
-	protected TrackWrapper _myTrack = null;
-
-	private void copyThisTrackToDatabase(final TrackWrapper theTrack)
-	{
-		try
-		{
+	private void copyThisTrackToDatabase(final TrackWrapper theTrack) {
+		try {
 			if (theTrack == null)
 				return;
 
@@ -251,8 +128,7 @@ public class GndDemonstrator extends ViewPart
 			final PreparedStatement st = conn.prepareStatement(theQuery);
 
 			final Enumeration<Editable> enumer = theTrack.getPositionIterator();
-			while (enumer.hasMoreElements())
-			{
+			while (enumer.hasMoreElements()) {
 				final FixWrapper thisF = (FixWrapper) enumer.nextElement();
 				final WorldLocation wl = thisF.getLocation();
 				st.setInt(1, ++rowCounter);
@@ -264,55 +140,140 @@ public class GndDemonstrator extends ViewPart
 			System.out.println("changed " + ctr + " records");
 			st.close();
 			conn.close();
-		}
-		catch (final Exception e)
-		{
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void doConnect()
-	{
+	private void countData() {
+		try {
+			final java.sql.Connection conn = getConnection();
+			final Statement s = conn.createStatement();
+			final ResultSet r = s.executeQuery("select id, name from roads_geom");
+			int ctr = 0;
+			while (r.next()) {
 
-		try
-		{
+				ctr++;
+			}
+			System.out.println("found " + ctr + " records");
+			s.close();
+			conn.close();
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * This is a callback that will allow us to create the viewer and initialize it.
+	 */
+	@Override
+	public void createPartControl(final Composite parent) {
+		makeActions();
+		contributeToActionBars();
+
+		// declare the part monitor, we use it when we generate actions
+		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
+
+		// and start listening
+		listenToMyParts();
+
+		// also tell the layer manager what we're actually capable of
+		RightClickSupport.addRightClickGenerator(new GenerateTrack());
+
+	}
+
+	@Override
+	public void dispose() {
+		if (_myPartMonitor != null) {
+			_myPartMonitor.ditch();
+		}
+		super.dispose();
+	}
+
+	private void doConnect() {
+
+		try {
 			final java.sql.Connection conn = getConnection();
 
 			System.out.println("Connection successful!");
 			conn.close();
-		}
-		catch (final Exception e)
-		{
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 
 	}
 
-	/**
-	 * 
-	 */
-	private void listenToMyParts()
-	{
-		_myPartMonitor.addPartListener(TrackDataProvider.class,
-				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
-				{
-					public void eventTriggered(final String type, final Object part,
-							final IWorkbenchPart parentPart)
-					{
-						final TrackDataProvider trk = (TrackDataProvider) part;
-						_myTrack = (TrackWrapper) trk.getPrimaryTrack();
-						sendToDB.setEnabled(true);
-					}
-				});
+	private void fillLocalPullDown(final IMenuManager manager) {
+		manager.add(action1);
+		manager.add(sendToDB);
+		manager.add(action3);
+		manager.add(action4);
 	}
 
+	private void fillLocalToolBar(final IToolBarManager manager) {
+		manager.add(action1);
+		manager.add(sendToDB);
+		manager.add(action3);
+		manager.add(action4);
+	}
+
+	private java.sql.Connection getConnection() throws SQLException {
+		java.sql.Connection conn;
+		final String url = "jdbc:postgresql://localhost:5432/postgis";
+		conn = DriverManager.getConnection(url, "postgres", "4pfonmr");
+
+		return conn;
+	}
+
+	/**
+	 *
+	 */
+	private void listenToMyParts() {
+		_myPartMonitor.addPartListener(TrackDataProvider.class, PartMonitor.ACTIVATED, new PartMonitor.ICallback() {
+			@Override
+			public void eventTriggered(final String type, final Object part, final IWorkbenchPart parentPart) {
+				final TrackDataProvider trk = (TrackDataProvider) part;
+				_myTrack = (TrackWrapper) trk.getPrimaryTrack();
+				sendToDB.setEnabled(true);
+			}
+		});
+	}
+
+	private void makeActions() {
+		action1 = new Action() {
+			@Override
+			public void run() {
+				doConnect();
+			}
+		};
+		action1.setText("Connect");
+
+		sendToDB = new Action("To database", IAction.AS_CHECK_BOX) {
+			@Override
+			public void run() {
+				copyThisTrackToDatabase(_myTrack);
+			}
+		};
+		sendToDB.setEnabled(false);
+
+		action3 = new Action("Count rows", IAction.AS_PUSH_BUTTON) {
+			@Override
+			public void run() {
+				countData();
+			}
+		};
+		action4 = new Action("Clear db", IAction.AS_PUSH_BUTTON) {
+			@Override
+			public void run() {
+				clearDB();
+			}
+		};
+	}
+
+	/**
+	 * Passing the focus request to the viewer's control.
+	 */
 	@Override
-	public void dispose()
-	{
-		if (_myPartMonitor != null)
-		{
-			_myPartMonitor.ditch();
-		}
-		super.dispose();
+	public void setFocus() {
 	}
 }

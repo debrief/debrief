@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: CreateTOPO.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.5 $
@@ -86,73 +87,71 @@ import MWC.GUI.ETOPO.ETOPO_2_Minute;
 
 /**
  * class to create an ETOPO object,
- * 
+ *
  * @see MWC.GUI.Chart.Painters.ETOPOPainter
  */
-public class CreateTOPO extends PlainCreateLayer
-{
+public class CreateTOPO extends PlainCreateLayer {
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * static copy of parent, so we can retrieve the path
-	 * 
+	 *
 	 */
 	private static MWC.GUI.ToolParent _myParent = null;
 
 	/**
 	 * the name of the property which indicates where the etopo data is
-	 * 
+	 *
 	 */
 	public static String ETOPO_PATH = "ETOPO_Directory";
-	
-  /**
-   * the name of the property which indicates how
-   * transparent to make ETOPO
-   * 
-   */
+
+	/**
+	 * the name of the property which indicates how transparent to make ETOPO
+	 *
+	 */
 	public static String ETOPO_TRANSPARENCY = "ETOPO_Transparency";
 
 	/**
 	 * the default path to find the ETOPO data
-	 * 
+	 *
 	 */
 	private static String DEFAULT_PATH = "etopo";
 
 	/**
-	 * constructor, taking normal PlainCreate parameters
-	 * 
+	 * static do we have data?
+	 *
 	 */
-	public CreateTOPO(final MWC.GUI.ToolParent theParent,
-			final MWC.GUI.Properties.PropertiesPanel thePanel, final Layers theData,
-			final BoundsProvider bounds)
-	{
-		super(theParent, thePanel, theData, bounds, "TOPO Gridded Bathy",
-				"images/etopo_add.png");
+	public static boolean check2MinBathyData() {
+		final String newPath = getETOPOPath();
 
-		_myParent = theParent;
-	}
+		boolean res = false;
 
-	/**
-	 * initialise the tool, so that it knows where to get it's layers information
-	 * 
-	 * @param theParent
-	 */
-	public static void initialise(final ToolParent theParent)
-	{
-		_myParent = theParent;
+		// just see if we've already got a complete path
+		final File tstFile = new File(newPath);
+		final boolean foundIt = tstFile.isFile();
+
+		// hmm, we've either got a full path, or just the directory and we need
+		// to append the file itself
+		if (foundIt || ETOPO_2_Minute.dataFileExists(newPath)) {
+			res = true;
+		}
+
+		return res;
 	}
 
 	/**
 	 * get the current ETOPO path
-	 * 
+	 *
 	 */
-	public static String getETOPOPath()
-	{
+	public static String getETOPOPath() {
 
 		// do we have a parent?
-		if (_myParent == null)
-		{
-			System.err
-					.println("Parent has not been set up for CreateTOPO.  Implementation fault");
+		if (_myParent == null) {
+			System.err.println("Parent has not been set up for CreateTOPO.  Implementation fault");
 			return null;
 		}
 
@@ -168,45 +167,19 @@ public class CreateTOPO extends PlainCreateLayer
 	}
 
 	/**
-	 * create this item. The Layers object will know to put this layer at the back
-	 * because of it's BackgroundLayer marker interface
-	 * 
+	 * initialise the tool, so that it knows where to get it's layers information
+	 *
+	 * @param theParent
 	 */
-	protected Layer createItem()
-	{
-		return loadBathyData(getLayers());
-	}
-
-	/**
-	 * static do we have data?
-	 * 
-	 */
-	public static boolean check2MinBathyData()
-	{
-		final String newPath = getETOPOPath();
-
-		boolean res = false;
-
-		// just see if we've already got a complete path
-		final File tstFile = new File(newPath);
-		final boolean foundIt = tstFile.isFile();
-
-		// hmm, we've either got a full path, or just the directory and we need
-		// to append the file itself
-		if (foundIt || ETOPO_2_Minute.dataFileExists(newPath))
-		{
-			res = true;
-		}
-
-		return res;
+	public static void initialise(final ToolParent theParent) {
+		_myParent = theParent;
 	}
 
 	/**
 	 * static class which allows other layers to load data
-	 * 
+	 *
 	 */
-	public static Layer load2MinBathyData()
-	{
+	public static Layer load2MinBathyData() {
 		final String newPath = getETOPOPath();
 
 		Layer res = null;
@@ -217,18 +190,12 @@ public class CreateTOPO extends PlainCreateLayer
 
 		// hmm, we've either got a full path, or just the directory and we need
 		// to append the file itself
-		if (foundIt || ETOPO_2_Minute.dataFileExists(newPath))
-		{
+		if (foundIt || ETOPO_2_Minute.dataFileExists(newPath)) {
 			res = new ETOPO_2_Minute(newPath);
-		}
-		else
-		{
-			_myParent
-					.logError(
-							ToolParent.ERROR,
-							"2 minute bathy Not Found:"
-									+ "Sorry neither of the ETOPO datafiles can be found. Please check the ETOPO section of the userguide.",
-							null);
+		} else {
+			_myParent.logError(ToolParent.ERROR, "2 minute bathy Not Found:"
+					+ "Sorry neither of the ETOPO datafiles can be found. Please check the ETOPO section of the userguide.",
+					null);
 		}
 
 		return res;
@@ -236,32 +203,45 @@ public class CreateTOPO extends PlainCreateLayer
 
 	/**
 	 * static class which allows other layers to load data
-	 * 
+	 *
 	 */
-	public static Layer loadBathyData(final Layers theLayers)
-	{
+	public static Layer loadBathyData(final Layers theLayers) {
 		final String newPath = getETOPOPath();
 
 		Layer res = null;
 
 		// right, see if we can find either of the ETOPO datasets.
 		// try the 5 2 minute first
-		if (ETOPO_2_Minute.dataFileExists(newPath))
-		{
+		if (ETOPO_2_Minute.dataFileExists(newPath)) {
 			res = new ETOPO_2_Minute(newPath);
-		}
-		else if (ETOPOPainter.dataFileExists(newPath))
-		{
+		} else if (ETOPOPainter.dataFileExists(newPath)) {
 			res = new ETOPOPainter(newPath, theLayers);
-		}
-		else
-		{
-			MWC.GUI.Dialogs.DialogFactory
-					.showMessage(
-							"ETOPO Not Found",
-							"Sorry neither of the ETOPO datafiles can be found. Please check the ETOPO section of the userguide.");
+		} else {
+			MWC.GUI.Dialogs.DialogFactory.showMessage("ETOPO Not Found",
+					"Sorry neither of the ETOPO datafiles can be found. Please check the ETOPO section of the userguide.");
 		}
 
 		return res;
+	}
+
+	/**
+	 * constructor, taking normal PlainCreate parameters
+	 *
+	 */
+	public CreateTOPO(final MWC.GUI.ToolParent theParent, final MWC.GUI.Properties.PropertiesPanel thePanel,
+			final Layers theData, final BoundsProvider bounds) {
+		super(theParent, thePanel, theData, bounds, "TOPO Gridded Bathy", "images/etopo_add.png");
+
+		_myParent = theParent;
+	}
+
+	/**
+	 * create this item. The Layers object will know to put this layer at the back
+	 * because of it's BackgroundLayer marker interface
+	 *
+	 */
+	@Override
+	protected Layer createItem() {
+		return loadBathyData(getLayers());
 	}
 }

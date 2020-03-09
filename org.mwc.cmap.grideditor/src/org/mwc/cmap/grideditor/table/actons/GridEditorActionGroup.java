@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.cmap.grideditor.table.actons;
 
 import java.util.Iterator;
@@ -33,8 +34,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 
-public class GridEditorActionGroup extends ActionGroup
-{
+public class GridEditorActionGroup extends ActionGroup {
 
 	private final GridEditorView myView;
 
@@ -52,47 +52,44 @@ public class GridEditorActionGroup extends ActionGroup
 
 	private ExportToClipboardAction myExportAction;
 
-	public GridEditorActionGroup(final GridEditorView view,
-			final GridEditorActionContext context)
-	{
+	public GridEditorActionGroup(final GridEditorView view, final GridEditorActionContext context) {
 		myView = view;
 		super.setContext(context);
-		getContext().setListener(new GridEditorActionContext.Listener()
-		{
+		getContext().setListener(new GridEditorActionContext.Listener() {
 
-			public void tableInputChanged()
-			{
+			@Override
+			public void chartInputChanged() {
+				contextChanged();
+			}
+
+			@Override
+			public void selectionChanged() {
+				contextChanged();
+			}
+
+			@Override
+			public void tableInputChanged() {
 				myView.refreshUndoContext();
-				contextChanged();
-			}
-
-			public void selectionChanged()
-			{
-				contextChanged();
-			}
-
-			public void chartInputChanged()
-			{
 				contextChanged();
 			}
 		});
 	}
 
-	@Override
-	public void setContext(final ActionContext context)
-	{
-		throw new UnsupportedOperationException("I am managing my context myself");
+	private void contextChanged() {
+		if (!myActionsInitialized) {
+			return;
+		}
+		myTrackSelectionAction.refreshWithTableUI();
+		myShowVisItemsAction.refreshWithTableUI();
+		final GridEditorActionContext contextImpl = getContext();
+		myInsertRowAction.refreshWithActionContext(contextImpl);
+		myExportAction.refreshWithTableUI();
+		myDeleteRowAction.refreshWithActionContext(contextImpl);
+		myInterpolateAction.refreshWithActionContext(contextImpl);
 	}
 
 	@Override
-	public GridEditorActionContext getContext()
-	{
-		return (GridEditorActionContext) super.getContext();
-	}
-
-	@Override
-	public void fillActionBars(final IActionBars actionBars)
-	{
+	public void fillActionBars(final IActionBars actionBars) {
 		initActions();
 		final IToolBarManager toolbar = actionBars.getToolBarManager();
 		toolbar.add(myInsertRowAction);
@@ -106,8 +103,7 @@ public class GridEditorActionGroup extends ActionGroup
 	}
 
 	@Override
-	public void fillContextMenu(final IMenuManager menu)
-	{
+	public void fillContextMenu(final IMenuManager menu) {
 		initActions();
 		menu.add(myInsertRowAction);
 		menu.add(myDeleteRowAction);
@@ -120,52 +116,47 @@ public class GridEditorActionGroup extends ActionGroup
 		menu.add(new Separator());
 
 		// right, find the selection
-		final StructuredSelection sel = (StructuredSelection) myView.getUI().getTable()
-				.getTableViewer().getSelection();
+		final StructuredSelection sel = (StructuredSelection) myView.getUI().getTable().getTableViewer().getSelection();
 
 		// do we have something?
-		if (sel.size() > 0)
-		{
+		if (sel.size() > 0) {
 
 			// create an array of the items being edited
 			final Editable[] items = new Editable[sel.size()];
 			int index = 0;
 			@SuppressWarnings("rawtypes")
-			final
-			Iterator iter = sel.iterator();
-			while (iter.hasNext())
-			{
+			final Iterator iter = sel.iterator();
+			while (iter.hasNext()) {
 				items[index++] = (Editable) iter.next();
 			}
 
 			// collate the other metadata
-			final GriddableWrapper wrapper = (GriddableWrapper) myView.getUI().getTable()
-					.getTableViewer().getInput();
+			final GriddableWrapper wrapper = (GriddableWrapper) myView.getUI().getTable().getTableViewer().getInput();
 
 			// fill the layers objects
 			final Layer[] topLayers = new Layer[sel.size()];
 			final Layer[] parentLayers = new Layer[sel.size()];
-			for (int i = 0; i < sel.size(); i++)
-			{
+			for (int i = 0; i < sel.size(); i++) {
 				topLayers[i] = wrapper.getWrapper().getTopLevelLayer();
 				parentLayers[i] = wrapper.getWrapper().getTopLevelLayer();
 			}
 			final Layers theLayers = wrapper.getWrapper().getLayers();
 
 			// create a drop-down menu for this item
-			RightClickSupport.getDropdownListFor(menu, items, topLayers,
-					parentLayers, theLayers, true);
+			RightClickSupport.getDropdownListFor(menu, items, topLayers, parentLayers, theLayers, true);
 		}
 	}
 
-	private void initActions()
-	{
-		if (myActionsInitialized)
-		{
+	@Override
+	public GridEditorActionContext getContext() {
+		return (GridEditorActionContext) super.getContext();
+	}
+
+	private void initActions() {
+		if (myActionsInitialized) {
 			return;
 		}
-		if (myView.getUI() == null)
-		{
+		if (myView.getUI() == null) {
 			return;
 		}
 		final GridEditorTable tableUI = myView.getUI().getTable();
@@ -178,18 +169,8 @@ public class GridEditorActionGroup extends ActionGroup
 		myActionsInitialized = true;
 	}
 
-	private void contextChanged()
-	{
-		if (!myActionsInitialized)
-		{
-			return;
-		}
-		myTrackSelectionAction.refreshWithTableUI();
-		myShowVisItemsAction.refreshWithTableUI();
-		final GridEditorActionContext contextImpl = getContext();
-		myInsertRowAction.refreshWithActionContext(contextImpl);
-		myExportAction.refreshWithTableUI();
-		myDeleteRowAction.refreshWithActionContext(contextImpl);
-		myInterpolateAction.refreshWithActionContext(contextImpl);
+	@Override
+	public void setContext(final ActionContext context) {
+		throw new UnsupportedOperationException("I am managing my context myself");
 	}
 }

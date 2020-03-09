@@ -1,327 +1,335 @@
 package edu.nps.moves.dis;
 
-import java.util.*;
-import java.io.*;
-import edu.nps.moves.disenum.*;
-import edu.nps.moves.disutil.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Section 5.3.4.2. Information about stuff exploding. COMPLETE
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class DetonationPdu extends WarfareFamilyPdu implements Serializable
-{
-   /** ID of muntion that was fired */
-   protected EntityID  munitionID = new EntityID(); 
+public class DetonationPdu extends WarfareFamilyPdu implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   /** ID firing event */
-   protected EventID  eventID = new EventID(); 
+	/** ID of muntion that was fired */
+	protected EntityID munitionID = new EntityID();
 
-   /** ID firing event */
-   protected Vector3Float  velocity = new Vector3Float(); 
+	/** ID firing event */
+	protected EventID eventID = new EventID();
 
-   /** where the detonation is, in world coordinates */
-   protected Vector3Double  locationInWorldCoordinates = new Vector3Double(); 
+	/** ID firing event */
+	protected Vector3Float velocity = new Vector3Float();
 
-   /** Describes munition used */
-   protected BurstDescriptor  burstDescriptor = new BurstDescriptor(); 
+	/** where the detonation is, in world coordinates */
+	protected Vector3Double locationInWorldCoordinates = new Vector3Double();
 
-   /** location of the detonation or impact in the target entity's coordinate system. This information should be used for damage assessment. */
-   protected Vector3Float  locationInEntityCoordinates = new Vector3Float(); 
+	/** Describes munition used */
+	protected BurstDescriptor burstDescriptor = new BurstDescriptor();
 
-   /** result of the explosion */
-   protected short  detonationResult;
+	/**
+	 * location of the detonation or impact in the target entity's coordinate
+	 * system. This information should be used for damage assessment.
+	 */
+	protected Vector3Float locationInEntityCoordinates = new Vector3Float();
 
-   /** How many articulation parameters we have */
-   protected short  numberOfArticulationParameters;
+	/** result of the explosion */
+	protected short detonationResult;
 
-   /** padding */
-   protected short  pad = (short)0;
+	/** How many articulation parameters we have */
+	protected short numberOfArticulationParameters;
 
-   protected List< ArticulationParameter > articulationParameters = new ArrayList< ArticulationParameter >(); 
+	/** padding */
+	protected short pad = (short) 0;
 
-/** Constructor */
- public DetonationPdu()
- {
-    setPduType( (short)3 );
- }
+	protected List<ArticulationParameter> articulationParameters = new ArrayList<ArticulationParameter>();
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+	/** Constructor */
+	public DetonationPdu() {
+		setPduType((short) 3);
+	}
 
-   marshalSize = super.getMarshalledSize();
-   marshalSize = marshalSize + munitionID.getMarshalledSize();  // munitionID
-   marshalSize = marshalSize + eventID.getMarshalledSize();  // eventID
-   marshalSize = marshalSize + velocity.getMarshalledSize();  // velocity
-   marshalSize = marshalSize + locationInWorldCoordinates.getMarshalledSize();  // locationInWorldCoordinates
-   marshalSize = marshalSize + burstDescriptor.getMarshalledSize();  // burstDescriptor
-   marshalSize = marshalSize + locationInEntityCoordinates.getMarshalledSize();  // locationInEntityCoordinates
-   marshalSize = marshalSize + 1;  // detonationResult
-   marshalSize = marshalSize + 1;  // numberOfArticulationParameters
-   marshalSize = marshalSize + 2;  // pad
-   for(int idx=0; idx < articulationParameters.size(); idx++)
-   {
-        ArticulationParameter listElement = articulationParameters.get(idx);
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-   }
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-   return marshalSize;
-}
+		if (this == obj) {
+			return true;
+		}
 
+		if (obj == null) {
+			return false;
+		}
 
-public void setMunitionID(EntityID pMunitionID)
-{ munitionID = pMunitionID;
-}
+		if (getClass() != obj.getClass())
+			return false;
 
-public EntityID getMunitionID()
-{ return munitionID; 
-}
+		return equalsImpl(obj);
+	}
 
-public void setEventID(EventID pEventID)
-{ eventID = pEventID;
-}
+	@Override
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-public EventID getEventID()
-{ return eventID; 
-}
+		if (!(obj instanceof DetonationPdu))
+			return false;
 
-public void setVelocity(Vector3Float pVelocity)
-{ velocity = pVelocity;
-}
+		final DetonationPdu rhs = (DetonationPdu) obj;
 
-public Vector3Float getVelocity()
-{ return velocity; 
-}
+		if (!(munitionID.equals(rhs.munitionID)))
+			ivarsEqual = false;
+		if (!(eventID.equals(rhs.eventID)))
+			ivarsEqual = false;
+		if (!(velocity.equals(rhs.velocity)))
+			ivarsEqual = false;
+		if (!(locationInWorldCoordinates.equals(rhs.locationInWorldCoordinates)))
+			ivarsEqual = false;
+		if (!(burstDescriptor.equals(rhs.burstDescriptor)))
+			ivarsEqual = false;
+		if (!(locationInEntityCoordinates.equals(rhs.locationInEntityCoordinates)))
+			ivarsEqual = false;
+		if (!(detonationResult == rhs.detonationResult))
+			ivarsEqual = false;
+		if (!(numberOfArticulationParameters == rhs.numberOfArticulationParameters))
+			ivarsEqual = false;
+		if (!(pad == rhs.pad))
+			ivarsEqual = false;
 
-public void setLocationInWorldCoordinates(Vector3Double pLocationInWorldCoordinates)
-{ locationInWorldCoordinates = pLocationInWorldCoordinates;
-}
+		for (int idx = 0; idx < articulationParameters.size(); idx++) {
+			if (!(articulationParameters.get(idx).equals(rhs.articulationParameters.get(idx))))
+				ivarsEqual = false;
+		}
 
-public Vector3Double getLocationInWorldCoordinates()
-{ return locationInWorldCoordinates; 
-}
+		return ivarsEqual && super.equalsImpl(rhs);
+	}
 
-public void setBurstDescriptor(BurstDescriptor pBurstDescriptor)
-{ burstDescriptor = pBurstDescriptor;
-}
+	public List<ArticulationParameter> getArticulationParameters() {
+		return articulationParameters;
+	}
 
-public BurstDescriptor getBurstDescriptor()
-{ return burstDescriptor; 
-}
+	public BurstDescriptor getBurstDescriptor() {
+		return burstDescriptor;
+	}
 
-public void setLocationInEntityCoordinates(Vector3Float pLocationInEntityCoordinates)
-{ locationInEntityCoordinates = pLocationInEntityCoordinates;
-}
+	public short getDetonationResult() {
+		return detonationResult;
+	}
 
-public Vector3Float getLocationInEntityCoordinates()
-{ return locationInEntityCoordinates; 
-}
+	public EventID getEventID() {
+		return eventID;
+	}
 
-public void setDetonationResult(short pDetonationResult)
-{ detonationResult = pDetonationResult;
-}
+	public Vector3Float getLocationInEntityCoordinates() {
+		return locationInEntityCoordinates;
+	}
 
-public short getDetonationResult()
-{ return detonationResult; 
-}
+	public Vector3Double getLocationInWorldCoordinates() {
+		return locationInWorldCoordinates;
+	}
 
-public short getNumberOfArticulationParameters()
-{ return (short)articulationParameters.size();
-}
+	@Override
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
-/** Note that setting this value will not change the marshalled value. The list whose length this describes is used for that purpose.
- * The getnumberOfArticulationParameters method will also be based on the actual list length rather than this value. 
- * The method is simply here for java bean completeness.
- */
-public void setNumberOfArticulationParameters(short pNumberOfArticulationParameters)
-{ numberOfArticulationParameters = pNumberOfArticulationParameters;
-}
+		marshalSize = super.getMarshalledSize();
+		marshalSize = marshalSize + munitionID.getMarshalledSize(); // munitionID
+		marshalSize = marshalSize + eventID.getMarshalledSize(); // eventID
+		marshalSize = marshalSize + velocity.getMarshalledSize(); // velocity
+		marshalSize = marshalSize + locationInWorldCoordinates.getMarshalledSize(); // locationInWorldCoordinates
+		marshalSize = marshalSize + burstDescriptor.getMarshalledSize(); // burstDescriptor
+		marshalSize = marshalSize + locationInEntityCoordinates.getMarshalledSize(); // locationInEntityCoordinates
+		marshalSize = marshalSize + 1; // detonationResult
+		marshalSize = marshalSize + 1; // numberOfArticulationParameters
+		marshalSize = marshalSize + 2; // pad
+		for (int idx = 0; idx < articulationParameters.size(); idx++) {
+			final ArticulationParameter listElement = articulationParameters.get(idx);
+			marshalSize = marshalSize + listElement.getMarshalledSize();
+		}
 
-public void setPad(short pPad)
-{ pad = pPad;
-}
+		return marshalSize;
+	}
 
-public short getPad()
-{ return pad; 
-}
+	public EntityID getMunitionID() {
+		return munitionID;
+	}
 
-public void setArticulationParameters(List<ArticulationParameter> pArticulationParameters)
-{ articulationParameters = pArticulationParameters;
-}
+	public short getNumberOfArticulationParameters() {
+		return (short) articulationParameters.size();
+	}
 
-public List<ArticulationParameter> getArticulationParameters()
-{ return articulationParameters; }
+	public short getPad() {
+		return pad;
+	}
 
+	public Vector3Float getVelocity() {
+		return velocity;
+	}
 
-public void marshal(DataOutputStream dos)
-{
-    super.marshal(dos);
-    try 
-    {
-       munitionID.marshal(dos);
-       eventID.marshal(dos);
-       velocity.marshal(dos);
-       locationInWorldCoordinates.marshal(dos);
-       burstDescriptor.marshal(dos);
-       locationInEntityCoordinates.marshal(dos);
-       dos.writeByte( (byte)detonationResult);
-       dos.writeByte( (byte)articulationParameters.size());
-       dos.writeShort( (short)pad);
+	@Override
+	public void marshal(final DataOutputStream dos) {
+		super.marshal(dos);
+		try {
+			munitionID.marshal(dos);
+			eventID.marshal(dos);
+			velocity.marshal(dos);
+			locationInWorldCoordinates.marshal(dos);
+			burstDescriptor.marshal(dos);
+			locationInEntityCoordinates.marshal(dos);
+			dos.writeByte((byte) detonationResult);
+			dos.writeByte((byte) articulationParameters.size());
+			dos.writeShort(pad);
 
-       for(int idx = 0; idx < articulationParameters.size(); idx++)
-       {
-            ArticulationParameter aArticulationParameter = articulationParameters.get(idx);
-            aArticulationParameter.marshal(dos);
-       } // end of list marshalling
+			for (int idx = 0; idx < articulationParameters.size(); idx++) {
+				final ArticulationParameter aArticulationParameter = articulationParameters.get(idx);
+				aArticulationParameter.marshal(dos);
+			} // end of list marshalling
 
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
-public void unmarshal(DataInputStream dis)
-{
-     super.unmarshal(dis);
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	@Override
+	public void marshal(final java.nio.ByteBuffer buff) {
+		super.marshal(buff);
+		munitionID.marshal(buff);
+		eventID.marshal(buff);
+		velocity.marshal(buff);
+		locationInWorldCoordinates.marshal(buff);
+		burstDescriptor.marshal(buff);
+		locationInEntityCoordinates.marshal(buff);
+		buff.put((byte) detonationResult);
+		buff.put((byte) articulationParameters.size());
+		buff.putShort(pad);
 
-    try 
-    {
-       munitionID.unmarshal(dis);
-       eventID.unmarshal(dis);
-       velocity.unmarshal(dis);
-       locationInWorldCoordinates.unmarshal(dis);
-       burstDescriptor.unmarshal(dis);
-       locationInEntityCoordinates.unmarshal(dis);
-       detonationResult = (short)dis.readUnsignedByte();
-       numberOfArticulationParameters = (short)dis.readUnsignedByte();
-       pad = dis.readShort();
-       for(int idx = 0; idx < numberOfArticulationParameters; idx++)
-       {
-           ArticulationParameter anX = new ArticulationParameter();
-           anX.unmarshal(dis);
-           articulationParameters.add(anX);
-       }
+		for (int idx = 0; idx < articulationParameters.size(); idx++) {
+			final ArticulationParameter aArticulationParameter = articulationParameters.get(idx);
+			aArticulationParameter.marshal(buff);
+		} // end of list marshalling
 
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+	} // end of marshal method
 
+	public void setArticulationParameters(final List<ArticulationParameter> pArticulationParameters) {
+		articulationParameters = pArticulationParameters;
+	}
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
-       super.marshal(buff);
-       munitionID.marshal(buff);
-       eventID.marshal(buff);
-       velocity.marshal(buff);
-       locationInWorldCoordinates.marshal(buff);
-       burstDescriptor.marshal(buff);
-       locationInEntityCoordinates.marshal(buff);
-       buff.put( (byte)detonationResult);
-       buff.put( (byte)articulationParameters.size());
-       buff.putShort( (short)pad);
+	public void setBurstDescriptor(final BurstDescriptor pBurstDescriptor) {
+		burstDescriptor = pBurstDescriptor;
+	}
 
-       for(int idx = 0; idx < articulationParameters.size(); idx++)
-       {
-            ArticulationParameter aArticulationParameter = (ArticulationParameter)articulationParameters.get(idx);
-            aArticulationParameter.marshal(buff);
-       } // end of list marshalling
+	public void setDetonationResult(final short pDetonationResult) {
+		detonationResult = pDetonationResult;
+	}
 
-    } // end of marshal method
+	public void setEventID(final EventID pEventID) {
+		eventID = pEventID;
+	}
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       super.unmarshal(buff);
+	public void setLocationInEntityCoordinates(final Vector3Float pLocationInEntityCoordinates) {
+		locationInEntityCoordinates = pLocationInEntityCoordinates;
+	}
 
-       munitionID.unmarshal(buff);
-       eventID.unmarshal(buff);
-       velocity.unmarshal(buff);
-       locationInWorldCoordinates.unmarshal(buff);
-       burstDescriptor.unmarshal(buff);
-       locationInEntityCoordinates.unmarshal(buff);
-       detonationResult = (short)(buff.get() & 0xFF);
-       numberOfArticulationParameters = (short)(buff.get() & 0xFF);
-       pad = buff.getShort();
-       for(int idx = 0; idx < numberOfArticulationParameters; idx++)
-       {
-            ArticulationParameter anX = new ArticulationParameter();
-            anX.unmarshal(buff);
-            articulationParameters.add(anX);
-       }
+	public void setLocationInWorldCoordinates(final Vector3Double pLocationInWorldCoordinates) {
+		locationInWorldCoordinates = pLocationInWorldCoordinates;
+	}
 
- } // end of unmarshal method 
+	public void setMunitionID(final EntityID pMunitionID) {
+		munitionID = pMunitionID;
+	}
 
+	/**
+	 * Note that setting this value will not change the marshalled value. The list
+	 * whose length this describes is used for that purpose. The
+	 * getnumberOfArticulationParameters method will also be based on the actual
+	 * list length rather than this value. The method is simply here for java bean
+	 * completeness.
+	 */
+	public void setNumberOfArticulationParameters(final short pNumberOfArticulationParameters) {
+		numberOfArticulationParameters = pNumberOfArticulationParameters;
+	}
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+	public void setPad(final short pPad) {
+		pad = pPad;
+	}
 
-    if(this == obj){
-      return true;
-    }
+	public void setVelocity(final Vector3Float pVelocity) {
+		velocity = pVelocity;
+	}
 
-    if(obj == null){
-       return false;
-    }
+	@Override
+	public void unmarshal(final DataInputStream dis) {
+		super.unmarshal(dis);
 
-    if(getClass() != obj.getClass())
-        return false;
+		try {
+			munitionID.unmarshal(dis);
+			eventID.unmarshal(dis);
+			velocity.unmarshal(dis);
+			locationInWorldCoordinates.unmarshal(dis);
+			burstDescriptor.unmarshal(dis);
+			locationInEntityCoordinates.unmarshal(dis);
+			detonationResult = (short) dis.readUnsignedByte();
+			numberOfArticulationParameters = (short) dis.readUnsignedByte();
+			pad = dis.readShort();
+			for (int idx = 0; idx < numberOfArticulationParameters; idx++) {
+				final ArticulationParameter anX = new ArticulationParameter();
+				anX.unmarshal(dis);
+				articulationParameters.add(anX);
+			}
 
-    return equalsImpl(obj);
- }
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
-@Override
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	@Override
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		super.unmarshal(buff);
 
-    if(!(obj instanceof DetonationPdu))
-        return false;
+		munitionID.unmarshal(buff);
+		eventID.unmarshal(buff);
+		velocity.unmarshal(buff);
+		locationInWorldCoordinates.unmarshal(buff);
+		burstDescriptor.unmarshal(buff);
+		locationInEntityCoordinates.unmarshal(buff);
+		detonationResult = (short) (buff.get() & 0xFF);
+		numberOfArticulationParameters = (short) (buff.get() & 0xFF);
+		pad = buff.getShort();
+		for (int idx = 0; idx < numberOfArticulationParameters; idx++) {
+			final ArticulationParameter anX = new ArticulationParameter();
+			anX.unmarshal(buff);
+			articulationParameters.add(anX);
+		}
 
-     final DetonationPdu rhs = (DetonationPdu)obj;
-
-     if( ! (munitionID.equals( rhs.munitionID) )) ivarsEqual = false;
-     if( ! (eventID.equals( rhs.eventID) )) ivarsEqual = false;
-     if( ! (velocity.equals( rhs.velocity) )) ivarsEqual = false;
-     if( ! (locationInWorldCoordinates.equals( rhs.locationInWorldCoordinates) )) ivarsEqual = false;
-     if( ! (burstDescriptor.equals( rhs.burstDescriptor) )) ivarsEqual = false;
-     if( ! (locationInEntityCoordinates.equals( rhs.locationInEntityCoordinates) )) ivarsEqual = false;
-     if( ! (detonationResult == rhs.detonationResult)) ivarsEqual = false;
-     if( ! (numberOfArticulationParameters == rhs.numberOfArticulationParameters)) ivarsEqual = false;
-     if( ! (pad == rhs.pad)) ivarsEqual = false;
-
-     for(int idx = 0; idx < articulationParameters.size(); idx++)
-     {
-        if( ! ( articulationParameters.get(idx).equals(rhs.articulationParameters.get(idx)))) ivarsEqual = false;
-     }
-
-
-    return ivarsEqual && super.equalsImpl(rhs);
- }
+	} // end of unmarshal method
 } // end of class

@@ -1,457 +1,395 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
- *
- *    (C) 2000-2014, PlanetMayo Ltd
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
 
 package ASSET.Models.Detection;
 
-/**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:
- * @author
- * @version 1.0
- */
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 
 import java.io.Serializable;
 
-import ASSET.Models.SensorType;
 import ASSET.NetworkParticipant;
+import ASSET.Models.SensorType;
 import ASSET.Participants.Category;
 import MWC.GUI.Properties.AbstractPropertyEditor;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 
-public class DetectionEvent implements java.util.Comparator<DetectionEvent>, Serializable
-{
-	
-  public static final String IDENTIFIED_STR = "Identified";
-  public static final String CLASSIFIED_STR = "Classified";
-  public static final String DETECTED_STR = "Detected";
-  public static final String UNDETECTED_STR = "Undetected";
+public class DetectionEvent implements java.util.Comparator<DetectionEvent>, Serializable {
 
-  /**
-	 * 
+	public static class DetectionStatePropertyEditor extends AbstractPropertyEditor {
+
+		////////////////////////////////////////////////////
+		// member objects
+		////////////////////////////////////////////////////
+		private final String _stringTags[] = { UNDETECTED_STR, DETECTED_STR, CLASSIFIED_STR, IDENTIFIED_STR, };
+
+		////////////////////////////////////////////////////
+		// member methods
+		////////////////////////////////////////////////////
+		@Override
+		public String[] getTags() {
+			return _stringTags;
+		}
+
+	}
+
+	public static final String IDENTIFIED_STR = "Identified";
+	public static final String CLASSIFIED_STR = "Classified";
+	public static final String DETECTED_STR = "Detected";
+
+	public static final String UNDETECTED_STR = "Undetected";
+
+	////////////////////////////////////////////////////////////
+	// set of (ascending) detection states
+	////////////////////////////////////////////////////////////
+
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
-	////////////////////////////////////////////////////////////
-  // set of (ascending) detection states
-  ////////////////////////////////////////////////////////////
+	/**
+	 * we're not in contact with this participant (and there won't be a detection -
+	 * but lets keep it in here anyway)
+	 */
+	public static final int UNDETECTED = 0;
 
-  /**
-   * we're not in contact with this participant (and
-   * there won't be a detection - but lets keep it in here anyway)
-   */
-  public static final int UNDETECTED = 0;
+	/**
+	 * we've only just about detected this participant, but we've no idea what it is
+	 */
+	public static final int DETECTED = 1;
 
-  /**
-   * we've only just about detected this participant,
-   * but we've no idea what it is
-   */
-  public static final int DETECTED = 1;
+	/**
+	 * we know what type of target it is - the category
+	 */
+	public static final int CLASSIFIED = 2;
 
-  /**
-   * we know what type of target it is - the category
-   */
-  public static final int CLASSIFIED = 2;
+	/**
+	 * we know exactly what it is!
+	 */
+	public static final int IDENTIFIED = 3;
 
-  /**
-   * we know exactly what it is!
-   */
-  public static final int IDENTIFIED = 3;
+	/**
+	 * the current detection state for this target
+	 */
+	private int _detectionState;
 
+	/**
+	 * store the sensor location for this detection. This has been introduced mainly
+	 * to support remote sensors. A helo could hear be informed of a bearing
+	 * detection from a sonar buoy but needs to know the sonar buoy location find
+	 * out where the bearing line spans from
+	 */
+	private WorldLocation _sensorLocation;
 
-  /**
-   * the current detection state for this target
-   */
-  private int _detectionState;
+	/**
+	 * time of this detection
+	 */
+	private long _time;
 
-  /**
-   * store the sensor location for this detection.  This has been
-   * introduced mainly to support remote sensors. A helo could
-   * hear be informed of a bearing detection from a sonar buoy
-   * but needs to know the sonar buoy location find out where
-   * the bearing line spans from
-   */
-  private WorldLocation _sensorLocation;
+	/**
+	 * sensor which made detection
+	 */
+	private int _sensorId;
 
-  /**
-   * time of this detection
-   */
-  private long _time;
+	/**
+	 * range of detection (yds)
+	 */
+	private WorldDistance _range;
 
-  /**
-   * sensor which made detection
-   */
-  private int _sensorId;
+	/**
+	 * the estimated range, where the actual range isn't available
+	 */
+	private WorldDistance _estimatedRange;
 
-  /**
-   * range of detection (yds)
-   */
-  private WorldDistance _range;
+	/**
+	 * relative bearing to target (degs)
+	 */
+	protected Float _relBearing;
 
-  /**
-   * the estimated range, where the actual range isn't available
-   */
-  private WorldDistance _estimatedRange;
+	/**
+	 * bearing of detection (degs)
+	 */
+	private Float _bearing;
 
-  /**
-   * relative bearing to target (degs)
-   */
-  protected Float _relBearing;
+	/**
+	 * strength of detection (%)
+	 */
+	private Float _strength;
 
-  /**
-   * bearing of detection (degs)
-   */
-  private Float _bearing;
+	/**
+	 * observed frequency
+	 *
+	 */
+	private Float _freq = null;
 
-  /**
-   * strength of detection (%)
-   */
-  private Float _strength;
-  
-  /** observed frequency
-   * 
-   */
-  private Float _freq = null;
+	/**
+	 * the type of this target
+	 */
+	private Category _target_type;
 
-  /**
-   * the type of this target
-   */
-  private Category _target_type;
+	/**
+	 * the course of the target (degs)
+	 */
+	private Float _course;
 
-  /**
-   * the course of the target (degs)
-   */
-  private Float _course;
+	/**
+	 * the speed of the target (knots)
+	 */
+	private Float _speed;
 
-  /**
-   * the speed of the target (knots)
-   */
-  private Float _speed;
+	/**
+	 * the host vessel for this detection
+	 */
+	private int _hostId;
 
-  /**
-   * the host vessel for this detection
-   */
-  private int _hostId;
+	/**
+	 * a textual message desribing this detection
+	 */
+	private String _myMessage;
 
-  /**
-   * a textual message desribing this detection
-   */
-  private String _myMessage;
+	/**
+	 * the id of the target
+	 */
+	private Integer _targetId;
 
-  /**
-   * the id of the target
-   */
-  private Integer _targetId;
-  
-  /** store the ambigous bearing
-   * 
-   */
-	private Float _ambigBrg = null;
+	////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////
 
+	/**
+	 * store the ambigous bearing
+	 *
+	 */
+	private Float _ambigBrg = null;;
 
-  ////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////
-  
-  /** no-op constructor created in support of Kryo networking
-   * 
-   */
-  protected DetectionEvent(){};
-  		 
+	/**
+	 * no-op constructor created in support of Kryo networking
+	 *
+	 */
+	protected DetectionEvent() {
+	}
 
-  /**
-   * Constructor
-   *
-   * @param time     the time this detection was made
-   * @param sensor   sensor which made detection
-   * @param range    range in yards
-   * @param bearing  bearing in degrees
-   * @param strength strength 1..100
-   */
-  public DetectionEvent(final long time,
-                        final int host,
-                        final WorldLocation sensorLocation,
-                        final SensorType sensor,
-                        final WorldDistance range,
-                        final WorldDistance estimatedRange,
-                        final Float bearing,
-                        final Float relBearing,
-                        final Float strength,
-                        final Category target_type,
-                        final Float speedKts,
-                        final Float course,
-                        final NetworkParticipant target)
-  {
+	/**
+	 * Constructor
+	 *
+	 * @param time     the time this detection was made
+	 * @param sensor   sensor which made detection
+	 * @param range    range in yards
+	 * @param bearing  bearing in degrees
+	 * @param strength strength 1..100
+	 */
+	public DetectionEvent(final long time, final int host, final WorldLocation sensorLocation, final SensorType sensor,
+			final WorldDistance range, final WorldDistance estimatedRange, final Float bearing, final Float relBearing,
+			final Float strength, final Category target_type, final Float speedKts, final Float course,
+			final NetworkParticipant target) {
 
-  	
-    _time = time;
-    _range = range;
-    _estimatedRange = estimatedRange;
-    _bearing = bearing;
-    _relBearing = relBearing;
-    _strength = strength;
-    _target_type = target_type;
-    _course = course;
-    _speed = speedKts;
-    _sensorId = sensor.getId();
-    _hostId = host;
-    _sensorLocation = sensorLocation;
+		_time = time;
+		_range = range;
+		_estimatedRange = estimatedRange;
+		_bearing = bearing;
+		_relBearing = relBearing;
+		_strength = strength;
+		_target_type = target_type;
+		_course = course;
+		_speed = speedKts;
+		_sensorId = sensor.getId();
+		_hostId = host;
+		_sensorLocation = sensorLocation;
 
-    if (target != null)
-      _targetId = new Integer(target.getId());
-    else
-      _targetId = null;
+		if (target != null)
+			_targetId = new Integer(target.getId());
+		else
+			_targetId = null;
 
-    // write the message
-    if(target == null)
-    	throw new RuntimeException("Failed to specify target");
-    
-    _myMessage = target.getName() + " held on " + sensor.getName();
-  }
+		// write the message
+		if (target == null)
+			throw new RuntimeException("Failed to specify target");
 
-  /**
-   * Constructor
-   *
-   * @param time     the time this detection was made
-   * @param sensor   sensor which made detection
-   * @param range    range in yards
-   * @param bearing  bearing in degrees
-   * @param strength strength 1..100
-   */
-  public DetectionEvent(final long time,
-                        final int host,
-                        final WorldLocation sensorLocation,
-                        final SensorType sensor,
-                        final WorldDistance range,
-                        final WorldDistance estimatedRange,
-                        final Float bearing,
-                        final Float relBearing,
-                        final Float strength,
-                        final Category target_type,
-                        final WorldSpeed speed,
-                        final Float course,
-                        final NetworkParticipant target,
-                        final int detectionState)
-  {
+		_myMessage = target.getName() + " held on " + sensor.getName();
+	}
 
-  	this(time,host,sensorLocation,sensor, range,estimatedRange,bearing,relBearing,strength,target_type,new Float(speed.getValueIn(WorldSpeed.Kts)),course,target);
+	/**
+	 * Constructor
+	 *
+	 * @param time     the time this detection was made
+	 * @param sensor   sensor which made detection
+	 * @param range    range in yards
+	 * @param bearing  bearing in degrees
+	 * @param strength strength 1..100
+	 */
+	public DetectionEvent(final long time, final int host, final WorldLocation sensorLocation, final SensorType sensor,
+			final WorldDistance range, final WorldDistance estimatedRange, final Float bearing, final Float relBearing,
+			final Float strength, final Category target_type, final WorldSpeed speed, final Float course,
+			final NetworkParticipant target, final int detectionState) {
 
-    _detectionState = detectionState;
+		this(time, host, sensorLocation, sensor, range, estimatedRange, bearing, relBearing, strength, target_type,
+				new Float(speed.getValueIn(WorldSpeed.Kts)), course, target);
 
-  }
+		_detectionState = detectionState;
 
-  /**
-   * set the detection state for this detection
-   *
-   * @see DetectionEvent.UNDETECTED
-   */
-  public void setDetectionState(int state)
-  {
-    _detectionState = state;
-  }
+	}
 
-  /**
-   * get the detection state for this detection
-   *
-   * @see DetectionEvent.UNDETECTED
-   */
-  public int getDetectionState()
-  {
-    return _detectionState;
-  }
+	/**
+	 * ****************************************************************** support
+	 * for comparator interface
+	 * ******************************************************************
+	 */
 
+	@Override
+	public int compare(final DetectionEvent d1, final DetectionEvent d2) {
+		int res = 0;
 
-  /**
-   * get the bearing (degs)
-   */
-  public Float getBearing()
-  {
-    return _bearing;
-  }
+		if (d1.getTime() < d2.getTime())
+			res = -1;
+		else if (d1.getTime() > d2.getTime())
+			res = 1;
 
-  /**
-   * get the range (yds)
-   */
-  public WorldDistance getRange()
-  {
-    return _range;
-  }
+		return res;
+	}
 
-  /**
-   * get the estimated range (WorldDistance) for when
-   * actual range isn't known
-   */
-  public WorldDistance getEstimatedRange()
-  {
-    WorldDistance res;
-    if (_estimatedRange == null)
-      res = _range;
-    else
-      res = _estimatedRange;
+	@Override
+	public boolean equals(final Object obj) {
+		final DetectionEvent d2 = (DetectionEvent) obj;
 
-    return res;
-  }
+		return (this == d2);
 
-  /**
-   * get the target course (Degs)
-   */
-  public Float getCourse()
-  {
-    return _course;
-  }
+	}
 
-  /**
-   * get the target speed (kts)
-   */
-  public Float getSpeed()
-  {
-    return _speed;
-  }
+	public double getAmbiguousBearing() {
+		return _ambigBrg;
+	}
 
-  public Category getTargetType()
-  {
-    return _target_type;
-  }
+	/**
+	 * get the bearing (degs)
+	 */
+	public Float getBearing() {
+		return _bearing;
+	}
 
-  public String toString()
-  {
-    return _myMessage;
-  }
+	/**
+	 * get the target course (Degs)
+	 */
+	public Float getCourse() {
+		return _course;
+	}
 
-  public int getHost()
-  {
-    return _hostId;
-  }
+	/**
+	 * get the detection state for this detection
+	 *
+	 * @see DetectionEvent.UNDETECTED
+	 */
+	public int getDetectionState() {
+		return _detectionState;
+	}
 
-  public int getTarget()
-  {
-    return _targetId.intValue();
-  }
+	/**
+	 * get the estimated range (WorldDistance) for when actual range isn't known
+	 */
+	public WorldDistance getEstimatedRange() {
+		WorldDistance res;
+		if (_estimatedRange == null)
+			res = _range;
+		else
+			res = _estimatedRange;
 
-  /**
-   * set the id of the target we're looking at
-   *
-   * @param val the new id
-   */
-  public void setTarget(int val)
-  {
-    _targetId = new Integer(val);
-  }
-  
-  public void setFreq(Float freq)
-  {
-  	_freq = freq;
-  }
-  
-  public void setBearing(Float brg)
-  {
-    _bearing = brg;
-  }
-  
-  public void setAmbiguousBearing(Float ambiBrg)
-  {
-  	_ambigBrg = ambiBrg;
-  }
+		return res;
+	}
 
-	public boolean isAmbiguous()
-  {
-  	return _ambigBrg != null;
-  }
-  
-  public double getAmbiguousBearing()
-  {
-  	return _ambigBrg;
-  }
+	public Float getFreq() {
+		return _freq;
+	}
 
-  public long getTime()
-  {
-    return _time;
-  }
+	public int getHost() {
+		return _hostId;
+	}
 
-  public int getSensor()
-  {
-    return _sensorId;
-  }
+	/**
+	 * get the range (yds)
+	 */
+	public WorldDistance getRange() {
+		return _range;
+	}
 
-  public Float getStrength()
-  {
-    return _strength;
-  }
-  
-  public Float getFreq()
-  {
-  	return _freq;
-  }
+	public int getSensor() {
+		return _sensorId;
+	}
 
-  public WorldLocation getSensorLocation()
-  {
-    return _sensorLocation;
-  }
+	public WorldLocation getSensorLocation() {
+		return _sensorLocation;
+	}
 
-  /**
-   * ******************************************************************
-   * support for comparator interface
-   * ******************************************************************
-   */
+	/**
+	 * get the target speed (kts)
+	 */
+	public Float getSpeed() {
+		return _speed;
+	}
 
-  public int compare(final DetectionEvent d1,
-                     final DetectionEvent d2)
-  {
-    int res = 0;
+	public Float getStrength() {
+		return _strength;
+	}
 
-    if (d1.getTime() < d2.getTime())
-      res = -1;
-    else if (d1.getTime() > d2.getTime())
-      res = 1;
+	public int getTarget() {
+		return _targetId.intValue();
+	}
 
-    return res;
-  }
+	public Category getTargetType() {
+		return _target_type;
+	}
 
-  public boolean equals(final Object obj)
-  {
-    final DetectionEvent d2 = (DetectionEvent) obj;
+	public long getTime() {
+		return _time;
+	}
 
-    return (this == d2);
+	public boolean isAmbiguous() {
+		return _ambigBrg != null;
+	}
 
-  }
+	public void setAmbiguousBearing(final Float ambiBrg) {
+		_ambigBrg = ambiBrg;
+	}
 
-  public static class DetectionStatePropertyEditor extends AbstractPropertyEditor
-  {
+	public void setBearing(final Float brg) {
+		_bearing = brg;
+	}
 
-		////////////////////////////////////////////////////
-    // member objects
-    ////////////////////////////////////////////////////
-    private String _stringTags[] =
-      {
-        UNDETECTED_STR,
-        DETECTED_STR,
-        CLASSIFIED_STR,
-        IDENTIFIED_STR,
-      };
+	/**
+	 * set the detection state for this detection
+	 *
+	 * @see DetectionEvent.UNDETECTED
+	 */
+	public void setDetectionState(final int state) {
+		_detectionState = state;
+	}
 
-    ////////////////////////////////////////////////////
-    // member methods
-    ////////////////////////////////////////////////////
-    public String[] getTags()
-    {
-      return _stringTags;
-    }
+	public void setFreq(final Float freq) {
+		_freq = freq;
+	}
 
+	/**
+	 * set the id of the target we're looking at
+	 *
+	 * @param val the new id
+	 */
+	public void setTarget(final int val) {
+		_targetId = new Integer(val);
+	}
 
-  }
+	@Override
+	public String toString() {
+		return _myMessage;
+	}
 }

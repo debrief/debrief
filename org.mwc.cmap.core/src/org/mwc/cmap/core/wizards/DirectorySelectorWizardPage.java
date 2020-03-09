@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.cmap.core.wizards;
 
 import java.io.File;
@@ -33,8 +34,9 @@ import org.mwc.cmap.core.CorePlugin;
  * OR with the extension that matches the expected one (xml).
  */
 
-public class DirectorySelectorWizardPage extends WizardPage
-{
+public class DirectorySelectorWizardPage extends WizardPage {
+
+	public static final String FILE_SUFFIX = "txt";
 
 	protected String _filePath;
 
@@ -42,32 +44,27 @@ public class DirectorySelectorWizardPage extends WizardPage
 
 	private final String _helpContext;
 
-	public static final String FILE_SUFFIX = "txt";
-
 	/**
 	 * Constructor for SampleNewWizardPage.
-	 * 
+	 *
 	 * @param pageName
 	 */
-	public DirectorySelectorWizardPage(final String PAGE_ID, final String title,
-			final String description, final String pluginName, final String iconPath, final String helpContext)
-	{
+	public DirectorySelectorWizardPage(final String PAGE_ID, final String title, final String description,
+			final String pluginName, final String iconPath, final String helpContext) {
 		super(PAGE_ID);
 		setTitle(title);
 		setDescription(description);
 		_helpContext = helpContext;
-		super.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(
-				pluginName, iconPath));
+		super.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(pluginName, iconPath));
 	}
 
 	/**
 	 * @see IDialogPage#createControl(Composite)
 	 */
-	public void createControl(final Composite parent)
-	{
+	@Override
+	public void createControl(final Composite parent) {
 
-		if (_helpContext != null)
-		{
+		if (_helpContext != null) {
 			// declare our context sensitive help
 			CorePlugin.declareContextHelp(parent, _helpContext);
 		}
@@ -81,15 +78,12 @@ public class DirectorySelectorWizardPage extends WizardPage
 		final String filenameKey = super.getName();
 
 		final String title = "Output directory:";
-		_fileFieldEditor = new DirectoryFieldEditor(filenameKey, title, container)
-		{
-			protected void fireValueChanged(final String property, final Object oldValue,
-					final Object newValue)
-			{
+		_fileFieldEditor = new DirectoryFieldEditor(filenameKey, title, container) {
+			@Override
+			protected void fireValueChanged(final String property, final Object oldValue, final Object newValue) {
 				super.fireValueChanged(property, oldValue, newValue);
 
-				if (property.equals("field_editor_value"))
-				{
+				if (property.equals("field_editor_value")) {
 					// tell the ui to update itself
 					_filePath = (String) newValue;
 				}
@@ -111,30 +105,22 @@ public class DirectorySelectorWizardPage extends WizardPage
 		setControl(container);
 	}
 
-	private IPreferenceStore getPreferenceStore()
-	{
-		return CorePlugin.getDefault().getPreferenceStore();
-	}
-
 	/**
 	 * Ensures that both text fields are set.
 	 */
 
-	void dialogChanged()
-	{
+	void dialogChanged() {
 
 		final String targetDir = getFileName();
 
-		if ((targetDir == null) || (targetDir.length() == 0))
-		{
+		if ((targetDir == null) || (targetDir.length() == 0)) {
 			updateStatus("Target directory must be specified");
 			return;
 		}
 
 		// just check it's a directory, not a file
 		final File testFile = new File(targetDir);
-		if (!testFile.isDirectory())
-		{
+		if (!testFile.isDirectory()) {
 			updateStatus("Target must be a directory, not a file");
 			return;
 		}
@@ -145,21 +131,20 @@ public class DirectorySelectorWizardPage extends WizardPage
 		updateStatus(null);
 	}
 
-	public String getFileName()
-	{
+	public String getFileName() {
 		return _filePath;
 	}
 
-	private void updateStatus(final String message)
-	{
+	private IPreferenceStore getPreferenceStore() {
+		return CorePlugin.getDefault().getPreferenceStore();
+	}
+
+	private void updateStatus(final String message) {
 		setErrorMessage(message);
-		if (message == null)
-		{
-			this.setMessage("Press Finish to complete export",
-					IMessageProvider.INFORMATION);
+		if (message == null) {
+			this.setMessage("Press Finish to complete export", IMessageProvider.INFORMATION);
 			setPageComplete(true);
-		}
-		else
+		} else
 			setPageComplete(false);
 	}
 }

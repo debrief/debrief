@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package ASSET.Scenario.Observers.Plotting;
 
 import java.awt.Color;
@@ -34,8 +35,7 @@ import MWC.GUI.Editable;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
-public class PlotDetectionStatusObserver extends DetectionObserver
-{
+public class PlotDetectionStatusObserver extends DetectionObserver {
 	/***************************************************************
 	 * member variables
 	 ***************************************************************/
@@ -44,31 +44,51 @@ public class PlotDetectionStatusObserver extends DetectionObserver
 	 * constructor
 	 ***************************************************************/
 
+	// ////////////////////////////////////////////////////
+	// bean info for this class
+	// ///////////////////////////////////////////////////
+	public class DetectionInfo extends Editable.EditorType {
+
+		public DetectionInfo(final PlotDetectionStatusObserver data, final String name) {
+			super(data, name, "Plot sensor performance");
+		}
+
+		@Override
+		public String getName() {
+			return PlotDetectionStatusObserver.this.getName();
+		}
+
+		@Override
+		public PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final PropertyDescriptor[] res = { prop("Name", "the name of this observer"),
+						prop("Active", "whether this listener is active") };
+				return res;
+			} catch (final IntrospectionException e) {
+				System.out.println("::" + e.getMessage());
+				return super.getPropertyDescriptors();
+			}
+		}
+	}
+
 	/**
 	 * the list of targets - and their detection status
-	 * 
+	 *
 	 */
-	private HashMap<Integer, Integer> _detectionStates;
+	private final HashMap<Integer, Integer> _detectionStates;
 
 	/**
 	 * create a detection observer
-	 * 
-	 * @param watchVessel
-	 *          the type of vessel we are monitoring
-	 * @param targetVessel
-	 *          the type of vessel the monitored vessel is looking for,
-	 * @param name
-	 *          the name of this observer
-	 * @param detectionLevel
-	 *          the (optional) detection level required
-	 * @param isActive
-	 *          whether this is observer is active
+	 *
+	 * @param watchVessel    the type of vessel we are monitoring
+	 * @param targetVessel   the type of vessel the monitored vessel is looking for,
+	 * @param name           the name of this observer
+	 * @param detectionLevel the (optional) detection level required
+	 * @param isActive       whether this is observer is active
 	 */
 
-	public PlotDetectionStatusObserver(final TargetType watchVessel,
-			final TargetType targetVessel, final String name,
-			final Integer detectionLevel, final boolean isActive)
-	{
+	public PlotDetectionStatusObserver(final TargetType watchVessel, final TargetType targetVessel, final String name,
+			final Integer detectionLevel, final boolean isActive) {
 		super(watchVessel, targetVessel, name, detectionLevel, isActive);
 
 		// get ready...
@@ -76,77 +96,42 @@ public class PlotDetectionStatusObserver extends DetectionObserver
 	}
 
 	/**
-	 * ************************************************************ member methods
-	 * *************************************************************
-	 */
-
-	@Override
-	public void newDetections(DetectionList detections)
-	{
-		super.newDetections(detections);
-
-		// right, see which have these have already been plotted
-		Enumeration<DetectionEvent> numer = detections.elements();
-		while (numer.hasMoreElements())
-		{
-			DetectionEvent de = numer.nextElement();
-
-			// does this match our target category
-			Category thisTargetType = de.getTargetType();
-			TargetType myTargetType = this.getTargetType();
-			if (myTargetType.matches(thisTargetType))
-			{
-				// have we already detected it?
-				int tgtId = de.getHost();// de.getTarget();
-
-				Integer oldVal = _detectionStates.get(tgtId);
-				int detectionState = de.getDetectionState();
-
-				if (oldVal != null)
-				{
-					// ditch any old state
-					_detectionStates.remove(tgtId);
-
-					detectionState = Math.max(oldVal, detectionState);
-				}
-
-				_detectionStates.put(tgtId, detectionState);
-
-			}
-
-		}
-	}
-
-	@Override
-	protected void performCloseProcessing(ScenarioType scenario)
-	{
-		super.performCloseProcessing(scenario);
-	}
-
-	@Override
-	protected void performSetupProcessing(ScenarioType scenario)
-	{
-		super.performSetupProcessing(scenario);
-	}
-
-	/**
 	 * return the calculated result for the batch processing
-	 * 
+	 *
 	 * @return string to be used in results collation
 	 */
-	protected Number getBatchResult()
-	{
+	@Override
+	protected Number getBatchResult() {
 		return null;
 	}
 
 	/**
-	 * ok, this vessel matches what we're looking for. start listening to it
-	 * 
-	 * @param newPart
+	 * find the data area occupied by this item
 	 */
-	protected void listenTo(final ParticipantType newPart)
-	{
-		super.listenTo(newPart);
+	@Override
+	public WorldArea getBounds() {
+		return null;
+	}
+
+	/**
+	 * get the editor for this item
+	 *
+	 * @return the BeanInfo data for this editable object
+	 */
+	@Override
+	public Editable.EditorType getInfo() {
+		if (_myEditor == null)
+			_myEditor = new DetectionInfo(this, getName());
+
+		return _myEditor;
+	}
+
+	/**
+	 * get the scenario
+	 */
+	@Override
+	protected ScenarioType getScenario() {
+		return _myScenario;
 	}
 
 	// ////////////////////////////////////////////////
@@ -154,11 +139,14 @@ public class PlotDetectionStatusObserver extends DetectionObserver
 	// ////////////////////////////////////////////////
 
 	/**
-	 * get the scenario
+	 * whether there is any edit information for this item this is a convenience
+	 * function to save creating the EditorType data first
+	 *
+	 * @return yes/no
 	 */
-	protected ScenarioType getScenario()
-	{
-		return _myScenario;
+	@Override
+	public boolean hasEditor() {
+		return true;
 	}
 
 	/***************************************************************
@@ -174,10 +162,58 @@ public class PlotDetectionStatusObserver extends DetectionObserver
 	 ***************************************************************/
 
 	/**
+	 * ok, this vessel matches what we're looking for. start listening to it
+	 *
+	 * @param newPart
+	 */
+	@Override
+	protected void listenTo(final ParticipantType newPart) {
+		super.listenTo(newPart);
+	}
+
+	/**
+	 * ************************************************************ member methods
+	 * *************************************************************
+	 */
+
+	@Override
+	public void newDetections(final DetectionList detections) {
+		super.newDetections(detections);
+
+		// right, see which have these have already been plotted
+		final Enumeration<DetectionEvent> numer = detections.elements();
+		while (numer.hasMoreElements()) {
+			final DetectionEvent de = numer.nextElement();
+
+			// does this match our target category
+			final Category thisTargetType = de.getTargetType();
+			final TargetType myTargetType = this.getTargetType();
+			if (myTargetType.matches(thisTargetType)) {
+				// have we already detected it?
+				final int tgtId = de.getHost();// de.getTarget();
+
+				final Integer oldVal = _detectionStates.get(tgtId);
+				int detectionState = de.getDetectionState();
+
+				if (oldVal != null) {
+					// ditch any old state
+					_detectionStates.remove(tgtId);
+
+					detectionState = Math.max(oldVal, detectionState);
+				}
+
+				_detectionStates.put(tgtId, detectionState);
+
+			}
+
+		}
+	}
+
+	/**
 	 * paint this object to the specified canvas
 	 */
-	public void paint(CanvasType dest)
-	{
+	@Override
+	public void paint(final CanvasType dest) {
 		if (!this.getVisible())
 			return;
 
@@ -187,48 +223,40 @@ public class PlotDetectionStatusObserver extends DetectionObserver
 		// cool, here we go.
 
 		// loop through our selected vessels
-		Integer[] parts = _myScenario.getListOfParticipants();
-		for (int i = 0; i < parts.length; i++)
-		{
-			Integer thisP = parts[i];
+		final Integer[] parts = _myScenario.getListOfParticipants();
+		for (int i = 0; i < parts.length; i++) {
+			final Integer thisP = parts[i];
 
 			// sort out where he is
-			NetworkParticipant part = _myScenario.getThisParticipant(thisP);
-			WorldLocation loc = part.getStatus().getLocation();
-			Point pt = dest.toScreen(loc);
+			final NetworkParticipant part = _myScenario.getThisParticipant(thisP);
+			final WorldLocation loc = part.getStatus().getLocation();
+			final Point pt = dest.toScreen(loc);
 
 			// have we detected him?
 			Color hisColor = null;// Color.red;
-			if (_detectionStates.containsKey(thisP))
-			{
-				Integer theState = _detectionStates.get(thisP);
+			if (_detectionStates.containsKey(thisP)) {
+				final Integer theState = _detectionStates.get(thisP);
 
-				switch (theState)
-				{
-				case (DetectionEvent.CLASSIFIED):
-				{
+				switch (theState) {
+				case (DetectionEvent.CLASSIFIED): {
 					hisColor = Color.orange;
 					break;
 				}
-				case (DetectionEvent.DETECTED):
-				{
+				case (DetectionEvent.DETECTED): {
 					hisColor = Color.yellow;
 					break;
 				}
-				case (DetectionEvent.IDENTIFIED):
-				{
+				case (DetectionEvent.IDENTIFIED): {
 					hisColor = Color.green;
 					break;
 				}
-				default:
-				{
+				default: {
 					hisColor = null;
 				}
 				}
 			}
 
-			if (hisColor != null)
-			{
+			if (hisColor != null) {
 				dest.setColor(hisColor);
 				dest.fillOval(pt.x - 1, pt.y - 1, 3, 3);
 			}
@@ -236,83 +264,27 @@ public class PlotDetectionStatusObserver extends DetectionObserver
 
 	}
 
-	/**
-	 * find the data area occupied by this item
-	 */
-	public WorldArea getBounds()
-	{
-		return null;
+	@Override
+	protected void performCloseProcessing(final ScenarioType scenario) {
+		super.performCloseProcessing(scenario);
 	}
 
-	/**
-	 * Determine how far away we are from this point. or return null if it can't
-	 * be calculated
-	 */
-	public double rangeFrom(WorldLocation other)
-	{
-		return -1;
-	}
-
-	/**
-	 * whether there is any edit information for this item this is a convenience
-	 * function to save creating the EditorType data first
-	 * 
-	 * @return yes/no
-	 */
-	public boolean hasEditor()
-	{
-		return true;
-	}
-
-	/**
-	 * get the editor for this item
-	 * 
-	 * @return the BeanInfo data for this editable object
-	 */
-	public Editable.EditorType getInfo()
-	{
-		if (_myEditor == null)
-			_myEditor = new DetectionInfo(this, getName());
-
-		return _myEditor;
+	@Override
+	protected void performSetupProcessing(final ScenarioType scenario) {
+		super.performSetupProcessing(scenario);
 	}
 
 	// ////////////////////////////////////////////////
 	// accessors
 	// ////////////////////////////////////////////////
 
-	// ////////////////////////////////////////////////////
-	// bean info for this class
-	// ///////////////////////////////////////////////////
-	public class DetectionInfo extends Editable.EditorType
-	{
-
-		public DetectionInfo(final PlotDetectionStatusObserver data,
-				final String name)
-		{
-			super(data, name, "Plot sensor performance");
-		}
-
-		public String getName()
-		{
-			return PlotDetectionStatusObserver.this.getName();
-		}
-
-		public PropertyDescriptor[] getPropertyDescriptors()
-		{
-			try
-			{
-				final PropertyDescriptor[] res =
-				{ prop("Name", "the name of this observer"),
-						prop("Active", "whether this listener is active") };
-				return res;
-			}
-			catch (IntrospectionException e)
-			{
-				System.out.println("::" + e.getMessage());
-				return super.getPropertyDescriptors();
-			}
-		}
+	/**
+	 * Determine how far away we are from this point. or return null if it can't be
+	 * calculated
+	 */
+	@Override
+	public double rangeFrom(final WorldLocation other) {
+		return -1;
 	}
 
 }

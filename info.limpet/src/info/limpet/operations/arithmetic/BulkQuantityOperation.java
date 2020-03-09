@@ -14,16 +14,6 @@
  *****************************************************************************/
 package info.limpet.operations.arithmetic;
 
-import info.limpet.ICommand;
-import info.limpet.IContext;
-import info.limpet.IDocument;
-import info.limpet.IOperation;
-import info.limpet.IStoreGroup;
-import info.limpet.IStoreItem;
-import info.limpet.impl.NumberDocument;
-import info.limpet.operations.CollectionComplianceTests;
-import info.limpet.operations.arithmetic.InterpolatedMaths.IOperationPerformer;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -34,372 +24,324 @@ import javax.measure.unit.Unit;
 import org.eclipse.january.dataset.DoubleDataset;
 import org.eclipse.january.dataset.IDataset;
 
-public abstract class BulkQuantityOperation implements IOperation
-{
+import info.limpet.ICommand;
+import info.limpet.IContext;
+import info.limpet.IDocument;
+import info.limpet.IOperation;
+import info.limpet.IStoreGroup;
+import info.limpet.IStoreItem;
+import info.limpet.impl.NumberDocument;
+import info.limpet.operations.CollectionComplianceTests;
+import info.limpet.operations.arithmetic.InterpolatedMaths.IOperationPerformer;
 
-  private final CollectionComplianceTests aTests =
-      new CollectionComplianceTests();
+public abstract class BulkQuantityOperation implements IOperation {
 
-  /**
-   * signature for helper that can perform our bulk operation
-   * 
-   * @author Ian
-   * 
-   */
-  private static interface PerformOp
-  {
+	/**
+	 * the command that actually produces data
+	 *
+	 * @author ian
+	 *
+	 */
+	public abstract class BulkQuantityCommand extends CoreQuantityCommand {
+		public BulkQuantityCommand(final String title, final String description, final IStoreGroup store,
+				final boolean canUndo, final boolean canRedo, final List<IStoreItem> inputs, final IContext context) {
+			super(title, description, store, canUndo, canRedo, inputs, context);
+		}
 
-    IDataset perform(final BulkQuantityCommand bulkQuantityCommand,
-        final List<IStoreItem> inputs, final IOperationPerformer operation);
+		@Override
+		protected String generateName() {
+			return getBulkNameFor(getInputs());
+		}
 
-  }
+		/**
+		 * provide the name for the product dataset
+		 *
+		 * @param name
+		 * @param name2
+		 * @return
+		 */
+		abstract protected String getBulkNameFor(List<IStoreItem> items);
 
-  /**
-   * perform the operation with interpolated values
-   * 
-   * @author Ian
-   * 
-   */
-  private static class PerformInterpolation implements PerformOp
-  {
+		/**
+		 * determine the units of the product
+		 *
+		 * @param first
+		 * @param second
+		 * @return
+		 */
+		abstract protected Unit<?> getBulkOutputUnit(List<Unit<?>> units);
 
-    @Override
-    public IDataset perform(final BulkQuantityCommand command,
-        List<IStoreItem> inputs, IOperationPerformer operation)
-    {
+		/**
+		 * we loop through the data, but we need an initial dataset to start
+		 * from
+		 *
+		 * @param shape number of entities to contain
+		 * @return
+		 */
+		abstract protected DoubleDataset getInitial(int shape);
 
-      final NumberDocument longest =
-          (NumberDocument) getLongestIndexedCollection(inputs);
-      int shape = longest.getDataset().getShape()[0];
+		/**
+		 * provide class that can perform required operation
+		 *
+		 * @return
+		 */
+		abstract protected IOperationPerformer getOperation();
 
-      DoubleDataset outputIndices = longest.getIndexValues();
+		@Override
+		protected Unit<?> getUnits() {
+			final List<Unit<?>> units = new ArrayList<Unit<?>>();
+			for (final IStoreItem input : getInputs()) {
+				final NumberDocument doc = (NumberDocument) input;
+				units.add(doc.getUnits());
+			}
+			return getBulkOutputUnit(units);
+		}
 
-      DoubleDataset current = command.getInitial(shape);
-      // if there are indices, store them
-      command.assignOutputIndices(current, outputIndices);
+		/**
+		 * wrap the actual operation. We're doing this since we need to separate
+		 * it from the core "execute" operation in order to support dynamic
+		 * updates. That is, we need to create it when run initially, then
+		 * re-generate it on data updates
+		 *
+		 * @param unit the units to use
+		 * @param outputs the list of output series
+		 */
+		@Override
+		protected IDataset performCalc() {
+			final IDataset res;
 
-      for (IStoreItem item : inputs)
-      {
-        final NumberDocument doc = (NumberDocument) item;
+			// sort out what our data's like
+			final PerformOp performOp;
 
-        if (doc.size() > 0)
-        {
-          final DoubleDataset thisD = (DoubleDataset) doc.getDataset();
+			final List<IStoreItem> inputs = getInputs();
 
-          // hmm, is this a singleton?
-          if (doc.size() == 1)
-          {
-            // if it's just a singleton, we'll add the same value to each
-            // results value
-            current = (DoubleDataset) operation.perform(current, thisD, null);
+			if (getATests().allEqualIndexedOrSingleton(inputs)) {
+				performOp = new PerformInterpolation();
+			} else if (getATests().allEqualLengthOrSingleton(inputs)) {
+				performOp = new PerformIndexed();
+			} else {
+				performOp = null;
+			}
 
-            // if there are indices, store them
-            command.assignOutputIndices(current, outputIndices);
-          }
-          else
-          {
-            // apply our operation to the two datasets
-            current =
-                (DoubleDataset) InterpolatedMaths.performWithInterpolation(
-                    current, thisD, null, operation);
-          }
-        }
-      }
+			if (performOp != null) {
+				res = performOp.perform(this, inputs, getOperation());
+			} else {
+				res = null;
+			}
 
-      return current;
-    }
+			// done
+			return res;
+		}
+	}
 
-  }
+	/**
+	 * perform the operation with indexed values
+	 *
+	 * @author Ian
+	 *
+	 */
+	private static class PerformIndexed implements PerformOp {
 
-  /**
-   * perform the operation with indexed values
-   * 
-   * @author Ian
-   * 
-   */
-  private static class PerformIndexed implements PerformOp
-  {
+		@Override
+		public IDataset perform(final BulkQuantityCommand command, final List<IStoreItem> inputs,
+				final IOperationPerformer operation) {
+			NumberDocument longest = (NumberDocument) getLongestIndexedCollection(inputs);
+			if (longest == null) {
+				// no, no indexed data
+				longest = (NumberDocument) getLongestCollection(inputs);
+			}
+			final int shape = longest.getDataset().getShape()[0];
 
-    @Override
-    public IDataset perform(BulkQuantityCommand command,
-        List<IStoreItem> inputs, IOperationPerformer operation)
-    {
-      NumberDocument longest =
-          (NumberDocument) getLongestIndexedCollection(inputs);
-      if (longest == null)
-      {
-        // no, no indexed data
-        longest = (NumberDocument) getLongestCollection(inputs);
-      }
-      int shape = longest.getDataset().getShape()[0];
+			final DoubleDataset outputIndices;
+			if (longest.isIndexed()) {
+				outputIndices = longest.getIndexValues();
+			} else {
+				outputIndices = null;
+			}
 
-      final DoubleDataset outputIndices;
-      if (longest.isIndexed())
-      {
-        outputIndices = longest.getIndexValues();
-      }
-      else
-      {
-        outputIndices = null;
-      }
+			DoubleDataset current = command.getInitial(shape);
+			// if there are indices, store them
+			command.assignOutputIndices(current, outputIndices);
+			for (final IStoreItem item : inputs) {
+				final NumberDocument doc = (NumberDocument) item;
+				final DoubleDataset thisD = (DoubleDataset) doc.getDataset();
+				current = (DoubleDataset) operation.perform(current, thisD, null);
 
-      DoubleDataset current = command.getInitial(shape);
-      // if there are indices, store them
-      command.assignOutputIndices(current, outputIndices);
-      for (IStoreItem item : inputs)
-      {
-        NumberDocument doc = (NumberDocument) item;
-        DoubleDataset thisD = (DoubleDataset) doc.getDataset();
-        current = (DoubleDataset) operation.perform(current, thisD, null);
+				if (outputIndices != null) {
+					// if there are indices, store them
+					command.assignOutputIndices(current, outputIndices);
+				}
+			}
+			return current;
+		}
+	}
 
-        if (outputIndices != null)
-        {
-          // if there are indices, store them
-          command.assignOutputIndices(current, outputIndices);
-        }
-      }
-      return current;
-    }
-  }
+	/**
+	 * perform the operation with interpolated values
+	 *
+	 * @author Ian
+	 *
+	 */
+	private static class PerformInterpolation implements PerformOp {
 
-  /**
-   * the command that actually produces data
-   * 
-   * @author ian
-   * 
-   */
-  public abstract class BulkQuantityCommand extends CoreQuantityCommand
-  {
-    public BulkQuantityCommand(final String title, final String description,
-        final IStoreGroup store, final boolean canUndo, final boolean canRedo,
-        final List<IStoreItem> inputs, final IContext context)
-    {
-      super(title, description, store, canUndo, canRedo, inputs, context);
-    }
+		@Override
+		public IDataset perform(final BulkQuantityCommand command, final List<IStoreItem> inputs,
+				final IOperationPerformer operation) {
 
-    protected String generateName()
-    {
-      return getBulkNameFor(getInputs());
-    }
+			final NumberDocument longest = (NumberDocument) getLongestIndexedCollection(inputs);
+			final int shape = longest.getDataset().getShape()[0];
 
-    /**
-     * provide the name for the product dataset
-     * 
-     * @param name
-     * @param name2
-     * @return
-     */
-    abstract protected String getBulkNameFor(List<IStoreItem> items);
+			final DoubleDataset outputIndices = longest.getIndexValues();
 
-    /**
-     * determine the units of the product
-     * 
-     * @param first
-     * @param second
-     * @return
-     */
-    abstract protected Unit<?> getBulkOutputUnit(List<Unit<?>> units);
+			DoubleDataset current = command.getInitial(shape);
+			// if there are indices, store them
+			command.assignOutputIndices(current, outputIndices);
 
-    /**
-     * provide class that can perform required operation
-     * 
-     * @return
-     */
-    abstract protected IOperationPerformer getOperation();
+			for (final IStoreItem item : inputs) {
+				final NumberDocument doc = (NumberDocument) item;
 
-    protected Unit<?> getUnits()
-    {
-      final List<Unit<?>> units = new ArrayList<Unit<?>>();
-      for (IStoreItem input : getInputs())
-      {
-        final NumberDocument doc = (NumberDocument) input;
-        units.add(doc.getUnits());
-      }
-      return getBulkOutputUnit(units);
-    }
+				if (doc.size() > 0) {
+					final DoubleDataset thisD = (DoubleDataset) doc.getDataset();
 
-    /**
-     * wrap the actual operation. We're doing this since we need to separate it from the core
-     * "execute" operation in order to support dynamic updates. That is, we need to create it when
-     * run initially, then re-generate it on data updates
-     * 
-     * @param unit
-     *          the units to use
-     * @param outputs
-     *          the list of output series
-     */
-    protected IDataset performCalc()
-    {
-      final IDataset res;
+					// hmm, is this a singleton?
+					if (doc.size() == 1) {
+						// if it's just a singleton, we'll add the same value to
+						// each
+						// results value
+						current = (DoubleDataset) operation.perform(current, thisD, null);
 
-      // sort out what our data's like
-      final PerformOp performOp;
+						// if there are indices, store them
+						command.assignOutputIndices(current, outputIndices);
+					} else {
+						// apply our operation to the two datasets
+						current = (DoubleDataset) InterpolatedMaths.performWithInterpolation(current, thisD, null,
+								operation);
+					}
+				}
+			}
 
-      final List<IStoreItem> inputs = getInputs();
+			return current;
+		}
 
-      if (getATests().allEqualIndexedOrSingleton(inputs))
-      {
-        performOp = new PerformInterpolation();
-      }
-      else if (getATests().allEqualLengthOrSingleton(inputs))
-      {
-        performOp = new PerformIndexed();
-      }
-      else
-      {
-        performOp = null;
-      }
+	}
 
-      if (performOp != null)
-      {
-        res = performOp.perform(this, inputs, getOperation());
-      }
-      else
-      {
-        res = null;
-      }
+	/**
+	 * signature for helper that can perform our bulk operation
+	 *
+	 * @author Ian
+	 *
+	 */
+	private static interface PerformOp {
 
-      // done
-      return res;
-    }
+		IDataset perform(final BulkQuantityCommand bulkQuantityCommand, final List<IStoreItem> inputs,
+				final IOperationPerformer operation);
 
-    /**
-     * we loop through the data, but we need an initial dataset to start from
-     * 
-     * @param shape
-     *          number of entities to contain
-     * @return
-     */
-    abstract protected DoubleDataset getInitial(int shape);
-  }
+	}
 
-  public CollectionComplianceTests getATests()
-  {
-    return aTests;
-  }
+	protected static IDocument<?> getLongestCollection(final List<IStoreItem> selection) {
+		// find the longest time series.
+		IDocument<?> longest = null;
 
-  @Override
-  public List<ICommand> actionsFor(final List<IStoreItem> selection,
-      final IStoreGroup destination, final IContext context)
-  {
-    final List<ICommand> res = new ArrayList<ICommand>();
-    if (appliesTo(selection))
-    {
+		for (final IStoreItem sItem : selection) {
+			if (sItem instanceof IDocument) {
+				final IDocument<?> doc = (IDocument<?>) sItem;
+				if (longest == null) {
+					longest = doc;
+				} else {
+					// store the longest one
+					longest = doc.size() > longest.size() ? doc : longest;
+				}
+			}
+		}
 
-      // aah, what about temporal (interpolated) values?
-      final boolean allIndexed =
-          getATests().allEqualIndexedOrSingleton(selection);
-      final boolean suitableForIndexedInterpolation =
-          getATests().suitableForIndexedInterpolation(selection);
-      // final boolean hasIndexed = getATests().hasIndexed(selection);
-      if (allIndexed && suitableForIndexedInterpolation /* || hasIndexed */)
-      {
-        addInterpolatedCommands(selection, destination, res, context);
-      }
-      else if (getATests().allEqualLengthOrSingleton(selection))
-      {
-        // instead, offer our indexed commands?
-        addIndexedCommands(selection, destination, res, context);
-      }
-    }
-    return res;
-  }
+		return longest;
+	}
 
-  /**
-   * produce any new commands for this s election
-   * 
-   * @param selection
-   *          current selection
-   * @param destination
-   *          where the results will end up
-   * @param commands
-   *          the list of commands
-   */
-  protected abstract void addIndexedCommands(List<IStoreItem> selection,
-      IStoreGroup destination, Collection<ICommand> commands, IContext context);
+	protected static IDocument<?> getLongestIndexedCollection(final List<IStoreItem> selection) {
+		// find the longest time series.
+		IDocument<?> longest = null;
 
-  /**
-   * add any commands that require temporal interpolation
-   * 
-   * @param selection
-   * @param destination
-   * @param res
-   */
-  protected abstract void addInterpolatedCommands(List<IStoreItem> selection,
-      IStoreGroup destination, Collection<ICommand> res, IContext context);
+		for (final IStoreItem sItem : selection) {
+			if (sItem instanceof IDocument) {
+				final IDocument<?> doc = (IDocument<?>) sItem;
+				if (doc.isIndexed()) {
+					if (longest == null) {
+						longest = doc;
+					} else {
+						// store the longest one
+						longest = doc.size() > longest.size() ? doc : longest;
+					}
+				}
+			}
+		}
 
-  /**
-   * determine if this dataset is suitable
-   * 
-   * @param selection
-   * @return
-   */
-  protected abstract boolean appliesTo(List<IStoreItem> selection);
+		return longest;
+	}
 
-  protected static IDocument<?> getLongestCollection(
-      final List<IStoreItem> selection)
-  {
-    // find the longest time series.
-    IDocument<?> longest = null;
+	private final CollectionComplianceTests aTests = new CollectionComplianceTests();
 
-    for (final IStoreItem sItem : selection)
-    {
-      if (sItem instanceof IDocument)
-      {
-        final IDocument<?> doc = (IDocument<?>) sItem;
-        if (longest == null)
-        {
-          longest = doc;
-        }
-        else
-        {
-          // store the longest one
-          longest = doc.size() > longest.size() ? doc : longest;
-        }
-      }
-    }
+	@Override
+	public List<ICommand> actionsFor(final List<IStoreItem> selection, final IStoreGroup destination,
+			final IContext context) {
+		final List<ICommand> res = new ArrayList<ICommand>();
+		if (appliesTo(selection)) {
 
-    return longest;
-  }
+			// aah, what about temporal (interpolated) values?
+			final boolean allIndexed = getATests().allEqualIndexedOrSingleton(selection);
+			final boolean suitableForIndexedInterpolation = getATests().suitableForIndexedInterpolation(selection);
+			// final boolean hasIndexed = getATests().hasIndexed(selection);
+			if (allIndexed
+					&& suitableForIndexedInterpolation /* || hasIndexed */) {
+				addInterpolatedCommands(selection, destination, res, context);
+			} else if (getATests().allEqualLengthOrSingleton(selection)) {
+				// instead, offer our indexed commands?
+				addIndexedCommands(selection, destination, res, context);
+			}
+		}
+		return res;
+	}
 
-  protected static IDocument<?> getLongestIndexedCollection(
-      final List<IStoreItem> selection)
-  {
-    // find the longest time series.
-    IDocument<?> longest = null;
+	/**
+	 * produce any new commands for this s election
+	 *
+	 * @param selection current selection
+	 * @param destination where the results will end up
+	 * @param commands the list of commands
+	 */
+	protected abstract void addIndexedCommands(List<IStoreItem> selection, IStoreGroup destination,
+			Collection<ICommand> commands, IContext context);
 
-    for (final IStoreItem sItem : selection)
-    {
-      if (sItem instanceof IDocument)
-      {
-        final IDocument<?> doc = (IDocument<?>) sItem;
-        if (doc.isIndexed())
-        {
-          if (longest == null)
-          {
-            longest = doc;
-          }
-          else
-          {
-            // store the longest one
-            longest = doc.size() > longest.size() ? doc : longest;
-          }
-        }
-      }
-    }
+	/**
+	 * add any commands that require temporal interpolation
+	 *
+	 * @param selection
+	 * @param destination
+	 * @param res
+	 */
+	protected abstract void addInterpolatedCommands(List<IStoreItem> selection, IStoreGroup destination,
+			Collection<ICommand> res, IContext context);
 
-    return longest;
-  }
+	/**
+	 * determine if this dataset is suitable
+	 *
+	 * @param selection
+	 * @return
+	 */
+	protected abstract boolean appliesTo(List<IStoreItem> selection);
 
-  /**
-   * check if any of the data is decibels - since we can't do traditional add/subtract to them
-   * 
-   * @param selection
-   * @return yes/no
-   */
-  protected boolean hasLogData(final List<IStoreItem> selection)
-  {
-    return aTests.isUnitPresent(selection, NonSI.DECIBEL);
-  }
+	public CollectionComplianceTests getATests() {
+		return aTests;
+	}
+
+	/**
+	 * check if any of the data is decibels - since we can't do traditional
+	 * add/subtract to them
+	 *
+	 * @param selection
+	 * @return yes/no
+	 */
+	protected boolean hasLogData(final List<IStoreItem> selection) {
+		return aTests.isUnitPresent(selection, NonSI.DECIBEL);
+	}
 
 }

@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package Debrief.Tools.Tote.Calculations;
 
 // Copyright MWC 1999, Debrief 3 Project
@@ -86,8 +87,7 @@ import MWC.GenericData.Watchable;
  * Calculate the bearing from the primary vessel to the secondary (for use in
  * the tote)
  */
-public class relBearingCalc extends plainCalc
-{
+public class relBearingCalc extends plainCalc {
 	/**
 	 * string to use to represent UK bearing format
 	 */
@@ -108,61 +108,50 @@ public class relBearingCalc extends plainCalc
 	 */
 	private static Boolean UK_FORMAT = null;
 
-	// ///////////////////////////////////////////////////////////
-	// constructor
-	// //////////////////////////////////////////////////////////
-	/**
-	 * constructor, initialise formatter
-	 */
-	public relBearingCalc()
-	{
-		super(new DecimalFormat("000.0"), "Rel Brg", "degs");
-	}
-
-	public relBearingCalc(final NumberFormat pattern, final String myTitle, final String myUnits)
-	{
-		super(pattern, myTitle, myUnits);
-	}
-
-	// ///////////////////////////////////////////////////////////
-	// member functions
-	// //////////////////////////////////////////////////////////
-
 	/**
 	 * accessor class to find out if we want to use the US format for showing
 	 * relative data (0..360 versus R180-G180)
-	 * 
+	 *
 	 * @return yes/no
 	 */
-	public static boolean useUKFormat()
-	{
+	public static boolean useUKFormat() {
 		final String theVal = Application.getThisProperty(REL_BEARING_FORMAT);
 
-		if (theVal != null)
-		{
-			if (theVal.equals(UK_REL_BEARING_FORMAT))
-			{
+		if (theVal != null) {
+			if (theVal.equals(UK_REL_BEARING_FORMAT)) {
 				UK_FORMAT = new Boolean(true);
-			}
-			else
-			{
+			} else {
 				UK_FORMAT = new Boolean(false);
 			}
-		}
-		else
-		{
+		} else {
 			UK_FORMAT = new Boolean(true);
 		}
 
 		return UK_FORMAT.booleanValue();
 	}
 
-	public double calculate(final Watchable primary, final Watchable secondary,
-			final HiResDate thisTime)
-	{
+	// ///////////////////////////////////////////////////////////
+	// constructor
+	// //////////////////////////////////////////////////////////
+	/**
+	 * constructor, initialise formatter
+	 */
+	public relBearingCalc() {
+		super(new DecimalFormat("000.0"), "Rel Brg", "degs");
+	}
+
+	// ///////////////////////////////////////////////////////////
+	// member functions
+	// //////////////////////////////////////////////////////////
+
+	public relBearingCalc(final NumberFormat pattern, final String myTitle, final String myUnits) {
+		super(pattern, myTitle, myUnits);
+	}
+
+	@Override
+	public double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime) {
 		double res = 0.0;
-		if ((secondary != null) && (primary != null) && (secondary != primary))
-		{
+		if ((secondary != null) && (primary != null) && (secondary != primary)) {
 			// find
 			double brg = secondary.getLocation().bearingFrom(primary.getLocation());
 			brg = Conversions.clipRadians(brg);
@@ -176,15 +165,12 @@ public class relBearingCalc extends plainCalc
 			course = brg - course;
 
 			// do we trim the value to -180 to +180?
-			if (useUKFormat())
-			{
+			if (useUKFormat()) {
 				if (course > 180)
 					course -= 360;
 				if (course < -180)
 					course += 360;
-			}
-			else
-			{
+			} else {
 				// hey, we're in US. Check we're always +ve
 				if (course < 0)
 					course += 360;
@@ -199,37 +185,32 @@ public class relBearingCalc extends plainCalc
 	 * does this calculation require special bearing handling (prevent wrapping
 	 * through 360 degs)
 	 */
-	public boolean isWrappableData()
-	{
+	@Override
+	public boolean isWrappableData() {
 		return true;
 	}
 
 	/**
 	 * produce our calculation from the Watchables
-	 * 
-	 * @param primary
-	 *          primary watchable
-	 * @param secondary
-	 *          secondary watchable
+	 *
+	 * @param primary   primary watchable
+	 * @param secondary secondary watchable
 	 * @return string representation of calculated value
 	 */
-	public String update(final Watchable primary, final Watchable secondary, final HiResDate time)
-	{
+	@Override
+	public String update(final Watchable primary, final Watchable secondary, final HiResDate time) {
 		String res = null;
-		if ((primary != null) && (secondary != null) && (primary != secondary))
-		{
+		if ((primary != null) && (secondary != null) && (primary != secondary)) {
 
 			// get the value
 			final double theValue = calculate(primary, secondary, time);
-			
+
 			// and convert to string
 			if (useUKFormat())
-				res = MWC.Utilities.TextFormatting.FormatRelativeBearing
-						.toString(theValue);
+				res = MWC.Utilities.TextFormatting.FormatRelativeBearing.toString(theValue);
 			else
 				res = _myPattern.format(theValue);
-		}
-		else
+		} else
 			res = NOT_APPLICABLE;
 
 		return res;

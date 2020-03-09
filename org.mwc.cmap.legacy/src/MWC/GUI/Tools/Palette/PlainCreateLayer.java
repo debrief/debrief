@@ -1,17 +1,18 @@
- /*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: PlainCreateLayer.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -71,142 +72,141 @@ import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.PlainTool;
 
-abstract public class PlainCreateLayer extends PlainTool
-{
+abstract public class PlainCreateLayer extends PlainTool {
 
-	/** the panel used to edit this item
+	///////////////////////////////////////////////////////
+	// store action information
+	///////////////////////////////////////////////////////
+	protected class CreateLabelAction implements Action {
+		/**
+		 * the panel we are going to show the initial editor in
+		 */
+		final protected PropertiesPanel _thePanel1;
+		final protected Layer _theLayer;
+		final protected Layers _theData1;
+
+		public CreateLabelAction(final PropertiesPanel thePanel, final Layer theLayer, final Layers theData) {
+			_thePanel1 = thePanel;
+			_theLayer = theLayer;
+			_theData1 = theData;
+		}
+
+		/**
+		 * make it so!
+		 */
+		@Override
+		public void execute() {
+			// check that the creation worked
+			if (_theLayer != null) {
+				// add the Shape to the layer, and put it
+				// in the property editor
+				_theData1.addThisLayer(_theLayer);
+				_thePanel1.addEditor(_theLayer.getInfo(), _theLayer);
+				_theData1.fireModified(_theLayer);
+			}
+		}
+
+		/**
+		 * specify is this is an operation which can be redone
+		 */
+		@Override
+		public boolean isRedoable() {
+			return true;
+		}
+
+		/**
+		 * specify is this is an operation which can be undone
+		 */
+		@Override
+		public boolean isUndoable() {
+			return true;
+		}
+
+		/**
+		 * return string describing this operation
+		 *
+		 * @return String describing this operation
+		 */
+		@Override
+		public String toString() {
+			return "New grid:" + _theLayer.getName();
+		}
+
+		/**
+		 * take the shape away from the layer
+		 */
+		@Override
+		public void undo() {
+			_theData1.removeThisLayer(_theLayer);
+			_theData1.fireExtended();
+		}
+	}
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * the panel used to edit this item
 	 */
 	PropertiesPanel _thePanel;
 
-  /** the Layers object, which we need in order to fire data extended event
-   *
-   */
-  Layers _theData;
-
-  final protected BoundsProvider _theBounds;
-
-
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-	/** constructor for label
-	 * @param theParent parent where we can change cursor
-	 * @param thePanel panel
-	 * @param theData the layer we are adding the item to
+	/**
+	 * the Layers object, which we need in order to fire data extended event
+	 *
 	 */
-	public PlainCreateLayer(final ToolParent theParent,
-										final PropertiesPanel thePanel,
-                    final Layers theData,
-										final BoundsProvider bounds,
-										final String theName,
-										final String theImage)
-	{
+	Layers _theData;
+
+	final protected BoundsProvider _theBounds;
+
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	/**
+	 * constructor for label
+	 *
+	 * @param theParent parent where we can change cursor
+	 * @param thePanel  panel
+	 * @param theData   the layer we are adding the item to
+	 */
+	public PlainCreateLayer(final ToolParent theParent, final PropertiesPanel thePanel, final Layers theData,
+			final BoundsProvider bounds, final String theName, final String theImage) {
 		super(theParent, theName, theImage);
 
 		_thePanel = thePanel;
 		_theBounds = bounds;
-    _theData = theData;
+		_theData = theData;
 	}
-
-
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
-
-  /** accessor to retrieve the layered data
-   *
-   */
-  public Layers getLayers()
-  {
-    return _theData;
-  }
 
 	protected abstract Layer createItem();
 
-	public Action getData()
-	{
-    Action res = null;
+	@Override
+	public Action getData() {
+		Action res = null;
 
-    // ask the child class to create itself
+		// ask the child class to create itself
 		final Layer theLayer = createItem();
 
-    // did it work?
-    if(theLayer != null)
-    {
-      // wrap it up in an action
-      res=  new CreateLabelAction(_thePanel,
-                                  theLayer,
-                                  _theData);
-    }
+		// did it work?
+		if (theLayer != null) {
+			// wrap it up in an action
+			res = new CreateLabelAction(_thePanel, theLayer, _theData);
+		}
 
-    return res;
+		return res;
 	}
 
-  ///////////////////////////////////////////////////////
-  // store action information
-  ///////////////////////////////////////////////////////
-	protected class CreateLabelAction implements Action
-	{
-		/** the panel we are going to show the initial editor in
-		 */
-		final protected PropertiesPanel _thePanel1;
-		final protected Layer _theLayer;
-    final protected Layers _theData1;
-
-
-		public CreateLabelAction(final PropertiesPanel thePanel,
-															 final Layer theLayer,
-                               final Layers theData)
-		{
-			_thePanel1 = thePanel;
-			_theLayer = theLayer;
-      _theData1 = theData;
-		}
-
-		/** specify is this is an operation which can be undone
-		 */
-		public boolean isUndoable()
-		{
-			return true;
-		}
-
-		/** specify is this is an operation which can be redone
-		 */
-		public boolean isRedoable()
-		{
-			return true;
-		}
-
-		/** return string describing this operation
-		 * @return String describing this operation
-		 */
-		public String toString()
-		{
-			return "New grid:" + _theLayer.getName();
-		}
-
-		/** take the shape away from the layer
-		 */
-		public void undo()
-		{
-      _theData1.removeThisLayer(_theLayer);
-      _theData1.fireExtended();
-		}
-
-    /** make it so!
-     */
-    public void execute()
-    {
-      // check that the creation worked
-      if(_theLayer != null)
-      {
-        // add the Shape to the layer, and put it
-        // in the property editor
-        _theData1.addThisLayer(_theLayer);
-        _thePanel1.addEditor(_theLayer.getInfo(), _theLayer);
-        _theData1.fireModified(_theLayer);
-      }
-    }
-  }
+	/**
+	 * accessor to retrieve the layered data
+	 *
+	 */
+	public Layers getLayers() {
+		return _theData;
+	}
 
 }

@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.debrief.core.actions.drag;
 
 import java.awt.Point;
@@ -39,101 +40,95 @@ import MWC.GUI.Layers;
 import MWC.GUI.Shapes.DraggableItem.LocationConstruct;
 import MWC.GenericData.WorldLocation;
 
-/** super-class that introduces ability to extract the status message used when dragging track segments.  This behaviour
- * is then inherited by child classes.
- * 
+/**
+ * super-class that introduces ability to extract the status message used when
+ * dragging track segments. This behaviour is then inherited by child classes.
+ *
  * @author ian
  *
  */
-public class CoreDragOperation
-{
-	/** the track segment that gets manipulated
-	 * 
-	 */
-	final protected TrackSegment _segment;
-	final private String _myName;
-
-	protected CoreDragOperation(final TrackSegment trackSegment, final String myName)
-	{
-		_segment = trackSegment;
-		_myName = myName;
-	}
-	
-	/** accessor, to get to the segment we're managing
-	 * 
-	 * @return
-	 */
-	final public TrackSegment getSegment()
-	{
-		return _segment;
-	}
-
-	/** repaint the track segment
-	 * 
-	 * @param dest
-	 */
-	final public void paint(final CanvasType dest)
-	{
-		_segment.paint(dest);
-	}
-
-
-	final public void findNearestHotSpotIn(final Point cursorPos, final WorldLocation cursorLoc,
-			final LocationConstruct currentNearest, final Layer parentLayer, final Layers theLayers)
-	{
-		// we don't support this when dragging tracks
-	}
-	
-	/** get the name of this hot-spot
-	 * 
-	 * @return
-	 */
-	final public String getName()
-	{
-		return _myName;
-	}
-	/** retrieve the text message representing the last drag
-	 * 
-	 * @return
-	 */
-	public String getDragMsg()
-	{
-		String res = null;
-		
-		if(_segment instanceof CoreTMASegment)
-		{
-			final CoreTMASegment tma = (CoreTMASegment) _segment;
-			res = tma.getDragTextMessage();
-		}
-		
-		return res;
-	}
-
-
+public class CoreDragOperation {
 	/**
 	 * whether the user wants the live solution data to be shown in the properties
 	 * window
-	 * 
+	 *
 	 * @return yes/no
 	 */
-	private static boolean showInProperties()
-	{
-		final String dontShowDragStr = CorePlugin.getToolParent().getProperty(
-				PrefsPage.PreferenceConstants.DONT_SHOW_DRAG_IN_PROPS);
+	private static boolean showInProperties() {
+		final String dontShowDragStr = CorePlugin.getToolParent()
+				.getProperty(PrefsPage.PreferenceConstants.DONT_SHOW_DRAG_IN_PROPS);
 		final boolean dontShowDrag = Boolean.parseBoolean(dontShowDragStr);
 		return !dontShowDrag;
 	}
 
 	/**
-	 * utility function to stick the supplied item on the properties view, and
-	 * then refresh it.
-	 * 
-	 * @param subject
-	 *          what to show as the current selection
+	 * the track segment that gets manipulated
+	 *
 	 */
-	protected void updatePropsView(final TrackSegment subject,
-			final TrackWrapper parent, final Layers theLayers)
-	{
+	final protected TrackSegment _segment;
+
+	final private String _myName;
+
+	protected CoreDragOperation(final TrackSegment trackSegment, final String myName) {
+		_segment = trackSegment;
+		_myName = myName;
+	}
+
+	final public void findNearestHotSpotIn(final Point cursorPos, final WorldLocation cursorLoc,
+			final LocationConstruct currentNearest, final Layer parentLayer, final Layers theLayers) {
+		// we don't support this when dragging tracks
+	}
+
+	/**
+	 * retrieve the text message representing the last drag
+	 *
+	 * @return
+	 */
+	public String getDragMsg() {
+		String res = null;
+
+		if (_segment instanceof CoreTMASegment) {
+			final CoreTMASegment tma = (CoreTMASegment) _segment;
+			res = tma.getDragTextMessage();
+		}
+
+		return res;
+	}
+
+	/**
+	 * get the name of this hot-spot
+	 *
+	 * @return
+	 */
+	final public String getName() {
+		return _myName;
+	}
+
+	/**
+	 * accessor, to get to the segment we're managing
+	 *
+	 * @return
+	 */
+	final public TrackSegment getSegment() {
+		return _segment;
+	}
+
+	/**
+	 * repaint the track segment
+	 *
+	 * @param dest
+	 */
+	final public void paint(final CanvasType dest) {
+		_segment.paint(dest);
+	}
+
+	/**
+	 * utility function to stick the supplied item on the properties view, and then
+	 * refresh it.
+	 *
+	 * @param subject what to show as the current selection
+	 */
+	protected void updatePropsView(final TrackSegment subject, final TrackWrapper parent, final Layers theLayers) {
 		if (!showInProperties())
 			return;
 
@@ -144,23 +139,19 @@ public class CoreDragOperation
 		final IViewPart view = page.findView(IPageLayout.ID_PROP_SHEET);
 
 		// do we have a properties view open?
-		if (view != null)
-		{
+		if (view != null) {
 			final PropertySheet ps = (PropertySheet) view;
 			final PropertySheetPage thisPage = (PropertySheetPage) ps.getCurrentPage();
 
 			// and have we found a properties page?
-			if (thisPage != null && !thisPage.getControl().isDisposed())
-			{
+			if (thisPage != null && !thisPage.getControl().isDisposed()) {
 				// wrap the plottable
 				final EditableWrapper parentP = new EditableWrapper(parent, null, theLayers);
-				final EditableWrapper wrapped = new EditableWrapper(subject, parentP,
-						theLayers);
+				final EditableWrapper wrapped = new EditableWrapper(subject, parentP, theLayers);
 				final ISelection selected = new StructuredSelection(wrapped);
 
 				// tell the properties page to show what we're dragging
-				thisPage
-						.selectionChanged(win.getActivePage().getActivePart(), selected);
+				thisPage.selectionChanged(win.getActivePage().getActivePart(), selected);
 
 				// and trigger the update
 				thisPage.refresh();
@@ -168,5 +159,5 @@ public class CoreDragOperation
 		}
 
 	}
-	
+
 }

@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: ReaderMonitor.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -52,127 +53,110 @@ import javax.swing.SwingUtilities;
 
 import MWC.Utilities.ReaderWriter.PlainImporter.MonitorProvider;
 
-public class ReaderMonitor extends BufferedReader
-{
-  private int _counter;
+public class ReaderMonitor extends BufferedReader {
+	private static class SwingProvider implements MonitorProvider {
 
-  private MonitorProvider _provider;
+		protected class showMonitor extends Thread {
+			private final String _name;
+			private final int _length;
 
-  public ReaderMonitor(final Reader r, final int length, final String fileName,
-      MonitorProvider provider)
-  {
-    super(r);
-    _counter = 0;
-    this._provider = provider;
-    _provider.init(fileName, length);
-  }
+			public showMonitor(final String name, final int length) {
+				super();
+				_name = name;
+				_length = length;
+			}
 
-  public ReaderMonitor(final Reader r, final int length, final String fileName)
-  {
-    this(r, length, fileName, new SwingProvider());
-  }
+			@Override
+			public void run() {
+				final java.io.File fl = new java.io.File(_name);
+				_pm = new ProgressMonitor(null, "Reading file:" + fl.getName(), "blank", 0, _length - 1);
+				_pm.setMillisToPopup(0);
+				_pm.setMillisToDecideToPopup(0);
+			}
+		}
 
-  /**
-   * override the readLine method, to tell us were at a new line
-   *
-   */
-  public String readLine() throws IOException
-  {
-    _counter++;
-    if(_provider!=null)
-      _provider.progress(_counter);
-    return super.readLine();
-  }
+		private ProgressMonitor _pm;
+		private Thread _myThread;
 
-  /**
-   * finalise, time to close the progress bar
-   *
-   */
-  protected void finalize() throws Throwable
-  {
-    super.finalize();
-    if(_provider!=null)
-      _provider.done();
+		private int _length;
 
-  }
-  
-  @Override
-  public void close() throws IOException
-  {
-    super.close();
-    if(_provider!=null)
-      _provider.done();
-  }
+		@Override
+		public void done() {
+			// Nothing to do here :)
+		}
 
-  private static class SwingProvider implements MonitorProvider
-  {
+		@Override
+		public void init(final String fileName, final int length) {
+			_length = length;
+			_myThread = new showMonitor(fileName, length);
+			_myThread.start();
 
-    private ProgressMonitor _pm;
-    private Thread _myThread;
-    private int _length;
+		}
 
-    @Override
-    public void init(final String fileName, final int length)
-    {
-      _length = length;
-      _myThread = new showMonitor(fileName, length);
-      _myThread.start();
+		@Override
+		public void progress(final int progress) {
+			SwingUtilities.invokeLater(new Runnable() {
 
-    }
+				@Override
+				public void run() {
+					if (_pm != null) {
+						try {
+							_pm.setNote("" + (progress * 100 / _length) + "% complete");
+							_pm.setProgress(progress);
+						} catch (final Exception e) {
+							// This shouldn't happen. Let's leave it just in case.
+						}
+					}
 
-    protected class showMonitor extends Thread
-    {
-      private final String _name;
-      private final int _length;
+				}
+			});
 
-      public showMonitor(final String name, final int length)
-      {
-        super();
-        _name = name;
-        _length = length;
-      }
+		}
+	}
 
-      public void run()
-      {
-        final java.io.File fl = new java.io.File(_name);
-        _pm = new ProgressMonitor(null, "Reading file:" + fl.getName(), "blank",
-            0, _length - 1);
-        _pm.setMillisToPopup(0);
-        _pm.setMillisToDecideToPopup(0);
-      }
-    }
+	private int _counter;
 
-    @Override
-    public void progress(final int progress)
-    {
-      SwingUtilities.invokeLater(new Runnable()
-      {
-        
-        @Override
-        public void run()
-        {
-          if (_pm != null)
-          {
-            try
-            {
-              _pm.setNote("" + (progress * 100 / _length) + "% complete");
-              _pm.setProgress(progress);
-            }
-            catch (Exception e)
-            {
-              // This shouldn't happen. Let's leave it just in case.
-            }
-          }
-          
-        }
-      });
-     
-    }
-    
-    @Override
-    public void done()
-    {
-      // Nothing to do here :)
-    }
-  }
+	private final MonitorProvider _provider;
+
+	public ReaderMonitor(final Reader r, final int length, final String fileName) {
+		this(r, length, fileName, new SwingProvider());
+	}
+
+	public ReaderMonitor(final Reader r, final int length, final String fileName, final MonitorProvider provider) {
+		super(r);
+		_counter = 0;
+		this._provider = provider;
+		_provider.init(fileName, length);
+	}
+
+	@Override
+	public void close() throws IOException {
+		super.close();
+		if (_provider != null)
+			_provider.done();
+	}
+
+	/**
+	 * finalise, time to close the progress bar
+	 *
+	 */
+	@Override
+	protected void finalize() throws Throwable {
+		super.finalize();
+		if (_provider != null)
+			_provider.done();
+
+	}
+
+	/**
+	 * override the readLine method, to tell us were at a new line
+	 *
+	 */
+	@Override
+	public String readLine() throws IOException {
+		_counter++;
+		if (_provider != null)
+			_provider.progress(_counter);
+		return super.readLine();
+	}
 }

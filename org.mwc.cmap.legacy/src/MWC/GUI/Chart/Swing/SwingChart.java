@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: SwingChart.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.4 $
@@ -104,7 +105,6 @@
 // new Swing versions
 //
 
-
 package MWC.GUI.Chart.Swing;
 
 import java.awt.Component;
@@ -130,386 +130,344 @@ import MWC.GUI.Canvas.CanvasAdaptor;
 import MWC.GUI.Canvas.Swing.SwingCanvas;
 import MWC.GenericData.WorldArea;
 
-
 /**
- * The Chart is a canvas placed in a panel.
- * the majority of functionality is contained
- * in the PlainChart parent class, only the
- * raw comms is in this class.
- * This is configured by setting the listeners to the
- * chart/panel to be the listener functions defined in
- * the parent.
+ * The Chart is a canvas placed in a panel. the majority of functionality is
+ * contained in the PlainChart parent class, only the raw comms is in this
+ * class. This is configured by setting the listeners to the chart/panel to be
+ * the listener functions defined in the parent.
  */
-public class SwingChart extends PlainChart
-{
+public class SwingChart extends PlainChart {
 
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
 
-  /**
-	 * 
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	private SwingCanvas _theCanvas;
 
-  /**
-   * our list of layered images.
-   */
-  private HashMap<Layer, Image> _myLayers = new HashMap<Layer, Image>();
-
-  /**
-   * the data area we last plotted (so that we know when a full layered repaint is needed).
-   */
-  private WorldArea _lastDataArea = null;
-
-  /**
-   * the image we paint into the corner of the canvas.
-   */
-  private Image _ourImage;
-
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-
-  /**
-   * constructor, providing us with the set of layers to plot.
-   *
-   * @param theLayers the data to plot
-   */
-  public SwingChart(final Layers theLayers)
-  {
-    super(theLayers);
-    _theCanvas = createCanvas();
-    _theCanvas.setProjection(new MWC.Algorithms.Projections.FlatProjection());
-
-    // add us as a painter to the canvas
-    _theCanvas.addPainter(this);
-
-    // catch any resize events
-    _theCanvas.addComponentListener(new ComponentAdapter()
-    {
-      public void componentResized(final ComponentEvent e)
-      {
-        canvasResized();
-      }
-    });
-
-    _theCanvas.getProjection().setScreenArea(_theCanvas.getSize());
-
-    _theCanvas.addMouseMotionListener(this);
-    _theCanvas.addMouseListener(this);
-
-    // store the rubber band
-    //   setRubberBand(new MWC.GUI.RubberBanding.RubberbandRectangle());
-
-    // create the tooltip handler
-    _theCanvas.setTooltipHandler(new MWC.GUI.Canvas.BasicTooltipHandler(theLayers));
-
-  }
-
-  /**
-   * constructor, providing us with a set of layers to plot, together with a background
-   * image.
-   *
-   * @param theLayers the data to plot
-   * @param imageName the image to show as a water-mark
-   */
-  public SwingChart(final Layers theLayers, final String imageName)
-  {
-    this(theLayers);
-
-    // try to open the image
-    final URL imageURL = getClass().getClassLoader().getResource(imageName);
-    if (imageURL != null)
-    {
-      final ImageIcon io = new ImageIcon(imageURL);
-      _ourImage = io.getImage();
-    }
-  }
-
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
-
-  public void canvasResized()
-  {
-    // and clear out our buffered layers (they all need to be repainted anyway)
-    _myLayers.clear();
-
-    // now we've cleared the layers, call the parent resize method (which causes a repaint
-    //  of the layers)
-    super.canvasResized();
-  }
-
-
-  /**
-   * over-rideable member function which allows us to over-ride the
-   * canvas which gets used.
-   *
-   * @return the Canvas to use
-   */
-  public SwingCanvas createCanvas()
-  {
-    return new SwingCanvas();
-  }
-
-  /**
-   * get the size of the canvas.
-   *
-   * @return the dimensions of the canvas
-   */
-  public final java.awt.Dimension getScreenSize()
-  {
-    // get the current size of the canvas
-    return _theCanvas.getSize();
-  }
-
-  public final Component getPanel()
-  {
-    return _theCanvas;
-  }
-
-  public final void update()
-  {
-    // clear out the layers object
-    _myLayers.clear();
-
-    // and start the update
-    _theCanvas.updateMe();
-  }
-
-  @Override
-  public final void update(final HasEditables changedLayer)
-  {
-    if (changedLayer == null)
-    {
-      _theCanvas.updateMe();
-    }
-    else
-    {
-      // just delete that layer
-      _myLayers.remove(changedLayer);
-
-      // chuck in a GC, to clear the old image allocation
-      System.gc();
-
-      // and trigger update
-      _theCanvas.updateMe();
-    }
-  }
-
-
-  /**
-   * over-ride the parent's version of paint, so that we can try to do it by layers.
-   */
-  public final void paintMe(final CanvasType dest)
-  {
-    // check that we have a valid canvas (that the sizes are set)
-    final java.awt.Dimension sArea = dest.getProjection().getScreenArea();
-    if (sArea != null)
-    {
-      if (sArea.width > 0)
-      {
-
-        // hey, we've plotted at least once, has the data area changed?
-        if (_lastDataArea != _theCanvas.getProjection().getDataArea())
-        {
-          // remember the data area for next time
-          _lastDataArea = _theCanvas.getProjection().getDataArea();
-
-          // clear out all of the layers we are using
-          _myLayers.clear();
-        }
-
-        // draw in the solid background
-        paintBackground(dest);
-
-        // ok, pass through the layers, repainting any which need it
-        final int len = _theLayers.size();
-        for (int i = 0; i < len; i++)
-        {
-          final Layer thisLayer = _theLayers.elementAt(i);
-
-          boolean isAlreadyPlotted = false;
-
-          // just check if this layer is visible
-          if (thisLayer.getVisible())
-          {
-
-            if (doubleBufferPlot())
-            {
-
-              // check we're plotting to a SwingCanvas, because we don't double-buffer anything else
-              if (dest instanceof MWC.GUI.Canvas.Swing.SwingCanvas)
-              {
-
-                // does this layer want to be double-buffered?
-                if (thisLayer instanceof BaseLayer)
-                {
-
-                  // just check if there is a property which over-rides the double-buffering
-                  final BaseLayer bl = (BaseLayer) thisLayer;
-                  if (bl.isBuffered())
-                  {
-                    isAlreadyPlotted = true;
-
-                    // do our double-buffering bit
-                    // do we have a layer for this object
-                    Image image = (Image) _myLayers.get(thisLayer);
-                    if (image == null)
-                    {
-
-                      // sure it is, create an image to paint into (the TYPE_INT_ARGB ensures it has a transparent background)
-                      image = new BufferedImage(_theCanvas.getWidth(), _theCanvas.getHeight(), BufferedImage.TYPE_INT_ARGB);
-
-                      final Graphics g2 = image.getGraphics();
-
-                      // wrap the Graphics to make it look like a CanvasType
-                      final CanvasAdaptor ca = new CanvasAdaptor(_theCanvas.getProjection(), g2);
-
-                      // draw into it
-                      thisLayer.paint(ca);
-
-                      // ditch the graphics
-                      g2.dispose();
-
-                      // store this image in our list, indexed by the layer object itself
-                      _myLayers.put(thisLayer, image);
-                    }
-
-                    // have we ended up with an image to paint?
-                    if (image != null)
-                    {
-                      // get the graphics to paint to
-                      final Graphics gr = dest.getGraphicsTemp();
-
-                      if (gr != null)
-                      {
-                        // lastly add this image to our Graphics object
-                        gr.drawImage(image, 0, 0, _theCanvas);
-
-                        // and ditch it
-                        gr.dispose();
-
-                      }
-                      else
-                        MWC.Utilities.Errors.Trace.trace("SwingChart.PaintMe() :FAILED TO GET GRAPHICS TEMP");
-                    }
-
-                  }
-                }
-              }  // whether we were plotting to a SwingCanvas (which may be double-buffered
-            } // whther we are happy to do double-buffering
-
-            // did we manage to paint it
-            if (!isAlreadyPlotted)
-            {
-              thisLayer.paint(dest);
-
-              isAlreadyPlotted = true;
-            }
-          }
-        }
-      }
-    }
-
-  }
-
-
-  /**
-   * property to indicate if we are happy to perform double-buffering.
-   * - override it to change the response
-   */
-  protected boolean doubleBufferPlot()
-  {
-    return true;
-  }
-
-  /**
-   * paint the solid background.
-   *
-   * @param dest where we're painting to
-   */
-  private void paintBackground(final CanvasType dest)
-  {
-    // fill the background, to start with
-    final Dimension sz = new Dimension(_theCanvas.getWidth(), _theCanvas.getHeight());
-    dest.setColor(dest.getBackgroundColor());
-    dest.fillRect(0, 0, sz.width, sz.height);
-
-    // do we have an image?
-    if (_ourImage != null)
-    {
-      // find the coords
-      final int imgWidth = _ourImage.getWidth(getPanel());
-      final int imgHeight = _ourImage.getHeight(getPanel());
-
-      // find the point to paint at
-      final Point thePt = new Point((int) dest.getSize().getWidth() - imgWidth - 3,
-                                    (int) dest.getSize().getHeight() - imgHeight - 3);
-
-      // paint in our logo
-      dest.drawImage(_ourImage, thePt.x, thePt.y, imgWidth, imgHeight, getPanel());
-    }
-  }
-
-
-  //////////////////////////////////////////////////////////
-  // methods for handling requests from our canvas
-  //////////////////////////////////////////////////////////
-
-  public final void rescale()
-  {
-    // do a rescale
-    _theCanvas.rescale();
-
-  }
-
-  public final void repaint()
-  {
-    _theCanvas.repaint();
-  }
-
-  public final void repaintNow(final java.awt.Rectangle rect)
-  {
-    _theCanvas.paintImmediately(rect);
-  }
-
-
-  public final CanvasType getCanvas()
-  {
-    return _theCanvas;
-  }
-
-  /**
-   * provide method to clear stored data.
-   */
-  public void close()
-  {
-    // clear the layers
-    _myLayers.clear();
-    _myLayers = null;
-
-    // instruct the canvas to close
-    _theCanvas.close();
-    _theCanvas = null;
-
-    super.close();
-  }
-
+	/**
+	 * our list of layered images.
+	 */
+	private HashMap<Layer, Image> _myLayers = new HashMap<Layer, Image>();
+
+	/**
+	 * the data area we last plotted (so that we know when a full layered repaint is
+	 * needed).
+	 */
+	private WorldArea _lastDataArea = null;
+
+	/**
+	 * the image we paint into the corner of the canvas.
+	 */
+	private Image _ourImage;
+
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+
+	/**
+	 * constructor, providing us with the set of layers to plot.
+	 *
+	 * @param theLayers the data to plot
+	 */
+	public SwingChart(final Layers theLayers) {
+		super(theLayers);
+		_theCanvas = createCanvas();
+		_theCanvas.setProjection(new MWC.Algorithms.Projections.FlatProjection());
+
+		// add us as a painter to the canvas
+		_theCanvas.addPainter(this);
+
+		// catch any resize events
+		_theCanvas.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(final ComponentEvent e) {
+				canvasResized();
+			}
+		});
+
+		_theCanvas.getProjection().setScreenArea(_theCanvas.getSize());
+
+		_theCanvas.addMouseMotionListener(this);
+		_theCanvas.addMouseListener(this);
+
+		// store the rubber band
+		// setRubberBand(new MWC.GUI.RubberBanding.RubberbandRectangle());
+
+		// create the tooltip handler
+		_theCanvas.setTooltipHandler(new MWC.GUI.Canvas.BasicTooltipHandler(theLayers));
+
+	}
+
+	/**
+	 * constructor, providing us with a set of layers to plot, together with a
+	 * background image.
+	 *
+	 * @param theLayers the data to plot
+	 * @param imageName the image to show as a water-mark
+	 */
+	public SwingChart(final Layers theLayers, final String imageName) {
+		this(theLayers);
+
+		// try to open the image
+		final URL imageURL = getClass().getClassLoader().getResource(imageName);
+		if (imageURL != null) {
+			final ImageIcon io = new ImageIcon(imageURL);
+			_ourImage = io.getImage();
+		}
+	}
+
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+
+	@Override
+	public void canvasResized() {
+		// and clear out our buffered layers (they all need to be repainted anyway)
+		_myLayers.clear();
+
+		// now we've cleared the layers, call the parent resize method (which causes a
+		// repaint
+		// of the layers)
+		super.canvasResized();
+	}
+
+	/**
+	 * provide method to clear stored data.
+	 */
+	@Override
+	public void close() {
+		// clear the layers
+		_myLayers.clear();
+		_myLayers = null;
+
+		// instruct the canvas to close
+		_theCanvas.close();
+		_theCanvas = null;
+
+		super.close();
+	}
+
+	/**
+	 * over-rideable member function which allows us to over-ride the canvas which
+	 * gets used.
+	 *
+	 * @return the Canvas to use
+	 */
+	public SwingCanvas createCanvas() {
+		return new SwingCanvas();
+	}
+
+	/**
+	 * property to indicate if we are happy to perform double-buffering. - override
+	 * it to change the response
+	 */
+	protected boolean doubleBufferPlot() {
+		return true;
+	}
+
+	@Override
+	public final CanvasType getCanvas() {
+		return _theCanvas;
+	}
+
+	@Override
+	public final Component getPanel() {
+		return _theCanvas;
+	}
+
+	/**
+	 * get the size of the canvas.
+	 *
+	 * @return the dimensions of the canvas
+	 */
+	@Override
+	public final java.awt.Dimension getScreenSize() {
+		// get the current size of the canvas
+		return _theCanvas.getSize();
+	}
+
+	/**
+	 * paint the solid background.
+	 *
+	 * @param dest where we're painting to
+	 */
+	private void paintBackground(final CanvasType dest) {
+		// fill the background, to start with
+		final Dimension sz = new Dimension(_theCanvas.getWidth(), _theCanvas.getHeight());
+		dest.setColor(dest.getBackgroundColor());
+		dest.fillRect(0, 0, sz.width, sz.height);
+
+		// do we have an image?
+		if (_ourImage != null) {
+			// find the coords
+			final int imgWidth = _ourImage.getWidth(getPanel());
+			final int imgHeight = _ourImage.getHeight(getPanel());
+
+			// find the point to paint at
+			final Point thePt = new Point((int) dest.getSize().getWidth() - imgWidth - 3,
+					(int) dest.getSize().getHeight() - imgHeight - 3);
+
+			// paint in our logo
+			dest.drawImage(_ourImage, thePt.x, thePt.y, imgWidth, imgHeight, getPanel());
+		}
+	}
+
+	/**
+	 * over-ride the parent's version of paint, so that we can try to do it by
+	 * layers.
+	 */
+	@Override
+	public final void paintMe(final CanvasType dest) {
+		// check that we have a valid canvas (that the sizes are set)
+		final java.awt.Dimension sArea = dest.getProjection().getScreenArea();
+		if (sArea != null) {
+			if (sArea.width > 0) {
+
+				// hey, we've plotted at least once, has the data area changed?
+				if (_lastDataArea != _theCanvas.getProjection().getDataArea()) {
+					// remember the data area for next time
+					_lastDataArea = _theCanvas.getProjection().getDataArea();
+
+					// clear out all of the layers we are using
+					_myLayers.clear();
+				}
+
+				// draw in the solid background
+				paintBackground(dest);
+
+				// ok, pass through the layers, repainting any which need it
+				final int len = _theLayers.size();
+				for (int i = 0; i < len; i++) {
+					final Layer thisLayer = _theLayers.elementAt(i);
+
+					boolean isAlreadyPlotted = false;
+
+					// just check if this layer is visible
+					if (thisLayer.getVisible()) {
+
+						if (doubleBufferPlot()) {
+
+							// check we're plotting to a SwingCanvas, because we don't double-buffer
+							// anything else
+							if (dest instanceof MWC.GUI.Canvas.Swing.SwingCanvas) {
+
+								// does this layer want to be double-buffered?
+								if (thisLayer instanceof BaseLayer) {
+
+									// just check if there is a property which over-rides the double-buffering
+									final BaseLayer bl = (BaseLayer) thisLayer;
+									if (bl.isBuffered()) {
+										isAlreadyPlotted = true;
+
+										// do our double-buffering bit
+										// do we have a layer for this object
+										Image image = _myLayers.get(thisLayer);
+										if (image == null) {
+
+											// sure it is, create an image to paint into (the TYPE_INT_ARGB ensures it
+											// has a transparent background)
+											image = new BufferedImage(_theCanvas.getWidth(), _theCanvas.getHeight(),
+													BufferedImage.TYPE_INT_ARGB);
+
+											final Graphics g2 = image.getGraphics();
+
+											// wrap the Graphics to make it look like a CanvasType
+											final CanvasAdaptor ca = new CanvasAdaptor(_theCanvas.getProjection(), g2);
+
+											// draw into it
+											thisLayer.paint(ca);
+
+											// ditch the graphics
+											g2.dispose();
+
+											// store this image in our list, indexed by the layer object itself
+											_myLayers.put(thisLayer, image);
+										}
+
+										// have we ended up with an image to paint?
+										if (image != null) {
+											// get the graphics to paint to
+											final Graphics gr = dest.getGraphicsTemp();
+
+											if (gr != null) {
+												// lastly add this image to our Graphics object
+												gr.drawImage(image, 0, 0, _theCanvas);
+
+												// and ditch it
+												gr.dispose();
+
+											} else
+												MWC.Utilities.Errors.Trace
+														.trace("SwingChart.PaintMe() :FAILED TO GET GRAPHICS TEMP");
+										}
+
+									}
+								}
+							} // whether we were plotting to a SwingCanvas (which may be double-buffered
+						} // whther we are happy to do double-buffering
+
+						// did we manage to paint it
+						if (!isAlreadyPlotted) {
+							thisLayer.paint(dest);
+
+							isAlreadyPlotted = true;
+						}
+					}
+				}
+			}
+		}
+
+	}
+
+	//////////////////////////////////////////////////////////
+	// methods for handling requests from our canvas
+	//////////////////////////////////////////////////////////
+
+	@Override
+	public final void repaint() {
+		_theCanvas.repaint();
+	}
+
+	@Override
+	public final void repaintNow(final java.awt.Rectangle rect) {
+		_theCanvas.paintImmediately(rect);
+	}
+
+	@Override
+	public final void rescale() {
+		// do a rescale
+		_theCanvas.rescale();
+
+	}
+
+	@Override
+	public final void update() {
+		// clear out the layers object
+		_myLayers.clear();
+
+		// and start the update
+		_theCanvas.updateMe();
+	}
+
+	@Override
+	public final void update(final HasEditables changedLayer) {
+		if (changedLayer == null) {
+			_theCanvas.updateMe();
+		} else {
+			// just delete that layer
+			_myLayers.remove(changedLayer);
+
+			// chuck in a GC, to clear the old image allocation
+			System.gc();
+
+			// and trigger update
+			_theCanvas.updateMe();
+		}
+	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: Track.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.9 $
@@ -114,7 +115,7 @@ import MWC.GenericData.WorldArea;
 
 public class Track implements Serializable {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -167,63 +168,10 @@ public class Track implements Serializable {
 			// ok - add the fixes incrementally, so we can sort out the time
 			// limits
 			for (final Iterator<Fix> iter = theFixesVal.iterator(); iter.hasNext();) {
-				final Fix thisFix = (Fix) iter.next();
+				final Fix thisFix = iter.next();
 				addFix(thisFix);
 			}
 		}
-	}
-
-	public void closeMe() {
-		// empty out the fixes
-		_theFixes.removeAllElements();
-	}
-
-	// ////////////////////////////////////////////////
-	// member functions
-	// ////////////////////////////////////////////////
-
-	public Enumeration<Fix> getFixes() {
-		return _theFixes.elements();
-	}
-
-	/**
-	 * get the last fix - convenience function called from ASSET
-	 * 
-	 * @return the last fix
-	 */
-	public Fix getFinalFix() {
-		return (Fix) _theFixes.lastElement();
-	}
-
-	/**
-	 * do we have any data?
-	 * 
-	 * @return yes/no
-	 */
-	public boolean hasFixes() {
-		return !_theFixes.isEmpty();
-	}
-
-	/**
-	 * Get
-	 */
-	public String getVesselName() {
-		return VesselName;
-	}
-
-	/**
-	 * Retrieve the area of the track
-	 */
-	public WorldArea getDataArea() {
-		return _theArea;
-	}
-
-	/**
-	 * Set
-	 */
-	public void setVesselName(final String VesselName) {
-		this.VesselName = VesselName;
-		setName(VesselName);
 	}
 
 	/**
@@ -258,27 +206,81 @@ public class Track implements Serializable {
 		}
 	}
 
+	// ////////////////////////////////////////////////
+	// member functions
+	// ////////////////////////////////////////////////
+
+	public void closeMe() {
+		// empty out the fixes
+		_theFixes.removeAllElements();
+	}
+
 	/**
-	 * return this item as a string
+	 * Retrieve the area of the track
 	 */
-	public String toString() {
-		return getName();
+	public WorldArea getDataArea() {
+		return _theArea;
+	}
+
+	public HiResDate getEndDTG() {
+		return _endDTG;
+	}
+
+	/**
+	 * get the last fix - convenience function called from ASSET
+	 *
+	 * @return the last fix
+	 */
+	public Fix getFinalFix() {
+		return _theFixes.lastElement();
+	}
+
+	public Enumeration<Fix> getFixes() {
+		return _theFixes.elements();
 	}
 
 	public String getName() {
 		return _trackName;
 	}
 
-	public void setName(final String theName) {
-		_trackName = theName;
-	}
-
 	public HiResDate getStartDTG() {
 		return _startDTG;
 	}
 
-	public HiResDate getEndDTG() {
-		return _endDTG;
+	/**
+	 * Get
+	 */
+	public String getVesselName() {
+		return VesselName;
+	}
+
+	/**
+	 * do we have any data?
+	 *
+	 * @return yes/no
+	 */
+	public boolean hasFixes() {
+		return !_theFixes.isEmpty();
+	}
+
+	public void setName(final String theName) {
+		_trackName = theName;
+	}
+
+	/**
+	 * Set
+	 */
+	public void setVesselName(final String VesselName) {
+		this.VesselName = VesselName;
+		setName(VesselName);
+	}
+
+	/**
+	 * return this item as a string
+	 */
+	@Override
+	public String toString() {
+		return getName();
 	}
 
 }

@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.cmap.gridharness.data;
 
 public abstract class AbstractValueInUnits implements ValueInUnits {
@@ -27,10 +28,7 @@ public abstract class AbstractValueInUnits implements ValueInUnits {
 		myStorageUnits = unitsSet.getMainUnit();
 	}
 
-	public void setValues(final double value, final UnitsSet.Unit units) {
-		myStorageValue = myUnitsSet.convert(units, myStorageUnits, value);
-	}
-
+	@Override
 	public UnitsSet getUnitsSet() {
 		return myUnitsSet;
 	}
@@ -38,9 +36,15 @@ public abstract class AbstractValueInUnits implements ValueInUnits {
 	public double getValue() {
 		return myStorageValue;
 	}
-	
+
+	@Override
 	public double getValueIn(final UnitsSet.Unit units) {
 		return myUnitsSet.convert(myStorageUnits, units, myStorageValue);
+	}
+
+	@Override
+	public void setValues(final double value, final UnitsSet.Unit units) {
+		myStorageValue = myUnitsSet.convert(units, myStorageUnits, value);
 	}
 
 	/**

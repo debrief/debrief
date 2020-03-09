@@ -1,184 +1,180 @@
 package edu.nps.moves.dis7;
 
-import java.util.*;
-import java.io.*;
-import edu.nps.moves.disenum.*;
-import edu.nps.moves.disutil.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
 
 /**
- * Unique designation of an attached or unattached intercom in an event or exercirse. Section 6.2.48
+ * Unique designation of an attached or unattached intercom in an event or
+ * exercirse. Section 6.2.48
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class IntercomIdentifier extends Object implements Serializable
-{
-   protected int  siteNumber;
+public class IntercomIdentifier extends Object implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   protected int  applicationNumber;
+	protected int siteNumber;
 
-   protected int  referenceNumber;
+	protected int applicationNumber;
 
-   protected int  intercomNumber;
+	protected int referenceNumber;
 
+	protected int intercomNumber;
 
-/** Constructor */
- public IntercomIdentifier()
- {
- }
+	/** Constructor */
+	public IntercomIdentifier() {
+	}
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-   marshalSize = marshalSize + 2;  // siteNumber
-   marshalSize = marshalSize + 2;  // applicationNumber
-   marshalSize = marshalSize + 2;  // referenceNumber
-   marshalSize = marshalSize + 2;  // intercomNumber
+		if (this == obj) {
+			return true;
+		}
 
-   return marshalSize;
-}
+		if (obj == null) {
+			return false;
+		}
 
+		if (getClass() != obj.getClass())
+			return false;
 
-public void setSiteNumber(int pSiteNumber)
-{ siteNumber = pSiteNumber;
-}
+		return equalsImpl(obj);
+	}
 
-public int getSiteNumber()
-{ return siteNumber; 
-}
+	/**
+	 * Compare all fields that contribute to the state, ignoring transient and
+	 * static fields, for <code>this</code> and the supplied object
+	 *
+	 * @param obj the object to compare to
+	 * @return true if the objects are equal, false otherwise.
+	 */
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-public void setApplicationNumber(int pApplicationNumber)
-{ applicationNumber = pApplicationNumber;
-}
+		if (!(obj instanceof IntercomIdentifier))
+			return false;
 
-public int getApplicationNumber()
-{ return applicationNumber; 
-}
+		final IntercomIdentifier rhs = (IntercomIdentifier) obj;
 
-public void setReferenceNumber(int pReferenceNumber)
-{ referenceNumber = pReferenceNumber;
-}
+		if (!(siteNumber == rhs.siteNumber))
+			ivarsEqual = false;
+		if (!(applicationNumber == rhs.applicationNumber))
+			ivarsEqual = false;
+		if (!(referenceNumber == rhs.referenceNumber))
+			ivarsEqual = false;
+		if (!(intercomNumber == rhs.intercomNumber))
+			ivarsEqual = false;
 
-public int getReferenceNumber()
-{ return referenceNumber; 
-}
+		return ivarsEqual;
+	}
 
-public void setIntercomNumber(int pIntercomNumber)
-{ intercomNumber = pIntercomNumber;
-}
+	public int getApplicationNumber() {
+		return applicationNumber;
+	}
 
-public int getIntercomNumber()
-{ return intercomNumber; 
-}
+	public int getIntercomNumber() {
+		return intercomNumber;
+	}
 
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
-public void marshal(DataOutputStream dos)
-{
-    try 
-    {
-       dos.writeShort( (short)siteNumber);
-       dos.writeShort( (short)applicationNumber);
-       dos.writeShort( (short)referenceNumber);
-       dos.writeShort( (short)intercomNumber);
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+		marshalSize = marshalSize + 2; // siteNumber
+		marshalSize = marshalSize + 2; // applicationNumber
+		marshalSize = marshalSize + 2; // referenceNumber
+		marshalSize = marshalSize + 2; // intercomNumber
 
-public void unmarshal(DataInputStream dis)
-{
-    try 
-    {
-       siteNumber = (int)dis.readUnsignedShort();
-       applicationNumber = (int)dis.readUnsignedShort();
-       referenceNumber = (int)dis.readUnsignedShort();
-       intercomNumber = (int)dis.readUnsignedShort();
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+		return marshalSize;
+	}
 
+	public int getReferenceNumber() {
+		return referenceNumber;
+	}
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
-       buff.putShort( (short)siteNumber);
-       buff.putShort( (short)applicationNumber);
-       buff.putShort( (short)referenceNumber);
-       buff.putShort( (short)intercomNumber);
-    } // end of marshal method
+	public int getSiteNumber() {
+		return siteNumber;
+	}
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       siteNumber = (int)(buff.getShort() & 0xFFFF);
-       applicationNumber = (int)(buff.getShort() & 0xFFFF);
-       referenceNumber = (int)(buff.getShort() & 0xFFFF);
-       intercomNumber = (int)(buff.getShort() & 0xFFFF);
- } // end of unmarshal method 
+	public void marshal(final DataOutputStream dos) {
+		try {
+			dos.writeShort((short) siteNumber);
+			dos.writeShort((short) applicationNumber);
+			dos.writeShort((short) referenceNumber);
+			dos.writeShort((short) intercomNumber);
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	public void marshal(final java.nio.ByteBuffer buff) {
+		buff.putShort((short) siteNumber);
+		buff.putShort((short) applicationNumber);
+		buff.putShort((short) referenceNumber);
+		buff.putShort((short) intercomNumber);
+	} // end of marshal method
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+	public void setApplicationNumber(final int pApplicationNumber) {
+		applicationNumber = pApplicationNumber;
+	}
 
-    if(this == obj){
-      return true;
-    }
+	public void setIntercomNumber(final int pIntercomNumber) {
+		intercomNumber = pIntercomNumber;
+	}
 
-    if(obj == null){
-       return false;
-    }
+	public void setReferenceNumber(final int pReferenceNumber) {
+		referenceNumber = pReferenceNumber;
+	}
 
-    if(getClass() != obj.getClass())
-        return false;
+	public void setSiteNumber(final int pSiteNumber) {
+		siteNumber = pSiteNumber;
+	}
 
-    return equalsImpl(obj);
- }
+	public void unmarshal(final DataInputStream dis) {
+		try {
+			siteNumber = dis.readUnsignedShort();
+			applicationNumber = dis.readUnsignedShort();
+			referenceNumber = dis.readUnsignedShort();
+			intercomNumber = dis.readUnsignedShort();
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
- /**
-  * Compare all fields that contribute to the state, ignoring
- transient and static fields, for <code>this</code> and the supplied object
-  * @param obj the object to compare to
-  * @return true if the objects are equal, false otherwise.
-  */
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
-
-    if(!(obj instanceof IntercomIdentifier))
-        return false;
-
-     final IntercomIdentifier rhs = (IntercomIdentifier)obj;
-
-     if( ! (siteNumber == rhs.siteNumber)) ivarsEqual = false;
-     if( ! (applicationNumber == rhs.applicationNumber)) ivarsEqual = false;
-     if( ! (referenceNumber == rhs.referenceNumber)) ivarsEqual = false;
-     if( ! (intercomNumber == rhs.intercomNumber)) ivarsEqual = false;
-
-    return ivarsEqual;
- }
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		siteNumber = buff.getShort() & 0xFFFF;
+		applicationNumber = buff.getShort() & 0xFFFF;
+		referenceNumber = buff.getShort() & 0xFFFF;
+		intercomNumber = buff.getShort() & 0xFFFF;
+	} // end of unmarshal method
 } // end of class

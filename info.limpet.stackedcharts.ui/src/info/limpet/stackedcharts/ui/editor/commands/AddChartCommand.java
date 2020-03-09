@@ -1,47 +1,52 @@
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 package info.limpet.stackedcharts.ui.editor.commands;
-
-import info.limpet.stackedcharts.model.Chart;
 
 import java.util.List;
 
 import org.eclipse.gef.commands.Command;
 
-public class AddChartCommand extends Command
-{
-  private final Chart chart;
-  private final List<Chart> charts;
-  private int index = -1;
+import info.limpet.stackedcharts.model.Chart;
 
-  public AddChartCommand(final List<Chart> charts, final Chart chart)
-  {
-    this.chart = chart;
-    this.charts = charts;
-  }
+public class AddChartCommand extends Command {
+	private final Chart chart;
+	private final List<Chart> charts;
+	private int index = -1;
 
-  public AddChartCommand(final List<Chart> charts, final Chart chart,
-      final int index)
-  {
-    this(charts, chart);
-    this.index = index;
-  }
+	public AddChartCommand(final List<Chart> charts, final Chart chart) {
+		this.chart = chart;
+		this.charts = charts;
+	}
 
-  @Override
-  public void execute()
-  {
-    if (index != -1)
-    {
-      charts.add(index, chart);
-    }
-    else
-    {
-      charts.add(chart);
-    }
-  }
+	public AddChartCommand(final List<Chart> charts, final Chart chart, final int index) {
+		this(charts, chart);
+		this.index = index;
+	}
 
-  @Override
-  public void undo()
-  {
-    index = charts.indexOf(chart);
-    charts.remove(chart);
-  }
+	@Override
+	public void execute() {
+		if (index != -1) {
+			charts.add(index, chart);
+		} else {
+			charts.add(chart);
+		}
+	}
+
+	@Override
+	public void undo() {
+		index = charts.indexOf(chart);
+		charts.remove(chart);
+	}
 }

@@ -1,45 +1,165 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
- *
- *    (C) 2000-2014, PlanetMayo Ltd
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+
 package ASSET.Participants;
 
-/**
- * Title:        ASSET Simulator
- * Description:  Advanced Scenario Simulator for Evaluation of Tactics
- * Copyright:    Copyright (c) 2001
- * Company:      PlanetMayo Ltd
- * @author Ian Mayo
- * @version 1.0
- */
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
-import java.util.*;
-
-import ASSET.*;
+import ASSET.ParticipantType;
+import ASSET.ScenarioType;
 import ASSET.Models.SensorType;
 import ASSET.Models.Detection.DetectionList;
-import ASSET.Models.Movement.*;
+import ASSET.Models.Movement.SSMovementCharacteristics;
+import ASSET.Models.Movement.SimpleDemandedStatus;
 import ASSET.Models.Sensor.SensorList;
 import ASSET.Models.Vessels.Radiated.RadiatedCharacteristics;
-import MWC.GenericData.*;
+import MWC.GenericData.WorldAcceleration;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldSpeed;
 
-public class CoreParticipant implements ParticipantType, java.io.Serializable
-{
+public class CoreParticipant implements ParticipantType, java.io.Serializable {
+
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	public static class ParticipantTest extends junit.framework.TestCase {
+		protected class DecidedListener implements ParticipantDecidedListener {
+			@Override
+			public void newDecision(final String state, final ASSET.Participants.DemandedStatus dem_stat) {
+				dem_state = state;
+				dem_status = dem_stat;
+			}
+
+			@Override
+			public void restart(final ScenarioType scenario) {
+
+			}
+		}
+
+		public class DetectedListener implements ParticipantDetectedListener {
+			@Override
+			public void newDetections(final ASSET.Models.Detection.DetectionList list) {
+				newDetectionList = list;
+			}
+
+			@Override
+			public void restart(final ScenarioType scenario) {
+
+			}
+		}
+
+		protected class MovedListener implements ParticipantMovedListener {
+			@Override
+			public void moved(final ASSET.Participants.Status newStatus) {
+				newStat = newStatus;
+			}
+
+			@Override
+			public void restart(final ScenarioType scenario) {
+
+			}
+		}
+
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		ASSET.Participants.Status newStat = null;
+
+		String dem_state = null;
+
+		ASSET.Participants.DemandedStatus dem_status = null;
+
+		ASSET.Models.Detection.DetectionList newDetectionList = null;
+
+		public ParticipantTest(final String val) {
+			super(val);
+		}
+
+		public void testParticipantStepping() {
+			// setup the world model
+			MWC.GenericData.WorldLocation.setModel(new MWC.Algorithms.EarthModels.CompletelyFlatEarth());
+
+			final ParticipantType part = new CoreParticipant(12);
+			part.setMovementModel(new ASSET.Models.Movement.CoreMovement());
+			part.setMovementChars(new SSMovementCharacteristics("here",
+					new WorldAcceleration(1, WorldAcceleration.M_sec_sec),
+					new WorldAcceleration(1, WorldAcceleration.M_sec_sec), 0, new WorldSpeed(20, WorldSpeed.M_sec),
+					new WorldSpeed(1, WorldSpeed.M_sec), new WorldDistance(200, WorldDistance.METRES),
+					new WorldSpeed(1, WorldSpeed.M_sec), new WorldSpeed(1, WorldSpeed.M_sec),
+					new WorldDistance(100, WorldDistance.METRES), new WorldDistance(1, WorldDistance.METRES)));
+
+			// initialise the participant
+			final Status newStat1 = new Status(part.getId(), 0);
+			newStat1.setLocation(new MWC.GenericData.WorldLocation(0.0, 0.0, 0));
+			newStat1.setCourse(45);
+			newStat1.setSpeed(new WorldSpeed(12, WorldSpeed.M_sec));
+			part.setStatus(newStat1);
+
+			// create the dummy decision model
+			final ASSET.Models.Decision.Movement.Transit transit = new ASSET.Models.Decision.Movement.Transit();
+			transit.setLoop(false);
+			final MWC.GenericData.WorldPath path = new MWC.GenericData.WorldPath();
+			path.addPoint(new MWC.GenericData.WorldLocation(1, 1, 0));
+			path.addPoint(new MWC.GenericData.WorldLocation(1.1, 0.9, 0));
+			transit.setDestinations(path);
+			part.setDecisionModel(transit);
+
+			// setup the listeners
+			final MovedListener mover = new MovedListener();
+			part.addParticipantMovedListener(mover);
+
+			final DecidedListener decider = new DecidedListener();
+			part.addParticipantDecidedListener(decider);
+
+			// give him some sensors
+
+			// make first step
+			final ASSET.Scenario.CoreScenario theScenario = new ASSET.Scenario.CoreScenario();
+			part.doDecision(0, 10000, theScenario);
+			part.doMovement(0, 10000, theScenario);
+			part.doDetection(0, 10000, theScenario);
+
+			assertEquals("moved forward correct time", 10000, this.newStat.getTime());
+			assertEquals("new decision activity is correct", transit.getActivity(), this.dem_state);
+			assertEquals("new dem state is correct", 45d, ((SimpleDemandedStatus) this.dem_status).getCourse(), 0.001);
+			assertEquals("no detections made (no sensors)", null, this.newDetectionList);
+
+			// make second step
+			part.doDecision(10000, 20000, theScenario);
+			part.doMovement(10000, 20000, theScenario);
+			part.doDetection(10000, 20000, theScenario);
+			assertEquals("moved forward correct time", 20000, this.newStat.getTime());
+			assertEquals("new decision activity is correct", transit.getActivity(), this.dem_state);
+			assertEquals("new dem state is correct", 45d, ((SimpleDemandedStatus) this.dem_status).getCourse(), 0.001);
+			assertEquals("no detections made (no sensors)", null, this.newDetectionList);
+
+		}
+	}
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
+
+	/**
+	 * the message we use when there's F/A happending
+	 */
+	public static final String INACTIVE_DESCRIPTOR = "inactive";
 
 	// //////////////////////////////////////////////////////
 	// member variables
@@ -67,13 +187,13 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	/**
 	 * the current set of detections
 	 */
-	private DetectionList _myNewDetections;
+	private final DetectionList _myNewDetections;
 
 	/**
 	 * our list of third party detections (such as those from weapon in the water,
 	 * sonar buoy)
 	 */
-	private ASSET.Models.Detection.DetectionList _myRemoteDetections = new DetectionList();
+	private final ASSET.Models.Detection.DetectionList _myRemoteDetections = new DetectionList();
 
 	/**
 	 * our id number
@@ -87,7 +207,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 
 	/**
 	 * whether we are 'alive' in the scenario
-	 * 
+	 *
 	 */
 	private boolean _isAlive = true;
 
@@ -103,7 +223,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 
 	/**
 	 * whether to paint decisions for this object
-	 * 
+	 *
 	 */
 	private boolean _paintDecisions;
 
@@ -154,34 +274,30 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	 */
 	private Vector<ParticipantDecidedListener> _participantDecidedListeners;
 
+	// //////////////////////////////////////////////////////
+	// constructor
+	// /////////////////////////////////////////////////////
+
 	/**
 	 * list of people listening out for any detections
 	 */
 	private Vector<ParticipantDetectedListener> _participantDetectedListeners;
 
 	/**
-	 * the message we use when there's F/A happending
+	 * null constructor, used for reading in data from file?
 	 */
-	public static final String INACTIVE_DESCRIPTOR = "inactive";
+	public CoreParticipant(final int id) {
+		this(id, null, null, new java.util.Date().toString());
+	}
 
 	// //////////////////////////////////////////////////////
 	// constructor
 	// /////////////////////////////////////////////////////
 
 	/**
-	 * null constructor, used for reading in data from file?
-	 */
-	public CoreParticipant(final int id)
-	{
-		this(id, null, null, new java.util.Date().toString());
-	}
-
-	/**
 	 * normal constructor
 	 */
-	protected CoreParticipant(final int id, final Status status,
-			final DemandedStatus demStatus, final String name)
-	{
+	protected CoreParticipant(final int id, final Status status, final DemandedStatus demStatus, final String name) {
 		_myId = id;
 		setStatus(status);
 		setDemandedStatus(demStatus);
@@ -191,71 +307,62 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 		_myNewDetections = new DetectionList();
 	}
 
-	// //////////////////////////////////////////////////////
-	// constructor
-	// /////////////////////////////////////////////////////
+	@Override
+	public void addParticipantDecidedListener(final ParticipantDecidedListener list) {
+		if (_participantDecidedListeners == null)
+			_participantDecidedListeners = new Vector<ParticipantDecidedListener>(1, 2);
 
-	public String toString()
-	{
-		return getName();
+		_participantDecidedListeners.add(list);
+	}
+
+	@Override
+	public void addParticipantDetectedListener(final ParticipantDetectedListener list) {
+		if (_participantDetectedListeners == null)
+			_participantDetectedListeners = new Vector<ParticipantDetectedListener>(1, 2);
+
+		_participantDetectedListeners.add(list);
+	}
+
+	// ///////////////////////////////////////////////////
+	// manage our listeners
+	// ///////////////////////////////////////////////////
+	@Override
+	public void addParticipantMovedListener(final ParticipantMovedListener list) {
+		if (_participantMovedListeners == null)
+			_participantMovedListeners = new Vector<ParticipantMovedListener>(1, 2);
+
+		_participantMovedListeners.add(list);
 	}
 
 	/**
-	 * the name of this participant
+	 * add a sensor to this participant
 	 */
-	public String getName()
-	{
-		return _myName;
-	}
-
-	/**
-	 * the name of this participant
-	 */
-	public void setName(final String val)
-	{
-		_myName = val;
-	}
-
-	/**
-	 * the status of this participant
-	 */
-	public Status getStatus()
-	{
-		return _myStatus;
-	}
-
-	/**
-	 * the demanded status of this participant
-	 */
-	public DemandedStatus getDemandedStatus()
-	{
-		return _myDemandedStatus;
+	@Override
+	public void addSensor(final ASSET.Models.SensorType sensor) {
+		_mySensors.add(sensor);
 	}
 
 	/**
 	 * perform the decision portion of the step
 	 */
-	public void doDecision(long oldTime, long newTime, ScenarioType scenario)
-	{
+	@Override
+	public void doDecision(final long oldTime, final long newTime, final ScenarioType scenario) {
 		// ////////////////////////////////////////////////
 		// pre-processing for special situation on first step
 		// ////////////////////////////////////////////////
 		// just check if we have a time value for our status
-		if (_myStatus.getTime() == -1)
-		{
+		if (_myStatus.getTime() == -1) {
 			_myStatus.setTime(scenario.getTime());
 		}
 
 		// do we have a demanded status? We may not do in the first step
 		if (_myDemandedStatus == null)
-			_myDemandedStatus = new SimpleDemandedStatus(_myStatus.getTime(),
-					_myStatus);
+			_myDemandedStatus = new SimpleDemandedStatus(_myStatus.getTime(), _myStatus);
 
 		final DemandedStatus oldDemStatus = _myDemandedStatus;
 
 		// do decision cycle
-		if (_decisionModel != null)
-		{
+		if (_decisionModel != null) {
 			// take a copy of the demanded status for the decision models to use
 
 			// check if this is our first step (& we don't have a dem status)
@@ -263,20 +370,15 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 			if (_myDemandedStatus != null)
 				copyDemStatus = DemandedStatus.copy(newTime, _myDemandedStatus);
 
-			_myDemandedStatus = _decisionModel.decide(_myStatus,
-					this.getMovementChars(), copyDemStatus, _myNewDetections, scenario,
-					newTime);
+			_myDemandedStatus = _decisionModel.decide(_myStatus, this.getMovementChars(), copyDemStatus,
+					_myNewDetections, scenario, newTime);
 		}
 
 		// if we haven't got a way ahead, continue in steady state
-		if (_myDemandedStatus == null)
-		{
-			_myDemandedStatus = new SimpleDemandedStatus(_myStatus.getTime(),
-					_myStatus);
+		if (_myDemandedStatus == null) {
+			_myDemandedStatus = new SimpleDemandedStatus(_myStatus.getTime(), _myStatus);
 			_myActivity = INACTIVE_DESCRIPTOR;
-		}
-		else
-		{
+		} else {
 			if (_decisionModel != null)
 				_myActivity = _decisionModel.getActivity();
 			else
@@ -284,8 +386,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 		}
 
 		// and fire the update
-		if ((oldDemStatus != _myDemandedStatus)
-				|| (!_myActivity.equals(_myLastActivity)))
+		if ((oldDemStatus != _myDemandedStatus) || (!_myActivity.equals(_myLastActivity)))
 			fireDecided(_myActivity, _myDemandedStatus);
 
 		_myLastActivity = _myActivity;
@@ -294,12 +395,11 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	/**
 	 * perform the detection portion of the step
 	 */
-	public void doDetection(long oldtime, long newTime, ScenarioType scenario)
-	{
+	@Override
+	public void doDetection(final long oldtime, final long newTime, final ScenarioType scenario) {
 		// do detection cycle
 		if (_mySensors != null)
-			_mySensors.detects(scenario.getEnvironment(), _myNewDetections, this,
-					scenario, newTime);
+			_mySensors.detects(scenario.getEnvironment(), _myNewDetections, this, scenario, newTime);
 
 		// get detections from any remote sensors (sonar buoy, weapon in the water,
 		// ..)
@@ -315,17 +415,68 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	}
 
 	/**
+	 * do the movement portion of the step
+	 *
+	 * @param newTime the new model time we're stepping to
+	 */
+	private void doMovement(final long newTime) {
+
+		// see if there are any sensor lineup changes
+		if (getSensorFit() != null) {
+			Iterator<SensorType> theSensors = getSensorFit().getSensors().iterator();
+
+			// do we have any demanded sensor states?
+			if (_myDemandedStatus != null) {
+				final Vector<DemandedSensorStatus> theStates = _myDemandedStatus.getSensorStates();
+				if (theStates != null) {
+					if (theStates.size() > 0) {
+
+						// yes, work through them
+						for (int i = 0; i < theStates.size(); i++) {
+							final DemandedSensorStatus sensorStatus = theStates.elementAt(i);
+
+							// and inform each sensor
+							while (theSensors.hasNext()) {
+								final SensorType thisSensor = theSensors.next();
+								if (thisSensor.getMedium() == sensorStatus.getMedium()) {
+									thisSensor.inform(sensorStatus);
+								}
+							}
+						}
+					}
+				}
+			}
+
+			// let the sensors update themselves
+			theSensors = getSensorFit().getSensors().iterator();
+			while (theSensors.hasNext()) {
+				final SensorType sensor = theSensors.next();
+				sensor.update(_myDemandedStatus, _myStatus, newTime);
+			}
+		}
+
+		// if we have a set of movement chars, do the move.
+		if (_movementChars != null) {
+			// do movement itself
+			_myStatus = _movement.step(newTime, _myStatus, _myDemandedStatus, _movementChars);
+		}
+
+		// do the state update cycle
+		updateStates(newTime);
+
+	}
+
+	/**
 	 * perform the movement portion of the step
 	 */
-	public void doMovement(long oldtime, long newTime, ScenarioType scenario)
-	{
+	@Override
+	public void doMovement(final long oldtime, final long newTime, final ScenarioType scenario) {
 
 		// remember the old status
 		final Status oldStatus = _myStatus;
 
 		// check we have movement
-		if (_movement == null)
-		{
+		if (_movement == null) {
 			_movement = new ASSET.Models.Movement.CoreMovement();
 		}
 
@@ -338,132 +489,55 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 
 	}
 
-	/**
-	 * do the movement portion of the step
-	 * 
-	 * @param newTime
-	 *          the new model time we're stepping to
-	 */
-	private void doMovement(final long newTime)
-	{
-
-		// see if there are any sensor lineup changes
-		if (getSensorFit() != null)
-		{
-			Iterator<SensorType> theSensors = getSensorFit().getSensors().iterator();
-
-			// do we have any demanded sensor states?
-			if (_myDemandedStatus != null)
-			{
-				Vector<DemandedSensorStatus> theStates = _myDemandedStatus
-						.getSensorStates();
-				if (theStates != null)
-				{
-					if (theStates.size() > 0)
-					{
-
-						// yes, work through them
-						for (int i = 0; i < theStates.size(); i++)
-						{
-							DemandedSensorStatus sensorStatus = theStates.elementAt(i);
-
-							// and inform each sensor
-							while (theSensors.hasNext())
-							{
-								SensorType thisSensor = theSensors.next();
-								if (thisSensor.getMedium() == sensorStatus.getMedium())
-								{
-									thisSensor.inform(sensorStatus);
-								}
-							}
-						}
-					}
-				}
-			}
-
-			// let the sensors update themselves
-			theSensors = getSensorFit().getSensors().iterator();
-			while (theSensors.hasNext())
-			{
-				SensorType sensor = theSensors.next();
-				sensor.update(_myDemandedStatus, _myStatus, newTime);
+	private void fireDecided(final String decision, final DemandedStatus dem_status) {
+		if (_participantDecidedListeners != null) {
+			final Iterator<ParticipantDecidedListener> it = _participantDecidedListeners.iterator();
+			while (it.hasNext()) {
+				final ParticipantDecidedListener pml = it.next();
+				pml.newDecision(decision, dem_status);
 			}
 		}
+	}
 
-		// if we have a set of movement chars, do the move.
-		if (_movementChars != null)
-		{
-			// do movement itself
-			_myStatus = _movement.step(newTime, _myStatus, _myDemandedStatus,
-					_movementChars);
+	protected void fireDetected(final ASSET.Models.Detection.DetectionList list) {
+		if (_participantDetectedListeners != null) {
+			final Iterator<ParticipantDetectedListener> it = _participantDetectedListeners.iterator();
+			while (it.hasNext()) {
+				final ParticipantDetectedListener pml = it.next();
+				pml.newDetections(list);
+			}
 		}
+	}
 
-		// do the state update cycle
-		updateStates(newTime);
-
+	private void fireMoved(final Status newStatus) {
+		if (_participantMovedListeners != null) {
+			final List<ParticipantMovedListener> syncL = Collections.synchronizedList(_participantMovedListeners);
+			final Iterator<ParticipantMovedListener> it = syncL.iterator();
+			while (it.hasNext()) {
+				final ParticipantMovedListener pml = it.next();
+				pml.moved(newStatus);
+			}
+		}
 	}
 
 	/**
-	 * use our state models to update the current set of vessel states
-	 * 
-	 * @param newTime
-	 *          the time we are stepping to
+	 * return what this participant is currently doing
 	 */
-	protected void updateStates(final long newTime)
-	{
-		// nothing to do in core class
-	}
-
-	/**
-	 * get the id of this participant
-	 */
-	public int getId()
-	{
-		return _myId;
+	@Override
+	public String getActivity() {
+		return _myActivity;
 	}
 
 	@Override
-	public boolean isAlive()
-	{
+	public boolean getAlive() {
 		return _isAlive;
-	}
-
-	@Override
-	public void setAlive(boolean val)
-	{
-		_isAlive = val;
-	}
-
-	@Override
-	public boolean getAlive()
-	{
-		return _isAlive;
-	}
-
-	/**
-	 * set the id of this participant
-	 */
-	public void setId(final int val)
-	{
-		_myId = val;
-
-		// update the id in the status
-		_myStatus.setId(_myId);
-	}
-
-	/**
-	 * set the maximum speed of this participant (kts)
-	 */
-	public ASSET.Models.Movement.MovementCharacteristics getMovementChars()
-	{
-		return _movementChars;
 	}
 
 	/**
 	 * find the list of detections for this participant
 	 */
-	public ASSET.Models.Detection.DetectionList getAllDetections()
-	{
+	@Override
+	public ASSET.Models.Detection.DetectionList getAllDetections() {
 		DetectionList res = null;
 		if (_mySensors != null)
 			res = _mySensors.getAllDetections();
@@ -472,43 +546,114 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	}
 
 	/**
-	 * find the list of current detections
+	 * return the category of the target
 	 */
-	public DetectionList getNewDetections()
-	{
-		return _myNewDetections;
+	@Override
+	public Category getCategory() {
+		return _myCategory;
 	}
 
 	/**
-	 * pass on the list of new detections
+	 * get the decision model for this participant
 	 */
-	public void newDetections(DetectionList detections)
-	{
-		// extend our list of third party detections with this one
-		_myRemoteDetections.extend(detections);
+	@Override
+	public ASSET.Models.DecisionType getDecisionModel() {
+		// give us a chain model if we need it
+		if (_decisionModel == null)
+			_decisionModel = new ASSET.Models.Decision.Waterfall();
+
+		return _decisionModel;
+	}
+
+	/**
+	 * the demanded status of this participant
+	 */
+	@Override
+	public DemandedStatus getDemandedStatus() {
+		return _myDemandedStatus;
+	}
+
+	/**
+	 * get the id of this participant
+	 */
+	@Override
+	public int getId() {
+		return _myId;
+	}
+
+	/**
+	 * set the maximum speed of this participant (kts)
+	 */
+	@Override
+	public ASSET.Models.Movement.MovementCharacteristics getMovementChars() {
+		return _movementChars;
 	}
 
 	/**
 	 * set the get the movement model used by this vessel
 	 */
-	public ASSET.Models.MovementType getMovementModel()
-	{
+	@Override
+	public ASSET.Models.MovementType getMovementModel() {
 		return _movement;
+	}
+
+	/**
+	 * the name of this participant
+	 */
+	@Override
+	public String getName() {
+		return _myName;
+	}
+
+	/**
+	 * find the list of current detections
+	 */
+	@Override
+	public DetectionList getNewDetections() {
+		return _myNewDetections;
+	}
+
+	/**
+	 * get the number of sensors we hold
+	 */
+	@Override
+	public int getNumSensors() {
+		int res = 0;
+		if (_mySensors != null)
+			res = _mySensors.getNumSensors();
+
+		return res;
+	}
+
+	@Override
+	public boolean getPaintDecisions() {
+		return _paintDecisions;
 	}
 
 	/**
 	 * the energy radiation characteristics for this participant
 	 */
-	public ASSET.Models.Vessels.Radiated.RadiatedCharacteristics getRadiatedChars()
-	{
+	@Override
+	public ASSET.Models.Vessels.Radiated.RadiatedCharacteristics getRadiatedChars() {
 		return _radiatedChars;
+	}
+
+	/**
+	 * get the radiated noise of this participant in this bearing in this medium
+	 */
+	@Override
+	public double getRadiatedNoiseFor(final int medium, final double brg_degs) {
+		final double vesselRadiated = _radiatedChars.radiatedEnergyFor(medium, getStatus(), brg_degs);
+		final double sensorRadiated = _mySensors.getRadiatedNoiseFor(medium);
+		final double res = vesselRadiated + sensorRadiated;
+		return res;
 	}
 
 	/**
 	 * the self-noise characteristics for this participant
 	 */
-	public ASSET.Models.Vessels.Radiated.RadiatedCharacteristics getSelfNoise()
-	{
+	@Override
+	public ASSET.Models.Vessels.Radiated.RadiatedCharacteristics getSelfNoise() {
 		RadiatedCharacteristics res = null;
 		// do we have a self noise?
 		if (_selfNoise == null)
@@ -520,68 +665,120 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	}
 
 	/**
-	 * get the radiated noise of this participant in this bearing in this medium
-	 */
-	public double getRadiatedNoiseFor(final int medium, final double brg_degs)
-	{
-		double vesselRadiated = _radiatedChars.radiatedEnergyFor(medium,
-				getStatus(), brg_degs);
-		double sensorRadiated = _mySensors.getRadiatedNoiseFor(medium);
-		double res = vesselRadiated + sensorRadiated;
-		return res;
-	}
-
-	/**
 	 * get the self noise of this participant in this bearing in this medium
 	 */
-	public double getSelfNoiseFor(final int medium, final double brg_degs)
-	{
+	@Override
+	public double getSelfNoiseFor(final int medium, final double brg_degs) {
 
-		double res = 0;
-		RadiatedCharacteristics selfNoise = getSelfNoise();
-		if (selfNoise != null)
-		{
-			Status status = getStatus();
+		final double res = 0;
+		final RadiatedCharacteristics selfNoise = getSelfNoise();
+		if (selfNoise != null) {
+			final Status status = getStatus();
 			selfNoise.radiatedEnergyFor(medium, status, brg_degs);
 		}
 		return res;
 	}
 
 	/**
+	 * get the indicated sensro
+	 *
+	 * @param index
+	 * @return
+	 */
+	@Override
+	public ASSET.Models.SensorType getSensorAt(final int index) {
+		return _mySensors.getSensor(index);
+	}
+
+	/**
+	 * get the sensors for this participant
+	 *
+	 * @return
+	 */
+	@Override
+	public SensorList getSensorFit() {
+		return _mySensors;
+	}
+
+	/**
+	 * the status of this participant
+	 */
+	@Override
+	public Status getStatus() {
+		return _myStatus;
+	}
+
+	@Override
+	public boolean isAlive() {
+		return _isAlive;
+	}
+
+	/**
+	 * pass on the list of new detections
+	 */
+	@Override
+	public void newDetections(final DetectionList detections) {
+		// extend our list of third party detections with this one
+		_myRemoteDetections.extend(detections);
+	}
+
+	/**
 	 * find out if this participant radiates this type of noise
-	 * 
-	 * @param medium
-	 *          the medium we're looking for
+	 *
+	 * @param medium the medium we're looking for
 	 * @return yes/no
 	 */
-	public boolean radiatesThisNoise(final int medium)
-	{
+	@Override
+	public boolean radiatesThisNoise(final int medium) {
 		// do we have any radiated chars?
 		boolean vesselRadiates = false;
-		
-		if(_radiatedChars != null)
-		{
+
+		if (_radiatedChars != null) {
 			// does the vessel radiate this?
 			vesselRadiates = _radiatedChars.radiatesThis(medium);
 		}
-		
+
 		// do any of the sensors radiate this?
-		boolean sensorRadiates = _mySensors.radiatesThisMedium(medium);
+		final boolean sensorRadiates = _mySensors.radiatesThisMedium(medium);
 
 		// return the combination of the two
 		return (vesselRadiates || sensorRadiates);
 	}
 
+	@Override
+	public WorldDistance rangeFrom(final WorldLocation point) {
+		final double dist = getStatus().getLocation().rangeFrom(point);
+		final WorldDistance res = new WorldDistance(dist, WorldDistance.DEGS);
+		return res;
+	}
+
+	@Override
+	public void removeParticipantDecidedListener(final ParticipantDecidedListener list) {
+		if (_participantDecidedListeners != null)
+			_participantDecidedListeners.remove(list);
+	}
+
+	@Override
+	public void removeParticipantDetectedListener(final ParticipantDetectedListener list) {
+		if (_participantDetectedListeners != null)
+			_participantDetectedListeners.remove(list);
+	}
+
+	@Override
+	public void removeParticipantMovedListener(final ParticipantMovedListener list) {
+		if (_participantMovedListeners != null)
+			_participantMovedListeners.remove(list);
+	}
+
 	/**
 	 * reset, to go back to the initial state
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
-	public void restart(ScenarioType scenario)
-	{
+	public void restart(final ScenarioType scenario) {
 		// reset the statuses
 		_myStatus = new Status(_myInitialStatus);
-		_myDemandedStatus = DemandedStatus.copy(_myStatus.getTime(),
-				_myInitialDemandedStatus);
+		_myDemandedStatus = DemandedStatus.copy(_myStatus.getTime(), _myInitialDemandedStatus);
 
 		// reset the other data
 		_myActivity = "inactive";
@@ -595,41 +792,35 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 			_mySensors.restart();
 
 		// inform the listeners
-		if (_participantDecidedListeners != null)
-		{
+		if (_participantDecidedListeners != null) {
 			// work on a copy of the list, in case it gets modified
-			Vector<ParticipantDecidedListener> tmpListeners = (Vector<ParticipantDecidedListener>) _participantDetectedListeners
+			final Vector<ParticipantDecidedListener> tmpListeners = (Vector<ParticipantDecidedListener>) _participantDetectedListeners
 					.clone();
 			final Iterator<ParticipantDecidedListener> it = tmpListeners.iterator();
-			while (it.hasNext())
-			{
+			while (it.hasNext()) {
 				final ParticipantDecidedListener pdl = it.next();
 				pdl.restart(scenario);
 			}
 		}
 
-		if (_participantDetectedListeners != null)
-		{
+		if (_participantDetectedListeners != null) {
 			// work on a copy of the list, in case it gets modified
-			Vector<ParticipantDetectedListener> tmpListeners = (Vector<ParticipantDetectedListener>) _participantDetectedListeners
+			final Vector<ParticipantDetectedListener> tmpListeners = (Vector<ParticipantDetectedListener>) _participantDetectedListeners
 					.clone();
 			final Iterator<ParticipantDetectedListener> it = tmpListeners.iterator();
-			while (it.hasNext())
-			{
+			while (it.hasNext()) {
 				final ParticipantDetectedListener ptl = it.next();
 				ptl.restart(scenario);
 			}
 		}
 
-		if (_participantMovedListeners != null)
-		{
+		if (_participantMovedListeners != null) {
 			// work on a copy of the list, in case it gets modified
-			Vector<ParticipantMovedListener> tmpListeners = (Vector<ParticipantMovedListener>) _participantMovedListeners
+			final Vector<ParticipantMovedListener> tmpListeners = (Vector<ParticipantMovedListener>) _participantMovedListeners
 					.clone();
 
 			final Iterator<ParticipantMovedListener> it = tmpListeners.iterator();
-			while (it.hasNext())
-			{
+			while (it.hasNext()) {
 				final ParticipantMovedListener pml = it.next();
 				pml.restart(scenario);
 			}
@@ -637,135 +828,124 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 
 	}
 
-	/**
-	 * set the decision model for this participant
-	 */
-	public void setDecisionModel(final ASSET.Models.DecisionType decision)
-	{
-		_decisionModel = decision;
-	}
-
-	/**
-	 * get the decision model for this participant
-	 */
-	public ASSET.Models.DecisionType getDecisionModel()
-	{
-		// give us a chain model if we need it
-		if (_decisionModel == null)
-			_decisionModel = new ASSET.Models.Decision.Waterfall();
-
-		return _decisionModel;
-	}
-
-	/**
-	 * get the number of sensors we hold
-	 */
-	public int getNumSensors()
-	{
-		int res = 0;
-		if (_mySensors != null)
-			res = _mySensors.getNumSensors();
-
-		return res;
-	}
-
-	/**
-	 * get the sensors for this participant
-	 * 
-	 * @return
-	 */
-	public SensorList getSensorFit()
-	{
-		return _mySensors;
-	}
-
-	/**
-	 * get the indicated sensro
-	 * 
-	 * @param index
-	 * @return
-	 */
-	public ASSET.Models.SensorType getSensorAt(final int index)
-	{
-		return _mySensors.getSensor(index);
-	}
-
-	/**
-	 * set the movement model for this participant
-	 */
-	public void setMovementModel(final ASSET.Models.MovementType movement)
-	{
-		_movement = movement;
-	}
-
 	@Override
-	public WorldDistance rangeFrom(WorldLocation point)
-	{
-		double dist = getStatus().getLocation().rangeFrom(point);
-		WorldDistance res = new WorldDistance(dist, WorldDistance.DEGS);
-		return res;
-	}
-
-	/**
-	 * add a sensor to this participant
-	 */
-	public void addSensor(final ASSET.Models.SensorType sensor)
-	{
-		_mySensors.add(sensor);
-	}
-
-	/**
-	 * return what this participant is currently doing
-	 */
-	public String getActivity()
-	{
-		return _myActivity;
-	}
-
-	/**
-	 * return the category of the target
-	 */
-	public Category getCategory()
-	{
-		return _myCategory;
+	public void setAlive(final boolean val) {
+		_isAlive = val;
 	}
 
 	/**
 	 * set the category
 	 */
-	public void setCategory(final Category val)
-	{
+	@Override
+	public void setCategory(final Category val) {
 		_myCategory = val;
+	}
+
+	/**
+	 * set the decision model for this participant
+	 */
+	@Override
+	public void setDecisionModel(final ASSET.Models.DecisionType decision) {
+		_decisionModel = decision;
+	}
+
+	/**
+	 * set the demanded status for this participant
+	 */
+	@Override
+	public void setDemandedStatus(final DemandedStatus val) {
+		_myDemandedStatus = val;
+		if (_myDemandedStatus != null)
+			_myInitialDemandedStatus = DemandedStatus.copy(_myDemandedStatus.getTime(), _myDemandedStatus);
+	}
+
+	/**
+	 * set the id of this participant
+	 */
+	public void setId(final int val) {
+		_myId = val;
+
+		// update the id in the status
+		_myStatus.setId(_myId);
 	}
 
 	/**
 	 * set the initial status for this vessel
 	 */
-	public void setInitialStatus(final Status val)
-	{
+	@Override
+	public void setInitialStatus(final Status val) {
 		_myInitialStatus = val;
+	}
+
+	/**
+	 * set the movement characteristics
+	 */
+	@Override
+	public void setMovementChars(final ASSET.Models.Movement.MovementCharacteristics moveChars) {
+		_movementChars = moveChars;
+	}
+
+	/**
+	 * set the movement model for this participant
+	 */
+	@Override
+	public void setMovementModel(final ASSET.Models.MovementType movement) {
+		_movement = movement;
+	}
+
+	/**
+	 * the name of this participant
+	 */
+	@Override
+	public void setName(final String val) {
+		_myName = val;
+	}
+
+	@Override
+	public void setPaintDecisions(final boolean paintDecisions) {
+		_paintDecisions = paintDecisions;
+	}
+
+	/**
+	 * set the radiated noise characteristics
+	 */
+	@Override
+	public void setRadiatedChars(final ASSET.Models.Vessels.Radiated.RadiatedCharacteristics radChars) {
+		_radiatedChars = radChars;
+	}
+
+	/**
+	 * set the self noise characteristics
+	 */
+	@Override
+	public void setSelfNoise(final ASSET.Models.Vessels.Radiated.RadiatedCharacteristics selfChars) {
+		_selfNoise = selfChars;
+	}
+
+	/**
+	 * set the sensor fit
+	 */
+	@Override
+	public void setSensorFit(final ASSET.Models.Sensor.SensorList sensorList) {
+		_mySensors = sensorList;
 	}
 
 	/**
 	 * set the status
 	 */
-	public void setStatus(final Status val)
-	{
+	@Override
+	public void setStatus(final Status val) {
 		// just check we have the right id for this status
-		if (val != null)
-		{
+		if (val != null) {
 			val.setId(this.getId());
 
 			// and store it
 			_myStatus = val;
 
 			// copy it to the initial status, if we haven't already got one
-			if (_myInitialStatus == null)
-			{
+			if (_myInitialStatus == null) {
 				_myInitialStatus = new Status(val);
-			}
-			else
-			{
+			} else {
 				// just do a quick check to ensure that we're not working with a dummy
 				// status
 				if (_myInitialStatus.getLocation() == null)
@@ -775,289 +955,18 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 
 	}
 
-	/**
-	 * set the demanded status for this participant
-	 */
-	public void setDemandedStatus(final DemandedStatus val)
-	{
-		_myDemandedStatus = val;
-		if (_myDemandedStatus != null)
-			_myInitialDemandedStatus = DemandedStatus.copy(
-					_myDemandedStatus.getTime(), _myDemandedStatus);
-	}
-
-	/**
-	 * set the sensor fit
-	 */
-	public void setSensorFit(final ASSET.Models.Sensor.SensorList sensorList)
-	{
-		_mySensors = sensorList;
-	}
-
-	/**
-	 * set the movement characteristics
-	 */
-	public void setMovementChars(
-			final ASSET.Models.Movement.MovementCharacteristics moveChars)
-	{
-		_movementChars = moveChars;
-	}
-
-	/**
-	 * set the radiated noise characteristics
-	 */
-	public void setRadiatedChars(
-			final ASSET.Models.Vessels.Radiated.RadiatedCharacteristics radChars)
-	{
-		_radiatedChars = radChars;
-	}
-
-	/**
-	 * set the self noise characteristics
-	 */
-	public void setSelfNoise(
-			final ASSET.Models.Vessels.Radiated.RadiatedCharacteristics selfChars)
-	{
-		_selfNoise = selfChars;
-	}
-
-	// ///////////////////////////////////////////////////
-	// manage our listeners
-	// ///////////////////////////////////////////////////
-	public void addParticipantMovedListener(final ParticipantMovedListener list)
-	{
-		if (_participantMovedListeners == null)
-			_participantMovedListeners = new Vector<ParticipantMovedListener>(1, 2);
-
-		_participantMovedListeners.add(list);
-	}
-
-	public void removeParticipantMovedListener(final ParticipantMovedListener list)
-	{
-		if (_participantMovedListeners != null)
-			_participantMovedListeners.remove(list);
-	}
-
-	public void addParticipantDecidedListener(
-			final ParticipantDecidedListener list)
-	{
-		if (_participantDecidedListeners == null)
-			_participantDecidedListeners = new Vector<ParticipantDecidedListener>(1,
-					2);
-
-		_participantDecidedListeners.add(list);
-	}
-
-	public void removeParticipantDecidedListener(
-			final ParticipantDecidedListener list)
-	{
-		if (_participantDecidedListeners != null)
-			_participantDecidedListeners.remove(list);
-	}
-
-	public void addParticipantDetectedListener(
-			final ParticipantDetectedListener list)
-	{
-		if (_participantDetectedListeners == null)
-			_participantDetectedListeners = new Vector<ParticipantDetectedListener>(
-					1, 2);
-
-		_participantDetectedListeners.add(list);
-	}
-
-	public void removeParticipantDetectedListener(
-			final ParticipantDetectedListener list)
-	{
-		if (_participantDetectedListeners != null)
-			_participantDetectedListeners.remove(list);
-	}
-
-	private void fireMoved(final Status newStatus)
-	{
-		if (_participantMovedListeners != null)
-		{
-			List<ParticipantMovedListener> syncL = Collections
-					.synchronizedList(_participantMovedListeners);
-			final Iterator<ParticipantMovedListener> it = syncL.iterator();
-			while (it.hasNext())
-			{
-				final ParticipantMovedListener pml = it.next();
-				pml.moved(newStatus);
-			}
-		}
-	}
-
-	protected void fireDetected(final ASSET.Models.Detection.DetectionList list)
-	{
-		if (_participantDetectedListeners != null)
-		{
-			final Iterator<ParticipantDetectedListener> it = _participantDetectedListeners
-					.iterator();
-			while (it.hasNext())
-			{
-				final ParticipantDetectedListener pml = it.next();
-				pml.newDetections(list);
-			}
-		}
-	}
-
-	private void fireDecided(final String decision,
-			final DemandedStatus dem_status)
-	{
-		if (_participantDecidedListeners != null)
-		{
-			final Iterator<ParticipantDecidedListener> it = _participantDecidedListeners
-					.iterator();
-			while (it.hasNext())
-			{
-				final ParticipantDecidedListener pml = it.next();
-				pml.newDecision(decision, dem_status);
-			}
-		}
-	}
-
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	public static class ParticipantTest extends junit.framework.TestCase
-	{
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public ParticipantTest(final String val)
-		{
-			super(val);
-		}
-
-		ASSET.Participants.Status newStat = null;
-
-		String dem_state = null;
-
-		ASSET.Participants.DemandedStatus dem_status = null;
-
-		ASSET.Models.Detection.DetectionList newDetectionList = null;
-
-		protected class DecidedListener implements ParticipantDecidedListener
-		{
-			public void newDecision(final String state,
-					final ASSET.Participants.DemandedStatus dem_stat)
-			{
-				dem_state = state;
-				dem_status = dem_stat;
-			}
-
-			public void restart(ScenarioType scenario)
-			{
-
-			}
-		}
-
-		public class DetectedListener implements ParticipantDetectedListener
-		{
-			public void newDetections(final ASSET.Models.Detection.DetectionList list)
-			{
-				newDetectionList = list;
-			}
-
-			public void restart(ScenarioType scenario)
-			{
-
-			}
-		}
-
-		protected class MovedListener implements ParticipantMovedListener
-		{
-			public void moved(final ASSET.Participants.Status newStatus)
-			{
-				newStat = newStatus;
-			}
-
-			public void restart(ScenarioType scenario)
-			{
-
-			}
-		}
-
-		public void testParticipantStepping()
-		{
-			// setup the world model
-			MWC.GenericData.WorldLocation
-					.setModel(new MWC.Algorithms.EarthModels.CompletelyFlatEarth());
-
-			final ParticipantType part = new CoreParticipant(12);
-			part.setMovementModel(new ASSET.Models.Movement.CoreMovement());
-			part.setMovementChars(new SSMovementCharacteristics("here",
-					new WorldAcceleration(1, WorldAcceleration.M_sec_sec),
-					new WorldAcceleration(1, WorldAcceleration.M_sec_sec), 0,
-					new WorldSpeed(20, WorldSpeed.M_sec), new WorldSpeed(1,
-							WorldSpeed.M_sec), new WorldDistance(200, WorldDistance.METRES),
-					new WorldSpeed(1, WorldSpeed.M_sec), new WorldSpeed(1,
-							WorldSpeed.M_sec), new WorldDistance(100, WorldDistance.METRES),
-					new WorldDistance(1, WorldDistance.METRES)));
-
-			// initialise the participant
-			final Status newStat1 = new Status(part.getId(), 0);
-			newStat1.setLocation(new MWC.GenericData.WorldLocation(0.0, 0.0, 0));
-			newStat1.setCourse(45);
-			newStat1.setSpeed(new WorldSpeed(12, WorldSpeed.M_sec));
-			part.setStatus(newStat1);
-
-			// create the dummy decision model
-			final ASSET.Models.Decision.Movement.Transit transit = new ASSET.Models.Decision.Movement.Transit();
-			transit.setLoop(false);
-			final MWC.GenericData.WorldPath path = new MWC.GenericData.WorldPath();
-			path.addPoint(new MWC.GenericData.WorldLocation(1, 1, 0));
-			path.addPoint(new MWC.GenericData.WorldLocation(1.1, 0.9, 0));
-			transit.setDestinations(path);
-			part.setDecisionModel(transit);
-
-			// setup the listeners
-			final MovedListener mover = new MovedListener();
-			part.addParticipantMovedListener(mover);
-
-			final DecidedListener decider = new DecidedListener();
-			part.addParticipantDecidedListener(decider);
-
-			// give him some sensors
-
-			// make first step
-			final ASSET.Scenario.CoreScenario theScenario = new ASSET.Scenario.CoreScenario();
-			part.doDecision(0, 10000, theScenario);
-			part.doMovement(0, 10000, theScenario);
-			part.doDetection(0, 10000, theScenario);
-
-			assertEquals("moved forward correct time", 10000, this.newStat.getTime());
-			assertEquals("new decision activity is correct", transit.getActivity(),
-					this.dem_state);
-			assertEquals("new dem state is correct", 45d,
-					((SimpleDemandedStatus) this.dem_status).getCourse(), 0.001);
-			assertEquals("no detections made (no sensors)", null,
-					this.newDetectionList);
-
-			// make second step
-			part.doDecision(10000, 20000, theScenario);
-			part.doMovement(10000, 20000, theScenario);
-			part.doDetection(10000, 20000, theScenario);
-			assertEquals("moved forward correct time", 20000, this.newStat.getTime());
-			assertEquals("new decision activity is correct", transit.getActivity(),
-					this.dem_state);
-			assertEquals("new dem state is correct", 45d,
-					((SimpleDemandedStatus) this.dem_status).getCourse(), 0.001);
-			assertEquals("no detections made (no sensors)", null,
-					this.newDetectionList);
-
-		}
-	}
-
 	@Override
-	public boolean getPaintDecisions()
-	{
-		return _paintDecisions;
+	public String toString() {
+		return getName();
 	}
 
-	@Override
-	public void setPaintDecisions(boolean paintDecisions)
-	{
-		_paintDecisions = paintDecisions;
+	/**
+	 * use our state models to update the current set of vessel states
+	 *
+	 * @param newTime the time we are stepping to
+	 */
+	protected void updateStates(final long newTime) {
+		// nothing to do in core class
 	}
 
 }

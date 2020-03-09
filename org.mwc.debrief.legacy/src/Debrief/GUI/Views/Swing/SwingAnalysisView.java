@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: SwingAnalysisView.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.4 $
@@ -197,494 +198,437 @@
 // Initial revision
 //
 
-
 package Debrief.GUI.Views.Swing;
+
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Insets;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JToolBar;
+import javax.swing.border.TitledBorder;
 
 import Debrief.GUI.Frames.Session;
 import Debrief.GUI.Frames.Swing.SwingSession;
 import Debrief.GUI.Tote.Swing.SwingStepControl;
 import Debrief.GUI.Tote.Swing.SwingStepControl.ImageToggleButton;
 import Debrief.GUI.Views.AnalysisView;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Chart.Swing.SwingChart;
 import MWC.GUI.Dialogs.AWT.RowLayout;
 import MWC.GUI.Properties.Swing.SwingPropertiesPanel;
-import MWC.GUI.ToolParent;
 import MWC.GUI.Tools.Chart.Pan;
 import MWC.GUI.Tools.Chart.Swing.SwingCursorPosition;
 import MWC.GUI.Tools.Swing.SwingToolbar;
-
-import javax.swing.*;
-import javax.swing.border.TitledBorder;
-import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 /**
  * Swing implementation of analysis view.
  *
  * @author administrator
  */
-public class SwingAnalysisView extends AnalysisView
-{
+public class SwingAnalysisView extends AnalysisView {
 
-  ///////////////////////////////////////////////
-  // member variables
-  ///////////////////////////////////////////////
+	///////////////////////////////////////////////
+	// member variables
+	///////////////////////////////////////////////
 
-  /**
-   * the whole of the panel we are contained in.
-   */
-  private JSplitPane _thePanel;
-
-  /**
-   * the left-hand pane which contains the toolbar and message window.
-   */
-  private JSplitPane _theInfoPanel;
-
-  /**
-   * the tote/properties panel.
-   */
-  private SwingPropertiesPanel _theProperties;
-
-  /**
-   * the status bar at the foot of the page.
-   */
-  private MWC.GUI.Swing.SwingStatusBar _theStatusBar;
-
-  /**
-   * the holder for the toolbars.
-   */
-  private javax.swing.JTabbedPane _toolbarHolder;
-
-  /**
-   * the thingy which looks after the painters - keep a reference so that we can
-   * explicitly clear it our later.
-   */
-  private Debrief.GUI.Tote.Painters.PainterManager _painterManager;
-
-  /**
-   * the chart providing an overview of the data.
-   */
-  SwingChart _overviewChart;
-
-
-
-  ///////////////////////////////////////////////
-  // constructor
-  ///////////////////////////////////////////////
-  /**
-   * constructor, of course.
-   *
-   * @param theParent  the toolparent = where we control the cursor from
-   * @param theSession the Session to put in the view
-   */
-  public SwingAnalysisView(final ToolParent theParent,
-                           final SwingSession theSession)
-  {
-    super(theParent, theSession);
-
-    // create the GUI
-    initForm(theSession);
-
-    // now build the toolbar
-    buildTheInterface();
-
-
-    addExtraToolbarButtons();
-
-
-    createPainters(theSession);
-
-
-  }
-
-
-
-  ///////////////////////////////////////////////
-  // member functions
-  ///////////////////////////////////////////////
-
-  /**
-   * return the Swing panel we are contained in.
-   *
-   * @return a Panel representing the View
-   */
-  public final Component getPanel()
-  {
-    return _thePanel;
-  }
-
-
-  /**
-   * get ready to close, set all local references to null, to assist garbage
-   * collection.
-   */
-  public void close()
-  {
-    // clear out this list
-    _painterManager.closeMe();
-    _painterManager = null;
-
-
-    // get the parent to close first
-    super.close();
-
-    // now tidy up the object we manage
-    if (_thePanel != null)
-    {
-      _thePanel.removeAll();
-    }
-    if (_theInfoPanel != null)
-    {
-      _theInfoPanel.removeAll();
-    }
-    if (_toolbarHolder != null)
-    {
-      _toolbarHolder.removeAll();
-    }
-    if (_theProperties != null)
-    {
-      _theProperties.removeAll();
-      _theProperties.closeMe();
-
-    }
-    if (_theStatusBar != null)
-    {
-      _theStatusBar.removeAll();
-    }
-
-  }
-
-  /**
-   * member method to add any extra toolbar buttons we're after.
-   */
-  private void addExtraToolbarButtons()
-  {
-    // create the manual/auto button
-    final ImageToggleButton overviewBtn = new SwingStepControl.ImageToggleButton("View overview", "images/overview.png");
-    overviewBtn.setMargin(new Insets(0, 5, 0, 0));
-    overviewBtn.setSelected(false);
-    overviewBtn.addItemListener(new ItemListener()
-    {
-      public void itemStateChanged(final ItemEvent e)
-      {
-        _overviewChart.getPanel().setVisible(!_overviewChart.getPanel().isVisible());
-      }
-    });
-    overviewBtn.setToolTipText("Show/Hide overview chart");
-
-    // find the right toolbar tab
-    final int index = _toolbarHolder.indexOfTab("View");
-    final JPanel holder = (JPanel) _toolbarHolder.getComponentAt(index);
-    // find our component
-    final int len = holder.getComponentCount();
-    for (int i = 0; i < len; i++)
-    {
-      final Component cp = holder.getComponent(i);
-      if (cp.getName().equals(holder.getName()))
-      {
-        final SwingToolbar thisToolbar = (SwingToolbar) cp;
-        thisToolbar.add(overviewBtn);
-        break;
-      }
-    }
-  }
-
-
-  /**
-   * member method to create a toolbar button for this tool.
-   *
-   * @param item the description of this tool
-   */
-  protected final void addThisTool(final MWC.GUI.Tools.MenuItemInfo item)
-  {
-    // see which toolbar this is on
-    final String toolbar = item.getMenuName();
-
-    
-    
-    SwingToolbar thisToolbar = null;
-
-    // check if we have a toolbar for this tool
-    final int index = _toolbarHolder.indexOfTab(toolbar);
-
-    if (index == -1)
-    {
-      // we obviously have to create this toolbar, go for it
-      thisToolbar = new SwingToolbar(MWC.GUI.Toolbar.HORIZONTAL, toolbar, (SwingSession) super._theSession);
-      thisToolbar.setLayout(new RowLayout());
-      thisToolbar.setMinimumSize(new Dimension(0, 0));
-      // we also put it into a panel, to assist when its floating
-      final JPanel jp = new JPanel();
-      jp.setLayout(new BorderLayout());
-      jp.setName(toolbar);
-      jp.add("West", thisToolbar);
-
-      // finally add the panel to the toolbar
-      _toolbarHolder.add(toolbar, jp);
-    }
-    else
-    {
-      final JPanel holder = (JPanel) _toolbarHolder.getComponentAt(index);
-      // find our component
-      final int len = holder.getComponentCount();
-      for (int i = 0; i < len; i++)
-      {
-        final Component cp = holder.getComponent(i);
-        if (cp.getName().equals(holder.getName()))
-        {
-          thisToolbar = (SwingToolbar) cp;
-          break;
-        }
-      }
-      //   thisToolbar = (SwingToolbar)_toolbarHolder.getComponentAt(index);
-    }
-
-    if (thisToolbar == null)
-    {
-      return;
-    }
-
-    // see if this is an action button, or it toggles as part of a group
-    if (item.getToggleGroup() == null)
-    {
-      thisToolbar.addTool(item.getTool(),
-                          item.getShortCut(),
-                          item.getMnemonic());
-    }
-    else
-    {
-      thisToolbar.addToggleTool(item.getToggleGroup(),
-                                item.getTool(),
-                                item.getShortCut(),
-                                item.getMnemonic());
-    }
-  }
-
-
-  /**
-   * Description of the Method.
-   *
-   * @param theSession Description of Parameter
-   */
-  private void createPainters(final SwingSession theSession)
-  {
-
-    // create our painters
-    final Debrief.GUI.Tote.Painters.SnailPainter sp =
-      new Debrief.GUI.Tote.Painters.SnailPainter(getChart(),
-                                                 theSession.getData(),
-                                                 getTote());
-    final Debrief.GUI.Tote.Painters.TotePainter tp
-      = new Debrief.GUI.Tote.Painters.TotePainter(getChart(),
-                                                  theSession.getData(),
-                                                  getTote());
-    final Debrief.GUI.Tote.Painters.RelativePainter rp =
-      new Debrief.GUI.Tote.Painters.RelativePainter(getChart(),
-                                                    theSession.getData(),
-                                                    getTote());
-
-
-    // add the painters to the manager
-    _painterManager = new Debrief.GUI.Tote.Painters.PainterManager(getTote().getStepper());
-    _painterManager.addPainter(tp);
-    _painterManager.addPainter(sp);
-    _painterManager.addPainter(rp);
-    _painterManager.setCurrentListener(tp);
-  }
-
-
-  /**
-   * layout the controls within our panel.
-   *
-   * @param theSession Description of Parameter
-   */
-  void initForm(final Session theSession)
-  {
-    // create the panel
-    _thePanel = new JSplitPane();
-
-    // create the main components of the panel
-    final SwingChart _theChart = new SwingChart(theSession.getData());
-
-    // toolbar - we now have a tabbed panel of toolbars, to save space!
-    _toolbarHolder = new MyToolbarHolder();
-
-    // the properties panel
-    _theProperties = new SwingPropertiesPanel(theSession.getData(), theSession
-        .getUndoBuffer(), super.getParent(), (SwingSession) theSession);
-
-    // the tote itself (part of the properties panel)
-    final Debrief.GUI.Tote.Swing.SwingTote _theTote = new
-      Debrief.GUI.Tote.Swing.SwingTote(_theProperties,
-                                       theSession.getData(),
-                                       _theChart,
-                                       theSession.getUndoBuffer(),
-                                       (SwingSession) theSession, getParent());
-
-    // create the overview chart aswell
-    _overviewChart = new SwingOverviewChart(theSession.getData(), _theChart, this.getParent());
-
-    // start off with the overview chart hidden
-    _overviewChart.getPanel().setVisible(false);
-
-    // try to put another border around the chart
-    final JComponent cp = (JComponent) _overviewChart.getPanel();
-    cp.setBorder(BorderFactory.createEtchedBorder());
-
-    final JPanel overviewHolder = new JPanel()
-    {
-      /**
-			 * 
+	/**
+	 * our own implementation of a tabbed toolbar - the only difference is that when
+	 * we drop it, we check that what we're receiving is in fact a dropped toolbar
+	 * and set it's name correctly.
+	 *
+	 * @author administrator
+	 */
+	private static final class MyToolbarHolder extends JTabbedPane {
+		/**
+			 *
 			 */
-			private static final long serialVersionUID = 1L;
-
-			public Dimension getPreferredSize()
-      {
-        return new Dimension(200, 200);
-      }
-    };
-
-    overviewHolder.setBorder(BorderFactory.
-                             createTitledBorder(BorderFactory.createLoweredBevelBorder(),
-                                                "Overview Chart", TitledBorder.LEFT,
-                                                TitledBorder.TOP,
-                                                overviewHolder.getFont().deriveFont(8)));
-    overviewHolder.setLayout(new BorderLayout());
-    overviewHolder.add("Center", _overviewChart.getPanel());
-
-    // put the tote & overview into a holder
-    final JPanel toteHolder = new JPanel();
-    toteHolder.setName("Tote");
-    toteHolder.setLayout(new BorderLayout());
-    toteHolder.add("North", _theTote.getPanel());
-    toteHolder.add("Center", overviewHolder);
-
-    // put the tote into the Properties panel - as a "Non-removable" item
-    // try putting the tote into a toolbar
-    _theProperties.addThisPanel(toteHolder);
-
-    // tell the canvas projector where to get it's relative plotting data from
-    _theChart.getCanvas().getProjection().setRelativeProjectionParent(_theTote);
-
-    // create the general status bar (used for rng/brg measurements)
-    _theStatusBar = new MWC.GUI.Swing.SwingStatusBar(_theProperties, getParent());
-
-    // and configure the tote
-    final JLabel cursorPos = new JLabel("000 00 00.00 N 000 00 00.00W");
-    _theChart.addCursorMovedListener(new SwingCursorPosition(_theChart, cursorPos));
-
-    final Pan myPanner = new Pan(_theChart, this.getParent(), null, true);
-    myPanner.execute();
-
-    /////////////////////////////////////////////////
-    // pass objects back to parent
-    //////////////////////////////////////////////////
-
-    // inform the parent of the components
-    setChart(_theChart);
-    setProperties(_theProperties);
-    setTote(_theTote);
-    setStatusBar(_theStatusBar);
-
-    //////////////////////////////////////////////////////
-    // property editing bits
-    /////////////////////////////////////////////////////
-    final JPanel thePropertiesHolder = new JPanel();
-    thePropertiesHolder.setLayout(new BorderLayout());
-
-    // try to put the properties into a toolbar parent
-    thePropertiesHolder.add(_theProperties, BorderLayout.CENTER);
-
-    // Put in container to hold two text boxes at the foot of the page
-    final JToolBar statuses = new JToolBar();
-    statuses.setUI(new MWC.GUI.Tools.Swing.MyMetalToolBarUI((SwingSession) super._theSession));
-    statuses.add(_theStatusBar);
-    statuses.add(cursorPos);
-    thePropertiesHolder.add(statuses, BorderLayout.SOUTH);
-
-    ///////////////////////////////////////////////////////
-    // layout bits
-    ///////////////////////////////////////////////////////
-
-    // set up the info panel
-    _theInfoPanel = new JSplitPane();
-    _theInfoPanel.setTopComponent(_toolbarHolder);
-    _theInfoPanel.setOrientation(JSplitPane.VERTICAL_SPLIT);
-    _theInfoPanel.setBottomComponent(thePropertiesHolder);
-
-    // put the bits in the main panel
-    _thePanel.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-    _thePanel.setLeftComponent(_theInfoPanel);
-    _thePanel.setRightComponent(_theChart.getPanel());
-    _thePanel.setContinuousLayout(false);
-    _thePanel.setOneTouchExpandable(true);
-
-    // force the panel to be slightly wider, it's just too narrow on min size
-    // _thePanel.setDividerLocation(_theInfoPanel.getMinimumSize().width);
-    _thePanel.setDividerLocation(_theInfoPanel.getMinimumSize().width + 50);
-
-    _thePanel.doLayout();
-
-    /////////////////////////////////////////////////
-    // drag drop support bits
-    /////////////////////////////////////////////////
-    _dropSupport.addComponent(_theChart.getPanel());
-
-  }
-
-
-  /**
-   * our own implementation of a tabbed toolbar - the only difference is that
-   * when we drop it, we check that what we're receiving is in fact a dropped
-   * toolbar and set it's name correctly.
-   *
-   * @author administrator
-   */
-  private static final class MyToolbarHolder extends JTabbedPane
-  {
-    /**
-		 * 
-		 */
 		private static final long serialVersionUID = 1L;
 
+		/**
+		 * Constructor for the MyToolbarHolder object.
+		 */
+		public MyToolbarHolder() {
+			// shrink the font a little
+			this.setFont(this.getFont().deriveFont(10.0f));
+		}
 
 		/**
-     * Constructor for the MyToolbarHolder object.
-     */
-    public MyToolbarHolder()
-    {
-      // shrink the font a little
-      this.setFont(this.getFont().deriveFont(10.0f));
-    }
+		 * Add the component to this view.
+		 *
+		 * @param title     Description of Parameter
+		 * @param component Description of Parameter
+		 * @return Description of the Returned Value
+		 */
+		@Override
+		public final Component add(final String title, final Component component) {
+			final Component res;
+			// check if we are receiving a dropped toolbar
+			if (title.equals("North")) {
+				// a floating toolbar is being replaced - what can we do?
+				res = super.add(component.getName(), component);
+				this.setSelectedComponent(res);
+			} else {
+				// this is a normal drop operation, continue as normal
+				res = super.add(title, component);
+			}
+			return res;
+		}
 
+	}
 
-    /**
-     * Add the component to this view.
-     *
-     * @param title     Description of Parameter
-     * @param component Description of Parameter
-     * @return Description of the Returned Value
-     */
-    public final Component add(final String title, final Component component)
-    {
-      final Component res;
-      // check if we are receiving a dropped toolbar
-      if (title.equals("North"))
-      {
-        // a floating toolbar is being replaced - what can we do?
-        res = super.add(component.getName(), component);
-        this.setSelectedComponent(res);
-      }
-      else
-      {
-        // this is a normal drop operation, continue as normal
-        res = super.add(title, component);
-      }
-      return res;
-    }
+	/**
+	 * the whole of the panel we are contained in.
+	 */
+	private JSplitPane _thePanel;
 
-  }
+	/**
+	 * the left-hand pane which contains the toolbar and message window.
+	 */
+	private JSplitPane _theInfoPanel;
+
+	/**
+	 * the tote/properties panel.
+	 */
+	private SwingPropertiesPanel _theProperties;
+
+	/**
+	 * the status bar at the foot of the page.
+	 */
+	private MWC.GUI.Swing.SwingStatusBar _theStatusBar;
+
+	/**
+	 * the holder for the toolbars.
+	 */
+	private javax.swing.JTabbedPane _toolbarHolder;
+
+	/**
+	 * the thingy which looks after the painters - keep a reference so that we can
+	 * explicitly clear it our later.
+	 */
+	private Debrief.GUI.Tote.Painters.PainterManager _painterManager;
+
+	/**
+	 * the chart providing an overview of the data.
+	 */
+	SwingChart _overviewChart;
+
+	///////////////////////////////////////////////
+	// member functions
+	///////////////////////////////////////////////
+
+	///////////////////////////////////////////////
+	// constructor
+	///////////////////////////////////////////////
+	/**
+	 * constructor, of course.
+	 *
+	 * @param theParent  the toolparent = where we control the cursor from
+	 * @param theSession the Session to put in the view
+	 */
+	public SwingAnalysisView(final ToolParent theParent, final SwingSession theSession) {
+		super(theParent, theSession);
+
+		// create the GUI
+		initForm(theSession);
+
+		// now build the toolbar
+		buildTheInterface();
+
+		addExtraToolbarButtons();
+
+		createPainters(theSession);
+
+	}
+
+	/**
+	 * member method to add any extra toolbar buttons we're after.
+	 */
+	private void addExtraToolbarButtons() {
+		// create the manual/auto button
+		final ImageToggleButton overviewBtn = new SwingStepControl.ImageToggleButton("View overview",
+				"images/overview.png");
+		overviewBtn.setMargin(new Insets(0, 5, 0, 0));
+		overviewBtn.setSelected(false);
+		overviewBtn.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(final ItemEvent e) {
+				_overviewChart.getPanel().setVisible(!_overviewChart.getPanel().isVisible());
+			}
+		});
+		overviewBtn.setToolTipText("Show/Hide overview chart");
+
+		// find the right toolbar tab
+		final int index = _toolbarHolder.indexOfTab("View");
+		final JPanel holder = (JPanel) _toolbarHolder.getComponentAt(index);
+		// find our component
+		final int len = holder.getComponentCount();
+		for (int i = 0; i < len; i++) {
+			final Component cp = holder.getComponent(i);
+			if (cp.getName().equals(holder.getName())) {
+				final SwingToolbar thisToolbar = (SwingToolbar) cp;
+				thisToolbar.add(overviewBtn);
+				break;
+			}
+		}
+	}
+
+	/**
+	 * member method to create a toolbar button for this tool.
+	 *
+	 * @param item the description of this tool
+	 */
+	@Override
+	protected final void addThisTool(final MWC.GUI.Tools.MenuItemInfo item) {
+		// see which toolbar this is on
+		final String toolbar = item.getMenuName();
+
+		SwingToolbar thisToolbar = null;
+
+		// check if we have a toolbar for this tool
+		final int index = _toolbarHolder.indexOfTab(toolbar);
+
+		if (index == -1) {
+			// we obviously have to create this toolbar, go for it
+			thisToolbar = new SwingToolbar(MWC.GUI.Toolbar.HORIZONTAL, toolbar, (SwingSession) super._theSession);
+			thisToolbar.setLayout(new RowLayout());
+			thisToolbar.setMinimumSize(new Dimension(0, 0));
+			// we also put it into a panel, to assist when its floating
+			final JPanel jp = new JPanel();
+			jp.setLayout(new BorderLayout());
+			jp.setName(toolbar);
+			jp.add("West", thisToolbar);
+
+			// finally add the panel to the toolbar
+			_toolbarHolder.add(toolbar, jp);
+		} else {
+			final JPanel holder = (JPanel) _toolbarHolder.getComponentAt(index);
+			// find our component
+			final int len = holder.getComponentCount();
+			for (int i = 0; i < len; i++) {
+				final Component cp = holder.getComponent(i);
+				if (cp.getName().equals(holder.getName())) {
+					thisToolbar = (SwingToolbar) cp;
+					break;
+				}
+			}
+			// thisToolbar = (SwingToolbar)_toolbarHolder.getComponentAt(index);
+		}
+
+		if (thisToolbar == null) {
+			return;
+		}
+
+		// see if this is an action button, or it toggles as part of a group
+		if (item.getToggleGroup() == null) {
+			thisToolbar.addTool(item.getTool(), item.getShortCut(), item.getMnemonic());
+		} else {
+			thisToolbar.addToggleTool(item.getToggleGroup(), item.getTool(), item.getShortCut(), item.getMnemonic());
+		}
+	}
+
+	/**
+	 * get ready to close, set all local references to null, to assist garbage
+	 * collection.
+	 */
+	@Override
+	public void close() {
+		// clear out this list
+		_painterManager.closeMe();
+		_painterManager = null;
+
+		// get the parent to close first
+		super.close();
+
+		// now tidy up the object we manage
+		if (_thePanel != null) {
+			_thePanel.removeAll();
+		}
+		if (_theInfoPanel != null) {
+			_theInfoPanel.removeAll();
+		}
+		if (_toolbarHolder != null) {
+			_toolbarHolder.removeAll();
+		}
+		if (_theProperties != null) {
+			_theProperties.removeAll();
+			_theProperties.closeMe();
+
+		}
+		if (_theStatusBar != null) {
+			_theStatusBar.removeAll();
+		}
+
+	}
+
+	/**
+	 * Description of the Method.
+	 *
+	 * @param theSession Description of Parameter
+	 */
+	private void createPainters(final SwingSession theSession) {
+
+		// create our painters
+		final Debrief.GUI.Tote.Painters.SnailPainter sp = new Debrief.GUI.Tote.Painters.SnailPainter(getChart(),
+				theSession.getData(), getTote());
+		final Debrief.GUI.Tote.Painters.TotePainter tp = new Debrief.GUI.Tote.Painters.TotePainter(getChart(),
+				theSession.getData(), getTote());
+		final Debrief.GUI.Tote.Painters.RelativePainter rp = new Debrief.GUI.Tote.Painters.RelativePainter(getChart(),
+				theSession.getData(), getTote());
+
+		// add the painters to the manager
+		_painterManager = new Debrief.GUI.Tote.Painters.PainterManager(getTote().getStepper());
+		_painterManager.addPainter(tp);
+		_painterManager.addPainter(sp);
+		_painterManager.addPainter(rp);
+		_painterManager.setCurrentListener(tp);
+	}
+
+	/**
+	 * return the Swing panel we are contained in.
+	 *
+	 * @return a Panel representing the View
+	 */
+	public final Component getPanel() {
+		return _thePanel;
+	}
+
+	/**
+	 * layout the controls within our panel.
+	 *
+	 * @param theSession Description of Parameter
+	 */
+	void initForm(final Session theSession) {
+		// create the panel
+		_thePanel = new JSplitPane();
+
+		// create the main components of the panel
+		final SwingChart _theChart = new SwingChart(theSession.getData());
+
+		// toolbar - we now have a tabbed panel of toolbars, to save space!
+		_toolbarHolder = new MyToolbarHolder();
+
+		// the properties panel
+		_theProperties = new SwingPropertiesPanel(theSession.getData(), theSession.getUndoBuffer(), super.getParent(),
+				(SwingSession) theSession);
+
+		// the tote itself (part of the properties panel)
+		final Debrief.GUI.Tote.Swing.SwingTote _theTote = new Debrief.GUI.Tote.Swing.SwingTote(_theProperties,
+				theSession.getData(), _theChart, theSession.getUndoBuffer(), (SwingSession) theSession, getParent());
+
+		// create the overview chart aswell
+		_overviewChart = new SwingOverviewChart(theSession.getData(), _theChart, this.getParent());
+
+		// start off with the overview chart hidden
+		_overviewChart.getPanel().setVisible(false);
+
+		// try to put another border around the chart
+		final JComponent cp = (JComponent) _overviewChart.getPanel();
+		cp.setBorder(BorderFactory.createEtchedBorder());
+
+		final JPanel overviewHolder = new JPanel() {
+			/**
+				 *
+				 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public Dimension getPreferredSize() {
+				return new Dimension(200, 200);
+			}
+		};
+
+		overviewHolder.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLoweredBevelBorder(),
+				"Overview Chart", TitledBorder.LEFT, TitledBorder.TOP, overviewHolder.getFont().deriveFont(8)));
+		overviewHolder.setLayout(new BorderLayout());
+		overviewHolder.add("Center", _overviewChart.getPanel());
+
+		// put the tote & overview into a holder
+		final JPanel toteHolder = new JPanel();
+		toteHolder.setName("Tote");
+		toteHolder.setLayout(new BorderLayout());
+		toteHolder.add("North", _theTote.getPanel());
+		toteHolder.add("Center", overviewHolder);
+
+		// put the tote into the Properties panel - as a "Non-removable" item
+		// try putting the tote into a toolbar
+		_theProperties.addThisPanel(toteHolder);
+
+		// tell the canvas projector where to get it's relative plotting data from
+		_theChart.getCanvas().getProjection().setRelativeProjectionParent(_theTote);
+
+		// create the general status bar (used for rng/brg measurements)
+		_theStatusBar = new MWC.GUI.Swing.SwingStatusBar(_theProperties, getParent());
+
+		// and configure the tote
+		final JLabel cursorPos = new JLabel("000 00 00.00 N 000 00 00.00W");
+		_theChart.addCursorMovedListener(new SwingCursorPosition(_theChart, cursorPos));
+
+		final Pan myPanner = new Pan(_theChart, this.getParent(), null, true);
+		myPanner.execute();
+
+		/////////////////////////////////////////////////
+		// pass objects back to parent
+		//////////////////////////////////////////////////
+
+		// inform the parent of the components
+		setChart(_theChart);
+		setProperties(_theProperties);
+		setTote(_theTote);
+		setStatusBar(_theStatusBar);
+
+		//////////////////////////////////////////////////////
+		// property editing bits
+		/////////////////////////////////////////////////////
+		final JPanel thePropertiesHolder = new JPanel();
+		thePropertiesHolder.setLayout(new BorderLayout());
+
+		// try to put the properties into a toolbar parent
+		thePropertiesHolder.add(_theProperties, BorderLayout.CENTER);
+
+		// Put in container to hold two text boxes at the foot of the page
+		final JToolBar statuses = new JToolBar();
+		statuses.setUI(new MWC.GUI.Tools.Swing.MyMetalToolBarUI((SwingSession) super._theSession));
+		statuses.add(_theStatusBar);
+		statuses.add(cursorPos);
+		thePropertiesHolder.add(statuses, BorderLayout.SOUTH);
+
+		///////////////////////////////////////////////////////
+		// layout bits
+		///////////////////////////////////////////////////////
+
+		// set up the info panel
+		_theInfoPanel = new JSplitPane();
+		_theInfoPanel.setTopComponent(_toolbarHolder);
+		_theInfoPanel.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		_theInfoPanel.setBottomComponent(thePropertiesHolder);
+
+		// put the bits in the main panel
+		_thePanel.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+		_thePanel.setLeftComponent(_theInfoPanel);
+		_thePanel.setRightComponent(_theChart.getPanel());
+		_thePanel.setContinuousLayout(false);
+		_thePanel.setOneTouchExpandable(true);
+
+		// force the panel to be slightly wider, it's just too narrow on min size
+		// _thePanel.setDividerLocation(_theInfoPanel.getMinimumSize().width);
+		_thePanel.setDividerLocation(_theInfoPanel.getMinimumSize().width + 50);
+
+		_thePanel.doLayout();
+
+		/////////////////////////////////////////////////
+		// drag drop support bits
+		/////////////////////////////////////////////////
+		_dropSupport.addComponent(_theChart.getPanel());
+
+	}
 
 }
-

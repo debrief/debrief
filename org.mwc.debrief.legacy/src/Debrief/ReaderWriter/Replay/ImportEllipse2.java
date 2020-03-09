@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: ImportEllipse.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.3 $
@@ -104,66 +105,58 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 /**
  * class to parse a label from a line of text
  */
-final class ImportEllipse2 extends ImportEllipse
-{
+final class ImportEllipse2 extends ImportEllipse {
 
-  // ////////////////////////////////////////////////
-  // testing code...
-  // ////////////////////////////////////////////////
-  static public class testImport2 extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE = "CONV";
+	// ////////////////////////////////////////////////
+	// testing code...
+	// ////////////////////////////////////////////////
+	static public class testImport2 extends junit.framework.TestCase {
+		static public final String TEST_ALL_TEST_TYPE = "CONV";
 
-    public testImport2(final String val)
-    {
-      super(val);
-    }
+		public testImport2(final String val) {
+			super(val);
+		}
 
-    public void testValues() throws ParseException
-    {
-      final String iLine =
-          ";ELLIPSE2: @F 951212 060200 951212 061200 21.8 0 0 N 21.5 0 0 W 45.0 5000 3000 test ellipse";
-      final AbstractPlainLineImporter iff = new ImportEllipse2();
-      final ShapeWrapper res = (ShapeWrapper) iff.readThisLine(iLine);
+		public void testValues() throws ParseException {
+			final String iLine = ";ELLIPSE2: @F 951212 060200 951212 061200 21.8 0 0 N 21.5 0 0 W 45.0 5000 3000 test ellipse";
+			final AbstractPlainLineImporter iff = new ImportEllipse2();
+			final ShapeWrapper res = (ShapeWrapper) iff.readThisLine(iLine);
 
-      // and check the result
-      assertNotNull("read it in", res);
-      assertEquals("right track", "test ellipse", res.getLabel());
-      assertEquals("right color", new java.awt.Color(255, 150, 0), res.getColor());
-      assertEquals("right name", "test ellipse", res.getName());
-      assertNotNull("start present", res.getStartDTG());
-      assertNotNull("end present", res.getEndDTG());
-      long diff = (res.getEndDTG().getMicros() - res.getStartDTG().getMicros()) / 1000;
-      assertEquals("correct interval",600000, diff);
-      final EllipseShape ell = (EllipseShape) res.getShape();
-      assertEquals("right orient", 45.0, ell.getOrientation());
-      assertEquals("right maxima", 5000, ell.getMaxima().getValueIn(
-          WorldDistance.YARDS), 0.001);
-      assertEquals("right minima", 3000, ell.getMinima().getValueIn(
-          WorldDistance.YARDS), 0.001);
-    }
-  }
+			// and check the result
+			assertNotNull("read it in", res);
+			assertEquals("right track", "test ellipse", res.getLabel());
+			assertEquals("right color", new java.awt.Color(255, 150, 0), res.getColor());
+			assertEquals("right name", "test ellipse", res.getName());
+			assertNotNull("start present", res.getStartDTG());
+			assertNotNull("end present", res.getEndDTG());
+			final long diff = (res.getEndDTG().getMicros() - res.getStartDTG().getMicros()) / 1000;
+			assertEquals("correct interval", 600000, diff);
+			final EllipseShape ell = (EllipseShape) res.getShape();
+			assertEquals("right orient", 45.0, ell.getOrientation());
+			assertEquals("right maxima", 5000, ell.getMaxima().getValueIn(WorldDistance.YARDS), 0.001);
+			assertEquals("right minima", 3000, ell.getMinima().getValueIn(WorldDistance.YARDS), 0.001);
+		}
+	}
 
-  /** our REP file type
-   * 
-   */
-  private final static String TYPE_STR = ";ELLIPSE2:";
+	/**
+	 * our REP file type
+	 *
+	 */
+	private final static String TYPE_STR = ";ELLIPSE2:";
 
-  public ImportEllipse2()
-  {
-    super(TYPE_STR);
-  }
+	public ImportEllipse2() {
+		super(TYPE_STR);
+	}
 
-  @Override
-  protected HiResDate endDateFor(StringTokenizer st) throws ParseException
-  {
-    // get date & time
-    String dateStr = st.nextToken()+ " " + st.nextToken();
+	@Override
+	protected HiResDate endDateFor(final StringTokenizer st) throws ParseException {
+		// get date & time
+		final String dateStr = st.nextToken() + " " + st.nextToken();
 
-    // produce a date from this data
-    final HiResDate date = DebriefFormatDateTime.parseThis(dateStr);
-    
-    return date;
-  }
+		// produce a date from this data
+		final HiResDate date = DebriefFormatDateTime.parseThis(dateStr);
+
+		return date;
+	}
 
 }

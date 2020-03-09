@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.asset.netasset2.sensor2;
 
 import java.awt.Color;
@@ -45,7 +46,6 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.mwc.asset.netasset2.time.IVTime;
 
-import swing2swt.layout.BorderLayout;
 import ASSET.NetworkParticipant;
 import ASSET.ScenarioType;
 import ASSET.Models.SensorType;
@@ -57,27 +57,67 @@ import ASSET.Participants.ParticipantDetectedListener;
 import ASSET.Participants.Status;
 import MWC.GUI.JFreeChart.DateAxisEditor;
 import MWC.GUI.JFreeChart.RelativeDateAxis;
+import swing2swt.layout.BorderLayout;
 
-public class VSensor extends Composite implements ParticipantDetectedListener,
-		IVTime
-{
+public class VSensor extends Composite implements ParticipantDetectedListener, IVTime {
 
+	class DropdownSelectionListener extends SelectionAdapter {
+		private final ToolItem dropdown;
+
+		private final Menu menu;
+
+		public DropdownSelectionListener(final ToolItem dropdown) {
+			this.dropdown = dropdown;
+			menu = new Menu(dropdown.getParent().getShell());
+		}
+
+		public void add(final String item, final int secs) {
+			final MenuItem menuItem = new MenuItem(menu, SWT.NONE);
+			menuItem.setText(item);
+			menuItem.setData(secs);
+			menuItem.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(final SelectionEvent event) {
+					final MenuItem selected = (MenuItem) event.widget;
+					dropdown.setText(selected.getText());
+					dropdown.setData(selected.getData());
+					setTimePeriod((Integer) dropdown.getData());
+				}
+			});
+		}
+
+		@Override
+		public void widgetSelected(final SelectionEvent event) {
+			if (event.detail == SWT.ARROW) {
+				final ToolItem item = (ToolItem) event.widget;
+				final Rectangle rect = item.getBounds();
+				final Point pt = item.getParent().toDisplay(new Point(rect.x, rect.y));
+				menu.setLocation(pt.x, pt.y + rect.height);
+				menu.setVisible(true);
+			} else {
+				setTimePeriod((Integer) dropdown.getData());
+			}
+		}
+	}
+
+	private static long lastTime = new Date().getTime();
 	private final XYPlot _thePlot;
 	private final JFreeChart _thePlotArea;
 	private final ChartPanel _chartInPanel;
 	private TimeSeriesCollection dataList;
 	private Integer _visibleTimePeriod = new Integer(5 * 60);
+
 	private final RelativeDateAxis _dateAxis;
+
 	private long _timeNow = -1;
 
 	/**
 	 * Create the composite.
-	 * 
+	 *
 	 * @param parent
 	 * @param style
 	 */
-	public VSensor(final Composite parent, final int style)
-	{
+	public VSensor(final Composite parent, final int style) {
 		super(parent, style);
 		setLayout(new BorderLayout(0, 0));
 
@@ -98,8 +138,7 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 
 		final ToolItem tltmDropdownItem = new ToolItem(toolBar, SWT.DROP_DOWN);
 		tltmDropdownItem.setText("Visible period");
-		final DropdownSelectionListener drops = new DropdownSelectionListener(
-				tltmDropdownItem);
+		final DropdownSelectionListener drops = new DropdownSelectionListener(tltmDropdownItem);
 		drops.add("5 Mins", 5 * 60);
 		drops.add("15 Mins", 15 * 60);
 		drops.add("60 Mins", 60 * 60);
@@ -113,14 +152,13 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 
 		// the y axis is common to hi & lo res. Format it here
 		final NumberAxis yAxis = new NumberAxis("Degs");
-	//	yAxis.setRange(0, 360);
+		// yAxis.setRange(0, 360);
 		yAxis.setAutoRange(true);
 		yAxis.setTickUnit(new NumberTickUnit(45));
 
 		// create a date-formatting axis
 		_dateAxis = new RelativeDateAxis();
-		_dateAxis.setStandardTickUnits(DateAxisEditor
-				.createStandardDateTickUnitsAsTickUnits());
+		_dateAxis.setStandardTickUnits(DateAxisEditor.createStandardDateTickUnitsAsTickUnits());
 		_dateAxis.setAutoRange(true);
 
 		final XYItemRenderer theRenderer = new XYShapeRenderer();
@@ -154,77 +192,12 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 
 	}
 
-	class DropdownSelectionListener extends SelectionAdapter
-	{
-		private final ToolItem dropdown;
+	@Override
+	protected void checkSubclass() {
+		// Disable the check that prevents subclassing of SWT components
+	};
 
-		private final Menu menu;
-
-		public DropdownSelectionListener(final ToolItem dropdown)
-		{
-			this.dropdown = dropdown;
-			menu = new Menu(dropdown.getParent().getShell());
-		}
-
-		public void add(final String item, final int secs)
-		{
-			final MenuItem menuItem = new MenuItem(menu, SWT.NONE);
-			menuItem.setText(item);
-			menuItem.setData(secs);
-			menuItem.addSelectionListener(new SelectionAdapter()
-			{
-				public void widgetSelected(final SelectionEvent event)
-				{
-					final MenuItem selected = (MenuItem) event.widget;
-					dropdown.setText(selected.getText());
-					dropdown.setData(selected.getData());
-					setTimePeriod((Integer) dropdown.getData());
-				}
-			});
-		}
-
-		public void widgetSelected(final SelectionEvent event)
-		{
-			if (event.detail == SWT.ARROW)
-			{
-				final ToolItem item = (ToolItem) event.widget;
-				final Rectangle rect = item.getBounds();
-				final Point pt = item.getParent().toDisplay(new Point(rect.x, rect.y));
-				menu.setLocation(pt.x, pt.y + rect.height);
-				menu.setVisible(true);
-			}
-			else
-			{
-				setTimePeriod((Integer) dropdown.getData());
-			}
-		}
-	}
-
-	// specify time period displayed
-	protected void setTimePeriod(final Integer secs)
-	{
-		_visibleTimePeriod = secs;
-
-		if (_timeNow != 0)
-		{
-			if (secs == 0)
-			{
-				_dateAxis.setAutoRange(true);
-			}
-			else
-			{
-				final long startTime = _timeNow - (secs * 1000);
-				final Range newR = new Range(startTime, _timeNow);
-				_dateAxis.setRange(newR, true, true);
-			}
-
-		}
-	}
-
-	private static long lastTime = new Date().getTime();;
-
-	protected void doTest()
-	{
+	protected void doTest() {
 		final DetectionList dets = new DetectionList();
 
 		lastTime += (int) (1 + Math.random() * 21) * 5d * 1000;
@@ -232,47 +205,40 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 		newTime(lastTime);
 
 		final int numE = (int) (Math.random() * 5d);
-		for (int i = 0; i < numE; i++)
-		{
+		for (int i = 0; i < numE; i++) {
 			final float thisBrg = (float) (Math.random() * 360d);
 			final SensorType st = new OpticSensor(i);
 			final int partId = 100 + i;
-			final NetworkParticipant np = new NetworkParticipant()
-			{
+			final NetworkParticipant np = new NetworkParticipant() {
 
 				@Override
-				public Status getStatus()
-				{
+				public String getActivity() {
 					return null;
 				}
 
 				@Override
-				public String getName()
-				{
-					return "scrap name";
+				public Category getCategory() {
+					return null;
 				}
 
 				@Override
-				public int getId()
-				{
+				public int getId() {
 					return partId;
 				}
 
 				@Override
-				public Category getCategory()
-				{
-					return null;
+				public String getName() {
+					return "scrap name";
 				}
 
 				@Override
-				public String getActivity()
-				{
+				public Status getStatus() {
 					return null;
 				}
 			};
 
-			final DetectionEvent de = new DetectionEvent(lastTime, 12, null, st, null,
-					null, thisBrg, null, null, null, null, null, np);
+			final DetectionEvent de = new DetectionEvent(lastTime, 12, null, st, null, null, thisBrg, null, null, null,
+					null, null, np);
 			dets.add(de);
 		}
 
@@ -280,19 +246,10 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 	}
 
 	@Override
-	protected void checkSubclass()
-	{
-		// Disable the check that prevents subclassing of SWT components
-	}
-
-	@Override
-	public void newDetections(final DetectionList detections)
-	{
-		if (detections.size() > 0)
-		{
+	public void newDetections(final DetectionList detections) {
+		if (detections.size() > 0) {
 			final Iterator<DetectionEvent> iter = detections.iterator();
-			while (iter.hasNext())
-			{
+			while (iter.hasNext()) {
 				final DetectionEvent thisD = iter.next();
 				processThis(thisD);
 			}
@@ -300,13 +257,19 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 
 	}
 
-	private void processThis(final DetectionEvent thisD)
-	{
+	@Override
+	public void newTime(final long newTime) {
+		_timeNow = newTime;
+		// check we're showing the correct period
+		setTimePeriod(_visibleTimePeriod);
+
+	}
+
+	private void processThis(final DetectionEvent thisD) {
 		// keep track of if we need to add the time series to the plot
 		boolean addDataset = false;
 
-		if (dataList == null)
-		{
+		if (dataList == null) {
 			dataList = new TimeSeriesCollection();
 			addDataset = true;
 		}
@@ -318,8 +281,7 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 		// keep track of if we should be adding this series to the dataset
 		boolean seriesAddPending = false;
 
-		if (thisSeries == null)
-		{
+		if (thisSeries == null) {
 			thisSeries = new TimeSeries(seriesId);
 			// don't actually add the series until it contains some data
 			seriesAddPending = true;
@@ -331,12 +293,9 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 		final long newTime = thisD.getTime();
 		final FixedMillisecond time = new FixedMillisecond(newTime);
 
-		try
-		{
+		try {
 			thisSeries.add(time, bearing);
-		}
-		catch (final Exception e)
-		{
+		} catch (final Exception e) {
 			System.err.println("BUGGER");
 		}
 
@@ -349,17 +308,23 @@ public class VSensor extends Composite implements ParticipantDetectedListener,
 	}
 
 	@Override
-	public void restart(final ScenarioType scenario)
-	{
+	public void restart(final ScenarioType scenario) {
 	}
 
-	@Override
-	public void newTime(final long newTime)
-	{
-		_timeNow = newTime;
-		// check we're showing the correct period
-		setTimePeriod(_visibleTimePeriod);
+	// specify time period displayed
+	protected void setTimePeriod(final Integer secs) {
+		_visibleTimePeriod = secs;
 
+		if (_timeNow != 0) {
+			if (secs == 0) {
+				_dateAxis.setAutoRange(true);
+			} else {
+				final long startTime = _timeNow - (secs * 1000);
+				final Range newR = new Range(startTime, _timeNow);
+				_dateAxis.setRange(newR, true, true);
+			}
+
+		}
 	}
 
 }

@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package com.planetmayo.debrief.satc.model.contributions;
 
 import static org.junit.Assert.assertEquals;
@@ -26,7 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.IStatus;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -49,17 +50,111 @@ import com.vividsolutions.jts.geom.Polygon;
 
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
-public class Range1959ForecastContribution extends BaseContribution
-{
-	private static final long serialVersionUID = 1L;
+public class Range1959ForecastContribution extends BaseContribution {
+	protected static class Range1959ForecastContributionTest {
 
-	private ArrayList<FrequencyMeasurement> measurements = new ArrayList<FrequencyMeasurement>();
+		private Range1959ForecastContribution _freq;
+
+		private void addBearing(final ProblemSpace space, final String date, final String time,
+				final double bearingDegs) throws IncompatibleStateException {
+			final Date theDate = ObjectUtils.safeParseDate(new GMTDateFormat("yyMMdd HHmmss"), date + " " + time);
+
+			final BoundedState state = new BoundedState(theDate);
+			state.setBearingValue(Math.toRadians(bearingDegs));
+			space.add(state);
+		}
+
+		@Before
+		public void setUp() throws Exception {
+			_freq = new Range1959ForecastContribution();
+		}
+
+		@SuppressWarnings("deprecation")
+		@Test
+		public void testLoadFromOne() throws Exception {
+			assertFalse("should be empty", _freq.hasData());
+
+			_freq.loadFrom(TestSupport.getFreqDataOne());
+			assertTrue("should not be empty", _freq.hasData());
+			assertEquals("correct start date", new Date(110, 00, 12, 13, 10, 00), _freq.getStartDate());
+			assertEquals("correct finish date", new Date(110, 00, 12, 13, 20, 00), _freq.getFinishDate());
+
+			// and apply it to a problem space
+			final double rDotDotHz = _freq.calculateFreqRate();
+			assertEquals("correct freq", -0.0239, rDotDotHz, 0.0001);
+			final ProblemSpace space = new ProblemSpace();
+			// and add the bearings
+			addBearing(space, "100112", "131000", -99.53);
+			addBearing(space, "100112", "131050", -97.18);
+			addBearing(space, "100112", "131140", -94.8);
+			addBearing(space, "100112", "131230", -92.42);
+			addBearing(space, "100112", "131320", -90.04);
+			addBearing(space, "100112", "131410", -87.66);
+			addBearing(space, "100112", "131500", -85.3);
+			addBearing(space, "100112", "131550", -82.96);
+			addBearing(space, "100112", "131640", -80.65);
+			addBearing(space, "100112", "131730", -78.37);
+			addBearing(space, "100112", "131820", -76.14);
+			addBearing(space, "100112", "131910", -73.95);
+			addBearing(space, "100112", "132000", -71.82);
+
+			final double rDotDotKts = _freq.calcRDotKts(rDotDotHz);
+			final double bDot = _freq.calculateBearingRate(space);
+			final double range = _freq.calculateRange(rDotDotKts, bDot);
+			assertEquals("correct rDotDotHz", -0.0239763, rDotDotHz, 0.000001);
+			assertEquals("correct rDotDotKts", -0.47952, rDotDotKts, 0.00001);
+			assertEquals("correct bDot", 2.7869, bDot, 0.00001);
+			assertEquals("correct range", -6.8439, range, 0.001);
+
+			// ok, now check that the new bound is generated
+			_freq.actUpon(space);
+
+			// check the new constraint is in there.
+		}
+
+		@SuppressWarnings("deprecation")
+		@Test
+		public void testLoadFromTwo() throws Exception {
+			assertFalse("should be empty", _freq.hasData());
+
+			_freq.loadFrom(TestSupport.getFreqDataTwo());
+			assertTrue("should not be empty", _freq.hasData());
+			assertEquals("correct start date", new Date(110, 00, 12, 13, 35, 00), _freq.getStartDate());
+			assertEquals("correct finish date", new Date(110, 00, 12, 13, 40, 00), _freq.getFinishDate());
+
+			// and apply it to a problem space
+			final double rDotDotHz = _freq.calculateFreqRate();
+			final ProblemSpace space = new ProblemSpace();
+			// and add the bearings
+			addBearing(space, "100112", "133500", -48.41);
+			addBearing(space, "100112", "133550", -47.79);
+			addBearing(space, "100112", "133640", -47.19);
+			addBearing(space, "100112", "133730", -46.6);
+			addBearing(space, "100112", "133820", -46.03);
+			addBearing(space, "100112", "133910", -45.48);
+			addBearing(space, "100112", "134000", -44.94);
+			addBearing(space, "100112", "134050", -44.42);
+
+			final double rDotDotKts = _freq.calcRDotKts(rDotDotHz);
+			final double bDot = _freq.calculateBearingRate(space);
+			final double range = _freq.calculateRange(rDotDotKts, bDot);
+			assertEquals("correct freq", -0.001943, rDotDotHz, 0.00001);
+			assertEquals("correct rDotDotKts", -0.03887, rDotDotKts, 0.0001);
+			assertEquals("correct bDot", 0.69385, bDot, 0.00001);
+			assertEquals("correct range", -8.95088, range, 0.00001);
+		}
+
+	}
+
+	private static final long serialVersionUID = 1L;
 	public static final String OBSERVATIONS_NUMBER = "numObservations";
 	public static final String RANGE = "range";
 	public static final String SOUND_SPEED = "speedSound";
 	public static final String F_NOUGHT = "fNought";
 	public static final String MIN_RANGE = "minRange";
 	public static final String MAX_RANGE = "maxRange";
+
+	private final ArrayList<FrequencyMeasurement> measurements = new ArrayList<FrequencyMeasurement>();
 
 	/**
 	 * fNought for radiated source (Hz)
@@ -79,58 +174,6 @@ public class Range1959ForecastContribution extends BaseContribution
 
 	private Double minRangeM;
 
-
-	@Override
-	protected double cumulativeScoreFor(CoreRoute route)
-	{
-		double min = this.getMinRange() == null ? 0 : this.getMinRange();
-		double max = this.getMaxRange() == null ? 0 : this.getMaxRange();
-		if (!isActive() || route.getType() == LegType.ALTERING || calculatedRange == null
-				|| calculatedRange < min || calculatedRange > max)
-		{
-			return 0;
-		}
-		double sum = 0;
-		int count = 0;
-		for (FrequencyMeasurement origin : measurements)
-		{
-			Date currentDate = origin.getDate();
-			if (currentDate.compareTo(route.getStartTime()) >= 0
-					&& currentDate.compareTo(route.getEndTime()) <= 0)
-			{
-				State state = route.getStateAt(currentDate);
-				// check that the route has a state at this time (since we may not
-				// be generating states for all of our measurements)
-				if (state != null)
-				{
-					Point location = state.getLocation();
-					GeodeticCalculator calculator = GeoSupport.createCalculator();
-					calculator.setStartingGeographicPoint(location.getX(),
-							location.getY());
-					calculator.setDestinationGeographicPoint(origin.getLocation()
-							.getLon(), origin.getLocation().getLat());
-					double distance = calculator.getOrthodromicDistance();
-
-					double temp = distance - calculatedRange;
-					// store the error
-					state.setScore(this, temp  * this.getWeight() / 10);
-					
-					// and prepare the cumulative score				
-					sum += temp * temp;
-					count++;
-				}
-			}
-		}
-		if (count == 0)
-		{
-			return 0;
-		}
-		double norm = Math.max(Math.abs(max - calculatedRange),
-				Math.abs(min - calculatedRange));
-		return Math.sqrt(sum / count) / norm;
-	}
-
-	
 //	@Override
 //	protected double cumulativeScoreFor(CoreRoute route)
 //	{
@@ -189,16 +232,16 @@ public class Range1959ForecastContribution extends BaseContribution
 //		return res;
 //	}
 
-	public void actUpon(ProblemSpace space) throws IncompatibleStateException
-	{
+	@Override
+	public void actUpon(final ProblemSpace space) throws IncompatibleStateException {
 		// calculate rDotDotHz
-		double rDotDotHz = calculateFreqRate();
+		final double rDotDotHz = calculateFreqRate();
 
 		// calculate rDotDotKts
-		double rDotDotKts = calcRDotKts(rDotDotHz);
+		final double rDotDotKts = calcRDotKts(rDotDotHz);
 
 		// calculate bearing rate
-		double bDot = calculateBearingRate(space);
+		final double bDot = calculateBearingRate(space);
 
 		// calculate range
 		double range = calculateRange(rDotDotKts, bDot);
@@ -208,34 +251,26 @@ public class Range1959ForecastContribution extends BaseContribution
 
 		// calculate range error
 		final double error;
-		if (bDot < 3)
-		{
+		if (bDot < 3) {
 			error = 10000;
-		}
-		else if (bDot < 5)
-		{
+		} else if (bDot < 5) {
 			error = 5000;
-		}
-		else if (bDot < 8)
-		{
+		} else if (bDot < 8) {
 			error = 3000;
-		}
-		else
-		{
+		} else {
 			error = 1000;
 		}
 
 		// calculate min/max ranges
 		double minR = range - error;
-		double maxR = range + error;
+		final double maxR = range + error;
 
 		// output some diagnostics data
-		DecimalFormat ff = new DecimalFormat("0.0000");
-		String message = "1959 calculation, name:" + this.getName()
-				+ " rDotDot Hz:" + ff.format(rDotDotHz) + " rDotDot Kts "
-				+ ff.format(rDotDotKts) + " bDot:" + ff.format(bDot) + " range (m):"
+		final DecimalFormat ff = new DecimalFormat("0.0000");
+		final String message = "1959 calculation, name:" + this.getName() + " rDotDot Hz:" + ff.format(rDotDotHz)
+				+ " rDotDot Kts " + ff.format(rDotDotKts) + " bDot:" + ff.format(bDot) + " range (m):"
 				+ ff.format(range) + " error:" + (int) error;
-		SATC_Activator.log(Status.INFO, message, null);
+		SATC_Activator.log(IStatus.INFO, message, null);
 
 		// sanity check on minR
 		minR = Math.max(minR, 100);
@@ -246,38 +281,34 @@ public class Range1959ForecastContribution extends BaseContribution
 		setMaxRange(maxR);
 
 		// get the cut near the centre of the dataset
-		FrequencyMeasurement measure = measurements.get(measurements.size() / 2);
+		final FrequencyMeasurement measure = measurements.get(measurements.size() / 2);
 
 		// NOTE: the following line is from when we applied a range forecast at
 		// every point.
 		// for (FrequencyMeasurement measure : measurements)
 		// {
 		// capture this time
-		Date subjectTime = measure.getDate();
+		final Date subjectTime = measure.getDate();
 
 		// ok, get a locaiton
 		final GeoPoint loc = measure.getLocation();
 		final Point pt = loc.asPoint();
 
 		// yes, ok we can centre our donut on that
-		LinearRing outer = GeoSupport.geoRing(pt, maxR);
-		LinearRing inner = GeoSupport.geoRing(pt, minR);
+		final LinearRing outer = GeoSupport.geoRing(pt, maxR);
+		final LinearRing inner = GeoSupport.geoRing(pt, minR);
 		LinearRing[] holes;
 
 		// did we generate an inner?
-		if (inner == null)
-		{
+		if (inner == null) {
 			// nope = provide empty inner
 			holes = null;
-		}
-		else
-		{
-			holes = new LinearRing[]
-			{ inner };
+		} else {
+			holes = new LinearRing[] { inner };
 		}
 
 		// and create a polygon for it.
-		Polygon thePoly = GeoSupport.getFactory().createPolygon(outer, holes);
+		final Polygon thePoly = GeoSupport.getFactory().createPolygon(outer, holes);
 
 		// GeoSupport.writeGeometry("rng_" + ctr, thePoly);
 
@@ -288,8 +319,7 @@ public class Range1959ForecastContribution extends BaseContribution
 		// is there already a bounded state at this time?
 		BoundedState thisS = space.getBoundedStateAt(subjectTime);
 
-		if (thisS == null)
-		{
+		if (thisS == null) {
 			// nope, better create it
 			thisS = new BoundedState(subjectTime);
 			space.add(thisS);
@@ -300,74 +330,162 @@ public class Range1959ForecastContribution extends BaseContribution
 
 	}
 
-	private double calcRDotKts(double rDotDotHz)
-	{
+	/**
+	 * add this new measurement
+	 * 
+	 * @param measure
+	 */
+	public void addMeasurement(final FrequencyMeasurement measure) {
+		// extend the time period accordingly
+		final Date theTime = measure.getDate();
+		if (this.getStartDate() == null) {
+			this.setStartDate(theTime);
+			this.setFinishDate(theTime);
+		} else {
+			final long newTime = theTime.getTime();
+			if (this.getStartDate().getTime() > newTime)
+				this.setStartDate(theTime);
+			if (this.getFinishDate().getTime() < newTime)
+				this.setFinishDate(theTime);
+		}
+		measurements.add(measure);
+		firePropertyChange(OBSERVATIONS_NUMBER, measurements.size(), measurements.size());
+	}
+
+	private double calcRDotKts(final double rDotDotHz) {
 		return rDotDotHz * speedSound / fNought;
 	}
 
-	private double calculateRange(double rDotDotKts, double bDot)
-	{
-		return 110.85 * rDotDotKts / Math.pow(bDot, 2);
-	}
-
-	private double calculateBearingRate(ProblemSpace space)
-	{
+	private double calculateBearingRate(final ProblemSpace space) {
 		// get the states for our time period
 		// get a few bounded states
-		Collection<BoundedState> testStates = space.getBoundedStatesBetween(
-				this.getStartDate(), this.getFinishDate());
-		ArrayList<Double> values = new ArrayList<Double>();
-		ArrayList<Double> times = new ArrayList<Double>();
-		for (Iterator<BoundedState> iterator = testStates.iterator(); iterator
-				.hasNext();)
-		{
-			BoundedState boundedState = iterator.next();
+		final Collection<BoundedState> testStates = space.getBoundedStatesBetween(this.getStartDate(),
+				this.getFinishDate());
+		final ArrayList<Double> values = new ArrayList<Double>();
+		final ArrayList<Double> times = new ArrayList<Double>();
+		for (final Iterator<BoundedState> iterator = testStates.iterator(); iterator.hasNext();) {
+			final BoundedState boundedState = iterator.next();
 			// does it have a bearing?
-			if (boundedState.hasBearing())
-			{
+			if (boundedState.hasBearing()) {
 				values.add(boundedState.getBearing());
-				long millis = boundedState.getTime().getTime();
-				double mins = millis / 1000 / 60d;
+				final long millis = boundedState.getTime().getTime();
+				final double mins = millis / 1000 / 60d;
 				times.add(mins);
 			}
 		}
 
-		double bDotRads = getSlope(times, values);
+		final double bDotRads = getSlope(times, values);
 
 		// convert the bearing rate to degs (our formula needs it
 		return Math.toDegrees(bDotRads);
 	}
 
-	private double calculateFreqRate()
-	{
+	private double calculateFreqRate() {
 		double freq = 0;
 
 		// put the frequencies into an array
-		ArrayList<Double> values = new ArrayList<Double>();
-		ArrayList<Double> times = new ArrayList<Double>();
+		final ArrayList<Double> values = new ArrayList<Double>();
+		final ArrayList<Double> times = new ArrayList<Double>();
 
 		Long firstTime = null;
 
-		Iterator<FrequencyMeasurement> iter = measurements.iterator();
-		while (iter.hasNext())
-		{
-			FrequencyMeasurement frequencyMeasurement = (FrequencyMeasurement) iter
-					.next();
+		final Iterator<FrequencyMeasurement> iter = measurements.iterator();
+		while (iter.hasNext()) {
+			final FrequencyMeasurement frequencyMeasurement = iter.next();
 			values.add(frequencyMeasurement.getFrequency());
-			long millis = frequencyMeasurement.getDate().getTime();
+			final long millis = frequencyMeasurement.getDate().getTime();
 
-			if (firstTime == null)
-			{
+			if (firstTime == null) {
 				firstTime = millis;
 			}
 
-			double mins = (millis - firstTime) / 1000d / 60;
+			final double mins = (millis - firstTime) / 1000d / 60;
 			times.add(mins);
 		}
 
 		freq = getSlope(times, values);
 
 		return freq;
+	}
+
+	private double calculateRange(final double rDotDotKts, final double bDot) {
+		return 110.85 * rDotDotKts / Math.pow(bDot, 2);
+	}
+
+	@Override
+	protected double cumulativeScoreFor(final CoreRoute route) {
+		final double min = this.getMinRange() == null ? 0 : this.getMinRange();
+		final double max = this.getMaxRange() == null ? 0 : this.getMaxRange();
+		if (!isActive() || route.getType() == LegType.ALTERING || calculatedRange == null || calculatedRange < min
+				|| calculatedRange > max) {
+			return 0;
+		}
+		double sum = 0;
+		int count = 0;
+		for (final FrequencyMeasurement origin : measurements) {
+			final Date currentDate = origin.getDate();
+			if (currentDate.compareTo(route.getStartTime()) >= 0 && currentDate.compareTo(route.getEndTime()) <= 0) {
+				final State state = route.getStateAt(currentDate);
+				// check that the route has a state at this time (since we may not
+				// be generating states for all of our measurements)
+				if (state != null) {
+					final Point location = state.getLocation();
+					final GeodeticCalculator calculator = GeoSupport.createCalculator();
+					calculator.setStartingGeographicPoint(location.getX(), location.getY());
+					calculator.setDestinationGeographicPoint(origin.getLocation().getLon(),
+							origin.getLocation().getLat());
+					final double distance = calculator.getOrthodromicDistance();
+
+					final double temp = distance - calculatedRange;
+					// store the error
+					state.setScore(this, temp * this.getWeight() / 10);
+
+					// and prepare the cumulative score
+					sum += temp * temp;
+					count++;
+				}
+			}
+		}
+		if (count == 0) {
+			return 0;
+		}
+		final double norm = Math.max(Math.abs(max - calculatedRange), Math.abs(min - calculatedRange));
+		return Math.sqrt(sum / count) / norm;
+	}
+
+	@Override
+	public ContributionDataType getDataType() {
+		return ContributionDataType.FORECAST;
+	}
+
+	/**
+	 * subject radiated freq (hz)
+	 * 
+	 * @return
+	 */
+	public double getfNought() {
+		return fNought;
+	}
+
+	public Double getMaxRange() {
+		return maxRangeM;
+	}
+
+	public Double getMinRange() {
+		return minRangeM;
+	}
+
+	public int getNumObservations() {
+		return measurements.size();
+	}
+
+	/**
+	 * get the calculated range (m)
+	 * 
+	 * @return
+	 */
+	public Double getRange() {
+		return calculatedRange;
 	}
 
 	/**
@@ -378,21 +496,19 @@ public class Range1959ForecastContribution extends BaseContribution
 	 * @return
 	 * @throws Exception
 	 */
-	private double getSlope(ArrayList<Double> x_values, ArrayList<Double> y_values)
-			throws IllegalArgumentException
-	{
+	private double getSlope(final ArrayList<Double> x_values, final ArrayList<Double> y_values)
+			throws IllegalArgumentException {
 
 		if (x_values.size() != y_values.size())
 			throw new IllegalArgumentException("The arrays aren't the same lenth");
-		
-		if ((x_values.size() == 0) ||(y_values.size() == 0))
+
+		if ((x_values.size() == 0) || (y_values.size() == 0))
 			throw new IllegalArgumentException("We can't handle zero length arrays (div/0)");
 
-		SimpleRegression sr = new SimpleRegression();
-		for (int i = 0; i < x_values.size(); i++)
-		{
-			double x = x_values.get(i);
-			double y = y_values.get(i);
+		final SimpleRegression sr = new SimpleRegression();
+		for (int i = 0; i < x_values.size(); i++) {
+			final double x = x_values.get(i);
+			final double y = y_values.get(i);
 			sr.addData(x, y);
 		}
 
@@ -400,52 +516,13 @@ public class Range1959ForecastContribution extends BaseContribution
 
 	}
 
-	@Override
-	public ContributionDataType getDataType()
-	{
-		return ContributionDataType.FORECAST;
-	}
-
 	/**
-	 * how many freq measuremnts we contain
+	 * local speed of sounds (kts)
 	 * 
 	 * @return
 	 */
-	public int size()
-	{
-		return measurements.size();
-	}
-
-	public int getNumObservations()
-	{
-		return measurements.size();
-	}
-
-	/**
-	 * add this new measurement
-	 * 
-	 * @param measure
-	 */
-	public void addMeasurement(FrequencyMeasurement measure)
-	{
-		// extend the time period accordingly
-		final Date theTime = measure.getDate();
-		if (this.getStartDate() == null)
-		{
-			this.setStartDate(theTime);
-			this.setFinishDate(theTime);
-		}
-		else
-		{
-			long newTime = theTime.getTime();
-			if (this.getStartDate().getTime() > newTime)
-				this.setStartDate(theTime);
-			if (this.getFinishDate().getTime() < newTime)
-				this.setFinishDate(theTime);
-		}
-		measurements.add(measure);
-		firePropertyChange(OBSERVATIONS_NUMBER, measurements.size(),
-				measurements.size());
+	public double getSpeedSound() {
+		return speedSound;
 	}
 
 	/**
@@ -453,43 +530,13 @@ public class Range1959ForecastContribution extends BaseContribution
 	 * 
 	 * @return
 	 */
-	private boolean hasData()
-	{
+	private boolean hasData() {
 		return measurements.size() > 0;
 	}
 
-	/**
-	 * subject radiated freq (hz)
-	 * 
-	 * @return
-	 */
-	public double getfNought()
-	{
-		return fNought;
-	}
+	// ///////////////////////////////////////
 
-	public void setfNought(double fNought)
-	{
-		this.fNought = fNought;
-	}
-
-	/**
-	 * local speed of sounds (kts)
-	 * 
-	 * @return
-	 */
-	public double getSpeedSound()
-	{
-		return speedSound;
-	}
-
-	public void setSpeedSound(double speedSound)
-	{
-		this.speedSound = speedSound;
-	}
-
-	private void loadFrom(List<String> lines)
-	{
+	private void loadFrom(final List<String> lines) {
 		// load from this source
 		// ;SENSOR2: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B
 		// CCC.C
@@ -505,184 +552,78 @@ public class Range1959ForecastContribution extends BaseContribution
 		// ;SENSOR: 100112 121329 SENSOR @A 0 3 57.38 S 30 0 8.65 W 1.5 15000
 
 		// Read File Line By Line
-		for (String strLine : lines)
-		{
+		for (final String strLine : lines) {
 			// hey, is this a comment line?
-			if (strLine.startsWith(";;"))
-			{
+			if (strLine.startsWith(";;")) {
 				continue;
 			}
 			// ok, get parseing it
-			String[] elements = strLine.split("\\s+");
+			final String[] elements = strLine.split("\\s+");
 
 			// now the date
-			String date = elements[1];
+			final String date = elements[1];
 
 			// and the time
-			String time = elements[2];
+			final String time = elements[2];
 
-			String latDegs = elements[5];
-			String latMins = elements[6];
-			String latSecs = elements[7];
-			String latHemi = elements[8];
+			final String latDegs = elements[5];
+			final String latMins = elements[6];
+			final String latSecs = elements[7];
+			final String latHemi = elements[8];
 
-			String lonDegs = elements[9];
-			String lonMins = elements[10];
-			String lonSecs = elements[11];
-			String lonHemi = elements[12];
+			final String lonDegs = elements[9];
+			final String lonMins = elements[10];
+			final String lonSecs = elements[11];
+			final String lonHemi = elements[12];
 
 			// // and the beraing
 			// String bearing = elements[13];
 			// String ambigBearing = elements[14];
 
 			// and the range
-			String freq = elements[15];
+			final String freq = elements[15];
 
 			// ok,now construct the date=time
-			Date theDate = ObjectUtils.safeParseDate(new GMTDateFormat(
-					"yyMMdd HHmmss"), date + " " + time);
+			final Date theDate = ObjectUtils.safeParseDate(new GMTDateFormat("yyMMdd HHmmss"), date + " " + time);
 
 			// and the location
-			double lat = Double.valueOf(latDegs) + Double.valueOf(latMins) / 60d
-					+ Double.valueOf(latSecs) / 60d / 60d;
+			double lat = Double.valueOf(latDegs) + Double.valueOf(latMins) / 60d + Double.valueOf(latSecs) / 60d / 60d;
 			if (latHemi.toUpperCase().equals("S"))
 				lat = -lat;
-			double lon = Double.valueOf(lonDegs) + Double.valueOf(lonMins) / 60d
-					+ Double.valueOf(lonSecs) / 60d / 60d;
+			double lon = Double.valueOf(lonDegs) + Double.valueOf(lonMins) / 60d + Double.valueOf(lonSecs) / 60d / 60d;
 			if (lonHemi.toUpperCase().equals("W"))
 				lon = -lon;
 
-			GeoPoint theLoc = new GeoPoint(lat, lon);
+			final GeoPoint theLoc = new GeoPoint(lat, lon);
 			// double angle = Math.toRadians(Double.parseDouble(bearing));
 
-			FrequencyMeasurement measure = new FrequencyMeasurement(theDate, theLoc,
-					Double.parseDouble(freq));
+			final FrequencyMeasurement measure = new FrequencyMeasurement(theDate, theLoc, Double.parseDouble(freq));
 
 			addMeasurement(measure);
 
 		}
 	}
 
-	// ///////////////////////////////////////
-
-	protected static class Range1959ForecastContributionTest
-	{
-
-		private Range1959ForecastContribution _freq;
-
-		@Before
-		public void setUp() throws Exception
-		{
-			_freq = new Range1959ForecastContribution();
-		}
-
-		@SuppressWarnings("deprecation")
-		@Test
-		public void testLoadFromOne() throws Exception
-		{
-			assertFalse("should be empty", _freq.hasData());
-
-			_freq.loadFrom(TestSupport.getFreqDataOne());
-			assertTrue("should not be empty", _freq.hasData());
-			assertEquals("correct start date", new Date(110, 00, 12, 13, 10, 00),
-					_freq.getStartDate());
-			assertEquals("correct finish date", new Date(110, 00, 12, 13, 20, 00),
-					_freq.getFinishDate());
-
-			// and apply it to a problem space
-			double rDotDotHz = _freq.calculateFreqRate();
-			assertEquals("correct freq", -0.0239, rDotDotHz, 0.0001);
-			ProblemSpace space = new ProblemSpace();
-			// and add the bearings
-			addBearing(space, "100112", "131000", -99.53);
-			addBearing(space, "100112", "131050", -97.18);
-			addBearing(space, "100112", "131140", -94.8);
-			addBearing(space, "100112", "131230", -92.42);
-			addBearing(space, "100112", "131320", -90.04);
-			addBearing(space, "100112", "131410", -87.66);
-			addBearing(space, "100112", "131500", -85.3);
-			addBearing(space, "100112", "131550", -82.96);
-			addBearing(space, "100112", "131640", -80.65);
-			addBearing(space, "100112", "131730", -78.37);
-			addBearing(space, "100112", "131820", -76.14);
-			addBearing(space, "100112", "131910", -73.95);
-			addBearing(space, "100112", "132000", -71.82);
-
-			double rDotDotKts = _freq.calcRDotKts(rDotDotHz);
-			double bDot = _freq.calculateBearingRate(space);
-			double range = _freq.calculateRange(rDotDotKts, bDot);
-			assertEquals("correct rDotDotHz", -0.0239763, rDotDotHz, 0.000001);
-			assertEquals("correct rDotDotKts", -0.47952, rDotDotKts, 0.00001);
-			assertEquals("correct bDot", 2.7869, bDot, 0.00001);
-			assertEquals("correct range", -6.8439, range, 0.001);
-
-			// ok, now check that the new bound is generated
-			_freq.actUpon(space);
-
-			// check the new constraint is in there.
-		}
-
-		private void addBearing(ProblemSpace space, String date, String time,
-				double bearingDegs) throws IncompatibleStateException
-		{
-			Date theDate = ObjectUtils.safeParseDate(new GMTDateFormat(
-					"yyMMdd HHmmss"), date + " " + time);
-
-			BoundedState state = new BoundedState(theDate);
-			state.setBearingValue(Math.toRadians(bearingDegs));
-			space.add(state);
-		}
-
-		@SuppressWarnings("deprecation")
-		@Test
-		public void testLoadFromTwo() throws Exception
-		{
-			assertFalse("should be empty", _freq.hasData());
-
-			_freq.loadFrom(TestSupport.getFreqDataTwo());
-			assertTrue("should not be empty", _freq.hasData());
-			assertEquals("correct start date", new Date(110, 00, 12, 13, 35, 00),
-					_freq.getStartDate());
-			assertEquals("correct finish date", new Date(110, 00, 12, 13, 40, 00),
-					_freq.getFinishDate());
-
-			// and apply it to a problem space
-			double rDotDotHz = _freq.calculateFreqRate();
-			ProblemSpace space = new ProblemSpace();
-			// and add the bearings
-			addBearing(space, "100112", "133500", -48.41);
-			addBearing(space, "100112", "133550", -47.79);
-			addBearing(space, "100112", "133640", -47.19);
-			addBearing(space, "100112", "133730", -46.6);
-			addBearing(space, "100112", "133820", -46.03);
-			addBearing(space, "100112", "133910", -45.48);
-			addBearing(space, "100112", "134000", -44.94);
-			addBearing(space, "100112", "134050", -44.42);
-
-			double rDotDotKts = _freq.calcRDotKts(rDotDotHz);
-			double bDot = _freq.calculateBearingRate(space);
-			double range = _freq.calculateRange(rDotDotKts, bDot);
-			assertEquals("correct freq", -0.001943, rDotDotHz, 0.00001);
-			assertEquals("correct rDotDotKts", -0.03887, rDotDotKts, 0.0001);
-			assertEquals("correct bDot", 0.69385, bDot, 0.00001);
-			assertEquals("correct range", -8.95088, range, 0.00001);
-		}
-
+	public void setfNought(final double fNought) {
+		this.fNought = fNought;
 	}
 
-	/**
-	 * get the calculated range (m)
-	 * 
-	 * @return
-	 */
-	public Double getRange()
-	{
-		return calculatedRange;
+	public void setMaxRange(final Double maxRngM) {
+		final Double oldMaxRange = maxRangeM;
+		this.maxRangeM = maxRngM;
+		firePropertyChange(MAX_RANGE, oldMaxRange, maxRngM);
+		firePropertyChange(HARD_CONSTRAINTS, oldMaxRange, maxRngM);
 	}
 
-	public void setRange(Double range)
-	{
-		Double oldRange = calculatedRange;
+	public void setMinRange(final Double minRngM) {
+		final Double oldMinRange = minRangeM;
+		this.minRangeM = minRngM;
+		firePropertyChange(MIN_RANGE, oldMinRange, minRngM);
+		firePropertyChange(HARD_CONSTRAINTS, oldMinRange, minRngM);
+	}
+
+	public void setRange(final Double range) {
+		final Double oldRange = calculatedRange;
 
 		this.calculatedRange = range;
 
@@ -690,29 +631,16 @@ public class Range1959ForecastContribution extends BaseContribution
 		firePropertyChange(HARD_CONSTRAINTS, oldRange, range);
 	}
 
-	public void setMaxRange(Double maxRngM)
-	{
-		Double oldMaxRange = maxRangeM;
-		this.maxRangeM = maxRngM;
-		firePropertyChange(MAX_RANGE, oldMaxRange, maxRngM);
-		firePropertyChange(HARD_CONSTRAINTS, oldMaxRange, maxRngM);
+	public void setSpeedSound(final double speedSound) {
+		this.speedSound = speedSound;
 	}
 
-	public void setMinRange(Double minRngM)
-	{
-		Double oldMinRange = minRangeM;
-		this.minRangeM = minRngM;
-		firePropertyChange(MIN_RANGE, oldMinRange, minRngM);
-		firePropertyChange(HARD_CONSTRAINTS, oldMinRange, minRngM);
-	}
-
-	public Double getMaxRange()
-	{
-		return maxRangeM;
-	}
-
-	public Double getMinRange()
-	{
-		return minRangeM;
+	/**
+	 * how many freq measuremnts we contain
+	 * 
+	 * @return
+	 */
+	public int size() {
+		return measurements.size();
 	}
 }

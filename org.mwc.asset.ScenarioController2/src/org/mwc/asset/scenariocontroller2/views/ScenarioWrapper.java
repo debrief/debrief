@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.asset.scenariocontroller2.views;
 
 import java.util.Enumeration;
@@ -30,20 +31,18 @@ import MWC.GUI.Layers;
 
 /**
  * view of a complete simulation (scenario and controllers)
- * 
+ *
  * @author Administrator
- * 
+ *
  */
-public class ScenarioWrapper extends Layers
-{
+public class ScenarioWrapper extends Layers {
 	/**
 	 * layout-manager compliant wrapper around a scenario control file
 	 * 
 	 * @author Administrator
 	 * 
 	 */
-	private class ControllerWrapper extends BaseLayer
-	{
+	private class ControllerWrapper extends BaseLayer {
 		/**
 		 * 
 		 */
@@ -51,13 +50,11 @@ public class ScenarioWrapper extends Layers
 		private BaseLayer _layerObs;
 		private BaseLayer _layerGenny;
 
-		public ControllerWrapper()
-		{
+		public ControllerWrapper() {
 			this.setName("Generator Pending");
 		}
 
-		public void setObservers(final Vector<ScenarioObserver> observers)
-		{
+		public void setObservers(final Vector<ScenarioObserver> observers) {
 			// clear out
 			this.removeAllElements();
 
@@ -73,8 +70,7 @@ public class ScenarioWrapper extends Layers
 
 			// ok, now load the observers themselves
 			final Iterator<ScenarioObserver> iter = observers.iterator();
-			while (iter.hasNext())
-			{
+			while (iter.hasNext()) {
 				final ScenarioObserver thisS = iter.next();
 				_layerObs.add(thisS);
 			}
@@ -98,9 +94,7 @@ public class ScenarioWrapper extends Layers
 	 * @param scenarioController
 	 * @param layer
 	 */
-	public ScenarioWrapper(final MultiScenarioPresenter scenarioController,
-			final ScenarioLayer layer)
-	{
+	public ScenarioWrapper(final MultiScenarioPresenter scenarioController, final ScenarioLayer layer) {
 		_thePresenter = scenarioController;
 		_controlWrapper = new ControllerWrapper();
 		_scenLayer = layer;
@@ -109,45 +103,34 @@ public class ScenarioWrapper extends Layers
 	}
 
 	/**
-	 * convenience method to ditch any layers other than the scenario and
-	 * controller
+	 * convenience method to ditch any layers other than the scenario and controller
 	 * 
 	 */
-	public void ditchChartFeatures()
-	{
+	public void ditchChartFeatures() {
 
 		final Enumeration<Editable> layers = this.elements();
-		while (layers.hasMoreElements())
-		{
+		while (layers.hasMoreElements()) {
 			final Layer thisLayer = (Layer) layers.nextElement();
-			if ((thisLayer == _scenLayer) || (thisLayer == _controlWrapper))
-			{
+			if ((thisLayer == _scenLayer) || (thisLayer == _controlWrapper)) {
 				// ok, leave it
-			}
-			else
-			{
+			} else {
 				// aaah, one last check - just check it's not an instance of the
 				// scenario wrapper
-				if (thisLayer instanceof ScenarioLayer)
-				{
+				if (thisLayer instanceof ScenarioLayer) {
 
-				}
-				else
+				} else
 					this.removeThisLayer(thisLayer);
 			}
 		}
 	}
 
-	public void fireNewController()
-	{
+	public void fireNewController() {
 		_controlWrapper.setObservers(_thePresenter.getObservers());
 		this.fireExtended();
 	}
 
-	public ScenarioType getScenario()
-	{
+	public ScenarioType getScenario() {
 		return _scenLayer.getScenario();
 	}
-
 
 }

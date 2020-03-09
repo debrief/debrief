@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2018, Deep Blue C Technology Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.debrief.lite.gui.custom;
 
 import java.awt.BorderLayout;
@@ -27,223 +28,190 @@ import java.awt.event.MouseMotionListener;
 import javax.swing.SwingConstants;
 
 import org.jdesktop.swingx.JXLabel;
+import org.mwc.debrief.lite.DebriefLiteApp;
 
-public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
-{
-  /**
-   *
-   */
-  private static final long serialVersionUID = -2723902372006197600L;
+public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -2723902372006197600L;
 
-  private static final Integer MIN_ANIMATION_SIZE = 20;
+	private static final Integer MIN_ANIMATION_SIZE = 20;
 
-  private final JXLabel titleLabel;
+	private final JXLabel titleLabel;
 
-  // Variables used to implement the resize behavior.
-  private boolean dragging = false;
-  private Point dragLocation = new Point();
+	// Variables used to implement the resize behavior.
+	private boolean dragging = false;
+	private Point dragLocation = new Point();
 
-  public JXCollapsiblePaneWithTitle(final Direction direction,
-      final String title, final int defaultSize)
-  {
-    super(direction, MIN_ANIMATION_SIZE, false);
+	public JXCollapsiblePaneWithTitle(final Direction direction, final String title, final int defaultSize) {
+		super(direction, MIN_ANIMATION_SIZE, false);
 
-    final JXCollapsiblePane collapsiblePaneInstance = this;
-    collapsiblePaneInstance.setPreferredSize(new Dimension(defaultSize,
-        defaultSize));
-    collapsiblePaneInstance.setName(title);
+		final JXCollapsiblePane collapsiblePaneInstance = this;
+		collapsiblePaneInstance.setPreferredSize(new Dimension(defaultSize, defaultSize));
+		collapsiblePaneInstance.setName(title);
 
-    titleLabel = new JXLabel(title, SwingConstants.CENTER);
-    titleLabel.setName("titleLabel");
-    final Dimension titleDimension;
+		titleLabel = new JXLabel(title, SwingConstants.CENTER);
+		titleLabel.setName("titleLabel");
+		final Dimension titleDimension;
 
-    if (direction.isVertical())
-    {
-      titleDimension = new Dimension(defaultSize, 20);
-    }
-    else
-    {
-      titleDimension = new Dimension(20, defaultSize);
-    }
-    titleLabel.setPreferredSize(titleDimension);
-    setLayout(new BorderLayout());
+		if (direction.isVertical()) {
+			titleDimension = new Dimension(defaultSize, 20);
+		} else {
+			titleDimension = new Dimension(20, defaultSize);
+		}
+		titleLabel.setPreferredSize(titleDimension);
+		setLayout(new BorderLayout());
 
-    if (direction == Direction.LEFT)
-    {
-      add(titleLabel, BorderLayout.EAST);
-      setMinimumSize(new Dimension(30, titleLabel.getHeight()));
-    }
-    else if (direction == Direction.RIGHT)
-    {
-      add(titleLabel, BorderLayout.WEST);
-    }
-    else if (direction == Direction.DOWN)
-    {
-      add(titleLabel, BorderLayout.NORTH);
-      setMinimumSize(new Dimension(titleLabel.getWidth(), 30));
-    }
-    else if (direction == Direction.UP)
-    {
-      add(titleLabel, BorderLayout.SOUTH);
-    }
+		if (direction == Direction.LEFT) {
+			add(titleLabel, BorderLayout.EAST);
+			setMinimumSize(new Dimension(30, titleLabel.getHeight()));
 
-    if (!direction.isVertical())
-    {
-      titleLabel.setTextRotation(3 * Math.PI / 2);
-    }
+		} else if (direction == Direction.RIGHT) {
+			add(titleLabel, BorderLayout.WEST);
 
-    titleLabel.setBackground(Color.black);
+		} else if (direction == Direction.DOWN) {
+			add(titleLabel, BorderLayout.NORTH);
+			setMinimumSize(new Dimension(titleLabel.getWidth(), 30));
+		} else if (direction == Direction.UP) {
+			add(titleLabel, BorderLayout.SOUTH);
 
-    titleLabel.addMouseListener(new MouseAdapter()
-    {
-      @Override
-      public void mouseClicked(final MouseEvent e)
-      {
-        if (e.getClickCount() == 2)
-        {
-          collapsiblePaneInstance.setCollapsed(!collapsiblePaneInstance
-              .isCollapsed());
-        }
-      }
+		}
+		if (!direction.isVertical()) {
+			titleLabel.setTextRotation(3 * Math.PI / 2);
+		}
 
-      @Override
-      public void mousePressed(final MouseEvent e)
-      {
-        dragging = true;
-        dragLocation = e.getLocationOnScreen();
-      }
+		titleLabel.setBackground(Color.black);
 
-      @Override
-      public void mouseReleased(final MouseEvent e)
-      {
-        dragging = false;
-      }
-    });
+		titleLabel.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(final MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					collapsiblePaneInstance.setCollapsed(!collapsiblePaneInstance.isCollapsed());
+				}
+			}
 
-    titleLabel.addMouseMotionListener(new MouseMotionListener()
-    {
+			@Override
+			public void mousePressed(final MouseEvent e) {
+				dragging = true;
+				dragLocation = e.getLocationOnScreen();
+			}
 
-      @Override
-      public void mouseDragged(final MouseEvent event)
-      {
-        if (dragging)
-        {
-          int deltaMultiplier = 1;
-          if (direction == Direction.DOWN || direction == Direction.RIGHT)
-          {
-            deltaMultiplier *= -1;
-          }
+			@Override
+			public void mouseReleased(final MouseEvent e) {
+				dragging = false;
+			}
+		});
 
-          int delta;
-          if (direction.isVertical())
-          {
-            final int newDimensionDelta = (int) (event.getLocationOnScreen()
-                .getY() - dragLocation.getY());
+		titleLabel.addMouseMotionListener(new MouseMotionListener() {
 
-            delta = newDimensionDelta;
-          }
-          else
-          {
-            final int newDimensionDelta = (int) (event.getLocationOnScreen()
-                .getX() - dragLocation.getX());
+			@Override
+			public void mouseDragged(final MouseEvent event) {
+				if (dragging) {
+					int deltaMultiplier = 1;
+					if (direction == Direction.DOWN || direction == Direction.RIGHT) {
+						deltaMultiplier *= -1;
+					}
 
-            delta = newDimensionDelta;
-          }
-          delta *= deltaMultiplier;
+					int delta;
+					if (direction.isVertical()) {
+						final int newDimensionDelta = (int) (event.getLocationOnScreen().getY() - dragLocation.getY());
 
-          wrapper.getView().setVisible(true);
+						delta = newDimensionDelta;
+					} else {
+						final int newDimensionDelta = (int) (event.getLocationOnScreen().getX() - dragLocation.getX());
 
-          int newDimension;
-          if (direction.isVertical())
-          {
-            newDimension = wrapper.getHeight() + delta;
-          }
-          else
-          {
-            newDimension = wrapper.getWidth() + delta;
-          }
-          newDimension = Math.max(newDimension, getMinimunAnimationSize());
+						delta = newDimensionDelta;
+					}
+					delta *= deltaMultiplier;
 
-          Rectangle bounds = wrapper.getBounds();
+					wrapper.getView().setVisible(true);
 
-          if (direction.isVertical())
-          {
-            final int oldHeight = bounds.height;
-            bounds.height = newDimension;
-            wrapper.setBounds(bounds);
+					int newDimension;
+					if (direction.isVertical()) {
+						newDimension = wrapper.getHeight() + delta;
+					} else {
+						newDimension = wrapper.getWidth() + delta;
+					}
+					newDimension = Math.max(newDimension, getMinimunAnimationSize());
 
-            if (direction.getFixedDirection(
-                getComponentOrientation()) == Direction.DOWN)
-            {
-              wrapper.setViewPosition(new Point(0, wrapper.getView()
-                  .getPreferredSize().height - newDimension));
-            }
-            else
-            {
-              wrapper.setViewPosition(new Point(0, newDimension));
-            }
+					Rectangle bounds = wrapper.getBounds();
 
-            bounds = getBounds();
-            bounds.height = (bounds.height - oldHeight) + newDimension;
-            bounds.width = 0;
-            currentDimension = bounds.height;
-          }
-          else
-          {
-            final int oldWidth = bounds.width;
-            bounds.width = newDimension;
-            wrapper.setBounds(bounds);
+					if (direction.isVertical()) {
+						final int oldHeight = bounds.height;
+						bounds.height = newDimension;
+						wrapper.setBounds(bounds);
 
-            if (direction.getFixedDirection(
-                getComponentOrientation()) == Direction.RIGHT)
-            {
-              wrapper.setViewPosition(new Point(wrapper.getView()
-                  .getPreferredSize().width - newDimension, 0));
-            }
-            else
-            {
-              wrapper.setViewPosition(new Point(newDimension, 0));
-            }
+						if (direction.getFixedDirection(getComponentOrientation()) == Direction.DOWN) {
+							wrapper.setViewPosition(
+									new Point(0, wrapper.getView().getPreferredSize().height - newDimension));
+						} else {
+							wrapper.setViewPosition(new Point(0, newDimension));
+						}
 
-            bounds = getBounds();
-            bounds.width = (bounds.width - oldWidth) + newDimension;
-            bounds.height = 0;
-            currentDimension = bounds.width;
-          }
+						bounds = getBounds();
+						final int maxheight = DebriefLiteApp.getInstance().getApplicationFrame().getHeight();
+						// minor adjustments +5
+						final int ribbonHeight = DebriefLiteApp.getInstance().getApplicationFrame().getRibbon()
+								.getHeight() + (titleLabel.getHeight() * 2) + 5;
+						if (bounds.height < maxheight - ribbonHeight) {
+							bounds.height = (bounds.height - oldHeight) + newDimension;
+						} else {
+							bounds.height = maxheight - ribbonHeight - 2;
+						}
 
-          collapsiblePaneInstance.collapsed =
-              newDimension == MIN_ANIMATION_SIZE;
-          collapsiblePaneInstance.setPreferredSize(new Dimension(bounds.width,
-              bounds.height));
-          setBounds(bounds);
+						bounds.width = 0;
+						currentDimension = bounds.height;
+					} else {
+						final int oldWidth = bounds.width;
+						bounds.width = newDimension;
+						wrapper.setBounds(bounds);
 
-          validate();
+						if (direction.getFixedDirection(getComponentOrientation()) == Direction.RIGHT) {
+							wrapper.setViewPosition(
+									new Point(wrapper.getView().getPreferredSize().width - newDimension, 0));
+						} else {
+							wrapper.setViewPosition(new Point(newDimension, 0));
+						}
 
-          dragLocation = event.getLocationOnScreen();
-        }
-      }
+						bounds = getBounds();
+						final int maxwidth = DebriefLiteApp.getInstance().getApplicationFrame().getWidth();
+						// 30 is the width of titlebar.
+						if (bounds.width < maxwidth - titleLabel.getWidth()) {
+							bounds.width = (bounds.width - oldWidth) + newDimension;
+						} else {
+							bounds.width = maxwidth - titleLabel.getWidth() - 2;
+						}
+						bounds.height = 0;
+						currentDimension = bounds.width;
+					}
 
-      @Override
-      public void mouseMoved(final MouseEvent event)
-      {
-        // Nothing to do here. Added a line to avoid the travis warning
-        System.out.print("");
-      }
-    });
+					collapsiblePaneInstance.collapsed = newDimension == MIN_ANIMATION_SIZE;
+					collapsiblePaneInstance.setPreferredSize(new Dimension(bounds.width, bounds.height));
+					setBounds(bounds);
 
-    if (collapsiblePaneInstance.getDirection().isVertical())
-    {
-      titleLabel.setCursor(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR));
-    }
-    else
-    {
-      titleLabel.setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
-    }
-  }
+					validate();
 
-  @Override
-  public String getName()
-  {
-    return titleLabel.getText();
-  }
+					dragLocation = event.getLocationOnScreen();
+				}
+			}
+
+			@Override
+			public void mouseMoved(final MouseEvent event) {
+				// Nothing to do here. Added a line to avoid the travis warning
+				System.out.print("");
+			}
+		});
+
+		if (collapsiblePaneInstance.getDirection().isVertical()) {
+			titleLabel.setCursor(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR));
+		} else {
+			titleLabel.setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
+		}
+	}
+
+	@Override
+	public String getName() {
+		return titleLabel.getText();
+	}
 }

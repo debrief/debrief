@@ -1,259 +1,238 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
-package Debrief.Tools.Operations;
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 
-import Debrief.GUI.Frames.Session;
-import MWC.GUI.ToolParent;
-import MWC.GUI.Tools.Action;
-import MWC.Utilities.Errors.Trace;
+package Debrief.Tools.Operations;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class SavePlotAsXML extends MWC.GUI.Tools.Operations.Save
-{
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  private Session _theSession = null;
+import Debrief.GUI.Frames.Session;
+import MWC.GUI.ToolParent;
+import MWC.GUI.Tools.Action;
+import MWC.Utilities.Errors.Trace;
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  public SavePlotAsXML(final ToolParent theParent,
-                       final Session theSession)
-  {
-    this(theParent, theSession, "Save Plot As...", "images/24/save-as.png");
-  }
+public class SavePlotAsXML extends MWC.GUI.Tools.Operations.Save {
+	///////////////////////////////////////////////////////
+	// store action information
+	///////////////////////////////////////////////////////
+	protected final static class SavePlotAction implements Action {
+		/**
+		 * store the name of the session we have saved
+		 */
+		final String _theSessionName;
 
-  public SavePlotAsXML(final ToolParent theParent,
-                       final Session theSession,
-                       final String theTitle,
-                       final String theImage)
-  {
-    super(theParent, theTitle, "*.xml", theImage);
+		public SavePlotAction(final String theName) {
+			_theSessionName = theName;
+		}
 
-    // store the session parameter
-    _theSession = theSession;
+		@Override
+		public final void execute() {
+		}
 
-    // see if we have an old directory to retrieve
-    if (_lastDirectory.equals(""))
-    {
-      final String val = getParent().getProperty("XML_Directory");
-      if (val != null)
-        _lastDirectory = val;
-    }
-  }
+		@Override
+		public final boolean isRedoable() {
+			return false;
+		}
 
-  /////////////////////////////////////////////////////////////
-  // member methods
-  ////////////////////////////////////////////////////////////
+		@Override
+		public final boolean isUndoable() {
+			return false;
+		}
 
-  /** save the plot to file.  If we are over-writing an existing file we write to a new file-name, then we rename
-   * to the existing file if it all goes ok
-   *
-   * @param fileName
-   * @return
-   */
-  protected final Action doSave(final String fileName)
-  {
-    Action res = null;
+		@Override
+		public final String toString() {
+			return "Save " + _theSessionName;
+		}
 
-    // ok, we do a clever save method here.  We save to a temp filename, and only over-write the
-    // real-one if the save is successful.
+		@Override
+		public final void undo() {
+			// delete the plottables from the Application object
+		}
 
+	}
 
-    // check the output filename
-    String theFileName = fileName;
-    final int idx = theFileName.toLowerCase().indexOf(".xml");
-    if (idx == -1)
-    {
-      theFileName += ".xml";
-    }
+	/**
+		 *
+		 */
+	private static final long serialVersionUID = 1L;
 
-    // the name of the temp filename, if we need one.
-    String tmpFileName = null;
+	public static void main(final String[] args) {
+		final String fName = "c:\\test2.txt";
+		final File fD = new File(fName);
+		// File f2 = new File("c:\\test2.txt");
+		// fD.renameTo(f2);
+		final boolean deleted = fD.delete();
+		System.out.println("res:" + deleted);
 
-    // the name of the file which we actually store to
-    String outputFileName = theFileName;
+	}
 
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+	private Session _theSession = null;
 
-    // does this file exist
-    final File targetFile = new File(theFileName);
-    if (targetFile.exists())
-    {
-      // yes, the file already exists.  Write to a temp filename
-      tmpFileName = targetFile.getName();
+	/////////////////////////////////////////////////////////////
+	// member methods
+	////////////////////////////////////////////////////////////
 
-      // ok, prepend with a marker
-      tmpFileName = "~" + tmpFileName;
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	public SavePlotAsXML(final ToolParent theParent, final Session theSession) {
+		this(theParent, theSession, "Save Plot As...", "images/24/save-as.png");
+	}
 
-      // and a tmp suffix
-      tmpFileName = tmpFileName.replaceAll(".xml", ".tmp");
+	public SavePlotAsXML(final ToolParent theParent, final Session theSession, final String theTitle,
+			final String theImage) {
+		super(theParent, theTitle, "*.xml", theImage);
 
-      // and replace the dir markers
-      tmpFileName = targetFile.getParent() + "\\" + tmpFileName;
+		// store the session parameter
+		_theSession = theSession;
 
-      outputFileName = tmpFileName;
+		// see if we have an old directory to retrieve
+		if (_lastDirectory.equals("")) {
+			final String val = getParent().getProperty("XML_Directory");
+			if (val != null)
+				_lastDirectory = val;
+		}
+	}
 
-    }
+	@Override
+	public final void close() {
+		super.close();
 
-    // did it all go ok?
-    boolean saveWorked = false;
+		_theSession = null;
+	}
 
-    // now save session to this file
-    try
-    {
-      // open the file
-      final OutputStream os = new FileOutputStream(outputFileName);
+	/**
+	 * save the plot to file. If we are over-writing an existing file we write to a
+	 * new file-name, then we rename to the existing file if it all goes ok
+	 *
+	 * @param fileName
+	 * @return
+	 */
+	@Override
+	protected final Action doSave(final String fileName) {
+		Action res = null;
 
-      try
-      {
-        // pass all of this to the XML exporter
-        Debrief.ReaderWriter.XML.DebriefXMLReaderWriter.exportThis(_theSession, os);
+		// ok, we do a clever save method here. We save to a temp filename, and only
+		// over-write the
+		// real-one if the save is successful.
 
-        // ok - remember it went ok
-        saveWorked = true;
-      }
-      catch (final java.lang.OutOfMemoryError me)
-      {
-        MWC.Utilities.Errors.Trace.trace(me, " Ran out of memory whilst saving plot, try adding -Xmx256m to the command line");
-      }
+		// check the output filename
+		String theFileName = fileName;
+		final int idx = theFileName.toLowerCase().indexOf(".xml");
+		if (idx == -1) {
+			theFileName += ".xml";
+		}
 
-      // close the stream, even if the operation failed.  We need to close the stream so that we can delete
-      // the temp file when necessary
-      os.close();
-    }
-    catch (final IOException e)
-    {
-      MWC.Utilities.Errors.Trace.trace(e);
-    }
+		// the name of the temp filename, if we need one.
+		String tmpFileName = null;
 
-    // did it work?
-    if (saveWorked)
-    {
-      // ok, are we over-writing an existing file?
-      if (tmpFileName != null)
-      {
-        // yes.  delete the original file
-        final File oldFile = new File(theFileName);
-        oldFile.delete();
+		// the name of the file which we actually store to
+		String outputFileName = theFileName;
 
-        // and rename our new file
-        final File tmpFile = new File(tmpFileName);
-        final boolean renameChanged = tmpFile.renameTo(oldFile);
-        
-        if(!renameChanged)
-        {
-        	Trace.trace("File-save failed.  Old file still present with '.tmp' suffix", true);
-        }
-        
-      }
+		// does this file exist
+		final File targetFile = new File(theFileName);
+		if (targetFile.exists()) {
+			// yes, the file already exists. Write to a temp filename
+			tmpFileName = targetFile.getName();
 
-      // inform the session of it's filename
-      _theSession.setFileName(theFileName);
+			// ok, prepend with a marker
+			tmpFileName = "~" + tmpFileName;
 
-      // store the action
-      res = new SavePlotAction(_theSession.getName());
+			// and a tmp suffix
+			tmpFileName = tmpFileName.replaceAll(".xml", ".tmp");
 
-      // put the filename into the MRU
-      Debrief.GUI.Frames.Application.addToMru(theFileName);
+			// and replace the dir markers
+			tmpFileName = targetFile.getParent() + "\\" + tmpFileName;
 
-    }
-    else
-    {
-      // the save failed - try to delete the working file
-      final File scrapFile = new File(outputFileName);
+			outputFileName = tmpFileName;
 
-      if (scrapFile.exists())
-      {
-        final boolean deleted = scrapFile.delete();
-        System.out.println("deleted:" + deleted);
-      }
-    }
+		}
 
-    return res;
-  }
+		// did it all go ok?
+		boolean saveWorked = false;
 
+		// now save session to this file
+		try {
+			// open the file
+			final OutputStream os = new FileOutputStream(outputFileName);
 
-  final Session getSession()
-  {
-    return _theSession;
-  }
+			try {
+				// pass all of this to the XML exporter
+				Debrief.ReaderWriter.XML.DebriefXMLReaderWriter.exportThis(_theSession, os);
 
-  ///////////////////////////////////////////////////////
-  // store action information
-  ///////////////////////////////////////////////////////
-  protected final static class SavePlotAction implements Action
-  {
-    /**
-     * store the name of the session we have saved
-     */
-    final String _theSessionName;
+				// ok - remember it went ok
+				saveWorked = true;
+			} catch (final java.lang.OutOfMemoryError me) {
+				MWC.Utilities.Errors.Trace.trace(me,
+						" Ran out of memory whilst saving plot, try adding -Xmx256m to the command line");
+			}
 
-    public SavePlotAction(final String theName)
-    {
-      _theSessionName = theName;
-    }
+			// close the stream, even if the operation failed. We need to close the stream
+			// so that we can delete
+			// the temp file when necessary
+			os.close();
+		} catch (final IOException e) {
+			MWC.Utilities.Errors.Trace.trace(e);
+		}
 
-    public final boolean isRedoable()
-    {
-      return false;
-    }
+		// did it work?
+		if (saveWorked) {
+			// ok, are we over-writing an existing file?
+			if (tmpFileName != null) {
+				// yes. delete the original file
+				final File oldFile = new File(theFileName);
+				oldFile.delete();
 
+				// and rename our new file
+				final File tmpFile = new File(tmpFileName);
+				final boolean renameChanged = tmpFile.renameTo(oldFile);
 
-    public final boolean isUndoable()
-    {
-      return false;
-    }
+				if (!renameChanged) {
+					Trace.trace("File-save failed.  Old file still present with '.tmp' suffix", true);
+				}
 
-    public final String toString()
-    {
-      return "Save " + _theSessionName;
-    }
+			}
 
-    public final void undo()
-    {
-      // delete the plottables from the Application object
-    }
+			// inform the session of it's filename
+			_theSession.setFileName(theFileName);
 
-    public final void execute()
-    {
-    }
+			// store the action
+			res = new SavePlotAction(_theSession.getName());
 
-  }
+			// put the filename into the MRU
+			Debrief.GUI.Frames.Application.addToMru(theFileName);
 
+		} else {
+			// the save failed - try to delete the working file
+			final File scrapFile = new File(outputFileName);
 
-  public final void close()
-  {
-    super.close();
+			if (scrapFile.exists()) {
+				final boolean deleted = scrapFile.delete();
+				System.out.println("deleted:" + deleted);
+			}
+		}
 
-    _theSession = null;
-  }
+		return res;
+	}
 
-
-  public static void main(final String[] args)
-  {
-    final String fName = "c:\\test2.txt";
-    final File fD = new File(fName);
-    //    File f2 = new File("c:\\test2.txt");
-    //    fD.renameTo(f2);
-    final boolean deleted = fD.delete();
-    System.out.println("res:" + deleted);
-
-  }
+	final Session getSession() {
+		return _theSession;
+	}
 }

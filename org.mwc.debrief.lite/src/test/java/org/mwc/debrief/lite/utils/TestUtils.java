@@ -1,17 +1,17 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
- *
- *    (C) 2000-2016, Deep Blue C Technology Ltd
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- */
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *  
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *  
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *  
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *******************************************************************************/
 package org.mwc.debrief.lite.utils;
 
 /**
@@ -25,9 +25,12 @@ import java.awt.Window;
 
 import javax.swing.JComboBox;
 import javax.swing.JMenu;
+import javax.swing.JPanel;
 
 import org.mwc.debrief.lite.DebriefLiteApp;
+import org.mwc.debrief.lite.custom.JRibbonLabel;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
+import org.pushingpixels.flamingo.api.common.JCommandButtonStrip;
 import org.pushingpixels.flamingo.api.common.JCommandMenuButton;
 import org.pushingpixels.flamingo.api.common.JScrollablePanel;
 import org.pushingpixels.flamingo.api.common.popup.JPopupPanel;
@@ -35,6 +38,7 @@ import org.pushingpixels.flamingo.api.ribbon.AbstractRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 import org.pushingpixels.flamingo.api.ribbon.synapse.JRibbonComboBox;
 import org.pushingpixels.flamingo.internal.ui.ribbon.JBandControlPanel;
+import org.pushingpixels.flamingo.internal.ui.ribbon.JFlowBandControlPanel;
 import org.pushingpixels.flamingo.internal.ui.ribbon.JRibbonComponent;
 
 public class TestUtils
@@ -166,33 +170,62 @@ public class TestUtils
     return combo;
   }
   
-  public static JCommandButton getSaveButton()
+  public static JCommandMenuButton getSaveButton()
   {
     JBandControlPanel liteBand = (JBandControlPanel)getRibbonBand(1,0).getComponent(0);
     JCommandButton saveButton = ((JCommandButton)liteBand.getComponent(2));
     JPopupPanel panel = (JPopupPanel)saveButton.getPopupCallback().getPopupPanel(saveButton);
-    JCommandButton saveDDButton = (JCommandButton)((JScrollablePanel)panel.getComponent(0)).getComponent(1);
+    JCommandMenuButton saveDDButton =(JCommandMenuButton)((JPanel)((JPanel)((JScrollablePanel)panel.getComponent(0)).getComponent(0)).getComponent(0)).getComponent(0);
+    
     saveDDButton.setFireActionOnRollover(true);
     System.out.println("Save Button:"+saveDDButton);
     return saveDDButton;
   }
   
-  public static JCommandButton getSaveASButton()
+  public static JCommandButton getSaveMainButton()
+  {
+    JBandControlPanel liteBand = (JBandControlPanel)getRibbonBand(1,0).getComponent(0);
+    JCommandButton saveButton = ((JCommandButton)liteBand.getComponent(2));
+    return saveButton;
+  }
+  
+  public static JCommandMenuButton getSaveASButton()
   {
     JBandControlPanel liteBand = (JBandControlPanel)getRibbonBand(1,0).getComponent(0);
     JCommandButton saveButton = ((JCommandButton)liteBand.getComponent(2));
     JPopupPanel panel = (JPopupPanel)saveButton.getPopupCallback().getPopupPanel(saveButton);
-    JCommandButton saveDDButton = (JCommandButton)((JScrollablePanel<JPopupPanel>)panel.getComponent(0)).getComponent(2);
+    
+    JCommandMenuButton saveDDButton =(JCommandMenuButton)((JPanel)((JPanel)((JScrollablePanel)panel.getComponent(0)).getComponent(0)).getComponent(0)).getComponent(1);
+    saveDDButton.setFireActionOnRollover(true);
+    System.out.println("Save Button:"+saveDDButton);
     return saveDDButton;
   }
-  public static JCommandMenuButton getSaveAsButton()
+  public static JCommandButtonStrip getTimeControllerCommands()
   {
-    JBandControlPanel liteBand = (JBandControlPanel)getRibbonBand(1,0).getComponent(0);
-    JCommandButton saveButton = ((JCommandButton)liteBand.getComponent(2));
-    JPopupPanel panel = (JPopupPanel)saveButton.getPopupCallback().getPopupPanel(saveButton);
-    JCommandMenuButton saveDDButton = (JCommandMenuButton)TestUtils.getChildNamed(panel, "saveas");
-    return saveDDButton;
+    
+    JFlowBandControlPanel panel = (JFlowBandControlPanel)getRibbonBand(4,2).getComponent(0);
+    return (JCommandButtonStrip)panel.getComponent(0);
+    
   }
+  
+  public static JRibbonLabel getTimeFormatLabel()
+  {
+    JFlowBandControlPanel panel = (JFlowBandControlPanel)getRibbonBand(4,2).getComponent(0);
+    return (JRibbonLabel)((JRibbonComponent)panel.getComponent(1)).getComponent(1);
+  }
+  public static JCommandButton getEditTimeFormatButton()
+  {
+    JFlowBandControlPanel panel = (JFlowBandControlPanel)getRibbonBand(4,2).getComponent(0);
+    return (JCommandButton)panel.getComponent(2);
+  }
+//  public static JCommandMenuButton getSaveAsButton()
+//  {
+//    JBandControlPanel liteBand = (JBandControlPanel)getRibbonBand(1,0).getComponent(0);
+//    JCommandButton saveButton = ((JCommandButton)liteBand.getComponent(2));
+//    JPopupPanel panel = (JPopupPanel)saveButton.getPopupCallback().getPopupPanel(saveButton);
+//    JCommandMenuButton saveDDButton = (JCommandMenuButton)TestUtils.getChildNamed(panel, "saveas");
+//    return saveDDButton;
+//  }
   
   
 }

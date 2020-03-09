@@ -1,225 +1,226 @@
 package edu.nps.moves.dis;
 
-import java.util.*;
-import java.io.*;
-import edu.nps.moves.disenum.*;
-import edu.nps.moves.disutil.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 5.2.44: Grid data record, representation 1
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class GridAxisRecordRepresentation1 extends GridAxisRecord implements Serializable
-{
-   /** constant scale factor */
-   protected float  fieldScale;
+public class GridAxisRecordRepresentation1 extends GridAxisRecord implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   /** constant offset used to scale grid data */
-   protected float  fieldOffset;
+	/** constant scale factor */
+	protected float fieldScale;
 
-   /** Number of data values */
-   protected int  numberOfValues;
+	/** constant offset used to scale grid data */
+	protected float fieldOffset;
 
-   /** variable length list of data parameters ^^^this is wrong--need padding as well */
-   protected List< TwoByteChunk > dataValues = new ArrayList< TwoByteChunk >(); 
+	/** Number of data values */
+	protected int numberOfValues;
 
-/** Constructor */
- public GridAxisRecordRepresentation1()
- {
- }
+	/**
+	 * variable length list of data parameters ^^^this is wrong--need padding as
+	 * well
+	 */
+	protected List<TwoByteChunk> dataValues = new ArrayList<TwoByteChunk>();
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+	/** Constructor */
+	public GridAxisRecordRepresentation1() {
+	}
 
-   marshalSize = super.getMarshalledSize();
-   marshalSize = marshalSize + 4;  // fieldScale
-   marshalSize = marshalSize + 4;  // fieldOffset
-   marshalSize = marshalSize + 2;  // numberOfValues
-   for(int idx=0; idx < dataValues.size(); idx++)
-   {
-        TwoByteChunk listElement = dataValues.get(idx);
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-   }
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-   return marshalSize;
-}
+		if (this == obj) {
+			return true;
+		}
 
+		if (obj == null) {
+			return false;
+		}
 
-public void setFieldScale(float pFieldScale)
-{ fieldScale = pFieldScale;
-}
+		if (getClass() != obj.getClass())
+			return false;
 
-public float getFieldScale()
-{ return fieldScale; 
-}
+		return equalsImpl(obj);
+	}
 
-public void setFieldOffset(float pFieldOffset)
-{ fieldOffset = pFieldOffset;
-}
+	@Override
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-public float getFieldOffset()
-{ return fieldOffset; 
-}
+		if (!(obj instanceof GridAxisRecordRepresentation1))
+			return false;
 
-public int getNumberOfValues()
-{ return (int)dataValues.size();
-}
+		final GridAxisRecordRepresentation1 rhs = (GridAxisRecordRepresentation1) obj;
 
-/** Note that setting this value will not change the marshalled value. The list whose length this describes is used for that purpose.
- * The getnumberOfValues method will also be based on the actual list length rather than this value. 
- * The method is simply here for java bean completeness.
- */
-public void setNumberOfValues(int pNumberOfValues)
-{ numberOfValues = pNumberOfValues;
-}
+		if (!(fieldScale == rhs.fieldScale))
+			ivarsEqual = false;
+		if (!(fieldOffset == rhs.fieldOffset))
+			ivarsEqual = false;
+		if (!(numberOfValues == rhs.numberOfValues))
+			ivarsEqual = false;
 
-public void setDataValues(List<TwoByteChunk> pDataValues)
-{ dataValues = pDataValues;
-}
+		for (int idx = 0; idx < dataValues.size(); idx++) {
+			if (!(dataValues.get(idx).equals(rhs.dataValues.get(idx))))
+				ivarsEqual = false;
+		}
 
-public List<TwoByteChunk> getDataValues()
-{ return dataValues; }
+		return ivarsEqual && super.equalsImpl(rhs);
+	}
 
+	public List<TwoByteChunk> getDataValues() {
+		return dataValues;
+	}
 
-public void marshal(DataOutputStream dos)
-{
-    super.marshal(dos);
-    try 
-    {
-       dos.writeFloat( (float)fieldScale);
-       dos.writeFloat( (float)fieldOffset);
-       dos.writeShort( (short)dataValues.size());
+	public float getFieldOffset() {
+		return fieldOffset;
+	}
 
-       for(int idx = 0; idx < dataValues.size(); idx++)
-       {
-            TwoByteChunk aTwoByteChunk = dataValues.get(idx);
-            aTwoByteChunk.marshal(dos);
-       } // end of list marshalling
+	public float getFieldScale() {
+		return fieldScale;
+	}
 
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+	@Override
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
-public void unmarshal(DataInputStream dis)
-{
-     super.unmarshal(dis);
+		marshalSize = super.getMarshalledSize();
+		marshalSize = marshalSize + 4; // fieldScale
+		marshalSize = marshalSize + 4; // fieldOffset
+		marshalSize = marshalSize + 2; // numberOfValues
+		for (int idx = 0; idx < dataValues.size(); idx++) {
+			final TwoByteChunk listElement = dataValues.get(idx);
+			marshalSize = marshalSize + listElement.getMarshalledSize();
+		}
 
-    try 
-    {
-       fieldScale = dis.readFloat();
-       fieldOffset = dis.readFloat();
-       numberOfValues = (int)dis.readUnsignedShort();
-       for(int idx = 0; idx < numberOfValues; idx++)
-       {
-           TwoByteChunk anX = new TwoByteChunk();
-           anX.unmarshal(dis);
-           dataValues.add(anX);
-       }
+		return marshalSize;
+	}
 
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+	public int getNumberOfValues() {
+		return dataValues.size();
+	}
 
+	@Override
+	public void marshal(final DataOutputStream dos) {
+		super.marshal(dos);
+		try {
+			dos.writeFloat(fieldScale);
+			dos.writeFloat(fieldOffset);
+			dos.writeShort((short) dataValues.size());
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
-       super.marshal(buff);
-       buff.putFloat( (float)fieldScale);
-       buff.putFloat( (float)fieldOffset);
-       buff.putShort( (short)dataValues.size());
+			for (int idx = 0; idx < dataValues.size(); idx++) {
+				final TwoByteChunk aTwoByteChunk = dataValues.get(idx);
+				aTwoByteChunk.marshal(dos);
+			} // end of list marshalling
 
-       for(int idx = 0; idx < dataValues.size(); idx++)
-       {
-            TwoByteChunk aTwoByteChunk = (TwoByteChunk)dataValues.get(idx);
-            aTwoByteChunk.marshal(buff);
-       } // end of list marshalling
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
-    } // end of marshal method
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	@Override
+	public void marshal(final java.nio.ByteBuffer buff) {
+		super.marshal(buff);
+		buff.putFloat(fieldScale);
+		buff.putFloat(fieldOffset);
+		buff.putShort((short) dataValues.size());
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       super.unmarshal(buff);
+		for (int idx = 0; idx < dataValues.size(); idx++) {
+			final TwoByteChunk aTwoByteChunk = dataValues.get(idx);
+			aTwoByteChunk.marshal(buff);
+		} // end of list marshalling
 
-       fieldScale = buff.getFloat();
-       fieldOffset = buff.getFloat();
-       numberOfValues = (int)(buff.getShort() & 0xFFFF);
-       for(int idx = 0; idx < numberOfValues; idx++)
-       {
-            TwoByteChunk anX = new TwoByteChunk();
-            anX.unmarshal(buff);
-            dataValues.add(anX);
-       }
+	} // end of marshal method
 
- } // end of unmarshal method 
+	public void setDataValues(final List<TwoByteChunk> pDataValues) {
+		dataValues = pDataValues;
+	}
 
+	public void setFieldOffset(final float pFieldOffset) {
+		fieldOffset = pFieldOffset;
+	}
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+	public void setFieldScale(final float pFieldScale) {
+		fieldScale = pFieldScale;
+	}
 
-    if(this == obj){
-      return true;
-    }
+	/**
+	 * Note that setting this value will not change the marshalled value. The list
+	 * whose length this describes is used for that purpose. The getnumberOfValues
+	 * method will also be based on the actual list length rather than this value.
+	 * The method is simply here for java bean completeness.
+	 */
+	public void setNumberOfValues(final int pNumberOfValues) {
+		numberOfValues = pNumberOfValues;
+	}
 
-    if(obj == null){
-       return false;
-    }
+	@Override
+	public void unmarshal(final DataInputStream dis) {
+		super.unmarshal(dis);
 
-    if(getClass() != obj.getClass())
-        return false;
+		try {
+			fieldScale = dis.readFloat();
+			fieldOffset = dis.readFloat();
+			numberOfValues = dis.readUnsignedShort();
+			for (int idx = 0; idx < numberOfValues; idx++) {
+				final TwoByteChunk anX = new TwoByteChunk();
+				anX.unmarshal(dis);
+				dataValues.add(anX);
+			}
 
-    return equalsImpl(obj);
- }
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
-@Override
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	@Override
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		super.unmarshal(buff);
 
-    if(!(obj instanceof GridAxisRecordRepresentation1))
-        return false;
+		fieldScale = buff.getFloat();
+		fieldOffset = buff.getFloat();
+		numberOfValues = buff.getShort() & 0xFFFF;
+		for (int idx = 0; idx < numberOfValues; idx++) {
+			final TwoByteChunk anX = new TwoByteChunk();
+			anX.unmarshal(buff);
+			dataValues.add(anX);
+		}
 
-     final GridAxisRecordRepresentation1 rhs = (GridAxisRecordRepresentation1)obj;
-
-     if( ! (fieldScale == rhs.fieldScale)) ivarsEqual = false;
-     if( ! (fieldOffset == rhs.fieldOffset)) ivarsEqual = false;
-     if( ! (numberOfValues == rhs.numberOfValues)) ivarsEqual = false;
-
-     for(int idx = 0; idx < dataValues.size(); idx++)
-     {
-        if( ! ( dataValues.get(idx).equals(rhs.dataValues.get(idx)))) ivarsEqual = false;
-     }
-
-
-    return ivarsEqual && super.equalsImpl(rhs);
- }
+	} // end of unmarshal method
 } // end of class

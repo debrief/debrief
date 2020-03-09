@@ -4,31 +4,29 @@ import org.mwc.debrief.dis.listeners.IDISGeneralPDUListener;
 
 import edu.nps.moves.dis.Pdu;
 
-/** simple class that sends a PDU straight to a listener (mostly for non-network testing)
- * 
+/**
+ * simple class that sends a PDU straight to a listener (mostly for non-network
+ * testing)
+ *
  * @author ian
  *
  */
-public class PassThruPduSender implements IPduSender
-{
-  
-  final private IDISGeneralPDUListener _listener;
+public class PassThruPduSender implements IPduSender {
 
-  public PassThruPduSender(IDISGeneralPDUListener listener)
-  {
-    _listener = listener;
-  }
+	final private IDISGeneralPDUListener _listener;
 
-  @Override
-  public void sendPdu(Pdu pdu)
-  {
-    _listener.logPDU(pdu);
-  }
+	public PassThruPduSender(final IDISGeneralPDUListener listener) {
+		_listener = listener;
+	}
 
-  @Override
-  public void close()
-  {
-    _listener.complete("unknown");
-  }
+	@Override
+	public void close() {
+		_listener.complete("unknown");
+	}
+
+	@Override
+	public void sendPdu(final Pdu pdu) {
+		_listener.logPDU(pdu);
+	}
 
 }

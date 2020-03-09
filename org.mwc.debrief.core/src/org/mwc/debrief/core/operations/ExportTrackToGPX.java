@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.debrief.core.operations;
 
 import java.io.File;
@@ -37,29 +38,72 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 
-public class ExportTrackToGPX implements RightClickContextItemGenerator
-{
+public class ExportTrackToGPX implements RightClickContextItemGenerator {
+
+	private static class ExportTrack extends CMAPOperation {
+
+		private final Editable[] _subjects;
+
+		public ExportTrack(final String title, final Editable[] subjects) {
+			super(title);
+			_subjects = subjects;
+		}
+
+		@Override
+		public boolean canUndo() {
+			return false;
+		}
+
+		@Override
+		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
+			final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
+
+			// right, get going through the track
+			for (int i = 0; i < _subjects.length; i++) {
+				final Editable thisE = _subjects[i];
+				if (thisE instanceof TrackWrapper) {
+					tracks.add((TrackWrapper) thisE);
+				}
+			}
+
+			// if there's only one track - use it in the filename
+			final String fileHeader;
+			if (tracks.size() == 1) {
+				fileHeader = tracks.get(0).getName() + "_export";
+			}
+
+			else
+				fileHeader = "debrief_export";
+
+			final File someFile = new File(fileHeader + ".gpx");
+			ImportGPX.doExport(tracks, someFile);
+
+			return Status.OK_STATUS;
+		}
+
+		@Override
+		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
+			// ignore
+			return null;
+		}
+	}
 
 	@Override
-	public void generate(final IMenuManager parent, final Layers theLayers,
-			final Layer[] parentLayers, final Editable[] subjects) 
-	{
+	public void generate(final IMenuManager parent, final Layers theLayers, final Layer[] parentLayers,
+			final Editable[] subjects) {
 		int layersValidForConvertToTrack = 0;
 
 		// right, work through the subjects
-		for (int i = 0; i < subjects.length; i++)
-		{
+		for (int i = 0; i < subjects.length; i++) {
 			final Editable thisE = subjects[i];
-			if (thisE instanceof TrackWrapper)
-			{
+			if (thisE instanceof TrackWrapper) {
 				// cool, go for it!
 				layersValidForConvertToTrack++;
 			}
 		}
 
 		// ok, is it worth going for?
-		if (layersValidForConvertToTrack > 0)
-		{
+		if (layersValidForConvertToTrack > 0) {
 			final String title;
 			if (layersValidForConvertToTrack > 1)
 				title = "Export tracks to GPX";
@@ -67,10 +111,9 @@ public class ExportTrackToGPX implements RightClickContextItemGenerator
 				title = "Export track to GPX";
 
 			// yes, create the action
-			final Action exportToCloud = new Action(title)
-			{
-				public void run()
-				{
+			final Action exportToCloud = new Action(title) {
+				@Override
+				public void run() {
 					// ok, go for it.
 					// sort it out as an operation
 					final IUndoableOperation exportTrack = new ExportTrack(title, subjects);
@@ -86,76 +129,17 @@ public class ExportTrackToGPX implements RightClickContextItemGenerator
 			// ok - flash up the menu item
 			parent.add(exportToCloud);
 		}
-		
+
 	}
-	
+
 	/**
 	 * put the operation firer onto the undo history. We've refactored this into a
 	 * separate method so testing classes don't have to simulate the CorePlugin
-	 * 
+	 *
 	 * @param operation
 	 */
-	protected void runIt(final IUndoableOperation operation)
-	{
+	protected void runIt(final IUndoableOperation operation) {
 		CorePlugin.run(operation);
-	}
-	
-	private static class ExportTrack extends CMAPOperation
-	{
-
-		private final Editable[] _subjects;
-
-		public ExportTrack(final String title, final Editable[] subjects)
-		{
-			super(title);
-			_subjects = subjects;
-		}
-
-		@Override
-		public IStatus execute(final IProgressMonitor monitor, 
-				final IAdaptable info) throws ExecutionException 
-		{			
-			final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>(); 
-
-			// right, get going through the track
-			for (int i = 0; i < _subjects.length; i++)
-			{
-				final Editable thisE = _subjects[i];
-				if (thisE instanceof TrackWrapper)
-				{
-					tracks.add((TrackWrapper) thisE);
-				}
-			}
-			
-			// if there's only one track - use it in the filename
-			final String fileHeader;
-			if(tracks.size() == 1)
-			{
-				fileHeader = tracks.get(0).getName() + "_export";
-			}
-			
-			else
-				fileHeader = "debrief_export";
-			
-			final File someFile = new File(fileHeader + ".gpx");			
-			ImportGPX.doExport(tracks, someFile);
-			
-			return Status.OK_STATUS;
-		}
-		
-		@Override
-		public boolean canUndo()
-		{
-			return false;
-		}
-
-		@Override
-		public IStatus undo(final IProgressMonitor monitor, 
-				final IAdaptable info) throws ExecutionException 
-		{
-			// ignore
-			return null;
-		}
 	}
 
 }

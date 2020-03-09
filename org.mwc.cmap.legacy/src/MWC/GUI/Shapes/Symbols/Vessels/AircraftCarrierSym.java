@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: AircraftCarrierSym.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.3 $
@@ -55,63 +56,61 @@ import MWC.GenericData.WorldLocation;
 
 public class AircraftCarrierSym extends PlainSymbol {
 
-  /**
-	 * 
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
-  public java.awt.Dimension getBounds(){
-    // sort out the size of the symbol at the current scale factor
-    final java.awt.Dimension res = new java.awt.Dimension((int)(2 * 4 * getScaleVal()),(int)( 2 * 4 * getScaleVal()));
-    return res;
-  }
+	@Override
+	public PlainSymbol create() {
+		return new AircraftCarrierSym();
+	}
 
-  public void paint(final CanvasType dest, final WorldLocation centre)
-  {
-    paint(dest, centre, 0.0);
-  }
+	@Override
+	public java.awt.Dimension getBounds() {
+		// sort out the size of the symbol at the current scale factor
+		final java.awt.Dimension res = new java.awt.Dimension((int) (2 * 4 * getScaleVal()),
+				(int) (2 * 4 * getScaleVal()));
+		return res;
+	}
 
+	@Override
+	public String getType() {
+		return "Carrier";
+	}
 
-  public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
-  {
-    // set the colour
-    dest.setColor(getColor());
+	@Override
+	public void paint(final CanvasType dest, final WorldLocation centre) {
+		paint(dest, centre, 0.0);
+	}
 
-    // create our centre point
-    final java.awt.Point centre = dest.toScreen(theLocation);
+	@Override
+	public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction) {
+		// set the colour
+		dest.setColor(getColor());
 
-    final int wid = (int)(6 * getScaleVal());
-    final int tinyWid = (int) getScaleVal();
+		// create our centre point
+		final java.awt.Point centre = dest.toScreen(theLocation);
 
-    // start with the centre object
-    dest.fillOval(centre.x - tinyWid/2, centre.y - tinyWid/2, tinyWid, tinyWid);
+		// handle unable to gen screen coords (if off visible area)
+		if (centre == null)
+			return;
 
-    // now the outer circle
-    dest.drawOval(centre.x - wid/2, centre.y - wid/2, wid, wid);
+		final int wid = (int) (6 * getScaleVal());
+		final int tinyWid = (int) getScaleVal();
 
-    // now the slash
-    final double theta = MWC.Algorithms.Conversions.Degs2Rads(45);
-    final double dX = Math.sin(theta) * wid * 1.3;
-    final double dY = Math.sin(theta) * wid * 1.3;
+		// start with the centre object
+		dest.fillOval(centre.x - tinyWid / 2, centre.y - tinyWid / 2, tinyWid, tinyWid);
 
-    dest.drawLine(centre.x - (int)dX, centre.y + (int)dY,
-                  centre.x + (int)dX, centre.y - (int)dY);
+		// now the outer circle
+		dest.drawOval(centre.x - wid / 2, centre.y - wid / 2, wid, wid);
 
-  }
+		// now the slash
+		final double theta = MWC.Algorithms.Conversions.Degs2Rads(45);
+		final double dX = Math.sin(theta) * wid * 1.3;
+		final double dY = Math.sin(theta) * wid * 1.3;
 
-  public String getType()
-  {
-    return "Carrier";
-  }
+		dest.drawLine(centre.x - (int) dX, centre.y + (int) dY, centre.x + (int) dX, centre.y - (int) dY);
 
-
-  @Override
-  public PlainSymbol create()
-  {
-    return new AircraftCarrierSym();
-  }
+	}
 }
-
-
-
-

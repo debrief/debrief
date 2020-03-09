@@ -1,133 +1,135 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package ASSET.Util.XML.Tools;
 
 import ASSET.ScenarioType;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Tools.Action;
 
-public class SaveScenarioAsXML extends MWC.GUI.Tools.Operations.Save
-{
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  private ScenarioType _theScenario = null;
+public class SaveScenarioAsXML extends MWC.GUI.Tools.Operations.Save {
+	///////////////////////////////////////////////////////
+	// store action information
+	///////////////////////////////////////////////////////
+	protected class SaveScenarioAction implements Action {
+		/**
+		 * store the name of the ScenarioType we have saved
+		 */
+		final String _theScenarioName;
 
-  private final static String mySuffix = "xml";
+		public SaveScenarioAction(final String theName) {
+			_theScenarioName = theName;
+		}
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  public SaveScenarioAsXML(final ToolParent theParent,
-                    final ASSET.ScenarioType theScenario){
-    this(theParent, theScenario,  "Save Scenario As...", "images/saveas.gif");
-  }
+		@Override
+		public void execute() {
+		}
 
-  SaveScenarioAsXML(final ToolParent theParent,
-                    final ASSET.ScenarioType theScenario,
-                    final String theTitle,
-                    final String theImage)
-  {
-    super(theParent, theTitle, "*." + mySuffix, theImage);
+		@Override
+		public boolean isRedoable() {
+			return false;
+		}
 
-    // store the ScenarioType parameter
-    _theScenario = theScenario;
+		@Override
+		public boolean isUndoable() {
+			return false;
+		}
 
-    // see if we have an old directory to retrieve
-    if(_lastDirectory == "")
-    {
-      final String val = getParent().getProperty("ASF_Directory");
-      if(val != null)
-        _lastDirectory = val;
-    }
-  }
+		@Override
+		public String toString() {
+			return "Save " + _theScenarioName;
+		}
 
-  /////////////////////////////////////////////////////////////
-  // member methods
-  ////////////////////////////////////////////////////////////
-  protected Action doSave(String filename)
-  {
-    Action res = null;
+		@Override
+		public void undo() {
+			// delete the plottables from the Application object
+		}
 
-    // now save ScenarioType to this file
-      // check if the file ends in XML
-      final int idx = filename.toLowerCase().indexOf("." + mySuffix);
-//      final int CLASS_EXTENSION_LENGTH = 4;
-      if(idx == -1)
-      {
-        filename += "." + mySuffix;
-      }
+	}
 
-      // open the file
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-      throw new UnsupportedOperationException();
-//      final OutputStream os = new FileOutputStream(filename);
-//      // pass all of this to the XML exporter
-//      ASSET.Util.XML.ASSETReaderWriter.exportThis(_theScenario, null, os);
-//      os.close();
+	private final static String mySuffix = "xml";
 
-    //  res =  new SaveScenarioAction("the scenario"); /** create names for scenarios */
+	/////////////////////////////////////////////////////////////
+	// member variables
+	////////////////////////////////////////////////////////////
+	private ScenarioType _theScenario = null;
 
-   // return res;
-  }
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	public SaveScenarioAsXML(final ToolParent theParent, final ASSET.ScenarioType theScenario) {
+		this(theParent, theScenario, "Save Scenario As...", "images/saveas.gif");
+	}
 
+	SaveScenarioAsXML(final ToolParent theParent, final ASSET.ScenarioType theScenario, final String theTitle,
+			final String theImage) {
+		super(theParent, theTitle, "*." + mySuffix, theImage);
 
-  protected ScenarioType getScenarioType()
-  {
-    return _theScenario;
-  }
+		// store the ScenarioType parameter
+		_theScenario = theScenario;
 
-  ///////////////////////////////////////////////////////
-  // store action information
-  ///////////////////////////////////////////////////////
-  protected class SaveScenarioAction implements Action{
-    /** store the name of the ScenarioType we have saved
-     */
-    final String _theScenarioName;
+		// see if we have an old directory to retrieve
+		if (_lastDirectory == "") {
+			final String val = getParent().getProperty("ASF_Directory");
+			if (val != null)
+				_lastDirectory = val;
+		}
+	}
 
-    public SaveScenarioAction(final String theName){
-      _theScenarioName = theName;
-    }
+	@Override
+	public void close() {
+		super.close();
 
-    public boolean isRedoable(){
-      return false;
-    }
+		_theScenario = null;
+	}
 
+	/////////////////////////////////////////////////////////////
+	// member methods
+	////////////////////////////////////////////////////////////
+	@Override
+	protected Action doSave(String filename) {
+		final Action res = null;
 
-    public boolean isUndoable(){
-      return false;
-    }
+		// now save ScenarioType to this file
+		// check if the file ends in XML
+		final int idx = filename.toLowerCase().indexOf("." + mySuffix);
+		// final int CLASS_EXTENSION_LENGTH = 4;
+		if (idx == -1) {
+			filename += "." + mySuffix;
+		}
 
-    public String toString(){
-      return "Save " + _theScenarioName;
-    }
+		// open the file
 
-    public void undo(){
-      // delete the plottables from the Application object
-    }
+		throw new UnsupportedOperationException();
+		// final OutputStream os = new FileOutputStream(filename);
+		// // pass all of this to the XML exporter
+		// ASSET.Util.XML.ASSETReaderWriter.exportThis(_theScenario, null, os);
+		// os.close();
 
-    public void execute(){
-    }
+		// res = new SaveScenarioAction("the scenario"); /** create names for scenarios
+		// */
 
-  }
+		// return res;
+	}
 
-
-  public void close()
-  {
-    super.close();
-
-    _theScenario = null;
-  }
+	protected ScenarioType getScenarioType() {
+		return _theScenario;
+	}
 }

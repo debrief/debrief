@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2018, Deep Blue C Technology Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.debrief.lite.menu;
 
 import java.awt.Desktop;
@@ -23,11 +24,13 @@ import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.undo.RedoAction;
 import org.mwc.debrief.lite.undo.UndoAction;
 import org.mwc.debrief.lite.util.ResizableIconFactory;
 import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
+import org.pushingpixels.flamingo.api.common.RichTooltip;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.common.model.Command;
 import org.pushingpixels.flamingo.api.common.projection.CommandButtonProjection;
@@ -38,163 +41,156 @@ import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Frames.Session;
+import MWC.GUI.ToolParent;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
  *
  */
-public class DebriefRibbonLite
-{
+public class DebriefRibbonLite {
+	private static class ExitLiteApp extends AbstractAction implements CommandAction {
 
-  private static class ExitLiteApp extends AbstractAction implements CommandAction
-  {
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+		private final Runnable _action;
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
-    private final Runnable _action;
+		public ExitLiteApp(final Runnable exitAction) {
+			_action = exitAction;
+		}
 
-    public ExitLiteApp(Runnable exitAction)
-    {
-      _action = exitAction;
-    }
+		@Override
+		public void actionPerformed(final ActionEvent e) {
+			_action.run();
+		}
 
-    @Override
-    public void actionPerformed(final ActionEvent e)
-    {
-      _action.run();
-    }
+		@Override
+		public void commandActivated(final CommandActionEvent e) {
+			actionPerformed(e);
 
-    @Override
-    public void commandActivated(CommandActionEvent e)
-    {
-      actionPerformed(e);
-      
-    }
+		}
 
-  }
+	}
 
-  private static class HelpAction extends AbstractAction implements CommandAction
-  {
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
-    @SuppressWarnings("unused")
-    private final String _path;
+	private static class HelpAction extends AbstractAction implements CommandAction {
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+		@SuppressWarnings("unused")
+		private final String _path;
 
-    public HelpAction(String path)
-    {
-      _path = path;
-    }
+		public HelpAction(final String path) {
+			_path = path;
+		}
 
-    @Override
-    public void actionPerformed(final ActionEvent e)
-    {
-      if (Desktop.isDesktopSupported())
-      {
+		@Override
+		public void actionPerformed(final ActionEvent e) {
+			if (Desktop.isDesktopSupported()) {
 //        JOptionPane.showMessageDialog(null, "Please see the file titled ReadMe.pdf");
 
-        try
-        {
-          final File myFile = new File(_path);
-          Desktop.getDesktop().open(myFile);
-        }
-        catch (Exception ex)
-        {
-          Application.logError2(Application.ERROR, "Failed to open PDF", ex);
-          SwingUtilities.invokeLater(new Runnable()
-          {
-            @Override
-            public void run()
-            {
-              JOptionPane.showMessageDialog(null, "Failed to find help file:"
-                  + _path);
-            }
-          });
-        }
-      }
-    }
+				try {
+					final File myFile = new File(_path);
+					Desktop.getDesktop().open(myFile);
+				} catch (final Exception ex) {
+					Application.logError2(ToolParent.ERROR, "Failed to open PDF", ex);
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							JOptionPane.showMessageDialog(null, "Failed to find help file:" + _path);
+						}
+					});
+				}
+			}
+		}
 
-    @Override
-    public void commandActivated(CommandActionEvent e)
-    {
-      actionPerformed(e);
-      
-    }
+		@Override
+		public void commandActivated(final CommandActionEvent e) {
+			actionPerformed(e);
 
-  }
+		}
 
-  protected static void addLiteTab(final JRibbon ribbon, final Session session,
-      final Runnable resetAction, final Runnable exitAction,
-      final Runnable collapseAction, final String path)
-  {
-    final JRibbonBand liteMenu = new JRibbonBand("Lite", null);
-    liteMenu.startGroup();
-    final UndoAction undoAction = new UndoAction(session.getUndoBuffer());
-    final CommandButtonProjection<Command> undoCommand = MenuUtils.createCommand("Undo",
-        "icons/24/undo.png", undoAction, PresentationPriority.TOP, null);
-    // so that action has the command it has to enable/disable
-    undoAction.setActionCommand(undoCommand.getContentModel());
-    undoCommand.getContentModel().setActionEnabled(false);
-    // add the undoaction as observer for undobuffer
-    session.getUndoBuffer().addObserver(undoAction);
-    ribbon.addTaskbarCommand(undoCommand.getContentModel());
-    final RedoAction redoAction = new RedoAction(session.getUndoBuffer());
-    final CommandButtonProjection<Command> redoCommand = MenuUtils.createCommand("Redo",
-        "icons/24/redo.png", redoAction, PresentationPriority.TOP, null);
-    // so that action has the command it has to enable/disable
-    redoAction.setActionCommand(redoCommand.getContentModel());
-    redoCommand.getContentModel().setActionEnabled(false);
-    ribbon.addTaskbarCommand(redoCommand.getContentModel());
+	}
 
-    CommandAction collapsePopup = new CommandAction()
-    {
+	static Command collapseCommand;
 
-      @Override
-      public void commandActivated(CommandActionEvent e)
-      {
-        collapseAction.run();
-        
-      }
-    };
-    // and the expand/collapse button
-    
-    final Command collapseCommand = addToggleCommand("Collapse",
-        "icons/24/fit_to_win.png", collapsePopup);
-    // so that action has the command it has to enable/disable
-    collapseCommand.setActionEnabled(true);
-    ribbon.addTaskbarCommand(collapseCommand);
+	protected static void addLiteTab(final JRibbon ribbon, final Session session, final Runnable resetAction,
+			final Runnable exitAction, final Runnable collapseAction, final String path) {
+		final JRibbonBand liteMenu = new JRibbonBand("Lite", null);
+		liteMenu.startGroup();
+		final UndoAction undoAction = new UndoAction(session.getUndoBuffer());
+		final CommandButtonProjection<Command> undoCommand = MenuUtils.createCommand("Undo", "icons/24/undo.png",
+				undoAction, null, "Undo");
+		// so that action has the command it has to enable/disable
+		undoAction.setActionCommand(undoCommand.getContentModel());
+		undoCommand.getContentModel().setActionEnabled(false);
+		// add the undoaction as observer for undobuffer
+		session.getUndoBuffer().addObserver(undoAction);
+		ribbon.addTaskbarCommand(undoCommand.getContentModel());
+		final RedoAction redoAction = new RedoAction(session.getUndoBuffer());
+		final CommandButtonProjection<Command> redoCommand = MenuUtils.createCommand("Redo", "icons/24/redo.png",
+				redoAction, null, "Redo");
 
-    // add the action as observer of undobuffer
-    session.getUndoBuffer().addObserver(redoAction);
-    MenuUtils.addCommand("Help", "icons/24/help.png", new HelpAction(path),
-        liteMenu, PresentationPriority.TOP);
-    MenuUtils.addCommand("Exit", "icons/24/exit.png", new ExitLiteApp(
-        exitAction), liteMenu, PresentationPriority.TOP);
+		// so that action has the command it has to enable/disable
+		redoAction.setActionCommand(redoCommand.getContentModel());
+		redoCommand.getContentModel().setActionEnabled(false);
+		ribbon.addTaskbarCommand(redoCommand.getContentModel());
 
-    liteMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
-        liteMenu));
-    final RibbonTask liteTask = new RibbonTask("Lite", liteMenu);
-    ribbon.addTask(liteTask);
-  }
-  
-  private static Command addToggleCommand(String commandName,String imagePath,CommandAction actionToAdd) {
-    ImageWrapperResizableIcon imageIcon = null;
-    if (imagePath != null)
-    {
-      final Image zoominImage = MenuUtils.createImage(imagePath);
-      imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, MenuUtils.ICON_SIZE_16);
-    }
-    final Command.Builder builder = Command.builder()
-        .setText(commandName).setIconFactory(ResizableIconFactory.factory(imageIcon)).setAction(actionToAdd);
-        //.setTitleClickAction();
+		final CommandAction collapsePopup = new CommandAction() {
 
-      builder.setToggle();
-      builder.setToggleSelected(false);
-      final Command command = builder.build();
+			@Override
+			public void commandActivated(final CommandActionEvent e) {
+				collapseAction.run();
+				updateCommandTooltip(DebriefLiteApp.collapsedState);
+			}
+		};
+		// and the expand/collapse button
 
-      return command;
-  }
+		collapseCommand = addToggleCommand("Collapse", "icons/24/fit_to_win.png", collapsePopup);
+		// so that action has the command it has to enable/disable
+		collapseCommand.setActionEnabled(true);
+		ribbon.addTaskbarCommand(collapseCommand);
+
+		// add the action as observer of undobuffer
+		session.getUndoBuffer().addObserver(redoAction);
+		MenuUtils.addCommand("Help", "icons/24/help.png", new HelpAction(path), liteMenu, PresentationPriority.TOP,
+				"Display Help");
+		MenuUtils.addCommand("Exit", "icons/24/exit.png", new ExitLiteApp(exitAction), liteMenu,
+				PresentationPriority.TOP, "Exit Debrief Lite");
+
+		liteMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(liteMenu));
+		final RibbonTask liteTask = new RibbonTask("Lite", liteMenu);
+		ribbon.addTask(liteTask);
+	}
+
+	private static Command addToggleCommand(final String commandName, final String imagePath,
+			final CommandAction actionToAdd) {
+		ImageWrapperResizableIcon imageIcon = null;
+		if (imagePath != null) {
+			final Image zoominImage = MenuUtils.createImage(imagePath);
+			imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, MenuUtils.ICON_SIZE_16);
+		}
+		final Command.Builder builder = Command.builder().setText(commandName)
+				.setIconFactory(ResizableIconFactory.factory(imageIcon)).setAction(actionToAdd)
+				.setActionRichTooltip(RichTooltip.builder().setTitle(commandName).build());
+		// .setTitleClickAction();
+
+		builder.setToggle();
+		builder.setToggleSelected(false);
+		final Command command = builder.build();
+
+		return command;
+	}
+
+	protected static void updateCommandTooltip(final boolean state) {
+		final String title;
+		if (state) {
+			title = "Restore";
+		} else {
+			title = "Collapse";
+		}
+		collapseCommand.setActionRichTooltip(RichTooltip.builder().setTitle(title).build());
+
+	}
 }

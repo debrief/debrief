@@ -1,30 +1,31 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
- *
- *    (C) 2000-2016, Deep Blue C Technology Ltd
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *  
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *  
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *  
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *******************************************************************************/
+
 package org.mwc.debrief.lite.tests;
 
 import java.util.Arrays;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JSlider;
 
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.utils.TestUtils;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
+import org.pushingpixels.flamingo.api.common.JCommandButtonStrip;
 import org.pushingpixels.flamingo.api.common.JCommandMenuButton;
 import org.pushingpixels.flamingo.api.common.JCommandToggleButton;
 import org.pushingpixels.flamingo.api.common.JScrollablePanel;
@@ -54,8 +55,8 @@ public class TestMenus extends BaseTestCase
     assertEquals(ribbonFrame.getRibbon().getTask(1).getTitle(),"File");
     RibbonTask fileMenu = TestUtils.getTask(1);
     assertTrue(fileMenu.getBandCount()==3);
-    doAssertions(TestUtils.getRibbonBand(1,0),"File",new String[] {"New","Open","Save","Close"},false);
-    assertSaveAs(TestUtils.getRibbonBand(1,0));
+    //doAssertions(TestUtils.getRibbonBand(1,0),"File",new String[] {"New","Open","Save","Close"},false);
+    //assertSaveAs(TestUtils.getRibbonBand(1,0));
     doAssertions(TestUtils.getRibbonBand(1,1),"Import",new String[] {"Replay","Plot","NMEA","TIF"},false);
     doAssertions(TestUtils.getRibbonBand(1,2),"Export",new String[] {"Clipboard"},false);
     }
@@ -80,10 +81,10 @@ public class TestMenus extends BaseTestCase
     {
       assertEquals(TestUtils.getTask(4).getTitle(),"Time");
       RibbonTask timeMenu = TestUtils.getTask(4);
-      assertTrue(timeMenu.getBandCount()==3);
-      doAssertions(TestUtils.getRibbonBand(4, 0),"Display Mode",new String[] {"Normal","Snail"},true);
-      doAssertionsTimeController(TestUtils.getRibbonBand(4, 1));
-      doAssertionsTimeSlider(TestUtils.getRibbonBand(4, 2));
+      assertTrue(timeMenu.getBandCount()==4);
+      //doAssertions(TestUtils.getRibbonBand(4, 0),"Display Mode",new String[] {"Normal","Snail",""},true);
+      doAssertionsTimeController(TestUtils.getRibbonBand(4, 2));
+      doAssertionsTimeSlider(TestUtils.getRibbonBand(4, 3));
     }
   }
   
@@ -93,9 +94,9 @@ public class TestMenus extends BaseTestCase
     assertTrue(liteBand.getComponent(0) instanceof JRibbonComponent);
     JRibbonComponent newButton = ((JRibbonComponent)liteBand.getComponent(0));
     @SuppressWarnings("unchecked")
-    JComboBox<String> combo = (JComboBox<String>)TestUtils.getChildNamed(newButton, "select-layer-combo");
+    JComboBox<String> combo = (JComboBox<String>)TestUtils.getActiveLayerDropDown();
     assertNotNull(combo);
-    assertEquals(combo.getItemCount(),1);
+    assertEquals(combo.getItemCount(),3);
     assertEquals(combo.getItemAt(0),"User-selected Layer");
   }
   private void doShapesAssertions(AbstractRibbonBand liteBand1) {
@@ -103,25 +104,22 @@ public class TestMenus extends BaseTestCase
     JBandControlPanel liteBand = (JBandControlPanel)liteBand1.getComponent(0);
     assertEquals(7, liteBand.getComponentCount());
     assertTrue(liteBand.getComponent(0) instanceof JCommandButton);
-    assertTrue(liteBand.getComponent(2) instanceof JRibbonComponent);
-    assertRibbonLabel("Ellipse",(JRibbonComponent)liteBand.getComponent(2));
-    assertRibbonLabel("Rectangle",(JRibbonComponent)liteBand.getComponent(3));
-    assertRibbonLabel("Circle",(JRibbonComponent)liteBand.getComponent(4));
-    assertRibbonLabel("Line",(JRibbonComponent)liteBand.getComponent(5));
-    assertRibbonLabel("Arc",(JRibbonComponent)liteBand.getComponent(6));
+    assertTrue(liteBand.getComponent(2) instanceof JCommandButton);
+    assertRibbonLabel("Ellipse",(JCommandButton)liteBand.getComponent(2));
+    assertRibbonLabel("Rectangle",(JCommandButton)liteBand.getComponent(3));
+    assertRibbonLabel("Circle",(JCommandButton)liteBand.getComponent(4));
+    assertRibbonLabel("Arc",(JCommandButton)liteBand.getComponent(5));
+    assertRibbonLabel("Line",(JCommandButton)liteBand.getComponent(6));
     JCommandButton labelButton = ((JCommandButton)liteBand.getComponent(0));
     assertTrue(labelButton.getText().equals("Label"));
     assertTrue(labelButton.isEnabled());
-    assertTrue(liteBand.getComponent(3) instanceof JRibbonComponent);
     }
   
   
-  private void assertRibbonLabel(String string, JRibbonComponent component)
+  private void assertRibbonLabel(String string, JCommandButton component)
   {
-    assertTrue(component.getComponent(1) instanceof JCommandButton);
-    JCommandButton lbl = (JCommandButton)component.getComponent(1);
-    assertEquals(lbl.getText(),string);
-    assertTrue(lbl.isEnabled());   
+    assertEquals(component.getText(),string);
+    assertTrue(component.isEnabled());   
   }
 
   private void doAssertionTransparencySliderBar(AbstractRibbonBand liteBand1,String menuName,String itemname) {
@@ -131,7 +129,7 @@ public class TestMenus extends BaseTestCase
     assertTrue(liteBand.getComponent(0) instanceof JRibbonComponent);
     JRibbonComponent newButton = ((JRibbonComponent)liteBand.getComponent(0));
     assertTrue(newButton.getComponent(0) instanceof JLabel);
-    assertEquals(((JLabel)newButton.getComponent(0)).getText(),itemname);
+ //   assertEquals(((JLabel)newButton.getComponent(0)).getText(),itemname);
     assertTrue(newButton.getComponent(1) instanceof JSlider);
     JSlider slider = (JSlider)newButton.getComponent(1);
     assertEquals(slider.getMaximum(),100);
@@ -186,7 +184,7 @@ public class TestMenus extends BaseTestCase
     else {
       assertTrue(newButton.isEnabled());
     }
-    assertTrue(newButton.getCommandButtonKind().equals(CommandButtonKind.ACTION_AND_POPUP_MAIN_ACTION));
+    assertTrue(newButton.getCommandButtonKind().equals(CommandButtonKind.ACTION_AND_POPUP_MAIN_POPUP));
     assertNotNull(newButton.getPopupCallback());
     assertNotNull(newButton.getPopupCallback().getPopupPanel(newButton));
     JPopupPanel panel = (JPopupPanel)newButton.getPopupCallback().getPopupPanel(newButton);
@@ -204,33 +202,47 @@ public class TestMenus extends BaseTestCase
   
   private void doAssertionsTimeController(AbstractRibbonBand rb)
   {
-    JPanel panel = (JPanel)TestUtils.getChildNamed(rb.getComponent(0),"topbuttonspanel");
-    assertEquals(11,panel.getComponentCount());
-    JCommandButton btn = (JCommandButton)TestUtils.getChildNamed(panel, "play"); 
+    JCommandButtonStrip panel = TestUtils.getTimeControllerCommands();
+    assertEquals(8,panel.getComponentCount());
+    JCommandButton btn = (JCommandButton)panel.getComponent(0); 
     assertNotNull(btn);
-    assertFalse(btn.isEnabled());
-    btn = (JCommandButton)TestUtils.getChildNamed(panel, "rewind"); 
+    assertEquals(btn.getProjection().getContentModel().getText().toLowerCase(),"behind");
+    assertFalse(btn.getProjection().getContentModel().isActionEnabled());
+    btn = (JCommandButton)panel.getComponent(1);  
+    assertEquals(btn.getProjection().getContentModel().getText().toLowerCase(),"rewind");
     assertNotNull(btn);
-    assertFalse(btn.isEnabled());
-    btn = (JCommandButton)TestUtils.getChildNamed(panel, "back"); 
+    assertFalse(btn.getProjection().getContentModel().isActionEnabled());
+    btn = (JCommandButton)panel.getComponent(2); 
     assertNotNull(btn);
-    assertFalse(btn.isEnabled());
-    btn = (JCommandButton)TestUtils.getChildNamed(panel, "starttime"); 
+    assertEquals(btn.getProjection().getContentModel().getText().toLowerCase(),"back");
+    assertFalse(btn.getProjection().getContentModel().isActionEnabled());
+    btn = (JCommandButton)panel.getComponent(3);  
     assertNotNull(btn);
-    assertFalse(btn.isEnabled());    
-    btn = (JCommandButton)TestUtils.getChildNamed(panel, "endtime"); 
+    assertEquals(btn.getProjection().getContentModel().getText().toLowerCase(),"play");
+    assertFalse(btn.getProjection().getContentModel().isActionEnabled());
+    btn = (JCommandButton)panel.getComponent(4);  
     assertNotNull(btn);
-    assertFalse(btn.isEnabled());
-    btn = (JCommandButton)TestUtils.getChildNamed(panel, "forward"); 
+    assertEquals(btn.getProjection().getContentModel().getText().toLowerCase(),"forward");
+    assertFalse(btn.getProjection().getContentModel().isActionEnabled());
+    btn = (JCommandButton)panel.getComponent(5);  
     assertNotNull(btn);
-    assertFalse(btn.isEnabled());
-    btn = (JCommandButton)TestUtils.getChildNamed(panel, "fastforward"); 
+    assertEquals(btn.getProjection().getContentModel().getText().toLowerCase(),"fast forward");
+    assertFalse(btn.getProjection().getContentModel().isActionEnabled());
+    btn = (JCommandButton)panel.getComponent(6);  
     assertNotNull(btn);
-    assertFalse(btn.isEnabled());
-    btn = (JCommandButton)TestUtils.getChildNamed(panel, "timeprops"); 
+    assertEquals(btn.getProjection().getContentModel().getText().toLowerCase(),"end");
+    assertFalse(btn.getProjection().getContentModel().isActionEnabled());
+    
+    btn = (JCommandButton)panel.getComponent(7); 
     assertNotNull(btn);
-    assertFalse(btn.isEnabled());
-    assertNotNull(TestUtils.getChildNamed(panel, "timeformatlabel"));
+    assertEquals(btn.getProjection().getContentModel().getText().toLowerCase(),"properties");
+    assertFalse(btn.getProjection().getContentModel().isActionEnabled());
+    JLabel label = TestUtils.getTimeFormatLabel();
+    assertNotNull(label);
+    assertEquals(label.getText(),"yy/MM/dd HH:mm:ss");
+    JCommandButton formatButton = TestUtils.getEditTimeFormatButton();
+    assertNotNull(formatButton);
+    assertEquals(formatButton.getText(),"Format");
     
   }
   private void doAssertionsTimeSlider(AbstractRibbonBand rb) {

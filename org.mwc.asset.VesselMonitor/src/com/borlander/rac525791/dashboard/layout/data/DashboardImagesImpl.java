@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package com.borlander.rac525791.dashboard.layout.data;
 
 import java.util.HashMap;
@@ -26,7 +27,7 @@ import com.borlander.rac525791.dashboard.layout.DashboardImages;
 /**
  * The very simple implementation similar to
  * org.eclipse.jface.resource.ImageRegistry class.
- * 
+ *
  * (Written to avoid dependency on jface.resource)
  */
 class DashboardImagesImpl implements DashboardImages {
@@ -46,13 +47,14 @@ class DashboardImagesImpl implements DashboardImages {
 
 	private final HashMap<String, Image> myImages = new HashMap<String, Image>();
 
-	public DashboardImagesImpl(Display display, String folder, boolean preload) {
+	public DashboardImagesImpl(final Display display, final String folder, final boolean preload) {
 		myControlsPath = folder + "/" + CONTROLS;
 		myCirclesPath = folder + "/" + CIRCLES;
 		myNumbersPath = folder + "/" + NUMBERS;
 
 		myDisplay = display;
 		myDisplay.disposeExec(new Runnable() {
+			@Override
 			public void run() {
 				DashboardImagesImpl.this.dispose();
 			}
@@ -65,8 +67,9 @@ class DashboardImagesImpl implements DashboardImages {
 		}
 	}
 
+	@Override
 	public void dispose() {
-		for (Image next : myImages.values()) {
+		for (final Image next : myImages.values()) {
 			if (next != null && !next.isDisposed()) {
 				next.dispose();
 			}
@@ -74,26 +77,24 @@ class DashboardImagesImpl implements DashboardImages {
 		myImages.clear();
 	}
 
-	public Image getNumbers() {
-		return getImage(myNumbersPath);
-	}
-
+	@Override
 	public Image getCircleLids() {
 		return getImage(myCirclesPath);
 	}
 
+	@Override
 	public Image getControls() {
 		return getImage(myControlsPath);
 	}
 
-	private Image getImage(String filePath) {
+	private Image getImage(final String filePath) {
 		Image result = myImages.get(filePath);
 		if (result == null || result.isDisposed()) {
 			// XXX: Strange, but it does not always work for png images
 			// Issues with alpha channel were found
 			// result = new Image(myDisplay, filePath);
 
-			ImageDescriptor desc = Activator.getImageDescriptor(filePath);
+			final ImageDescriptor desc = Activator.getImageDescriptor(filePath);
 //			ImageLoader loader = new ImageLoader();
 //			loader.load(filePath);
 //			result = new Image(myDisplay, loader.data[0]);
@@ -101,5 +102,10 @@ class DashboardImagesImpl implements DashboardImages {
 			myImages.put(filePath, result);
 		}
 		return result;
+	}
+
+	@Override
+	public Image getNumbers() {
+		return getImage(myNumbersPath);
 	}
 }

@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.GUI.Shapes.Symbols;
 
 // Copyright MWC 1999, Debrief 3 Project
@@ -61,79 +62,70 @@ package MWC.GUI.Shapes.Symbols;
 
 import java.beans.PropertyEditorSupport;
 
-public class SymbolFactoryPropertyEditor extends PropertyEditorSupport
-{
+public class SymbolFactoryPropertyEditor extends PropertyEditorSupport {
 
-  protected String _mySymbolType;
+	//////////////////////////////////////////////////////////////////
+	// class which performs just as normal symbol property lister, but which only
+	// returns the list of buoy types
+	///////////////////////////////////////////////////////////////////
+	public static class SymbolFactoryBuoyPropertyEditor extends SymbolFactoryPropertyEditor {
+		@Override
+		public String[] getTags() {
+			// retrieve the set of symbols from the factory
+			final String[] _theSymbols = SymbolFactory.getBuoySymbolList();
 
-  public String[] getTags()
-  {
-    // retrieve the set of symbols from the factory
-    final String[] _theSymbols = SymbolFactory.getSymbolList();
+			return _theSymbols;
+		}
+	}
 
-    return _theSymbols;
-  }
+	//////////////////////////////////////////////////////////////////
+	// class which performs just as normal symbol property lister, but which only
+	// returns the list of vessel types
+	///////////////////////////////////////////////////////////////////
+	public static class SymbolFactoryVesselPropertyEditor extends SymbolFactoryPropertyEditor {
+		@Override
+		public String[] getTags() {
+			// retrieve the set of symbols from the factory
+			final String[] _theSymbols = SymbolFactory.getVesselSymbolList();
 
-  public Object getValue()
-  {
-    return _mySymbolType;
-  }
+			return _theSymbols;
+		}
+	}
 
+	protected String _mySymbolType;
 
+	@Override
+	public String getAsText() {
+		return _mySymbolType;
+	}
 
-  public void setValue(final Object p1)
-  {
-    if(p1 instanceof String)
-    {
-      final String val = (String) p1;
-      setAsText(val);
-    }else if(p1 instanceof Integer)
-    {
-    	final Integer index = (Integer) p1;
-			setAsText(getTags()[index ]);
-    }
-  }
+	@Override
+	public String[] getTags() {
+		// retrieve the set of symbols from the factory
+		final String[] _theSymbols = SymbolFactory.getSymbolList();
 
-  public void setAsText(final String val)
-  {
-    _mySymbolType = val;
-  }
+		return _theSymbols;
+	}
 
+	@Override
+	public Object getValue() {
+		return _mySymbolType;
+	}
 
-  public String getAsText()
-  {
-    return _mySymbolType;
-  }
+	@Override
+	public void setAsText(final String val) {
+		_mySymbolType = val;
+	}
 
-  //////////////////////////////////////////////////////////////////
-  // class which performs just as normal symbol property lister, but which only
-  // returns the list of vessel types
-  ///////////////////////////////////////////////////////////////////
-  public static class SymbolFactoryVesselPropertyEditor extends SymbolFactoryPropertyEditor
-  {
-    public String[] getTags()
-    {
-      // retrieve the set of symbols from the factory
-      final String[] _theSymbols = SymbolFactory.getVesselSymbolList();
-
-      return _theSymbols;
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////
-  // class which performs just as normal symbol property lister, but which only
-  // returns the list of buoy types
-  ///////////////////////////////////////////////////////////////////
-  public static class SymbolFactoryBuoyPropertyEditor extends SymbolFactoryPropertyEditor
-  {
-    public String[] getTags()
-    {
-      // retrieve the set of symbols from the factory
-      final String[] _theSymbols = SymbolFactory.getBuoySymbolList();
-
-      return _theSymbols;
-    }
-  }
+	@Override
+	public void setValue(final Object p1) {
+		if (p1 instanceof String) {
+			final String val = (String) p1;
+			setAsText(val);
+		} else if (p1 instanceof Integer) {
+			final Integer index = (Integer) p1;
+			setAsText(getTags()[index]);
+		}
+	}
 
 }
-

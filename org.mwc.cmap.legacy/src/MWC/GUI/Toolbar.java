@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: Toolbar.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -74,44 +75,41 @@
 // Initial revision
 //
 
-
 package MWC.GUI;
 
-/** interface to be implemented by classes which produce a toolbar for our use
+/**
+ * interface to be implemented by classes which produce a toolbar for our use
  */
 public interface Toolbar {
 
-  /** which direction is the toolbar laid out?
-   */
-  public static final int HORIZONTAL = 1;
-  public static final int VERTICAL = 2;
+	/**
+	 * which direction is the toolbar laid out?
+	 */
+	public static final int HORIZONTAL = 1;
+	public static final int VERTICAL = 2;
 
-  /** create a UI control in the toolbar which calls the specified command
-   */
-  public void addTool(Tool theTool);
-	
-	/** create a toggling control, which is part of the named group
+	/**
+	 * create a toggling control, which is part of the named group
 	 */
 	public void addToggleTool(String group, Tool theTool);
 
-	
-  /** create a UI control in the toolbar which calls the specified command
-   */
-  public void addTool(Tool theTool, 
-											java.awt.MenuShortcut theShortcut,
-											char theMnemonic);
-	/** create a toggling control, which is part of the named group
+	/**
+	 * create a toggling control, which is part of the named group
 	 */
-	public void addToggleTool(String group, 
-														Tool theTool, 
-														java.awt.MenuShortcut theShortcut,
-														char theMnemonic);
-	
-	/** provide method to clear toolbar (removing references to tools)
+	public void addToggleTool(String group, Tool theTool, java.awt.MenuShortcut theShortcut, char theMnemonic);
+
+	/**
+	 * create a UI control in the toolbar which calls the specified command
+	 */
+	public void addTool(Tool theTool);
+
+	/**
+	 * create a UI control in the toolbar which calls the specified command
+	 */
+	public void addTool(Tool theTool, java.awt.MenuShortcut theShortcut, char theMnemonic);
+
+	/**
+	 * provide method to clear toolbar (removing references to tools)
 	 */
 	public void close();
 }
-
-
-
-

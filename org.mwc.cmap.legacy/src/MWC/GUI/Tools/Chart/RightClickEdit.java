@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.GUI.Tools.Chart;
 
 // Copyright MWC 1999, Debrief 3 Project
@@ -220,238 +221,883 @@ import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Undo.UndoBuffer;
 
-public class RightClickEdit implements PlainChart.ChartClickListener,
-		Serializable
-{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public class RightClickEdit implements PlainChart.ChartClickListener, Serializable {
+	// ///////////////////////////////////////////////////
+	// implementation of menuCreator class, which provides utilities
+	// for creating boolean editors and method invokers
+	// ///////////////////////////////////////////////////
+	abstract static public class BaseMenuCreator implements MenuCreator {
+		protected void createAdditionalItems(final javax.swing.JPopupMenu menu,
+				final MWC.GUI.Properties.PropertiesPanel thePanel, final Editable theEditable, final Layers theData) {
+			// create the editable properties and method invokers for this object
+			final JMenu subMenu = new JMenu(theEditable.getInfo().getBeanDescriptor().getDisplayName());
+			createBooleanEditors(subMenu, theEditable, thePanel, theData, null, null);
+
+			// try for any enumererated editors for this other object
+			createSelectionEditors(subMenu, theEditable, thePanel, theData, null, null);
+
+			// lastly create any applicable methods
+			createMethodInvokers(subMenu, theEditable, theData);
+
+			// did we actually create any?
+			if (subMenu.getItemCount() > 0)
+				menu.add(subMenu);
+
+		}
+
+		@Override
+		abstract public void createMenu(javax.swing.JPopupMenu menu, java.awt.Point thePoint,
+				MWC.GUI.CanvasType theCanvas, MWC.GUI.Properties.PropertiesPanel thePanel, MWC.GUI.Layers theData);
+
+	}
+
+	// //////////////////////////////////////////////////////////////////
+	// store action information
+	static protected class BooleanOperationAction extends PlainOperationAction {
+		Method _theSetter;
+
+		Object _theData1;
+
+		boolean _newVal;
+
+		Layers _theLayers;
+
+		Layer _theParent;
+
+		Layer _updateLayer;
+
+		public BooleanOperationAction(final Method theSetter, final Object theData, final String descriptor,
+				final boolean newVal, final Editable.EditorType theEditor, final Layers theLayers,
+				final Layer theParent, final Layer updateLayer) {
+			super(theData, theEditor, descriptor, theLayers);
+			_theSetter = theSetter;
+			_theData1 = theData;
+			_newVal = newVal;
+			_theLayers = theLayers;
+			_theParent = theParent;
+			_updateLayer = updateLayer;
+		}
+
+		@Override
+		public void execute() {
+			// hey, do it!
+			try {
+				final Object args[] = { new Boolean(_newVal) };
+				_theSetter.invoke(_theData1, args);
+
+				// inform the editable that we've updated it
+				fireAction(new Boolean(!_newVal), new Boolean(_newVal));
+
+				// and trigger a redraw
+				_theLayers.fireReformatted(_updateLayer);
+			} catch (final Exception e) {
+				MWC.Utilities.Errors.Trace.trace(e);
+			}
+		}
+
+		@Override
+		public boolean isRedoable() {
+			return true;
+		}
+
+		@Override
+		public boolean isUndoable() {
+			return true;
+		}
+
+		@Override
+		public void undo() {
+			// hey, do the opposite!
+			try {
+				final Object args[] = { new Boolean(!_newVal) };
+				_theSetter.invoke(_theData1, args);
+
+				// inform the editable that we've updated it
+				fireAction(new Boolean(_newVal), new Boolean(!_newVal));
+
+				// and trigger a redraw
+				_theLayers.fireReformatted(_updateLayer);
+
+			} catch (final Exception e) {
+				MWC.Utilities.Errors.Trace.trace(e);
+			}
+		}
+	}
+
+	static protected class DoThisListener implements java.awt.event.ItemListener, java.awt.event.ActionListener {
+		private Action _myAction;
+
+		private UndoBuffer _myBuffer;
+
+		public DoThisListener(final Action action, final UndoBuffer buffer) {
+			_myAction = action;
+			_myBuffer = buffer;
+		}
+
+		@Override
+		public void actionPerformed(final ActionEvent e) {
+			doIt();
+		}
+
+		private void doIt() {
+			// perform the operation
+			_myAction.execute();
+			// add ourselves to the buffer
+			_myBuffer.add(_myAction);
+			// clear local references
+			_myAction = null;
+			_myBuffer = null;
+		}
+
+		@Override
+		public void itemStateChanged(final ItemEvent e) {
+			doIt();
+		}
+
+	}
+
+	static public class EditThisActionListener implements java.awt.event.ActionListener {
+		PropertiesPanel _myPanel;
+
+		Editable.EditorType _myEditor;
+
+		/**
+		 * the layer this item belongs to (or null if not known)
+		 */
+		Layer _parentLayer;
+
+		public EditThisActionListener(final PropertiesPanel thePanel, final Editable.EditorType editor,
+				final Layer parentLayer) {
+			_myPanel = thePanel;
+			_myEditor = editor;
+			_parentLayer = parentLayer;
+		}
+
+		@Override
+		public void actionPerformed(final java.awt.event.ActionEvent event) {
+			_myPanel.addEditor(_myEditor, _parentLayer);
+			_myPanel = null;
+			_myEditor = null;
+		}
+	}
 
 	// ///////////////////////////////////////////////////////////
-	// member variables
+	// embedded interface for classes which may wish to add menu
+	// items
 	// //////////////////////////////////////////////////////////
-	PropertiesPanel _thePanel;
+	static public interface MenuCreator {
+		/**
+		 * add extended functionality for the point found
+		 *
+		 * @param menu      the Menu to add items to
+		 * @param thePoint  the screen location of the mouse click
+		 * @param theCanvas the canvas to update following changes
+		 * @param thePanel  the properties page current available
+		 * @param theData   the set of layers (plus data) currently in use
+		 */
+		public void createMenu(JPopupMenu menu, java.awt.Point thePoint, MWC.GUI.CanvasType theCanvas,
+				MWC.GUI.Properties.PropertiesPanel thePanel, MWC.GUI.Layers theData);
 
-	/**
-	 * list of additional classes which we invite to extend our pop up menu
-	 */
-	Vector<MenuCreator> _theExtras;
-
-	/**
-	 * this static hashtable contains multiple lists of plottable extras, indexed
-	 * by the properties panel they edit
-	 * <p/>
-	 * PlottableExtras are lists of additional classes which are able to extend
-	 * the popup menu once a Plottable has been selected
-	 */
-	private final Hashtable<PropertiesPanel, Vector<PlottableMenuCreator>> _thePlottableExtras;
-
-	// ///////////////////////////////////////////////////////////
-	// constructor
-	// //////////////////////////////////////////////////////////
-	public RightClickEdit(final PropertiesPanel thePanel)
-	{
-		_thePanel = thePanel;
-		_theExtras = new Vector<MenuCreator>(0, 1);
-		_thePlottableExtras = new Hashtable<PropertiesPanel, Vector<PlottableMenuCreator>>();
 	}
 
 	// ///////////////////////////////////////////////////////////
 	// member functions
 	// //////////////////////////////////////////////////////////
 
-	/**
-	 * get the list of extra editors which we know about
-	 */
-	public java.util.Vector<PlottableMenuCreator> getExtraPlottableEditors(
-			final PropertiesPanel thePanel)
-	{
-		return (Vector<PlottableMenuCreator>) _thePlottableExtras.get(thePanel);
-	}
-
-	public void addMenuCreator(final MenuCreator mn)
-	{
-		_theExtras.addElement(mn);
-	}
-
-	public void removeMenuCreator(final MenuCreator mn)
-	{
-		_theExtras.removeElement(mn);
-	}
-
-	public void addPlottableMenuCreator(final PlottableMenuCreator mn,
-			final PropertiesPanel thePanel)
-	{
-		// see if we have a list for this panel
-		final Vector<PlottableMenuCreator> obj = _thePlottableExtras.get(thePanel);
-		Vector<PlottableMenuCreator> vt = null;
-
-		if (obj == null)
-		{
-			// we've got to make one
-			vt = new Vector<PlottableMenuCreator>(0, 1);
-
-			// and add it to our list
-			_thePlottableExtras.put(thePanel, vt);
-		}
-		else
-		{
-			vt = obj;
-		}
-
-		// now put the menu creator into the vector
-		vt.addElement(mn);
-	}
-
-	public void removePlottableMenuCreator(final PlottableMenuCreator mn,
-			final PropertiesPanel thePanel)
-	{
-		// see if we have a list for this panel
-		final Vector<PlottableMenuCreator> oj = _thePlottableExtras.get(thePanel);
-		if (oj != null)
-		{
-			oj.removeElement(mn);
-		}
-	}
-
-	public static class ObjectConstruct
-	{
+	public static class ObjectConstruct {
 		public Plottable object = null;
 
 		public double distance = -1;
 
 		@SuppressWarnings("unused")
-		private Layer parent = null;  // we don't currently use the parent, but let's keep it safe anyway
+		private Layer parent = null; // we don't currently use the parent, but let's keep it safe anyway
 
 		public java.util.Vector<Plottable> rangeIndependent;
 
 		public Layer topLayer;
 
-		public void setData(final Plottable p, final double dist, final Layer l, final Layer top)
-		{
+		public void addRangeIndependent(final Plottable p) {
+			if (rangeIndependent == null)
+				rangeIndependent = new Vector<Plottable>(1, 1);
+			rangeIndependent.add(p);
+		}
+
+		public void setData(final Plottable p, final double dist, final Layer l, final Layer top) {
 			object = p;
 			distance = dist;
 			parent = l;
 			topLayer = top;
 		}
+	}
 
-		public void addRangeIndependent(final Plottable p)
-		{
-			if (rangeIndependent == null)
-				rangeIndependent = new Vector<Plottable>(1, 1);
-			rangeIndependent.add(p);
+	static public class ourMenuItem extends JMenuItem implements ActionListener {
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		transient protected Method _myMethod;
+
+		protected Object _myData;
+
+		protected Layers _theLayers;
+
+		protected Editable _theEditable;
+
+		public ourMenuItem(final String name, final Method m, final Object data, final Layers theLayers,
+				final Editable theEditable) {
+			super(name);
+			_myData = data;
+			_myMethod = m;
+			_theLayers = theLayers;
+			_theEditable = theEditable;
+
+			addActionListener(this);
+
+		}
+
+		@Override
+		public void actionPerformed(final ActionEvent e) {
+			doIt();
+		}
+
+		private void doIt() {
+			try {
+				_myMethod.invoke(_myData, (Object[]) null);
+				_theLayers.fireModified(null);
+				// inform the object that we've updated it.
+				_theEditable.getInfo().fireChanged(this, _myMethod.toString(), null, null);
+
+			} catch (final Exception e) {
+				MWC.Utilities.Errors.Trace.trace(e);
+			}
+		}
+
+	}
+
+	// /////////////////////////////////////////////////////////////////////
+	//
+	// ///////////////////////////////////////////////////////////////
+	abstract static protected class PlainOperationAction implements Action {
+		Object _theData;
+
+		transient Editable.EditorType _theEditor;
+
+		String _theDescriptor;
+
+		Layers _theLayers;
+
+		protected PlainOperationAction(final Object theData, final Editable.EditorType theEditor,
+				final String theDescriptor, final Layers theLayers) {
+			_theData = theData;
+			_theEditor = theEditor;
+			_theDescriptor = theDescriptor;
+			_theLayers = theLayers;
+		}
+
+		protected void fireAction(final Object newVal, final Object oldVal) {
+			_theEditor.fireChanged(this, _theDescriptor, oldVal, newVal);
+		}
+
+		@Override
+		public String toString() {
+			return _theDescriptor;
+		}
+
+		protected void updateChart() {
+			_theLayers.fireModified(null);
 		}
 	}
 
-	public static void findNearest(final Layer thisLayer,
-			final MWC.GenericData.WorldLocation cursorPos,
-			final ObjectConstruct currentNearest, final Layer topLayer)
-	{
+	// ///////////////////////////////////////////////////////////
+	// embedded interface for classes which may wish to add menu
+	// items
+	// //////////////////////////////////////////////////////////
+	static public interface PlottableMenuCreator {
+		/**
+		 * add extended functionality for the point found
+		 *
+		 * @param menu        the Menu to add items to
+		 * @param data        the Plottable point identified
+		 * @param thePoint    the screen location of the mouse click
+		 * @param theCanvas   the canvas to update following changes
+		 * @param thePanel    the properties page current available
+		 * @param theParent   the immediate parent for this object
+		 * @param theLayers   the set of layers (plus data) currently in use
+		 * @param updateLayer the top level parent of this object (the one we have to
+		 *                    refresh)
+		 */
+		public void createMenu(JPopupMenu menu, Editable data, Point thePoint, PropertiesPanel thePanel,
+				Layer theParent, Layers theLayers, Layer updateLayer);
+
+	}
+
+	// //////////////////////////////////////////////////////////////////
+	// store action information
+	static protected class SelectionOperationAction extends PlainOperationAction {
+		Method _theSetter;
+
+		String _newVal;
+
+		String _oldVal;
+
+		PropertyEditor _editor;
+
+		Layers _theLayers;
+
+		Layer _theParent;
+
+		Layer _updateLayer;
+
+		public SelectionOperationAction(final Method theSetter, final Object theData, final String descriptor,
+				final String newVal, final String oldVal, final PropertyEditor editor,
+				final Editable.EditorType theEditor, final Layers theLayers, final Layer theParent,
+				final Layer updateLayer) {
+			super(theData, theEditor, descriptor, theLayers);
+			_theSetter = theSetter;
+			_newVal = newVal;
+			_oldVal = oldVal;
+			_editor = editor;
+			_theLayers = theLayers;
+			_theParent = theParent;
+			_updateLayer = updateLayer;
+
+			// over-ride the update layer if it's null, set it to the ParentLayer,
+			// just in case that is a top level layer
+			if (_updateLayer == null)
+				_updateLayer = theParent;
+		}
+
+		@Override
+		public void execute() {
+			// hey, do it!
+			try {
+				// convert the text to an integer (as received by the setter)
+				_editor.setAsText(_newVal);
+				final Object val = _editor.getValue();
+
+				// prepare the storage data
+				final Object args[] = { val };
+				_theSetter.invoke(_theData, args);
+
+				// inform the editable that we've updated it
+				fireAction(null, null);
+
+				// and trigger a redraw
+				_theLayers.fireReformatted(_updateLayer);
+			} catch (final Exception e) {
+				MWC.Utilities.Errors.Trace.trace(e);
+			}
+		}
+
+		@Override
+		public boolean isRedoable() {
+			return true;
+		}
+
+		@Override
+		public boolean isUndoable() {
+			return true;
+		}
+
+		@Override
+		public void undo() {
+			// hey, do the opposite!
+			try {
+				_editor.setAsText(_oldVal);
+				final Object val = _editor.getValue();
+
+				final Object args[] = { val };
+				_theSetter.invoke(_theData, args);
+
+				// inform the editable that we've updated it
+				fireAction(null, null);
+
+				// and trigger a redraw
+				_theLayers.fireReformatted(_updateLayer);
+
+			} catch (final Exception e) {
+				MWC.Utilities.Errors.Trace.trace(e);
+			}
+		}
+	}
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	static protected void createAdditionalBooleanEditors(final JMenu theMenu, final Editable theItem,
+			final PropertiesPanel thePanel, final Layers theLayers, final Layer parentLayer, final Layer updateLayer) {
+
+		final Editable.EditorType bi = theItem.getInfo();
+
+		// are there any additional edit types returned which have
+		// a custom editor and therefore require their own entry?
+		final BeanInfo[] bil = bi.getAdditionalBeanInfo();
+		if (bil != null) {
+			// so, we've got our beaninfo items, see it we can edit it
+			final int num = bil.length;
+			for (int j = 0; j < num; j++) {
+				final BeanInfo bin = bil[j];
+				if (bin instanceof MWC.GUI.Editable.EditorType) {
+					final Editable.EditorType et = (Editable.EditorType) bin;
+					final BeanDescriptor bd = et.getBeanDescriptor();
+
+					// is there a bean descriptor?
+					if (bd != null) {
+						// try for any boolean editors for this other object
+						createBooleanEditors(theMenu, (Editable) et.getData(), thePanel, theLayers, parentLayer,
+								updateLayer);
+					}
+				}
+			}
+		}
+	}
+
+	static protected void createAdditionalMethodInvokers(final JMenu theMenu, final Editable theItem,
+			final Layers theLayers) {
+
+		final Editable.EditorType bi = theItem.getInfo();
+
+		// are there any additional edit types returned which have
+		// a custom editor and therefore require their own entry?
+		final BeanInfo[] bil = bi.getAdditionalBeanInfo();
+		if (bil != null) {
+			// so, we've got our beaninfo items, see it we can edit it
+			final int num = bil.length;
+			for (int j = 0; j < num; j++) {
+				final BeanInfo bin = bil[j];
+				if (bin instanceof MWC.GUI.Editable.EditorType) {
+					final Editable.EditorType et = (Editable.EditorType) bin;
+					final BeanDescriptor bd = et.getBeanDescriptor();
+
+					// is there a bean descriptor?
+					if (bd != null) {
+						// try for any boolean editors for this other object
+						createMethodInvokers(theMenu, (Editable) et.getData(), theLayers);
+					}
+				}
+			}
+		}
+	}
+
+	static protected void createAdditionalSelectionEditors(final JMenu theMenu, final Editable theItem,
+			final PropertiesPanel thePanel, final Layers theLayers, final Layer parentLayer, final Layer updateLayer) {
+
+		final Editable.EditorType bi = theItem.getInfo();
+
+		// are there any additional edit types returned which have
+		// a custom editor and therefore require their own entry?
+		final BeanInfo[] bil = bi.getAdditionalBeanInfo();
+		if (bil != null) {
+			// so, we've got our beaninfo items, see it we can edit it
+			final int num = bil.length;
+			for (int j = 0; j < num; j++) {
+				final BeanInfo bin = bil[j];
+				if (bin instanceof MWC.GUI.Editable.EditorType) {
+					final Editable.EditorType et = (Editable.EditorType) bin;
+					final BeanDescriptor bd = et.getBeanDescriptor();
+
+					// is there a bean descriptor?
+					if (bd != null) {
+						// try for any boolean editors for this other object
+						createSelectionEditors(theMenu, (Editable) et.getData(), thePanel, theLayers, parentLayer,
+								updateLayer);
+					}
+				}
+			}
+		}
+	}
+
+	static protected void createBooleanEditors(final JMenu theMenu, final Editable theItem,
+			final PropertiesPanel thePanel, final Layers theLayers, final Layer parentLayer, final Layer updateLayer) {
+
+		final PropertiesPanel myPanel = thePanel;
+
+		// step through the properties and see if any are boolean
+		final PropertyDescriptor props[] = theItem.getInfo().getPropertyDescriptors();
+		if (props != null) {
+			for (int i = 0; i < props.length; i++) {
+				final PropertyDescriptor prop = props[i];
+				final Class<?> thisType = prop.getPropertyType();
+				final Class<?> boolClass = Boolean.class;
+				if ((thisType == boolClass) || (thisType.equals(boolean.class))) {
+					// hey we've found one
+					final JCheckBoxMenuItem cm = new JCheckBoxMenuItem(prop.getDisplayName());
+
+					try {
+						// get the current value
+						final Method getter = prop.getReadMethod();
+						final Method setter = prop.getWriteMethod();
+						final Object val = getter.invoke(theItem, (Object[]) null);
+						final boolean current = ((Boolean) val).booleanValue();
+						cm.setState(current);
+
+						final BooleanOperationAction action = new BooleanOperationAction(setter, theItem,
+								prop.getDisplayName(), !current, theItem.getInfo(), theLayers, parentLayer,
+								updateLayer);
+
+						cm.addItemListener(new DoThisListener(action, myPanel.getBuffer()));
+
+						theMenu.add(cm);
+					} catch (final Exception e) {
+						MWC.Utilities.Errors.Trace.trace(e);
+					}
+				}
+
+			}
+		}
+	}
+
+	static public JPopupMenu createMenuFor(final Editable data, final Point thePoint, final Layer theParent,
+			final PropertiesPanel thePanel, final Layers theLayers, final java.util.Vector<PlottableMenuCreator> extras,
+			final Layer updateLayer) {
+
+		// change the panel parameter to be a final
+		final PropertiesPanel myPanel = thePanel;
+
+		// create the popup menu
+		final JPopupMenu pi = new JPopupMenu();
+
+		// check we have info
+		if (data != null) {
+
+			// get the editable data for this item
+			final Editable.EditorType bi = data.getInfo();
+
+			if (bi != null) {
+				// and add the items, starting with the plottable itself
+				final Editable.EditorType et2 = bi;
+				final JMenuItem m = new JMenuItem("Edit " + et2.getBeanDescriptor().getDisplayName());
+				m.addActionListener(new EditThisActionListener(myPanel, et2, theParent));
+				pi.add(m);
+
+				final JMenu mp = new JMenu(et2.getBeanDescriptor().getDisplayName());
+
+				// also see if there are any boolean property editors for this ite,
+				createBooleanEditors(mp, data, thePanel, theLayers, theParent, updateLayer);
+
+				// are we showing combined lists?
+				if (bi.combinePropertyLists())
+					createAdditionalBooleanEditors(mp, data, thePanel, theLayers, theParent, updateLayer);
+
+				// also see if there are any lists of properties which
+				// we can create as a drop down list
+				createSelectionEditors(mp, data, thePanel, theLayers, theParent, updateLayer);
+
+				// are we showing combined lists?
+				if (bi.combinePropertyLists())
+					createAdditionalSelectionEditors(mp, data, thePanel, theLayers, theParent, updateLayer);
+
+				// put in the separator if we need to
+				if (mp.getItemCount() > 0) {
+					mp.addSeparator();
+				}
+
+				// see if there are any methods we should call
+				createMethodInvokers(mp, data, theLayers);
+
+				// are we showing combined lists?
+				if (bi.combinePropertyLists())
+					createAdditionalMethodInvokers(mp, data, theLayers);
+
+				// were any items added
+				if (mp.getItemCount() > 0) {
+					pi.add(mp);
+				}
+
+				if (!bi.combinePropertyLists()) {
+					// we've already added the additional items, we don't need to do it
+					// here
+
+					// add separator to indicate that this is a new item we're editing
+					pi.addSeparator();
+
+					// are there any additional edit types returned which have
+					// a custom editor and therefore require their own entry?
+					final BeanInfo[] bil = bi.getAdditionalBeanInfo();
+					if (bil != null) {
+						// so, we've got our beaninfo items, see it we can edit it
+						final int num = bil.length;
+						for (int j = 0; j < num; j++) {
+							final BeanInfo bin = bil[j];
+							if (bin instanceof MWC.GUI.Editable.EditorType) {
+								final Editable.EditorType et = (Editable.EditorType) bin;
+								final BeanDescriptor bd = et.getBeanDescriptor();
+
+								// is there a bean descriptor?
+								if (bd != null) {
+									// produce the edit entry
+									final JMenuItem mi = new JMenuItem(
+											"Edit " + et.getBeanDescriptor().getDisplayName());
+
+									// and add an action listener
+									mi.addActionListener(new EditThisActionListener(myPanel, et, theParent));
+
+									// add to the popup menu
+									pi.add(mi);
+
+								}
+
+								// create temporary menu to hold any editors for this additional
+								// item
+								final JMenu mn = new JMenu(et.getBeanDescriptor().getDisplayName());
+
+								// try for any boolean editors for this other object
+								createBooleanEditors(mn, (Editable) et.getData(), thePanel, theLayers, theParent,
+										updateLayer);
+
+								// try for any list editors for this other object
+								createSelectionEditors(mn, (Editable) et.getData(), thePanel, theLayers, theParent,
+										updateLayer);
+
+								// put in the separator if we need to
+								if (mn.getItemCount() > 0) {
+									mn.addSeparator();
+								}
+
+								// try for any bean methods for this
+								createMethodInvokers(mn, (Editable) et.getData(), theLayers);
+
+								// were any items added
+								if (mn.getItemCount() > 0) {
+									pi.add(mn);
+								}
+
+							} // end of if this beaninfo is editable
+
+						} // looping through the additional bean items
+
+					} // end of if there are any additional bean items at all
+
+				} // end of whether any additional bean items were returned
+
+			} // end of if any beaninfo was returned for this item
+
+			// see if we have a list of extras for this panel
+			if (extras != null) {
+
+				pi.addSeparator();
+
+				final Enumeration<PlottableMenuCreator> creators = extras.elements();
+				while (creators.hasMoreElements()) {
+					final PlottableMenuCreator mc = creators.nextElement();
+					mc.createMenu(pi, data, thePoint, thePanel, theParent, theLayers, updateLayer);
+					// pi.addSeparator();
+				}
+			} // whether there were actually any plottable extras
+
+		} // end of whether there we received any data.
+
+		// separator, before we get the real tat
+		// pi.addSeparator();
+
+		return pi;
+
+	}
+
+	// CS-IGNORE:OFF FINAL_PARAMETERS
+
+	static public void createMethodInvokers(final JMenu theMenu, final Editable theItem, final Layers theLayers) {
+
+		// also check if our additional data has any methods
+		// check we have methods
+		final MethodDescriptor[] mds = theItem.getInfo().getMethodDescriptors();
+
+		// now step through them
+		if (mds != null) {
+			final int cnt = mds.length;
+			for (int i = 0; i < cnt; i++) {
+				// get this method
+				final MethodDescriptor md = mds[i];
+				final Method me = md.getMethod();
+				final JMenuItem m2 = new ourMenuItem(md.getDisplayName(), me, theItem, theLayers, theItem);
+				theMenu.add(m2);
+
+			}
+		}
+
+	}
+
+	static protected void createSelectionEditors(final JMenu theMenu, final Editable theItem,
+			final PropertiesPanel thePanel, final Layers theLayers, final Layer theParent, final Layer updateLayer) {
+
+		final PropertiesPanel myPanel = thePanel;
+
+		// retrieve the list of properties
+		final PropertyDescriptor props[] = theItem.getInfo().getPropertyDescriptors();
+
+		// are there any?
+		if (props != null) {
+			// step through the list
+			for (int i = 0; i < props.length; i++) {
+				// get this property
+				final PropertyDescriptor prop = props[i];
+
+				// the property editor we are going to use
+				PropertyEditor pe = null;
+
+				// find out the type of the editor
+				final Method m = prop.getReadMethod();
+				final Class<?> cl = m.getReturnType();
+
+				// is there a custom editor for this type?
+				final Class<?> c = prop.getPropertyEditorClass();
+
+				// try to create an editor for this class
+				try {
+					if (c != null)
+						pe = (PropertyEditor) c.newInstance();
+				} catch (final Exception e) {
+					MWC.Utilities.Errors.Trace.trace(e);
+				}
+
+				// did it work?
+				if (pe == null) {
+					// try to find an editor for this through our manager
+					pe = PropertyEditorManager.findEditor(cl);
+				}
+
+				// have we managed to create an editor?
+				if (pe != null) {
+					// just check that we haven't already created a
+					// boolean editor for this field already
+					final Class<?> boolClass = Boolean.class;
+					if ((cl != boolClass) && (!cl.equals(boolean.class))) {
+
+						// retrieve the tags
+						final String[] tags = pe.getTags();
+
+						// are there any tags for this class?
+						if (tags != null) {
+							// create a drop-down list
+							final JMenu thisMen = new JMenu(prop.getDisplayName());
+
+							// sort out the setter details
+							final Method getter = prop.getReadMethod();
+							final Method setter = prop.getWriteMethod();
+
+							// get the current value
+							Object val = null;
+							try {
+								val = getter.invoke(theItem, (Object[]) null);
+							} catch (final Exception e) {
+								MWC.Utilities.Errors.Trace.trace(e);
+							}
+							pe.setValue(val);
+
+							// convert the current value to text
+							final String current = pe.getAsText();
+
+							// and now a drop-down item for each options
+							for (int j = 0; j < tags.length; j++) {
+								final String thisTag = tags[j];
+
+								// create the item
+								final JCheckBoxMenuItem thisOption = new JCheckBoxMenuItem(thisTag,
+										thisTag.equals(current));
+
+								// add it to the menu
+								thisMen.add(thisOption);
+
+								// create the custom action
+								final SelectionOperationAction action = new SelectionOperationAction(setter, theItem,
+										prop.getDisplayName(), tags[j], current, pe, theItem.getInfo(), theLayers,
+										theParent, updateLayer);
+
+								// create the action listener
+
+								thisOption.addItemListener(new DoThisListener(action, myPanel.getBuffer()));
+							}
+
+							// and add ourselves to the menu
+							theMenu.add(thisMen);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	public static void findNearest(final Layer thisLayer, final MWC.GenericData.WorldLocation cursorPos,
+			final ObjectConstruct currentNearest, final Layer topLayer) {
 		// so, step through this layer
-		if (thisLayer.getVisible())
-		{
+		if (thisLayer.getVisible()) {
 			// is it a 'special' layer that provides it's own range?
-			if (thisLayer instanceof BaseLayer.ProvidesRange)
-			{
+			if (thisLayer instanceof BaseLayer.ProvidesRange) {
 				// how far away is it?
 				final double rng = thisLayer.rangeFrom(cursorPos);
 
 				// does it return a range?
-				if (rng != -1.0)
-				{
+				if (rng != -1.0) {
 					// has our results object been initialised?
-					if (currentNearest.object == null)
-					{
+					if (currentNearest.object == null) {
 						// no, just copy in the data
 						currentNearest.setData(thisLayer, rng, thisLayer, topLayer);
-					}
-					else
-					{
+					} else {
 						// yes it has, copy the data items in
-						if (rng < currentNearest.distance)
-						{
+						if (rng < currentNearest.distance) {
 							currentNearest.setData(thisLayer, rng, thisLayer, topLayer);
 						}
 					}
 				}
 			}
 
-			else
-			{
+			else {
 
 				// go through this layer
 				final Enumeration<Editable> enumer = thisLayer.elements();
 
 				// check something got returned
-				if (enumer != null)
-				{
-					while (enumer.hasMoreElements())
-					{
+				if (enumer != null) {
+					while (enumer.hasMoreElements()) {
 						final Object next = enumer.nextElement();
 
 						// is this item a layer itself?
-						if ((next instanceof Layer)
-								&& (!(next instanceof Editable.DoNoInspectChildren)))
-						{
+						if ((next instanceof Layer) && (!(next instanceof Editable.DoNoInspectChildren))) {
 							// cast to Layer
 							final Layer l = (Layer) next;
 
 							// find the nearest values
 							findNearest(l, cursorPos, currentNearest, topLayer);
-						}
-						else
-						{
+						} else {
 
-							if (next instanceof Plottable)
-							{
+							if (next instanceof Plottable) {
 								final Plottable p = (Plottable) next;
 
 								// is it visible even?
-								if (p.getVisible())
-								{
+								if (p.getVisible()) {
 
 									// is there an editor for this item
-									if (p.hasEditor())
-									{
+									if (p.hasEditor()) {
 										// how far away is it?
 										final double rng = p.rangeFrom(cursorPos);
 
 										// does it return a range?
-										if (rng != -1.0)
-										{
+										if (rng != -1.0) {
 											// has our results object been initialised?
-											if (currentNearest.object == null)
-											{
+											if (currentNearest.object == null) {
 												// no, just copy in the data
 												currentNearest.setData(p, rng, thisLayer, topLayer);
-											}
-											else
-											{
+											} else {
 												// yes it has, copy the data items in
-												if (rng < currentNearest.distance)
-												{
+												if (rng < currentNearest.distance) {
 													currentNearest.setData(p, rng, thisLayer, topLayer);
 												}
 											}
-										}
-										else
-										{
+										} else {
 											// not range related, add to our list of non-location
 											// related
 											// entities (unless it's a type we specifically exclude
 											// from
 											// right-click editing, like Narrative Entries)
-											if (p instanceof ExcludeFromRightClickEdit)
-											{
+											if (p instanceof ExcludeFromRightClickEdit) {
 												// just ignore it, we don't want to show it.
-											}
-											else
+											} else
 												currentNearest.addRangeIndependent(p);
 										}
-									}
-									else
-									{
+									} else {
 										// no editor, so we can't create a menu item for it anyway
 									}
 								}
@@ -464,10 +1110,83 @@ public class RightClickEdit implements PlainChart.ChartClickListener,
 		}
 	}
 
-	public void CursorClicked(final java.awt.Point thePoint,
-			final MWC.GenericData.WorldLocation thePos, final CanvasType theCanvas,
-			final Layers theData)
-	{
+	// ///////////////////////////////////////////////////////////
+	// member variables
+	// //////////////////////////////////////////////////////////
+	PropertiesPanel _thePanel;
+
+	/**
+	 * list of additional classes which we invite to extend our pop up menu
+	 */
+	Vector<MenuCreator> _theExtras;
+
+	/**
+	 * this static hashtable contains multiple lists of plottable extras, indexed by
+	 * the properties panel they edit
+	 * <p/>
+	 * PlottableExtras are lists of additional classes which are able to extend the
+	 * popup menu once a Plottable has been selected
+	 */
+	private final Hashtable<PropertiesPanel, Vector<PlottableMenuCreator>> _thePlottableExtras;
+
+	// //////////////////////////////////////////////////////////
+	// embedded class containing information necessary to handle
+	// menu action
+	// //////////////////////////////////////////////////////////
+
+	// ///////////////////////////////////////////////////////////
+	// constructor
+	// //////////////////////////////////////////////////////////
+	public RightClickEdit(final PropertiesPanel thePanel) {
+		_thePanel = thePanel;
+		_theExtras = new Vector<MenuCreator>(0, 1);
+		_thePlottableExtras = new Hashtable<PropertiesPanel, Vector<PlottableMenuCreator>>();
+	}
+
+	public void addMenuCreator(final MenuCreator mn) {
+		_theExtras.addElement(mn);
+	}
+
+	public void addPlottableMenuCreator(final PlottableMenuCreator mn, final PropertiesPanel thePanel) {
+		// see if we have a list for this panel
+		final Vector<PlottableMenuCreator> obj = _thePlottableExtras.get(thePanel);
+		Vector<PlottableMenuCreator> vt = null;
+
+		if (obj == null) {
+			// we've got to make one
+			vt = new Vector<PlottableMenuCreator>(0, 1);
+
+			// and add it to our list
+			_thePlottableExtras.put(thePanel, vt);
+		} else {
+			vt = obj;
+		}
+
+		// now put the menu creator into the vector
+		vt.addElement(mn);
+	}
+
+	// ///////////////////////////////////////////////////////////
+	// embedded class which executes commands, but will also
+	// allow them to be placed on the undo buffer
+	// //////////////////////////////////////////////////////////
+
+	protected JPopupMenu createMenu(final Plottable data, final Point thePoint, final Layer theParent,
+			final CanvasType theCanvas, final Layers theLayers, final Layer updateLayer) {
+		Vector<PlottableMenuCreator> oj = null;
+
+		if (_thePlottableExtras != null)
+			oj = _thePlottableExtras.get(_thePanel);
+
+		final JPopupMenu res = createMenuFor(data, thePoint, theParent, _thePanel, theLayers, oj, updateLayer);
+
+		return res;
+
+	}
+
+	@Override
+	public void CursorClicked(final java.awt.Point thePoint, final MWC.GenericData.WorldLocation thePos,
+			final CanvasType theCanvas, final Layers theData) {
 
 		//
 		Plottable res = null;
@@ -487,18 +1206,15 @@ public class RightClickEdit implements PlainChart.ChartClickListener,
 		// find the nearest editable item
 		final ObjectConstruct vals = new ObjectConstruct();
 		final int num = theData.size();
-		for (int i = 0; i < num; i++)
-		{
+		for (int i = 0; i < num; i++) {
 			final Layer thisL = theData.elementAt(i);
-			if (thisL.getVisible())
-			{
+			if (thisL.getVisible()) {
 				// find the nearest items, this method call will recursively pass down
 				// through
 				// the layers
 				findNearest(thisL, thePos, vals, thisL);
 
-				if ((layerDist == -1) || (vals.distance < layerDist))
-				{
+				if ((layerDist == -1) || (vals.distance < layerDist)) {
 					layerDist = vals.distance;
 					topLayer = thisL;
 				}
@@ -512,66 +1228,53 @@ public class RightClickEdit implements PlainChart.ChartClickListener,
 		noPoints = vals.rangeIndependent;
 
 		// see if this is in our dbl-click range
-		if (HitTester.doesHit(thePoint, thePos, dist, theCanvas.getProjection()))
-		{
+		if (HitTester.doesHit(thePoint, thePos, dist, theCanvas.getProjection())) {
 			// do nothing, it's ok
-		}
-		else
-		{
+		} else {
 			res = null;
 		}
 
 		// so, we've spotted a valid plottable, see if there are any
 		// other operations to apply to it.
-		final JPopupMenu theMenu = createMenu((Plottable) res, thePoint, theParent,
-				theCanvas, theData, topLayer);
+		final JPopupMenu theMenu = createMenu(res, thePoint, theParent, theCanvas, theData, topLayer);
 
 		// separator, before we get the real tat
 		theMenu.addSeparator();
 
 		// and now extend this menu with the other new ones not related to this
 		// plottable
-		if (res == null)
-		{
+		if (res == null) {
 			final Enumeration<MenuCreator> creators = _theExtras.elements();
-			while (creators.hasMoreElements())
-			{
-				final MenuCreator mc = (MenuCreator) creators.nextElement();
+			while (creators.hasMoreElements()) {
+				final MenuCreator mc = creators.nextElement();
 				mc.createMenu(theMenu, thePoint, theCanvas, _thePanel, theData);
 			}
 		}
 
 		// are there any non-position related points?
-		if ((noPoints != null) && (res == null))
-		{
+		if ((noPoints != null) && (res == null)) {
 
 			final Enumeration<Plottable> pts = noPoints.elements();
-			while (pts.hasMoreElements())
-			{
-				final Plottable p = (Plottable) pts.nextElement();
+			while (pts.hasMoreElements()) {
+				final Plottable p = pts.nextElement();
 
 				// and add the items, starting with the plottable itself
 				final Editable.EditorType et2 = p.getInfo();
-				final JMenuItem m = new JMenuItem("Edit "
-						+ et2.getBeanDescriptor().getDisplayName());
-				m.addActionListener(new EditThisActionListener(_thePanel, et2,
-						theParent));
+				final JMenuItem m = new JMenuItem("Edit " + et2.getBeanDescriptor().getDisplayName());
+				m.addActionListener(new EditThisActionListener(_thePanel, et2, theParent));
 				theMenu.add(m);
 
 				// create temporary menu to hold any editors for this additional item
 				final JMenu mn = new JMenu(et2.getBeanDescriptor().getDisplayName());
 
 				// try for any boolean editors for this other object
-				createBooleanEditors(mn, (Editable) et2.getData(), 
-						_thePanel, theData, theParent, topLayer);
+				createBooleanEditors(mn, (Editable) et2.getData(), _thePanel, theData, theParent, topLayer);
 
 				// try for any boolean editors for this other object
-				createSelectionEditors(mn, (Editable) et2.getData(), 
-						_thePanel, theData, theParent, topLayer);
+				createSelectionEditors(mn, (Editable) et2.getData(), _thePanel, theData, theParent, topLayer);
 
 				// put in the separator if we need to
-				if (mn.getItemCount() > 0)
-				{
+				if (mn.getItemCount() > 0) {
 					mn.addSeparator();
 				}
 
@@ -579,8 +1282,7 @@ public class RightClickEdit implements PlainChart.ChartClickListener,
 				createMethodInvokers(mn, (Editable) et2.getData(), theData);
 
 				// were any items added
-				if (mn.getItemCount() > 0)
-				{
+				if (mn.getItemCount() > 0) {
 					theMenu.add(mn);
 				}
 
@@ -591,207 +1293,35 @@ public class RightClickEdit implements PlainChart.ChartClickListener,
 
 	}
 
-	protected JPopupMenu createMenu(final Plottable data, final Point thePoint,
-			final Layer theParent, final CanvasType theCanvas,
-			final Layers theLayers, final Layer updateLayer)
-	{
-		Vector<PlottableMenuCreator> oj = null;
-
-		if (_thePlottableExtras != null)
-			oj = _thePlottableExtras.get(_thePanel);
-
-		final JPopupMenu res = createMenuFor(data, thePoint, theParent,
-				_thePanel, theLayers, oj, updateLayer);
-
-		return res;
-
+	/**
+	 * get the list of extra editors which we know about
+	 */
+	public java.util.Vector<PlottableMenuCreator> getExtraPlottableEditors(final PropertiesPanel thePanel) {
+		return _thePlottableExtras.get(thePanel);
 	}
 
-	static public JPopupMenu createMenuFor(final Editable data,
-			final Point thePoint, final Layer theParent,
-			final PropertiesPanel thePanel, final Layers theLayers,
-			final java.util.Vector<PlottableMenuCreator> extras,
-			final Layer updateLayer)
-	{
+	public void removeMenuCreator(final MenuCreator mn) {
+		_theExtras.removeElement(mn);
+	}
 
-		// change the panel parameter to be a final
-		final PropertiesPanel myPanel = thePanel;
-
-		// create the popup menu
-		final JPopupMenu pi = new JPopupMenu();
-
-		// check we have info
-		if (data != null)
-		{
-
-			// get the editable data for this item
-			final Editable.EditorType bi = data.getInfo();
-
-			if (bi != null)
-			{
-				// and add the items, starting with the plottable itself
-				final Editable.EditorType et2 = bi;
-				final JMenuItem m = new JMenuItem("Edit "
-						+ et2.getBeanDescriptor().getDisplayName());
-				m.addActionListener(new EditThisActionListener(myPanel, et2, theParent));
-				pi.add(m);
-
-				final JMenu mp = new JMenu(et2.getBeanDescriptor().getDisplayName());
-
-				// also see if there are any boolean property editors for this ite,
-				createBooleanEditors(mp, data, thePanel, theLayers,
-						theParent, updateLayer);
-
-				// are we showing combined lists?
-				if (bi.combinePropertyLists())
-					createAdditionalBooleanEditors(mp, data, thePanel,
-							theLayers, theParent, updateLayer);
-
-				// also see if there are any lists of properties which
-				// we can create as a drop down list
-				createSelectionEditors(mp, data, thePanel, theLayers,
-						theParent, updateLayer);
-
-				// are we showing combined lists?
-				if (bi.combinePropertyLists())
-					createAdditionalSelectionEditors(mp, data, thePanel,
-							theLayers, theParent, updateLayer);
-
-				// put in the separator if we need to
-				if (mp.getItemCount() > 0)
-				{
-					mp.addSeparator();
-				}
-
-				// see if there are any methods we should call
-				createMethodInvokers(mp, data, theLayers);
-
-				// are we showing combined lists?
-				if (bi.combinePropertyLists())
-					createAdditionalMethodInvokers(mp, data, theLayers);
-
-				// were any items added
-				if (mp.getItemCount() > 0)
-				{
-					pi.add(mp);
-				}
-
-				if (!bi.combinePropertyLists())
-				{
-					// we've already added the additional items, we don't need to do it
-					// here
-
-					// add separator to indicate that this is a new item we're editing
-					pi.addSeparator();
-
-					// are there any additional edit types returned which have
-					// a custom editor and therefore require their own entry?
-					final BeanInfo[] bil = bi.getAdditionalBeanInfo();
-					if (bil != null)
-					{
-						// so, we've got our beaninfo items, see it we can edit it
-						final int num = bil.length;
-						for (int j = 0; j < num; j++)
-						{
-							final BeanInfo bin = bil[j];
-							if (bin instanceof MWC.GUI.Editable.EditorType)
-							{
-								final Editable.EditorType et = (Editable.EditorType) bin;
-								final BeanDescriptor bd = et.getBeanDescriptor();
-
-								// is there a bean descriptor?
-								if (bd != null)
-								{
-									// produce the edit entry
-									final JMenuItem mi = new JMenuItem("Edit "
-											+ et.getBeanDescriptor().getDisplayName());
-
-									// and add an action listener
-									mi.addActionListener(new EditThisActionListener(myPanel, et,
-											theParent));
-
-									// add to the popup menu
-									pi.add(mi);
-
-								}
-
-								// create temporary menu to hold any editors for this additional
-								// item
-								final JMenu mn = new JMenu(et.getBeanDescriptor()
-										.getDisplayName());
-
-								// try for any boolean editors for this other object
-								createBooleanEditors(mn, (Editable) et.getData(),
-										thePanel, theLayers, theParent, updateLayer);
-
-								// try for any list editors for this other object
-								createSelectionEditors(mn, (Editable) et.getData(),
-										thePanel, theLayers, theParent, updateLayer);
-
-								// put in the separator if we need to
-								if (mn.getItemCount() > 0)
-								{
-									mn.addSeparator();
-								}
-
-								// try for any bean methods for this
-								createMethodInvokers(mn, (Editable) et.getData(), theLayers);
-
-								// were any items added
-								if (mn.getItemCount() > 0)
-								{
-									pi.add(mn);
-								}
-
-							} // end of if this beaninfo is editable
-
-						} // looping through the additional bean items
-
-					} // end of if there are any additional bean items at all
-
-				} // end of whether any additional bean items were returned
-
-			} // end of if any beaninfo was returned for this item
-
-			// see if we have a list of extras for this panel
-			if (extras != null)
-			{
-
-				pi.addSeparator();
-
-				final Enumeration<PlottableMenuCreator> creators = extras.elements();
-				while (creators.hasMoreElements())
-				{
-					final PlottableMenuCreator mc = (PlottableMenuCreator) creators
-							.nextElement();
-					mc.createMenu(pi, data, thePoint, thePanel, theParent,
-							theLayers, updateLayer);
-					// pi.addSeparator();
-				}
-			} // whether there were actually any plottable extras
-
-		} // end of whether there we received any data.
-
-		// separator, before we get the real tat
-		// pi.addSeparator();
-
-		return pi;
-
+	public void removePlottableMenuCreator(final PlottableMenuCreator mn, final PropertiesPanel thePanel) {
+		// see if we have a list for this panel
+		final Vector<PlottableMenuCreator> oj = _thePlottableExtras.get(thePanel);
+		if (oj != null) {
+			oj.removeElement(mn);
+		}
 	}
 
 	// CS-IGNORE:ON FINAL_PARAMETERS
-	protected void showMenu(JPopupMenu menu, Point thePoint, CanvasType theCanvas)
-	{
-		if (theCanvas instanceof java.awt.Canvas)
-		{
+	protected void showMenu(JPopupMenu menu, Point thePoint, CanvasType theCanvas) {
+		if (theCanvas instanceof java.awt.Canvas) {
 			MWC.Utilities.Errors.Trace
 					.trace("POPUP MENUS NOT SUPPORTED UNDER AWT - IMPLEMENT MENU BUILDER HELPER CLASSES");
 			// Canvas dest = (Canvas)theCanvas;
 			// dest.add(theMenu);
 			// theMenu.show(dest, thePoint.x, thePoint.y);
 		}
-		if (theCanvas instanceof javax.swing.JComponent)
-		{
+		if (theCanvas instanceof javax.swing.JComponent) {
 			final javax.swing.JComponent dest = (javax.swing.JComponent) theCanvas;
 			dest.add(menu);
 			menu.show(dest, thePoint.x, thePoint.y);
@@ -800,747 +1330,6 @@ public class RightClickEdit implements PlainChart.ChartClickListener,
 		menu = null;
 		thePoint = null;
 		theCanvas = null;
-	}
-
-	// CS-IGNORE:OFF FINAL_PARAMETERS
-
-	static protected void createAdditionalMethodInvokers(final JMenu theMenu,
-			final Editable theItem, final Layers theLayers)
-	{
-
-		final Editable.EditorType bi = theItem.getInfo();
-
-		// are there any additional edit types returned which have
-		// a custom editor and therefore require their own entry?
-		final BeanInfo[] bil = bi.getAdditionalBeanInfo();
-		if (bil != null)
-		{
-			// so, we've got our beaninfo items, see it we can edit it
-			final int num = bil.length;
-			for (int j = 0; j < num; j++)
-			{
-				final BeanInfo bin = bil[j];
-				if (bin instanceof MWC.GUI.Editable.EditorType)
-				{
-					final Editable.EditorType et = (Editable.EditorType) bin;
-					final BeanDescriptor bd = et.getBeanDescriptor();
-
-					// is there a bean descriptor?
-					if (bd != null)
-					{
-						// try for any boolean editors for this other object
-						createMethodInvokers(theMenu, (Editable) et.getData(), theLayers);
-					}
-				}
-			}
-		}
-	}
-
-	static public void createMethodInvokers(final JMenu theMenu,
-			final Editable theItem, final Layers theLayers)
-	{
-
-		// also check if our additional data has any methods
-		// check we have methods
-		final MethodDescriptor[] mds = theItem.getInfo().getMethodDescriptors();
-
-		// now step through them
-		if (mds != null)
-		{
-			final int cnt = mds.length;
-			for (int i = 0; i < cnt; i++)
-			{
-				// get this method
-				final MethodDescriptor md = mds[i];
-				final Method me = md.getMethod();
-				final JMenuItem m2 = new ourMenuItem(md.getDisplayName(), me, theItem,
-				    theLayers, theItem);
-				theMenu.add(m2);
-
-			}
-		}
-
-	}
-
-	static protected void createAdditionalBooleanEditors(final JMenu theMenu,
-			final Editable theItem,
-			final PropertiesPanel thePanel, final Layers theLayers,
-			final Layer parentLayer, final Layer updateLayer)
-	{
-
-		final Editable.EditorType bi = theItem.getInfo();
-
-		// are there any additional edit types returned which have
-		// a custom editor and therefore require their own entry?
-		final BeanInfo[] bil = bi.getAdditionalBeanInfo();
-		if (bil != null)
-		{
-			// so, we've got our beaninfo items, see it we can edit it
-			final int num = bil.length;
-			for (int j = 0; j < num; j++)
-			{
-				final BeanInfo bin = bil[j];
-				if (bin instanceof MWC.GUI.Editable.EditorType)
-				{
-					final Editable.EditorType et = (Editable.EditorType) bin;
-					final BeanDescriptor bd = et.getBeanDescriptor();
-
-					// is there a bean descriptor?
-					if (bd != null)
-					{
-						// try for any boolean editors for this other object
-						createBooleanEditors(theMenu, (Editable) et.getData(),
-								thePanel, theLayers, parentLayer, updateLayer);
-					}
-				}
-			}
-		}
-	}
-
-	static protected void createBooleanEditors(final JMenu theMenu,
-			final Editable theItem, 
-			final PropertiesPanel thePanel, final Layers theLayers,
-			final Layer parentLayer, final Layer updateLayer)
-	{
-
-		final PropertiesPanel myPanel = thePanel;
-
-		// step through the properties and see if any are boolean
-		final PropertyDescriptor props[] = theItem.getInfo()
-				.getPropertyDescriptors();
-		if (props != null)
-		{
-			for (int i = 0; i < props.length; i++)
-			{
-				final PropertyDescriptor prop = props[i];
-				final Class<?> thisType = prop.getPropertyType();
-				final Class<?> boolClass = Boolean.class;
-				if ((thisType == boolClass) || (thisType.equals(boolean.class)))
-				{
-					// hey we've found one
-					final JCheckBoxMenuItem cm = new JCheckBoxMenuItem(
-							prop.getDisplayName());
-
-					try
-					{
-						// get the current value
-						final Method getter = prop.getReadMethod();
-						final Method setter = prop.getWriteMethod();
-						final Object val = getter.invoke(theItem, (Object[]) null);
-						final boolean current = ((Boolean) val).booleanValue();
-						cm.setState(current);
-
-						final BooleanOperationAction action = new BooleanOperationAction(
-								setter, theItem, prop.getDisplayName(), !current,
-								theItem.getInfo(), theLayers, parentLayer, updateLayer);
-
-						cm.addItemListener(new DoThisListener(action, myPanel.getBuffer()));
-
-						theMenu.add(cm);
-					}
-					catch (final Exception e)
-					{
-						MWC.Utilities.Errors.Trace.trace(e);
-					}
-				}
-
-			}
-		}
-	}
-
-	static protected void createAdditionalSelectionEditors(final JMenu theMenu,
-			final Editable theItem,
-			final PropertiesPanel thePanel, final Layers theLayers,
-			final Layer parentLayer, final Layer updateLayer)
-	{
-
-		final Editable.EditorType bi = theItem.getInfo();
-
-		// are there any additional edit types returned which have
-		// a custom editor and therefore require their own entry?
-		final BeanInfo[] bil = bi.getAdditionalBeanInfo();
-		if (bil != null)
-		{
-			// so, we've got our beaninfo items, see it we can edit it
-			final int num = bil.length;
-			for (int j = 0; j < num; j++)
-			{
-				final BeanInfo bin = bil[j];
-				if (bin instanceof MWC.GUI.Editable.EditorType)
-				{
-					final Editable.EditorType et = (Editable.EditorType) bin;
-					final BeanDescriptor bd = et.getBeanDescriptor();
-
-					// is there a bean descriptor?
-					if (bd != null)
-					{
-						// try for any boolean editors for this other object
-						createSelectionEditors(theMenu, (Editable) et.getData(),
-								thePanel, theLayers, parentLayer, updateLayer);
-					}
-				}
-			}
-		}
-	}
-
-	static protected void createSelectionEditors(final JMenu theMenu,
-			final Editable theItem, final PropertiesPanel thePanel, final Layers theLayers,
-			final Layer theParent, final Layer updateLayer)
-	{
-
-		final PropertiesPanel myPanel = thePanel;
-
-		// retrieve the list of properties
-		final PropertyDescriptor props[] = theItem.getInfo()
-				.getPropertyDescriptors();
-
-		// are there any?
-		if (props != null)
-		{
-			// step through the list
-			for (int i = 0; i < props.length; i++)
-			{
-				// get this property
-				final PropertyDescriptor prop = props[i];
-
-				// the property editor we are going to use
-				PropertyEditor pe = null;
-
-				// find out the type of the editor
-				final Method m = prop.getReadMethod();
-				final Class<?> cl = m.getReturnType();
-
-				// is there a custom editor for this type?
-				final Class<?> c = prop.getPropertyEditorClass();
-
-				// try to create an editor for this class
-				try
-				{
-					if (c != null)
-						pe = (PropertyEditor) c.newInstance();
-				}
-				catch (final Exception e)
-				{
-					MWC.Utilities.Errors.Trace.trace(e);
-				}
-
-				// did it work?
-				if (pe == null)
-				{
-					// try to find an editor for this through our manager
-					pe = PropertyEditorManager.findEditor(cl);
-				}
-
-				// have we managed to create an editor?
-				if (pe != null)
-				{
-					// just check that we haven't already created a
-					// boolean editor for this field already
-					final Class<?> boolClass = Boolean.class;
-					if ((cl != boolClass) && (!cl.equals(boolean.class)))
-					{
-
-						// retrieve the tags
-						final String[] tags = pe.getTags();
-
-						// are there any tags for this class?
-						if (tags != null)
-						{
-							// create a drop-down list
-							final JMenu thisMen = new JMenu(prop.getDisplayName());
-
-							// sort out the setter details
-							final Method getter = prop.getReadMethod();
-							final Method setter = prop.getWriteMethod();
-
-							// get the current value
-							Object val = null;
-							try
-							{
-								val = getter.invoke(theItem, (Object[]) null);
-							}
-							catch (final Exception e)
-							{
-								MWC.Utilities.Errors.Trace.trace(e);
-							}
-							pe.setValue(val);
-
-							// convert the current value to text
-							final String current = pe.getAsText();
-
-							// and now a drop-down item for each options
-							for (int j = 0; j < tags.length; j++)
-							{
-								final String thisTag = tags[j];
-
-								// create the item
-								final JCheckBoxMenuItem thisOption = new JCheckBoxMenuItem(
-										thisTag, thisTag.equals(current));
-
-								// add it to the menu
-								thisMen.add(thisOption);
-
-								// create the custom action
-								final SelectionOperationAction action = new SelectionOperationAction(
-										setter, theItem, prop.getDisplayName(), tags[j],
-										current, pe, theItem.getInfo(), theLayers, theParent,
-										updateLayer);
-
-								// create the action listener
-
-								thisOption.addItemListener(new DoThisListener(action, myPanel
-										.getBuffer()));
-							}
-
-							// and add ourselves to the menu
-							theMenu.add(thisMen);
-						}
-					}
-				}
-			}
-		}
-	}
-
-	// //////////////////////////////////////////////////////////
-	// embedded class containing information necessary to handle
-	// menu action
-	// //////////////////////////////////////////////////////////
-
-	static public class EditThisActionListener implements
-			java.awt.event.ActionListener
-	{
-		PropertiesPanel _myPanel;
-
-		Editable.EditorType _myEditor;
-
-		/**
-		 * the layer this item belongs to (or null if not known)
-		 */
-		Layer _parentLayer;
-
-		public EditThisActionListener(final PropertiesPanel thePanel,
-				final Editable.EditorType editor, final Layer parentLayer)
-		{
-			_myPanel = thePanel;
-			_myEditor = editor;
-			_parentLayer = parentLayer;
-		}
-
-		public void actionPerformed(final java.awt.event.ActionEvent event)
-		{
-			_myPanel.addEditor(_myEditor, _parentLayer);
-			_myPanel = null;
-			_myEditor = null;
-		}
-	}
-
-	static protected class DoThisListener implements java.awt.event.ItemListener,
-			java.awt.event.ActionListener
-	{
-		private Action _myAction;
-
-		private UndoBuffer _myBuffer;
-
-		public DoThisListener(final Action action, final UndoBuffer buffer)
-		{
-			_myAction = action;
-			_myBuffer = buffer;
-		}
-
-		public void itemStateChanged(final ItemEvent e)
-		{
-			doIt();
-		}
-
-		public void actionPerformed(final ActionEvent e)
-		{
-			doIt();
-		}
-
-		private void doIt()
-		{
-			// perform the operation
-			_myAction.execute();
-			// add ourselves to the buffer
-			_myBuffer.add(_myAction);
-			// clear local references
-			_myAction = null;
-			_myBuffer = null;
-		}
-
-	}
-
-	// ///////////////////////////////////////////////////////////
-	// embedded interface for classes which may wish to add menu
-	// items
-	// //////////////////////////////////////////////////////////
-	static public interface PlottableMenuCreator
-	{
-		/**
-		 * add extended functionality for the point found
-		 * 
-		 * @param menu
-		 *          the Menu to add items to
-		 * @param data
-		 *          the Plottable point identified
-		 * @param thePoint
-		 *          the screen location of the mouse click
-		 * @param theCanvas
-		 *          the canvas to update following changes
-		 * @param thePanel
-		 *          the properties page current available
-		 * @param theParent
-		 *          the immediate parent for this object
-		 * @param theLayers
-		 *          the set of layers (plus data) currently in use
-		 * @param updateLayer
-		 *          the top level parent of this object (the one we have to refresh)
-		 */
-		public void createMenu(JPopupMenu menu, Editable data, Point thePoint,
-				PropertiesPanel thePanel, Layer theParent,
-				Layers theLayers, Layer updateLayer);
-
-	}
-
-	// ///////////////////////////////////////////////////////////
-	// embedded class which executes commands, but will also
-	// allow them to be placed on the undo buffer
-	// //////////////////////////////////////////////////////////
-
-	static public class ourMenuItem extends JMenuItem implements ActionListener
-	{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		transient protected Method _myMethod;
-
-		protected Object _myData;
-
-		protected Layers _theLayers;
-
-		protected Editable _theEditable;
-
-		public ourMenuItem(final String name, final Method m, final Object data,
-				final Layers theLayers, final Editable theEditable)
-		{
-			super(name);
-			_myData = data;
-			_myMethod = m;
-			_theLayers = theLayers;
-			_theEditable = theEditable;
-
-			addActionListener(this);
-
-		}
-
-		public void actionPerformed(final ActionEvent e)
-		{
-			doIt();
-		}
-
-		private void doIt()
-		{
-			try
-			{
-				_myMethod.invoke(_myData, (Object[]) null);
-				_theLayers.fireModified(null);
-				// inform the object that we've updated it.
-				_theEditable.getInfo().fireChanged(this, _myMethod.toString(), null,
-						null);
-
-			}
-			catch (final Exception e)
-			{
-				MWC.Utilities.Errors.Trace.trace(e);
-			}
-		}
-
-	}
-
-	// /////////////////////////////////////////////////////////////////////
-	//
-	// ///////////////////////////////////////////////////////////////
-	abstract static protected class PlainOperationAction implements Action
-	{
-		Object _theData;
-
-		transient Editable.EditorType _theEditor;
-
-		String _theDescriptor;
-
-		Layers _theLayers;
-
-		protected PlainOperationAction(final Object theData,
-				final Editable.EditorType theEditor, final String theDescriptor,
-				final Layers theLayers)
-		{
-			_theData = theData;
-			_theEditor = theEditor;
-			_theDescriptor = theDescriptor;
-			_theLayers = theLayers;
-		}
-
-		protected void fireAction(final Object newVal, final Object oldVal)
-		{
-			_theEditor.fireChanged(this, _theDescriptor, oldVal, newVal);
-		}
-
-		public String toString()
-		{
-			return _theDescriptor;
-		}
-
-		protected void updateChart()
-		{
-			_theLayers.fireModified(null);
-		}
-	}
-
-	// //////////////////////////////////////////////////////////////////
-	// store action information
-	static protected class BooleanOperationAction extends PlainOperationAction
-	{
-		Method _theSetter;
-
-		Object _theData1;
-
-		boolean _newVal;
-
-		Layers _theLayers;
-
-		Layer _theParent;
-
-		Layer _updateLayer;
-
-		public BooleanOperationAction(final Method theSetter, final Object theData,
-				final String descriptor,
-				final boolean newVal, final Editable.EditorType theEditor,
-				final Layers theLayers, final Layer theParent, final Layer updateLayer)
-		{
-			super(theData, theEditor, descriptor, theLayers);
-			_theSetter = theSetter;
-			_theData1 = theData;
-			_newVal = newVal;
-			_theLayers = theLayers;
-			_theParent = theParent;
-			_updateLayer = updateLayer;
-		}
-
-		public boolean isRedoable()
-		{
-			return true;
-		}
-
-		public boolean isUndoable()
-		{
-			return true;
-		}
-
-		public void undo()
-		{
-			// hey, do the opposite!
-			try
-			{
-				final Object args[] =
-				{ new Boolean(!_newVal) };
-				_theSetter.invoke(_theData1, args);
-
-				// inform the editable that we've updated it
-				fireAction(new Boolean(_newVal), new Boolean(!_newVal));
-
-				// and trigger a redraw
-				_theLayers.fireReformatted(_updateLayer);
-
-			}
-			catch (final Exception e)
-			{
-				MWC.Utilities.Errors.Trace.trace(e);
-			}
-		}
-
-		public void execute()
-		{
-			// hey, do it!
-			try
-			{
-				final Object args[] =
-				{ new Boolean(_newVal) };
-				_theSetter.invoke(_theData1, args);
-
-				// inform the editable that we've updated it
-				fireAction(new Boolean(!_newVal), new Boolean(_newVal));
-
-				// and trigger a redraw
-				_theLayers.fireReformatted(_updateLayer);
-			}
-			catch (final Exception e)
-			{
-				MWC.Utilities.Errors.Trace.trace(e);
-			}
-		}
-	}
-
-	// //////////////////////////////////////////////////////////////////
-	// store action information
-	static protected class SelectionOperationAction extends PlainOperationAction
-	{
-		Method _theSetter;
-
-		String _newVal;
-
-		String _oldVal;
-
-		PropertyEditor _editor;
-
-		Layers _theLayers;
-
-		Layer _theParent;
-
-		Layer _updateLayer;
-
-		public SelectionOperationAction(final Method theSetter,
-				final Object theData, final String descriptor, final String newVal, final String oldVal,
-				final PropertyEditor editor, final Editable.EditorType theEditor,
-				final Layers theLayers, final Layer theParent, final Layer updateLayer)
-		{
-			super(theData, theEditor, descriptor, theLayers);
-			_theSetter = theSetter;
-			_newVal = newVal;
-			_oldVal = oldVal;
-			_editor = editor;
-			_theLayers = theLayers;
-			_theParent = theParent;
-			_updateLayer = updateLayer;
-
-			// over-ride the update layer if it's null, set it to the ParentLayer,
-			// just in case that is a top level layer
-			if (_updateLayer == null)
-				_updateLayer = theParent;
-		}
-
-		public boolean isRedoable()
-		{
-			return true;
-		}
-
-		public boolean isUndoable()
-		{
-			return true;
-		}
-
-		public void undo()
-		{
-			// hey, do the opposite!
-			try
-			{
-				_editor.setAsText(_oldVal);
-				final Object val = _editor.getValue();
-
-				final Object args[] =
-				{ val };
-				_theSetter.invoke(_theData, args);
-
-				// inform the editable that we've updated it
-				fireAction(null, null);
-
-				// and trigger a redraw
-				_theLayers.fireReformatted(_updateLayer);
-
-			}
-			catch (final Exception e)
-			{
-				MWC.Utilities.Errors.Trace.trace(e);
-			}
-		}
-
-		public void execute()
-		{
-			// hey, do it!
-			try
-			{
-				// convert the text to an integer (as received by the setter)
-				_editor.setAsText(_newVal);
-				final Object val = _editor.getValue();
-
-				// prepare the storage data
-				final Object args[] =
-				{ val };
-				_theSetter.invoke(_theData, args);
-
-				// inform the editable that we've updated it
-				fireAction(null, null);
-
-				// and trigger a redraw
-				_theLayers.fireReformatted(_updateLayer);
-			}
-			catch (final Exception e)
-			{
-				MWC.Utilities.Errors.Trace.trace(e);
-			}
-		}
-	}
-
-	// ///////////////////////////////////////////////////////////
-	// embedded interface for classes which may wish to add menu
-	// items
-	// //////////////////////////////////////////////////////////
-	static public interface MenuCreator
-	{
-		/**
-		 * add extended functionality for the point found
-		 * 
-		 * @param menu
-		 *          the Menu to add items to
-		 * @param thePoint
-		 *          the screen location of the mouse click
-		 * @param theCanvas
-		 *          the canvas to update following changes
-		 * @param thePanel
-		 *          the properties page current available
-		 * @param theData
-		 *          the set of layers (plus data) currently in use
-		 */
-		public void createMenu(JPopupMenu menu, java.awt.Point thePoint,
-				MWC.GUI.CanvasType theCanvas,
-				MWC.GUI.Properties.PropertiesPanel thePanel, MWC.GUI.Layers theData);
-
-	}
-
-	// ///////////////////////////////////////////////////
-	// implementation of menuCreator class, which provides utilities
-	// for creating boolean editors and method invokers
-	// ///////////////////////////////////////////////////
-	abstract static public class BaseMenuCreator implements MenuCreator
-	{
-		abstract public void createMenu(javax.swing.JPopupMenu menu,
-				java.awt.Point thePoint, MWC.GUI.CanvasType theCanvas,
-				MWC.GUI.Properties.PropertiesPanel thePanel, MWC.GUI.Layers theData);
-
-		protected void createAdditionalItems(final javax.swing.JPopupMenu menu,
-				final MWC.GUI.Properties.PropertiesPanel thePanel,
-				final Editable theEditable, final Layers theData)
-		{
-			// create the editable properties and method invokers for this object
-			final JMenu subMenu = new JMenu(theEditable.getInfo().getBeanDescriptor()
-					.getDisplayName());
-			createBooleanEditors(subMenu, theEditable, thePanel, theData,
-					null, null);
-
-			// try for any enumererated editors for this other object
-			createSelectionEditors(subMenu, theEditable, thePanel,
-					theData, null, null);
-
-			// lastly create any applicable methods
-			createMethodInvokers(subMenu, theEditable, theData);
-
-			// did we actually create any?
-			if (subMenu.getItemCount() > 0)
-				menu.add(subMenu);
-
-		}
-
 	}
 
 }

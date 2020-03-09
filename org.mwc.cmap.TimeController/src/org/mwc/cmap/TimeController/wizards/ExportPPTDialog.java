@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.cmap.TimeController.wizards;
 
 import java.io.File;
@@ -29,10 +30,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
@@ -48,431 +49,344 @@ import Debrief.ReaderWriter.powerPoint.PlotTracks;
  * @author Ayesha <ayesha.ma@gmail.com>
  *
  */
-public class ExportPPTDialog extends Dialog
-{
+public class ExportPPTDialog extends Dialog {
 
-  public static final String PREF_PPT_EXPORT_LOCATION = "pptExportLocation";
-  public static final String PREF_PPT_EXPORT_FILENAME = "pptExportFilename";
-  public static final String PREF_PPT_EXPORT_FILEFORMAT = "pptExportFormat";
-  public static final String PREF_PPT_EXPORT_OPEN_FILE = "pptExportOpenFile";
-  public static final String PREF_PPT_EXPORT_VISIBLE_BAR =
-      "pptExportVisibleBar";
-  public static final String PREF_PPT_EXPORT_UNIT_BAR = "pptExportUnitBar";
+	public static final String PREF_PPT_EXPORT_LOCATION = "pptExportLocation";
+	public static final String PREF_PPT_EXPORT_FILENAME = "pptExportFilename";
+	public static final String PREF_PPT_EXPORT_FILEFORMAT = "pptExportFormat";
+	public static final String PREF_PPT_EXPORT_OPEN_FILE = "pptExportOpenFile";
+	public static final String PREF_PPT_EXPORT_VISIBLE_BAR = "pptExportVisibleBar";
+	public static final String PREF_PPT_EXPORT_UNIT_BAR = "pptExportUnitBar";
 
-  private static final String[] supportedFormats =
-  {"PPTX"};
-  private static final String[] unitsScaleBar =
-  {MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS,
-      MWC.GUI.Properties.UnitsPropertyEditor.KYD_UNITS,
-      MWC.GUI.Properties.UnitsPropertyEditor.NM_UNITS,
-      MWC.GUI.Properties.UnitsPropertyEditor.KM_UNITS,
-      MWC.GUI.Properties.UnitsPropertyEditor.METRES_UNITS};
+	private static final String[] supportedFormats = { "PPTX" };
+	private static final String[] unitsScaleBar = { MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS,
+			MWC.GUI.Properties.UnitsPropertyEditor.KYD_UNITS, MWC.GUI.Properties.UnitsPropertyEditor.NM_UNITS,
+			MWC.GUI.Properties.UnitsPropertyEditor.KM_UNITS, MWC.GUI.Properties.UnitsPropertyEditor.METRES_UNITS };
 
-  private static String getFileNameStem(final String fileName)
-  {
-    final String newName;
-    if (fileName.indexOf("-") != -1)
-    {
-      newName = fileName.substring(0, fileName.lastIndexOf("-"));
-    }
-    else
-    {
-      newName = fileName;
-    }
-    return newName;
-  }
+	private static String getFileNameStem(final String fileName) {
+		final String newName;
+		if (fileName.indexOf("-") != -1) {
+			newName = fileName.substring(0, fileName.lastIndexOf("-"));
+		} else {
+			newName = fileName;
+		}
+		return newName;
+	}
 
-  private Text txtExportLocation;
-  private Text txtFilename;
+	private Text txtExportLocation;
+	private Text txtFilename;
 
-  private Combo cmbFileFormats;
-  private Combo cmbScaleBarUnits;
-  private Button checkScaleBarVisible;
+	private Combo cmbFileFormats;
+	private Combo cmbScaleBarUnits;
+	private Button checkScaleBarVisible;
 
-  private String fileFormat;
-  private String fileName;
-  private String scaleBarUnit;
+	private String fileFormat;
+	private String fileName;
+	private String scaleBarUnit;
 
-  private String exportLocation;
-  private boolean viewOnComplete = true;
-  private boolean scaleBarVisible = true;
+	private String exportLocation;
+	private boolean viewOnComplete = true;
+	private boolean scaleBarVisible = true;
 
-  private Button viewOnCompleteBtn;
+	private Button viewOnCompleteBtn;
 
-  public ExportPPTDialog(final Shell parentShell)
-  {
-    super(parentShell);
+	public ExportPPTDialog(final Shell parentShell) {
+		super(parentShell);
 
-    // load prefs
-    exportLocation = PlatformUI.getPreferenceStore().getString(
-        PREF_PPT_EXPORT_LOCATION);
-    fileName = PlatformUI.getPreferenceStore().getString(
-        PREF_PPT_EXPORT_FILENAME);
-    if (fileName == null || fileName.isEmpty())
-    {
-      fileName = "DebriefExport";
-    }
-    fileFormat = PlatformUI.getPreferenceStore().getString(
-        PREF_PPT_EXPORT_FILEFORMAT);
-    viewOnComplete = PlatformUI.getPreferenceStore().getBoolean(
-        PREF_PPT_EXPORT_OPEN_FILE);
-    scaleBarVisible = PlatformUI.getPreferenceStore().getBoolean(
-        PREF_PPT_EXPORT_VISIBLE_BAR);
-    scaleBarUnit = PlatformUI.getPreferenceStore().getString(
-        PREF_PPT_EXPORT_UNIT_BAR);
-  }
+		// load prefs
+		exportLocation = PlatformUI.getPreferenceStore().getString(PREF_PPT_EXPORT_LOCATION);
+		fileName = PlatformUI.getPreferenceStore().getString(PREF_PPT_EXPORT_FILENAME);
+		if (fileName == null || fileName.isEmpty()) {
+			fileName = "DebriefExport";
+		}
+		fileFormat = PlatformUI.getPreferenceStore().getString(PREF_PPT_EXPORT_FILEFORMAT);
+		viewOnComplete = PlatformUI.getPreferenceStore().getBoolean(PREF_PPT_EXPORT_OPEN_FILE);
+		scaleBarVisible = PlatformUI.getPreferenceStore().getBoolean(PREF_PPT_EXPORT_VISIBLE_BAR);
+		scaleBarUnit = PlatformUI.getPreferenceStore().getString(PREF_PPT_EXPORT_UNIT_BAR);
+	}
 
-  @Override
-  protected void configureShell(final Shell newShell)
-  {
-    super.configureShell(newShell);
-    newShell.setText("Debrief export");
-    setShellStyle(SWT.RESIZE);
-    newShell.setSize(550, 350);
-  }
+	@Override
+	protected void configureShell(final Shell newShell) {
+		super.configureShell(newShell);
+		newShell.setText("Debrief export");
+		setShellStyle(SWT.RESIZE);
+		newShell.setSize(550, 350);
+	}
 
-  @Override
-  protected void createButtonsForButtonBar(final Composite parent)
-  {
-    ((GridLayout) parent.getLayout()).numColumns++;
-    final Link link = new Link(parent, SWT.NONE);
-    link.setText("<a>Click to view PPT template</a>");
-    link.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
-    link.addSelectionListener(new SelectionAdapter()
-    {
-      @Override
-      public void widgetSelected(final SelectionEvent e)
-      {
-        final String prefId = "org.mwc.debrief.core.preferences.PrefsPage";
-        final PreferenceDialog dialog = PreferencesUtil
-            .createPreferenceDialogOn(link.getShell(), prefId, null, null);
-        dialog.open();
-      }
-    });
+	@Override
+	protected void createButtonsForButtonBar(final Composite parent) {
+		((GridLayout) parent.getLayout()).numColumns++;
+		final Link link = new Link(parent, SWT.NONE);
+		link.setText("<a>Click to view PPT template</a>");
+		link.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
+		link.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				final String prefId = "org.mwc.debrief.core.preferences.PrefsPage";
+				final PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn(link.getShell(), prefId, null,
+						null);
+				dialog.open();
+			}
+		});
 
-    // create OK and Cancel buttons by default
-    createButton(parent, IDialogConstants.OK_ID, "Export", true);
-    createButton(parent, IDialogConstants.CANCEL_ID,
-        IDialogConstants.CANCEL_LABEL, false);
-    getButton(OK).setEnabled(isValid());
+		// create OK and Cancel buttons by default
+		createButton(parent, IDialogConstants.OK_ID, "Export", true);
+		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
+		getButton(OK).setEnabled(isValid());
 
-  }
+	}
 
-  @Override
-  protected Control createDialogArea(final Composite parent)
-  {
-    final Composite dialogParent = (Composite) super.createDialogArea(parent);
-    final Composite composite = new Composite(dialogParent, SWT.NONE);
-    composite.setLayoutData(new GridData(GridData.FILL_BOTH));
-    composite.setLayout(new GridLayout(3, false));
-    final Label lblExportLocation = new Label(composite, SWT.NONE);
-    lblExportLocation.setText("Export Location");
-    txtExportLocation = new Text(composite, SWT.BORDER);
+	@Override
+	protected Control createDialogArea(final Composite parent) {
+		final Composite dialogParent = (Composite) super.createDialogArea(parent);
+		final Composite composite = new Composite(dialogParent, SWT.NONE);
+		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
+		composite.setLayout(new GridLayout(3, false));
+		final Label lblExportLocation = new Label(composite, SWT.NONE);
+		lblExportLocation.setText("Export Location");
+		txtExportLocation = new Text(composite, SWT.BORDER);
 
-    final GridData data = new GridData(GridData.FILL_HORIZONTAL);
-    data.grabExcessHorizontalSpace = true;
-    data.horizontalAlignment = SWT.FILL;
-    txtExportLocation.setLayoutData(data);
-    final Button btnBrowse = new Button(composite, SWT.PUSH);
-    btnBrowse.setText("Browse..");
-    btnBrowse.addSelectionListener(new SelectionAdapter()
-    {
-      @Override
-      public void widgetSelected(final SelectionEvent e)
-      {
-        final DirectoryDialog fd = new DirectoryDialog(getParentShell(),
-            SWT.OPEN);
-        final String selectedFile = fd.open();
-        if (selectedFile != null)
-        {
-          txtExportLocation.setText(selectedFile);
-          exportLocation = txtExportLocation.getText();
-          if (!isExportLocationValid())
-          {
-            MessageDialog.openError(getParentShell(), "Error!",
-                "Specify a valid folder to export the PPT file");
-            enableOK(false);
-          }
-          else
-          {
-            enableOK(isValid());
-          }
+		final GridData data = new GridData(GridData.FILL_HORIZONTAL);
+		data.grabExcessHorizontalSpace = true;
+		data.horizontalAlignment = SWT.FILL;
+		txtExportLocation.setLayoutData(data);
+		final Button btnBrowse = new Button(composite, SWT.PUSH);
+		btnBrowse.setText("Browse..");
+		btnBrowse.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				final DirectoryDialog fd = new DirectoryDialog(getParentShell(), SWT.OPEN);
+				final String selectedFile = fd.open();
+				if (selectedFile != null) {
+					txtExportLocation.setText(selectedFile);
+					exportLocation = txtExportLocation.getText();
+					if (!isExportLocationValid()) {
+						MessageDialog.openError(getParentShell(), "Error!",
+								"Specify a valid folder to export the PPT file");
+						enableOK(false);
+					} else {
+						enableOK(isValid());
+					}
 
-        }
-        else
-        {
-          enableOK(false);
-        }
-      }
-    });
-    final Label lblFilename = new Label(composite, SWT.NONE);
-    lblFilename.setText("File name");
-    txtFilename = new Text(composite, SWT.BORDER);
-    txtFilename.setLayoutData(data);
+				} else {
+					enableOK(false);
+				}
+			}
+		});
+		final Label lblFilename = new Label(composite, SWT.NONE);
+		lblFilename.setText("File name");
+		txtFilename = new Text(composite, SWT.BORDER);
+		txtFilename.setLayoutData(data);
 
-    cmbFileFormats = new Combo(composite, SWT.DROP_DOWN);
-    cmbFileFormats.setItems(supportedFormats);
+		cmbFileFormats = new Combo(composite, SWT.DROP_DOWN);
+		cmbFileFormats.setItems(supportedFormats);
 
-    final Composite compositeFormatting = new Composite(dialogParent, SWT.NONE);
-    compositeFormatting.setLayoutData(new GridData(GridData.FILL_BOTH));
-    compositeFormatting.setLayout(new GridLayout(1, false));
+		final Composite compositeFormatting = new Composite(dialogParent, SWT.NONE);
+		compositeFormatting.setLayoutData(new GridData(GridData.FILL_BOTH));
+		compositeFormatting.setLayout(new GridLayout(1, false));
 
-    final Group grpFormatting = new Group(compositeFormatting, SWT.NONE);
-    grpFormatting.setText("Formatting");
-    grpFormatting.setLayoutData(data);
-    grpFormatting.setLayout(new GridLayout(1, false));
+		final Group grpFormatting = new Group(compositeFormatting, SWT.NONE);
+		grpFormatting.setText("Formatting");
+		grpFormatting.setLayoutData(data);
+		grpFormatting.setLayout(new GridLayout(1, false));
 
-    final Group grpScaleBar = new Group(grpFormatting, SWT.NONE);
-    grpScaleBar.setText("Scale bar");
-    grpScaleBar.setLayoutData(data);
-    grpScaleBar.setLayout(new GridLayout(2, false));
+		final Group grpScaleBar = new Group(grpFormatting, SWT.NONE);
+		grpScaleBar.setText("Scale bar");
+		grpScaleBar.setLayoutData(data);
+		grpScaleBar.setLayout(new GridLayout(2, false));
 
-    final Label lblScaleBarVisilibility = new Label(grpScaleBar, SWT.NONE);
-    lblScaleBarVisilibility.setText("Visilibity");
+		final Label lblScaleBarVisilibility = new Label(grpScaleBar, SWT.NONE);
+		lblScaleBarVisilibility.setText("Visilibity");
 
-    checkScaleBarVisible = new Button(grpScaleBar, SWT.CHECK);
-    checkScaleBarVisible.setText("Visible");
-    checkScaleBarVisible.setSelection(scaleBarVisible);
+		checkScaleBarVisible = new Button(grpScaleBar, SWT.CHECK);
+		checkScaleBarVisible.setText("Visible");
+		checkScaleBarVisible.setSelection(scaleBarVisible);
 
-    final Label lblScaleBarUnits = new Label(grpScaleBar, SWT.NONE);
-    lblScaleBarUnits.setText("Units");
+		final Label lblScaleBarUnits = new Label(grpScaleBar, SWT.NONE);
+		lblScaleBarUnits.setText("Units");
 
-    cmbScaleBarUnits = new Combo(grpScaleBar, SWT.DROP_DOWN);
-    cmbScaleBarUnits.setItems(unitsScaleBar);
-    cmbScaleBarUnits.setEnabled(scaleBarVisible);
+		cmbScaleBarUnits = new Combo(grpScaleBar, SWT.DROP_DOWN);
+		cmbScaleBarUnits.setItems(unitsScaleBar);
+		cmbScaleBarUnits.setEnabled(scaleBarVisible);
 
-    // ok, and the "view on complete" toggle
-    viewOnCompleteBtn = new Button(composite, SWT.CHECK);
-    viewOnCompleteBtn.setText("Open exported PPTX");
-    viewOnCompleteBtn.setSelection(viewOnComplete);
+		// ok, and the "view on complete" toggle
+		viewOnCompleteBtn = new Button(composite, SWT.CHECK);
+		viewOnCompleteBtn.setText("Open exported PPTX");
+		viewOnCompleteBtn.setSelection(viewOnComplete);
 
-    initUI();
-    return dialogParent;
-  }
+		initUI();
+		return dialogParent;
+	}
 
-  public String getExportLocation()
-  {
-    return exportLocation;
-  }
+	private void enableOK(final boolean enable) {
+		if (getShell().isVisible()) {
+			getButton(OK).setEnabled(enable);
+		}
+	}
 
-  public String getFileFormat()
-  {
-    return fileFormat;
-  }
+	public String getExportLocation() {
+		return exportLocation;
+	}
 
-  public String getFileName()
-  {
-    return fileName;
-  }
+	public String getFileFormat() {
+		return fileFormat;
+	}
 
-  public String getFileToExport(final String filenameOverride)
-  {
-    final String fName = filenameOverride != null ? filenameOverride : fileName;
-    return exportLocation + File.separator + fName + "." + fileFormat;
-  }
+	public String getFileName() {
+		return fileName;
+	}
 
-  public boolean getOpenOncomplete()
-  {
-    return viewOnComplete;
-  }
+	public String getFileToExport(final String filenameOverride) {
+		final String fName = filenameOverride != null ? filenameOverride : fileName;
+		return exportLocation + File.separator + fName + "." + fileFormat;
+	}
 
-  public boolean isScaleBarVisible()
-  {
-    return scaleBarVisible;
-  }
+	private String getMasterTemplateFile() {
+		String templateFile = CorePlugin.getDefault().getPreferenceStore()
+				.getString(PrefsPage.PreferenceConstants.PPT_TEMPLATE);
+		if (templateFile == null || templateFile.isEmpty()) {
+			templateFile = CorePlugin.getDefault().getPreferenceStore()
+					.getDefaultString(PrefsPage.PreferenceConstants.PPT_TEMPLATE);
+		}
+		return templateFile;
+	}
 
-  public String getScaleBarUnit()
-  {
-    return scaleBarUnit;
-  }
+	public boolean getOpenOncomplete() {
+		return viewOnComplete;
+	}
 
-  private boolean isValid()
-  {
-    return isValidFileName(txtFilename.getText()) && isExportLocationValid();
-  }
+	public String getScaleBarUnit() {
+		return scaleBarUnit;
+	}
 
-  private void initUI()
-  {
-    if (exportLocation != null)
-    {
-      txtExportLocation.setText(exportLocation);
-    }
-    if (!isNullOrEmpty(fileFormat))
-    {
-      cmbFileFormats.setText(fileFormat);
-    }
-    else
-    {
-      cmbFileFormats.setText(supportedFormats[0]);
-    }
-    if (!isNullOrEmpty(scaleBarUnit))
-    {
-      cmbScaleBarUnits.setText(scaleBarUnit);
-    }
-    else
-    {
-      cmbScaleBarUnits.setText(unitsScaleBar[4]);
-    }
-    if (fileName != null)
-    {
-      txtFilename.setText(fileName);
-    }
-    viewOnCompleteBtn.setSelection(viewOnComplete);
-    checkScaleBarVisible.setSelection(scaleBarVisible);
+	private void initUI() {
+		if (exportLocation != null) {
+			txtExportLocation.setText(exportLocation);
+		}
+		if (!isNullOrEmpty(fileFormat)) {
+			cmbFileFormats.setText(fileFormat);
+		} else {
+			cmbFileFormats.setText(supportedFormats[0]);
+		}
+		if (!isNullOrEmpty(scaleBarUnit)) {
+			cmbScaleBarUnits.setText(scaleBarUnit);
+		} else {
+			cmbScaleBarUnits.setText(unitsScaleBar[4]);
+		}
+		if (fileName != null) {
+			txtFilename.setText(fileName);
+		}
+		viewOnCompleteBtn.setSelection(viewOnComplete);
+		checkScaleBarVisible.setSelection(scaleBarVisible);
 
-    checkScaleBarVisible.addSelectionListener(new SelectionAdapter()
-    {
-      @Override
-      public void widgetSelected(SelectionEvent e)
-      {
-        cmbScaleBarUnits.setEnabled(checkScaleBarVisible.getSelection());
-      }
-    });
+		checkScaleBarVisible.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				cmbScaleBarUnits.setEnabled(checkScaleBarVisible.getSelection());
+			}
+		});
 
-    txtFilename.addModifyListener(new ModifyListener()
-    {
+		txtFilename.addModifyListener(new ModifyListener() {
 
-      @Override
-      public void modifyText(ModifyEvent e)
-      {
-        if (isNullOrEmpty(txtFilename.getText()))
-        {
-          MessageDialog.openError(getParentShell(), "Error!",
-              "Specify the name of the file to export");
-          enableOK(false);
-        }
-        else
-        {
-          enableOK(isValid());
-        }
-      }
-    });
-    txtExportLocation.addModifyListener(new ModifyListener()
-    {
+			@Override
+			public void modifyText(final ModifyEvent e) {
+				if (isNullOrEmpty(txtFilename.getText())) {
+					MessageDialog.openError(getParentShell(), "Error!", "Specify the name of the file to export");
+					enableOK(false);
+				} else {
+					enableOK(isValid());
+				}
+			}
+		});
+		txtExportLocation.addModifyListener(new ModifyListener() {
 
-      @Override
-      public void modifyText(ModifyEvent e)
-      {
-        if (!isExportLocationValid())
-        {
-          MessageDialog.openError(getParentShell(), "Error!",
-              "Specify a valid folder to export the PPT file");
-          enableOK(false);
-        }
-        else
-        {
-          enableOK(isValid());
-        }
+			@Override
+			public void modifyText(final ModifyEvent e) {
+				if (!isExportLocationValid()) {
+					MessageDialog.openError(getParentShell(), "Error!",
+							"Specify a valid folder to export the PPT file");
+					enableOK(false);
+				} else {
+					enableOK(isValid());
+				}
 
-      }
-    });
-  }
+			}
+		});
+	}
 
-  private boolean isNullOrEmpty(final String text)
-  {
-    return text == null || text.trim().isEmpty();
-  }
+	private boolean isExportLocationValid() {
+		if (isNullOrEmpty(txtExportLocation.getText())) {
+			return false;
+		}
+		return new File(txtExportLocation.getText()).isDirectory();
+	}
 
-  private boolean isValidFileName(final String text)
-  {
-    return !isNullOrEmpty(text) && text.equals(text.replaceAll(
-        "[^a-zA-Z0-9-_\\.]", "_"));
-  }
+	private boolean isNullOrEmpty(final String text) {
+		return text == null || text.trim().isEmpty();
+	}
 
-  @Override
-  protected boolean isResizable()
-  {
-    return true;
-  }
+	@Override
+	protected boolean isResizable() {
+		return true;
+	}
 
-  private void enableOK(boolean enable)
-  {
-    if (getShell().isVisible())
-    {
-      getButton(OK).setEnabled(enable);
-    }
-  }
+	public boolean isScaleBarVisible() {
+		return scaleBarVisible;
+	}
 
-  private boolean isExportLocationValid()
-  {
-    if (isNullOrEmpty(txtExportLocation.getText()))
-    {
-      return false;
-    }
-    return new File(txtExportLocation.getText()).isDirectory();
-  }
+	private boolean isValid() {
+		return isValidFileName(txtFilename.getText()) && isExportLocationValid();
+	}
 
-  @Override
-  protected void okPressed()
-  {
-    // check the export path and format
+	private boolean isValidFileName(final String text) {
+		return !isNullOrEmpty(text) && text.equals(text.replaceAll("[^a-zA-Z0-9-_\\.]", "_"));
+	}
 
-    // ok, we've got to store the values in the controls,
-    // since they're about to get disposed
-    this.exportLocation = txtExportLocation.getText();
-    this.fileName = txtFilename.getText();
-    final String stemmedName = getFileNameStem(fileName);
-    this.fileFormat = cmbFileFormats.getText();
-    this.scaleBarUnit = cmbScaleBarUnits.getText();
-    this.scaleBarVisible = checkScaleBarVisible.getSelection();
-    PlotTracks plotTracks = new PlotTracks();
-    String errorMsg = plotTracks.validateDonorFile(getMasterTemplateFile());
-    if (errorMsg != null && !errorMsg.isEmpty())
-    {
-      MessageDialog.openError(getParentShell(), "Error!", errorMsg);
-    }
-    else
-    {
-      this.viewOnComplete = viewOnCompleteBtn.getSelection();
+	@Override
+	protected void okPressed() {
+		// check the export path and format
 
-      // and store the prefs
-      PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_LOCATION,
-          exportLocation);
-      PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_FILENAME,
-          stemmedName);
-      PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_FILEFORMAT,
-          fileFormat);
-      PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_OPEN_FILE,
-          viewOnComplete);
-      PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_VISIBLE_BAR,
-          scaleBarVisible);
-      PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_UNIT_BAR,
-          scaleBarUnit);
+		// ok, we've got to store the values in the controls,
+		// since they're about to get disposed
+		this.exportLocation = txtExportLocation.getText();
+		this.fileName = txtFilename.getText();
+		final String stemmedName = getFileNameStem(fileName);
+		this.fileFormat = cmbFileFormats.getText();
+		this.scaleBarUnit = cmbScaleBarUnits.getText();
+		this.scaleBarVisible = checkScaleBarVisible.getSelection();
+		final PlotTracks plotTracks = new PlotTracks();
+		final String errorMsg = plotTracks.validateDonorFile(getMasterTemplateFile());
+		if (errorMsg != null && !errorMsg.isEmpty()) {
+			MessageDialog.openError(getParentShell(), "Error!", errorMsg);
+		} else {
+			this.viewOnComplete = viewOnCompleteBtn.getSelection();
 
-      // let parent do it's business
-      super.okPressed();
-    }
-  }
+			// and store the prefs
+			PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_LOCATION, exportLocation);
+			PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_FILENAME, stemmedName);
+			PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_FILEFORMAT, fileFormat);
+			PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_OPEN_FILE, viewOnComplete);
+			PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_VISIBLE_BAR, scaleBarVisible);
+			PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_UNIT_BAR, scaleBarUnit);
 
-  public void setExportLocation(final String exportLocation)
-  {
-    this.exportLocation = exportLocation;
-  }
+			// let parent do it's business
+			super.okPressed();
+		}
+	}
 
-  public void setFileFormat(final String fileFormat)
-  {
-    this.fileFormat = fileFormat;
-  }
+	public void setExportLocation(final String exportLocation) {
+		this.exportLocation = exportLocation;
+	}
 
-  public void setFileName(final String fileName)
-  {
-    this.fileName = fileName.replaceAll("[^a-zA-Z0-9-_\\.]", "_");
-  }
+	public void setFileFormat(final String fileFormat) {
+		this.fileFormat = fileFormat;
+	}
 
-  public void setOpenOnComplete(final Boolean openFile)
-  {
-    viewOnComplete = openFile;
-  }
+	public void setFileName(final String fileName) {
+		this.fileName = fileName.replaceAll("[^a-zA-Z0-9-_\\.]", "_");
+	}
 
-  private String getMasterTemplateFile()
-  {
-    String templateFile = CorePlugin.getDefault().getPreferenceStore()
-        .getString(PrefsPage.PreferenceConstants.PPT_TEMPLATE);
-    if (templateFile == null || templateFile.isEmpty())
-    {
-      templateFile = CorePlugin.getDefault().getPreferenceStore()
-          .getDefaultString(PrefsPage.PreferenceConstants.PPT_TEMPLATE);
-    }
-    return templateFile;
-  }
+	public void setOpenOnComplete(final Boolean openFile) {
+		viewOnComplete = openFile;
+	}
 }

@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.cmap.gridharness.views;
 
 import org.eclipse.jface.viewers.CellEditor;
@@ -27,13 +28,13 @@ abstract public class ValueWithUnitsCellEditor extends CellEditor implements Mul
 
 	/**
 	 * hmm, the text bit.
-	 * 
+	 *
 	 */
 	Text _myText;
 
 	/**
 	 * and the drop-down units bit
-	 * 
+	 *
 	 */
 	Combo _myCombo;
 
@@ -47,12 +48,9 @@ abstract public class ValueWithUnitsCellEditor extends CellEditor implements Mul
 		_comboTip = comboTip;
 	}
 
+	@Override
 	protected Control createControl(final Composite parent) {
 		return createControl(parent, _textTip, _comboTip);
-	}
-	
-	public Control getLastControl() {
-		return _myCombo;
 	}
 
 	protected Control createControl(final Composite parent, final String tipOne, final String tipTwo) {
@@ -84,7 +82,34 @@ abstract public class ValueWithUnitsCellEditor extends CellEditor implements Mul
 	}
 
 	/**
-	 * 
+	 * @param dist  the value typed in
+	 * @param units the units for the value
+	 * @return an object representing the new data value
+	 */
+	abstract protected Object createResultsObject(double dist, int units);
+
+	@Override
+	protected Object doGetValue() {
+		final String distTxt = _myText.getText();
+		final double dist = new Double(distTxt).doubleValue();
+		final int units = _myCombo.getSelectionIndex();
+		final Object res = createResultsObject(dist, units);
+		return res;
+	}
+
+	@Override
+	protected void doSetFocus() {
+		_myText.setFocus();
+	}
+
+	@Override
+	protected void doSetValue(final Object value) {
+		storeMe(value);
+		doUpdate();
+	}
+
+	/**
+	 *
 	 */
 	final private void doUpdate() {
 		// get the best units
@@ -97,43 +122,22 @@ abstract public class ValueWithUnitsCellEditor extends CellEditor implements Mul
 	/**
 	 * @return
 	 */
-	abstract protected int getUnitsValue();
-
-	/**
-	 * @return
-	 */
 	abstract protected double getDoubleValue();
+
+	@Override
+	public Control getLastControl() {
+		return _myCombo;
+	}
 
 	/**
 	 * @return
 	 */
 	abstract protected String[] getTagsList();
 
-	protected Object doGetValue() {
-		final String distTxt = _myText.getText();
-		final double dist = new Double(distTxt).doubleValue();
-		final int units = _myCombo.getSelectionIndex();
-		final Object res = createResultsObject(dist, units);
-		return res;
-	}
-
 	/**
-	 * @param dist
-	 * 		the value typed in
-	 * @param units
-	 * 		the units for the value
-	 * @return an object representing the new data value
+	 * @return
 	 */
-	abstract protected Object createResultsObject(double dist, int units);
-
-	protected void doSetFocus() {
-		_myText.setFocus();
-	}
-
-	protected void doSetValue(final Object value) {
-		storeMe(value);
-		doUpdate();
-	}
+	abstract protected int getUnitsValue();
 
 	abstract protected void storeMe(Object value);
 

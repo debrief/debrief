@@ -1,32 +1,35 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.asset.core.property_support.unused;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.List;
 
 import ASSET.Models.Decision.TargetType;
 import ASSET.Participants.Category;
 
-public class OldTargetTypeCellEditor extends CellEditor
-{
+public class OldTargetTypeCellEditor extends CellEditor {
 
 	/**
 	 * and the drop-down units bit
@@ -52,13 +55,12 @@ public class OldTargetTypeCellEditor extends CellEditor
 
 	final private String _typeTip = "the type of the subject participant(s)";
 
-	public OldTargetTypeCellEditor(final Composite parent)
-	{
+	public OldTargetTypeCellEditor(final Composite parent) {
 		super(parent);
 	}
 
-	protected Control createControl(final Composite parent)
-	{
+	@Override
+	protected Control createControl(final Composite parent) {
 		final Composite holder = new Composite(parent, SWT.NONE);
 		final RowLayout rows = new RowLayout();
 		rows.marginLeft = rows.marginRight = 0;
@@ -83,38 +85,8 @@ public class OldTargetTypeCellEditor extends CellEditor
 		return holder;
 	}
 
-	/**
-	 * @return our list of values
-	 */
-	protected String[] getForces()
-	{
-		String[] res = new String[] { null };
-		res = (String[]) Category.getForces().toArray(res);
-		return res;
-	}
-
-	/**
-	 * @return our list of values
-	 */
-	protected String[] getEnvironments()
-	{
-		String[] res = new String[] { null };
-		res = (String[]) Category.getEnvironments().toArray(res);
-		return res;
-	}
-
-	/**
-	 * @return our list of values
-	 */
-	protected String[] getTypes()
-	{
-		String[] res = new String[] { null };
-		res = (String[]) Category.getTypes().toArray(res);
-		return res;
-	}
-
-	protected Object doGetValue()
-	{
+	@Override
+	protected Object doGetValue() {
 		final TargetType tt = new TargetType();
 
 		if (_myForce.getSelectionIndex() != -1)
@@ -126,31 +98,25 @@ public class OldTargetTypeCellEditor extends CellEditor
 		return tt;
 	}
 
-	protected void doSetFocus()
-	{
+	@Override
+	protected void doSetFocus() {
 	}
 
-	protected void doSetValue(final Object value)
-	{
+	@Override
+	protected void doSetValue(final Object value) {
 		final TargetType _myCat = (TargetType) value;
 
 		// ok, sort out the forces
 		final Collection<String> types = _myCat.getTargets();
-		for (final Iterator<String> iter = types.iterator(); iter.hasNext();)
-		{
-			final String type = (String) iter.next();
+		for (final Iterator<String> iter = types.iterator(); iter.hasNext();) {
+			final String type = iter.next();
 
 			// is this a force?
-			if (Category.getForces().contains(type))
-			{
+			if (Category.getForces().contains(type)) {
 				_myForce.select(_myForce.indexOf(type));
-			}
-			else if (Category.getTypes().contains(type))
-			{
+			} else if (Category.getTypes().contains(type)) {
 				_myType.select(_myType.indexOf(type));
-			}
-			else if (Category.getEnvironments().contains(type))
-			{
+			} else if (Category.getEnvironments().contains(type)) {
 				_myEnvironment.select(_myEnvironment.indexOf(type));
 			}
 		}
@@ -158,6 +124,33 @@ public class OldTargetTypeCellEditor extends CellEditor
 		// _myForce.select(1);
 		// _myEnvironment.select(2);
 		// _myType.select(3);
+	}
+
+	/**
+	 * @return our list of values
+	 */
+	protected String[] getEnvironments() {
+		String[] res = new String[] { null };
+		res = Category.getEnvironments().toArray(res);
+		return res;
+	}
+
+	/**
+	 * @return our list of values
+	 */
+	protected String[] getForces() {
+		String[] res = new String[] { null };
+		res = Category.getForces().toArray(res);
+		return res;
+	}
+
+	/**
+	 * @return our list of values
+	 */
+	protected String[] getTypes() {
+		String[] res = new String[] { null };
+		res = Category.getTypes().toArray(res);
+		return res;
 	}
 
 }

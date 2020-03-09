@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2016, Deep Blue C Technology Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.debrief.lite.util;
 
 import java.awt.Component;
@@ -24,44 +25,37 @@ import org.pushingpixels.neon.icon.ResizableIcon;
  * @author Ayesha
  *
  */
-public class ResizableIconFactory implements ResizableIcon
-{
-  
-  private ResizableIcon delegate;
-  
-  
-  public ResizableIconFactory(ResizableIcon icon)
-  {
-    delegate = icon;
-  }
+public class ResizableIconFactory implements ResizableIcon {
 
-  @Override
-  public void paintIcon(Component c, Graphics g, int x, int y)
-  {
-    delegate.paintIcon(c,g,x,y);
-  }
+	public static Factory factory(final ResizableIcon icon) {
+		return () -> new ResizableIconFactory(icon);
+	}
 
-  @Override
-  public int getIconWidth()
-  {
-    return delegate.getIconWidth();
-  }
+	private final ResizableIcon delegate;
 
-  @Override
-  public int getIconHeight()
-  {
-    return delegate.getIconHeight();
-  }
+	public ResizableIconFactory(final ResizableIcon icon) {
+		delegate = icon;
+	}
 
-  @Override
-  public void setDimension(Dimension arg0)
-  {
-    delegate.setDimension(arg0);
+	@Override
+	public int getIconHeight() {
+		return delegate.getIconHeight();
+	}
 
-  }
-  
-  public static Factory factory(ResizableIcon icon) {
-    return () -> new ResizableIconFactory(icon);
-  }
+	@Override
+	public int getIconWidth() {
+		return delegate.getIconWidth();
+	}
+
+	@Override
+	public void paintIcon(final Component c, final Graphics g, final int x, final int y) {
+		delegate.paintIcon(c, g, x, y);
+	}
+
+	@Override
+	public void setDimension(final Dimension arg0) {
+		delegate.setDimension(arg0);
+
+	}
 
 }

@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package Debrief.Tools.Tote.Calculations;
 
 import java.text.DecimalFormat;
@@ -93,86 +94,75 @@ import MWC.GenericData.Watchable;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
-public final class timeSecsCalc extends plainCalc
-{
-  private java.text.SimpleDateFormat _myDateFormat = null;
-  private java.text.SimpleDateFormat _milliSecsFormat = null;
+public final class timeSecsCalc extends plainCalc {
+	private java.text.SimpleDateFormat _myDateFormat = null;
+	private java.text.SimpleDateFormat _milliSecsFormat = null;
 
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
+	public timeSecsCalc() {
+		super(new DecimalFormat("00.00"), "Time", "HHmm.ss");
 
-  public timeSecsCalc()
-  {
-    super(new DecimalFormat("00.00"), "Time", "HHmm.ss");
+		// create the format
+		_myDateFormat = new GMTDateFormat("HHmm.ss");
+		_milliSecsFormat = new GMTDateFormat("s");
 
-    // create the format
-    _myDateFormat = new GMTDateFormat("HHmm.ss");
-    _milliSecsFormat = new GMTDateFormat("s");
+		// just over-ride the units when we're in hi-res mode
+		if (HiResDate.inHiResProcessingMode()) {
+			super.setUnits("secs");
+		}
 
-    // just over-ride the units when we're in hi-res mode
-    if(HiResDate.inHiResProcessingMode())
-    {
-      super.setUnits("secs");
-    }
+	}
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-  }
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	@Override
+	public final double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime) {
+		double res = 0.0;
+		if (primary != null) {
+			res = primary.getTime().getMicros();
+		} else
+			res = secondary.getTime().getMicros();
 
-  public final double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime)
-  {
-    double res = 0.0;
-    if (primary != null)
-    {
-      res = primary.getTime().getMicros();
-    }
-    else
-      res = secondary.getTime().getMicros();
+		return res;
+	}
 
-    return res;
-  }
+	/**
+	 * does this calculation require special bearing handling (prevent wrapping
+	 * through 360 degs)
+	 */
+	@Override
+	public final boolean isWrappableData() {
+		return false;
+	}
 
-  public synchronized final String update(final Watchable primary, final Watchable secondary, final HiResDate time)
-  {
-    String res = NOT_APPLICABLE;
-    long val = 0;
-    if (primary != null)
-    {
-      // HI-RES NOT DONE - should be able to plot times in micros
-      final HiResDate theDTG = primary.getTime();
+	@Override
+	public synchronized final String update(final Watchable primary, final Watchable secondary, final HiResDate time) {
+		String res = NOT_APPLICABLE;
+		long val = 0;
+		if (primary != null) {
+			// HI-RES NOT DONE - should be able to plot times in micros
+			final HiResDate theDTG = primary.getTime();
 
-      // is it a valid time?
-      if (theDTG != null)
-      {
-        val = theDTG.getDate().getTime();
+			// is it a valid time?
+			if (theDTG != null) {
+				val = theDTG.getDate().getTime();
 
-        // hmm, are we in hi-res mode?
-        if(HiResDate.inHiResProcessingMode())
-        {
-          res = _milliSecsFormat.format(theDTG.getDate()) + "." +  DebriefFormatDateTime.formatMicros(theDTG);
-        }
-        else
-        {
-          res = _myDateFormat.format(new java.util.Date(val));
-        }
+				// hmm, are we in hi-res mode?
+				if (HiResDate.inHiResProcessingMode()) {
+					res = _milliSecsFormat.format(theDTG.getDate()) + "." + DebriefFormatDateTime.formatMicros(theDTG);
+				} else {
+					res = _myDateFormat.format(new java.util.Date(val));
+				}
 
-      }
-      else
-        res = NOT_APPLICABLE;
-    }
+			} else
+				res = NOT_APPLICABLE;
+		}
 
-    return res;
-  }
-
-  /**
-   * does this calculation require special bearing handling (prevent wrapping through 360 degs)
-   */
-  public final boolean isWrappableData()
-  {
-    return false;
-  }
+		return res;
+	}
 
 }

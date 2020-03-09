@@ -1,19 +1,18 @@
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 package info.limpet.stackedcharts.ui.editor.policies;
-
-import info.limpet.stackedcharts.model.Chart;
-import info.limpet.stackedcharts.model.Dataset;
-import info.limpet.stackedcharts.model.DependentAxis;
-import info.limpet.stackedcharts.model.ScatterSet;
-import info.limpet.stackedcharts.ui.editor.commands.AddAxisToChartCommand;
-import info.limpet.stackedcharts.ui.editor.commands.AddDatasetsToAxisCommand;
-import info.limpet.stackedcharts.ui.editor.commands.MoveScatterSetCommand;
-import info.limpet.stackedcharts.ui.editor.parts.AxisEditPart;
-import info.limpet.stackedcharts.ui.editor.parts.AxisLandingPadEditPart;
-import info.limpet.stackedcharts.ui.editor.parts.ChartEditPart.ChartPanePosition;
-import info.limpet.stackedcharts.ui.editor.parts.ChartPaneEditPart;
-import info.limpet.stackedcharts.ui.editor.parts.DatasetEditPart;
-import info.limpet.stackedcharts.ui.editor.parts.ScatterSetContainerEditPart;
-import info.limpet.stackedcharts.ui.editor.parts.ScatterSetEditPart;
 
 import java.util.List;
 
@@ -30,128 +29,116 @@ import org.eclipse.gef.editpolicies.ContainerEditPolicy;
 import org.eclipse.gef.requests.CreateRequest;
 import org.eclipse.gef.requests.GroupRequest;
 
-public class ScatterSetContainerEditPolicy extends ContainerEditPolicy
-    implements EditPolicy
-{
+import info.limpet.stackedcharts.model.Chart;
+import info.limpet.stackedcharts.model.Dataset;
+import info.limpet.stackedcharts.model.DependentAxis;
+import info.limpet.stackedcharts.model.ScatterSet;
+import info.limpet.stackedcharts.ui.editor.commands.AddAxisToChartCommand;
+import info.limpet.stackedcharts.ui.editor.commands.AddDatasetsToAxisCommand;
+import info.limpet.stackedcharts.ui.editor.commands.MoveScatterSetCommand;
+import info.limpet.stackedcharts.ui.editor.parts.AxisEditPart;
+import info.limpet.stackedcharts.ui.editor.parts.AxisLandingPadEditPart;
+import info.limpet.stackedcharts.ui.editor.parts.ChartEditPart.ChartPanePosition;
+import info.limpet.stackedcharts.ui.editor.parts.ChartPaneEditPart;
+import info.limpet.stackedcharts.ui.editor.parts.DatasetEditPart;
+import info.limpet.stackedcharts.ui.editor.parts.ScatterSetContainerEditPart;
+import info.limpet.stackedcharts.ui.editor.parts.ScatterSetEditPart;
 
-  @Override
-  public void eraseTargetFeedback(final Request request)
-  {
-    // remove the highlight
-    if (REQ_ADD.equals(request.getType()))
-    {
-      final ScatterSetContainerEditPart host =
-          (ScatterSetContainerEditPart) getHost();
-      final IFigure figure = host.getFigure();
-      figure.setBackgroundColor(AxisEditPart.BACKGROUND_COLOR);
-    }
-  }
+public class ScatterSetContainerEditPolicy extends ContainerEditPolicy implements EditPolicy {
 
-  @Override
-  protected Command getAddCommand(final GroupRequest request)
-  {
-    @SuppressWarnings("rawtypes")
-    final List toAdd = request.getEditParts();
-    final Command res;
+	@Override
+	public void eraseTargetFeedback(final Request request) {
+		// remove the highlight
+		if (REQ_ADD.equals(request.getType())) {
+			final ScatterSetContainerEditPart host = (ScatterSetContainerEditPart) getHost();
+			final IFigure figure = host.getFigure();
+			figure.setBackgroundColor(AxisEditPart.BACKGROUND_COLOR);
+		}
+	}
 
-    if (toAdd.size() == 0)
-    {
-      res = null;
-    }
-    else
-    {
+	@Override
+	protected Command getAddCommand(final GroupRequest request) {
+		@SuppressWarnings("rawtypes")
+		final List toAdd = request.getEditParts();
+		final Command res;
 
-      final Object first = toAdd.get(0);
-      if (first instanceof ScatterSetEditPart)
-      {
-        ScatterSetEditPart scatterSetEditPart = ((ScatterSetEditPart) first);
-        ScatterSet scatterSet = scatterSetEditPart.getModel();
-        Chart from = scatterSetEditPart.getChart();
+		if (toAdd.size() == 0) {
+			res = null;
+		} else {
 
-        ScatterSetContainerEditPart container =
-            (ScatterSetContainerEditPart) getHost();
-        Chart to = (Chart) container.getParent().getModel();
+			final Object first = toAdd.get(0);
+			if (first instanceof ScatterSetEditPart) {
+				final ScatterSetEditPart scatterSetEditPart = ((ScatterSetEditPart) first);
+				final ScatterSet scatterSet = scatterSetEditPart.getModel();
+				final Chart from = scatterSetEditPart.getChart();
 
-        res = new MoveScatterSetCommand(scatterSet, from, to);
-      }
-      else if (first instanceof DatasetEditPart)
-      {
+				final ScatterSetContainerEditPart container = (ScatterSetContainerEditPart) getHost();
+				final Chart to = (Chart) container.getParent().getModel();
 
-        // find the landing side
-        final AxisLandingPadEditPart landingPadEditPart =
-            (AxisLandingPadEditPart) getHost();
-        final ChartPaneEditPart.AxisLandingPad pad =
-            (ChartPaneEditPart.AxisLandingPad) landingPadEditPart.getModel();
+				res = new MoveScatterSetCommand(scatterSet, from, to);
+			} else if (first instanceof DatasetEditPart) {
 
-        // find out which list (min/max) this axis is currently on
-        final EList<DependentAxis> destination = pad
-            .getPos() == ChartPanePosition.MIN ? pad.getChart().getMinAxes()
-                : pad.getChart().getMaxAxes();
+				// find the landing side
+				final AxisLandingPadEditPart landingPadEditPart = (AxisLandingPadEditPart) getHost();
+				final ChartPaneEditPart.AxisLandingPad pad = (ChartPaneEditPart.AxisLandingPad) landingPadEditPart
+						.getModel();
 
-        if (destination != null)
-        {
-          CompoundCommand compoundCommand = new CompoundCommand();
-          res = compoundCommand;
+				// find out which list (min/max) this axis is currently on
+				final EList<DependentAxis> destination = pad.getPos() == ChartPanePosition.MIN
+						? pad.getChart().getMinAxes()
+						: pad.getChart().getMaxAxes();
 
-          if (first instanceof DatasetEditPart)
-          {
-            // ok, it's a dataset. we need to wrap it into an axis before
-            // we can add it to the chart
-            DatasetEditPart datasetEditPart = (DatasetEditPart) first;
-            AxisEditPart parent = (AxisEditPart) datasetEditPart.getParent();
-            Dataset dataset = (Dataset) datasetEditPart.getModel();
-            DependentAxis parentAxis = (DependentAxis) parent.getModel();
+				if (destination != null) {
+					final CompoundCommand compoundCommand = new CompoundCommand();
+					res = compoundCommand;
 
-            // take a copy of the parent axis, since we know it's suitable
-            DependentAxis newAxis = EcoreUtil.copy(parentAxis);
-            newAxis.getDatasets().clear();
-            compoundCommand.add(new AddAxisToChartCommand(destination,
-                newAxis));
-            compoundCommand.add(new AddDatasetsToAxisCommand(newAxis, dataset));
-          }
-        }
-        else
-        {
-          // we don't have a target location
-          res = null;
-        }
-      }
-      else
-      {
-        // it's not a type that we're interested in
-        res = null;
-      }
-    }
-    return res;
-  }
+					if (first instanceof DatasetEditPart) {
+						// ok, it's a dataset. we need to wrap it into an axis before
+						// we can add it to the chart
+						final DatasetEditPart datasetEditPart = (DatasetEditPart) first;
+						final AxisEditPart parent = (AxisEditPart) datasetEditPart.getParent();
+						final Dataset dataset = (Dataset) datasetEditPart.getModel();
+						final DependentAxis parentAxis = (DependentAxis) parent.getModel();
 
-  @Override
-  protected Command getCreateCommand(final CreateRequest request)
-  {
-    return null;
-  }
+						// take a copy of the parent axis, since we know it's suitable
+						final DependentAxis newAxis = EcoreUtil.copy(parentAxis);
+						newAxis.getDatasets().clear();
+						compoundCommand.add(new AddAxisToChartCommand(destination, newAxis));
+						compoundCommand.add(new AddDatasetsToAxisCommand(newAxis, dataset));
+					}
+				} else {
+					// we don't have a target location
+					res = null;
+				}
+			} else {
+				// it's not a type that we're interested in
+				res = null;
+			}
+		}
+		return res;
+	}
 
-  @Override
-  public EditPart getTargetEditPart(final Request request)
-  {
-    if (REQ_ADD.equals(request.getType()))
-    {
-      return getHost();
-    }
-    return super.getTargetEditPart(request);
-  }
+	@Override
+	protected Command getCreateCommand(final CreateRequest request) {
+		return null;
+	}
 
-  @Override
-  public void showTargetFeedback(final Request request)
-  {
-    // highlight the Axis when user is about to drop a dataset on it
-    if (REQ_ADD.equals(request.getType()))
-    {
-      final ScatterSetContainerEditPart host =
-          (ScatterSetContainerEditPart) getHost();
-      final IFigure figure = host.getFigure();
-      figure.setBackgroundColor(ColorConstants.lightGray);
-    }
-  }
+	@Override
+	public EditPart getTargetEditPart(final Request request) {
+		if (REQ_ADD.equals(request.getType())) {
+			return getHost();
+		}
+		return super.getTargetEditPart(request);
+	}
+
+	@Override
+	public void showTargetFeedback(final Request request) {
+		// highlight the Axis when user is about to drop a dataset on it
+		if (REQ_ADD.equals(request.getType())) {
+			final ScatterSetContainerEditPart host = (ScatterSetContainerEditPart) getHost();
+			final IFigure figure = host.getFigure();
+			figure.setBackgroundColor(ColorConstants.lightGray);
+		}
+	}
 
 }

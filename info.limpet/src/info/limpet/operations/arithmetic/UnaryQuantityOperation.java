@@ -14,15 +14,6 @@
  *****************************************************************************/
 package info.limpet.operations.arithmetic;
 
-import info.limpet.ICommand;
-import info.limpet.IContext;
-import info.limpet.IOperation;
-import info.limpet.IStoreGroup;
-import info.limpet.IStoreItem;
-import info.limpet.impl.Document;
-import info.limpet.impl.NumberDocument;
-import info.limpet.operations.CollectionComplianceTests;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -34,274 +25,261 @@ import org.eclipse.january.dataset.DoubleDataset;
 import org.eclipse.january.dataset.IDataset;
 import org.eclipse.january.metadata.AxesMetadata;
 
-public abstract class UnaryQuantityOperation implements IOperation
-{
-  /**
-   * the command that actually produces data
-   * 
-   * @author ian
-   * 
-   */
-  public class UnaryQuantityCommand extends CoreQuantityCommand
-  {
+import info.limpet.ICommand;
+import info.limpet.IContext;
+import info.limpet.IOperation;
+import info.limpet.IStoreGroup;
+import info.limpet.IStoreItem;
+import info.limpet.impl.Document;
+import info.limpet.impl.NumberDocument;
+import info.limpet.operations.CollectionComplianceTests;
 
-    public UnaryQuantityCommand(final String title, final String description,
-        final IStoreGroup store, final List<IStoreItem> inputs,
-        final IContext context)
-    {
-      super(title, description, store, true, true, inputs, context);
-    }
+public abstract class UnaryQuantityOperation implements IOperation {
+	/**
+	 * the command that actually produces data
+	 *
+	 * @author ian
+	 *
+	 */
+	public class UnaryQuantityCommand extends CoreQuantityCommand {
 
-    @Override
-    public void execute()
-    {
-      // clear the results sets
-      clearOutputs(getOutputs());
+		public UnaryQuantityCommand(final String title, final String description, final IStoreGroup store,
+				final List<IStoreItem> inputs, final IContext context) {
+			super(title, description, store, true, true, inputs, context);
+		}
 
-      // we may be acting separately on multiple inputs.
-      // so, loop through them
-      for (final IStoreItem input : getInputs())
-      {
-        final NumberDocument inputDoc = (NumberDocument) input;
+		@Override
+		public void execute() {
+			// clear the results sets
+			clearOutputs(getOutputs());
 
-        // ok, process this one.
-        // sort out the output unit
-        final Unit<?> unit = getUnits(inputDoc);
+			// we may be acting separately on multiple inputs.
+			// so, loop through them
+			for (final IStoreItem input : getInputs()) {
+				final NumberDocument inputDoc = (NumberDocument) input;
 
-        // start adding values.
-        final IDataset dataset = performCalc(inputDoc);
+				// ok, process this one.
+				// sort out the output unit
+				final Unit<?> unit = getUnits(inputDoc);
 
-        // store the name
-        dataset.setName(generateName(inputDoc));
+				// start adding values.
+				final IDataset dataset = performCalc(inputDoc);
 
-        // ok, wrap the dataset
-        final NumberDocument output =
-            new NumberDocument((DoubleDataset) dataset, this, unit);
-        
-        // also store the index units
-        if(output.isIndexed())
-        {
-          output.setIndexUnits(inputDoc.getIndexUnits());
-        }
-        
-        // and fire out the update
-        output.fireDataChanged();
+				// store the name
+				dataset.setName(generateName(inputDoc));
 
-        // store the output
-        super.addOutput(output);
+				// ok, wrap the dataset
+				final NumberDocument output = new NumberDocument((DoubleDataset) dataset, this, unit);
 
-        // tell the series that we're a dependent
-        inputDoc.addDependent(this);
+				// also store the index units
+				if (output.isIndexed()) {
+					output.setIndexUnits(inputDoc.getIndexUnits());
+				}
 
-        // ok, store the results
-        getStore().add(output);
+				// and fire out the update
+				output.fireDataChanged();
 
-      }
+				// store the output
+				super.addOutput(output);
 
-    }
+				// tell the series that we're a dependent
+				inputDoc.addDependent(this);
 
-    protected String generateName(final NumberDocument inputDoc)
-    {
-      // get the name
-      return getUnaryNameFor(inputDoc.getName());
-    }
+				// ok, store the results
+				getStore().add(output);
 
-    protected Unit<?> getUnits(final NumberDocument inputDoc)
-    {
-      // get the unit
-      return getUnaryOutputUnit(inputDoc.getUnits());
-    }
+			}
 
-    /**
-     * wrap the actual operation. We're doing this since we need to separate it from the core
-     * "execute" operation in order to support dynamic updates
-     * 
-     * @param nd
-     * 
-     * @param unit
-     *          the units to use
-     * @param outputs
-     *          the list of output series
-     */
-    protected IDataset performCalc(final NumberDocument nd)
-    {
-      final DoubleDataset ds = (DoubleDataset) nd.getDataset();
+		}
 
-      // ok, re-calculate this
-      Dataset res = calculate(ds);
+		@Override
+		protected String generateName() {
+			// warning - this is only present to meet the API requirements.
+			// Since we over-ride the execute() method, we call our own
+			// performCalc()
+			// operation.
 
-      // store the axes
-      final AxesMetadata axis1 = ds.getFirstMetadata(AxesMetadata.class);
+			throw new IllegalArgumentException("This method should not get called");
+		}
 
-      // if there are indices, store them
-      if (axis1 != null)
-      {
-        res.addMetadata(axis1.clone());
-//        final AxesMetadata am = new AxesMetadataImpl();
-//        // keep track of the indices to use in the output
-//        final DoubleDataset outputIndices = (DoubleDataset) axis1.getAxes()[0];
-//        am.initialize(1);
-//        am.setAxis(0, outputIndices);
-//        res.addMetadata(am);
-      }
+		protected String generateName(final NumberDocument inputDoc) {
+			// get the name
+			return getUnaryNameFor(inputDoc.getName());
+		}
 
-      // done
-      return res;
-    }
+		@Override
+		protected Unit<?> getUnits() {
+			// warning - this is only present to meet the API requirements.
+			// Since we over-ride the execute() method, we call our own
+			// performCalc()
+			// operation.
 
-    /**
-     * for unitary operations we only act on a single input. We may be acting on an number of
-     * datasets, so find the relevant one, and re-calculate it
-     */
-    @Override
-    protected void recalculate(final IStoreItem subject)
-    {
-      // TODO: change logic, we should only re-generate the
-      // single output
+			throw new IllegalArgumentException("This method should not get called");
+		}
 
-      // workaround: we don't know which output derives
-      // from this input. So, we will have to regenerate
-      // all outputs
+		protected Unit<?> getUnits(final NumberDocument inputDoc) {
+			// get the unit
+			return getUnaryOutputUnit(inputDoc.getUnits());
+		}
 
-      final Iterator<Document<?>> oIter = getOutputs().iterator();
+		@Override
+		protected IDataset performCalc() {
+			// warning - this is only present to meet the API requirements.
+			// Since we over-ride the execute() method, we call our own
+			// performCalc()
+			// operation.
 
-      // we may be acting separately on multiple inputs.
-      // so, loop through them
-      for (final IStoreItem input : getInputs())
-      {
-        final NumberDocument inputDoc = (NumberDocument) input;
-        final NumberDocument outputDoc = (NumberDocument) oIter.next();
+			throw new IllegalArgumentException("This method should not get called");
+		}
 
-        // ok, process this one.
-        final Unit<?> unit = getUnits(inputDoc);
+		/**
+		 * wrap the actual operation. We're doing this since we need to separate
+		 * it from the core "execute" operation in order to support dynamic
+		 * updates
+		 *
+		 * @param nd
+		 *
+		 * @param unit the units to use
+		 * @param outputs the list of output series
+		 */
+		protected IDataset performCalc(final NumberDocument nd) {
+			final DoubleDataset ds = (DoubleDataset) nd.getDataset();
 
-        // update the units
-        if (outputDoc.getUnits() != unit)
-        {
-          outputDoc.setUnits(unit);
-        }
+			// ok, re-calculate this
+			final Dataset res = calculate(ds);
 
-        // clear the results sets
-        clearOutputs(getOutputs());
+			// store the axes
+			final AxesMetadata axis1 = ds.getFirstMetadata(AxesMetadata.class);
 
-        // start adding values.
-        final IDataset dataset = performCalc(inputDoc);
+			// if there are indices, store them
+			if (axis1 != null) {
+				res.addMetadata(axis1.clone());
+				// final AxesMetadata am = new AxesMetadataImpl();
+				// // keep track of the indices to use in the output
+				// final DoubleDataset outputIndices = (DoubleDataset)
+				// axis1.getAxes()[0];
+				// am.initialize(1);
+				// am.setAxis(0, outputIndices);
+				// res.addMetadata(am);
+			}
 
-        // update the name
-        dataset.setName(generateName(inputDoc));
+			// done
+			return res;
+		}
 
-        // store the data
-        outputDoc.setDataset(dataset);
+		/**
+		 * for unitary operations we only act on a single input. We may be
+		 * acting on an number of datasets, so find the relevant one, and
+		 * re-calculate it
+		 */
+		@Override
+		protected void recalculate(final IStoreItem subject) {
+			// TODO: change logic, we should only re-generate the
+			// single output
 
-        // and fire out the update
-        outputDoc.fireDataChanged();
-      }
-    }
+			// workaround: we don't know which output derives
+			// from this input. So, we will have to regenerate
+			// all outputs
 
-    @Override
-    protected Unit<?> getUnits()
-    {
-      // warning - this is only present to meet the API requirements.
-      // Since we over-ride the execute() method, we call our own performCalc() 
-      // operation.
-      
-      throw new IllegalArgumentException("This method should not get called");
-    }
+			final Iterator<Document<?>> oIter = getOutputs().iterator();
 
-    @Override
-    protected String generateName()
-    {
-      // warning - this is only present to meet the API requirements.
-      // Since we over-ride the execute() method, we call our own performCalc() 
-      // operation.
-      
-      throw new IllegalArgumentException("This method should not get called");
-    }
+			// we may be acting separately on multiple inputs.
+			// so, loop through them
+			for (final IStoreItem input : getInputs()) {
+				final NumberDocument inputDoc = (NumberDocument) input;
+				final NumberDocument outputDoc = (NumberDocument) oIter.next();
 
-    @Override
-    protected IDataset performCalc()
-    {
-      // warning - this is only present to meet the API requirements.
-      // Since we over-ride the execute() method, we call our own performCalc() 
-      // operation.
-      
-      throw new IllegalArgumentException("This method should not get called");
-    }
+				// ok, process this one.
+				final Unit<?> unit = getUnits(inputDoc);
 
-  }
+				// update the units
+				if (outputDoc.getUnits() != unit) {
+					outputDoc.setUnits(unit);
+				}
 
-  private final String _opName;
+				// clear the results sets
+				clearOutputs(getOutputs());
 
-  protected final CollectionComplianceTests aTests =
-      new CollectionComplianceTests();
+				// start adding values.
+				final IDataset dataset = performCalc(inputDoc);
 
-  public UnaryQuantityOperation(final String opName)
-  {
-    _opName = opName;
-  }
+				// update the name
+				dataset.setName(generateName(inputDoc));
 
-  @Override
-  public List<ICommand> actionsFor(final List<IStoreItem> selection,
-      final IStoreGroup destination, final IContext context)
-  {
-    final List<ICommand> res = new ArrayList<ICommand>();
-    if (appliesTo(selection))
-    {
-      final ICommand newC =
-          new UnaryQuantityCommand("Math - " + _opName, "description here",
-              destination, selection, context);
+				// store the data
+				outputDoc.setDataset(dataset);
 
-      res.add(newC);
-    }
+				// and fire out the update
+				outputDoc.fireDataChanged();
+			}
+		}
 
-    return res;
-  }
+	}
 
-  /**
-   * determine if this dataset is suitable
-   * 
-   * @param selection
-   * @return
-   */
-  protected abstract boolean appliesTo(List<IStoreItem> selection);
+	private final String _opName;
 
-  /**
-   * perform the operation on the subject dataset
-   * 
-   * @param input
-   * @return
-   */
-  abstract public Dataset calculate(Dataset input);
+	protected final CollectionComplianceTests aTests = new CollectionComplianceTests();
 
-  public CollectionComplianceTests getATests()
-  {
-    return aTests;
-  }
+	public UnaryQuantityOperation(final String opName) {
+		_opName = opName;
+	}
 
-  public String getName()
-  {
-    return _opName;
-  }
+	@Override
+	public List<ICommand> actionsFor(final List<IStoreItem> selection, final IStoreGroup destination,
+			final IContext context) {
+		final List<ICommand> res = new ArrayList<ICommand>();
+		if (appliesTo(selection)) {
+			final ICommand newC = new UnaryQuantityCommand("Math - " + _opName, "description here", destination,
+					selection, context);
 
-  /**
-   * provide the name for the product dataset
-   * 
-   * @param name
-   * @param name2
-   * @return
-   */
-  protected String getUnaryNameFor(final String name)
-  {
-    return name + ": " + _opName;
-  }
+			res.add(newC);
+		}
 
-  /**
-   * determine the units of the product
-   * 
-   * @param first
-   * @param second
-   * @return
-   */
-  abstract protected Unit<?> getUnaryOutputUnit(Unit<?> first);
+		return res;
+	}
+
+	/**
+	 * determine if this dataset is suitable
+	 *
+	 * @param selection
+	 * @return
+	 */
+	protected abstract boolean appliesTo(List<IStoreItem> selection);
+
+	/**
+	 * perform the operation on the subject dataset
+	 *
+	 * @param input
+	 * @return
+	 */
+	abstract public Dataset calculate(Dataset input);
+
+	public CollectionComplianceTests getATests() {
+		return aTests;
+	}
+
+	public String getName() {
+		return _opName;
+	}
+
+	/**
+	 * provide the name for the product dataset
+	 *
+	 * @param name
+	 * @param name2
+	 * @return
+	 */
+	protected String getUnaryNameFor(final String name) {
+		return name + ": " + _opName;
+	}
+
+	/**
+	 * determine the units of the product
+	 *
+	 * @param first
+	 * @param second
+	 * @return
+	 */
+	abstract protected Unit<?> getUnaryOutputUnit(Unit<?> first);
 
 }

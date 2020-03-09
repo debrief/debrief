@@ -1,21 +1,25 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.bitbucket.es4gwt.shared.elastic.filter;
 
-import static com.google.common.base.Preconditions.*;
-import static org.bitbucket.es4gwt.shared.elastic.filter.Filters.*;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static org.bitbucket.es4gwt.shared.elastic.filter.Filters.allTerms;
+import static org.bitbucket.es4gwt.shared.elastic.filter.Filters.and;
+import static org.bitbucket.es4gwt.shared.elastic.filter.Filters.terms;
 
 import java.util.Collection;
 import java.util.Map;
@@ -42,49 +46,39 @@ public class FilterBuilder {
 		this.terms = ArrayListMultimap.create();
 	}
 
-	public FilterBuilder(Multimap<ElasticFacet, String> terms) {
+	public FilterBuilder(final Multimap<ElasticFacet, String> terms) {
 		this.terms = terms;
-	}
-
-	public FilterBuilder withTerm(ElasticFacet facet, String term) {
-		checkNotNull(facet);
-		checkNotNull(term);
-		terms.put(facet, term);
-		return this;
-	}
-
-	public FilterBuilder filterMode(ElasticFacet facet, FilterMode filterMode) {
-		checkNotNull(facet);
-		checkNotNull(filterMode);
-		filterModes.put(facet, filterMode.name());
-		return this;
-	}
-
-	public boolean isFiltered() {
-		return !terms.isEmpty();
 	}
 
 	public ElasticFilter buildFilter() {
 		return createFilter(terms.keySet());
 	}
 
-	public ElasticFilter buildFilterFor(ElasticFacet facet) {
-		Set<ElasticFacet> otherFacets = Sets.newHashSet(terms.keySet());
+	public ElasticFilter buildFilterFor(final ElasticFacet facet) {
+		final Set<ElasticFacet> otherFacets = Sets.newHashSet(terms.keySet());
 		otherFacets.remove(facet);
 		return createFilter(otherFacets);
 	}
 
-	public ElasticFilter buildFilterOrNullFor(ElasticFacet facet) {
+	public ElasticFilter buildFilterOrNullFor(final ElasticFacet facet) {
 		if (!hasFilterFor(facet))
 			return null;
 		else
 			return buildFilterFor(facet);
 	}
 
-	private ElasticFilter createFilter(Set<ElasticFacet> facets) {
+	public String buildFilterString() {
+		return buildFilter().toRequestString();
+	}
+
+	public String buildFilterStringFor(final ElasticFacet facet) {
+		return buildFilterFor(facet).toRequestString();
+	}
+
+	private ElasticFilter createFilter(final Set<ElasticFacet> facets) {
 		checkArgument(!facets.isEmpty(), "Empty Set");
-		Collection<ElasticFilter> filters = Lists.newArrayList();
-		for (ElasticFacet facet : facets) {
+		final Collection<ElasticFilter> filters = Lists.newArrayList();
+		for (final ElasticFacet facet : facets) {
 			if (getFilterMode(facet).equals(FilterMode.ALL_OF)) {
 				filters.add(allTerms(facet, terms.get(facet)));
 			} else
@@ -93,31 +87,41 @@ public class FilterBuilder {
 		return and(filters);
 	}
 
-	private FilterMode getFilterMode(ElasticFacet facet) {
+	public FilterBuilder filterMode(final ElasticFacet facet, final FilterMode filterMode) {
+		checkNotNull(facet);
+		checkNotNull(filterMode);
+		filterModes.put(facet, filterMode.name());
+		return this;
+	}
+
+	private FilterMode getFilterMode(final ElasticFacet facet) {
 		if (filterModes.containsKey(facet))
 			return FilterMode.valueOf(filterModes.get(facet));
 		else
 			return FilterMode.ANY_OF;
 	}
 
-	public boolean hasFilterFor(ElasticFacet facet) {
+	public boolean hasFilterFor(final ElasticFacet facet) {
 		if (terms.isEmpty())
 			return false;
-		Set<ElasticFacet> keys = terms.keySet();
+		final Set<ElasticFacet> keys = terms.keySet();
 		return !(keys.size() == 1 && keys.contains(facet));
 	}
 
-	public String buildFilterString() {
-		return buildFilter().toRequestString();
-	}
-
-	public String buildFilterStringFor(ElasticFacet facet) {
-		return buildFilterFor(facet).toRequestString();
+	public boolean isFiltered() {
+		return !terms.isEmpty();
 	}
 
 	@Override
 	public String toString() {
 		return buildFilterString();
+	}
+
+	public FilterBuilder withTerm(final ElasticFacet facet, final String term) {
+		checkNotNull(facet);
+		checkNotNull(term);
+		terms.put(facet, term);
+		return this;
 	}
 
 }

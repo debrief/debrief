@@ -1,20 +1,22 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.GUI.Properties.Swing;
 
 // Copyright MWC 1999, Debrief 3 Project
+
 // $RCSfile: SwingEditFrame.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -50,7 +52,6 @@ package MWC.GUI.Properties.Swing;
 // further introduction of SWING components
 //
 
-
 import java.awt.Button;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -69,46 +70,43 @@ import javax.swing.JFrame;
 /////////////////////////////////////////////////////
 // frame to pop up, and allow editing
 ///////////////////////////////////////////////////
-    
-public class SwingEditFrame extends JDialog implements ActionListener
-{
-  /**
-	 * 
+
+public class SwingEditFrame extends JDialog implements ActionListener {
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	protected PropertyEditor _pe;
-  public SwingEditFrame(final JFrame parent, final PropertyEditor pe)
-  {
-    super(parent);
-    _pe = pe;
-    initForm();
-    setBackground(SystemColor.control);
-    final Dimension di = Toolkit.getDefaultToolkit().getScreenSize();
-    final Rectangle dme = getBounds();
-    setLocation( (di.width - dme.width)/2,
-                 (di.height - dme.height)/2);
-    this.addWindowListener(new WindowAdapter(){
-      public void windowClosing(final WindowEvent e)
-      {
-        dispose();
-      }
-      });
-        
-  }
-  public void initForm()
-  {
-    final Component cp = _pe.getCustomEditor();
-    this.getContentPane().add("Center", cp);
-    final Button fin = new Button("Done");
-    fin.addActionListener(this);
-    this.getContentPane().add("South", fin);
-    final Dimension sz = cp.getPreferredSize();
-    setSize(sz.width + 50,
-            sz.height + fin.getPreferredSize().height + 50);
-  }
-      
-  public void actionPerformed(final ActionEvent e)
-  {
-    dispose();
-  }
+
+	public SwingEditFrame(final JFrame parent, final PropertyEditor pe) {
+		super(parent);
+		_pe = pe;
+		initForm();
+		setBackground(SystemColor.control);
+		final Dimension di = Toolkit.getDefaultToolkit().getScreenSize();
+		final Rectangle dme = getBounds();
+		setLocation((di.width - dme.width) / 2, (di.height - dme.height) / 2);
+		this.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(final WindowEvent e) {
+				dispose();
+			}
+		});
+
+	}
+
+	@Override
+	public void actionPerformed(final ActionEvent e) {
+		dispose();
+	}
+
+	public void initForm() {
+		final Component cp = _pe.getCustomEditor();
+		this.getContentPane().add("Center", cp);
+		final Button fin = new Button("Done");
+		fin.addActionListener(this);
+		this.getContentPane().add("South", fin);
+		final Dimension sz = cp.getPreferredSize();
+		setSize(sz.width + 50, sz.height + fin.getPreferredSize().height + 50);
+	}
 }

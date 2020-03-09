@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: CreateVPFLayers.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.3 $
@@ -70,87 +71,87 @@ package MWC.GUI.Tools.Palette;
 import MWC.GUI.ToolParent;
 import MWC.GUI.VPF.VPFDatabase;
 
-public class CreateVPFLayers extends PlainCreate
-{
+public class CreateVPFLayers extends PlainCreate {
 
-  private static MWC.GUI.ToolParent _myParent = null;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-  /** the property name used to store the vpf coastline
-   *
-   */
-  public static final String VPF_DATABASE_PROPERTY = "VPF_DATABASE_DIR";
+	private static MWC.GUI.ToolParent _myParent = null;
 
-  /** the default path we use for the data path
-   *
-   */
+	/**
+	 * the property name used to store the vpf coastline
+	 *
+	 */
+	public static final String VPF_DATABASE_PROPERTY = "VPF_DATABASE_DIR";
+
+	/**
+	 * the default path we use for the data path
+	 *
+	 */
 //  public static final String VPF_PATH_DEFAULT = "f://dnc13";
-  public static final String VPF_PATH_DEFAULT = "f://vpf/vmap_af";
+	public static final String VPF_PATH_DEFAULT = "f://vpf/vmap_af";
 
-	public CreateVPFLayers(final MWC.GUI.ToolParent theParent,
-										final MWC.GUI.Properties.PropertiesPanel thePanel,
-										final MWC.GUI.Layers theData,
-										final BoundsProvider bounds)
-	{
-		super(theParent, thePanel, theData, bounds, "VPF Layers", "images/vpf.png");
-		
-		// are we getting our toolparent initialised?
-		if(theParent != null)
-			_myParent = theParent;
+	public static VPFDatabase createMyLibrary(final boolean autoPopulate) {
+		// create the parent layer which will hold the VPF libraries which we know about
+		VPFDatabase database = null;
+
+		// do we know where our ToolParent is?
+		if (_myParent == null) {
+			MWC.Utilities.Errors.Trace
+					.trace("Unable to create library, since 'Create VPF Layers' tool not initialised");
+			return database;
+		}
+
+		// see if there are any data directories
+		java.util.Map<String, String> paths = _myParent.getPropertiesLike(VPF_DATABASE_PROPERTY);
+
+		// did we get anything
+		if (paths == null) {
+			paths = new java.util.HashMap<String, String>();
+			paths.put("VPF_PATH_DEFAULT", VPF_PATH_DEFAULT);
+		}
+
+		final String[] demo = new String[paths.size()];
+		final String[] the_paths = paths.values().toArray(demo);
+
+		database = createMyLibrary(the_paths, autoPopulate);
+
+		return database;
+
 	}
-	
-	/** initialise the tool, so that it knows where to get it's layers information
-	 * 
+
+	public static VPFDatabase createMyLibrary(final String[] thePaths, final boolean autoPopulate) {
+		VPFDatabase database = null;
+
+		// create the database itself
+		database = new VPFDatabase(thePaths, autoPopulate);
+
+		return database;
+	}
+
+	/**
+	 * initialise the tool, so that it knows where to get it's layers information
+	 *
 	 * @param theParent
 	 */
-	public static void initialise(final ToolParent theParent)
-	{
+	public static void initialise(final ToolParent theParent) {
 		_myParent = theParent;
 	}
 
-  protected MWC.GUI.Plottable createItem()
-  {
-    return createMyLibrary(true);
-  }
+	public CreateVPFLayers(final MWC.GUI.ToolParent theParent, final MWC.GUI.Properties.PropertiesPanel thePanel,
+			final MWC.GUI.Layers theData, final BoundsProvider bounds) {
+		super(theParent, thePanel, theData, bounds, "VPF Layers", "images/vpf.png");
 
-  public static VPFDatabase createMyLibrary(final String[] thePaths, final boolean autoPopulate)
-  {
-    VPFDatabase database = null;
+		// are we getting our toolparent initialised?
+		if (theParent != null)
+			_myParent = theParent;
+	}
 
-    // create the database itself
-    database = new VPFDatabase(thePaths, autoPopulate);
-
-    return database;
-  }
-
-	public static VPFDatabase createMyLibrary(final boolean autoPopulate)
-	{
-    // create the parent layer which will hold the VPF libraries which we know about
-    VPFDatabase database = null;
-
-    // do we know where our ToolParent is?
-    if(_myParent == null)
-    {
-      MWC.Utilities.Errors.Trace.trace("Unable to create library, since 'Create VPF Layers' tool not initialised");
-      return database;
-    }
-
-    // see if there are any data directories
-    java.util.Map<String, String> paths = _myParent.getPropertiesLike(VPF_DATABASE_PROPERTY);
-
-    // did we get anything
-    if(paths == null)
-    {
-      paths = new java.util.HashMap<String, String>();
-      paths.put("VPF_PATH_DEFAULT", VPF_PATH_DEFAULT);
-  	}
-
-    final String [] demo = new String[paths.size()];
-    final String [] the_paths = paths.values().toArray(demo);
-
-    database = createMyLibrary(the_paths, autoPopulate);
-
-    return database;
-
+	@Override
+	protected MWC.GUI.Plottable createItem() {
+		return createMyLibrary(true);
 	}
 
 }

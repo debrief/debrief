@@ -1,171 +1,165 @@
 package edu.nps.moves.dis7;
 
-import java.util.*;
-import java.io.*;
-import edu.nps.moves.disenum.*;
-import edu.nps.moves.disutil.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
 
 /**
  * more laconically named EntityIdentifier
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class EntityID extends Object implements Serializable
-{
-   /** Site ID */
-   protected int  siteID;
+public class EntityID extends Object implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   /** application number ID */
-   protected int  applicationID;
+	/** Site ID */
+	protected int siteID;
 
-   /** Entity number ID */
-   protected int  entityID;
+	/** application number ID */
+	protected int applicationID;
 
+	/** Entity number ID */
+	protected int entityID;
 
-/** Constructor */
- public EntityID()
- {
- }
+	/** Constructor */
+	public EntityID() {
+	}
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-   marshalSize = marshalSize + 2;  // siteID
-   marshalSize = marshalSize + 2;  // applicationID
-   marshalSize = marshalSize + 2;  // entityID
+		if (this == obj) {
+			return true;
+		}
 
-   return marshalSize;
-}
+		if (obj == null) {
+			return false;
+		}
 
+		if (getClass() != obj.getClass())
+			return false;
 
-public void setSiteID(int pSiteID)
-{ siteID = pSiteID;
-}
+		return equalsImpl(obj);
+	}
 
-public int getSiteID()
-{ return siteID; 
-}
+	/**
+	 * Compare all fields that contribute to the state, ignoring transient and
+	 * static fields, for <code>this</code> and the supplied object
+	 *
+	 * @param obj the object to compare to
+	 * @return true if the objects are equal, false otherwise.
+	 */
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-public void setApplicationID(int pApplicationID)
-{ applicationID = pApplicationID;
-}
+		if (!(obj instanceof EntityID))
+			return false;
 
-public int getApplicationID()
-{ return applicationID; 
-}
+		final EntityID rhs = (EntityID) obj;
 
-public void setEntityID(int pEntityID)
-{ entityID = pEntityID;
-}
+		if (!(siteID == rhs.siteID))
+			ivarsEqual = false;
+		if (!(applicationID == rhs.applicationID))
+			ivarsEqual = false;
+		if (!(entityID == rhs.entityID))
+			ivarsEqual = false;
 
-public int getEntityID()
-{ return entityID; 
-}
+		return ivarsEqual;
+	}
 
+	public int getApplicationID() {
+		return applicationID;
+	}
 
-public void marshal(DataOutputStream dos)
-{
-    try 
-    {
-       dos.writeShort( (short)siteID);
-       dos.writeShort( (short)applicationID);
-       dos.writeShort( (short)entityID);
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+	public int getEntityID() {
+		return entityID;
+	}
 
-public void unmarshal(DataInputStream dis)
-{
-    try 
-    {
-       siteID = (int)dis.readUnsignedShort();
-       applicationID = (int)dis.readUnsignedShort();
-       entityID = (int)dis.readUnsignedShort();
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
+		marshalSize = marshalSize + 2; // siteID
+		marshalSize = marshalSize + 2; // applicationID
+		marshalSize = marshalSize + 2; // entityID
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
-       buff.putShort( (short)siteID);
-       buff.putShort( (short)applicationID);
-       buff.putShort( (short)entityID);
-    } // end of marshal method
+		return marshalSize;
+	}
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       siteID = (int)(buff.getShort() & 0xFFFF);
-       applicationID = (int)(buff.getShort() & 0xFFFF);
-       entityID = (int)(buff.getShort() & 0xFFFF);
- } // end of unmarshal method 
+	public int getSiteID() {
+		return siteID;
+	}
 
+	public void marshal(final DataOutputStream dos) {
+		try {
+			dos.writeShort((short) siteID);
+			dos.writeShort((short) applicationID);
+			dos.writeShort((short) entityID);
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	public void marshal(final java.nio.ByteBuffer buff) {
+		buff.putShort((short) siteID);
+		buff.putShort((short) applicationID);
+		buff.putShort((short) entityID);
+	} // end of marshal method
 
-    if(this == obj){
-      return true;
-    }
+	public void setApplicationID(final int pApplicationID) {
+		applicationID = pApplicationID;
+	}
 
-    if(obj == null){
-       return false;
-    }
+	public void setEntityID(final int pEntityID) {
+		entityID = pEntityID;
+	}
 
-    if(getClass() != obj.getClass())
-        return false;
+	public void setSiteID(final int pSiteID) {
+		siteID = pSiteID;
+	}
 
-    return equalsImpl(obj);
- }
+	public void unmarshal(final DataInputStream dis) {
+		try {
+			siteID = dis.readUnsignedShort();
+			applicationID = dis.readUnsignedShort();
+			entityID = dis.readUnsignedShort();
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
- /**
-  * Compare all fields that contribute to the state, ignoring
- transient and static fields, for <code>this</code> and the supplied object
-  * @param obj the object to compare to
-  * @return true if the objects are equal, false otherwise.
-  */
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
-
-    if(!(obj instanceof EntityID))
-        return false;
-
-     final EntityID rhs = (EntityID)obj;
-
-     if( ! (siteID == rhs.siteID)) ivarsEqual = false;
-     if( ! (applicationID == rhs.applicationID)) ivarsEqual = false;
-     if( ! (entityID == rhs.entityID)) ivarsEqual = false;
-
-    return ivarsEqual;
- }
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		siteID = buff.getShort() & 0xFFFF;
+		applicationID = buff.getShort() & 0xFFFF;
+		entityID = buff.getShort() & 0xFFFF;
+	} // end of unmarshal method
 } // end of class

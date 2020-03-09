@@ -14,16 +14,6 @@
  *****************************************************************************/
 package info.limpet.operations.admin;
 
-import info.limpet.ICommand;
-import info.limpet.IContext;
-import info.limpet.IDocument;
-import info.limpet.IStoreGroup;
-import info.limpet.IStoreItem;
-import info.limpet.impl.NumberDocument;
-import info.limpet.operations.arithmetic.BinaryQuantityOperation;
-import info.limpet.operations.arithmetic.InterpolatedMaths;
-import info.limpet.operations.arithmetic.InterpolatedMaths.IOperationPerformer;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -36,156 +26,138 @@ import org.eclipse.january.dataset.IDataset;
 import org.eclipse.january.metadata.AxesMetadata;
 import org.eclipse.january.metadata.internal.AxesMetadataImpl;
 
-public class CreateNewIndexedDatafileOperation extends BinaryQuantityOperation
-{
+import info.limpet.ICommand;
+import info.limpet.IContext;
+import info.limpet.IDocument;
+import info.limpet.IStoreGroup;
+import info.limpet.IStoreItem;
+import info.limpet.impl.NumberDocument;
+import info.limpet.operations.arithmetic.BinaryQuantityOperation;
+import info.limpet.operations.arithmetic.InterpolatedMaths;
+import info.limpet.operations.arithmetic.InterpolatedMaths.IOperationPerformer;
 
-  public class NewIndexedDatasetCommand extends BinaryQuantityCommand
-  {
-    public NewIndexedDatasetCommand(final String name,
-        final List<IStoreItem> selection, final IStoreGroup store,
-        final IContext context)
-    {
-      this(name, selection, store, null, context);
-    }
+public class CreateNewIndexedDatafileOperation extends BinaryQuantityOperation {
 
-    public NewIndexedDatasetCommand(final String name,
-        final List<IStoreItem> selection, final IStoreGroup destination,
-        final IDocument<?> timeProvider, final IContext context)
-    {
-      super(name, "Reindex dataset", destination, false, false, selection,
-          timeProvider, context);
-    }
+	public class NewIndexedDatasetCommand extends BinaryQuantityCommand {
+		public NewIndexedDatasetCommand(final String name, final List<IStoreItem> selection, final IStoreGroup store,
+				final IContext context) {
+			this(name, selection, store, null, context);
+		}
 
-    @Override
-    protected void assignOutputIndices(final IDataset output,
-        final Dataset outputIndices)
-    {
-      // ok, we don't do this, we want to take charge of the output indices
-    }
+		public NewIndexedDatasetCommand(final String name, final List<IStoreItem> selection,
+				final IStoreGroup destination, final IDocument<?> timeProvider, final IContext context) {
+			super(name, "Reindex dataset", destination, false, false, selection, timeProvider, context);
+		}
 
-    @Override
-    protected String getBinaryNameFor(final String name1, final String name2)
-    {
-      return "Composite of " + name1 + " and " + name2;
-    }
+		@Override
+		protected void assignOutputIndices(final IDataset output, final Dataset outputIndices) {
+			// ok, we don't do this, we want to take charge of the output
+			// indices
+		}
 
-    @Override
-    protected Unit<?> getBinaryOutputUnit(final Unit<?> first,
-        final Unit<?> second)
-    {
-      // return product of units
-      return first.times(second);
-    }
+		@Override
+		protected String getBinaryNameFor(final String name1, final String name2) {
+			return "Composite of " + name1 + " and " + name2;
+		}
 
-    @Override
-    protected IOperationPerformer getOperation()
-    {
-      return new InterpolatedMaths.IOperationPerformer()
-      {
-        @Override
-        public Dataset
-            perform(final Dataset a, final Dataset b, final Dataset o)
-        {
-          // ok, we're going to use dataset a as the new index units,
-          // so we've just got to set them in a copy of b
-          final Dataset output = b.clone();
+		@Override
+		protected Unit<?> getBinaryOutputUnit(final Unit<?> first, final Unit<?> second) {
+			// return product of units
+			return first.times(second);
+		}
 
-          // clear any existing metadata
-          output.clearMetadata(AxesMetadata.class);
+		@Override
+		protected IOperationPerformer getOperation() {
+			return new InterpolatedMaths.IOperationPerformer() {
+				@Override
+				public Dataset perform(final Dataset a, final Dataset b, final Dataset o) {
+					// ok, we're going to use dataset a as the new index units,
+					// so we've just got to set them in a copy of b
+					final Dataset output = b.clone();
 
-          // now store the new metadata
-          final AxesMetadata am = new AxesMetadataImpl();
-          am.initialize(1);
-          am.setAxis(0, a);
-          output.addMetadata(am);
+					// clear any existing metadata
+					output.clearMetadata(AxesMetadata.class);
 
-          return output;
-        }
-      };
-    }
+					// now store the new metadata
+					final AxesMetadata am = new AxesMetadataImpl();
+					am.initialize(1);
+					am.setAxis(0, a);
+					output.addMetadata(am);
 
-    @Override
-    protected Unit<?> getUnits()
-    {
-      // ok, now set the index units
-      final NumberDocument index = (NumberDocument) getInputs().get(1);
-      return index.getUnits();
-    }
+					return output;
+				}
+			};
+		}
 
-    @Override
-    protected void tidyOutput(final NumberDocument output)
-    {
-      super.tidyOutput(output);
+		@Override
+		protected Unit<?> getUnits() {
+			// ok, now set the index units
+			final NumberDocument index = (NumberDocument) getInputs().get(1);
+			return index.getUnits();
+		}
 
-      // ok, now set the index units
-      final NumberDocument index = (NumberDocument) getInputs().get(0);
-      final Unit<?> indUnits = index.getUnits();
+		@Override
+		protected void tidyOutput(final NumberDocument output) {
+			super.tidyOutput(output);
 
-      // and store them
-      output.setIndexUnits(indUnits);
-    }
-  }
+			// ok, now set the index units
+			final NumberDocument index = (NumberDocument) getInputs().get(0);
+			final Unit<?> indUnits = index.getUnits();
 
-  @Override
-  public List<ICommand> actionsFor(final List<IStoreItem> selection,
-      final IStoreGroup destination, final IContext context)
-  {
-    final List<ICommand> res = new ArrayList<ICommand>();
-    if (appliesTo(selection))
-    {
-      // aah, what about temporal (interpolated) values?
-      addInterpolatedCommands(selection, destination, res, context);
-    }
-    return res;
-  }
+			// and store them
+			output.setIndexUnits(indUnits);
+		}
+	}
 
-  @Override
-  protected void addIndexedCommands(final List<IStoreItem> selection,
-      final IStoreGroup destination, final Collection<ICommand> res,
-      final IContext context)
-  {
-    throw new RuntimeException(
-        "This operation doesn't support indexed operations");
-  }
+	@Override
+	public List<ICommand> actionsFor(final List<IStoreItem> selection, final IStoreGroup destination,
+			final IContext context) {
+		final List<ICommand> res = new ArrayList<ICommand>();
+		if (appliesTo(selection)) {
+			// aah, what about temporal (interpolated) values?
+			addInterpolatedCommands(selection, destination, res, context);
+		}
+		return res;
+	}
 
-  @Override
-  protected void addInterpolatedCommands(final List<IStoreItem> selection,
-      final IStoreGroup destination, final Collection<ICommand> res,
-      final IContext context)
-  {
-    final IDocument<?> longest = getLongestIndexedCollection(selection);
+	@Override
+	protected void addIndexedCommands(final List<IStoreItem> selection, final IStoreGroup destination,
+			final Collection<ICommand> res, final IContext context) {
+		throw new RuntimeException("This operation doesn't support indexed operations");
+	}
 
-    if (longest != null)
-    {
-      final NumberDocument coll1 = (NumberDocument) selection.get(0);
-      final NumberDocument coll2 = (NumberDocument) selection.get(1);
+	@Override
+	protected void addInterpolatedCommands(final List<IStoreItem> selection, final IStoreGroup destination,
+			final Collection<ICommand> res, final IContext context) {
+		final IDocument<?> longest = getLongestIndexedCollection(selection);
 
-      ICommand newC =
-          new NewIndexedDatasetCommand("Create new document, indexed on:"
-              + coll1, selection, destination, longest, context);
-      res.add(newC);
+		if (longest != null) {
+			final NumberDocument coll1 = (NumberDocument) selection.get(0);
+			final NumberDocument coll2 = (NumberDocument) selection.get(1);
 
-      final ArrayList<IStoreItem> newSel = new ArrayList<IStoreItem>(selection);
-      Collections.reverse(newSel);
+			ICommand newC = new NewIndexedDatasetCommand("Create new document, indexed on:" + coll1, selection,
+					destination, longest, context);
+			res.add(newC);
 
-      // ok, now reverse the selection
-      newC =
-          new NewIndexedDatasetCommand("Create new document, indexed on:"
-              + coll2, newSel, destination, longest, context);
-      res.add(newC);
+			final ArrayList<IStoreItem> newSel = new ArrayList<IStoreItem>(selection);
+			Collections.reverse(newSel);
 
-    }
-  }
+			// ok, now reverse the selection
+			newC = new NewIndexedDatasetCommand("Create new document, indexed on:" + coll2, newSel, destination,
+					longest, context);
+			res.add(newC);
 
-  @Override
-  protected boolean appliesTo(final List<IStoreItem> selection)
-  {
-    final boolean nonEmpty = getATests().nonEmpty(selection);
-    final boolean correctNum = getATests().exactNumber(selection, 2);
-    final boolean allQuantity = getATests().allQuantity(selection);
-    final boolean commonIndex = getATests().allEqualIndexed(selection);
+		}
+	}
 
-    return nonEmpty && correctNum && allQuantity && commonIndex;
-  }
+	@Override
+	protected boolean appliesTo(final List<IStoreItem> selection) {
+		final boolean nonEmpty = getATests().nonEmpty(selection);
+		final boolean correctNum = getATests().exactNumber(selection, 2);
+		final boolean allQuantity = getATests().allQuantity(selection);
+		final boolean commonIndex = getATests().allEqualIndexed(selection);
+
+		return nonEmpty && correctNum && allQuantity && commonIndex;
+	}
 
 }

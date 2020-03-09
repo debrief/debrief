@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package com.planetmayo.debrief.satc.support;
 
 import java.util.ArrayList;
@@ -36,83 +37,175 @@ import com.vividsolutions.jts.geom.Point;
 
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
-public class TestSupport
-{
-	private ArrayList<State> _targetSolution;
+public class TestSupport {
+	public static String asGeoJSON(final String title, final Coordinate[] pts) {
+		String res = "";
+		final String newLine = System.getProperty("line.separator");
 
-	public List<State> loadSolutionTrack()
-	{
-		if (_targetSolution != null)
-			return _targetSolution;
+		// sort out the feature
+		String coordsStr = "";
+		for (int i = 0; i < pts.length; i++) {
+			final Coordinate coordinate = pts[i];
 
-		ArrayList<String> lines = getSolution();
-
-		_targetSolution = new ArrayList<State>();
-		// load from this source
-		// ;;IGNORE YYMMDD HHMMSS IGNORE IGNORE LAT_DEG LAT_MIN LAT_SEC LAT_HEM
-		// LONG_DEG LONG_MIN LONG_SEC LONG_HEM CRSE SPED DEPTH
-		// 100112 121329 SENSOR @A 0 3 57.38 S 30 0 8.65 W 1.5 15000
-
-		// Read File Line By Line
-		for (String strLine : lines)
-		{
-			// hey, is this a comment line?
-			if (strLine.startsWith(";;"))
-			{
-				continue;
+			if (i > 0) {
+				coordsStr += ", ";
 			}
-			// ok, get parseing it
-			String[] elements = strLine.split("\\s+");
-
-			// now the date
-			String date = elements[0];
-
-			// and the time
-			String time = elements[1];
-
-			String latDegs = elements[4];
-			String latMins = elements[5];
-			String latSecs = elements[6];
-			String latHemi = elements[7];
-
-			String lonDegs = elements[8];
-			String lonMins = elements[9];
-			String lonSecs = elements[10];
-			String lonHemi = elements[11];
-
-			// and the course
-			String course = elements[13];
-
-			// and the speed
-			String speed = elements[14];
-
-			// ok,now construct the date=time
-			Date theDate = ObjectUtils.safeParseDate(new GMTDateFormat(
-					"yyMMdd HHmmss"), date + " " + time);
-
-			// and the location
-			double lat = Double.valueOf(latDegs) + Double.valueOf(latMins) / 60d
-					+ Double.valueOf(latSecs) / 60d / 60d;
-			if (latHemi.toUpperCase().equals("S"))
-				lat = -lat;
-			double lon = Double.valueOf(lonDegs) + Double.valueOf(lonMins) / 60d
-					+ Double.valueOf(lonSecs) / 60d / 60d;
-			if (lonHemi.toUpperCase().equals("W"))
-				lon = -lon;
-
-			Point pt = GeoSupport.getFactory().createPoint(new Coordinate(lat, lon));
-			State newS = new State(theDate, pt,
-					Math.toRadians(Double.valueOf(course)), GeoSupport.kts2MSec(Double
-							.valueOf(speed)));
-			_targetSolution.add(newS);
-
+			coordsStr += "[" + newLine;
+			coordsStr += coordinate.x + "," + newLine;
+			coordsStr += coordinate.y + newLine;
+			coordsStr += "]" + newLine;
 		}
 
-		return _targetSolution;
+		res = "{   " + " \"type\": \"FeatureCollection\"," + newLine + " \"features\": [{" + newLine
+				+ "\"type\": \"Feature\"," + newLine + " \"geometry\": {" + newLine + "   \"type\": \"LineString\","
+				+ newLine + "   \"coordinates\": [" + newLine + coordsStr + newLine + "  ]" + newLine + " }," + newLine
+				+ " \"properties\": {" + newLine + "  \"name\": \"" + title + "\"," + newLine + " }" + newLine + "}]"
+				+ newLine + "}";
+
+		return res;
 	}
 
-	private static ArrayList<String> getSolution()
-	{
+	public static ArrayList<String> getFreqDataOne() {
+		// and put them into an array list
+		final ArrayList<String> rows = new ArrayList<String>();
+		rows.add(
+				";SENSOR2: 100112 131000 SENSOR @A 60 09 44.84 N 000 01 27.17 W NULL NULL 150.069 0000 NB_FREQ SUBJECT held on NB_FREQ");
+		rows.add(
+				";SENSOR2: 100112 131050 SENSOR @A 60 09 43.01 N 000 01 29.15 W NULL NULL 150.048 0000 NB_FREQ SUBJECT held on NB_FREQ");
+		rows.add(
+				";SENSOR2: 100112 131140 SENSOR @A 60 09 41.17 N 000 01 31.13 W NULL NULL 150.027 0000 NB_FREQ SUBJECT held on NB_FREQ");
+		rows.add(
+				";SENSOR2: 100112 131230 SENSOR @A 60 09 39.33 N 000 01 33.11 W NULL NULL 150.005 0000 NB_FREQ SUBJECT held on NB_FREQ");
+		rows.add(
+				";SENSOR2: 100112 131320 SENSOR @A 60 09 37.50 N 000 01 35.09 W NULL NULL 149.984 0000 NB_FREQ SUBJECT held on NB_FREQ");
+		rows.add(
+				";SENSOR2: 100112 131410 SENSOR @A 60 09 35.66 N 000 01 37.06 W NULL NULL 149.963 0000 NB_FREQ SUBJECT held on NB_FREQ");
+		rows.add(
+				";SENSOR2: 100112 131500 SENSOR @A 60 09 33.83 N 000 01 39.04 W NULL NULL 149.941 0000 NB_FREQ SUBJECT held on NB_FREQ");
+		rows.add(
+				";SENSOR2: 100112 131550 SENSOR @A 60 09 31.99 N 000 01 41.02 W NULL NULL 149.921 0000 NB_FREQ SUBJECT held on NB_FREQ");
+		rows.add(
+				";SENSOR2: 100112 131640 SENSOR @A 60 09 30.15 N 000 01 43.00 W NULL NULL 149.900 0000 NB_FREQ SUBJECT held on NB_FREQ");
+		rows.add(
+				";SENSOR2: 100112 131730 SENSOR @A 60 09 28.32 N 000 01 44.98 W NULL NULL 149.880 0000 NB_FREQ SUBJECT held on NB_FREQ");
+		rows.add(
+				";SENSOR2: 100112 131820 SENSOR @A 60 09 26.48 N 000 01 46.96 W NULL NULL 149.861 0000 NB_FREQ SUBJECT held on NB_FREQ");
+		rows.add(
+				";SENSOR2: 100112 131910 SENSOR @A 60 09 24.64 N 000 01 48.93 W NULL NULL 149.842 0000 NB_FREQ SUBJECT held on NB_FREQ");
+		rows.add(
+				";SENSOR2: 100112 132000 SENSOR @A 60 09 22.81 N 000 01 50.91 W NULL NULL 149.824 0000 NB_FREQ SUBJECT held on NB_FREQ");
+
+		return rows;
+	}
+
+	public static ArrayList<String> getFreqDataTwo() {
+		// and put them into an array list
+		final ArrayList<String> rows = new ArrayList<String>();
+		rows.add(
+				";SENSOR2: 100112 133500 SENSOR @A 60 09 32.08 N 000 02 40.66 W NULL NULL 149.759 0000 NB_FREQ SUBJECT held on NB_FREQ");
+		rows.add(
+				";SENSOR2: 100112 133550 SENSOR @A 60 09 34.15 N 000 02 41.08 W NULL NULL 149.757 0000 NB_FREQ SUBJECT held on NB_FREQ");
+		rows.add(
+				";SENSOR2: 100112 133640 SENSOR @A 60 09 36.22 N 000 02 41.50 W NULL NULL 149.755 0000 NB_FREQ SUBJECT held on NB_FREQ");
+		rows.add(
+				";SENSOR2: 100112 133730 SENSOR @A 60 09 38.30 N 000 02 41.91 W NULL NULL 149.753 0000 NB_FREQ SUBJECT held on NB_FREQ");
+		rows.add(
+				";SENSOR2: 100112 133820 SENSOR @A 60 09 40.37 N 000 02 42.33 W NULL NULL 149.752 0000 NB_FREQ SUBJECT held on NB_FREQ");
+		rows.add(
+				";SENSOR2: 100112 133910 SENSOR @A 60 09 42.44 N 000 02 42.74 W NULL NULL 149.750 0000 NB_FREQ SUBJECT held on NB_FREQ");
+		rows.add(
+				";SENSOR2: 100112 134000 SENSOR @A 60 09 44.52 N 000 02 43.16 W NULL NULL 149.748 0000 NB_FREQ SUBJECT held on NB_FREQ");
+
+		return rows;
+	}
+
+	public static ArrayList<String> getLongData() {
+		final ArrayList<String> rows = new ArrayList<String>();
+
+		rows.add(
+				";;IGNORE	YYMMDD	HHMMSS	IGNORE	IGNORE	LAT_DEG	LAT_MIN	LAT_SEC	LAT_HEM	LONG_DEG	LONG_MIN	LONG_SEC	LONG_HEM	BEARING	MAX_RNG");
+		rows.add(";SENSOR:	100112	121329	SENSOR	@A	0	3	57.38	S	30	0	8.65	W	1.5	15000");
+		rows.add(";SENSOR:	100112	121359	SENSOR	@A	0	3	52.31	S	30	0	11.09	W	1.1	15000");
+		rows.add(";SENSOR:	100112	121429	SENSOR	@A	0	3	51.7	S	30	0	16.99	W	1.4	15000");
+		rows.add(";SENSOR:	100112	121459	SENSOR	@A	0	3	51.7	S	30	0	22.99	W	1.8	15000");
+		rows.add(";SENSOR:	100112	121529	SENSOR	@A	0	3	51.7	S	30	0	28.99	W	2.2	15000");
+		rows.add(";SENSOR:	100112	121559	SENSOR	@A	0	3	51.7	S	30	0	34.99	W	2.5	15000");
+		rows.add(";SENSOR:	100112	121629	SENSOR	@A	0	3	51.7	S	30	0	40.99	W	2.9	15000");
+		rows.add(";SENSOR:	100112	121644	SENSOR	@A	0	3	51.7	S	30	0	43.99	W	3.1	15000");
+		rows.add(";SENSOR:	100112	121744	SENSOR	@A	0	3	51.7	S	30	0	55.99	W	3.8	15000");
+		rows.add(";SENSOR:	100112	121814	SENSOR	@A	0	3	51.7	S	30	1	1.99	W	4.2	15000");
+		rows.add(";SENSOR:	100112	121929	SENSOR	@A	0	3	42.55	S	30	1	10.68	W	3.7	15000");
+		rows.add(";SENSOR:	100112	122029	SENSOR	@A	0	3	30.74	S	30	1	12.76	W	2	15000");
+		rows.add(";SENSOR:	100112	122129	SENSOR	@A	0	3	16.96	S	30	1	15.19	W	0.3	15000");
+		rows.add(";SENSOR:	100112	122229	SENSOR	@A	0	3	3.18	S	30	1	17.62	W	-1.8	15000");
+		rows.add(";SENSOR:	100112	122329	SENSOR	@A	0	2	49.39	S	30	1	20.05	W	-4.1	15000");
+		rows.add(";SENSOR:	100112	122429	SENSOR	@A	0	2	35.6	S	30	1	22.48	W	-6.9	15000");
+		rows.add(";SENSOR:	100112	122529	SENSOR	@A	0	2	21.82	S	30	1	24.91	W	-10.1	15000");
+		rows.add(";SENSOR:	100112	122629	SENSOR	@A	0	2	8.03	S	30	1	27.34	W	-14	15000");
+		rows.add(";SENSOR:	100112	122729	SENSOR	@A	0	1	54.24	S	30	1	29.78	W	-18.6	15000");
+		rows.add(";SENSOR:	100112	122829	SENSOR	@A	0	1	40.45	S	30	1	32.21	W	-24.2	15000");
+		rows.add(";SENSOR:	100112	122929	SENSOR	@A	0	1	26.46	S	30	1	32.28	W	-32	15000");
+		rows.add(";SENSOR:	100112	123029	SENSOR	@A	0	1	12.46	S	30	1	32.28	W	-41	15000");
+		rows.add(";SENSOR:	100112	123129	SENSOR	@A	0	1	0.29	S	30	1	36.37	W	-48.4	15000");
+		rows.add(";SENSOR:	100112	123229	SENSOR	@A	0	0	53.29	S	30	1	48.49	W	-50.6	15000");
+		rows.add(";SENSOR:	100112	123329	SENSOR	@A	0	0	46.29	S	30	2	0.61	W	-55.3	15000");
+		rows.add(";SENSOR:	100112	123429	SENSOR	@A	0	0	39.29	S	30	2	12.74	W	-62.5	15000");
+		rows.add(";SENSOR:	100112	123529	SENSOR	@A	0	0	32.29	S	30	2	24.86	W	-73	15000");
+		rows.add(";SENSOR:	100112	123629	SENSOR	@A	0	0	25.29	S	30	2	36.99	W	-88.1	15000");
+		rows.add(";SENSOR:	100112	123729	SENSOR	@A	0	0	18.29	S	30	2	49.11	W	-108	15000");
+		rows.add(";SENSOR:	100112	123829	SENSOR	@A	0	0	11.29	S	30	3	1.24	W	-129.2	15000");
+		rows.add(";SENSOR:	100112	123929	SENSOR	@A	0	0	5.39	S	30	3	13.71	W	-146.5	15000");
+		rows.add(";SENSOR:	100112	124029	SENSOR	@A	0	0	5.39	S	30	3	27.71	W	-158.7	15000");
+		rows.add(";SENSOR:	100112	124129	SENSOR	@A	0	0	5.39	S	30	3	41.71	W	-169.3	15000");
+		rows.add(";SENSOR:	100112	124229	SENSOR	@A	0	0	5.39	S	30	3	49.87	W	-172.3	15000");
+		rows.add(";SENSOR:	100112	124329	SENSOR	@A	0	0	5.39	S	30	3	57.87	W	-174.6	15000");
+		rows.add(";SENSOR:	100112	124429	SENSOR	@A	0	0	8.65	S	30	4	4.46	W	-175.1	15000");
+		rows.add(";SENSOR:	100112	124529	SENSOR	@A	0	0	16.62	S	30	4	4.73	W	-169.8	15000");
+		rows.add(";SENSOR:	100112	124629	SENSOR	@A	0	0	24.62	S	30	4	4.73	W	-164.2	15000");
+		rows.add(";SENSOR:	100112	124729	SENSOR	@A	0	0	36.96	S	30	4	4.73	W	-157.1	15000");
+		rows.add(";SENSOR:	100112	124829	SENSOR	@A	0	0	50.96	S	30	4	4.73	W	-148.6	15000");
+		rows.add(";SENSOR:	100112	124929	SENSOR	@A	0	1	4.96	S	30	4	4.73	W	-139	15000");
+		rows.add(";SENSOR:	100112	125029	SENSOR	@A	0	1	18.96	S	30	4	4.73	W	-129	15000");
+		rows.add(";SENSOR:	100112	125129	SENSOR	@A	0	1	32.96	S	30	4	4.73	W	-119	15000");
+		rows.add(";SENSOR:	100112	125229	SENSOR	@A	0	1	46.96	S	30	4	4.73	W	-109.6	15000");
+		rows.add(";SENSOR:	100112	125329	SENSOR	@A	0	2	0.96	S	30	4	4.73	W	-101.2	15000");
+		rows.add(";SENSOR:	100112	125429	SENSOR	@A	0	2	12.21	S	30	4	12.68	W	-97	15000");
+		rows.add(";SENSOR:	100112	125529	SENSOR	@A	0	2	22.94	S	30	4	21.68	W	-93.1	15000");
+		rows.add(";SENSOR:	100112	125629	SENSOR	@A	0	2	33.66	S	30	4	30.68	W	-88.8	15000");
+		rows.add(";SENSOR:	100112	125744	SENSOR	@A	0	2	49.98	S	30	4	36.93	W	-80.5	15000");
+		rows.add(";SENSOR:	100112	125829	SENSOR	@A	0	2	59.84	S	30	4	40.52	W	-75.9	15000");
+		rows.add(";SENSOR:	100112	125914	SENSOR	@A	0	3	9.71	S	30	4	44.11	W	-71.7	15000");
+		rows.add(";SENSOR:	100112	130014	SENSOR	@A	0	3	22.42	S	30	4	49.71	W	-66.6	15000");
+		rows.add(";SENSOR:	100112	130129	SENSOR	@A	0	3	35.82	S	30	5	0.96	W	-61	15000");
+		rows.add(";SENSOR:	100112	130229	SENSOR	@A	0	3	46.55	S	30	5	9.96	W	-56.5	15000");
+		rows.add(";SENSOR:	100112	130329	SENSOR	@A	0	3	57.27	S	30	5	18.95	W	-52	15000");
+		rows.add(";SENSOR:	100112	130429	SENSOR	@A	0	4	8	S	30	5	27.95	W	-47.5	15000");
+		rows.add(";SENSOR:	100112	130529	SENSOR	@A	0	4	18.72	S	30	5	36.95	W	-43.2	15000");
+
+		return rows;
+	}
+
+	public static ArrayList<String> getShortData() {
+		// and put them into an array list
+		final ArrayList<String> rows = new ArrayList<String>();
+		rows.add(
+				";;IGNORE	YYMMDD	HHMMSS	IGNORE	IGNORE	LAT_DEG	LAT_MIN	LAT_SEC	LAT_HEM	LONG_DEG	LONG_MIN	LONG_SEC	LONG_HEM	BEARING	MAX_RNG");
+		rows.add(";SENSOR:	100112	121329	SENSOR	@A	0	3	57.38	S	30	0	8.65	W	1.5	15000");
+		// rows.add(";SENSOR: 100112 121459 SENSOR @A 0 3 51.7 S 30 0 22.99 W 1.8
+		// 15000");
+		rows.add(";SENSOR:	100112	121529	SENSOR	@A	0	3	51.7	S	30	0	28.99	W	2.2	15000");
+		// rows.add(";SENSOR: 100112 121644 SENSOR @A 0 3 51.7 S 30 0 43.99 W 3.1
+		// 15000");
+		rows.add(";SENSOR:	100112	121744	SENSOR	@A	0	3	51.7	S	30	0	55.99	W	3.8	15000");
+		// rows.add(";SENSOR: 100112 122029 SENSOR @A 0 3 30.74 S 30 1 12.76 W 2
+		// 15000");
+		rows.add(";SENSOR:	100112	122129	SENSOR	@A	0	3	16.96	S	30	1	15.19	W	0.3	15000");
+		rows.add(";SENSOR:	100112	122429	SENSOR	@A	0	2	35.6	S	30	1	22.48	W	-6.9	15000");
+
+		return rows;
+	}
+
+	private static ArrayList<String> getSolution() {
 		final ArrayList<String> rows = new ArrayList<String>();
 
 		rows.add("100112 121314 SUBJECT @C 00 00 00.00 S 030 00 00.00 W 270.00  9.00  0.00");
@@ -335,143 +428,24 @@ public class TestSupport
 
 	}
 
-	public static ArrayList<String> getLongData()
-	{
-		final ArrayList<String> rows = new ArrayList<String>();
+	private ArrayList<State> _targetSolution;
 
-		rows.add(";;IGNORE	YYMMDD	HHMMSS	IGNORE	IGNORE	LAT_DEG	LAT_MIN	LAT_SEC	LAT_HEM	LONG_DEG	LONG_MIN	LONG_SEC	LONG_HEM	BEARING	MAX_RNG");
-		rows.add(";SENSOR:	100112	121329	SENSOR	@A	0	3	57.38	S	30	0	8.65	W	1.5	15000");
-		rows.add(";SENSOR:	100112	121359	SENSOR	@A	0	3	52.31	S	30	0	11.09	W	1.1	15000");
-		rows.add(";SENSOR:	100112	121429	SENSOR	@A	0	3	51.7	S	30	0	16.99	W	1.4	15000");
-		rows.add(";SENSOR:	100112	121459	SENSOR	@A	0	3	51.7	S	30	0	22.99	W	1.8	15000");
-		rows.add(";SENSOR:	100112	121529	SENSOR	@A	0	3	51.7	S	30	0	28.99	W	2.2	15000");
-		rows.add(";SENSOR:	100112	121559	SENSOR	@A	0	3	51.7	S	30	0	34.99	W	2.5	15000");
-		rows.add(";SENSOR:	100112	121629	SENSOR	@A	0	3	51.7	S	30	0	40.99	W	2.9	15000");
-		rows.add(";SENSOR:	100112	121644	SENSOR	@A	0	3	51.7	S	30	0	43.99	W	3.1	15000");
-		rows.add(";SENSOR:	100112	121744	SENSOR	@A	0	3	51.7	S	30	0	55.99	W	3.8	15000");
-		rows.add(";SENSOR:	100112	121814	SENSOR	@A	0	3	51.7	S	30	1	1.99	W	4.2	15000");
-		rows.add(";SENSOR:	100112	121929	SENSOR	@A	0	3	42.55	S	30	1	10.68	W	3.7	15000");
-		rows.add(";SENSOR:	100112	122029	SENSOR	@A	0	3	30.74	S	30	1	12.76	W	2	15000");
-		rows.add(";SENSOR:	100112	122129	SENSOR	@A	0	3	16.96	S	30	1	15.19	W	0.3	15000");
-		rows.add(";SENSOR:	100112	122229	SENSOR	@A	0	3	3.18	S	30	1	17.62	W	-1.8	15000");
-		rows.add(";SENSOR:	100112	122329	SENSOR	@A	0	2	49.39	S	30	1	20.05	W	-4.1	15000");
-		rows.add(";SENSOR:	100112	122429	SENSOR	@A	0	2	35.6	S	30	1	22.48	W	-6.9	15000");
-		rows.add(";SENSOR:	100112	122529	SENSOR	@A	0	2	21.82	S	30	1	24.91	W	-10.1	15000");
-		rows.add(";SENSOR:	100112	122629	SENSOR	@A	0	2	8.03	S	30	1	27.34	W	-14	15000");
-		rows.add(";SENSOR:	100112	122729	SENSOR	@A	0	1	54.24	S	30	1	29.78	W	-18.6	15000");
-		rows.add(";SENSOR:	100112	122829	SENSOR	@A	0	1	40.45	S	30	1	32.21	W	-24.2	15000");
-		rows.add(";SENSOR:	100112	122929	SENSOR	@A	0	1	26.46	S	30	1	32.28	W	-32	15000");
-		rows.add(";SENSOR:	100112	123029	SENSOR	@A	0	1	12.46	S	30	1	32.28	W	-41	15000");
-		rows.add(";SENSOR:	100112	123129	SENSOR	@A	0	1	0.29	S	30	1	36.37	W	-48.4	15000");
-		rows.add(";SENSOR:	100112	123229	SENSOR	@A	0	0	53.29	S	30	1	48.49	W	-50.6	15000");
-		rows.add(";SENSOR:	100112	123329	SENSOR	@A	0	0	46.29	S	30	2	0.61	W	-55.3	15000");
-		rows.add(";SENSOR:	100112	123429	SENSOR	@A	0	0	39.29	S	30	2	12.74	W	-62.5	15000");
-		rows.add(";SENSOR:	100112	123529	SENSOR	@A	0	0	32.29	S	30	2	24.86	W	-73	15000");
-		rows.add(";SENSOR:	100112	123629	SENSOR	@A	0	0	25.29	S	30	2	36.99	W	-88.1	15000");
-		rows.add(";SENSOR:	100112	123729	SENSOR	@A	0	0	18.29	S	30	2	49.11	W	-108	15000");
-		rows.add(";SENSOR:	100112	123829	SENSOR	@A	0	0	11.29	S	30	3	1.24	W	-129.2	15000");
-		rows.add(";SENSOR:	100112	123929	SENSOR	@A	0	0	5.39	S	30	3	13.71	W	-146.5	15000");
-		rows.add(";SENSOR:	100112	124029	SENSOR	@A	0	0	5.39	S	30	3	27.71	W	-158.7	15000");
-		rows.add(";SENSOR:	100112	124129	SENSOR	@A	0	0	5.39	S	30	3	41.71	W	-169.3	15000");
-		rows.add(";SENSOR:	100112	124229	SENSOR	@A	0	0	5.39	S	30	3	49.87	W	-172.3	15000");
-		rows.add(";SENSOR:	100112	124329	SENSOR	@A	0	0	5.39	S	30	3	57.87	W	-174.6	15000");
-		rows.add(";SENSOR:	100112	124429	SENSOR	@A	0	0	8.65	S	30	4	4.46	W	-175.1	15000");
-		rows.add(";SENSOR:	100112	124529	SENSOR	@A	0	0	16.62	S	30	4	4.73	W	-169.8	15000");
-		rows.add(";SENSOR:	100112	124629	SENSOR	@A	0	0	24.62	S	30	4	4.73	W	-164.2	15000");
-		rows.add(";SENSOR:	100112	124729	SENSOR	@A	0	0	36.96	S	30	4	4.73	W	-157.1	15000");
-		rows.add(";SENSOR:	100112	124829	SENSOR	@A	0	0	50.96	S	30	4	4.73	W	-148.6	15000");
-		rows.add(";SENSOR:	100112	124929	SENSOR	@A	0	1	4.96	S	30	4	4.73	W	-139	15000");
-		rows.add(";SENSOR:	100112	125029	SENSOR	@A	0	1	18.96	S	30	4	4.73	W	-129	15000");
-		rows.add(";SENSOR:	100112	125129	SENSOR	@A	0	1	32.96	S	30	4	4.73	W	-119	15000");
-		rows.add(";SENSOR:	100112	125229	SENSOR	@A	0	1	46.96	S	30	4	4.73	W	-109.6	15000");
-		rows.add(";SENSOR:	100112	125329	SENSOR	@A	0	2	0.96	S	30	4	4.73	W	-101.2	15000");
-		rows.add(";SENSOR:	100112	125429	SENSOR	@A	0	2	12.21	S	30	4	12.68	W	-97	15000");
-		rows.add(";SENSOR:	100112	125529	SENSOR	@A	0	2	22.94	S	30	4	21.68	W	-93.1	15000");
-		rows.add(";SENSOR:	100112	125629	SENSOR	@A	0	2	33.66	S	30	4	30.68	W	-88.8	15000");
-		rows.add(";SENSOR:	100112	125744	SENSOR	@A	0	2	49.98	S	30	4	36.93	W	-80.5	15000");
-		rows.add(";SENSOR:	100112	125829	SENSOR	@A	0	2	59.84	S	30	4	40.52	W	-75.9	15000");
-		rows.add(";SENSOR:	100112	125914	SENSOR	@A	0	3	9.71	S	30	4	44.11	W	-71.7	15000");
-		rows.add(";SENSOR:	100112	130014	SENSOR	@A	0	3	22.42	S	30	4	49.71	W	-66.6	15000");
-		rows.add(";SENSOR:	100112	130129	SENSOR	@A	0	3	35.82	S	30	5	0.96	W	-61	15000");
-		rows.add(";SENSOR:	100112	130229	SENSOR	@A	0	3	46.55	S	30	5	9.96	W	-56.5	15000");
-		rows.add(";SENSOR:	100112	130329	SENSOR	@A	0	3	57.27	S	30	5	18.95	W	-52	15000");
-		rows.add(";SENSOR:	100112	130429	SENSOR	@A	0	4	8	S	30	5	27.95	W	-47.5	15000");
-		rows.add(";SENSOR:	100112	130529	SENSOR	@A	0	4	18.72	S	30	5	36.95	W	-43.2	15000");
-
-		return rows;
-	}
-
-	public static ArrayList<String> getShortData()
-	{
-		// and put them into an array list
-		final ArrayList<String> rows = new ArrayList<String>();
-		rows.add(";;IGNORE	YYMMDD	HHMMSS	IGNORE	IGNORE	LAT_DEG	LAT_MIN	LAT_SEC	LAT_HEM	LONG_DEG	LONG_MIN	LONG_SEC	LONG_HEM	BEARING	MAX_RNG");
-		rows.add(";SENSOR:	100112	121329	SENSOR	@A	0	3	57.38	S	30	0	8.65	W	1.5	15000");
-		// rows.add(";SENSOR:	100112	121459	SENSOR	@A	0	3	51.7	S	30	0	22.99	W	1.8	15000");
-		rows.add(";SENSOR:	100112	121529	SENSOR	@A	0	3	51.7	S	30	0	28.99	W	2.2	15000");
-		// rows.add(";SENSOR:	100112	121644	SENSOR	@A	0	3	51.7	S	30	0	43.99	W	3.1	15000");
-		rows.add(";SENSOR:	100112	121744	SENSOR	@A	0	3	51.7	S	30	0	55.99	W	3.8	15000");
-		// rows.add(";SENSOR:	100112	122029	SENSOR	@A	0	3	30.74	S	30	1	12.76	W	2	15000");
-		rows.add(";SENSOR:	100112	122129	SENSOR	@A	0	3	16.96	S	30	1	15.19	W	0.3	15000");
-		rows.add(";SENSOR:	100112	122429	SENSOR	@A	0	2	35.6	S	30	1	22.48	W	-6.9	15000");
-
-		return rows;
-	}
-	
-	public static ArrayList<String> getFreqDataOne()
-	{
-		// and put them into an array list
-		final ArrayList<String> rows = new ArrayList<String>();
-		rows.add(";SENSOR2: 100112 131000 SENSOR @A 60 09 44.84 N 000 01 27.17 W NULL NULL 150.069 0000 NB_FREQ SUBJECT held on NB_FREQ");
-		rows.add(";SENSOR2: 100112 131050 SENSOR @A 60 09 43.01 N 000 01 29.15 W NULL NULL 150.048 0000 NB_FREQ SUBJECT held on NB_FREQ");
-		rows.add(";SENSOR2: 100112 131140 SENSOR @A 60 09 41.17 N 000 01 31.13 W NULL NULL 150.027 0000 NB_FREQ SUBJECT held on NB_FREQ");
-		rows.add(";SENSOR2: 100112 131230 SENSOR @A 60 09 39.33 N 000 01 33.11 W NULL NULL 150.005 0000 NB_FREQ SUBJECT held on NB_FREQ");
-		rows.add(";SENSOR2: 100112 131320 SENSOR @A 60 09 37.50 N 000 01 35.09 W NULL NULL 149.984 0000 NB_FREQ SUBJECT held on NB_FREQ");
-		rows.add(";SENSOR2: 100112 131410 SENSOR @A 60 09 35.66 N 000 01 37.06 W NULL NULL 149.963 0000 NB_FREQ SUBJECT held on NB_FREQ");
-		rows.add(";SENSOR2: 100112 131500 SENSOR @A 60 09 33.83 N 000 01 39.04 W NULL NULL 149.941 0000 NB_FREQ SUBJECT held on NB_FREQ");
-		rows.add(";SENSOR2: 100112 131550 SENSOR @A 60 09 31.99 N 000 01 41.02 W NULL NULL 149.921 0000 NB_FREQ SUBJECT held on NB_FREQ");
-		rows.add(";SENSOR2: 100112 131640 SENSOR @A 60 09 30.15 N 000 01 43.00 W NULL NULL 149.900 0000 NB_FREQ SUBJECT held on NB_FREQ");
-		rows.add(";SENSOR2: 100112 131730 SENSOR @A 60 09 28.32 N 000 01 44.98 W NULL NULL 149.880 0000 NB_FREQ SUBJECT held on NB_FREQ");
-		rows.add(";SENSOR2: 100112 131820 SENSOR @A 60 09 26.48 N 000 01 46.96 W NULL NULL 149.861 0000 NB_FREQ SUBJECT held on NB_FREQ");
-		rows.add(";SENSOR2: 100112 131910 SENSOR @A 60 09 24.64 N 000 01 48.93 W NULL NULL 149.842 0000 NB_FREQ SUBJECT held on NB_FREQ");
-		rows.add(";SENSOR2: 100112 132000 SENSOR @A 60 09 22.81 N 000 01 50.91 W NULL NULL 149.824 0000 NB_FREQ SUBJECT held on NB_FREQ");
-
-		return rows;
-	}
-	public static ArrayList<String> getFreqDataTwo()
-	{
-		// and put them into an array list
-		final ArrayList<String> rows = new ArrayList<String>();
-		rows.add(";SENSOR2: 100112 133500 SENSOR @A 60 09 32.08 N 000 02 40.66 W NULL NULL 149.759 0000 NB_FREQ SUBJECT held on NB_FREQ");
-		rows.add(";SENSOR2: 100112 133550 SENSOR @A 60 09 34.15 N 000 02 41.08 W NULL NULL 149.757 0000 NB_FREQ SUBJECT held on NB_FREQ");
-		rows.add(";SENSOR2: 100112 133640 SENSOR @A 60 09 36.22 N 000 02 41.50 W NULL NULL 149.755 0000 NB_FREQ SUBJECT held on NB_FREQ");
-		rows.add(";SENSOR2: 100112 133730 SENSOR @A 60 09 38.30 N 000 02 41.91 W NULL NULL 149.753 0000 NB_FREQ SUBJECT held on NB_FREQ");
-		rows.add(";SENSOR2: 100112 133820 SENSOR @A 60 09 40.37 N 000 02 42.33 W NULL NULL 149.752 0000 NB_FREQ SUBJECT held on NB_FREQ");
-		rows.add(";SENSOR2: 100112 133910 SENSOR @A 60 09 42.44 N 000 02 42.74 W NULL NULL 149.750 0000 NB_FREQ SUBJECT held on NB_FREQ");
-		rows.add(";SENSOR2: 100112 134000 SENSOR @A 60 09 44.52 N 000 02 43.16 W NULL NULL 149.748 0000 NB_FREQ SUBJECT held on NB_FREQ");
-		
-
-		return rows;
-	}
-
-	public void loadGoodData(ISolver generator)
-	{
-		IContributions contributions = generator.getContributions();
+	public void loadGoodData(final ISolver generator) {
+		final IContributions contributions = generator.getContributions();
 		// clear the geneartor first
-		boolean live = generator.isLiveRunning();
+		final boolean live = generator.isLiveRunning();
 		generator.setLiveRunning(false);
 		generator.clear();
 
 		// now load some data
-		BearingMeasurementContribution bmc = new BearingMeasurementContribution();
+		final BearingMeasurementContribution bmc = new BearingMeasurementContribution();
 		bmc.setName("Measured bearing");
 		bmc.setAutoDetect(false);
-		RangeForecastContribution rangeF = new RangeForecastContribution();
+		final RangeForecastContribution rangeF = new RangeForecastContribution();
 		rangeF.setName("Measured range");
-		ArrayList<String> rows = getLongData();
+		final ArrayList<String> rows = getLongData();
 
-		try
-		{
+		try {
 			// populate the bearing data
 			bmc.loadFrom(rows);
 			contributions.addContribution(bmc);
@@ -479,34 +453,31 @@ public class TestSupport
 			// and populate the range data
 			rangeF.loadFrom(rows);
 			contributions.addContribution(rangeF);
-		}
-		catch (Exception e)
-		{
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 
 		// sort out the legs
-		StraightLegForecastContribution st1 = new StraightLegForecastContribution();
-		GMTDateFormat dateFormat = new GMTDateFormat(
-				"yyMMdd HHmmss");
-    st1.setStartDate(ObjectUtils.safeParseDate(dateFormat, "100112 121329"));
+		final StraightLegForecastContribution st1 = new StraightLegForecastContribution();
+		final GMTDateFormat dateFormat = new GMTDateFormat("yyMMdd HHmmss");
+		st1.setStartDate(ObjectUtils.safeParseDate(dateFormat, "100112 121329"));
 		st1.setFinishDate(ObjectUtils.safeParseDate(dateFormat, "100112 123029"));
 		st1.setName("Straight leg one");
 		contributions.addContribution(st1);
 
-		StraightLegForecastContribution st2 = new StraightLegForecastContribution();
+		final StraightLegForecastContribution st2 = new StraightLegForecastContribution();
 		st2.setStartDate(ObjectUtils.safeParseDate(dateFormat, "100112 123329"));
 		st2.setFinishDate(ObjectUtils.safeParseDate(dateFormat, "100112 124829"));
 		st2.setName("Straight leg two");
 		contributions.addContribution(st2);
 
-		StraightLegForecastContribution st3 = new StraightLegForecastContribution();
+		final StraightLegForecastContribution st3 = new StraightLegForecastContribution();
 		st3.setStartDate(ObjectUtils.safeParseDate(dateFormat, "100112 125100"));
 		st3.setFinishDate(ObjectUtils.safeParseDate(dateFormat, "100112 130429"));
 		st3.setName("Straight leg three");
 		contributions.addContribution(st3);
 
-		CourseForecastContribution course = new CourseForecastContribution();
+		final CourseForecastContribution course = new CourseForecastContribution();
 		course.setStartDate(ObjectUtils.safeParseDate(dateFormat, "100112 121329"));
 		course.setFinishDate(ObjectUtils.safeParseDate(dateFormat, "100112 130429"));
 		course.setMinCourse(Math.toRadians(190));
@@ -515,7 +486,7 @@ public class TestSupport
 		course.setName("Initial course forecast");
 		contributions.addContribution(course);
 
-		SpeedForecastContribution speed = new SpeedForecastContribution();
+		final SpeedForecastContribution speed = new SpeedForecastContribution();
 		speed.setStartDate(ObjectUtils.safeParseDate(dateFormat, "100112 121329"));
 		speed.setFinishDate(ObjectUtils.safeParseDate(dateFormat, "100112 130429"));
 		speed.setMinSpeed(GeoSupport.kts2MSec(4d));
@@ -529,7 +500,8 @@ public class TestSupport
 		// LocationForecastContribution locF = new LocationForecastContribution();
 		// locF.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
 		// "100112 121300"));
-		// locF.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 121700"));
+		// locF.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112
+		// 121700"));
 		// locF.setLocation(new GeoPoint(0.03, -30.0));
 		// locF.setLimit(3000d);
 		// locF.setName("Last known location");
@@ -540,7 +512,8 @@ public class TestSupport
 		// CourseForecastContribution course = new CourseForecastContribution();
 		// course.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss",
 		// "100112 121231"));
-		// course.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 122525"));
+		// course.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd
+		// HHmmss","100112 122525"));
 		// course.setMinCourse(Math.toRadians(225));
 		// course.setMaxCourse(Math.toRadians(315));
 		// course.setName("Last known course");
@@ -548,18 +521,20 @@ public class TestSupport
 		//
 		// // hey, how about a time-bounded course constraint?
 		// SpeedForecastContribution speed2 = new SpeedForecastContribution();
-		// speed2.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 122500"));
-		// speed2.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd HHmmss","100112 123100"));
+		// speed2.setStartDate(SupportServices.INSTANCE.parseDate("yyMMdd
+		// HHmmss","100112 122500"));
+		// speed2.setFinishDate(SupportServices.INSTANCE.parseDate("yyMMdd
+		// HHmmss","100112 123100"));
 		// speed2.setMinSpeed(GeoSupport.kts2MSec(8d));
 		// speed2.setMaxSpeed(GeoSupport.kts2MSec(27d));
 		// speed2.setName("Later speed obs");
 		// getGenerator().addContribution(speed2);
 
 		// and our analysis contributions
-		SpeedAnalysisContribution speedA = new SpeedAnalysisContribution();
+		final SpeedAnalysisContribution speedA = new SpeedAnalysisContribution();
 		speedA.setActive(true);
 		contributions.addContribution(speedA);
-		CourseAnalysisContribution courseA = new CourseAnalysisContribution();
+		final CourseAnalysisContribution courseA = new CourseAnalysisContribution();
 		courseA.setActive(true);
 		contributions.addContribution(courseA);
 		contributions.addContribution(new LocationAnalysisContribution());
@@ -570,35 +545,67 @@ public class TestSupport
 
 	}
 
-	public static String asGeoJSON(String title, Coordinate[] pts)
-	{
-		String res = "";
-		final String newLine = System.getProperty("line.separator");
+	public List<State> loadSolutionTrack() {
+		if (_targetSolution != null)
+			return _targetSolution;
 
-		// sort out the feature
-		String coordsStr = "";
-		for (int i = 0; i < pts.length; i++)
-		{
-			Coordinate coordinate = pts[i];
+		final ArrayList<String> lines = getSolution();
 
-			if (i > 0) 
-			{
-				coordsStr += ", ";
+		_targetSolution = new ArrayList<State>();
+		// load from this source
+		// ;;IGNORE YYMMDD HHMMSS IGNORE IGNORE LAT_DEG LAT_MIN LAT_SEC LAT_HEM
+		// LONG_DEG LONG_MIN LONG_SEC LONG_HEM CRSE SPED DEPTH
+		// 100112 121329 SENSOR @A 0 3 57.38 S 30 0 8.65 W 1.5 15000
+
+		// Read File Line By Line
+		for (final String strLine : lines) {
+			// hey, is this a comment line?
+			if (strLine.startsWith(";;")) {
+				continue;
 			}
-			coordsStr += "[" + newLine;
-			coordsStr += coordinate.x + "," + newLine;
-			coordsStr += coordinate.y + newLine;
-			coordsStr += "]" + newLine;
+			// ok, get parseing it
+			final String[] elements = strLine.split("\\s+");
+
+			// now the date
+			final String date = elements[0];
+
+			// and the time
+			final String time = elements[1];
+
+			final String latDegs = elements[4];
+			final String latMins = elements[5];
+			final String latSecs = elements[6];
+			final String latHemi = elements[7];
+
+			final String lonDegs = elements[8];
+			final String lonMins = elements[9];
+			final String lonSecs = elements[10];
+			final String lonHemi = elements[11];
+
+			// and the course
+			final String course = elements[13];
+
+			// and the speed
+			final String speed = elements[14];
+
+			// ok,now construct the date=time
+			final Date theDate = ObjectUtils.safeParseDate(new GMTDateFormat("yyMMdd HHmmss"), date + " " + time);
+
+			// and the location
+			double lat = Double.valueOf(latDegs) + Double.valueOf(latMins) / 60d + Double.valueOf(latSecs) / 60d / 60d;
+			if (latHemi.toUpperCase().equals("S"))
+				lat = -lat;
+			double lon = Double.valueOf(lonDegs) + Double.valueOf(lonMins) / 60d + Double.valueOf(lonSecs) / 60d / 60d;
+			if (lonHemi.toUpperCase().equals("W"))
+				lon = -lon;
+
+			final Point pt = GeoSupport.getFactory().createPoint(new Coordinate(lat, lon));
+			final State newS = new State(theDate, pt, Math.toRadians(Double.valueOf(course)),
+					GeoSupport.kts2MSec(Double.valueOf(speed)));
+			_targetSolution.add(newS);
+
 		}
 
-		res = "{   " + " \"type\": \"FeatureCollection\"," + newLine
-				+ " \"features\": [{" + newLine + "\"type\": \"Feature\"," + newLine
-				+ " \"geometry\": {" + newLine + "   \"type\": \"LineString\","
-				+ newLine + "   \"coordinates\": [" + newLine + coordsStr + newLine
-				+ "  ]" + newLine + " }," + newLine + " \"properties\": {" + newLine
-				+ "  \"name\": \"" + title + "\"," + newLine + " }" + newLine + "}]"
-				+ newLine + "}";
-
-		return res;
+		return _targetSolution;
 	}
 }

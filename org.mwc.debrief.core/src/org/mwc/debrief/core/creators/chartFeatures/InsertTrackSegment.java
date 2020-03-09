@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.debrief.core.creators.chartFeatures;
 
 import java.awt.Color;
@@ -26,6 +27,7 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.dialogs.ListDialog;
 
@@ -48,14 +50,16 @@ import MWC.Utilities.TextFormatting.GMTDateFormat;
 /**
  * @author ian.mayo
  */
-public class InsertTrackSegment extends CoreInsertChartFeature
-{
+public class InsertTrackSegment extends CoreInsertChartFeature {
 
 	private static final String NEW_LAYER_COMMAND = "[New Track...]";
 	private final Layer _parentLayer;
 
-	public InsertTrackSegment(final Layer parent)
-	{
+	public InsertTrackSegment() {
+		this(null);
+	}
+
+	public InsertTrackSegment(final Layer parent) {
 		// tell the parent we produce a top-level layer
 		super(false);
 
@@ -63,43 +67,11 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 		_parentLayer = parent;
 	}
 
-	public InsertTrackSegment()
-	{
-		this(null);
-	}
-
-	/**
-	 * get a plottable object
-	 * 
-	 * @param centre
-	 * @param theChart
-	 * @return
-	 */
-	protected Plottable getPlottable(final PlainChart theChart)
-	{
-		PlanningSegment res = null;
-
-		// create input box dialog
-		final InputDialog inp = new InputDialog(Display.getCurrent().getActiveShell(),
-				"New track", "What is the name of this leg", "name here", null);
-
-		// did he cancel?
-		if (inp.open() == InputDialog.OK)
-		{
-			// get the results
-			final String txt = inp.getValue();
-			res = new PlanningSegment(txt, 45, new WorldSpeed(12, WorldSpeed.Kts),
-					new WorldDistance(5, WorldDistance.KM));
-		}
-
-		return res;
-	}
-
 	/**
 	 * @return
 	 */
-	protected String getLayerName()
-	{
+	@Override
+	protected String getLayerName() {
 		String res = null;
 
 		if (_parentLayer != null)
@@ -131,31 +103,26 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 		final int selection = list.open();
 
 		// did user say yes?
-		if (selection != ListDialog.CANCEL)
-		{
+		if (selection != Window.CANCEL) {
 			// yup, store it's name
 			final Object[] val = list.getResult();
 			res = val[0].toString();
 
 			// hmm, is it our add layer command?
-			if (res.equals(NEW_LAYER_COMMAND))
-			{
+			if (res.equals(NEW_LAYER_COMMAND)) {
 				// better create one. Ask the user
 
 				// create input box dialog
-				InputDialog inp = new InputDialog(
-						Display.getCurrent().getActiveShell(), "New track",
+				InputDialog inp = new InputDialog(Display.getCurrent().getActiveShell(), "New track",
 						"Enter name for new track", "name here...", null);
 
 				// did he cancel?
-				if (inp.open() == InputDialog.OK)
-				{
+				if (inp.open() == Window.OK) {
 					// get the results
 					final String txt = inp.getValue();
 
 					// check there's something there
-					if (txt.length() > 0)
-					{
+					if (txt.length() > 0) {
 
 						res = txt;
 						HiResDate startDate = null;
@@ -164,53 +131,43 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 						final DateFormat df = new GMTDateFormat("yyMMdd HHmmss");
 
 						final String dateToday = df.format(new Date());
-						inp = new InputDialog(Display.getCurrent().getActiveShell(),
-								"New track", "Enter start DTG  (yyMMdd HHmmss)",
-								dateToday, null);
+						inp = new InputDialog(Display.getCurrent().getActiveShell(), "New track",
+								"Enter start DTG  (yyMMdd HHmmss)", dateToday, null);
 
 						// keep popping open the dialog until we get valid date, or user
 						// presses cancel
-						while ((startDate == null) && (inp.open() == InputDialog.OK))
-						{
+						while ((startDate == null) && (inp.open() == Window.OK)) {
 							final String startDateTxt = inp.getValue();
-							try
-              {
-                startDate = DebriefFormatDateTime.parseThis(startDateTxt);
-                
-                if (startDate != null)
-                {
-                  // get the centre of the visible area
-                  final WorldLocation wc = new WorldLocation(getCentre(theChart));
-                  
-                  // create new track
-                  final TrackWrapper tw = new CompositeTrackWrapper(startDate, wc);
-                  
-                  // give it a default color
-                  tw.setColor(Color.red);
-                  
-                  // initialize NameVisible (false)
-                  tw.setNameVisible(false);
+							try {
+								startDate = DebriefFormatDateTime.parseThis(startDateTxt);
 
-                  // store the name
-                  tw.setName(txt);
+								if (startDate != null) {
+									// get the centre of the visible area
+									final WorldLocation wc = new WorldLocation(getCentre(theChart));
 
-                  // add to layers object
-                  theLayers.addThisLayer(tw);
-                }
-              }
-              catch (ParseException e)
-              {
-                Trace.trace(e, "While parsing date");
-              }
+									// create new track
+									final TrackWrapper tw = new CompositeTrackWrapper(startDate, wc);
+
+									// give it a default color
+									tw.setColor(Color.red);
+
+									// initialize NameVisible (false)
+									tw.setNameVisible(false);
+
+									// store the name
+									tw.setName(txt);
+
+									// add to layers object
+									theLayers.addThisLayer(tw);
+								}
+							} catch (final ParseException e) {
+								Trace.trace(e, "While parsing date");
+							}
 						}
-					}
-					else
-					{
+					} else {
 						res = null;
 					}
-				}
-				else
-				{
+				} else {
 					res = null;
 				}
 			}
@@ -220,29 +177,50 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 	}
 
 	/**
+	 * get a plottable object
+	 *
+	 * @param centre
+	 * @param theChart
+	 * @return
+	 */
+	@Override
+	protected Plottable getPlottable(final PlainChart theChart) {
+		PlanningSegment res = null;
+
+		// create input box dialog
+		final InputDialog inp = new InputDialog(Display.getCurrent().getActiveShell(), "New track",
+				"What is the name of this leg", "name here", null);
+
+		// did he cancel?
+		if (inp.open() == Window.OK) {
+			// get the results
+			final String txt = inp.getValue();
+			res = new PlanningSegment(txt, 45, new WorldSpeed(12, WorldSpeed.Kts),
+					new WorldDistance(5, WorldDistance.KM));
+		}
+
+		return res;
+	}
+
+	/**
 	 * find the list of tracks
-	 * 
-	 * @param theLayers
-	 *          the list to search through
+	 *
+	 * @param theLayers the list to search through
 	 * @return Tracks
 	 */
-	private String[] trimmedTracks(final Layers theLayers)
-	{
+	private String[] trimmedTracks(final Layers theLayers) {
 		final Vector<String> res = new Vector<String>(0, 1);
 		final Enumeration<Editable> enumer = theLayers.elements();
-		while (enumer.hasMoreElements())
-		{
+		while (enumer.hasMoreElements()) {
 			final Layer thisLayer = (Layer) enumer.nextElement();
-			if (thisLayer instanceof CompositeTrackWrapper)
-			{
+			if (thisLayer instanceof CompositeTrackWrapper) {
 				res.add(thisLayer.getName());
 			}
 		}
 
 		res.add(NEW_LAYER_COMMAND);
 
-		final String[] sampleArray = new String[]
-		{ "aa" };
+		final String[] sampleArray = new String[] { "aa" };
 		return res.toArray(sampleArray);
 	}
 

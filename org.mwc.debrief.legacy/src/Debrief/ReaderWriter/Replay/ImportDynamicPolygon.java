@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: ImportEllipse.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.3 $
@@ -112,186 +113,11 @@ import junit.framework.TestCase;
  * class that is able to export a polygon - note the Replay file format doesn't
  * include polygons, so we only export it.
  */
-class ImportDynamicPolygon extends AbstractPlainLineImporter
-{
+class ImportDynamicPolygon extends AbstractPlainLineImporter {
 
-	/**
-	 * the type for this string
-	 */
-	private final String _myType = ";DYNAMIC_POLY:";
+	public static class TestImport extends TestCase {
 
-	@Override
-	public final Object readThisLine(final String theLine) throws ParseException
-	{
-		String line = theLine;
-		// get a stream from the string
-		StringTokenizer st = new StringTokenizer(line);
-
-		// declare local variables
-		double latDeg, longDeg, latMin, longMin;
-		char latHem, longHem;
-		double latSec, longSec;
-		String theText = null;
-
-		// skip the comment identifier
-		st.nextToken();
-
-		// start with the symbology
-		symbology = st.nextToken();
-
-		String theName = checkForQuotedName(st).trim();
-
-		// combine the date, a space, and the time
-		final String dateToken = st.nextToken();
-		final String timeToken = st.nextToken();
-
-		// and extract the date
-		HiResDate theDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
-		
-		final Vector<PolygonNode> nodes = new Vector<PolygonNode>();
-		Integer counter = new Integer(1);
-		// create the Polygon object
-		final PolygonShape sp = createShape(nodes);
-
-		while (st.hasMoreTokens())
-		{
-			// meet the label
-			final String sts = st.nextToken();
-
-			if (Character.isDigit(sts.charAt(0)))
-			{
-				try
-				{
-					// now the location
-					latDeg = MWCXMLReader.readThisDouble(sts);
-					latMin = MWCXMLReader.readThisDouble(st.nextToken());
-					latSec = MWCXMLReader.readThisDouble(st.nextToken());
-
-					/**
-					 * now, we may have trouble here, since there may not be a space
-					 * between the hemisphere character and a 3-digit latitude value - so
-					 * BE CAREFUL
-					 */
-					final String vDiff = st.nextToken();
-					if (vDiff.length() > 3)
-					{
-						// hmm, they are combined
-						latHem = vDiff.charAt(0);
-						final String secondPart = vDiff.substring(1, vDiff.length());
-						longDeg = MWCXMLReader.readThisDouble(secondPart);
-					}
-					else
-					{
-						// they are separate, so only the hem is in this one
-						latHem = vDiff.charAt(0);
-						longDeg = MWCXMLReader.readThisDouble(st.nextToken());
-					}
-					longMin = MWCXMLReader.readThisDouble(st.nextToken());
-					longSec = MWCXMLReader.readThisDouble(st.nextToken());
-					longHem = st.nextToken().charAt(0);
-
-					// we have our first location, create it
-					final WorldLocation theLoc = new WorldLocation(latDeg, latMin,
-							latSec, latHem, longDeg, longMin, longSec, longHem, 0);
-					final PolygonNode newNode = new PolygonNode(counter.toString(),
-							theLoc, sp);
-					sp.add(newNode);
-				}
-				catch (final ParseException pe)
-				{
-					MWC.Utilities.Errors.Trace.trace(pe, "Whilst import Polygon");
-					return null;
-				}
-
-				counter += 1;
-			}
-			else
-			{
-				theText = sts;
-				if (st.hasMoreTokens())
-				{
-					// and lastly read in the message
-					theText += st.nextToken("\r");
-				}
-			}
-		}
-
-		// and put Polygon into a shape
-		final DynamicPolygonShapeWrapper sw = new DynamicPolygonShapeWrapper(theText, (PolygonShape)sp,
-				ImportReplay.replayColorFor(symbology), theDate, null);
-		sw.setTrackName(theName);
-
-		return sw;
-	}
-
-	protected PolygonShape createShape(final Vector<PolygonNode> nodes)
-	{
-		return new PolygonShape(nodes);
-	}
-
-	@Override
-	public String getYourType()
-	{
-		return _myType;
-	}
-
-	@Override
-	public final String exportThis(final MWC.GUI.Plottable theWrapper)
-	{
-		final ShapeWrapper theShape = (ShapeWrapper) theWrapper;
-
-		final PolygonShape polygon = (PolygonShape) theShape.getShape();
-
-		String line = getYourType();
-		line += " " + ImportReplay.replaySymbolFor(polygon.getColor(), null);
-
-		// ok, start looping through them:
-		final Iterator<PolygonNode> pts = polygon.getPoints().iterator();
-		while (pts.hasNext())
-		{
-			final PolygonShape.PolygonNode node = (PolygonShape.PolygonNode) pts
-					.next();
-			// get the loc
-			final WorldLocation loc = node.getLocation();
-
-			// convert to a string
-			final String str = MWC.Utilities.TextFormatting.DebriefFormatLocation
-					.toString(loc);
-
-			// now our line
-			line += " " + str;
-
-		}
-
-		return line + " " + polygon.getName();
-
-	}
-
-	@Override
-	public final boolean canExportThis(final Object val)
-	{
-		if (val instanceof ShapeWrapper)
-		{
-			final ShapeWrapper sw = (ShapeWrapper) val;
-			final PlainShape ps = sw.getShape();
-			if (ps instanceof PolygonShape)
-				return canExport((PolygonShape) ps);
-		}
-
-		return false;
-
-	}
-
-	protected boolean canExport(final PolygonShape ps)
-	{
-		return ps.getClosed();
-	}
-
-	public static class TestImport extends TestCase
-	{
-
-		public void testWithLabel() throws ParseException
-		{
+		public void testWithLabel() throws ParseException {
 			final String line = " ;POLY_RECT: @J \"Dynamic A\" 951212 051000.000 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E label";
 			final ImportDynamicPolygon ip = new ImportDynamicPolygon();
 			final DynamicPolygonShapeWrapper res = (DynamicPolygonShapeWrapper) ip.readThisLine(line);
@@ -315,6 +141,155 @@ class ImportDynamicPolygon extends AbstractPlainLineImporter
 			assertEquals("Track name isn't correct", "Dynamic A", res.getTrackName());
 			assertEquals("Start DTG isn't correct", 818745000000000l, res.getStartDTG().getMicros());
 		}
+	}
+
+	/**
+	 * the type for this string
+	 */
+	private final String _myType = ";DYNAMIC_POLY:";
+
+	protected boolean canExport(final PolygonShape ps) {
+		return ps.getClosed();
+	}
+
+	@Override
+	public final boolean canExportThis(final Object val) {
+		if (val instanceof ShapeWrapper) {
+			final ShapeWrapper sw = (ShapeWrapper) val;
+			final PlainShape ps = sw.getShape();
+			if (ps instanceof PolygonShape)
+				return canExport((PolygonShape) ps);
+		}
+
+		return false;
+
+	}
+
+	protected PolygonShape createShape(final Vector<PolygonNode> nodes) {
+		return new PolygonShape(nodes);
+	}
+
+	@Override
+	public final String exportThis(final MWC.GUI.Plottable theWrapper) {
+		final ShapeWrapper theShape = (ShapeWrapper) theWrapper;
+
+		final PolygonShape polygon = (PolygonShape) theShape.getShape();
+
+		String line = getYourType();
+		line += " " + ImportReplay.replaySymbolFor(polygon.getColor(), null);
+
+		// ok, start looping through them:
+		final Iterator<PolygonNode> pts = polygon.getPoints().iterator();
+		while (pts.hasNext()) {
+			final PolygonShape.PolygonNode node = pts.next();
+			// get the loc
+			final WorldLocation loc = node.getLocation();
+
+			// convert to a string
+			final String str = MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(loc);
+
+			// now our line
+			line += " " + str;
+
+		}
+
+		return line + " " + polygon.getName();
+
+	}
+
+	@Override
+	public String getYourType() {
+		return _myType;
+	}
+
+	@Override
+	public final Object readThisLine(final String theLine) throws ParseException {
+		final String line = theLine;
+		// get a stream from the string
+		final StringTokenizer st = new StringTokenizer(line);
+
+		// declare local variables
+		double latDeg, longDeg, latMin, longMin;
+		char latHem, longHem;
+		double latSec, longSec;
+		String theText = null;
+
+		// skip the comment identifier
+		st.nextToken();
+
+		// start with the symbology
+		symbology = st.nextToken();
+
+		final String theName = checkForQuotedName(st).trim();
+
+		// combine the date, a space, and the time
+		final String dateToken = st.nextToken();
+		final String timeToken = st.nextToken();
+
+		// and extract the date
+		final HiResDate theDate = DebriefFormatDateTime.parseThis(dateToken, timeToken);
+
+		final Vector<PolygonNode> nodes = new Vector<PolygonNode>();
+		Integer counter = new Integer(1);
+		// create the Polygon object
+		final PolygonShape sp = createShape(nodes);
+
+		while (st.hasMoreTokens()) {
+			// meet the label
+			final String sts = st.nextToken();
+
+			if (Character.isDigit(sts.charAt(0))) {
+				try {
+					// now the location
+					latDeg = MWCXMLReader.readThisDouble(sts);
+					latMin = MWCXMLReader.readThisDouble(st.nextToken());
+					latSec = MWCXMLReader.readThisDouble(st.nextToken());
+
+					/**
+					 * now, we may have trouble here, since there may not be a space between the
+					 * hemisphere character and a 3-digit latitude value - so BE CAREFUL
+					 */
+					final String vDiff = st.nextToken();
+					if (vDiff.length() > 3) {
+						// hmm, they are combined
+						latHem = vDiff.charAt(0);
+						final String secondPart = vDiff.substring(1, vDiff.length());
+						longDeg = MWCXMLReader.readThisDouble(secondPart);
+					} else {
+						// they are separate, so only the hem is in this one
+						latHem = vDiff.charAt(0);
+						longDeg = MWCXMLReader.readThisDouble(st.nextToken());
+					}
+					longMin = MWCXMLReader.readThisDouble(st.nextToken());
+					longSec = MWCXMLReader.readThisDouble(st.nextToken());
+					longHem = st.nextToken().charAt(0);
+
+					// we have our first location, create it
+					final WorldLocation theLoc = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg, longMin,
+							longSec, longHem, 0);
+					final PolygonNode newNode = new PolygonNode(counter.toString(), theLoc, sp);
+					sp.add(newNode);
+				} catch (final ParseException pe) {
+					MWC.Utilities.Errors.Trace.trace(pe, "Whilst import Polygon");
+					return null;
+				}
+
+				counter += 1;
+			} else {
+				theText = sts;
+				if (st.hasMoreTokens()) {
+					// and lastly read in the message
+					theText += st.nextToken("\r");
+				}
+			}
+		}
+
+		// and put Polygon into a shape
+		final DynamicPolygonShapeWrapper sw = new DynamicPolygonShapeWrapper(theText, sp,
+				ImportReplay.replayColorFor(symbology), theDate, null);
+		sw.setTrackName(theName);
+
+		return sw;
 	}
 
 }

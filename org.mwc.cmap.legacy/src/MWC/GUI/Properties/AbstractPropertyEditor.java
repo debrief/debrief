@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: AbstractPropertyEditor.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -59,87 +60,83 @@
 // Initial revision
 //
 
-
 package MWC.GUI.Properties;
 
 import java.beans.PropertyEditorSupport;
 
-abstract public class AbstractPropertyEditor extends PropertyEditorSupport
-{
+abstract public class AbstractPropertyEditor extends PropertyEditorSupport {
 
-  /** the current value from the list of tags
-   *
-   */
-  protected int _currentlySelectedValue;
+	/**
+	 * the current value from the list of tags
+	 *
+	 */
+	protected int _currentlySelectedValue;
 
-  /** retrieve the list of tags we display
-   *
-   * @return the list of options
-   */
-  abstract public String[] getTags();
+	@Override
+	public String getAsText() {
+		return getTags()[_currentlySelectedValue];
+	}
 
+	/**
+	 * get the int index of the currently selected item
+	 *
+	 * @return the index
+	 */
+	public int getIndex() {
+		return _currentlySelectedValue;
+	}
 
-  /** return the currently selected string
-   *
-   * @return
-   */
-  public Object getValue()
-  {
-    return new Integer(_currentlySelectedValue);
-  }
+	/**
+	 * retrieve the list of tags we display
+	 *
+	 * @return the list of options
+	 */
+	@Override
+	abstract public String[] getTags();
 
-  /** get the int index of the currently selected item
-   *
-   * @return the index
-   */
-  public int getIndex()
-  {
-    return _currentlySelectedValue;
-  }
+	/**
+	 * return the currently selected string
+	 *
+	 * @return
+	 */
+	@Override
+	public Object getValue() {
+		return new Integer(_currentlySelectedValue);
+	}
 
-  /** select this vlaue
-   *
-   * @param p1
-   */
-  public void setValue(final Object p1)
-  {
-    if(p1 instanceof String)
-    {
-      final String val = (String) p1;
-      setAsText(val);
-    }
-    else if(p1 instanceof Integer)
-    {
-      _currentlySelectedValue = ((Integer)p1).intValue();
-    }
-  }
+	@Override
+	public void setAsText(final String val) {
+		// loop through the tags to match this
+		final String[] theTags = getTags();
+		for (int i = 0; i < theTags.length; i++) {
+			if (theTags[i].equals(val)) {
+				_currentlySelectedValue = i;
+				break;
+			}
+		}
+	}
 
-  /** set the index of the current selection
-   *
-   * @param val
-   */
-  public void setIndex(final int val)
-  {
-    _currentlySelectedValue = val;
-  }
+	/**
+	 * set the index of the current selection
+	 *
+	 * @param val
+	 */
+	public void setIndex(final int val) {
+		_currentlySelectedValue = val;
+	}
 
-  public void setAsText(final String val)
-  {
-    // loop through the tags to match this
-    final String [] theTags = getTags();
-    for(int i=0;i<theTags.length;i++)
-    {
-      if(theTags[i].equals(val))
-      {
-        _currentlySelectedValue = i;
-        break;
-      }
-    }
-  }
-
-  public String getAsText()
-  {
-    return getTags()[_currentlySelectedValue];
-  }
+	/**
+	 * select this vlaue
+	 *
+	 * @param p1
+	 */
+	@Override
+	public void setValue(final Object p1) {
+		if (p1 instanceof String) {
+			final String val = (String) p1;
+			setAsText(val);
+		} else if (p1 instanceof Integer) {
+			_currentlySelectedValue = ((Integer) p1).intValue();
+		}
+	}
 }
-

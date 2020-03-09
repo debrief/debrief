@@ -1,264 +1,264 @@
 package edu.nps.moves.dis7;
 
-import java.util.*;
-import java.io.*;
-import edu.nps.moves.disenum.*;
-import edu.nps.moves.disutil.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
 
 /**
  * Effect of IO on an entity. Section 6.2.49.3
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class IOEffect extends Object implements Serializable
-{
-   protected long  recordType = (long)5500;
+public class IOEffect extends Object implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   protected int  recordLength = (int)16;
+	protected long recordType = 5500;
 
-   protected short  ioStatus;
+	protected int recordLength = 16;
 
-   protected short  ioLinkType;
+	protected short ioStatus;
 
-   protected EntityID  ioEffect = new EntityID(); 
+	protected short ioLinkType;
 
-   protected short  ioEffectDutyCycle;
+	protected EntityID ioEffect = new EntityID();
 
-   protected int  ioEffectDuration;
+	protected short ioEffectDutyCycle;
 
-   protected int  ioProcess;
+	protected int ioEffectDuration;
 
-   protected int  padding = (int)0;
+	protected int ioProcess;
 
+	protected int padding = 0;
 
-/** Constructor */
- public IOEffect()
- {
- }
+	/** Constructor */
+	public IOEffect() {
+	}
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-   marshalSize = marshalSize + 4;  // recordType
-   marshalSize = marshalSize + 2;  // recordLength
-   marshalSize = marshalSize + 1;  // ioStatus
-   marshalSize = marshalSize + 1;  // ioLinkType
-   marshalSize = marshalSize + ioEffect.getMarshalledSize();  // ioEffect
-   marshalSize = marshalSize + 1;  // ioEffectDutyCycle
-   marshalSize = marshalSize + 2;  // ioEffectDuration
-   marshalSize = marshalSize + 2;  // ioProcess
-   marshalSize = marshalSize + 2;  // padding
+		if (this == obj) {
+			return true;
+		}
 
-   return marshalSize;
-}
+		if (obj == null) {
+			return false;
+		}
 
+		if (getClass() != obj.getClass())
+			return false;
 
-public void setRecordType(long pRecordType)
-{ recordType = pRecordType;
-}
+		return equalsImpl(obj);
+	}
 
-public long getRecordType()
-{ return recordType; 
-}
+	/**
+	 * Compare all fields that contribute to the state, ignoring transient and
+	 * static fields, for <code>this</code> and the supplied object
+	 *
+	 * @param obj the object to compare to
+	 * @return true if the objects are equal, false otherwise.
+	 */
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-public void setRecordLength(int pRecordLength)
-{ recordLength = pRecordLength;
-}
+		if (!(obj instanceof IOEffect))
+			return false;
 
-public int getRecordLength()
-{ return recordLength; 
-}
+		final IOEffect rhs = (IOEffect) obj;
 
-public void setIoStatus(short pIoStatus)
-{ ioStatus = pIoStatus;
-}
+		if (!(recordType == rhs.recordType))
+			ivarsEqual = false;
+		if (!(recordLength == rhs.recordLength))
+			ivarsEqual = false;
+		if (!(ioStatus == rhs.ioStatus))
+			ivarsEqual = false;
+		if (!(ioLinkType == rhs.ioLinkType))
+			ivarsEqual = false;
+		if (!(ioEffect.equals(rhs.ioEffect)))
+			ivarsEqual = false;
+		if (!(ioEffectDutyCycle == rhs.ioEffectDutyCycle))
+			ivarsEqual = false;
+		if (!(ioEffectDuration == rhs.ioEffectDuration))
+			ivarsEqual = false;
+		if (!(ioProcess == rhs.ioProcess))
+			ivarsEqual = false;
+		if (!(padding == rhs.padding))
+			ivarsEqual = false;
 
-public short getIoStatus()
-{ return ioStatus; 
-}
+		return ivarsEqual;
+	}
 
-public void setIoLinkType(short pIoLinkType)
-{ ioLinkType = pIoLinkType;
-}
+	public EntityID getIoEffect() {
+		return ioEffect;
+	}
 
-public short getIoLinkType()
-{ return ioLinkType; 
-}
+	public int getIoEffectDuration() {
+		return ioEffectDuration;
+	}
 
-public void setIoEffect(EntityID pIoEffect)
-{ ioEffect = pIoEffect;
-}
+	public short getIoEffectDutyCycle() {
+		return ioEffectDutyCycle;
+	}
 
-public EntityID getIoEffect()
-{ return ioEffect; 
-}
+	public short getIoLinkType() {
+		return ioLinkType;
+	}
 
-public void setIoEffectDutyCycle(short pIoEffectDutyCycle)
-{ ioEffectDutyCycle = pIoEffectDutyCycle;
-}
+	public int getIoProcess() {
+		return ioProcess;
+	}
 
-public short getIoEffectDutyCycle()
-{ return ioEffectDutyCycle; 
-}
+	public short getIoStatus() {
+		return ioStatus;
+	}
 
-public void setIoEffectDuration(int pIoEffectDuration)
-{ ioEffectDuration = pIoEffectDuration;
-}
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
-public int getIoEffectDuration()
-{ return ioEffectDuration; 
-}
+		marshalSize = marshalSize + 4; // recordType
+		marshalSize = marshalSize + 2; // recordLength
+		marshalSize = marshalSize + 1; // ioStatus
+		marshalSize = marshalSize + 1; // ioLinkType
+		marshalSize = marshalSize + ioEffect.getMarshalledSize(); // ioEffect
+		marshalSize = marshalSize + 1; // ioEffectDutyCycle
+		marshalSize = marshalSize + 2; // ioEffectDuration
+		marshalSize = marshalSize + 2; // ioProcess
+		marshalSize = marshalSize + 2; // padding
 
-public void setIoProcess(int pIoProcess)
-{ ioProcess = pIoProcess;
-}
+		return marshalSize;
+	}
 
-public int getIoProcess()
-{ return ioProcess; 
-}
+	public int getPadding() {
+		return padding;
+	}
 
-public void setPadding(int pPadding)
-{ padding = pPadding;
-}
+	public int getRecordLength() {
+		return recordLength;
+	}
 
-public int getPadding()
-{ return padding; 
-}
+	public long getRecordType() {
+		return recordType;
+	}
 
+	public void marshal(final DataOutputStream dos) {
+		try {
+			dos.writeInt((int) recordType);
+			dos.writeShort((short) recordLength);
+			dos.writeByte((byte) ioStatus);
+			dos.writeByte((byte) ioLinkType);
+			ioEffect.marshal(dos);
+			dos.writeByte((byte) ioEffectDutyCycle);
+			dos.writeShort((short) ioEffectDuration);
+			dos.writeShort((short) ioProcess);
+			dos.writeShort((short) padding);
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
-public void marshal(DataOutputStream dos)
-{
-    try 
-    {
-       dos.writeInt( (int)recordType);
-       dos.writeShort( (short)recordLength);
-       dos.writeByte( (byte)ioStatus);
-       dos.writeByte( (byte)ioLinkType);
-       ioEffect.marshal(dos);
-       dos.writeByte( (byte)ioEffectDutyCycle);
-       dos.writeShort( (short)ioEffectDuration);
-       dos.writeShort( (short)ioProcess);
-       dos.writeShort( (short)padding);
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	public void marshal(final java.nio.ByteBuffer buff) {
+		buff.putInt((int) recordType);
+		buff.putShort((short) recordLength);
+		buff.put((byte) ioStatus);
+		buff.put((byte) ioLinkType);
+		ioEffect.marshal(buff);
+		buff.put((byte) ioEffectDutyCycle);
+		buff.putShort((short) ioEffectDuration);
+		buff.putShort((short) ioProcess);
+		buff.putShort((short) padding);
+	} // end of marshal method
 
-public void unmarshal(DataInputStream dis)
-{
-    try 
-    {
-       recordType = dis.readInt();
-       recordLength = (int)dis.readUnsignedShort();
-       ioStatus = (short)dis.readUnsignedByte();
-       ioLinkType = (short)dis.readUnsignedByte();
-       ioEffect.unmarshal(dis);
-       ioEffectDutyCycle = (short)dis.readUnsignedByte();
-       ioEffectDuration = (int)dis.readUnsignedShort();
-       ioProcess = (int)dis.readUnsignedShort();
-       padding = (int)dis.readUnsignedShort();
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+	public void setIoEffect(final EntityID pIoEffect) {
+		ioEffect = pIoEffect;
+	}
 
+	public void setIoEffectDuration(final int pIoEffectDuration) {
+		ioEffectDuration = pIoEffectDuration;
+	}
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
-       buff.putInt( (int)recordType);
-       buff.putShort( (short)recordLength);
-       buff.put( (byte)ioStatus);
-       buff.put( (byte)ioLinkType);
-       ioEffect.marshal(buff);
-       buff.put( (byte)ioEffectDutyCycle);
-       buff.putShort( (short)ioEffectDuration);
-       buff.putShort( (short)ioProcess);
-       buff.putShort( (short)padding);
-    } // end of marshal method
+	public void setIoEffectDutyCycle(final short pIoEffectDutyCycle) {
+		ioEffectDutyCycle = pIoEffectDutyCycle;
+	}
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       recordType = buff.getInt();
-       recordLength = (int)(buff.getShort() & 0xFFFF);
-       ioStatus = (short)(buff.get() & 0xFF);
-       ioLinkType = (short)(buff.get() & 0xFF);
-       ioEffect.unmarshal(buff);
-       ioEffectDutyCycle = (short)(buff.get() & 0xFF);
-       ioEffectDuration = (int)(buff.getShort() & 0xFFFF);
-       ioProcess = (int)(buff.getShort() & 0xFFFF);
-       padding = (int)(buff.getShort() & 0xFFFF);
- } // end of unmarshal method 
+	public void setIoLinkType(final short pIoLinkType) {
+		ioLinkType = pIoLinkType;
+	}
 
+	public void setIoProcess(final int pIoProcess) {
+		ioProcess = pIoProcess;
+	}
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+	public void setIoStatus(final short pIoStatus) {
+		ioStatus = pIoStatus;
+	}
 
-    if(this == obj){
-      return true;
-    }
+	public void setPadding(final int pPadding) {
+		padding = pPadding;
+	}
 
-    if(obj == null){
-       return false;
-    }
+	public void setRecordLength(final int pRecordLength) {
+		recordLength = pRecordLength;
+	}
 
-    if(getClass() != obj.getClass())
-        return false;
+	public void setRecordType(final long pRecordType) {
+		recordType = pRecordType;
+	}
 
-    return equalsImpl(obj);
- }
+	public void unmarshal(final DataInputStream dis) {
+		try {
+			recordType = dis.readInt();
+			recordLength = dis.readUnsignedShort();
+			ioStatus = (short) dis.readUnsignedByte();
+			ioLinkType = (short) dis.readUnsignedByte();
+			ioEffect.unmarshal(dis);
+			ioEffectDutyCycle = (short) dis.readUnsignedByte();
+			ioEffectDuration = dis.readUnsignedShort();
+			ioProcess = dis.readUnsignedShort();
+			padding = dis.readUnsignedShort();
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
- /**
-  * Compare all fields that contribute to the state, ignoring
- transient and static fields, for <code>this</code> and the supplied object
-  * @param obj the object to compare to
-  * @return true if the objects are equal, false otherwise.
-  */
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
-
-    if(!(obj instanceof IOEffect))
-        return false;
-
-     final IOEffect rhs = (IOEffect)obj;
-
-     if( ! (recordType == rhs.recordType)) ivarsEqual = false;
-     if( ! (recordLength == rhs.recordLength)) ivarsEqual = false;
-     if( ! (ioStatus == rhs.ioStatus)) ivarsEqual = false;
-     if( ! (ioLinkType == rhs.ioLinkType)) ivarsEqual = false;
-     if( ! (ioEffect.equals( rhs.ioEffect) )) ivarsEqual = false;
-     if( ! (ioEffectDutyCycle == rhs.ioEffectDutyCycle)) ivarsEqual = false;
-     if( ! (ioEffectDuration == rhs.ioEffectDuration)) ivarsEqual = false;
-     if( ! (ioProcess == rhs.ioProcess)) ivarsEqual = false;
-     if( ! (padding == rhs.padding)) ivarsEqual = false;
-
-    return ivarsEqual;
- }
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		recordType = buff.getInt();
+		recordLength = buff.getShort() & 0xFFFF;
+		ioStatus = (short) (buff.get() & 0xFF);
+		ioLinkType = (short) (buff.get() & 0xFF);
+		ioEffect.unmarshal(buff);
+		ioEffectDutyCycle = (short) (buff.get() & 0xFF);
+		ioEffectDuration = buff.getShort() & 0xFFFF;
+		ioProcess = buff.getShort() & 0xFFFF;
+		padding = buff.getShort() & 0xFFFF;
+	} // end of unmarshal method
 } // end of class

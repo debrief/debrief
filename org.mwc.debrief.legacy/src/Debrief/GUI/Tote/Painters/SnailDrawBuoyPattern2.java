@@ -1,17 +1,17 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 package Debrief.GUI.Tote.Painters;
 
 import java.awt.Graphics;
@@ -31,80 +31,69 @@ import MWC.GenericData.WorldArea;
  * class to handle drawing a buoy pattern when we're in snail mode
  *
  */
-public final class SnailDrawBuoyPattern2 implements
-    SnailPainter2.drawHighLight2, Editable
-{
+public final class SnailDrawBuoyPattern2 implements SnailPainter2.drawHighLight2, Editable {
 
-  @Override
-  public final boolean canPlot(final Watchable wt)
-  {
-    boolean res = false;
+	@Override
+	public final boolean canPlot(final Watchable wt) {
+		boolean res = false;
 
-    if (wt instanceof Debrief.Wrappers.BuoyPatternWrapper.BuoyPatternAdaptor)
-    {
-      res = true;
-    }
-    return res;
-  }
+		if (wt instanceof Debrief.Wrappers.BuoyPatternWrapper.BuoyPatternAdaptor) {
+			res = true;
+		}
+		return res;
+	}
 
-  ///////////////////////////////////
-  // member functions
-  //////////////////////////////////
-  @Override
-  public final Rectangle drawMe(final MWC.Algorithms.PlainProjection proj,
-      final Graphics dest, final WatchableList list, final Watchable watch,
-      final TotePainter parent, final HiResDate dtg,
-      final ColorFadeCalculator fader)
-  {
-    Rectangle thisR = null;
+	///////////////////////////////////
+	// member functions
+	//////////////////////////////////
+	@Override
+	public final Rectangle drawMe(final MWC.Algorithms.PlainProjection proj, final Graphics dest,
+			final WatchableList list, final Watchable watch, final TotePainter parent, final HiResDate dtg,
+			final ColorFadeCalculator fader) {
+		Rectangle thisR = null;
 
-    // get a pointer to the fix
-    final BuoyPatternWrapper.BuoyPatternAdaptor adaptor =
-        (BuoyPatternWrapper.BuoyPatternAdaptor) watch;
+		// get a pointer to the fix
+		final BuoyPatternWrapper.BuoyPatternAdaptor adaptor = (BuoyPatternWrapper.BuoyPatternAdaptor) watch;
 
-    final BuoyPatternWrapper pattern = adaptor.getPattern();
+		final BuoyPatternWrapper pattern = adaptor.getPattern();
 
-    // get the current area of the watchable
-    final WorldArea wa = watch.getBounds();
-    // convert to screen coordinates
-    final Point tl = new Point(proj.toScreen(wa.getTopLeft()));
-    final Point br = new Point(proj.toScreen(wa.getBottomRight()));
+		// get the current area of the watchable
+		final WorldArea wa = watch.getBounds();
+		// convert to screen coordinates
+		final Point tl = new Point(proj.toScreen(wa.getTopLeft()));
+		final Point br = new Point(proj.toScreen(wa.getBottomRight()));
 
-    // create our own canvas object
-    final CanvasAdaptor cad = new CanvasAdaptor(proj, dest);
+		// create our own canvas object
+		final CanvasAdaptor cad = new CanvasAdaptor(proj, dest);
 
-    // and do the paint
-    pattern.paint(cad);
+		// and do the paint
+		pattern.paint(cad);
 
-    // extend the area covered to include the stick
+		// extend the area covered to include the stick
 
-    thisR = new Rectangle(tl);
-    thisR.add(br);
+		thisR = new Rectangle(tl);
+		thisR.add(br);
 
-    return thisR;
-  }
+		return thisR;
+	}
 
-  @Override
-  public final Editable.EditorType getInfo()
-  {
-    return null;
-  }
+	@Override
+	public final Editable.EditorType getInfo() {
+		return null;
+	}
 
-  @Override
-  public final String getName()
-  {
-    return "Snail Bouypattern Plotter";
-  }
+	@Override
+	public final String getName() {
+		return "Snail Bouypattern Plotter";
+	}
 
-  @Override
-  public final boolean hasEditor()
-  {
-    return false;
-  }
+	@Override
+	public final boolean hasEditor() {
+		return false;
+	}
 
-  @Override
-  public final String toString()
-  {
-    return getName();
-  }
+	@Override
+	public final String toString() {
+		return getName();
+	}
 }

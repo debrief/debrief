@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package com.planetmayo.debrief.satc_rcp.ui.converters;
 
 import org.eclipse.core.databinding.conversion.IConverter;
@@ -28,53 +29,47 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 
 import com.planetmayo.debrief.satc.util.ObjectUtils;
 
-public class MinMaxLimitObservable extends AbstractObservableValue
-{
-	private IObservableValue minObservable;
-	private IObservableValue maxObservable;
-	private IConverter converter;
-	private PrivateInterface privateInterface;
-	private Object cachedValue;
-	private boolean updating;
-	private boolean intervalMode;
-	private String suffix;
-
-	private class PrivateInterface implements IChangeListener, IStaleListener,
-			IDisposeListener
-	{
-		public void handleDispose(DisposeEvent staleEvent)
-		{
-			dispose();
-		}
-
-		public void handleChange(ChangeEvent event)
-		{
+public class MinMaxLimitObservable extends AbstractObservableValue {
+	private class PrivateInterface implements IChangeListener, IStaleListener, IDisposeListener {
+		@Override
+		public void handleChange(final ChangeEvent event) {
 			if (!isDisposed() && !updating)
 				notifyIfChanged();
 		}
 
-		public void handleStale(StaleEvent staleEvent)
-		{
+		@Override
+		public void handleDispose(final DisposeEvent staleEvent) {
+			dispose();
+		}
+
+		@Override
+		public void handleStale(final StaleEvent staleEvent) {
 			if (!isDisposed())
 				fireStale();
 		}
 	}
 
-	public MinMaxLimitObservable(IObservableValue minObservable,
-			IObservableValue maxObservable)
-	{
+	private IObservableValue minObservable;
+	private IObservableValue maxObservable;
+	private final IConverter converter;
+	private PrivateInterface privateInterface;
+	private Object cachedValue;
+	private boolean updating;
+	private final boolean intervalMode;
+
+	private final String suffix;
+
+	public MinMaxLimitObservable(final IObservableValue minObservable, final IObservableValue maxObservable) {
 		this(minObservable, maxObservable, null, null);
 	}
 
-	public MinMaxLimitObservable(IObservableValue minObservable,
-			IObservableValue maxObservable, IConverter converter)
-	{
+	public MinMaxLimitObservable(final IObservableValue minObservable, final IObservableValue maxObservable,
+			final IConverter converter) {
 		this(minObservable, maxObservable, converter, null);
 	}
 
-	public MinMaxLimitObservable(IObservableValue minObservable,
-			IObservableValue maxObservable, IConverter converter, String suffix)
-	{
+	public MinMaxLimitObservable(final IObservableValue minObservable, final IObservableValue maxObservable,
+			final IConverter converter, final String suffix) {
 		super(minObservable.getRealm());
 		this.minObservable = minObservable;
 		this.maxObservable = maxObservable;
@@ -89,133 +84,16 @@ public class MinMaxLimitObservable extends AbstractObservableValue
 			maxObservable.addDisposeListener(privateInterface);
 	}
 
-	public Object getValueType()
-	{
-		return String.class;
-	}
-
-	protected void firstListenerAdded()
-	{
-		cachedValue = doGetValue();
-
-		if (minObservable != null)
-		{
-			minObservable.addChangeListener(privateInterface);
-			minObservable.addStaleListener(privateInterface);
-		}
-
-		if (maxObservable != null)
-		{
-			maxObservable.addChangeListener(privateInterface);
-			maxObservable.addStaleListener(privateInterface);
-		}
-	}
-
-	protected void lastListenerRemoved()
-	{
-		if (minObservable != null && !minObservable.isDisposed())
-		{
-			minObservable.removeChangeListener(privateInterface);
-			minObservable.removeStaleListener(privateInterface);
-		}
-
-		if (maxObservable != null && !maxObservable.isDisposed())
-		{
-			maxObservable.removeChangeListener(privateInterface);
-			maxObservable.removeStaleListener(privateInterface);
-		}
-
-		cachedValue = null;
-	}
-
-	private void notifyIfChanged()
-	{
-		if (hasListeners())
-		{
-			Object oldValue = cachedValue;
-			Object newValue = cachedValue = doGetValue();
-			if (!ObjectUtils.safeEquals(oldValue, newValue))
-			{
-				fireValueChange(Diffs.createValueDiff(oldValue, newValue));
-			}
-		}
-	}
-
-	protected Object doGetValue()
-	{
-		String minString = "";
-		String maxString = "";
-		Object minValue = minObservable == null ? null : minObservable.getValue();
-		Object maxValue = maxObservable == null ? null : maxObservable.getValue();
-
-		if (minValue == null && maxValue == null)
-		{
-			return null;
-		}
-		if (minValue != null)
-		{
-			if (converter != null)
-			{
-				minString = converter.convert(minValue).toString();
-			}
-			else
-			{
-				minString = "" + ((Number) minValue).intValue();
-			}
-		}
-		if (maxValue != null)
-		{
-			if (converter != null)
-			{
-				maxString = converter.convert(maxValue).toString();
-			}
-			else
-			{
-				maxString = "" + ((Number) maxValue).intValue();
-			}
-		}
-		if (!intervalMode)
-		{
-			return minString + maxString;
-		}
-		if (minString.isEmpty())
-		{
-			return "< " + maxString;
-		}
-		if (maxString.isEmpty())
-		{
-			return "> " + minString;
-		}
-		return minString + (maxString.equals(minString) ? "" : " - " + maxString)
-				+ suffix;
-	}
-
-	protected void doSetValue(Object value)
-	{
-		throw new IllegalStateException("Hard contraints are read-only!");
-	}
-
-	public boolean isStale()
-	{
-		ObservableTracker.getterCalled(this);
-		boolean minStale = minObservable != null ? minObservable.isStale() : false;
-		boolean maxStale = maxObservable != null ? maxObservable.isStale() : false;
-		return minStale || maxStale;
-	}
-
-	public synchronized void dispose()
-	{
+	@Override
+	public synchronized void dispose() {
 		checkRealm();
-		if (!isDisposed())
-		{
-			if (minObservable != null && !minObservable.isDisposed())
-			{
+		if (!isDisposed()) {
+			if (minObservable != null && !minObservable.isDisposed()) {
 				minObservable.removeDisposeListener(privateInterface);
 				minObservable.removeChangeListener(privateInterface);
 				minObservable.removeStaleListener(privateInterface);
 			}
-			if (maxObservable != null && !maxObservable.isDisposed())
-			{
+			if (maxObservable != null && !maxObservable.isDisposed()) {
 				maxObservable.removeDisposeListener(privateInterface);
 				maxObservable.removeChangeListener(privateInterface);
 				maxObservable.removeStaleListener(privateInterface);
@@ -226,5 +104,99 @@ public class MinMaxLimitObservable extends AbstractObservableValue
 			cachedValue = null;
 		}
 		super.dispose();
+	}
+
+	@Override
+	protected Object doGetValue() {
+		String minString = "";
+		String maxString = "";
+		final Object minValue = minObservable == null ? null : minObservable.getValue();
+		final Object maxValue = maxObservable == null ? null : maxObservable.getValue();
+
+		if (minValue == null && maxValue == null) {
+			return null;
+		}
+		if (minValue != null) {
+			if (converter != null) {
+				minString = converter.convert(minValue).toString();
+			} else {
+				minString = "" + ((Number) minValue).intValue();
+			}
+		}
+		if (maxValue != null) {
+			if (converter != null) {
+				maxString = converter.convert(maxValue).toString();
+			} else {
+				maxString = "" + ((Number) maxValue).intValue();
+			}
+		}
+		if (!intervalMode) {
+			return minString + maxString;
+		}
+		if (minString.isEmpty()) {
+			return "< " + maxString;
+		}
+		if (maxString.isEmpty()) {
+			return "> " + minString;
+		}
+		return minString + (maxString.equals(minString) ? "" : " - " + maxString) + suffix;
+	}
+
+	@Override
+	protected void doSetValue(final Object value) {
+		throw new IllegalStateException("Hard contraints are read-only!");
+	}
+
+	@Override
+	protected void firstListenerAdded() {
+		cachedValue = doGetValue();
+
+		if (minObservable != null) {
+			minObservable.addChangeListener(privateInterface);
+			minObservable.addStaleListener(privateInterface);
+		}
+
+		if (maxObservable != null) {
+			maxObservable.addChangeListener(privateInterface);
+			maxObservable.addStaleListener(privateInterface);
+		}
+	}
+
+	@Override
+	public Object getValueType() {
+		return String.class;
+	}
+
+	@Override
+	public boolean isStale() {
+		ObservableTracker.getterCalled(this);
+		final boolean minStale = minObservable != null ? minObservable.isStale() : false;
+		final boolean maxStale = maxObservable != null ? maxObservable.isStale() : false;
+		return minStale || maxStale;
+	}
+
+	@Override
+	protected void lastListenerRemoved() {
+		if (minObservable != null && !minObservable.isDisposed()) {
+			minObservable.removeChangeListener(privateInterface);
+			minObservable.removeStaleListener(privateInterface);
+		}
+
+		if (maxObservable != null && !maxObservable.isDisposed()) {
+			maxObservable.removeChangeListener(privateInterface);
+			maxObservable.removeStaleListener(privateInterface);
+		}
+
+		cachedValue = null;
+	}
+
+	private void notifyIfChanged() {
+		if (hasListeners()) {
+			final Object oldValue = cachedValue;
+			final Object newValue = cachedValue = doGetValue();
+			if (!ObjectUtils.safeEquals(oldValue, newValue)) {
+				fireValueChange(Diffs.createValueDiff(oldValue, newValue));
+			}
+		}
 	}
 }

@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.cmap.core.property_support.lengtheditor.preferences;
 
 import java.io.BufferedReader;
@@ -21,12 +22,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.IStatus;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.lengtheditor.Messages;
 
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
-
 
 public class LengthsRegistry {
 
@@ -35,6 +35,14 @@ public class LengthsRegistry {
 	static final String FILE_NAME = "fileName";//$NON-NLS-1$
 
 	private static LengthsRegistry ourInstance;
+
+	public synchronized static LengthsRegistry getRegistry() {
+		if (ourInstance == null) {
+			ourInstance = new LengthsRegistry();
+			ourInstance.load();
+		}
+		return ourInstance;
+	}
 
 	private String myFileName;
 
@@ -46,18 +54,6 @@ public class LengthsRegistry {
 		setFileName(CorePlugin.getDefault().getPreferenceStore().getString(FILE_NAME));
 	}
 
-	public synchronized static LengthsRegistry getRegistry() {
-		if (ourInstance == null) {
-			ourInstance = new LengthsRegistry();
-			ourInstance.load();
-		}
-		return ourInstance;
-	}
-
-	public int getItemsCount() {
-		return Math.min(myNames.size(), myLengths.size());
-	}
-
 	/**
 	 * Clear data from registry
 	 */
@@ -66,9 +62,24 @@ public class LengthsRegistry {
 		getLengths().clear();
 	}
 
-	public void reload() {
-		clear();
-		load();
+	public String getFileName() {
+		return myFileName;
+	}
+
+	public int getItemsCount() {
+		return Math.min(myNames.size(), myLengths.size());
+	}
+
+	public List<Double> getLengths() {
+		return myLengths;
+	}
+
+	public List<String> getNames() {
+		return myNames;
+	}
+
+	private boolean isHeader() {
+		return true;
 	}
 
 	/**
@@ -76,7 +87,7 @@ public class LengthsRegistry {
 	 */
 	private void load() {
 		if (getFileName() == null || getFileName().trim().length() == 0) {
-			CorePlugin.logError(Status.WARNING,Messages.LengthsRegistry_EmptyFile, null);
+			CorePlugin.logError(IStatus.WARNING, Messages.LengthsRegistry_EmptyFile, null);
 			return;
 		}
 
@@ -85,7 +96,7 @@ public class LengthsRegistry {
 			try {
 				String nextLine = null;
 				// skip header
-				if (isHeader()){
+				if (isHeader()) {
 					br.readLine();
 				}
 				try {
@@ -96,16 +107,12 @@ public class LengthsRegistry {
 					br.close();
 				}
 			} catch (final IOException e) {
-				CorePlugin.logError(Status.WARNING,Messages.LengthsRegistry_ErrorOnReading, e);
+				CorePlugin.logError(IStatus.WARNING, Messages.LengthsRegistry_ErrorOnReading, e);
 			}
 		} catch (final FileNotFoundException e) {
-			CorePlugin.logError(Status.WARNING,Messages.LengthsRegistry_FileNotFound, null);
+			CorePlugin.logError(IStatus.WARNING, Messages.LengthsRegistry_FileNotFound, null);
 		}
 
-	}
-
-	private boolean isHeader() {
-		return true;
 	}
 
 	private void parseLine(final String nextLine) {
@@ -125,19 +132,12 @@ public class LengthsRegistry {
 		}
 	}
 
+	public void reload() {
+		clear();
+		load();
+	}
+
 	public void setFileName(final String fileName) {
 		myFileName = fileName;
-	}
-
-	public String getFileName() {
-		return myFileName;
-	}
-
-	public List<String> getNames() {
-		return myNames;
-	}
-
-	public List<Double> getLengths() {
-		return myLengths;
 	}
 }

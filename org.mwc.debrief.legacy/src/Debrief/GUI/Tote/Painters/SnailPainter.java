@@ -1,17 +1,17 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 package Debrief.GUI.Tote.Painters;
 
 // Copyright MWC 2000, Debrief 3 Project
@@ -259,651 +259,543 @@ import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 
-public class SnailPainter extends TotePainter
-{
-
-  public interface drawHighLight
-  {
-    public boolean canPlot(Watchable wt);
-
-    public java.awt.Rectangle drawMe(PlainProjection proj, Graphics dest,
-        WatchableList list, Watchable watch, SnailPainter parent, HiResDate dtg,
-        Color backColor);
-  }
-
-  // /////////////////////////////////
-  // member variables
-  // ////////////////////////////////
-
-  static public final class testMe extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-    public testMe(final String val)
-    {
-      super(val);
-    }
-
-    public final void testMyParams()
-    {
-      Editable ed = new SnailPainter(null, null, null);
-      editableTesterSupport.testParams(ed, this);
-      ed = null;
-    }
-  }
-
-  public static final String SNAIL_NAME = "Snail";
-
-  public static void extractPlottables(final Layer thisLayer,
-      final Vector<Plottable> res)
-  {
-    // just see if this layer is one of our back-ground layesr
-    final Enumeration<Editable> iter = thisLayer.elements();
-    while (iter.hasMoreElements())
-    {
-      final Plottable thisPlottable = (Plottable) iter.nextElement();
-      if (thisPlottable instanceof ShapeWrapper)
-      {
-        // see if has a valid DTG -- IS IT TIME-RELATED?
-        final ShapeWrapper swp = (ShapeWrapper) thisPlottable;
-        final HiResDate dat = swp.getStartDTG();
-        final HiResDate endDat = swp.getEndDTG();
-        if (dat == null && endDat == null)
-        {
-          // let's use it
-          res.addElement(thisPlottable);
-        }
-        else if (dat != null)
-        {
-          // so it's got a date, check if the date represents our null
-          // value
-          // anyway
-          if (dat.getMicros() == -1)
-            res.addElement(thisPlottable);
-        }
-      }
-      else if (thisPlottable instanceof LabelWrapper)
-      {
-        // see if has a valid DTG -- IS IT TIME-RELATED?
-        final LabelWrapper lwp = (LabelWrapper) thisPlottable;
-        final HiResDate dat = lwp.getStartDTG();
-        final HiResDate endDat = lwp.getEndDTG();
-        // check if it is using our "null" date value
-        if (dat == null && endDat == null)
-        {
-          // let's use it
-          res.addElement(thisPlottable);
-        }
-        else
-        {
-          // it's got a date, which makes it one of our watchables, it
-          // will
-          // get caught elsewhere
-        }
-      }
-      else if (thisPlottable instanceof LightweightTrackWrapper)
-      {
-        // ok, ignore it. it's tactical
-      }
-      else
-      {
-        // it's not a shape - it's probably the grid or the scale,
-        res.addElement(thisPlottable);
-      } // whether it's a labelwrapper
-    } // looping through the elements of this layer
-  }
-
-  /**
-   * method to return the non-tactical items on the plot, such as scale, grid, coast etc.
-   */
-  public static Vector<Plottable> getNonWatchables(final Layer thisLayer)
-  {
-    final Vector<Plottable> res = new Vector<Plottable>(0, 1);
-    // is this layer visible?
-    if (thisLayer.getVisible())
-    {
-      if (thisLayer instanceof Layer.BackgroundLayer)
-      {
-        res.addElement(thisLayer);
-      }
-      else if ((thisLayer instanceof FixWrapper)
-          || (thisLayer instanceof LightweightTrackWrapper)
-          || (thisLayer instanceof TrackWrapper)
-          || (thisLayer instanceof BuoyPatternWrapper)
-          || (thisLayer instanceof SensorWrapper)
-          || (thisLayer instanceof TMAWrapper)
-          || (thisLayer instanceof TrackSegment)
-          || (thisLayer instanceof SegmentList))
-      {
-        // ignore it - it's clearly tactical, and there's just no way
-        // it can contain non-tactical child elements
-      }
-      else
-      {
-        extractPlottables(thisLayer, res);
-      } // if this is a background layer (or not)
-    } // whether this layer is visible
-    return res;
-  }
-
-  /**
-   * method to return the non-tactical items on the plot, such as scale, grid, coast etc.
-   */
-  public static Vector<Plottable> getNonWatchables(final Layers theData)
-  {
-    final Vector<Plottable> res = new Vector<Plottable>(0, 1);
-    // step through the layers
-    final int cnt = theData.size();
-    for (int i = 0; i < cnt; i++)
-    {
-      // right, now for the next layer
-      final Layer thisLayer = theData.elementAt(i);
-
-      // get the non-watchables for this layer
-      final Vector<Plottable> theseElements = getNonWatchables(thisLayer);
-
-      // and add them to our list
-      res.addAll(theseElements);
-
-    } // loop through the layers
-    return res;
-  }
-
-  /**
-   * this is the list of items which we know have been plotted to the screen, so that we know which
-   * ones to hide
-   */
-  private final HashMap<Watchable, WatchableList> _oldWatchables;
-
-  /**
-   * the highlight plotters we know about
-   */
-  protected final Vector<SnailPainter.drawHighLight> _myHighlightPlotters;
-
-  /**
-   * the size to draw myself
-   */
-  protected final int _mySize = 5;
-
-  /**
-   * the list of painters previously used by the canvas
-   */
-  protected Vector<PaintListener> _oldPainters;
-
-  // /////////////////////////////////
-  // member functions
-  // ////////////////////////////////
-
-  /**
-   * whether we are currently painting(hiding) the old points
-   */
-  private boolean _paintingOldies;
-
-  /**
-   * the snail track plotter to use
-   */
-  private final SnailDrawFix _mySnailPlotter;
-
-  // /////////////////////////////////
-  // constructorsna
-  // ////////////////////////////////
-  public SnailPainter(final PlainChart theChart, final Layers theData,
-      final AnalysisTote theTote)
-  {
-    this(theChart, theData, theTote, "Snail");
-  }
-
-  public SnailPainter(final PlainChart theChart, final Layers theData,
-      final AnalysisTote theTote, final String myName)
-  {
-    super(theChart, theData, theTote);
-
-    _oldWatchables = new HashMap<Watchable, WatchableList>();
-
-    _mySnailPlotter = new SnailDrawFix(myName);
-
-    _myHighlightPlotters = new Vector<SnailPainter.drawHighLight>(0, 1);
-    _myHighlightPlotters.addElement(_mySnailPlotter);
-    _myHighlightPlotters.addElement(new SnailDrawBuoyPattern());
-    _myHighlightPlotters.addElement(new SnailDrawAnnotation());
-    _myHighlightPlotters.addElement(new SnailDrawSensorContact(
-        _mySnailPlotter));
-    _myHighlightPlotters.addElement(new SnailDrawTMAContact(_mySnailPlotter));
-
-    _mySnailPlotter.setPointSize(new BoundedInteger(5, 0, 0));
-    _mySnailPlotter.setVectorStretch(1);
-  }
-
-  public void createNewHighlights(final HiResDate newDTG,
-      final WatchableList _thePrimary, final CanvasType theCanvas,
-      final Graphics2D dest, final Color backColor)
-  {
-    // determine the new items
-    final Vector<Plottable> theWatchableLists = getWatchables(
-        super.getLayers());
-    _paintingOldies = false;
-
-    // sort out the line width of the primary
-    if (_thePrimary instanceof Layer)
-    {
-      final Layer ly = (Layer) _thePrimary;
-      if (dest instanceof Graphics2D)
-      {
-        final Graphics2D g2 = dest;
-        g2.setStroke(new BasicStroke(ly.getLineThickness()));
-      }
-    }
-
-    // show the current highlighter
-    Watchable[] wList = _theTote.getPrimary().getNearestTo(newDTG);
-
-    Watchable newPrimary = null;
-    if (wList.length > 0)
-      newPrimary = wList[0];
-    if (newPrimary != null)
-    {
-      final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter thisHighlighter =
-          getCurrentPrimaryHighlighter();
-      if (thisHighlighter.getName().equals("Range Rings"))
-      {
-
-        thisHighlighter.highlightIt(theCanvas.getProjection(), dest, _theTote
-            .getPrimary(), newPrimary, true);
-      }
-    }
-
-    // got through to highlight the data
-    final Enumeration<Plottable> watches = theWatchableLists.elements();
-    while (watches.hasMoreElements())
-    {
-      final WatchableList list = (WatchableList) watches.nextElement();
-      // is the primary an instance of layer (with it's own line thickness?)
-      if (list instanceof Layer)
-      {
-        final Layer ly = (Layer) list;
-        dest.setStroke(new BasicStroke(ly.getLineThickness()));
-      }
-
-      // ok, clear the nearest items
-      wList = list.getNearestTo(newDTG);
-      Watchable watch = null;
-      if (wList.length > 0)
-        watch = wList[0];
-
-      if (watch != null)
-      {
-        // plot it
-        highlightIt(theCanvas.getProjection(), dest, list, watch, newDTG,
-            backColor);
-      }
-    }
-
-    // restore the painting setup
-    dest.setPaintMode();
-    dest.dispose();
-
-    // we know we're finished with the first step now anyway
-    _firstStep = false;
-    _lastDTG = newDTG;
-
-    // do a repaint, if we have to
-    if (!_inRepaint)
-    {
-
-      // are any of the bits which changed visible?
-      if (_areaCovered != null)
-      {
-
-        // force a repaint of the plot
-
-        // grow the area covered by a shade,
-        _areaCovered.grow(2, 2);
-
-        // see if we are trying to plot in relative mode - in which
-        // case we need a full repaint
-        if (theCanvas.getProjection().getNonStandardPlotting())
-        {
-          _theChart.update();
-        }
-        else
-        {
-          // and ask for an instant update
-          // NOTE: changed this to stop JDK1.3
-          // plotting in a purple background _theChart.repaintNow(_areaCovered);
-          _theChart.repaint();
-        }
-      }
-    }
-  }
-
-  /**
-   * override the method provided by TotePainter. That method returns null, since it can rely on the
-   * other painters to generate the current data area --> there aren't any other painters here
-   * though, so we need to calculate it
-   */
-  @Override
-  public final WorldArea getDataArea()
-  {
-    return this._theChart.getDataArea();
-  }
-
-  /**
-   * NON-STANDARD implementation, we are returning the editor for our snail plotter object, not
-   * ourself
-   */
-  @Override
-  public final Editable.EditorType getInfo()
-  {
-    return _mySnailPlotter.getInfo();
-  }
-
-  @Override
-  public final String getName()
-  {
-    return toString();
-  }
-
-  /**
-   * whether to plot in the name of the vessel
-   */
-  public final boolean getPlotTrackName()
-  {
-    return _mySnailPlotter.getPlotTrackName();
-  }
-
-  /**
-   * how much to stretch this vector
-   *
-   * @return the stretch to apply
-   */
-  public final double getVectorStretch()
-  {
-    return _mySnailPlotter.getVectorStretch();
-  }
-
-  @Override
-  public final boolean hasEditor()
-  {
-    return true;
-  }
-
-  /**
-   * method to highlight a watchable.
-   */
-  private void highlightIt(final PlainProjection proj, final Graphics dest,
-      final WatchableList list, final Watchable watch, final HiResDate dtg,
-      final Color backColor)
-  {
-    // check that our graphics context is still valid -
-    // we can't, so we will just have to trap any exceptions it raises
-    try
-    {
-      // set the highlight colour
-      dest.setColor(Color.white);
-
-      // see if our plotters can plot this type of watchable
-      final Enumeration<SnailPainter.drawHighLight> iter = _myHighlightPlotters
-          .elements();
-      while (iter.hasMoreElements())
-      {
-        final SnailPainter.drawHighLight plotter = iter.nextElement();
-
-        if (plotter.canPlot(watch))
-        {
-          // does this list have a width?
-          if (list instanceof Layer)
-          {
-            final Layer ly = (Layer) list;
-            if (dest instanceof Graphics2D)
-            {
-              final Graphics2D g2 = (Graphics2D) dest;
-              g2.setStroke(new BasicStroke(ly.getLineThickness()));
-            }
-          }
-          else if (list instanceof ShapeWrapper)
-          {
-            final ShapeWrapper sw = (ShapeWrapper) list;
-            if (dest instanceof Graphics2D)
-            {
-              final Graphics2D g2 = (Graphics2D) dest;
-              g2.setStroke(new BasicStroke(sw.getShape().getLineWidth()));
-            }
-          }
-
-          final Rectangle rec = plotter.drawMe(proj, dest, list, watch, this,
-              dtg, backColor);
-
-          // add this to the list to be hidden at a later date
-          if (!_paintingOldies)
-            _oldWatchables.put(watch, list);
-
-          // just check if a rectangle got returned at all (there may not
-          // have been any valid data
-          if (rec != null)
-          {
-            if (_areaCovered == null)
-              _areaCovered = rec;
-            else
-              _areaCovered.add(rec);
-          }
-
-          // and drop out of the loop
-          break;
-        }
-      }
-
-    }
-    catch (final IllegalStateException e)
-    {
-      MWC.Utilities.Errors.Trace.trace(e);
-    }
-  }
-
-  @Override
-  public void newTime(final HiResDate oldDTG, final HiResDate newDTG,
-      final CanvasType canvas)
-  {
-
-    // check if we have any data
-    if (_theTote.getPrimary() == null)
-      return;
-
-    // check we have a valid new DTG
-    if (newDTG == null)
-    {
-      return;
-    }
-
-    // get the primary track
-    final WatchableList _thePrimary = _theTote.getPrimary();
-
-    // initialise the area covered
-    _areaCovered = null;
-
-    // prepare the chart
-    CanvasType theCanvas = canvas;
-    if (theCanvas == null)
-      theCanvas = _theChart.getCanvas();
-
-    final Graphics2D dest = (Graphics2D) theCanvas.getGraphicsTemp();
-
-    final Color backColor = theCanvas.getBackgroundColor();
-
-    // just drop out if we can't create any graphics though
-    if (dest == null)
-      return;
-
-    removeOldHighLights(oldDTG, _thePrimary, theCanvas, dest, backColor);
-
-    createNewHighlights(newDTG, _thePrimary, theCanvas, dest, backColor);
-
-  }
-
-  public void removeOldHighLights(final HiResDate oldDTG,
-      final WatchableList _thePrimary, final CanvasType theCanvas,
-      final Graphics2D dest, final Color backColor)
-  {
-    // switch to paint mode, so we can draw the background correctly
-    dest.setPaintMode();
-
-    // see if we are doing a fresh plot (in which case
-    // we will plot the non-watchables aswell)
-    if ((oldDTG == null) || (_oldWatchables.size() == 0))
-    {
-      final Vector<Plottable> nonWatches = getNonWatchables(super.getLayers());
-      final Enumeration<Plottable> iter = nonWatches.elements();
-      while (iter.hasMoreElements())
-      {
-        final Plottable p = iter.nextElement();
-        p.paint(new MWC.GUI.Canvas.CanvasAdaptor(theCanvas.getProjection(),
-            dest));
-      }
-    }
-
-    dest.setXORMode(theCanvas.getBackgroundColor());
-
-    // hide the old watchables
-    if (_oldWatchables.size() > 0)
-    {
-      _paintingOldies = true;
-
-      // check this isn't the first step
-      if (!_firstStep)
-      {
-        // find the watchable representing the current data point
-        final Watchable[] wList = _thePrimary.getNearestTo(_lastDTG);
-
-        // is the primary an instance of layer (with it's own line thickness?)
-        if (_thePrimary instanceof Layer)
-        {
-          final Layer ly = (Layer) _thePrimary;
-          dest.setStroke(new BasicStroke(ly.getLineThickness()));
-        }
-
-        // and carry on!
-
-        Watchable oldPrimary = null;
-        if (wList.length > 0)
-          oldPrimary = wList[0];
-        if (oldPrimary != null)
-        {
-          final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter thisHighlighter =
-              getCurrentPrimaryHighlighter();
-          if (thisHighlighter.getName().equals("Range Rings"))
-          {
-            thisHighlighter.highlightIt(theCanvas.getProjection(), dest,
-                _theTote.getPrimary(), oldPrimary, true);
-          }
-        }
-
-        // sort out the oldies
-        final Iterator<Watchable> oldies = _oldWatchables.keySet().iterator();
-        while (oldies.hasNext())
-        {
-          final Watchable thisOne = oldies.next();
-          // is this one instance of layer (with it's own line thickness?)
-          if (thisOne instanceof Layer)
-          {
-            final Layer ly = (Layer) thisOne;
-            if (dest instanceof Graphics2D)
-            {
-              final Graphics2D g2 = dest;
-              g2.setStroke(new BasicStroke(ly.getLineThickness()));
-            }
-          }
-
-          // ok, clear the nearest items
-          final WatchableList list = _oldWatchables.get(thisOne);
-          highlightIt(theCanvas.getProjection(), dest, list, thisOne, _lastDTG,
-              backColor);
-        }
-      }
-
-      // now remove all of the watchables from it
-      _oldWatchables.clear();
-    }
-  }
-
-  // ///////////////////////////////////////
-  // accessors for the beaninfo
-  // //////////////////////////////////////
-  // ////////////////////////////////////////////////////////
-  // accessors for editable parameters
-  // ///////////////////////////////////////////////////////
-
-  /**
-   * whether to plot in the name of the vessel
-   */
-  public final void setPlotTrackName(final boolean val)
-  {
-    _mySnailPlotter.setPlotTrackName(val);
-  }
-
-  /**
-   * the stretch to apply to the speed vector (pixels per knot)
-   *
-   * @param val
-   *          the strech to use = 1 is 1 pixel per knot
-   */
-  public final void setVectorStretch(final double val)
-  {
-    _mySnailPlotter.setVectorStretch(val);
-  }
-
-  //
-  @Override
-  public void steppingModeChanged(final boolean on)
-  {
-    if (on)
-    {
-      // remove the current painters for the canvas
-      final Enumeration<CanvasType.PaintListener> iter = _theChart.getCanvas()
-          .getPainters();
-
-      _oldPainters = new Vector<PaintListener>(0, 1);
-
-      // take a copy of these painters
-      while (iter.hasMoreElements())
-      {
-        _oldPainters.addElement(iter.nextElement());
-      }
-
-      // and remove the painters
-      final Enumeration<CanvasType.PaintListener> oldies = _oldPainters
-          .elements();
-      while (oldies.hasMoreElements())
-      {
-        _theChart.getCanvas().removePainter(oldies.nextElement());
-      }
-
-      // add us as a painter
-      _theChart.getCanvas().addPainter(this);
-
-      // and redraw the chart
-      _theChart.update();
-
-    }
-    else
-    {
-      // remove us as a painter
-      _theChart.getCanvas().removePainter(this);
-
-      // restore the painters
-      final Enumeration<CanvasType.PaintListener> oldies = _oldPainters
-          .elements();
-      while (oldies.hasMoreElements())
-      {
-        _theChart.getCanvas().addPainter(oldies.nextElement());
-      }
-
-    }
-
-  }
-
-  @Override
-  public String toString()
-  {
-    return SNAIL_NAME;
-  }
+public class SnailPainter extends TotePainter {
+
+	public interface drawHighLight {
+		public boolean canPlot(Watchable wt);
+
+		public java.awt.Rectangle drawMe(PlainProjection proj, Graphics dest, WatchableList list, Watchable watch,
+				SnailPainter parent, HiResDate dtg, Color backColor);
+	}
+
+	// /////////////////////////////////
+	// member variables
+	// ////////////////////////////////
+
+	static public final class testMe extends junit.framework.TestCase {
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public testMe(final String val) {
+			super(val);
+		}
+
+		public final void testMyParams() {
+			Editable ed = new SnailPainter(null, null, null);
+			editableTesterSupport.testParams(ed, this);
+			ed = null;
+		}
+	}
+
+	public static final String SNAIL_NAME = "Snail";
+
+	public static void extractPlottables(final Layer thisLayer, final Vector<Plottable> res) {
+		// just see if this layer is one of our back-ground layesr
+		final Enumeration<Editable> iter = thisLayer.elements();
+		while (iter.hasMoreElements()) {
+			final Plottable thisPlottable = (Plottable) iter.nextElement();
+			if (thisPlottable instanceof ShapeWrapper) {
+				// see if has a valid DTG -- IS IT TIME-RELATED?
+				final ShapeWrapper swp = (ShapeWrapper) thisPlottable;
+				final HiResDate dat = swp.getStartDTG();
+				final HiResDate endDat = swp.getEndDTG();
+				if (dat == null && endDat == null) {
+					// let's use it
+					res.addElement(thisPlottable);
+				} else if (dat != null) {
+					// so it's got a date, check if the date represents our null
+					// value
+					// anyway
+					if (dat.getMicros() == -1)
+						res.addElement(thisPlottable);
+				}
+			} else if (thisPlottable instanceof LabelWrapper) {
+				// see if has a valid DTG -- IS IT TIME-RELATED?
+				final LabelWrapper lwp = (LabelWrapper) thisPlottable;
+				final HiResDate dat = lwp.getStartDTG();
+				final HiResDate endDat = lwp.getEndDTG();
+				// check if it is using our "null" date value
+				if (dat == null && endDat == null) {
+					// let's use it
+					res.addElement(thisPlottable);
+				} else {
+					// it's got a date, which makes it one of our watchables, it
+					// will
+					// get caught elsewhere
+				}
+			} else if (thisPlottable instanceof LightweightTrackWrapper) {
+				// ok, ignore it. it's tactical
+			} else {
+				// it's not a shape - it's probably the grid or the scale,
+				res.addElement(thisPlottable);
+			} // whether it's a labelwrapper
+		} // looping through the elements of this layer
+	}
+
+	/**
+	 * method to return the non-tactical items on the plot, such as scale, grid,
+	 * coast etc.
+	 */
+	public static Vector<Plottable> getNonWatchables(final Layer thisLayer) {
+		final Vector<Plottable> res = new Vector<Plottable>(0, 1);
+		// is this layer visible?
+		if (thisLayer.getVisible()) {
+			if (thisLayer instanceof Layer.BackgroundLayer) {
+				res.addElement(thisLayer);
+			} else if ((thisLayer instanceof FixWrapper) || (thisLayer instanceof LightweightTrackWrapper)
+					|| (thisLayer instanceof TrackWrapper) || (thisLayer instanceof BuoyPatternWrapper)
+					|| (thisLayer instanceof SensorWrapper) || (thisLayer instanceof TMAWrapper)
+					|| (thisLayer instanceof TrackSegment) || (thisLayer instanceof SegmentList)) {
+				// ignore it - it's clearly tactical, and there's just no way
+				// it can contain non-tactical child elements
+			} else {
+				extractPlottables(thisLayer, res);
+			} // if this is a background layer (or not)
+		} // whether this layer is visible
+		return res;
+	}
+
+	/**
+	 * method to return the non-tactical items on the plot, such as scale, grid,
+	 * coast etc.
+	 */
+	public static Vector<Plottable> getNonWatchables(final Layers theData) {
+		final Vector<Plottable> res = new Vector<Plottable>(0, 1);
+		// step through the layers
+		final int cnt = theData.size();
+		for (int i = 0; i < cnt; i++) {
+			// right, now for the next layer
+			final Layer thisLayer = theData.elementAt(i);
+
+			// get the non-watchables for this layer
+			final Vector<Plottable> theseElements = getNonWatchables(thisLayer);
+
+			// and add them to our list
+			res.addAll(theseElements);
+
+		} // loop through the layers
+		return res;
+	}
+
+	/**
+	 * this is the list of items which we know have been plotted to the screen, so
+	 * that we know which ones to hide
+	 */
+	private final HashMap<Watchable, WatchableList> _oldWatchables;
+
+	/**
+	 * the highlight plotters we know about
+	 */
+	protected final Vector<SnailPainter.drawHighLight> _myHighlightPlotters;
+
+	/**
+	 * the size to draw myself
+	 */
+	protected final int _mySize = 5;
+
+	/**
+	 * the list of painters previously used by the canvas
+	 */
+	protected Vector<PaintListener> _oldPainters;
+
+	// /////////////////////////////////
+	// member functions
+	// ////////////////////////////////
+
+	/**
+	 * whether we are currently painting(hiding) the old points
+	 */
+	private boolean _paintingOldies;
+
+	/**
+	 * the snail track plotter to use
+	 */
+	private final SnailDrawFix _mySnailPlotter;
+
+	// /////////////////////////////////
+	// constructorsna
+	// ////////////////////////////////
+	public SnailPainter(final PlainChart theChart, final Layers theData, final AnalysisTote theTote) {
+		this(theChart, theData, theTote, "Snail");
+	}
+
+	public SnailPainter(final PlainChart theChart, final Layers theData, final AnalysisTote theTote,
+			final String myName) {
+		super(theChart, theData, theTote);
+
+		_oldWatchables = new HashMap<Watchable, WatchableList>();
+
+		_mySnailPlotter = new SnailDrawFix(myName);
+
+		_myHighlightPlotters = new Vector<SnailPainter.drawHighLight>(0, 1);
+		_myHighlightPlotters.addElement(_mySnailPlotter);
+		_myHighlightPlotters.addElement(new SnailDrawBuoyPattern());
+		_myHighlightPlotters.addElement(new SnailDrawAnnotation());
+		_myHighlightPlotters.addElement(new SnailDrawSensorContact(_mySnailPlotter));
+		_myHighlightPlotters.addElement(new SnailDrawTMAContact(_mySnailPlotter));
+
+		_mySnailPlotter.setPointSize(new BoundedInteger(5, 0, 0));
+		_mySnailPlotter.setVectorStretch(1);
+	}
+
+	public void createNewHighlights(final HiResDate newDTG, final WatchableList _thePrimary, final CanvasType theCanvas,
+			final Graphics2D dest, final Color backColor) {
+		// determine the new items
+		final Vector<Plottable> theWatchableLists = getWatchables(super.getLayers());
+		_paintingOldies = false;
+
+		// sort out the line width of the primary
+		if (_thePrimary instanceof Layer) {
+			final Layer ly = (Layer) _thePrimary;
+			if (dest instanceof Graphics2D) {
+				final Graphics2D g2 = dest;
+				g2.setStroke(new BasicStroke(ly.getLineThickness()));
+			}
+		}
+
+		// show the current highlighter
+		Watchable[] wList = _theTote.getPrimary().getNearestTo(newDTG);
+
+		Watchable newPrimary = null;
+		if (wList.length > 0)
+			newPrimary = wList[0];
+		if (newPrimary != null) {
+			final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter thisHighlighter = getCurrentPrimaryHighlighter();
+			if (thisHighlighter.getName().equals("Range Rings")) {
+
+				thisHighlighter.highlightIt(theCanvas.getProjection(), dest, _theTote.getPrimary(), newPrimary, true);
+			}
+		}
+
+		// got through to highlight the data
+		final Enumeration<Plottable> watches = theWatchableLists.elements();
+		while (watches.hasMoreElements()) {
+			final WatchableList list = (WatchableList) watches.nextElement();
+			// is the primary an instance of layer (with it's own line thickness?)
+			if (list instanceof Layer) {
+				final Layer ly = (Layer) list;
+				dest.setStroke(new BasicStroke(ly.getLineThickness()));
+			}
+
+			// ok, clear the nearest items
+			wList = list.getNearestTo(newDTG);
+			Watchable watch = null;
+			if (wList.length > 0)
+				watch = wList[0];
+
+			if (watch != null) {
+				// plot it
+				highlightIt(theCanvas.getProjection(), dest, list, watch, newDTG, backColor);
+			}
+		}
+
+		// restore the painting setup
+		dest.setPaintMode();
+		dest.dispose();
+
+		// we know we're finished with the first step now anyway
+		_firstStep = false;
+		_lastDTG = newDTG;
+
+		// do a repaint, if we have to
+		if (!_inRepaint) {
+
+			// are any of the bits which changed visible?
+			if (_areaCovered != null) {
+
+				// force a repaint of the plot
+
+				// grow the area covered by a shade,
+				_areaCovered.grow(2, 2);
+
+				// see if we are trying to plot in relative mode - in which
+				// case we need a full repaint
+				if (theCanvas.getProjection().getNonStandardPlotting()) {
+					_theChart.update();
+				} else {
+					// and ask for an instant update
+					// NOTE: changed this to stop JDK1.3
+					// plotting in a purple background _theChart.repaintNow(_areaCovered);
+					_theChart.repaint();
+				}
+			}
+		}
+	}
+
+	/**
+	 * override the method provided by TotePainter. That method returns null, since
+	 * it can rely on the other painters to generate the current data area --> there
+	 * aren't any other painters here though, so we need to calculate it
+	 */
+	@Override
+	public final WorldArea getDataArea() {
+		return this._theChart.getDataArea();
+	}
+
+	/**
+	 * NON-STANDARD implementation, we are returning the editor for our snail
+	 * plotter object, not ourself
+	 */
+	@Override
+	public final Editable.EditorType getInfo() {
+		return _mySnailPlotter.getInfo();
+	}
+
+	@Override
+	public final String getName() {
+		return toString();
+	}
+
+	/**
+	 * whether to plot in the name of the vessel
+	 */
+	public final boolean getPlotTrackName() {
+		return _mySnailPlotter.getPlotTrackName();
+	}
+
+	/**
+	 * how much to stretch this vector
+	 *
+	 * @return the stretch to apply
+	 */
+	public final double getVectorStretch() {
+		return _mySnailPlotter.getVectorStretch();
+	}
+
+	@Override
+	public final boolean hasEditor() {
+		return true;
+	}
+
+	/**
+	 * method to highlight a watchable.
+	 */
+	private void highlightIt(final PlainProjection proj, final Graphics dest, final WatchableList list,
+			final Watchable watch, final HiResDate dtg, final Color backColor) {
+		// check that our graphics context is still valid -
+		// we can't, so we will just have to trap any exceptions it raises
+		try {
+			// set the highlight colour
+			dest.setColor(Color.white);
+
+			// see if our plotters can plot this type of watchable
+			final Enumeration<SnailPainter.drawHighLight> iter = _myHighlightPlotters.elements();
+			while (iter.hasMoreElements()) {
+				final SnailPainter.drawHighLight plotter = iter.nextElement();
+
+				if (plotter.canPlot(watch)) {
+					// does this list have a width?
+					if (list instanceof Layer) {
+						final Layer ly = (Layer) list;
+						if (dest instanceof Graphics2D) {
+							final Graphics2D g2 = (Graphics2D) dest;
+							g2.setStroke(new BasicStroke(ly.getLineThickness()));
+						}
+					} else if (list instanceof ShapeWrapper) {
+						final ShapeWrapper sw = (ShapeWrapper) list;
+						if (dest instanceof Graphics2D) {
+							final Graphics2D g2 = (Graphics2D) dest;
+							g2.setStroke(new BasicStroke(sw.getShape().getLineWidth()));
+						}
+					}
+
+					final Rectangle rec = plotter.drawMe(proj, dest, list, watch, this, dtg, backColor);
+
+					// add this to the list to be hidden at a later date
+					if (!_paintingOldies)
+						_oldWatchables.put(watch, list);
+
+					// just check if a rectangle got returned at all (there may not
+					// have been any valid data
+					if (rec != null) {
+						if (_areaCovered == null)
+							_areaCovered = rec;
+						else
+							_areaCovered.add(rec);
+					}
+
+					// and drop out of the loop
+					break;
+				}
+			}
+
+		} catch (final IllegalStateException e) {
+			MWC.Utilities.Errors.Trace.trace(e);
+		}
+	}
+
+	@Override
+	public void newTime(final HiResDate oldDTG, final HiResDate newDTG, final CanvasType canvas) {
+
+		// check if we have any data
+		if (_theTote.getPrimary() == null)
+			return;
+
+		// check we have a valid new DTG
+		if (newDTG == null) {
+			return;
+		}
+
+		// get the primary track
+		final WatchableList _thePrimary = _theTote.getPrimary();
+
+		// initialise the area covered
+		_areaCovered = null;
+
+		// prepare the chart
+		CanvasType theCanvas = canvas;
+		if (theCanvas == null)
+			theCanvas = _theChart.getCanvas();
+
+		final Graphics2D dest = (Graphics2D) theCanvas.getGraphicsTemp();
+
+		final Color backColor = theCanvas.getBackgroundColor();
+
+		// just drop out if we can't create any graphics though
+		if (dest == null)
+			return;
+
+		removeOldHighLights(oldDTG, _thePrimary, theCanvas, dest, backColor);
+
+		createNewHighlights(newDTG, _thePrimary, theCanvas, dest, backColor);
+
+	}
+
+	public void removeOldHighLights(final HiResDate oldDTG, final WatchableList _thePrimary, final CanvasType theCanvas,
+			final Graphics2D dest, final Color backColor) {
+		// switch to paint mode, so we can draw the background correctly
+		dest.setPaintMode();
+
+		// see if we are doing a fresh plot (in which case
+		// we will plot the non-watchables aswell)
+		if ((oldDTG == null) || (_oldWatchables.size() == 0)) {
+			final Vector<Plottable> nonWatches = getNonWatchables(super.getLayers());
+			final Enumeration<Plottable> iter = nonWatches.elements();
+			while (iter.hasMoreElements()) {
+				final Plottable p = iter.nextElement();
+				p.paint(new MWC.GUI.Canvas.CanvasAdaptor(theCanvas.getProjection(), dest));
+			}
+		}
+
+		dest.setXORMode(theCanvas.getBackgroundColor());
+
+		// hide the old watchables
+		if (_oldWatchables.size() > 0) {
+			_paintingOldies = true;
+
+			// check this isn't the first step
+			if (!_firstStep) {
+				// find the watchable representing the current data point
+				final Watchable[] wList = _thePrimary.getNearestTo(_lastDTG);
+
+				// is the primary an instance of layer (with it's own line thickness?)
+				if (_thePrimary instanceof Layer) {
+					final Layer ly = (Layer) _thePrimary;
+					dest.setStroke(new BasicStroke(ly.getLineThickness()));
+				}
+
+				// and carry on!
+
+				Watchable oldPrimary = null;
+				if (wList.length > 0)
+					oldPrimary = wList[0];
+				if (oldPrimary != null) {
+					final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter thisHighlighter = getCurrentPrimaryHighlighter();
+					if (thisHighlighter.getName().equals("Range Rings")) {
+						thisHighlighter.highlightIt(theCanvas.getProjection(), dest, _theTote.getPrimary(), oldPrimary,
+								true);
+					}
+				}
+
+				// sort out the oldies
+				final Iterator<Watchable> oldies = _oldWatchables.keySet().iterator();
+				while (oldies.hasNext()) {
+					final Watchable thisOne = oldies.next();
+					// is this one instance of layer (with it's own line thickness?)
+					if (thisOne instanceof Layer) {
+						final Layer ly = (Layer) thisOne;
+						if (dest instanceof Graphics2D) {
+							final Graphics2D g2 = dest;
+							g2.setStroke(new BasicStroke(ly.getLineThickness()));
+						}
+					}
+
+					// ok, clear the nearest items
+					final WatchableList list = _oldWatchables.get(thisOne);
+					highlightIt(theCanvas.getProjection(), dest, list, thisOne, _lastDTG, backColor);
+				}
+			}
+
+			// now remove all of the watchables from it
+			_oldWatchables.clear();
+		}
+	}
+
+	// ///////////////////////////////////////
+	// accessors for the beaninfo
+	// //////////////////////////////////////
+	// ////////////////////////////////////////////////////////
+	// accessors for editable parameters
+	// ///////////////////////////////////////////////////////
+
+	/**
+	 * whether to plot in the name of the vessel
+	 */
+	public final void setPlotTrackName(final boolean val) {
+		_mySnailPlotter.setPlotTrackName(val);
+	}
+
+	/**
+	 * the stretch to apply to the speed vector (pixels per knot)
+	 *
+	 * @param val the strech to use = 1 is 1 pixel per knot
+	 */
+	public final void setVectorStretch(final double val) {
+		_mySnailPlotter.setVectorStretch(val);
+	}
+
+	//
+	@Override
+	public void steppingModeChanged(final boolean on) {
+		if (on) {
+			// remove the current painters for the canvas
+			final Enumeration<CanvasType.PaintListener> iter = _theChart.getCanvas().getPainters();
+
+			_oldPainters = new Vector<PaintListener>(0, 1);
+
+			// take a copy of these painters
+			while (iter.hasMoreElements()) {
+				_oldPainters.addElement(iter.nextElement());
+			}
+
+			// and remove the painters
+			final Enumeration<CanvasType.PaintListener> oldies = _oldPainters.elements();
+			while (oldies.hasMoreElements()) {
+				_theChart.getCanvas().removePainter(oldies.nextElement());
+			}
+
+			// add us as a painter
+			_theChart.getCanvas().addPainter(this);
+
+			// and redraw the chart
+			_theChart.update();
+
+		} else {
+			// remove us as a painter
+			_theChart.getCanvas().removePainter(this);
+
+			// restore the painters
+			final Enumeration<CanvasType.PaintListener> oldies = _oldPainters.elements();
+			while (oldies.hasMoreElements()) {
+				_theChart.getCanvas().addPainter(oldies.nextElement());
+			}
+
+		}
+
+	}
+
+	@Override
+	public String toString() {
+		return SNAIL_NAME;
+	}
 
 }

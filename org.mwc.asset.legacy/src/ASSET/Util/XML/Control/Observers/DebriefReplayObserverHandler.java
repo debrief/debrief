@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package ASSET.Util.XML.Control.Observers;
 
 /**
@@ -74,190 +75,166 @@ import ASSET.Util.XML.Decisions.Util.TargetTypeHandler;
 /**
  * read in a debrief replay observer from file
  */
-abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
-{
+abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler {
 
-  private final static String type = "DebriefReplayObserver";
+	private final static String type = "DebriefReplayObserver";
 
-  private boolean _recordDetections = false;
-  private boolean _recordPositions = false;
-  private boolean _recordDecisions = false;
-  private TargetType _targetType = null;
-  final private List<String> _formatHelpers = new ArrayList<String>();
-  private String _subjectSensor = null;
-  private String _targetFolder = null;
-  private Boolean _includeSensorLocation = null;
+	private static final String RECORD_DETECTIONS = "record_detections";
+	private static final String RECORD_DECISIONS = "record_decisions";
+	private static final String RECORD_POSITIONS = "record_positions";
+	private static final String TARGET_TYPE = "SubjectToTrack";
+	private static final String SUBJECT_SENSOR = "SubjectSensor";
+	private static final String TARGET_FOLDER = "TargetFolder";
+	private static final String PLOT_SENSOR_LOCATION = "PlotSensorLocation";
 
-  private static final String RECORD_DETECTIONS = "record_detections";
-  private static final String RECORD_DECISIONS = "record_decisions";
-  private static final String RECORD_POSITIONS = "record_positions";
-  private static final String TARGET_TYPE = "SubjectToTrack";
-  private static final String SUBJECT_SENSOR = "SubjectSensor";
-  private static final String TARGET_FOLDER = "TargetFolder";
-  private static final String PLOT_SENSOR_LOCATION = "PlotSensorLocation"; 
+	static public void exportThis(final Object toExport, final Element parent, final org.w3c.dom.Document doc) {
+		// create ourselves
+		final Element thisPart = doc.createElement(type);
 
-  public DebriefReplayObserverHandler(String type)
-  {
-    super(type);
+		// get data item
+		final DebriefReplayObserver bb = (DebriefReplayObserver) toExport;
 
-    addAttributeHandler(new HandleBooleanAttribute(RECORD_DETECTIONS)
-    {
-      public void setValue(String name, final boolean val)
-      {
-        _recordDetections = val;
-      }
-    });
-    addAttributeHandler(new HandleAttribute(SUBJECT_SENSOR)
-    {
-      public void setValue(String name, final String val)
-      {
-        _subjectSensor = val;
-      }
-    });
-    addAttributeHandler(new HandleAttribute(TARGET_FOLDER)
-    {
-      public void setValue(String name, final String val)
-      {
-        _targetFolder = val;
-      }
-    });
-    addAttributeHandler(new HandleBooleanAttribute(RECORD_DECISIONS)
-    {
-      public void setValue(String name, final boolean val)
-      {
-        _recordDecisions = val;
-      }
-    });
-    addAttributeHandler(new HandleBooleanAttribute(PLOT_SENSOR_LOCATION)
-    {
-      public void setValue(String name, final boolean val)
-      {
-        _includeSensorLocation = val;
-      }
-    });
-    addAttributeHandler(new HandleBooleanAttribute(RECORD_POSITIONS)
-    {
-      public void setValue(String name, final boolean val)
-      {
-        _recordPositions = val;
-      }
-    });
+		// output the parent ttributes
+		CoreFileObserverHandler.exportThis(bb, thisPart);
 
-    addHandler(new TargetTypeHandler(TARGET_TYPE)
-    {
-      public void setTargetType(TargetType type1)
-      {
-        _targetType = type1;
-      }
-    });
-    addHandler(new DebriefFormatHelperHandler()
-    {
-      @Override
-      public void storeMe(final String text)
-      {
-        _formatHelpers.add(text);
-      }
-    });
-  }
+		// output it's attributes
+		thisPart.setAttribute(RECORD_DETECTIONS, writeThis(bb.getRecordDetections()));
+		thisPart.setAttribute(RECORD_DECISIONS, writeThis(bb.getRecordDecisions()));
+		thisPart.setAttribute(RECORD_POSITIONS, writeThis(bb.getRecordPositions()));
+		if (bb.getSubjectToTrack() != null) {
+			TargetTypeHandler.exportThis(TARGET_TYPE, bb.getSubjectToTrack(), thisPart, doc);
+		}
 
-  public DebriefReplayObserverHandler()
-  {
-    this(type);
-  }
+		if (bb.getTargetFolder() != null) {
+			thisPart.setAttribute(TARGET_FOLDER, bb.getTargetFolder());
+		}
 
-  public void elementClosed()
-  {
-    // create ourselves
-    final DebriefReplayObserver debriefObserver =
-        getObserver(_name, _isActive, _recordDetections, _recordDecisions,
-            _recordPositions, _targetType, _formatHelpers);
-    
-    if(_subjectSensor != null)
-    {
-      debriefObserver.setSubjectSensor(_subjectSensor);
-    }
+		final List<String> helpers = bb.getFormatHelpers();
+		if (helpers != null) {
+			for (final String t : helpers) {
+				final Element thisHelper = doc.createElement(DebriefFormatHelperHandler.type);
+				thisHelper.setAttribute(DebriefFormatHelperHandler.TEXT, t);
+				thisPart.appendChild(thisHelper);
+			}
+		}
 
-    if(_targetFolder != null)
-    {
-      debriefObserver.setTargetFolder(_targetFolder);
-    }
-    
-    if(_includeSensorLocation != null)
-    {
-      debriefObserver.setIncludeSensorLocation(_includeSensorLocation);
-    }
-    
-    setObserver(debriefObserver);
+		// output it's attributes
+		parent.appendChild(thisPart);
 
-    // close the parenet
-    super.elementClosed();
+	}
 
-    // and clear the data
-    _recordDetections = false;
-    _recordDecisions = false;
-    _recordPositions = true;
-    _targetType = null;
-    _subjectSensor = null;
-    _targetFolder = null;
-    _includeSensorLocation = null;
-    
-    // and clear the format helpers
-    _formatHelpers.clear();
-  }
+	private boolean _recordDetections = false;
+	private boolean _recordPositions = false;
+	private boolean _recordDecisions = false;
+	private TargetType _targetType = null;
+	final private List<String> _formatHelpers = new ArrayList<String>();
+	private String _subjectSensor = null;
+	private String _targetFolder = null;
 
-  protected DebriefReplayObserver getObserver(String name, boolean isActive,
-      boolean recordDetections, boolean recordDecisions,
-      boolean recordPositions, TargetType subject, List<String> formatHelpers)
-  {
-    return new DebriefReplayObserver(_directory, _fileName, recordDetections,
-        recordDecisions, recordPositions, subject, name, isActive,
-        formatHelpers);
-  }
+	private Boolean _includeSensorLocation = null;
 
-  abstract public void setObserver(ScenarioObserver obs);
+	public DebriefReplayObserverHandler() {
+		this(type);
+	}
 
-  static public void exportThis(final Object toExport,
-      final Element parent, final org.w3c.dom.Document doc)
-  {
-    // create ourselves
-    final Element thisPart = doc.createElement(type);
+	public DebriefReplayObserverHandler(final String type) {
+		super(type);
 
-    // get data item
-    final DebriefReplayObserver bb = (DebriefReplayObserver) toExport;
+		addAttributeHandler(new HandleBooleanAttribute(RECORD_DETECTIONS) {
+			@Override
+			public void setValue(final String name, final boolean val) {
+				_recordDetections = val;
+			}
+		});
+		addAttributeHandler(new HandleAttribute(SUBJECT_SENSOR) {
+			@Override
+			public void setValue(final String name, final String val) {
+				_subjectSensor = val;
+			}
+		});
+		addAttributeHandler(new HandleAttribute(TARGET_FOLDER) {
+			@Override
+			public void setValue(final String name, final String val) {
+				_targetFolder = val;
+			}
+		});
+		addAttributeHandler(new HandleBooleanAttribute(RECORD_DECISIONS) {
+			@Override
+			public void setValue(final String name, final boolean val) {
+				_recordDecisions = val;
+			}
+		});
+		addAttributeHandler(new HandleBooleanAttribute(PLOT_SENSOR_LOCATION) {
+			@Override
+			public void setValue(final String name, final boolean val) {
+				_includeSensorLocation = val;
+			}
+		});
+		addAttributeHandler(new HandleBooleanAttribute(RECORD_POSITIONS) {
+			@Override
+			public void setValue(final String name, final boolean val) {
+				_recordPositions = val;
+			}
+		});
 
-    // output the parent ttributes
-    CoreFileObserverHandler.exportThis(bb, thisPart);
+		addHandler(new TargetTypeHandler(TARGET_TYPE) {
+			@Override
+			public void setTargetType(final TargetType type1) {
+				_targetType = type1;
+			}
+		});
+		addHandler(new DebriefFormatHelperHandler() {
+			@Override
+			public void storeMe(final String text) {
+				_formatHelpers.add(text);
+			}
+		});
+	}
 
-    // output it's attributes
-    thisPart.setAttribute(RECORD_DETECTIONS,
-        writeThis(bb.getRecordDetections()));
-    thisPart.setAttribute(RECORD_DECISIONS, writeThis(bb.getRecordDecisions()));
-    thisPart.setAttribute(RECORD_POSITIONS, writeThis(bb.getRecordPositions()));
-    if (bb.getSubjectToTrack() != null)
-    {
-      TargetTypeHandler.exportThis(TARGET_TYPE, bb.getSubjectToTrack(),
-          thisPart, doc);
-    }
-    
-    if(bb.getTargetFolder() != null)
-    {
-      thisPart.setAttribute(TARGET_FOLDER, bb.getTargetFolder());
-    }
-    
-    List<String> helpers = bb.getFormatHelpers();
-    if(helpers != null)
-    {
-      for(String t: helpers)
-      {
-        final Element thisHelper = doc.createElement(DebriefFormatHelperHandler.type);
-        thisHelper.setAttribute(DebriefFormatHelperHandler.TEXT, t);
-        thisPart.appendChild(thisHelper);
-      }
-    }
+	@Override
+	public void elementClosed() {
+		// create ourselves
+		final DebriefReplayObserver debriefObserver = getObserver(_name, _isActive, _recordDetections, _recordDecisions,
+				_recordPositions, _targetType, _formatHelpers);
 
-    // output it's attributes
-    parent.appendChild(thisPart);
+		if (_subjectSensor != null) {
+			debriefObserver.setSubjectSensor(_subjectSensor);
+		}
 
-  }
+		if (_targetFolder != null) {
+			debriefObserver.setTargetFolder(_targetFolder);
+		}
+
+		if (_includeSensorLocation != null) {
+			debriefObserver.setIncludeSensorLocation(_includeSensorLocation);
+		}
+
+		setObserver(debriefObserver);
+
+		// close the parenet
+		super.elementClosed();
+
+		// and clear the data
+		_recordDetections = false;
+		_recordDecisions = false;
+		_recordPositions = true;
+		_targetType = null;
+		_subjectSensor = null;
+		_targetFolder = null;
+		_includeSensorLocation = null;
+
+		// and clear the format helpers
+		_formatHelpers.clear();
+	}
+
+	protected DebriefReplayObserver getObserver(final String name, final boolean isActive,
+			final boolean recordDetections, final boolean recordDecisions, final boolean recordPositions,
+			final TargetType subject, final List<String> formatHelpers) {
+		return new DebriefReplayObserver(_directory, _fileName, recordDetections, recordDecisions, recordPositions,
+				subject, name, isActive, formatHelpers);
+	}
+
+	@Override
+	abstract public void setObserver(ScenarioObserver obs);
 
 }

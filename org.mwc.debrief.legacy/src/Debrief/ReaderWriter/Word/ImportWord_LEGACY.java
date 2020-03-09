@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 package Debrief.ReaderWriter.Word;
 
 import java.io.IOException;
@@ -40,437 +54,360 @@ import MWC.TacticalData.NarrativeWrapper;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
-public class ImportWord_LEGACY
-{
+public class ImportWord_LEGACY {
 
-  private static class FCSEntry
-  {
-    private static String getClassified(final String input)
-    {
-      String res = null;
+	private static class FCSEntry {
+		private static String getClassified(final String input) {
+			String res = null;
 
-      final String regexp = "Classified (.*$)";
-      final Pattern pattern = Pattern.compile(regexp);
+			final String regexp = "Classified (.*$)";
+			final Pattern pattern = Pattern.compile(regexp);
 
-      final Matcher matcher = pattern.matcher(input);
-      if (matcher.find())
-      {
-        res = matcher.group(1);
-      }
+			final Matcher matcher = pattern.matcher(input);
+			if (matcher.find()) {
+				res = matcher.group(1);
+			}
 
-      return res;
-    }
+			return res;
+		}
 
-    private static Double
-        getElement(final String identifier, final String input)
-    {
-      Double res = null;
+		private static Double getElement(final String identifier, final String input) {
+			Double res = null;
 
-      final String regexp = identifier + "-*(\\d+\\.?\\d*)";
-      final Pattern pattern = Pattern.compile(regexp);
+			final String regexp = identifier + "-*(\\d+\\.?\\d*)";
+			final Pattern pattern = Pattern.compile(regexp);
 
-      final Matcher matcher = pattern.matcher(input);
-      if (matcher.find())
-      {
-        final String found = matcher.group(1);
-        try
-        {
-          res = Double.parseDouble(found);
-        }
-        catch (final NumberFormatException fe)
-        {
-          // ok, we failed :-(
-        }
-      }
+			final Matcher matcher = pattern.matcher(input);
+			if (matcher.find()) {
+				final String found = matcher.group(1);
+				try {
+					res = Double.parseDouble(found);
+				} catch (final NumberFormatException fe) {
+					// ok, we failed :-(
+				}
+			}
 
-      return res;
-    }
+			return res;
+		}
 
-    /**
-     * extract the track number from the provided string
-     * 
-     * @param str
-     * @return
-     */
-    private static String parseTrack(final String str)
-    {
-      final String shortTrackId = "(M\\d{2})";
-      final Pattern shortPattern = Pattern.compile(shortTrackId);
+		/**
+		 * extract the track number from the provided string
+		 *
+		 * @param str
+		 * @return
+		 */
+		private static String parseTrack(final String str) {
+			final String shortTrackId = "(M\\d{2})";
+			final Pattern shortPattern = Pattern.compile(shortTrackId);
 
-      final Matcher matcher = shortPattern.matcher(str);
-      final String res;
-      if (matcher.find())
-      {
-        res = matcher.group(1);
-      }
-      else
-      {
-        final String longTrackId = "[A-Z]{1,4}(\\d{3})";
-        final Pattern longPattern = Pattern.compile(longTrackId);
+			final Matcher matcher = shortPattern.matcher(str);
+			final String res;
+			if (matcher.find()) {
+				res = matcher.group(1);
+			} else {
+				final String longTrackId = "[A-Z]{1,4}(\\d{3})";
+				final Pattern longPattern = Pattern.compile(longTrackId);
 
-        final Matcher matcher1 = longPattern.matcher(str);
-        if (matcher1.find())
-        {
-          res = matcher1.group(1);
-        }
-        else
-        {
-          res = null;
-        }
-      }
+				final Matcher matcher1 = longPattern.matcher(str);
+				if (matcher1.find()) {
+					res = matcher1.group(1);
+				} else {
+					res = null;
+				}
+			}
 
-      return res;
-    }
+			return res;
+		}
 
-    final double brgDegs;
-    final double rangYds;
-    @SuppressWarnings("unused")
-    final String tgtType;
+		final double brgDegs;
+		final double rangYds;
+		@SuppressWarnings("unused")
+		final String tgtType;
 
-    final String contact;
+		final String contact;
 
-    final double crseDegs;
+		final double crseDegs;
 
-    final double spdKts;
+		final double spdKts;
 
-    public FCSEntry(final NarrEntry thisN, final String msg)
-    {
-      // pull out the matching strings
-      final Double bVal = getElement("B-", msg);
-      final Double rVal = getElement("R-", msg);
-      final Double cVal = getElement("C-", msg);
-      final Double sVal = getElement("S-", msg);
+		public FCSEntry(final NarrEntry thisN, final String msg) {
+			// pull out the matching strings
+			final Double bVal = getElement("B-", msg);
+			final Double rVal = getElement("R-", msg);
+			final Double cVal = getElement("C-", msg);
+			final Double sVal = getElement("S-", msg);
 
-      // extract the classification
-      final String classStr = getClassified(msg);
+			// extract the classification
+			final String classStr = getClassified(msg);
 
-      // try to extract the track id
-      final String trackId = parseTrack(msg);
+			// try to extract the track id
+			final String trackId = parseTrack(msg);
 
-      this.crseDegs = cVal != null ? cVal : 0d;
-      this.brgDegs = bVal != null ? bVal : 0d;
-      this.rangYds = rVal != null ? rVal * 1000d : 0d;
-      this.spdKts = sVal != null ? sVal : 0d;
-      this.tgtType = classStr != null ? classStr : "N/A";
-      this.contact = trackId != null ? trackId : "N/A";
-    }
+			this.crseDegs = cVal != null ? cVal : 0d;
+			this.brgDegs = bVal != null ? bVal : 0d;
+			this.rangYds = rVal != null ? rVal * 1000d : 0d;
+			this.spdKts = sVal != null ? sVal : 0d;
+			this.tgtType = classStr != null ? classStr : "N/A";
+			this.contact = trackId != null ? trackId : "N/A";
+		}
 
-  }
+	}
 
-  private static class NarrEntry
-  {
-    HiResDate dtg;
-    String type;
-    String platform;
-    String text;
+	private static class NarrEntry {
+		private static Date lastDtg;
+		private static String lastPlatform;
+		private static NarrEntry lastEntry;
+		/**
+		 * we've encountered circumstances where copy/paste has ended up with the day
+		 * being earlier than the current one When we can detect this, we'll use the
+		 * previous day.
+		 */
+		private static String lastDay;
 
-    boolean appendedToPrevious = false;
+		/**
+		 * don#t assume a decreasing day is wrong if the month has incremented
+		 */
+		private static String lastMonth;
 
-    // ///////////////////
-    // static variables to help handle corrupt/incomplete data.
-    // NOTE: any new ones should be included in the "reset() processing
-    // ///////////////////
+		// ///////////////////
+		// static variables to help handle corrupt/incomplete data.
+		// NOTE: any new ones should be included in the "reset() processing
+		// ///////////////////
 
-    private static Date lastDtg;
-    private static String lastPlatform;
-    private static NarrEntry lastEntry;
-    /**
-     * we've encountered circumstances where copy/paste has ended up with the day being earlier than
-     * the current one When we can detect this, we'll use the previous day.
-     */
-    private static String lastDay;
+		static public NarrEntry create(final String msg, final int lineNum) {
+			NarrEntry res = null;
+			try {
+				res = new NarrEntry(msg);
 
-    /**
-     * don#t assume a decreasing day is wrong if the month has incremented
-     */
-    private static String lastMonth;
+				if (res.appendedToPrevious && res.text != null) {
+					// that's ok - we'll let the parent handle it
+				} else {
+					// just check it's valid
+					final boolean valid = (res.dtg != null) && (res.type != null) && (res.platform != null)
+							&& (res.text != null);
+					if (!valid) {
+						res = null;
+					}
+				}
+			} catch (final ParseException e) {
+				logThisError("Failed whilst parsing Word Document, at line:" + lineNum, e);
+			}
 
-    static public NarrEntry create(final String msg, final int lineNum)
-    {
-      NarrEntry res = null;
-      try
-      {
-        res = new NarrEntry(msg);
+			return res;
+		}
 
-        if (res.appendedToPrevious && res.text != null)
-        {
-          // that's ok - we'll let the parent handle it
-        }
-        else
-        {
-          // just check it's valid
-          final boolean valid =
-              (res.dtg != null) && (res.type != null) && (res.platform != null)
-                  && (res.text != null);
-          if (!valid)
-          {
-            res = null;
-          }
-        }
-      }
-      catch (final ParseException e)
-      {
-        logThisError("Failed whilst parsing Word Document, at line:" + lineNum,
-            e);
-      }
+		/**
+		 * reset the static variables we use to handle missing, or mangled data
+		 *
+		 */
+		public static void reset() {
+			lastDtg = null;
+			lastPlatform = null;
+			lastEntry = null;
+			lastDay = null;
+			lastMonth = null;
+		}
 
-      return res;
-    }
+		HiResDate dtg;
+		String type;
 
-    /**
-     * reset the static variables we use to handle missing, or mangled data
-     * 
-     */
-    public static void reset()
-    {
-      lastDtg = null;
-      lastPlatform = null;
-      lastEntry = null;
-      lastDay = null;
-      lastMonth = null;
-    }
+		String platform;
 
-    @SuppressWarnings("deprecation")
-    public NarrEntry(final String entry) throws ParseException
-    {
-      final String trimmed = entry.trim();
-      final String[] parts = trimmed.split(",");
-      int ctr = 0;
-      
+		String text;
+
+		boolean appendedToPrevious = false;
+
+		@SuppressWarnings("deprecation")
+		public NarrEntry(final String entry) throws ParseException {
+			final String trimmed = entry.trim();
+			final String[] parts = trimmed.split(",");
+			int ctr = 0;
+
 //      if(entry.contains("SEARCH STRING"))
 //      {
 //        System.out.println("here");
 //      }
 
-      // sort out our date formats
-      final DateFormat fourBlock = new GMTDateFormat("HHmm");
+			// sort out our date formats
+			final DateFormat fourBlock = new GMTDateFormat("HHmm");
 
-      // final DateFormat sixBlock = new SimpleDateFormat("ddHHmm");
-      // sixBlock.setTimeZone(TimeZone.getTimeZone("UTC"));
+			// final DateFormat sixBlock = new SimpleDateFormat("ddHHmm");
+			// sixBlock.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-      final boolean correctLength = parts.length > 5;
-      final boolean sixFigDTG =
-          correctLength && parts[0].length() == 6
-              && parts[0].matches(DATE_MATCH_SIX);
-      final boolean fourFigDTG =
-          correctLength && parts[0].length() == 4
-              && parts[0].matches(DATE_MATCH_FOUR);
-      final boolean hasDTG = sixFigDTG || fourFigDTG;
+			final boolean correctLength = parts.length > 5;
+			final boolean sixFigDTG = correctLength && parts[0].length() == 6 && parts[0].matches(DATE_MATCH_SIX);
+			final boolean fourFigDTG = correctLength && parts[0].length() == 4 && parts[0].matches(DATE_MATCH_FOUR);
+			final boolean hasDTG = sixFigDTG || fourFigDTG;
 
-      if (hasDTG)
-      {
-        final String dtgStr;
-        if (fourFigDTG)
-        {
-          dtgStr = parts[ctr++];
-        }
-        else
-        {
-          dtgStr = parts[ctr++].substring(2, 6);
-        }
+			if (hasDTG) {
+				final String dtgStr;
+				if (fourFigDTG) {
+					dtgStr = parts[ctr++];
+				} else {
+					dtgStr = parts[ctr++].substring(2, 6);
+				}
 
-        // ok, sort out the time first
-        String dayStr = parts[ctr++];
-        final String monStr = parts[ctr++];
-        final String yrStr = parts[ctr++];
-        platform = parts[ctr++].trim();
-        type = parts[ctr++].trim();
+				// ok, sort out the time first
+				String dayStr = parts[ctr++];
+				final String monStr = parts[ctr++];
+				final String yrStr = parts[ctr++];
+				platform = parts[ctr++].trim();
+				type = parts[ctr++].trim();
 
-        /**
-         * special processing, to overcome the previous day being used
-         * 
-         */
-        boolean dayDecreased = lastDay != null
-            && Integer.parseInt(dayStr) < Integer.parseInt(lastDay);
-        boolean monthIncreased = lastMonth != null
-            && Integer.parseInt(monStr) > Integer.parseInt(lastMonth);
-        
-        if (dayDecreased && !monthIncreased)
-        {
-          // ok, the day has dropped, but the month hasn't increased
-          dayStr = lastDay;
-        }
-        else
-        {
-          // it's valid, update the last day
-          lastDay = dayStr;
-          lastMonth = monStr;
-        }
+				/**
+				 * special processing, to overcome the previous day being used
+				 *
+				 */
+				final boolean dayDecreased = lastDay != null && Integer.parseInt(dayStr) < Integer.parseInt(lastDay);
+				final boolean monthIncreased = lastMonth != null
+						&& Integer.parseInt(monStr) > Integer.parseInt(lastMonth);
 
-        // hmm, on occasion we don't get the closing comma on the entry type
-        if (type.length() > 20)
-        {
-          final int firstSpace = type.indexOf(" ");
-          // note: should actually be looking for non-alphanumeric, since it may be a tab
-          type = type.substring(0, firstSpace - 1);
-        }
+				if (dayDecreased && !monthIncreased) {
+					// ok, the day has dropped, but the month hasn't increased
+					dayStr = lastDay;
+				} else {
+					// it's valid, update the last day
+					lastDay = dayStr;
+					lastMonth = monStr;
+				}
 
-        final int year;
-        if (yrStr.length() == 2)
-        {
-          final int theYear = Integer.parseInt(yrStr);
+				// hmm, on occasion we don't get the closing comma on the entry type
+				if (type.length() > 20) {
+					final int firstSpace = type.indexOf(" ");
+					// note: should actually be looking for non-alphanumeric, since it may be a tab
+					type = type.substring(0, firstSpace - 1);
+				}
 
-          // is this from the late 80's onwards?
-          if (theYear > 80)
-          {
-            year = 1900 + theYear;
-          }
-          else
-          {
-            year = 2000 + theYear;
-          }
-        }
-        else
-        {
-          year = Integer.parseInt(yrStr);
-        }
+				final int year;
+				if (yrStr.length() == 2) {
+					final int theYear = Integer.parseInt(yrStr);
 
-        final Date datePart =
-            new Date(year - 1900, Integer.parseInt(monStr) - 1, Integer
-                .parseInt(dayStr));
+					// is this from the late 80's onwards?
+					if (theYear > 80) {
+						year = 1900 + theYear;
+					} else {
+						year = 2000 + theYear;
+					}
+				} else {
+					year = Integer.parseInt(yrStr);
+				}
 
-        final Date timePart = fourBlock.parse(dtgStr);
+				final Date datePart = new Date(year - 1900, Integer.parseInt(monStr) - 1, Integer.parseInt(dayStr));
 
-        dtg = new HiResDate(new Date(datePart.getTime() + timePart.getTime()));
+				final Date timePart = fourBlock.parse(dtgStr);
 
-        // ok, and the message part
-        final int ind = entry.indexOf(type);
+				dtg = new HiResDate(new Date(datePart.getTime() + timePart.getTime()));
 
-        text = entry.substring(ind + type.length() + 1).trim();
+				// ok, and the message part
+				final int ind = entry.indexOf(type);
 
-        // remember what's happening, so we can refer back to previous entries
-        lastDtg = new Date(dtg.getDate().getTime());
-        lastPlatform = platform;
-        lastEntry = this;
-      }
-      else
-      {
+				text = entry.substring(ind + type.length() + 1).trim();
 
-        final int firstTab = trimmed.indexOf("\t");
-        int blockToUse = 6;
-        if (firstTab != -1 && firstTab <= 7)
-        {
-          blockToUse = firstTab;
-        }
+				// remember what's happening, so we can refer back to previous entries
+				lastDtg = new Date(dtg.getDate().getTime());
+				lastPlatform = platform;
+				lastEntry = this;
+			} else {
 
-        // see if the first few characters are date
-        final String dateStr =
-            trimmed.substring(0, Math.min(trimmed.length(), blockToUse));
+				final int firstTab = trimmed.indexOf("\t");
+				int blockToUse = 6;
+				if (firstTab != -1 && firstTab <= 7) {
+					blockToUse = firstTab;
+				}
 
-        // is this all numeric
-        boolean probIsDate = false;
+				// see if the first few characters are date
+				final String dateStr = trimmed.substring(0, Math.min(trimmed.length(), blockToUse));
 
-        try
-        {
-          if (dateStr.length() == 6 || dateStr.length() == 4)
-          {
-            @SuppressWarnings("unused")
-            final int testInt = Integer.parseInt(dateStr);
-            probIsDate = true;
-          }
-        }
-        catch (final NumberFormatException e)
-        {
-        }
+				// is this all numeric
+				boolean probIsDate = false;
 
-        final boolean probHasContent = entry.length() > 8;
+				try {
+					if (dateStr.length() == 6 || dateStr.length() == 4) {
+						@SuppressWarnings("unused")
+						final int testInt = Integer.parseInt(dateStr);
+						probIsDate = true;
+					}
+				} catch (final NumberFormatException e) {
+				}
 
-        if (probIsDate && probHasContent)
-        {
-          // yes, go for it.
+				final boolean probHasContent = entry.length() > 8;
 
-          // ooh, do we have some stored data?
-          if (lastDtg != null && lastPlatform != null)
-          {
-            final String parseStr;
-            if (dateStr.length() == 6)
-            {
-              // reduce to four charts
-              parseStr = dateStr.substring(2, 6);
-            }
-            else
-            {
-              parseStr = dateStr;
-            }
+				if (probIsDate && probHasContent) {
+					// yes, go for it.
 
-            // first try to parse it
-            final Date timePart = fourBlock.parse(parseStr);
+					// ooh, do we have some stored data?
+					if (lastDtg != null && lastPlatform != null) {
+						final String parseStr;
+						if (dateStr.length() == 6) {
+							// reduce to four charts
+							parseStr = dateStr.substring(2, 6);
+						} else {
+							parseStr = dateStr;
+						}
 
-            // ok, we can go for it
-            final Date newDate =
-                new Date(lastDtg.getYear(), lastDtg.getMonth()-1, lastDtg
-                    .getDate());
+						// first try to parse it
+						final Date timePart = fourBlock.parse(parseStr);
 
-            // ok, we're ready for the DTG
-            dtg = new HiResDate(newDate.getTime() + timePart.getTime());
+						// ok, we can go for it
+						final Date newDate = new Date(lastDtg.getYear(), lastDtg.getMonth() - 1, lastDtg.getDate());
 
-            // stash the platform
-            platform = lastPlatform;
+						// ok, we're ready for the DTG
+						dtg = new HiResDate(newDate.getTime() + timePart.getTime());
 
-            // and catch the rest of the text
-            text = trimmed.substring(dateStr.length()).trim();
+						// stash the platform
+						platform = lastPlatform;
 
-            // see if we can recognise the first word as a track number
+						// and catch the rest of the text
+						text = trimmed.substring(dateStr.length()).trim();
+
+						// see if we can recognise the first word as a track number
 //            if (text.length() == 0)
 //            {
 //              System.out.println("here");
 //            }
 
-            final String startOfLine =
-                text.substring(0, Math.min(20, text.length() - 1));
-            final String trackNum = FCSEntry.parseTrack(startOfLine);
-            if (trackNum != null)
-            {
-              type = "FCS";
-            }
-            else
-            {
-              // explain we don't know what type of comment this is
-              type = "N/A";
-            }
+						final String startOfLine = text.substring(0, Math.min(20, text.length() - 1));
+						final String trackNum = FCSEntry.parseTrack(startOfLine);
+						if (trackNum != null) {
+							type = "FCS";
+						} else {
+							// explain we don't know what type of comment this is
+							type = "N/A";
+						}
 
-            // try to replace soft returns with hard returns
-            text = text.replace("\r", "\n");
-          }
-        }
-        else
-        {
-          // hmm, see if it's just text. If it is, stick it on the end of the previous one
+						// try to replace soft returns with hard returns
+						text = text.replace("\r", "\n");
+					}
+				} else {
+					// hmm, see if it's just text. If it is, stick it on the end of the previous one
 
-          // ooh, it may be a next day marker. have a check
-          final DateFormat dtgBlock = new GMTDateFormat("dd MMM yy");
+					// ooh, it may be a next day marker. have a check
+					final DateFormat dtgBlock = new GMTDateFormat("dd MMM yy");
 
-          boolean hasDate = false;
-          try
-          {
-            @SuppressWarnings("unused")
-            final Date scrapDate = dtgBlock.parse(trimmed);
-            hasDate = true;
-          }
-          catch (final ParseException e)
-          {
-            // it's ok, we can silently fail
-          }
+					boolean hasDate = false;
+					try {
+						@SuppressWarnings("unused")
+						final Date scrapDate = dtgBlock.parse(trimmed);
+						hasDate = true;
+					} catch (final ParseException e) {
+						// it's ok, we can silently fail
+					}
 
-          if (hasDate)
-          {
-            // ok. skip it. it's just a date
-          }
-          else
-          {
-            // ooh, do we have a previous one?
-            if (lastEntry != null)
-            {
-              text = trimmed;
+					if (hasDate) {
+						// ok. skip it. it's just a date
+					} else {
+						// ooh, do we have a previous one?
+						if (lastEntry != null) {
+							text = trimmed;
 
-              // now flag that we've just added ourselves to the previous one
-              appendedToPrevious = true;
-            }
-          }
-        }
-      }
-    }
-  }
+							// now flag that we've just added ourselves to the previous one
+							appendedToPrevious = true;
+						}
+					}
+				}
+			}
+		}
+	}
 
 //  public static class TestImportWord extends TestCase
 //  {
@@ -507,7 +444,7 @@ public class ImportWord_LEGACY
 //          final Exception e)
 //      {
 //      }
-//      
+//
 //      @Override
 //      public void logError(int status, String text, Exception e,
 //          boolean revealLog)
@@ -541,7 +478,7 @@ public class ImportWord_LEGACY
 //        "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/test_narrative.doc";
 //    private final static String valid_doc_path =
 //        "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/FCS_narrative.doc";
-//    
+//
 //    private final static String ownship_track =
 //        "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
 //
@@ -777,345 +714,286 @@ public class ImportWord_LEGACY
 //    }
 //  }
 
-  private static List<String> SkipNames = null;
+	private static List<String> SkipNames = null;
 
-  /**
-   * match a 6 figure DTG
-   * 
-   */
-  private static final String DATE_MATCH_SIX = "(\\d{6})";
+	/**
+	 * match a 6 figure DTG
+	 *
+	 */
+	private static final String DATE_MATCH_SIX = "(\\d{6})";
 
-  private static final String DATE_MATCH_FOUR = "(\\d{4})";
+	private static final String DATE_MATCH_FOUR = "(\\d{4})";
 
-  public static void logThisError(final String msg, final Exception e)
-  {
-    Application.logError2(ToolParent.WARNING, msg, e);
-  }
+	public static void logThisError(final String msg, final Exception e) {
+		Application.logError2(ToolParent.WARNING, msg, e);
+	}
 
-  /**
-   * where we write our data
-   * 
-   */
-  private final Layers _layers;
+	/**
+	 * where we write our data
+	 *
+	 */
+	private final Layers _layers;
 
-  /**
-   * keep track of the last successfully imported narrateive entry if we've just received a plain
-   * text block, we'll add it to the previous one *
-   */
-  private NarrativeEntry _lastEntry;
+	/**
+	 * keep track of the last successfully imported narrateive entry if we've just
+	 * received a plain text block, we'll add it to the previous one *
+	 */
+	private NarrativeEntry _lastEntry;
 
-  Map<String, String> nameMatches = new HashMap<String, String>();
+	Map<String, String> nameMatches = new HashMap<String, String>();
 
-  public ImportWord_LEGACY(final Layers target)
-  {
-    _layers = target;
+	public ImportWord_LEGACY(final Layers target) {
+		_layers = target;
 
-    if (SkipNames == null)
-    {
-      SkipNames = new ArrayList<String>();
-      SkipNames.add("HMS");
-      SkipNames.add("Hms");
-      SkipNames.add("USS");
-      SkipNames.add("RNAS");
-      SkipNames.add("HNLMS");
-    }
-  }
+		if (SkipNames == null) {
+			SkipNames = new ArrayList<String>();
+			SkipNames.add("HMS");
+			SkipNames.add("Hms");
+			SkipNames.add("USS");
+			SkipNames.add("RNAS");
+			SkipNames.add("HNLMS");
+		}
+	}
 
-  private void addEntry(final NarrEntry thisN)
-  {
-    final NarrativeWrapper nw = getNarrativeLayer();
-    String hisTrack = trackFor(thisN.platform, thisN.platform);
+	private void addEntry(final NarrEntry thisN) {
+		final NarrativeWrapper nw = getNarrativeLayer();
+		String hisTrack = trackFor(thisN.platform, thisN.platform);
 
-    // did we find a track? Don't worry if we didn't just use the raw text
-    if (hisTrack == null)
-    {
-      hisTrack = thisN.platform;
-    }
+		// did we find a track? Don't worry if we didn't just use the raw text
+		if (hisTrack == null) {
+			hisTrack = thisN.platform;
+		}
 
-    final NarrativeEntry ne =
-        new NarrativeEntry(hisTrack, thisN.type, new HiResDate(thisN.dtg),
-            thisN.text);
+		final NarrativeEntry ne = new NarrativeEntry(hisTrack, thisN.type, new HiResDate(thisN.dtg), thisN.text);
 
-    // remember that entry, in case we get incomplete text inthe future
-    _lastEntry = ne;
+		// remember that entry, in case we get incomplete text inthe future
+		_lastEntry = ne;
 
-    // try to color the entry
-    final Layer host = _layers.findLayer(trackFor(thisN.platform));
-    if (host instanceof TrackWrapper)
-    {
-      final TrackWrapper tw = (TrackWrapper) host;
-      ne.setColor(tw.getColor());
-    }
+		// try to color the entry
+		final Layer host = _layers.findLayer(trackFor(thisN.platform));
+		if (host instanceof TrackWrapper) {
+			final TrackWrapper tw = (TrackWrapper) host;
+			ne.setColor(tw.getColor());
+		}
 
-    // and store it
-    nw.add(ne);
-  }
+		// and store it
+		nw.add(ne);
+	}
 
-  private void addFCS(final NarrEntry thisN)
-  {
-    // ok, parse the message
-    final FCSEntry fe = new FCSEntry(thisN, thisN.text);
+	private void addFCS(final NarrEntry thisN) {
+		// ok, parse the message
+		final FCSEntry fe = new FCSEntry(thisN, thisN.text);
 
-    // do we have enough data to create a solution?
-    if(fe.brgDegs == 0 && fe.rangYds == 0)
-    {
-      return;
-    }
-    
-    // find the host
-    final TrackWrapper host =
-        (TrackWrapper) _layers.findLayer(trackFor(thisN.platform));
-    if (host != null)
-    {
-      // find the fix nearest this time
-      final Watchable[] nearest = host.getNearestTo(thisN.dtg);
-      if (nearest != null && nearest.length > 0)
-      {
-        final Watchable fix = nearest[0];
-        // apply the offset
-        final WorldVector vec =
-            new WorldVector(Math.toRadians(fe.brgDegs), new WorldDistance(
-                fe.rangYds, WorldDistance.YARDS), new WorldDistance(0,
-                WorldDistance.METRES));
-        final WorldLocation loc = fix.getLocation().add(vec);
+		// do we have enough data to create a solution?
+		if (fe.brgDegs == 0 && fe.rangYds == 0) {
+			return;
+		}
 
-        // find the track for this solution
-        TrackWrapper hisTrack = (TrackWrapper) _layers.findLayer(fe.contact);
-        if (hisTrack == null)
-        {
-          hisTrack = new TrackWrapper();
-          hisTrack.setName(fe.contact);
-          hisTrack.setColor(DebriefColors.RED);
-          _layers.addThisLayer(hisTrack);
-        }
+		// find the host
+		final TrackWrapper host = (TrackWrapper) _layers.findLayer(trackFor(thisN.platform));
+		if (host != null) {
+			// find the fix nearest this time
+			final Watchable[] nearest = host.getNearestTo(thisN.dtg);
+			if (nearest != null && nearest.length > 0) {
+				final Watchable fix = nearest[0];
+				// apply the offset
+				final WorldVector vec = new WorldVector(Math.toRadians(fe.brgDegs),
+						new WorldDistance(fe.rangYds, WorldDistance.YARDS), new WorldDistance(0, WorldDistance.METRES));
+				final WorldLocation loc = fix.getLocation().add(vec);
 
-        // ok, now create the fix
-        final WorldSpeed ws = new WorldSpeed(fe.spdKts, WorldSpeed.Kts);
-        final double yds_per_sec = ws.getValueIn(WorldSpeed.ft_sec / 3);
-        final Fix newF =
-            new Fix(thisN.dtg, loc, Math.toRadians(fe.crseDegs), yds_per_sec);
-        final FixWrapper newFw = new FixWrapper(newF);
-        
-        // lastly, reset the label, so it's legible
-        newFw.resetName();
-        
-        // oh, and switch the symbol on
-        newFw.setSymbolShowing(true);
+				// find the track for this solution
+				TrackWrapper hisTrack = (TrackWrapper) _layers.findLayer(fe.contact);
+				if (hisTrack == null) {
+					hisTrack = new TrackWrapper();
+					hisTrack.setName(fe.contact);
+					hisTrack.setColor(DebriefColors.RED);
+					_layers.addThisLayer(hisTrack);
+				}
 
-        // and store it
-        hisTrack.add(newFw);
-      }
-      else
-      {
-        logError("Host fix not present for FCS at:" + thisN.dtg.getDate(), null);
-      }
-    }
-  }
+				// ok, now create the fix
+				final WorldSpeed ws = new WorldSpeed(fe.spdKts, WorldSpeed.Kts);
+				final double yds_per_sec = ws.getValueIn(WorldSpeed.ft_sec / 3);
+				final Fix newF = new Fix(thisN.dtg, loc, Math.toRadians(fe.crseDegs), yds_per_sec);
+				final FixWrapper newFw = new FixWrapper(newF);
 
-  private NarrativeWrapper getNarrativeLayer()
-  {
-    NarrativeWrapper nw =
-        (NarrativeWrapper) _layers.findLayer(LayerHandler.NARRATIVE_LAYER);
+				// lastly, reset the label, so it's legible
+				newFw.resetName();
 
-    if (nw == null)
-    {
-      nw = new NarrativeWrapper(LayerHandler.NARRATIVE_LAYER);
-      _layers.addThisLayer(nw);
-    }
+				// oh, and switch the symbol on
+				newFw.setSymbolShowing(true);
 
-    return nw;
-  }
+				// and store it
+				hisTrack.add(newFw);
+			} else {
+				logError("Host fix not present for FCS at:" + thisN.dtg.getDate(), null);
+			}
+		}
+	}
 
-  public void importThis(final String fName, final InputStream is)
-  {
-    HWPFDocument doc = null;
-    try
-    {
-      doc = new HWPFDocument(is);
-    }
-    catch (final IOException e)
-    {
-      e.printStackTrace();
-    }
+	private NarrativeWrapper getNarrativeLayer() {
+		NarrativeWrapper nw = (NarrativeWrapper) _layers.findLayer(LayerHandler.NARRATIVE_LAYER);
 
-    if (doc == null)
-      return;
+		if (nw == null) {
+			nw = new NarrativeWrapper(LayerHandler.NARRATIVE_LAYER);
+			_layers.addThisLayer(nw);
+		}
 
-    // keep track of if we've added anything
-    boolean dataAdded = false;
+		return nw;
+	}
 
-    // find the outer time period - we only load data into the current time period
-    TimePeriod outerPeriod = null;
-    final Enumeration<Editable> layers = _layers.elements();
-    while (layers.hasMoreElements())
-    {
-      final Layer thisL = (Layer) layers.nextElement();
-      if (thisL instanceof WatchableList)
-      {
-        final WatchableList wl = (WatchableList) thisL;
-        if (wl.getStartDTG() != null && wl.getEndDTG() != null)
-        {
-          final TimePeriod thisP =
-              new TimePeriod.BaseTimePeriod(wl.getStartDTG(), wl.getEndDTG());
-          if (outerPeriod == null)
-          {
-            outerPeriod = thisP;
-          }
-          else
-          {
-            outerPeriod.extend(wl.getStartDTG());
-            outerPeriod.extend(wl.getEndDTG());
-          }
-        }
-      }
-    }
+	public void importThis(final String fName, final InputStream is) {
+		HWPFDocument doc = null;
+		try {
+			doc = new HWPFDocument(is);
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
 
-    final Range r = doc.getRange();
+		if (doc == null)
+			return;
 
-    // clear the stored data in the MS Word importer
-    NarrEntry.reset();
+		// keep track of if we've added anything
+		boolean dataAdded = false;
 
-    final int lenParagraph = r.numParagraphs();
-    for (int x = 0; x < lenParagraph; x++)
-    {
-      final Paragraph p = r.getParagraph(x);
-      final String text = p.text();
-      if (text.trim().length() == 0)
-      {
-        continue;
-      }
+		// find the outer time period - we only load data into the current time period
+		TimePeriod outerPeriod = null;
+		final Enumeration<Editable> layers = _layers.elements();
+		while (layers.hasMoreElements()) {
+			final Layer thisL = (Layer) layers.nextElement();
+			if (thisL instanceof WatchableList) {
+				final WatchableList wl = (WatchableList) thisL;
+				if (wl.getStartDTG() != null && wl.getEndDTG() != null) {
+					final TimePeriod thisP = new TimePeriod.BaseTimePeriod(wl.getStartDTG(), wl.getEndDTG());
+					if (outerPeriod == null) {
+						outerPeriod = thisP;
+					} else {
+						outerPeriod.extend(wl.getStartDTG());
+						outerPeriod.extend(wl.getEndDTG());
+					}
+				}
+			}
+		}
 
-      // ok, get the narrative type
-      final NarrEntry thisN = NarrEntry.create(text, x);
+		final Range r = doc.getRange();
 
-      if (thisN == null)
-      {
-        // logError("Unable to parse line:" + text, null);
-        continue;
-      }
+		// clear the stored data in the MS Word importer
+		NarrEntry.reset();
 
-      // do we know the outer time period?
-      if (outerPeriod != null && thisN.dtg != null)
-      {
-        // check it's in the currently loaded time period
-        if (!outerPeriod.contains(thisN.dtg))
-        {
+		final int lenParagraph = r.numParagraphs();
+		for (int x = 0; x < lenParagraph; x++) {
+			final Paragraph p = r.getParagraph(x);
+			final String text = p.text();
+			if (text.trim().length() == 0) {
+				continue;
+			}
+
+			// ok, get the narrative type
+			final NarrEntry thisN = NarrEntry.create(text, x);
+
+			if (thisN == null) {
+				// logError("Unable to parse line:" + text, null);
+				continue;
+			}
+
+			// do we know the outer time period?
+			if (outerPeriod != null && thisN.dtg != null) {
+				// check it's in the currently loaded time period
+				if (!outerPeriod.contains(thisN.dtg)) {
 //          System.out.println(thisN.dtg.getDate() + " is not between " + outerPeriod.getStartDTG().getDate() + " and " + outerPeriod.getEndDTG().getDate());
-          
-          // ok, it's not in our period
-          continue;
-        }
-      }
 
-      // is it just text, that we will appned
-      if (thisN.appendedToPrevious)
-      {
-        // hmm, just check if this is an FCS
+					// ok, it's not in our period
+					continue;
+				}
+			}
 
-        // do we have a previous one?
-        if (_lastEntry != null)
-        {
-          final String newText = thisN.text;
+			// is it just text, that we will appned
+			if (thisN.appendedToPrevious) {
+				// hmm, just check if this is an FCS
 
-          _lastEntry.setEntry(_lastEntry.getEntry() + "\n" + newText);
-        }
+				// do we have a previous one?
+				if (_lastEntry != null) {
+					final String newText = thisN.text;
 
-        // ok, we can't do any more. carry on
-        continue;
-      }
+					_lastEntry.setEntry(_lastEntry.getEntry() + "\n" + newText);
+				}
 
-      switch (thisN.type)
-      {
-      case "FCS":
-      {
-        // add a narrative entry
-        addEntry(thisN);
+				// ok, we can't do any more. carry on
+				continue;
+			}
 
-        // create track for this
-        try
-        {
-          addFCS(thisN);
-        }
-        catch (final StringIndexOutOfBoundsException e)
-        {
-          // don't worry about panicking, it may not be an FCS after all
-        }
-        catch (final NumberFormatException e)
-        {
-          // don't worry about panicking, it may not be an FCS after all
-        }
+			switch (thisN.type) {
+			case "FCS": {
+				// add a narrative entry
+				addEntry(thisN);
 
-        // ok, take note that we've added something
-        dataAdded = true;
+				// create track for this
+				try {
+					addFCS(thisN);
+				} catch (final StringIndexOutOfBoundsException e) {
+					// don't worry about panicking, it may not be an FCS after all
+				} catch (final NumberFormatException e) {
+					// don't worry about panicking, it may not be an FCS after all
+				}
 
-        break;
-      }
-      default:
-      {
-        // ok, just add a narrative entry for anything not recognised
+				// ok, take note that we've added something
+				dataAdded = true;
 
-        // add a narrative entry
-        addEntry(thisN);
+				break;
+			}
+			default: {
+				// ok, just add a narrative entry for anything not recognised
 
-        // ok, take note that we've added something
-        dataAdded = true;
+				// add a narrative entry
+				addEntry(thisN);
 
-        break;
+				// ok, take note that we've added something
+				dataAdded = true;
 
-      }
-      }
-    }
+				break;
 
-    if (dataAdded)
-    {
-      _layers.fireModified(getNarrativeLayer());
-    }
-  }
+			}
+			}
+		}
 
-  public void logError(final String msg, final Exception e)
-  {
-    logThisError(msg, e);
-  }
+		if (dataAdded) {
+			_layers.fireModified(getNarrativeLayer());
+		}
+	}
 
-  private String trackFor(final String originalName)
-  {
-    return trackFor(originalName, null);
-  }
+	public void logError(final String msg, final Exception e) {
+		logThisError(msg, e);
+	}
 
-  private String trackFor(final String originalName, String name)
-  {
-    if (name == null)
-    {
-      name = originalName;
-    }
+	private String trackFor(final String originalName) {
+		return trackFor(originalName, null);
+	}
 
-    final String platform = name.trim();
-    String match = nameMatches.get(platform);
-    if (match == null)
-    {
-      // search the layers
-      final Layer theL = _layers.findLayer(platform);
-      if (theL != null)
-      {
-        match = theL.getName();
-        nameMatches.put(originalName, match);
-      }
-      else
-      {
-        // try skipping then names
-        final Iterator<String> nameIter = SkipNames.iterator();
-        while (nameIter.hasNext() && match == null)
-        {
-          final String thisSkip = nameIter.next();
-          if (platform.startsWith(thisSkip))
-          {
-            final String subStr = platform.substring(thisSkip.length()).trim();
-            match = trackFor(originalName, subStr);
-          }
-        }
-      }
-    }
+	private String trackFor(final String originalName, String name) {
+		if (name == null) {
+			name = originalName;
+		}
 
-    return match;
-  }
+		final String platform = name.trim();
+		String match = nameMatches.get(platform);
+		if (match == null) {
+			// search the layers
+			final Layer theL = _layers.findLayer(platform);
+			if (theL != null) {
+				match = theL.getName();
+				nameMatches.put(originalName, match);
+			} else {
+				// try skipping then names
+				final Iterator<String> nameIter = SkipNames.iterator();
+				while (nameIter.hasNext() && match == null) {
+					final String thisSkip = nameIter.next();
+					if (platform.startsWith(thisSkip)) {
+						final String subStr = platform.substring(thisSkip.length()).trim();
+						match = trackFor(originalName, subStr);
+					}
+				}
+			}
+		}
+
+		return match;
+	}
 }

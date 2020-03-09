@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: PlainTool.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -103,150 +104,147 @@ import MWC.GUI.Tool;
 import MWC.GUI.ToolParent;
 import MWC.GenericData.WorldArea;
 
-
-/** a GUI-independent tool implementation, mostly for commands
- * which are 'operations', ie do a single GUI-independent process
- * immediately the button is pressed
+/**
+ * a GUI-independent tool implementation, mostly for commands which are
+ * 'operations', ie do a single GUI-independent process immediately the button
+ * is pressed
  */
 @SuppressWarnings("serial")
 abstract public class PlainTool extends AbstractAction implements Tool {
-  
-  public static interface BoundsProvider
-  {
-    WorldArea getViewport();
-    WorldArea getBounds();
-  }
-  
-  /** the parent class, where we have control over the cursor shape
-   */
-  ToolParent _theParent;
-  /** the image to show to represent this command on a toolbar
-   */
-  private String image = null;
-  /** the label to use to represent this command
-   */
-  private String _label;
 
-  public PlainTool(final ToolParent theParent, final String theLabel, final String theImage){
-    _theParent = theParent;
-    if(theLabel == null){
-      // check we have a label, if so use it, else
-      _label = "blank";
-    }
-    else
-    {
-      _label = theLabel;
-    }
+	public static interface BoundsProvider {
+		WorldArea getBounds();
 
-    // check we have an image, if not then
-    // create one
-    if(theImage == null){
-      // create new image
-      image = null;
-    }
-    else{
-      image = theImage;
-    }
-  }
+		WorldArea getViewport();
+	}
 
-  public PlainTool()
-  {
-    // default constructor, for serialisation
-  }
+	/**
+		 *
+		 */
+	private static final long serialVersionUID = 1L;
 
-  /////////////////////////////////////////////////////////
-  // member function
-  /////////////////////////////////////////////////////////
-
-	/** allow us to be defined as an action listener
+	/**
+	 * the parent class, where we have control over the cursor shape
 	 */
-	public void actionPerformed(final java.awt.event.ActionEvent p1)
-	{
+	ToolParent _theParent;
+	/**
+	 * the image to show to represent this command on a toolbar
+	 */
+	private String image = null;
+	/**
+	 * the label to use to represent this command
+	 */
+	private String _label;
+
+	public PlainTool() {
+		// default constructor, for serialisation
+	}
+
+	public PlainTool(final ToolParent theParent, final String theLabel, final String theImage) {
+		_theParent = theParent;
+		if (theLabel == null) {
+			// check we have a label, if so use it, else
+			_label = "blank";
+		} else {
+			_label = theLabel;
+		}
+
+		// check we have an image, if not then
+		// create one
+		if (theImage == null) {
+			// create new image
+			image = null;
+		} else {
+			image = theImage;
+		}
+	}
+
+	/////////////////////////////////////////////////////////
+	// member function
+	/////////////////////////////////////////////////////////
+
+	/**
+	 * allow us to be defined as an action listener
+	 */
+	@Override
+	public void actionPerformed(final java.awt.event.ActionEvent p1) {
 		execute();
 	}
 
-
-/** the job of the execute function is to collate
-  * the data necessary for the command to take place, then
-  * call the function specific command in the 'Action'
-  * object
-  */
-  public void execute(){
-
-    // start busy
-    setBusy(true);
-
-    // create the memento
-    final Action newAction = getData();
-
-    // do the action
-    if(newAction != null)
-    {
-      newAction.execute();
-
-      // check that the action is undoable, before we stick it on the buffer
-      if(newAction.isUndoable()){
-        // store the event
-        // put it on the buffer
-        if(_theParent != null)
-          _theParent.addActionToBuffer(newAction);
-      }
-    }
-    // end busy
-    setBusy(false);
-  }
-
-
-  public void setBusy(final boolean isBusy){
-    if(_theParent != null){
-      if(isBusy)
-        _theParent.setCursor(java.awt.Cursor.WAIT_CURSOR);
-      else
-        _theParent.restoreCursor();
-    }
-  }
-
-  /** abstract definition - this is where the class retrieves the data
-   * necessary for the operation
-   */
-  public abstract Action getData();
-
-  /** get the label (name) for this command*/
-  public String getLabel(){
-    return _label;
-  }
-
-	public void setLabel(final String val)
-	{
-		_label = val;
-	}
-
-  /** get the image represented by this command*/
-  public String getImage(){
-    return image;
-  }
-
-
-  public ToolParent getParent(){
-    return _theParent;
-  }
-
-
-	/** provide a method which will allow us to close (finalise) the tool
+	/**
+	 * provide a method which will allow us to close (finalise) the tool
 	 */
-	public void close()
-	{
+	@Override
+	public void close() {
 		_theParent = null;
 		image = null;
 		_label = null;
 	}
 
+	/**
+	 * the job of the execute function is to collate the data necessary for the
+	 * command to take place, then call the function specific command in the
+	 * 'Action' object
+	 */
+	@Override
+	public void execute() {
+
+		// start busy
+		setBusy(true);
+
+		// create the memento
+		final Action newAction = getData();
+
+		// do the action
+		if (newAction != null) {
+			newAction.execute();
+
+			// check that the action is undoable, before we stick it on the buffer
+			if (newAction.isUndoable()) {
+				// store the event
+				// put it on the buffer
+				if (_theParent != null)
+					_theParent.addActionToBuffer(newAction);
+			}
+		}
+		// end busy
+		setBusy(false);
+	}
+
+	/**
+	 * abstract definition - this is where the class retrieves the data necessary
+	 * for the operation
+	 */
+	@Override
+	public abstract Action getData();
+
+	/** get the image represented by this command */
+	@Override
+	public String getImage() {
+		return image;
+	}
+
+	/** get the label (name) for this command */
+	@Override
+	public String getLabel() {
+		return _label;
+	}
+
+	public ToolParent getParent() {
+		return _theParent;
+	}
+
+	public void setBusy(final boolean isBusy) {
+		if (_theParent != null) {
+			if (isBusy)
+				_theParent.setCursor(java.awt.Cursor.WAIT_CURSOR);
+			else
+				_theParent.restoreCursor();
+		}
+	}
+
+	public void setLabel(final String val) {
+		_label = val;
+	}
+
 }
-
-
-
-
-
-
-
-

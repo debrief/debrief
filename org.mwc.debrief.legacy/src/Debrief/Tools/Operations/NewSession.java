@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: NewSession.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.4 $
@@ -94,109 +95,100 @@
 
 package Debrief.Tools.Operations;
 
+import java.io.File;
+import java.io.FileInputStream;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Frames.Session;
-import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
 import Debrief.ReaderWriter.XML.PlotHandler;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.PlainTool;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
-
-import java.io.File;
-import java.io.FileInputStream;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReaderWriter;
 
 /**
  * command to create a new blank session in the current application
  */
-public final class NewSession extends PlainTool
-{
+public final class NewSession extends PlainTool {
 
-  ///////////////////////////////////////////////////////////////
-  // member variables
-  ///////////////////////////////////////////////////////////////
-  private final Application _theApplication;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-  // whether to read in default layers
-  private final boolean _loadDefaultLayers;
+	/**
+	 * the filename to read our default set of layers from
+	 */
+	public static final String DEFAULT_NAME = "default_plot.xml";
 
-  /**
-   * the filename to read our default set of layers from
-   */
-  public static final String DEFAULT_NAME = "default_plot.xml";
+	///////////////////////////////////////////////////////////////
+	// member variables
+	///////////////////////////////////////////////////////////////
+	private final Application _theApplication;
 
-  ///////////////////////////////////////////////////////////////
-  // constructor
-  ///////////////////////////////////////////////////////////////
-  public NewSession(final Application theApplication)
-  {
-    this(theApplication, false);
-  }
+	// whether to read in default layers
+	private final boolean _loadDefaultLayers;
 
-  public NewSession(final Application application, final boolean loadLayers)
-  {
-    super(application, "New Plot", "images/24/new.png");
-    _theApplication = application;
-    _loadDefaultLayers = loadLayers;
-  }
+	///////////////////////////////////////////////////////////////
+	// constructor
+	///////////////////////////////////////////////////////////////
+	public NewSession(final Application theApplication) {
+		this(theApplication, false);
+	}
 
-  ///////////////////////////////////////////////////////////////
-  // member functions
-  ///////////////////////////////////////////////////////////////
+	public NewSession(final Application application, final boolean loadLayers) {
+		super(application, "New Plot", "images/24/new.png");
+		_theApplication = application;
+		_loadDefaultLayers = loadLayers;
+	}
 
+	///////////////////////////////////////////////////////////////
+	// member functions
+	///////////////////////////////////////////////////////////////
 
+	/**
+	 * actually open the session
+	 */
+	@Override
+	public final void execute() {
+		// Ok, create the skeleton session
+		Session theSess = _theApplication.createSession();
 
-  /**
-   * we don't return an action, since this isn't an undoable operation anyway
-   */
-  public final Action getData()
-  {
-    return null;
-  }
+		// do we want to load default layers?
+		if (_loadDefaultLayers) {
+			try {
+				final File defaultLayers = new File(DEFAULT_NAME);
+				if (defaultLayers.exists()) {
+					// ok. try to load the default layers
+					final MWCXMLReader handler = new PlotHandler(_theApplication, theSess, DEFAULT_NAME);
 
+					// note, the handler give the session to the application all on it's own
+					MWCXMLReaderWriter.importThis(handler, DEFAULT_NAME, new FileInputStream(DEFAULT_NAME));
+				} else {
+					// file not found, report error to user (as if they don't know)
+					MWC.GUI.Dialogs.DialogFactory.showMessage("Open default plot",
+							"Sorry " + NewSession.DEFAULT_NAME + " not found in Debrief startup directory."
+									+ System.getProperty("line.separator")
+									+ "Please create this file if required (as described in Debrief User Guide).");
+				}
+			} catch (final Exception e) {
+				MWC.Utilities.Errors.Trace.trace(e, "Problem occured whilst trying to load default layers");
+			}
+		} else {
+			// give it to the parent ourselves
+			_theApplication.newSession(theSess);
 
-  /**
-   * actually open the session
-   */
-  public final void execute()
-  {
-    // Ok, create the skeleton session
-    Session theSess = _theApplication.createSession();
+			//
+			theSess = null;
+		}
 
-    // do we want to load default layers?
-    if (_loadDefaultLayers)
-    {
-      try
-      {
-        final File defaultLayers = new File(DEFAULT_NAME);
-        if (defaultLayers.exists())
-        {
-          // ok.  try to load the default layers
-          final MWCXMLReader handler = new PlotHandler(_theApplication, theSess, DEFAULT_NAME);
+	}
 
-          // note, the handler give the session to the application all on it's own
-          DebriefXMLReaderWriter.importThis(handler, DEFAULT_NAME, new FileInputStream(DEFAULT_NAME));
-        }
-        else
-        {
-          // file not found, report error to user (as if they don't know)
-          MWC.GUI.Dialogs.DialogFactory.showMessage("Open default plot", "Sorry " + NewSession.DEFAULT_NAME + " not found in Debrief startup directory." +
-                                                                         System.getProperty("line.separator") + "Please create this file if required (as described in Debrief User Guide).");
-        }
-      }
-      catch (final Exception e)
-      {
-        MWC.Utilities.Errors.Trace.trace(e, "Problem occured whilst trying to load default layers");
-      }
-    }
-    else
-    {
-      // give it to the parent ourselves
-      _theApplication.newSession(theSess);
-
-      //
-      theSess = null;
-    }
-
-  }
+	/**
+	 * we don't return an action, since this isn't an undoable operation anyway
+	 */
+	@Override
+	public final Action getData() {
+		return null;
+	}
 }

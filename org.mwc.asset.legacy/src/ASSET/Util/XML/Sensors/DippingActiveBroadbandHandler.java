@@ -1,17 +1,4 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
- *
- *    (C) 2000-2014, PlanetMayo Ltd
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+
 package ASSET.Util.XML.Sensors;
 
 import ASSET.Models.SensorType;
@@ -20,162 +7,152 @@ import MWC.GenericData.WorldSpeed;
 import MWC.Utilities.ReaderWriter.XML.Util.DurationHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldSpeedHandler;
 
-/**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application http://debrief.info
  *
- * @author
- * @version 1.0
- */
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 
+public abstract class DippingActiveBroadbandHandler extends ActiveBroadbandHandler {
 
-public abstract class DippingActiveBroadbandHandler extends ActiveBroadbandHandler
-{
+	private final static String type1 = "DippingActiveBroadbandSensor";
+	private final static String AIR_LOWER_RATE = "AirLowerRate";
+	private final static String AIR_RAISE_RATE = "AirRaiseRate";
+	private final static String WATER_LOWER_RATE = "WaterLowerRate";
+	private final static String WATER_RAISE_RATE = "WaterRaiseRate";
+	private final static String RAISE_PAUSE = "RaisePause";
+	private final static String LOWER_PAUSE = "LowerPause";
 
-  private final static String type1 = "DippingActiveBroadbandSensor";
-  private final static String AIR_LOWER_RATE = "AirLowerRate";
-  private final static String AIR_RAISE_RATE = "AirRaiseRate";
-  private final static String WATER_LOWER_RATE = "WaterLowerRate";
-  private final static String WATER_RAISE_RATE = "WaterRaiseRate";
-  private final static String RAISE_PAUSE = "RaisePause";
-  private final static String LOWER_PAUSE = "LowerPause";
+	static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc) {
+		// create ourselves
+		final org.w3c.dom.Element thisPart = doc.createElement(type1);
 
+		// get data item
+		final ASSET.Models.Sensor.Initial.DippingActiveBroadbandSensor bb = (ASSET.Models.Sensor.Initial.DippingActiveBroadbandSensor) toExport;
 
-  WorldSpeed airLowerRate;
-  WorldSpeed airRaiseRate;
-  Duration lowerPause;
-  Duration raisePause;
-  WorldSpeed waterLowerRate;
-  WorldSpeed waterRaiseRate;
+		// dipping specific stuff
+		WorldSpeedHandler.exportSpeed(AIR_LOWER_RATE, bb.getAirLowerRate(), thisPart, doc);
+		WorldSpeedHandler.exportSpeed(AIR_RAISE_RATE, bb.getAirRaiseRate(), thisPart, doc);
+		WorldSpeedHandler.exportSpeed(WATER_LOWER_RATE, bb.getWaterLowerRate(), thisPart, doc);
+		WorldSpeedHandler.exportSpeed(WATER_RAISE_RATE, bb.getWaterRaiseRate(), thisPart, doc);
+		DurationHandler.exportDuration(RAISE_PAUSE, bb.getRaisePause(), thisPart, doc);
+		DurationHandler.exportDuration(LOWER_PAUSE, bb.getLowerPause(), thisPart, doc);
 
+		// normal sensor stuff
+		thisPart.setAttribute(APERTURE, writeThis(bb.getDetectionAperture()));
+		thisPart.setAttribute(SOURCE_LEVEL, writeThis(bb.getSourceLevel()));
 
-  public DippingActiveBroadbandHandler()
-  {
-    super(type1);
+		CoreSensorHandler.exportCoreSensorBits(thisPart, bb);
 
-    addHandler(new WorldSpeedHandler(AIR_LOWER_RATE)
-    {
-      public void setSpeed(WorldSpeed res)
-      {
-        airLowerRate = res;
-      }
-    });
+		parent.appendChild(thisPart);
 
-    addHandler(new WorldSpeedHandler(AIR_RAISE_RATE)
-    {
-      public void setSpeed(WorldSpeed res)
-      {
-        airRaiseRate = res;
-      }
-    });
+	}
 
-    addHandler(new WorldSpeedHandler(WATER_LOWER_RATE)
-    {
-      public void setSpeed(WorldSpeed res)
-      {
-        waterLowerRate = res;
-      }
-    });
+	WorldSpeed airLowerRate;
+	WorldSpeed airRaiseRate;
+	Duration lowerPause;
+	Duration raisePause;
+	WorldSpeed waterLowerRate;
 
-    addHandler(new WorldSpeedHandler(WATER_RAISE_RATE)
-    {
-      public void setSpeed(WorldSpeed res)
-      {
-        waterRaiseRate = res;
-      }
-    });
+	WorldSpeed waterRaiseRate;
 
-    addHandler(new DurationHandler(RAISE_PAUSE)
-    {
-      public void setDuration(Duration res)
-      {
-        raisePause = res;
-      }
-    });
+	public DippingActiveBroadbandHandler() {
+		super(type1);
 
-    addHandler(new DurationHandler(LOWER_PAUSE)
-    {
-      public void setDuration(Duration res)
-      {
-        lowerPause = res;
-      }
-    });
-  }
+		addHandler(new WorldSpeedHandler(AIR_LOWER_RATE) {
+			@Override
+			public void setSpeed(final WorldSpeed res) {
+				airLowerRate = res;
+			}
+		});
 
-  /**
-   * method for child class to instantiate sensor
-   *
-   * @param myId
-   * @param myName
-   * @return the new sensor
-   */
-  protected SensorType getSensor(int myId, String myName)
-  {
-    // get this instance
-    final ASSET.Models.Sensor.Initial.DippingActiveBroadbandSensor bb =
-      new ASSET.Models.Sensor.Initial.DippingActiveBroadbandSensor(myId);
-    bb.setName(myName);
+		addHandler(new WorldSpeedHandler(AIR_RAISE_RATE) {
+			@Override
+			public void setSpeed(final WorldSpeed res) {
+				airRaiseRate = res;
+			}
+		});
 
-    // dipper specific
-    bb.setAirLowerRate(airLowerRate);
-    bb.setAirRaiseRate(airRaiseRate);
-    bb.setLowerPause(lowerPause);
-    bb.setRaisePause(raisePause);
-    bb.setWaterLowerRate(waterLowerRate);
-    bb.setWaterRaiseRate(waterRaiseRate);
+		addHandler(new WorldSpeedHandler(WATER_LOWER_RATE) {
+			@Override
+			public void setSpeed(final WorldSpeed res) {
+				waterLowerRate = res;
+			}
+		});
 
-    // normal sensor stuff
-    bb.setDetectionAperture(_myAperture);
-    bb.setSourceLevel(_mySourceLevel);
-    bb.setWorking(_working);
+		addHandler(new WorldSpeedHandler(WATER_RAISE_RATE) {
+			@Override
+			public void setSpeed(final WorldSpeed res) {
+				waterRaiseRate = res;
+			}
+		});
 
-    return bb;
-  }
+		addHandler(new DurationHandler(RAISE_PAUSE) {
+			@Override
+			public void setDuration(final Duration res) {
+				raisePause = res;
+			}
+		});
 
-  public void elementClosed()
-  {
-    super.elementClosed();
+		addHandler(new DurationHandler(LOWER_PAUSE) {
+			@Override
+			public void setDuration(final Duration res) {
+				lowerPause = res;
+			}
+		});
+	}
 
-    // and clear our data
-    _working = true;
+	@Override
+	public void elementClosed() {
+		super.elementClosed();
 
-    airLowerRate = null;
-    airRaiseRate = null;
-    lowerPause = null;
-    raisePause = null;
-    waterLowerRate = null;
-    waterRaiseRate = null;
+		// and clear our data
+		_working = true;
 
-  }
+		airLowerRate = null;
+		airRaiseRate = null;
+		lowerPause = null;
+		raisePause = null;
+		waterLowerRate = null;
+		waterRaiseRate = null;
 
-  static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
-                                final org.w3c.dom.Document doc)
-  {
-    // create ourselves
-    final org.w3c.dom.Element thisPart = doc.createElement(type1);
+	}
 
-    // get data item
-    final ASSET.Models.Sensor.Initial.DippingActiveBroadbandSensor bb = (ASSET.Models.Sensor.Initial.DippingActiveBroadbandSensor) toExport;
+	/**
+	 * method for child class to instantiate sensor
+	 *
+	 * @param myId
+	 * @param myName
+	 * @return the new sensor
+	 */
+	protected SensorType getSensor(final int myId, final String myName) {
+		// get this instance
+		final ASSET.Models.Sensor.Initial.DippingActiveBroadbandSensor bb = new ASSET.Models.Sensor.Initial.DippingActiveBroadbandSensor(
+				myId);
+		bb.setName(myName);
 
+		// dipper specific
+		bb.setAirLowerRate(airLowerRate);
+		bb.setAirRaiseRate(airRaiseRate);
+		bb.setLowerPause(lowerPause);
+		bb.setRaisePause(raisePause);
+		bb.setWaterLowerRate(waterLowerRate);
+		bb.setWaterRaiseRate(waterRaiseRate);
 
-    // dipping specific stuff
-    WorldSpeedHandler.exportSpeed(AIR_LOWER_RATE, bb.getAirLowerRate(), thisPart, doc);
-    WorldSpeedHandler.exportSpeed(AIR_RAISE_RATE, bb.getAirRaiseRate(), thisPart, doc);
-    WorldSpeedHandler.exportSpeed(WATER_LOWER_RATE, bb.getWaterLowerRate(), thisPart, doc);
-    WorldSpeedHandler.exportSpeed(WATER_RAISE_RATE, bb.getWaterRaiseRate(), thisPart, doc);
-    DurationHandler.exportDuration(RAISE_PAUSE, bb.getRaisePause(), thisPart, doc);
-    DurationHandler.exportDuration(LOWER_PAUSE, bb.getLowerPause(), thisPart, doc);
+		// normal sensor stuff
+		bb.setDetectionAperture(_myAperture);
+		bb.setSourceLevel(_mySourceLevel);
+		bb.setWorking(_working);
 
-
-    // normal sensor stuff
-    thisPart.setAttribute(APERTURE, writeThis(bb.getDetectionAperture()));
-    thisPart.setAttribute(SOURCE_LEVEL, writeThis(bb.getSourceLevel()));
-
-    CoreSensorHandler.exportCoreSensorBits(thisPart, bb);
-
-    parent.appendChild(thisPart);
-
-  }
+		return bb;
+	}
 }

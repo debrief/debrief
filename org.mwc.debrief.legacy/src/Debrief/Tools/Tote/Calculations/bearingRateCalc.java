@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package Debrief.Tools.Tote.Calculations;
 
 // Copyright MWC 1999, Debrief 3 Project
@@ -91,111 +92,114 @@ package Debrief.Tools.Tote.Calculations;
 
 import java.text.DecimalFormat;
 
-import MWC.GenericData.*;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WorldVector;
 
-/** Calculate the bearing from the primary vessel to the secondary (for use in the tote)
+/**
+ * Calculate the bearing from the primary vessel to the secondary (for use in
+ * the tote)
  */
-public final class bearingRateCalc extends plainCalc
-{
+public final class bearingRateCalc extends plainCalc {
 
-  //////////////////////////////////////////////////
-  // member variables
-  //////////////////////////////////////////////////
+	//////////////////////////////////////////////////
+	// member variables
+	//////////////////////////////////////////////////
 
-  /** our own copy of a world vector, to reduce object creation
-   *
-   */
-  private static final WorldVector _myWorldVector = new WorldVector(0,0,0);
+	/**
+	 * our own copy of a world vector, to reduce object creation
+	 *
+	 */
+	private static final WorldVector _myWorldVector = new WorldVector(0, 0, 0);
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-/** constructor, initialise formatter
- */
-  public bearingRateCalc()
-  {
-    super(new DecimalFormat("0.000"), "Brg Rate", "deg/min");
-  }
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	/**
+	 * constructor, initialise formatter
+	 */
+	public bearingRateCalc() {
+		super(new DecimalFormat("0.000"), "Brg Rate", "deg/min");
+	}
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
-/** produce our calculation from the Watchables
- * @param primary primary watchable
- * @param secondary secondary watchable
- * @return string representation of calculated value
- */
-  public final String update(final Watchable primary, final Watchable secondary, final HiResDate time)
-  {
-    String res = null;
-    if(((primary != null) && (secondary != null))
-       && (primary != secondary))
-    {
-      final double bDot = calculate(primary, secondary, time);
+	@Override
+	public final double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime) {
+		double res = 0.0;
+		if ((primary != null) && (secondary != null) && (primary != secondary)) {
+			final WorldVector wv = primary.getLocation().subtract(secondary.getLocation(), _myWorldVector);
 
-      // make a copy of the original val absolute, we rely on the sign of the 
-      final double formattedbDot = Math.abs(bDot);
-      res = _myPattern.format(formattedbDot);
+			final double brg = wv.getBearing();
+			double rng = wv.getRange();
 
-      if(bDot < 0)
-        res += "L";
-      else
-        res += "R";
+			// convert to yards
+			rng = MWC.Algorithms.Conversions.Degs2Yds(rng);
 
+			// get the vessel course and speeds (in knots and radians)
+			final double oCrse = secondary.getCourse();
+			final double oSpd = secondary.getSpeed();
+			final double tCrse = primary.getCourse();
+			final double tSpd = primary.getSpeed();
 
-    }
-    else
-      res = NOT_APPLICABLE;
+			final double relBrg = brg - oCrse;
+			final double ATB = brg - Math.PI - tCrse;
+			final double TSA = tSpd * Math.sin(ATB);
+			final double OSA = oSpd * Math.sin(relBrg);
+			final double RSA = TSA + OSA;
 
-    return res;
-  }
+			// RSA = Conversions.clipRadians(RSA);
 
-  /** does this calculation require special bearing handling (prevent wrapping through 360 degs)
-   *
-   */
-  public final boolean isWrappableData() {
-    return false;
-  }
+			final double bDot = 6080 / Math.PI * RSA / rng;
 
-  public final double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime)
-  {
-    double res = 0.0;
-    if((primary != null) && (secondary != null) && (primary != secondary))
-    {
-      final WorldVector wv = primary.getLocation().subtract(secondary.getLocation(), _myWorldVector);
+			res = bDot;
 
-      final double brg = wv.getBearing();
-      double rng = wv.getRange();
+		}
+		return res;
+	}
 
-      // convert to yards
-      rng = MWC.Algorithms.Conversions.Degs2Yds (rng);
+	/**
+	 * does this calculation require special bearing handling (prevent wrapping
+	 * through 360 degs)
+	 *
+	 */
+	@Override
+	public final boolean isWrappableData() {
+		return false;
+	}
 
-      // get the vessel course and speeds (in knots and radians)
-      final double oCrse = secondary.getCourse();
-      final double oSpd = secondary.getSpeed();
-      final double tCrse = primary.getCourse();
-      final double tSpd = primary.getSpeed();
+	@Override
+	public final String toString() {
+		return "Bearing rate calculation";
+	}
 
-      final double relBrg = brg - oCrse;
-      final double ATB = brg - Math.PI - tCrse;
-      final double TSA = tSpd * Math.sin(ATB);
-      final double OSA = oSpd * Math.sin(relBrg);
-      final double RSA = TSA + OSA;
+	/**
+	 * produce our calculation from the Watchables
+	 *
+	 * @param primary   primary watchable
+	 * @param secondary secondary watchable
+	 * @return string representation of calculated value
+	 */
+	@Override
+	public final String update(final Watchable primary, final Watchable secondary, final HiResDate time) {
+		String res = null;
+		if (((primary != null) && (secondary != null)) && (primary != secondary)) {
+			final double bDot = calculate(primary, secondary, time);
 
-    //  RSA = Conversions.clipRadians(RSA);
+			// make a copy of the original val absolute, we rely on the sign of the
+			final double formattedbDot = Math.abs(bDot);
+			res = _myPattern.format(formattedbDot);
 
-      final double bDot = 6080 / Math.PI * RSA / rng;
+			if (bDot < 0)
+				res += "L";
+			else
+				res += "R";
 
-      res = bDot;
+		} else
+			res = NOT_APPLICABLE;
 
-    }
-    return res;
-  }
-
-
-  public final String toString() {
-    return "Bearing rate calculation";
-  }
-
+		return res;
+	}
 
 }

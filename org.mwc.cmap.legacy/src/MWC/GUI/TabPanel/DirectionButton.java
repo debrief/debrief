@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.GUI.TabPanel;
 
 import java.awt.Color;
@@ -21,7 +22,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
-
 
 //	01/29/97	TWB	Integrated changes from Windows
 //	05/23/97	LAB	Updated to support Java 1.1
@@ -43,85 +43,595 @@ import java.beans.VetoableChangeListener;
 
 /**
  * The DirectionButton is a button component that has an arrow drawn in it that
- * points one of four ways (left, up, right, or down). At runtime, the button has
- * a raised look and a pressed look.
+ * points one of four ways (left, up, right, or down). At runtime, the button
+ * has a raised look and a pressed look.
  * <p>
  * This component is usually used in conjunction with a combo or list box to
- * indicate a list that the user can view by clicking the arrow, or with spinners
- * to let the user scroll through available values.
+ * indicate a list that the user can view by clicking the arrow, or with
+ * spinners to let the user scroll through available values.
  * <p>
+ *
  * @version 1.1, June 27, 1997
- * @author  Symantec
+ * @author Symantec
  */
-public class DirectionButton extends ButtonBase
-{
-    /**
-	 * 
+public class DirectionButton extends ButtonBase {
+	/**
+	 * This is the PropertyChangeEvent handling inner class for the constrained
+	 * ArrowIndent property. Handles vetoing ArrowIndents that are not valid.
+	 */
+	class IndntVeto implements java.beans.VetoableChangeListener, java.io.Serializable {
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		/**
+		 * This method gets called when an attempt to change the constrained ArrowIndent
+		 * property is made. Ensures the given arrow indent size is valid for this
+		 * button.
+		 *
+		 * @param e a <code>PropertyChangeEvent</code> object describing the event
+		 *          source and the property that has changed.
+		 * @exception PropertyVetoException if the recipient wishes the property change
+		 *                                  to be rolled back.
+		 */
+		@Override
+		public void vetoableChange(final PropertyChangeEvent e) throws PropertyVetoException {
+			final int i = ((Integer) e.getNewValue()).intValue();
+			if (!isValidArrowIndent(i)) {
+				throw new PropertyVetoException("Invalid arrow indent: " + i, e);
+			}
+		}
+	}
+
+	/**
+	 * This is the PropertyChangeEvent handling inner class for the constrained
+	 * Direction property. Handles vetoing Directions that are not valid.
+	 */
+	class SizeVeto implements java.beans.VetoableChangeListener, java.io.Serializable {
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		/**
+		 * This method gets called when an attempt to change the constrained Direction
+		 * property is made. Ensures the given direction size is valid for this button.
+		 *
+		 * @param e a <code>PropertyChangeEvent</code> object describing the event
+		 *          source and the property that has changed.
+		 * @exception PropertyVetoException if the recipient wishes the property change
+		 *                                  to be rolled back.
+		 */
+		@Override
+		public void vetoableChange(final PropertyChangeEvent e) throws PropertyVetoException {
+			final int i = ((Integer) e.getNewValue()).intValue();
+			if (!isValidDirection(i)) {
+				throw new PropertyVetoException("Invalid direction size: " + i, e);
+			}
+		}
+	}
+
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
-		/**
-     * The point LEFT style constant.
-     */
-    public static final int LEFT = 0;
+	/**
+	 * The point LEFT style constant.
+	 */
+	public static final int LEFT = 0;
 
-    /**
-     * The point RIGHT style constant.
-     */
-    public static final int RIGHT = 1;
+	/**
+	 * The point RIGHT style constant.
+	 */
+	public static final int RIGHT = 1;
 
-    /**
-     * The point UP style constant.
-     */
-    public static final int UP = 2;
+	/**
+	 * The point UP style constant.
+	 */
+	public static final int UP = 2;
 
-    /**
-     * The point DOWN style constant.
-     */
-    public static final int DOWN = 3;
+	/**
+	 * The point DOWN style constant.
+	 */
+	public static final int DOWN = 3;
 
-    /**
-     * Constructs a default DirectionButton, which will point left.
-     */
-    public DirectionButton()
-    {
-        this(LEFT);
-    }
+	/**
+	 * The color of the arrow in the button.
+	 */
+	protected Color arrowColor = null;
 
-    /**
-     * Constructs a DirectionButton pointing the specified direction.
-     * @param d a style constant indicating which direction to point the button
-     * @see #LEFT
-     * @see #UP
-     * @see #RIGHT
-     * @see #DOWN
-     */
-	public DirectionButton(final int d)
-	{
+	/**
+	 * The color of the arrow when the button is disabled.
+	 */
+	protected Color disabledArrowColor = null;
+
+	/**
+	 * The direction the arrow points. One of: LEFT, UP, RIGHT, or DOWN.
+	 *
+	 * @see #LEFT
+	 * @see #UP
+	 * @see #RIGHT
+	 * @see #DOWN
+	 */
+	protected int direction;
+
+	/**
+	 * The number of pixels to shrink the arrow from the left side of the button.
+	 */
+	protected int left;
+
+	/**
+	 * The number of pixels to shrink the arrow from the right side of the button.
+	 */
+	protected int right;
+
+	/**
+	 * The number of pixels to shrink the arrow from the top side of the button.
+	 */
+	protected int top;
+
+	/**
+	 * The number of pixels to shrink the arrow from the bottom side of the button.
+	 */
+	protected int bottom;
+
+	/**
+	 * The margin around the arrow in pixels. 0 = arrow takes up entire button.
+	 */
+	protected int indent;
+
+	private SizeVeto sizeVeto = null;
+
+	private IndntVeto indentVeto = null;
+
+	private final VetoableChangeSupport vetos = new VetoableChangeSupport(this);
+
+	private final PropertyChangeSupport changes = new PropertyChangeSupport(this);
+
+	/**
+	 * Constructs a default DirectionButton, which will point left.
+	 */
+	public DirectionButton() {
+		this(LEFT);
+	}
+
+	/**
+	 * Constructs a DirectionButton pointing the specified direction.
+	 *
+	 * @param d a style constant indicating which direction to point the button
+	 * @see #LEFT
+	 * @see #UP
+	 * @see #RIGHT
+	 * @see #DOWN
+	 */
+	public DirectionButton(final int d) {
 		direction = d;
-		left      = 0;
-		right     = 0;
-		bottom    = 0;
-		indent    = 0;
-		try { setArrowColor(Color.black); } catch (final PropertyVetoException exc) {}
+		left = 0;
+		right = 0;
+		bottom = 0;
+		indent = 0;
+		try {
+			setArrowColor(Color.black);
+		} catch (final PropertyVetoException exc) {
+		}
 
 	}
 
-    /**
-     * Sets the direction of the arrow after construction.
-     * @param d constant indicating direction to point button
-     * @exception PropertyVetoException
-     * if the specified property value is unacceptable
-     * @see #getDirection
-     * @see #LEFT
-     * @see #UP
-     * @see #RIGHT
-     * @see #DOWN
-     */
-	public void setDirection(final int d) throws PropertyVetoException
-	{
-		if(direction != d)
-		{
+	/**
+	 * Adds a listener for the ArrowIndent property changes.
+	 *
+	 * @param listener the listener to add.
+	 * @see #removeDirectionChangeListener
+	 */
+	public void addArrowIndentListener(final PropertyChangeListener listener) {
+		changes.addPropertyChangeListener("ArrowIndent", listener);
+	}
+
+	/**
+	 * Adds a vetoable listener for the ArrowIndent property changes.
+	 *
+	 * @param listener the listener to add.
+	 * @see #removeVetoableDirectionChangeListener
+	 */
+	public void addArrowIndentListener(final VetoableChangeListener listener) {
+		vetos.addVetoableChangeListener("ArrowIndent", listener);
+	}
+
+	/**
+	 * Adds a listener for the Direction property changes.
+	 *
+	 * @param listener the listener to add.
+	 * @see #removeDirectionChangeListener
+	 */
+	public void addDirectionListener(final PropertyChangeListener listener) {
+		changes.addPropertyChangeListener("Direction", listener);
+	}
+
+	/**
+	 * Adds a vetoable listener for the Direction property changes.
+	 *
+	 * @param listener the listener to add.
+	 * @see #removeVetoableDirectionChangeListener
+	 */
+	public void addDirectionListener(final VetoableChangeListener listener) {
+		vetos.addVetoableChangeListener("Direction", listener);
+	}
+
+	/**
+	 * Tells this component that it has been added to a container. This is a
+	 * standard Java AWT method which gets called by the AWT when this component is
+	 * added to a container. Typically, it is used to create this component's peer.
+	 *
+	 * It has been overridden here to hook-up event listeners.
+	 *
+	 * @see #removeNotify
+	 */
+	@Override
+	public synchronized void addNotify() {
+		super.addNotify();
+
+		// Hook up listeners
+		if (sizeVeto == null) {
+			sizeVeto = new SizeVeto();
+			addDirectionListener(sizeVeto);
+		}
+		if (indentVeto == null) {
+			indentVeto = new IndntVeto();
+			addArrowIndentListener(indentVeto);
+		}
+	}
+
+	/**
+	 * Adds a listener for all event changes.
+	 *
+	 * @param listener the listener to add.
+	 * @see #removePropertyChangeListener
+	 */
+	@Override
+	public void addPropertyChangeListener(final PropertyChangeListener listener) {
+		super.addPropertyChangeListener(listener);
+		changes.addPropertyChangeListener(listener);
+	}
+
+	/**
+	 * Adds a vetoable listener for all event changes.
+	 *
+	 * @param listener the listener to add.
+	 * @see #removeVetoableChangeListener
+	 */
+	@Override
+	public void addVetoableChangeListener(final VetoableChangeListener listener) {
+		super.addVetoableChangeListener(listener);
+		vetos.addVetoableChangeListener(listener);
+	}
+
+	/**
+	 * Fills a triangle which has at least one side that is straight up and down or
+	 * left and right.
+	 *
+	 * @param g          the Graphics to use to draw with.
+	 * @param tipX       the horizontal coordinate of the point opposite a straight
+	 *                   side.
+	 * @param tipY       the vertical coordinate of the point opposite a straight
+	 *                   side.
+	 * @param aX         the horizontal coordinate of one of the two points defining
+	 *                   the straight side.
+	 * @param aY         the vertical coordinate of one of the two points defining
+	 *                   the straight side.
+	 * @param bX         the horizontal coordinate of one of the two points defining
+	 *                   the straight side.
+	 * @param bY         the vertical coordinate of one of the two points defining
+	 *                   the straight side.
+	 * @param direction1 the direction of the straight line UP, DOWN, or LEFT,
+	 *                   RIGHT.
+	 *
+	 *                   aX and bX should be the same for UP or Down. aY and bY
+	 *                   should be the same for LEFT or RIGHT. If not, then the a
+	 *                   coordinates are used.
+	 *
+	 * @see #UP
+	 * @see #DOWN
+	 * @see #LEFT
+	 * @see #RIGHT
+	 */
+	protected void fillTriangle(final Graphics g, final int tipX, final int tipY, final int aX, final int aY,
+			final int bX, final int bY, final int direction1) {
+		int max, min;
+
+		switch (direction1) {
+		case UP:
+		case DOWN:
+			max = Math.max(aX, bX);
+			min = Math.min(aX, bX);
+			for (int i = min; i <= max; ++i) {
+				g.drawLine(tipX, tipY, i, aY);
+			}
+			break;
+		case RIGHT:
+		case LEFT:
+			max = Math.max(aY, bY);
+			min = Math.min(aY, bY);
+			for (int i = min; i <= max; ++i) {
+				g.drawLine(tipX, tipY, aX, i);
+			}
+			break;
+		}
+	}
+
+	/**
+	 * Gets the current color of the direction arrow.
+	 *
+	 * @return the current arrow color
+	 * @see #setArrowColor
+	 */
+	public Color getArrowColor() {
+		return arrowColor;
+	}
+
+	/**
+	 * Returns the amount of blank space between the arrow and the button border in
+	 * pixels.
+	 *
+	 * @see #setArrowIndent
+	 */
+	public int getArrowIndent() {
+		return indent;
+	}
+
+	/**
+	 * Returns the direction the button is currently pointing.
+	 *
+	 * @see #setDirection
+	 * @see #LEFT
+	 * @see #UP
+	 * @see #RIGHT
+	 * @see #DOWN
+	 */
+	public int getDirection() {
+		return direction;
+	}
+
+	/**
+	 * Returns the minimum dimensions to properly display this component. This is a
+	 * standard Java AWT method which gets called to determine the minimum size of
+	 * this component.
+	 *
+	 * @return a button that has a content area of 3 by 3 pixels.
+	 * @see java.awt.Component#getMinimumSize
+	 */
+	@Override
+	public Dimension getMinimumSize() {
+		final Dimension defaultSize = super.getPreferredSize();
+
+		return new Dimension(defaultSize.width + 3, defaultSize.height + 3);
+	}
+
+	/**
+	 * Returns the recommended dimensions to properly display this component. This
+	 * is a standard Java AWT method which gets called to determine the recommended
+	 * size of this component.
+	 *
+	 * @return a button that has a content area of 7 by 7 pixels.
+	 * @see java.awt.Component#getMinimumSize
+	 */
+	@Override
+	public Dimension getPreferredSize() {
+		final Dimension defaultSize = super.getPreferredSize();
+
+		return new Dimension(defaultSize.width + 7, defaultSize.height + 7);
+	}
+
+	/**
+	 * Is the given arrow indent is valid for this button.
+	 *
+	 * @param i the given bevel size
+	 * @return true if the given indent size is acceptable, false if not.
+	 */
+	protected boolean isValidArrowIndent(final int i) {
+		final Dimension s = getSize();
+
+		final int temp = (i * 2) + (bevel + 1) * 2 + 4;
+
+		if (i < 0 || s.width < temp || s.height < temp)
+			return false;
+		else
+			return true;
+	}
+
+	/**
+	 * Is the given bevel size valid for this button.
+	 *
+	 * @param i the given bevel size
+	 * @return true if the given bevel size is acceptable, false if not.
+	 */
+	@Override
+	protected boolean isValidBevelSize(final int i) {
+		final Dimension s = getSize();
+
+		final int temp = i * 2 + 4;
+
+		if (i < 0 || s.width < temp || s.height < temp)
+			return false;
+		else
+			return true;
+	}
+
+	/**
+	 * Is the given direction valid for this button.
+	 *
+	 * @param i the given bevel size
+	 * @return true if the given direction is acceptable, false if not.
+	 */
+	protected boolean isValidDirection(final int i) {
+		switch (i) {
+		case LEFT:
+		case RIGHT:
+		case UP:
+		case DOWN:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	/**
+	 * Removes a listener for the ArrowIndent property changes.
+	 *
+	 * @param listener the listener to remove.
+	 * @see #addDirectionChangeListener
+	 */
+	public void removeArrowIndentListener(final PropertyChangeListener listener) {
+		changes.removePropertyChangeListener("ArrowIndent", listener);
+	}
+
+	/**
+	 * Removes a vetoable listener for the ArrowIndent property changes.
+	 *
+	 * @param listener the listener to remove.
+	 * @see #addVetoableDirectionChangeListener
+	 */
+	public void removeArrowIndentListener(final VetoableChangeListener listener) {
+		vetos.removeVetoableChangeListener("ArrowIndent", listener);
+	}
+
+	/**
+	 * Removes a listener for the Direction property changes.
+	 *
+	 * @param listener the listener to remove.
+	 * @see #addDirectionChangeListener
+	 */
+	public void removeDirectionListener(final PropertyChangeListener listener) {
+		changes.removePropertyChangeListener("Direction", listener);
+	}
+
+	/**
+	 * Removes a vetoable listener for the Direction property changes.
+	 *
+	 * @param listener the listener to remove.
+	 * @see #addVetoableDirectionChangeListener
+	 */
+	public void removeDirectionListener(final VetoableChangeListener listener) {
+		vetos.removeVetoableChangeListener("Direction", listener);
+	}
+
+	/**
+	 * Tells this component that it is being removed from a container. This is a
+	 * standard Java AWT method which gets called by the AWT when this component is
+	 * removed from a container. Typically, it is used to destroy the peers of this
+	 * component and all its subcomponents.
+	 *
+	 * It has been overridden here to unhook event listeners.
+	 *
+	 * @see #addNotify
+	 */
+	@Override
+	public synchronized void removeNotify() {
+		// Unhook listeners
+		if (sizeVeto != null) {
+			removeDirectionListener(sizeVeto);
+			sizeVeto = null;
+		}
+		if (indentVeto != null) {
+			removeArrowIndentListener(indentVeto);
+			indentVeto = null;
+		}
+
+		super.removeNotify();
+	}
+
+	/**
+	 * Removes a listener for all event changes.
+	 *
+	 * @param listener the listener to remove.
+	 * @see #addPropertyChangeListener
+	 */
+	@Override
+	public void removePropertyChangeListener(final PropertyChangeListener listener) {
+		super.removePropertyChangeListener(listener);
+		changes.removePropertyChangeListener(listener);
+	}
+
+	/**
+	 * Removes a vetoable listener for all event changes.
+	 *
+	 * @param listener the listener to remove.
+	 * @see #addVetoableChangeListener
+	 */
+	@Override
+	public void removeVetoableChangeListener(final VetoableChangeListener listener) {
+		super.removeVetoableChangeListener(listener);
+		vetos.removeVetoableChangeListener(listener);
+	}
+
+	/**
+	 * Sets the color of the direction arrow.
+	 *
+	 * @param newValue the new arrow color.
+	 * @exception PropertyVetoException if the specified property value is
+	 *                                  unacceptable
+	 * @see #getArrowColor
+	 */
+	public void setArrowColor(final Color newValue) throws PropertyVetoException {
+		if (!GeneralUtils.objectsEqual(arrowColor, newValue)) {
+			final Color oldValue = arrowColor;
+
+			vetos.fireVetoableChange("ArrowColor", oldValue, newValue);
+
+			arrowColor = newValue;
+			try {
+				disabledArrowColor = ColorUtils.fade(arrowColor, Color.lightGray, 0.50);
+			} catch (final IllegalArgumentException exc) {
+			}
+
+			repaint();
+
+			changes.firePropertyChange("ArrowColor", oldValue, newValue);
+		}
+	}
+
+	/**
+	 * Sets the amount of blank space between the arrow and the button border in
+	 * pixels.
+	 *
+	 * @param ai the margin around the arrow in pixels. 0=arrow takes up entire
+	 *           button
+	 * @exception PropertyVetoException if the specified property value is
+	 *                                  unacceptable
+	 * @see #getArrowIndent
+	 */
+	public void setArrowIndent(final int ai) throws PropertyVetoException {
+		if (indent != ai) {
+			final Integer oldValue = new Integer(indent);
+			final Integer newValue = new Integer(ai);
+
+			vetos.fireVetoableChange("ArrowIndent", oldValue, newValue);
+
+			indent = ai;
+			// Make sure that changes to indent don't make changes to shrinkTriangle
+			// give us a bad triangle.
+			shrinkTriangle(left, right, top, bottom);
+			repaint();
+
+			changes.firePropertyChange("ArrowIndent", oldValue, newValue);
+		}
+	}
+
+	/**
+	 * Sets the direction of the arrow after construction.
+	 *
+	 * @param d constant indicating direction to point button
+	 * @exception PropertyVetoException if the specified property value is
+	 *                                  unacceptable
+	 * @see #getDirection
+	 * @see #LEFT
+	 * @see #UP
+	 * @see #RIGHT
+	 * @see #DOWN
+	 */
+	public void setDirection(final int d) throws PropertyVetoException {
+		if (direction != d) {
 			final Integer oldValue = new Integer(direction);
 			final Integer newValue = new Integer(d);
 
@@ -134,613 +644,99 @@ public class DirectionButton extends ButtonBase
 		}
 	}
 
-    /**
-     * Returns the direction the button is currently pointing.
-     * @see #setDirection
-     * @see #LEFT
-     * @see #UP
-     * @see #RIGHT
-     * @see #DOWN
-     */
-    public int getDirection()
-    {
-        return direction;
-    }
-
-    /**
-     * Sets the amount of blank space between the arrow and the button
-     * border in pixels.
-     * @param ai the margin around the arrow in pixels. 0=arrow takes up entire button
-     * @exception PropertyVetoException
-     * if the specified property value is unacceptable
-     * @see #getArrowIndent
-     */
-    public void setArrowIndent(final int ai) throws PropertyVetoException
-    {
-    	if(indent != ai)
-    	{
-			final Integer oldValue = new Integer(indent);
-			final Integer newValue = new Integer(ai);
-
-			vetos.fireVetoableChange("ArrowIndent", oldValue, newValue);
-
-	        indent = ai;
-	        //Make sure that changes to indent don't make changes to shrinkTriangle
-	        //give us a bad triangle.
-	        shrinkTriangle(left, right, top, bottom);
-	        repaint();
-
-		    changes.firePropertyChange("ArrowIndent", oldValue, newValue);
-		}
-    }
-
 	/**
-	 * Sets the color of the direction arrow.
-	 * @param newValue the new arrow color.
-     * @exception PropertyVetoException
-     * if the specified property value is unacceptable
-	 * @see #getArrowColor
+	 * Sets the extra amount, in pixels, to shrink the arrow triangle. Constrains
+	 * the values such that the arrow will never be less than three pixels. If a
+	 * value is entered that would exceed this limit, the limit will be used
+	 * instead.
+	 *
+	 * @param left   pixels to shrink from left side
+	 * @param right  pixels to shrink from right side
+	 * @param top    pixels to shrink from top
+	 * @param bottom pixels to shrink from bottom
 	 */
-	public void setArrowColor(final Color newValue) throws PropertyVetoException
-	{
-		if (!GeneralUtils.objectsEqual(arrowColor, newValue))
-		{
-			final Color oldValue = arrowColor;
+	public void shrinkTriangle(final int l, final int r, final int t, final int b) {
+		if (isAdded) {
+			final Dimension s = getSize();
+			final int maxWidth = s.width - bevel - bevel - 2;
+			final int maxHeight = s.height - bevel - bevel - 2;
 
-			vetos.fireVetoableChange("ArrowColor", oldValue, newValue);
-
-			arrowColor = newValue;
-			try
-			{
-				disabledArrowColor = ColorUtils.fade(arrowColor, Color.lightGray, 0.50);
+			if (maxWidth - (l + r + indent + indent) >= 3) {
+				left = l;
+				right = r;
+			} else {
+				left = (maxWidth - indent - indent - 3) / 2;
+				right = left;
 			}
-			catch (final IllegalArgumentException exc) {}
 
-			repaint();
-
-			changes.firePropertyChange("ArrowColor", oldValue, newValue);
+			if (maxHeight - (t + b + indent + indent) >= 3) {
+				top = t;
+				bottom = b;
+			} else {
+				top = (maxHeight - indent - indent - 3) / 2;
+				bottom = top;
+			}
 		}
 	}
 
-    /**
-     * Gets the current color of the direction arrow.
-     * @return the current arrow color
-     * @see #setArrowColor
-     */
-	public Color getArrowColor()
-	{
-	    return arrowColor;
-	}
-
-
-    /**
-     * Returns the amount of blank space between the arrow and the button
-     * border in pixels.
-     * @see #setArrowIndent
-     */
-    public int getArrowIndent()
-    {
-        return indent;
-    }
-
-    /**
-     * Sets the extra amount, in pixels, to shrink the arrow triangle.
-     * Constrains the values such that the arrow will never be less than
-     * three pixels.  If a value is entered that would exceed this limit,
-     * the limit will be used instead.
-     * @param left pixels to shrink from left side
-     * @param right pixels to shrink from right side
-     * @param top pixels to shrink from top
-     * @param bottom pixels to shrink from bottom
-     */
-    public void shrinkTriangle(final int l, final int r, final int t, final int b)
-    {
-    	if(isAdded)
-    	{
-	    	final Dimension s = getSize();
-		    final int maxWidth	= s.width - bevel - bevel - 2;
-		    final int maxHeight	= s.height - bevel - bevel - 2;
-
-		    if(maxWidth - (l + r + indent + indent) >= 3)
-		    {
-		    	left	= l;
-		    	right	= r;
-		    }
-		    else
-		    {
-		    	left	= (maxWidth - indent - indent - 3) / 2;
-		    	right	= left;
-		    }
-
-		    if(maxHeight - (t + b + indent + indent) >= 3)
-		    {
-		    	top		= t;
-		    	bottom	= b;
-		    }
-		    else
-		    {
-		    	top	= (maxHeight - indent - indent - 3) / 2;
-		    	bottom	= top;
-		    }
-        }
-    }
-
-    /**
-	 * Returns the recommended dimensions to properly display this component.
-     * This is a standard Java AWT method which gets called to determine
-     * the recommended size of this component.
-     *
-     * @return a button that has a content area of 7 by 7 pixels.
-     * @see java.awt.Component#getMinimumSize
-	 */
-    public Dimension getPreferredSize()
-    {
-    	final Dimension defaultSize = super.getPreferredSize();
-
-		return new Dimension(defaultSize.width + 7, defaultSize.height + 7);
-    }
-
-    /**
-	 * Returns the minimum dimensions to properly display this component.
-     * This is a standard Java AWT method which gets called to determine
-     * the minimum size of this component.
-     *
-     * @return a button that has a content area of 3 by 3 pixels.
-     * @see java.awt.Component#getMinimumSize
-	 */
-    public Dimension getMinimumSize()
-    {
-    	final Dimension defaultSize = super.getPreferredSize();
-
-		return new Dimension(defaultSize.width + 3, defaultSize.height + 3);
-    }
-
 	/**
-	 * Tells this component that it has been added to a container.
-	 * This is a standard Java AWT method which gets called by the AWT when
-	 * this component is added to a container. Typically, it is used to
-	 * create this component's peer.
+	 * Maintains the buttonImage size and draws the button in the buttonImage
+	 * offscreen image.
 	 *
-	 * It has been overridden here to hook-up event listeners.
-	 *
-	 * @see #removeNotify
-	 */
-	public synchronized void addNotify()
-	{
-		super.addNotify();
-
-		//Hook up listeners
-		if (sizeVeto == null)
-		{
-			sizeVeto = new SizeVeto();
-			addDirectionListener(sizeVeto);
-		}
-		if (indentVeto == null)
-		{
-			indentVeto = new IndntVeto();
-			addArrowIndentListener(indentVeto);
-		}
-	}
-
-	/**
-	 * Tells this component that it is being removed from a container.
-	 * This is a standard Java AWT method which gets called by the AWT when
-	 * this component is removed from a container. Typically, it is used to
-	 * destroy the peers of this component and all its subcomponents.
-	 *
-	 * It has been overridden here to unhook event listeners.
-	 *
-	 * @see #addNotify
-	 */
-	public synchronized void removeNotify()
-	{
-		//Unhook listeners
-		if (sizeVeto != null)
-		{
-			removeDirectionListener(sizeVeto);
-			sizeVeto = null;
-		}
-		if (indentVeto != null)
-		{
-			removeArrowIndentListener(indentVeto);
-			indentVeto = null;
-		}
-
-		super.removeNotify();
-	}
-
-    /**
-     * Adds a listener for all event changes.
-     * @param listener the listener to add.
-     * @see #removePropertyChangeListener
-     */
-    public void addPropertyChangeListener(final PropertyChangeListener listener)
-    {
-    	super.addPropertyChangeListener(listener);
-    	changes.addPropertyChangeListener(listener);
-    }
-
-    /**
-     * Removes a listener for all event changes.
-     * @param listener the listener to remove.
-     * @see #addPropertyChangeListener
-     */
-    public void removePropertyChangeListener(final PropertyChangeListener listener)
-    {
-    	super.removePropertyChangeListener(listener);
-    	changes.removePropertyChangeListener(listener);
-    }
-
-    /**
-     * Adds a vetoable listener for all event changes.
-     * @param listener the listener to add.
-     * @see #removeVetoableChangeListener
-     */
-    public void addVetoableChangeListener(final VetoableChangeListener listener)
-    {
-     	super.addVetoableChangeListener(listener);
-		vetos.addVetoableChangeListener(listener);
-    }
-
-    /**
-     * Removes a vetoable listener for all event changes.
-     * @param listener the listener to remove.
-     * @see #addVetoableChangeListener
-     */
-    public void removeVetoableChangeListener(final VetoableChangeListener listener)
-    {
-    	super.removeVetoableChangeListener(listener);
-    	vetos.removeVetoableChangeListener(listener);
-    }
-
-    /**
-     * Adds a listener for the Direction property changes.
-     * @param listener the listener to add.
-     * @see #removeDirectionChangeListener
-     */
-    public void addDirectionListener(final PropertyChangeListener listener)
-    {
-    	changes.addPropertyChangeListener("Direction", listener);
-    }
-
-    /**
-     * Removes a listener for the Direction property changes.
-     * @param listener the listener to remove.
-     * @see #addDirectionChangeListener
-     */
-    public void removeDirectionListener(final PropertyChangeListener listener)
-    {
-    	changes.removePropertyChangeListener("Direction", listener);
-    }
-
-    /**
-     * Adds a vetoable listener for the Direction property changes.
-     * @param listener the listener to add.
-     * @see #removeVetoableDirectionChangeListener
-     */
-    public void addDirectionListener(final VetoableChangeListener listener)
-    {
-    	vetos.addVetoableChangeListener("Direction", listener);
-    }
-
-    /**
-     * Removes a vetoable listener for the Direction property changes.
-     * @param listener the listener to remove.
-     * @see #addVetoableDirectionChangeListener
-     */
-    public void removeDirectionListener(final VetoableChangeListener listener)
-    {
-    	vetos.removeVetoableChangeListener("Direction", listener);
-    }
-
-    /**
-     * Adds a listener for the ArrowIndent property changes.
-     * @param listener the listener to add.
-     * @see #removeDirectionChangeListener
-     */
-    public void addArrowIndentListener(final PropertyChangeListener listener)
-    {
-    	changes.addPropertyChangeListener("ArrowIndent", listener);
-    }
-
-    /**
-     * Removes a listener for the ArrowIndent property changes.
-     * @param listener the listener to remove.
-     * @see #addDirectionChangeListener
-     */
-    public void removeArrowIndentListener(final PropertyChangeListener listener)
-    {
-    	changes.removePropertyChangeListener("ArrowIndent", listener);
-    }
-
-    /**
-     * Adds a vetoable listener for the ArrowIndent property changes.
-     * @param listener the listener to add.
-     * @see #removeVetoableDirectionChangeListener
-     */
-    public void addArrowIndentListener(final VetoableChangeListener listener)
-    {
-    	vetos.addVetoableChangeListener("ArrowIndent", listener);
-    }
-
-    /**
-     * Removes a vetoable listener for the ArrowIndent property changes.
-     * @param listener the listener to remove.
-     * @see #addVetoableDirectionChangeListener
-     */
-    public void removeArrowIndentListener(final VetoableChangeListener listener)
-    {
-    	vetos.removeVetoableChangeListener("ArrowIndent", listener);
-    }
-
-	/**
-	 * This is the PropertyChangeEvent handling inner class for the constrained Direction property.
-	 * Handles vetoing Directions that are not valid.
-	 */
-	class SizeVeto implements java.beans.VetoableChangeListener, java.io.Serializable
-	{
-	    /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-			/**
-	     * This method gets called when an attempt to change the constrained Direction property is made.
-	     * Ensures the given direction size is valid for this button.
-	     *
-	     * @param     e a <code>PropertyChangeEvent</code> object describing the
-	     *   	      event source and the property that has changed.
-	     * @exception PropertyVetoException if the recipient wishes the property
-	     *              change to be rolled back.
-	     */
-	    public void vetoableChange(final PropertyChangeEvent e) throws PropertyVetoException
-	    {
-	    	final int i = ((Integer)e.getNewValue()).intValue();
-	        if (!isValidDirection(i))
-	        {
-	            throw new PropertyVetoException("Invalid direction size: " + i, e);
-	        }
-	    }
-	}
-
-	/**
-	 * This is the PropertyChangeEvent handling inner class for the constrained ArrowIndent property.
-	 * Handles vetoing ArrowIndents that are not valid.
-	 */
-	class IndntVeto implements java.beans.VetoableChangeListener, java.io.Serializable
-	{
-	    /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-			/**
-	     * This method gets called when an attempt to change the constrained ArrowIndent property is made.
-	     * Ensures the given arrow indent size is valid for this button.
-	     *
-	     * @param     e a <code>PropertyChangeEvent</code> object describing the
-	     *   	      event source and the property that has changed.
-	     * @exception PropertyVetoException if the recipient wishes the property
-	     *              change to be rolled back.
-	     */
-	    public void vetoableChange(final PropertyChangeEvent e) throws PropertyVetoException
-	    {
-	    	final int i = ((Integer)e.getNewValue()).intValue();
-	        if (!isValidArrowIndent(i))
-	        {
-	            throw new PropertyVetoException("Invalid arrow indent: " + i, e);
-	        }
-	    }
-	}
-
-
-	/**
-	 * Maintains the buttonImage size and draws the
-	 * button in the buttonImage offscreen image.
 	 * @see symantec.itools.awt.ButtonBase#updateButtonImage
 	 */
-	protected void updateButtonImage()
-	{
+	@Override
+	protected void updateButtonImage() {
 		super.updateButtonImage();
-		final Graphics g		= buttonImage.getGraphics();
-	    final Dimension s		= getSize();
-        final int trueBevel	= bevel + 1;
-        int centerHorizontal;
-        int centerVertical;
-        int topSide;
-        int bottomSide;
-        int leftSide;
-        int rightSide;
+		final Graphics g = buttonImage.getGraphics();
+		final Dimension s = getSize();
+		final int trueBevel = bevel + 1;
+		int centerHorizontal;
+		int centerVertical;
+		int topSide;
+		int bottomSide;
+		int leftSide;
+		int rightSide;
 
-        if(isEnabled())
-        {
-            g.setColor(arrowColor);
-        }
-        else
-        {
-            g.setColor(disabledArrowColor);
-        }
-
-		centerHorizontal	= ((s.width - 1) / 2)					+ pressedAdjustment;
-		centerVertical		= ((s.height - 1) / 2)					+ pressedAdjustment;
-		topSide				= (top + trueBevel - 1)					+ pressedAdjustment  + indent;
-		bottomSide			= (s.height - 1 - bottom - trueBevel)	+ pressedAdjustment  - indent;
-		leftSide			= (left + trueBevel - 1)				+ pressedAdjustment  + indent;
-		rightSide			= (s.width - 1 - right - trueBevel)		+ pressedAdjustment  - indent;
-
-		if (OS.isMacintosh())
-		{
-		    leftSide	+= 1;
-		    topSide		+= 1;
+		if (isEnabled()) {
+			g.setColor(arrowColor);
+		} else {
+			g.setColor(disabledArrowColor);
 		}
 
-        switch (direction)
-		{
-			case UP:
-			{
-				fillTriangle(g, centerHorizontal, topSide, leftSide, bottomSide, rightSide, bottomSide, direction);
-				break;
-			}
-			case DOWN:
-			{
-				fillTriangle(g, centerHorizontal, bottomSide, leftSide, topSide, rightSide, topSide, direction);
-				break;
-			}
+		centerHorizontal = ((s.width - 1) / 2) + pressedAdjustment;
+		centerVertical = ((s.height - 1) / 2) + pressedAdjustment;
+		topSide = (top + trueBevel - 1) + pressedAdjustment + indent;
+		bottomSide = (s.height - 1 - bottom - trueBevel) + pressedAdjustment - indent;
+		leftSide = (left + trueBevel - 1) + pressedAdjustment + indent;
+		rightSide = (s.width - 1 - right - trueBevel) + pressedAdjustment - indent;
 
-			case LEFT:
-			{
-				fillTriangle(g, leftSide, centerVertical, rightSide, bottomSide, rightSide, topSide, direction);
-				break;
-			}
+		if (OS.isMacintosh()) {
+			leftSide += 1;
+			topSide += 1;
+		}
 
-			case RIGHT:
-			{
-				fillTriangle(g, rightSide, centerVertical, leftSide, bottomSide, leftSide, topSide, direction);
-				break;
-            }
+		switch (direction) {
+		case UP: {
+			fillTriangle(g, centerHorizontal, topSide, leftSide, bottomSide, rightSide, bottomSide, direction);
+			break;
+		}
+		case DOWN: {
+			fillTriangle(g, centerHorizontal, bottomSide, leftSide, topSide, rightSide, topSide, direction);
+			break;
+		}
+
+		case LEFT: {
+			fillTriangle(g, leftSide, centerVertical, rightSide, bottomSide, rightSide, topSide, direction);
+			break;
+		}
+
+		case RIGHT: {
+			fillTriangle(g, rightSide, centerVertical, leftSide, bottomSide, leftSide, topSide, direction);
+			break;
+		}
 		}
 		if (g != null)
-		    g.dispose();
+			g.dispose();
 	}
-
-	/**
-	 * Fills a triangle which has at least one side that is straight up and down or left and right.
-	 * @param g the Graphics to use to draw with.
-	 * @param tipX the horizontal coordinate of the point opposite a straight side.
-	 * @param tipY the vertical coordinate of the point opposite a straight side.
-	 * @param aX the horizontal coordinate of one of the two points defining the straight side.
-	 * @param aY the vertical coordinate of one of the two points defining the straight side.
-	 * @param bX the horizontal coordinate of one of the two points defining the straight side.
-	 * @param bY the vertical coordinate of one of the two points defining the straight side.
-	 * @param direction1 the direction of the straight line UP, DOWN, or LEFT, RIGHT.
-	 *
-	 * aX and bX should be the same for UP or Down.  aY and bY should be the same for LEFT or RIGHT.
-	 * If not, then the a coordinates are used.
-	 *
-	 * @see #UP
-	 * @see #DOWN
-	 * @see #LEFT
-	 * @see #RIGHT
-	 */
-	protected void fillTriangle(final Graphics g, final int tipX, final int tipY, final int aX, final int aY, final int bX, final int bY, final int direction1)
-	{
-		int max, min;
-
-		switch(direction1)
-		{
-			case UP:
-			case DOWN:
-				max = Math.max(aX, bX);
-				min = Math.min(aX, bX);
-				for(int i = min; i <= max; ++i)
-				{
-					g.drawLine(tipX, tipY, i, aY);
-				}
-				break;
-			case RIGHT:
-			case LEFT:
-				max = Math.max(aY, bY);
-				min = Math.min(aY, bY);
-				for(int i = min; i <= max; ++i)
-				{
-					g.drawLine(tipX, tipY, aX, i);
-				}
-				break;
-		}
-	}
-
-    /**
-     * Is the given bevel size valid for this button.
-     * @param i the given bevel size
-     * @return true if the given bevel size is acceptable, false if not.
-     */
-    protected boolean isValidBevelSize(final int i)
-    {
-        final Dimension s = getSize();
-
-        final int temp = i * 2 + 4;
-
-        if (i < 0 || s.width < temp || s.height < temp)
-            return false;
-        else
-        	return true;
-    }
-
-    /**
-     * Is the given direction valid for this button.
-     * @param i the given bevel size
-     * @return true if the given direction is acceptable, false if not.
-     */
-    protected boolean isValidDirection(final int i)
-    {
-    	switch(i)
-    	{
-    		case LEFT:
-    		case RIGHT:
-    		case UP:
-    		case DOWN:
-    			return true;
-    		default:
-    			return false;
-    	}
-    }
-
-    /**
-     * Is the given arrow indent is valid for this button.
-     * @param i the given bevel size
-     * @return true if the given indent size is acceptable, false if not.
-     */
-    protected boolean isValidArrowIndent(final int i)
-    {
-    	final Dimension s = getSize();
-
-    	final int temp = (i * 2) + (bevel + 1) * 2 + 4;
-
-    	if(i < 0 || s.width < temp || s.height < temp)
-    		return false;
-    	else
-    		return true;
-    }
-
-	/**
-	 * The color of the arrow in the button.
-	 */
-	protected Color	arrowColor			= null;
-	/**
-	 * The color of the arrow when the button is disabled.
-	 */
-	protected Color	disabledArrowColor	= null;
-	/**
-	 * The direction the arrow points.
-	 * One of: LEFT, UP, RIGHT, or DOWN.
-     * @see #LEFT
-     * @see #UP
-     * @see #RIGHT
-     * @see #DOWN
-	 */
-	protected int		direction;
-	/**
-	 * The number of pixels to shrink the arrow from the left side of the button.
-	 */
-	protected int		left;
-	/**
-	 * The number of pixels to shrink the arrow from the right side of the button.
-	 */
-	protected int		right;
-	/**
-	 * The number of pixels to shrink the arrow from the top side of the button.
-	 */
-	protected int		top;
-	/**
-	 * The number of pixels to shrink the arrow from the bottom side of the button.
-	 */
-	protected int		bottom;
-	/**
-     * The margin around the arrow in pixels. 0 = arrow takes up entire button.
-	 */
-	protected int		indent;
-    private SizeVeto	sizeVeto	= null;
-    private IndntVeto	indentVeto	= null;
-    private final VetoableChangeSupport vetos = new VetoableChangeSupport(this);
-    private final PropertyChangeSupport changes = new PropertyChangeSupport(this);
 }

@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.debrief.core.creators.shapes;
 
 import java.util.Vector;
@@ -26,32 +27,19 @@ import MWC.GenericData.WorldLocation;
 
 /**
  * @author ian.mayo
- * 
+ *
  */
-public class InsertPolygon extends CoreInsertShape
-{
-
-	/**
-	 * produce the shape for the user
-	 * 
-	 * @param centre
-	 *          the current centre of the screen
-	 * @return a shape, based on the centre
-	 */
-	protected PlainShape getShape(final WorldLocation centre)
-	{
-		return null;
-	}
+public class InsertPolygon extends CoreInsertShape {
 
 	/**
 	 * get a plottable object
-	 * 
+	 *
 	 * @param centre
 	 * @param theChart
 	 * @return
 	 */
-	protected Plottable getPlottable(final PlainChart theChart)
-	{
+	@Override
+	protected Plottable getPlottable(final PlainChart theChart) {
 		// get centre of area
 		final WorldLocation centre = new WorldLocation(getCentre(theChart));
 
@@ -61,8 +49,8 @@ public class InsertPolygon extends CoreInsertShape
 		final PolygonShape newShape = new PolygonShape(path2);
 
 		// and now wrap the shape
-		final PolygonWrapper theWrapper = new PolygonWrapper("New " + getShapeName(),
-				newShape, PlainShape.DEFAULT_COLOR, null);
+		final PolygonWrapper theWrapper = new PolygonWrapper("New " + getShapeName(), newShape,
+				PlainShape.DEFAULT_COLOR, null);
 
 		// store the new point
 		newShape.add(new PolygonNode("1", centre, (PolygonShape) theWrapper.getShape()));
@@ -72,12 +60,23 @@ public class InsertPolygon extends CoreInsertShape
 	}
 
 	/**
+	 * produce the shape for the user
+	 *
+	 * @param centre the current centre of the screen
+	 * @return a shape, based on the centre
+	 */
+	@Override
+	protected PlainShape getShape(final WorldLocation centre) {
+		return null;
+	}
+
+	/**
 	 * return the name of this shape, used give the shape an initial name
-	 * 
+	 *
 	 * @return the name of this type of shape, eg: rectangle
 	 */
-	protected String getShapeName()
-	{
+	@Override
+	protected String getShapeName() {
 		return "polygon";
 	}
 

@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.GUI.Coast;
 
 import java.util.Vector;
@@ -19,11 +20,10 @@ import java.util.Vector;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
-/** Represents a single section of coastline.*/
-public final class CoastSegment extends Vector<WorldLocation>
-{
-  /**
-	 * 
+/** Represents a single section of coastline. */
+public final class CoastSegment extends Vector<WorldLocation> {
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	WorldArea myArea;
@@ -32,22 +32,22 @@ public final class CoastSegment extends Vector<WorldLocation>
 //    super(0,1);
 //  }
 
-  public void addPoint(final WorldLocation pt){
-    this.addElement(pt);
+	public void addPoint(final WorldLocation pt) {
+		this.addElement(pt);
 
-    if(myArea == null){
-      myArea = new WorldArea(pt, pt);
-    }else
-      myArea.extend(pt);
+		if (myArea == null) {
+			myArea = new WorldArea(pt, pt);
+		} else
+			myArea.extend(pt);
 
-  }
+	}
 
 //	public int compareTo(Plottable arg0)
 //	{
 //		Plottable other = (Plottable) arg0;
 //		return this.getName().compareTo(other.getName());
 //	}
-	
+
 //	protected WorldLocation getFirst(){
 //    WorldLocation res = null;
 //    if(this.size()>0){
@@ -89,21 +89,13 @@ public final class CoastSegment extends Vector<WorldLocation>
 //  {
 //  }
 
-  public WorldArea getBounds()
-  {
-    return myArea;
-  }
+	public WorldArea getBounds() {
+		return myArea;
+	}
 
 //  public boolean getVisible()
 //  {
 //    return true;
 //  }
 
- 
 }
-
-
-
-
-
-

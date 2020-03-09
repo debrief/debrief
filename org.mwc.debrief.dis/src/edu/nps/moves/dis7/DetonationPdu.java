@@ -1,328 +1,342 @@
 package edu.nps.moves.dis7;
 
-import java.util.*;
-import java.io.*;
-import edu.nps.moves.disenum.*;
-import edu.nps.moves.disutil.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Detonation or impact of munitions, as well as, non-munition explosions, the burst or initial bloom of chaff, and the ignition of a flare shall be indicated. Section 7.3.3  COMPLETE
+ * Detonation or impact of munitions, as well as, non-munition explosions, the
+ * burst or initial bloom of chaff, and the ignition of a flare shall be
+ * indicated. Section 7.3.3 COMPLETE
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class DetonationPdu extends WarfareFamilyPdu implements Serializable
-{
-   /** ID of the expendable entity, Section 7.3.3  */
-   protected EntityID  explodingEntityID = new EntityID(); 
+public class DetonationPdu extends WarfareFamilyPdu implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   /** ID of event, Section 7.3.3 */
-   protected EventIdentifier  eventID = new EventIdentifier(); 
+	/** ID of the expendable entity, Section 7.3.3 */
+	protected EntityID explodingEntityID = new EntityID();
 
-   /** velocity of the munition immediately before detonation/impact, Section 7.3.3  */
-   protected Vector3Float  velocity = new Vector3Float(); 
+	/** ID of event, Section 7.3.3 */
+	protected EventIdentifier eventID = new EventIdentifier();
 
-   /** location of the munition detonation, the expendable detonation, Section 7.3.3  */
-   protected Vector3Double  locationInWorldCoordinates = new Vector3Double(); 
+	/**
+	 * velocity of the munition immediately before detonation/impact, Section 7.3.3
+	 */
+	protected Vector3Float velocity = new Vector3Float();
 
-   /** Describes the detonation represented, Section 7.3.3  */
-   protected MunitionDescriptor  descriptor = new MunitionDescriptor(); 
+	/**
+	 * location of the munition detonation, the expendable detonation, Section 7.3.3
+	 */
+	protected Vector3Double locationInWorldCoordinates = new Vector3Double();
 
-   /** Velocity of the ammunition, Section 7.3.3  */
-   protected Vector3Float  locationOfEntityCoordinates = new Vector3Float(); 
+	/** Describes the detonation represented, Section 7.3.3 */
+	protected MunitionDescriptor descriptor = new MunitionDescriptor();
 
-   /** result of the detonation, Section 7.3.3  */
-   protected short  detonationResult;
+	/** Velocity of the ammunition, Section 7.3.3 */
+	protected Vector3Float locationOfEntityCoordinates = new Vector3Float();
 
-   /** How many articulation parameters we have, Section 7.3.3  */
-   protected short  numberOfVariableParameters;
+	/** result of the detonation, Section 7.3.3 */
+	protected short detonationResult;
 
-   /** padding */
-   protected int  pad;
+	/** How many articulation parameters we have, Section 7.3.3 */
+	protected short numberOfVariableParameters;
 
-   /** specify the parameter values for each Variable Parameter record, Section 7.3.3  */
-   protected List< VariableParameter > variableParameters = new ArrayList< VariableParameter >(); 
+	/** padding */
+	protected int pad;
 
-/** Constructor */
- public DetonationPdu()
- {
-    setPduType( (short)3 );
- }
+	/**
+	 * specify the parameter values for each Variable Parameter record, Section
+	 * 7.3.3
+	 */
+	protected List<VariableParameter> variableParameters = new ArrayList<VariableParameter>();
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+	/** Constructor */
+	public DetonationPdu() {
+		setPduType((short) 3);
+	}
 
-   marshalSize = super.getMarshalledSize();
-   marshalSize = marshalSize + explodingEntityID.getMarshalledSize();  // explodingEntityID
-   marshalSize = marshalSize + eventID.getMarshalledSize();  // eventID
-   marshalSize = marshalSize + velocity.getMarshalledSize();  // velocity
-   marshalSize = marshalSize + locationInWorldCoordinates.getMarshalledSize();  // locationInWorldCoordinates
-   marshalSize = marshalSize + descriptor.getMarshalledSize();  // descriptor
-   marshalSize = marshalSize + locationOfEntityCoordinates.getMarshalledSize();  // locationOfEntityCoordinates
-   marshalSize = marshalSize + 1;  // detonationResult
-   marshalSize = marshalSize + 1;  // numberOfVariableParameters
-   marshalSize = marshalSize + 2;  // pad
-   for(int idx=0; idx < variableParameters.size(); idx++)
-   {
-        VariableParameter listElement = variableParameters.get(idx);
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-   }
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-   return marshalSize;
-}
+		if (this == obj) {
+			return true;
+		}
 
+		if (obj == null) {
+			return false;
+		}
 
-public void setExplodingEntityID(EntityID pExplodingEntityID)
-{ explodingEntityID = pExplodingEntityID;
-}
+		if (getClass() != obj.getClass())
+			return false;
 
-public EntityID getExplodingEntityID()
-{ return explodingEntityID; 
-}
+		return equalsImpl(obj);
+	}
 
-public void setEventID(EventIdentifier pEventID)
-{ eventID = pEventID;
-}
+	@Override
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-public EventIdentifier getEventID()
-{ return eventID; 
-}
+		if (!(obj instanceof DetonationPdu))
+			return false;
 
-public void setVelocity(Vector3Float pVelocity)
-{ velocity = pVelocity;
-}
+		final DetonationPdu rhs = (DetonationPdu) obj;
 
-public Vector3Float getVelocity()
-{ return velocity; 
-}
+		if (!(explodingEntityID.equals(rhs.explodingEntityID)))
+			ivarsEqual = false;
+		if (!(eventID.equals(rhs.eventID)))
+			ivarsEqual = false;
+		if (!(velocity.equals(rhs.velocity)))
+			ivarsEqual = false;
+		if (!(locationInWorldCoordinates.equals(rhs.locationInWorldCoordinates)))
+			ivarsEqual = false;
+		if (!(descriptor.equals(rhs.descriptor)))
+			ivarsEqual = false;
+		if (!(locationOfEntityCoordinates.equals(rhs.locationOfEntityCoordinates)))
+			ivarsEqual = false;
+		if (!(detonationResult == rhs.detonationResult))
+			ivarsEqual = false;
+		if (!(numberOfVariableParameters == rhs.numberOfVariableParameters))
+			ivarsEqual = false;
+		if (!(pad == rhs.pad))
+			ivarsEqual = false;
 
-public void setLocationInWorldCoordinates(Vector3Double pLocationInWorldCoordinates)
-{ locationInWorldCoordinates = pLocationInWorldCoordinates;
-}
+		for (int idx = 0; idx < variableParameters.size(); idx++) {
+			if (!(variableParameters.get(idx).equals(rhs.variableParameters.get(idx))))
+				ivarsEqual = false;
+		}
 
-public Vector3Double getLocationInWorldCoordinates()
-{ return locationInWorldCoordinates; 
-}
+		return ivarsEqual && super.equalsImpl(rhs);
+	}
 
-public void setDescriptor(MunitionDescriptor pDescriptor)
-{ descriptor = pDescriptor;
-}
+	public MunitionDescriptor getDescriptor() {
+		return descriptor;
+	}
 
-public MunitionDescriptor getDescriptor()
-{ return descriptor; 
-}
+	public short getDetonationResult() {
+		return detonationResult;
+	}
 
-public void setLocationOfEntityCoordinates(Vector3Float pLocationOfEntityCoordinates)
-{ locationOfEntityCoordinates = pLocationOfEntityCoordinates;
-}
+	public EventIdentifier getEventID() {
+		return eventID;
+	}
 
-public Vector3Float getLocationOfEntityCoordinates()
-{ return locationOfEntityCoordinates; 
-}
+	public EntityID getExplodingEntityID() {
+		return explodingEntityID;
+	}
 
-public void setDetonationResult(short pDetonationResult)
-{ detonationResult = pDetonationResult;
-}
+	public Vector3Double getLocationInWorldCoordinates() {
+		return locationInWorldCoordinates;
+	}
 
-public short getDetonationResult()
-{ return detonationResult; 
-}
+	public Vector3Float getLocationOfEntityCoordinates() {
+		return locationOfEntityCoordinates;
+	}
 
-public short getNumberOfVariableParameters()
-{ return (short)variableParameters.size();
-}
+	@Override
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
-/** Note that setting this value will not change the marshalled value. The list whose length this describes is used for that purpose.
- * The getnumberOfVariableParameters method will also be based on the actual list length rather than this value. 
- * The method is simply here for java bean completeness.
- */
-public void setNumberOfVariableParameters(short pNumberOfVariableParameters)
-{ numberOfVariableParameters = pNumberOfVariableParameters;
-}
+		marshalSize = super.getMarshalledSize();
+		marshalSize = marshalSize + explodingEntityID.getMarshalledSize(); // explodingEntityID
+		marshalSize = marshalSize + eventID.getMarshalledSize(); // eventID
+		marshalSize = marshalSize + velocity.getMarshalledSize(); // velocity
+		marshalSize = marshalSize + locationInWorldCoordinates.getMarshalledSize(); // locationInWorldCoordinates
+		marshalSize = marshalSize + descriptor.getMarshalledSize(); // descriptor
+		marshalSize = marshalSize + locationOfEntityCoordinates.getMarshalledSize(); // locationOfEntityCoordinates
+		marshalSize = marshalSize + 1; // detonationResult
+		marshalSize = marshalSize + 1; // numberOfVariableParameters
+		marshalSize = marshalSize + 2; // pad
+		for (int idx = 0; idx < variableParameters.size(); idx++) {
+			final VariableParameter listElement = variableParameters.get(idx);
+			marshalSize = marshalSize + listElement.getMarshalledSize();
+		}
 
-public void setPad(int pPad)
-{ pad = pPad;
-}
+		return marshalSize;
+	}
 
-public int getPad()
-{ return pad; 
-}
+	public short getNumberOfVariableParameters() {
+		return (short) variableParameters.size();
+	}
 
-public void setVariableParameters(List<VariableParameter> pVariableParameters)
-{ variableParameters = pVariableParameters;
-}
+	public int getPad() {
+		return pad;
+	}
 
-public List<VariableParameter> getVariableParameters()
-{ return variableParameters; }
+	public List<VariableParameter> getVariableParameters() {
+		return variableParameters;
+	}
 
+	public Vector3Float getVelocity() {
+		return velocity;
+	}
 
-public void marshal(DataOutputStream dos)
-{
-    super.marshal(dos);
-    try 
-    {
-       explodingEntityID.marshal(dos);
-       eventID.marshal(dos);
-       velocity.marshal(dos);
-       locationInWorldCoordinates.marshal(dos);
-       descriptor.marshal(dos);
-       locationOfEntityCoordinates.marshal(dos);
-       dos.writeByte( (byte)detonationResult);
-       dos.writeByte( (byte)variableParameters.size());
-       dos.writeShort( (short)pad);
+	@Override
+	public void marshal(final DataOutputStream dos) {
+		super.marshal(dos);
+		try {
+			explodingEntityID.marshal(dos);
+			eventID.marshal(dos);
+			velocity.marshal(dos);
+			locationInWorldCoordinates.marshal(dos);
+			descriptor.marshal(dos);
+			locationOfEntityCoordinates.marshal(dos);
+			dos.writeByte((byte) detonationResult);
+			dos.writeByte((byte) variableParameters.size());
+			dos.writeShort((short) pad);
 
-       for(int idx = 0; idx < variableParameters.size(); idx++)
-       {
-            VariableParameter aVariableParameter = variableParameters.get(idx);
-            aVariableParameter.marshal(dos);
-       } // end of list marshalling
+			for (int idx = 0; idx < variableParameters.size(); idx++) {
+				final VariableParameter aVariableParameter = variableParameters.get(idx);
+				aVariableParameter.marshal(dos);
+			} // end of list marshalling
 
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
-public void unmarshal(DataInputStream dis)
-{
-     super.unmarshal(dis);
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	@Override
+	public void marshal(final java.nio.ByteBuffer buff) {
+		super.marshal(buff);
+		explodingEntityID.marshal(buff);
+		eventID.marshal(buff);
+		velocity.marshal(buff);
+		locationInWorldCoordinates.marshal(buff);
+		descriptor.marshal(buff);
+		locationOfEntityCoordinates.marshal(buff);
+		buff.put((byte) detonationResult);
+		buff.put((byte) variableParameters.size());
+		buff.putShort((short) pad);
 
-    try 
-    {
-       explodingEntityID.unmarshal(dis);
-       eventID.unmarshal(dis);
-       velocity.unmarshal(dis);
-       locationInWorldCoordinates.unmarshal(dis);
-       descriptor.unmarshal(dis);
-       locationOfEntityCoordinates.unmarshal(dis);
-       detonationResult = (short)dis.readUnsignedByte();
-       numberOfVariableParameters = (short)dis.readUnsignedByte();
-       pad = (int)dis.readUnsignedShort();
-       for(int idx = 0; idx < numberOfVariableParameters; idx++)
-       {
-           VariableParameter anX = new VariableParameter();
-           anX.unmarshal(dis);
-           variableParameters.add(anX);
-       }
+		for (int idx = 0; idx < variableParameters.size(); idx++) {
+			final VariableParameter aVariableParameter = variableParameters.get(idx);
+			aVariableParameter.marshal(buff);
+		} // end of list marshalling
 
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+	} // end of marshal method
 
+	public void setDescriptor(final MunitionDescriptor pDescriptor) {
+		descriptor = pDescriptor;
+	}
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
-       super.marshal(buff);
-       explodingEntityID.marshal(buff);
-       eventID.marshal(buff);
-       velocity.marshal(buff);
-       locationInWorldCoordinates.marshal(buff);
-       descriptor.marshal(buff);
-       locationOfEntityCoordinates.marshal(buff);
-       buff.put( (byte)detonationResult);
-       buff.put( (byte)variableParameters.size());
-       buff.putShort( (short)pad);
+	public void setDetonationResult(final short pDetonationResult) {
+		detonationResult = pDetonationResult;
+	}
 
-       for(int idx = 0; idx < variableParameters.size(); idx++)
-       {
-            VariableParameter aVariableParameter = (VariableParameter)variableParameters.get(idx);
-            aVariableParameter.marshal(buff);
-       } // end of list marshalling
+	public void setEventID(final EventIdentifier pEventID) {
+		eventID = pEventID;
+	}
 
-    } // end of marshal method
+	public void setExplodingEntityID(final EntityID pExplodingEntityID) {
+		explodingEntityID = pExplodingEntityID;
+	}
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       super.unmarshal(buff);
+	public void setLocationInWorldCoordinates(final Vector3Double pLocationInWorldCoordinates) {
+		locationInWorldCoordinates = pLocationInWorldCoordinates;
+	}
 
-       explodingEntityID.unmarshal(buff);
-       eventID.unmarshal(buff);
-       velocity.unmarshal(buff);
-       locationInWorldCoordinates.unmarshal(buff);
-       descriptor.unmarshal(buff);
-       locationOfEntityCoordinates.unmarshal(buff);
-       detonationResult = (short)(buff.get() & 0xFF);
-       numberOfVariableParameters = (short)(buff.get() & 0xFF);
-       pad = (int)(buff.getShort() & 0xFFFF);
-       for(int idx = 0; idx < numberOfVariableParameters; idx++)
-       {
-            VariableParameter anX = new VariableParameter();
-            anX.unmarshal(buff);
-            variableParameters.add(anX);
-       }
+	public void setLocationOfEntityCoordinates(final Vector3Float pLocationOfEntityCoordinates) {
+		locationOfEntityCoordinates = pLocationOfEntityCoordinates;
+	}
 
- } // end of unmarshal method 
+	/**
+	 * Note that setting this value will not change the marshalled value. The list
+	 * whose length this describes is used for that purpose. The
+	 * getnumberOfVariableParameters method will also be based on the actual list
+	 * length rather than this value. The method is simply here for java bean
+	 * completeness.
+	 */
+	public void setNumberOfVariableParameters(final short pNumberOfVariableParameters) {
+		numberOfVariableParameters = pNumberOfVariableParameters;
+	}
 
+	public void setPad(final int pPad) {
+		pad = pPad;
+	}
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+	public void setVariableParameters(final List<VariableParameter> pVariableParameters) {
+		variableParameters = pVariableParameters;
+	}
 
-    if(this == obj){
-      return true;
-    }
+	public void setVelocity(final Vector3Float pVelocity) {
+		velocity = pVelocity;
+	}
 
-    if(obj == null){
-       return false;
-    }
+	@Override
+	public void unmarshal(final DataInputStream dis) {
+		super.unmarshal(dis);
 
-    if(getClass() != obj.getClass())
-        return false;
+		try {
+			explodingEntityID.unmarshal(dis);
+			eventID.unmarshal(dis);
+			velocity.unmarshal(dis);
+			locationInWorldCoordinates.unmarshal(dis);
+			descriptor.unmarshal(dis);
+			locationOfEntityCoordinates.unmarshal(dis);
+			detonationResult = (short) dis.readUnsignedByte();
+			numberOfVariableParameters = (short) dis.readUnsignedByte();
+			pad = dis.readUnsignedShort();
+			for (int idx = 0; idx < numberOfVariableParameters; idx++) {
+				final VariableParameter anX = new VariableParameter();
+				anX.unmarshal(dis);
+				variableParameters.add(anX);
+			}
 
-    return equalsImpl(obj);
- }
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
-@Override
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	@Override
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		super.unmarshal(buff);
 
-    if(!(obj instanceof DetonationPdu))
-        return false;
+		explodingEntityID.unmarshal(buff);
+		eventID.unmarshal(buff);
+		velocity.unmarshal(buff);
+		locationInWorldCoordinates.unmarshal(buff);
+		descriptor.unmarshal(buff);
+		locationOfEntityCoordinates.unmarshal(buff);
+		detonationResult = (short) (buff.get() & 0xFF);
+		numberOfVariableParameters = (short) (buff.get() & 0xFF);
+		pad = buff.getShort() & 0xFFFF;
+		for (int idx = 0; idx < numberOfVariableParameters; idx++) {
+			final VariableParameter anX = new VariableParameter();
+			anX.unmarshal(buff);
+			variableParameters.add(anX);
+		}
 
-     final DetonationPdu rhs = (DetonationPdu)obj;
-
-     if( ! (explodingEntityID.equals( rhs.explodingEntityID) )) ivarsEqual = false;
-     if( ! (eventID.equals( rhs.eventID) )) ivarsEqual = false;
-     if( ! (velocity.equals( rhs.velocity) )) ivarsEqual = false;
-     if( ! (locationInWorldCoordinates.equals( rhs.locationInWorldCoordinates) )) ivarsEqual = false;
-     if( ! (descriptor.equals( rhs.descriptor) )) ivarsEqual = false;
-     if( ! (locationOfEntityCoordinates.equals( rhs.locationOfEntityCoordinates) )) ivarsEqual = false;
-     if( ! (detonationResult == rhs.detonationResult)) ivarsEqual = false;
-     if( ! (numberOfVariableParameters == rhs.numberOfVariableParameters)) ivarsEqual = false;
-     if( ! (pad == rhs.pad)) ivarsEqual = false;
-
-     for(int idx = 0; idx < variableParameters.size(); idx++)
-     {
-        if( ! ( variableParameters.get(idx).equals(rhs.variableParameters.get(idx)))) ivarsEqual = false;
-     }
-
-
-    return ivarsEqual && super.equalsImpl(rhs);
- }
+	} // end of unmarshal method
 } // end of class

@@ -1,17 +1,4 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
- *
- *    (C) 2000-2014, PlanetMayo Ltd
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+
 package ASSET.Util.XML.Vessels.Util.Mediums;
 
 import ASSET.Models.Environment.EnvironmentType;
@@ -19,98 +6,93 @@ import ASSET.Models.Mediums.Optic;
 import MWC.GenericData.WorldDistance;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
 
-/**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application http://debrief.info
  *
- * @author
- * @version 1.0
- */
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 
-abstract public class OpticHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
-{
+abstract public class OpticHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader {
 
-  final static private String type = "Optic";
+	final static private String type = "Optic";
 
-  final static private String NOISE = "BaseNoiseLevel";
-  final static private String AREA = "XSectArea";
-  final static private String HEIGHT = "Height";
+	final static private String NOISE = "BaseNoiseLevel";
+	final static private String AREA = "XSectArea";
+	final static private String HEIGHT = "Height";
 
+	static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
+			final org.w3c.dom.Document doc) {
+		final ASSET.Models.Mediums.Optic bb = (ASSET.Models.Mediums.Optic) toExport;
 
-  double _myNoise = Optic.INVALID_HEIGHT;
-  double _myArea = Optic.INVALID_HEIGHT;
-  WorldDistance _myHeight = new WorldDistance(Optic.INVALID_HEIGHT, WorldDistance.METRES);
+		final org.w3c.dom.Element ele = doc.createElement(type);
 
-  public OpticHandler()
-  {
-    super(type);
+		ele.setAttribute(AREA, writeThis(bb.getXSectArea()));
 
-    addAttributeHandler(new HandleDoubleAttribute(NOISE)
-    {
-      public void setValue(String name, final double val)
-      {
-        _myNoise = val;
-      }
-    });
-    addAttributeHandler(new HandleDoubleAttribute(AREA)
-    {
-      public void setValue(String name, final double val)
-      {
-        _myArea = val;
-      }
-    });
+		WorldDistanceHandler.exportDistance(HEIGHT, bb.getHeight(), ele, doc);
 
-    addHandler(new WorldDistanceHandler(HEIGHT)
-    {
-      public void setWorldDistance(WorldDistance res)
-      {
-        _myHeight = res;
-      }
-    });
-  }
+		parent.appendChild(ele);
+	}
 
+	double _myNoise = Optic.INVALID_HEIGHT;
+	double _myArea = Optic.INVALID_HEIGHT;
 
-  public void elementClosed()
-  {
+	WorldDistance _myHeight = new WorldDistance(Optic.INVALID_HEIGHT, WorldDistance.METRES);
 
-    Optic res = null;
+	public OpticHandler() {
+		super(type);
 
-    // do we have height?
-    if (_myHeight == null)
-    {
-      res = new ASSET.Models.Mediums.Optic(_myNoise, new WorldDistance(Optic.INVALID_HEIGHT, WorldDistance.METRES));
+		addAttributeHandler(new HandleDoubleAttribute(NOISE) {
+			@Override
+			public void setValue(final String name, final double val) {
+				_myNoise = val;
+			}
+		});
+		addAttributeHandler(new HandleDoubleAttribute(AREA) {
+			@Override
+			public void setValue(final String name, final double val) {
+				_myArea = val;
+			}
+		});
 
-    }
-    else
-    {
-      res = new ASSET.Models.Mediums.Optic(_myArea, _myHeight);
-    }
+		addHandler(new WorldDistanceHandler(HEIGHT) {
+			@Override
+			public void setWorldDistance(final WorldDistance res) {
+				_myHeight = res;
+			}
+		});
+	}
 
-    res.setXSectArea(_myArea);
-    setMedium(EnvironmentType.VISUAL, res);
+	@Override
+	public void elementClosed() {
 
-    // reset vars
-    _myNoise = Optic.INVALID_HEIGHT;
-    _myArea = Optic.INVALID_HEIGHT;
-    _myHeight = null;
+		Optic res = null;
 
-  }
+		// do we have height?
+		if (_myHeight == null) {
+			res = new ASSET.Models.Mediums.Optic(_myNoise,
+					new WorldDistance(Optic.INVALID_HEIGHT, WorldDistance.METRES));
 
-  abstract public void setMedium(int index, ASSET.Models.Vessels.Radiated.RadiatedCharacteristics.Medium med);
+		} else {
+			res = new ASSET.Models.Mediums.Optic(_myArea, _myHeight);
+		}
 
-  static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,
-                                final org.w3c.dom.Document doc)
-  {
-    final ASSET.Models.Mediums.Optic bb = (ASSET.Models.Mediums.Optic) toExport;
+		res.setXSectArea(_myArea);
+		setMedium(EnvironmentType.VISUAL, res);
 
-    final org.w3c.dom.Element ele = doc.createElement(type);
+		// reset vars
+		_myNoise = Optic.INVALID_HEIGHT;
+		_myArea = Optic.INVALID_HEIGHT;
+		_myHeight = null;
 
-    ele.setAttribute(AREA, writeThis(bb.getXSectArea()));
+	}
 
-    WorldDistanceHandler.exportDistance(HEIGHT, bb.getHeight(), ele, doc);
-
-    parent.appendChild(ele);
-  }
+	abstract public void setMedium(int index, ASSET.Models.Vessels.Radiated.RadiatedCharacteristics.Medium med);
 }

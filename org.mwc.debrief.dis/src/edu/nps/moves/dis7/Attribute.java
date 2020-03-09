@@ -1,168 +1,163 @@
 package edu.nps.moves.dis7;
 
-import java.util.*;
-import java.io.*;
-import edu.nps.moves.disenum.*;
-import edu.nps.moves.disutil.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
 
 /**
- * Used to convey information for one or more attributes. Attributes conform to the standard variable record format of 6.2.82. Section 6.2.10. NOT COMPLETE
+ * Used to convey information for one or more attributes. Attributes conform to
+ * the standard variable record format of 6.2.82. Section 6.2.10. NOT COMPLETE
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class Attribute extends Object implements Serializable
-{
-   protected long  recordType;
+public class Attribute extends Object implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   protected int  recordLength;
+	protected long recordType;
 
-   protected long  recordSpecificFields;
+	protected int recordLength;
 
+	protected long recordSpecificFields;
 
-/** Constructor */
- public Attribute()
- {
- }
+	/** Constructor */
+	public Attribute() {
+	}
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-   marshalSize = marshalSize + 4;  // recordType
-   marshalSize = marshalSize + 2;  // recordLength
-   marshalSize = marshalSize + 8;  // recordSpecificFields
+		if (this == obj) {
+			return true;
+		}
 
-   return marshalSize;
-}
+		if (obj == null) {
+			return false;
+		}
 
+		if (getClass() != obj.getClass())
+			return false;
 
-public void setRecordType(long pRecordType)
-{ recordType = pRecordType;
-}
+		return equalsImpl(obj);
+	}
 
-public long getRecordType()
-{ return recordType; 
-}
+	/**
+	 * Compare all fields that contribute to the state, ignoring transient and
+	 * static fields, for <code>this</code> and the supplied object
+	 *
+	 * @param obj the object to compare to
+	 * @return true if the objects are equal, false otherwise.
+	 */
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-public void setRecordLength(int pRecordLength)
-{ recordLength = pRecordLength;
-}
+		if (!(obj instanceof Attribute))
+			return false;
 
-public int getRecordLength()
-{ return recordLength; 
-}
+		final Attribute rhs = (Attribute) obj;
 
-public void setRecordSpecificFields(long pRecordSpecificFields)
-{ recordSpecificFields = pRecordSpecificFields;
-}
+		if (!(recordType == rhs.recordType))
+			ivarsEqual = false;
+		if (!(recordLength == rhs.recordLength))
+			ivarsEqual = false;
+		if (!(recordSpecificFields == rhs.recordSpecificFields))
+			ivarsEqual = false;
 
-public long getRecordSpecificFields()
-{ return recordSpecificFields; 
-}
+		return ivarsEqual;
+	}
 
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
-public void marshal(DataOutputStream dos)
-{
-    try 
-    {
-       dos.writeInt( (int)recordType);
-       dos.writeShort( (short)recordLength);
-       dos.writeLong( (long)recordSpecificFields);
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+		marshalSize = marshalSize + 4; // recordType
+		marshalSize = marshalSize + 2; // recordLength
+		marshalSize = marshalSize + 8; // recordSpecificFields
 
-public void unmarshal(DataInputStream dis)
-{
-    try 
-    {
-       recordType = dis.readInt();
-       recordLength = (int)dis.readUnsignedShort();
-       recordSpecificFields = dis.readLong();
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+		return marshalSize;
+	}
 
+	public int getRecordLength() {
+		return recordLength;
+	}
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
-       buff.putInt( (int)recordType);
-       buff.putShort( (short)recordLength);
-       buff.putLong( (long)recordSpecificFields);
-    } // end of marshal method
+	public long getRecordSpecificFields() {
+		return recordSpecificFields;
+	}
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       recordType = buff.getInt();
-       recordLength = (int)(buff.getShort() & 0xFFFF);
-       recordSpecificFields = buff.getLong();
- } // end of unmarshal method 
+	public long getRecordType() {
+		return recordType;
+	}
 
+	public void marshal(final DataOutputStream dos) {
+		try {
+			dos.writeInt((int) recordType);
+			dos.writeShort((short) recordLength);
+			dos.writeLong(recordSpecificFields);
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	public void marshal(final java.nio.ByteBuffer buff) {
+		buff.putInt((int) recordType);
+		buff.putShort((short) recordLength);
+		buff.putLong(recordSpecificFields);
+	} // end of marshal method
 
-    if(this == obj){
-      return true;
-    }
+	public void setRecordLength(final int pRecordLength) {
+		recordLength = pRecordLength;
+	}
 
-    if(obj == null){
-       return false;
-    }
+	public void setRecordSpecificFields(final long pRecordSpecificFields) {
+		recordSpecificFields = pRecordSpecificFields;
+	}
 
-    if(getClass() != obj.getClass())
-        return false;
+	public void setRecordType(final long pRecordType) {
+		recordType = pRecordType;
+	}
 
-    return equalsImpl(obj);
- }
+	public void unmarshal(final DataInputStream dis) {
+		try {
+			recordType = dis.readInt();
+			recordLength = dis.readUnsignedShort();
+			recordSpecificFields = dis.readLong();
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
- /**
-  * Compare all fields that contribute to the state, ignoring
- transient and static fields, for <code>this</code> and the supplied object
-  * @param obj the object to compare to
-  * @return true if the objects are equal, false otherwise.
-  */
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
-
-    if(!(obj instanceof Attribute))
-        return false;
-
-     final Attribute rhs = (Attribute)obj;
-
-     if( ! (recordType == rhs.recordType)) ivarsEqual = false;
-     if( ! (recordLength == rhs.recordLength)) ivarsEqual = false;
-     if( ! (recordSpecificFields == rhs.recordSpecificFields)) ivarsEqual = false;
-
-    return ivarsEqual;
- }
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		recordType = buff.getInt();
+		recordLength = buff.getShort() & 0xFFFF;
+		recordSpecificFields = buff.getLong();
+	} // end of unmarshal method
 } // end of class

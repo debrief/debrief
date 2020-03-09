@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package MWC.GUI.Properties.AWT;
 
 // Copyright MWC 1999, Debrief 3 Project
@@ -107,97 +108,91 @@ import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.TabPanel.AWTTabPanel;
 import MWC.GUI.Undo.UndoBuffer;
 
-public class AWTPropertiesPanel extends AWTTabPanel implements PropertiesPanel
-{
-  /**
-	 * 
+public class AWTPropertiesPanel extends AWTTabPanel implements PropertiesPanel {
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	/////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  Layers _theLayers;
-  UndoBuffer _theBuffer;
+	// member variables
+	////////////////////////////////////////////////////////////
+	Layers _theLayers;
+	UndoBuffer _theBuffer;
 
-  /** the toolparent we supply to any new panels
-   *
-   */
-  MWC.GUI.ToolParent _theToolParent;
+	/**
+	 * the toolparent we supply to any new panels
+	 *
+	 */
+	MWC.GUI.ToolParent _theToolParent;
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  public AWTPropertiesPanel(final UndoBuffer theUndoBuffer,
-                            final MWC.GUI.ToolParent theToolParent){
-    super();
-    _theBuffer = theUndoBuffer;
-    _theToolParent = theToolParent;
-  }
+	/////////////////////////////////////////////////////////////
+	// constructor
+	////////////////////////////////////////////////////////////
+	public AWTPropertiesPanel(final UndoBuffer theUndoBuffer, final MWC.GUI.ToolParent theToolParent) {
+		super();
+		_theBuffer = theUndoBuffer;
+		_theToolParent = theToolParent;
+	}
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
 
+	@Override
+	public void addConstructor(final Editable.EditorType theInfo, final Layer parentLayer) {
+		final AWTPropertyEditor ap = new AWTPropertyEditor(theInfo, this, _theLayers, _theToolParent, parentLayer);
+		ap.setNames("Build", null, null);
+		final int index = addTabPanel(theInfo.getName(), true, ap.getPanel());
+		try {
+			setCurrentTab(index);
+		} catch (final Exception e) {
+			// don't bother, we don't expect there to be a problem
+			MWC.Utilities.Errors.Trace.trace(e);
+		}
+	}
 
-  public void remove(final Object theObject)
-  {
-    // ignore it!
-  }
+	@Override
+	public void addEditor(final Editable.EditorType theInfo, final Layer parentLayer) {
+		final AWTPropertyEditor ap = new AWTPropertyEditor(theInfo, this, _theLayers, _theToolParent, parentLayer);
+		final int index = addTabPanel(theInfo.getName(), true, ap.getPanel());
+		try {
+			setCurrentTab(index);
+		} catch (final Exception e) {
+			// don't bother, we don't expect there to be a problem
+			MWC.Utilities.Errors.Trace.trace(e);
+		}
+	}
 
-  public void removeMe(final Panel thePage){
-    // find the index of the panel
-    super.removeTabPanel(super.getCurrentPanelNdx());
-  }
+	public void doApply() {
+		_theLayers.fireModified(null);
+	}
 
+	@Override
+	public UndoBuffer getBuffer() {
+		return _theBuffer;
+	}
 
-  /** put the specified panel to the top of the stack
-   */
-  public void show(final java.awt.Panel thePanel){
-    final int idx = super.getPanelTabIndex(thePanel);
-    try{
-    super.setCurrentPanelNdx(idx);
-    }catch(final Exception e){
-      // we don't really expect anything to happen here.
-      MWC.Utilities.Errors.Trace.trace(e);
-    }
-  }
+	@Override
+	public void remove(final Object theObject) {
+		// ignore it!
+	}
 
-  public void addConstructor(final Editable.EditorType theInfo, final Layer parentLayer){
-    final AWTPropertyEditor ap = new AWTPropertyEditor(theInfo,
-                                                 this,
-                                                 _theLayers,
-                                                 _theToolParent,
-                                                 parentLayer);
-    ap.setNames("Build", null, null);
-    final int index = addTabPanel(theInfo.getName(), true, ap.getPanel());
-    try{
-      setCurrentTab(index);
-    }catch(final Exception e){
-      // don't bother, we don't expect there to be a problem
-      MWC.Utilities.Errors.Trace.trace(e);
-    }
-  }
+	public void removeMe(final Panel thePage) {
+		// find the index of the panel
+		super.removeTabPanel(super.getCurrentPanelNdx());
+	}
 
-  public void addEditor(final Editable.EditorType theInfo, final Layer parentLayer){
-    final AWTPropertyEditor ap = new AWTPropertyEditor(theInfo,
-                                                 this,
-                                                 _theLayers,
-                                                 _theToolParent, parentLayer);
-    final int index = addTabPanel(theInfo.getName(), true, ap.getPanel());
-    try{
-      setCurrentTab(index);
-    }catch(final Exception e){
-      // don't bother, we don't expect there to be a problem
-      MWC.Utilities.Errors.Trace.trace(e);
-    }
-  }
-
-  public void doApply(){
-    _theLayers.fireModified(null);
-  }
-
-  public UndoBuffer getBuffer(){
-    return _theBuffer;
-  }
+	/**
+	 * put the specified panel to the top of the stack
+	 */
+	public void show(final java.awt.Panel thePanel) {
+		final int idx = super.getPanelTabIndex(thePanel);
+		try {
+			super.setCurrentPanelNdx(idx);
+		} catch (final Exception e) {
+			// we don't really expect anything to happen here.
+			MWC.Utilities.Errors.Trace.trace(e);
+		}
+	}
 
 }

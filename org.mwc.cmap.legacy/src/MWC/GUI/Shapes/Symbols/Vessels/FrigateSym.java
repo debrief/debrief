@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 // $RCSfile: FrigateSym.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -53,46 +54,34 @@ import java.util.Vector;
 
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 
-public class FrigateSym extends ScreenScaledSym
-{
+public class FrigateSym extends ScreenScaledSym {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
-  @Override
-  public PlainSymbol create()
-  {
-    return new FrigateSym();
-  }
-	
-	protected Vector<double[][]> getCoords()
-	{
+	@Override
+	public PlainSymbol create() {
+		return new FrigateSym();
+	}
+
+	@Override
+	protected Vector<double[][]> getCoords() {
 		final Vector<double[][]> hullLines = new Vector<double[][]>();
 
 		// start with hull
-		hullLines.add(new double[][]
-		{
-		{ -4, -2 },
-		{ -4, 2 },
-		{ 4, -2 },
-		{ 4, 2 },
-		{ -4, -2 }});
+		hullLines.add(new double[][] { { -4, -2 }, { -4, 2 }, { 4, -2 }, { 4, 2 }, { -4, -2 } });
 
 		// now the keel form
-		hullLines.add(new double[][]
-		{
-		{ -4, 2 },
-		{ 0, 5 },
-		{ 4, 2 } });
+		hullLines.add(new double[][] { { -4, 2 }, { 0, 5 }, { 4, 2 } });
 
 		return hullLines;
 
 	}
 
-	public String getType()
-	{
+	@Override
+	public String getType() {
 		return "Frigate";
 	}
 

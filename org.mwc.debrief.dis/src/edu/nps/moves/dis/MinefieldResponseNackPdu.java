@@ -1,243 +1,243 @@
 package edu.nps.moves.dis;
 
-import java.util.*;
-import java.io.*;
-import edu.nps.moves.disenum.*;
-import edu.nps.moves.disutil.*;
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Section 5.3.10.4 proivde the means to request a retransmit of a minefield data pdu. COMPLETE
+ * Section 5.3.10.4 proivde the means to request a retransmit of a minefield
+ * data pdu. COMPLETE
  *
- * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All rights reserved.
- * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
+ * Copyright (c) 2008-2016, MOVES Institute, Naval Postgraduate School. All
+ * rights reserved. This work is licensed under the BSD open source license,
+ * available at https://www.movesinstitute.org/licenses/bsd.html
  *
  * @author DMcG
  */
-public class MinefieldResponseNackPdu extends MinefieldFamilyPdu implements Serializable
-{
-   /** Minefield ID */
-   protected EntityID  minefieldID = new EntityID(); 
+public class MinefieldResponseNackPdu extends MinefieldFamilyPdu implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
-   /** entity ID making the request */
-   protected EntityID  requestingEntityID = new EntityID(); 
+	/** Minefield ID */
+	protected EntityID minefieldID = new EntityID();
 
-   /** request ID */
-   protected short  requestID;
+	/** entity ID making the request */
+	protected EntityID requestingEntityID = new EntityID();
 
-   /** how many pdus were missing */
-   protected short  numberOfMissingPdus;
+	/** request ID */
+	protected short requestID;
 
-   /** PDU sequence numbers that were missing */
-   protected List< EightByteChunk > missingPduSequenceNumbers = new ArrayList< EightByteChunk >(); 
+	/** how many pdus were missing */
+	protected short numberOfMissingPdus;
 
-/** Constructor */
- public MinefieldResponseNackPdu()
- {
-    setPduType( (short)40 );
- }
+	/** PDU sequence numbers that were missing */
+	protected List<EightByteChunk> missingPduSequenceNumbers = new ArrayList<EightByteChunk>();
 
-public int getMarshalledSize()
-{
-   int marshalSize = 0; 
+	/** Constructor */
+	public MinefieldResponseNackPdu() {
+		setPduType((short) 40);
+	}
 
-   marshalSize = super.getMarshalledSize();
-   marshalSize = marshalSize + minefieldID.getMarshalledSize();  // minefieldID
-   marshalSize = marshalSize + requestingEntityID.getMarshalledSize();  // requestingEntityID
-   marshalSize = marshalSize + 1;  // requestID
-   marshalSize = marshalSize + 1;  // numberOfMissingPdus
-   for(int idx=0; idx < missingPduSequenceNumbers.size(); idx++)
-   {
-        EightByteChunk listElement = missingPduSequenceNumbers.get(idx);
-        marshalSize = marshalSize + listElement.getMarshalledSize();
-   }
+	/*
+	 * The equals method doesn't always work--mostly it works only on classes that
+	 * consist only of primitives. Be careful.
+	 */
+	@Override
+	public boolean equals(final Object obj) {
 
-   return marshalSize;
-}
+		if (this == obj) {
+			return true;
+		}
 
+		if (obj == null) {
+			return false;
+		}
 
-public void setMinefieldID(EntityID pMinefieldID)
-{ minefieldID = pMinefieldID;
-}
+		if (getClass() != obj.getClass())
+			return false;
 
-public EntityID getMinefieldID()
-{ return minefieldID; 
-}
+		return equalsImpl(obj);
+	}
 
-public void setRequestingEntityID(EntityID pRequestingEntityID)
-{ requestingEntityID = pRequestingEntityID;
-}
+	@Override
+	public boolean equalsImpl(final Object obj) {
+		boolean ivarsEqual = true;
 
-public EntityID getRequestingEntityID()
-{ return requestingEntityID; 
-}
+		if (!(obj instanceof MinefieldResponseNackPdu))
+			return false;
 
-public void setRequestID(short pRequestID)
-{ requestID = pRequestID;
-}
+		final MinefieldResponseNackPdu rhs = (MinefieldResponseNackPdu) obj;
 
-public short getRequestID()
-{ return requestID; 
-}
+		if (!(minefieldID.equals(rhs.minefieldID)))
+			ivarsEqual = false;
+		if (!(requestingEntityID.equals(rhs.requestingEntityID)))
+			ivarsEqual = false;
+		if (!(requestID == rhs.requestID))
+			ivarsEqual = false;
+		if (!(numberOfMissingPdus == rhs.numberOfMissingPdus))
+			ivarsEqual = false;
 
-public short getNumberOfMissingPdus()
-{ return (short)missingPduSequenceNumbers.size();
-}
+		for (int idx = 0; idx < missingPduSequenceNumbers.size(); idx++) {
+			if (!(missingPduSequenceNumbers.get(idx).equals(rhs.missingPduSequenceNumbers.get(idx))))
+				ivarsEqual = false;
+		}
 
-/** Note that setting this value will not change the marshalled value. The list whose length this describes is used for that purpose.
- * The getnumberOfMissingPdus method will also be based on the actual list length rather than this value. 
- * The method is simply here for java bean completeness.
- */
-public void setNumberOfMissingPdus(short pNumberOfMissingPdus)
-{ numberOfMissingPdus = pNumberOfMissingPdus;
-}
+		return ivarsEqual && super.equalsImpl(rhs);
+	}
 
-public void setMissingPduSequenceNumbers(List<EightByteChunk> pMissingPduSequenceNumbers)
-{ missingPduSequenceNumbers = pMissingPduSequenceNumbers;
-}
+	@Override
+	public int getMarshalledSize() {
+		int marshalSize = 0;
 
-public List<EightByteChunk> getMissingPduSequenceNumbers()
-{ return missingPduSequenceNumbers; }
+		marshalSize = super.getMarshalledSize();
+		marshalSize = marshalSize + minefieldID.getMarshalledSize(); // minefieldID
+		marshalSize = marshalSize + requestingEntityID.getMarshalledSize(); // requestingEntityID
+		marshalSize = marshalSize + 1; // requestID
+		marshalSize = marshalSize + 1; // numberOfMissingPdus
+		for (int idx = 0; idx < missingPduSequenceNumbers.size(); idx++) {
+			final EightByteChunk listElement = missingPduSequenceNumbers.get(idx);
+			marshalSize = marshalSize + listElement.getMarshalledSize();
+		}
 
+		return marshalSize;
+	}
 
-public void marshal(DataOutputStream dos)
-{
-    super.marshal(dos);
-    try 
-    {
-       minefieldID.marshal(dos);
-       requestingEntityID.marshal(dos);
-       dos.writeByte( (byte)requestID);
-       dos.writeByte( (byte)missingPduSequenceNumbers.size());
+	public EntityID getMinefieldID() {
+		return minefieldID;
+	}
 
-       for(int idx = 0; idx < missingPduSequenceNumbers.size(); idx++)
-       {
-            EightByteChunk aEightByteChunk = missingPduSequenceNumbers.get(idx);
-            aEightByteChunk.marshal(dos);
-       } // end of list marshalling
+	public List<EightByteChunk> getMissingPduSequenceNumbers() {
+		return missingPduSequenceNumbers;
+	}
 
-    } // end try 
-    catch(Exception e)
-    { 
-      System.out.println(e);}
-    } // end of marshal method
+	public short getNumberOfMissingPdus() {
+		return (short) missingPduSequenceNumbers.size();
+	}
 
-public void unmarshal(DataInputStream dis)
-{
-     super.unmarshal(dis);
+	public short getRequestID() {
+		return requestID;
+	}
 
-    try 
-    {
-       minefieldID.unmarshal(dis);
-       requestingEntityID.unmarshal(dis);
-       requestID = (short)dis.readUnsignedByte();
-       numberOfMissingPdus = (short)dis.readUnsignedByte();
-       for(int idx = 0; idx < numberOfMissingPdus; idx++)
-       {
-           EightByteChunk anX = new EightByteChunk();
-           anX.unmarshal(dis);
-           missingPduSequenceNumbers.add(anX);
-       }
+	public EntityID getRequestingEntityID() {
+		return requestingEntityID;
+	}
 
-    } // end try 
-   catch(Exception e)
-    { 
-      System.out.println(e); 
-    }
- } // end of unmarshal method 
+	@Override
+	public void marshal(final DataOutputStream dos) {
+		super.marshal(dos);
+		try {
+			minefieldID.marshal(dos);
+			requestingEntityID.marshal(dos);
+			dos.writeByte((byte) requestID);
+			dos.writeByte((byte) missingPduSequenceNumbers.size());
 
+			for (int idx = 0; idx < missingPduSequenceNumbers.size(); idx++) {
+				final EightByteChunk aEightByteChunk = missingPduSequenceNumbers.get(idx);
+				aEightByteChunk.marshal(dos);
+			} // end of list marshalling
 
-/**
- * Packs a Pdu into the ByteBuffer.
- * @throws java.nio.BufferOverflowException if buff is too small
- * @throws java.nio.ReadOnlyBufferException if buff is read only
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin writing
- * @since ??
- */
-public void marshal(java.nio.ByteBuffer buff)
-{
-       super.marshal(buff);
-       minefieldID.marshal(buff);
-       requestingEntityID.marshal(buff);
-       buff.put( (byte)requestID);
-       buff.put( (byte)missingPduSequenceNumbers.size());
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of marshal method
 
-       for(int idx = 0; idx < missingPduSequenceNumbers.size(); idx++)
-       {
-            EightByteChunk aEightByteChunk = (EightByteChunk)missingPduSequenceNumbers.get(idx);
-            aEightByteChunk.marshal(buff);
-       } // end of list marshalling
+	/**
+	 * Packs a Pdu into the ByteBuffer.
+	 *
+	 * @throws java.nio.BufferOverflowException if buff is too small
+	 * @throws java.nio.ReadOnlyBufferException if buff is read only
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin writing
+	 * @since ??
+	 */
+	@Override
+	public void marshal(final java.nio.ByteBuffer buff) {
+		super.marshal(buff);
+		minefieldID.marshal(buff);
+		requestingEntityID.marshal(buff);
+		buff.put((byte) requestID);
+		buff.put((byte) missingPduSequenceNumbers.size());
 
-    } // end of marshal method
+		for (int idx = 0; idx < missingPduSequenceNumbers.size(); idx++) {
+			final EightByteChunk aEightByteChunk = missingPduSequenceNumbers.get(idx);
+			aEightByteChunk.marshal(buff);
+		} // end of list marshalling
 
-/**
- * Unpacks a Pdu from the underlying data.
- * @throws java.nio.BufferUnderflowException if buff is too small
- * @see java.nio.ByteBuffer
- * @param buff The ByteBuffer at the position to begin reading
- * @since ??
- */
-public void unmarshal(java.nio.ByteBuffer buff)
-{
-       super.unmarshal(buff);
+	} // end of marshal method
 
-       minefieldID.unmarshal(buff);
-       requestingEntityID.unmarshal(buff);
-       requestID = (short)(buff.get() & 0xFF);
-       numberOfMissingPdus = (short)(buff.get() & 0xFF);
-       for(int idx = 0; idx < numberOfMissingPdus; idx++)
-       {
-            EightByteChunk anX = new EightByteChunk();
-            anX.unmarshal(buff);
-            missingPduSequenceNumbers.add(anX);
-       }
+	public void setMinefieldID(final EntityID pMinefieldID) {
+		minefieldID = pMinefieldID;
+	}
 
- } // end of unmarshal method 
+	public void setMissingPduSequenceNumbers(final List<EightByteChunk> pMissingPduSequenceNumbers) {
+		missingPduSequenceNumbers = pMissingPduSequenceNumbers;
+	}
 
+	/**
+	 * Note that setting this value will not change the marshalled value. The list
+	 * whose length this describes is used for that purpose. The
+	 * getnumberOfMissingPdus method will also be based on the actual list length
+	 * rather than this value. The method is simply here for java bean completeness.
+	 */
+	public void setNumberOfMissingPdus(final short pNumberOfMissingPdus) {
+		numberOfMissingPdus = pNumberOfMissingPdus;
+	}
 
- /*
-  * The equals method doesn't always work--mostly it works only on classes that consist only of primitives. Be careful.
-  */
-@Override
- public boolean equals(Object obj)
- {
+	public void setRequestID(final short pRequestID) {
+		requestID = pRequestID;
+	}
 
-    if(this == obj){
-      return true;
-    }
+	public void setRequestingEntityID(final EntityID pRequestingEntityID) {
+		requestingEntityID = pRequestingEntityID;
+	}
 
-    if(obj == null){
-       return false;
-    }
+	@Override
+	public void unmarshal(final DataInputStream dis) {
+		super.unmarshal(dis);
 
-    if(getClass() != obj.getClass())
-        return false;
+		try {
+			minefieldID.unmarshal(dis);
+			requestingEntityID.unmarshal(dis);
+			requestID = (short) dis.readUnsignedByte();
+			numberOfMissingPdus = (short) dis.readUnsignedByte();
+			for (int idx = 0; idx < numberOfMissingPdus; idx++) {
+				final EightByteChunk anX = new EightByteChunk();
+				anX.unmarshal(dis);
+				missingPduSequenceNumbers.add(anX);
+			}
 
-    return equalsImpl(obj);
- }
+		} // end try
+		catch (final Exception e) {
+			System.out.println(e);
+		}
+	} // end of unmarshal method
 
-@Override
- public boolean equalsImpl(Object obj)
- {
-     boolean ivarsEqual = true;
+	/**
+	 * Unpacks a Pdu from the underlying data.
+	 *
+	 * @throws java.nio.BufferUnderflowException if buff is too small
+	 * @see java.nio.ByteBuffer
+	 * @param buff The ByteBuffer at the position to begin reading
+	 * @since ??
+	 */
+	@Override
+	public void unmarshal(final java.nio.ByteBuffer buff) {
+		super.unmarshal(buff);
 
-    if(!(obj instanceof MinefieldResponseNackPdu))
-        return false;
+		minefieldID.unmarshal(buff);
+		requestingEntityID.unmarshal(buff);
+		requestID = (short) (buff.get() & 0xFF);
+		numberOfMissingPdus = (short) (buff.get() & 0xFF);
+		for (int idx = 0; idx < numberOfMissingPdus; idx++) {
+			final EightByteChunk anX = new EightByteChunk();
+			anX.unmarshal(buff);
+			missingPduSequenceNumbers.add(anX);
+		}
 
-     final MinefieldResponseNackPdu rhs = (MinefieldResponseNackPdu)obj;
-
-     if( ! (minefieldID.equals( rhs.minefieldID) )) ivarsEqual = false;
-     if( ! (requestingEntityID.equals( rhs.requestingEntityID) )) ivarsEqual = false;
-     if( ! (requestID == rhs.requestID)) ivarsEqual = false;
-     if( ! (numberOfMissingPdus == rhs.numberOfMissingPdus)) ivarsEqual = false;
-
-     for(int idx = 0; idx < missingPduSequenceNumbers.size(); idx++)
-     {
-        if( ! ( missingPduSequenceNumbers.get(idx).equals(rhs.missingPduSequenceNumbers.get(idx)))) ivarsEqual = false;
-     }
-
-
-    return ivarsEqual && super.equalsImpl(rhs);
- }
+	} // end of unmarshal method
 } // end of class

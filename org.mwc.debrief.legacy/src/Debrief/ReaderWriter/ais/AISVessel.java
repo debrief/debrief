@@ -34,7 +34,6 @@ package Debrief.ReaderWriter.ais;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
-
 /**
  * This class is representation of an AIS vessel report
  *
@@ -42,7 +41,6 @@ import java.util.Calendar;
  * @author Alexander Lotter
  */
 public class AISVessel implements IAISMessage, IAISDecodable, Cloneable {
-
 
 	/** message id */
 	private int msgId;
@@ -112,9 +110,10 @@ public class AISVessel implements IAISMessage, IAISDecodable, Cloneable {
 	 * @param countryId
 	 * @param msgSrc
 	 */
-	public AISVessel(int msgId, int imo, int mmsi, String callSign, String name, int shipType,
-			int dimensionA, int dimensionB, int dimensionC, int dimensionD, Timestamp eta,
-			double draught, String destination, int countryId, int msgSrc) {
+	public AISVessel(final int msgId, final int imo, final int mmsi, final String callSign, final String name,
+			final int shipType, final int dimensionA, final int dimensionB, final int dimensionC, final int dimensionD,
+			final Timestamp eta, final double draught, final String destination, final int countryId,
+			final int msgSrc) {
 		this.msgId = msgId;
 		this.imo = imo;
 		this.mmsi = mmsi;
@@ -133,120 +132,16 @@ public class AISVessel implements IAISMessage, IAISDecodable, Cloneable {
 
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public String getCallSign() {
-		return callSign;
-	}
-
-	public int getShipType() {
-		return shipType;
-	}
-
-	public int getCountryId() {
-		return countryId;
-	}
-
-	public int getDimensionA() {
-		return dimensionA;
-	}
-
-	public int getDimensionB() {
-		return dimensionB;
-	}
-
-	public int getDimensionC() {
-		return dimensionC;
-	}
-
-	public int getDimensionD() {
-		return dimensionD;
-	}
-
-	public int getMsgId() {
-		return msgId;
-	}
-
-	public int getImo() {
-		return imo;
-	}
-
-	public int getMmsi() {
-		return mmsi;
-	}
-
-	public int getMsgSrc() {
-		return msgSrc;
-	}
-
-	public double getDraught() {
-		return draught;
-	}
-
-	public Timestamp getEta() {
-		return eta;
-	}
-
-	public String getDestination() {
-		return destination;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (o == null)
-			return false;
-		if (o == this)
-			return true;
-		if (!o.getClass().equals(o.getClass()))
-			return false;
-
-		AISVessel that = (AISVessel) o;
-
-		boolean same = this.destination.equals(that.destination)
-				&& this.callSign.equals(that.callSign) && this.countryId == that.countryId
-				&& this.dimensionA == that.dimensionA && this.dimensionB == that.dimensionB
-				&& this.dimensionC == that.dimensionC && this.dimensionD == that.dimensionD
-				&& this.msgId == that.msgId && this.imo == that.imo && this.mmsi == that.mmsi
-				&& this.msgSrc == that.msgSrc && this.name.equals(that.name)
-				&& this.shipType == that.shipType;
-
-		return same;
-	}
-
 	@Override
 	public AISVessel clone() {
 		try {
 			return (AISVessel) super.clone();
 		}
 
-		catch (CloneNotSupportedException e) {
+		catch (final CloneNotSupportedException e) {
 			// this shouldn't happen, since we are Cloneable
 			throw new InternalError();
 		}
-	}
-
-	@Override
-	public String toString() {
-		StringBuffer sbuffer = new StringBuffer();
-		sbuffer.append("AISVessel\n");
-		sbuffer.append("MSGID\t\t" + this.msgId + "\n");
-		sbuffer.append("IMO\t\t" + this.imo + "\n");
-		sbuffer.append("MMSI\t\t" + this.mmsi + "\n");
-		sbuffer.append("CALLSIGN\t" + this.callSign + "\n");
-		sbuffer.append("NAME\t\t" + this.name + "\n");
-		sbuffer.append("SHIPTYPE\t" + this.shipType + "\n");
-		sbuffer.append("DIMA\t\t" + this.dimensionA + "\n");
-		sbuffer.append("DIMB\t\t" + this.dimensionB + "\n");
-		sbuffer.append("DIMC\t\t" + this.dimensionC + "\n");
-		sbuffer.append("DIMD\t\t" + this.dimensionD + "\n");
-		sbuffer.append("ETA\t\t" + this.eta + "\n");
-		sbuffer.append("DRAUGHT\t\t" + this.draught + "\n");
-		sbuffer.append("DESTINATION\t" + this.destination + "\n");
-		sbuffer.append("COUNTRYID\t" + this.countryId + "\n");
-		sbuffer.append("MSGSRC\t\t" + this.msgSrc + "\n");
-		return sbuffer.toString();
 	}
 
 	/**
@@ -258,7 +153,8 @@ public class AISVessel implements IAISMessage, IAISDecodable, Cloneable {
 	 * @param decBytes decoded bytes
 	 * @throws AISParseException
 	 */
-	public IAISMessage decode(String decBytes) throws AISParseException {
+	@Override
+	public IAISMessage decode(final String decBytes) throws AISParseException {
 
 		if (decBytes.length() < 421)
 			throw new AISParseException(AISParseException.NOT_CONSISTENT_DECODED_STRING);
@@ -285,7 +181,7 @@ public class AISVessel implements IAISMessage, IAISDecodable, Cloneable {
 		// :TODO Ship and Cargo digits should be splitted
 		this.shipType = AISDecoder.getDecValueByBinStr(decBytes.substring(232, 240), false);
 
-		String mmsiStr = Integer.toString(this.mmsi);
+		final String mmsiStr = Integer.toString(this.mmsi);
 		if (!(mmsiStr.length() < 3)) {
 			this.countryId = Integer.valueOf(mmsiStr.substring(0, 3));
 		} else {
@@ -305,19 +201,19 @@ public class AISVessel implements IAISMessage, IAISDecodable, Cloneable {
 		// bits 270-273 - 4 bits
 
 		/* ETA bits 274-293 - 20 bits */
-		int etaMinute = AISDecoder.getDecValueByBinStr(decBytes.substring(288, 294), false);
-		int etaHour = AISDecoder.getDecValueByBinStr(decBytes.substring(283, 288), false);
-		int etaDay = AISDecoder.getDecValueByBinStr(decBytes.substring(278, 283), false);
-		int etaMonth = AISDecoder.getDecValueByBinStr(decBytes.substring(274, 278), false);
-		Calendar cal = Calendar.getInstance();//TimeZone.getTimeZone("UTC"));
-		int year = cal.get(Calendar.YEAR);
+		final int etaMinute = AISDecoder.getDecValueByBinStr(decBytes.substring(288, 294), false);
+		final int etaHour = AISDecoder.getDecValueByBinStr(decBytes.substring(283, 288), false);
+		final int etaDay = AISDecoder.getDecValueByBinStr(decBytes.substring(278, 283), false);
+		final int etaMonth = AISDecoder.getDecValueByBinStr(decBytes.substring(274, 278), false);
+		final Calendar cal = Calendar.getInstance();// TimeZone.getTimeZone("UTC"));
+		final int year = cal.get(Calendar.YEAR);
 		cal.clear();
 		cal.set(year, etaMonth - 1, etaDay, etaHour, etaMinute);
 
-		this.eta =new Timestamp(cal.getTimeInMillis());
+		this.eta = new Timestamp(cal.getTimeInMillis());
 
 		/* Maximum present static draught bits 294-301 - 8 bits */
-		int draughtInt = AISDecoder.getDecValueByBinStr(decBytes.substring(294, 302), false);
+		final int draughtInt = AISDecoder.getDecValueByBinStr(decBytes.substring(294, 302), false);
 		this.draught = draughtInt / 10.0;
 
 		/* Destionation bits 302-421 - 120 bits */
@@ -331,6 +227,87 @@ public class AISVessel implements IAISMessage, IAISDecodable, Cloneable {
 		// dimA,dimB,dimC,dimD,countryId,msgSrc);
 
 		return this;
+	}
+
+	@Override
+	public boolean equals(final Object o) {
+		if (o == null)
+			return false;
+		if (o == this)
+			return true;
+		if (!o.getClass().equals(o.getClass()))
+			return false;
+
+		final AISVessel that = (AISVessel) o;
+
+		final boolean same = this.destination.equals(that.destination) && this.callSign.equals(that.callSign)
+				&& this.countryId == that.countryId && this.dimensionA == that.dimensionA
+				&& this.dimensionB == that.dimensionB && this.dimensionC == that.dimensionC
+				&& this.dimensionD == that.dimensionD && this.msgId == that.msgId && this.imo == that.imo
+				&& this.mmsi == that.mmsi && this.msgSrc == that.msgSrc && this.name.equals(that.name)
+				&& this.shipType == that.shipType;
+
+		return same;
+	}
+
+	public String getCallSign() {
+		return callSign;
+	}
+
+	public int getCountryId() {
+		return countryId;
+	}
+
+	public String getDestination() {
+		return destination;
+	}
+
+	public int getDimensionA() {
+		return dimensionA;
+	}
+
+	public int getDimensionB() {
+		return dimensionB;
+	}
+
+	public int getDimensionC() {
+		return dimensionC;
+	}
+
+	public int getDimensionD() {
+		return dimensionD;
+	}
+
+	public double getDraught() {
+		return draught;
+	}
+
+	public Timestamp getEta() {
+		return eta;
+	}
+
+	public int getImo() {
+		return imo;
+	}
+
+	public int getMmsi() {
+		return mmsi;
+	}
+
+	public int getMsgId() {
+		return msgId;
+	}
+
+	public int getMsgSrc() {
+		return msgSrc;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public int getShipType() {
+		return shipType;
 	}
 
 	@Override
@@ -355,5 +332,27 @@ public class AISVessel implements IAISMessage, IAISDecodable, Cloneable {
 		result = prime * result + dimensionC;
 		result = prime * result + dimensionD;
 		return result;
+	}
+
+	@Override
+	public String toString() {
+		final StringBuffer sbuffer = new StringBuffer();
+		sbuffer.append("AISVessel\n");
+		sbuffer.append("MSGID\t\t" + this.msgId + "\n");
+		sbuffer.append("IMO\t\t" + this.imo + "\n");
+		sbuffer.append("MMSI\t\t" + this.mmsi + "\n");
+		sbuffer.append("CALLSIGN\t" + this.callSign + "\n");
+		sbuffer.append("NAME\t\t" + this.name + "\n");
+		sbuffer.append("SHIPTYPE\t" + this.shipType + "\n");
+		sbuffer.append("DIMA\t\t" + this.dimensionA + "\n");
+		sbuffer.append("DIMB\t\t" + this.dimensionB + "\n");
+		sbuffer.append("DIMC\t\t" + this.dimensionC + "\n");
+		sbuffer.append("DIMD\t\t" + this.dimensionD + "\n");
+		sbuffer.append("ETA\t\t" + this.eta + "\n");
+		sbuffer.append("DRAUGHT\t\t" + this.draught + "\n");
+		sbuffer.append("DESTINATION\t" + this.destination + "\n");
+		sbuffer.append("COUNTRYID\t" + this.countryId + "\n");
+		sbuffer.append("MSGSRC\t\t" + this.msgSrc + "\n");
+		return sbuffer.toString();
 	}
 }

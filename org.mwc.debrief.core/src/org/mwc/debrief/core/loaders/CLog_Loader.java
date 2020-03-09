@@ -1,17 +1,17 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 package org.mwc.debrief.core.loaders;
 
 import java.io.InputStream;
@@ -39,118 +39,95 @@ import MWC.GUI.Tools.Action;
 
 /**
  */
-public class CLog_Loader extends CoreLoader
-{
+public class CLog_Loader extends CoreLoader {
 
-  public CLog_Loader()
-  {
-    super("CLog File", ".txt");
-  }
+	public CLog_Loader() {
+		super("CLog File", ".txt");
+	}
 
-  @Override
-  public boolean canLoad(final String fileName)
-  {
-    boolean res = false;
+	@Override
+	public boolean canLoad(final String fileName) {
+		boolean res = false;
 
-    if (super.canLoad(fileName))
-    {
-      res = CLogFileImporter.canLoad(fileName, CorePlugin.getToolParent());
-    }
-    return res;
-  }
+		if (super.canLoad(fileName)) {
+			res = CLogFileImporter.canLoad(fileName, CorePlugin.getToolParent());
+		}
+		return res;
+	}
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.mwc.debrief.core.interfaces.IPlotLoader#loadFile(org.mwc.cmap.plotViewer
-   * .editors.CorePlotEditor, org.eclipse.ui.IEditorInput)
-   */
-  @Override
-  protected IRunnableWithProgress getImporter(final IAdaptable target,
-      final Layers layers, final InputStream inputStream, final String fileName)
-  {
-    return new IRunnableWithProgress()
-    {
-      @Override
-      public void run(final IProgressMonitor pm)
-      {
-        final CLogFileImporter importer = new CLogFileImporter();
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.mwc.debrief.core.interfaces.IPlotLoader#loadFile(org.mwc.cmap.plotViewer
+	 * .editors.CorePlotEditor, org.eclipse.ui.IEditorInput)
+	 */
+	@Override
+	protected IRunnableWithProgress getImporter(final IAdaptable target, final Layers layers,
+			final InputStream inputStream, final String fileName) {
+		return new IRunnableWithProgress() {
+			@Override
+			public void run(final IProgressMonitor pm) {
+				final CLogFileImporter importer = new CLogFileImporter();
 
-        // get the last filename used
-        final String prefKey = "Last_Track_Name";
-        final IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(
-            CorePlugin.PLUGIN_ID + ".New_CLog_File");
-        final String defaultName = prefs.get(prefKey, "<Pending>");
+				// get the last filename used
+				final String prefKey = "Last_Track_Name";
+				final IEclipsePreferences prefs = InstanceScope.INSTANCE
+						.getNode(CorePlugin.PLUGIN_ID + ".New_CLog_File");
+				final String defaultName = prefs.get(prefKey, "<Pending>");
 
-        final CLog_Helper helper = new CLog_Helper()
-        {
+				final CLog_Helper helper = new CLog_Helper() {
 
-          @Override
-          public String getTrackName()
-          {
-            final AtomicReference<String> res = new AtomicReference<String>(
-                CLog_Helper.CANCEL_STRING);
-            Display.getDefault().syncExec(new Runnable()
-            {
-              @Override
-              public void run()
-              {
-                final Shell sw = Display.getCurrent().getActiveShell();
-                final InputDialog id = new InputDialog(sw,
-                    "Load new CLog track",
-                    "Please enter the name for this new track.", defaultName,
-                    new IInputValidator()
-                    {
-                      @Override
-                      public String isValid(final String newText)
-                      {
-                        if (newText.length() < 3)
-                        {
-                          return "Please provide a longer name";
-                        }
-                        return null;
-                      }
-                    });
+					@Override
+					public String getTrackName() {
+						final AtomicReference<String> res = new AtomicReference<String>(CLog_Helper.CANCEL_STRING);
+						Display.getDefault().syncExec(new Runnable() {
+							@Override
+							public void run() {
+								final Shell sw = Display.getCurrent().getActiveShell();
+								final InputDialog id = new InputDialog(sw, "Load new CLog track",
+										"Please enter the name for this new track.", defaultName,
+										new IInputValidator() {
+											@Override
+											public String isValid(final String newText) {
+												if (newText.length() < 3) {
+													return "Please provide a longer name";
+												}
+												return null;
+											}
+										});
 
-                final int answer = id.open();
-                if (answer == Window.OK)
-                {
-                  res.set(id.getValue());
-                  // and store it
-                  prefs.put(prefKey, id.getValue());
+								final int answer = id.open();
+								if (answer == Window.OK) {
+									res.set(id.getValue());
+									// and store it
+									prefs.put(prefKey, id.getValue());
 
-                  try
-                  {
-                    // forces the application to save the preferences
-                    prefs.flush();
-                  }
-                  catch (final BackingStoreException e)
-                  {
-                    e.printStackTrace();
-                  }
+									try {
+										// forces the application to save the preferences
+										prefs.flush();
+									} catch (final BackingStoreException e) {
+										e.printStackTrace();
+									}
 
-                }
-              }
-            });
-            return res.get();
-          }
-        };
+								}
+							}
+						});
+						return res.get();
+					}
+				};
 
-        try
-        {
-          // ok - get loading going
-          final Action importAction = importer.importThis(helper, inputStream,
-              layers, CorePlugin.getToolParent());
+				try {
+					// ok - get loading going
+					final Action importAction = importer.importThis(helper, inputStream, layers,
+							CorePlugin.getToolParent());
 
-          final WrapDebriefAction dAction = new WrapDebriefAction(importAction);
-          CorePlugin.run(dAction);
-        }
-        catch (final Exception e)
-        {
-          DebriefPlugin.logError(IStatus.ERROR, "Problem loading AIS datafile:"
-              + fileName, e);
-        }
-      }
-    };
-  }
+					final WrapDebriefAction dAction = new WrapDebriefAction(importAction);
+					CorePlugin.run(dAction);
+				} catch (final Exception e) {
+					DebriefPlugin.logError(IStatus.ERROR, "Problem loading AIS datafile:" + fileName, e);
+				}
+			}
+		};
+	}
 }

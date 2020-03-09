@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2018, Deep Blue C Technology Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.debrief.lite.map;
 
 import java.awt.Component;
@@ -36,108 +37,90 @@ import MWC.GUI.ToolParent;
  * @author Unni Mana <unnivm@gmail.com>
  *
  */
-public class GeoToolMapRenderer
-{
+public class GeoToolMapRenderer {
 
-  public static interface MapRenderer
-  {
-    public void paint(final Graphics gc);
-  }
+	public static interface MapRenderer {
+		public void paint(final Graphics gc);
+	}
 
-  private LiteMapPane mapPane;
+	private final LiteMapPane mapPane;
 
-  private final MapContent mapContent;
+	private final MapContent mapContent;
 
-  private Graphics graphics;
+	private Graphics graphics;
 
-  private SimpleFeatureSource featureSource;
+	private SimpleFeatureSource featureSource;
 
-  private final List<MapRenderer> _myRenderers = new ArrayList<MapRenderer>();
+	private final MathTransform _transform;
 
-  public GeoToolMapRenderer()
-  {
-    super();
+	private final List<MapRenderer> _myRenderers = new ArrayList<MapRenderer>();
 
-    // Create a map content and add our shape file to it
-    mapContent = new MapContent();
-    mapContent.setTitle("Debrief Lite");
-  }
+	public GeoToolMapRenderer(final float alpha, final MapContent _mapContent, final MathTransform transform) {
+		super();
 
-  public void addRenderer(final MapRenderer renderer)
-  {
-    _myRenderers.add(renderer);
-  }
+		// Create a map content and add our shape file to it
+		mapContent = _mapContent;
+		_transform = transform;
+		mapContent.setTitle("Debrief Lite");
 
-  public LiteMapPane createMapLayout(final float alpha)
-  {
-    mapPane = new LiteMapPane(this, alpha);
-    final StreamingRenderer streamer = new StreamingRenderer();
-    mapPane.setRenderer(streamer);
-    mapPane.setMapContent(mapContent);
-    return mapPane;
-  }
+		mapPane = new LiteMapPane(this, alpha);
+		final StreamingRenderer streamer = new StreamingRenderer();
+		mapPane.setRenderer(streamer);
+		mapPane.setMapContent(mapContent);
+	}
 
-  /**
-   * returns java.awt.Graphics object
-   *
-   * @return
-   */
-  public Graphics getGraphicsContext()
-  {
-    return graphics;
-  }
+	public void addRenderer(final MapRenderer renderer) {
+		_myRenderers.add(renderer);
+	}
 
-  public Component getMap()
-  {
-    return mapPane;
-  }
+	/**
+	 * returns java.awt.Graphics object
+	 *
+	 * @return
+	 */
+	public Graphics getGraphicsContext() {
+		return graphics;
+	}
 
-  /**
-   * return map component
-   *
-   * @return
-   */
-  public MapContent getMapComponent()
-  {
-    return mapContent;
-  }
+	public Component getMap() {
+		return mapPane;
+	}
 
-  public MathTransform getTransform()
-  {
-    return mapPane.getTransform();
-  }
+	/**
+	 * return map component
+	 *
+	 * @return
+	 */
+	public MapContent getMapComponent() {
+		return mapContent;
+	}
 
-  /**
-   * gets a MathTransform object
-   *
-   * @return MathTransform
-   */
-  public MathTransform getTransformObject()
-  {
-    final SimpleFeatureType schema = featureSource.getSchema();
-    final CoordinateReferenceSystem dataCRS = schema
-        .getCoordinateReferenceSystem();
-    final CoordinateReferenceSystem worldCRS = mapContent
-        .getCoordinateReferenceSystem();
-    MathTransform transform = null;
-    try
-    {
-      transform = CRS.findMathTransform(dataCRS, worldCRS);
-    }
-    catch (final FactoryException e)
-    {
-      Application.logError2(ToolParent.ERROR, "Failure in projection transform",
-          e);
-    }
-    return transform;
-  }
+	public MathTransform getTransform() {
+		return _transform;
+	}
 
-  public void paintEvent(final Graphics arg0)
-  {
-    for (final MapRenderer r : _myRenderers)
-    {
-      r.paint(arg0);
-    }
-  }
+	/**
+	 * gets a MathTransform object
+	 *
+	 * @return MathTransform
+	 */
+	public MathTransform getTransformObject() {
+		final SimpleFeatureType schema = featureSource.getSchema();
+		final CoordinateReferenceSystem dataCRS = schema.getCoordinateReferenceSystem();
+		final CoordinateReferenceSystem worldCRS = mapContent.getCoordinateReferenceSystem();
+		MathTransform transform = null;
+		try {
+			transform = CRS.findMathTransform(dataCRS, worldCRS);
+		} catch (final FactoryException e) {
+			Application.logError2(ToolParent.ERROR, "Failure in projection transform", e);
+		}
+		return transform;
+	}
+
+	public void paintEvent(final Graphics arg0) {
+		for (final MapRenderer r : _myRenderers) {
+			r.paint(arg0);
+		}
+	}
 
 }

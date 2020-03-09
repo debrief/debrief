@@ -1,31 +1,24 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
- *
- *    (C) 2000-2014, PlanetMayo Ltd
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+
 package ASSET.Models.Decision.Tactical;
 
-/**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:
- * @author
- * @version 1.0
- */
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
 
 import ASSET.ParticipantType;
-import ASSET.Models.Decision.Movement.Trail;
 import ASSET.Models.Decision.TargetType;
+import ASSET.Models.Decision.Movement.Trail;
 import ASSET.Models.Movement.SimpleDemandedStatus;
 import ASSET.Participants.Category;
 import ASSET.Participants.DemandedStatus;
@@ -38,65 +31,179 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 
-public class BearingTrail extends Trail
-{
+public class BearingTrail extends Trail {
 
 	// ////////////////////////////////////////////////////////////////////
 	// Member Variables
 	// ////////////////////////////////////////////////////////////////////
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	/**
-	 * the bearing to trail at (degrees)
-	 */
-	private double _trailBearing;
+	// ////////////////////////////////////////////////
+	// editable properties
+	// ////////////////////////////////////////////////
+	static public class BearingTrailInfo extends MWC.GUI.Editable.EditorType {
+
+		/**
+		 * constructor for editable details of a set of Layers
+		 *
+		 * @param data the Layers themselves
+		 */
+		public BearingTrailInfo(final BearingTrail data) {
+			super(data, data.getName(), "Edit");
+		}
+
+		/**
+		 * editable GUI properties for our participant
+		 *
+		 * @return property descriptions
+		 */
+		@Override
+		public java.beans.PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final java.beans.PropertyDescriptor[] res = { prop("TargetType", "the type of vessel we are trailing"),
+						prop("TrailBearing", "the bearing (ATB) at which we trail"),
+						prop("TrailRange", "the range at which we trail"),
+						prop("AllowableError", "the envelope allowed around the trail range"),
+						prop("Name", "the name of this bearing trail model"), };
+				// res[0].setPropertyEditorClass(ASSET.GUI.Editors.TargetTypeEditor.class);
+				return res;
+			} catch (final java.beans.IntrospectionException e) {
+				e.printStackTrace();
+				return super.getPropertyDescriptors();
+			}
+		}
+	}
+
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	static public class BearingTrailTest extends SupportTesting.EditableTesting {
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public BearingTrailTest(final String val) {
+			super(val);
+		}
+
+		/**
+		 * get an object which we can test
+		 *
+		 * @return Editable object which we can check the properties for
+		 */
+		@Override
+		public Editable getEditable() {
+			final BearingTrail bt = new BearingTrail(new WorldDistance(1200, WorldDistance.YARDS));
+			return bt;
+		}
+
+		public void testBearingTrail() {
+
+			final double rngToHim = 10000;
+			final double crseToHim = 45;
+			final double brgToHim = 110;
+
+			// final MWC.GenericData.WorldLocation origin = new
+			// MWC.GenericData.WorldLocation(0,0,0);
+			// final MWC.GenericData.WorldLocation hisLoc = origin.add(new
+			// MWC.GenericData.WorldVector(MWC.Algorithms.Conversions.Degs2Rads(crseToHim),
+			// MWC.Algorithms.Conversions.Yds2Degs(rngToHim),
+			// 0));
+
+			// setup a couple of targets
+			final ASSET.Models.Vessels.Surface ssn = new ASSET.Models.Vessels.Surface(1);
+			ssn.setName("ssn");
+			ssn.setCategory(new ASSET.Participants.Category(Category.Force.RED, Category.Environment.SUBSURFACE,
+					Category.Type.SUBMARINE));
+
+			final ParticipantType target = new ASSET.Models.Vessels.Surface(1);
+			target.setName("some target");
+
+			final ASSET.Models.Sensor.Initial.BroadbandSensor bb = new ASSET.Models.Sensor.Initial.BroadbandSensor(12);
+			final ASSET.Models.Detection.DetectionEvent de = new ASSET.Models.Detection.DetectionEvent(100l,
+					ssn.getId(), new WorldLocation(0, 0, 0), bb, new WorldDistance(rngToHim, WorldDistance.YARDS),
+					new WorldDistance(rngToHim, WorldDistance.YARDS), new Float(brgToHim), new Float(crseToHim),
+					new Float(10), ssn.getCategory(), null, new Float(350), target);
+
+			final ASSET.Models.Detection.DetectionList dl = new ASSET.Models.Detection.DetectionList();
+			dl.add(de);
+
+			final TargetType tt = new TargetType(ASSET.Participants.Category.Type.SUBMARINE);
+
+			final BearingTrail bt = new BearingTrail(new WorldDistance(1200, WorldDistance.YARDS));
+			bt.setTrailBearing(145.0);
+			bt.setTrailRange(new WorldDistance(8000, WorldDistance.YARDS));
+			bt.setTargetType(tt);
+
+			final ASSET.Participants.Status status = new ASSET.Participants.Status(0, 0);
+			status.setCourse(100);
+			status.setLocation(new MWC.GenericData.WorldLocation(0, 0, 0));
+			status.setSpeed(new WorldSpeed(12, WorldSpeed.M_sec));
+
+			ASSET.Participants.DemandedStatus dec = bt.decide(status, null, null, dl, null, 100);
+
+			// now try another trail location
+			bt.setTrailBearing(335.0);
+			bt.setTrailRange(new WorldDistance(8000, WorldDistance.YARDS));
+
+			dec = bt.decide(status, null, null, dl, null, 100);
+
+			// now try another trail location
+			bt.setTrailBearing(225.0);
+			bt.setTrailRange(new WorldDistance(11000, WorldDistance.YARDS));
+
+			dec = bt.decide(status, null, null, dl, null, 100);
+
+			assertNotNull("I'm alive", dec);
+
+			// @@@ testing this, produce results on paper first!
+			// produce genuinely flat model, & allow us to assign it to WorldLocation
+		}
+	}
 
 	// ////////////////////////////////////////////////////////////////////
 	// Constructor
 	// ////////////////////////////////////////////////////////////////////
 
-	public BearingTrail(final WorldDistance trailRange)
-	{
-		super(trailRange);
-
-		super.setName("Bearing Trail");
-	}
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
 	// ////////////////////////////////////////////////////////////////////
 	// Member methods
 	// ////////////////////////////////////////////////////////////////////
 
 	/**
-	 * get the course and speed we need to get back on track - in this case,
-	 * produce a demanded status which will make us trail the target at an
-	 * indicated range from him, at an indicated ATB
+	 * the bearing to trail at (degrees)
 	 */
-	protected DemandedStatus getDemanded(long time,
-			final ASSET.Participants.Status status,
-			final ASSET.Models.Detection.DetectionEvent detection,
-			ScenarioActivityMonitor monitor)
-	{
-		SimpleDemandedStatus res = new SimpleDemandedStatus(time, status);
+	private double _trailBearing;
+
+	public BearingTrail(final WorldDistance trailRange) {
+		super(trailRange);
+
+		super.setName("Bearing Trail");
+	}
+
+	/**
+	 * get the course and speed we need to get back on track - in this case, produce
+	 * a demanded status which will make us trail the target at an indicated range
+	 * from him, at an indicated ATB
+	 */
+	@Override
+	protected DemandedStatus getDemanded(final long time, final ASSET.Participants.Status status,
+			final ASSET.Models.Detection.DetectionEvent detection, final ScenarioActivityMonitor monitor) {
+		final SimpleDemandedStatus res = new SimpleDemandedStatus(time, status);
 
 		final Float Brg = detection.getBearing();
 		// check we have a value
-		if (Brg != null)
-		{
+		if (Brg != null) {
 			// get the bearing to the target
-			final double brg = this.courseToTarget(status.getId(), status
-					.getLocation(), detection);
+			final double brg = this.courseToTarget(status.getId(), status.getLocation(), detection);
 
 			// now work out the range to the target
 			final WorldDistance Rng = detection.getRange();
-			if (Rng != null)
-			{
+			if (Rng != null) {
 
 				// find the range to the target
-				WorldDistance rngToTarget = rangeToTarget(status.getId(), status
-						.getLocation(), detection);
+				final WorldDistance rngToTarget = rangeToTarget(status.getId(), status.getLocation(), detection);
 
 				// store this range
 				final double rng_degs = rngToTarget.getValueIn(WorldDistance.DEGS);
@@ -105,15 +212,13 @@ public class BearingTrail extends Trail
 				final Float Crse = detection.getCourse();
 
 				// check we have his course
-				if (Crse != null)
-				{
+				if (Crse != null) {
 					// what's the vector to the target
 					final MWC.GenericData.WorldVector toHim = new MWC.GenericData.WorldVector(
 							MWC.Algorithms.Conversions.Degs2Rads(brg), rng_degs, 0);
 
 					// so what's the target location?
-					final MWC.GenericData.WorldLocation hisLoc = detection
-							.getSensorLocation().add(toHim);
+					final MWC.GenericData.WorldLocation hisLoc = detection.getSensorLocation().add(toHim);
 
 					// what's his course
 					double crse = Crse.doubleValue();
@@ -121,7 +226,7 @@ public class BearingTrail extends Trail
 					// so what bearing do we want to be on, relative to it
 					crse += _trailBearing;
 
-					double rngDegs = super.getTrailRange().getValueIn(WorldDistance.DEGS);
+					final double rngDegs = super.getTrailRange().getValueIn(WorldDistance.DEGS);
 
 					// so we've got our course. work out where we should be relative to it
 					final MWC.GenericData.WorldVector vec = new MWC.GenericData.WorldVector(
@@ -131,54 +236,48 @@ public class BearingTrail extends Trail
 					final MWC.GenericData.WorldLocation ourDestination = hisLoc.add(vec);
 
 					// what's our bearing to this
-					MWC.GenericData.WorldVector demandedVec = ourDestination
-							.subtract(status.getLocation());
+					MWC.GenericData.WorldVector demandedVec = ourDestination.subtract(status.getLocation());
 
 					// work out the change in speed we should make
 					final double spdChange = Math.max(0.4, res.getSpeed() * 0.05);
 
 					// are we very far from our required location?
-					final double distError = MWC.Algorithms.Conversions
-							.Degs2Yds(demandedVec.getRange());
+					final double distError = MWC.Algorithms.Conversions.Degs2Yds(demandedVec.getRange());
 
 					// is this outside our allowable error
-					if (distError > _allowable_error.getValueIn(WorldDistance.YARDS))
-					{
+					if (distError > _allowable_error.getValueIn(WorldDistance.YARDS)) {
 						// we are further away than allowed, so speed up
 						res.setSpeed(res.getSpeed() + spdChange);
-					}
-					else
-					{
+					} else {
 						// within the envelope, so slow down
 
 						// let's try to match his state
 						// now, what is his statea?
-						Status hisStat = monitor.getThisParticipant(detection.getTarget()).getStatus();
+						final Status hisStat = monitor.getThisParticipant(detection.getTarget()).getStatus();
 						res.setSpeed(hisStat.getSpeed());
-						
+
 						// put the course into the demandedDev
-						demandedVec = new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(hisStat.getCourse()),0,0);
-						
-//
-//						// do we know his speed?
-//						final Float Spd = detection.getSpeed();
-//
-//						if (Spd != null)
-//						{
-//							// copy his speed
-//							res.setSpeed(Spd.doubleValue());
-//						}
-//						else
-//						{
-//							// just slow down a little
-//							res.setSpeed(res.getSpeed() - spdChange);
-//						}
+						demandedVec = new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(hisStat.getCourse()), 0, 0);
+
+						//
+						// // do we know his speed?
+						// final Float Spd = detection.getSpeed();
+						//
+						// if (Spd != null)
+						// {
+						// // copy his speed
+						// res.setSpeed(Spd.doubleValue());
+						// }
+						// else
+						// {
+						// // just slow down a little
+						// res.setSpeed(res.getSpeed() - spdChange);
+						// }
 
 					}
 
 					// make a decision on our course
-					res.setCourse(MWC.Algorithms.Conversions.Rads2Degs(demandedVec
-							.getBearing()));
+					res.setCourse(MWC.Algorithms.Conversions.Rads2Degs(demandedVec.getBearing()));
 				} // if we know the course
 			} // if we know the range
 		}
@@ -187,34 +286,20 @@ public class BearingTrail extends Trail
 	}
 
 	/**
-	 * reset this decision model
-	 */
-	public void restart()
-	{
-		//
-	}
-
-	/**
 	 * get the editor for this item
-	 * 
+	 *
 	 * @return the BeanInfo data for this editable object
 	 */
-	public MWC.GUI.Editable.EditorType getInfo()
-	{
+	@Override
+	public MWC.GUI.Editable.EditorType getInfo() {
 		if (_myEditor == null)
 			_myEditor = new BearingTrailInfo(this);
 
 		return _myEditor;
 	}
 
-	public double getTrailBearing()
-	{
+	public double getTrailBearing() {
 		return _trailBearing;
-	}
-
-	public void setTrailBearing(final double val)
-	{
-		_trailBearing = val;
 	}
 
 	// //////////////////////////////////////////////////////////
@@ -223,18 +308,18 @@ public class BearingTrail extends Trail
 
 	/**
 	 * get the version details for this model.
-	 * 
+	 *
 	 * <pre>
 	 * $Log: BearingTrail.java,v $
 	 * Revision 1.1  2006/08/08 14:21:31  Ian.Mayo
 	 * Second import
-	 * 
+	 *
 	 * Revision 1.1  2006/08/07 12:25:40  Ian.Mayo
 	 * First versions
-	 * 
+	 *
 	 * Revision 1.12  2004/08/31 09:36:16  Ian.Mayo
 	 * Rename inner static tests to match signature **Test to make automated testing more consistent
-	 * 
+	 *
 	 * Revision 1.11  2004/08/26 16:26:58  Ian.Mayo
 	 * Implement editable properties
 	 * <p/>
@@ -264,151 +349,21 @@ public class BearingTrail extends Trail
 	 * <p/>
 	 * </pre>
 	 */
-	public String getVersion()
-	{
+	@Override
+	public String getVersion() {
 		return "$Date$";
 	}
 
-	// ////////////////////////////////////////////////
-	// editable properties
-	// ////////////////////////////////////////////////
-	static public class BearingTrailInfo extends MWC.GUI.Editable.EditorType
-	{
-
-		/**
-		 * constructor for editable details of a set of Layers
-		 * 
-		 * @param data
-		 *          the Layers themselves
-		 */
-		public BearingTrailInfo(final BearingTrail data)
-		{
-			super(data, data.getName(), "Edit");
-		}
-
-		/**
-		 * editable GUI properties for our participant
-		 * 
-		 * @return property descriptions
-		 */
-		public java.beans.PropertyDescriptor[] getPropertyDescriptors()
-		{
-			try
-			{
-				final java.beans.PropertyDescriptor[] res =
-				{
-						prop("TargetType", "the type of vessel we are trailing"),
-						prop("TrailBearing", "the bearing (ATB) at which we trail"),
-						prop("TrailRange", "the range at which we trail"),
-						prop("AllowableError",
-								"the envelope allowed around the trail range"),
-						prop("Name", "the name of this bearing trail model"), };
-				// res[0].setPropertyEditorClass(ASSET.GUI.Editors.TargetTypeEditor.class);
-				return res;
-			}
-			catch (java.beans.IntrospectionException e)
-			{
-				e.printStackTrace();
-				return super.getPropertyDescriptors();
-			}
-		}
+	/**
+	 * reset this decision model
+	 */
+	@Override
+	public void restart() {
+		//
 	}
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public class BearingTrailTest extends SupportTesting.EditableTesting
-	{
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public BearingTrailTest(final String val)
-		{
-			super(val);
-		}
-
-		/**
-		 * get an object which we can test
-		 * 
-		 * @return Editable object which we can check the properties for
-		 */
-		public Editable getEditable()
-		{
-			final BearingTrail bt = new BearingTrail(new WorldDistance(1200,
-					WorldDistance.YARDS));
-			return bt;
-		}
-
-		public void testBearingTrail()
-		{
-
-			final double rngToHim = 10000;
-			final double crseToHim = 45;
-			final double brgToHim = 110;
-
-			// final MWC.GenericData.WorldLocation origin = new
-			// MWC.GenericData.WorldLocation(0,0,0);
-			// final MWC.GenericData.WorldLocation hisLoc = origin.add(new
-			// MWC.GenericData.WorldVector(MWC.Algorithms.Conversions.Degs2Rads(crseToHim),
-			// MWC.Algorithms.Conversions.Yds2Degs(rngToHim),
-			// 0));
-
-			// setup a couple of targets
-			final ASSET.Models.Vessels.Surface ssn = new ASSET.Models.Vessels.Surface(
-					1);
-			ssn.setName("ssn");
-			ssn.setCategory(new ASSET.Participants.Category(Category.Force.RED,
-					Category.Environment.SUBSURFACE, Category.Type.SUBMARINE));
-
-			final ParticipantType target = new ASSET.Models.Vessels.Surface(
-					1);
-			target.setName("some target");
-
-			final ASSET.Models.Sensor.Initial.BroadbandSensor bb = new ASSET.Models.Sensor.Initial.BroadbandSensor(
-					12);
-			final ASSET.Models.Detection.DetectionEvent de = new ASSET.Models.Detection.DetectionEvent(
-					100l, ssn.getId(), new WorldLocation(0, 0, 0), bb, new WorldDistance(
-							rngToHim, WorldDistance.YARDS), new WorldDistance(rngToHim,
-							WorldDistance.YARDS), new Float(brgToHim), new Float(crseToHim),
-					new Float(10), ssn.getCategory(), null, new Float(350), target);
-
-			final ASSET.Models.Detection.DetectionList dl = new ASSET.Models.Detection.DetectionList();
-			dl.add(de);
-
-			final TargetType tt = new TargetType(
-					ASSET.Participants.Category.Type.SUBMARINE);
-
-			final BearingTrail bt = new BearingTrail(new WorldDistance(1200,
-					WorldDistance.YARDS));
-			bt.setTrailBearing(145.0);
-			bt.setTrailRange(new WorldDistance(8000, WorldDistance.YARDS));
-			bt.setTargetType(tt);
-
-			final ASSET.Participants.Status status = new ASSET.Participants.Status(0,
-					0);
-			status.setCourse(100);
-			status.setLocation(new MWC.GenericData.WorldLocation(0, 0, 0));
-			status.setSpeed(new WorldSpeed(12, WorldSpeed.M_sec));
-
-			ASSET.Participants.DemandedStatus dec = bt.decide(status, null, null, dl,
-					null, 100);
-
-			// now try another trail location
-			bt.setTrailBearing(335.0);
-			bt.setTrailRange(new WorldDistance(8000, WorldDistance.YARDS));
-
-			dec = bt.decide(status, null, null, dl, null, 100);
-
-			// now try another trail location
-			bt.setTrailBearing(225.0);
-			bt.setTrailRange(new WorldDistance(11000, WorldDistance.YARDS));
-
-			dec = bt.decide(status, null, null, dl, null, 100);
-
-			assertNotNull("I'm alive", dec);
-
-			// @@@ testing this, produce results on paper first!
-			// produce genuinely flat model, & allow us to assign it to WorldLocation
-		}
+	public void setTrailBearing(final double val) {
+		_trailBearing = val;
 	}
 
 }

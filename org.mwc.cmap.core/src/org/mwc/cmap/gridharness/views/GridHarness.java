@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.cmap.gridharness.views;
 
 import java.beans.PropertyChangeEvent;
@@ -42,7 +43,6 @@ import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.gridharness.data.samples.ObservationList;
 import org.mwc.cmap.gridharness.data.samples.PositionList;
 
-
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view
  * shows data obtained from the model. The sample creates a dummy model on the
@@ -59,28 +59,25 @@ import org.mwc.cmap.gridharness.data.samples.PositionList;
  */
 
 public class GridHarness extends ViewPart {
-	private TableViewer viewer;
-	private Action subtleChange;
-	private Action clearList;
-	private List _myList;
+	static class NameSorter extends ViewerSorter {
+	}
 
 	private/*
-			 * The content provider class is responsible for providing objects
-			 * to the view. It can wrap existing objects in adapters or simply
-			 * return objects as-is. These objects may be sensitive to the
-			 * current input of the view, or ignore it and always show the same
-			 * content (like Task List, for example).
+			 * The content provider class is responsible for providing objects to the view.
+			 * It can wrap existing objects in adapters or simply return objects as-is.
+			 * These objects may be sensitive to the current input of the view, or ignore it
+			 * and always show the same content (like Task List, for example).
 			 */
 	class ViewContentProvider implements IStructuredContentProvider {
-		public void inputChanged(final Viewer v, final Object oldInput, final Object newInput) {
-		}
-
+		@Override
 		public void dispose() {
 		}
 
+		@Override
 		public Object[] getElements(final Object parent) {
 			final Object[] res = new Object[4];
 			final PropertyChangeListener pcl = new PropertyChangeListener() {
+				@Override
 				public void propertyChange(final PropertyChangeEvent evt) {
 					propertyChanged(evt);
 				}
@@ -91,26 +88,36 @@ public class GridHarness extends ViewPart {
 			res[3] = ObservationList.getLongSample(pcl);
 			return res;
 		}
+
+		@Override
+		public void inputChanged(final Viewer v, final Object oldInput, final Object newInput) {
+		}
 	}
 
-	class ViewLabelProvider extends LabelProvider implements
-			ITableLabelProvider {
-		public String getColumnText(final Object obj, final int index) {
-			return getText(obj);
-		}
-
+	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
+		@Override
 		public Image getColumnImage(final Object obj, final int index) {
 			return getImage(obj);
 		}
 
+		@Override
+		public String getColumnText(final Object obj, final int index) {
+			return getText(obj);
+		}
+
+		@Override
 		public Image getImage(final Object obj) {
-			return PlatformUI.getWorkbench().getSharedImages().getImage(
-					ISharedImages.IMG_OBJ_ELEMENT);
+			return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_ELEMENT);
 		}
 	}
 
-	static class NameSorter extends ViewerSorter {
-	}
+	private TableViewer viewer;
+
+	private Action subtleChange;
+
+	private Action clearList;
+
+	private List _myList;
 
 	/**
 	 * The constructor.
@@ -118,23 +125,30 @@ public class GridHarness extends ViewPart {
 	public GridHarness() {
 	}
 
-	@SuppressWarnings("deprecation")
-	public void propertyChanged(final PropertyChangeEvent event) {
-		final String txt = new Date().toGMTString() + ":" + event.getNewValue();
-		_myList.add(txt);
+	private void changeObs(final ObservationList selected) {
+		selected.makeSubtleChange();
+	}
+
+	private void changePos(final PositionList selected) {
+		selected.makeSubtleChange();
+	}
+
+	private void contributeToActionBars() {
+		final IActionBars bars = getViewSite().getActionBars();
+		fillLocalPullDown(bars.getMenuManager());
+		fillLocalToolBar(bars.getToolBarManager());
 	}
 
 	/**
-	 * This is a callback that will allow us to create the viewer and initialize
-	 * it.
+	 * This is a callback that will allow us to create the viewer and initialize it.
 	 */
+	@Override
 	public void createPartControl(final Composite parent) {
 		// do the layout
 		final Composite holder = new Composite(parent, SWT.NONE);
 		holder.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-		viewer = new TableViewer(holder, SWT.MULTI | SWT.H_SCROLL
-				| SWT.V_SCROLL | SWT.BORDER);
+		viewer = new TableViewer(holder, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setLabelProvider(new ViewLabelProvider());
 		viewer.setSorter(new NameSorter());
@@ -143,19 +157,12 @@ public class GridHarness extends ViewPart {
 		_myList = new List(holder, SWT.BORDER);
 
 		// Create the help context id for the viewer's control
-		PlatformUI.getWorkbench().getHelpSystem().setHelp(viewer.getControl(),
-				"com.pml.GridHarness.viewer");
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(viewer.getControl(), "com.pml.GridHarness.viewer");
 		makeActions();
 		contributeToActionBars();
 
 		// setup as selection provider
 		getSite().setSelectionProvider(viewer);
-	}
-
-	private void contributeToActionBars() {
-		final IActionBars bars = getViewSite().getActionBars();
-		fillLocalPullDown(bars.getMenuManager());
-		fillLocalToolBar(bars.getToolBarManager());
 	}
 
 	private void fillLocalPullDown(final IMenuManager manager) {
@@ -171,14 +178,15 @@ public class GridHarness extends ViewPart {
 
 	private void makeActions() {
 		subtleChange = new Action() {
+			@Override
 			public void run() {
 				makeSubtleChange();
 			}
 		};
 		subtleChange.setText("Subtle Change");
-		subtleChange
-				.setToolTipText("Make a subtle change to the selected object");
+		subtleChange.setToolTipText("Make a subtle change to the selected object");
 		clearList = new Action() {
+			@Override
 			public void run() {
 				_myList.removeAll();
 			}
@@ -203,17 +211,16 @@ public class GridHarness extends ViewPart {
 
 	}
 
-	private void changePos(final PositionList selected) {
-		selected.makeSubtleChange();
-	}
-
-	private void changeObs(final ObservationList selected) {
-		selected.makeSubtleChange();
+	@SuppressWarnings("deprecation")
+	public void propertyChanged(final PropertyChangeEvent event) {
+		final String txt = new Date().toGMTString() + ":" + event.getNewValue();
+		_myList.add(txt);
 	}
 
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
+	@Override
 	public void setFocus() {
 		viewer.getControl().setFocus();
 	}

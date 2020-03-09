@@ -1,17 +1,18 @@
-/*
- *    Debrief - the Open Source Maritime Analysis Application
- *    http://debrief.info
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ * (C) 2000-2020, Deep Blue C Technology Ltd
  *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the Eclipse Public License v1.0
- *    (http://www.eclipse.org/legal/epl-v10.html)
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
  *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
- */
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package com.planetmayo.debrief.satc.util;
 
 import java.awt.BasicStroke;
@@ -33,6 +34,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -49,169 +51,143 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
-public class StraightLineCullingTestForm extends JFrame
-{	
+public class StraightLineCullingTestForm extends JFrame {
 	private static final long serialVersionUID = 1L;
-	
+
+	public static void main(final String[] args) {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				final StraightLineCullingTestForm form = new StraightLineCullingTestForm();
+				form.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+				form.setVisible(true);
+			}
+		});
+	}
+
 	private XYSeriesCollection collections;
 	private JFreeChart chart;
-	private JFileChooser fc = new JFileChooser();
-	
-	public StraightLineCullingTestForm() throws HeadlessException
-	{
+
+	private final JFileChooser fc = new JFileChooser();
+
+	public StraightLineCullingTestForm() throws HeadlessException {
 		super("Straight line culling");
 		createChart();
 		createMenu();
-		
+
 		pack();
 		setLocationRelativeTo(null);
 	}
-	
-	private void createChart() 
-	{
+
+	private void createChart() {
 		collections = new XYSeriesCollection();
-		chart = ChartFactory.createXYLineChart("main", "x", "y", 
-				collections, PlotOrientation.VERTICAL, false, false, false);
-		
-		ChartPanel panel = new ChartPanel(chart);
+		chart = ChartFactory.createXYLineChart("main", "x", "y", collections, PlotOrientation.VERTICAL, false, false,
+				false);
+
+		final ChartPanel panel = new ChartPanel(chart);
 		panel.setPreferredSize(new Dimension(800, 600));
 		setContentPane(panel);
 	}
-	
-	private void createMenu()
-	{
-		JMenu menu = new JMenu("File");
-		menu.add(new AbstractAction("Load") 
-		{
+
+	private void createMenu() {
+		final JMenu menu = new JMenu("File");
+		menu.add(new AbstractAction("Load") {
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				if (fc.showOpenDialog(StraightLineCullingTestForm.this) == 
-								JFileChooser.APPROVE_OPTION) 
-				{
-					try
-					{
+			public void actionPerformed(final ActionEvent e) {
+				if (fc.showOpenDialog(StraightLineCullingTestForm.this) == JFileChooser.APPROVE_OPTION) {
+					try {
 						loadFile(fc.getSelectedFile());
+					} catch (final IOException ex) {
 					}
-					catch (IOException ex) { }
-				}				
+				}
 			}
 		});
-		
-		JMenuBar menuBar = new JMenuBar();
+
+		final JMenuBar menuBar = new JMenuBar();
 		menuBar.add(menu);
 		setJMenuBar(menuBar);
 	}
-	
-	@SuppressWarnings("resource")
-	private void loadFile(File file) throws IOException
-	{
-  	Scanner scanner = new Scanner(file);
-		scanner.useLocale(Locale.US);		
-		List<List<Coordinate>> coordinates = new ArrayList<List<Coordinate>>();
-		while (true)
-		{
-			try
-			{
-				int num = scanner.nextInt();
-				scanner.next();
-				double x = scanner.nextDouble();
-				double y = scanner.nextDouble();
 
-				if (num > 0)
-				{
-					num--;
-					while (coordinates.size() <= num)
-					{
-						coordinates.add(new ArrayList<Coordinate>());
-					}
-					Coordinate coordinate = new Coordinate(x, y);
-					coordinates.get(num).add(coordinate);
-				}
-			}
-			catch (NoSuchElementException ex)
-			{
-				break;
-			}
-		}
-		for (int i = 0; i < coordinates.size(); i++)
-		{
-			Coordinate c = coordinates.get(i).get(0);
-			coordinates.get(i).add(c);
-		}
-		culling(coordinates);
-	}
-	
-	private void culling(List<List<Coordinate>> polygons)
-	{
-		DefaultXYItemRenderer renderer = new DefaultXYItemRenderer();
+	private void culling(final List<List<Coordinate>> polygons) {
+		final DefaultXYItemRenderer renderer = new DefaultXYItemRenderer();
 		renderer.setBaseShapesVisible(false);
 		((XYPlot) chart.getPlot()).setRenderer(renderer);
 		collections.removeAllSeries();
-		
-		List<LocationRange> ranges = new ArrayList<LocationRange>(polygons.size());
-		GeometryFactory factory = new GeometryFactory();
-		for (List<Coordinate> coordinates : polygons)
-		{
-			Geometry geo = factory.createPolygon(coordinates.toArray(new Coordinate[0]));
-			ranges.add(new LocationRange(geo));			
+
+		final List<LocationRange> ranges = new ArrayList<LocationRange>(polygons.size());
+		final GeometryFactory factory = new GeometryFactory();
+		for (final List<Coordinate> coordinates : polygons) {
+			final Geometry geo = factory.createPolygon(coordinates.toArray(new Coordinate[0]));
+			ranges.add(new LocationRange(geo));
 		}
-		StraightLineCulling culling = new StraightLineCulling(ranges);
+		final StraightLineCulling culling = new StraightLineCulling(ranges);
 		culling.process();
-		
+
 		int i = 0;
-		for (Geometry geometry : culling.getFiltered())
-		{
-			XYSeries series = new XYSeries("polygon " + (++i), false);
-			for (Coordinate c : geometry.getCoordinates())
-			{
+		for (final Geometry geometry : culling.getFiltered()) {
+			final XYSeries series = new XYSeries("polygon " + (++i), false);
+			for (final Coordinate c : geometry.getCoordinates()) {
 				series.add(c.x, c.y);
 			}
 			collections.addSeries(series);
 		}
-		if (culling.hasResults())
-		{
+		if (culling.hasResults()) {
 			drawResultLineAndPolygon(1, culling.getFirstCrissCrossLine(), culling.getConstrainedStart());
 			drawResultLineAndPolygon(2, culling.getSecondCrissCrossLine(), culling.getConstrainedEnd());
 		}
 	}
-	
-	private void drawResultLineAndPolygon(int num, Coordinate[] line, Geometry geometry)
-	{
-		XYItemRenderer renderer = ((XYPlot) chart.getPlot()).getRenderer();
 
-		XYSeries lineSeries = new XYSeries("line " + num);
+	private void drawResultLineAndPolygon(final int num, final Coordinate[] line, final Geometry geometry) {
+		final XYItemRenderer renderer = ((XYPlot) chart.getPlot()).getRenderer();
+
+		final XYSeries lineSeries = new XYSeries("line " + num);
 		lineSeries.add(line[0].x, line[0].y);
 		lineSeries.add(line[1].x, line[1].y);
 		collections.addSeries(lineSeries);
-		
-		XYSeries polygonSeries = new XYSeries("result " + num, false);
-		for (Coordinate c : geometry.getCoordinates())
-		{
+
+		final XYSeries polygonSeries = new XYSeries("result " + num, false);
+		for (final Coordinate c : geometry.getCoordinates()) {
 			polygonSeries.add(c.x, c.y);
-		}		
-		collections.addSeries(polygonSeries);		
-		
+		}
+		collections.addSeries(polygonSeries);
+
 		renderer.setSeriesPaint(collections.getSeriesCount() - 2, Color.MAGENTA);
-		renderer.setSeriesStroke(collections.getSeriesCount() - 2, new BasicStroke(1.0f));		
+		renderer.setSeriesStroke(collections.getSeriesCount() - 2, new BasicStroke(1.0f));
 		renderer.setSeriesPaint(collections.getSeriesCount() - 1, Color.BLACK);
 		renderer.setSeriesStroke(collections.getSeriesCount() - 1, new BasicStroke(3.0f));
 	}
 
-	public static void main(String[] args)
-	{
-		SwingUtilities.invokeLater(new Runnable()
-		{			
-			@Override
-			public void run()
-			{
-				StraightLineCullingTestForm form = new StraightLineCullingTestForm();
-				form.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);				
-				form.setVisible(true);
+	@SuppressWarnings("resource")
+	private void loadFile(final File file) throws IOException {
+		final Scanner scanner = new Scanner(file);
+		scanner.useLocale(Locale.US);
+		final List<List<Coordinate>> coordinates = new ArrayList<List<Coordinate>>();
+		while (true) {
+			try {
+				int num = scanner.nextInt();
+				scanner.next();
+				final double x = scanner.nextDouble();
+				final double y = scanner.nextDouble();
+
+				if (num > 0) {
+					num--;
+					while (coordinates.size() <= num) {
+						coordinates.add(new ArrayList<Coordinate>());
+					}
+					final Coordinate coordinate = new Coordinate(x, y);
+					coordinates.get(num).add(coordinate);
+				}
+			} catch (final NoSuchElementException ex) {
+				break;
 			}
-		});
+		}
+		for (int i = 0; i < coordinates.size(); i++) {
+			final Coordinate c = coordinates.get(i).get(0);
+			coordinates.get(i).add(c);
+		}
+		culling(coordinates);
 	}
 
 }
