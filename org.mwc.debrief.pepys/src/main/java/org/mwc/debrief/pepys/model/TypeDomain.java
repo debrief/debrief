@@ -13,10 +13,30 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
-package org.mwc.debrief.pepys.model.bean;
+package org.mwc.debrief.pepys.model;
 
-public interface AbstractBean {
+import org.mwc.debrief.pepys.model.bean.FilterableBean;
+
+/**
+ * Class used for the Data Type Filtering Model Item.
+ * 
+ */
+public class TypeDomain {
+	private Class<FilterableBean> datatype;
+	private String name;
 	
-	// We will use it to get the ID Field in the database.
-	public String getIdField();
+	public Class<FilterableBean> getDatatype() {
+		return datatype;
+	}
+	public void setDatatype(Class<FilterableBean> datatype) {
+		this.datatype = datatype;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	
 }

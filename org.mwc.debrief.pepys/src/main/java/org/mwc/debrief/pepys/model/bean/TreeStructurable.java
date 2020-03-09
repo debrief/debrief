@@ -15,8 +15,9 @@
 
 package org.mwc.debrief.pepys.model.bean;
 
-public interface AbstractBean {
+public interface TreeStructurable {
+	public String getSource();
+	public String getMeasureName();
+	public String getSensorName();
 	
-	// We will use it to get the ID Field in the database.
-	public String getIdField();
 }

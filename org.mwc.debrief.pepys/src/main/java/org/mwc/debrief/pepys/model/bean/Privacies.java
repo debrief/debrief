@@ -21,7 +21,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
-import org.mwc.debrief.pepys.model.DatabaseConnection;
+import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 
 import junit.framework.TestCase;
 

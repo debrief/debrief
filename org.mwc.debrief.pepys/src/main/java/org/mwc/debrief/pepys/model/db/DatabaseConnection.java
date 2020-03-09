@@ -13,7 +13,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
-package org.mwc.debrief.pepys.model;
+package org.mwc.debrief.pepys.model.db;
 
 import java.beans.PropertyVetoException;
 import java.lang.reflect.Constructor;

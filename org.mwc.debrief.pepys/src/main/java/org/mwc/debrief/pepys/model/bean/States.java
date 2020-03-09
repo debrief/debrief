@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 
-import org.mwc.debrief.pepys.model.DatabaseConnection;
+import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -15,7 +15,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
 import junit.framework.TestCase;
 
-public class States implements AbstractBean {
+public class States implements AbstractBean , FilterableBean{
 
 	private int state_id;
 	private Timestamp time;
@@ -144,5 +144,15 @@ public class States implements AbstractBean {
 			}
 			
 		}
+	}
+
+	@Override
+	public String getTimeField() {
+		return "time";
+	}
+
+	@Override
+	public String getLocationField() {
+		return "location";
 	}
 }

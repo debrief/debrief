@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.debrief.pepys.model;
 
 import java.beans.PropertyVetoException;
@@ -8,6 +23,7 @@ import java.util.List;
 import org.mwc.debrief.pepys.model.bean.DatafileTypes;
 import org.mwc.debrief.pepys.model.bean.Datafiles;
 import org.mwc.debrief.pepys.model.bean.States;
+import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 
 public class ProofOfConcept {
 	public static void main(final String[] args) {

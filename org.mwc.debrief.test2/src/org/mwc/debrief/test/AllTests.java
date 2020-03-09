@@ -127,6 +127,6 @@ import org.junit.runners.Suite;
 		org.mwc.debrief.pepys.model.bean.PrivaciesTest.class,
 		org.mwc.debrief.pepys.model.bean.StatesTest.class})
 @RunWith(Suite.class)
-public class AllTests 
+public class AllTests
 
 }

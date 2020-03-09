@@ -15,8 +15,10 @@
 
 package org.mwc.debrief.pepys.model.bean;
 
-public interface AbstractBean {
+public interface FilterableBean {	
+	// It is needed that all the beans can be filterable by period.
+	public String getTimeField();
 	
-	// We will use it to get the ID Field in the database.
-	public String getIdField();
+	// Same for Area 
+	public String getLocationField();
 }
