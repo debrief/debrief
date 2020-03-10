@@ -125,7 +125,8 @@ import org.junit.runners.Suite;
 		org.mwc.debrief.pepys.model.bean.Datafiles.DatafilesTest.class,
 		org.mwc.debrief.pepys.model.bean.DatafileTypes.DatafileTypesTest.class,
 		org.mwc.debrief.pepys.model.bean.Privacies.PrivaciesTest.class,
-		org.mwc.debrief.pepys.model.bean.States.StatesTest.class})
+		org.mwc.debrief.pepys.model.bean.States.StatesTest.class,
+		org.mwc.debrief.pepys.model.tree.TreeNode.TreeNodeTest.class})
 @RunWith(Suite.class)
 public class AllTests{
 	

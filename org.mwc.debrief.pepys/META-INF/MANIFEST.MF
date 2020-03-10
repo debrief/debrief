@@ -12,5 +12,9 @@ Bundle-ClassPath: libs/c3p0-0.9.5.5.jar,
  libs/sqlite-jdbc-3.30.1.jar,
  .
 Require-Bundle: org.mwc.cmap.legacy;bundle-version="1.0.293",
- org.mwc.debrief.legacy;bundle-version="1.0.432"
-Export-Package: org.mwc.debrief.pepys.model.bean
+ org.mwc.debrief.legacy;bundle-version="1.0.432",
+ org.eclipse.swt
+Export-Package: org.mwc.debrief.pepys.model.bean,
+ org.mwc.debrief.pepys.model.tree
+Import-Package: org.eclipse.jface.resource,
+ org.eclipse.jface.viewers

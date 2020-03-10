@@ -48,6 +48,13 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	private TreeNode treeModel = new TreeNode(TreeNode.NodeType.ROOT, "", null);
 
+	public ModelConfiguration(final WorldArea _area, final TimePeriod _period)
+			throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException {
+		currentArea = _area;
+		currentPeriod = _period;
+	}
+
 	@Override
 	public void addPropertyChangeListener(PropertyChangeListener l) {
 		if (_pSupport == null) {
@@ -115,12 +122,11 @@ public class ModelConfiguration implements AbstractConfiguration {
 	@Override
 	public void apply() throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException {
-		
+
 		TreeBuilder.buildStructure(this);
-		
+
 		if (_pSupport != null) {
-			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, TREE_MODEL, null,
-					treeModel);
+			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, TREE_MODEL, null, treeModel);
 			_pSupport.firePropertyChange(pce);
 		}
 	}

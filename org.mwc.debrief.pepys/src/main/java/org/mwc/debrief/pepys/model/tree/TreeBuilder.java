@@ -52,13 +52,13 @@ public class TreeBuilder {
 
 			TreeNode datafileNode = root.getChild(datafileName);
 			if (datafileNode == null) {
-				datafileNode = new TreeNode(TreeNode.NodeType.DATAFILES, datafileName, null);
+				datafileNode = new TreeNode(TreeNode.NodeType.DATAFILES, datafileName, null, root);
 				root.addChild(datafileNode);
 			}
 
 			TreeNode measureNode = datafileNode.getChild(item.getMeasureName());
 			if (measureNode == null) {
-				measureNode = new TreeNode(TreeNode.NodeType.MEASURE, item.getMeasureName(), null);
+				measureNode = new TreeNode(TreeNode.NodeType.MEASURE, item.getMeasureName(), null, datafileNode);
 				datafileNode.addChild(measureNode);
 			}
 

@@ -34,9 +34,17 @@ public class TreeNode {
 	private NodeType type;
 	private String name;
 	private TreeStructurable value;
+	private TreeNode parent = null;
 
 	private TreeMap<String, TreeNode> children = new TreeMap<String, TreeNode>();
 
+	public TreeNode(final NodeType _type, final String _name, final TreeStructurable _value, final TreeNode _parent) {
+		this.type = _type;
+		this.name = _name;
+		this.value = _value;
+		this.parent = _parent;
+	}
+	
 	public TreeNode(final NodeType _type, final String _name, final TreeStructurable _value) {
 		this.type = _type;
 		this.name = _name;
@@ -51,8 +59,24 @@ public class TreeNode {
 		children.put(node.name, node);
 	}
 	
+	public TreeNode[] getChildren() {
+		return children.values().toArray(new TreeNode[] {});
+	}
+	
+	public boolean hasChildren() {
+		return !children.isEmpty();
+	}
+	
 	public void removeAllChildren() {
 		children.clear();
+	}
+	
+	public TreeNode getParent() {
+		return parent;
+	}
+
+	public void setParent(TreeNode parent) {
+		this.parent = parent;
 	}
 
 	@Override
@@ -107,12 +131,12 @@ public class TreeNode {
 			assertTrue("States - database entries", list.size() == 543);
 			
 			final String rootName = "ROOT";
-			final TreeNode root = new TreeNode(NodeType.ROOT, rootName, (States)list.get(0));
-			final TreeNode child1 = new TreeNode(NodeType.ROOT, rootName, (States)list.get(1));
-			final TreeNode child2 = new TreeNode(NodeType.ROOT, rootName, (States)list.get(2));
-			final TreeNode child3 = new TreeNode(NodeType.ROOT, rootName, (States)list.get(3));
-			final TreeNode child1child1 = new TreeNode(NodeType.ROOT, rootName, (States)list.get(4));
-			final TreeNode child1child2 = new TreeNode(NodeType.ROOT, rootName, (States)list.get(5));
+			final TreeNode root = new TreeNode(NodeType.ROOT, rootName, (States)list.get(0), null);
+			final TreeNode child1 = new TreeNode(NodeType.ROOT, rootName, (States)list.get(1), root);
+			final TreeNode child2 = new TreeNode(NodeType.ROOT, rootName, (States)list.get(2), root);
+			final TreeNode child3 = new TreeNode(NodeType.ROOT, rootName, (States)list.get(3), root);
+			final TreeNode child1child1 = new TreeNode(NodeType.ROOT, rootName, (States)list.get(4), child1);
+			final TreeNode child1child2 = new TreeNode(NodeType.ROOT, rootName, (States)list.get(5), child1);
 			
 			root.addChild(child1);
 			root.addChild(child2);
