@@ -31,10 +31,13 @@ import org.mwc.debrief.pepys.model.bean.TreeStructurable;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.tree.TreeNode.NodeType;
 
+import junit.framework.TestCase;
+
 public class TreeBuilder {
 
 	/**
 	 * Method that builds the tree structure from top to bottom.
+	 * 
 	 * @param items
 	 * @param root
 	 * @param sensors
@@ -46,13 +49,13 @@ public class TreeBuilder {
 
 		for (TreeStructurable item : items) {
 			final String datafileName = datafiles.get(item.getSource()).getReference();
-			
+
 			TreeNode datafileNode = root.getChild(datafileName);
 			if (datafileNode == null) {
 				datafileNode = new TreeNode(TreeNode.NodeType.DATAFILES, datafileName, null);
 				root.addChild(datafileNode);
 			}
-			
+
 			TreeNode measureNode = datafileNode.getChild(item.getMeasureName());
 			if (measureNode == null) {
 				measureNode = new TreeNode(TreeNode.NodeType.MEASURE, item.getMeasureName(), null);
@@ -60,22 +63,22 @@ public class TreeBuilder {
 			}
 
 			TreeNode leaf = new TreeNode(NodeType.VALUE, item.getMyName(), item);
-			
+
 			if (item.getSensor() == -1) {
 				// It has an exception in the structure, we simply add the leaf.
 				measureNode.addChild(leaf);
-			}else {
+			} else {
 				final String sensorName = sensors.get(item.getSensor()).getName();
 				TreeNode sensorNode = measureNode.getChild(sensorName);
 				if (sensorNode == null) {
 					sensorNode = new TreeNode(TreeNode.NodeType.SENSOR, sensorName, null);
 					measureNode.addChild(sensorNode);
 				}
-				
+
 				sensorNode.addChild(leaf);
 			}
 		}
-		
+
 		return root;
 	}
 
@@ -88,7 +91,7 @@ public class TreeBuilder {
 		for (Datafiles datafile : DatabaseConnection.getInstance().listAll(Datafiles.class, null)) {
 			datafiles.put(datafile.getDatafile_id(), datafile);
 		}
-		
+
 		for (Sensors sensor : DatabaseConnection.getInstance().listAll(Sensors.class, null)) {
 			sensors.put(sensor.getSensor_id(), sensor);
 		}
@@ -108,7 +111,7 @@ public class TreeBuilder {
 			final Class<FilterableBean> currentBeanType = domain.getDatatype();
 
 			if (TreeStructurable.class.isAssignableFrom(currentBeanType)) {
-				
+
 				// TODO FILTERING HERE
 				String filter = null;
 				List<? extends TreeStructurable> currentItems = (List<? extends TreeStructurable>) DatabaseConnection
@@ -118,5 +121,12 @@ public class TreeBuilder {
 		}
 
 		buildStructure(allItems.toArray(new TreeStructurable[] {}), configuration.getTreeModel());
+	}
+	
+	public class TreeBuilderTest extends TestCase{
+		
+		public void testTreeBuilder() {
+			
+		}
 	}
 }

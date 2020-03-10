@@ -125,27 +125,6 @@ public class States implements AbstractBean, FilterableBean, TreeStructurable {
 		this.time = time;
 	}
 
-	public static class StatesTest extends TestCase {
-
-		public void testStatesQuery() {
-			try {
-				final List list = DatabaseConnection.getInstance().listAll(States.class, null);
-
-				assertTrue("States - database entries", list.size() == 543);
-
-				final List list2 = DatabaseConnection.getInstance().listAll(States.class, "source_id = 16");
-
-				assertTrue("States - database entries", list2.size() == 44);
-
-			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		}
-	}
-
 	@Override
 	public String getTimeField() {
 		return "time";
@@ -175,5 +154,26 @@ public class States implements AbstractBean, FilterableBean, TreeStructurable {
 	public String getMyName() {
 		// TODO 
 		return state_id + "";
+	}
+
+	public static class StatesTest extends TestCase {
+
+		public void testStatesQuery() {
+			try {
+				final List list = DatabaseConnection.getInstance().listAll(States.class, null);
+
+				assertTrue("States - database entries", list.size() == 543);
+
+				final List list2 = DatabaseConnection.getInstance().listAll(States.class, "source_id = 16");
+
+				assertTrue("States - database entries", list2.size() == 44);
+
+			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
 	}
 }

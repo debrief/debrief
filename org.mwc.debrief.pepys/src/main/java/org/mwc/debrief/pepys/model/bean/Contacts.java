@@ -237,13 +237,11 @@ public class Contacts implements AbstractBean, FilterableBean, TreeStructurable 
 
 	@Override
 	public String getMeasureName() {
-		// TODO Auto-generated method stub
 		return "Contacts";
 	}
 
 	@Override
 	public int getSensor() {
-		// TODO Auto-generated method stub
 		return sensor_id;
 	}
 

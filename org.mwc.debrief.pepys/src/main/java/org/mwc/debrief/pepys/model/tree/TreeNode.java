@@ -16,9 +16,14 @@
 package org.mwc.debrief.pepys.model.tree;
 
 import java.io.PrintStream;
+import java.util.List;
 import java.util.TreeMap;
 
+import org.mwc.debrief.pepys.model.bean.States;
 import org.mwc.debrief.pepys.model.bean.TreeStructurable;
+import org.mwc.debrief.pepys.model.db.DatabaseConnection;
+
+import junit.framework.TestCase;
 
 public class TreeNode {
 
@@ -86,6 +91,42 @@ public class TreeNode {
 		printStream.println(currentTab + name);
 		for (TreeNode child : children.values()) {
 			child.print(currentTab + tabDelta, tabDelta, printStream);
+		}
+	}
+	
+	public static class TreeNodeTest extends TestCase{
+		
+		public void testTreeNode() {
+			List list = null;
+			try {
+				list = DatabaseConnection.getInstance().listAll(States.class, null);
+			} catch (Exception e) {
+				fail("Failed retrieving data from Database");
+			}
+
+			assertTrue("States - database entries", list.size() == 543);
+			
+			final String rootName = "ROOT";
+			final TreeNode root = new TreeNode(NodeType.ROOT, rootName, (States)list.get(0));
+			final TreeNode child1 = new TreeNode(NodeType.ROOT, rootName, (States)list.get(1));
+			final TreeNode child2 = new TreeNode(NodeType.ROOT, rootName, (States)list.get(2));
+			final TreeNode child3 = new TreeNode(NodeType.ROOT, rootName, (States)list.get(3));
+			final TreeNode child1child1 = new TreeNode(NodeType.ROOT, rootName, (States)list.get(4));
+			final TreeNode child1child2 = new TreeNode(NodeType.ROOT, rootName, (States)list.get(5));
+			
+			root.addChild(child1);
+			root.addChild(child2);
+			root.addChild(child3);
+			
+			child1.addChild(child1child1);
+			child1.addChild(child1child2);
+			
+			assertTrue("Retrieving child1 correctly", child1.equals(root.getChild(child1.name)));
+			assertTrue("Retrieving child2 correctly", child2.equals(root.getChild(child2.name)));
+			assertTrue("Retrieving child3 correctly", child3.equals(root.getChild(child3.name)));
+
+			assertTrue("Retrieving child1child1 correctly", child1child1.equals(child1.getChild(child1child1.name)));
+			assertTrue("Retrieving child1child2 correctly", child1child2.equals(child1.getChild(child1child2.name)));
 		}
 	}
 }
