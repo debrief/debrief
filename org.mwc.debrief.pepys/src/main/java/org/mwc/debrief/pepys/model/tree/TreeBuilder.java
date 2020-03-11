@@ -24,9 +24,9 @@ import java.util.TreeMap;
 
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.model.TypeDomain;
-import org.mwc.debrief.pepys.model.bean.Datafiles;
+import org.mwc.debrief.pepys.model.bean.Datafile;
 import org.mwc.debrief.pepys.model.bean.FilterableBean;
-import org.mwc.debrief.pepys.model.bean.Sensors;
+import org.mwc.debrief.pepys.model.bean.Sensor;
 import org.mwc.debrief.pepys.model.bean.TreeStructurable;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.tree.TreeNode.NodeType;
@@ -45,7 +45,7 @@ public class TreeBuilder {
 	 * @return
 	 */
 	public static TreeNode buildStructure(final TreeStructurable[] items, final TreeNode root,
-			final TreeMap<Integer, Sensors> sensors, final TreeMap<Integer, Datafiles> datafiles) {
+			final TreeMap<Integer, Sensor> sensors, final TreeMap<Integer, Datafile> datafiles) {
 
 		for (TreeStructurable item : items) {
 			final String datafileName = datafiles.get(item.getSource()).getReference();
@@ -85,14 +85,14 @@ public class TreeBuilder {
 	public static TreeNode buildStructure(final TreeStructurable[] items, final TreeNode root)
 			throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException {
-		final TreeMap<Integer, Sensors> sensors = new TreeMap<Integer, Sensors>();
-		final TreeMap<Integer, Datafiles> datafiles = new TreeMap<Integer, Datafiles>();
+		final TreeMap<Integer, Sensor> sensors = new TreeMap<Integer, Sensor>();
+		final TreeMap<Integer, Datafile> datafiles = new TreeMap<Integer, Datafile>();
 
-		for (Datafiles datafile : DatabaseConnection.getInstance().listAll(Datafiles.class, null)) {
+		for (Datafile datafile : DatabaseConnection.getInstance().listAll(Datafile.class, null)) {
 			datafiles.put(datafile.getDatafile_id(), datafile);
 		}
 
-		for (Sensors sensor : DatabaseConnection.getInstance().listAll(Sensors.class, null)) {
+		for (Sensor sensor : DatabaseConnection.getInstance().listAll(Sensor.class, null)) {
 			sensors.put(sensor.getSensor_id(), sensor);
 		}
 

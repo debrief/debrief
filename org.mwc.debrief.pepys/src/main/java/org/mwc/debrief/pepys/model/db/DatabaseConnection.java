@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.mwc.debrief.pepys.model.bean.AbstractBean;
+import org.mwc.debrief.pepys.model.bean.TableName;
 import org.sqlite.SQLiteConfig;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
@@ -90,7 +91,13 @@ public class DatabaseConnection {
 		}
 		query.setLength(query.length() - 1);
 		query.append(" FROM ");
-		query.append(type.getSimpleName());
+		
+		final TableName tableName = (TableName) type.getAnnotation(TableName.class);
+		if (tableName.name().isEmpty()) {
+			query.append(type.getSimpleName());
+		}else {
+			query.append(tableName.name());
+		}
 		return query.toString();
 	}
 

@@ -21,7 +21,6 @@ import java.beans.PropertyChangeListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -32,10 +31,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.model.ModelConfiguration;
 import org.mwc.debrief.pepys.model.TypeDomain;
-import org.mwc.debrief.pepys.model.bean.Comments;
-import org.mwc.debrief.pepys.model.bean.Contacts;
-import org.mwc.debrief.pepys.model.bean.FilterableBean;
-import org.mwc.debrief.pepys.model.bean.States;
+import org.mwc.debrief.pepys.model.bean.Comment;
+import org.mwc.debrief.pepys.model.bean.Contact;
+import org.mwc.debrief.pepys.model.bean.State;
 import org.mwc.debrief.pepys.view.PepysImportView;
 
 import MWC.GenericData.HiResDate;
@@ -46,9 +44,9 @@ public class PepysImportPresenter {
 	public PepysImportPresenter(final Shell parent) {
 		AbstractConfiguration model = new ModelConfiguration();
 
-		model.addDatafileTypeFilter(new TypeDomain(States.class, "States", true));
-		model.addDatafileTypeFilter(new TypeDomain(Contacts.class, "Contacts", true));
-		model.addDatafileTypeFilter(new TypeDomain(Comments.class, "Comments", true));
+		model.addDatafileTypeFilter(new TypeDomain(State.class, "States", true));
+		model.addDatafileTypeFilter(new TypeDomain(Contact.class, "Contacts", true));
+		model.addDatafileTypeFilter(new TypeDomain(Comment.class, "Comments", true));
 		PepysImportView view = new PepysImportView(model, parent);
 
 		addDataTypeFilters(model, view);

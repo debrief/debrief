@@ -19,7 +19,8 @@ import java.util.Date;
 
 import MWC.GenericData.WorldLocation;
 
-public class Contacts implements FilterableBean, TreeStructurable {
+@TableName(name = "Contacts")
+public class Contact implements FilterableBean, TreeStructurable {
 
 	private int contact_id;
 	private String name;
@@ -43,7 +44,7 @@ public class Contacts implements FilterableBean, TreeStructurable {
 	private Date created_date;
 	private WorldLocation location;
 
-	public Contacts() {
+	public Contact() {
 
 	}
 

@@ -25,13 +25,14 @@ import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 
 import junit.framework.TestCase;
 
-public class Privacies implements AbstractBean {
+@TableName(name = "DatafileTypes")
+public class DatafileType implements AbstractBean {
 
-	private int privacy_id;
+	private int datafile_type_id;
 	private String name;
 	private Date created_date;
 
-	public Privacies() {
+	public DatafileType() {
 
 	}
 
@@ -39,42 +40,42 @@ public class Privacies implements AbstractBean {
 		return created_date;
 	}
 
+	public int getDatafile_type_id() {
+		return datafile_type_id;
+	}
+
 	@Override
 	public String getIdField() {
-		return "privacy_id";
+		return "datafile_type_id";
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public int getPrivacy_id() {
-		return privacy_id;
-	}
-
 	public void setCreated_date(final Date created_date) {
 		this.created_date = created_date;
+	}
+
+	public void setDatafile_type_id(final int datafile_type_id) {
+		this.datafile_type_id = datafile_type_id;
 	}
 
 	public void setName(final String name) {
 		this.name = name;
 	}
 
-	public void setPrivacy_id(final int privacy_id) {
-		this.privacy_id = privacy_id;
-	}
-
-	public static class PrivaciesTest extends TestCase{
+	public static class DatafileTypesTest extends TestCase{
 		
-		public void testPrivaciesQuery(){
+		public void testDatafileTypesQuery(){
 			try {
-				final List list = DatabaseConnection.getInstance().listAll(Privacies.class, null);
+				final List list = DatabaseConnection.getInstance().listAll(DatafileType.class, null);
 				
-				assertTrue("Privacies - database entries", list.size() == 1);
+				assertTrue("Datafiletypes - database entries", list.size() == 1);
 				
-				final Privacies type = (Privacies) list.get(0);
+				final DatafileType type = (DatafileType) list.get(0);
 				assertTrue("Datafiletypes - database entries", "1".equals(type.getIdField()));
-				assertTrue("Datafiletypes - database entries", "PRIVACY-1".equals(type.getName()));
+				assertTrue("Datafiletypes - database entries", "DATAFILE-TYPE-1".equals(type.getName()));
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException e) {
 				// TODO Auto-generated catch block

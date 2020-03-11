@@ -15,7 +15,8 @@ import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
 import junit.framework.TestCase;
 
-public class States implements FilterableBean, TreeStructurable {
+@TableName(name = "States")
+public class State implements FilterableBean, TreeStructurable {
 
 	private int state_id;
 	private Timestamp time;
@@ -28,7 +29,7 @@ public class States implements FilterableBean, TreeStructurable {
 	private Timestamp created_date;
 	private WorldLocation location;
 
-	public States() {
+	public State() {
 
 	}
 
@@ -160,11 +161,11 @@ public class States implements FilterableBean, TreeStructurable {
 
 		public void testStatesQuery() {
 			try {
-				final List list = DatabaseConnection.getInstance().listAll(States.class, null);
+				final List list = DatabaseConnection.getInstance().listAll(State.class, null);
 
 				assertTrue("States - database entries", list.size() == 543);
 
-				final List list2 = DatabaseConnection.getInstance().listAll(States.class, "source_id = 16");
+				final List list2 = DatabaseConnection.getInstance().listAll(State.class, "source_id = 16");
 
 				assertTrue("States - database entries", list2.size() == 44);
 

@@ -17,7 +17,8 @@ package org.mwc.debrief.pepys.model.bean;
 
 import java.util.Date;
 
-public class Comments implements FilterableBean, TreeStructurable{
+@TableName(name = "Comments")
+public class Comment implements FilterableBean, TreeStructurable{
 
 	private int comment_id;
 	private int platform_id;
@@ -28,7 +29,7 @@ public class Comments implements FilterableBean, TreeStructurable{
 	private int privacy_id;
 	private Date created_date;
 
-	public Comments() {
+	public Comment() {
 		
 	}
 	

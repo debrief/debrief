@@ -19,7 +19,7 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.TreeMap;
 
-import org.mwc.debrief.pepys.model.bean.States;
+import org.mwc.debrief.pepys.model.bean.State;
 import org.mwc.debrief.pepys.model.bean.TreeStructurable;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 
@@ -127,7 +127,7 @@ public class TreeNode {
 		public void testTreeNode() {
 			List list = null;
 			try {
-				list = DatabaseConnection.getInstance().listAll(States.class, null);
+				list = DatabaseConnection.getInstance().listAll(State.class, null);
 			} catch (Exception e) {
 				fail("Failed retrieving data from Database");
 			}
@@ -135,12 +135,12 @@ public class TreeNode {
 			assertTrue("States - database entries", list.size() == 543);
 			
 			final String rootName = "ROOT";
-			final TreeNode root = new TreeNode(NodeType.ROOT, rootName, (States)list.get(0), null);
-			final TreeNode child1 = new TreeNode(NodeType.ROOT, rootName, (States)list.get(1), root);
-			final TreeNode child2 = new TreeNode(NodeType.ROOT, rootName, (States)list.get(2), root);
-			final TreeNode child3 = new TreeNode(NodeType.ROOT, rootName, (States)list.get(3), root);
-			final TreeNode child1child1 = new TreeNode(NodeType.ROOT, rootName, (States)list.get(4), child1);
-			final TreeNode child1child2 = new TreeNode(NodeType.ROOT, rootName, (States)list.get(5), child1);
+			final TreeNode root = new TreeNode(NodeType.ROOT, rootName, (State)list.get(0), null);
+			final TreeNode child1 = new TreeNode(NodeType.ROOT, rootName, (State)list.get(1), root);
+			final TreeNode child2 = new TreeNode(NodeType.ROOT, rootName, (State)list.get(2), root);
+			final TreeNode child3 = new TreeNode(NodeType.ROOT, rootName, (State)list.get(3), root);
+			final TreeNode child1child1 = new TreeNode(NodeType.ROOT, rootName, (State)list.get(4), child1);
+			final TreeNode child1child2 = new TreeNode(NodeType.ROOT, rootName, (State)list.get(5), child1);
 			
 			root.addChild(child1);
 			root.addChild(child2);

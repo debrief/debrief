@@ -25,7 +25,8 @@ import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 
 import junit.framework.TestCase;
 
-public class Datafiles implements AbstractBean {
+@TableName(name = "Datafiles")
+public class Datafile implements AbstractBean {
 
 	private int datafile_id;
 	private boolean simulated;
@@ -35,7 +36,7 @@ public class Datafiles implements AbstractBean {
 	private String url;
 	private Date created_date;
 
-	public Datafiles() {
+	public Datafile() {
 
 	}
 
@@ -104,7 +105,7 @@ public class Datafiles implements AbstractBean {
 		
 		public void testDatafilesQuery(){
 			try {
-				final List list = DatabaseConnection.getInstance().listAll(Datafiles.class, null);
+				final List list = DatabaseConnection.getInstance().listAll(Datafile.class, null);
 				
 				assertTrue("Datafiles - database entries", list.size() == 25);
 				
@@ -112,7 +113,7 @@ public class Datafiles implements AbstractBean {
 					{"6", "sen_frig_sensor"}, {"18", "NMEA_bad"}, {"25", "test_land_track"}};
 					
 				for ( Object l : list ) {
-					final Datafiles dataFile = (Datafiles) l;
+					final Datafile dataFile = (Datafile) l;
 					boolean correct = true;
 					for (int i = 0 ; i < datafilesSomeReferences.length; i++) {
 						correct &= !datafilesSomeReferences[0].equals(dataFile.getIdField()) || datafilesSomeReferences[1].equals(dataFile.getReference());
