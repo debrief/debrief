@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.gridharness.data.base60.Sexagesimal;
 import org.mwc.cmap.gridharness.data.base60.SexagesimalFormat;
+import org.mwc.cmap.gridharness.data.base60.SexagesimalSupport;
 
 import MWC.GenericData.WorldLocation;
 
@@ -107,6 +108,9 @@ public class CWorldLocation extends Composite {
 	}
 
 	private SexagesimalFormat getFormat() {
+		if (CorePlugin.getDefault() == null) {
+			return SexagesimalSupport._DD_MM_SS_SSS;
+		}
 		// intentionally reevaluated each time
 		return CorePlugin.getDefault().getLocationFormat();
 	}

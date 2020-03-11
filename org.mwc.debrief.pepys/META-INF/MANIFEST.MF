@@ -21,4 +21,5 @@ Import-Package: org.eclipse.core.databinding,
  org.eclipse.core.databinding.beans,
  org.eclipse.jface.resource,
  org.eclipse.jface.viewers,
- org.eclipse.nebula.widgets.cdatetime
+ org.eclipse.nebula.widgets.cdatetime,
+ org.mwc.cmap.core.custom_widget

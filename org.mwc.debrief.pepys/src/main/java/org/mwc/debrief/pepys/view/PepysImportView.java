@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
+import org.mwc.cmap.core.custom_widget.CWorldLocation;
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.nebula.PShelf;
 import org.mwc.debrief.pepys.nebula.PShelfItem;
@@ -51,7 +52,7 @@ public class PepysImportView extends Dialog {
 
 	private Button applyButton;
 	private Button importButton;
-	private Button useCurrentViewport;
+	private Button useCurrentViewportButton;
 
 	private CDateTime startDate;
 	private CDateTime startTime;
@@ -62,6 +63,10 @@ public class PepysImportView extends Dialog {
 	private TreeViewer tree;
 	
 	private ArrayList<Button> dataTypesCheckBox = new ArrayList<Button>();
+
+	private CWorldLocation topLeftLocation;
+	
+	private CWorldLocation bottomRightLocation;
 	
 	private Composite dataTypesComposite;
 
@@ -90,13 +95,16 @@ public class PepysImportView extends Dialog {
 		final GridData shelfGridData = new GridData();
 		shelfGridData.verticalAlignment = GridData.FILL;
 		shelfGridData.grabExcessVerticalSpace = true;
+		shelfGridData.widthHint = 270;
 		this.shelf.setLayoutData(shelfGridData);
 
 		// TIME PERIOD
 		final PShelfItem timePeriodItem = new PShelfItem(shelf, SWT.NONE);
 		timePeriodItem.setText("Time Period");
-		GridLayout timePeriodLayout = new GridLayout();
+		final GridLayout timePeriodLayout = new GridLayout();
 		timePeriodLayout.numColumns = 2;
+		timePeriodLayout.marginWidth = 10;
+		timePeriodLayout.marginHeight = 10;
 		timePeriodItem.getBody().setLayout(timePeriodLayout);
 
 		this.startLabel = new Label(timePeriodItem.getBody(), SWT.PUSH);
@@ -117,22 +125,39 @@ public class PepysImportView extends Dialog {
 		this.endTime = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.SPINNER | CDT.TIME_MEDIUM);
 		
 		// AREA
+		final GridLayout areaItemLayout = new GridLayout();
+		areaItemLayout.numColumns = 1;
+		areaItemLayout.marginWidth = 10;
+		areaItemLayout.marginHeight = 10;
 		final PShelfItem areaItem = new PShelfItem(shelf, SWT.NONE);
 		areaItem.setText("Area");
-		areaItem.getBody().setLayout(new FillLayout(SWT.VERTICAL));
+		areaItem.getBody().setLayout(areaItemLayout);
 
 		this.topLeftLabel = new Label(areaItem.getBody(), SWT.NONE);
 		this.topLeftLabel.setText("Top Left:");
 
+		this.topLeftLocation = new CWorldLocation(areaItem.getBody(), SWT.NONE);
+
 		this.bottomRightLabel = new Label(areaItem.getBody(), SWT.NONE);
 		this.bottomRightLabel.setText("Bottom Right");
-
-		this.useCurrentViewport = new Button(areaItem.getBody(), SWT.PUSH);
-		this.useCurrentViewport.setText("Use current viewport");
 		
+		this.bottomRightLocation = new CWorldLocation(areaItem.getBody(), SWT.NONE);
+
+		final GridData useCurrentButtonGridData = new GridData();
+		this.useCurrentViewportButton = new Button(areaItem.getBody(), SWT.PUSH);
+		this.useCurrentViewportButton.setText("Use current viewport");
+		this.useCurrentViewportButton.setLayoutData(useCurrentButtonGridData);
+		useCurrentButtonGridData.widthHint = 150;
+		useCurrentButtonGridData.heightHint = 40;
+		useCurrentButtonGridData.horizontalAlignment = SWT.END;
+
+		final GridLayout dataTypeItemLayout = new GridLayout();
+		dataTypeItemLayout.numColumns = 1;
+		dataTypeItemLayout.marginWidth = 10;
+		dataTypeItemLayout.marginHeight = 10;
 		final PShelfItem dataTypeItem = new PShelfItem(shelf, SWT.NONE);
 		dataTypeItem.setText("Data Type");
-		dataTypeItem.getBody().setLayout(new FillLayout(SWT.VERTICAL));
+		dataTypeItem.getBody().setLayout(dataTypeItemLayout);
 		dataTypesComposite = dataTypeItem.getBody();
 		
 		final GridData treeGrid = new GridData(GridData.FILL_BOTH);
@@ -150,6 +175,8 @@ public class PepysImportView extends Dialog {
 		this.applyButton = new Button(parent, SWT.PUSH);
 		this.applyButton.setText("Apply");
 		this.applyButton.setLayoutData(applyGridDataButton);
+		applyGridDataButton.widthHint = 150;
+		applyGridDataButton.heightHint = 40;
 
 		final GridData importGridDataButton = new GridData();
 		importGridDataButton.horizontalAlignment = GridData.END;
@@ -157,7 +184,8 @@ public class PepysImportView extends Dialog {
 		this.importButton = new Button(parent, SWT.PUSH);
 		this.importButton.setText("Import");
 		this.importButton.setLayoutData(importGridDataButton);
-		
+		importGridDataButton.widthHint = 150;
+		importGridDataButton.heightHint = 40;
 
 	}
 
@@ -187,6 +215,26 @@ public class PepysImportView extends Dialog {
 
 	public Composite getDataTypesComposite() {
 		return dataTypesComposite;
+	}
+
+	public CWorldLocation getTopLeftLocation() {
+		return topLeftLocation;
+	}
+
+	public CWorldLocation getBottomRightLocation() {
+		return bottomRightLocation;
+	}
+
+	public Button getApplyButton() {
+		return applyButton;
+	}
+
+	public Button getImportButton() {
+		return importButton;
+	}
+
+	public Button getUseCurrentViewportButton() {
+		return useCurrentViewportButton;
 	}
 	
 	

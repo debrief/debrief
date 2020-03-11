@@ -32,11 +32,11 @@ import MWC.GenericData.WorldArea;
 
 public class ModelConfiguration implements AbstractConfiguration {
 
-	private String AREA_PROPERTY = "AREA";
+	public static String AREA_PROPERTY = "AREA";
 
-	private String PERIOD_PROPERTY = "PERIOD";
+	public static String PERIOD_PROPERTY = "PERIOD";
 
-	private String TREE_MODEL = "TREE_MODEL";
+	public static String TREE_MODEL = "TREE_MODEL";
 
 	private PropertyChangeSupport _pSupport = null;
 

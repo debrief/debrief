@@ -25,6 +25,9 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.model.ModelConfiguration;
@@ -42,7 +45,7 @@ public class PepysImportPresenter {
 
 	public PepysImportPresenter(final Shell parent) {
 		AbstractConfiguration model = new ModelConfiguration();
-		
+
 		model.addDatafileTypeFilter(new TypeDomain(States.class, "States", true));
 		model.addDatafileTypeFilter(new TypeDomain(Contacts.class, "Contacts", true));
 		model.addDatafileTypeFilter(new TypeDomain(Comments.class, "Comments", true));
@@ -54,34 +57,53 @@ public class PepysImportPresenter {
 
 	private void addDataTypeFilters(final AbstractConfiguration _model, final PepysImportView _view) {
 		final Composite composite = _view.getDataTypesComposite();
-		composite.setLayout(new FillLayout(SWT.VERTICAL));
-		
+
 		for (TypeDomain type : _model.getDatafileTypeFilters()) {
 			final Button typeButton = new Button(composite, SWT.CHECK);
 			typeButton.setText(type.getName());
+			typeButton.setSelection(type.isChecked());
 			type.removeAllPropertyChangeListeners();
 			type.addPropertyChangeListener(new PropertyChangeListener() {
-				
+
 				@Override
 				public void propertyChange(PropertyChangeEvent evt) {
 					typeButton.setSelection(type.isChecked());
 				}
 			});
-			
+
 			typeButton.addSelectionListener(new SelectionListener() {
-				
+
 				@Override
 				public void widgetSelected(SelectionEvent event) {
 					type.setChecked(typeButton.getSelection());
 				}
-				
+
 				@Override
 				public void widgetDefaultSelected(SelectionEvent event) {
 					type.setChecked(typeButton.getSelection());
 				}
 			});
 		}
-		
+
+		_view.getApplyButton().addListener(SWT.Selection, new Listener() {
+
+			@Override
+			public void handleEvent(Event event) {
+				switch (event.type) {
+				case SWT.Selection:
+					try {
+						_model.apply();
+					} catch (Exception e) {
+						e.printStackTrace();
+						final MessageBox messageBox = new MessageBox(_view.getParent(), SWT.ERROR | SWT.OK);
+						messageBox.setMessage(e.toString());
+						messageBox.setText("Error retrieving information from Database");
+						messageBox.open();
+					}
+					break;
+				}
+			}
+		});
 	}
 
 	protected void addDatabindings(final AbstractConfiguration model, final PepysImportView view) {
@@ -107,7 +129,19 @@ public class PepysImportPresenter {
 
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
-				view.getStartDate().setSelection(model.getTimePeriod().getStartDTG().getDate());
+				if (ModelConfiguration.PERIOD_PROPERTY.equals(evt.getPropertyName())) {
+					view.getStartDate().setSelection(model.getTimePeriod().getStartDTG().getDate());
+				}
+			}
+		});
+		
+		model.addPropertyChangeListener(new PropertyChangeListener() {
+			
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if (ModelConfiguration.TREE_MODEL.equals(evt.getPropertyName())) {
+					view.getTree().setInput(model.getTreeModel());
+				}
 			}
 		});
 
