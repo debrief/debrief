@@ -17,7 +17,7 @@ package org.mwc.debrief.pepys.model.bean;
 
 import java.util.Date;
 
-public class Comments implements AbstractBean, FilterableBean, TreeStructurable{
+public class Comments implements FilterableBean, TreeStructurable{
 
 	private int comment_id;
 	private int platform_id;

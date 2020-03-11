@@ -118,6 +118,10 @@ public class TreeNode {
 		}
 	}
 	
+	public String getName() {
+		return name;
+	}
+
 	public static class TreeNodeTest extends TestCase{
 		
 		public void testTreeNode() {

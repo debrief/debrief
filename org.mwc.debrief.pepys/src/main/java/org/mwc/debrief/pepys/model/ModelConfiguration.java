@@ -48,13 +48,6 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	private TreeNode treeModel = new TreeNode(TreeNode.NodeType.ROOT, "", null);
 
-	public ModelConfiguration(final WorldArea _area, final TimePeriod _period)
-			throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException {
-		currentArea = _area;
-		currentPeriod = _period;
-	}
-
 	@Override
 	public void addPropertyChangeListener(PropertyChangeListener l) {
 		if (_pSupport == null) {

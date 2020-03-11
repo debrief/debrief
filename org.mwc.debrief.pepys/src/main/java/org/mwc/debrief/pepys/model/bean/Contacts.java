@@ -19,7 +19,7 @@ import java.util.Date;
 
 import MWC.GenericData.WorldLocation;
 
-public class Contacts implements AbstractBean, FilterableBean, TreeStructurable {
+public class Contacts implements FilterableBean, TreeStructurable {
 
 	private int contact_id;
 	private String name;

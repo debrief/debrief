@@ -110,7 +110,7 @@ public class TreeBuilder {
 		for (TypeDomain domain : configuration.getDatafileTypeFilters()) {
 			final Class<FilterableBean> currentBeanType = domain.getDatatype();
 
-			if (TreeStructurable.class.isAssignableFrom(currentBeanType)) {
+			if (TreeStructurable.class.isAssignableFrom(currentBeanType) && domain.isChecked()) {
 
 				// TODO FILTERING HERE
 				String filter = null;

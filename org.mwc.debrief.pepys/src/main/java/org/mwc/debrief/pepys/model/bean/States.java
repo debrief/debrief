@@ -15,7 +15,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
 import junit.framework.TestCase;
 
-public class States implements AbstractBean, FilterableBean, TreeStructurable {
+public class States implements FilterableBean, TreeStructurable {
 
 	private int state_id;
 	private Timestamp time;

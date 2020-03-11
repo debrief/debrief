@@ -15,7 +15,7 @@
 
 package org.mwc.debrief.pepys.model.bean;
 
-public interface FilterableBean {	
+public interface FilterableBean extends AbstractBean {	
 	// It is needed that all the beans can be filterable by period.
 	public String getTimeField();
 	

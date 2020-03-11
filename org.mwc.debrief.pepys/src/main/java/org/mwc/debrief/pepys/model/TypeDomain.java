@@ -15,6 +15,10 @@
 
 package org.mwc.debrief.pepys.model;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
 import org.mwc.debrief.pepys.model.bean.FilterableBean;
 
 /**
@@ -24,6 +28,35 @@ import org.mwc.debrief.pepys.model.bean.FilterableBean;
 public class TypeDomain {
 	private Class<FilterableBean> datatype;
 	private String name;
+	private boolean checked;
+
+	public static String CHECKED_PROPERTY = "CHECKED_CHANGED";
+	
+	private PropertyChangeSupport _pSupport = null;
+	
+	public TypeDomain(final Class datatype, final String name, final boolean checked) {
+		super();
+		this.datatype = datatype;
+		this.name = name;
+		this.checked = checked;
+	}
+
+	public void addPropertyChangeListener(PropertyChangeListener l) {
+		if (_pSupport == null) {
+			_pSupport = new PropertyChangeSupport(this);
+		}
+		_pSupport.addPropertyChangeListener(l);
+	}
+
+	public void removePropertyChangeListener(PropertyChangeListener l) {
+		if (_pSupport != null) {
+			_pSupport.removePropertyChangeListener(l);
+		}
+	}
+	
+	public void removeAllPropertyChangeListeners() {
+		_pSupport = null;
+	}
 	
 	public Class<FilterableBean> getDatatype() {
 		return datatype;
@@ -37,6 +70,20 @@ public class TypeDomain {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	
+
+	public boolean isChecked() {
+		return checked;
+	}
+
+	public void setChecked(boolean checked) {
+		final boolean oldValue = this.checked;
+		this.checked = checked;
+		
+		if (_pSupport != null) {
+			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, CHECKED_PROPERTY, oldValue,
+					checked);
+			_pSupport.firePropertyChange(pce);
+		}
+	}
+		
 }
