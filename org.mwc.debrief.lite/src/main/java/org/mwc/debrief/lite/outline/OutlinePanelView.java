@@ -556,7 +556,7 @@ public class OutlinePanelView extends SwingLayerManager implements ClipboardOwne
 			panel.setBackground(UIManager.getColor("Tree.textBackground"));
 			setOpaque(false);
 			panel.setOpaque(false);
-			panel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+			panel.setLayout(new FlowLayout(FlowLayout.LEFT, 2, 0));
 
 			visibility.setOpaque(false);
 			visibilityIconEnabled = new ImageIcon(getClass().getClassLoader().getResource("icons/16/visible-eye.png"));
