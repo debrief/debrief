@@ -1188,7 +1188,7 @@ public class SwingLayerManager extends SwingCustomEditor
 		for (int i = 0; i < _myData.size(); i++) {
 			final Layer thisL = _myData.elementAt(i);
 			final DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) getTreeNodeConstantTime(treeCache, thisL);
-			if (rootNode == null) {
+			if (rootNode == null || rootNode.getParent()==null) {
 				root.add(makeLayer(thisL, thisL, treeCache));
 				((DefaultTreeModel) _myTree.getModel()).reload();
 			} else {
@@ -1260,9 +1260,13 @@ public class SwingLayerManager extends SwingCustomEditor
 						thisL.add(node);
 						needToReloadThisLayer = true;
 					} else {
+						
+						if(nodeL.getParent()==null) {
+							//node is not on the tree, so add to thisL, because we are iterating through thisL
+							thisL.add(nodeL);
+						}
 						// reload just that node that was modified
 						final TreeNode parent = nodeL.getParent();
-
 						// Lets reload it only once
 						if (!reloadedNodes.contains(parent)) {
 							reloadedNodes.add(parent);
@@ -1277,7 +1281,7 @@ public class SwingLayerManager extends SwingCustomEditor
 
 		for (final TreeNode node : reloadedNodes) {
 			((DefaultTreeModel) _myTree.getModel()).reload(node);
-			((DefaultTreeModel) _myTree.getModel()).reload(node);
+			//((DefaultTreeModel) _myTree.getModel()).reload(node);
 		}
 
 		if (needToReloadThisLayer) {
