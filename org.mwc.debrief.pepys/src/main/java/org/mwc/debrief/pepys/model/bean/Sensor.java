@@ -2,12 +2,22 @@ package org.mwc.debrief.pepys.model.bean;
 
 import java.util.Date;
 
+import org.mwc.debrief.pepys.model.db.annotation.FieldName;
+import org.mwc.debrief.pepys.model.db.annotation.Id;
+import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
+import org.mwc.debrief.pepys.model.db.annotation.TableName;
+
 @TableName(name = "Sensors")
 public class Sensor implements AbstractBean, Comparable<Sensor> {
+	
+	@Id
 	private int sensor_id;
 	private String name;
 	private int sensor_type_id;
-	private int host;
+	
+	@ManyToOne
+	@FieldName(name = "host")
+	private Platform platform;
 	private Date created_date;
 	
 	public Sensor() {
@@ -38,12 +48,12 @@ public class Sensor implements AbstractBean, Comparable<Sensor> {
 		this.sensor_type_id = sensor_type_id;
 	}
 
-	public int getHost() {
-		return host;
+	public Platform getPlatform() {
+		return platform;
 	}
 
-	public void setHost(int host) {
-		this.host = host;
+	public void setPlatform(Platform platform) {
+		this.platform = platform;
 	}
 
 	public Date getCreated_date() {
@@ -52,11 +62,6 @@ public class Sensor implements AbstractBean, Comparable<Sensor> {
 
 	public void setCreated_date(Date created_date) {
 		this.created_date = created_date;
-	}
-
-	@Override
-	public String getIdField() {
-		return "sensor_id";
 	}
 
 	@Override

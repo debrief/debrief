@@ -24,10 +24,9 @@ import java.util.TreeMap;
 
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.model.TypeDomain;
+import org.mwc.debrief.pepys.model.bean.AbstractBean;
 import org.mwc.debrief.pepys.model.bean.Datafile;
-import org.mwc.debrief.pepys.model.bean.FilterableBean;
 import org.mwc.debrief.pepys.model.bean.Sensor;
-import org.mwc.debrief.pepys.model.bean.TreeStructurable;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.tree.TreeNode.NodeType;
 
@@ -44,10 +43,10 @@ public class TreeBuilder {
 	 * @param datafiles
 	 * @return
 	 */
-	public static TreeNode buildStructure(final TreeStructurable[] items, final TreeNode root,
+	public static TreeNode buildStructure(final AbstractBean[] items, final TreeNode root,
 			final TreeMap<Integer, Sensor> sensors, final TreeMap<Integer, Datafile> datafiles) {
 
-		for (TreeStructurable item : items) {
+		/*for (AbstractBean item : items) {
 			final String datafileName = datafiles.get(item.getSource()).getReference();
 
 			TreeNode datafileNode = root.getChild(datafileName);
@@ -77,12 +76,12 @@ public class TreeBuilder {
 
 				sensorNode.addChild(leaf);
 			}
-		}
+		}*/
 
 		return root;
 	}
 
-	public static TreeNode buildStructure(final TreeStructurable[] items, final TreeNode root)
+	public static TreeNode buildStructure(final AbstractBean[] items, final TreeNode root)
 			throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException {
 		final TreeMap<Integer, Sensor> sensors = new TreeMap<Integer, Sensor>();
@@ -106,21 +105,21 @@ public class TreeBuilder {
 			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException {
 		configuration.getTreeModel().removeAllChildren();
 
-		final ArrayList<TreeStructurable> allItems = new ArrayList<TreeStructurable>();
+		final ArrayList<AbstractBean> allItems = new ArrayList<AbstractBean>();
 		for (TypeDomain domain : configuration.getDatafileTypeFilters()) {
-			final Class<FilterableBean> currentBeanType = domain.getDatatype();
+			final Class<AbstractBean> currentBeanType = domain.getDatatype();
 
-			if (TreeStructurable.class.isAssignableFrom(currentBeanType) && domain.isChecked()) {
+			if (AbstractBean.class.isAssignableFrom(currentBeanType) && domain.isChecked()) {
 
 				// TODO FILTERING HERE
 				String filter = null;
-				List<? extends TreeStructurable> currentItems = (List<? extends TreeStructurable>) DatabaseConnection
-						.getInstance().listAll(currentBeanType, filter);
+				List<? extends AbstractBean> currentItems = (List<? extends AbstractBean>) DatabaseConnection
+						.getInstance().listAll(currentBeanType, null);
 				allItems.addAll(currentItems);
 			}
 		}
 
-		buildStructure(allItems.toArray(new TreeStructurable[] {}), configuration.getTreeModel());
+		buildStructure(allItems.toArray(new AbstractBean[] {}), configuration.getTreeModel());
 	}
 	
 	public class TreeBuilderTest extends TestCase{

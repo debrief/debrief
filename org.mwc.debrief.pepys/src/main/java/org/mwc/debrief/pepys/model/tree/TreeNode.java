@@ -19,8 +19,8 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.TreeMap;
 
+import org.mwc.debrief.pepys.model.bean.AbstractBean;
 import org.mwc.debrief.pepys.model.bean.State;
-import org.mwc.debrief.pepys.model.bean.TreeStructurable;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 
 import junit.framework.TestCase;
@@ -33,19 +33,19 @@ public class TreeNode {
 
 	private NodeType type;
 	private String name;
-	private TreeStructurable value;
+	private AbstractBean value;
 	private TreeNode parent = null;
 
 	private TreeMap<String, TreeNode> children = new TreeMap<String, TreeNode>();
 
-	public TreeNode(final NodeType _type, final String _name, final TreeStructurable _value, final TreeNode _parent) {
+	public TreeNode(final NodeType _type, final String _name, final AbstractBean _value, final TreeNode _parent) {
 		this.type = _type;
 		this.name = _name;
 		this.value = _value;
 		this.parent = _parent;
 	}
 	
-	public TreeNode(final NodeType _type, final String _name, final TreeStructurable _value) {
+	public TreeNode(final NodeType _type, final String _name, final AbstractBean _value) {
 		this.type = _type;
 		this.name = _name;
 		this.value = _value;
@@ -107,7 +107,7 @@ public class TreeNode {
 		return true;
 	}
 
-	public TreeStructurable getValue() {
+	public AbstractBean getValue() {
 		return value;
 	}
 	

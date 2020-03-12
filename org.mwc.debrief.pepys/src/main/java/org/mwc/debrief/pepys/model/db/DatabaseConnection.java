@@ -27,11 +27,17 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import javax.print.attribute.standard.PresentationDirection;
+
 import org.mwc.debrief.pepys.model.bean.AbstractBean;
-import org.mwc.debrief.pepys.model.bean.TableName;
+import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils;
+import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
+import org.mwc.debrief.pepys.model.db.annotation.OneToOne;
+import org.mwc.debrief.pepys.model.db.annotation.TableName;
 import org.sqlite.SQLiteConfig;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
@@ -45,6 +51,7 @@ public class DatabaseConnection {
 	private static DatabaseConnection INSTANCE = null;
 	public static final boolean SHOW_SQL = true;
 	public static final String LOCATION_COORDINATES = "XYZ";
+	public static final String WHERE_CONNECTOR = " AND ";
 
 	public static DatabaseConnection getInstance() throws PropertyVetoException, SQLException {
 		if (INSTANCE == null) {
@@ -68,35 +75,82 @@ public class DatabaseConnection {
 		return Character.toUpperCase(str.charAt(0)) + str.substring(1);
 	}
 
-	private String createQuery(final Class type) {
+	private String prepareSelect(final Class<?> type, final List<String> join, final String prefix) {
+		final String baseTableName = AnnotationsUtils.getTableName(type);
+		final String tableName = prefix + baseTableName;
 		final StringBuilder query = new StringBuilder();
-		query.append("SELECT ");
 		final Field[] fields = type.getDeclaredFields();
 		for (final Field field : fields) {
+			final String columnName = AnnotationsUtils.getColumnName(field);
+
 			if (field.getType().equals(WorldLocation.class)) {
 				for (final char c : LOCATION_COORDINATES.toCharArray()) {
 					query.append(c);
 					query.append(" (");
-					query.append(field.getName());
+					query.append(tableName);
+					query.append(".");
+					query.append(columnName);
 					query.append(") as ");
-					query.append(field.getName());
+					query.append(tableName);
+					query.append(columnName);
 					query.append("_");
 					query.append(c);
-					query.append(",");
+					query.append(", ");
 				}
+			} else if (field.isAnnotationPresent(ManyToOne.class) || field.isAnnotationPresent(OneToOne.class)) {
+				final StringBuilder newJoin = new StringBuilder();
+				if (field.isAnnotationPresent(ManyToOne.class)) {
+					newJoin.append(" INNER ");
+				} else if (field.isAnnotationPresent(OneToOne.class)) {
+					newJoin.append(" LEFT ");
+				}
+				newJoin.append(" JOIN ");
+				newJoin.append(AnnotationsUtils.getTableName(field.getType()));
+				newJoin.append(" AS ");
+				newJoin.append(prefix);
+				newJoin.append(baseTableName);
+				newJoin.append(AnnotationsUtils.getColumnName(field));
+				newJoin.append(AnnotationsUtils.getTableName(field.getType()));
+				newJoin.append(" ON ");
+				newJoin.append(prefix);
+				newJoin.append(baseTableName);
+				newJoin.append(AnnotationsUtils.getColumnName(field));
+				newJoin.append(AnnotationsUtils.getTableName(field.getType()));
+				newJoin.append(".");
+				newJoin.append(AnnotationsUtils.getIdField(field.getType()).getName());
+				newJoin.append(" = ");
+				newJoin.append(prefix);
+				newJoin.append(baseTableName);
+				newJoin.append(".");
+				newJoin.append(AnnotationsUtils.getColumnName(field));
+				join.add(newJoin.toString());
+				query.append(prepareSelect(field.getType(), join,
+						prefix + baseTableName + AnnotationsUtils.getColumnName(field)));
+				query.append(", ");
 			} else {
+				query.append(prefix);
+				query.append(baseTableName);
+				query.append(".");
 				query.append(field.getName());
-				query.append(",");
+				query.append(", ");
 			}
 		}
-		query.setLength(query.length() - 1);
+		query.setLength(query.length() - 2);
+		return query.toString();
+	}
+
+	private String createQuery(final Class type) {
+		final ArrayList<String> joins = new ArrayList<String>();
+		final String tableName = AnnotationsUtils.getTableName(type);
+
+		final StringBuilder query = new StringBuilder();
+		query.append("SELECT ");
+		query.append(prepareSelect(type, joins, ""));
 		query.append(" FROM ");
-		
-		final TableName tableName = (TableName) type.getAnnotation(TableName.class);
-		if (tableName.name().isEmpty()) {
-			query.append(type.getSimpleName());
-		}else {
-			query.append(tableName.name());
+		query.append(tableName);
+
+		for (String join : joins) {
+			query.append(join);
 		}
 		return query.toString();
 	}
@@ -106,7 +160,7 @@ public class DatabaseConnection {
 		if (AbstractBean.class.isAssignableFrom(type)) {
 			final Constructor constructor = type.getConstructor();
 			final AbstractBean ans = (AbstractBean) constructor.newInstance();
-			return " WHERE " + ans.getIdField() + " = ?";
+			return " WHERE " + AnnotationsUtils.getIdField(type).getName() + " = ?";
 		}
 		return "";
 	}
@@ -136,7 +190,7 @@ public class DatabaseConnection {
 		}
 	}
 
-	public <T> List<T> listAll(final Class<T> type, final String condition)
+	public <T> List<T> listAll(final Class<T> type, final Collection<Condition> conditions)
 			throws PropertyVetoException, SQLException, NoSuchMethodException, SecurityException,
 			InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		final Connection connection = pool.getConnection();
@@ -144,11 +198,18 @@ public class DatabaseConnection {
 		ResultSet resultSet = null;
 		Statement statement = null;
 		try {
-			final Constructor<T> constructor = type.getConstructor();
-			String query = createQuery(type);
-			if (condition != null) {
-				query = query + " WHERE " + condition;
+			final StringBuilder queryBuilder = new StringBuilder(createQuery(type));
+
+			if (conditions != null && !conditions.isEmpty()) {
+				queryBuilder.append(" WHERE ");
+				for (Condition condition : conditions) {
+					queryBuilder.append(condition.getConditionQuery());
+					queryBuilder.append(WHERE_CONNECTOR);
+				}
+				queryBuilder.setLength(queryBuilder.length() - WHERE_CONNECTOR.length());
 			}
+
+			final String query = queryBuilder.toString();
 			if (SHOW_SQL) {
 				System.out.println("Query: " + query);
 			}
@@ -167,7 +228,7 @@ public class DatabaseConnection {
 			resultSet = statement.executeQuery(query);
 
 			while (resultSet.next()) {
-				final T instance = storeFieldValue(type, resultSet, constructor);
+				final T instance = storeFieldValue(type, resultSet);
 				ans.add(instance);
 			}
 
@@ -185,15 +246,14 @@ public class DatabaseConnection {
 		}
 	}
 
-	public <T> T storeFieldValue(final Class<T> type, ResultSet resultSet, final Constructor<T> constructor)
-			throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException,
-			SQLException {
+	public <T> T storeFieldValue(final Class<T> type, ResultSet resultSet) throws InstantiationException,
+			IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
+		final Constructor<T> constructor = type.getConstructor();
 		final T instance = constructor.newInstance();
 		final Field[] fields = type.getDeclaredFields();
 		for (final Field field : fields) {
 			final Class fieldType = field.getType();
-			final Method method = type.getDeclaredMethod("set" + capitalizeFirstLetter(field.getName()),
-					fieldType);
+			final Method method = type.getDeclaredMethod("set" + capitalizeFirstLetter(field.getName()), fieldType);
 			if (int.class == fieldType) {
 				method.invoke(instance, resultSet.getInt(field.getName()));
 			} else if (String.class == fieldType) {

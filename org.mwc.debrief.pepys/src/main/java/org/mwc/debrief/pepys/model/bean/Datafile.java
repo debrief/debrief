@@ -22,16 +22,25 @@ import java.util.Date;
 import java.util.List;
 
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
+import org.mwc.debrief.pepys.model.db.annotation.FieldName;
+import org.mwc.debrief.pepys.model.db.annotation.Id;
+import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
+import org.mwc.debrief.pepys.model.db.annotation.OneToOne;
+import org.mwc.debrief.pepys.model.db.annotation.TableName;
 
 import junit.framework.TestCase;
 
 @TableName(name = "Datafiles")
 public class Datafile implements AbstractBean {
 
+	@Id
 	private int datafile_id;
 	private boolean simulated;
 	private int privacy_id;
-	private int datafile_type_id;
+	
+	@ManyToOne
+	@FieldName(name = "datafile_type_id")
+	private DatafileType datafile;
 	private String reference;
 	private String url;
 	private Date created_date;
@@ -48,13 +57,12 @@ public class Datafile implements AbstractBean {
 		return datafile_id;
 	}
 
-	public int getDatafile_type_id() {
-		return datafile_type_id;
+	public DatafileType getDatafile() {
+		return datafile;
 	}
 
-	@Override
-	public String getIdField() {
-		return "datafile_id";
+	public void setDatafile(DatafileType datafile) {
+		this.datafile = datafile;
 	}
 
 	public int getPrivacy_id() {
@@ -79,10 +87,6 @@ public class Datafile implements AbstractBean {
 
 	public void setDatafile_id(final int datafile_id) {
 		this.datafile_id = datafile_id;
-	}
-
-	public void setDatafile_type_id(final int datafile_type_id) {
-		this.datafile_type_id = datafile_type_id;
 	}
 
 	public void setPrivacy_id(final int privacy_id) {
@@ -116,7 +120,7 @@ public class Datafile implements AbstractBean {
 					final Datafile dataFile = (Datafile) l;
 					boolean correct = true;
 					for (int i = 0 ; i < datafilesSomeReferences.length; i++) {
-						correct &= !datafilesSomeReferences[0].equals(dataFile.getIdField()) || datafilesSomeReferences[1].equals(dataFile.getReference());
+						//correct &= !datafilesSomeReferences[0].equals(dataFile.getIdField()) || datafilesSomeReferences[1].equals(dataFile.getReference());
 					}
 					assertTrue("Datafiles - Reference Name",  correct);
 				}

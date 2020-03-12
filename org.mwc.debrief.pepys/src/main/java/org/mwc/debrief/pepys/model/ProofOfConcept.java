@@ -28,13 +28,14 @@ import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 public class ProofOfConcept {
 	public static void main(final String[] args) {
 		try {
+			final List list2 = DatabaseConnection.getInstance().listAll(DatafileType.class, null);
 			final List list = DatabaseConnection.getInstance().listAll(Datafile.class, null);
 
-			final List list2 = DatabaseConnection.getInstance().listAll(DatafileType.class, null);
-
 			final List list3 = DatabaseConnection.getInstance().listAll(State.class, null);
+			
 
-			final List list4 = DatabaseConnection.getInstance().listAll(State.class, "source_id = 16");
+
+			//final List list4 = DatabaseConnection.getInstance().listAll(State.class, "source_id = 16");
 
 			for (final Object l : list) {
 				final Datafile dataFile = (Datafile) l;
@@ -51,10 +52,10 @@ public class ProofOfConcept {
 				System.out.println("State ID: " + state.getState_id());
 			}
 
-			for (final Object l : list4) {
-				final State state = (State) l;
-				System.out.println("Filtered State ID: " + state.getState_id() + ", " + state.getLocation());
-			}
+			//for (final Object l : list4) {
+			//	final State state = (State) l;
+			//	System.out.println("Filtered State ID: " + state.getState_id() + ", " + state.getLocation());
+			//}
 		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 				| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException e) {
 			e.printStackTrace();

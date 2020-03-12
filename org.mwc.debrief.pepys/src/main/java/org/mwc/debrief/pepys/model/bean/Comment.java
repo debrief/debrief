@@ -17,16 +17,29 @@ package org.mwc.debrief.pepys.model.bean;
 
 import java.util.Date;
 
-@TableName(name = "Comments")
-public class Comment implements FilterableBean, TreeStructurable{
+import org.mwc.debrief.pepys.model.db.annotation.FieldName;
+import org.mwc.debrief.pepys.model.db.annotation.Id;
+import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
+import org.mwc.debrief.pepys.model.db.annotation.OneToOne;
+import org.mwc.debrief.pepys.model.db.annotation.TableName;
 
+@TableName(name = "Comments")
+public class Comment implements AbstractBean{
+
+	@Id
 	private int comment_id;
 	private int platform_id;
 	private Date time;
 	private int comment_type_id;
 	private String content;
-	private int source_id;
-	private int privacy_id;
+	
+	@ManyToOne
+	@FieldName(name = "source_id")
+	private Datafile datafile;
+	
+	@OneToOne
+	@FieldName(name = "privacy_id")
+	private Privacy privacy;
 	private Date created_date;
 
 	public Comment() {
@@ -73,22 +86,6 @@ public class Comment implements FilterableBean, TreeStructurable{
 		this.content = content;
 	}
 
-	public int getSource_id() {
-		return source_id;
-	}
-
-	public void setSource_id(int source_id) {
-		this.source_id = source_id;
-	}
-
-	public int getPrivacy_id() {
-		return privacy_id;
-	}
-
-	public void setPrivacy_id(int privacy_id) {
-		this.privacy_id = privacy_id;
-	}
-
 	public Date getCreated_date() {
 		return created_date;
 	}
@@ -96,40 +93,21 @@ public class Comment implements FilterableBean, TreeStructurable{
 	public void setCreated_date(Date created_date) {
 		this.created_date = created_date;
 	}
-	
-	@Override
-	public String getTimeField() {
-		return "time";
+
+	public Datafile getDatafile() {
+		return datafile;
 	}
 
-	@Override
-	public String getLocationField() {
-		return null;
+	public void setDatafile(Datafile datafile) {
+		this.datafile = datafile;
 	}
 
-	@Override
-	public String getIdField() {
-		return "comment_id";
+	public Privacy getPrivacy() {
+		return privacy;
 	}
 
-	@Override
-	public int getSource() {
-		return source_id;
-	}
-
-	@Override
-	public String getMeasureName() {
-		return "Comments";
-	}
-
-	@Override
-	public int getSensor() {
-		return -1;
-	}
-
-	@Override
-	public String getMyName() {
-		return content;
+	public void setPrivacy(Privacy privacy) {
+		this.privacy = privacy;
 	}
 
 }

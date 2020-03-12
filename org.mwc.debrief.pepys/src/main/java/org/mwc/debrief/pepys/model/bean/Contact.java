@@ -17,14 +17,24 @@ package org.mwc.debrief.pepys.model.bean;
 
 import java.util.Date;
 
+import org.mwc.debrief.pepys.model.db.annotation.FieldName;
+import org.mwc.debrief.pepys.model.db.annotation.Id;
+import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
+import org.mwc.debrief.pepys.model.db.annotation.OneToOne;
+import org.mwc.debrief.pepys.model.db.annotation.TableName;
+
 import MWC.GenericData.WorldLocation;
 
 @TableName(name = "Contacts")
-public class Contact implements FilterableBean, TreeStructurable {
+public class Contact implements AbstractBean {
 
+	@Id
 	private int contact_id;
 	private String name;
-	private int sensor_id;
+	
+	@ManyToOne
+	@FieldName(name = "sensor_id")
+	private Sensor sensor;
 	private Date time;
 	private double bearing;
 	private double rel_bearing;
@@ -38,9 +48,15 @@ public class Contact implements FilterableBean, TreeStructurable {
 	private String contact_type;
 	private double mla;
 	private double sla;
-	private int subject_id;
-	private int source_id;
-	private int privacy_id;
+	
+	@ManyToOne
+	@FieldName(name = "source_id")
+	private Datafile datafile;
+	
+	@OneToOne
+	@FieldName(name = "privacy_id")
+	private Privacy privacy;
+	
 	private Date created_date;
 	private WorldLocation location;
 
@@ -62,14 +78,6 @@ public class Contact implements FilterableBean, TreeStructurable {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public int getSensor_id() {
-		return sensor_id;
-	}
-
-	public void setSensor_id(int sensor_id) {
-		this.sensor_id = sensor_id;
 	}
 
 	public Date getTime() {
@@ -176,30 +184,6 @@ public class Contact implements FilterableBean, TreeStructurable {
 		this.sla = sla;
 	}
 
-	public int getSubject_id() {
-		return subject_id;
-	}
-
-	public void setSubject_id(int subject_id) {
-		this.subject_id = subject_id;
-	}
-
-	public int getSource_id() {
-		return source_id;
-	}
-
-	public void setSource_id(int source_id) {
-		this.source_id = source_id;
-	}
-
-	public int getPrivacy_id() {
-		return privacy_id;
-	}
-
-	public void setPrivacy_id(int privacy_id) {
-		this.privacy_id = privacy_id;
-	}
-
 	public Date getCreated_date() {
 		return created_date;
 	}
@@ -216,39 +200,29 @@ public class Contact implements FilterableBean, TreeStructurable {
 		this.location = location;
 	}
 
-	@Override
-	public String getIdField() {
-		return "contact_id";
+	public Sensor getSensor() {
+		return sensor;
 	}
 
-	@Override
-	public String getTimeField() {
-		return "time";
+	public void setSensor(Sensor sensor) {
+		this.sensor = sensor;
 	}
 
-	@Override
-	public String getLocationField() {
-		return "location";
+	public Datafile getDatafile() {
+		return datafile;
 	}
 
-	@Override
-	public int getSource() {
-		return source_id;
+	public void setDatafile(Datafile datafile) {
+		this.datafile = datafile;
 	}
 
-	@Override
-	public String getMeasureName() {
-		return "Contacts";
+	public Privacy getPrivacy() {
+		return privacy;
 	}
 
-	@Override
-	public int getSensor() {
-		return sensor_id;
+	public void setPrivacy(Privacy privacy) {
+		this.privacy = privacy;
 	}
-
-	@Override
-	public String getMyName() {
-		return name;
-	}
+	
 
 }

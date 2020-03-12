@@ -22,12 +22,15 @@ import java.util.Date;
 import java.util.List;
 
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
+import org.mwc.debrief.pepys.model.db.annotation.Id;
+import org.mwc.debrief.pepys.model.db.annotation.TableName;
 
 import junit.framework.TestCase;
 
 @TableName(name = "DatafileTypes")
 public class DatafileType implements AbstractBean {
 
+	@Id
 	private int datafile_type_id;
 	private String name;
 	private Date created_date;
@@ -42,11 +45,6 @@ public class DatafileType implements AbstractBean {
 
 	public int getDatafile_type_id() {
 		return datafile_type_id;
-	}
-
-	@Override
-	public String getIdField() {
-		return "datafile_type_id";
 	}
 
 	public String getName() {
@@ -74,7 +72,7 @@ public class DatafileType implements AbstractBean {
 				assertTrue("Datafiletypes - database entries", list.size() == 1);
 				
 				final DatafileType type = (DatafileType) list.get(0);
-				assertTrue("Datafiletypes - database entries", "1".equals(type.getIdField()));
+				//assertTrue("Datafiletypes - database entries", "1".equals(type.getIdField()));
 				assertTrue("Datafiletypes - database entries", "DATAFILE-TYPE-1".equals(type.getName()));
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException e) {

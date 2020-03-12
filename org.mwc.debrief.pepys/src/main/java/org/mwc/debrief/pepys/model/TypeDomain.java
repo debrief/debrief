@@ -19,14 +19,14 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-import org.mwc.debrief.pepys.model.bean.FilterableBean;
+import org.mwc.debrief.pepys.model.bean.AbstractBean;
 
 /**
  * Class used for the Data Type Filtering Model Item.
  * 
  */
 public class TypeDomain {
-	private Class<FilterableBean> datatype;
+	private Class<AbstractBean> datatype;
 	private String name;
 	private boolean checked;
 
@@ -58,10 +58,10 @@ public class TypeDomain {
 		_pSupport = null;
 	}
 	
-	public Class<FilterableBean> getDatatype() {
+	public Class<AbstractBean> getDatatype() {
 		return datatype;
 	}
-	public void setDatatype(Class<FilterableBean> datatype) {
+	public void setDatatype(Class<AbstractBean> datatype) {
 		this.datatype = datatype;
 	}
 	public String getName() {

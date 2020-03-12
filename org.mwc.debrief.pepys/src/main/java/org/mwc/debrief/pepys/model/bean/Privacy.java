@@ -22,12 +22,15 @@ import java.util.Date;
 import java.util.List;
 
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
+import org.mwc.debrief.pepys.model.db.annotation.Id;
+import org.mwc.debrief.pepys.model.db.annotation.TableName;
 
 import junit.framework.TestCase;
 
 @TableName(name = "Privacies")
 public class Privacy implements AbstractBean {
 
+	@Id
 	private int privacy_id;
 	private String name;
 	private Date created_date;
@@ -38,11 +41,6 @@ public class Privacy implements AbstractBean {
 
 	public Date getCreated_date() {
 		return created_date;
-	}
-
-	@Override
-	public String getIdField() {
-		return "privacy_id";
 	}
 
 	public String getName() {
@@ -74,7 +72,7 @@ public class Privacy implements AbstractBean {
 				assertTrue("Privacies - database entries", list.size() == 1);
 				
 				final Privacy type = (Privacy) list.get(0);
-				assertTrue("Datafiletypes - database entries", "1".equals(type.getIdField()));
+				//assertTrue("Datafiletypes - database entries", "1".equals(type.getIdField()));
 				assertTrue("Datafiletypes - database entries", "PRIVACY-1".equals(type.getName()));
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException e) {

@@ -7,6 +7,10 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
+import org.mwc.debrief.pepys.model.db.annotation.FieldName;
+import org.mwc.debrief.pepys.model.db.annotation.Id;
+import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
+import org.mwc.debrief.pepys.model.db.annotation.TableName;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -16,15 +20,22 @@ import MWC.TacticalData.Fix;
 import junit.framework.TestCase;
 
 @TableName(name = "States")
-public class State implements FilterableBean, TreeStructurable {
+public class State implements AbstractBean {
 
+	@Id
 	private int state_id;
 	private Timestamp time;
-	private int sensor_id;
+	
+	@ManyToOne
+	@FieldName(name = "sensor_id")
+	private Sensor sensor;
 	private double heading;
 	private double course;
 	private double speed;
-	private int source_id;
+	
+	@ManyToOne
+	@FieldName(name = "source_id")
+	private Datafile datafile;
 	private int privacy_id;
 	private Timestamp created_date;
 	private WorldLocation location;
@@ -53,11 +64,6 @@ public class State implements FilterableBean, TreeStructurable {
 		return heading;
 	}
 
-	@Override
-	public String getIdField() {
-		return "state_id";
-	}
-
 	public WorldLocation getLocation() {
 		return location;
 	}
@@ -66,12 +72,12 @@ public class State implements FilterableBean, TreeStructurable {
 		return privacy_id;
 	}
 
-	public int getSensor_id() {
-		return sensor_id;
+	public Datafile getDatafile() {
+		return datafile;
 	}
 
-	public int getSource_id() {
-		return source_id;
+	public void setDatafile(Datafile datafile) {
+		this.datafile = datafile;
 	}
 
 	public double getSpeed() {
@@ -106,12 +112,8 @@ public class State implements FilterableBean, TreeStructurable {
 		this.privacy_id = privacy_id;
 	}
 
-	public void setSensor_id(final int sensor_id) {
-		this.sensor_id = sensor_id;
-	}
-
-	public void setSource_id(final int source_id) {
-		this.source_id = source_id;
+	public void setSensor(Sensor sensor) {
+		this.sensor = sensor;
 	}
 
 	public void setSpeed(final double speed) {
@@ -126,37 +128,6 @@ public class State implements FilterableBean, TreeStructurable {
 		this.time = time;
 	}
 
-	@Override
-	public String getTimeField() {
-		return "time";
-	}
-
-	@Override
-	public String getLocationField() {
-		return "location";
-	}
-
-	@Override
-	public int getSource() {
-		return source_id;
-	}
-
-	@Override
-	public String getMeasureName() {
-		return "States";
-	}
-
-	@Override
-	public int getSensor() {
-		return sensor_id;
-	}
-
-	@Override
-	public String getMyName() {
-		// TODO 
-		return state_id + "";
-	}
-
 	public static class StatesTest extends TestCase {
 
 		public void testStatesQuery() {
@@ -165,9 +136,9 @@ public class State implements FilterableBean, TreeStructurable {
 
 				assertTrue("States - database entries", list.size() == 543);
 
-				final List list2 = DatabaseConnection.getInstance().listAll(State.class, "source_id = 16");
+				//final List list2 = DatabaseConnection.getInstance().listAll(State.class, "source_id = 16");
 
-				assertTrue("States - database entries", list2.size() == 44);
+				//assertTrue("States - database entries", list2.size() == 44);
 
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException e) {

@@ -17,6 +17,4 @@ package org.mwc.debrief.pepys.model.bean;
 
 public interface AbstractBean {
 	
-	// We will use it to get the ID Field in the database.
-	public String getIdField();
 }

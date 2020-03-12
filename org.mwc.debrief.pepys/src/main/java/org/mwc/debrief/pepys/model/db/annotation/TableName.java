@@ -1,4 +1,4 @@
-package org.mwc.debrief.pepys.model.bean;
+package org.mwc.debrief.pepys.model.db.annotation;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
