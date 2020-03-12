@@ -45,7 +45,7 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 import MWC.GenericData.WorldLocation;
 
 /**
- * Created by Saul on 10/23/2016.
+ * Created by Saul - saulhidalgoaular@gmail.com
  */
 public class DatabaseConnection {
 	private static DatabaseConnection INSTANCE = null;
@@ -131,6 +131,10 @@ public class DatabaseConnection {
 				query.append(prefix);
 				query.append(baseTableName);
 				query.append(".");
+				query.append(field.getName());
+				query.append(" AS ");
+				query.append(prefix);
+				query.append(baseTableName);
 				query.append(field.getName());
 				query.append(", ");
 			}
@@ -228,7 +232,7 @@ public class DatabaseConnection {
 			resultSet = statement.executeQuery(query);
 
 			while (resultSet.next()) {
-				final T instance = storeFieldValue(type, resultSet);
+				final T instance = storeFieldValue(type, resultSet, "");
 				ans.add(instance);
 			}
 
@@ -246,33 +250,39 @@ public class DatabaseConnection {
 		}
 	}
 
-	public <T> T storeFieldValue(final Class<T> type, ResultSet resultSet) throws InstantiationException,
-			IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
+	public <T> T storeFieldValue(final Class<T> type, final ResultSet resultSet, final String prefix)
+			throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException,
+			SQLException {
 		final Constructor<T> constructor = type.getConstructor();
 		final T instance = constructor.newInstance();
 		final Field[] fields = type.getDeclaredFields();
 		for (final Field field : fields) {
 			final Class fieldType = field.getType();
 			final Method method = type.getDeclaredMethod("set" + capitalizeFirstLetter(field.getName()), fieldType);
-			if (int.class == fieldType) {
-				method.invoke(instance, resultSet.getInt(field.getName()));
+
+			final String thisColumnName = prefix + AnnotationsUtils.getTableName(type) + AnnotationsUtils.getColumnName(field);
+			if (field.isAnnotationPresent(ManyToOne.class) || field.isAnnotationPresent(OneToOne.class)) {
+				method.invoke(instance, storeFieldValue(fieldType, resultSet,
+						prefix + AnnotationsUtils.getTableName(type) + AnnotationsUtils.getColumnName(field)));
+			} else if (int.class == fieldType) {
+				method.invoke(instance, resultSet.getInt(thisColumnName));
 			} else if (String.class == fieldType) {
-				method.invoke(instance, resultSet.getString(field.getName()));
+				method.invoke(instance, resultSet.getString(thisColumnName));
 			} else if (Date.class == fieldType) {
-				method.invoke(instance, resultSet.getDate(field.getName()));
+				method.invoke(instance, resultSet.getDate(thisColumnName));
 			} else if (boolean.class == fieldType) {
-				method.invoke(instance, resultSet.getBoolean(field.getName()));
+				method.invoke(instance, resultSet.getBoolean(thisColumnName));
 			} else if (Timestamp.class == fieldType) {
-				method.invoke(instance, resultSet.getTimestamp(field.getName()));
+				method.invoke(instance, resultSet.getTimestamp(thisColumnName));
 			} else if (double.class == fieldType) {
-				method.invoke(instance, resultSet.getDouble(field.getName()));
+				method.invoke(instance, resultSet.getDouble(thisColumnName));
 			} else if (WorldLocation.class == fieldType) {
 				// WARNING.
 				// THIS WILL CLASSIFY NULL LOCATION AT (0,0,0)
 				// SAUL
 				final double[] values = new double[3];
 				for (int i = 0; i < values.length && i < LOCATION_COORDINATES.length(); i++) {
-					values[i] = resultSet.getDouble(field.getName() + "_" + LOCATION_COORDINATES.charAt(i));
+					values[i] = resultSet.getDouble(thisColumnName + "_" + LOCATION_COORDINATES.charAt(i));
 				}
 				final WorldLocation newLocation = new WorldLocation(values[0], values[1], values[2]);
 				method.invoke(instance, newLocation);
