@@ -13,7 +13,10 @@ public class Sensor implements AbstractBean, Comparable<Sensor> {
 	@Id
 	private int sensor_id;
 	private String name;
-	private int sensor_type_id;
+	
+	@ManyToOne
+	@FieldName(name = "sensor_type_id")
+	private SensorType sensorType;
 	
 	@ManyToOne
 	@FieldName(name = "host")
@@ -40,12 +43,12 @@ public class Sensor implements AbstractBean, Comparable<Sensor> {
 		this.name = name;
 	}
 
-	public int getSensor_type_id() {
-		return sensor_type_id;
+	public SensorType getSensorType() {
+		return sensorType;
 	}
 
-	public void setSensor_type_id(int sensor_type_id) {
-		this.sensor_type_id = sensor_type_id;
+	public void setSensorType(SensorType sensorType) {
+		this.sensorType = sensorType;
 	}
 
 	public Platform getPlatform() {

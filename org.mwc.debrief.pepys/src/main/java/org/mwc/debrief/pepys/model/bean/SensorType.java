@@ -1,7 +1,9 @@
 package org.mwc.debrief.pepys.model.bean;
 
 import org.mwc.debrief.pepys.model.db.annotation.Id;
+import org.mwc.debrief.pepys.model.db.annotation.TableName;
 
+@TableName(name = "SensorTypes")
 public class SensorType implements AbstractBean {
 	
 	@Id

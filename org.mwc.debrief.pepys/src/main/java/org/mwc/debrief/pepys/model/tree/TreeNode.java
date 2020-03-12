@@ -28,7 +28,7 @@ import junit.framework.TestCase;
 public class TreeNode {
 
 	public static enum NodeType {
-		ROOT, DATAFILES, MEASURE, SENSOR, VALUE
+		ROOT, PLATFORM, MEASURE, SENSOR, DATAFILE
 	}
 
 	private NodeType type;

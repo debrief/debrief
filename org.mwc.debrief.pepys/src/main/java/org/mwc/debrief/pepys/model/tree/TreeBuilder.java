@@ -28,6 +28,7 @@ import org.mwc.debrief.pepys.model.bean.AbstractBean;
 import org.mwc.debrief.pepys.model.bean.Datafile;
 import org.mwc.debrief.pepys.model.bean.Sensor;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
+import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils;
 import org.mwc.debrief.pepys.model.tree.TreeNode.NodeType;
 
 import junit.framework.TestCase;
@@ -39,63 +40,45 @@ public class TreeBuilder {
 	 * 
 	 * @param items
 	 * @param root
-	 * @param sensors
-	 * @param datafiles
 	 * @return
 	 */
-	public static TreeNode buildStructure(final AbstractBean[] items, final TreeNode root,
-			final TreeMap<Integer, Sensor> sensors, final TreeMap<Integer, Datafile> datafiles) {
+	public static TreeNode buildStructure(final AbstractBean[] items, final TreeNode root) {
 
-		/*for (AbstractBean item : items) {
-			final String datafileName = datafiles.get(item.getSource()).getReference();
+		for (AbstractBean item : items) {
+			if (item instanceof TreeStructurable) {
+				final TreeStructurable currentItem = (TreeStructurable)item;
+				final String platformName = currentItem.getPlatform().getName();
 
-			TreeNode datafileNode = root.getChild(datafileName);
-			if (datafileNode == null) {
-				datafileNode = new TreeNode(TreeNode.NodeType.DATAFILES, datafileName, null, root);
-				root.addChild(datafileNode);
-			}
-
-			TreeNode measureNode = datafileNode.getChild(item.getMeasureName());
-			if (measureNode == null) {
-				measureNode = new TreeNode(TreeNode.NodeType.MEASURE, item.getMeasureName(), null, datafileNode);
-				datafileNode.addChild(measureNode);
-			}
-
-			TreeNode leaf = new TreeNode(NodeType.VALUE, item.getMyName(), item);
-
-			if (item.getSensor() == -1) {
-				// It has an exception in the structure, we simply add the leaf.
-				measureNode.addChild(leaf);
-			} else {
-				final String sensorName = sensors.get(item.getSensor()).getName();
-				TreeNode sensorNode = measureNode.getChild(sensorName);
-				if (sensorNode == null) {
-					sensorNode = new TreeNode(TreeNode.NodeType.SENSOR, sensorName, null);
-					measureNode.addChild(sensorNode);
+				TreeNode datafileNode = root.getChild(platformName);
+				if (datafileNode == null) {
+					datafileNode = new TreeNode(TreeNode.NodeType.PLATFORM, platformName, null, root);
+					root.addChild(datafileNode);
 				}
 
-				sensorNode.addChild(leaf);
+				final String measureName = AnnotationsUtils.getTableName(currentItem.getClass());
+				TreeNode measureNode = datafileNode.getChild(measureName);
+				if (measureNode == null) {
+					measureNode = new TreeNode(TreeNode.NodeType.MEASURE, measureName, null, datafileNode);
+					datafileNode.addChild(measureNode);
+				}
+
+				TreeNode leaf = new TreeNode(NodeType.DATAFILE, currentItem.getDatafile().getReference(), item);
+
+				if (currentItem.getSensorType() == null) {
+					// It has an exception in the structure, we simply add the leaf.
+					measureNode.addChild(leaf);
+				} else {
+					final String sensorName = currentItem.getSensorType().getName();
+					TreeNode sensorNode = measureNode.getChild(sensorName);
+					if (sensorNode == null) {
+						sensorNode = new TreeNode(TreeNode.NodeType.SENSOR, sensorName, null);
+						measureNode.addChild(sensorNode);
+					}
+
+					sensorNode.addChild(leaf);
+				}
 			}
-		}*/
-
-		return root;
-	}
-
-	public static TreeNode buildStructure(final AbstractBean[] items, final TreeNode root)
-			throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException {
-		final TreeMap<Integer, Sensor> sensors = new TreeMap<Integer, Sensor>();
-		final TreeMap<Integer, Datafile> datafiles = new TreeMap<Integer, Datafile>();
-
-		for (Datafile datafile : DatabaseConnection.getInstance().listAll(Datafile.class, null)) {
-			datafiles.put(datafile.getDatafile_id(), datafile);
 		}
-
-		for (Sensor sensor : DatabaseConnection.getInstance().listAll(Sensor.class, null)) {
-			sensors.put(sensor.getSensor_id(), sensor);
-		}
-
-		buildStructure(items, root, sensors, datafiles);
 
 		return root;
 	}

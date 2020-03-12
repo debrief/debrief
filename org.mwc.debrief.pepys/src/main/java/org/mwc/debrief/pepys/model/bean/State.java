@@ -11,6 +11,7 @@ import org.mwc.debrief.pepys.model.db.annotation.FieldName;
 import org.mwc.debrief.pepys.model.db.annotation.Id;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
+import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -20,7 +21,7 @@ import MWC.TacticalData.Fix;
 import junit.framework.TestCase;
 
 @TableName(name = "States")
-public class State implements AbstractBean {
+public class State implements AbstractBean, TreeStructurable {
 
 	@Id
 	private int state_id;
@@ -147,5 +148,21 @@ public class State implements AbstractBean {
 			}
 
 		}
+	}
+
+	@Override
+	public Platform getPlatform() {
+		if (sensor != null) {
+			return sensor.getPlatform();
+		}
+		return null;
+	}
+
+	@Override
+	public SensorType getSensorType() {
+		if (sensor != null) {
+			return sensor.getSensorType();
+		}
+		return null;
 	}
 }

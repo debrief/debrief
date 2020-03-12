@@ -22,11 +22,12 @@ import org.mwc.debrief.pepys.model.db.annotation.Id;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.OneToOne;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
+import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 
 import MWC.GenericData.WorldLocation;
 
 @TableName(name = "Contacts")
-public class Contact implements AbstractBean {
+public class Contact implements AbstractBean, TreeStructurable {
 
 	@Id
 	private int contact_id;
@@ -222,6 +223,22 @@ public class Contact implements AbstractBean {
 
 	public void setPrivacy(Privacy privacy) {
 		this.privacy = privacy;
+	}
+
+	@Override
+	public Platform getPlatform() {
+		if (sensor != null) {
+			return sensor.getPlatform();
+		}
+		return null;
+	}
+
+	@Override
+	public SensorType getSensorType() {
+		if (sensor != null) {
+			return sensor.getSensorType();
+		}
+		return null;
 	}
 	
 

@@ -22,13 +22,17 @@ import org.mwc.debrief.pepys.model.db.annotation.Id;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.OneToOne;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
+import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 
 @TableName(name = "Comments")
-public class Comment implements AbstractBean{
+public class Comment implements AbstractBean, TreeStructurable{
 
 	@Id
 	private int comment_id;
-	private int platform_id;
+	
+	@ManyToOne
+	@FieldName(name = "platform_id")
+	private Platform platform;
 	private Date time;
 	private int comment_type_id;
 	private String content;
@@ -54,12 +58,12 @@ public class Comment implements AbstractBean{
 		this.comment_id = comment_id;
 	}
 
-	public int getPlatform_id() {
-		return platform_id;
+	public Platform getPlatform() {
+		return platform;
 	}
 
-	public void setPlatform_id(int platform_id) {
-		this.platform_id = platform_id;
+	public void setPlatform(Platform platform) {
+		this.platform = platform;
 	}
 
 	public Date getTime() {
@@ -108,6 +112,12 @@ public class Comment implements AbstractBean{
 
 	public void setPrivacy(Privacy privacy) {
 		this.privacy = privacy;
+	}
+
+	@Override
+	public SensorType getSensorType() {
+		// A comment doesn't have sensor :( 
+		return null;
 	}
 
 }
