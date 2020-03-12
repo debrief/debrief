@@ -23,17 +23,17 @@ import org.mwc.debrief.pepys.model.bean.AbstractBean;
 
 /**
  * Class used for the Data Type Filtering Model Item.
- * 
+ *
  */
 public class TypeDomain {
+	public static String CHECKED_PROPERTY = "CHECKED_CHANGED";
 	private Class<AbstractBean> datatype;
 	private String name;
+
 	private boolean checked;
 
-	public static String CHECKED_PROPERTY = "CHECKED_CHANGED";
-	
 	private PropertyChangeSupport _pSupport = null;
-	
+
 	public TypeDomain(final Class datatype, final String name, final boolean checked) {
 		super();
 		this.datatype = datatype;
@@ -41,49 +41,52 @@ public class TypeDomain {
 		this.checked = checked;
 	}
 
-	public void addPropertyChangeListener(PropertyChangeListener l) {
+	public void addPropertyChangeListener(final PropertyChangeListener l) {
 		if (_pSupport == null) {
 			_pSupport = new PropertyChangeSupport(this);
 		}
 		_pSupport.addPropertyChangeListener(l);
 	}
 
-	public void removePropertyChangeListener(PropertyChangeListener l) {
-		if (_pSupport != null) {
-			_pSupport.removePropertyChangeListener(l);
-		}
-	}
-	
-	public void removeAllPropertyChangeListeners() {
-		_pSupport = null;
-	}
-	
 	public Class<AbstractBean> getDatatype() {
 		return datatype;
 	}
-	public void setDatatype(Class<AbstractBean> datatype) {
-		this.datatype = datatype;
-	}
+
 	public String getName() {
 		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public boolean isChecked() {
 		return checked;
 	}
 
-	public void setChecked(boolean checked) {
+	public void removeAllPropertyChangeListeners() {
+		_pSupport = null;
+	}
+
+	public void removePropertyChangeListener(final PropertyChangeListener l) {
+		if (_pSupport != null) {
+			_pSupport.removePropertyChangeListener(l);
+		}
+	}
+
+	public void setChecked(final boolean checked) {
 		final boolean oldValue = this.checked;
 		this.checked = checked;
-		
+
 		if (_pSupport != null) {
 			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, CHECKED_PROPERTY, oldValue,
 					checked);
 			_pSupport.firePropertyChange(pce);
 		}
 	}
-		
+
+	public void setDatatype(final Class<AbstractBean> datatype) {
+		this.datatype = datatype;
+	}
+
+	public void setName(final String name) {
+		this.name = name;
+	}
+
 }

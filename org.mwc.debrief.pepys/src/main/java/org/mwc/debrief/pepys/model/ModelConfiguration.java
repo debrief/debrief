@@ -40,76 +40,25 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	private PropertyChangeSupport _pSupport = null;
 
-	private ArrayList<TypeDomain> currentDatatype = new ArrayList<TypeDomain>();
+	private final ArrayList<TypeDomain> currentDatatype = new ArrayList<TypeDomain>();
 
 	private WorldArea currentArea = null;
 
 	private TimePeriod currentPeriod = null;
 
-	private TreeNode treeModel = new TreeNode(TreeNode.NodeType.ROOT, "", null);
+	private final TreeNode treeModel = new TreeNode(TreeNode.NodeType.ROOT, "", null);
 
 	@Override
-	public void addPropertyChangeListener(PropertyChangeListener l) {
-		if (_pSupport == null) {
-			_pSupport = new PropertyChangeSupport(this);
-		}
-		_pSupport.addPropertyChangeListener(l);
-	}
-
-	@Override
-	public void removePropertyChangeListener(PropertyChangeListener l) {
-		if (_pSupport != null) {
-			_pSupport.removePropertyChangeListener(l);
-		}
-	}
-
-	@Override
-	public Collection<TypeDomain> getDatafileTypeFilters() {
-		return currentDatatype;
-	}
-
-	@Override
-	public void addDatafileTypeFilter(TypeDomain newType) {
+	public void addDatafileTypeFilter(final TypeDomain newType) {
 		currentDatatype.add(newType);
 	}
 
 	@Override
-	public void removeDatafileTypeFilter(TypeDomain typeToRemove) {
-		currentDatatype.remove(typeToRemove);
-	}
-
-	@Override
-	public void setArea(WorldArea newArea) {
-		final WorldArea oldArea = currentArea;
-		currentArea = newArea;
-
-		if (_pSupport != null) {
-			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, AREA_PROPERTY, oldArea,
-					currentArea);
-			_pSupport.firePropertyChange(pce);
+	public void addPropertyChangeListener(final PropertyChangeListener l) {
+		if (_pSupport == null) {
+			_pSupport = new PropertyChangeSupport(this);
 		}
-	}
-
-	@Override
-	public WorldArea getCurrentArea() {
-		return currentArea;
-	}
-
-	@Override
-	public void setTimePeriod(TimePeriod newPeriod) {
-		final TimePeriod oldPeriod = currentPeriod;
-		currentPeriod = newPeriod;
-
-		if (_pSupport != null) {
-			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, PERIOD_PROPERTY, oldPeriod,
-					currentPeriod);
-			_pSupport.firePropertyChange(pce);
-		}
-	}
-
-	@Override
-	public TimePeriod getTimePeriod() {
-		return currentPeriod;
+		_pSupport.addPropertyChangeListener(l);
 	}
 
 	@Override
@@ -125,21 +74,72 @@ public class ModelConfiguration implements AbstractConfiguration {
 	}
 
 	@Override
+	public void doImport() {
+		doImportProcessMockup(treeModel);
+	}
+
+	private void doImportProcessMockup(final TreeNode treeModel) {
+		if (treeModel.getValue() != null && treeModel.isChecked()) {
+			System.out.println("Importing " + treeModel.getName() + " -> " + treeModel.getValue());
+		}
+		for (final TreeNode child : treeModel.getChildren()) {
+			doImportProcessMockup(child);
+		}
+	}
+
+	@Override
+	public WorldArea getCurrentArea() {
+		return currentArea;
+	}
+
+	@Override
+	public Collection<TypeDomain> getDatafileTypeFilters() {
+		return currentDatatype;
+	}
+
+	@Override
+	public TimePeriod getTimePeriod() {
+		return currentPeriod;
+	}
+
+	@Override
 	public TreeNode getTreeModel() {
 		return treeModel;
 	}
 
 	@Override
-	public void doImport() {
-		doImportProcessMockup(treeModel);
+	public void removeDatafileTypeFilter(final TypeDomain typeToRemove) {
+		currentDatatype.remove(typeToRemove);
 	}
 
-	private void doImportProcessMockup(TreeNode treeModel) {
-		if (treeModel.getValue() != null && treeModel.isChecked()) {
-			System.out.println("Importing " + treeModel.getName() + " -> " + treeModel.getValue());
+	@Override
+	public void removePropertyChangeListener(final PropertyChangeListener l) {
+		if (_pSupport != null) {
+			_pSupport.removePropertyChangeListener(l);
 		}
-		for (TreeNode child : treeModel.getChildren()) {
-			doImportProcessMockup(child);
+	}
+
+	@Override
+	public void setArea(final WorldArea newArea) {
+		final WorldArea oldArea = currentArea;
+		currentArea = newArea;
+
+		if (_pSupport != null) {
+			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, AREA_PROPERTY, oldArea,
+					currentArea);
+			_pSupport.firePropertyChange(pce);
+		}
+	}
+
+	@Override
+	public void setTimePeriod(final TimePeriod newPeriod) {
+		final TimePeriod oldPeriod = currentPeriod;
+		currentPeriod = newPeriod;
+
+		if (_pSupport != null) {
+			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, PERIOD_PROPERTY, oldPeriod,
+					currentPeriod);
+			_pSupport.firePropertyChange(pce);
 		}
 	}
 

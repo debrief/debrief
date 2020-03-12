@@ -5,30 +5,29 @@ import org.mwc.debrief.pepys.model.db.annotation.TableName;
 
 @TableName(name = "SensorTypes")
 public class SensorType implements AbstractBean {
-	
+
 	@Id
 	private int sensor_type_id;
 	private String name;
-	
+
 	public SensorType() {
-		
-	}
 
-	public int getSensor_type_id() {
-		return sensor_type_id;
-	}
-
-	public void setSensor_type_id(int sensor_type_id) {
-		this.sensor_type_id = sensor_type_id;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public void setName(String name) {
+	public int getSensor_type_id() {
+		return sensor_type_id;
+	}
+
+	public void setName(final String name) {
 		this.name = name;
 	}
-	
-	
+
+	public void setSensor_type_id(final int sensor_type_id) {
+		this.sensor_type_id = sensor_type_id;
+	}
+
 }

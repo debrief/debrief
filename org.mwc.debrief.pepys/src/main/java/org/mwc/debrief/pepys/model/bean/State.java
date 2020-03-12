@@ -23,22 +23,45 @@ import junit.framework.TestCase;
 @TableName(name = "States")
 public class State implements AbstractBean, TreeStructurable {
 
+	public static class StatesTest extends TestCase {
+
+		public void testStatesQuery() {
+			try {
+				final List list = DatabaseConnection.getInstance().listAll(State.class, null);
+
+				assertTrue("States - database entries", list.size() == 543);
+
+				// final List list2 = DatabaseConnection.getInstance().listAll(State.class,
+				// "source_id = 16");
+
+				// assertTrue("States - database entries", list2.size() == 44);
+
+			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+	}
+
 	@Id
 	private int state_id;
+
 	private Timestamp time;
-	
 	@ManyToOne
 	@FieldName(name = "sensor_id")
 	private Sensor sensor;
 	private double heading;
 	private double course;
+
 	private double speed;
-	
 	@ManyToOne
 	@FieldName(name = "source_id")
 	private Datafile datafile;
 	private int privacy_id;
 	private Timestamp created_date;
+
 	private WorldLocation location;
 
 	public State() {
@@ -61,6 +84,11 @@ public class State implements AbstractBean, TreeStructurable {
 		return created_date;
 	}
 
+	@Override
+	public Datafile getDatafile() {
+		return datafile;
+	}
+
 	public double getHeading() {
 		return heading;
 	}
@@ -69,16 +97,24 @@ public class State implements AbstractBean, TreeStructurable {
 		return location;
 	}
 
+	@Override
+	public Platform getPlatform() {
+		if (sensor != null) {
+			return sensor.getPlatform();
+		}
+		return null;
+	}
+
 	public int getPrivacy_id() {
 		return privacy_id;
 	}
 
-	public Datafile getDatafile() {
-		return datafile;
-	}
-
-	public void setDatafile(Datafile datafile) {
-		this.datafile = datafile;
+	@Override
+	public SensorType getSensorType() {
+		if (sensor != null) {
+			return sensor.getSensorType();
+		}
+		return null;
 	}
 
 	public double getSpeed() {
@@ -101,6 +137,10 @@ public class State implements AbstractBean, TreeStructurable {
 		this.created_date = created_date;
 	}
 
+	public void setDatafile(final Datafile datafile) {
+		this.datafile = datafile;
+	}
+
 	public void setHeading(final double heading) {
 		this.heading = heading;
 	}
@@ -113,7 +153,7 @@ public class State implements AbstractBean, TreeStructurable {
 		this.privacy_id = privacy_id;
 	}
 
-	public void setSensor(Sensor sensor) {
+	public void setSensor(final Sensor sensor) {
 		this.sensor = sensor;
 	}
 
@@ -127,42 +167,5 @@ public class State implements AbstractBean, TreeStructurable {
 
 	public void setTime(final Timestamp time) {
 		this.time = time;
-	}
-
-	public static class StatesTest extends TestCase {
-
-		public void testStatesQuery() {
-			try {
-				final List list = DatabaseConnection.getInstance().listAll(State.class, null);
-
-				assertTrue("States - database entries", list.size() == 543);
-
-				//final List list2 = DatabaseConnection.getInstance().listAll(State.class, "source_id = 16");
-
-				//assertTrue("States - database entries", list2.size() == 44);
-
-			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		}
-	}
-
-	@Override
-	public Platform getPlatform() {
-		if (sensor != null) {
-			return sensor.getPlatform();
-		}
-		return null;
-	}
-
-	@Override
-	public SensorType getSensorType() {
-		if (sensor != null) {
-			return sensor.getSensorType();
-		}
-		return null;
 	}
 }

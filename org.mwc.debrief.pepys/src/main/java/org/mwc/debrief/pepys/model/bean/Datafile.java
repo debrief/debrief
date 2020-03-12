@@ -25,7 +25,6 @@ import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.FieldName;
 import org.mwc.debrief.pepys.model.db.annotation.Id;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
-import org.mwc.debrief.pepys.model.db.annotation.OneToOne;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
 
 import junit.framework.TestCase;
@@ -33,16 +32,46 @@ import junit.framework.TestCase;
 @TableName(name = "Datafiles")
 public class Datafile implements AbstractBean {
 
+	public static class DatafilesTest extends TestCase {
+
+		public void testDatafilesQuery() {
+			try {
+				final List list = DatabaseConnection.getInstance().listAll(Datafile.class, null);
+
+				assertTrue("Datafiles - database entries", list.size() == 25);
+
+				final String[][] datafilesSomeReferences = new String[][] { { "1", "sen_tracks" },
+						{ "6", "sen_frig_sensor" }, { "18", "NMEA_bad" }, { "25", "test_land_track" } };
+
+				for (final Object l : list) {
+					final Datafile dataFile = (Datafile) l;
+					final boolean correct = true;
+					for (int i = 0; i < datafilesSomeReferences.length; i++) {
+						// correct &= !datafilesSomeReferences[0].equals(dataFile.getIdField()) ||
+						// datafilesSomeReferences[1].equals(dataFile.getReference());
+					}
+					assertTrue("Datafiles - Reference Name", correct);
+				}
+			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+	}
+
 	@Id
 	private int datafile_id;
 	private boolean simulated;
+
 	private int privacy_id;
-	
 	@ManyToOne
 	@FieldName(name = "datafile_type_id")
 	private DatafileType datafile;
 	private String reference;
 	private String url;
+
 	private Date created_date;
 
 	public Datafile() {
@@ -53,16 +82,12 @@ public class Datafile implements AbstractBean {
 		return created_date;
 	}
 
-	public int getDatafile_id() {
-		return datafile_id;
-	}
-
 	public DatafileType getDatafile() {
 		return datafile;
 	}
 
-	public void setDatafile(DatafileType datafile) {
-		this.datafile = datafile;
+	public int getDatafile_id() {
+		return datafile_id;
 	}
 
 	public int getPrivacy_id() {
@@ -85,6 +110,10 @@ public class Datafile implements AbstractBean {
 		this.created_date = created_date;
 	}
 
+	public void setDatafile(final DatafileType datafile) {
+		this.datafile = datafile;
+	}
+
 	public void setDatafile_id(final int datafile_id) {
 		this.datafile_id = datafile_id;
 	}
@@ -103,33 +132,5 @@ public class Datafile implements AbstractBean {
 
 	public void setUrl(final String url) {
 		this.url = url;
-	}
-
-	public static class DatafilesTest extends TestCase{
-		
-		public void testDatafilesQuery(){
-			try {
-				final List list = DatabaseConnection.getInstance().listAll(Datafile.class, null);
-				
-				assertTrue("Datafiles - database entries", list.size() == 25);
-				
-				final String [][] datafilesSomeReferences = new String[][] {{"1", "sen_tracks"},
-					{"6", "sen_frig_sensor"}, {"18", "NMEA_bad"}, {"25", "test_land_track"}};
-					
-				for ( Object l : list ) {
-					final Datafile dataFile = (Datafile) l;
-					boolean correct = true;
-					for (int i = 0 ; i < datafilesSomeReferences.length; i++) {
-						//correct &= !datafilesSomeReferences[0].equals(dataFile.getIdField()) || datafilesSomeReferences[1].equals(dataFile.getReference());
-					}
-					assertTrue("Datafiles - Reference Name",  correct);
-				}
-			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		}
 	}
 }

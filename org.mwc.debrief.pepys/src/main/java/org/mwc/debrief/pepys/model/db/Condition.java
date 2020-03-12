@@ -1,9 +1,9 @@
 package org.mwc.debrief.pepys.model.db;
 
 public class Condition {
-	private String conditionQuery;
+	private final String conditionQuery;
 
-	public Condition(String conditionQuery) {
+	public Condition(final String conditionQuery) {
 		super();
 		this.conditionQuery = conditionQuery;
 	}
@@ -11,6 +11,5 @@ public class Condition {
 	public String getConditionQuery() {
 		return conditionQuery;
 	}
-	
-	
+
 }

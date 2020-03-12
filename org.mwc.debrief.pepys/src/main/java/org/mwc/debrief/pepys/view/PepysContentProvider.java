@@ -18,35 +18,35 @@ package org.mwc.debrief.pepys.view;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.mwc.debrief.pepys.model.tree.TreeNode;
 
-public class PepysContentProvider implements ITreeContentProvider{
+public class PepysContentProvider implements ITreeContentProvider {
 
 	final Object[] EMPTY_ARRAY = new Object[] {};
-	
+
 	@Override
-	public Object[] getChildren(Object element) {
+	public Object[] getChildren(final Object element) {
 		if (element instanceof TreeNode) {
-			return ((TreeNode)element).getChildren();
+			return ((TreeNode) element).getChildren();
 		}
 		return EMPTY_ARRAY;
 	}
 
 	@Override
-	public Object[] getElements(Object element) {
+	public Object[] getElements(final Object element) {
 		return getChildren(element);
 	}
 
 	@Override
-	public Object getParent(Object element) {
+	public Object getParent(final Object element) {
 		if (element instanceof TreeNode) {
-			return ((TreeNode)element).getParent();
+			return ((TreeNode) element).getParent();
 		}
 		return null;
 	}
 
 	@Override
-	public boolean hasChildren(Object element) {
+	public boolean hasChildren(final Object element) {
 		if (element instanceof TreeNode) {
-			return ((TreeNode)element).hasChildren();
+			return ((TreeNode) element).hasChildren();
 		}
 		return false;
 	}

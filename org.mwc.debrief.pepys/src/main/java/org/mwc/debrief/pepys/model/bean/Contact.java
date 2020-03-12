@@ -32,7 +32,7 @@ public class Contact implements AbstractBean, TreeStructurable {
 	@Id
 	private int contact_id;
 	private String name;
-	
+
 	@ManyToOne
 	@FieldName(name = "sensor_id")
 	private Sensor sensor;
@@ -49,15 +49,15 @@ public class Contact implements AbstractBean, TreeStructurable {
 	private String contact_type;
 	private double mla;
 	private double sla;
-	
+
 	@ManyToOne
 	@FieldName(name = "source_id")
 	private Datafile datafile;
-	
+
 	@OneToOne
 	@FieldName(name = "privacy_id")
 	private Privacy privacy;
-	
+
 	private Date created_date;
 	private WorldLocation location;
 
@@ -65,164 +65,65 @@ public class Contact implements AbstractBean, TreeStructurable {
 
 	}
 
-	public int getContact_id() {
-		return contact_id;
-	}
-
-	public void setContact_id(int contact_id) {
-		this.contact_id = contact_id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Date getTime() {
-		return time;
-	}
-
-	public void setTime(Date time) {
-		this.time = time;
-	}
-
 	public double getBearing() {
 		return bearing;
-	}
-
-	public void setBearing(double bearing) {
-		this.bearing = bearing;
-	}
-
-	public double getRel_bearing() {
-		return rel_bearing;
-	}
-
-	public void setRel_bearing(double rel_bearing) {
-		this.rel_bearing = rel_bearing;
-	}
-
-	public double getFreq() {
-		return freq;
-	}
-
-	public void setFreq(double freq) {
-		this.freq = freq;
-	}
-
-	public double getElevation() {
-		return elevation;
-	}
-
-	public void setElevation(double elevation) {
-		this.elevation = elevation;
-	}
-
-	public double getMajor() {
-		return major;
-	}
-
-	public void setMajor(double major) {
-		this.major = major;
-	}
-
-	public double getMinor() {
-		return minor;
-	}
-
-	public void setMinor(double minor) {
-		this.minor = minor;
-	}
-
-	public double getOrientation() {
-		return orientation;
-	}
-
-	public void setOrientation(double orientation) {
-		this.orientation = orientation;
 	}
 
 	public String getClassification() {
 		return classification;
 	}
 
-	public void setClassification(String classification) {
-		this.classification = classification;
-	}
-
 	public String getConfidence() {
 		return confidence;
 	}
 
-	public void setConfidence(String confidence) {
-		this.confidence = confidence;
+	public int getContact_id() {
+		return contact_id;
 	}
 
 	public String getContact_type() {
 		return contact_type;
 	}
 
-	public void setContact_type(String contact_type) {
-		this.contact_type = contact_type;
-	}
-
-	public double getMla() {
-		return mla;
-	}
-
-	public void setMla(double mla) {
-		this.mla = mla;
-	}
-
-	public double getSla() {
-		return sla;
-	}
-
-	public void setSla(double sla) {
-		this.sla = sla;
-	}
-
 	public Date getCreated_date() {
 		return created_date;
 	}
 
-	public void setCreated_date(Date created_date) {
-		this.created_date = created_date;
+	@Override
+	public Datafile getDatafile() {
+		return datafile;
+	}
+
+	public double getElevation() {
+		return elevation;
+	}
+
+	public double getFreq() {
+		return freq;
 	}
 
 	public WorldLocation getLocation() {
 		return location;
 	}
 
-	public void setLocation(WorldLocation location) {
-		this.location = location;
+	public double getMajor() {
+		return major;
 	}
 
-	public Sensor getSensor() {
-		return sensor;
+	public double getMinor() {
+		return minor;
 	}
 
-	public void setSensor(Sensor sensor) {
-		this.sensor = sensor;
+	public double getMla() {
+		return mla;
 	}
 
-	public Datafile getDatafile() {
-		return datafile;
+	public String getName() {
+		return name;
 	}
 
-	public void setDatafile(Datafile datafile) {
-		this.datafile = datafile;
-	}
-
-	public Privacy getPrivacy() {
-		return privacy;
-	}
-
-	public void setPrivacy(Privacy privacy) {
-		this.privacy = privacy;
+	public double getOrientation() {
+		return orientation;
 	}
 
 	@Override
@@ -233,6 +134,18 @@ public class Contact implements AbstractBean, TreeStructurable {
 		return null;
 	}
 
+	public Privacy getPrivacy() {
+		return privacy;
+	}
+
+	public double getRel_bearing() {
+		return rel_bearing;
+	}
+
+	public Sensor getSensor() {
+		return sensor;
+	}
+
 	@Override
 	public SensorType getSensorType() {
 		if (sensor != null) {
@@ -240,6 +153,93 @@ public class Contact implements AbstractBean, TreeStructurable {
 		}
 		return null;
 	}
-	
+
+	public double getSla() {
+		return sla;
+	}
+
+	public Date getTime() {
+		return time;
+	}
+
+	public void setBearing(final double bearing) {
+		this.bearing = bearing;
+	}
+
+	public void setClassification(final String classification) {
+		this.classification = classification;
+	}
+
+	public void setConfidence(final String confidence) {
+		this.confidence = confidence;
+	}
+
+	public void setContact_id(final int contact_id) {
+		this.contact_id = contact_id;
+	}
+
+	public void setContact_type(final String contact_type) {
+		this.contact_type = contact_type;
+	}
+
+	public void setCreated_date(final Date created_date) {
+		this.created_date = created_date;
+	}
+
+	public void setDatafile(final Datafile datafile) {
+		this.datafile = datafile;
+	}
+
+	public void setElevation(final double elevation) {
+		this.elevation = elevation;
+	}
+
+	public void setFreq(final double freq) {
+		this.freq = freq;
+	}
+
+	public void setLocation(final WorldLocation location) {
+		this.location = location;
+	}
+
+	public void setMajor(final double major) {
+		this.major = major;
+	}
+
+	public void setMinor(final double minor) {
+		this.minor = minor;
+	}
+
+	public void setMla(final double mla) {
+		this.mla = mla;
+	}
+
+	public void setName(final String name) {
+		this.name = name;
+	}
+
+	public void setOrientation(final double orientation) {
+		this.orientation = orientation;
+	}
+
+	public void setPrivacy(final Privacy privacy) {
+		this.privacy = privacy;
+	}
+
+	public void setRel_bearing(final double rel_bearing) {
+		this.rel_bearing = rel_bearing;
+	}
+
+	public void setSensor(final Sensor sensor) {
+		this.sensor = sensor;
+	}
+
+	public void setSla(final double sla) {
+		this.sla = sla;
+	}
+
+	public void setTime(final Date time) {
+		this.time = time;
+	}
 
 }

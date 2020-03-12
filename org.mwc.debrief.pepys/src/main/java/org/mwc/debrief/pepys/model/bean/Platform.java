@@ -9,26 +9,25 @@ public class Platform implements AbstractBean {
 	@Id
 	private int platform_id;
 	private String name;
-	
+
 	public Platform() {
-		
-	}
 
-	public int getPlatform_id() {
-		return platform_id;
-	}
-
-	public void setPlatform_id(int platform_id) {
-		this.platform_id = platform_id;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public void setName(String name) {
+	public int getPlatform_id() {
+		return platform_id;
+	}
+
+	public void setName(final String name) {
 		this.name = name;
 	}
-	
-	
+
+	public void setPlatform_id(final int platform_id) {
+		this.platform_id = platform_id;
+	}
+
 }

@@ -30,9 +30,31 @@ import junit.framework.TestCase;
 @TableName(name = "Privacies")
 public class Privacy implements AbstractBean {
 
+	public static class PrivaciesTest extends TestCase {
+
+		public void testPrivaciesQuery() {
+			try {
+				final List list = DatabaseConnection.getInstance().listAll(Privacy.class, null);
+
+				assertTrue("Privacies - database entries", list.size() == 1);
+
+				final Privacy type = (Privacy) list.get(0);
+				// assertTrue("Datafiletypes - database entries",
+				// "1".equals(type.getIdField()));
+				assertTrue("Datafiletypes - database entries", "PRIVACY-1".equals(type.getName()));
+			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+	}
+
 	@Id
 	private int privacy_id;
 	private String name;
+
 	private Date created_date;
 
 	public Privacy() {
@@ -61,25 +83,5 @@ public class Privacy implements AbstractBean {
 
 	public void setPrivacy_id(final int privacy_id) {
 		this.privacy_id = privacy_id;
-	}
-
-	public static class PrivaciesTest extends TestCase{
-		
-		public void testPrivaciesQuery(){
-			try {
-				final List list = DatabaseConnection.getInstance().listAll(Privacy.class, null);
-				
-				assertTrue("Privacies - database entries", list.size() == 1);
-				
-				final Privacy type = (Privacy) list.get(0);
-				//assertTrue("Datafiletypes - database entries", "1".equals(type.getIdField()));
-				assertTrue("Datafiletypes - database entries", "PRIVACY-1".equals(type.getName()));
-			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		}
 	}
 }

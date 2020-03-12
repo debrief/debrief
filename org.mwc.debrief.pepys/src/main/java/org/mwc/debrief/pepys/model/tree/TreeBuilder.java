@@ -20,13 +20,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeMap;
 
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.model.TypeDomain;
 import org.mwc.debrief.pepys.model.bean.AbstractBean;
-import org.mwc.debrief.pepys.model.bean.Datafile;
-import org.mwc.debrief.pepys.model.bean.Sensor;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils;
 import org.mwc.debrief.pepys.model.tree.TreeNode.NodeType;
@@ -35,18 +32,25 @@ import junit.framework.TestCase;
 
 public class TreeBuilder {
 
+	public class TreeBuilderTest extends TestCase {
+
+		public void testTreeBuilder() {
+
+		}
+	}
+
 	/**
 	 * Method that builds the tree structure from top to bottom.
-	 * 
+	 *
 	 * @param items
 	 * @param root
 	 * @return
 	 */
 	public static TreeNode buildStructure(final AbstractBean[] items, final TreeNode root) {
 
-		for (AbstractBean item : items) {
+		for (final AbstractBean item : items) {
 			if (item instanceof TreeStructurable) {
-				final TreeStructurable currentItem = (TreeStructurable)item;
+				final TreeStructurable currentItem = (TreeStructurable) item;
 				final String platformName = currentItem.getPlatform().getName();
 
 				TreeNode datafileNode = root.getChild(platformName);
@@ -62,7 +66,7 @@ public class TreeBuilder {
 					datafileNode.addChild(measureNode);
 				}
 
-				TreeNode leaf = new TreeNode(NodeType.DATAFILE, currentItem.getDatafile().getReference(), item);
+				final TreeNode leaf = new TreeNode(NodeType.DATAFILE, currentItem.getDatafile().getReference(), item);
 
 				if (currentItem.getSensorType() == null) {
 					// It has an exception in the structure, we simply add the leaf.
@@ -89,26 +93,19 @@ public class TreeBuilder {
 		configuration.getTreeModel().removeAllChildren();
 
 		final ArrayList<AbstractBean> allItems = new ArrayList<AbstractBean>();
-		for (TypeDomain domain : configuration.getDatafileTypeFilters()) {
+		for (final TypeDomain domain : configuration.getDatafileTypeFilters()) {
 			final Class<AbstractBean> currentBeanType = domain.getDatatype();
 
 			if (AbstractBean.class.isAssignableFrom(currentBeanType) && domain.isChecked()) {
 
 				// TODO FILTERING HERE
-				String filter = null;
-				List<? extends AbstractBean> currentItems = (List<? extends AbstractBean>) DatabaseConnection
-						.getInstance().listAll(currentBeanType, null);
+				final String filter = null;
+				final List<? extends AbstractBean> currentItems = DatabaseConnection.getInstance()
+						.listAll(currentBeanType, null);
 				allItems.addAll(currentItems);
 			}
 		}
 
 		buildStructure(allItems.toArray(new AbstractBean[] {}), configuration.getTreeModel());
-	}
-	
-	public class TreeBuilderTest extends TestCase{
-		
-		public void testTreeBuilder() {
-			
-		}
 	}
 }

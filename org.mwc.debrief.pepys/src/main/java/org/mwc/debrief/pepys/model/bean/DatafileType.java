@@ -30,9 +30,31 @@ import junit.framework.TestCase;
 @TableName(name = "DatafileTypes")
 public class DatafileType implements AbstractBean {
 
+	public static class DatafileTypesTest extends TestCase {
+
+		public void testDatafileTypesQuery() {
+			try {
+				final List list = DatabaseConnection.getInstance().listAll(DatafileType.class, null);
+
+				assertTrue("Datafiletypes - database entries", list.size() == 1);
+
+				final DatafileType type = (DatafileType) list.get(0);
+				// assertTrue("Datafiletypes - database entries",
+				// "1".equals(type.getIdField()));
+				assertTrue("Datafiletypes - database entries", "DATAFILE-TYPE-1".equals(type.getName()));
+			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+	}
+
 	@Id
 	private int datafile_type_id;
 	private String name;
+
 	private Date created_date;
 
 	public DatafileType() {
@@ -61,25 +83,5 @@ public class DatafileType implements AbstractBean {
 
 	public void setName(final String name) {
 		this.name = name;
-	}
-
-	public static class DatafileTypesTest extends TestCase{
-		
-		public void testDatafileTypesQuery(){
-			try {
-				final List list = DatabaseConnection.getInstance().listAll(DatafileType.class, null);
-				
-				assertTrue("Datafiletypes - database entries", list.size() == 1);
-				
-				final DatafileType type = (DatafileType) list.get(0);
-				//assertTrue("Datafiletypes - database entries", "1".equals(type.getIdField()));
-				assertTrue("Datafiletypes - database entries", "DATAFILE-TYPE-1".equals(type.getName()));
-			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		}
 	}
 }

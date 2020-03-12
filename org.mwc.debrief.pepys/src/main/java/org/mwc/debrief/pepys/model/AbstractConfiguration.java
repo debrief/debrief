@@ -24,24 +24,24 @@ import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
 
 public interface AbstractConfiguration extends hasPropertyListeners {
-	
-	public Collection<TypeDomain> getDatafileTypeFilters();
-	
+
 	public void addDatafileTypeFilter(final TypeDomain newType);
-	
-	public void removeDatafileTypeFilter(final TypeDomain typeToRemove);
-	
-	public void setArea(final WorldArea newArea);
-	
-	public WorldArea getCurrentArea();
-	
-	public void setTimePeriod(final TimePeriod newPeriod);
-	
-	public TimePeriod getTimePeriod();
-	
-	public TreeNode getTreeModel();
-	
+
 	public void apply() throws Exception;
-	
+
 	public void doImport();
+
+	public WorldArea getCurrentArea();
+
+	public Collection<TypeDomain> getDatafileTypeFilters();
+
+	public TimePeriod getTimePeriod();
+
+	public TreeNode getTreeModel();
+
+	public void removeDatafileTypeFilter(final TypeDomain typeToRemove);
+
+	public void setArea(final WorldArea newArea);
+
+	public void setTimePeriod(final TimePeriod newPeriod);
 }

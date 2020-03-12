@@ -15,28 +15,19 @@
 
 package org.mwc.debrief.pepys.view;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Dialog;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Tree;
 import org.mwc.cmap.core.custom_widget.CWorldLocation;
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.nebula.PShelf;
@@ -62,24 +53,72 @@ public class PepysImportView extends Dialog {
 
 	private PShelf shelf;
 	private CheckboxTreeViewer tree;
-	
-	private ArrayList<Button> dataTypesCheckBox = new ArrayList<Button>();
+
+	private final ArrayList<Button> dataTypesCheckBox = new ArrayList<Button>();
 
 	private CWorldLocation topLeftLocation;
-	
+
 	private CWorldLocation bottomRightLocation;
-	
+
 	private Composite dataTypesComposite;
 
-	public PepysImportView(final AbstractConfiguration model, Shell parent) {
+	public PepysImportView(final AbstractConfiguration model, final Shell parent) {
 		super(parent);
 
 		initGUI(model, parent);
 
 	}
 
+	public Button getApplyButton() {
+		return applyButton;
+	}
+
+	public CWorldLocation getBottomRightLocation() {
+		return bottomRightLocation;
+	}
+
+	public ArrayList<Button> getDataTypesCheckBox() {
+		return dataTypesCheckBox;
+	}
+
+	public Composite getDataTypesComposite() {
+		return dataTypesComposite;
+	}
+
+	public CDateTime getEndDate() {
+		return endDate;
+	}
+
+	public CDateTime getEndTime() {
+		return endTime;
+	}
+
+	public Button getImportButton() {
+		return importButton;
+	}
+
+	public CDateTime getStartDate() {
+		return startDate;
+	}
+
+	public CDateTime getStartTime() {
+		return startTime;
+	}
+
+	public CWorldLocation getTopLeftLocation() {
+		return topLeftLocation;
+	}
+
+	public CheckboxTreeViewer getTree() {
+		return tree;
+	}
+
+	public Button getUseCurrentViewportButton() {
+		return useCurrentViewportButton;
+	}
+
 	public void initGUI(final AbstractConfiguration model, final Shell parent) {
-		GridLayout mainLayout = new GridLayout();
+		final GridLayout mainLayout = new GridLayout();
 		mainLayout.numColumns = 2;
 		mainLayout.marginWidth = 20;
 		mainLayout.marginHeight = 20;
@@ -87,7 +126,7 @@ public class PepysImportView extends Dialog {
 
 		this.titleLabel = new Label(parent, SWT.NONE);
 		this.titleLabel.setText("Pepys Import");
-		GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+		final GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 		gridData.horizontalSpan = 2;
 		titleLabel.setLayoutData(gridData);
 
@@ -124,7 +163,7 @@ public class PepysImportView extends Dialog {
 		this.endDate = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.DROP_DOWN | CDT.DATE_SHORT);
 		this.endDate.setPattern("dd/MM/yyyy");
 		this.endTime = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.SPINNER | CDT.TIME_MEDIUM);
-		
+
 		// AREA
 		final GridLayout areaItemLayout = new GridLayout();
 		areaItemLayout.numColumns = 1;
@@ -141,7 +180,7 @@ public class PepysImportView extends Dialog {
 
 		this.bottomRightLabel = new Label(areaItem.getBody(), SWT.NONE);
 		this.bottomRightLabel.setText("Bottom Right");
-		
+
 		this.bottomRightLocation = new CWorldLocation(areaItem.getBody(), SWT.NONE);
 
 		final GridData useCurrentButtonGridData = new GridData();
@@ -160,7 +199,7 @@ public class PepysImportView extends Dialog {
 		dataTypeItem.setText("Data Type");
 		dataTypeItem.getBody().setLayout(dataTypeItemLayout);
 		dataTypesComposite = dataTypeItem.getBody();
-		
+
 		final GridData treeGrid = new GridData(GridData.FILL_BOTH);
 		treeGrid.horizontalAlignment = GridData.FILL;
 		treeGrid.grabExcessHorizontalSpace = true;
@@ -170,7 +209,7 @@ public class PepysImportView extends Dialog {
 		this.tree.setContentProvider(new PepysContentProvider());
 		this.tree.setLabelProvider(new PepysLabelProvider());
 		this.tree.getTree().setLayoutData(treeGrid);
-		
+
 		final GridData applyGridDataButton = new GridData();
 		applyGridDataButton.horizontalAlignment = GridData.END;
 		this.applyButton = new Button(parent, SWT.PUSH);
@@ -190,53 +229,4 @@ public class PepysImportView extends Dialog {
 
 	}
 
-	public CDateTime getStartDate() {
-		return startDate;
-	}
-
-	public CDateTime getStartTime() {
-		return startTime;
-	}
-
-	public CDateTime getEndDate() {
-		return endDate;
-	}
-
-	public CDateTime getEndTime() {
-		return endTime;
-	}
-
-	public CheckboxTreeViewer getTree() {
-		return tree;
-	}
-
-	public ArrayList<Button> getDataTypesCheckBox() {
-		return dataTypesCheckBox;
-	}
-
-	public Composite getDataTypesComposite() {
-		return dataTypesComposite;
-	}
-
-	public CWorldLocation getTopLeftLocation() {
-		return topLeftLocation;
-	}
-
-	public CWorldLocation getBottomRightLocation() {
-		return bottomRightLocation;
-	}
-
-	public Button getApplyButton() {
-		return applyButton;
-	}
-
-	public Button getImportButton() {
-		return importButton;
-	}
-
-	public Button getUseCurrentViewportButton() {
-		return useCurrentViewportButton;
-	}
-	
-	
 }

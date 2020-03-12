@@ -20,8 +20,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.mwc.debrief.pepys.model.bean.DatafileType;
 import org.mwc.debrief.pepys.model.bean.Datafile;
+import org.mwc.debrief.pepys.model.bean.DatafileType;
 import org.mwc.debrief.pepys.model.bean.State;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 
@@ -32,10 +32,9 @@ public class ProofOfConcept {
 			final List list = DatabaseConnection.getInstance().listAll(Datafile.class, null);
 
 			final List list3 = DatabaseConnection.getInstance().listAll(State.class, null);
-			
 
-
-			//final List list4 = DatabaseConnection.getInstance().listAll(State.class, "source_id = 16");
+			// final List list4 = DatabaseConnection.getInstance().listAll(State.class,
+			// "source_id = 16");
 
 			for (final Object l : list) {
 				final Datafile dataFile = (Datafile) l;
@@ -44,7 +43,8 @@ public class ProofOfConcept {
 
 			for (final Object l : list2) {
 				final DatafileType datafileTypes = (DatafileType) l;
-				System.out.println("DataFileType ID: " + datafileTypes.getDatafile_type_id() + ", " + datafileTypes.getName());
+				System.out.println(
+						"DataFileType ID: " + datafileTypes.getDatafile_type_id() + ", " + datafileTypes.getName());
 			}
 
 			for (final Object l : list3) {
@@ -52,10 +52,11 @@ public class ProofOfConcept {
 				System.out.println("State ID: " + state.getState_id());
 			}
 
-			//for (final Object l : list4) {
-			//	final State state = (State) l;
-			//	System.out.println("Filtered State ID: " + state.getState_id() + ", " + state.getLocation());
-			//}
+			// for (final Object l : list4) {
+			// final State state = (State) l;
+			// System.out.println("Filtered State ID: " + state.getState_id() + ", " +
+			// state.getLocation());
+			// }
 		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 				| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException e) {
 			e.printStackTrace();

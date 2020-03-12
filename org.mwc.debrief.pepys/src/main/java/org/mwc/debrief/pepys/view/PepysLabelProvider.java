@@ -15,57 +15,49 @@
 
 package org.mwc.debrief.pepys.view;
 
-import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
-import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
 import org.mwc.debrief.pepys.model.tree.TreeNode;
 
 public class PepysLabelProvider implements ILabelProvider {
 
 	@Override
-	public void addListener(ILabelProviderListener listener) {
+	public void addListener(final ILabelProviderListener listener) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
-	public boolean isLabelProperty(Object element, String property) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void removeListener(ILabelProviderListener listener) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public Image getImage(Object element) {
+	public Image getImage(final Object element) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getText(Object element) {
+	public String getText(final Object element) {
 		if (element instanceof TreeNode) {
-			return ((TreeNode)element).getName();
+			return ((TreeNode) element).getName();
 		}
 		return "";
+	}
+
+	@Override
+	public boolean isLabelProperty(final Object element, final String property) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void removeListener(final ILabelProviderListener listener) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
