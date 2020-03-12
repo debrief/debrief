@@ -77,7 +77,11 @@ public class PepysImportPresenter {
 
 			public void setStartTime(final AbstractConfiguration model) {
 				final HiResDate start = new HiResDate(view.getStartDate().getSelection());
-				model.setTimePeriod(new TimePeriod.BaseTimePeriod(start, model.getTimePeriod().getEndDTG()));
+				if (model.getTimePeriod() == null) {
+					model.setTimePeriod(new TimePeriod.BaseTimePeriod(start, start));
+				} else {
+					model.setTimePeriod(new TimePeriod.BaseTimePeriod(start, model.getTimePeriod().getEndDTG()));
+				}
 			}
 
 			@Override
@@ -90,6 +94,29 @@ public class PepysImportPresenter {
 				setStartTime(model);
 			}
 		});
+
+		view.getEndDate().addSelectionListener(new SelectionListener() {
+
+			public void setEndTime(final AbstractConfiguration model) {
+				final HiResDate end = new HiResDate(view.getEndDate().getSelection());
+				if (model.getTimePeriod() == null) {
+					model.setTimePeriod(new TimePeriod.BaseTimePeriod(end, end));
+				} else {
+					model.setTimePeriod(new TimePeriod.BaseTimePeriod(model.getTimePeriod().getStartDTG(), end));
+				}
+			}
+
+			@Override
+			public void widgetDefaultSelected(final SelectionEvent sel) {
+				setEndTime(model);
+			}
+
+			@Override
+			public void widgetSelected(final SelectionEvent sel) {
+				setEndTime(model);
+			}
+		});
+
 		model.addPropertyChangeListener(new PropertyChangeListener() {
 
 			@Override
