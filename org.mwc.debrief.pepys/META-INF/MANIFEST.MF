@@ -14,7 +14,8 @@ Bundle-ClassPath: libs/c3p0-0.9.5.5.jar,
 Require-Bundle: org.mwc.cmap.legacy;bundle-version="1.0.293",
  org.mwc.debrief.legacy;bundle-version="1.0.432",
  org.eclipse.swt,
- org.eclipse.core.commands;bundle-version="3.9.400"
+ org.eclipse.core.commands;bundle-version="3.9.400",
+ org.eclipse.nebula.cwt;bundle-version="0.9.3"
 Export-Package: org.mwc.debrief.pepys.model.bean,
  org.mwc.debrief.pepys.model.tree
 Import-Package: org.eclipse.core.databinding,
