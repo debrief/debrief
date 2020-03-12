@@ -129,4 +129,18 @@ public class ModelConfiguration implements AbstractConfiguration {
 		return treeModel;
 	}
 
+	@Override
+	public void doImport() {
+		doImportProcessMockup(treeModel);
+	}
+
+	private void doImportProcessMockup(TreeNode treeModel) {
+		if (treeModel.getValue() != null && treeModel.isChecked()) {
+			System.out.println("Importing " + treeModel.getName() + " -> " + treeModel.getValue());
+		}
+		for (TreeNode child : treeModel.getChildren()) {
+			doImportProcessMockup(child);
+		}
+	}
+
 }

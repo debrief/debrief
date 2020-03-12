@@ -18,6 +18,8 @@ package org.mwc.debrief.pepys.presenter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import org.eclipse.jface.viewers.CheckStateChangedEvent;
+import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -34,6 +36,7 @@ import org.mwc.debrief.pepys.model.TypeDomain;
 import org.mwc.debrief.pepys.model.bean.Comment;
 import org.mwc.debrief.pepys.model.bean.Contact;
 import org.mwc.debrief.pepys.model.bean.State;
+import org.mwc.debrief.pepys.model.tree.TreeNode;
 import org.mwc.debrief.pepys.view.PepysImportView;
 
 import MWC.GenericData.HiResDate;
@@ -82,26 +85,6 @@ public class PepysImportPresenter {
 				}
 			});
 		}
-
-		_view.getApplyButton().addListener(SWT.Selection, new Listener() {
-
-			@Override
-			public void handleEvent(Event event) {
-				switch (event.type) {
-				case SWT.Selection:
-					try {
-						_model.apply();
-					} catch (Exception e) {
-						e.printStackTrace();
-						final MessageBox messageBox = new MessageBox(_view.getParent(), SWT.ERROR | SWT.OK);
-						messageBox.setMessage(e.toString());
-						messageBox.setText("Error retrieving information from Database");
-						messageBox.open();
-					}
-					break;
-				}
-			}
-		});
 	}
 
 	protected void addDatabindings(final AbstractConfiguration model, final PepysImportView view) {
@@ -132,13 +115,67 @@ public class PepysImportPresenter {
 				}
 			}
 		});
-		
+
 		model.addPropertyChangeListener(new PropertyChangeListener() {
-			
+
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
 				if (ModelConfiguration.TREE_MODEL.equals(evt.getPropertyName())) {
 					view.getTree().setInput(model.getTreeModel());
+				}
+			}
+		});
+
+
+		view.getApplyButton().addListener(SWT.Selection, new Listener() {
+
+			@Override
+			public void handleEvent(Event event) {
+				switch (event.type) {
+				case SWT.Selection:
+					try {
+						model.apply();
+					} catch (Exception e) {
+						e.printStackTrace();
+						final MessageBox messageBox = new MessageBox(view.getParent(), SWT.ERROR | SWT.OK);
+						messageBox.setMessage(e.toString());
+						messageBox.setText("Error retrieving information from Database");
+						messageBox.open();
+					}
+					break;
+				}
+			}
+		});
+		
+		view.getImportButton().addListener(SWT.Selection, new Listener() {
+
+			@Override
+			public void handleEvent(Event event) {
+				switch (event.type) {
+				case SWT.Selection:
+					model.doImport();
+					break;
+				}
+			}
+		});
+
+		view.getTree().addCheckStateListener(new ICheckStateListener() {
+
+			@Override
+			public void checkStateChanged(CheckStateChangedEvent event) {
+				if (event.getChecked()) {
+					view.getTree().setSubtreeChecked(event.getElement(), true);
+					((TreeNode)event.getElement()).setCheckedRecursive(event.getChecked());
+				}
+			}
+		});
+
+		view.getTree().addCheckStateListener(new ICheckStateListener() {
+
+			@Override
+			public void checkStateChanged(CheckStateChangedEvent event) {
+				if (event.getElement() instanceof TreeNode) {
+					((TreeNode)event.getElement()).setChecked(event.getChecked());
 				}
 			}
 		});

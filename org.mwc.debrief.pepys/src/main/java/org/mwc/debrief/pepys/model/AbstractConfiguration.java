@@ -42,4 +42,6 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 	public TreeNode getTreeModel();
 	
 	public void apply() throws Exception;
+	
+	public void doImport();
 }

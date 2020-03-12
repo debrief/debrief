@@ -19,6 +19,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 
+import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
@@ -60,7 +61,7 @@ public class PepysImportView extends Dialog {
 	private CDateTime endTime;
 
 	private PShelf shelf;
-	private TreeViewer tree;
+	private CheckboxTreeViewer tree;
 	
 	private ArrayList<Button> dataTypesCheckBox = new ArrayList<Button>();
 
@@ -165,7 +166,7 @@ public class PepysImportView extends Dialog {
 		treeGrid.grabExcessHorizontalSpace = true;
 		treeGrid.verticalAlignment = GridData.FILL;
 		treeGrid.grabExcessVerticalSpace = true;
-		this.tree = new TreeViewer(parent, SWT.BORDER);
+		this.tree = new CheckboxTreeViewer(parent, SWT.BORDER);
 		this.tree.setContentProvider(new PepysContentProvider());
 		this.tree.setLabelProvider(new PepysLabelProvider());
 		this.tree.getTree().setLayoutData(treeGrid);
@@ -205,7 +206,7 @@ public class PepysImportView extends Dialog {
 		return endTime;
 	}
 
-	public TreeViewer getTree() {
+	public CheckboxTreeViewer getTree() {
 		return tree;
 	}
 

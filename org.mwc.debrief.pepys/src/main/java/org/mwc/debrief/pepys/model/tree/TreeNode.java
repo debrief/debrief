@@ -35,6 +35,7 @@ public class TreeNode {
 	private String name;
 	private AbstractBean value;
 	private TreeNode parent = null;
+	private boolean checked = false;
 
 	private TreeMap<String, TreeNode> children = new TreeMap<String, TreeNode>();
 
@@ -77,6 +78,21 @@ public class TreeNode {
 
 	public void setParent(TreeNode parent) {
 		this.parent = parent;
+	}
+
+	public boolean isChecked() {
+		return checked;
+	}
+
+	public void setChecked(final boolean checked) {
+		this.checked = checked;
+	}
+	
+	public void setCheckedRecursive(final boolean checked) {
+		setChecked(checked);
+		for (TreeNode child : children.values()) {
+			child.setCheckedRecursive(checked);
+		}
 	}
 
 	@Override
