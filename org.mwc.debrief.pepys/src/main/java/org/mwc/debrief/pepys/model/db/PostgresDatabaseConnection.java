@@ -23,9 +23,15 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.Properties;
 
+import org.postgis.PGbox3d;
+import org.postgis.PGgeometry;
+import org.postgis.Point;
+import org.postgresql.geometric.PGpoint;
 import org.postgresql.util.PGobject;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+import com.mchange.v2.c3p0.impl.NewProxyConnection;
+import com.mchange.v2.c3p0.impl.NewProxyConnectionUnwrapper;
 
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldLocation;
@@ -64,11 +70,26 @@ public class PostgresDatabaseConnection extends DatabaseConnection {
 
 	@Override
 	protected String createLocationQuery(String tableName, String columnName) {
-		return "";
+		return getAlias(tableName) + "." + columnName + " AS " + getAlias(tableName + columnName) + ", ";
 	}
 
 	@Override
-	protected WorldLocation createWorldLocation(ResultSet result, String columnName) throws SQLException {
+	protected WorldLocation createWorldLocation(final ResultSet result, String columnName) throws SQLException {
+		try {
+			final PGobject object = (PGobject)result.getObject(columnName);
+			if (object instanceof PGpoint) { 
+				final PGpoint newPoint = (PGpoint) object;
+				return new WorldLocation(newPoint.x, newPoint.y, 0);
+			}else if (object instanceof PGgeometry) {
+				final PGgeometry geometry = (PGgeometry) object;
+				if (geometry.getGeometry().getDimension() > 0) {
+					final Point point = geometry.getGeometry().getFirstPoint();
+					return new WorldLocation(point.getX(), point.getY(), point.getZ());
+				}
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
 
@@ -77,10 +98,10 @@ public class PostgresDatabaseConnection extends DatabaseConnection {
 		/*
 		 * Add the geometry types to the connection.
 		 */
-		//((org.postgresql.PGConnection) connection).addDataType("geometry",
-		//		(Class<? extends PGobject>) Class.forName("org.postgis.PGgeometry"));
-		//((org.postgresql.PGConnection) connection).addDataType("box3d",
-		//		(Class<? extends PGobject>) Class.forName("org.postgis.PGbox3d"));
+		((org.postgresql.PGConnection) NewProxyConnectionUnwrapper.unWrapperInnerConnection((NewProxyConnection)connection)).addDataType("geometry", 
+				PGgeometry.class);
+		((org.postgresql.PGConnection)  NewProxyConnectionUnwrapper.unWrapperInnerConnection((NewProxyConnection)connection)).addDataType("box3d",
+				PGbox3d.class);
 	}
 
 	@Override
