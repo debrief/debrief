@@ -7,7 +7,7 @@ import org.mwc.debrief.pepys.model.db.annotation.TableName;
 public class Platform implements AbstractBean {
 
 	@Id
-	private int platform_id;
+	private String platform_id;
 	private String name;
 
 	public Platform() {
@@ -18,7 +18,7 @@ public class Platform implements AbstractBean {
 		return name;
 	}
 
-	public int getPlatform_id() {
+	public String getPlatform_id() {
 		return platform_id;
 	}
 
@@ -26,7 +26,7 @@ public class Platform implements AbstractBean {
 		this.name = name;
 	}
 
-	public void setPlatform_id(final int platform_id) {
+	public void setPlatform_id(final String platform_id) {
 		this.platform_id = platform_id;
 	}
 

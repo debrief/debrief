@@ -32,7 +32,7 @@ import MWC.GenericData.WorldLocation;
 public class Contact implements AbstractBean, TreeStructurable {
 
 	@Id
-	private int contact_id;
+	private String contact_id;
 	private String name;
 
 	@ManyToOne
@@ -81,7 +81,7 @@ public class Contact implements AbstractBean, TreeStructurable {
 		return confidence;
 	}
 
-	public int getContact_id() {
+	public String getContact_id() {
 		return contact_id;
 	}
 
@@ -178,7 +178,7 @@ public class Contact implements AbstractBean, TreeStructurable {
 		this.confidence = confidence;
 	}
 
-	public void setContact_id(final int contact_id) {
+	public void setContact_id(final String contact_id) {
 		this.contact_id = contact_id;
 	}
 

@@ -65,7 +65,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	@Override
 	public void apply() throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException {
+			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException, ClassNotFoundException {
 
 		TreeBuilder.buildStructure(this);
 

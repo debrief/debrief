@@ -43,7 +43,7 @@ public class Privacy implements AbstractBean {
 				// "1".equals(type.getIdField()));
 				assertTrue("Datafiletypes - database entries", "PRIVACY-1".equals(type.getName()));
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException e) {
+					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException | ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -52,7 +52,7 @@ public class Privacy implements AbstractBean {
 	}
 
 	@Id
-	private int privacy_id;
+	private String privacy_id;
 	private String name;
 
 	private Date created_date;
@@ -69,7 +69,7 @@ public class Privacy implements AbstractBean {
 		return name;
 	}
 
-	public int getPrivacy_id() {
+	public String getPrivacy_id() {
 		return privacy_id;
 	}
 
@@ -81,7 +81,7 @@ public class Privacy implements AbstractBean {
 		this.name = name;
 	}
 
-	public void setPrivacy_id(final int privacy_id) {
+	public void setPrivacy_id(final String privacy_id) {
 		this.privacy_id = privacy_id;
 	}
 }

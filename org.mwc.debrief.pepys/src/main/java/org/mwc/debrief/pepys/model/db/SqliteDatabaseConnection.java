@@ -1,13 +1,37 @@
+/*******************************************************************************
+ * Debrief - the Open Source Maritime Analysis Application
+ * http://debrief.info
+ *
+ * (C) 2000-2020, Deep Blue C Technology Ltd
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *******************************************************************************/
+
 package org.mwc.debrief.pepys.model.db;
 
 import java.beans.PropertyVetoException;
+import java.lang.reflect.Field;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 
+import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils;
+import org.mwc.debrief.pepys.model.db.annotation.Time;
 import org.sqlite.SQLiteConfig;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
+import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldLocation;
 
 public class SqliteDatabaseConnection extends DatabaseConnection {
@@ -16,10 +40,10 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 	public static final String SQLITE_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.000000";
 	public static final String DATABASE_FILE_PATH = "test2.db";
 
-	public SqliteDatabaseConnection() throws PropertyVetoException {
+	public SqliteDatabaseConnection() {
 		super(); // Just formality :)
 	}
-	
+
 	protected void initialize() throws PropertyVetoException {
 		// enabling dynamic extension loading
 		// absolutely required by SpatiaLite
@@ -40,12 +64,11 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 		for (final char c : LOCATION_COORDINATES.toCharArray()) {
 			query.append(c);
 			query.append(" (");
-			query.append(tableName);
+			query.append(getAlias(tableName));
 			query.append(".");
 			query.append(columnName);
 			query.append(") as ");
-			query.append(tableName);
-			query.append(columnName);
+			query.append(getAlias(tableName + columnName));
 			query.append("_");
 			query.append(c);
 			query.append(", ");
@@ -75,5 +98,26 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 		return INSTANCE;
 	}
 
-	
+	@Override
+	protected void loadExtention(final Connection connection, final Statement statement) throws SQLException {
+		// loading SpatiaLite
+		statement.execute("SELECT load_extension('mod_spatialite')");
+
+		// enabling Spatial Metadata
+		// using v.2.4.0 this automatically initializes SPATIAL_REF_SYS and
+		// GEOMETRY_COLUMNS
+		final String sql = "SELECT InitSpatialMetadata()";
+		statement.execute(sql);
+	}
+
+	@Override
+	public String databasePrefix() {
+		return "";
+	}
+
+	@Override
+	public String databaseSuffix() {
+		return "";
+	}
+
 }

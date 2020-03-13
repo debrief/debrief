@@ -39,7 +39,7 @@ public class State implements AbstractBean, TreeStructurable {
 				// assertTrue("States - database entries", list2.size() == 44);
 
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException e) {
+					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException | ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -48,7 +48,7 @@ public class State implements AbstractBean, TreeStructurable {
 	}
 
 	@Id
-	private int state_id;
+	private String state_id;
 
 	@Time
 	private Timestamp time;
@@ -63,7 +63,7 @@ public class State implements AbstractBean, TreeStructurable {
 	@ManyToOne
 	@FieldName(name = "source_id")
 	private Datafile datafile;
-	private int privacy_id;
+	private String privacy_id;
 	private Timestamp created_date;
 
 	private WorldLocation location;
@@ -109,7 +109,7 @@ public class State implements AbstractBean, TreeStructurable {
 		return null;
 	}
 
-	public int getPrivacy_id() {
+	public String getPrivacy_id() {
 		return privacy_id;
 	}
 
@@ -125,7 +125,7 @@ public class State implements AbstractBean, TreeStructurable {
 		return speed;
 	}
 
-	public int getState_id() {
+	public String getState_id() {
 		return state_id;
 	}
 
@@ -153,7 +153,7 @@ public class State implements AbstractBean, TreeStructurable {
 		this.location = location;
 	}
 
-	public void setPrivacy_id(final int privacy_id) {
+	public void setPrivacy_id(final String privacy_id) {
 		this.privacy_id = privacy_id;
 	}
 
@@ -165,7 +165,7 @@ public class State implements AbstractBean, TreeStructurable {
 		this.speed = speed;
 	}
 
-	public void setState_id(final int state_id) {
+	public void setState_id(final String state_id) {
 		this.state_id = state_id;
 	}
 

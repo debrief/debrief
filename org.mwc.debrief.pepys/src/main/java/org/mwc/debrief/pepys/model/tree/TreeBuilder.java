@@ -109,7 +109,7 @@ public class TreeBuilder {
 
 	public static void buildStructure(final AbstractConfiguration configuration)
 			throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException {
+			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException, ClassNotFoundException {
 		configuration.getTreeModel().removeAllChildren();
 
 		final ArrayList<AbstractBean> allItems = new ArrayList<AbstractBean>();
@@ -117,24 +117,11 @@ public class TreeBuilder {
 			final Class<AbstractBean> currentBeanType = domain.getDatatype();
 
 			if (AbstractBean.class.isAssignableFrom(currentBeanType) && domain.isChecked()) {
-
+				DatabaseConnection.getInstance().cleanRenamingBuffer();
 				final ArrayList<Condition> conditions = new ArrayList<Condition>();
 
-				// Let's filter by Period.
-				final Field timeField = AnnotationsUtils.getField(currentBeanType, Time.class);
-				if (timeField != null) {
-					final SimpleDateFormat sqlDateFormat = new SimpleDateFormat(SqliteDatabaseConnection.SQLITE_DATE_FORMAT);
-					final String initDate = sqlDateFormat.format(configuration.getTimePeriod().getStartDTG().getDate());
-					final String endDate = sqlDateFormat.format(configuration.getTimePeriod().getEndDTG().getDate());
-
-					final String fieldName = AnnotationsUtils.getTableName(currentBeanType)
-							+ AnnotationsUtils.getColumnName(timeField);
-
-					conditions.add(new Condition(DatabaseConnection.ESCAPE_CHARACTER + initDate
-							+ DatabaseConnection.ESCAPE_CHARACTER + " <= " + fieldName));
-					conditions.add(new Condition(fieldName + " <= " + DatabaseConnection.ESCAPE_CHARACTER + endDate
-							+ DatabaseConnection.ESCAPE_CHARACTER));
-				}
+				conditions.addAll(DatabaseConnection.getInstance().createPeriodFilter(configuration.getTimePeriod(),
+						currentBeanType));
 
 				// TODO FILTERING HERE
 				final String filter = null;

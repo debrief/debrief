@@ -53,7 +53,7 @@ public class Datafile implements AbstractBean {
 					assertTrue("Datafiles - Reference Name", correct);
 				}
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException e) {
+					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException | ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -62,10 +62,10 @@ public class Datafile implements AbstractBean {
 	}
 
 	@Id
-	private int datafile_id;
+	private String datafile_id;
 	private boolean simulated;
 
-	private int privacy_id;
+	private String privacy_id;
 	@ManyToOne
 	@FieldName(name = "datafile_type_id")
 	private DatafileType datafile;
@@ -86,11 +86,11 @@ public class Datafile implements AbstractBean {
 		return datafile;
 	}
 
-	public int getDatafile_id() {
+	public String getDatafile_id() {
 		return datafile_id;
 	}
 
-	public int getPrivacy_id() {
+	public String getPrivacy_id() {
 		return privacy_id;
 	}
 
@@ -114,11 +114,11 @@ public class Datafile implements AbstractBean {
 		this.datafile = datafile;
 	}
 
-	public void setDatafile_id(final int datafile_id) {
+	public void setDatafile_id(final String datafile_id) {
 		this.datafile_id = datafile_id;
 	}
 
-	public void setPrivacy_id(final int privacy_id) {
+	public void setPrivacy_id(final String privacy_id) {
 		this.privacy_id = privacy_id;
 	}
 

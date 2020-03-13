@@ -43,7 +43,7 @@ public class DatafileType implements AbstractBean {
 				// "1".equals(type.getIdField()));
 				assertTrue("Datafiletypes - database entries", "DATAFILE-TYPE-1".equals(type.getName()));
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException e) {
+					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException | ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -52,7 +52,7 @@ public class DatafileType implements AbstractBean {
 	}
 
 	@Id
-	private int datafile_type_id;
+	private String datafile_type_id;
 	private String name;
 
 	private Date created_date;
@@ -65,7 +65,7 @@ public class DatafileType implements AbstractBean {
 		return created_date;
 	}
 
-	public int getDatafile_type_id() {
+	public String getDatafile_type_id() {
 		return datafile_type_id;
 	}
 
@@ -77,7 +77,7 @@ public class DatafileType implements AbstractBean {
 		this.created_date = created_date;
 	}
 
-	public void setDatafile_type_id(final int datafile_type_id) {
+	public void setDatafile_type_id(final String datafile_type_id) {
 		this.datafile_type_id = datafile_type_id;
 	}
 

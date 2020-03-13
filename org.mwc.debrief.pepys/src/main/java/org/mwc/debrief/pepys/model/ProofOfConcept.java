@@ -58,7 +58,8 @@ public class ProofOfConcept {
 			// state.getLocation());
 			// }
 		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-				| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException e) {
+				| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
+				| ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 	}

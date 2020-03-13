@@ -11,7 +11,7 @@ import org.mwc.debrief.pepys.model.db.annotation.TableName;
 public class Sensor implements AbstractBean, Comparable<Sensor> {
 
 	@Id
-	private int sensor_id;
+	private String sensor_id;
 	private String name;
 
 	@ManyToOne
@@ -29,7 +29,7 @@ public class Sensor implements AbstractBean, Comparable<Sensor> {
 
 	@Override
 	public int compareTo(final Sensor o) {
-		return sensor_id - o.sensor_id;
+		return sensor_id.compareTo(o.sensor_id);
 	}
 
 	public Date getCreated_date() {
@@ -44,7 +44,7 @@ public class Sensor implements AbstractBean, Comparable<Sensor> {
 		return platform;
 	}
 
-	public int getSensor_id() {
+	public String getSensor_id() {
 		return sensor_id;
 	}
 
@@ -64,7 +64,7 @@ public class Sensor implements AbstractBean, Comparable<Sensor> {
 		this.platform = platform;
 	}
 
-	public void setSensor_id(final int sensor_id) {
+	public void setSensor_id(final String sensor_id) {
 		this.sensor_id = sensor_id;
 	}
 

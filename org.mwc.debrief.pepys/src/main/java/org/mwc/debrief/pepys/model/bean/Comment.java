@@ -30,7 +30,7 @@ import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 public class Comment implements AbstractBean, TreeStructurable {
 
 	@Id
-	private int comment_id;
+	private String comment_id;
 
 	@ManyToOne
 	@FieldName(name = "platform_id")
@@ -38,7 +38,7 @@ public class Comment implements AbstractBean, TreeStructurable {
 	
 	@Time
 	private Timestamp time;
-	private int comment_type_id;
+	private String comment_type_id;
 	private String content;
 
 	@ManyToOne
@@ -54,11 +54,11 @@ public class Comment implements AbstractBean, TreeStructurable {
 
 	}
 
-	public int getComment_id() {
+	public String getComment_id() {
 		return comment_id;
 	}
 
-	public int getComment_type_id() {
+	public String getComment_type_id() {
 		return comment_type_id;
 	}
 
@@ -94,11 +94,11 @@ public class Comment implements AbstractBean, TreeStructurable {
 		return time;
 	}
 
-	public void setComment_id(final int comment_id) {
+	public void setComment_id(final String comment_id) {
 		this.comment_id = comment_id;
 	}
 
-	public void setComment_type_id(final int comment_type_id) {
+	public void setComment_type_id(final String comment_type_id) {
 		this.comment_type_id = comment_type_id;
 	}
 
