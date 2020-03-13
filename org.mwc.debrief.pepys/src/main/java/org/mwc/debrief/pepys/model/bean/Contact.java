@@ -15,6 +15,7 @@
 
 package org.mwc.debrief.pepys.model.bean;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 import org.mwc.debrief.pepys.model.db.annotation.FieldName;
@@ -36,7 +37,7 @@ public class Contact implements AbstractBean, TreeStructurable {
 	@ManyToOne
 	@FieldName(name = "sensor_id")
 	private Sensor sensor;
-	private Date time;
+	private Timestamp time;
 	private double bearing;
 	private double rel_bearing;
 	private double freq;
@@ -238,7 +239,7 @@ public class Contact implements AbstractBean, TreeStructurable {
 		this.sla = sla;
 	}
 
-	public void setTime(final Date time) {
+	public void setTime(final Timestamp time) {
 		this.time = time;
 	}
 

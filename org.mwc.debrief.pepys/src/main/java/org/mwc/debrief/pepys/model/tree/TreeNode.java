@@ -15,14 +15,20 @@
 
 package org.mwc.debrief.pepys.model.tree;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
-import org.mwc.debrief.pepys.model.bean.AbstractBean;
 import org.mwc.debrief.pepys.model.bean.State;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
+import MWC.GenericData.TimePeriod.BaseTimePeriod;
 import junit.framework.TestCase;
 
 public class TreeNode {
@@ -44,12 +50,18 @@ public class TreeNode {
 			assertTrue("States - database entries", list.size() == 543);
 
 			final String rootName = "ROOT";
-			final TreeNode root = new TreeNode(NodeType.ROOT, rootName, (State) list.get(0), null);
-			final TreeNode child1 = new TreeNode(NodeType.ROOT, rootName, (State) list.get(1), root);
-			final TreeNode child2 = new TreeNode(NodeType.ROOT, rootName, (State) list.get(2), root);
-			final TreeNode child3 = new TreeNode(NodeType.ROOT, rootName, (State) list.get(3), root);
-			final TreeNode child1child1 = new TreeNode(NodeType.ROOT, rootName, (State) list.get(4), child1);
-			final TreeNode child1child2 = new TreeNode(NodeType.ROOT, rootName, (State) list.get(5), child1);
+			final TreeNode root = new TreeNode(NodeType.ROOT, rootName, null);
+			root.addItem((State) list.get(0));
+			final TreeNode child1 = new TreeNode(NodeType.ROOT, rootName, root);
+			child1.addItem((State) list.get(1));
+			final TreeNode child2 = new TreeNode(NodeType.ROOT, rootName, root);
+			child2.addItem((State) list.get(2));
+			final TreeNode child3 = new TreeNode(NodeType.ROOT, rootName, root);
+			child3.addItem((State) list.get(3));
+			final TreeNode child1child1 = new TreeNode(NodeType.ROOT, rootName, child1);
+			child1child1.addItem((State) list.get(4));
+			final TreeNode child1child2 = new TreeNode(NodeType.ROOT, rootName, child1);
+			child1child2.addItem((State) list.get(5));
 
 			root.addChild(child1);
 			root.addChild(child2);
@@ -67,30 +79,56 @@ public class TreeNode {
 		}
 	}
 
+	private static final String ADD_VALUE = "ADD_VALUE";
+
 	private final NodeType type;
 	private final String name;
-	private final AbstractBean value;
 	private TreeNode parent = null;
+	private final TimePeriod currentPeriod = new BaseTimePeriod(TimePeriod.INVALID_DATE, TimePeriod.INVALID_DATE);
 
 	private boolean checked = false;
 
+	private final PropertyChangeSupport _pSupport = new PropertyChangeSupport(this);
+
+	private final ArrayList<TreeStructurable> items = new ArrayList<TreeStructurable>();
+
 	private final TreeMap<String, TreeNode> children = new TreeMap<String, TreeNode>();
 
-	public TreeNode(final NodeType _type, final String _name, final AbstractBean _value) {
+	private final PropertyChangeListener addNewItemListener = new PropertyChangeListener() {
+
+		@Override
+		public void propertyChange(final PropertyChangeEvent evt) {
+			if (ADD_VALUE.equals(evt.getPropertyName()) && evt.getNewValue() != null
+					&& evt.getNewValue() instanceof TreeStructurable) {
+				final TreeStructurable newItem = (TreeStructurable) evt.getNewValue();
+				currentPeriod.extend(new HiResDate(newItem.getTime()));
+			}
+		}
+	};
+
+	public TreeNode(final NodeType _type, final String _name) {
 		this.type = _type;
 		this.name = _name;
-		this.value = _value;
+
+		_pSupport.addPropertyChangeListener(addNewItemListener);
 	}
 
-	public TreeNode(final NodeType _type, final String _name, final AbstractBean _value, final TreeNode _parent) {
+	public TreeNode(final NodeType _type, final String _name, final TreeNode _parent) {
 		this.type = _type;
 		this.name = _name;
-		this.value = _value;
 		this.parent = _parent;
+
+		_pSupport.addPropertyChangeListener(addNewItemListener);
 	}
 
 	public void addChild(final TreeNode node) {
 		children.put(node.name, node);
+	}
+
+	public void addItem(final TreeStructurable item) {
+		items.add(item);
+
+		_pSupport.firePropertyChange(ADD_VALUE, null, item);
 	}
 
 	@Override
@@ -120,16 +158,20 @@ public class TreeNode {
 		return children.values().toArray(new TreeNode[] {});
 	}
 
+	public TimePeriod getCurrentPeriod() {
+		return currentPeriod;
+	}
+
+	public ArrayList<TreeStructurable> getItems() {
+		return items;
+	}
+
 	public String getName() {
 		return name;
 	}
 
 	public TreeNode getParent() {
 		return parent;
-	}
-
-	public AbstractBean getValue() {
-		return value;
 	}
 
 	public boolean hasChildren() {

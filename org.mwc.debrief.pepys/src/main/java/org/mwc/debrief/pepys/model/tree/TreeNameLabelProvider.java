@@ -13,14 +13,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
-package org.mwc.debrief.pepys.view;
+package org.mwc.debrief.pepys.model.tree;
 
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
-import org.mwc.debrief.pepys.model.tree.TreeNode;
 
-public class PepysLabelProvider implements ILabelProvider {
+import MWC.GenericData.TimePeriod.BaseTimePeriod;
+import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
+
+public class TreeNameLabelProvider implements ILabelProvider {
 
 	@Override
 	public void addListener(final ILabelProviderListener listener) {
@@ -43,7 +45,14 @@ public class PepysLabelProvider implements ILabelProvider {
 	@Override
 	public String getText(final Object element) {
 		if (element instanceof TreeNode) {
-			return ((TreeNode) element).getName();
+			final TreeNode node = (TreeNode) element;
+			String name = node.getName();
+			if (node.getCurrentPeriod() instanceof BaseTimePeriod
+					&& !((BaseTimePeriod) node.getCurrentPeriod()).isInvalid()) {
+				name = name + "  " + DebriefFormatDateTime.toStringHiRes(node.getCurrentPeriod().getStartDTG()) + " - "
+						+ DebriefFormatDateTime.toStringHiRes(node.getCurrentPeriod().getEndDTG());
+			}
+			return name;
 		}
 		return "";
 	}

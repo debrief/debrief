@@ -13,12 +13,11 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
-package org.mwc.debrief.pepys.view;
+package org.mwc.debrief.pepys.model.tree;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.mwc.debrief.pepys.model.tree.TreeNode;
 
-public class PepysContentProvider implements ITreeContentProvider {
+public class TreeContentProvider implements ITreeContentProvider {
 
 	final Object[] EMPTY_ARRAY = new Object[] {};
 

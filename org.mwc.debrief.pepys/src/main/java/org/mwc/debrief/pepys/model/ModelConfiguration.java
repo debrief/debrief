@@ -26,6 +26,7 @@ import java.util.Collection;
 
 import org.mwc.debrief.pepys.model.tree.TreeBuilder;
 import org.mwc.debrief.pepys.model.tree.TreeNode;
+import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
@@ -79,8 +80,10 @@ public class ModelConfiguration implements AbstractConfiguration {
 	}
 
 	private void doImportProcessMockup(final TreeNode treeModel) {
-		if (treeModel.getValue() != null && treeModel.isChecked()) {
-			System.out.println("Importing " + treeModel.getName() + " -> " + treeModel.getValue());
+		if (treeModel.isChecked()) {
+			for (final TreeStructurable item : treeModel.getItems()) {
+				System.out.println("Importing " + treeModel.getName() + " -> " + item);
+			}
 		}
 		for (final TreeNode child : treeModel.getChildren()) {
 			doImportProcessMockup(child);

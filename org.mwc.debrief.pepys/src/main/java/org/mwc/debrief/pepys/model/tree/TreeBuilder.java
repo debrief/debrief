@@ -55,32 +55,47 @@ public class TreeBuilder {
 
 				TreeNode datafileNode = root.getChild(platformName);
 				if (datafileNode == null) {
-					datafileNode = new TreeNode(TreeNode.NodeType.PLATFORM, platformName, null, root);
+					datafileNode = new TreeNode(TreeNode.NodeType.PLATFORM, platformName, root);
 					root.addChild(datafileNode);
 				}
 
 				final String measureName = AnnotationsUtils.getTableName(currentItem.getClass());
 				TreeNode measureNode = datafileNode.getChild(measureName);
 				if (measureNode == null) {
-					measureNode = new TreeNode(TreeNode.NodeType.MEASURE, measureName, null, datafileNode);
+					measureNode = new TreeNode(TreeNode.NodeType.MEASURE, measureName, datafileNode);
 					datafileNode.addChild(measureNode);
 				}
 
-				final TreeNode leaf = new TreeNode(NodeType.DATAFILE, currentItem.getDatafile().getReference(), item);
-
+				TreeNode leaf;
 				if (currentItem.getSensorType() == null) {
 					// It has an exception in the structure, we simply add the leaf.
-					measureNode.addChild(leaf);
+					
+					leaf = measureNode.getChild(currentItem.getDatafile().getReference());
+					if (leaf == null) {
+						leaf = new TreeNode(NodeType.DATAFILE, currentItem.getDatafile().getReference());
+						
+						measureNode.addChild(leaf);
+					}
+					leaf.addItem(currentItem);
 				} else {
 					final String sensorName = currentItem.getSensorType().getName();
 					TreeNode sensorNode = measureNode.getChild(sensorName);
+					
 					if (sensorNode == null) {
 						sensorNode = new TreeNode(TreeNode.NodeType.SENSOR, sensorName, null);
 						measureNode.addChild(sensorNode);
 					}
 
-					sensorNode.addChild(leaf);
+					leaf = sensorNode.getChild(currentItem.getDatafile().getReference());
+					if (leaf == null) {
+						leaf = new TreeNode(NodeType.DATAFILE, currentItem.getDatafile().getReference());
+						
+						sensorNode.addChild(leaf);
+					}
+					
 				}
+				
+				leaf.addItem(currentItem);
 			}
 		}
 

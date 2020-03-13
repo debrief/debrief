@@ -30,6 +30,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.mwc.cmap.core.custom_widget.CWorldLocation;
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
+import org.mwc.debrief.pepys.model.tree.TreeContentProvider;
+import org.mwc.debrief.pepys.model.tree.TreeNameLabelProvider;
 import org.mwc.debrief.pepys.nebula.PShelf;
 import org.mwc.debrief.pepys.nebula.PShelfItem;
 import org.mwc.debrief.pepys.nebula.RedmondShelfRenderer;
@@ -206,8 +208,8 @@ public class PepysImportView extends Dialog {
 		treeGrid.verticalAlignment = GridData.FILL;
 		treeGrid.grabExcessVerticalSpace = true;
 		this.tree = new CheckboxTreeViewer(parent, SWT.BORDER);
-		this.tree.setContentProvider(new PepysContentProvider());
-		this.tree.setLabelProvider(new PepysLabelProvider());
+		this.tree.setContentProvider(new TreeContentProvider());
+		this.tree.setLabelProvider(new TreeNameLabelProvider());
 		this.tree.getTree().setLayoutData(treeGrid);
 
 		final GridData applyGridDataButton = new GridData();

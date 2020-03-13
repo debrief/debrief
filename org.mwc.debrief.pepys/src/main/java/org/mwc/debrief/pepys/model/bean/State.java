@@ -4,6 +4,7 @@ import java.beans.PropertyVetoException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
@@ -125,7 +126,7 @@ public class State implements AbstractBean, TreeStructurable {
 		return state_id;
 	}
 
-	public Timestamp getTime() {
+	public Date getTime() {
 		return time;
 	}
 

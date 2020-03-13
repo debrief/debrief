@@ -15,6 +15,7 @@
 
 package org.mwc.debrief.pepys.model.bean;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 import org.mwc.debrief.pepys.model.db.annotation.FieldName;
@@ -33,7 +34,7 @@ public class Comment implements AbstractBean, TreeStructurable {
 	@ManyToOne
 	@FieldName(name = "platform_id")
 	private Platform platform;
-	private Date time;
+	private Timestamp time;
 	private int comment_type_id;
 	private String content;
 
@@ -118,7 +119,7 @@ public class Comment implements AbstractBean, TreeStructurable {
 		this.privacy = privacy;
 	}
 
-	public void setTime(final Date time) {
+	public void setTime(final Timestamp time) {
 		this.time = time;
 	}
 
