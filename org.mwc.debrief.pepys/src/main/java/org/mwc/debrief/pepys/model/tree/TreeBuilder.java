@@ -16,16 +16,20 @@
 package org.mwc.debrief.pepys.model.tree;
 
 import java.beans.PropertyVetoException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.model.TypeDomain;
 import org.mwc.debrief.pepys.model.bean.AbstractBean;
+import org.mwc.debrief.pepys.model.db.Condition;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils;
+import org.mwc.debrief.pepys.model.db.annotation.Time;
 import org.mwc.debrief.pepys.model.tree.TreeNode.NodeType;
 
 import junit.framework.TestCase;
@@ -69,18 +73,18 @@ public class TreeBuilder {
 				TreeNode leaf;
 				if (currentItem.getSensorType() == null) {
 					// It has an exception in the structure, we simply add the leaf.
-					
+
 					leaf = measureNode.getChild(currentItem.getDatafile().getReference());
 					if (leaf == null) {
 						leaf = new TreeNode(NodeType.DATAFILE, currentItem.getDatafile().getReference());
-						
+
 						measureNode.addChild(leaf);
 					}
 					leaf.addItem(currentItem);
 				} else {
 					final String sensorName = currentItem.getSensorType().getName();
 					TreeNode sensorNode = measureNode.getChild(sensorName);
-					
+
 					if (sensorNode == null) {
 						sensorNode = new TreeNode(TreeNode.NodeType.SENSOR, sensorName, null);
 						measureNode.addChild(sensorNode);
@@ -89,12 +93,12 @@ public class TreeBuilder {
 					leaf = sensorNode.getChild(currentItem.getDatafile().getReference());
 					if (leaf == null) {
 						leaf = new TreeNode(NodeType.DATAFILE, currentItem.getDatafile().getReference());
-						
+
 						sensorNode.addChild(leaf);
 					}
-					
+
 				}
-				
+
 				leaf.addItem(currentItem);
 			}
 		}
@@ -113,10 +117,28 @@ public class TreeBuilder {
 
 			if (AbstractBean.class.isAssignableFrom(currentBeanType) && domain.isChecked()) {
 
+				final ArrayList<Condition> conditions = new ArrayList<Condition>();
+
+				// Let's filter by Period.
+				final Field timeField = AnnotationsUtils.getField(currentBeanType, Time.class);
+				if (timeField != null) {
+					final SimpleDateFormat sqlDateFormat = new SimpleDateFormat(DatabaseConnection.SQLITE_DATE_FORMAT);
+					final String initDate = sqlDateFormat.format(configuration.getTimePeriod().getStartDTG().getDate());
+					final String endDate = sqlDateFormat.format(configuration.getTimePeriod().getEndDTG().getDate());
+
+					final String fieldName = AnnotationsUtils.getTableName(currentBeanType)
+							+ AnnotationsUtils.getColumnName(timeField);
+
+					conditions.add(new Condition(DatabaseConnection.ESCAPE_CHARACTER + initDate
+							+ DatabaseConnection.ESCAPE_CHARACTER + " <= " + fieldName));
+					conditions.add(new Condition(fieldName + " <= " + DatabaseConnection.ESCAPE_CHARACTER + endDate
+							+ DatabaseConnection.ESCAPE_CHARACTER));
+				}
+
 				// TODO FILTERING HERE
 				final String filter = null;
 				final List<? extends AbstractBean> currentItems = DatabaseConnection.getInstance()
-						.listAll(currentBeanType, null);
+						.listAll(currentBeanType, conditions);
 				allItems.addAll(currentItems);
 			}
 		}

@@ -155,8 +155,10 @@ public class PepysImportView extends Dialog {
 
 		this.startDate = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.DROP_DOWN | CDT.DATE_SHORT);
 		this.startDate.setPattern("dd/MM/yyyy");
+		this.startDate.setSelection(model.getTimePeriod().getStartDTG().getDate());
 
 		this.startTime = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.SPINNER | CDT.TIME_MEDIUM);
+		this.startTime.setSelection(model.getTimePeriod().getStartDTG().getDate());
 
 		this.endLabel = new Label(timePeriodItem.getBody(), SWT.NONE);
 		this.endLabel.setText("End:");
@@ -164,7 +166,10 @@ public class PepysImportView extends Dialog {
 
 		this.endDate = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.DROP_DOWN | CDT.DATE_SHORT);
 		this.endDate.setPattern("dd/MM/yyyy");
+		this.endDate.setSelection(model.getTimePeriod().getEndDTG().getDate());
+		
 		this.endTime = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.SPINNER | CDT.TIME_MEDIUM);
+		this.endTime.setSelection(model.getTimePeriod().getEndDTG().getDate());
 
 		// AREA
 		final GridLayout areaItemLayout = new GridLayout();

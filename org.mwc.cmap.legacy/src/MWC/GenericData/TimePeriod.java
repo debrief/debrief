@@ -96,6 +96,11 @@ public interface TimePeriod extends java.io.Serializable, Cloneable {
 			_startDTG = start;
 			_endDTG = end;
 		}
+		
+		public BaseTimePeriod() {
+			_startDTG = new HiResDate();
+			_endDTG = new HiResDate();
+		}
 
 		/////////////////////////////////////////////////////////////
 		// member functions
@@ -125,7 +130,9 @@ public interface TimePeriod extends java.io.Serializable, Cloneable {
 			if (obj == this)
 				return true;
 			final TimePeriod tp = (TimePeriod) obj;
-			return (tp.getStartDTG().equals(this.getStartDTG()) && tp.getEndDTG().equals(this.getEndDTG()));
+			
+			return ((tp.getStartDTG() == null && this.getStartDTG() == null) || (tp.getStartDTG() != null && tp.getStartDTG().equals(this.getStartDTG()))) &&
+				    ((tp.getEndDTG() == null && this.getEndDTG() == null) || (tp.getEndDTG() != null && tp.getEndDTG().equals(this.getEndDTG())));
 		}
 
 		/**
@@ -379,4 +386,9 @@ public interface TimePeriod extends java.io.Serializable, Cloneable {
 	@Override
 	public String toString();
 
+	/**
+	 * True if getEndDTG() and getStartDTG() are null
+	 * @return
+	 */
+	public boolean isInvalid();
 }

@@ -29,6 +29,7 @@ import org.mwc.debrief.pepys.model.tree.TreeNode;
 import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.TimePeriod.BaseTimePeriod;
 import MWC.GenericData.WorldArea;
 
 public class ModelConfiguration implements AbstractConfiguration {
@@ -45,7 +46,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	private WorldArea currentArea = null;
 
-	private TimePeriod currentPeriod = null;
+	private TimePeriod currentPeriod = new BaseTimePeriod();
 
 	private final TreeNode treeModel = new TreeNode(TreeNode.NodeType.ROOT, "", null);
 

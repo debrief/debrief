@@ -1,5 +1,6 @@
 package org.mwc.debrief.pepys.model.db.annotation;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
 public class AnnotationsUtils {
@@ -13,10 +14,10 @@ public class AnnotationsUtils {
 		}
 	}
 
-	public static Field getIdField(final Class<?> type) {
+	public static Field getField(final Class<?> type, final Class<? extends Annotation> annotation) {
 		final Field[] fields = type.getDeclaredFields();
 		for (final Field field : fields) {
-			if (field.isAnnotationPresent(Id.class)) {
+			if (field.isAnnotationPresent(annotation)) {
 				return field;
 			}
 		}

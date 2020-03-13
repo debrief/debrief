@@ -33,6 +33,7 @@ import java.util.List;
 
 import org.mwc.debrief.pepys.model.bean.AbstractBean;
 import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils;
+import org.mwc.debrief.pepys.model.db.annotation.Id;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.OneToOne;
 import org.sqlite.SQLiteConfig;
@@ -49,6 +50,8 @@ public class DatabaseConnection {
 	public static final boolean SHOW_SQL = true;
 	public static final String LOCATION_COORDINATES = "XYZ";
 	public static final String WHERE_CONNECTOR = " AND ";
+	public static final String SQLITE_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.000000";
+	public static final char ESCAPE_CHARACTER = '\'';
 
 	public static DatabaseConnection getInstance() throws PropertyVetoException, SQLException {
 		if (INSTANCE == null) {
@@ -93,7 +96,7 @@ public class DatabaseConnection {
 		if (AbstractBean.class.isAssignableFrom(type)) {
 			final Constructor constructor = type.getConstructor();
 			final AbstractBean ans = (AbstractBean) constructor.newInstance();
-			return " WHERE " + AnnotationsUtils.getIdField(type).getName() + " = ?";
+			return " WHERE " + AnnotationsUtils.getField(type, Id.class).getName() + " = ?";
 		}
 		return "";
 	}
@@ -221,7 +224,7 @@ public class DatabaseConnection {
 				newJoin.append(AnnotationsUtils.getColumnName(field));
 				newJoin.append(AnnotationsUtils.getTableName(field.getType()));
 				newJoin.append(".");
-				newJoin.append(AnnotationsUtils.getIdField(field.getType()).getName());
+				newJoin.append(AnnotationsUtils.getField(field.getType(), Id.class).getName());
 				newJoin.append(" = ");
 				newJoin.append(prefix);
 				newJoin.append(baseTableName);

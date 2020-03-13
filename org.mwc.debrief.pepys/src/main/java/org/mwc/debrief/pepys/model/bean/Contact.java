@@ -23,6 +23,7 @@ import org.mwc.debrief.pepys.model.db.annotation.Id;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.OneToOne;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
+import org.mwc.debrief.pepys.model.db.annotation.Time;
 import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 
 import MWC.GenericData.WorldLocation;
@@ -37,6 +38,8 @@ public class Contact implements AbstractBean, TreeStructurable {
 	@ManyToOne
 	@FieldName(name = "sensor_id")
 	private Sensor sensor;
+	
+	@Time
 	private Timestamp time;
 	private double bearing;
 	private double rel_bearing;

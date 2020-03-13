@@ -23,6 +23,7 @@ import org.mwc.debrief.pepys.model.db.annotation.Id;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.OneToOne;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
+import org.mwc.debrief.pepys.model.db.annotation.Time;
 import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 
 @TableName(name = "Comments")
@@ -34,6 +35,8 @@ public class Comment implements AbstractBean, TreeStructurable {
 	@ManyToOne
 	@FieldName(name = "platform_id")
 	private Platform platform;
+	
+	@Time
 	private Timestamp time;
 	private int comment_type_id;
 	private String content;

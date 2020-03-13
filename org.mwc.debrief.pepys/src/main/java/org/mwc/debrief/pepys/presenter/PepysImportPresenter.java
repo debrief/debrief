@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Debrief - the Open Source Maritime Analysis Application
+. * Debrief - the Open Source Maritime Analysis Application
  * http://debrief.info
  *
  * (C) 2000-2020, Deep Blue C Technology Ltd
@@ -77,11 +77,9 @@ public class PepysImportPresenter {
 
 			public void setStartTime(final AbstractConfiguration model) {
 				final HiResDate start = new HiResDate(view.getStartDate().getSelection());
-				if (model.getTimePeriod() == null) {
-					model.setTimePeriod(new TimePeriod.BaseTimePeriod(start, start));
-				} else {
-					model.setTimePeriod(new TimePeriod.BaseTimePeriod(start, model.getTimePeriod().getEndDTG()));
-				}
+				final HiResDate oldStart = model.getTimePeriod().getStartDTG();
+				model.setTimePeriod(new TimePeriod.BaseTimePeriod(HiResDate.copyOnlyDate(start, oldStart),
+						model.getTimePeriod().getEndDTG()));
 			}
 
 			@Override
@@ -99,11 +97,9 @@ public class PepysImportPresenter {
 
 			public void setEndTime(final AbstractConfiguration model) {
 				final HiResDate end = new HiResDate(view.getEndDate().getSelection());
-				if (model.getTimePeriod() == null) {
-					model.setTimePeriod(new TimePeriod.BaseTimePeriod(end, end));
-				} else {
-					model.setTimePeriod(new TimePeriod.BaseTimePeriod(model.getTimePeriod().getStartDTG(), end));
-				}
+				final HiResDate oldEnd = model.getTimePeriod().getEndDTG();
+				model.setTimePeriod(new TimePeriod.BaseTimePeriod(model.getTimePeriod().getStartDTG(),
+						HiResDate.copyOnlyDate(end, oldEnd)));
 			}
 
 			@Override
@@ -117,11 +113,52 @@ public class PepysImportPresenter {
 			}
 		});
 
+		view.getStartTime().addSelectionListener(new SelectionListener() {
+
+			public void setStartTime(final AbstractConfiguration model) {
+				final HiResDate start = new HiResDate(view.getStartTime().getSelection());
+				final HiResDate oldStart = model.getTimePeriod().getStartDTG();
+				model.setTimePeriod(new TimePeriod.BaseTimePeriod(HiResDate.copyOnlyTime(start, oldStart),
+						model.getTimePeriod().getEndDTG()));
+			}
+
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				setStartTime(model);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent sel) {
+				setStartTime(model);
+			}
+		});
+
+		view.getEndTime().addSelectionListener(new SelectionListener() {
+
+			public void setEndTime(final AbstractConfiguration model) {
+				final HiResDate end = new HiResDate(view.getEndTime().getSelection());
+				final HiResDate oldEnd = model.getTimePeriod().getEndDTG();
+				model.setTimePeriod(new TimePeriod.BaseTimePeriod(model.getTimePeriod().getStartDTG(),
+						HiResDate.copyOnlyTime(end, oldEnd)));
+			}
+
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				setEndTime(model);
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+				setEndTime(model);
+			}
+		});
+
 		model.addPropertyChangeListener(new PropertyChangeListener() {
 
 			@Override
 			public void propertyChange(final PropertyChangeEvent evt) {
-				if (ModelConfiguration.PERIOD_PROPERTY.equals(evt.getPropertyName())) {
+				if (ModelConfiguration.PERIOD_PROPERTY.equals(evt.getPropertyName())
+						&& !evt.getOldValue().equals(evt.getNewValue())) {
 					view.getStartDate().setSelection(model.getTimePeriod().getStartDTG().getDate());
 				}
 			}

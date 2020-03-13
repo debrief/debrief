@@ -12,6 +12,7 @@ import org.mwc.debrief.pepys.model.db.annotation.FieldName;
 import org.mwc.debrief.pepys.model.db.annotation.Id;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
+import org.mwc.debrief.pepys.model.db.annotation.Time;
 import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 
 import Debrief.Wrappers.FixWrapper;
@@ -49,7 +50,9 @@ public class State implements AbstractBean, TreeStructurable {
 	@Id
 	private int state_id;
 
+	@Time
 	private Timestamp time;
+	
 	@ManyToOne
 	@FieldName(name = "sensor_id")
 	private Sensor sensor;
