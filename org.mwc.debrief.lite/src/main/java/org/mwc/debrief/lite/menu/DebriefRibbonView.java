@@ -196,6 +196,9 @@ public class DebriefRibbonView {
 
 	}
 
+	private static Command zoominButton;
+	private static AdvancedZoomInAction zoomInAction;
+
 	private static ComponentProjection<JRibbonSlider, SliderComponentContentModel> addAlphaSlider(
 			final ChangeListener alphaListener, final float alpha) {
 
@@ -265,46 +268,8 @@ public class DebriefRibbonView {
 		viewBand.startGroup();
 		MenuUtils.addCommandToggleButton("Pan", "icons/24/hand.png", new PanCommandAction(mapPane), viewBand,
 				PresentationPriority.TOP, true, mouseModeGroup, false);
-		final AdvancedZoomInAction zoomInAction = new AdvancedZoomInAction(mapPane);
-		// MenuUtils.addCommandToggleButton("Pan", "icons/24/hand.png", new PanAction(
-		// mapPane)
-		// {
-		//
-		// /**
-		// *
-		// */
-		// private static final long serialVersionUID = 1072919666918011233L;
-		//
-		// @Override
-		// public void actionPerformed(final ActionEvent ev)
-		// {
-		// getMapPane().setCursorTool(new PanTool()
-		// {
-		//
-		// @Override
-		// public void onMouseDragged(final MapMouseEvent ev)
-		// {
-		// if (ev.getButton() != MouseEvent.BUTTON3)
-		// {
-		// super.onMouseDragged(ev);
-		// }
-		// }
-		//
-		// @Override
-		// public void onMousePressed(final MapMouseEvent ev)
-		// {
-		//
-		// if (ev.getButton() != MouseEvent.BUTTON3)
-		// {
-		// super.onMousePressed(ev);
-		// }
-		// }
-		// });
-		// }
-		//
-		// }, viewBand, RibbonElementPriority.TOP, true, mouseModeGroup, false);
-		// final ZoomInAction zoomInAction = new AdvancedZoomInAction(mapPane);
-		MenuUtils.addCommandToggleButton("Zoom In", "icons/24/zoomin.png", zoomInAction, viewBand,
+		zoomInAction = new AdvancedZoomInAction(mapPane);
+		zoominButton = MenuUtils.addCommandToggleButton("Zoom In", "icons/24/zoomin.png", zoomInAction, viewBand,
 				PresentationPriority.TOP, true, mouseModeGroup, true);
 		final RangeBearingAction rangeAction = new RangeBearingAction(mapPane, false, statusBar, transform);
 
@@ -366,5 +331,11 @@ public class DebriefRibbonView {
 
 		viewBand.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(viewBand));
 		return viewBand;
+	}
+
+	public static void resetToggleMenuStates() {
+		zoominButton.setToggleSelected(true);
+		zoomInAction.actionPerformed(null);
+		
 	}
 }
