@@ -28,6 +28,7 @@ import org.mwc.debrief.pepys.model.TypeDomain;
 import org.mwc.debrief.pepys.model.bean.AbstractBean;
 import org.mwc.debrief.pepys.model.db.Condition;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
+import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils;
 import org.mwc.debrief.pepys.model.db.annotation.Time;
 import org.mwc.debrief.pepys.model.tree.TreeNode.NodeType;
@@ -122,7 +123,7 @@ public class TreeBuilder {
 				// Let's filter by Period.
 				final Field timeField = AnnotationsUtils.getField(currentBeanType, Time.class);
 				if (timeField != null) {
-					final SimpleDateFormat sqlDateFormat = new SimpleDateFormat(DatabaseConnection.SQLITE_DATE_FORMAT);
+					final SimpleDateFormat sqlDateFormat = new SimpleDateFormat(SqliteDatabaseConnection.SQLITE_DATE_FORMAT);
 					final String initDate = sqlDateFormat.format(configuration.getTimePeriod().getStartDTG().getDate());
 					final String endDate = sqlDateFormat.format(configuration.getTimePeriod().getEndDTG().getDate());
 

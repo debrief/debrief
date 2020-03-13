@@ -45,28 +45,30 @@ import MWC.GenericData.WorldLocation;
 /**
  * Created by Saul - saulhidalgoaular@gmail.com
  */
-public class DatabaseConnection {
-	private static DatabaseConnection INSTANCE = null;
+public abstract class DatabaseConnection {
+	public static DatabaseConnection INSTANCE = null;
 	public static final boolean SHOW_SQL = true;
-	public static final String LOCATION_COORDINATES = "XYZ";
 	public static final String WHERE_CONNECTOR = " AND ";
-	public static final String SQLITE_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.000000";
 	public static final char ESCAPE_CHARACTER = '\'';
 
-	public static DatabaseConnection getInstance() throws PropertyVetoException, SQLException {
-		if (INSTANCE == null) {
-			INSTANCE = new DatabaseConnection();
-			INSTANCE.initialize("test2.db");
-		}
+	public DatabaseConnection() {
+		
+	}
+	
+	protected abstract DatabaseConnection createInstance() throws PropertyVetoException;
+
+	protected abstract String createLocationQuery(final String tableName, final String columnName);
+
+	protected abstract WorldLocation createWorldLocation(final ResultSet result, final String columnName)
+			throws SQLException;
+	
+	public static DatabaseConnection getInstance() throws PropertyVetoException {
 		return INSTANCE;
 	}
 
-	private ComboPooledDataSource pool;
+	protected ComboPooledDataSource pool;
 
-	private final int TIME_OUT = 60000;
-
-	private DatabaseConnection() {
-	}
+	protected final int TIME_OUT = 60000;
 
 	private String capitalizeFirstLetter(final String str) {
 		if (str == null || str.isEmpty()) {
@@ -99,31 +101,6 @@ public class DatabaseConnection {
 			return " WHERE " + AnnotationsUtils.getField(type, Id.class).getName() + " = ?";
 		}
 		return "";
-	}
-
-	protected void initialize(final String path) throws PropertyVetoException, SQLException {
-		final Connection connection = null;
-		final Statement stmt = null;
-		try {
-			// enabling dynamic extension loading
-			// absolutely required by SpatiaLite
-			final SQLiteConfig config = new SQLiteConfig();
-			config.enableLoadExtension(true);
-
-			pool = new ComboPooledDataSource();
-			pool.setCheckoutTimeout(TIME_OUT);
-			pool.setDriverClass("org.sqlite.JDBC");
-			final String completePath = "jdbc:sqlite:" + path;
-			pool.setJdbcUrl(completePath);
-			pool.setProperties(config.toProperties());
-		} finally {
-			if (stmt != null) {
-				stmt.close();
-			}
-			if (connection != null) {
-				connection.close();
-			}
-		}
 	}
 
 	public <T> List<T> listAll(final Class<T> type, final Collection<Condition> conditions)
@@ -191,19 +168,7 @@ public class DatabaseConnection {
 			final String columnName = AnnotationsUtils.getColumnName(field);
 
 			if (field.getType().equals(WorldLocation.class)) {
-				for (final char c : LOCATION_COORDINATES.toCharArray()) {
-					query.append(c);
-					query.append(" (");
-					query.append(tableName);
-					query.append(".");
-					query.append(columnName);
-					query.append(") as ");
-					query.append(tableName);
-					query.append(columnName);
-					query.append("_");
-					query.append(c);
-					query.append(", ");
-				}
+				query.append(createLocationQuery(tableName, columnName));
 			} else if (field.isAnnotationPresent(ManyToOne.class) || field.isAnnotationPresent(OneToOne.class)) {
 				final StringBuilder newJoin = new StringBuilder();
 				if (field.isAnnotationPresent(ManyToOne.class)) {
@@ -318,15 +283,7 @@ public class DatabaseConnection {
 			} else if (double.class == fieldType) {
 				method.invoke(instance, resultSet.getDouble(thisColumnName));
 			} else if (WorldLocation.class == fieldType) {
-				// WARNING.
-				// THIS WILL CLASSIFY NULL LOCATION AT (0,0,0)
-				// SAUL
-				final double[] values = new double[3];
-				for (int i = 0; i < values.length && i < LOCATION_COORDINATES.length(); i++) {
-					values[i] = resultSet.getDouble(thisColumnName + "_" + LOCATION_COORDINATES.charAt(i));
-				}
-				final WorldLocation newLocation = new WorldLocation(values[0], values[1], values[2]);
-				method.invoke(instance, newLocation);
+				method.invoke(instance, createWorldLocation(resultSet, thisColumnName));
 			} else {
 				try {
 					// Unknown type. We will find out what to do here later.
