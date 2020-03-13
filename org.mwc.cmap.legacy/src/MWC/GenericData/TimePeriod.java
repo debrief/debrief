@@ -109,7 +109,7 @@ public interface TimePeriod extends java.io.Serializable, Cloneable {
 		public final boolean contains(final HiResDate other) {
 			boolean res = false;
 
-			if (_startDTG.equals(INVALID_DATE) && _endDTG.equals(INVALID_DATE)) {
+			if (_startDTG == INVALID_DATE && _endDTG == INVALID_DATE) {
 				res = true;
 			} else if ((_startDTG.lessThanOrEqualTo(other)) && (_endDTG.greaterThanOrEqualTo(other))) {
 				res = true;
