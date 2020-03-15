@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
+import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.FieldName;
 import org.mwc.debrief.pepys.model.db.annotation.Id;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
@@ -36,26 +37,31 @@ public class Datafile implements AbstractBean {
 
 		public void testDatafilesQuery() {
 			try {
-				final List list = DatabaseConnection.getInstance().listAll(Datafile.class, null);
+				new SqliteDatabaseConnection().createInstance();
+				final List<Datafile> list = DatabaseConnection.getInstance().listAll(Datafile.class, null);
 
-				assertTrue("Datafiles - database entries", list.size() == 25);
+				assertTrue("Datafiles - database entries", list.size() == 18);
 
 				final String[][] datafilesSomeReferences = new String[][] { { "1", "sen_tracks" },
 						{ "6", "sen_frig_sensor" }, { "18", "NMEA_bad" }, { "25", "test_land_track" } };
 
-				for (final Object l : list) {
-					final Datafile dataFile = (Datafile) l;
-					final boolean correct = true;
+				for (final Datafile dataFile : list) {
+					boolean correct = true;
 					for (int i = 0; i < datafilesSomeReferences.length; i++) {
-						// correct &= !datafilesSomeReferences[0].equals(dataFile.getIdField()) ||
-						// datafilesSomeReferences[1].equals(dataFile.getReference());
+						correct &= datafilesSomeReferences[i][0].equals(dataFile.getDatafile_id())
+								&& datafilesSomeReferences[i][1].equals(dataFile.getReference());
 					}
+
 					assertTrue("Datafiles - Reference Name", correct);
+
+					assertTrue("Datafiles - Concatenated reference ",
+							"DATAFILE-TYPE-1".equals(dataFile.getDatafile().getName()));
 				}
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException | ClassNotFoundException e) {
-				// TODO Auto-generated catch block
+					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
+					| ClassNotFoundException e) {
 				e.printStackTrace();
+				fail("Couldn't connect to database or query error");
 			}
 
 		}

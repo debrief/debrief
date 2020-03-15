@@ -26,19 +26,16 @@ public class TreeNameLabelProvider implements ILabelProvider {
 
 	@Override
 	public void addListener(final ILabelProviderListener listener) {
-		// TODO Auto-generated method stub
-
+		return;
 	}
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
-
+		return;
 	}
 
 	@Override
 	public Image getImage(final Object element) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -59,14 +56,12 @@ public class TreeNameLabelProvider implements ILabelProvider {
 
 	@Override
 	public boolean isLabelProperty(final Object element, final String property) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void removeListener(final ILabelProviderListener listener) {
-		// TODO Auto-generated method stub
-
+		return;
 	}
 
 }

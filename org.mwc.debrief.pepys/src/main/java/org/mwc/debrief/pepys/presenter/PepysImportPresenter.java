@@ -38,7 +38,6 @@ import org.mwc.debrief.pepys.model.bean.Comment;
 import org.mwc.debrief.pepys.model.bean.Contact;
 import org.mwc.debrief.pepys.model.bean.State;
 import org.mwc.debrief.pepys.model.db.PostgresDatabaseConnection;
-import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.tree.TreeNode;
 import org.mwc.debrief.pepys.view.PepysImportView;
 
@@ -51,10 +50,9 @@ public class PepysImportPresenter {
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
 		try {
-			//new SqliteDatabaseConnection().createInstance();
+			//  new SqliteDatabaseConnection().createInstance();
 			new PostgresDatabaseConnection().createInstance();
-		} catch (PropertyVetoException e) {
-			// TODO Auto-generated catch block
+		} catch (final PropertyVetoException e) {
 			e.printStackTrace();
 		}
 
@@ -133,12 +131,12 @@ public class PepysImportPresenter {
 			}
 
 			@Override
-			public void widgetSelected(SelectionEvent arg0) {
+			public void widgetDefaultSelected(final SelectionEvent sel) {
 				setStartTime(model);
 			}
 
 			@Override
-			public void widgetDefaultSelected(SelectionEvent sel) {
+			public void widgetSelected(final SelectionEvent arg0) {
 				setStartTime(model);
 			}
 		});
@@ -153,12 +151,12 @@ public class PepysImportPresenter {
 			}
 
 			@Override
-			public void widgetSelected(SelectionEvent arg0) {
+			public void widgetDefaultSelected(final SelectionEvent arg0) {
 				setEndTime(model);
 			}
 
 			@Override
-			public void widgetDefaultSelected(SelectionEvent arg0) {
+			public void widgetSelected(final SelectionEvent arg0) {
 				setEndTime(model);
 			}
 		});
@@ -188,8 +186,7 @@ public class PepysImportPresenter {
 
 			@Override
 			public void handleEvent(final Event event) {
-				switch (event.type) {
-				case SWT.Selection:
+				if (event.type == SWT.Selection) {
 					try {
 						model.apply();
 					} catch (final Exception e) {
@@ -199,7 +196,6 @@ public class PepysImportPresenter {
 						messageBox.setText("Error retrieving information from Database");
 						messageBox.open();
 					}
-					break;
 				}
 			}
 		});
@@ -208,10 +204,8 @@ public class PepysImportPresenter {
 
 			@Override
 			public void handleEvent(final Event event) {
-				switch (event.type) {
-				case SWT.Selection:
+				if (event.type == SWT.Selection) {
 					model.doImport();
-					break;
 				}
 			}
 		});

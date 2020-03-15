@@ -126,7 +126,10 @@ import org.junit.runners.Suite;
 		org.mwc.debrief.pepys.model.bean.DatafileType.DatafileTypesTest.class,
 		org.mwc.debrief.pepys.model.bean.Privacy.PrivaciesTest.class,
 		org.mwc.debrief.pepys.model.bean.State.StatesTest.class,
-		org.mwc.debrief.pepys.model.tree.TreeNode.TreeNodeTest.class})
+		org.mwc.debrief.pepys.model.tree.TreeNode.TreeNodeTest.class, 
+		org.mwc.debrief.pepys.model.bean.SensorType.SensorTypeTest.class, 
+		org.mwc.debrief.pepys.model.bean.Sensor.SensorTest.class,
+		org.mwc.debrief.pepys.model.bean.Privacy.PrivaciesTest.class})
 @RunWith(Suite.class)
 public class AllTests{
 	

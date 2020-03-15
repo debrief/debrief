@@ -16,50 +16,39 @@
 package org.mwc.debrief.pepys.model.db;
 
 import java.beans.PropertyVetoException;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
 
-import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils;
-import org.mwc.debrief.pepys.model.db.annotation.Time;
 import org.sqlite.SQLiteConfig;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
-import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldLocation;
 
 public class SqliteDatabaseConnection extends DatabaseConnection {
 
 	public static final String LOCATION_COORDINATES = "XYZ";
 	public static final String SQLITE_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.000000";
-	public static final String DATABASE_FILE_PATH = "test2.db";
+	public static final String DATABASE_FILE_PATH = "../org.mwc.debrief.pepys/test6.db";
 
 	public SqliteDatabaseConnection() {
 		super(); // Just formality :)
 	}
 
-	protected void initialize() throws PropertyVetoException {
-		// enabling dynamic extension loading
-		// absolutely required by SpatiaLite
-		final SQLiteConfig config = new SQLiteConfig();
-		config.enableLoadExtension(true);
-
-		pool = new ComboPooledDataSource();
-		pool.setCheckoutTimeout(TIME_OUT);
-		pool.setDriverClass("org.sqlite.JDBC");
-		final String completePath = "jdbc:sqlite:" + DATABASE_FILE_PATH;
-		pool.setJdbcUrl(completePath);
-		pool.setProperties(config.toProperties());
+	@Override
+	public DatabaseConnection createInstance() throws PropertyVetoException {
+		if (INSTANCE == null) {
+			final SqliteDatabaseConnection newInstance = new SqliteDatabaseConnection();
+			newInstance.initialize();
+			INSTANCE = newInstance;
+		}
+		return INSTANCE;
 	}
 
 	@Override
-	protected String createLocationQuery(String tableName, String columnName) {
+	protected String createLocationQuery(final String tableName, final String columnName) {
 		final StringBuilder query = new StringBuilder();
 		for (final char c : LOCATION_COORDINATES.toCharArray()) {
 			query.append(c);
@@ -77,7 +66,7 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 	}
 
 	@Override
-	protected WorldLocation createWorldLocation(ResultSet result, String columnName) throws SQLException {
+	protected WorldLocation createWorldLocation(final ResultSet result, final String columnName) throws SQLException {
 		// WARNING.
 		// THIS WILL CLASSIFY NULL LOCATION AT (0,0,0)
 		// SAUL
@@ -89,13 +78,27 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 	}
 
 	@Override
-	public DatabaseConnection createInstance() throws PropertyVetoException {
-		if (INSTANCE == null) {
-			final SqliteDatabaseConnection newInstance = new SqliteDatabaseConnection();
-			newInstance.initialize();
-			INSTANCE = newInstance;
-		}
-		return INSTANCE;
+	public String databasePrefix() {
+		return "";
+	}
+
+	@Override
+	public String databaseSuffix() {
+		return "";
+	}
+
+	protected void initialize() throws PropertyVetoException {
+		// enabling dynamic extension loading
+		// absolutely required by SpatiaLite
+		final SQLiteConfig config = new SQLiteConfig();
+		config.enableLoadExtension(true);
+
+		pool = new ComboPooledDataSource();
+		pool.setCheckoutTimeout(TIME_OUT);
+		pool.setDriverClass("org.sqlite.JDBC");
+		final String completePath = "jdbc:sqlite:" + DATABASE_FILE_PATH;
+		pool.setJdbcUrl(completePath);
+		pool.setProperties(config.toProperties());
 	}
 
 	@Override
@@ -108,16 +111,6 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 		// GEOMETRY_COLUMNS
 		final String sql = "SELECT InitSpatialMetadata()";
 		statement.execute(sql);
-	}
-
-	@Override
-	public String databasePrefix() {
-		return "";
-	}
-
-	@Override
-	public String databaseSuffix() {
-		return "";
 	}
 
 }

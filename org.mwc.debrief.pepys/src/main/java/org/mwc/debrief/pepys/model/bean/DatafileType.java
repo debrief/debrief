@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
+import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.Id;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
 
@@ -34,18 +35,19 @@ public class DatafileType implements AbstractBean {
 
 		public void testDatafileTypesQuery() {
 			try {
-				final List list = DatabaseConnection.getInstance().listAll(DatafileType.class, null);
+				new SqliteDatabaseConnection().createInstance();
+				final List<DatafileType> list = DatabaseConnection.getInstance().listAll(DatafileType.class, null);
 
 				assertTrue("Datafiletypes - database entries", list.size() == 1);
 
-				final DatafileType type = (DatafileType) list.get(0);
-				// assertTrue("Datafiletypes - database entries",
-				// "1".equals(type.getIdField()));
+				final DatafileType type = list.get(0);
+				assertTrue("Datafiletypes - database entries", "1".equals(type.getDatafile_type_id()));
 				assertTrue("Datafiletypes - database entries", "DATAFILE-TYPE-1".equals(type.getName()));
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException | ClassNotFoundException e) {
-				// TODO Auto-generated catch block
+					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
+					| ClassNotFoundException e) {
 				e.printStackTrace();
+				fail("Couldn't connect to database or query error");
 			}
 
 		}

@@ -4,10 +4,13 @@ import java.beans.PropertyVetoException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.mwc.debrief.pepys.model.db.Condition;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
+import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.FieldName;
 import org.mwc.debrief.pepys.model.db.annotation.Id;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
@@ -29,19 +32,20 @@ public class State implements AbstractBean, TreeStructurable {
 
 		public void testStatesQuery() {
 			try {
-				final List list = DatabaseConnection.getInstance().listAll(State.class, null);
+				new SqliteDatabaseConnection().createInstance();
+				final List<State> list = DatabaseConnection.getInstance().listAll(State.class, null);
 
-				assertTrue("States - database entries", list.size() == 543);
+				assertTrue("States - database entries", list.size() == 24418);
 
-				// final List list2 = DatabaseConnection.getInstance().listAll(State.class,
-				// "source_id = 16");
+				final List<State> list2 = DatabaseConnection.getInstance().listAll(State.class,
+						Arrays.asList(new Condition[] { new Condition("source_id = 13") }));
 
-				// assertTrue("States - database entries", list2.size() == 44);
-
+				assertTrue("States - database entries", list2.size() == 14);
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException | ClassNotFoundException e) {
-				// TODO Auto-generated catch block
+					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
+					| ClassNotFoundException e) {
 				e.printStackTrace();
+				fail("Couldn't connect to database or query error");
 			}
 
 		}
@@ -52,7 +56,7 @@ public class State implements AbstractBean, TreeStructurable {
 
 	@Time
 	private Timestamp time;
-	
+
 	@ManyToOne
 	@FieldName(name = "sensor_id")
 	private Sensor sensor;
@@ -129,6 +133,7 @@ public class State implements AbstractBean, TreeStructurable {
 		return state_id;
 	}
 
+	@Override
 	public Date getTime() {
 		return time;
 	}

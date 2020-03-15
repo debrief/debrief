@@ -53,33 +53,20 @@ public abstract class DatabaseConnection {
 	public static final boolean SHOW_SQL = true;
 	public static final String WHERE_CONNECTOR = " AND ";
 	public static final char ESCAPE_CHARACTER = '\'';
-	
-	protected HashMap<String, String> aliasRenamingMap = new HashMap<String, String>();
 
-	public DatabaseConnection() {
-		
-	}
-	
-	public abstract DatabaseConnection createInstance() throws PropertyVetoException;
-
-	protected abstract String createLocationQuery(final String tableName, final String columnName);
-
-	protected abstract WorldLocation createWorldLocation(final ResultSet result, final String columnName)
-			throws SQLException;
-	
-	protected abstract void loadExtention(final Connection connection, final Statement statement) throws SQLException, ClassNotFoundException;
-	
 	public static DatabaseConnection getInstance() throws PropertyVetoException {
 		return INSTANCE;
 	}
-	
-	public abstract String databasePrefix();
-	
-	public abstract String databaseSuffix();
+
+	protected HashMap<String, String> aliasRenamingMap = new HashMap<String, String>();
 
 	protected ComboPooledDataSource pool;
 
 	protected final int TIME_OUT = 60000;
+
+	public DatabaseConnection() {
+
+	}
 
 	private String capitalizeFirstLetter(final String str) {
 		if (str == null || str.isEmpty()) {
@@ -88,7 +75,37 @@ public abstract class DatabaseConnection {
 		return Character.toUpperCase(str.charAt(0)) + str.substring(1);
 	}
 
-	private String createQuery(final Class type) {
+	public void cleanRenamingBuffer() {
+		aliasRenamingMap.clear();
+	}
+
+	public abstract DatabaseConnection createInstance() throws PropertyVetoException;
+
+	protected abstract String createLocationQuery(final String tableName, final String columnName);
+
+	public Collection<Condition> createPeriodFilter(final TimePeriod period, final Class<?> type) {
+		final ArrayList<Condition> conditions = new ArrayList<Condition>();
+
+		// Let's filter by Period.
+		final Field timeField = AnnotationsUtils.getField(type, Time.class);
+		if (timeField != null) {
+			final SimpleDateFormat sqlDateFormat = new SimpleDateFormat(SqliteDatabaseConnection.SQLITE_DATE_FORMAT);
+			final String initDate = sqlDateFormat.format(period.getStartDTG().getDate());
+			final String endDate = sqlDateFormat.format(period.getEndDTG().getDate());
+
+			final String fieldName = getAlias(AnnotationsUtils.getTableName(type)) + "."
+					+ AnnotationsUtils.getColumnName(timeField);
+
+			conditions.add(new Condition(DatabaseConnection.ESCAPE_CHARACTER + initDate
+					+ DatabaseConnection.ESCAPE_CHARACTER + " <= " + fieldName));
+			conditions.add(new Condition(fieldName + " <= " + DatabaseConnection.ESCAPE_CHARACTER + endDate
+					+ DatabaseConnection.ESCAPE_CHARACTER));
+		}
+
+		return conditions;
+	}
+
+	private String createQuery(final Class<?> type) {
 		final ArrayList<String> joins = new ArrayList<String>();
 		final String tableName = AnnotationsUtils.getTableName(type);
 
@@ -111,20 +128,44 @@ public abstract class DatabaseConnection {
 	private <T> String createQueryQueryIDPart(final Class<T> type) throws NoSuchMethodException, SecurityException,
 			InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		if (AbstractBean.class.isAssignableFrom(type)) {
-			final Constructor constructor = type.getConstructor();
-			final AbstractBean ans = (AbstractBean) constructor.newInstance();
 			return " WHERE " + AnnotationsUtils.getField(type, Id.class).getName() + " = ?";
 		}
 		return "";
 	}
-	
-	public void cleanRenamingBuffer() {
-		aliasRenamingMap.clear();
+
+	protected abstract WorldLocation createWorldLocation(final ResultSet result, final String columnName)
+			throws SQLException;
+
+	public abstract String databasePrefix();
+
+	public abstract String databaseSuffix();
+
+	protected String getAlias(final String realTableName) {
+		if (!aliasRenamingMap.containsKey(realTableName)) {
+			// It hasn't been previously renamed.
+			aliasRenamingMap.put(realTableName, intToString(aliasRenamingMap.size() + 10000));
+		}
+		return aliasRenamingMap.get(realTableName);
+
+	}
+
+	protected String intToString(final int _id) {
+		int id = _id;
+		final int BASE = 26;
+		final StringBuilder ans = new StringBuilder();
+		while (id > 0) {
+			final int letter = (id - 1) % BASE;
+			ans.append((char) ('A' + letter));
+			id = (id - letter) / BASE;
+		}
+
+		return ans.reverse().toString();
 	}
 
 	public <T> List<T> listAll(final Class<T> type, final Collection<Condition> conditions)
 			throws PropertyVetoException, SQLException, NoSuchMethodException, SecurityException,
-			InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException {
+			InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			ClassNotFoundException {
 		final Connection connection = pool.getConnection();
 		final List<T> ans = new ArrayList<>();
 		ResultSet resultSet = null;
@@ -149,7 +190,7 @@ public abstract class DatabaseConnection {
 			statement = connection.createStatement();
 
 			loadExtention(connection, statement);
-			
+
 			resultSet = statement.executeQuery(query);
 
 			while (resultSet.next()) {
@@ -170,6 +211,41 @@ public abstract class DatabaseConnection {
 			}
 		}
 	}
+
+	public <T> T listById(final Class<T> type, final Object id)
+			throws SQLException, NoSuchMethodException, SecurityException, InstantiationException,
+			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		final Connection connection = pool.getConnection();
+		ResultSet resultSet = null;
+		try {
+			final Constructor<T> constructor = type.getConstructor();
+			final String query = createQuery(type) + createQueryQueryIDPart(type);
+
+			if (SHOW_SQL) {
+				System.out.println("Query: " + query);
+			}
+
+			final PreparedStatement statement = connection.prepareStatement(query);
+			statement.setString(1, id.toString());
+			resultSet = statement.executeQuery();
+
+			final T instance = storeFieldValue(type, resultSet, "");
+
+			connection.close();
+
+			return instance;
+		} finally {
+			if (connection != null) {
+				connection.close();
+			}
+			if (resultSet != null) {
+				resultSet.close();
+			}
+		}
+	}
+
+	protected abstract void loadExtention(final Connection connection, final Statement statement)
+			throws SQLException, ClassNotFoundException;
 
 	private String prepareSelect(final Class<?> type, final List<String> join, final String prefix) {
 		final String baseTableName = AnnotationsUtils.getTableName(type);
@@ -193,9 +269,11 @@ public abstract class DatabaseConnection {
 				newJoin.append(AnnotationsUtils.getTableName(field.getType()));
 				newJoin.append(databaseSuffix());
 				newJoin.append(" AS ");
-				newJoin.append(getAlias(prefix + baseTableName + AnnotationsUtils.getColumnName(field) + AnnotationsUtils.getTableName(field.getType())));
+				newJoin.append(getAlias(prefix + baseTableName + AnnotationsUtils.getColumnName(field)
+						+ AnnotationsUtils.getTableName(field.getType())));
 				newJoin.append(" ON ");
-				newJoin.append(getAlias(prefix + baseTableName + AnnotationsUtils.getColumnName(field) + AnnotationsUtils.getTableName(field.getType())));
+				newJoin.append(getAlias(prefix + baseTableName + AnnotationsUtils.getColumnName(field)
+						+ AnnotationsUtils.getTableName(field.getType())));
 				newJoin.append(".");
 				newJoin.append(AnnotationsUtils.getField(field.getType(), Id.class).getName());
 				newJoin.append(" = ");
@@ -219,44 +297,8 @@ public abstract class DatabaseConnection {
 		return query.toString();
 	}
 
-	protected <T> T retrieveById(final Object id, final Class<T> type)
-			throws SQLException, NoSuchMethodException, SecurityException, InstantiationException,
-			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		final Connection connection = pool.getConnection();
-		ResultSet resultSet = null;
-		try {
-			final Constructor<T> constructor = type.getConstructor();
-			final T ans = constructor.newInstance();
-			final String query = createQuery(type) + createQueryQueryIDPart(type);
-
-			if (SHOW_SQL) {
-				System.out.println("Query: " + query);
-			}
-
-			final PreparedStatement statement = connection.prepareStatement(query);
-			statement.setString(1, id.toString());
-			resultSet = statement.executeQuery();
-
-			if (resultSet.next()) {
-				final Field[] fields = type.getFields();
-				for (final Field field : fields) {
-					final Class fieldType = field.getClass();
-					final Method method = type.getMethod("set" + capitalizeFirstLetter(field.getName()), fieldType);
-					method.invoke(ans, resultSet.getObject(field.getName()));
-				}
-			}
-
-			connection.close();
-
-			return ans;
-		} finally {
-			if (connection != null) {
-				connection.close();
-			}
-			if (resultSet != null) {
-				resultSet.close();
-			}
-		}
+	public void removeInstance() {
+		INSTANCE = null;
 	}
 
 	public <T> T storeFieldValue(final Class<T> type, final ResultSet resultSet, final String prefix)
@@ -266,18 +308,18 @@ public abstract class DatabaseConnection {
 		final T instance = constructor.newInstance();
 		final Field[] fields = type.getDeclaredFields();
 		for (final Field field : fields) {
-			final Class fieldType = field.getType();
+			final Class<?> fieldType = field.getType();
 			final Method method = type.getDeclaredMethod("set" + capitalizeFirstLetter(field.getName()), fieldType);
 
-			final String thisColumnName = getAlias(prefix + AnnotationsUtils.getTableName(type)
-					+ AnnotationsUtils.getColumnName(field));
+			final String thisColumnName = getAlias(
+					prefix + AnnotationsUtils.getTableName(type) + AnnotationsUtils.getColumnName(field));
 			if (field.isAnnotationPresent(ManyToOne.class) || field.isAnnotationPresent(OneToOne.class)) {
 				method.invoke(instance, storeFieldValue(fieldType, resultSet,
 						prefix + AnnotationsUtils.getTableName(type) + AnnotationsUtils.getColumnName(field)));
 			} else if (int.class == fieldType) {
 				try {
 					method.invoke(instance, resultSet.getInt(thisColumnName));
-				}catch (Exception e) {
+				} catch (final Exception e) {
 					e.printStackTrace();
 				}
 			} else if (String.class == fieldType) {
@@ -304,49 +346,5 @@ public abstract class DatabaseConnection {
 
 		}
 		return instance;
-	}
-	
-	public Collection<Condition> createPeriodFilter(final TimePeriod period, final Class type){
-		final ArrayList<Condition> conditions = new ArrayList<Condition>();
-		
-		// Let's filter by Period.
-		final Field timeField = AnnotationsUtils.getField(type, Time.class);
-		if (timeField != null) {
-			final SimpleDateFormat sqlDateFormat = new SimpleDateFormat(SqliteDatabaseConnection.SQLITE_DATE_FORMAT);
-			final String initDate = sqlDateFormat.format(period.getStartDTG().getDate());
-			final String endDate = sqlDateFormat.format(period.getEndDTG().getDate());
-
-			final String fieldName = getAlias(AnnotationsUtils.getTableName(type)) + "."
-					+ AnnotationsUtils.getColumnName(timeField);
-
-			conditions.add(new Condition(DatabaseConnection.ESCAPE_CHARACTER + initDate
-					+ DatabaseConnection.ESCAPE_CHARACTER + " <= " + fieldName));
-			conditions.add(new Condition(fieldName + " <= " + DatabaseConnection.ESCAPE_CHARACTER + endDate
-					+ DatabaseConnection.ESCAPE_CHARACTER));
-		}
-		
-		return conditions;
-	}
-	
-	protected String intToString(final int _id) {
-		int id = _id;
-		final int BASE = 26;
-		final StringBuilder ans = new StringBuilder();
-		while(id > 0) {
-			int letter = (id - 1) % BASE;
-			ans.append((char)('A' + letter));
-			id = (id - letter) / BASE;
-		}
-		
-		return ans.reverse().toString();
-	}
-	
-	protected String getAlias(final String realTableName) {
-		if (!aliasRenamingMap.containsKey(realTableName)) {
-			// It hasn't been previously renamed.
-			aliasRenamingMap.put(realTableName, intToString(aliasRenamingMap.size() + 10000));
-		}
-		return aliasRenamingMap.get(realTableName);
-		
 	}
 }

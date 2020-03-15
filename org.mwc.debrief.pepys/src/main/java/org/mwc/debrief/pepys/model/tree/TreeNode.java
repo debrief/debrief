@@ -25,6 +25,7 @@ import java.util.TreeMap;
 
 import org.mwc.debrief.pepys.model.bean.State;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
+import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -40,27 +41,33 @@ public class TreeNode {
 	public static class TreeNodeTest extends TestCase {
 
 		public void testTreeNode() {
-			List list = null;
+			List<State> list = null;
 			try {
+				new SqliteDatabaseConnection().createInstance();
 				list = DatabaseConnection.getInstance().listAll(State.class, null);
 			} catch (final Exception e) {
 				fail("Failed retrieving data from Database");
 			}
 
-			assertTrue("States - database entries", list.size() == 543);
+			assertTrue("States - database entries", list.size() == 24418);
 
 			final String rootName = "ROOT";
 			final TreeNode root = new TreeNode(NodeType.ROOT, rootName, null);
 			root.addItem((State) list.get(0));
-			final TreeNode child1 = new TreeNode(NodeType.ROOT, rootName, root);
+			final String child1Name = "CHILD1";
+			final TreeNode child1 = new TreeNode(NodeType.PLATFORM, child1Name, root);
 			child1.addItem((State) list.get(1));
-			final TreeNode child2 = new TreeNode(NodeType.ROOT, rootName, root);
+			final String child2Name = "CHILD2";
+			final TreeNode child2 = new TreeNode(NodeType.MEASURE, child2Name, root);
 			child2.addItem((State) list.get(2));
-			final TreeNode child3 = new TreeNode(NodeType.ROOT, rootName, root);
+			final String child3Name = "CHILD3";
+			final TreeNode child3 = new TreeNode(NodeType.ROOT, child3Name, root);
 			child3.addItem((State) list.get(3));
-			final TreeNode child1child1 = new TreeNode(NodeType.ROOT, rootName, child1);
+			final String child1child1Name = "child1child1Name";
+			final TreeNode child1child1 = new TreeNode(NodeType.ROOT, child1child1Name, child1);
 			child1child1.addItem((State) list.get(4));
-			final TreeNode child1child2 = new TreeNode(NodeType.ROOT, rootName, child1);
+			final String child1child2Name = "child1child2Name";
+			final TreeNode child1child2 = new TreeNode(NodeType.ROOT, child1child2Name, child1);
 			child1child2.addItem((State) list.get(5));
 
 			root.addChild(child1);
@@ -70,12 +77,12 @@ public class TreeNode {
 			child1.addChild(child1child1);
 			child1.addChild(child1child2);
 
-			assertTrue("Retrieving child1 correctly", child1.equals(root.getChild(child1.name)));
-			assertTrue("Retrieving child2 correctly", child2.equals(root.getChild(child2.name)));
-			assertTrue("Retrieving child3 correctly", child3.equals(root.getChild(child3.name)));
+			assertTrue("Retrieving child1 correctly", child1.equals(root.getChild(child1Name)));
+			assertTrue("Retrieving child2 correctly", child2.equals(root.getChild(child2Name)));
+			assertTrue("Retrieving child3 correctly", child3.equals(root.getChild(child3Name)));
 
-			assertTrue("Retrieving child1child1 correctly", child1child1.equals(child1.getChild(child1child1.name)));
-			assertTrue("Retrieving child1child2 correctly", child1child2.equals(child1.getChild(child1child2.name)));
+			assertTrue("Retrieving child1child1 correctly", child1child1.equals(child1.getChild(child1child1Name)));
+			assertTrue("Retrieving child1child2 correctly", child1child2.equals(child1.getChild(child1child2Name)));
 		}
 	}
 

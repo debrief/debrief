@@ -1,14 +1,42 @@
 package org.mwc.debrief.pepys.model.bean;
 
+import java.beans.PropertyVetoException;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 
+import org.mwc.debrief.pepys.model.db.DatabaseConnection;
+import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.FieldName;
 import org.mwc.debrief.pepys.model.db.annotation.Id;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
 
+import junit.framework.TestCase;
+
 @TableName(name = "Sensors")
 public class Sensor implements AbstractBean, Comparable<Sensor> {
+
+	public static class SensorTest extends TestCase {
+		public void testSensorQuery() {
+			try {
+				new SqliteDatabaseConnection().createInstance();
+				final List<Sensor> list = DatabaseConnection.getInstance().listAll(Sensor.class, null);
+
+				assertTrue("States - database entries", list.size() == 30);
+
+				final Sensor plantFormSensor = DatabaseConnection.getInstance().listById(Sensor.class, 27);
+
+				assertTrue("States - database entries", "PLATFORM-1".equals(plantFormSensor.getName()));
+			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
+					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
+					| ClassNotFoundException e) {
+				e.printStackTrace();
+				fail("Couldn't connect to database or query error");
+			}
+		}
+	}
 
 	@Id
 	private String sensor_id;

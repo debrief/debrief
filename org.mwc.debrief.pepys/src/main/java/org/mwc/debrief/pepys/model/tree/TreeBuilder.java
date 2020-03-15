@@ -16,10 +16,8 @@
 package org.mwc.debrief.pepys.model.tree;
 
 import java.beans.PropertyVetoException;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,9 +26,7 @@ import org.mwc.debrief.pepys.model.TypeDomain;
 import org.mwc.debrief.pepys.model.bean.AbstractBean;
 import org.mwc.debrief.pepys.model.db.Condition;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
-import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils;
-import org.mwc.debrief.pepys.model.db.annotation.Time;
 import org.mwc.debrief.pepys.model.tree.TreeNode.NodeType;
 
 import junit.framework.TestCase;
@@ -107,9 +103,9 @@ public class TreeBuilder {
 		return root;
 	}
 
-	public static void buildStructure(final AbstractConfiguration configuration)
-			throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException, ClassNotFoundException {
+	public static void buildStructure(final AbstractConfiguration configuration) throws NoSuchMethodException,
+			SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, PropertyVetoException, SQLException, ClassNotFoundException {
 		configuration.getTreeModel().removeAllChildren();
 
 		final ArrayList<AbstractBean> allItems = new ArrayList<AbstractBean>();
@@ -123,8 +119,8 @@ public class TreeBuilder {
 				conditions.addAll(DatabaseConnection.getInstance().createPeriodFilter(configuration.getTimePeriod(),
 						currentBeanType));
 
-				// TODO FILTERING HERE
-				final String filter = null;
+				// TODO AREA FILTERING HERE
+
 				final List<? extends AbstractBean> currentItems = DatabaseConnection.getInstance()
 						.listAll(currentBeanType, conditions);
 				allItems.addAll(currentItems);
