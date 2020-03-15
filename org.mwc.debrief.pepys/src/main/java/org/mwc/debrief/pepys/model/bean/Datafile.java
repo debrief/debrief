@@ -42,20 +42,22 @@ public class Datafile implements AbstractBean {
 
 				assertTrue("Datafiles - database entries", list.size() == 18);
 
-				final String[][] datafilesSomeReferences = new String[][] { { "1", "sen_tracks" },
-						{ "6", "sen_frig_sensor" }, { "18", "NMEA_bad" }, { "25", "test_land_track" } };
+				final String[][] datafilesSomeReferences = new String[][] { { "1", "NMEA_TRIAL.log" },
+						{ "6", "rep_test1.rep" }, { "18", "gpx_1_0_InvalidSpeed.gpx" }, { "11", "e_trac.txt" } };
 
-				for (final Datafile dataFile : list) {
-					boolean correct = true;
-					for (int i = 0; i < datafilesSomeReferences.length; i++) {
-						correct &= datafilesSomeReferences[i][0].equals(dataFile.getDatafile_id())
+				for (int i = 0; i < datafilesSomeReferences.length; i++) {
+					boolean exist = false;
+					for (final Datafile dataFile : list) {
+						exist |= datafilesSomeReferences[i][0].equals(dataFile.getDatafile_id())
 								&& datafilesSomeReferences[i][1].equals(dataFile.getReference());
 					}
 
-					assertTrue("Datafiles - Reference Name", correct);
-
+					assertTrue("Datafiles - Reference Name", exist);
+				}
+				
+				for (Datafile datafile : list) {
 					assertTrue("Datafiles - Concatenated reference ",
-							"DATAFILE-TYPE-1".equals(dataFile.getDatafile().getName()));
+							"DATAFILE-TYPE-1".equals(datafile.getDatafile().getName()));
 				}
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
