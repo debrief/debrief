@@ -488,6 +488,13 @@
                     <reference definitionId="org.mwc.debrief.activeCorePlotEditor"> </reference>
                 </visibleWhen>
             </command>
+            
+            <command commandId="org.mwc.debrief.core.Pepys" icon="icons/24/database.png"
+                style="push" id="org.mwc.debrief.core.FitToWindow">
+                <visibleWhen checkEnabled="false">
+                    <reference definitionId="org.mwc.debrief.activeCorePlotEditor"> </reference>
+                </visibleWhen>
+            </command>
 
             <command commandId="org.mwc.debrief.core.Redraw" icon="icons/24/repaint.png"
                 style="push" id="org.mwc.debrief.core.Redraw">
@@ -935,6 +942,9 @@
 
         <command defaultHandler="org.mwc.cmap.plotViewer.actions.ZoomOut"
             id="org.mwc.debrief.core.ZoomOut" name="Zoom &amp;Out"> </command>
+            
+        <command defaultHandler="org.mwc.cmap.plotViewer.actions.ImportDatabase"
+            id="org.mwc.debrief.core.Pepys" name="&amp;Import from Database"> </command>
 
         <command defaultHandler="org.mwc.cmap.plotViewer.actions.FitToWindow"
             id="org.mwc.debrief.core.FitToWindow" name="&amp;Fit to window"> </command>
