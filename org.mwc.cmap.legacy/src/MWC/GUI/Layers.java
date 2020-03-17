@@ -1398,5 +1398,26 @@ public class Layers implements Serializable, Plottable, PlottablesType {
 
 		}
 	}
+	
+	public boolean hasNoBounds(Plottable newItem) {
+		boolean hasNoBounds = true;
+		int noBoundsCount=0;
+		Enumeration<Editable> enumer = elements();
+		while(enumer.hasMoreElements()) {
+			Layer item = (Layer)enumer.nextElement();
+			Enumeration<Editable> edits = item.elements();
+			while(edits.hasMoreElements()) {
+				Plottable p = (Plottable)edits.nextElement();
+				if(p.getBounds()!=null) {
+					noBoundsCount++;
+					if(noBoundsCount>1) {
+						hasNoBounds=false;
+						break;
+					}
+				}
+			}
+		}
+		return hasNoBounds;
+	}
 
 }

@@ -337,7 +337,7 @@ abstract public class PlainChart
 					final WorldArea dataArea = getCanvas().getProjection().getDataArea();
 
 					// do we need to rescale the data?
-					if (dataArea != null && dataArea.equals(Layers.getDebriefOrigin())) {
+					if (theData.hasNoBounds(newItem)) {
 						// note - this logic got changed, to meet Full Debrief requirements, since
 						// we only want plot to rescale if it has only just loaded.
 						rescale();
