@@ -15,11 +15,47 @@
 
 package org.mwc.cmap.plotViewer.actions;
 
+import java.util.Enumeration;
+
+import org.eclipse.ui.PlatformUI;
+import org.mwc.debrief.pepys.model.PepysConnectorBridge;
+import org.mwc.debrief.pepys.presenter.PepysImportPresenter;
+import MWC.GUI.Editable;
+import MWC.GUI.Layers;
+import MWC.GUI.PlainChart;
+import MWC.GenericData.WorldArea;
+
 public class ImportDatabase extends CoreEditorAction {
 
 	@Override
 	protected void execute() {
-		System.out.println("Output");
+
+		final PlainChart theChart = getChart();
+
+		final PepysConnectorBridge pepysBridge = new PepysConnectorBridge() {
+
+			@Override
+			public Layers getLayers() {
+				return theChart.getLayers();
+			}
+
+			@Override
+			public WorldArea getCurrentArea() {
+				return new WorldArea(theChart.getCanvas().getProjection().getVisibleDataArea());
+			}
+		};
+
+		final PepysImportPresenter pepysImportPresenter = new PepysImportPresenter(
+				PlatformUI.getWorkbench().getModalDialogShellProvider().getShell());
+		
+		final Layers _layers = theChart.getLayers();
+		final Enumeration<Editable> items = _layers.elements();
+		while (items.hasMoreElements()) {
+			final Editable thisE = items.nextElement();
+			System.out.println(thisE.getName());
+		}
+
+		System.out.println("Area = " + pepysBridge.getCurrentArea());
 	}
-	
+
 }

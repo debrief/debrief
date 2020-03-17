@@ -50,7 +50,7 @@ public class PepysImportPresenter {
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
 		try {
-			//  new SqliteDatabaseConnection().createInstance();
+			// new SqliteDatabaseConnection().createInstance();
 			new PostgresDatabaseConnection().createInstance();
 		} catch (final PropertyVetoException e) {
 			e.printStackTrace();
@@ -165,7 +165,7 @@ public class PepysImportPresenter {
 
 			@Override
 			public void propertyChange(final PropertyChangeEvent evt) {
-				if (ModelConfiguration.PERIOD_PROPERTY.equals(evt.getPropertyName())
+				if (AbstractConfiguration.PERIOD_PROPERTY.equals(evt.getPropertyName())
 						&& !evt.getOldValue().equals(evt.getNewValue())) {
 					view.getStartDate().setSelection(model.getTimePeriod().getStartDTG().getDate());
 				}
@@ -176,8 +176,19 @@ public class PepysImportPresenter {
 
 			@Override
 			public void propertyChange(final PropertyChangeEvent evt) {
-				if (ModelConfiguration.TREE_MODEL.equals(evt.getPropertyName())) {
+				if (AbstractConfiguration.TREE_MODEL.equals(evt.getPropertyName())) {
 					view.getTree().setInput(model.getTreeModel());
+				}
+			}
+		});
+
+		model.addPropertyChangeListener(new PropertyChangeListener() {
+
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if (AbstractConfiguration.AREA_PROPERTY.equals(evt.getPropertyName())) {
+					view.getTopLeftLocation().setValue(model.getCurrentArea().getTopLeft());
+					view.getBottomRightLocation().setValue(model.getCurrentArea().getBottomRight());
 				}
 			}
 		});
@@ -206,6 +217,16 @@ public class PepysImportPresenter {
 			public void handleEvent(final Event event) {
 				if (event.type == SWT.Selection) {
 					model.doImport();
+				}
+			}
+		});
+
+		view.getUseCurrentViewportButton().addListener(SWT.Selection, new Listener() {
+
+			@Override
+			public void handleEvent(Event event) {
+				if (event.type == SWT.Selection) {
+					model.setCurrentViewport();
 				}
 			}
 		});

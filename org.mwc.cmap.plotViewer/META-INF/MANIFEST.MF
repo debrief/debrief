@@ -17,6 +17,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.ide,
  org.eclipse.ui.views,
  org.mwc.cmap.geotools,
- org.mwc.cmap.NaturalEarth
+ org.mwc.cmap.NaturalEarth,
+ org.mwc.debrief.pepys
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-11

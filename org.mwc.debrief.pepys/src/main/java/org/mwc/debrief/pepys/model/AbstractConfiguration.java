@@ -25,6 +25,12 @@ import MWC.GenericData.WorldArea;
 
 public interface AbstractConfiguration extends hasPropertyListeners {
 
+	public static String AREA_PROPERTY = "AREA";
+
+	public static String PERIOD_PROPERTY = "PERIOD";
+
+	public static String TREE_MODEL = "TREE_MODEL";
+	
 	public void addDatafileTypeFilter(final TypeDomain newType);
 
 	public void apply() throws Exception;
@@ -44,4 +50,8 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 	public void setArea(final WorldArea newArea);
 
 	public void setTimePeriod(final TimePeriod newPeriod);
+	
+	public void setPepysConnectorBridge(final PepysConnectorBridge _bridge);
+
+	public void setCurrentViewport(); 
 }

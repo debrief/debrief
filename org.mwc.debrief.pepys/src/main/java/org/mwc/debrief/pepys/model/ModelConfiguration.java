@@ -34,12 +34,6 @@ import MWC.GenericData.WorldArea;
 
 public class ModelConfiguration implements AbstractConfiguration {
 
-	public static String AREA_PROPERTY = "AREA";
-
-	public static String PERIOD_PROPERTY = "PERIOD";
-
-	public static String TREE_MODEL = "TREE_MODEL";
-
 	private PropertyChangeSupport _pSupport = null;
 
 	private final ArrayList<TypeDomain> currentDatatype = new ArrayList<TypeDomain>();
@@ -49,6 +43,8 @@ public class ModelConfiguration implements AbstractConfiguration {
 	private TimePeriod currentPeriod = new BaseTimePeriod();
 
 	private final TreeNode treeModel = new TreeNode(TreeNode.NodeType.ROOT, "", null);
+	
+	private PepysConnectorBridge _bridge;
 
 	@Override
 	public void addDatafileTypeFilter(final TypeDomain newType) {
@@ -145,6 +141,16 @@ public class ModelConfiguration implements AbstractConfiguration {
 					currentPeriod);
 			_pSupport.firePropertyChange(pce);
 		}
+	}
+
+	@Override
+	public void setPepysConnectorBridge(PepysConnectorBridge _bridge) {
+		this._bridge = _bridge;
+	}
+
+	@Override
+	public void setCurrentViewport() {
+		setArea(_bridge.getCurrentArea());
 	}
 
 }

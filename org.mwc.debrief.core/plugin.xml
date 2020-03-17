@@ -269,6 +269,12 @@
             </toolbar>
             <toolbar id="org.mwc.debrief.core.ChartFeatures" label="Chart Features">
                 <separator name="charts" visible="true"/>
+	            <command commandId="org.mwc.debrief.core.Pepys" icon="icons/24/database.png"
+	                style="push" id="org.mwc.debrief.core.Pepys">
+	                <visibleWhen checkEnabled="false">
+	                    <reference definitionId="org.mwc.debrief.activeCorePlotEditor"> </reference>
+	                </visibleWhen>
+	            </command>
                 <separator name="sep2" visible="true"/>
                 <separator name="additions" visible="true"/>
             </toolbar>
@@ -483,13 +489,6 @@
 
         <menuContribution locationURI="toolbar:org.mwc.debrief.core.EditorView?after=additions">
             <command commandId="org.mwc.debrief.core.FitToWindow" icon="icons/24/fit_to_win.png"
-                style="push" id="org.mwc.debrief.core.FitToWindow">
-                <visibleWhen checkEnabled="false">
-                    <reference definitionId="org.mwc.debrief.activeCorePlotEditor"> </reference>
-                </visibleWhen>
-            </command>
-            
-            <command commandId="org.mwc.debrief.core.Pepys" icon="icons/24/database.png"
                 style="push" id="org.mwc.debrief.core.FitToWindow">
                 <visibleWhen checkEnabled="false">
                     <reference definitionId="org.mwc.debrief.activeCorePlotEditor"> </reference>
