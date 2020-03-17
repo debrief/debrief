@@ -198,6 +198,7 @@ public class DebriefRibbonView {
 
 	private static Command zoominButton;
 	private static AdvancedZoomInAction zoomInAction;
+	private static JRadioButtonMenuItem[] unitRadioButton = new JRadioButtonMenuItem[WorldDistance.UnitLabels.length];
 
 	private static ComponentProjection<JRibbonSlider, SliderComponentContentModel> addAlphaSlider(
 			final ChangeListener alphaListener, final float alpha) {
@@ -286,13 +287,13 @@ public class DebriefRibbonView {
 				geoMapRenderer.getMap().repaint();
 			}
 		};
-
+		
 		for (int i = 0; i < WorldDistance.UnitLabels.length; i++) {
-			final JRadioButtonMenuItem unitRadioButton = new JRadioButtonMenuItem(WorldDistance.UnitLabels[i]);
-			unitRadioButton.setSelected(RangeBearingTool.getBearingUnit() == i);
-			unitRadioButton.addActionListener(changeUnits);
-			menu.add(unitRadioButton);
-			unitsGroup.add(unitRadioButton);
+			unitRadioButton[i] = new JRadioButtonMenuItem(WorldDistance.UnitLabels[i]);
+			unitRadioButton[i].setSelected(RangeBearingTool.getBearingUnit() == i);
+			unitRadioButton[i].addActionListener(changeUnits);
+			menu.add(unitRadioButton[i]);
+			unitsGroup.add(unitRadioButton[i]);
 		}
 
 		ImageWrapperResizableIcon imageIcon = null;
@@ -334,8 +335,13 @@ public class DebriefRibbonView {
 	}
 
 	public static void resetToggleMenuStates() {
-		zoominButton.setToggleSelected(true);
-		zoomInAction.actionPerformed(null);
+		if(zoominButton!=null) {
+			zoominButton.setToggleSelected(true);
+			zoomInAction.actionPerformed(null);
+		}
+		if(unitRadioButton.length>0) {
+			unitRadioButton[1].setSelected(true);
+		}
 		
 	}
 }
