@@ -13,11 +13,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
-package org.mwc.cmap.plotViewer.actions;
+package org.mwc.debrief.pepys;
 
 import java.util.Enumeration;
 
 import org.eclipse.ui.PlatformUI;
+import org.mwc.cmap.plotViewer.actions.CoreEditorAction;
 import org.mwc.debrief.pepys.model.PepysConnectorBridge;
 import org.mwc.debrief.pepys.presenter.PepysImportPresenter;
 import MWC.GUI.Editable;
