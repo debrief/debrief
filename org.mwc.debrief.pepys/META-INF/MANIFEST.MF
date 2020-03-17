@@ -15,21 +15,9 @@ Bundle-ClassPath: libs/c3p0-0.9.5.5.jar,
  libs/postgresql-42.2.11.jar
 Require-Bundle: org.mwc.cmap.legacy;bundle-version="1.0.293",
  org.mwc.debrief.legacy;bundle-version="1.0.432",
- org.eclipse.swt,
- org.eclipse.core.commands;bundle-version="3.9.400",
- org.eclipse.nebula.cwt;bundle-version="0.9.3",
  org.eclipse.jface
-Export-Package: org.mwc.debrief.pepys,
- org.mwc.debrief.pepys.model,
- org.mwc.debrief.pepys.model.bean,
- org.mwc.debrief.pepys.model.tree,
- org.mwc.debrief.pepys.presenter
-Import-Package: org.eclipse.core.databinding,
- org.eclipse.core.databinding.beans,
- org.eclipse.jface.resource,
- org.eclipse.jface.viewers,
+Import-Package: org.eclipse.jface.viewers,
  org.eclipse.nebula.widgets.cdatetime,
  org.eclipse.ui,
  org.mwc.cmap.core.custom_widget,
- org.mwc.cmap.plotViewer.actions,
- org.mwc.debrief.pepys
+ org.mwc.cmap.plotViewer.actions

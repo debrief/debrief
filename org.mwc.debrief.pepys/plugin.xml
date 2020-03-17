@@ -21,8 +21,8 @@
    <extension point="org.eclipse.ui.menus">
       	<menuContribution locationURI="toolbar:org.mwc.debrief.core.ChartFeatures?after=charts">
             <separator name="org.mwc.debrief.core.charts"> </separator>
-            <command commandId="org.mwc.debrief.core.Pepys.ImportDatabase" icon="icons/24/database.png"
-                style="push" id="org.mwc.debrief.core.Pepys.ImportDatabase">
+            <command commandId="org.mwc.debrief.pepys.ImportDatabase" icon="icons/24/database.png"
+                style="push" id="org.mwc.debrief.pepys.ImportDatabase">
                 <visibleWhen checkEnabled="false">
                     <reference definitionId="org.mwc.debrief.activeCorePlotEditor"> </reference>
                 </visibleWhen>
@@ -33,7 +33,7 @@
      <extension point="org.eclipse.ui.commands">
        <command
              defaultHandler="org.mwc.debrief.pepys.ImportDatabase"
-             id="org.mwc.debrief.core.Pepys.ImportDatabase"
+             id="org.mwc.debrief.pepys.ImportDatabase"
              name="Import from Database">
        </command>
      </extension>
