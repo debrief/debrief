@@ -275,6 +275,13 @@ public class SwingLayerManager extends SwingCustomEditor
 			_myPlottable.setVisible(!_isVis);
 			fireReformatted();
 		}
+		
+		@Override
+		public String toString() {
+		
+			return _isVis?" Show "+_myPlottable.getName():" Hide "+_myPlottable.getName();
+					
+		}
 	}
 
 	protected class ImmediateEditor extends DefaultTreeCellEditor {
