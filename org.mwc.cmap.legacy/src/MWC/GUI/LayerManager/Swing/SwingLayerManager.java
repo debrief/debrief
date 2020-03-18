@@ -888,7 +888,7 @@ public class SwingLayerManager extends SwingCustomEditor
 				}
 
 				// is this a right-click
-				if ((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0) {
+				if ((e.getModifiersEx() & InputEvent.META_DOWN_MASK) != 0) {
 					// did we click on a node?
 					if (node == null) {
 						// do nothing
