@@ -278,9 +278,8 @@ public class SwingLayerManager extends SwingCustomEditor
 		
 		@Override
 		public String toString() {
-		
-			return _isVis?"show "+_myPlottable.getName():"hide "+_myPlottable.getName();
-					
+			final String name = _myPlottable.getName();
+			return _isVis ? "show " + name : "hide " + name;
 		}
 	}
 
