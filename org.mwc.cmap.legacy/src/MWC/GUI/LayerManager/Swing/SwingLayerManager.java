@@ -266,6 +266,12 @@ public class SwingLayerManager extends SwingCustomEditor
 			return true;
 		}
 
+		@Override
+		public String toString() {
+			final String name = _myPlottable.getName();
+			return _isVis ? " Show " + name : " Hide " + name;
+		}
+
 		/**
 		 * this method calls the 'undo' event in the parent tool, passing the necessary
 		 * data to it
@@ -274,12 +280,6 @@ public class SwingLayerManager extends SwingCustomEditor
 		public void undo() {
 			_myPlottable.setVisible(!_isVis);
 			fireReformatted();
-		}
-		
-		@Override
-		public String toString() {
-			final String name = _myPlottable.getName();
-			return _isVis ? " Show " + name : " Hide " + name;
 		}
 	}
 
@@ -1194,7 +1194,7 @@ public class SwingLayerManager extends SwingCustomEditor
 		for (int i = 0; i < _myData.size(); i++) {
 			final Layer thisL = _myData.elementAt(i);
 			final DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) getTreeNodeConstantTime(treeCache, thisL);
-			if (rootNode == null || rootNode.getParent()==null) {
+			if (rootNode == null || rootNode.getParent() == null) {
 				root.add(makeLayer(thisL, thisL, treeCache));
 				((DefaultTreeModel) _myTree.getModel()).reload();
 			} else {
@@ -1266,9 +1266,10 @@ public class SwingLayerManager extends SwingCustomEditor
 						thisL.add(node);
 						needToReloadThisLayer = true;
 					} else {
-						
-						if(nodeL.getParent()==null) {
-							//node is not on the tree, so add to thisL, because we are iterating through thisL
+
+						if (nodeL.getParent() == null) {
+							// node is not on the tree, so add to thisL, because we are iterating through
+							// thisL
 							thisL.add(nodeL);
 						}
 						// reload just that node that was modified
@@ -1287,7 +1288,7 @@ public class SwingLayerManager extends SwingCustomEditor
 
 		for (final TreeNode node : reloadedNodes) {
 			((DefaultTreeModel) _myTree.getModel()).reload(node);
-			//((DefaultTreeModel) _myTree.getModel()).reload(node);
+			// ((DefaultTreeModel) _myTree.getModel()).reload(node);
 		}
 
 		if (needToReloadThisLayer) {
