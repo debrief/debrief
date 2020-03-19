@@ -15,13 +15,15 @@
 
 package org.mwc.debrief.pepys;
 
-import java.util.Enumeration;
+import java.beans.PropertyVetoException;
 
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.plotViewer.actions.CoreEditorAction;
 import org.mwc.debrief.pepys.model.PepysConnectorBridge;
+import org.mwc.debrief.pepys.model.db.PostgresDatabaseConnection;
 import org.mwc.debrief.pepys.presenter.PepysImportPresenter;
-import MWC.GUI.Editable;
+
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GenericData.WorldArea;
@@ -36,27 +38,28 @@ public class ImportDatabase extends CoreEditorAction {
 		final PepysConnectorBridge pepysBridge = new PepysConnectorBridge() {
 
 			@Override
-			public Layers getLayers() {
-				return theChart.getLayers();
-			}
-
-			@Override
 			public WorldArea getCurrentArea() {
 				return new WorldArea(theChart.getCanvas().getProjection().getVisibleDataArea());
 			}
+
+			@Override
+			public Layers getLayers() {
+				return theChart.getLayers();
+			}
 		};
 
-		final PepysImportPresenter pepysImportPresenter = new PepysImportPresenter(
-				PlatformUI.getWorkbench().getModalDialogShellProvider().getShell());
-		
-		final Layers _layers = theChart.getLayers();
-		final Enumeration<Editable> items = _layers.elements();
-		while (items.hasMoreElements()) {
-			final Editable thisE = items.nextElement();
-			System.out.println(thisE.getName());
+		final Shell shell = new Shell(PlatformUI.getWorkbench().getDisplay());
+		try {
+			// new SqliteDatabaseConnection().createInstance();
+			new PostgresDatabaseConnection().createInstance();
+		} catch (final PropertyVetoException e) {
+			e.printStackTrace();
 		}
 
-		System.out.println("Area = " + pepysBridge.getCurrentArea());
+		new PepysImportPresenter(shell, pepysBridge, getChart().getLayers());
+
+		shell.pack();
+		shell.open();
 	}
 
 }

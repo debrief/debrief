@@ -167,7 +167,7 @@ public class PepysImportView extends Dialog {
 		this.endDate = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.DROP_DOWN | CDT.DATE_SHORT);
 		this.endDate.setPattern("dd/MM/yyyy");
 		this.endDate.setSelection(model.getTimePeriod().getEndDTG().getDate());
-		
+
 		this.endTime = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.SPINNER | CDT.TIME_MEDIUM);
 		this.endTime.setSelection(model.getTimePeriod().getEndDTG().getDate());
 

@@ -26,6 +26,14 @@ import org.mwc.debrief.pepys.model.db.annotation.TableName;
 import org.mwc.debrief.pepys.model.db.annotation.Time;
 import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 
+import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.BaseLayer;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 
 @TableName(name = "Contacts")
@@ -38,7 +46,7 @@ public class Contact implements AbstractBean, TreeStructurable {
 	@ManyToOne
 	@FieldName(name = "sensor_id")
 	private Sensor sensor;
-	
+
 	@Time
 	private Timestamp time;
 	private double bearing;
@@ -67,6 +75,26 @@ public class Contact implements AbstractBean, TreeStructurable {
 
 	public Contact() {
 
+	}
+
+	@Override
+	public void doImport(final Layers _layers) {
+		final String layerName = getDatafile().getReference();
+		final Layer target = _layers.findLayer(layerName, true);
+
+		if (target != null && target instanceof BaseLayer) {
+			final BaseLayer folder = (BaseLayer) target;
+			final Editable found = folder.find(getPlatform().getName());
+			if (found != null && found instanceof TrackWrapper) {
+				final TrackWrapper track = (TrackWrapper) found;
+
+				final SensorWrapper newSensorWrapper = new SensorWrapper(getSensor().getName());
+				final SensorContactWrapper contact = new SensorContactWrapper(track.getName(), new HiResDate(getTime()),
+						null, bearing, location, null, getName(), 0, getSensor().getName());
+				newSensorWrapper.add(contact);
+				track.add(newSensorWrapper);
+			}
+		}
 	}
 
 	public double getBearing() {
@@ -162,6 +190,7 @@ public class Contact implements AbstractBean, TreeStructurable {
 		return sla;
 	}
 
+	@Override
 	public Date getTime() {
 		return time;
 	}

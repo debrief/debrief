@@ -24,15 +24,21 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.mwc.debrief.pepys.model.bean.Contact;
 import org.mwc.debrief.pepys.model.tree.TreeBuilder;
 import org.mwc.debrief.pepys.model.tree.TreeNode;
 import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 
+import MWC.GUI.Layers;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.TimePeriod.BaseTimePeriod;
 import MWC.GenericData.WorldArea;
 
 public class ModelConfiguration implements AbstractConfiguration {
+
+	interface InternTreeItemFiltering {
+		boolean isAcceptable(final TreeStructurable _item);
+	}
 
 	private PropertyChangeSupport _pSupport = null;
 
@@ -43,8 +49,10 @@ public class ModelConfiguration implements AbstractConfiguration {
 	private TimePeriod currentPeriod = new BaseTimePeriod();
 
 	private final TreeNode treeModel = new TreeNode(TreeNode.NodeType.ROOT, "", null);
-	
+
 	private PepysConnectorBridge _bridge;
+
+	private Layers _layers;
 
 	@Override
 	public void addDatafileTypeFilter(final TypeDomain newType) {
@@ -61,7 +69,8 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	@Override
 	public void apply() throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException, ClassNotFoundException {
+			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException,
+			ClassNotFoundException {
 
 		TreeBuilder.buildStructure(this);
 
@@ -73,7 +82,33 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	@Override
 	public void doImport() {
-		doImportProcessMockup(treeModel);
+		doImport(treeModel, new InternTreeItemFiltering() {
+
+			@Override
+			public boolean isAcceptable(final TreeStructurable _item) {
+				return !(_item instanceof Contact);
+			}
+		});
+		doImport(treeModel, new InternTreeItemFiltering() {
+
+			@Override
+			public boolean isAcceptable(final TreeStructurable _item) {
+				return _item instanceof Contact;
+			}
+		});
+	}
+
+	private void doImport(final TreeNode treeModel, final InternTreeItemFiltering filter) {
+		if (treeModel.isChecked()) {
+			for (final TreeStructurable item : treeModel.getItems()) {
+				if (filter.isAcceptable(item)) {
+					item.doImport(_layers);
+				}
+			}
+		}
+		for (final TreeNode child : treeModel.getChildren()) {
+			doImport(child, filter);
+		}
 	}
 
 	private void doImportProcessMockup(final TreeNode treeModel) {
@@ -132,6 +167,21 @@ public class ModelConfiguration implements AbstractConfiguration {
 	}
 
 	@Override
+	public void setCurrentViewport() {
+		setArea(_bridge.getCurrentArea());
+	}
+
+	@Override
+	public void setLayers(final Layers _layers) {
+		this._layers = _layers;
+	}
+
+	@Override
+	public void setPepysConnectorBridge(final PepysConnectorBridge _bridge) {
+		this._bridge = _bridge;
+	}
+
+	@Override
 	public void setTimePeriod(final TimePeriod newPeriod) {
 		final TimePeriod oldPeriod = currentPeriod;
 		currentPeriod = newPeriod;
@@ -141,16 +191,6 @@ public class ModelConfiguration implements AbstractConfiguration {
 					currentPeriod);
 			_pSupport.firePropertyChange(pce);
 		}
-	}
-
-	@Override
-	public void setPepysConnectorBridge(PepysConnectorBridge _bridge) {
-		this._bridge = _bridge;
-	}
-
-	@Override
-	public void setCurrentViewport() {
-		setArea(_bridge.getCurrentArea());
 	}
 
 }

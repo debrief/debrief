@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.model.ModelConfiguration;
+import org.mwc.debrief.pepys.model.PepysConnectorBridge;
 import org.mwc.debrief.pepys.model.TypeDomain;
 import org.mwc.debrief.pepys.model.bean.Comment;
 import org.mwc.debrief.pepys.model.bean.Contact;
@@ -41,6 +42,7 @@ import org.mwc.debrief.pepys.model.db.PostgresDatabaseConnection;
 import org.mwc.debrief.pepys.model.tree.TreeNode;
 import org.mwc.debrief.pepys.view.PepysImportView;
 
+import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 
@@ -67,6 +69,12 @@ public class PepysImportPresenter {
 		}
 	}
 
+	private final AbstractConfiguration _model;
+
+	private final PepysImportView _view;
+
+	private final Shell _parent;
+
 	public PepysImportPresenter(final Shell parent) {
 		final AbstractConfiguration model = new ModelConfiguration();
 
@@ -75,8 +83,19 @@ public class PepysImportPresenter {
 		model.addDatafileTypeFilter(new TypeDomain(Comment.class, "Comments", true));
 		final PepysImportView view = new PepysImportView(model, parent);
 
+		_model = model;
+		_view = view;
+		_parent = parent;
+
 		addDataTypeFilters(model, view);
 		addDatabindings(model, view);
+	}
+
+	public PepysImportPresenter(final Shell shell, final PepysConnectorBridge pepysBridge, final Layers layers) {
+		this(shell);
+
+		_model.setPepysConnectorBridge(pepysBridge);
+		_model.setLayers(layers);
 	}
 
 	protected void addDatabindings(final AbstractConfiguration model, final PepysImportView view) {
@@ -185,7 +204,7 @@ public class PepysImportPresenter {
 		model.addPropertyChangeListener(new PropertyChangeListener() {
 
 			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
+			public void propertyChange(final PropertyChangeEvent evt) {
 				if (AbstractConfiguration.AREA_PROPERTY.equals(evt.getPropertyName())) {
 					view.getTopLeftLocation().setValue(model.getCurrentArea().getTopLeft());
 					view.getBottomRightLocation().setValue(model.getCurrentArea().getBottomRight());
@@ -202,7 +221,7 @@ public class PepysImportPresenter {
 						model.apply();
 					} catch (final Exception e) {
 						e.printStackTrace();
-						final MessageBox messageBox = new MessageBox(view.getParent(), SWT.ERROR | SWT.OK);
+						final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
 						messageBox.setMessage(e.toString());
 						messageBox.setText("Error retrieving information from Database");
 						messageBox.open();
@@ -224,7 +243,7 @@ public class PepysImportPresenter {
 		view.getUseCurrentViewportButton().addListener(SWT.Selection, new Listener() {
 
 			@Override
-			public void handleEvent(Event event) {
+			public void handleEvent(final Event event) {
 				if (event.type == SWT.Selection) {
 					model.setCurrentViewport();
 				}
@@ -235,10 +254,8 @@ public class PepysImportPresenter {
 
 			@Override
 			public void checkStateChanged(final CheckStateChangedEvent event) {
-				if (event.getChecked()) {
-					view.getTree().setSubtreeChecked(event.getElement(), true);
-					((TreeNode) event.getElement()).setCheckedRecursive(event.getChecked());
-				}
+				view.getTree().setSubtreeChecked(event.getElement(), event.getChecked());
+				((TreeNode) event.getElement()).setCheckedRecursive(event.getChecked());
 			}
 		});
 
@@ -284,5 +301,13 @@ public class PepysImportPresenter {
 				}
 			});
 		}
+	}
+
+	public AbstractConfiguration getModel() {
+		return _model;
+	}
+
+	public PepysImportView getView() {
+		return _view;
 	}
 }

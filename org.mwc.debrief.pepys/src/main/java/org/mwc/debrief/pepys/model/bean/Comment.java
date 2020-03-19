@@ -26,6 +26,13 @@ import org.mwc.debrief.pepys.model.db.annotation.TableName;
 import org.mwc.debrief.pepys.model.db.annotation.Time;
 import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 
+import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GenericData.HiResDate;
+import MWC.TacticalData.NarrativeEntry;
+import MWC.TacticalData.NarrativeWrapper;
+
 @TableName(name = "Comments")
 public class Comment implements AbstractBean, TreeStructurable {
 
@@ -35,7 +42,7 @@ public class Comment implements AbstractBean, TreeStructurable {
 	@ManyToOne
 	@FieldName(name = "platform_id")
 	private Platform platform;
-	
+
 	@Time
 	private Timestamp time;
 	private String comment_type_id;
@@ -52,6 +59,30 @@ public class Comment implements AbstractBean, TreeStructurable {
 
 	public Comment() {
 
+	}
+
+	@Override
+	public void doImport(final Layers _layers) {
+		Layer dest = _layers.findLayer(NarrativeEntry.NARRATIVE_LAYER, true);
+		if (dest == null) {
+			dest = new NarrativeWrapper(NarrativeEntry.NARRATIVE_LAYER);
+
+			// add it to the manager
+			_layers.addThisLayer(dest);
+		}
+
+		final NarrativeEntry entry = new NarrativeEntry(getPlatform().getName(), new HiResDate(getTime()),
+				getContent());
+
+		// ok, can we provide a track color for it?
+		final String source = entry.getTrackName();
+		final Layer host = _layers.findLayer(source, true);
+		if (host instanceof TrackWrapper) {
+			final TrackWrapper tw = (TrackWrapper) host;
+			entry.setColor(tw.getColor());
+		}
+
+		dest.add(entry);
 	}
 
 	public String getComment_id() {
@@ -90,6 +121,7 @@ public class Comment implements AbstractBean, TreeStructurable {
 		return null;
 	}
 
+	@Override
 	public Date getTime() {
 		return time;
 	}
