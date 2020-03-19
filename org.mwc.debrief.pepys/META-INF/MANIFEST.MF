@@ -16,7 +16,8 @@ Bundle-ClassPath: libs/c3p0-0.9.5.5.jar,
  src/main/java/
 Require-Bundle: org.mwc.cmap.legacy;bundle-version="1.0.293",
  org.mwc.debrief.legacy;bundle-version="1.0.432",
- org.eclipse.jface
+ org.eclipse.jface,
+ org.eclipse.nebula.cwt;bundle-version="0.9.3"
 Import-Package: org.eclipse.jface.viewers,
  org.eclipse.nebula.widgets.cdatetime,
  org.eclipse.ui,
