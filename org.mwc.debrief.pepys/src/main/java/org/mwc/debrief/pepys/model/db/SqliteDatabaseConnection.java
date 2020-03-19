@@ -74,7 +74,7 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 		for (int i = 0; i < values.length && i < LOCATION_COORDINATES.length(); i++) {
 			values[i] = result.getDouble(columnName + "_" + LOCATION_COORDINATES.charAt(i));
 		}
-		return new WorldLocation(values[0], values[1], values[2]);
+		return new WorldLocation(values[1], values[0], values[2]);
 	}
 
 	@Override

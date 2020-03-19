@@ -63,12 +63,12 @@ public class PostgresDatabaseConnection extends DatabaseConnection {
 			final PGobject object = (PGobject) result.getObject(columnName);
 			if (object instanceof PGpoint) {
 				final PGpoint newPoint = (PGpoint) object;
-				return new WorldLocation(newPoint.x, newPoint.y, 0);
+				return new WorldLocation(newPoint.y, newPoint.x, 0);
 			} else if (object instanceof PGgeometry) {
 				final PGgeometry geometry = (PGgeometry) object;
 				if (geometry.getGeometry().getDimension() > 0) {
 					final Point point = geometry.getGeometry().getFirstPoint();
-					return new WorldLocation(point.getX(), point.getY(), point.getZ());
+					return new WorldLocation(point.getY(), point.getX(), point.getZ());
 				}
 			}
 		} catch (final Exception e) {
