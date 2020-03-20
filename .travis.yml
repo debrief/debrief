@@ -5,6 +5,8 @@ sudo: required
 cache:
   directories:
     - $HOME/.m2
+before-install:
+  - sudo apt-get install -y libsqlite3-mod-spatialite
 install:
 - mvn --version
 addons:
@@ -18,7 +20,6 @@ addons:
     - pdftk
     - unzip
     - spatialite-bin
-    - libsqlite3-mod-spatialite
 notifications:
   slack: debrief-devs:GF1nQSqn2eozH3wQtyuPLAlG
 before_script:
