@@ -7,6 +7,10 @@ cache:
     - $HOME/.m2
 before-install:
   - sudo apt-get install -y libsqlite3-mod-spatialite
+  - sudo apt-get install libpq-dev python-dev
+  - sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
+  - sudo apt-get update
+  - sudo apt-get install postgis
 install:
 - mvn --version
 addons:
