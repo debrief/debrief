@@ -25,9 +25,11 @@ addons:
     - spatialite-bin
 notifications:
   slack: debrief-devs:GF1nQSqn2eozH3wQtyuPLAlG
+services:
+- xvfb
 before_script:
 - export DISPLAY=:99
-- sh -e /etc/init.d/xvfb start
+# - sh -e /etc/init.d/xvfb start
 - sleep 3
 # modify Debrief feature to include win-64 subdirectory
 - echo "root.win32.win32.x86_64 = win-64" >> org.mwc.debrief.combined.feature/build.properties
