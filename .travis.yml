@@ -21,7 +21,6 @@ addons:
     - uuid-runtime
     - libglib2.0-dev
     - libxml2-dev
-    - pdftk
     - unzip
     - spatialite-bin
 notifications:
