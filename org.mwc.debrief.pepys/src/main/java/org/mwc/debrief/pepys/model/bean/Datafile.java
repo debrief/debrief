@@ -63,7 +63,7 @@ public class Datafile implements AbstractBean {
 					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
 					| ClassNotFoundException e) {
 				e.printStackTrace();
-				fail("Couldn't connect to database or query error");
+				fail("Couldn't connect to database or query error:" + e);
 			}
 
 		}
