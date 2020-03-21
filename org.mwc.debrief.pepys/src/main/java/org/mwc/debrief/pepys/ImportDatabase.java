@@ -16,12 +16,14 @@
 package org.mwc.debrief.pepys;
 
 import java.beans.PropertyVetoException;
+import java.io.FileNotFoundException;
 
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.plotViewer.actions.CoreEditorAction;
 import org.mwc.debrief.pepys.model.PepysConnectorBridge;
 import org.mwc.debrief.pepys.model.db.PostgresDatabaseConnection;
+import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.presenter.PepysImportPresenter;
 
 import MWC.GUI.Layers;
@@ -50,9 +52,9 @@ public class ImportDatabase extends CoreEditorAction {
 
 		final Shell shell = new Shell(PlatformUI.getWorkbench().getDisplay());
 		try {
-			// new SqliteDatabaseConnection().createInstance();
-			new PostgresDatabaseConnection().createInstance();
-		} catch (final PropertyVetoException e) {
+			new SqliteDatabaseConnection().createInstance();
+			// new PostgresDatabaseConnection().createInstance();
+		} catch (final PropertyVetoException | FileNotFoundException e) {
 			e.printStackTrace();
 		}
 
