@@ -14,6 +14,7 @@ import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.FieldName;
 import org.mwc.debrief.pepys.model.db.annotation.Id;
+import org.mwc.debrief.pepys.model.db.annotation.Location;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
 import org.mwc.debrief.pepys.model.db.annotation.Time;
@@ -75,6 +76,7 @@ public class State implements AbstractBean, TreeStructurable {
 	private String privacy_id;
 	private Timestamp created_date;
 
+	@Location
 	private WorldLocation location;
 
 	public State() {
