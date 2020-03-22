@@ -141,9 +141,9 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 			final WorldLocation topRight = currentArea.getTopRight();
 			final WorldLocation bottomLeft = currentArea.getBottomLeft();
 	
-			final String polygonArea = "POLYGON((" + topLeft.getLat() + " " + topLeft.getLong() + "," + bottomLeft.getLat()
-					+ " " + bottomLeft.getLong() + "," + bottomRight.getLat() + " " + bottomRight.getLong() + ","
-					+ topRight.getLat() + " " + topRight.getLong() + "," + topLeft.getLat() + " " + topLeft.getLong()
+			final String polygonArea = "POLYGON((" + topLeft.getLong() + " " + topLeft.getLat() + "," + bottomLeft.getLong()
+					+ " " + bottomLeft.getLat() + "," + bottomRight.getLong() + " " + bottomRight.getLat() + ","
+					+ topRight.getLong() + " " + topRight.getLat() + "," + topLeft.getLong() + " " + topLeft.getLat()
 					+ "))";
 			final String fieldName = getAlias(AnnotationsUtils.getTableName(type)) + "."
 					+ AnnotationsUtils.getColumnName(locationField);
