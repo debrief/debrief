@@ -130,7 +130,7 @@ public class PostgresDatabaseConnection extends DatabaseConnection {
 	}
 
 	@Override
-	public Collection<? extends Condition> createAreaFilter(final WorldArea currentArea) {
+	public Collection<? extends Condition> createAreaFilter(final WorldArea currentArea, final Class<?> type) {
 		final WorldLocation topLeft = currentArea.getTopLeft();
 		final WorldLocation bottomRight = currentArea.getBottomRight();
 		final WorldLocation topRight = currentArea.getTopRight();

@@ -69,7 +69,7 @@ public abstract class DatabaseConnection {
 	protected HashMap<String, String> aliasRenamingMap = new HashMap<String, String>();
 
 	protected DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration();
-	
+
 	protected ComboPooledDataSource pool;
 
 	protected final int TIME_OUT = 60000;
@@ -358,11 +358,12 @@ public abstract class DatabaseConnection {
 		return instance;
 	}
 
-	public abstract Collection<? extends Condition> createAreaFilter(WorldArea currentArea);
+	public abstract Collection<? extends Condition> createAreaFilter(WorldArea currentArea, final Class<?> type);
 
 	protected void initialize() throws FileNotFoundException, PropertyVetoException {
 		if (configurationFilename != null) {
-			final FileInputStream inputStream = new FileInputStream(new File(configurationFilename));
+			final String path = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+			final FileInputStream inputStream = new FileInputStream(new File(path + configurationFilename));
 			ConfigurationReader.parseConfigurationFile(databaseConfiguration, inputStream);
 		}
 	}

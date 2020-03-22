@@ -17,13 +17,17 @@ package org.mwc.debrief.pepys.model.db;
 
 import java.beans.PropertyVetoException;
 import java.io.FileNotFoundException;
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils;
+import org.mwc.debrief.pepys.model.db.annotation.Location;
 import org.sqlite.SQLiteConfig;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
@@ -35,7 +39,6 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 
 	public static final String LOCATION_COORDINATES = "XYZ";
 	public static final String SQLITE_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.000000";
-	public static final String DATABASE_FILE_PATH = "../org.mwc.debrief.pepys/test6.db";
 	public static final String CONFIGURATION_TAG = "database";
 
 	public SqliteDatabaseConnection() {
@@ -107,7 +110,9 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 		final HashMap<String, String> databaseTagConfiguration = databaseConfiguration.getCategory(CONFIGURATION_TAG);
 		
 		pool.setDriverClass(databaseTagConfiguration.get("driver"));
-		pool.setJdbcUrl(databaseTagConfiguration.get("path"));
+
+		final String path = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+		pool.setJdbcUrl(path + databaseTagConfiguration.get("path"));
 		pool.setProperties(config.toProperties());
 	}
 
@@ -124,8 +129,32 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 	}
 
 	@Override
-	public Collection<? extends Condition> createAreaFilter(WorldArea currentArea) {
-		return null;
+	public Collection<? extends Condition> createAreaFilter(WorldArea currentArea, final Class<?> type) {
+		final ArrayList<Condition> conditions = new ArrayList<Condition>();
+		
+		final Field locationField = AnnotationsUtils.getField(type, Location.class);
+		if (locationField != null && currentArea != null) {
+			
+			final WorldLocation topLeft = currentArea.getTopLeft();
+			final WorldLocation bottomRight = currentArea.getBottomRight();
+			final WorldLocation topRight = currentArea.getTopRight();
+			final WorldLocation bottomLeft = currentArea.getBottomLeft();
+	
+			final String polygonArea = "POLYGON((" + topLeft.getLat() + " " + topLeft.getLong() + "," + bottomLeft.getLat()
+					+ " " + bottomLeft.getLong() + "," + bottomRight.getLat() + " " + bottomRight.getLong() + ","
+					+ topRight.getLat() + " " + topRight.getLong() + "," + topLeft.getLat() + " " + topLeft.getLong()
+					+ "))";
+			final String fieldName = getAlias(AnnotationsUtils.getTableName(type)) + "."
+					+ AnnotationsUtils.getColumnName(locationField);
+			
+			final String geom = "ST_GeomFromText(" + ESCAPE_CHARACTER + polygonArea + ESCAPE_CHARACTER + ")";
+			final String contains = "ST_Contains(" + geom + "," + fieldName + ")";
+			System.out.println(contains);
+
+			conditions.add(new Condition(contains));
+		}
+
+		return conditions;
 	}
 
 }

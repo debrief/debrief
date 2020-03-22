@@ -13,7 +13,7 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="lib" path="libs/c3p0-0.9.5.5.jar" sourcepath="/tmp/.org.sf.feeling.decompiler1583580243708/source/c3p0-0.9.5.5-sources-1584112990297.jar"/>
 	<classpathentry kind="lib" path="libs/sqlite-dialect-0.1.0.jar"/>
-	<classpathentry kind="lib" path="libs/sqlite-jdbc-3.30.1.jar" sourcepath="/tmp/.org.sf.feeling.decompiler1582890943249/source/sqlite-jdbc-3.30.1-sources.jar"/>
+	<classpathentry kind="lib" path="libs/sqlite-jdbc-3.30.1.jar" sourcepath="/tmp/.org.sf.feeling.decompiler1584786830447/source/sqlite-jdbc-3.30.1-sources-1584888275118.jar"/>
 	<classpathentry kind="lib" path="libs/mchange-commons-java-0.2.20.jar"/>
 	<classpathentry kind="lib" path="libs/postgis-jdbc-2.4.0.jar" sourcepath="/tmp/.org.sf.feeling.decompiler1583580243708/source/postgis-jdbc-2.4.0-sources.jar"/>
 	<classpathentry kind="lib" path="libs/postgresql-42.2.11.jar" sourcepath="/tmp/.org.sf.feeling.decompiler1583580243708/source/postgresql-42.2.11-sources.jar"/>
