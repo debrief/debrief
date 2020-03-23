@@ -22,7 +22,7 @@ public class ConfigurationReader {
 			// Check Database Categories
 			final HashMap<String, String> databaseCategory = databaseConfigurationTest.getCategory("database");
 			final HashMap<String, String> archiveCategory = databaseConfigurationTest.getCategory("archive");
-			
+
 			assertTrue("databaseCategory - size", databaseCategory.size() == 5);
 			assertTrue("archiveCategory - size", archiveCategory.size() == 2);
 
@@ -31,7 +31,11 @@ public class ConfigurationReader {
 			assertTrue("DBHost", databaseCategory.get("db_host").equals("localhost"));
 			assertTrue("DBPort", databaseCategory.get("db_port").equals("5432"));
 			assertTrue("archiveCategory - User", archiveCategory.get("user").equals("_abcdef_"));
-			
+
+		}
+
+		public void testProcess() {
+			assertTrue("Process Test", process("ABZabz").equals("NOMnom"));
 		}
 	}
 
@@ -42,12 +46,20 @@ public class ConfigurationReader {
 	static final String CATEGORY_END = "]";
 
 	private static final String CONFIG_SEPARATOR = "=";
-	
+
 	private static final String CONFIG_COMMENT_CHAR = "#";
 
 	public static String process(final String str) {
-		
-		return str;
+		final char[] strArray = str.toCharArray();
+		final int delta = 'Z' - 'A' + 1;
+		for (int i = 0; i < strArray.length; i++) {
+			strArray[i] = (char) (strArray[i] - 13);
+			if (Character.isLetter(str.charAt(i)) && ((Character.isUpperCase(str.charAt(i)) && strArray[i] < 'A')
+					|| (!Character.isUpperCase(str.charAt(i)) && strArray[i] < 'a'))) {
+				strArray[i] += delta;
+			}
+		}
+		return new String(strArray);
 	}
 
 	public static boolean isToProcess(final String str) {
@@ -92,9 +104,9 @@ public class ConfigurationReader {
 
 				if (isCategory(currentLine)) {
 					currentCategoryName = getCategoryName(currentLine);
-				} else if ( currentLine.startsWith(CONFIG_COMMENT_CHAR) ) {
+				} else if (currentLine.startsWith(CONFIG_COMMENT_CHAR)) {
 					// Just a comment
-				}else if (currentCategoryName != null) {
+				} else if (currentCategoryName != null) {
 					parseRegularLine(configuration.getCategory(currentCategoryName), currentLine);
 				}
 			}
