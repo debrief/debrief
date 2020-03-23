@@ -20,6 +20,7 @@ import java.util.Date;
 
 import org.mwc.debrief.pepys.model.db.annotation.FieldName;
 import org.mwc.debrief.pepys.model.db.annotation.Id;
+import org.mwc.debrief.pepys.model.db.annotation.Location;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.OneToOne;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
@@ -71,6 +72,8 @@ public class Contact implements AbstractBean, TreeStructurable {
 	private Privacy privacy;
 
 	private Date created_date;
+	
+	@Location
 	private WorldLocation location;
 
 	public Contact() {
