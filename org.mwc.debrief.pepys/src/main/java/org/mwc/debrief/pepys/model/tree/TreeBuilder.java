@@ -119,7 +119,8 @@ public class TreeBuilder {
 				conditions.addAll(DatabaseConnection.getInstance().createPeriodFilter(configuration.getTimePeriod(),
 						currentBeanType));
 
-				// TODO AREA FILTERING HERE
+				conditions.addAll(DatabaseConnection.getInstance().createAreaFilter(configuration.getCurrentArea(),
+						currentBeanType));
 
 				final List<? extends AbstractBean> currentItems = DatabaseConnection.getInstance()
 						.listAll(currentBeanType, conditions);
