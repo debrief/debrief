@@ -30,7 +30,6 @@ import org.mwc.debrief.pepys.model.tree.TreeBuilder;
 import org.mwc.debrief.pepys.model.tree.TreeNode;
 import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 
-import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.TimePeriod.BaseTimePeriod;
@@ -54,8 +53,6 @@ public class ModelConfiguration implements AbstractConfiguration {
 	private final TreeNode treeModel = new TreeNode(TreeNode.NodeType.ROOT, "", null);
 
 	private PepysConnectorBridge _bridge;
-
-	private Layers _layers;
 
 	public ModelConfiguration() {
 		final Calendar twentyYearsAgoCal = Calendar.getInstance();
@@ -92,27 +89,31 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	@Override
 	public void doImport() {
-		doImport(treeModel, new InternTreeItemFiltering() {
+		if (_bridge == null) {
+			doImportProcessMockup(treeModel);
+		}else {
+			doImport(treeModel, new InternTreeItemFiltering() {
 
-			@Override
-			public boolean isAcceptable(final TreeStructurable _item) {
-				return !(_item instanceof Contact);
-			}
-		});
-		doImport(treeModel, new InternTreeItemFiltering() {
+				@Override
+				public boolean isAcceptable(final TreeStructurable _item) {
+					return !(_item instanceof Contact);
+				}
+			});
+			doImport(treeModel, new InternTreeItemFiltering() {
 
-			@Override
-			public boolean isAcceptable(final TreeStructurable _item) {
-				return _item instanceof Contact;
-			}
-		});
+				@Override
+				public boolean isAcceptable(final TreeStructurable _item) {
+					return _item instanceof Contact;
+				}
+			});
+		}
 	}
 
 	private void doImport(final TreeNode treeModel, final InternTreeItemFiltering filter) {
 		if (treeModel.isChecked()) {
 			for (final TreeStructurable item : treeModel.getItems()) {
 				if (filter.isAcceptable(item)) {
-					item.doImport(_layers);
+					item.doImport(_bridge.getLayers());
 				}
 			}
 		}
@@ -184,11 +185,6 @@ public class ModelConfiguration implements AbstractConfiguration {
 			final WorldArea demoArea = new WorldArea(new WorldLocation(65, -125, 0), new WorldLocation(-45, 80, 0));
 			setArea(demoArea);
 		}
-	}
-
-	@Override
-	public void setLayers(final Layers _layers) {
-		this._layers = _layers;
 	}
 
 	@Override

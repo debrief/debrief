@@ -95,7 +95,6 @@ public class PepysImportPresenter {
 		this(shell);
 
 		_model.setPepysConnectorBridge(pepysBridge);
-		_model.setLayers(layers);
 	}
 
 	protected void addDatabindings(final AbstractConfiguration model, final PepysImportView view) {

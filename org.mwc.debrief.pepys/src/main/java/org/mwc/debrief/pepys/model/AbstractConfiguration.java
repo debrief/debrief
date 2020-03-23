@@ -19,7 +19,6 @@ import java.util.Collection;
 
 import org.mwc.debrief.pepys.model.tree.TreeNode;
 
-import MWC.GUI.Layers;
 import MWC.GUI.hasPropertyListeners;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
@@ -51,8 +50,6 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 	public void setArea(final WorldArea newArea);
 
 	public void setCurrentViewport();
-
-	public void setLayers(final Layers _layers);
 
 	public void setPepysConnectorBridge(final PepysConnectorBridge _bridge);
 
