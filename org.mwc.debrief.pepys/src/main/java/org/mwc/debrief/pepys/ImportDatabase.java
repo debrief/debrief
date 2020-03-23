@@ -16,6 +16,7 @@
 package org.mwc.debrief.pepys;
 
 import java.beans.PropertyVetoException;
+import java.io.FileNotFoundException;
 
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
@@ -52,7 +53,7 @@ public class ImportDatabase extends CoreEditorAction {
 		try {
 			new SqliteDatabaseConnection().createInstance();
 			// new PostgresDatabaseConnection().createInstance();
-		} catch (final PropertyVetoException e) {
+		} catch (final PropertyVetoException | FileNotFoundException e) {
 			e.printStackTrace();
 		}
 

@@ -16,10 +16,12 @@
 package org.mwc.debrief.pepys.model.db;
 
 import java.beans.PropertyVetoException;
+import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 
 import org.sqlite.SQLiteConfig;
 
@@ -32,13 +34,15 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 	public static final String LOCATION_COORDINATES = "XYZ";
 	public static final String SQLITE_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.000000";
 	public static final String DATABASE_FILE_PATH = "../org.mwc.debrief.pepys/test6.db";
+	public static final String CONFIGURATION_TAG = "database";
 
 	public SqliteDatabaseConnection() {
 		super(); // Just formality :)
+		configurationFilename = "../org.mwc.debrief.pepys/sqlite.ini";
 	}
 
 	@Override
-	public DatabaseConnection createInstance() throws PropertyVetoException {
+	public DatabaseConnection createInstance() throws PropertyVetoException, FileNotFoundException {
 		if (INSTANCE == null) {
 			final SqliteDatabaseConnection newInstance = new SqliteDatabaseConnection();
 			newInstance.initialize();
@@ -87,7 +91,9 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 		return "";
 	}
 
-	protected void initialize() throws PropertyVetoException {
+	@Override
+	protected void initialize() throws PropertyVetoException, FileNotFoundException {
+		super.initialize();
 		// enabling dynamic extension loading
 		// absolutely required by SpatiaLite
 		final SQLiteConfig config = new SQLiteConfig();
@@ -95,10 +101,13 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 
 		pool = new ComboPooledDataSource();
 		pool.setCheckoutTimeout(TIME_OUT);
-		pool.setDriverClass("org.sqlite.JDBC");
-		final String pathHeader = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-		final String completePath = "jdbc:sqlite:" + pathHeader + DATABASE_FILE_PATH;
+
+		final HashMap<String, String> databaseTagConfiguration = databaseConfiguration.getCategory(CONFIGURATION_TAG);
+
+		final String path = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+		final String completePath = "jdbc:sqlite:" + path + databaseTagConfiguration.get("path");
 		pool.setJdbcUrl(completePath);
+		pool.setDriverClass("org.sqlite.JDBC");
 		pool.setProperties(config.toProperties());
 	}
 
