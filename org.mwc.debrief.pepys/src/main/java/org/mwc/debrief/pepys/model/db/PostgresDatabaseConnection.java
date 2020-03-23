@@ -102,14 +102,14 @@ public class PostgresDatabaseConnection extends DatabaseConnection {
 		final HashMap<String, String> databaseTagConfig = databaseConfiguration.getCategory(CONGIG_TAG);
 		final HashMap<String, String> databaseTagConnection = databaseConfiguration.getCategory(CONNECTION_TAG);
 
-		props.setProperty("user", databaseTagConnection.get("user"));
-		props.setProperty("password", databaseTagConnection.get("password"));
-		props.setProperty("ssl", databaseTagConnection.get("ssl"));
+		props.setProperty("user", databaseTagConnection.get("db_username"));
+		props.setProperty("password", databaseTagConnection.get("db_password"));
+		props.setProperty("ssl", "false");
 
 		pool = new ComboPooledDataSource();
 		pool.setCheckoutTimeout(TIME_OUT);
-		pool.setDriverClass(databaseTagConfig.get("driver"));
-		final String completePath = HOST_HEADER + databaseTagConnection.get("host") + ":"
+		pool.setDriverClass("org.postgresql.Driver");
+		final String completePath = HOST_HEADER + databaseTagConnection.get("db_host") + ":"
 				+ databaseTagConnection.get("db_port") + "/" + databaseTagConnection.get("db_name");
 		pool.setJdbcUrl(completePath);
 		pool.setProperties(props);
