@@ -16,6 +16,9 @@
 package org.mwc.debrief.pepys.model.db;
 
 import java.beans.PropertyVetoException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -40,6 +43,8 @@ import org.mwc.debrief.pepys.model.db.annotation.Location;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.OneToOne;
 import org.mwc.debrief.pepys.model.db.annotation.Time;
+import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
+import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
@@ -56,11 +61,15 @@ public abstract class DatabaseConnection {
 	public static final String WHERE_CONNECTOR = " AND ";
 	public static final char ESCAPE_CHARACTER = '\'';
 
+	protected String configurationFilename = null;
+
 	public static DatabaseConnection getInstance() throws PropertyVetoException {
 		return INSTANCE;
 	}
 
 	protected HashMap<String, String> aliasRenamingMap = new HashMap<String, String>();
+
+	protected DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration();
 
 	protected ComboPooledDataSource pool;
 
@@ -108,7 +117,7 @@ public abstract class DatabaseConnection {
 		return conditions;
 	}
 
-	public abstract DatabaseConnection createInstance() throws PropertyVetoException;
+	public abstract DatabaseConnection createInstance() throws PropertyVetoException, FileNotFoundException;
 
 	protected abstract String createLocationQuery(final String tableName, final String columnName);
 
@@ -375,6 +384,14 @@ public abstract class DatabaseConnection {
 
 		}
 		return instance;
+	}
+
+	protected void initialize() throws FileNotFoundException, PropertyVetoException {
+		if (configurationFilename != null) {
+			final String path = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+			final FileInputStream inputStream = new FileInputStream(new File(path + configurationFilename));
+			ConfigurationReader.parseConfigurationFile(databaseConfiguration, inputStream);
+		}
 	}
 
 }

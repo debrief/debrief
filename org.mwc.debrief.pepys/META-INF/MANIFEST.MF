@@ -25,4 +25,5 @@ Import-Package: org.eclipse.jface.viewers,
  org.mwc.cmap.plotViewer.actions
 Export-Package: org.mwc.debrief.pepys,
  org.mwc.debrief.pepys.model.bean,
+ org.mwc.debrief.pepys.model.db.config,
  org.mwc.debrief.pepys.model.tree

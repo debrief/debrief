@@ -1,6 +1,7 @@
 package org.mwc.debrief.pepys.model.bean;
 
 import java.beans.PropertyVetoException;
+import java.io.FileNotFoundException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.Date;
@@ -31,7 +32,7 @@ public class Sensor implements AbstractBean, Comparable<Sensor> {
 				assertTrue("States - database entries", "PLATFORM-1".equals(plantFormSensor.getName()));
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
-					| ClassNotFoundException e) {
+					| ClassNotFoundException | FileNotFoundException e) {
 				e.printStackTrace();
 				fail("Couldn't connect to database or query error");
 			}

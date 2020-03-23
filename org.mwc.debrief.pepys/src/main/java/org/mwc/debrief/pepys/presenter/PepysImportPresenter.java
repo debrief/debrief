@@ -18,6 +18,7 @@ package org.mwc.debrief.pepys.presenter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
+import java.io.FileNotFoundException;
 
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.ICheckStateListener;
@@ -54,7 +55,7 @@ public class PepysImportPresenter {
 		try {
 			new SqliteDatabaseConnection().createInstance();
 			// new PostgresDatabaseConnection().createInstance();
-		} catch (final PropertyVetoException e) {
+		} catch (final PropertyVetoException | FileNotFoundException e) {
 			e.printStackTrace();
 		}
 
