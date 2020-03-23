@@ -22,6 +22,7 @@ import java.beans.PropertyVetoException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 
 import org.mwc.debrief.pepys.model.bean.Contact;
@@ -30,6 +31,7 @@ import org.mwc.debrief.pepys.model.tree.TreeNode;
 import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 
 import MWC.GUI.Layers;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.TimePeriod.BaseTimePeriod;
 import MWC.GenericData.WorldArea;
@@ -54,6 +56,13 @@ public class ModelConfiguration implements AbstractConfiguration {
 	private PepysConnectorBridge _bridge;
 
 	private Layers _layers;
+
+	public ModelConfiguration() {
+		final Calendar twentyYearsAgoCal = Calendar.getInstance();
+		twentyYearsAgoCal.add(Calendar.YEAR, -20);
+
+		currentPeriod.setStartDTG(new HiResDate(twentyYearsAgoCal.getTime()));
+	}
 
 	@Override
 	public void addDatafileTypeFilter(final TypeDomain newType) {
@@ -172,7 +181,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 		if (_bridge != null) {
 			setArea(_bridge.getCurrentArea());
 		} else {
-			final WorldArea demoArea = new WorldArea(new WorldLocation(0.5, 4.05, 0), new WorldLocation(0, 4.05, 0));
+			final WorldArea demoArea = new WorldArea(new WorldLocation(65, -125, 0), new WorldLocation(-45, 80, 0));
 			setArea(demoArea);
 		}
 	}
