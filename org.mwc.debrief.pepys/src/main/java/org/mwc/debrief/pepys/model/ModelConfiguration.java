@@ -33,6 +33,7 @@ import MWC.GUI.Layers;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.TimePeriod.BaseTimePeriod;
 import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 public class ModelConfiguration implements AbstractConfiguration {
 
@@ -168,7 +169,12 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	@Override
 	public void setCurrentViewport() {
-		setArea(_bridge.getCurrentArea());
+		if (_bridge != null) {
+			setArea(_bridge.getCurrentArea());
+		} else {
+			final WorldArea demoArea = new WorldArea(new WorldLocation(0.5, 4.05, 0), new WorldLocation(0, 4.05, 0));
+			setArea(demoArea);
+		}
 	}
 
 	@Override
