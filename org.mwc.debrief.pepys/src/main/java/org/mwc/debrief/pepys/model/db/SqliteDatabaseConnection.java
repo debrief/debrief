@@ -16,12 +16,16 @@
 package org.mwc.debrief.pepys.model.db;
 
 import java.beans.PropertyVetoException;
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
 
+import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils;
+import org.mwc.debrief.pepys.model.db.annotation.Location;
 import org.sqlite.SQLiteConfig;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
@@ -117,8 +121,31 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 
 	@Override
 	public Collection<? extends Condition> createAreaFilter(WorldArea currentArea, final Class<?> type) {
-		// TODO Auto-generated method stub
-		return null;
+		final ArrayList<Condition> conditions = new ArrayList<Condition>();
+
+		final Field locationField = AnnotationsUtils.getField(type, Location.class);
+		if (locationField != null && currentArea != null) {
+
+			final WorldLocation topLeft = currentArea.getTopLeft();
+			final WorldLocation bottomRight = currentArea.getBottomRight();
+			final WorldLocation topRight = currentArea.getTopRight();
+			final WorldLocation bottomLeft = currentArea.getBottomLeft();
+
+			final String polygonArea = "POLYGON((" + topLeft.getLat() + " " + topLeft.getLong() + ","
+					+ bottomLeft.getLat() + " " + bottomLeft.getLong() + "," + bottomRight.getLat() + " "
+					+ bottomRight.getLong() + "," + topRight.getLat() + " " + topRight.getLong() + ","
+					+ topLeft.getLat() + " " + topLeft.getLong() + "))";
+			final String fieldName = getAlias(AnnotationsUtils.getTableName(type)) + "."
+					+ AnnotationsUtils.getColumnName(locationField);
+
+			final String geom = "ST_GeomFromText(" + ESCAPE_CHARACTER + polygonArea + ESCAPE_CHARACTER + ")";
+			final String contains = "ST_Contains(" + geom + "," + fieldName + ")";
+			System.out.println(contains);
+
+			conditions.add(new Condition(contains));
+		}
+
+		return conditions;
 	}
 
 }
