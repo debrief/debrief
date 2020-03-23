@@ -96,7 +96,8 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 		pool = new ComboPooledDataSource();
 		pool.setCheckoutTimeout(TIME_OUT);
 		pool.setDriverClass("org.sqlite.JDBC");
-		final String completePath = "jdbc:sqlite:" + DATABASE_FILE_PATH;
+		final String pathHeader = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+		final String completePath = "jdbc:sqlite:" + pathHeader + DATABASE_FILE_PATH;
 		pool.setJdbcUrl(completePath);
 		pool.setProperties(config.toProperties());
 	}
