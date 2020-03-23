@@ -12,9 +12,9 @@ public class ConfigurationReader {
 	public static class ConfigurationReaderTest extends TestCase {
 
 		public void testConfigurationRead() {
-			final String testConfiguration = "[database]\n" + "db_username = _abcdef_\n" + "db_password = _abcdef_\n"
+			final String testConfiguration = "[database]\n" + "db_username = abcdef\n" + "db_password = _abcdef_\n"
 					+ "db_host = localhost\n" + "db_port = 5432\n" + "db_name = pepys2\n" + "[archive]\n"
-					+ "user = _abcdef_\n" + "password = _abcdef_";
+					+ "user = abcdef\n" + "password = abcdef";
 			final InputStream stream = new ByteArrayInputStream(testConfiguration.getBytes());
 			final DatabaseConfiguration databaseConfigurationTest = new DatabaseConfiguration();
 			parseConfigurationFile(databaseConfigurationTest, stream);
@@ -26,11 +26,11 @@ public class ConfigurationReader {
 			assertTrue("databaseCategory - size", databaseCategory.size() == 5);
 			assertTrue("archiveCategory - size", archiveCategory.size() == 2);
 
-			assertTrue("DBUsername", databaseCategory.get("db_username").equals("_abcdef_"));
-			assertTrue("DBPassword", databaseCategory.get("db_password").equals("_abcdef_"));
+			assertTrue("DBUsername", databaseCategory.get("db_username").equals("abcdef"));
+			assertTrue("DBPassword", databaseCategory.get("db_password").equals("abcdef"));
 			assertTrue("DBHost", databaseCategory.get("db_host").equals("localhost"));
 			assertTrue("DBPort", databaseCategory.get("db_port").equals("5432"));
-			assertTrue("archiveCategory - User", archiveCategory.get("user").equals("_abcdef_"));
+			assertTrue("archiveCategory - User", archiveCategory.get("user").equals("abcdef"));
 
 		}
 
