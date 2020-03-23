@@ -20,11 +20,13 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 
 import org.sqlite.SQLiteConfig;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
+import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
 public class SqliteDatabaseConnection extends DatabaseConnection {
@@ -111,6 +113,12 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 		// GEOMETRY_COLUMNS
 		final String sql = "SELECT InitSpatialMetadata()";
 		statement.execute(sql);
+	}
+
+	@Override
+	public Collection<? extends Condition> createAreaFilter(WorldArea currentArea) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

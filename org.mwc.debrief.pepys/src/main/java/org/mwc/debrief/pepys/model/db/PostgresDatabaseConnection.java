@@ -20,6 +20,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.Properties;
 
 import org.postgis.PGbox3d;
@@ -32,6 +33,7 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.mchange.v2.c3p0.impl.NewProxyConnection;
 import com.mchange.v2.c3p0.impl.NewProxyConnectionUnwrapper;
 
+import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
 public class PostgresDatabaseConnection extends DatabaseConnection {
@@ -111,6 +113,22 @@ public class PostgresDatabaseConnection extends DatabaseConnection {
 				.unWrapperInnerConnection((NewProxyConnection) connection)).addDataType("geometry", PGgeometry.class);
 		((org.postgresql.PGConnection) NewProxyConnectionUnwrapper
 				.unWrapperInnerConnection((NewProxyConnection) connection)).addDataType("box3d", PGbox3d.class);
+	}
+
+	@Override
+	public Collection<? extends Condition> createAreaFilter(final WorldArea currentArea) {
+		final WorldLocation topLeft = currentArea.getTopLeft();
+		final WorldLocation bottomRight = currentArea.getBottomRight();
+		final WorldLocation topRight = currentArea.getTopRight();
+		final WorldLocation bottomLeft = currentArea.getBottomLeft();
+		
+		final String polygonArea = "POLYGON((" + topLeft.getLat() + " " + topLeft.getLong() + "," +
+				bottomLeft.getLat() + " " + bottomLeft.getLong() + "," +
+				bottomRight.getLat() + " " + bottomRight.getLong() + "," +
+				topRight.getLat() + " " + topRight.getLong() + "," +
+				topLeft.getLat() + " " + topLeft.getLong() + "))";
+		
+		return null;
 	}
 
 }

@@ -43,6 +43,7 @@ import org.mwc.debrief.pepys.model.db.annotation.Time;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
 /**
@@ -347,4 +348,6 @@ public abstract class DatabaseConnection {
 		}
 		return instance;
 	}
+
+	public abstract Collection<? extends Condition> createAreaFilter(WorldArea currentArea);
 }
