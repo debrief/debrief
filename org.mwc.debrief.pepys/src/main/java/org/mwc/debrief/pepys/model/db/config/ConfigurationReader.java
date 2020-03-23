@@ -49,21 +49,12 @@ public class ConfigurationReader {
 
 	private static final String CONFIG_COMMENT_CHAR = "#";
 
-	public static String process(final String str) {
-		final char[] strArray = str.toCharArray();
-		final int delta = 'Z' - 'A' + 1;
-		for (int i = 0; i < strArray.length; i++) {
-			strArray[i] = (char) (strArray[i] - 13);
-			if (Character.isLetter(str.charAt(i)) && ((Character.isUpperCase(str.charAt(i)) && strArray[i] < 'A')
-					|| (!Character.isUpperCase(str.charAt(i)) && strArray[i] < 'a'))) {
-				strArray[i] += delta;
-			}
+	public static String getCategoryName(final String category) {
+		// We are assuming it is a category
+		if (category != null && category.length() >= 2) {
+			return category.substring(1, category.length() - 1);
 		}
-		return new String(strArray);
-	}
-
-	public static boolean isToProcess(final String str) {
-		return str != null && str.startsWith(DEMILITER) && str.endsWith(DEMILITER);
+		return null;
 	}
 
 	public static boolean isCategory(final String line) {
@@ -74,24 +65,8 @@ public class ConfigurationReader {
 		return false;
 	}
 
-	public static String getCategoryName(final String category) {
-		// We are assuming it is a category
-		if (category != null && category.length() >= 2) {
-			return category.substring(1, category.length() - 1);
-		}
-		return null;
-	}
-
-	public static void parseRegularLine(final HashMap<String, String> category, final String str) {
-		if (str != null && str.contains(CONFIG_SEPARATOR)) {
-			final String tokens[] = str.split(CONFIG_SEPARATOR);
-			if (tokens.length == 2) {
-				if (isToProcess(tokens[1].trim())) {
-					tokens[1] = process(tokens[1].trim());
-				}
-				category.put(tokens[0].trim(), tokens[1].trim());
-			}
-		}
+	public static boolean isToProcess(final String str) {
+		return str != null && str.startsWith(DEMILITER) && str.endsWith(DEMILITER);
 	}
 
 	public static void parseConfigurationFile(final DatabaseConfiguration configuration,
@@ -115,6 +90,31 @@ public class ConfigurationReader {
 				scanner.close();
 			}
 		}
+	}
+
+	public static void parseRegularLine(final HashMap<String, String> category, final String str) {
+		if (str != null && str.contains(CONFIG_SEPARATOR)) {
+			final String tokens[] = str.split(CONFIG_SEPARATOR);
+			if (tokens.length == 2) {
+				if (isToProcess(tokens[1].trim())) {
+					tokens[1] = process(tokens[1].trim());
+				}
+				category.put(tokens[0].trim(), tokens[1].trim());
+			}
+		}
+	}
+
+	public static String process(final String str) {
+		final char[] strArray = str.toCharArray();
+		final int delta = 'Z' - 'A' + 1;
+		for (int i = 0; i < strArray.length; i++) {
+			strArray[i] = (char) (strArray[i] - 13);
+			if (Character.isLetter(str.charAt(i)) && ((Character.isUpperCase(str.charAt(i)) && strArray[i] < 'A')
+					|| (!Character.isUpperCase(str.charAt(i)) && strArray[i] < 'a'))) {
+				strArray[i] += delta;
+			}
+		}
+		return new String(strArray);
 	}
 
 }
