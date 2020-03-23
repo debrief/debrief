@@ -16,21 +16,15 @@
 package org.mwc.debrief.pepys.model.db;
 
 import java.beans.PropertyVetoException;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Collection;
 
-import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils;
-import org.mwc.debrief.pepys.model.db.annotation.Location;
 import org.sqlite.SQLiteConfig;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
-import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
 public class SqliteDatabaseConnection extends DatabaseConnection {
@@ -118,34 +112,4 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 		final String sql = "SELECT InitSpatialMetadata()";
 		statement.execute(sql);
 	}
-
-	@Override
-	public Collection<? extends Condition> createAreaFilter(WorldArea currentArea, final Class<?> type) {
-		final ArrayList<Condition> conditions = new ArrayList<Condition>();
-
-		final Field locationField = AnnotationsUtils.getField(type, Location.class);
-		if (locationField != null && currentArea != null) {
-
-			final WorldLocation topLeft = currentArea.getTopLeft();
-			final WorldLocation bottomRight = currentArea.getBottomRight();
-			final WorldLocation topRight = currentArea.getTopRight();
-			final WorldLocation bottomLeft = currentArea.getBottomLeft();
-
-			final String polygonArea = "POLYGON((" + topLeft.getLong() + " " + topLeft.getLat() + ","
-					+ bottomLeft.getLong() + " " + bottomLeft.getLat() + "," + bottomRight.getLong() + " "
-					+ bottomRight.getLat() + "," + topRight.getLong() + " " + topRight.getLat() + ","
-					+ topLeft.getLong() + " " + topLeft.getLat() + "))";
-			final String fieldName = getAlias(AnnotationsUtils.getTableName(type)) + "."
-					+ AnnotationsUtils.getColumnName(locationField);
-
-			final String geom = "ST_GeomFromText(" + ESCAPE_CHARACTER + polygonArea + ESCAPE_CHARACTER + ")";
-			final String contains = "ST_Contains(" + geom + "," + fieldName + ")";
-			System.out.println(contains);
-
-			conditions.add(new Condition(contains));
-		}
-
-		return conditions;
-	}
-
 }

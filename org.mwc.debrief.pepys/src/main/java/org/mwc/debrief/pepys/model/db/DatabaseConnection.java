@@ -36,6 +36,7 @@ import java.util.List;
 import org.mwc.debrief.pepys.model.bean.AbstractBean;
 import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils;
 import org.mwc.debrief.pepys.model.db.annotation.Id;
+import org.mwc.debrief.pepys.model.db.annotation.Location;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.OneToOne;
 import org.mwc.debrief.pepys.model.db.annotation.Time;
@@ -78,6 +79,33 @@ public abstract class DatabaseConnection {
 
 	public void cleanRenamingBuffer() {
 		aliasRenamingMap.clear();
+	}
+
+	public Collection<? extends Condition> createAreaFilter(final WorldArea currentArea, final Class<?> type) {
+		final ArrayList<Condition> conditions = new ArrayList<Condition>();
+
+		final Field locationField = AnnotationsUtils.getField(type, Location.class);
+		if (locationField != null && currentArea != null) {
+
+			final WorldLocation topLeft = currentArea.getTopLeft();
+			final WorldLocation bottomRight = currentArea.getBottomRight();
+			final WorldLocation topRight = currentArea.getTopRight();
+			final WorldLocation bottomLeft = currentArea.getBottomLeft();
+
+			final String polygonArea = "POLYGON((" + topLeft.getLong() + " " + topLeft.getLat() + ","
+					+ bottomLeft.getLong() + " " + bottomLeft.getLat() + "," + bottomRight.getLong() + " "
+					+ bottomRight.getLat() + "," + topRight.getLong() + " " + topRight.getLat() + ","
+					+ topLeft.getLong() + " " + topLeft.getLat() + "))";
+			final String fieldName = getAlias(AnnotationsUtils.getTableName(type)) + "."
+					+ AnnotationsUtils.getColumnName(locationField);
+
+			final String geom = "ST_GeomFromText(" + ESCAPE_CHARACTER + polygonArea + ESCAPE_CHARACTER + ")";
+			final String contains = "ST_Contains(" + geom + "," + fieldName + ")";
+
+			conditions.add(new Condition(contains));
+		}
+
+		return conditions;
 	}
 
 	public abstract DatabaseConnection createInstance() throws PropertyVetoException;
@@ -348,7 +376,5 @@ public abstract class DatabaseConnection {
 		}
 		return instance;
 	}
-	
-	public abstract Collection<? extends Condition> createAreaFilter(WorldArea currentArea, final Class<?> type);
 
 }
