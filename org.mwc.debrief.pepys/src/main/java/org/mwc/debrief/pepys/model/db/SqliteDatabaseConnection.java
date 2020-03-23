@@ -116,7 +116,7 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 	}
 
 	@Override
-	public Collection<? extends Condition> createAreaFilter(WorldArea currentArea) {
+	public Collection<? extends Condition> createAreaFilter(WorldArea currentArea, final Class<?> type) {
 		// TODO Auto-generated method stub
 		return null;
 	}

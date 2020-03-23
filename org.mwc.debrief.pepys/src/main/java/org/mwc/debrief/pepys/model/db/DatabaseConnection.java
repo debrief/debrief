@@ -348,6 +348,7 @@ public abstract class DatabaseConnection {
 		}
 		return instance;
 	}
+	
+	public abstract Collection<? extends Condition> createAreaFilter(WorldArea currentArea, final Class<?> type);
 
-	public abstract Collection<? extends Condition> createAreaFilter(WorldArea currentArea);
 }
