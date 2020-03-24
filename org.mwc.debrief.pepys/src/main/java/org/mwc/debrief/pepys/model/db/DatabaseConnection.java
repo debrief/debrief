@@ -23,6 +23,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URL;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -45,7 +47,8 @@ import org.mwc.debrief.pepys.model.db.annotation.OneToOne;
 import org.mwc.debrief.pepys.model.db.annotation.Time;
 import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
-
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 import MWC.GenericData.TimePeriod;
@@ -407,7 +410,16 @@ public abstract class DatabaseConnection {
 		if (configurationFile != null && new File(configurationFile).isFile()) {
 			configurationFilename = configurationFile;
 		}else {
-			configurationFilename = DEFAULT_DATABASE_FILE;
+			final Bundle bundle = FrameworkUtil.getBundle(DatabaseConnection.class);
+			if (bundle != null) {
+				// We are not running an unit test, so we load it from the root folder
+				
+				final URL url = bundle.getResource(Paths.get(DEFAULT_DATABASE_FILE).getFileName().toString());
+				configurationFilename = url.getPath();
+				
+			}else {
+				configurationFilename = DEFAULT_DATABASE_FILE;
+			}
 		}
 		
 		loadDatabaseConfiguration(_config, configurationFilename);
