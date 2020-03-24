@@ -34,7 +34,6 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 
 	public static final String LOCATION_COORDINATES = "XYZ";
 	public static final String SQLITE_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.000000";
-	public static final String DATABASE_FILE_PATH = "../org.mwc.debrief.pepys/test6.db";
 
 	public SqliteDatabaseConnection() {
 		super(); // Just formality :)
@@ -43,8 +42,8 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 	@Override
 	public DatabaseConnection createInstance(final DatabaseConfiguration _config) throws PropertyVetoException, FileNotFoundException {
 		if (INSTANCE == null) {
-			databaseConfiguration = _config;
 			final SqliteDatabaseConnection newInstance = new SqliteDatabaseConnection();
+			newInstance.databaseConfiguration = _config;
 			newInstance.initialize(_config);
 			INSTANCE = newInstance;
 		}

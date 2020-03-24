@@ -12,7 +12,7 @@ public class ConfigurationReader {
 	public static class ConfigurationReaderTest extends TestCase {
 
 		public void testConfigurationRead() {
-			final String testConfiguration = "[database]\n" + "db_username = abcdef\n" + "db_password = _abcdef_\n"
+			final String testConfiguration = "[database]\n" + "db_username = abcdef\n" + "db_password = abcdef\n"
 					+ "db_host = localhost\n" + "db_port = 5432\n" + "db_name = pepys2\n" + "[archive]\n"
 					+ "user = abcdef\n" + "password = abcdef";
 			final InputStream stream = new ByteArrayInputStream(testConfiguration.getBytes());

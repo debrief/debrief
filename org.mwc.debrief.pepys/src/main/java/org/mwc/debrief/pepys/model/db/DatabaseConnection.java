@@ -71,9 +71,9 @@ public abstract class DatabaseConnection {
 	
 	public static final String SQLITE = "sqlite";
 
-	public static final String DEFAULT_SQLITE_DATABASE_FILE = "../org.mwc.debrief.pepys/sqlite.ini";
+	public static final String DEFAULT_SQLITE_DATABASE_FILE = "../../../org.mwc.debrief.pepys/sqlite.ini";
 	
-	public static final String DEFAULT_POSTGRES_DATABASE_FILE = "../org.mwc.debrief.pepys/postgres.ini";
+	public static final String DEFAULT_POSTGRES_DATABASE_FILE = "../../../org.mwc.debrief.pepys/postgres.ini";
 	
 	public static final String DEFAULT_DATABASE_FILE = DEFAULT_SQLITE_DATABASE_FILE;
 	
@@ -418,6 +418,7 @@ public abstract class DatabaseConnection {
 		if (configurationFilename != null) {
 			final String path = DatabaseConnection.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 			final FileInputStream inputStream = new FileInputStream(new File(path + configurationFilename));
+			
 			ConfigurationReader.parseConfigurationFile(_config, inputStream);
 		}
 	}
