@@ -442,7 +442,7 @@ public abstract class DatabaseConnection {
 			final String configurationFilename) throws FileNotFoundException {
 		if (configurationFilename != null) {
 			final String pathPrefix;
-			if (Paths.get(configurationFilename).isAbsolute()) {
+			if (Paths.get(configurationFilename).isAbsolute() || Paths.get(configurationFilename).getFileName().toString().equals(configurationFilename) ) {
 				pathPrefix = "";
 			} else {
 				pathPrefix = DatabaseConnection.class.getProtectionDomain().getCodeSource().getLocation().getPath();
