@@ -22,7 +22,8 @@ Import-Package: org.eclipse.jface.viewers,
  org.eclipse.nebula.widgets.cdatetime,
  org.eclipse.ui,
  org.mwc.cmap.core.custom_widget,
- org.mwc.cmap.plotViewer.actions
+ org.mwc.cmap.plotViewer.actions,
+ org.osgi.framework;version="1.9.0"
 Export-Package: org.mwc.debrief.pepys,
  org.mwc.debrief.pepys.model.bean,
  org.mwc.debrief.pepys.model.db.config,
