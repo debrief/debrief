@@ -65,10 +65,20 @@ public class ImportDatabase extends CoreEditorAction {
 			if (category != null && category.containsKey(DatabaseConnection.CONFIGURATION_DATABASE_TYPE)) {
 				final String databaseType = category.get(DatabaseConnection.CONFIGURATION_DATABASE_TYPE);
 				if (databaseType != null) {
-					if (databaseType.equals(DatabaseConnection.POSTGRES)) {
-						new PostgresDatabaseConnection().createInstance(databaseConfiguration);
-					} else if (databaseType.equals(DatabaseConnection.SQLITE)) {
-						new SqliteDatabaseConnection().createInstance(databaseConfiguration);
+					final DatabaseConnection conn;
+					switch(databaseType) {
+					case DatabaseConnection.POSTGRES:
+						conn = new PostgresDatabaseConnection();
+						break;
+					case DatabaseConnection.SQLITE:					
+						conn = new SqliteDatabaseConnection();
+						break;					
+					default:
+						conn = null;
+						break;
+					}
+					if(conn != null) {
+						conn.createInstance(databaseConfiguration);
 					}
 				}
 			}
