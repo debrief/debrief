@@ -76,6 +76,8 @@ public abstract class DatabaseConnection {
 
 	public static final String DEFAULT_SQLITE_DATABASE_FILE = "../../../org.mwc.debrief.pepys/sqlite.ini";
 	
+	public static final String DEFAULT_SQLITE_TEST_DATABASE_FILE = "../../../org.mwc.debrief.pepys/sqlitetests.ini";
+	
 	public static final String DEFAULT_POSTGRES_DATABASE_FILE = "../../../org.mwc.debrief.pepys/postgres.ini";
 	
 	public static final String DEFAULT_DATABASE_FILE = DEFAULT_SQLITE_DATABASE_FILE;

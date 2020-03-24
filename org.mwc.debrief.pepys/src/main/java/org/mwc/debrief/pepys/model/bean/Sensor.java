@@ -24,7 +24,7 @@ public class Sensor implements AbstractBean, Comparable<Sensor> {
 		public void testSensorQuery() {
 			try {
 				final DatabaseConfiguration _config = new DatabaseConfiguration();
-				DatabaseConnection.loadDatabaseConfiguration(_config, DatabaseConnection.DEFAULT_SQLITE_DATABASE_FILE);
+				DatabaseConnection.loadDatabaseConfiguration(_config, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE);
 				new SqliteDatabaseConnection().createInstance(_config);
 				final List<Sensor> list = DatabaseConnection.getInstance().listAll(Sensor.class, null);
 
