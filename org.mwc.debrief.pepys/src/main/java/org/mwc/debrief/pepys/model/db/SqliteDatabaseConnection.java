@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 
+import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.sqlite.SQLiteConfig;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
@@ -34,18 +35,17 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 	public static final String LOCATION_COORDINATES = "XYZ";
 	public static final String SQLITE_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.000000";
 	public static final String DATABASE_FILE_PATH = "../org.mwc.debrief.pepys/test6.db";
-	public static final String CONFIGURATION_TAG = "database";
 
 	public SqliteDatabaseConnection() {
 		super(); // Just formality :)
-		configurationFilename = "../org.mwc.debrief.pepys/sqlite.ini";
 	}
-
+	
 	@Override
-	public DatabaseConnection createInstance() throws PropertyVetoException, FileNotFoundException {
+	public DatabaseConnection createInstance(final DatabaseConfiguration _config) throws PropertyVetoException, FileNotFoundException {
 		if (INSTANCE == null) {
+			databaseConfiguration = _config;
 			final SqliteDatabaseConnection newInstance = new SqliteDatabaseConnection();
-			newInstance.initialize();
+			newInstance.initialize(_config);
 			INSTANCE = newInstance;
 		}
 		return INSTANCE;
@@ -92,8 +92,7 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 	}
 
 	@Override
-	protected void initialize() throws PropertyVetoException, FileNotFoundException {
-		super.initialize();
+	protected void initialize(final DatabaseConfiguration _config) throws PropertyVetoException, FileNotFoundException {
 		// enabling dynamic extension loading
 		// absolutely required by SpatiaLite
 		final SQLiteConfig config = new SQLiteConfig();

@@ -17,12 +17,18 @@ package org.mwc.debrief.pepys;
 
 import java.beans.PropertyVetoException;
 import java.io.FileNotFoundException;
+import java.util.HashMap;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.plotViewer.actions.CoreEditorAction;
 import org.mwc.debrief.pepys.model.PepysConnectorBridge;
+import org.mwc.debrief.pepys.model.db.DatabaseConnection;
+import org.mwc.debrief.pepys.model.db.PostgresDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
+import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.mwc.debrief.pepys.presenter.PepysImportPresenter;
 
 import MWC.GUI.Layers;
@@ -50,17 +56,38 @@ public class ImportDatabase extends CoreEditorAction {
 		};
 
 		final Shell shell = new Shell(PlatformUI.getWorkbench().getDisplay());
+		final DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration();
 		try {
-			new SqliteDatabaseConnection().createInstance();
-			// new PostgresDatabaseConnection().createInstance();
-		} catch (final PropertyVetoException | FileNotFoundException e) {
+			DatabaseConnection.loadDatabaseConfiguration(databaseConfiguration);
+
+			final HashMap<String, String> category = databaseConfiguration
+					.getCategory(DatabaseConnection.CONFIGURATION_TAG);
+			if (category != null && category.containsKey(DatabaseConnection.CONFIGURATION_DATABASE_TYPE)) {
+				final String databaseType = category.get(DatabaseConnection.CONFIGURATION_DATABASE_TYPE);
+				if (databaseType != null) {
+					if (databaseType.equals(DatabaseConnection.POSTGRES)) {
+						new PostgresDatabaseConnection().createInstance(databaseConfiguration);
+					} else if (databaseType.equals(DatabaseConnection.SQLITE)) {
+						new SqliteDatabaseConnection().createInstance(databaseConfiguration);
+					}
+				}
+			}
+		} catch (FileNotFoundException | PropertyVetoException e) {
+			// Invalid Database Configuration error
 			e.printStackTrace();
+
+			final MessageBox messageBox = new MessageBox(shell, SWT.ERROR | SWT.OK);
+			messageBox.setMessage(e.toString());
+			messageBox.setText("Error in database configuration file.");
+			messageBox.open();
 		}
 
-		new PepysImportPresenter(shell, pepysBridge, getChart().getLayers());
+		if (DatabaseConnection.getInstance() != null) {
+			new PepysImportPresenter(shell, pepysBridge, getChart().getLayers());
 
-		shell.pack();
-		shell.open();
+			shell.pack();
+			shell.open();
+		}
 	}
 
 }

@@ -26,6 +26,7 @@ import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.Id;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
+import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 
 import junit.framework.TestCase;
 
@@ -36,7 +37,9 @@ public class Privacy implements AbstractBean {
 
 		public void testPrivaciesQuery() {
 			try {
-				new SqliteDatabaseConnection().createInstance();
+				final DatabaseConfiguration _config = new DatabaseConfiguration();
+				DatabaseConnection.loadDatabaseConfiguration(_config, DatabaseConnection.DEFAULT_SQLITE_DATABASE_FILE);
+				new SqliteDatabaseConnection().createInstance(_config);
 				final List<Privacy> list = DatabaseConnection.getInstance().listAll(Privacy.class, null);
 
 				assertTrue("Privacies - database entries", list.size() == 1);

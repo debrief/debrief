@@ -28,6 +28,7 @@ import org.mwc.debrief.pepys.model.db.annotation.FieldName;
 import org.mwc.debrief.pepys.model.db.annotation.Id;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
+import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 
 import junit.framework.TestCase;
 
@@ -38,7 +39,9 @@ public class Datafile implements AbstractBean {
 
 		public void testDatafilesQuery() {
 			try {
-				new SqliteDatabaseConnection().createInstance();
+				final DatabaseConfiguration _config = new DatabaseConfiguration();
+				DatabaseConnection.loadDatabaseConfiguration(_config, DatabaseConnection.DEFAULT_SQLITE_DATABASE_FILE);
+				new SqliteDatabaseConnection().createInstance(_config);
 				final List<Datafile> list = DatabaseConnection.getInstance().listAll(Datafile.class, null);
 
 				assertTrue("Datafiles - database entries", list.size() == 18);

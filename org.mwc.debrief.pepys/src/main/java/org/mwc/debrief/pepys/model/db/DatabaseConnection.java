@@ -61,15 +61,29 @@ public abstract class DatabaseConnection {
 	public static final String WHERE_CONNECTOR = " AND ";
 	public static final char ESCAPE_CHARACTER = '\'';
 
-	protected String configurationFilename = null;
+	public static final String CONFIG_FILE_ENV_NAME = "PEPYS_CONFIG_FILE";
+	
+	public static final String CONFIGURATION_TAG = "database";
+	
+	public static final String CONFIGURATION_DATABASE_TYPE = "db_type";
+	
+	public static final String POSTGRES = "postgres";
+	
+	public static final String SQLITE = "sqlite";
 
-	public static DatabaseConnection getInstance() throws PropertyVetoException {
+	public static final String DEFAULT_SQLITE_DATABASE_FILE = "../org.mwc.debrief.pepys/sqlite.ini";
+	
+	public static final String DEFAULT_POSTGRES_DATABASE_FILE = "../org.mwc.debrief.pepys/postgres.ini";
+	
+	public static final String DEFAULT_DATABASE_FILE = DEFAULT_SQLITE_DATABASE_FILE;
+	
+	public static DatabaseConnection getInstance()  {
 		return INSTANCE;
 	}
 
 	protected HashMap<String, String> aliasRenamingMap = new HashMap<String, String>();
 
-	protected DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration();
+	protected DatabaseConfiguration databaseConfiguration;
 
 	protected ComboPooledDataSource pool;
 
@@ -117,7 +131,7 @@ public abstract class DatabaseConnection {
 		return conditions;
 	}
 
-	public abstract DatabaseConnection createInstance() throws PropertyVetoException, FileNotFoundException;
+	public abstract DatabaseConnection createInstance(final DatabaseConfiguration _config) throws PropertyVetoException, FileNotFoundException;
 
 	protected abstract String createLocationQuery(final String tableName, final String columnName);
 
@@ -256,7 +270,6 @@ public abstract class DatabaseConnection {
 		final Connection connection = pool.getConnection();
 		ResultSet resultSet = null;
 		try {
-			final Constructor<T> constructor = type.getConstructor();
 			final String query = createQuery(type) + createQueryQueryIDPart(type);
 
 			if (SHOW_SQL) {
@@ -386,12 +399,29 @@ public abstract class DatabaseConnection {
 		return instance;
 	}
 
-	protected void initialize() throws FileNotFoundException, PropertyVetoException {
+	public static void loadDatabaseConfiguration(final DatabaseConfiguration _config) throws FileNotFoundException, PropertyVetoException {
+
+		final String configurationFile = System.getenv(CONFIG_FILE_ENV_NAME);
+		
+		final String configurationFilename;
+		if (configurationFile != null && new File(configurationFile).isFile()) {
+			configurationFilename = configurationFile;
+		}else {
+			configurationFilename = DEFAULT_DATABASE_FILE;
+		}
+		
+		loadDatabaseConfiguration(_config, configurationFilename);
+	}
+
+	public static void loadDatabaseConfiguration(final DatabaseConfiguration _config,
+			final String configurationFilename) throws FileNotFoundException {
 		if (configurationFilename != null) {
-			final String path = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+			final String path = DatabaseConnection.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 			final FileInputStream inputStream = new FileInputStream(new File(path + configurationFilename));
-			ConfigurationReader.parseConfigurationFile(databaseConfiguration, inputStream);
+			ConfigurationReader.parseConfigurationFile(_config, inputStream);
 		}
 	}
+
+	protected abstract void initialize(DatabaseConfiguration _config) throws PropertyVetoException, FileNotFoundException;
 
 }

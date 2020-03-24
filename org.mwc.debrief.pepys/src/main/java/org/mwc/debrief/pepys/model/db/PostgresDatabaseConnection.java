@@ -24,6 +24,7 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Properties;
 
+import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.postgis.PGbox3d;
 import org.postgis.PGgeometry;
 import org.postgis.Point;
@@ -40,20 +41,18 @@ public class PostgresDatabaseConnection extends DatabaseConnection {
 
 	private static final String HOST_HEADER = "jdbc:postgresql://";
 
-	private static final String CONGIG_TAG = "configuration";
 	private static final String CONNECTION_TAG = "connection";
-
-	private static final String DATABASE_FILE_PATH = "postgresql-pepysdb.alwaysdata.net/pepysdb_core";
 
 	public PostgresDatabaseConnection() {
 		super(); // Just formality :)
 	}
-
+	
 	@Override
-	public DatabaseConnection createInstance() throws PropertyVetoException, FileNotFoundException {
+	public DatabaseConnection createInstance(final DatabaseConfiguration _config) throws PropertyVetoException, FileNotFoundException {
 		if (INSTANCE == null) {
+			databaseConfiguration = _config;
 			final PostgresDatabaseConnection newInstance = new PostgresDatabaseConnection();
-			newInstance.initialize();
+			newInstance.initialize(_config);
 			INSTANCE = newInstance;
 		}
 		return INSTANCE;
@@ -95,11 +94,8 @@ public class PostgresDatabaseConnection extends DatabaseConnection {
 	}
 
 	@Override
-	protected void initialize() throws PropertyVetoException, FileNotFoundException {
-		super.initialize();
+	protected void initialize(final DatabaseConfiguration _config) throws PropertyVetoException, FileNotFoundException {
 		final Properties props = new Properties();
-
-		final HashMap<String, String> databaseTagConfig = databaseConfiguration.getCategory(CONGIG_TAG);
 		final HashMap<String, String> databaseTagConnection = databaseConfiguration.getCategory(CONNECTION_TAG);
 
 		props.setProperty("user", databaseTagConnection.get("db_username"));

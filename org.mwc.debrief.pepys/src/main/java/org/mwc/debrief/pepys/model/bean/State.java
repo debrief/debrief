@@ -18,6 +18,7 @@ import org.mwc.debrief.pepys.model.db.annotation.Location;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
 import org.mwc.debrief.pepys.model.db.annotation.Time;
+import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 
 import Debrief.Wrappers.FixWrapper;
@@ -38,7 +39,9 @@ public class State implements AbstractBean, TreeStructurable {
 
 		public void testStatesQuery() {
 			try {
-				new SqliteDatabaseConnection().createInstance();
+				final DatabaseConfiguration _config = new DatabaseConfiguration();
+				DatabaseConnection.loadDatabaseConfiguration(_config, DatabaseConnection.DEFAULT_SQLITE_DATABASE_FILE);
+				new SqliteDatabaseConnection().createInstance(_config);
 				final List<State> list = DatabaseConnection.getInstance().listAll(State.class, null);
 
 				assertTrue("States - database entries", list.size() == 24418);

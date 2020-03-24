@@ -13,6 +13,7 @@ import org.mwc.debrief.pepys.model.db.annotation.FieldName;
 import org.mwc.debrief.pepys.model.db.annotation.Id;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
+import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 
 import junit.framework.TestCase;
 
@@ -22,7 +23,9 @@ public class Sensor implements AbstractBean, Comparable<Sensor> {
 	public static class SensorTest extends TestCase {
 		public void testSensorQuery() {
 			try {
-				new SqliteDatabaseConnection().createInstance();
+				final DatabaseConfiguration _config = new DatabaseConfiguration();
+				DatabaseConnection.loadDatabaseConfiguration(_config, DatabaseConnection.DEFAULT_SQLITE_DATABASE_FILE);
+				new SqliteDatabaseConnection().createInstance(_config);
 				final List<Sensor> list = DatabaseConnection.getInstance().listAll(Sensor.class, null);
 
 				assertTrue("States - database entries", list.size() == 30);
