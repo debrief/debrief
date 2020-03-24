@@ -3,6 +3,7 @@ package org.mwc.debrief.pepys.model.bean;
 import java.beans.PropertyVetoException;
 import java.io.FileNotFoundException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -22,7 +23,20 @@ public class SensorType implements AbstractBean {
 		public void testSensorTypeQuery() {
 			try {
 				final DatabaseConfiguration _config = new DatabaseConfiguration();
-				DatabaseConnection.loadDatabaseConfiguration(_config, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE);
+				final String configurationFilename;
+				final String path = DatabaseConnection.class.getProtectionDomain().getCodeSource().getLocation()
+						.getPath();
+				if (path.endsWith("jar")) {
+					// We are not running an unit test or we are running from a .jar, so we load it
+					// from the root folder
+					configurationFilename = Paths.get(DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE)
+							.getFileName().toString();
+
+				} else {
+					configurationFilename = DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE;
+				}
+
+				DatabaseConnection.loadDatabaseConfiguration(_config, configurationFilename);
 				new SqliteDatabaseConnection().createInstance(_config);
 				final List<SensorType> list = DatabaseConnection.getInstance().listAll(SensorType.class, null);
 
