@@ -409,18 +409,30 @@ public abstract class DatabaseConnection {
 		final String configurationFile = System.getenv(CONFIG_FILE_ENV_NAME);
 		
 		final String configurationFilename;
-		if (configurationFile != null && new File(configurationFile).isFile()) {
-			configurationFilename = configurationFile;
-		}else {
+		if (configurationFile != null) {
+			if (new File(configurationFile).isFile()) {
+				configurationFilename = configurationFile;
+			} else {
+				// show error:
+				// "Config file specified in "+ CONFIG_FILE_ENV_NAME + " environment variable
+				// not found:" + configurationFilename
+				return;
+			}
+		} else {
 			final Bundle bundle = FrameworkUtil.getBundle(DatabaseConnection.class);
 			if (bundle != null) {
 				// We are not running an unit test, so we load it from the root folder
-				
+
 				final URL url = bundle.getResource(Paths.get(DEFAULT_DATABASE_FILE).getFileName().toString());
 				configurationFilename = url.getPath();
-				
-			}else {
+
+			} else {
 				configurationFilename = DEFAULT_DATABASE_FILE;
+			}
+			if (!new File(configurationFilename).isFile()) {
+				// show error:
+				// "Default database config file not found:" + configurationFilename
+				return;
 			}
 		}
 		
