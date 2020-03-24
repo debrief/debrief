@@ -430,8 +430,14 @@ public abstract class DatabaseConnection {
 	public static void loadDatabaseConfiguration(final DatabaseConfiguration _config,
 			final String configurationFilename) throws FileNotFoundException {
 		if (configurationFilename != null) {
-			final String path = DatabaseConnection.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-			final FileInputStream inputStream = new FileInputStream(new File(path + configurationFilename));
+			final String pathPrefix;
+			if (Paths.get(configurationFilename).isAbsolute()) {
+				pathPrefix = "";
+			}else {
+				pathPrefix = DatabaseConnection.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+			}
+						
+			final FileInputStream inputStream = new FileInputStream(new File(pathPrefix + configurationFilename));
 			
 			ConfigurationReader.parseConfigurationFile(_config, inputStream);
 		}
