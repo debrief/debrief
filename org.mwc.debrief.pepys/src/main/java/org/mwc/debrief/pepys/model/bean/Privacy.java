@@ -17,6 +17,7 @@ package org.mwc.debrief.pepys.model.bean;
 
 import java.beans.PropertyVetoException;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Paths;
 import java.sql.SQLException;
@@ -39,20 +40,7 @@ public class Privacy implements AbstractBean {
 		public void testPrivaciesQuery() {
 			try {
 				final DatabaseConfiguration _config = new DatabaseConfiguration();
-				final String configurationFilename;
-				final String path = DatabaseConnection.class.getProtectionDomain().getCodeSource().getLocation()
-						.getPath();
-				if (path.endsWith("jar")) {
-					// We are not running an unit test or we are running from a .jar, so we load it
-					// from the root folder
-					configurationFilename = Paths.get(DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE)
-							.getFileName().toString();
-
-				} else {
-					configurationFilename = DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE;
-				}
-
-				DatabaseConnection.loadDatabaseConfiguration(_config, configurationFilename);
+				DatabaseConnection.loadDatabaseConfiguration(_config, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE);
 				new SqliteDatabaseConnection().createInstance(_config);
 				final List<Privacy> list = DatabaseConnection.getInstance().listAll(Privacy.class, null);
 
@@ -63,7 +51,7 @@ public class Privacy implements AbstractBean {
 						"1".equals(privacy.getPrivacy_id()) && "PRIVACY-1".equals(privacy.getName()));
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
-					| ClassNotFoundException | FileNotFoundException e) {
+					| ClassNotFoundException | IOException e) {
 				e.printStackTrace();
 				fail("Couldn't connect to database or query error");
 			}

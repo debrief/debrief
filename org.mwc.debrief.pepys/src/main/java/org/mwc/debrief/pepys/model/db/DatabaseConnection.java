@@ -19,10 +19,14 @@ import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.sql.Connection;
@@ -74,11 +78,11 @@ public abstract class DatabaseConnection {
 
 	public static final String SQLITE = "sqlite";
 
-	public static final String DEFAULT_SQLITE_DATABASE_FILE = "../../../org.mwc.debrief.pepys/sqlite.ini";
+	public static final String DEFAULT_SQLITE_DATABASE_FILE = "/sqlite.ini";
 
-	public static final String DEFAULT_SQLITE_TEST_DATABASE_FILE = "../../../org.mwc.debrief.pepys/sqlitetests.ini";
+	public static final String DEFAULT_SQLITE_TEST_DATABASE_FILE = "/sqlitetests.ini";
 
-	public static final String DEFAULT_POSTGRES_DATABASE_FILE = "../../../org.mwc.debrief.pepys/postgres.ini";
+	public static final String DEFAULT_POSTGRES_DATABASE_FILE = "/postgres.ini";
 
 	public static final String DEFAULT_DATABASE_FILE = DEFAULT_SQLITE_DATABASE_FILE;
 
@@ -405,15 +409,17 @@ public abstract class DatabaseConnection {
 		return instance;
 	}
 
-	public static void loadDatabaseConfiguration(final DatabaseConfiguration _config)
-			throws FileNotFoundException, PropertyVetoException {
+	public static void loadDatabaseConfiguration(final DatabaseConfiguration _config, final String _defaultConfigFile)
+			throws PropertyVetoException, IOException {
 
 		final String configurationFile = System.getenv(CONFIG_FILE_ENV_NAME);
 
-		final String configurationFilename;
+		final InputStream configurationFileStream;
 		if (configurationFile != null) {
 			if (new File(configurationFile).isFile()) {
-				configurationFilename = configurationFile;
+				// Here we are simply load the file as given
+				configurationFileStream = new FileInputStream(new File(configurationFile));
+				;
 			} else {
 				// show error:
 				// "Config file specified in "+ CONFIG_FILE_ENV_NAME + " environment variable
@@ -426,41 +432,28 @@ public abstract class DatabaseConnection {
 			final Bundle bundle = FrameworkUtil.getBundle(DatabaseConnection.class);
 			final String path = DatabaseConnection.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 
-			if (bundle != null || path.endsWith("jar")) {
-				// We are not running an unit test or we are running from a .jar, so we load it
-				// from the root folder
-				configurationFilename = Paths.get(DEFAULT_DATABASE_FILE).getFileName().toString();
-			} else {
-				configurationFilename = DEFAULT_DATABASE_FILE;
+			if (bundle != null) {
+				// We are running from bundle or from .jar
+				configurationFileStream = bundle.getResource(_defaultConfigFile).openConnection().getInputStream();
+			} else if (path.endsWith("jar")) {
+				configurationFileStream = DatabaseConnection.class
+						.getResourceAsStream(_defaultConfigFile);
+			}else {
+				// We are running from Eclipse
+				configurationFileStream = new FileInputStream(new File(path + "../../" + _defaultConfigFile));
 			}
 		}
 
-		loadDatabaseConfiguration(_config, configurationFilename);
+		loadDatabaseConfiguration(_config, configurationFileStream);
 	}
 
 	public static void loadDatabaseConfiguration(final DatabaseConfiguration _config,
-			final String configurationFilename) throws FileNotFoundException {
-		if (configurationFilename != null) {
-			final String pathPrefix;
-			if (Paths.get(configurationFilename).isAbsolute() || Paths.get(configurationFilename).getFileName().toString().equals(configurationFilename) ) {
-				pathPrefix = "";
-			} else {
-				pathPrefix = DatabaseConnection.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-			}
-
-			if (!new File(pathPrefix + configurationFilename).isFile()) {
-				// show error:
-				// "Default database config file not found:" + configurationFilename
-	
-				throw new FileNotFoundException(
-						"DatabaseConnectionException we have concluded this is the file to load "
-								+ pathPrefix + configurationFilename + " but it is not a valid file");
-	
-			}
-			
-			final FileInputStream inputStream = new FileInputStream(new File(pathPrefix + configurationFilename));
-
-			ConfigurationReader.parseConfigurationFile(_config, inputStream);
+			final InputStream configurationStream) throws FileNotFoundException {
+		if (configurationStream != null) {
+			ConfigurationReader.parseConfigurationFile(_config, configurationStream);
+		}else {
+			throw new FileNotFoundException(
+					"DatabaseConnectionException we have received a null inputstream");
 		}
 	}
 

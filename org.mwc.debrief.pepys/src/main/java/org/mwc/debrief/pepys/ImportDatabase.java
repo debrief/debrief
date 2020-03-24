@@ -17,6 +17,7 @@ package org.mwc.debrief.pepys;
 
 import java.beans.PropertyVetoException;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 
 import org.eclipse.swt.SWT;
@@ -58,7 +59,7 @@ public class ImportDatabase extends CoreEditorAction {
 		final Shell shell = new Shell(PlatformUI.getWorkbench().getDisplay());
 		final DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration();
 		try {
-			DatabaseConnection.loadDatabaseConfiguration(databaseConfiguration);
+			DatabaseConnection.loadDatabaseConfiguration(databaseConfiguration, DatabaseConnection.DEFAULT_DATABASE_FILE);
 
 			final HashMap<String, String> category = databaseConfiguration
 					.getCategory(DatabaseConnection.CONFIGURATION_TAG);
@@ -82,7 +83,7 @@ public class ImportDatabase extends CoreEditorAction {
 					}
 				}
 			}
-		} catch (FileNotFoundException | PropertyVetoException e) {
+		} catch (IOException | PropertyVetoException e) {
 			// Invalid Database Configuration error
 			e.printStackTrace();
 
