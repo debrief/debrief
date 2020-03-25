@@ -31,6 +31,8 @@ import org.mwc.debrief.pepys.model.db.PostgresDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.mwc.debrief.pepys.presenter.PepysImportPresenter;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
@@ -38,9 +40,9 @@ import MWC.GenericData.WorldArea;
 
 public class ImportDatabase extends CoreEditorAction {
 
+	
 	@Override
 	protected void execute() {
-
 		final PlainChart theChart = getChart();
 
 		final PepysConnectorBridge pepysBridge = new PepysConnectorBridge() {

@@ -102,7 +102,11 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 
 		final HashMap<String, String> databaseTagConfiguration = databaseConfiguration.getCategory(CONFIGURATION_TAG);
 
-		final String path = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+		String path = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+		if (System.getProperty("os.name").toLowerCase().contains("win")) {
+			// Let's remove the initial / from the windows path;
+			path = path.substring(1);
+		}
 		final String completePath = "jdbc:sqlite:" + path + databaseTagConfiguration.get("db_name");
 		pool.setJdbcUrl(completePath);
 		pool.setDriverClass("org.sqlite.JDBC");
@@ -112,12 +116,12 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 	@Override
 	protected void loadExtention(final Connection connection, final Statement statement) throws SQLException {
 		// loading SpatiaLite
-		statement.execute("SELECT load_extension('mod_spatialite')");
+		//statement.execute("SELECT load_extension('C:\\Users\\saulh\\Downloads\\mod_spatialite-4.4.0-RC0-win-amd64\\mod_spatialite-4.4.0-RC0-win-amd64\\mod_spatialite.dll')");
 
 		// enabling Spatial Metadata
 		// using v.2.4.0 this automatically initializes SPATIAL_REF_SYS and
 		// GEOMETRY_COLUMNS
-		final String sql = "SELECT InitSpatialMetadata()";
-		statement.execute(sql);
+		//final String sql = "SELECT InitSpatialMetadata()";
+		//statement.execute(sql);
 	}
 }
