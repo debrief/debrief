@@ -16,6 +16,7 @@
 package org.mwc.debrief.pepys.model.db;
 
 import java.beans.PropertyVetoException;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -23,6 +24,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 
+import org.mwc.debrief.pepys.Activator;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.sqlite.SQLiteConfig;
 
@@ -116,12 +118,13 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 	@Override
 	protected void loadExtention(final Connection connection, final Statement statement) throws SQLException {
 		// loading SpatiaLite
-		//statement.execute("SELECT load_extension('C:\\Users\\saulh\\Downloads\\mod_spatialite-4.4.0-RC0-win-amd64\\mod_spatialite-4.4.0-RC0-win-amd64\\mod_spatialite.dll')");
+		
+		statement.execute("SELECT load_extension('" + Activator.nativeFolderPath + File.separator+ "mod_spatialite.so')");
 
 		// enabling Spatial Metadata
 		// using v.2.4.0 this automatically initializes SPATIAL_REF_SYS and
 		// GEOMETRY_COLUMNS
-		//final String sql = "SELECT InitSpatialMetadata()";
-		//statement.execute(sql);
+		final String sql = "SELECT InitSpatialMetadata()";
+		statement.execute(sql);
 	}
 }

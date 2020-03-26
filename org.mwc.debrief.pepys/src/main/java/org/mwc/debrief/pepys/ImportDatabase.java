@@ -16,7 +16,6 @@
 package org.mwc.debrief.pepys;
 
 import java.beans.PropertyVetoException;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -31,9 +30,6 @@ import org.mwc.debrief.pepys.model.db.PostgresDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.mwc.debrief.pepys.presenter.PepysImportPresenter;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GenericData.WorldArea;

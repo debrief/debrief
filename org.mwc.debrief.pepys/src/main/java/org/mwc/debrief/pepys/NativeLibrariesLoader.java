@@ -47,6 +47,9 @@ public class NativeLibrariesLoader {
 			nativePath = "/native/mac64/";
 			versionSeparator = '.';
 		}
+		if (OSUtils.LINUX && OSUtils.IS_64BIT) {
+			nativePath = "/native/linux/";
+		}
 		if (nativePath == null) {
 			// we don't have bundled libraries for this os
 			return;
