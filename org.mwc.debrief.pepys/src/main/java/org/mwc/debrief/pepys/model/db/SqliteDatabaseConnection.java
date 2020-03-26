@@ -44,7 +44,7 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 	@Override
 	public DatabaseConnection createInstance(final DatabaseConfiguration _config) throws PropertyVetoException, FileNotFoundException {
 		if (INSTANCE == null) {
-			final SqliteDatabaseConnection newInstance = new SqliteDatabaseConnection();
+			final SqliteDatabaseConnection newInstance = this;
 			newInstance.databaseConfiguration = _config;
 			newInstance.initialize(_config);
 			INSTANCE = newInstance;

@@ -49,7 +49,7 @@ public class PostgresDatabaseConnection extends DatabaseConnection {
 	public DatabaseConnection createInstance(final DatabaseConfiguration _config) throws PropertyVetoException, FileNotFoundException {
 		if (INSTANCE == null) {
 			databaseConfiguration = _config;
-			final PostgresDatabaseConnection newInstance = new PostgresDatabaseConnection();
+			final PostgresDatabaseConnection newInstance = this;
 			newInstance.initialize(_config);
 			INSTANCE = newInstance;
 		}
