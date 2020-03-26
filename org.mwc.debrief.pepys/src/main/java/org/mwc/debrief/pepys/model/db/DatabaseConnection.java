@@ -443,6 +443,23 @@ public abstract class DatabaseConnection {
 		loadDatabaseConfiguration(_config, configurationFileStream);
 	}
 
+	public boolean doTestQuery(final Class<AbstractBean> [] testBeans) throws SQLException {
+		final Connection connection = pool.getConnection();
+		Statement statement = connection.createStatement();
+		
+		for (Class<AbstractBean> bean : testBeans) {
+			final String tableName = AnnotationsUtils.getTableName(bean);
+
+			final Field id = AnnotationsUtils.getField(bean, Id.class);
+			final String idName = AnnotationsUtils.getColumnName(id);
+			
+			final String sql = "SELECT " + idName + " from " + tableName + " where false";
+			statement.execute(sql);	
+		}
+		
+		return true;
+	}
+	
 	public static void loadDatabaseConfiguration(final DatabaseConfiguration _config,
 			final InputStream configurationStream) throws FileNotFoundException {
 		if (configurationStream != null) {
@@ -455,5 +472,7 @@ public abstract class DatabaseConnection {
 
 	protected abstract void initialize(DatabaseConfiguration _config)
 			throws PropertyVetoException, FileNotFoundException;
+	
+	
 
 }

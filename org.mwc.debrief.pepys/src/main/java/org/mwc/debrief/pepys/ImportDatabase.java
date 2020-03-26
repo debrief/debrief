@@ -17,6 +17,7 @@ package org.mwc.debrief.pepys;
 
 import java.beans.PropertyVetoException;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.HashMap;
 
 import org.eclipse.swt.SWT;
@@ -25,6 +26,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.plotViewer.actions.CoreEditorAction;
 import org.mwc.debrief.pepys.model.PepysConnectorBridge;
+import org.mwc.debrief.pepys.model.bean.AbstractBean;
+import org.mwc.debrief.pepys.model.bean.Comment;
+import org.mwc.debrief.pepys.model.bean.Contact;
+import org.mwc.debrief.pepys.model.bean.State;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.PostgresDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
@@ -36,7 +41,6 @@ import MWC.GenericData.WorldArea;
 
 public class ImportDatabase extends CoreEditorAction {
 
-	
 	@Override
 	protected void execute() {
 		final PlainChart theChart = getChart();
@@ -57,7 +61,8 @@ public class ImportDatabase extends CoreEditorAction {
 		final Shell shell = new Shell(PlatformUI.getWorkbench().getDisplay());
 		final DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration();
 		try {
-			DatabaseConnection.loadDatabaseConfiguration(databaseConfiguration, DatabaseConnection.DEFAULT_DATABASE_FILE);
+			DatabaseConnection.loadDatabaseConfiguration(databaseConfiguration,
+					DatabaseConnection.DEFAULT_DATABASE_FILE);
 
 			final HashMap<String, String> category = databaseConfiguration
 					.getCategory(DatabaseConnection.CONFIGURATION_TAG);
@@ -65,19 +70,20 @@ public class ImportDatabase extends CoreEditorAction {
 				final String databaseType = category.get(DatabaseConnection.CONFIGURATION_DATABASE_TYPE);
 				if (databaseType != null) {
 					final DatabaseConnection conn;
-					switch(databaseType) {
+					switch (databaseType) {
 					case DatabaseConnection.POSTGRES:
 						conn = new PostgresDatabaseConnection();
 						break;
-					case DatabaseConnection.SQLITE:					
+					case DatabaseConnection.SQLITE:
 						conn = new SqliteDatabaseConnection();
-						break;					
+						break;
 					default:
 						conn = null;
 						break;
 					}
-					if(conn != null) {
+					if (conn != null) {
 						conn.createInstance(databaseConfiguration);
+						conn.doTestQuery(new Class[] { Contact.class, State.class, Comment.class });
 					}
 				}
 			}
@@ -86,9 +92,20 @@ public class ImportDatabase extends CoreEditorAction {
 			e.printStackTrace();
 
 			final MessageBox messageBox = new MessageBox(shell, SWT.ERROR | SWT.OK);
-			messageBox.setMessage(e.toString());
+			messageBox.setMessage("Debrief has been unable to load the configuration file\n" + e.toString());
 			messageBox.setText("Error in database configuration file.");
 			messageBox.open();
+			
+			return;
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+			final MessageBox messageBox = new MessageBox(shell, SWT.ERROR | SWT.OK);
+			messageBox.setMessage("Database inconsistency\n" + e.toString());
+			messageBox.setText("Error in database connection.");
+			messageBox.open();
+			
+			return;
 		}
 
 		if (DatabaseConnection.getInstance() != null) {
