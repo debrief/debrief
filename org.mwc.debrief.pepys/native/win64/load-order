@@ -1,14 +1,14 @@
 sqlite3.dll
 liblzma-5.dll
 zlib1.dll
-libgcc_s_seh_64-1.dll
+libgcc_s_seh-1.dll
 libproj-9.dll
 libiconv-2.dll
 libfreexl-1.dll
 libxml2-2.dll
 libsqlite3-0.dll
-libgeos_c-1.dll
 libstdc++_64-6.dll
 libgeos-3-5-0.dll
+libgeos_c-1.dll
 liblwgeom-2-3-0.dll
 mod_spatialite.dll
