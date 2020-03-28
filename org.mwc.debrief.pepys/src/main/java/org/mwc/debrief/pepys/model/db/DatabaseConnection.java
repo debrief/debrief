@@ -76,7 +76,7 @@ public abstract class DatabaseConnection {
 
 	public static final String DEFAULT_SQLITE_DATABASE_FILE = "/sqlite.ini";
 
-	public static final String DEFAULT_SQLITE_TEST_DATABASE_FILE = "/sqlitetests.ini";
+	public static final String DEFAULT_SQLITE_TEST_DATABASE_FILE = "/sqlite.ini";
 
 	public static final String DEFAULT_POSTGRES_DATABASE_FILE = "/postgres.ini";
 
