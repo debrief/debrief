@@ -35,7 +35,7 @@ public class ConfigurationReader {
 		}
 
 		public void testProcess() {
-			assertTrue("Process Test", process("ABZabz").equals("NOMnom"));
+			assertTrue("Process Test", process("_ABZabz_").equals("NOMnom"));
 		}
 	}
 
