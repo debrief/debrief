@@ -29,7 +29,7 @@ public class Activator extends AbstractUIPlugin {
 	
 	public static final String MOD_SPATIALITE_NAME = "mod_spatialite";
 	
-	public static String modSpatialiteName = "";
+	public static String modSpatialiteName = MOD_SPATIALITE_NAME;
 	
 	private static Activator plugin;
 

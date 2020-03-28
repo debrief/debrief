@@ -106,7 +106,7 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 		final HashMap<String, String> databaseTagConfiguration = databaseConfiguration.getCategory(CONFIGURATION_TAG);
 
 		String path = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-		path = path + "../";
+		path = path.substring(0, path.indexOf(Activator.PLUGIN_ID));
 		final String completePath = "jdbc:sqlite:" + path + databaseTagConfiguration.get("db_name");
 		pool.setJdbcUrl(completePath);
 		pool.setDriverClass("org.sqlite.JDBC");
@@ -118,8 +118,13 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 			throws SQLException, IOException {
 		// loading SpatiaLite
 
-		final String sqlExt = "SELECT load_extension('" + Activator.nativeFolderPath.getCanonicalPath().toString() + "/"
-				+ Activator.modSpatialiteName + "')";
+		final String pathPrefix;
+		if (Activator.nativeFolderPath != null) {
+			pathPrefix = Activator.nativeFolderPath.getCanonicalPath().toString() + "/";
+		} else {
+			pathPrefix = "";
+		}
+		final String sqlExt = "SELECT load_extension('" + pathPrefix + Activator.modSpatialiteName + "')";
 		statement.execute(sqlExt);
 
 		// enabling Spatial Metadata
