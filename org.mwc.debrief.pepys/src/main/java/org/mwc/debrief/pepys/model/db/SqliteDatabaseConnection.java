@@ -16,6 +16,7 @@
 package org.mwc.debrief.pepys.model.db;
 
 import java.beans.PropertyVetoException;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
@@ -118,13 +119,18 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 			throws SQLException, IOException {
 		// loading SpatiaLite
 
-		final String pathPrefix;
+		final String extentionToLoad;
 		if (Activator.nativeFolderPath != null) {
-			pathPrefix = Activator.nativeFolderPath.getCanonicalPath().toString() + "/";
+			final String newPath = Activator.nativeFolderPath.getCanonicalPath().toString() + "/";
+			if (new File(newPath + Activator.modSpatialiteName).isFile()) {
+				extentionToLoad = newPath + Activator.modSpatialiteName;
+			}else {
+				extentionToLoad = Activator.MOD_SPATIALITE_NAME;
+			}
 		} else {
-			pathPrefix = "";
+			extentionToLoad = Activator.MOD_SPATIALITE_NAME;
 		}
-		final String sqlExt = "SELECT load_extension('" + pathPrefix + Activator.modSpatialiteName + "')";
+		final String sqlExt = "SELECT load_extension('" + extentionToLoad + "')";
 		statement.execute(sqlExt);
 
 		// enabling Spatial Metadata
