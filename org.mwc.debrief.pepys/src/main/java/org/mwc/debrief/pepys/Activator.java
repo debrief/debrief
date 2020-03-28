@@ -27,6 +27,10 @@ public class Activator extends AbstractUIPlugin {
 
 	public static File nativeFolderPath = null;
 	
+	public static final String MOD_SPATIALITE_NAME = "mod_spatialite";
+	
+	public static String modSpatialiteName = "";
+	
 	private static Activator plugin;
 
 	public static Activator getDefault() {

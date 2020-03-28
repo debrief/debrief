@@ -39,13 +39,11 @@ public class NativeLibrariesLoader {
 		nativeLibrariesDirectory.mkdirs();
 		cleanDirectory(nativeLibrariesDirectory);
 		String nativePath = null;
-		char versionSeparator = '-';
 		if (OSUtils.WIN) {
 			nativePath = OSUtils.IS_64BIT ? "/native/win64/" : "/native/win32/";
 		}
 		if (OSUtils.MAC && OSUtils.IS_64BIT) {
 			nativePath = "/native/mac64/";
-			versionSeparator = '.';
 		}
 		if (OSUtils.LINUX && OSUtils.IS_64BIT) {
 			nativePath = "/native/linux/";
@@ -62,22 +60,12 @@ public class NativeLibrariesLoader {
 				if (libraryToLoad.isEmpty()) {
 					continue;
 				}
+				if (libraryToLoad.contains(Activator.MOD_SPATIALITE_NAME)) {
+					Activator.modSpatialiteName = libraryToLoad;
+				}
 				final File libraryFile = new File(nativeLibrariesDirectory, libraryToLoad);
 				FileUtils.copyURLToFile(bundle.getResource(nativePath + libraryToLoad), libraryFile);
-				//String libraryName = libraryToLoad.substring(0, libraryToLoad.lastIndexOf('.'));
-				//if (libraryName.startsWith("lib")) {
-				//	libraryName = libraryName.substring(3);
-				//}
-				//final int indexOfSeparator = libraryName.lastIndexOf(versionSeparator);
-				//long libraryVersion = 0;
-				//try {
-				//	libraryVersion = Long.parseLong(libraryName.substring(indexOfSeparator + 1));
-				//} catch (final NumberFormatException ex) {
-					// ignore
-				//}
-				//libraryName = libraryName.substring(0, indexOfSeparator);
 				System.load(libraryFile.getCanonicalPath());
-				// JNIHelper.setManuallyLoadedLibrary(libraryName, libraryVersion);
 			}
 		} finally {
 			IOUtils.closeQuietly(loadOrderStream);

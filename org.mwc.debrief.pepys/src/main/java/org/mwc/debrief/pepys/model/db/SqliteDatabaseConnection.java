@@ -16,8 +16,8 @@
 package org.mwc.debrief.pepys.model.db;
 
 import java.beans.PropertyVetoException;
-import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -40,9 +40,10 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 	public SqliteDatabaseConnection() {
 		super(); // Just formality :)
 	}
-	
+
 	@Override
-	public DatabaseConnection createInstance(final DatabaseConfiguration _config) throws PropertyVetoException, FileNotFoundException {
+	public DatabaseConnection createInstance(final DatabaseConfiguration _config)
+			throws PropertyVetoException, FileNotFoundException {
 		if (INSTANCE == null) {
 			final SqliteDatabaseConnection newInstance = this;
 			newInstance.databaseConfiguration = _config;
@@ -105,10 +106,7 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 		final HashMap<String, String> databaseTagConfiguration = databaseConfiguration.getCategory(CONFIGURATION_TAG);
 
 		String path = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-		if (System.getProperty("os.name").toLowerCase().contains("win")) {
-			// Let's remove the initial / from the windows path;
-			path = path.substring(1);
-		}
+		path = path + "../";
 		final String completePath = "jdbc:sqlite:" + path + databaseTagConfiguration.get("db_name");
 		pool.setJdbcUrl(completePath);
 		pool.setDriverClass("org.sqlite.JDBC");
@@ -116,10 +114,13 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 	}
 
 	@Override
-	protected void loadExtention(final Connection connection, final Statement statement) throws SQLException {
+	protected void loadExtention(final Connection connection, final Statement statement)
+			throws SQLException, IOException {
 		// loading SpatiaLite
-		
-		statement.execute("SELECT load_extension('" + Activator.nativeFolderPath + File.separator+ "mod_spatialite.so')");
+
+		final String sqlExt = "SELECT load_extension('" + Activator.nativeFolderPath.getCanonicalPath().toString() + "/"
+				+ Activator.modSpatialiteName + "')";
+		statement.execute(sqlExt);
 
 		// enabling Spatial Metadata
 		// using v.2.4.0 this automatically initializes SPATIAL_REF_SYS and

@@ -223,7 +223,7 @@ public abstract class DatabaseConnection {
 	public <T> List<T> listAll(final Class<T> type, final Collection<Condition> conditions)
 			throws PropertyVetoException, SQLException, NoSuchMethodException, SecurityException,
 			InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-			ClassNotFoundException {
+			ClassNotFoundException, IOException {
 		final Connection connection = pool.getConnection();
 		final List<T> ans = new ArrayList<>();
 		ResultSet resultSet = null;
@@ -302,7 +302,7 @@ public abstract class DatabaseConnection {
 	}
 
 	protected abstract void loadExtention(final Connection connection, final Statement statement)
-			throws SQLException, ClassNotFoundException;
+			throws SQLException, ClassNotFoundException, IOException;
 
 	private String prepareSelect(final Class<?> type, final List<String> join, final String prefix) {
 		final String baseTableName = AnnotationsUtils.getTableName(type);
