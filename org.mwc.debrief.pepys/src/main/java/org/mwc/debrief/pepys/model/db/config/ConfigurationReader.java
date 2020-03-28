@@ -104,14 +104,17 @@ public class ConfigurationReader {
 		}
 	}
 
-	public static String process(final String str) {
+	public static String process(final String _str) {
+		final String str = _str.substring(1, _str.length() - 1);
 		final char[] strArray = str.toCharArray();
 		final int delta = 'Z' - 'A' + 1;
 		for (int i = 0; i < strArray.length; i++) {
-			strArray[i] = (char) (strArray[i] - 13);
-			if (Character.isLetter(str.charAt(i)) && ((Character.isUpperCase(str.charAt(i)) && strArray[i] < 'A')
-					|| (!Character.isUpperCase(str.charAt(i)) && strArray[i] < 'a'))) {
-				strArray[i] += delta;
+			if (Character.isLetter(str.charAt(i))) {
+				strArray[i] = (char) (strArray[i] - 13);
+				if ((Character.isUpperCase(str.charAt(i)) && strArray[i] < 'A')
+						|| (!Character.isUpperCase(str.charAt(i)) && strArray[i] < 'a')) {
+					strArray[i] += delta;
+				}
 			}
 		}
 		return new String(strArray);
