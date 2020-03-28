@@ -16,7 +16,10 @@
 package org.mwc.debrief.pepys.model.bean;
 
 import java.beans.PropertyVetoException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
@@ -25,6 +28,7 @@ import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.Id;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
+import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 
 import junit.framework.TestCase;
 
@@ -35,7 +39,9 @@ public class DatafileType implements AbstractBean {
 
 		public void testDatafileTypesQuery() {
 			try {
-				new SqliteDatabaseConnection().createInstance();
+				final DatabaseConfiguration _config = new DatabaseConfiguration();
+				DatabaseConnection.loadDatabaseConfiguration(_config, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE);
+				new SqliteDatabaseConnection().createInstance(_config);
 				final List<DatafileType> list = DatabaseConnection.getInstance().listAll(DatafileType.class, null);
 
 				assertTrue("Datafiletypes - database entries", list.size() == 1);
@@ -45,7 +51,7 @@ public class DatafileType implements AbstractBean {
 				assertTrue("Datafiletypes - database entries", "DATAFILE-TYPE-1".equals(type.getName()));
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
-					| ClassNotFoundException e) {
+					| ClassNotFoundException | IOException e) {
 				e.printStackTrace();
 				fail("Couldn't connect to database or query error");
 			}

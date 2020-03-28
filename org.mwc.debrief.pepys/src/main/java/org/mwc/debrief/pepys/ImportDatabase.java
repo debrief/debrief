@@ -16,14 +16,24 @@
 package org.mwc.debrief.pepys;
 
 import java.beans.PropertyVetoException;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.HashMap;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.plotViewer.actions.CoreEditorAction;
 import org.mwc.debrief.pepys.model.PepysConnectorBridge;
+import org.mwc.debrief.pepys.model.bean.Comment;
+import org.mwc.debrief.pepys.model.bean.Contact;
+import org.mwc.debrief.pepys.model.bean.State;
+import org.mwc.debrief.pepys.model.db.DatabaseConnection;
+import org.mwc.debrief.pepys.model.db.PostgresDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
+import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.mwc.debrief.pepys.presenter.PepysImportPresenter;
-
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GenericData.WorldArea;
@@ -32,7 +42,6 @@ public class ImportDatabase extends CoreEditorAction {
 
 	@Override
 	protected void execute() {
-
 		final PlainChart theChart = getChart();
 
 		final PepysConnectorBridge pepysBridge = new PepysConnectorBridge() {
@@ -49,17 +58,62 @@ public class ImportDatabase extends CoreEditorAction {
 		};
 
 		final Shell shell = new Shell(PlatformUI.getWorkbench().getDisplay());
+		final DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration();
 		try {
-			new SqliteDatabaseConnection().createInstance();
-			// new PostgresDatabaseConnection().createInstance();
-		} catch (final PropertyVetoException e) {
+			DatabaseConnection.loadDatabaseConfiguration(databaseConfiguration,
+					DatabaseConnection.DEFAULT_DATABASE_FILE);
+
+			final HashMap<String, String> category = databaseConfiguration
+					.getCategory(DatabaseConnection.CONFIGURATION_TAG);
+			if (category != null && category.containsKey(DatabaseConnection.CONFIGURATION_DATABASE_TYPE)) {
+				final String databaseType = category.get(DatabaseConnection.CONFIGURATION_DATABASE_TYPE);
+				if (databaseType != null) {
+					final DatabaseConnection conn;
+					switch (databaseType) {
+					case DatabaseConnection.POSTGRES:
+						conn = new PostgresDatabaseConnection();
+						break;
+					case DatabaseConnection.SQLITE:
+						conn = new SqliteDatabaseConnection();
+						break;
+					default:
+						conn = null;
+						break;
+					}
+					if (conn != null) {
+						conn.createInstance(databaseConfiguration);
+						DatabaseConnection.getInstance()
+								.doTestQuery(new Class[] { Contact.class, State.class, Comment.class });
+					}
+				}
+			}
+		} catch (IOException | PropertyVetoException e) {
+			// Invalid Database Configuration error
 			e.printStackTrace();
+
+			final MessageBox messageBox = new MessageBox(shell, SWT.ERROR | SWT.OK);
+			messageBox.setMessage("Debrief has been unable to load the configuration file\n" + e.toString());
+			messageBox.setText("Error in database configuration file.");
+			messageBox.open();
+
+			return;
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+			final MessageBox messageBox = new MessageBox(shell, SWT.ERROR | SWT.OK);
+			messageBox.setMessage("Database inconsistency\n" + e.toString());
+			messageBox.setText("Error in database connection.");
+			messageBox.open();
+
+			return;
 		}
 
-		new PepysImportPresenter(shell, pepysBridge, getChart().getLayers());
+		if (DatabaseConnection.getInstance() != null) {
+			new PepysImportPresenter(shell, pepysBridge, getChart().getLayers());
 
-		shell.pack();
-		shell.open();
+			shell.pack();
+			shell.open();
+		}
 	}
 
 }

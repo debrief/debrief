@@ -16,6 +16,7 @@
 package org.mwc.debrief.pepys.model.tree;
 
 import java.beans.PropertyVetoException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -105,7 +106,7 @@ public class TreeBuilder {
 
 	public static void buildStructure(final AbstractConfiguration configuration) throws NoSuchMethodException,
 			SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, PropertyVetoException, SQLException, ClassNotFoundException {
+			InvocationTargetException, PropertyVetoException, SQLException, ClassNotFoundException, IOException {
 		configuration.getTreeModel().removeAllChildren();
 
 		final ArrayList<AbstractBean> allItems = new ArrayList<AbstractBean>();

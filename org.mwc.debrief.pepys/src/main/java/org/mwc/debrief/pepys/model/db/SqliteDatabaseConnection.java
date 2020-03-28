@@ -16,11 +16,17 @@
 package org.mwc.debrief.pepys.model.db;
 
 import java.beans.PropertyVetoException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 
+import org.mwc.debrief.pepys.Activator;
+import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.sqlite.SQLiteConfig;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
@@ -31,17 +37,18 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 
 	public static final String LOCATION_COORDINATES = "XYZ";
 	public static final String SQLITE_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.000000";
-	public static final String DATABASE_FILE_PATH = "../org.mwc.debrief.pepys/test6.db";
 
 	public SqliteDatabaseConnection() {
 		super(); // Just formality :)
 	}
 
 	@Override
-	public DatabaseConnection createInstance() throws PropertyVetoException {
+	public DatabaseConnection createInstance(final DatabaseConfiguration _config)
+			throws PropertyVetoException, FileNotFoundException {
 		if (INSTANCE == null) {
-			final SqliteDatabaseConnection newInstance = new SqliteDatabaseConnection();
-			newInstance.initialize();
+			final SqliteDatabaseConnection newInstance = this;
+			newInstance.databaseConfiguration = _config;
+			newInstance.initialize(_config);
 			INSTANCE = newInstance;
 		}
 		return INSTANCE;
@@ -87,7 +94,8 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 		return "";
 	}
 
-	protected void initialize() throws PropertyVetoException {
+	@Override
+	protected void initialize(final DatabaseConfiguration _config) throws PropertyVetoException, FileNotFoundException {
 		// enabling dynamic extension loading
 		// absolutely required by SpatiaLite
 		final SQLiteConfig config = new SQLiteConfig();
@@ -95,17 +103,35 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 
 		pool = new ComboPooledDataSource();
 		pool.setCheckoutTimeout(TIME_OUT);
-		pool.setDriverClass("org.sqlite.JDBC");
-		final String pathHeader = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-		final String completePath = "jdbc:sqlite:" + pathHeader + DATABASE_FILE_PATH;
+
+		final HashMap<String, String> databaseTagConfiguration = databaseConfiguration.getCategory(CONFIGURATION_TAG);
+
+		String path = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+		path = path.substring(0, path.indexOf(Activator.PLUGIN_ID));
+		final String completePath = "jdbc:sqlite:" + path + databaseTagConfiguration.get("db_name");
 		pool.setJdbcUrl(completePath);
+		pool.setDriverClass("org.sqlite.JDBC");
 		pool.setProperties(config.toProperties());
 	}
 
 	@Override
-	protected void loadExtention(final Connection connection, final Statement statement) throws SQLException {
+	protected void loadExtention(final Connection connection, final Statement statement)
+			throws SQLException, IOException {
 		// loading SpatiaLite
-		statement.execute("SELECT load_extension('mod_spatialite')");
+
+		final String extentionToLoad;
+		if (Activator.nativeFolderPath != null) {
+			final String newPath = Activator.nativeFolderPath.getCanonicalPath().toString() + "/";
+			if (new File(newPath + Activator.modSpatialiteName).isFile()) {
+				extentionToLoad = newPath + Activator.modSpatialiteName;
+			}else {
+				extentionToLoad = Activator.MOD_SPATIALITE_NAME;
+			}
+		} else {
+			extentionToLoad = Activator.MOD_SPATIALITE_NAME;
+		}
+		final String sqlExt = "SELECT load_extension('" + extentionToLoad + "')";
+		statement.execute(sqlExt);
 
 		// enabling Spatial Metadata
 		// using v.2.4.0 this automatically initializes SPATIAL_REF_SYS and

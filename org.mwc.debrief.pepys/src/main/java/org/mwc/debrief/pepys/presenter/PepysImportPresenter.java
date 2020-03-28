@@ -18,6 +18,8 @@ package org.mwc.debrief.pepys.presenter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.ICheckStateListener;
@@ -38,7 +40,9 @@ import org.mwc.debrief.pepys.model.TypeDomain;
 import org.mwc.debrief.pepys.model.bean.Comment;
 import org.mwc.debrief.pepys.model.bean.Contact;
 import org.mwc.debrief.pepys.model.bean.State;
+import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
+import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.mwc.debrief.pepys.model.tree.TreeNode;
 import org.mwc.debrief.pepys.view.PepysImportView;
 
@@ -52,9 +56,11 @@ public class PepysImportPresenter {
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
 		try {
-			new SqliteDatabaseConnection().createInstance();
+			final DatabaseConfiguration _config = new DatabaseConfiguration();
+			DatabaseConnection.loadDatabaseConfiguration(_config, DatabaseConnection.DEFAULT_SQLITE_DATABASE_FILE);
+			new SqliteDatabaseConnection().createInstance(_config);
 			// new PostgresDatabaseConnection().createInstance();
-		} catch (final PropertyVetoException e) {
+		} catch (final PropertyVetoException | IOException e) {
 			e.printStackTrace();
 		}
 

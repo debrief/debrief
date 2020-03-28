@@ -1,7 +1,10 @@
 package org.mwc.debrief.pepys.model.bean;
 
 import java.beans.PropertyVetoException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -17,6 +20,7 @@ import org.mwc.debrief.pepys.model.db.annotation.Location;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
 import org.mwc.debrief.pepys.model.db.annotation.Time;
+import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 
 import Debrief.Wrappers.FixWrapper;
@@ -37,7 +41,9 @@ public class State implements AbstractBean, TreeStructurable {
 
 		public void testStatesQuery() {
 			try {
-				new SqliteDatabaseConnection().createInstance();
+				final DatabaseConfiguration _config = new DatabaseConfiguration();
+				DatabaseConnection.loadDatabaseConfiguration(_config, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE);
+				new SqliteDatabaseConnection().createInstance(_config);
 				final List<State> list = DatabaseConnection.getInstance().listAll(State.class, null);
 
 				assertTrue("States - database entries", list.size() == 24418);
@@ -48,7 +54,7 @@ public class State implements AbstractBean, TreeStructurable {
 				assertTrue("States - database entries", list2.size() == 14);
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
-					| ClassNotFoundException e) {
+					| ClassNotFoundException | IOException e) {
 				e.printStackTrace();
 				fail("Couldn't connect to database or query error");
 			}

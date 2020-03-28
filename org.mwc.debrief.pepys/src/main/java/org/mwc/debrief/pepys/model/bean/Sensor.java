@@ -1,7 +1,10 @@
 package org.mwc.debrief.pepys.model.bean;
 
 import java.beans.PropertyVetoException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
@@ -12,6 +15,7 @@ import org.mwc.debrief.pepys.model.db.annotation.FieldName;
 import org.mwc.debrief.pepys.model.db.annotation.Id;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
+import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 
 import junit.framework.TestCase;
 
@@ -21,7 +25,9 @@ public class Sensor implements AbstractBean, Comparable<Sensor> {
 	public static class SensorTest extends TestCase {
 		public void testSensorQuery() {
 			try {
-				new SqliteDatabaseConnection().createInstance();
+				final DatabaseConfiguration _config = new DatabaseConfiguration();
+				DatabaseConnection.loadDatabaseConfiguration(_config, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE);
+				new SqliteDatabaseConnection().createInstance(_config);
 				final List<Sensor> list = DatabaseConnection.getInstance().listAll(Sensor.class, null);
 
 				assertTrue("States - database entries", list.size() == 30);
@@ -31,7 +37,7 @@ public class Sensor implements AbstractBean, Comparable<Sensor> {
 				assertTrue("States - database entries", "PLATFORM-1".equals(plantFormSensor.getName()));
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
-					| ClassNotFoundException e) {
+					| ClassNotFoundException | IOException e) {
 				e.printStackTrace();
 				fail("Couldn't connect to database or query error");
 			}

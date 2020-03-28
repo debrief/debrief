@@ -16,12 +16,15 @@
 package org.mwc.debrief.pepys.model.db;
 
 import java.beans.PropertyVetoException;
+import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.Properties;
 
+import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.postgis.PGbox3d;
 import org.postgis.PGgeometry;
 import org.postgis.Point;
@@ -36,17 +39,18 @@ import MWC.GenericData.WorldLocation;
 
 public class PostgresDatabaseConnection extends DatabaseConnection {
 
-	private static final String DATABASE_FILE_PATH = "postgresql-pepysdb.alwaysdata.net/pepysdb_core";
+	private static final String HOST_HEADER = "jdbc:postgresql://";
 
 	public PostgresDatabaseConnection() {
 		super(); // Just formality :)
 	}
-
+	
 	@Override
-	public DatabaseConnection createInstance() throws PropertyVetoException {
+	public DatabaseConnection createInstance(final DatabaseConfiguration _config) throws PropertyVetoException, FileNotFoundException {
 		if (INSTANCE == null) {
-			final PostgresDatabaseConnection newInstance = new PostgresDatabaseConnection();
-			newInstance.initialize();
+			databaseConfiguration = _config;
+			final PostgresDatabaseConnection newInstance = this;
+			newInstance.initialize(_config);
 			INSTANCE = newInstance;
 		}
 		return INSTANCE;
@@ -87,16 +91,21 @@ public class PostgresDatabaseConnection extends DatabaseConnection {
 		return "\"";
 	}
 
-	private void initialize() throws PropertyVetoException {
+	@Override
+	protected void initialize(final DatabaseConfiguration _config) throws PropertyVetoException, FileNotFoundException {
 		final Properties props = new Properties();
-		props.setProperty("user", "pepysdb_dev");
-		props.setProperty("password", "");
+    final HashMap<String, String> databaseTagConnection = _config
+        .getCategory(DatabaseConnection.CONFIGURATION_TAG);
+
+		props.setProperty("user", databaseTagConnection.get("db_username"));
+		props.setProperty("password", databaseTagConnection.get("db_password"));
 		props.setProperty("ssl", "false");
 
 		pool = new ComboPooledDataSource();
 		pool.setCheckoutTimeout(TIME_OUT);
 		pool.setDriverClass("org.postgresql.Driver");
-		final String completePath = "jdbc:postgresql://" + DATABASE_FILE_PATH;
+		final String completePath = HOST_HEADER + databaseTagConnection.get("db_host") + ":"
+				+ databaseTagConnection.get("db_port") + "/" + databaseTagConnection.get("db_name");
 		pool.setJdbcUrl(completePath);
 		pool.setProperties(props);
 	}
