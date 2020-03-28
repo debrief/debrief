@@ -17,13 +17,19 @@ Bundle-ClassPath: libs/c3p0-0.9.5.5.jar,
 Require-Bundle: org.mwc.cmap.legacy;bundle-version="1.0.293",
  org.mwc.debrief.legacy;bundle-version="1.0.432",
  org.eclipse.jface,
- org.eclipse.nebula.cwt;bundle-version="0.9.3"
-Import-Package: org.eclipse.jface.viewers,
+ org.eclipse.nebula.cwt;bundle-version="0.9.3",
+ org.eclipse.core.runtime;bundle-version="3.15.300"
+Import-Package: org.apache.commons.io,
+ org.eclipse.jface.viewers,
  org.eclipse.nebula.widgets.cdatetime,
  org.eclipse.ui,
+ org.eclipse.ui.plugin,
  org.mwc.cmap.core.custom_widget,
- org.mwc.cmap.plotViewer.actions
+ org.mwc.cmap.plotViewer.actions,
+ org.osgi.framework;version="1.9.0"
 Export-Package: org.mwc.debrief.pepys,
  org.mwc.debrief.pepys.model.bean,
  org.mwc.debrief.pepys.model.db.config,
  org.mwc.debrief.pepys.model.tree
+Bundle-Activator: org.mwc.debrief.pepys.Activator
+Bundle-ActivationPolicy: lazy

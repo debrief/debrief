@@ -19,6 +19,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.ICheckStateListener;
@@ -59,7 +60,7 @@ public class PepysImportPresenter {
 			DatabaseConnection.loadDatabaseConfiguration(_config, DatabaseConnection.DEFAULT_SQLITE_DATABASE_FILE);
 			new SqliteDatabaseConnection().createInstance(_config);
 			// new PostgresDatabaseConnection().createInstance();
-		} catch (final PropertyVetoException | FileNotFoundException e) {
+		} catch (final PropertyVetoException | IOException e) {
 			e.printStackTrace();
 		}
 

@@ -12,7 +12,7 @@ public class ConfigurationReader {
 	public static class ConfigurationReaderTest extends TestCase {
 
 		public void testConfigurationRead() {
-			final String testConfiguration = "[database]\n" + "db_username = abcdef\n" + "db_password = _abcdef_\n"
+			final String testConfiguration = "[database]\n" + "db_username = abcdef\n" + "db_password = abcdef\n"
 					+ "db_host = localhost\n" + "db_port = 5432\n" + "db_name = pepys2\n" + "[archive]\n"
 					+ "user = abcdef\n" + "password = abcdef";
 			final InputStream stream = new ByteArrayInputStream(testConfiguration.getBytes());
@@ -35,7 +35,7 @@ public class ConfigurationReader {
 		}
 
 		public void testProcess() {
-			assertTrue("Process Test", process("ABZabz").equals("NOMnom"));
+			assertTrue("Process Test", process("_ABZabz_").equals("NOMnom"));
 		}
 	}
 
@@ -104,14 +104,17 @@ public class ConfigurationReader {
 		}
 	}
 
-	public static String process(final String str) {
+	public static String process(final String _str) {
+		final String str = _str.substring(1, _str.length() - 1);
 		final char[] strArray = str.toCharArray();
 		final int delta = 'Z' - 'A' + 1;
 		for (int i = 0; i < strArray.length; i++) {
-			strArray[i] = (char) (strArray[i] - 13);
-			if (Character.isLetter(str.charAt(i)) && ((Character.isUpperCase(str.charAt(i)) && strArray[i] < 'A')
-					|| (!Character.isUpperCase(str.charAt(i)) && strArray[i] < 'a'))) {
-				strArray[i] += delta;
+			if (Character.isLetter(str.charAt(i))) {
+				strArray[i] = (char) (strArray[i] - 13);
+				if ((Character.isUpperCase(str.charAt(i)) && strArray[i] < 'A')
+						|| (!Character.isUpperCase(str.charAt(i)) && strArray[i] < 'a')) {
+					strArray[i] += delta;
+				}
 			}
 		}
 		return new String(strArray);

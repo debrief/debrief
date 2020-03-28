@@ -41,8 +41,6 @@ public class PostgresDatabaseConnection extends DatabaseConnection {
 
 	private static final String HOST_HEADER = "jdbc:postgresql://";
 
-	private static final String CONNECTION_TAG = "connection";
-
 	public PostgresDatabaseConnection() {
 		super(); // Just formality :)
 	}
@@ -51,7 +49,7 @@ public class PostgresDatabaseConnection extends DatabaseConnection {
 	public DatabaseConnection createInstance(final DatabaseConfiguration _config) throws PropertyVetoException, FileNotFoundException {
 		if (INSTANCE == null) {
 			databaseConfiguration = _config;
-			final PostgresDatabaseConnection newInstance = new PostgresDatabaseConnection();
+			final PostgresDatabaseConnection newInstance = this;
 			newInstance.initialize(_config);
 			INSTANCE = newInstance;
 		}
@@ -96,7 +94,8 @@ public class PostgresDatabaseConnection extends DatabaseConnection {
 	@Override
 	protected void initialize(final DatabaseConfiguration _config) throws PropertyVetoException, FileNotFoundException {
 		final Properties props = new Properties();
-		final HashMap<String, String> databaseTagConnection = databaseConfiguration.getCategory(CONNECTION_TAG);
+    final HashMap<String, String> databaseTagConnection = _config
+        .getCategory(DatabaseConnection.CONFIGURATION_TAG);
 
 		props.setProperty("user", databaseTagConnection.get("db_username"));
 		props.setProperty("password", databaseTagConnection.get("db_password"));

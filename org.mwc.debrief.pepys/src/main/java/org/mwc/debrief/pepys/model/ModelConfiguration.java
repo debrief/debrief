@@ -19,6 +19,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyVetoException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -77,7 +78,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 	@Override
 	public void apply() throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException,
-			ClassNotFoundException {
+			ClassNotFoundException, IOException {
 
 		TreeBuilder.buildStructure(this);
 

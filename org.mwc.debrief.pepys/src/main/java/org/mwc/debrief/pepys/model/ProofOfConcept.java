@@ -16,6 +16,7 @@
 package org.mwc.debrief.pepys.model;
 
 import java.beans.PropertyVetoException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.List;
@@ -59,7 +60,7 @@ public class ProofOfConcept {
 			// }
 		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 				| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
-				| ClassNotFoundException e) {
+				| ClassNotFoundException | IOException e) {
 			e.printStackTrace();
 		}
 	}
