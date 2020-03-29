@@ -25,7 +25,7 @@ import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -225,7 +225,9 @@ public class PepysImportController {
 			@Override
 			public void handleEvent(final Event event) {
 				if (event.type == SWT.Selection) {
+					final Cursor originalCursor = _parent.getCursor();
 					try {
+						_parent.setCursor(new Cursor(PlatformUI.getWorkbench().getDisplay(), SWT.CURSOR_WAIT));
 						model.apply();
 					} catch (final Exception e) {
 						e.printStackTrace();
@@ -233,6 +235,8 @@ public class PepysImportController {
 						messageBox.setMessage(e.toString());
 						messageBox.setText("Error retrieving information from Database");
 						messageBox.open();
+					}finally {
+						_parent.setCursor(originalCursor);
 					}
 				}
 			}
