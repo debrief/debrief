@@ -25,6 +25,7 @@ import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -32,11 +33,11 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.model.ModelConfiguration;
 import org.mwc.debrief.pepys.model.PepysConnectorBridge;
 import org.mwc.debrief.pepys.model.TypeDomain;
-import org.mwc.debrief.pepys.model.bean.AbstractBean;
 import org.mwc.debrief.pepys.model.bean.Comment;
 import org.mwc.debrief.pepys.model.bean.Contact;
 import org.mwc.debrief.pepys.model.bean.State;
@@ -46,7 +47,6 @@ import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.mwc.debrief.pepys.model.tree.TreeNode;
 import org.mwc.debrief.pepys.view.PepysImportView;
 
-import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 
@@ -81,12 +81,14 @@ public class PepysImportController {
 
 	private final Shell _parent;
 
+	private final String IMAGE_PREFIX = "/icons/16/";
+
 	public PepysImportController(final Shell parent) {
 		final AbstractConfiguration model = new ModelConfiguration();
 
-		model.addDatafileTypeFilter(new TypeDomain(State.class, "States", true));
-		model.addDatafileTypeFilter(new TypeDomain(Contact.class, "Contacts", true));
-		model.addDatafileTypeFilter(new TypeDomain(Comment.class, "Comments", true));
+		model.addDatafileTypeFilter(new TypeDomain(State.class, "States", true, IMAGE_PREFIX + "fix.png"));
+		model.addDatafileTypeFilter(new TypeDomain(Contact.class, "Contacts", true, IMAGE_PREFIX + "bearing.png"));
+		model.addDatafileTypeFilter(new TypeDomain(Comment.class, "Comments", true, IMAGE_PREFIX + "narrative.png"));
 		final PepysImportView view = new PepysImportView(model, parent);
 
 		_model = model;
@@ -283,6 +285,8 @@ public class PepysImportController {
 		for (final TypeDomain type : _model.getDatafileTypeFilters()) {
 			final Button typeButton = new Button(composite, SWT.CHECK);
 			typeButton.setText(type.getName());
+			typeButton.setImage(new Image(PlatformUI.getWorkbench().getDisplay(),
+					PepysImportController.class.getResourceAsStream(type.getImagePath())));
 			typeButton.setSelection(type.isChecked());
 			type.removeAllPropertyChangeListeners();
 			type.addPropertyChangeListener(new PropertyChangeListener() {

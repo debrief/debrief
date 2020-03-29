@@ -27,18 +27,20 @@ import org.mwc.debrief.pepys.model.bean.AbstractBean;
  */
 public class TypeDomain {
 	public static String CHECKED_PROPERTY = "CHECKED_CHANGED";
-	private Class<AbstractBean> datatype;
-	private String name;
+	private final Class<AbstractBean> datatype;
+	private final String name;
+	private final String imagePath;
 
 	private boolean checked;
 
 	private PropertyChangeSupport _pSupport = null;
 
-	public TypeDomain(final Class datatype, final String name, final boolean checked) {
+	public TypeDomain(final Class datatype, final String name, final boolean checked, final String _imagePath) {
 		super();
 		this.datatype = datatype;
 		this.name = name;
 		this.checked = checked;
+		this.imagePath = _imagePath;
 	}
 
 	public void addPropertyChangeListener(final PropertyChangeListener l) {
@@ -50,6 +52,10 @@ public class TypeDomain {
 
 	public Class<AbstractBean> getDatatype() {
 		return datatype;
+	}
+
+	public String getImagePath() {
+		return imagePath;
 	}
 
 	public String getName() {
@@ -79,14 +85,6 @@ public class TypeDomain {
 					checked);
 			_pSupport.firePropertyChange(pce);
 		}
-	}
-
-	public void setDatatype(final Class<AbstractBean> datatype) {
-		this.datatype = datatype;
-	}
-
-	public void setName(final String name) {
-		this.name = name;
 	}
 
 }
