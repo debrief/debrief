@@ -148,6 +148,7 @@ public class PepysImportView extends Dialog {
 		timePeriodLayout.numColumns = 2;
 		timePeriodLayout.marginWidth = 10;
 		timePeriodLayout.marginHeight = 10;
+		timePeriodItem.setImage(DebriefPlugin.getImageDescriptor("/icons/16/control_time.png").createImage());
 		timePeriodItem.getBody().setLayout(timePeriodLayout);
 
 		this.startLabel = new Label(timePeriodItem.getBody(), SWT.PUSH);
@@ -179,6 +180,7 @@ public class PepysImportView extends Dialog {
 		areaItemLayout.marginHeight = 10;
 		final PShelfItem areaItem = new PShelfItem(shelf, SWT.NONE);
 		areaItem.setText("Area");
+		areaItem.setImage(DebriefPlugin.getImageDescriptor("/icons/16/map.png").createImage());
 		areaItem.getBody().setLayout(areaItemLayout);
 
 		this.topLeftLabel = new Label(areaItem.getBody(), SWT.NONE);
@@ -205,6 +207,7 @@ public class PepysImportView extends Dialog {
 		dataTypeItemLayout.marginHeight = 10;
 		final PShelfItem dataTypeItem = new PShelfItem(shelf, SWT.NONE);
 		dataTypeItem.setText("Data Type");
+		dataTypeItem.setImage(DebriefPlugin.getImageDescriptor("/icons/16/filter.png").createImage());
 		dataTypeItem.getBody().setLayout(dataTypeItemLayout);
 		dataTypesComposite = dataTypeItem.getBody();
 
