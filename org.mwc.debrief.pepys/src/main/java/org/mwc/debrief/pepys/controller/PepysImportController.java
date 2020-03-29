@@ -13,12 +13,11 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
-package org.mwc.debrief.pepys.presenter;
+package org.mwc.debrief.pepys.controller;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
@@ -37,6 +36,7 @@ import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.model.ModelConfiguration;
 import org.mwc.debrief.pepys.model.PepysConnectorBridge;
 import org.mwc.debrief.pepys.model.TypeDomain;
+import org.mwc.debrief.pepys.model.bean.AbstractBean;
 import org.mwc.debrief.pepys.model.bean.Comment;
 import org.mwc.debrief.pepys.model.bean.Contact;
 import org.mwc.debrief.pepys.model.bean.State;
@@ -50,7 +50,7 @@ import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 
-public class PepysImportPresenter {
+public class PepysImportController {
 
 	public static void main(final String[] args) {
 		final Display display = new Display();
@@ -64,7 +64,7 @@ public class PepysImportPresenter {
 			e.printStackTrace();
 		}
 
-		new PepysImportPresenter(shell);
+		new PepysImportController(shell);
 
 		shell.pack();
 		shell.open();
@@ -81,7 +81,7 @@ public class PepysImportPresenter {
 
 	private final Shell _parent;
 
-	public PepysImportPresenter(final Shell parent) {
+	public PepysImportController(final Shell parent) {
 		final AbstractConfiguration model = new ModelConfiguration();
 
 		model.addDatafileTypeFilter(new TypeDomain(State.class, "States", true));
@@ -97,7 +97,7 @@ public class PepysImportPresenter {
 		addDatabindings(model, view);
 	}
 
-	public PepysImportPresenter(final Shell shell, final PepysConnectorBridge pepysBridge, final Layers layers) {
+	public PepysImportController(final Shell shell, final PepysConnectorBridge pepysBridge) {
 		this(shell);
 
 		_model.setPepysConnectorBridge(pepysBridge);

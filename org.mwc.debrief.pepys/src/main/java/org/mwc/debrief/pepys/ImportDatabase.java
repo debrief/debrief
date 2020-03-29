@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.plotViewer.actions.CoreEditorAction;
+import org.mwc.debrief.pepys.controller.PepysImportController;
 import org.mwc.debrief.pepys.model.PepysConnectorBridge;
 import org.mwc.debrief.pepys.model.bean.Comment;
 import org.mwc.debrief.pepys.model.bean.Contact;
@@ -33,7 +34,7 @@ import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.PostgresDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
-import org.mwc.debrief.pepys.presenter.PepysImportPresenter;
+
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GenericData.WorldArea;
@@ -109,7 +110,7 @@ public class ImportDatabase extends CoreEditorAction {
 		}
 
 		if (DatabaseConnection.getInstance() != null) {
-			new PepysImportPresenter(shell, pepysBridge, getChart().getLayers());
+			new PepysImportController(shell, pepysBridge);
 
 			shell.pack();
 			shell.open();

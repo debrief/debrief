@@ -16,10 +16,8 @@
 package org.mwc.debrief.pepys.model.bean;
 
 import java.beans.PropertyVetoException;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
@@ -40,13 +38,14 @@ public class Privacy implements AbstractBean {
 		public void testPrivaciesQuery() {
 			try {
 				final DatabaseConfiguration _config = new DatabaseConfiguration();
-				DatabaseConnection.loadDatabaseConfiguration(_config, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE);
+				DatabaseConnection.loadDatabaseConfiguration(_config,
+						DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE);
 				new SqliteDatabaseConnection().createInstance(_config);
 				final List<Privacy> list = DatabaseConnection.getInstance().listAll(Privacy.class, null);
 
 				assertTrue("Privacies - database entries", list.size() == 1);
 
-				final Privacy privacy = (Privacy) list.get(0);
+				final Privacy privacy = list.get(0);
 				assertTrue("Datafiletypes - database entries",
 						"1".equals(privacy.getPrivacy_id()) && "PRIVACY-1".equals(privacy.getName()));
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException

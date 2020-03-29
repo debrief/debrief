@@ -1,10 +1,8 @@
 package org.mwc.debrief.pepys.model.bean;
 
 import java.beans.PropertyVetoException;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -42,7 +40,8 @@ public class State implements AbstractBean, TreeStructurable {
 		public void testStatesQuery() {
 			try {
 				final DatabaseConfiguration _config = new DatabaseConfiguration();
-				DatabaseConnection.loadDatabaseConfiguration(_config, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE);
+				DatabaseConnection.loadDatabaseConfiguration(_config,
+						DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE);
 				new SqliteDatabaseConnection().createInstance(_config);
 				final List<State> list = DatabaseConnection.getInstance().listAll(State.class, null);
 

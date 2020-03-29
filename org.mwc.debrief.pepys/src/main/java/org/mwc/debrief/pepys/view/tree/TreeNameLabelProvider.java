@@ -13,11 +13,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
-package org.mwc.debrief.pepys.model.tree;
+package org.mwc.debrief.pepys.view.tree;
 
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
+import org.mwc.debrief.pepys.model.tree.TreeNode;
 
 import MWC.GenericData.TimePeriod.BaseTimePeriod;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;

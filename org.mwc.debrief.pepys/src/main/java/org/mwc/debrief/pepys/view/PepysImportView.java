@@ -31,10 +31,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.mwc.cmap.core.custom_widget.CWorldLocation;
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.model.tree.TreeContentProvider;
-import org.mwc.debrief.pepys.model.tree.TreeNameLabelProvider;
 import org.mwc.debrief.pepys.nebula.PShelf;
 import org.mwc.debrief.pepys.nebula.PShelfItem;
 import org.mwc.debrief.pepys.nebula.RedmondShelfRenderer;
+import org.mwc.debrief.pepys.view.tree.TreeNameLabelProvider;
 
 public class PepysImportView extends Dialog {
 
