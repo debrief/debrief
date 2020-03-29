@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
+import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.model.ModelConfiguration;
 import org.mwc.debrief.pepys.model.PepysConnectorBridge;
@@ -285,8 +286,7 @@ public class PepysImportController {
 		for (final TypeDomain type : _model.getDatafileTypeFilters()) {
 			final Button typeButton = new Button(composite, SWT.CHECK);
 			typeButton.setText(type.getName());
-			typeButton.setImage(new Image(PlatformUI.getWorkbench().getDisplay(),
-					PepysImportController.class.getResourceAsStream(type.getImagePath())));
+			typeButton.setImage(DebriefPlugin.getImageDescriptor(type.getImagePath()).createImage());
 			typeButton.setSelection(type.isChecked());
 			type.removeAllPropertyChangeListeners();
 			type.addPropertyChangeListener(new PropertyChangeListener() {

@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.nebula.cwt"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.legacy"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.legacy"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.core"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11">
 		<attributes>
 			<attribute name="module" value="true"/>
@@ -17,5 +13,10 @@
 	<classpathentry kind="lib" path="libs/mchange-commons-java-0.2.20.jar"/>
 	<classpathentry kind="lib" path="libs/postgis-jdbc-2.4.0.jar" sourcepath="/tmp/.org.sf.feeling.decompiler1583580243708/source/postgis-jdbc-2.4.0-sources.jar"/>
 	<classpathentry kind="lib" path="libs/postgresql-42.2.11.jar" sourcepath="/tmp/.org.sf.feeling.decompiler1583580243708/source/postgresql-42.2.11-sources.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.legacy"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.legacy"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.nebula.cwt"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.core"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

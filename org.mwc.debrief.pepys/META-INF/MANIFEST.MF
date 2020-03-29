@@ -26,6 +26,7 @@ Import-Package: org.apache.commons.io,
  org.eclipse.ui.plugin,
  org.mwc.cmap.core.custom_widget,
  org.mwc.cmap.plotViewer.actions,
+ org.mwc.debrief.core,
  org.osgi.framework;version="1.9.0"
 Export-Package: org.mwc.debrief.pepys,
  org.mwc.debrief.pepys.model.bean,
