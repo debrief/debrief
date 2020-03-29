@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.mwc.cmap.core.custom_widget.CWorldLocation;
+import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.model.tree.TreeContentProvider;
 import org.mwc.debrief.pepys.nebula.PShelf;
@@ -222,8 +223,9 @@ public class PepysImportView extends Dialog {
 		this.applyButton = new Button(parent, SWT.PUSH);
 		this.applyButton.setText("Apply");
 		this.applyButton.setLayoutData(applyGridDataButton);
+		this.applyButton.setImage(DebriefPlugin.getImageDescriptor("/icons/48/search.png").createImage());
 		applyGridDataButton.widthHint = 150;
-		applyGridDataButton.heightHint = 40;
+		applyGridDataButton.heightHint = 60;
 
 		final GridData importGridDataButton = new GridData();
 		importGridDataButton.horizontalAlignment = GridData.END;
@@ -231,8 +233,9 @@ public class PepysImportView extends Dialog {
 		this.importButton = new Button(parent, SWT.PUSH);
 		this.importButton.setText("Import");
 		this.importButton.setLayoutData(importGridDataButton);
+		this.importButton.setImage(DebriefPlugin.getImageDescriptor("/icons/48/import.png").createImage());
 		importGridDataButton.widthHint = 150;
-		importGridDataButton.heightHint = 40;
+		importGridDataButton.heightHint = 60;
 
 	}
 
