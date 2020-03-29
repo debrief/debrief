@@ -19,6 +19,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
+import java.sql.SQLException;
 
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.ICheckStateListener;
@@ -248,6 +249,41 @@ public class PepysImportController {
 			public void handleEvent(final Event event) {
 				if (event.type == SWT.Selection) {
 					model.doImport();
+				}
+			}
+		});
+		
+		view.getTestConnectionButton().addListener(SWT.Selection, new Listener() {
+			
+			@Override
+			public void handleEvent(Event event) {
+				if (event.type == SWT.Selection) {
+					boolean showError = false;
+					String errorMessage = "";
+					try {
+						showError = !model.doTestQuery();
+						errorMessage = "Database didn't contain the basic State, Contacts or Comments";
+					} catch (SQLException e) {
+						e.printStackTrace();
+
+						errorMessage = e.getMessage();
+						showError = true;
+					}
+					if (showError) {
+						final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
+						messageBox.setMessage("Please, check database connection data\n" + errorMessage);
+						messageBox.setText("Error in database.");
+						messageBox.open();
+
+						return;
+					}else {
+						final MessageBox messageBox = new MessageBox(_parent, SWT.OK);
+						messageBox.setMessage("Successful database connection");
+						messageBox.setText("Debrief NG");
+						messageBox.open();
+
+						return;
+					}
 				}
 			}
 		});

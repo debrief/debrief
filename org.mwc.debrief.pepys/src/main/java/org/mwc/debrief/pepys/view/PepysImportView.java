@@ -47,6 +47,7 @@ public class PepysImportView extends Dialog {
 
 	private Button applyButton;
 	private Button importButton;
+	private Button testConnectionButton;
 	private Button useCurrentViewportButton;
 
 	private CDateTime startDate;
@@ -108,6 +109,10 @@ public class PepysImportView extends Dialog {
 		return startTime;
 	}
 
+	public Button getTestConnectionButton() {
+		return testConnectionButton;
+	}
+
 	public CWorldLocation getTopLeftLocation() {
 		return topLeftLocation;
 	}
@@ -122,7 +127,7 @@ public class PepysImportView extends Dialog {
 
 	public void initGUI(final AbstractConfiguration model, final Shell parent) {
 		final GridLayout mainLayout = new GridLayout();
-		mainLayout.numColumns = 2;
+		mainLayout.numColumns = 3;
 		mainLayout.marginWidth = 20;
 		mainLayout.marginHeight = 20;
 		parent.setLayout(mainLayout);
@@ -130,7 +135,7 @@ public class PepysImportView extends Dialog {
 		this.titleLabel = new Label(parent, SWT.NONE);
 		this.titleLabel.setText("Pepys Import");
 		final GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
-		gridData.horizontalSpan = 2;
+		gridData.horizontalSpan = 3;
 		titleLabel.setLayoutData(gridData);
 
 		this.shelf = new PShelf(parent, SWT.BORDER);
@@ -216,6 +221,7 @@ public class PepysImportView extends Dialog {
 		treeGrid.grabExcessHorizontalSpace = true;
 		treeGrid.verticalAlignment = GridData.FILL;
 		treeGrid.grabExcessVerticalSpace = true;
+		treeGrid.horizontalSpan = 2;
 		this.tree = new CheckboxTreeViewer(parent, SWT.BORDER);
 		this.tree.setContentProvider(new TreeContentProvider());
 		this.tree.setLabelProvider(new TreeNameLabelProvider());
@@ -227,17 +233,24 @@ public class PepysImportView extends Dialog {
 		this.applyButton.setText("Apply");
 		this.applyButton.setLayoutData(applyGridDataButton);
 		this.applyButton.setImage(DebriefPlugin.getImageDescriptor("/icons/48/search.png").createImage());
-		applyGridDataButton.widthHint = 150;
+		applyGridDataButton.widthHint = 200;
 		applyGridDataButton.heightHint = 60;
 
 		final GridData importGridDataButton = new GridData();
 		importGridDataButton.horizontalAlignment = GridData.END;
-		importGridDataButton.minimumWidth = 150;
+		importGridDataButton.minimumWidth = 200;
+		importGridDataButton.horizontalSpan = 1;
+		this.testConnectionButton = new Button(parent, SWT.PUSH);
+		this.testConnectionButton.setText("Connection Test");
+		this.testConnectionButton.setLayoutData(importGridDataButton);
+		this.testConnectionButton.setImage(DebriefPlugin.getImageDescriptor("/icons/48/direction.png").createImage());
+
 		this.importButton = new Button(parent, SWT.PUSH);
 		this.importButton.setText("Import");
 		this.importButton.setLayoutData(importGridDataButton);
 		this.importButton.setImage(DebriefPlugin.getImageDescriptor("/icons/48/import.png").createImage());
-		importGridDataButton.widthHint = 150;
+
+		importGridDataButton.widthHint = 200;
 		importGridDataButton.heightHint = 60;
 
 	}

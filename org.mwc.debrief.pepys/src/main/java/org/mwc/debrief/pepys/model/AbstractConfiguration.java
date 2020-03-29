@@ -15,6 +15,7 @@
 
 package org.mwc.debrief.pepys.model;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 import org.mwc.debrief.pepys.model.tree.TreeNode;
@@ -54,4 +55,6 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 	public void setPepysConnectorBridge(final PepysConnectorBridge _bridge);
 
 	public void setTimePeriod(final TimePeriod newPeriod);
+	
+	public boolean doTestQuery() throws SQLException;
 }

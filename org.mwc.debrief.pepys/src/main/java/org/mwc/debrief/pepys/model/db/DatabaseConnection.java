@@ -92,7 +92,7 @@ public abstract class DatabaseConnection {
 
 	protected ComboPooledDataSource pool;
 
-	protected final int TIME_OUT = 60000;
+	protected final int TIME_OUT = 3000;
 
 	public DatabaseConnection() {
 
@@ -453,7 +453,7 @@ public abstract class DatabaseConnection {
 			final Field id = AnnotationsUtils.getField(bean, Id.class);
 			final String idName = AnnotationsUtils.getColumnName(id);
 			
-			final String sql = "SELECT " + idName + " from " + tableName + " where false";
+			final String sql = "SELECT " + idName + " from " + databasePrefix() + tableName + databaseSuffix() + " where false";
 			statement.execute(sql);	
 		}
 		

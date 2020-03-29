@@ -26,7 +26,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 
+import org.mwc.debrief.pepys.model.bean.Comment;
 import org.mwc.debrief.pepys.model.bean.Contact;
+import org.mwc.debrief.pepys.model.bean.State;
+import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.tree.TreeBuilder;
 import org.mwc.debrief.pepys.model.tree.TreeNode;
 import org.mwc.debrief.pepys.model.tree.TreeStructurable;
@@ -92,7 +95,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 	public void doImport() {
 		if (_bridge == null) {
 			doImportProcessMockup(treeModel);
-		}else {
+		} else {
 			doImport(treeModel, new InternTreeItemFiltering() {
 
 				@Override
@@ -132,6 +135,11 @@ public class ModelConfiguration implements AbstractConfiguration {
 		for (final TreeNode child : treeModel.getChildren()) {
 			doImportProcessMockup(child);
 		}
+	}
+
+	@Override
+	public boolean doTestQuery() throws SQLException {
+		return DatabaseConnection.getInstance().doTestQuery(new Class[] { Contact.class, State.class, Comment.class });
 	}
 
 	@Override
