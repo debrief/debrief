@@ -24,6 +24,8 @@ import java.sql.SQLException;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Cursor;
@@ -205,7 +207,18 @@ public class PepysImportController {
 			@Override
 			public void propertyChange(final PropertyChangeEvent evt) {
 				if (AbstractConfiguration.TREE_MODEL.equals(evt.getPropertyName())) {
+					System.out.println("Actualizado el arbol");
 					view.getTree().setInput(model.getTreeModel());
+				}
+			}
+		});
+
+		model.addPropertyChangeListener(new PropertyChangeListener() {
+
+			@Override
+			public void propertyChange(final PropertyChangeEvent evt) {
+				if (AbstractConfiguration.FILTER_PROPERTY.equals(evt.getPropertyName())) {
+					model.updateTree();
 				}
 			}
 		});
@@ -236,7 +249,7 @@ public class PepysImportController {
 						messageBox.setMessage(e.toString());
 						messageBox.setText("Error retrieving information from Database");
 						messageBox.open();
-					}finally {
+					} finally {
 						_parent.setCursor(originalCursor);
 					}
 				}
@@ -252,18 +265,18 @@ public class PepysImportController {
 				}
 			}
 		});
-		
+
 		view.getTestConnectionButton().addListener(SWT.Selection, new Listener() {
-			
+
 			@Override
-			public void handleEvent(Event event) {
+			public void handleEvent(final Event event) {
 				if (event.type == SWT.Selection) {
 					boolean showError = false;
 					String errorMessage = "";
 					try {
 						showError = !model.doTestQuery();
 						errorMessage = "Database didn't contain the basic State, Contacts or Comments";
-					} catch (SQLException e) {
+					} catch (final SQLException e) {
 						e.printStackTrace();
 
 						errorMessage = e.getMessage();
@@ -276,7 +289,7 @@ public class PepysImportController {
 						messageBox.open();
 
 						return;
-					}else {
+					} else {
 						final MessageBox messageBox = new MessageBox(_parent, SWT.OK);
 						messageBox.setMessage("Successful database connection");
 						messageBox.setText("Debrief NG");
@@ -314,6 +327,14 @@ public class PepysImportController {
 				if (event.getElement() instanceof TreeNode) {
 					((TreeNode) event.getElement()).setChecked(event.getChecked());
 				}
+			}
+		});
+
+		view.getSearchText().addModifyListener(new ModifyListener() {
+
+			@Override
+			public void modifyText(final ModifyEvent evt) {
+				model.setFilter(view.getSearchText().getText());
 			}
 		});
 

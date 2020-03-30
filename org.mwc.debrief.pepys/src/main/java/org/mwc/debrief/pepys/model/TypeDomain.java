@@ -19,7 +19,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-import org.mwc.debrief.pepys.model.bean.AbstractBean;
+import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 
 /**
  * Class used for the Data Type Filtering Model Item.
@@ -27,7 +27,7 @@ import org.mwc.debrief.pepys.model.bean.AbstractBean;
  */
 public class TypeDomain {
 	public static String CHECKED_PROPERTY = "CHECKED_CHANGED";
-	private final Class<AbstractBean> datatype;
+	private final Class<TreeStructurable> datatype;
 	private final String name;
 	private final String imagePath;
 
@@ -50,7 +50,7 @@ public class TypeDomain {
 		_pSupport.addPropertyChangeListener(l);
 	}
 
-	public Class<AbstractBean> getDatatype() {
+	public Class<TreeStructurable> getDatatype() {
 		return datatype;
 	}
 

@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.mwc.cmap.core.custom_widget.CWorldLocation;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
@@ -44,6 +45,7 @@ public class PepysImportView extends Dialog {
 	private Label topLeftLabel;
 	private Label bottomRightLabel;
 	private Label titleLabel;
+	private Label searchLabel;
 
 	private Button applyButton;
 	private Button importButton;
@@ -57,6 +59,8 @@ public class PepysImportView extends Dialog {
 
 	private PShelf shelf;
 	private CheckboxTreeViewer tree;
+
+	private Text searchText;
 
 	private final ArrayList<Button> dataTypesCheckBox = new ArrayList<Button>();
 
@@ -101,6 +105,10 @@ public class PepysImportView extends Dialog {
 		return importButton;
 	}
 
+	public Text getSearchText() {
+		return searchText;
+	}
+
 	public CDateTime getStartDate() {
 		return startDate;
 	}
@@ -135,16 +143,27 @@ public class PepysImportView extends Dialog {
 		this.titleLabel = new Label(parent, SWT.NONE);
 		this.titleLabel.setText("Pepys Import");
 		final GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
-		gridData.horizontalSpan = 3;
+		gridData.horizontalSpan = 2;
 		titleLabel.setLayoutData(gridData);
+
+		final GridData testConnectionGridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+		testConnectionGridData.horizontalAlignment = GridData.END;
+		this.testConnectionButton = new Button(parent, SWT.PUSH);
+		this.testConnectionButton.setText("Connection Test");
+		this.testConnectionButton.setLayoutData(testConnectionGridData);
+		this.testConnectionButton.setImage(DebriefPlugin.getImageDescriptor("/icons/16/direction.png").createImage());
 
 		this.shelf = new PShelf(parent, SWT.BORDER);
 		this.shelf.setRenderer(new RedmondShelfRenderer());
 		final GridData shelfGridData = new GridData();
 		shelfGridData.verticalAlignment = GridData.FILL;
+		shelfGridData.verticalSpan = 2;
 		shelfGridData.grabExcessVerticalSpace = true;
 		shelfGridData.widthHint = 270;
 		this.shelf.setLayoutData(shelfGridData);
+
+		this.searchLabel = new Label(parent, SWT.PUSH);
+		this.searchLabel.setText("Search:");
 
 		// TIME PERIOD
 		final PShelfItem timePeriodItem = new PShelfItem(shelf, SWT.NONE);
@@ -159,6 +178,14 @@ public class PepysImportView extends Dialog {
 		this.startLabel = new Label(timePeriodItem.getBody(), SWT.PUSH);
 		this.startLabel.setText("Start:");
 		this.startLabel.setLayoutData(gridData);
+
+		final GridData searchGrid = new GridData(GridData.FILL_HORIZONTAL);
+		searchGrid.horizontalAlignment = GridData.FILL;
+		searchGrid.grabExcessHorizontalSpace = true;
+		searchGrid.horizontalSpan = 1;
+
+		this.searchText = new Text(parent, SWT.SINGLE);
+		this.searchText.setLayoutData(searchGrid);
 
 		this.startDate = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.DROP_DOWN | CDT.DATE_SHORT);
 		this.startDate.setPattern("dd/MM/yyyy");
@@ -239,11 +266,7 @@ public class PepysImportView extends Dialog {
 		final GridData importGridDataButton = new GridData();
 		importGridDataButton.horizontalAlignment = GridData.END;
 		importGridDataButton.minimumWidth = 200;
-		importGridDataButton.horizontalSpan = 1;
-		this.testConnectionButton = new Button(parent, SWT.PUSH);
-		this.testConnectionButton.setText("Connection Test");
-		this.testConnectionButton.setLayoutData(importGridDataButton);
-		this.testConnectionButton.setImage(DebriefPlugin.getImageDescriptor("/icons/48/direction.png").createImage());
+		importGridDataButton.horizontalSpan = 2;
 
 		this.importButton = new Button(parent, SWT.PUSH);
 		this.importButton.setText("Import");

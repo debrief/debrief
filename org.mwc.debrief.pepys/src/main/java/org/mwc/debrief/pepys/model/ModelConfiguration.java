@@ -58,6 +58,10 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	private PepysConnectorBridge _bridge;
 
+	private Collection<TreeStructurable> currentItems;
+
+	private String filterText = "";
+
 	public ModelConfiguration() {
 		final Calendar twentyYearsAgoCal = Calendar.getInstance();
 		twentyYearsAgoCal.add(Calendar.YEAR, -20);
@@ -83,7 +87,8 @@ public class ModelConfiguration implements AbstractConfiguration {
 			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException,
 			ClassNotFoundException, IOException {
 
-		TreeBuilder.buildStructure(this);
+		currentItems = TreeBuilder.buildStructure(this);
+		updateTree();
 
 		if (_pSupport != null) {
 			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, TREE_MODEL, null, treeModel);
@@ -153,6 +158,11 @@ public class ModelConfiguration implements AbstractConfiguration {
 	}
 
 	@Override
+	public String getFilter() {
+		return filterText;
+	}
+
+	@Override
 	public TimePeriod getTimePeriod() {
 		return currentPeriod;
 	}
@@ -197,6 +207,18 @@ public class ModelConfiguration implements AbstractConfiguration {
 	}
 
 	@Override
+	public void setFilter(final String _newFilter) {
+		final String oldFilter = filterText;
+		filterText = _newFilter;
+
+		if (_pSupport != null) {
+			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, FILTER_PROPERTY, oldFilter,
+					filterText);
+			_pSupport.firePropertyChange(pce);
+		}
+	}
+
+	@Override
 	public void setPepysConnectorBridge(final PepysConnectorBridge _bridge) {
 		this._bridge = _bridge;
 	}
@@ -210,6 +232,18 @@ public class ModelConfiguration implements AbstractConfiguration {
 			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, PERIOD_PROPERTY, oldPeriod,
 					currentPeriod);
 			_pSupport.firePropertyChange(pce);
+		}
+	}
+
+	@Override
+	public void updateTree() {
+		if (currentItems != null) {
+			TreeBuilder.buildStructure(currentItems.toArray(new TreeStructurable[] {}), getTreeModel(), getFilter());
+
+			if (_pSupport != null) {
+				final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, TREE_MODEL, null, treeModel);
+				_pSupport.firePropertyChange(pce);
+			}
 		}
 	}
 

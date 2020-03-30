@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
@@ -41,6 +42,34 @@ public class TreeBuilder {
 		}
 	}
 
+	public static Collection<TreeStructurable> buildStructure(final AbstractConfiguration configuration)
+			throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException,
+			ClassNotFoundException, IOException {
+
+		final ArrayList<TreeStructurable> allItems = new ArrayList<>();
+		for (final TypeDomain domain : configuration.getDatafileTypeFilters()) {
+			final Class<TreeStructurable> currentBeanType = domain.getDatatype();
+
+			if (AbstractBean.class.isAssignableFrom(currentBeanType) && domain.isChecked()) {
+				DatabaseConnection.getInstance().cleanRenamingBuffer();
+				final ArrayList<Condition> conditions = new ArrayList<Condition>();
+
+				conditions.addAll(DatabaseConnection.getInstance().createPeriodFilter(configuration.getTimePeriod(),
+						currentBeanType));
+
+				conditions.addAll(DatabaseConnection.getInstance().createAreaFilter(configuration.getCurrentArea(),
+						currentBeanType));
+
+				final List<? extends TreeStructurable> currentItems = DatabaseConnection.getInstance()
+						.listAll(currentBeanType, conditions);
+				allItems.addAll(currentItems);
+			}
+		}
+
+		return allItems;
+	}
+
 	/**
 	 * Method that builds the tree structure from top to bottom.
 	 *
@@ -48,13 +77,14 @@ public class TreeBuilder {
 	 * @param root
 	 * @return
 	 */
-	public static TreeNode buildStructure(final AbstractBean[] items, final TreeNode root) {
+	public static TreeNode buildStructure(final TreeStructurable[] items, final TreeNode root, final String filter) {
+		root.removeAllChildren();
 
-		for (final AbstractBean item : items) {
-			if (item instanceof TreeStructurable) {
-				final TreeStructurable currentItem = (TreeStructurable) item;
-				final String platformName = currentItem.getPlatform().getName();
-
+		for (final TreeStructurable currentItem : items) {
+			final String platformName = currentItem.getPlatform().getName();
+			final String datafileName = currentItem.getDatafile().getReference();
+			if ((filter == null || filter.isBlank() || platformName.toLowerCase().contains(filter.toLowerCase())
+					|| datafileName.toLowerCase().contains(filter.toLowerCase()))) {
 				TreeNode datafileNode = root.getChild(platformName);
 				if (datafileNode == null) {
 					datafileNode = new TreeNode(TreeNode.NodeType.PLATFORM, platformName, root);
@@ -90,7 +120,7 @@ public class TreeBuilder {
 
 					leaf = sensorNode.getChild(currentItem.getDatafile().getReference());
 					if (leaf == null) {
-						leaf = new TreeNode(NodeType.DATAFILE, currentItem.getDatafile().getReference());
+						leaf = new TreeNode(NodeType.DATAFILE, datafileName);
 
 						sensorNode.addChild(leaf);
 					}
@@ -102,33 +132,5 @@ public class TreeBuilder {
 		}
 
 		return root;
-	}
-
-	public static void buildStructure(final AbstractConfiguration configuration) throws NoSuchMethodException,
-			SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException, PropertyVetoException, SQLException, ClassNotFoundException, IOException {
-		configuration.getTreeModel().removeAllChildren();
-
-		final ArrayList<AbstractBean> allItems = new ArrayList<AbstractBean>();
-		for (final TypeDomain domain : configuration.getDatafileTypeFilters()) {
-			final Class<AbstractBean> currentBeanType = domain.getDatatype();
-
-			if (AbstractBean.class.isAssignableFrom(currentBeanType) && domain.isChecked()) {
-				DatabaseConnection.getInstance().cleanRenamingBuffer();
-				final ArrayList<Condition> conditions = new ArrayList<Condition>();
-
-				conditions.addAll(DatabaseConnection.getInstance().createPeriodFilter(configuration.getTimePeriod(),
-						currentBeanType));
-
-				conditions.addAll(DatabaseConnection.getInstance().createAreaFilter(configuration.getCurrentArea(),
-						currentBeanType));
-
-				final List<? extends AbstractBean> currentItems = DatabaseConnection.getInstance()
-						.listAll(currentBeanType, conditions);
-				allItems.addAll(currentItems);
-			}
-		}
-
-		buildStructure(allItems.toArray(new AbstractBean[] {}), configuration.getTreeModel());
 	}
 }
