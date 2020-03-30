@@ -207,7 +207,6 @@ public class PepysImportController {
 			@Override
 			public void propertyChange(final PropertyChangeEvent evt) {
 				if (AbstractConfiguration.TREE_MODEL.equals(evt.getPropertyName())) {
-					System.out.println("Actualizado el arbol");
 					view.getTree().setInput(model.getTreeModel());
 				}
 			}
