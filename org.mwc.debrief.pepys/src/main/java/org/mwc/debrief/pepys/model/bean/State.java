@@ -128,8 +128,8 @@ public class State implements AbstractBean, TreeStructurable {
 
 		// create the wrapper for this annotation
 		final FixWrapper fixWrapper = new FixWrapper(
-				new Fix(new HiResDate(created_date.getTime()), location, course, speed));
-		fixWrapper.setName(created_date.toString());
+				new Fix(new HiResDate(time.getTime()), location, course, speed));
+		fixWrapper.setName(time.toString());
 		track.add(fixWrapper);
 	}
 
