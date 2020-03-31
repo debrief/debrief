@@ -56,22 +56,22 @@ public class TreeNode {
 
 			final String rootName = "ROOT";
 			final TreeNode root = new TreeNode(NodeType.ROOT, rootName, null);
-			root.addItem((State) list.get(0));
+			root.addItem(list.get(0));
 			final String child1Name = "CHILD1";
 			final TreeNode child1 = new TreeNode(NodeType.PLATFORM, child1Name, root);
-			child1.addItem((State) list.get(1));
+			child1.addItem(list.get(1));
 			final String child2Name = "CHILD2";
 			final TreeNode child2 = new TreeNode(NodeType.MEASURE, child2Name, root);
-			child2.addItem((State) list.get(2));
+			child2.addItem(list.get(2));
 			final String child3Name = "CHILD3";
 			final TreeNode child3 = new TreeNode(NodeType.ROOT, child3Name, root);
-			child3.addItem((State) list.get(3));
+			child3.addItem(list.get(3));
 			final String child1child1Name = "child1child1Name";
 			final TreeNode child1child1 = new TreeNode(NodeType.ROOT, child1child1Name, child1);
-			child1child1.addItem((State) list.get(4));
+			child1child1.addItem(list.get(4));
 			final String child1child2Name = "child1child2Name";
 			final TreeNode child1child2 = new TreeNode(NodeType.ROOT, child1child2Name, child1);
-			child1child2.addItem((State) list.get(5));
+			child1child2.addItem(list.get(5));
 
 			root.addChild(child1);
 			root.addChild(child2);
@@ -184,6 +184,10 @@ public class TreeNode {
 		return parent;
 	}
 
+	public NodeType getType() {
+		return type;
+	}
+
 	public boolean hasChildren() {
 		return !children.isEmpty();
 	}
@@ -226,4 +230,5 @@ public class TreeNode {
 	public void setParent(final TreeNode parent) {
 		this.parent = parent;
 	}
+
 }
