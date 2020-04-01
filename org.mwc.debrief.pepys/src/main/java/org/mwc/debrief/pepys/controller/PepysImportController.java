@@ -36,7 +36,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.model.ModelConfiguration;
@@ -234,23 +233,28 @@ public class PepysImportController {
 		});
 
 		view.getApplyButton().addListener(SWT.Selection, new Listener() {
-
 			@Override
 			public void handleEvent(final Event event) {
 				if (event.type == SWT.Selection) {
-					final Cursor originalCursor = _parent.getCursor();
-					try {
-						_parent.setCursor(new Cursor(PlatformUI.getWorkbench().getDisplay(), SWT.CURSOR_WAIT));
-						model.apply();
-					} catch (final Exception e) {
-						e.printStackTrace();
-						final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
-						messageBox.setMessage(e.toString());
-						messageBox.setText("Error retrieving information from Database");
-						messageBox.open();
-					} finally {
-						_parent.setCursor(originalCursor);
-					}
+					final Cursor _cursor = new Cursor(Display.getCurrent(), SWT.CURSOR_WAIT);
+					_parent.setCursor(_cursor);
+					Display.getCurrent().asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							try {
+								model.apply();
+							} catch (final Exception e) {
+								e.printStackTrace();
+								final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
+								messageBox.setMessage(e.toString());
+								messageBox.setText("Error retrieving information from Database");
+								messageBox.open();
+							} finally {
+								_parent.setCursor(null);
+								_cursor.dispose();
+							}
+						}
+					});
 				}
 			}
 		});
