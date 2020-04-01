@@ -1400,7 +1400,6 @@ public class Layers implements Serializable, Plottable, PlottablesType {
 	}
 	
 	public boolean hasNoBounds(Plottable newItem) {
-		boolean hasNoBounds = true;
 		int noBoundsCount=0;
 		Enumeration<Editable> enumer = elements();
 		while(enumer.hasMoreElements()) {
@@ -1414,13 +1413,12 @@ public class Layers implements Serializable, Plottable, PlottablesType {
 					//so we check for future additions to prevent rescaling every time
 					// a shape is added
 					if(noBoundsCount>1) {
-						hasNoBounds=false;
-						break;
+						return false;
 					}
 				}
 			}
 		}
-		return hasNoBounds;
+		return true;
 	}
 
 }
