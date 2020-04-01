@@ -23,6 +23,7 @@ import org.mwc.debrief.pepys.model.tree.TreeNode;
 import MWC.GUI.hasPropertyListeners;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 public interface AbstractConfiguration extends hasPropertyListeners {
 
@@ -45,6 +46,10 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 	public WorldArea getCurrentArea();
 
 	public Collection<TypeDomain> getDatafileTypeFilters();
+
+	public WorldLocation getDefaultBottomRight();
+
+	public WorldLocation getDefaultTopLeft();
 
 	public String getFilter();
 

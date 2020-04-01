@@ -68,6 +68,8 @@ public class CWorldLocation extends Composite {
 
 	private final Vector<LocationModifiedListener> _locationModifiedListeners = new Vector<>();
 
+	private boolean _locationListenerEnable = true;
+
 	public CWorldLocation(final Composite parent, final int style) {
 		super(parent, style);
 		final GridLayout rows = new GridLayout(2, true);
@@ -107,6 +109,11 @@ public class CWorldLocation extends Composite {
 		_locationModifiedListeners.add(listener);
 	}
 
+	public void clean() {
+		myLongitude.setValue(null);
+		myLatitude.setValue(null);
+	}
+
 	private SexagesimalFormat getFormat() {
 		if (CorePlugin.getDefault() == null) {
 			return SexagesimalSupport._DD_MM_SS_SSS;
@@ -137,6 +144,10 @@ public class CWorldLocation extends Composite {
 		return location;
 	}
 
+	public void setEnableLocationListener(final boolean _enabled) {
+		this._locationListenerEnable = _enabled;
+	}
+
 	public void setValue(final WorldLocation location) {
 		final Sexagesimal latitude = getFormat().parseDouble(location.getLat());
 		final Sexagesimal longitude = getFormat().parseDouble(location.getLong());
@@ -148,8 +159,10 @@ public class CWorldLocation extends Composite {
 	private void valueModified(final Object source) {
 		final LocationModifiedEvent event = new LocationModifiedEvent(source, myLatitude.getValue(),
 				myLongitude.getValue());
-		for (final LocationModifiedListener listener : _locationModifiedListeners) {
-			listener.modifyValue(event);
+		if (_locationListenerEnable) {
+			for (final LocationModifiedListener listener : _locationModifiedListeners) {
+				listener.modifyValue(event);
+			}
 		}
 	}
 }

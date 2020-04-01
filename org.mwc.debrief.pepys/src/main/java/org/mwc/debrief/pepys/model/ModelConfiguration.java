@@ -158,6 +158,16 @@ public class ModelConfiguration implements AbstractConfiguration {
 	}
 
 	@Override
+	public WorldLocation getDefaultBottomRight() {
+		return new WorldLocation(-45, 80, 0);
+	}
+
+	@Override
+	public WorldLocation getDefaultTopLeft() {
+		return new WorldLocation(65, -125, 0);
+	}
+
+	@Override
 	public String getFilter() {
 		return filterText;
 	}
@@ -201,7 +211,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 		if (_bridge != null) {
 			setArea(_bridge.getCurrentArea());
 		} else {
-			final WorldArea demoArea = new WorldArea(new WorldLocation(65, -125, 0), new WorldLocation(-45, 80, 0));
+			final WorldArea demoArea = new WorldArea(getDefaultTopLeft(), getDefaultBottomRight());
 			setArea(demoArea);
 		}
 	}
