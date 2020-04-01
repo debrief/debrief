@@ -23,8 +23,6 @@ import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.BaseLayer;
-import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
@@ -87,43 +85,21 @@ public class State implements AbstractBean, TreeStructurable {
 
 	}
 
-	public TrackWrapper createTrackWrapper() {
-		final TrackWrapper newTrackWrapper = new TrackWrapper();
-		final FixWrapper fixWrapper = new FixWrapper(
-				new Fix(new HiResDate(created_date.getTime()), location, course, speed));
-		newTrackWrapper.add(fixWrapper);
-		return newTrackWrapper;
-	}
-
 	@Override
 	public void doImport(final Layers _layers) {
-		final String layerName = getDatafile().getReference();
-		final Layer target = _layers.findLayer(layerName, true);
-
-		final BaseLayer folder;
-		if (target == null) {
-			// ok, generate the layer
-			folder = new BaseLayer();
-			folder.setName(layerName);
-			_layers.addThisLayer(folder);
-		} else if (target instanceof BaseLayer) {
-			folder = (BaseLayer) target;
-		} else {
-			// ok, slight renaming needed
-			folder = new BaseLayer();
-			folder.setName(layerName + "_1");
-			_layers.addThisLayer(folder);
-		}
-
+	  // see if the track is in already
+	  final String trackName = getPlatform().getName();
+		final Layer target = _layers.findLayer(trackName, true);
 		final TrackWrapper track;
-		final Editable found = folder.find(getPlatform().getName());
-		if (found != null && found instanceof TrackWrapper) {
-			track = (TrackWrapper) found;
+		if (target != null && target instanceof TrackWrapper) {
+		  // ok, use it
+			track = (TrackWrapper) target;
 		} else {
+		  // create a new track
 			track = new TrackWrapper();
-
-			track.setName(getPlatform().getName());
-			folder.add(track);
+			track.setName(trackName);
+			// and store it
+			_layers.addThisLayer(track);
 		}
 
 		// create the wrapper for this annotation
