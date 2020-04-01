@@ -17,7 +17,6 @@ package org.mwc.debrief.pepys;
 
 import java.beans.PropertyVetoException;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.HashMap;
 
 import org.eclipse.swt.SWT;
@@ -27,9 +26,6 @@ import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.plotViewer.actions.CoreEditorAction;
 import org.mwc.debrief.pepys.controller.PepysImportController;
 import org.mwc.debrief.pepys.model.PepysConnectorBridge;
-import org.mwc.debrief.pepys.model.bean.Comment;
-import org.mwc.debrief.pepys.model.bean.Contact;
-import org.mwc.debrief.pepys.model.bean.State;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.PostgresDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
