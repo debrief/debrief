@@ -816,9 +816,9 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		menuManager.add(formatMenu);
 
 		// and now the date formats
-		final Object[][] stepSizes = { { "1 sec", new Long(1000) }, { "1 min", new Long(60 * 1000) },
-				{ "5 min", new Long(5 * 60 * 1000) }, { "15 min", new Long(15 * 60 * 1000) },
-				{ "1 hour", new Long(60 * 60 * 1000) }, };
+		final Object[][] stepSizes = { { "1 sec", Long.valueOf(1000) }, { "1 min", Long.valueOf(60 * 1000) },
+				{ "5 min", Long.valueOf(5 * 60 * 1000) }, { "15 min", Long.valueOf(15 * 60 * 1000) },
+				{ "1 hour", Long.valueOf(60 * 60 * 1000) }, };
 
 		for (int i = 0; i < stepSizes.length; i++) {
 
@@ -859,7 +859,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			// the properties manager is expecting the integer index of the new
 			// format, not the string value.
 			// so store it as an integer index
-			final Integer thisIndex = new Integer(i);
+			final Integer thisIndex = Integer.valueOf(i);
 
 			// and create a new action to represent the change
 			final Action newFormat = new Action(thisFormat, IAction.AS_RADIO_BUTTON) {
@@ -1475,7 +1475,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		final Object oldDtgFormat = _myStepperProperties.getPropertyValue(TimeControlProperties.DTG_FORMAT_ID);
 
 		try {
-			_myStepperProperties.setPropertyValue(TimeControlProperties.DTG_FORMAT_ID, new Integer(4));
+			_myStepperProperties.setPropertyValue(TimeControlProperties.DTG_FORMAT_ID, Integer.valueOf(4));
 
 			final HiResDate tDemanded = new HiResDate(0, 818748000000000L);
 			// note - time equates to: 120600:00
@@ -1494,7 +1494,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 			// ok, go back to the demanded time (in case we loaded the plot with a
 			// different saved time)
-			_controllableTime.setTime(new Integer(111), tDemanded, true);
+			_controllableTime.setTime(Integer.valueOf(111), tDemanded, true);
 
 			// have a look at the date
 			final String timeStr = _timeLabel.getText();
