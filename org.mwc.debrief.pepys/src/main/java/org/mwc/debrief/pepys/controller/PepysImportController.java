@@ -52,6 +52,8 @@ import org.mwc.debrief.pepys.view.PepysImportView;
 
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 public class PepysImportController {
 
@@ -221,17 +223,6 @@ public class PepysImportController {
 			}
 		});
 
-		model.addPropertyChangeListener(new PropertyChangeListener() {
-
-			@Override
-			public void propertyChange(final PropertyChangeEvent evt) {
-				if (AbstractConfiguration.AREA_PROPERTY.equals(evt.getPropertyName())) {
-					view.getTopLeftLocation().setValue(model.getCurrentArea().getTopLeft());
-					view.getBottomRightLocation().setValue(model.getCurrentArea().getBottomRight());
-				}
-			}
-		});
-
 		view.getApplyButton().addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(final Event event) {
@@ -242,6 +233,7 @@ public class PepysImportController {
 						@Override
 						public void run() {
 							try {
+								updateAreaView2Model(model, view);
 								model.apply();
 							} catch (final Exception e) {
 								e.printStackTrace();
@@ -310,6 +302,7 @@ public class PepysImportController {
 			public void handleEvent(final Event event) {
 				if (event.type == SWT.Selection) {
 					model.setCurrentViewport();
+					updateAreaModel2View(model, view);
 				}
 			}
 		});
@@ -382,5 +375,30 @@ public class PepysImportController {
 
 	public PepysImportView getView() {
 		return _view;
+	}
+
+	public void updateAreaModel2View(final AbstractConfiguration model, final PepysImportView view) {
+		view.getTopLeftLocation().setValue(model.getCurrentArea().getTopLeft());
+		view.getBottomRightLocation().setValue(model.getCurrentArea().getBottomRight());
+	}
+
+	public void updateAreaView2Model(final AbstractConfiguration model, final PepysImportView view) {
+		final WorldLocation topLeft;
+
+		if (view.getTopLeftLocation().getValue() == null) {
+			topLeft = model.getDefaultTopLeft();
+			view.getTopLeftLocation().clean();
+		} else {
+			topLeft = view.getTopLeftLocation().getValue();
+		}
+		final WorldLocation bottomRight;
+		if (view.getBottomRightLocation().getValue() == null) {
+			bottomRight = model.getDefaultBottomRight();
+			view.getBottomRightLocation().clean();
+		} else {
+			bottomRight = view.getBottomRightLocation().getValue();
+		}
+
+		model.setArea(new WorldArea(topLeft, bottomRight));
 	}
 }
