@@ -1296,11 +1296,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 					Display.getDefault().asyncExec(new Runnable() {
 						@Override
 						public void run() {
-							if(max>MAX_SLIDER_LIMIT)
-								_tNowSlider.setMaximum(MAX_SLIDER_LIMIT);
-							else
-								_tNowSlider.setMaximum(max);
-								
+							_tNowSlider.setMaximum(max);
 						}
 					});
 			}
