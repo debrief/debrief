@@ -24,6 +24,6 @@
   </parent>
   <groupId>org.mwc.debrief</groupId>
   <artifactId>org.mwc.asset.core</artifactId>
-  <version>1.0.43</version>
+  <version>1.0.44</version>
   <packaging>eclipse-plugin</packaging>
 </project>
