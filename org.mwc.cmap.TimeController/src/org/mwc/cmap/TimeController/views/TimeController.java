@@ -119,6 +119,7 @@ import junit.framework.TestCase;
  */
 
 public class TimeController extends ViewPart implements ISelectionProvider, TimerListener, RelativeProjectionParent {
+	private static final int MAX_SLIDER_LIMIT = 1000000; 
 	private class FilterToPeriodAction extends Action {
 		FilterToPeriodAction() {
 			super("Filter to period", IAction.AS_CHECK_BOX);
@@ -1295,8 +1296,8 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 					Display.getDefault().asyncExec(new Runnable() {
 						@Override
 						public void run() {
-							if(max>1000000)
-								_tNowSlider.setMaximum(1000000);
+							if(max>MAX_SLIDER_LIMIT)
+								_tNowSlider.setMaximum(MAX_SLIDER_LIMIT);
 							else
 								_tNowSlider.setMaximum(max);
 								
