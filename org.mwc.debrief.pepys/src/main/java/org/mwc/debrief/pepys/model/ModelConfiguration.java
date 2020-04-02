@@ -99,8 +99,21 @@ public class ModelConfiguration implements AbstractConfiguration {
 	@Override
 	public void doImport() {
 		if (_bridge == null) {
+			/**
+			 * In case we don't have a bridge to Full Debrief, it means
+			 * we are probably running an unit test (or the deattached version,
+			 * then simply do a mockup import process (print to sout) :) 
+			 */
 			doImportProcessMockup(treeModel);
 		} else {
+			/**
+			 * Import process receives a filter method which is used to confirm if the 
+			 * node is going to be imported to Debrief.
+			 * 
+			 * I am using it to import first all the NON Contacts nodes, and 
+			 * after that I import only the Contact nodes. It will ensure
+			 * that we will have already all the related tracks.
+			 */
 			doImport(treeModel, new InternTreeItemFiltering() {
 
 				@Override
