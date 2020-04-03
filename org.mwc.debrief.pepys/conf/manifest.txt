@@ -4,7 +4,7 @@ Created-By: 11.0.6+10 (Oracle Corporation)
 Bundle-ManifestVersion: 2
 Bundle-Name: Pepys
 Bundle-SymbolicName: org.mwc.debrief.pepys
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.0.0
 Automatic-Module-Name: org.mwc.debref.pepys
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Implementation-Version: ${product.version}
