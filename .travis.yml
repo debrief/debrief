@@ -1,10 +1,16 @@
 language: java
-dist: trusty
+dist: bionic
 jdk: openjdk11
 sudo: required
 cache:
   directories:
     - $HOME/.m2
+before-install:
+  - sudo apt-get install -y libsqlite3-mod-spatialite
+  - sudo apt-get install libpq-dev python-dev
+  - sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable
+  - sudo apt-get update
+  - sudo apt-get install postgis
 install:
 - mvn --version
 addons:
@@ -15,13 +21,16 @@ addons:
     - uuid-runtime
     - libglib2.0-dev
     - libxml2-dev
-    - pdftk
     - unzip
+    - spatialite-bin
+    - libgdal20
 notifications:
   slack: debrief-devs:GF1nQSqn2eozH3wQtyuPLAlG
+services:
+- xvfb
 before_script:
 - export DISPLAY=:99
-- sh -e /etc/init.d/xvfb start
+# - sh -e /etc/init.d/xvfb start
 - sleep 3
 # modify Debrief feature to include win-64 subdirectory
 - echo "root.win32.win32.x86_64 = win-64" >> org.mwc.debrief.combined.feature/build.properties

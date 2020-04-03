@@ -13,7 +13,6 @@
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  -->
-
 <feature
       id="org.mwc.debrief.combined.feature"
       label="%featureName"
@@ -780,6 +779,13 @@ Library.
 
    <plugin
          id="javax.activation"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.mwc.debrief.pepys"
          download-size="0"
          install-size="0"
          version="0.0.0"
