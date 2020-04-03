@@ -28,13 +28,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.mwc.cmap.core.custom_widget.CWorldLocation;
+import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.model.tree.TreeContentProvider;
-import org.mwc.debrief.pepys.model.tree.TreeNameLabelProvider;
 import org.mwc.debrief.pepys.nebula.PShelf;
 import org.mwc.debrief.pepys.nebula.PShelfItem;
 import org.mwc.debrief.pepys.nebula.RedmondShelfRenderer;
+import org.mwc.debrief.pepys.view.tree.TreeNameLabelProvider;
 
 public class PepysImportView extends Dialog {
 
@@ -43,9 +45,11 @@ public class PepysImportView extends Dialog {
 	private Label topLeftLabel;
 	private Label bottomRightLabel;
 	private Label titleLabel;
+	private Label searchLabel;
 
 	private Button applyButton;
 	private Button importButton;
+	private Button testConnectionButton;
 	private Button useCurrentViewportButton;
 
 	private CDateTime startDate;
@@ -55,6 +59,8 @@ public class PepysImportView extends Dialog {
 
 	private PShelf shelf;
 	private CheckboxTreeViewer tree;
+
+	private Text searchText;
 
 	private final ArrayList<Button> dataTypesCheckBox = new ArrayList<Button>();
 
@@ -99,12 +105,20 @@ public class PepysImportView extends Dialog {
 		return importButton;
 	}
 
+	public Text getSearchText() {
+		return searchText;
+	}
+
 	public CDateTime getStartDate() {
 		return startDate;
 	}
 
 	public CDateTime getStartTime() {
 		return startTime;
+	}
+
+	public Button getTestConnectionButton() {
+		return testConnectionButton;
 	}
 
 	public CWorldLocation getTopLeftLocation() {
@@ -121,7 +135,7 @@ public class PepysImportView extends Dialog {
 
 	public void initGUI(final AbstractConfiguration model, final Shell parent) {
 		final GridLayout mainLayout = new GridLayout();
-		mainLayout.numColumns = 2;
+		mainLayout.numColumns = 3;
 		mainLayout.marginWidth = 20;
 		mainLayout.marginHeight = 20;
 		parent.setLayout(mainLayout);
@@ -132,13 +146,24 @@ public class PepysImportView extends Dialog {
 		gridData.horizontalSpan = 2;
 		titleLabel.setLayoutData(gridData);
 
+		final GridData testConnectionGridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+		testConnectionGridData.horizontalAlignment = GridData.END;
+		this.testConnectionButton = new Button(parent, SWT.PUSH);
+		this.testConnectionButton.setText("Connection Test");
+		this.testConnectionButton.setLayoutData(testConnectionGridData);
+		this.testConnectionButton.setImage(DebriefPlugin.getImageDescriptor("/icons/16/direction.png").createImage());
+
 		this.shelf = new PShelf(parent, SWT.BORDER);
 		this.shelf.setRenderer(new RedmondShelfRenderer());
 		final GridData shelfGridData = new GridData();
 		shelfGridData.verticalAlignment = GridData.FILL;
+		shelfGridData.verticalSpan = 2;
 		shelfGridData.grabExcessVerticalSpace = true;
 		shelfGridData.widthHint = 270;
 		this.shelf.setLayoutData(shelfGridData);
+
+		this.searchLabel = new Label(parent, SWT.PUSH);
+		this.searchLabel.setText("Search:");
 
 		// TIME PERIOD
 		final PShelfItem timePeriodItem = new PShelfItem(shelf, SWT.NONE);
@@ -147,11 +172,20 @@ public class PepysImportView extends Dialog {
 		timePeriodLayout.numColumns = 2;
 		timePeriodLayout.marginWidth = 10;
 		timePeriodLayout.marginHeight = 10;
+		timePeriodItem.setImage(DebriefPlugin.getImageDescriptor("/icons/16/control_time.png").createImage());
 		timePeriodItem.getBody().setLayout(timePeriodLayout);
 
 		this.startLabel = new Label(timePeriodItem.getBody(), SWT.PUSH);
 		this.startLabel.setText("Start:");
 		this.startLabel.setLayoutData(gridData);
+
+		final GridData searchGrid = new GridData(GridData.FILL_HORIZONTAL);
+		searchGrid.horizontalAlignment = GridData.FILL;
+		searchGrid.grabExcessHorizontalSpace = true;
+		searchGrid.horizontalSpan = 1;
+
+		this.searchText = new Text(parent, SWT.SINGLE);
+		this.searchText.setLayoutData(searchGrid);
 
 		this.startDate = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.DROP_DOWN | CDT.DATE_SHORT);
 		this.startDate.setPattern("dd/MM/yyyy");
@@ -178,6 +212,7 @@ public class PepysImportView extends Dialog {
 		areaItemLayout.marginHeight = 10;
 		final PShelfItem areaItem = new PShelfItem(shelf, SWT.NONE);
 		areaItem.setText("Area");
+		areaItem.setImage(DebriefPlugin.getImageDescriptor("/icons/16/map.png").createImage());
 		areaItem.getBody().setLayout(areaItemLayout);
 
 		this.topLeftLabel = new Label(areaItem.getBody(), SWT.NONE);
@@ -204,6 +239,7 @@ public class PepysImportView extends Dialog {
 		dataTypeItemLayout.marginHeight = 10;
 		final PShelfItem dataTypeItem = new PShelfItem(shelf, SWT.NONE);
 		dataTypeItem.setText("Data Type");
+		dataTypeItem.setImage(DebriefPlugin.getImageDescriptor("/icons/16/filter.png").createImage());
 		dataTypeItem.getBody().setLayout(dataTypeItemLayout);
 		dataTypesComposite = dataTypeItem.getBody();
 
@@ -212,6 +248,7 @@ public class PepysImportView extends Dialog {
 		treeGrid.grabExcessHorizontalSpace = true;
 		treeGrid.verticalAlignment = GridData.FILL;
 		treeGrid.grabExcessVerticalSpace = true;
+		treeGrid.horizontalSpan = 2;
 		this.tree = new CheckboxTreeViewer(parent, SWT.BORDER);
 		this.tree.setContentProvider(new TreeContentProvider());
 		this.tree.setLabelProvider(new TreeNameLabelProvider());
@@ -222,17 +259,22 @@ public class PepysImportView extends Dialog {
 		this.applyButton = new Button(parent, SWT.PUSH);
 		this.applyButton.setText("Apply");
 		this.applyButton.setLayoutData(applyGridDataButton);
-		applyGridDataButton.widthHint = 150;
-		applyGridDataButton.heightHint = 40;
+		this.applyButton.setImage(DebriefPlugin.getImageDescriptor("/icons/48/search.png").createImage());
+		applyGridDataButton.widthHint = 200;
+		applyGridDataButton.heightHint = 60;
 
 		final GridData importGridDataButton = new GridData();
 		importGridDataButton.horizontalAlignment = GridData.END;
-		importGridDataButton.minimumWidth = 150;
+		importGridDataButton.minimumWidth = 200;
+		importGridDataButton.horizontalSpan = 2;
+
 		this.importButton = new Button(parent, SWT.PUSH);
 		this.importButton.setText("Import");
 		this.importButton.setLayoutData(importGridDataButton);
-		importGridDataButton.widthHint = 150;
-		importGridDataButton.heightHint = 40;
+		this.importButton.setImage(DebriefPlugin.getImageDescriptor("/icons/48/import.png").createImage());
+
+		importGridDataButton.widthHint = 200;
+		importGridDataButton.heightHint = 60;
 
 	}
 

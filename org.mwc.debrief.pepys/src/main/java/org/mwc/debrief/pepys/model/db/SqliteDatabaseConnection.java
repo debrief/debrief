@@ -106,9 +106,17 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 
 		final HashMap<String, String> databaseTagConfiguration = databaseConfiguration.getCategory(CONFIGURATION_TAG);
 
-		String path = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-		path = path.substring(0, path.indexOf(Activator.PLUGIN_ID));
-		final String completePath = "jdbc:sqlite:" + path + databaseTagConfiguration.get("db_name");
+		final String completePath;
+		final String configurationFileName = databaseTagConfiguration.get("db_name");
+		if (new File(configurationFileName).exists()) {
+			completePath = "jdbc:sqlite:" + configurationFileName; 
+		}else {
+			// let's try a relative path
+			String path = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+			path = path.substring(0, path.indexOf(Activator.PLUGIN_ID));
+			completePath = "jdbc:sqlite:" + path + configurationFileName;
+		}
+		
 		pool.setJdbcUrl(completePath);
 		pool.setDriverClass("org.sqlite.JDBC");
 		pool.setProperties(config.toProperties());

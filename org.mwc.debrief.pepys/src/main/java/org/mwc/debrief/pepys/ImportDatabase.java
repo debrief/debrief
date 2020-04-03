@@ -17,7 +17,6 @@ package org.mwc.debrief.pepys;
 
 import java.beans.PropertyVetoException;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.HashMap;
 
 import org.eclipse.swt.SWT;
@@ -25,15 +24,13 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.plotViewer.actions.CoreEditorAction;
+import org.mwc.debrief.pepys.controller.PepysImportController;
 import org.mwc.debrief.pepys.model.PepysConnectorBridge;
-import org.mwc.debrief.pepys.model.bean.Comment;
-import org.mwc.debrief.pepys.model.bean.Contact;
-import org.mwc.debrief.pepys.model.bean.State;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.PostgresDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
-import org.mwc.debrief.pepys.presenter.PepysImportPresenter;
+
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GenericData.WorldArea;
@@ -57,7 +54,9 @@ public class ImportDatabase extends CoreEditorAction {
 			}
 		};
 
-		final Shell shell = new Shell(PlatformUI.getWorkbench().getDisplay());
+		final Shell shell = new Shell(PlatformUI.getWorkbench().getDisplay(),
+				SWT.APPLICATION_MODAL | SWT.MIN | SWT.CLOSE | SWT.RESIZE | SWT.MAX);
+		shell.setMinimumSize(600, 450);
 		final DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration();
 		try {
 			DatabaseConnection.loadDatabaseConfiguration(databaseConfiguration,
@@ -82,8 +81,6 @@ public class ImportDatabase extends CoreEditorAction {
 					}
 					if (conn != null) {
 						conn.createInstance(databaseConfiguration);
-						DatabaseConnection.getInstance()
-								.doTestQuery(new Class[] { Contact.class, State.class, Comment.class });
 					}
 				}
 			}
@@ -97,19 +94,10 @@ public class ImportDatabase extends CoreEditorAction {
 			messageBox.open();
 
 			return;
-		} catch (SQLException e) {
-			e.printStackTrace();
-
-			final MessageBox messageBox = new MessageBox(shell, SWT.ERROR | SWT.OK);
-			messageBox.setMessage("Database inconsistency\n" + e.toString());
-			messageBox.setText("Error in database connection.");
-			messageBox.open();
-
-			return;
 		}
 
 		if (DatabaseConnection.getInstance() != null) {
-			new PepysImportPresenter(shell, pepysBridge, getChart().getLayers());
+			new PepysImportController(shell, pepysBridge);
 
 			shell.pack();
 			shell.open();

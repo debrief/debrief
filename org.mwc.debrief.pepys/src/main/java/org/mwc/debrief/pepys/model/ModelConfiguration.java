@@ -26,7 +26,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 
+import org.mwc.debrief.pepys.model.bean.Comment;
 import org.mwc.debrief.pepys.model.bean.Contact;
+import org.mwc.debrief.pepys.model.bean.State;
+import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.tree.TreeBuilder;
 import org.mwc.debrief.pepys.model.tree.TreeNode;
 import org.mwc.debrief.pepys.model.tree.TreeStructurable;
@@ -55,6 +58,10 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	private PepysConnectorBridge _bridge;
 
+	private Collection<TreeStructurable> currentItems;
+
+	private String filterText = "";
+
 	public ModelConfiguration() {
 		final Calendar twentyYearsAgoCal = Calendar.getInstance();
 		twentyYearsAgoCal.add(Calendar.YEAR, -20);
@@ -80,7 +87,8 @@ public class ModelConfiguration implements AbstractConfiguration {
 			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException,
 			ClassNotFoundException, IOException {
 
-		TreeBuilder.buildStructure(this);
+		currentItems = TreeBuilder.buildStructure(this);
+		updateTree();
 
 		if (_pSupport != null) {
 			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, TREE_MODEL, null, treeModel);
@@ -91,8 +99,21 @@ public class ModelConfiguration implements AbstractConfiguration {
 	@Override
 	public void doImport() {
 		if (_bridge == null) {
+			/**
+			 * In case we don't have a bridge to Full Debrief, it means
+			 * we are probably running an unit test (or the deattached version,
+			 * then simply do a mockup import process (print to sout) :) 
+			 */
 			doImportProcessMockup(treeModel);
-		}else {
+		} else {
+			/**
+			 * Import process receives a filter method which is used to confirm if the 
+			 * node is going to be imported to Debrief.
+			 * 
+			 * I am using it to import first all the NON Contacts nodes, and 
+			 * after that I import only the Contact nodes. It will ensure
+			 * that we will have already all the related tracks.
+			 */
 			doImport(treeModel, new InternTreeItemFiltering() {
 
 				@Override
@@ -135,6 +156,11 @@ public class ModelConfiguration implements AbstractConfiguration {
 	}
 
 	@Override
+	public boolean doTestQuery() throws SQLException {
+		return DatabaseConnection.getInstance().doTestQuery(new Class[] { Contact.class, State.class, Comment.class });
+	}
+
+	@Override
 	public WorldArea getCurrentArea() {
 		return currentArea;
 	}
@@ -142,6 +168,21 @@ public class ModelConfiguration implements AbstractConfiguration {
 	@Override
 	public Collection<TypeDomain> getDatafileTypeFilters() {
 		return currentDatatype;
+	}
+
+	@Override
+	public WorldLocation getDefaultBottomRight() {
+		return new WorldLocation(-45, 80, 0);
+	}
+
+	@Override
+	public WorldLocation getDefaultTopLeft() {
+		return new WorldLocation(65, -125, 0);
+	}
+
+	@Override
+	public String getFilter() {
+		return filterText;
 	}
 
 	@Override
@@ -183,8 +224,20 @@ public class ModelConfiguration implements AbstractConfiguration {
 		if (_bridge != null) {
 			setArea(_bridge.getCurrentArea());
 		} else {
-			final WorldArea demoArea = new WorldArea(new WorldLocation(65, -125, 0), new WorldLocation(-45, 80, 0));
+			final WorldArea demoArea = new WorldArea(getDefaultTopLeft(), getDefaultBottomRight());
 			setArea(demoArea);
+		}
+	}
+
+	@Override
+	public void setFilter(final String _newFilter) {
+		final String oldFilter = filterText;
+		filterText = _newFilter;
+
+		if (_pSupport != null) {
+			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, FILTER_PROPERTY, oldFilter,
+					filterText);
+			_pSupport.firePropertyChange(pce);
 		}
 	}
 
@@ -202,6 +255,18 @@ public class ModelConfiguration implements AbstractConfiguration {
 			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, PERIOD_PROPERTY, oldPeriod,
 					currentPeriod);
 			_pSupport.firePropertyChange(pce);
+		}
+	}
+
+	@Override
+	public void updateTree() {
+		if (currentItems != null) {
+			TreeBuilder.buildStructure(currentItems.toArray(new TreeStructurable[] {}), getTreeModel(), getFilter());
+
+			if (_pSupport != null) {
+				final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, TREE_MODEL, null, treeModel);
+				_pSupport.firePropertyChange(pce);
+			}
 		}
 	}
 

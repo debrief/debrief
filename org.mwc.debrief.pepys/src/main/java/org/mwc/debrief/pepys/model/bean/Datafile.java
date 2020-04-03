@@ -16,10 +16,8 @@
 package org.mwc.debrief.pepys.model.bean;
 
 import java.beans.PropertyVetoException;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;

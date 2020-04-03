@@ -1398,5 +1398,27 @@ public class Layers implements Serializable, Plottable, PlottablesType {
 
 		}
 	}
+	
+	public boolean hasNoBounds(Plottable newItem) {
+		int noBoundsCount=0;
+		Enumeration<Editable> enumer = elements();
+		while(enumer.hasMoreElements()) {
+			Layer item = (Layer)enumer.nextElement();
+			Enumeration<Editable> edits = item.elements();
+			while(edits.hasMoreElements()) {
+				Plottable p = (Plottable)edits.nextElement();
+				if(p.getBounds()!=null) {
+					noBoundsCount++;
+					//the very first shape is already added at this stage,
+					//so we check for future additions to prevent rescaling every time
+					// a shape is added
+					if(noBoundsCount>1) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
 
 }
