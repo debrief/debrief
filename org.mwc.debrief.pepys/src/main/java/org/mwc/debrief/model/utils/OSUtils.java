@@ -62,7 +62,7 @@ public class OSUtils {
 			answer = clazz.getResource(resourcePath);
 		} else {
 			// We are running from Eclipse
-			answer = new File(path.substring(0, path.indexOf(pluginID)) + resourcePath).toURI().toURL();
+			answer = new File(path.substring(0, path.indexOf(pluginID) + pluginID.length() + 1) + resourcePath).toURI().toURL();
 		}
 		return answer;
 	}
