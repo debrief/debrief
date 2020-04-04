@@ -17,7 +17,6 @@ package org.mwc.debrief.pepys.model.db;
 
 import java.beans.PropertyVetoException;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -25,6 +24,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 
+import org.mwc.debrief.model.utils.NativeLibrariesLoader;
+import org.mwc.debrief.model.utils.NativeLibrariesLoader.ModSpatialiteAssigner;
 import org.mwc.debrief.pepys.Activator;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.sqlite.SQLiteConfig;
@@ -37,6 +38,10 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 
 	public static final String LOCATION_COORDINATES = "XYZ";
 	public static final String SQLITE_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.000000";
+	
+	public static File nativeFolderPath = null;
+	
+	public static String modSpatialiteName = Activator.MOD_SPATIALITE_NAME;
 
 	public SqliteDatabaseConnection() {
 		super(); // Just formality :)
@@ -44,7 +49,7 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 
 	@Override
 	public DatabaseConnection createInstance(final DatabaseConfiguration _config)
-			throws PropertyVetoException, FileNotFoundException {
+			throws PropertyVetoException, IOException {
 		if (INSTANCE == null) {
 			final SqliteDatabaseConnection newInstance = this;
 			newInstance.databaseConfiguration = _config;
@@ -95,7 +100,7 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 	}
 
 	@Override
-	protected void initialize(final DatabaseConfiguration _config) throws PropertyVetoException, FileNotFoundException {
+	protected void initialize(final DatabaseConfiguration _config) throws PropertyVetoException, IOException {
 		// enabling dynamic extension loading
 		// absolutely required by SpatiaLite
 		final SQLiteConfig config = new SQLiteConfig();
@@ -120,6 +125,22 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 		pool.setJdbcUrl(completePath);
 		pool.setDriverClass("org.sqlite.JDBC");
 		pool.setProperties(config.toProperties());
+		
+		if (Activator.nativeFolderPath != null) {
+			// Ok, we are working from a bundle, let's use that path.
+			nativeFolderPath = Activator.nativeFolderPath;
+		}else {
+			// Let's use a temporary folder
+			nativeFolderPath = new File(System.getProperty("java.io.tmpdir") + "navive/");
+		}
+		// Let's load the libraries in the initialization.
+		NativeLibrariesLoader.loadBundledXuggler(nativeFolderPath, new ModSpatialiteAssigner() {
+			
+			@Override
+			public void assign(String path) {
+				modSpatialiteName = path;
+			}
+		});
 	}
 
 	@Override
@@ -128,10 +149,10 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 		// loading SpatiaLite
 
 		final String extentionToLoad;
-		if (Activator.nativeFolderPath != null) {
-			final String newPath = Activator.nativeFolderPath.getCanonicalPath().toString() + "/";
-			if (new File(newPath + Activator.modSpatialiteName).isFile()) {
-				extentionToLoad = newPath + Activator.modSpatialiteName;
+		if (nativeFolderPath != null) {
+			final String newPath = nativeFolderPath.getCanonicalPath().toString() + "/";
+			if (new File(newPath + modSpatialiteName).isFile()) {
+				extentionToLoad = newPath + modSpatialiteName;
 			}else {
 				extentionToLoad = Activator.MOD_SPATIALITE_NAME;
 			}

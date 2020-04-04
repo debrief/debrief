@@ -29,8 +29,6 @@ public class Activator extends AbstractUIPlugin {
 	
 	public static final String MOD_SPATIALITE_NAME = "mod_spatialite";
 	
-	public static String modSpatialiteName = MOD_SPATIALITE_NAME;
-	
 	private static Activator plugin;
 
 	public static Activator getDefault() {
@@ -47,7 +45,6 @@ public class Activator extends AbstractUIPlugin {
 	@Override
 	public void start(final BundleContext context) throws Exception {
 		super.start(context);
-		NativeLibrariesLoader.loadBundledXuggler(context.getDataFile("native"), context.getBundle());
 		nativeFolderPath = context.getDataFile("native");
 		plugin = this;
 	}
