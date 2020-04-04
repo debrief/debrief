@@ -38,6 +38,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import org.mwc.debrief.model.utils.OSUtils;
+import org.mwc.debrief.pepys.Activator;
 import org.mwc.debrief.pepys.model.bean.AbstractBean;
 import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils;
 import org.mwc.debrief.pepys.model.db.annotation.Id;
@@ -47,8 +49,6 @@ import org.mwc.debrief.pepys.model.db.annotation.OneToOne;
 import org.mwc.debrief.pepys.model.db.annotation.Time;
 import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 import MWC.GenericData.TimePeriod;
@@ -425,18 +425,8 @@ public abstract class DatabaseConnection {
 
 			}
 		} else {
-			final Bundle bundle = FrameworkUtil.getBundle(DatabaseConnection.class);
-			final String path = DatabaseConnection.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-
-			if (bundle != null) {
-				// We are running from bundle or from .jar
-				configurationFileStream = bundle.getResource(_defaultConfigFile).openConnection().getInputStream();
-			} else if (path.endsWith("jar")) {
-				configurationFileStream = DatabaseConnection.class.getResourceAsStream(_defaultConfigFile);
-			} else {
-				// We are running from Eclipse
-				configurationFileStream = new FileInputStream(new File(path + "../../" + _defaultConfigFile));
-			}
+			configurationFileStream = OSUtils.getInputStreamResource(DatabaseConnection.class, _defaultConfigFile,
+					Activator.PLUGIN_ID);
 		}
 
 		loadDatabaseConfiguration(_config, configurationFileStream);
