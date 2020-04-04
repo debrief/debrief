@@ -40,14 +40,15 @@ public class Datafile implements AbstractBean {
 		public void testDatafilesQuery() {
 			try {
 				final DatabaseConfiguration _config = new DatabaseConfiguration();
-				DatabaseConnection.loadDatabaseConfiguration(_config, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE);
+				DatabaseConnection.loadDatabaseConfiguration(_config,
+						DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE);
 				new SqliteDatabaseConnection().createInstance(_config);
 				final List<Datafile> list = DatabaseConnection.getInstance().listAll(Datafile.class, null);
 
 				assertTrue("Datafiles - database entries", list.size() == 18);
 
-				final String[][] datafilesSomeReferences = new String[][] { { "1", "NMEA_TRIAL.log" },
-						{ "6", "rep_test1.rep" }, { "18", "gpx_1_0_InvalidSpeed.gpx" }, { "11", "e_trac.txt" } };
+				final String[][] datafilesSomeReferences = new String[][] { { "1", "gpx_1_0.gpx" },
+						{ "6", "gpx_1_1.gpx" }, { "18", "uk_track.rep" }, { "11", "NMEA_bad.log" } };
 
 				for (int i = 0; i < datafilesSomeReferences.length; i++) {
 					boolean exist = false;
@@ -58,10 +59,10 @@ public class Datafile implements AbstractBean {
 
 					assertTrue("Datafiles - Reference Name", exist);
 				}
-				
+
 				for (Datafile datafile : list) {
-					assertTrue("Datafiles - Concatenated reference ",
-							"DATAFILE-TYPE-1".equals(datafile.getDatafile().getName()));
+					assertTrue("Datafiles - Concatenated reference ", datafile.getDatafile().getName()
+							.equals(datafile.getReference().substring(datafile.getReference().indexOf('.'))));
 				}
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException

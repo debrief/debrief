@@ -52,7 +52,7 @@ public class TreeNode {
 				fail("Failed retrieving data from Database");
 			}
 
-			assertTrue("States - database entries", list.size() == 24418);
+			assertTrue("States - database entries", list.size() == 12209);
 
 			final String rootName = "ROOT";
 			final TreeNode root = new TreeNode(NodeType.ROOT, rootName, null);
