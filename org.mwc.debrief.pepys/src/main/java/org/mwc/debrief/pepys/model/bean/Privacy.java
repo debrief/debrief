@@ -43,11 +43,12 @@ public class Privacy implements AbstractBean {
 				new SqliteDatabaseConnection().createInstance(_config);
 				final List<Privacy> list = DatabaseConnection.getInstance().listAll(Privacy.class, null);
 
-				assertTrue("Privacies - database entries", list.size() == 1);
+				assertTrue("Privacies - database entries", list.size() == 4);
 
-				final Privacy privacy = list.get(0);
+				final Privacy privacy = DatabaseConnection.getInstance().listById(Privacy.class, 1);
+
 				assertTrue("Datafiletypes - database entries",
-						"1".equals(privacy.getPrivacy_id()) && "PRIVACY-1".equals(privacy.getName()));
+						"1".equals(privacy.getPrivacy_id()) && "Public".equals(privacy.getName()));
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
 					| ClassNotFoundException | IOException e) {

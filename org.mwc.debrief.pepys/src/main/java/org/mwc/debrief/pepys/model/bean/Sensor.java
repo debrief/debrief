@@ -29,11 +29,11 @@ public class Sensor implements AbstractBean, Comparable<Sensor> {
 				new SqliteDatabaseConnection().createInstance(_config);
 				final List<Sensor> list = DatabaseConnection.getInstance().listAll(Sensor.class, null);
 
-				assertTrue("States - database entries", list.size() == 30);
+				assertTrue("States - database entries", list.size() == 29);
 
 				final Sensor plantFormSensor = DatabaseConnection.getInstance().listById(Sensor.class, 27);
 
-				assertTrue("States - database entries", "PLATFORM-1".equals(plantFormSensor.getName()));
+				assertTrue("States - database entries", "Frigate".equals(plantFormSensor.getName()));
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
 					| ClassNotFoundException | IOException e) {
