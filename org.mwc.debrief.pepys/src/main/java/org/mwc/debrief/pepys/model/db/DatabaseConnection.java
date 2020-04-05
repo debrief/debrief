@@ -38,6 +38,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import org.mwc.debrief.model.utils.OSUtils;
+import org.mwc.debrief.pepys.Activator;
 import org.mwc.debrief.pepys.model.bean.AbstractBean;
 import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils;
 import org.mwc.debrief.pepys.model.db.annotation.Id;
@@ -47,8 +49,6 @@ import org.mwc.debrief.pepys.model.db.annotation.OneToOne;
 import org.mwc.debrief.pepys.model.db.annotation.Time;
 import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 import MWC.GenericData.TimePeriod;
@@ -137,7 +137,7 @@ public abstract class DatabaseConnection {
 	}
 
 	public abstract DatabaseConnection createInstance(final DatabaseConfiguration _config)
-			throws PropertyVetoException, FileNotFoundException;
+			throws PropertyVetoException, FileNotFoundException, IOException;
 
 	protected abstract String createLocationQuery(final String tableName, final String columnName);
 
@@ -425,54 +425,41 @@ public abstract class DatabaseConnection {
 
 			}
 		} else {
-			final Bundle bundle = FrameworkUtil.getBundle(DatabaseConnection.class);
-			final String path = DatabaseConnection.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-
-			if (bundle != null) {
-				// We are running from bundle or from .jar
-				configurationFileStream = bundle.getResource(_defaultConfigFile).openConnection().getInputStream();
-			} else if (path.endsWith("jar")) {
-				configurationFileStream = DatabaseConnection.class
-						.getResourceAsStream(_defaultConfigFile);
-			}else {
-				// We are running from Eclipse
-				configurationFileStream = new FileInputStream(new File(path + "../../" + _defaultConfigFile));
-			}
+			configurationFileStream = OSUtils.getInputStreamResource(DatabaseConnection.class, _defaultConfigFile,
+					Activator.PLUGIN_ID);
 		}
 
 		loadDatabaseConfiguration(_config, configurationFileStream);
 	}
 
-	public boolean doTestQuery(final Class<AbstractBean> [] testBeans) throws SQLException {
+	public boolean doTestQuery(final Class<AbstractBean>[] testBeans) throws SQLException {
 		final Connection connection = pool.getConnection();
 		Statement statement = connection.createStatement();
-		
+
 		for (Class<AbstractBean> bean : testBeans) {
 			final String tableName = AnnotationsUtils.getTableName(bean);
 
 			final Field id = AnnotationsUtils.getField(bean, Id.class);
 			final String idName = AnnotationsUtils.getColumnName(id);
-			
-			final String sql = "SELECT " + idName + " from " + databasePrefix() + tableName + databaseSuffix() + " where false";
-			statement.execute(sql);	
+
+			final String sql = "SELECT " + idName + " from " + databasePrefix() + tableName + databaseSuffix()
+					+ " where false";
+			statement.execute(sql);
 		}
-		
+
 		return true;
 	}
-	
+
 	public static void loadDatabaseConfiguration(final DatabaseConfiguration _config,
 			final InputStream configurationStream) throws FileNotFoundException {
 		if (configurationStream != null) {
 			ConfigurationReader.parseConfigurationFile(_config, configurationStream);
-		}else {
-			throw new FileNotFoundException(
-					"DatabaseConnectionException we have received a null inputstream");
+		} else {
+			throw new FileNotFoundException("DatabaseConnectionException we have received a null inputstream");
 		}
 	}
 
 	protected abstract void initialize(DatabaseConfiguration _config)
-			throws PropertyVetoException, FileNotFoundException;
-	
-	
+			throws PropertyVetoException, FileNotFoundException, IOException;
 
 }

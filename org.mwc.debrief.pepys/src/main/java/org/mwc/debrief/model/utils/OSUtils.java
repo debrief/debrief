@@ -13,7 +13,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
-package org.mwc.debrief.pepys;
+package org.mwc.debrief.model.utils;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 public class OSUtils {
 
@@ -38,5 +47,28 @@ public class OSUtils {
 		LINUX = linux;
 		final String jvmArch = System.getProperty("os.arch");
 		IS_64BIT = jvmArch != null && jvmArch.contains("64");
+	}
+
+	public static URL getURLResource(final Class clazz, final String resourcePath, final String pluginID)
+			throws MalformedURLException {
+		final URL answer;
+		final Bundle bundle = FrameworkUtil.getBundle(clazz);
+		final String path = clazz.getProtectionDomain().getCodeSource().getLocation().getPath();
+
+		if (bundle != null) {
+			// We are running from bundle or from .jar
+			answer = bundle.getResource(resourcePath);
+		} else if (path.endsWith("jar")) {
+			answer = clazz.getResource(resourcePath);
+		} else {
+			// We are running from Eclipse
+			answer = new File(path.substring(0, path.indexOf(pluginID) + pluginID.length() + 1) + resourcePath).toURI().toURL();
+		}
+		return answer;
+	}
+
+	public static InputStream getInputStreamResource(final Class clazz, final String resourcePath,
+			final String pluginID) throws IOException {
+		return getURLResource(clazz, resourcePath, pluginID).openStream();
 	}
 }
