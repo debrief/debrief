@@ -27,9 +27,9 @@ public class SensorType implements AbstractBean {
 				new SqliteDatabaseConnection().createInstance(_config);
 				final List<SensorType> list = DatabaseConnection.getInstance().listAll(SensorType.class, null);
 
-				assertTrue("States - database entries", list.size() == 4);
+				assertTrue("States - database entries", list.size() == 12);
 
-				final SensorType gpsSensor = DatabaseConnection.getInstance().listById(SensorType.class, 4);
+				final SensorType gpsSensor = DatabaseConnection.getInstance().listById(SensorType.class, 1);
 
 				assertTrue("States - database entries", "GPS".equals(gpsSensor.getName()));
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException

@@ -43,11 +43,20 @@ public class DatafileType implements AbstractBean {
 				new SqliteDatabaseConnection().createInstance(_config);
 				final List<DatafileType> list = DatabaseConnection.getInstance().listAll(DatafileType.class, null);
 
-				assertTrue("Datafiletypes - database entries", list.size() == 1);
+				assertTrue("Datafiletypes - database entries", list.size() == 7);
 
-				final DatafileType type = list.get(0);
-				assertTrue("Datafiletypes - database entries", "1".equals(type.getDatafile_type_id()));
-				assertTrue("Datafiletypes - database entries", "DATAFILE-TYPE-1".equals(type.getName()));
+				final String[][] datafilesSomeReferences = new String[][] { { "1", "DATAFILE-TYPE-1" } };
+
+				for (int i = 0; i < datafilesSomeReferences.length; i++) {
+					boolean exist = false;
+					for (final DatafileType dataFile : list) {
+						exist |= datafilesSomeReferences[i][0].equals(dataFile.getDatafile_type_id())
+								&& datafilesSomeReferences[i][1].equals(dataFile.getName());
+					}
+
+					assertTrue("Datafiles - Reference Name", exist);
+				}
+
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
 					| ClassNotFoundException | IOException e) {

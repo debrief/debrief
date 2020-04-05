@@ -13,18 +13,21 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
-package org.mwc.debrief.pepys;
+package org.mwc.debrief.model.utils;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
+import java.util.Scanner;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.osgi.framework.Bundle;
+import org.mwc.debrief.pepys.Activator;
 
 public class NativeLibrariesLoader {
+
+	public static interface ModSpatialiteAssigner {
+		public void assign(final String path);
+	}
 
 	private static void cleanDirectory(final File directory) {
 		for (final File child : directory.listFiles()) {
@@ -35,7 +38,8 @@ public class NativeLibrariesLoader {
 		}
 	}
 
-	public static void loadBundledXuggler(final File nativeLibrariesDirectory, final Bundle bundle) throws IOException {
+	public static void loadBundledXuggler(final File nativeLibrariesDirectory, final ModSpatialiteAssigner assigner)
+			throws IOException {
 		nativeLibrariesDirectory.mkdirs();
 		cleanDirectory(nativeLibrariesDirectory);
 		String nativePath = null;
@@ -52,23 +56,30 @@ public class NativeLibrariesLoader {
 			// we don't have bundled libraries for this os
 			return;
 		}
-		final InputStream loadOrderStream = bundle.getResource(nativePath + "load-order").openStream();
+		final InputStream loadOrderStream = OSUtils.getInputStreamResource(NativeLibrariesLoader.class,
+				nativePath + "load-order", Activator.PLUGIN_ID);
+		final Scanner scanner = new Scanner(loadOrderStream);
 		try {
-			final List<String> loadOrder = IOUtils.readLines(loadOrderStream);
-			for (String libraryToLoad : loadOrder) {
-				libraryToLoad = libraryToLoad.trim();
+			while (scanner.hasNextLine()) {
+				final String libraryToLoad = scanner.nextLine().trim();
 				if (libraryToLoad.isEmpty()) {
 					continue;
 				}
 				if (libraryToLoad.contains(Activator.MOD_SPATIALITE_NAME)) {
-					Activator.modSpatialiteName = libraryToLoad;
+					assigner.assign(libraryToLoad);
 				}
 				final File libraryFile = new File(nativeLibrariesDirectory, libraryToLoad);
-				FileUtils.copyURLToFile(bundle.getResource(nativePath + libraryToLoad), libraryFile);
+				FileUtils.copyURLToFile(OSUtils.getURLResource(NativeLibrariesLoader.class, nativePath + libraryToLoad,
+						Activator.PLUGIN_ID), libraryFile);
 				System.load(libraryFile.getCanonicalPath());
 			}
 		} finally {
-			IOUtils.closeQuietly(loadOrderStream);
+			if (scanner != null) {
+				scanner.close();
+			}
+			if (loadOrderStream != null) {
+				loadOrderStream.close();
+			}
 		}
 	}
 

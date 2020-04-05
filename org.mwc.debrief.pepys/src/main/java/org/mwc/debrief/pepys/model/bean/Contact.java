@@ -61,7 +61,7 @@ public class Contact implements AbstractBean, TreeStructurable {
 	private String confidence;
 	private String contact_type;
 	private double mla;
-	private double sla;
+	private double soa;
 
 	@ManyToOne
 	@FieldName(name = "source_id")
@@ -189,8 +189,8 @@ public class Contact implements AbstractBean, TreeStructurable {
 		return null;
 	}
 
-	public double getSla() {
-		return sla;
+	public double getSoa() {
+		return soa;
 	}
 
 	@Override
@@ -270,8 +270,8 @@ public class Contact implements AbstractBean, TreeStructurable {
 		this.sensor = sensor;
 	}
 
-	public void setSla(final double sla) {
-		this.sla = sla;
+	public void setSoa(final double soa) {
+		this.soa = soa;
 	}
 
 	public void setTime(final Timestamp time) {
