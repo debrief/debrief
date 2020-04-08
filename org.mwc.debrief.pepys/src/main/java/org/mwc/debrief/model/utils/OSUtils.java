@@ -49,6 +49,11 @@ public class OSUtils {
 		IS_64BIT = jvmArch != null && jvmArch.contains("64");
 	}
 
+	public static InputStream getInputStreamResource(final Class clazz, final String resourcePath,
+			final String pluginID) throws IOException {
+		return getURLResource(clazz, resourcePath, pluginID).openStream();
+	}
+
 	public static URL getURLResource(final Class clazz, final String resourcePath, final String pluginID)
 			throws MalformedURLException {
 		final URL answer;
@@ -62,13 +67,9 @@ public class OSUtils {
 			answer = clazz.getResource(resourcePath);
 		} else {
 			// We are running from Eclipse
-			answer = new File(path.substring(0, path.indexOf(pluginID) + pluginID.length() + 1) + resourcePath).toURI().toURL();
+			answer = new File(path.substring(0, path.indexOf(pluginID) + pluginID.length() + 1) + resourcePath).toURI()
+					.toURL();
 		}
 		return answer;
-	}
-
-	public static InputStream getInputStreamResource(final Class clazz, final String resourcePath,
-			final String pluginID) throws IOException {
-		return getURLResource(clazz, resourcePath, pluginID).openStream();
 	}
 }

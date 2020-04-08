@@ -38,7 +38,7 @@ import org.mwc.debrief.pepys.nebula.PShelfItem;
 import org.mwc.debrief.pepys.nebula.RedmondShelfRenderer;
 import org.mwc.debrief.pepys.view.tree.TreeNameLabelProvider;
 
-public class PepysImportView extends Dialog {
+public class PepysImportView extends Dialog implements AbstractViewSWT {
 
 	private Label startLabel;
 	private Label endLabel;
@@ -74,13 +74,14 @@ public class PepysImportView extends Dialog {
 		super(parent);
 
 		initGUI(model, parent);
-
 	}
 
+	@Override
 	public Button getApplyButton() {
 		return applyButton;
 	}
 
+	@Override
 	public CWorldLocation getBottomRightLocation() {
 		return bottomRightLocation;
 	}
@@ -89,46 +90,57 @@ public class PepysImportView extends Dialog {
 		return dataTypesCheckBox;
 	}
 
+	@Override
 	public Composite getDataTypesComposite() {
 		return dataTypesComposite;
 	}
 
+	@Override
 	public CDateTime getEndDate() {
 		return endDate;
 	}
 
+	@Override
 	public CDateTime getEndTime() {
 		return endTime;
 	}
 
+	@Override
 	public Button getImportButton() {
 		return importButton;
 	}
 
+	@Override
 	public Text getSearchText() {
 		return searchText;
 	}
 
+	@Override
 	public CDateTime getStartDate() {
 		return startDate;
 	}
 
+	@Override
 	public CDateTime getStartTime() {
 		return startTime;
 	}
 
+	@Override
 	public Button getTestConnectionButton() {
 		return testConnectionButton;
 	}
 
+	@Override
 	public CWorldLocation getTopLeftLocation() {
 		return topLeftLocation;
 	}
 
+	@Override
 	public CheckboxTreeViewer getTree() {
 		return tree;
 	}
 
+	@Override
 	public Button getUseCurrentViewportButton() {
 		return useCurrentViewportButton;
 	}

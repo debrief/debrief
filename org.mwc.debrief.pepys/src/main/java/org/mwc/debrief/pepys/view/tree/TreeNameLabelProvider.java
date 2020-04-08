@@ -42,11 +42,13 @@ public class TreeNameLabelProvider implements ILabelProvider {
 			final TreeNode node = (TreeNode) element;
 			if (node.getType().equals(TreeNode.NodeType.PLATFORM)) {
 				return DebriefPlugin.getImageDescriptor("/icons/16/leg.png").createImage();
-			}else if (node.getType().equals(TreeNode.NodeType.MEASURE)) {
+			} else if (node.getType().equals(TreeNode.NodeType.MEASURE)) {
 				return DebriefPlugin.getImageDescriptor("/icons/16/measurement.png").createImage();
-			}if (node.getType().equals(TreeNode.NodeType.DATAFILE)) {
+			}
+			if (node.getType().equals(TreeNode.NodeType.DATAFILE)) {
 				return DebriefPlugin.getImageDescriptor("/icons/16/narrative_viewer.png").createImage();
-			}if (node.getType().equals(TreeNode.NodeType.SENSOR)) {
+			}
+			if (node.getType().equals(TreeNode.NodeType.SENSOR)) {
 				return DebriefPlugin.getImageDescriptor("/icons/16/sensor.png").createImage();
 			}
 		}

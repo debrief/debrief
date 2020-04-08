@@ -45,9 +45,10 @@ import org.mwc.debrief.pepys.model.bean.Comment;
 import org.mwc.debrief.pepys.model.bean.Contact;
 import org.mwc.debrief.pepys.model.bean.State;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
-import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
+import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.mwc.debrief.pepys.model.tree.TreeNode;
+import org.mwc.debrief.pepys.view.AbstractViewSWT;
 import org.mwc.debrief.pepys.view.PepysImportView;
 
 import MWC.GenericData.HiResDate;
@@ -62,14 +63,17 @@ public class PepysImportController {
 		final Shell shell = new Shell(display);
 		try {
 			final DatabaseConfiguration _config = new DatabaseConfiguration();
-			DatabaseConnection.loadDatabaseConfiguration(_config, DatabaseConnection.DEFAULT_SQLITE_DATABASE_FILE);
-			new SqliteDatabaseConnection().createInstance(_config);
-			// new PostgresDatabaseConnection().createInstance();
+			ConfigurationReader.loadDatabaseConfiguration(_config, DatabaseConnection.DEFAULT_SQLITE_DATABASE_FILE,
+					DatabaseConnection.DEFAULT_SQLITE_DATABASE_FILE);
+
+			final AbstractConfiguration model = new ModelConfiguration();
+			model.loadDatabaseConfiguration(_config);
+			final AbstractViewSWT view = new PepysImportView(model, shell);
+
+			new PepysImportController(shell, model, view);
 		} catch (final PropertyVetoException | IOException e) {
 			e.printStackTrace();
 		}
-
-		new PepysImportController(shell);
 
 		shell.pack();
 		shell.open();
@@ -82,19 +86,16 @@ public class PepysImportController {
 
 	private final AbstractConfiguration _model;
 
-	private final PepysImportView _view;
+	private final AbstractViewSWT _view;
 
 	private final Shell _parent;
 
 	private final String IMAGE_PREFIX = "/icons/16/";
 
-	public PepysImportController(final Shell parent) {
-		final AbstractConfiguration model = new ModelConfiguration();
-
+	public PepysImportController(final Shell parent, final AbstractConfiguration model, final AbstractViewSWT view) {
 		model.addDatafileTypeFilter(new TypeDomain(State.class, "States", true, IMAGE_PREFIX + "fix.png"));
 		model.addDatafileTypeFilter(new TypeDomain(Contact.class, "Contacts", true, IMAGE_PREFIX + "bearing.png"));
 		model.addDatafileTypeFilter(new TypeDomain(Comment.class, "Comments", true, IMAGE_PREFIX + "narrative.png"));
-		final PepysImportView view = new PepysImportView(model, parent);
 
 		_model = model;
 		_view = view;
@@ -104,13 +105,14 @@ public class PepysImportController {
 		addDatabindings(model, view);
 	}
 
-	public PepysImportController(final Shell shell, final PepysConnectorBridge pepysBridge) {
-		this(shell);
+	public PepysImportController(final Shell parent, final AbstractConfiguration model, final AbstractViewSWT view,
+			final PepysConnectorBridge pepysBridge) {
+		this(parent, model, view);
 
 		_model.setPepysConnectorBridge(pepysBridge);
 	}
 
-	protected void addDatabindings(final AbstractConfiguration model, final PepysImportView view) {
+	protected void addDatabindings(final AbstractConfiguration model, final AbstractViewSWT view) {
 
 		view.getStartDate().addSelectionListener(new SelectionListener() {
 
@@ -337,7 +339,7 @@ public class PepysImportController {
 		view.getTree().setInput(model.getTreeModel());
 	}
 
-	private void addDataTypeFilters(final AbstractConfiguration _model, final PepysImportView _view) {
+	private void addDataTypeFilters(final AbstractConfiguration _model, final AbstractViewSWT _view) {
 		final Composite composite = _view.getDataTypesComposite();
 
 		for (final TypeDomain type : _model.getDatafileTypeFilters()) {
@@ -373,16 +375,16 @@ public class PepysImportController {
 		return _model;
 	}
 
-	public PepysImportView getView() {
+	public AbstractViewSWT getView() {
 		return _view;
 	}
 
-	public void updateAreaModel2View(final AbstractConfiguration model, final PepysImportView view) {
+	public void updateAreaModel2View(final AbstractConfiguration model, final AbstractViewSWT view) {
 		view.getTopLeftLocation().setValue(model.getCurrentArea().getTopLeft());
 		view.getBottomRightLocation().setValue(model.getCurrentArea().getBottomRight());
 	}
 
-	public void updateAreaView2Model(final AbstractConfiguration model, final PepysImportView view) {
+	public void updateAreaView2Model(final AbstractConfiguration model, final AbstractViewSWT view) {
 		final WorldLocation topLeft;
 
 		if (view.getTopLeftLocation().getValue() == null) {
