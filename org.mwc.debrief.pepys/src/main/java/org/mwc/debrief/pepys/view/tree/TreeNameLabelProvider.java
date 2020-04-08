@@ -40,7 +40,9 @@ public class TreeNameLabelProvider implements ILabelProvider {
 	public Image getImage(final Object element) {
 		if (element instanceof TreeNode) {
 			final TreeNode node = (TreeNode) element;
-			if (node.getType().equals(TreeNode.NodeType.PLATFORM)) {
+			if (node.getType().equals(TreeNode.NodeType.ROOT)) {
+				return DebriefPlugin.getImageDescriptor("/icons/16/database.png").createImage();
+			} else if (node.getType().equals(TreeNode.NodeType.PLATFORM)) {
 				return DebriefPlugin.getImageDescriptor("/icons/16/leg.png").createImage();
 			} else if (node.getType().equals(TreeNode.NodeType.MEASURE)) {
 				return DebriefPlugin.getImageDescriptor("/icons/16/measurement.png").createImage();

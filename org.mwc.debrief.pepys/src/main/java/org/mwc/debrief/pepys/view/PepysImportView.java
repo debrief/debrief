@@ -265,6 +265,7 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 		this.tree.setContentProvider(new TreeContentProvider());
 		this.tree.setLabelProvider(new TreeNameLabelProvider());
 		this.tree.getTree().setLayoutData(treeGrid);
+		this.tree.setAutoExpandLevel(2);
 
 		final GridData applyGridDataButton = new GridData();
 		applyGridDataButton.horizontalAlignment = GridData.END;
