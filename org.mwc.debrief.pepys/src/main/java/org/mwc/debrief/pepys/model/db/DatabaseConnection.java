@@ -415,7 +415,7 @@ public abstract class DatabaseConnection {
 			if (new File(configurationFile).isFile()) {
 				// Here we are simply load the file as given
 				configurationFileStream = new FileInputStream(new File(configurationFile));
-				;
+				
 			} else {
 				// show error:
 				// "Config file specified in "+ CONFIG_FILE_ENV_NAME + " environment variable
