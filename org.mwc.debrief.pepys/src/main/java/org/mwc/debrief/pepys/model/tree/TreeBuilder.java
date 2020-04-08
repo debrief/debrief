@@ -79,16 +79,18 @@ public class TreeBuilder {
 	 */
 	public static TreeNode buildStructure(final TreeStructurable[] items, final TreeNode root, final String filter) {
 		root.removeAllChildren();
+		final TreeNode subRoot = new TreeNode(TreeNode.NodeType.ROOT, "Database");
+		root.addChild(subRoot);
 
 		for (final TreeStructurable currentItem : items) {
 			final String platformName = currentItem.getPlatform().getName();
 			final String datafileName = currentItem.getDatafile().getReference();
 			if ((filter == null || filter.isBlank() || platformName.toLowerCase().contains(filter.toLowerCase())
 					|| datafileName.toLowerCase().contains(filter.toLowerCase()))) {
-				TreeNode datafileNode = root.getChild(platformName);
+				TreeNode datafileNode = subRoot.getChild(platformName);
 				if (datafileNode == null) {
-					datafileNode = new TreeNode(TreeNode.NodeType.PLATFORM, platformName, root);
-					root.addChild(datafileNode);
+					datafileNode = new TreeNode(TreeNode.NodeType.PLATFORM, platformName, subRoot);
+					subRoot.addChild(datafileNode);
 				}
 
 				final String measureName = AnnotationsUtils.getTableName(currentItem.getClass());
