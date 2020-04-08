@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class DatabaseConfiguration {
 
-	public HashMap<String, HashMap<String, String>> categories = new HashMap<String, HashMap<String, String>>();
+	private HashMap<String, HashMap<String, String>> categories = new HashMap<String, HashMap<String, String>>();
 
 	public DatabaseConfiguration() {
 
@@ -18,5 +18,9 @@ public class DatabaseConfiguration {
 			return categories.get(str);
 		}
 		return null;
+	}
+	
+	public void clear() {
+		categories.clear();
 	}
 }
