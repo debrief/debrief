@@ -93,9 +93,9 @@ public class ConfigurationReader {
 		final InputStream configurationFileStream;
 		if (_desiredFile != null) {
 			if (new File(_desiredFile).isFile()) {
+				_config.setSourcePath(_desiredFile);
 				// Here we are simply load the file as given
 				configurationFileStream = new FileInputStream(new File(_desiredFile));
-
 			} else {
 				// show error:
 				// "Config file specified in "+ CONFIG_FILE_ENV_NAME + " environment variable
@@ -104,9 +104,13 @@ public class ConfigurationReader {
 						"DatabaseConnectionException requested file " + _desiredFile + " but it is not a valid file");
 
 			}
-		} else {
+		} else if (_defaultConfigFile != null) {
+			_config.setSourcePath(_defaultConfigFile);
 			configurationFileStream = OSUtils.getInputStreamResource(DatabaseConnection.class, _defaultConfigFile,
 					Activator.PLUGIN_ID);
+		} else {
+			throw new IOException(
+					"DatabaseConnectionException requested file " + _desiredFile + " but it is not a valid file");
 		}
 
 		loadDatabaseConfiguration(_config, configurationFileStream);

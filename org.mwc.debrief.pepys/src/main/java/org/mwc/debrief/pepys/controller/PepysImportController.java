@@ -24,6 +24,10 @@ import java.sql.SQLException;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.DropTargetListener;
+import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
@@ -91,6 +95,10 @@ public class PepysImportController {
 	private final Shell _parent;
 
 	private final String IMAGE_PREFIX = "/icons/16/";
+
+	private final String INI_FILE_SUFFIX = "ini";
+
+	private final String SQLITE_FILE_SUFFIX = "sqlite";
 
 	public PepysImportController(final Shell parent, final AbstractConfiguration model, final AbstractViewSWT view) {
 		model.addDatafileTypeFilter(new TypeDomain(State.class, "States", true, IMAGE_PREFIX + "fix.png"));
@@ -337,6 +345,94 @@ public class PepysImportController {
 		});
 
 		view.getTree().setInput(model.getTreeModel());
+
+		view.getTree().addDropSupport(DND.DROP_MOVE, new FileTransfer[] { FileTransfer.getInstance() },
+				new DropTargetListener() {
+
+					@Override
+					public void dragEnter(final DropTargetEvent arg0) {
+
+					}
+
+					@Override
+					public void dragLeave(final DropTargetEvent arg0) {
+
+					}
+
+					@Override
+					public void dragOperationChanged(final DropTargetEvent arg0) {
+
+					}
+
+					@Override
+					public void dragOver(final DropTargetEvent arg0) {
+
+					}
+
+					@Override
+					public void drop(final DropTargetEvent event) {
+						final Object dataObject = event.data;
+						if (dataObject instanceof String[]) {
+							final String[] filesDropped = (String[]) dataObject;
+							if (filesDropped.length == 1) {
+								final String fileName = filesDropped[0];
+								try {
+
+									final DatabaseConfiguration _config;
+									if (fileName.toLowerCase().endsWith(INI_FILE_SUFFIX)) {
+										// Lets try to load the file as a configuration file.
+										_config = new DatabaseConfiguration();
+
+									} else if (fileName.toLowerCase().endsWith(SQLITE_FILE_SUFFIX)) {
+										_config = DatabaseConfiguration.DatabaseConfigurationFactory
+												.createSqliteConfiguration(fileName);
+									} else {
+										_config = new DatabaseConfiguration();
+										final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
+										messageBox.setMessage("Dragged object not recognized. Wrote file extension");
+										messageBox.setText("Error processing dragged object.");
+										messageBox.open();
+
+										return;
+									}
+									ConfigurationReader.loadDatabaseConfiguration(_config, fileName, null);
+									model.loadDatabaseConfiguration(_config);
+									final MessageBox messageBox = new MessageBox(_parent, SWT.OK | SWT.OK);
+									final String filePath = _config.getSourcePath() == null ? ""
+											: _config.getSourcePath();
+									messageBox.setMessage("File loaded successfully\n" + filePath);
+									messageBox.setText("File processing finished successfully");
+									messageBox.open();
+
+									return;
+								} catch (PropertyVetoException | IOException e) {
+									final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
+									messageBox.setMessage(
+											"Unable to load database specified in the configuration file\n" + fileName);
+									messageBox.setText("Error processing dragged object.");
+									messageBox.open();
+
+									return;
+								}
+							} else {
+								System.out.println("No se pueden agregar mas de 2 archivos");
+								return;
+							}
+						} else {
+							final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
+							messageBox.setMessage("Dragged object not recognized");
+							messageBox.setText("Error processing dragged object.");
+							messageBox.open();
+
+							return;
+						}
+					}
+
+					@Override
+					public void dropAccept(final DropTargetEvent arg0) {
+
+					}
+				});
 	}
 
 	private void addDataTypeFilters(final AbstractConfiguration _model, final AbstractViewSWT _view) {

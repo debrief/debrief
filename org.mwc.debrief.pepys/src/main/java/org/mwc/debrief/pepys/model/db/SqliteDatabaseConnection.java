@@ -38,6 +38,7 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 
 	public static final String LOCATION_COORDINATES = "XYZ";
 	public static final String SQLITE_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.000000";
+	public static final String CONFIGURATION_DB_NAME = "db_name";
 
 	public static File nativeFolderPath = null;
 
@@ -101,7 +102,7 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 		final HashMap<String, String> databaseTagConfiguration = databaseConfiguration.getCategory(CONFIGURATION_TAG);
 
 		final String completePath;
-		final String configurationFileName = databaseTagConfiguration.get("db_name");
+		final String configurationFileName = databaseTagConfiguration.get(CONFIGURATION_DB_NAME);
 		if (new File(configurationFileName).exists()) {
 			completePath = "jdbc:sqlite:" + configurationFileName;
 		} else {
