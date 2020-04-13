@@ -382,6 +382,7 @@ public class PepysImportController {
 									if (fileName.toLowerCase().endsWith(INI_FILE_SUFFIX)) {
 										// Lets try to load the file as a configuration file.
 										_config = new DatabaseConfiguration();
+										ConfigurationReader.loadDatabaseConfiguration(_config, fileName, null);
 
 									} else if (fileName.toLowerCase().endsWith(SQLITE_FILE_SUFFIX)) {
 										_config = DatabaseConfiguration.DatabaseConfigurationFactory
@@ -395,7 +396,6 @@ public class PepysImportController {
 
 										return;
 									}
-									ConfigurationReader.loadDatabaseConfiguration(_config, fileName, null);
 									model.loadDatabaseConfiguration(_config);
 									final MessageBox messageBox = new MessageBox(_parent, SWT.OK | SWT.OK);
 									final String filePath = _config.getSourcePath() == null ? ""
