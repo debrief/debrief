@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.gridharness.data.base60.Sexagesimal;
 import org.mwc.cmap.gridharness.data.base60.SexagesimalFormat;
+import org.mwc.cmap.gridharness.data.base60.SexagesimalSupport;
 
 import MWC.GenericData.WorldLocation;
 
@@ -66,6 +67,8 @@ public class CWorldLocation extends Composite {
 	private final FormattedText myLongitude;
 
 	private final Vector<LocationModifiedListener> _locationModifiedListeners = new Vector<>();
+
+	private boolean _locationListenerEnable = true;
 
 	public CWorldLocation(final Composite parent, final int style) {
 		super(parent, style);
@@ -106,7 +109,15 @@ public class CWorldLocation extends Composite {
 		_locationModifiedListeners.add(listener);
 	}
 
+	public void clean() {
+		myLongitude.setValue(null);
+		myLatitude.setValue(null);
+	}
+
 	private SexagesimalFormat getFormat() {
+		if (CorePlugin.getDefault() == null) {
+			return SexagesimalSupport._DD_MM_SS_SSS;
+		}
 		// intentionally reevaluated each time
 		return CorePlugin.getDefault().getLocationFormat();
 	}
@@ -133,6 +144,10 @@ public class CWorldLocation extends Composite {
 		return location;
 	}
 
+	public void setEnableLocationListener(final boolean _enabled) {
+		this._locationListenerEnable = _enabled;
+	}
+
 	public void setValue(final WorldLocation location) {
 		final Sexagesimal latitude = getFormat().parseDouble(location.getLat());
 		final Sexagesimal longitude = getFormat().parseDouble(location.getLong());
@@ -144,8 +159,10 @@ public class CWorldLocation extends Composite {
 	private void valueModified(final Object source) {
 		final LocationModifiedEvent event = new LocationModifiedEvent(source, myLatitude.getValue(),
 				myLongitude.getValue());
-		for (final LocationModifiedListener listener : _locationModifiedListeners) {
-			listener.modifyValue(event);
+		if (_locationListenerEnable) {
+			for (final LocationModifiedListener listener : _locationModifiedListeners) {
+				listener.modifyValue(event);
+			}
 		}
 	}
 }

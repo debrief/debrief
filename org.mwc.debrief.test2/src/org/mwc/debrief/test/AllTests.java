@@ -121,8 +121,17 @@ import org.junit.runners.Suite;
 		org.mwc.debrief.core.ContextOperations.SmoothTrackJumps.TestMe.class,
 		Debrief.ReaderWriter.BRT.BRTImporter.BRTImporterTest.class,
 		Debrief.ReaderWriter.FlatFile.OTH_Importer.OTH_ImporterTest.class,
-		MWC.TacticalData.SliderConverter.SliderConverterTest.class })
+		MWC.TacticalData.SliderConverter.SliderConverterTest.class,
+		org.mwc.debrief.pepys.model.bean.Datafile.DatafilesTest.class,
+		org.mwc.debrief.pepys.model.bean.DatafileType.DatafileTypesTest.class,
+		org.mwc.debrief.pepys.model.bean.Privacy.PrivaciesTest.class,
+		org.mwc.debrief.pepys.model.bean.State.StatesTest.class,
+		org.mwc.debrief.pepys.model.tree.TreeNode.TreeNodeTest.class, 
+		org.mwc.debrief.pepys.model.bean.SensorType.SensorTypeTest.class, 
+		org.mwc.debrief.pepys.model.bean.Sensor.SensorTest.class,
+		org.mwc.debrief.pepys.model.bean.Privacy.PrivaciesTest.class,
+		org.mwc.debrief.pepys.model.db.config.ConfigurationReader.ConfigurationReaderTest.class})
 @RunWith(Suite.class)
-public class AllTests {
-
+public class AllTests{
+	
 }

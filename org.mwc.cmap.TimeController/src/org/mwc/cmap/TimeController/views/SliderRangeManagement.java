@@ -118,7 +118,11 @@ abstract class SliderRangeManagement {
 		}
 	}
 
-	private static final int MINUTE_STEP = 60000000;
+	private static final long DAY_STEP = 24 * 60 * 60000000L;
+
+	private static final long HOUR_STEP = 60 * 60000000L;
+
+	private static final long MINUTE_STEP = 60000000;
 
 	private static final int SECOND_STEP = 1000000;
 
@@ -164,7 +168,7 @@ abstract class SliderRangeManagement {
 			// yes - initialise the ranges
 			final long range = max.getMicros() - min.getMicros();
 
-			int maxVal = 100;
+			final int maxVal;
 
 			if (range > 0) {
 				// double-check the min value
@@ -178,7 +182,8 @@ abstract class SliderRangeManagement {
 				} else {
 					final long rangeMillis = range / 1000;
 					final long rangeSecs = rangeMillis / 1000;
-					if (rangeSecs < Integer.MAX_VALUE) {
+					final int maxSliderSteps = 100000;
+					if (rangeSecs < maxSliderSteps) {
 						// ok, we're going to run in second resolution
 						maxVal = (int) rangeSecs;
 						setMaxVal(maxVal);
@@ -187,15 +192,37 @@ abstract class SliderRangeManagement {
 					} else {
 						// let's run in minute resolution
 						final long rangeMins = rangeSecs / 60;
-						if (rangeMins < Integer.MAX_VALUE) {
+						if (rangeMins < maxSliderSteps) {
 							// ok, we're going to run in minute resolution
 							maxVal = (int) rangeMins;
 							setMaxVal(maxVal);
 							_timeScalar = MINUTE_STEP;
 							setEnabled(true);
 						} else {
-							// hey, we must be running in units which are too large.
-							setEnabled(false);
+							// let's run in hour resolution
+							final long rangeHours = rangeMins / 60;
+							if (rangeHours < maxSliderSteps) {
+								// ok, we're going to run in minute resolution
+								maxVal = (int) rangeHours;
+								setMaxVal(maxVal);
+								_timeScalar = HOUR_STEP;
+								setEnabled(true);
+							} else {
+								// let's run in day resolution
+								final long rangDays = rangeHours / 24;
+								if (rangDays < maxSliderSteps) {
+									// ok, we're going to run in minute resolution
+									maxVal = (int) rangDays;
+									setMaxVal(maxVal);
+									_timeScalar = DAY_STEP;
+									setEnabled(true);
+								} else {
+									// hey, we must be running in units which are too large.
+									System.err.println("Can't show this time period - too long");
+									setEnabled(false);
+									return;
+								}
+							}
 						}
 					}
 				}
@@ -214,6 +241,12 @@ abstract class SliderRangeManagement {
 				} else if (_timeScalar == MINUTE_STEP) {
 					smallTick = 1; // one minute
 					largeTick = 60; // one hour
+				} else if (_timeScalar == HOUR_STEP) {
+					smallTick = 1; // one hour
+					largeTick = 24; // one day
+				} else if (_timeScalar == DAY_STEP) {
+					smallTick = 1; // one day
+					largeTick = 7; // one week
 				} else
 					throw new RuntimeException("Failed to determine correct step size");
 
