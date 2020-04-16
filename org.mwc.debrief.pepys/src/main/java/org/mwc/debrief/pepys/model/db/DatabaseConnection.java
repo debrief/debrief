@@ -117,7 +117,7 @@ public abstract class DatabaseConnection {
 			final WorldLocation topRight = currentArea.getTopRight();
 			final WorldLocation bottomLeft = currentArea.getBottomLeft();
 
-			final String polygonArea = "POLYGON((" + topLeft.getLong() + " " + topLeft.getLat() + ","
+			final String polygonArea = "SRID=4326;POLYGON((" + topLeft.getLong() + " " + topLeft.getLat() + ","
 					+ bottomLeft.getLong() + " " + bottomLeft.getLat() + "," + bottomRight.getLong() + " "
 					+ bottomRight.getLat() + "," + topRight.getLong() + " " + topRight.getLat() + ","
 					+ topLeft.getLong() + " " + topLeft.getLat() + "))";
