@@ -2,7 +2,7 @@
  *    Debrief - the Open Source Maritime Analysis Application
  *    http://debrief.info
  *
- *    (C) 2000-2018, Deep Blue C Technology Ltd
+ *    (C) 2000-2020, Deep Blue C Technology Ltd
  *
  *    This library is free software; you can redistribute it and/or
  *    modify it under the terms of the Eclipse Public License v1.0
