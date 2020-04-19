@@ -25,6 +25,7 @@ import java.util.List;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.FieldName;
+import org.mwc.debrief.pepys.model.db.annotation.Filterable;
 import org.mwc.debrief.pepys.model.db.annotation.Id;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
@@ -60,7 +61,7 @@ public class Datafile implements AbstractBean {
 					assertTrue("Datafiles - Reference Name", exist);
 				}
 
-				for (Datafile datafile : list) {
+				for (final Datafile datafile : list) {
 					assertTrue("Datafiles - Concatenated reference ", datafile.getDatafile().getName()
 							.equals(datafile.getReference().substring(datafile.getReference().indexOf('.'))));
 				}
@@ -82,6 +83,7 @@ public class Datafile implements AbstractBean {
 	@ManyToOne
 	@FieldName(name = "datafile_type_id")
 	private DatafileType datafile;
+	@Filterable
 	private String reference;
 	private String url;
 

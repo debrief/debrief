@@ -61,6 +61,9 @@ public class TreeBuilder {
 				conditions.addAll(DatabaseConnection.getInstance().createAreaFilter(configuration.getCurrentArea(),
 						currentBeanType));
 
+				conditions.addAll(
+						DatabaseConnection.getInstance().createTextFilter(configuration.getFilter(), currentBeanType));
+
 				final List<? extends TreeStructurable> currentItems = DatabaseConnection.getInstance()
 						.listAll(currentBeanType, conditions);
 				allItems.addAll(currentItems);
