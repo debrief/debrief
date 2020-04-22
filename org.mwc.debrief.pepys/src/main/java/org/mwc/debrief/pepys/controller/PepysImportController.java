@@ -217,7 +217,7 @@ public class PepysImportController {
 
 			@Override
 			public void propertyChange(final PropertyChangeEvent evt) {
-				if (AbstractConfiguration.FILTER_PROPERTY.equals(evt.getPropertyName())) {
+				if (AbstractConfiguration.SEARCH_PROPERTY.equals(evt.getPropertyName())) {
 					model.updateTree();
 				}
 			}
@@ -330,7 +330,15 @@ public class PepysImportController {
 
 			@Override
 			public void modifyText(final ModifyEvent evt) {
-				model.setFilter(view.getSearchText().getText());
+				model.setSearch(view.getSearchText().getText());
+			}
+		});
+
+		view.getFilterText().addModifyListener(new ModifyListener() {
+
+			@Override
+			public void modifyText(final ModifyEvent evt) {
+				model.setFilter(view.getFilterText().getText());
 			}
 		});
 

@@ -33,7 +33,7 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 
 	public static String TREE_MODEL = "TREE_MODEL";
 
-	public static String FILTER_PROPERTY = "FILTER";
+	public static String SEARCH_PROPERTY = "SEARCH";
 
 	public void addDatafileTypeFilter(final TypeDomain newType);
 
@@ -53,6 +53,8 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 
 	public String getFilter();
 
+	String getSearch();
+
 	public TimePeriod getTimePeriod();
 
 	public TreeNode getTreeModel();
@@ -66,6 +68,8 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 	public void setFilter(final String _newFilter);
 
 	public void setPepysConnectorBridge(final PepysConnectorBridge _bridge);
+
+	void setSearch(final String _newSearch);
 
 	public void setTimePeriod(final TimePeriod newPeriod);
 

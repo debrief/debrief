@@ -46,6 +46,7 @@ public class PepysImportView extends Dialog {
 	private Label bottomRightLabel;
 	private Label titleLabel;
 	private Label searchLabel;
+	private Label textSearchLabel;
 
 	private Button applyButton;
 	private Button importButton;
@@ -61,6 +62,8 @@ public class PepysImportView extends Dialog {
 	private CheckboxTreeViewer tree;
 
 	private Text searchText;
+	
+	private Text filterText;
 
 	private final ArrayList<Button> dataTypesCheckBox = new ArrayList<Button>();
 
@@ -99,6 +102,10 @@ public class PepysImportView extends Dialog {
 
 	public CDateTime getEndTime() {
 		return endTime;
+	}
+
+	public Text getFilterText() {
+		return filterText;
 	}
 
 	public Button getImportButton() {
@@ -184,7 +191,7 @@ public class PepysImportView extends Dialog {
 		searchGrid.grabExcessHorizontalSpace = true;
 		searchGrid.horizontalSpan = 1;
 
-		this.searchText = new Text(parent, SWT.SINGLE);
+		this.searchText = new Text(parent, SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
 		this.searchText.setLayoutData(searchGrid);
 
 		this.startDate = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.DROP_DOWN | CDT.DATE_SHORT);
@@ -233,6 +240,7 @@ public class PepysImportView extends Dialog {
 		useCurrentButtonGridData.heightHint = 40;
 		useCurrentButtonGridData.horizontalAlignment = SWT.END;
 
+		// Data Type
 		final GridLayout dataTypeItemLayout = new GridLayout();
 		dataTypeItemLayout.numColumns = 1;
 		dataTypeItemLayout.marginWidth = 10;
@@ -243,6 +251,25 @@ public class PepysImportView extends Dialog {
 		dataTypeItem.getBody().setLayout(dataTypeItemLayout);
 		dataTypesComposite = dataTypeItem.getBody();
 
+		// Text Search Area
+		final GridLayout textFilterLayout = new GridLayout();
+		textFilterLayout.numColumns = 1;
+		textFilterLayout.marginWidth = 10;
+		textFilterLayout.marginHeight = 10;
+		final PShelfItem textFilterItem = new PShelfItem(shelf, SWT.NONE);
+		textFilterItem.setText("Text");
+		textFilterItem.setImage(DebriefPlugin.getImageDescriptor("/icons/16/search.png").createImage());
+		textFilterItem.getBody().setLayout(textFilterLayout);
+
+		this.textSearchLabel = new Label(textFilterItem.getBody(), SWT.NONE);
+		this.textSearchLabel.setText("Enemy Contact:");
+
+		final GridData filterTextGridData = new GridData();
+		filterTextGridData.widthHint = 150;
+		this.filterText = new Text(textFilterItem.getBody(), SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
+		this.filterText.setLayoutData(filterTextGridData);
+
+		// Tree Area
 		final GridData treeGrid = new GridData(GridData.FILL_BOTH);
 		treeGrid.horizontalAlignment = GridData.FILL;
 		treeGrid.grabExcessHorizontalSpace = true;

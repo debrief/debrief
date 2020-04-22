@@ -46,6 +46,23 @@ public class ModelConfiguration implements AbstractConfiguration {
 		boolean isAcceptable(final TreeStructurable _item);
 	}
 
+	@Override
+	public String getSearch() {
+		return searchText;
+	}
+
+	@Override
+	public void setSearch(final String _newSearch) {
+		final String oldSearch = searchText;
+		searchText = _newSearch;
+
+		if (_pSupport != null) {
+			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, SEARCH_PROPERTY, oldSearch,
+					searchText);
+			_pSupport.firePropertyChange(pce);
+		}
+	}
+
 	private PropertyChangeSupport _pSupport = null;
 
 	private final ArrayList<TypeDomain> currentDatatype = new ArrayList<TypeDomain>();
@@ -61,6 +78,8 @@ public class ModelConfiguration implements AbstractConfiguration {
 	private Collection<TreeStructurable> currentItems;
 
 	private String filterText = "";
+	
+	private String searchText = "";
 
 	public ModelConfiguration() {
 		final Calendar twentyYearsAgoCal = Calendar.getInstance();
@@ -231,14 +250,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	@Override
 	public void setFilter(final String _newFilter) {
-		final String oldFilter = filterText;
 		filterText = _newFilter;
-
-		if (_pSupport != null) {
-			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, FILTER_PROPERTY, oldFilter,
-					filterText);
-			_pSupport.firePropertyChange(pce);
-		}
 	}
 
 	@Override
@@ -261,7 +273,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 	@Override
 	public void updateTree() {
 		if (currentItems != null) {
-			TreeBuilder.buildStructure(currentItems.toArray(new TreeStructurable[] {}), getTreeModel(), getFilter());
+			TreeBuilder.buildStructure(currentItems.toArray(new TreeStructurable[] {}), getTreeModel());
 
 			if (_pSupport != null) {
 				final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, TREE_MODEL, null, treeModel);
