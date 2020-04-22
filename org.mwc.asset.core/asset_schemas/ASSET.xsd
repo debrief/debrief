@@ -2309,6 +2309,13 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="ReportDecisions" type="xs:boolean" use="optional"
+			default="true">
+			<xs:annotation>
+				<xs:documentation>Whether decisions from this model should be recorded to REP
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="StayAlive" type="xs:boolean" use="optional"
 			default="true">
 			<xs:annotation>

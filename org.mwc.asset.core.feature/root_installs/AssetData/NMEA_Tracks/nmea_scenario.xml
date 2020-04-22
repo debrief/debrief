@@ -17,7 +17,7 @@
 <Scenario Name="NMEA_Data_Generator" xmlns="http://www.mwc.org/asset"
 	ShowSymbol="false" ShowActivity="false" ShowName="false"
 	StartTime="2016-11-05T15:00:00">
-	<StepTime Units="seconds" Value="2" />
+	<StepTime Units="seconds" Value="25" />
 	<Participants>
 		<Surface Name="GreenFV1">
 			<Category Type="FISHING_VESSEL" Force="GREEN"
@@ -29,8 +29,9 @@
 				</Location>
 				<Speed Value="0.0" Units="m/s"></Speed>
 			</Status>
-			<Waterfall Name="Fishing">
-				<RectangleWander Name="Fish in area">
+			<Waterfall Name="Fishing" ReportDecisions="false">
+				<RectangleWander Name="Fish in area"
+					ReportDecisions="false">
 					<Area>
 						<TopLeft>
 							<shortLocation Lat="11" Long="10"></shortLocation>
@@ -49,13 +50,14 @@
 				<MaxSpeed Value="10" Units="kts"></MaxSpeed>
 				<AccelerationRate Value="3" Units="kt/s" />
 				<DecelerationRate Value="3" Units="kt/s" />
-				<TurningCircle Value="100" Units="m" />
+				<TurningCircle Value="300" Units="m" />
 			</SurfaceMovementCharacteristics>
 		</Surface>
 		<Surface Name="MER">
 			<Category Type="MPA" Force="BLUE" Environment="AIRBORNE" />
 			<SensorFit>
-				<PlainCookieSensor Name="SimpleCookie">
+				<PlainCookieSensor Name="SimpleCookie"
+					CanProduceRange="false">
 					<DetectionRange Value="10" Units="nm">
 					</DetectionRange>
 				</PlainCookieSensor>
@@ -86,7 +88,7 @@
 				<MaxSpeed Value="10" Units="kts"></MaxSpeed>
 				<AccelerationRate Value="3" Units="kt/s" />
 				<DecelerationRate Value="3" Units="kt/s" />
-				<TurningCircle Value="100" Units="m" />
+				<TurningCircle Value="300" Units="m" />
 			</SurfaceMovementCharacteristics>
 		</Surface>
 	</Participants>

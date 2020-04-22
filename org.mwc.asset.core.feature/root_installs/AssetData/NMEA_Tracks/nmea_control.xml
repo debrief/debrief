@@ -36,13 +36,13 @@
 	</ScenarioGenerator>
 	<ObserverList>
 		<TimeObserver Name="elapsed time" Active="true">
-			<Duration Value="24" Units="hours" ></Duration>
+			<Duration Value="7" Units="hours" ></Duration>
 		</TimeObserver>
 		<DebriefReplayObserver Name="DebriefPlot"
-			record_detections="true" record_positions="true" Active="false"
-			record_decisions="false" file_name="NMEA_Trial">
+			record_detections="true" record_positions="true" Active="true"
+			record_decisions="true" file_name="NMEA_Trial">
 		</DebriefReplayObserver>
-		<NMEAObserver Name="NMEA_output" record_detections="true" record_positions="true" Active="true"
+		<NMEAObserver Name="NMEA_output" record_detections="true" record_positions="true" Active="false"
 			file_name="NMEA_out">
 			<SubjectToTrack>
 				<Type Name="BLUE" />

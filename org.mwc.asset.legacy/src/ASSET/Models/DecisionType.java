@@ -117,4 +117,10 @@ public interface DecisionType extends MWC.GUI.Editable, MWCModel {
 	 */
 	public void setName(String val);
 
+	/** whether decisions should be recorded for this decision type
+	 * 
+	 * @return yes/no
+	 */
+	boolean isReportDecisions();
+
 }

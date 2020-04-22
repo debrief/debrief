@@ -24,7 +24,8 @@ import ASSET.Models.Decision.CoreDecision;
 public class CoreDecisionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader {
 	protected final static String IS_ACTIVE = "IsActive";
 	protected final static String NAME = "Name";
-
+	protected final static String REPORT_DECISIONS = "ReportDecisions";
+	
 	/**
 	 * export our attributes within this object
 	 *
@@ -41,6 +42,7 @@ public class CoreDecisionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
 	String _myName;
 
 	boolean _isActive = true;
+	Boolean _reportDecisions = null;
 
 	//////////////////////////////////////////////////
 	// constructor = get going
@@ -60,6 +62,12 @@ public class CoreDecisionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
 				_isActive = value;
 			}
 		});
+		addAttributeHandler(new HandleBooleanAttribute(REPORT_DECISIONS) {
+			@Override
+			public void setValue(final String name, final boolean value) {
+				_reportDecisions = value;
+			}
+		});
 	}
 
 	/**
@@ -73,10 +81,14 @@ public class CoreDecisionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
 			decision.setName(_myName);
 
 		decision.setActive(_isActive);
+		if(_reportDecisions != null) {
+			decision.setReportDecisions(_reportDecisions);
+		}
 
 		// and clear
 		_myName = null;
 		_isActive = true;
+		_reportDecisions = null;
 	}
 
 }

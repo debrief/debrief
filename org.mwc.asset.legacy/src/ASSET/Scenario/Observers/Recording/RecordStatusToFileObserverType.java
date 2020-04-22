@@ -345,14 +345,13 @@ abstract public class RecordStatusToFileObserverType extends ContinuousRecordToF
 					if (getRecordDecisions()) {
 						// get the current activity
 						final String thisActivity = pt.getActivity();
-						writeThisDecisionDetail(pt, thisActivity, newTime);
+						if(thisActivity != null) {
+							writeThisDecisionDetail(pt, thisActivity, newTime);						
+						}
 					}
-
 				}
-
 			}
 		}
-
 	}
 
 	/**

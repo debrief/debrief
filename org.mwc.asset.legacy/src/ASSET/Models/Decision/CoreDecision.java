@@ -70,6 +70,11 @@ abstract public class CoreDecision implements DecisionType {
 	 * whether we're active or not
 	 */
 	private boolean _isActive = true;
+	
+	/** 
+	 * whether to report decisions or not
+	 */
+	private boolean _reportDecisions = true;
 
 	//////////////////////////////////////////////////
 	// constructor
@@ -168,6 +173,15 @@ abstract public class CoreDecision implements DecisionType {
 	@Override
 	final public String toString() {
 		return getName();
+	}
+
+	public void setReportDecisions(Boolean reportDecisions) {
+		_reportDecisions = reportDecisions;
+	}
+	
+	@Override
+	public boolean isReportDecisions() {
+		return _reportDecisions;
 	}
 
 }

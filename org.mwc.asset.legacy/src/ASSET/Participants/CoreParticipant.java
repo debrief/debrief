@@ -380,7 +380,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable {
 			_myActivity = INACTIVE_DESCRIPTOR;
 		} else {
 			if (_decisionModel != null)
-				_myActivity = _decisionModel.getActivity();
+				_myActivity = _decisionModel.isReportDecisions() ? _decisionModel.getActivity() : null;
 			else
 				_myActivity = "Decision model missing";
 		}
