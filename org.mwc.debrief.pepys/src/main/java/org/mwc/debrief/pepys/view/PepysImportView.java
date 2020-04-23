@@ -276,6 +276,7 @@ public class PepysImportView extends Dialog {
 		treeGrid.verticalAlignment = GridData.FILL;
 		treeGrid.grabExcessVerticalSpace = true;
 		treeGrid.horizontalSpan = 2;
+		
 		this.tree = new CheckboxTreeViewer(parent, SWT.BORDER);
 		this.tree.setContentProvider(new TreeContentProvider());
 		this.tree.setLabelProvider(new TreeNameLabelProvider());
@@ -287,9 +288,9 @@ public class PepysImportView extends Dialog {
 		this.applyButton = new Button(parent, SWT.PUSH);
 		this.applyButton.setText("Apply");
 		this.applyButton.setLayoutData(applyGridDataButton);
-		this.applyButton.setImage(DebriefPlugin.getImageDescriptor("/icons/48/search.png").createImage());
-		applyGridDataButton.widthHint = 200;
-		applyGridDataButton.heightHint = 60;
+		this.applyButton.setImage(DebriefPlugin.getImageDescriptor("/icons/24/search.png").createImage());
+		applyGridDataButton.widthHint = 120;
+		applyGridDataButton.heightHint = 40;
 
 		final GridData importGridDataButton = new GridData();
 		importGridDataButton.horizontalAlignment = GridData.END;
@@ -299,10 +300,10 @@ public class PepysImportView extends Dialog {
 		this.importButton = new Button(parent, SWT.PUSH);
 		this.importButton.setText("Import");
 		this.importButton.setLayoutData(importGridDataButton);
-		this.importButton.setImage(DebriefPlugin.getImageDescriptor("/icons/48/import.png").createImage());
+		this.importButton.setImage(DebriefPlugin.getImageDescriptor("/icons/24/import.png").createImage());
 
-		importGridDataButton.widthHint = 200;
-		importGridDataButton.heightHint = 60;
+		importGridDataButton.widthHint = 120;
+		importGridDataButton.heightHint = 40;
 
 	}
 
