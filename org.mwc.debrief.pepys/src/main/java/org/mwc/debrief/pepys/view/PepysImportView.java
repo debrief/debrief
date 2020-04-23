@@ -21,18 +21,26 @@ import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Dialog;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.TreeItem;
 import org.mwc.cmap.core.custom_widget.CWorldLocation;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.model.tree.TreeContentProvider;
+import org.mwc.debrief.pepys.model.tree.TreeNode;
 import org.mwc.debrief.pepys.nebula.PShelf;
 import org.mwc.debrief.pepys.nebula.PShelfItem;
 import org.mwc.debrief.pepys.nebula.RedmondShelfRenderer;
@@ -62,7 +70,7 @@ public class PepysImportView extends Dialog {
 	private CheckboxTreeViewer tree;
 
 	private Text searchText;
-	
+
 	private Text filterText;
 
 	private final ArrayList<Button> dataTypesCheckBox = new ArrayList<Button>();
@@ -276,12 +284,63 @@ public class PepysImportView extends Dialog {
 		treeGrid.verticalAlignment = GridData.FILL;
 		treeGrid.grabExcessVerticalSpace = true;
 		treeGrid.horizontalSpan = 2;
-		
+
+		final TreeNameLabelProvider labelProvider = new TreeNameLabelProvider();
 		this.tree = new CheckboxTreeViewer(parent, SWT.BORDER);
 		this.tree.setContentProvider(new TreeContentProvider());
 		this.tree.setLabelProvider(new TreeNameLabelProvider());
 		this.tree.getTree().setLayoutData(treeGrid);
 		this.tree.setAutoExpandLevel(2);
+		this.tree.getControl().addListener(SWT.PaintItem, new Listener() {
+
+			@Override
+			public void handleEvent(final Event event) {
+				if (event.item instanceof TreeItem) {
+					final TreeItem item = (TreeItem) event.item;
+					final String textToSearch = model.getSearch();
+					if (item.getData() instanceof TreeNode && textToSearch != null && !textToSearch.isBlank()) {
+						final TreeNode node = (TreeNode) item.getData();
+
+						if (node.getName() != null && node.getName().contains(textToSearch)) {
+							int offsetIcon = 0;
+							final Image itemLabel = labelProvider.getImage(node);
+							if (itemLabel != null) {
+								offsetIcon = itemLabel.getBounds().width;
+							}
+
+							final int offsetCheck = 19; // WARNING. THIS MIGHT CHANGE ACCODING TO THE THEME. Saul
+
+							final GC gc = event.gc;
+
+							final Point sizeOfTextToSearch = gc.stringExtent(textToSearch);
+
+							// TODO FIX ME
+							final int offsetStart = gc
+									.stringExtent(node.getName().substring(0, node.getName().indexOf(textToSearch))).x;
+							final int totalOffset = offsetIcon + offsetStart + offsetCheck;
+
+							// Y offset
+							final int yOffset = (event.height - sizeOfTextToSearch.y) / 2;
+
+							final Color oldForeground = gc.getForeground();
+							final Color oldBackground = gc.getBackground();
+
+							gc.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_YELLOW));
+							gc.fillRectangle(event.x + totalOffset, event.y + yOffset, sizeOfTextToSearch.x,
+									sizeOfTextToSearch.y);
+
+							gc.setForeground(parent.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+							gc.drawText(textToSearch, event.x + totalOffset, event.y + yOffset, true);
+							gc.setForeground(oldForeground);
+							gc.setBackground(oldBackground);
+							event.detail &= ~SWT.BACKGROUND;
+							event.detail &= ~SWT.HOT;
+						}
+					}
+				}
+			}
+
+		});
 
 		final GridData applyGridDataButton = new GridData();
 		applyGridDataButton.horizontalAlignment = GridData.END;
