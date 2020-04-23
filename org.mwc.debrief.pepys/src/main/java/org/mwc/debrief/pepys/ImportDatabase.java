@@ -56,7 +56,7 @@ public class ImportDatabase extends CoreEditorAction {
 
 		final Shell shell = new Shell(PlatformUI.getWorkbench().getDisplay(),
 				SWT.APPLICATION_MODAL | SWT.MIN | SWT.CLOSE | SWT.RESIZE | SWT.MAX);
-		shell.setMinimumSize(600, 450);
+		shell.setMinimumSize(1200, 850);
 		final DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration();
 		try {
 			DatabaseConnection.loadDatabaseConfiguration(databaseConfiguration,
