@@ -239,8 +239,6 @@ public class PepysImportController {
 			@Override
 			public void propertyChange(final PropertyChangeEvent evt) {
 				if (AbstractConfiguration.HIGHLIGHT_PROPERTY.equals(evt.getPropertyName())) {
-					// TODO Maybe this could be improved :( - Saul
-
 					final List<TreeNode> path = new ArrayList<TreeNode>();
 					TreeNode currentNode = (TreeNode) evt.getNewValue();
 					while (currentNode != null) {
