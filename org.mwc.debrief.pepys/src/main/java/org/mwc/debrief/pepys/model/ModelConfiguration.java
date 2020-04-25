@@ -102,16 +102,6 @@ public class ModelConfiguration implements AbstractConfiguration {
 				}
 			}
 		});
-
-		addPropertyChangeListener(new PropertyChangeListener() {
-
-			@Override
-			public void propertyChange(final PropertyChangeEvent evt) {
-				if (HIGHLIGHT_PROPERTY.equals(evt.getPropertyName())) {
-
-				}
-			}
-		});
 	}
 
 	@Override
