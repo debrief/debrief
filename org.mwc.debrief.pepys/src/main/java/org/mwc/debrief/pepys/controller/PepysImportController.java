@@ -20,9 +20,14 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -36,6 +41,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TreeItem;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.model.ModelConfiguration;
@@ -218,7 +224,71 @@ public class PepysImportController {
 			@Override
 			public void propertyChange(final PropertyChangeEvent evt) {
 				if (AbstractConfiguration.SEARCH_PROPERTY.equals(evt.getPropertyName())) {
-					model.updateTree();
+
+					// In case we are modifying the model directly.
+					if (!view.getSearchText().getText().equals(evt.getNewValue())) {
+						view.getSearchText().setText((String) evt.getNewValue());
+					}
+					view.getTree().refresh();
+				}
+			}
+		});
+
+		model.addPropertyChangeListener(new PropertyChangeListener() {
+
+			@Override
+			public void propertyChange(final PropertyChangeEvent evt) {
+				if (AbstractConfiguration.HIGHLIGHT_PROPERTY.equals(evt.getPropertyName())) {
+					// TODO Maybe this could be improved :( - Saul
+
+					final List<TreeNode> path = new ArrayList<TreeNode>();
+					TreeNode currentNode = (TreeNode) evt.getNewValue();
+					while (currentNode != null) {
+						path.add(currentNode);
+						currentNode = currentNode.getParent();
+					}
+					Collections.reverse(path);
+
+					TreeItem item = view.getTree().getTree().getItem(0);
+					for (final TreeNode itemPath : path) {
+						if (item.getData() != itemPath) {
+							for (final TreeItem child : item.getItems()) {
+								if (child.getData() == itemPath) {
+									item = child;
+									break;
+								}
+							}
+						}
+						item.setExpanded(true);
+						view.getTree().refresh();
+					}
+
+					view.getTree().getTree().showItem(item);
+				}
+			}
+		});
+
+		view.getSearchText().addListener(SWT.Traverse, new Listener() {
+
+			@Override
+			public void handleEvent(final Event event) {
+				if (event.detail == SWT.TRAVERSE_RETURN) {
+					model.getNextSearch();
+					view.getTree().refresh();
+				}
+			}
+		});
+
+		view.getTree().addSelectionChangedListener(new ISelectionChangedListener() {
+
+			@Override
+			public void selectionChanged(final SelectionChangedEvent event) {
+				final TreeItem[] selected = view.getTree().getTree().getSelection();
+				if (selected.length > 0) {
+					model.setHighlightedElement((TreeNode) selected[0].getData());
+					model.searchFromUser(true);
+				} else {
+					model.setHighlightedElement(null);
 				}
 			}
 		});
@@ -339,6 +409,35 @@ public class PepysImportController {
 			@Override
 			public void modifyText(final ModifyEvent evt) {
 				model.setFilter(view.getFilterText().getText());
+			}
+		});
+
+		view.getSearchNextButton().addListener(SWT.Selection, new Listener() {
+
+			@Override
+			public void handleEvent(final Event event) {
+				model.getNextSearch();
+
+				view.getTree().refresh();
+			}
+		});
+
+		view.getSearchPreviousButton().addListener(SWT.Selection, new Listener() {
+
+			@Override
+			public void handleEvent(final Event event) {
+				model.getPreviousSearch();
+				view.getTree().refresh();
+			}
+		});
+
+		model.addPropertyChangeListener(new PropertyChangeListener() {
+
+			@Override
+			public void propertyChange(final PropertyChangeEvent evt) {
+				if (AbstractConfiguration.SEARCH_RESULT_PROPERTY.equals(evt.getPropertyName())) {
+					view.getTextSearchResults().setText(model.getSearchResultsText());
+				}
 			}
 		});
 

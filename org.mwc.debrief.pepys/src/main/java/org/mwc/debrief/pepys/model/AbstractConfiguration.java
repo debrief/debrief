@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 import org.mwc.debrief.pepys.model.tree.TreeNode;
+import org.mwc.debrief.pepys.model.tree.TreeUtils.SearchTreeResult;
 
 import MWC.GUI.hasPropertyListeners;
 import MWC.GenericData.TimePeriod;
@@ -27,51 +28,71 @@ import MWC.GenericData.WorldLocation;
 
 public interface AbstractConfiguration extends hasPropertyListeners {
 
-	public static String AREA_PROPERTY = "AREA";
+	static String AREA_PROPERTY = "AREA";
 
-	public static String PERIOD_PROPERTY = "PERIOD";
+	static String PERIOD_PROPERTY = "PERIOD";
 
-	public static String TREE_MODEL = "TREE_MODEL";
+	static String TREE_MODEL = "TREE_MODEL";
 
-	public static String SEARCH_PROPERTY = "SEARCH";
+	static String SEARCH_PROPERTY = "SEARCH";
 
-	public void addDatafileTypeFilter(final TypeDomain newType);
+	static String HIGHLIGHT_PROPERTY = "HIGHTLIGHT";
 
-	public void apply() throws Exception;
+	static String SEARCH_RESULT_PROPERTY = "SEARCH_RESULT";
 
-	public void doImport();
+	void addDatafileTypeFilter(final TypeDomain newType);
 
-	public boolean doTestQuery() throws SQLException;
+	void apply() throws Exception;
 
-	public WorldArea getCurrentArea();
+	void doImport();
 
-	public Collection<TypeDomain> getDatafileTypeFilters();
+	boolean doTestQuery() throws SQLException;
 
-	public WorldLocation getDefaultBottomRight();
+	WorldArea getCurrentArea();
 
-	public WorldLocation getDefaultTopLeft();
+	SearchTreeResult getCurrentSearchTreeResultModel();
 
-	public String getFilter();
+	Collection<TypeDomain> getDatafileTypeFilters();
+
+	WorldLocation getDefaultBottomRight();
+
+	WorldLocation getDefaultTopLeft();
+
+	String getFilter();
+
+	SearchTreeResult getHereSearch();
+
+	SearchTreeResult getNextSearch();
+
+	SearchTreeResult getPreviousSearch();
 
 	String getSearch();
 
-	public TimePeriod getTimePeriod();
+	String getSearchResultsText();
 
-	public TreeNode getTreeModel();
+	TimePeriod getTimePeriod();
 
-	public void removeDatafileTypeFilter(final TypeDomain typeToRemove);
+	TreeNode getTreeModel();
 
-	public void setArea(final WorldArea newArea);
+	void removeDatafileTypeFilter(final TypeDomain typeToRemove);
 
-	public void setCurrentViewport();
+	void searchFromUser(final boolean _search);
 
-	public void setFilter(final String _newFilter);
+	void setArea(final WorldArea newArea);
 
-	public void setPepysConnectorBridge(final PepysConnectorBridge _bridge);
+	void setCurrentViewport();
+
+	void setFilter(final String _newFilter);
+
+	void setHighlightedElement(final TreeNode node);
+
+	void setPepysConnectorBridge(final PepysConnectorBridge _bridge);
 
 	void setSearch(final String _newSearch);
 
-	public void setTimePeriod(final TimePeriod newPeriod);
+	void setSearchResults(final int current, final int total);
 
-	public void updateTree();
+	void setTimePeriod(final TimePeriod newPeriod);
+
+	void updateTree();
 }

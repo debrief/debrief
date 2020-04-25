@@ -25,6 +25,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -48,6 +49,7 @@ import org.mwc.debrief.pepys.view.tree.TreeNameLabelProvider;
 
 public class PepysImportView extends Dialog {
 
+	final static RGB SWT_ORANGE = new RGB(255, 165, 0);
 	private Label startLabel;
 	private Label endLabel;
 	private Label topLeftLabel;
@@ -56,17 +58,21 @@ public class PepysImportView extends Dialog {
 	private Label searchLabel;
 	private Label textSearchLabel;
 
+	private Label textSearchResults;
 	private Button applyButton;
 	private Button importButton;
 	private Button testConnectionButton;
 	private Button useCurrentViewportButton;
+	private Button searchNextButton;
 
+	private Button searchPreviousButton;
 	private CDateTime startDate;
 	private CDateTime startTime;
 	private CDateTime endDate;
-	private CDateTime endTime;
 
+	private CDateTime endTime;
 	private PShelf shelf;
+
 	private CheckboxTreeViewer tree;
 
 	private Text searchText;
@@ -120,6 +126,14 @@ public class PepysImportView extends Dialog {
 		return importButton;
 	}
 
+	public Button getSearchNextButton() {
+		return searchNextButton;
+	}
+
+	public Button getSearchPreviousButton() {
+		return searchPreviousButton;
+	}
+
 	public Text getSearchText() {
 		return searchText;
 	}
@@ -136,6 +150,10 @@ public class PepysImportView extends Dialog {
 		return testConnectionButton;
 	}
 
+	public Label getTextSearchResults() {
+		return textSearchResults;
+	}
+
 	public CWorldLocation getTopLeftLocation() {
 		return topLeftLocation;
 	}
@@ -150,7 +168,7 @@ public class PepysImportView extends Dialog {
 
 	public void initGUI(final AbstractConfiguration model, final Shell parent) {
 		final GridLayout mainLayout = new GridLayout();
-		mainLayout.numColumns = 3;
+		mainLayout.numColumns = 6;
 		mainLayout.marginWidth = 20;
 		mainLayout.marginHeight = 20;
 		parent.setLayout(mainLayout);
@@ -158,7 +176,7 @@ public class PepysImportView extends Dialog {
 		this.titleLabel = new Label(parent, SWT.NONE);
 		this.titleLabel.setText("Pepys Import");
 		final GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
-		gridData.horizontalSpan = 2;
+		gridData.horizontalSpan = 5;
 		titleLabel.setLayoutData(gridData);
 
 		final GridData testConnectionGridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
@@ -180,6 +198,24 @@ public class PepysImportView extends Dialog {
 		this.searchLabel = new Label(parent, SWT.PUSH);
 		this.searchLabel.setText("Search:");
 
+		final GridData searchGrid = new GridData(GridData.FILL_HORIZONTAL);
+		searchGrid.horizontalAlignment = GridData.FILL;
+		searchGrid.grabExcessHorizontalSpace = true;
+		searchGrid.horizontalSpan = 1;
+
+		this.searchText = new Text(parent, SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
+		this.searchText.setLayoutData(searchGrid);
+
+		this.searchPreviousButton = new Button(parent, SWT.PUSH);
+		this.searchPreviousButton.setText("<");
+		this.searchNextButton = new Button(parent, SWT.PUSH);
+		this.searchNextButton.setText(">");
+
+		final GridData textSearchResultsGrid = new GridData();
+		this.textSearchResults = new Label(parent, SWT.PUSH);
+		this.textSearchResults.setText("         ");
+		this.textSearchResults.setLayoutData(textSearchResultsGrid);
+
 		// TIME PERIOD
 		final PShelfItem timePeriodItem = new PShelfItem(shelf, SWT.NONE);
 		timePeriodItem.setText("Time Period");
@@ -193,14 +229,6 @@ public class PepysImportView extends Dialog {
 		this.startLabel = new Label(timePeriodItem.getBody(), SWT.PUSH);
 		this.startLabel.setText("Start:");
 		this.startLabel.setLayoutData(gridData);
-
-		final GridData searchGrid = new GridData(GridData.FILL_HORIZONTAL);
-		searchGrid.horizontalAlignment = GridData.FILL;
-		searchGrid.grabExcessHorizontalSpace = true;
-		searchGrid.horizontalSpan = 1;
-
-		this.searchText = new Text(parent, SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
-		this.searchText.setLayoutData(searchGrid);
 
 		this.startDate = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.DROP_DOWN | CDT.DATE_SHORT);
 		this.startDate.setPattern("dd/MM/yyyy");
@@ -283,7 +311,7 @@ public class PepysImportView extends Dialog {
 		treeGrid.grabExcessHorizontalSpace = true;
 		treeGrid.verticalAlignment = GridData.FILL;
 		treeGrid.grabExcessVerticalSpace = true;
-		treeGrid.horizontalSpan = 2;
+		treeGrid.horizontalSpan = 5;
 
 		final TreeNameLabelProvider labelProvider = new TreeNameLabelProvider();
 		this.tree = new CheckboxTreeViewer(parent, SWT.BORDER);
@@ -301,7 +329,8 @@ public class PepysImportView extends Dialog {
 					if (item.getData() instanceof TreeNode && textToSearch != null && !textToSearch.isBlank()) {
 						final TreeNode node = (TreeNode) item.getData();
 
-						if (node.getName() != null && node.getName().contains(textToSearch)) {
+						if (node.getName() != null
+								&& node.getName().toLowerCase().contains(textToSearch.toLowerCase())) {
 							int offsetIcon = 0;
 							final Image itemLabel = labelProvider.getImage(node);
 							if (itemLabel != null) {
@@ -312,25 +341,43 @@ public class PepysImportView extends Dialog {
 
 							final GC gc = event.gc;
 
-							final Point sizeOfTextToSearch = gc.stringExtent(textToSearch);
-
-							// TODO FIX ME
-							final int offsetStart = gc
-									.stringExtent(node.getName().substring(0, node.getName().indexOf(textToSearch))).x;
-							final int totalOffset = offsetIcon + offsetStart + offsetCheck;
-
-							// Y offset
-							final int yOffset = (event.height - sizeOfTextToSearch.y) / 2;
-
 							final Color oldForeground = gc.getForeground();
 							final Color oldBackground = gc.getBackground();
 
-							gc.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_YELLOW));
-							gc.fillRectangle(event.x + totalOffset, event.y + yOffset, sizeOfTextToSearch.x,
-									sizeOfTextToSearch.y);
+							int currentIndex = 0;
+							int currentOcurrence = 0;
+							while (true) {
+								currentIndex = node.getName().toLowerCase().indexOf(textToSearch.toLowerCase(),
+										currentIndex);
+								if (currentIndex < 0) {
+									break;
+								}
 
-							gc.setForeground(parent.getDisplay().getSystemColor(SWT.COLOR_BLACK));
-							gc.drawText(textToSearch, event.x + totalOffset, event.y + yOffset, true);
+								final String textToDraw = node.getName().substring(currentIndex,
+										currentIndex + textToSearch.length());
+								final Point sizeOfTextToSearch = gc.stringExtent(textToDraw);
+								final int offsetStart = gc.stringExtent(node.getName().substring(0, currentIndex)).x;
+								final int totalOffset = offsetIcon + offsetStart + offsetCheck;
+
+								// Y offset
+								final int yOffset = (event.height - sizeOfTextToSearch.y) / 2;
+
+								if (model.getCurrentSearchTreeResultModel().getItem() == item.getData()
+										&& currentOcurrence == model.getCurrentSearchTreeResultModel().getOcurrence()) {
+									gc.setBackground(new Color(parent.getDisplay(), SWT_ORANGE));
+								} else {
+									gc.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_YELLOW));
+								}
+								gc.fillRectangle(event.x + totalOffset, event.y + yOffset, sizeOfTextToSearch.x,
+										sizeOfTextToSearch.y);
+
+								gc.setForeground(parent.getDisplay().getSystemColor(SWT.COLOR_BLACK));
+								gc.drawText(textToDraw, event.x + totalOffset, event.y + yOffset, true);
+
+								++currentOcurrence;
+								++currentIndex;
+							}
+
 							gc.setForeground(oldForeground);
 							gc.setBackground(oldBackground);
 							event.detail &= ~SWT.BACKGROUND;
@@ -354,7 +401,7 @@ public class PepysImportView extends Dialog {
 		final GridData importGridDataButton = new GridData();
 		importGridDataButton.horizontalAlignment = GridData.END;
 		importGridDataButton.minimumWidth = 200;
-		importGridDataButton.horizontalSpan = 2;
+		importGridDataButton.horizontalSpan = 5;
 
 		this.importButton = new Button(parent, SWT.PUSH);
 		this.importButton.setText("Import");

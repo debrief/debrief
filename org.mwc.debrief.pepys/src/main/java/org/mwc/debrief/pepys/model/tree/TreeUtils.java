@@ -33,7 +33,27 @@ import org.mwc.debrief.pepys.model.tree.TreeNode.NodeType;
 
 import junit.framework.TestCase;
 
-public class TreeBuilder {
+public class TreeUtils {
+
+	public static class SearchTreeResult {
+		private final TreeNode item;
+		private final int ocurrence;
+
+		public SearchTreeResult(final TreeNode item, final int ocurrence) {
+			super();
+			this.item = item;
+			this.ocurrence = ocurrence;
+		}
+
+		public TreeNode getItem() {
+			return item;
+		}
+
+		public int getOcurrence() {
+			return ocurrence;
+		}
+
+	}
 
 	public class TreeBuilderTest extends TestCase {
 
@@ -107,7 +127,7 @@ public class TreeBuilder {
 
 				leaf = measureNode.getChild(currentItem.getDatafile().getReference());
 				if (leaf == null) {
-					leaf = new TreeNode(NodeType.DATAFILE, currentItem.getDatafile().getReference());
+					leaf = new TreeNode(NodeType.DATAFILE, currentItem.getDatafile().getReference(), measureNode);
 
 					measureNode.addChild(leaf);
 				}
@@ -117,13 +137,13 @@ public class TreeBuilder {
 				TreeNode sensorNode = measureNode.getChild(sensorName);
 
 				if (sensorNode == null) {
-					sensorNode = new TreeNode(TreeNode.NodeType.SENSOR, sensorName, null);
+					sensorNode = new TreeNode(TreeNode.NodeType.SENSOR, sensorName, measureNode);
 					measureNode.addChild(sensorNode);
 				}
 
 				leaf = sensorNode.getChild(currentItem.getDatafile().getReference());
 				if (leaf == null) {
-					leaf = new TreeNode(NodeType.DATAFILE, datafileName);
+					leaf = new TreeNode(NodeType.DATAFILE, datafileName, sensorNode);
 
 					sensorNode.addChild(leaf);
 				}
@@ -134,5 +154,34 @@ public class TreeBuilder {
 		}
 
 		return root;
+	}
+
+	private static void buildTreeSearchMap(final List<SearchTreeResult> result, final String text,
+			final TreeNode currentNode) {
+		int currentOcurrence = 0;
+
+		String currentName = currentNode.getName();
+		while (currentName != null && !currentName.isBlank()) {
+			final int nextOne = currentName.toLowerCase().indexOf(text.toLowerCase());
+			if (nextOne >= 0) {
+				result.add(new SearchTreeResult(currentNode, currentOcurrence++));
+				currentName = currentName.substring(Math.min(currentName.length(), nextOne + 1));
+			} else {
+				break;
+			}
+		}
+		for (final TreeNode child : currentNode.getChildren()) {
+			buildTreeSearchMap(result, text, child);
+		}
+	}
+
+	public static SearchTreeResult[] buildTreeSearchMap(final String text, final TreeNode root) {
+		if (!text.isBlank()) {
+			final List<SearchTreeResult> result = new ArrayList<SearchTreeResult>();
+			buildTreeSearchMap(result, text, root);
+			return result.toArray(new SearchTreeResult[] {});
+		} else {
+			return null;
+		}
 	}
 }
