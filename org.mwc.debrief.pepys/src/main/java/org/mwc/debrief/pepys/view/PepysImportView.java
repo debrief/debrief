@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 import org.mwc.cmap.core.custom_widget.CWorldLocation;
 import org.mwc.debrief.core.DebriefPlugin;
+import org.mwc.debrief.model.utils.OSUtils;
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.model.tree.TreeContentProvider;
 import org.mwc.debrief.pepys.model.tree.TreeNode;
@@ -176,11 +177,12 @@ public class PepysImportView extends Dialog {
 		this.titleLabel = new Label(parent, SWT.NONE);
 		this.titleLabel.setText("Pepys Import");
 		final GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
-		gridData.horizontalSpan = 5;
+		gridData.horizontalSpan = 3;
 		titleLabel.setLayoutData(gridData);
 
 		final GridData testConnectionGridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 		testConnectionGridData.horizontalAlignment = GridData.END;
+		testConnectionGridData.horizontalSpan = 3;
 		this.testConnectionButton = new Button(parent, SWT.PUSH);
 		this.testConnectionButton.setText("Connection Test");
 		this.testConnectionButton.setLayoutData(testConnectionGridData);
@@ -213,7 +215,7 @@ public class PepysImportView extends Dialog {
 
 		final GridData textSearchResultsGrid = new GridData();
 		this.textSearchResults = new Label(parent, SWT.PUSH);
-		this.textSearchResults.setText("         ");
+		this.textSearchResults.setText("            ");
 		this.textSearchResults.setLayoutData(textSearchResultsGrid);
 
 		// TIME PERIOD
@@ -337,7 +339,14 @@ public class PepysImportView extends Dialog {
 								offsetIcon = itemLabel.getBounds().width;
 							}
 
-							final int offsetCheck = 19; // WARNING. THIS MIGHT CHANGE ACCODING TO THE THEME. Saul
+							final int offsetCheck; // WARNING. THIS MIGHT CHANGE ACCODING TO THE THEME. Saul
+							if (OSUtils.LINUX) {
+								offsetCheck = 19;
+							}else if (OSUtils.WIN) {
+								offsetCheck = 5;
+							}else {
+								offsetCheck = 19;
+							}
 
 							final GC gc = event.gc;
 
