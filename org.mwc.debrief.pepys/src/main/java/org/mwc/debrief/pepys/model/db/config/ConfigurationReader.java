@@ -1,9 +1,18 @@
 package org.mwc.debrief.pepys.model.db.config;
 
+import java.beans.PropertyVetoException;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Scanner;
+
+import org.mwc.debrief.model.utils.OSUtils;
+import org.mwc.debrief.pepys.Activator;
+import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 
 import junit.framework.TestCase;
 
@@ -69,6 +78,35 @@ public class ConfigurationReader {
 		return str != null && str.startsWith(DEMILITER) && str.endsWith(DEMILITER);
 	}
 
+	public static void loadDatabaseConfiguration(final DatabaseConfiguration _config,
+			final InputStream configurationStream) throws FileNotFoundException {
+		if (configurationStream != null) {
+			ConfigurationReader.parseConfigurationFile(_config, configurationStream);
+		} else {
+			throw new FileNotFoundException("DatabaseConnectionException we have received a null inputstream");
+		}
+	}
+
+	public static void loadDatabaseConfiguration(final DatabaseConfiguration _config, final String _desiredFile,
+			final String _defaultConfigFile) throws PropertyVetoException, IOException {
+
+		final InputStream configurationFileStream;
+		if (_desiredFile != null && new File(_desiredFile).isFile()) {
+			_config.setSourcePath(_desiredFile);
+			// Here we are simply load the file as given
+			configurationFileStream = new FileInputStream(new File(_desiredFile));
+		} else if (_defaultConfigFile != null) {
+			_config.setSourcePath(_defaultConfigFile);
+			configurationFileStream = OSUtils.getInputStreamResource(DatabaseConnection.class, _defaultConfigFile,
+					Activator.PLUGIN_ID);
+		} else {
+			throw new IOException(
+					"DatabaseConnectionException requested file " + _desiredFile + " but it is not a valid file");
+		}
+
+		loadDatabaseConfiguration(_config, configurationFileStream);
+	}
+
 	public static void parseConfigurationFile(final DatabaseConfiguration configuration,
 			final InputStream inputStream) {
 		final Scanner scanner = new Scanner(inputStream);
@@ -119,5 +157,4 @@ public class ConfigurationReader {
 		}
 		return new String(strArray);
 	}
-
 }

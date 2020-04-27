@@ -20,6 +20,6 @@ import MWC.GenericData.WorldArea;
 
 public interface PepysConnectorBridge {
 	public WorldArea getCurrentArea();
-	
+
 	public Layers getLayers();
 }

@@ -26,9 +26,9 @@ public class Activator extends AbstractUIPlugin {
 	public static final String PLUGIN_ID = "org.mwc.debrief.pepys"; //$NON-NLS-1$
 
 	public static File nativeFolderPath = null;
-	
+
 	public static final String MOD_SPATIALITE_NAME = "mod_spatialite";
-	
+
 	private static Activator plugin;
 
 	public static Activator getDefault() {

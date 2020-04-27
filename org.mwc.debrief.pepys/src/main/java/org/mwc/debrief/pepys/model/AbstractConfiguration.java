@@ -5,7 +5,7 @@
  * (C) 2000-2020, Deep Blue C Technology Ltd
  *
  * This library is free software; you can redistribute it and/or
- * modify it under the terms of the Eclipse Public License v1.0
+ * modify it under the terms of the Eclipse  License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
  *
  * This library is distributed in the hope that it will be useful,
@@ -15,9 +15,15 @@
 
 package org.mwc.debrief.pepys.model;
 
+import java.beans.PropertyVetoException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Collection;
 
+import org.mwc.debrief.pepys.model.db.DatabaseConnection;
+import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.mwc.debrief.pepys.model.tree.TreeNode;
 
 import MWC.GUI.hasPropertyListeners;
@@ -27,47 +33,57 @@ import MWC.GenericData.WorldLocation;
 
 public interface AbstractConfiguration extends hasPropertyListeners {
 
-	public static String AREA_PROPERTY = "AREA";
+	static String AREA_PROPERTY = "AREA";
 
-	public static String PERIOD_PROPERTY = "PERIOD";
+	static String PERIOD_PROPERTY = "PERIOD";
 
-	public static String TREE_MODEL = "TREE_MODEL";
+	static String TREE_MODEL = "TREE_MODEL";
 
-	public static String FILTER_PROPERTY = "FILTER";
+	static String FILTER_PROPERTY = "FILTER";
 
-	public void addDatafileTypeFilter(final TypeDomain newType);
+	void addDatafileTypeFilter(final TypeDomain newType);
 
-	public void apply() throws Exception;
+	void apply() throws Exception;
 
-	public void doImport();
+	void doImport();
 
-	public boolean doTestQuery() throws SQLException;
+	boolean doTestQuery() throws SQLException;
 
-	public WorldArea getCurrentArea();
+	WorldArea getCurrentArea();
 
-	public Collection<TypeDomain> getDatafileTypeFilters();
+	DatabaseConnection getDatabaseConnection();
 
-	public WorldLocation getDefaultBottomRight();
+	Collection<TypeDomain> getDatafileTypeFilters();
 
-	public WorldLocation getDefaultTopLeft();
+	WorldLocation getDefaultBottomRight();
 
-	public String getFilter();
+	WorldLocation getDefaultTopLeft();
 
-	public TimePeriod getTimePeriod();
+	String getFilter();
 
-	public TreeNode getTreeModel();
+	TimePeriod getTimePeriod();
 
-	public void removeDatafileTypeFilter(final TypeDomain typeToRemove);
+	TreeNode getTreeModel();
 
-	public void setArea(final WorldArea newArea);
+	void loadDatabaseConfiguration(final DatabaseConfiguration _configuration)
+			throws FileNotFoundException, PropertyVetoException, IOException;
 
-	public void setCurrentViewport();
+	void loadDatabaseConfiguration(final InputStream configurationFile)
+			throws FileNotFoundException, PropertyVetoException, IOException;
 
-	public void setFilter(final String _newFilter);
+	void loadDefaultDatabaseConfiguration() throws PropertyVetoException, IOException;
 
-	public void setPepysConnectorBridge(final PepysConnectorBridge _bridge);
+	void removeDatafileTypeFilter(final TypeDomain typeToRemove);
 
-	public void setTimePeriod(final TimePeriod newPeriod);
+	void setArea(final WorldArea newArea);
 
-	public void updateTree();
+	void setCurrentViewport();
+
+	void setFilter(final String _newFilter);
+
+	void setPepysConnectorBridge(final PepysConnectorBridge _bridge);
+
+	void setTimePeriod(final TimePeriod newPeriod);
+
+	void updateTree();
 }

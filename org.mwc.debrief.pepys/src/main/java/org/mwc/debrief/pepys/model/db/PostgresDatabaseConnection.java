@@ -16,7 +16,7 @@
 package org.mwc.debrief.pepys.model.db;
 
 import java.beans.PropertyVetoException;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -43,17 +43,6 @@ public class PostgresDatabaseConnection extends DatabaseConnection {
 
 	public PostgresDatabaseConnection() {
 		super(); // Just formality :)
-	}
-	
-	@Override
-	public DatabaseConnection createInstance(final DatabaseConfiguration _config) throws PropertyVetoException, FileNotFoundException {
-		if (INSTANCE == null) {
-			databaseConfiguration = _config;
-			final PostgresDatabaseConnection newInstance = this;
-			newInstance.initialize(_config);
-			INSTANCE = newInstance;
-		}
-		return INSTANCE;
 	}
 
 	@Override
@@ -92,10 +81,11 @@ public class PostgresDatabaseConnection extends DatabaseConnection {
 	}
 
 	@Override
-	protected void initialize(final DatabaseConfiguration _config) throws PropertyVetoException, FileNotFoundException {
+	protected void initialize(final DatabaseConfiguration _config) throws PropertyVetoException, IOException {
+		super.initialize(_config);
+
 		final Properties props = new Properties();
-    final HashMap<String, String> databaseTagConnection = _config
-        .getCategory(DatabaseConnection.CONFIGURATION_TAG);
+		final HashMap<String, String> databaseTagConnection = _config.getCategory(DatabaseConnection.CONFIGURATION_TAG);
 
 		props.setProperty("user", databaseTagConnection.get("db_username"));
 		props.setProperty("password", databaseTagConnection.get("db_password"));

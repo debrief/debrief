@@ -16,11 +16,8 @@
 package org.mwc.debrief.pepys.model.db;
 
 import java.beans.PropertyVetoException;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -38,8 +35,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import org.mwc.debrief.model.utils.OSUtils;
-import org.mwc.debrief.pepys.Activator;
 import org.mwc.debrief.pepys.model.bean.AbstractBean;
 import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils;
 import org.mwc.debrief.pepys.model.db.annotation.Id;
@@ -47,8 +42,8 @@ import org.mwc.debrief.pepys.model.db.annotation.Location;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.OneToOne;
 import org.mwc.debrief.pepys.model.db.annotation.Time;
-import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
+
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 import MWC.GenericData.TimePeriod;
@@ -59,7 +54,6 @@ import MWC.GenericData.WorldLocation;
  * Created by Saul - saulhidalgoaular@gmail.com
  */
 public abstract class DatabaseConnection {
-	public static DatabaseConnection INSTANCE = null;
 	public static final boolean SHOW_SQL = true;
 	public static final String WHERE_CONNECTOR = " AND ";
 	public static final char ESCAPE_CHARACTER = '\'';
@@ -82,9 +76,7 @@ public abstract class DatabaseConnection {
 
 	public static final String DEFAULT_DATABASE_FILE = DEFAULT_SQLITE_DATABASE_FILE;
 
-	public static DatabaseConnection getInstance() {
-		return INSTANCE;
-	}
+	public static final String GENERIC_CONNECTION_ERROR = "Please, check that the username, password and URL in the configuration file are correct.\nDebrief has been unable to connect to the database.";
 
 	protected HashMap<String, String> aliasRenamingMap = new HashMap<String, String>();
 
@@ -109,6 +101,13 @@ public abstract class DatabaseConnection {
 		aliasRenamingMap.clear();
 	}
 
+	protected void close() {
+		if (pool != null) {
+			pool.close();
+			pool = null;
+		}
+	}
+
 	public Collection<? extends Condition> createAreaFilter(final WorldArea currentArea, final Class<?> type) {
 		final ArrayList<Condition> conditions = new ArrayList<Condition>();
 
@@ -120,7 +119,7 @@ public abstract class DatabaseConnection {
 			final WorldLocation topRight = currentArea.getTopRight();
 			final WorldLocation bottomLeft = currentArea.getBottomLeft();
 
-			final String polygonArea = "POLYGON((" + topLeft.getLong() + " " + topLeft.getLat() + ","
+			final String polygonArea = "SRID=4326;POLYGON((" + topLeft.getLong() + " " + topLeft.getLat() + ","
 					+ bottomLeft.getLong() + " " + bottomLeft.getLat() + "," + bottomRight.getLong() + " "
 					+ bottomRight.getLat() + "," + topRight.getLong() + " " + topRight.getLat() + ","
 					+ topLeft.getLong() + " " + topLeft.getLat() + "))";
@@ -135,9 +134,6 @@ public abstract class DatabaseConnection {
 
 		return conditions;
 	}
-
-	public abstract DatabaseConnection createInstance(final DatabaseConfiguration _config)
-			throws PropertyVetoException, FileNotFoundException, IOException;
 
 	protected abstract String createLocationQuery(final String tableName, final String columnName);
 
@@ -198,6 +194,24 @@ public abstract class DatabaseConnection {
 
 	public abstract String databaseSuffix();
 
+	public boolean doTestQuery(final Class<AbstractBean>[] testBeans) throws SQLException {
+		final Connection connection = pool.getConnection();
+		final Statement statement = connection.createStatement();
+
+		for (final Class<AbstractBean> bean : testBeans) {
+			final String tableName = AnnotationsUtils.getTableName(bean);
+
+			final Field id = AnnotationsUtils.getField(bean, Id.class);
+			final String idName = AnnotationsUtils.getColumnName(id);
+
+			final String sql = "SELECT " + idName + " from " + databasePrefix() + tableName + databaseSuffix()
+					+ " where false";
+			statement.execute(sql);
+		}
+
+		return true;
+	}
+
 	protected String getAlias(final String realTableName) {
 		if (!aliasRenamingMap.containsKey(realTableName)) {
 			// It hasn't been previously renamed.
@@ -205,6 +219,18 @@ public abstract class DatabaseConnection {
 		}
 		return aliasRenamingMap.get(realTableName);
 
+	}
+
+	protected void initialize(final DatabaseConfiguration _config)
+			throws PropertyVetoException, FileNotFoundException, IOException {
+		close();
+
+		// expected to be overwritten by the implementation
+	}
+
+	public void initializeInstance(final DatabaseConfiguration _config) throws PropertyVetoException, IOException {
+		databaseConfiguration = _config;
+		initialize(_config);
 	}
 
 	protected String intToString(final int _id) {
@@ -354,10 +380,6 @@ public abstract class DatabaseConnection {
 		return query.toString();
 	}
 
-	public void removeInstance() {
-		INSTANCE = null;
-	}
-
 	public <T> T storeFieldValue(final Class<T> type, final ResultSet resultSet, final String prefix)
 			throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException,
 			SQLException {
@@ -404,62 +426,5 @@ public abstract class DatabaseConnection {
 		}
 		return instance;
 	}
-
-	public static void loadDatabaseConfiguration(final DatabaseConfiguration _config, final String _defaultConfigFile)
-			throws PropertyVetoException, IOException {
-
-		final String configurationFile = System.getenv(CONFIG_FILE_ENV_NAME);
-
-		final InputStream configurationFileStream;
-		if (configurationFile != null) {
-			if (new File(configurationFile).isFile()) {
-				// Here we are simply load the file as given
-				configurationFileStream = new FileInputStream(new File(configurationFile));
-				;
-			} else {
-				// show error:
-				// "Config file specified in "+ CONFIG_FILE_ENV_NAME + " environment variable
-				// not found:" + configurationFilename
-				throw new FileNotFoundException("DatabaseConnectionException requested file " + configurationFile
-						+ " but it is not a valid file");
-
-			}
-		} else {
-			configurationFileStream = OSUtils.getInputStreamResource(DatabaseConnection.class, _defaultConfigFile,
-					Activator.PLUGIN_ID);
-		}
-
-		loadDatabaseConfiguration(_config, configurationFileStream);
-	}
-
-	public boolean doTestQuery(final Class<AbstractBean>[] testBeans) throws SQLException {
-		final Connection connection = pool.getConnection();
-		Statement statement = connection.createStatement();
-
-		for (Class<AbstractBean> bean : testBeans) {
-			final String tableName = AnnotationsUtils.getTableName(bean);
-
-			final Field id = AnnotationsUtils.getField(bean, Id.class);
-			final String idName = AnnotationsUtils.getColumnName(id);
-
-			final String sql = "SELECT " + idName + " from " + databasePrefix() + tableName + databaseSuffix()
-					+ " where false";
-			statement.execute(sql);
-		}
-
-		return true;
-	}
-
-	public static void loadDatabaseConfiguration(final DatabaseConfiguration _config,
-			final InputStream configurationStream) throws FileNotFoundException {
-		if (configurationStream != null) {
-			ConfigurationReader.parseConfigurationFile(_config, configurationStream);
-		} else {
-			throw new FileNotFoundException("DatabaseConnectionException we have received a null inputstream");
-		}
-	}
-
-	protected abstract void initialize(DatabaseConfiguration _config)
-			throws PropertyVetoException, FileNotFoundException, IOException;
 
 }

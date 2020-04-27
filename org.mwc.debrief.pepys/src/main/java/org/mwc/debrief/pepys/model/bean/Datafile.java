@@ -28,6 +28,7 @@ import org.mwc.debrief.pepys.model.db.annotation.FieldName;
 import org.mwc.debrief.pepys.model.db.annotation.Id;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
+import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 
 import junit.framework.TestCase;
@@ -40,10 +41,12 @@ public class Datafile implements AbstractBean {
 		public void testDatafilesQuery() {
 			try {
 				final DatabaseConfiguration _config = new DatabaseConfiguration();
-				DatabaseConnection.loadDatabaseConfiguration(_config,
+				ConfigurationReader.loadDatabaseConfiguration(_config,
+						DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE,
 						DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE);
-				new SqliteDatabaseConnection().createInstance(_config);
-				final List<Datafile> list = DatabaseConnection.getInstance().listAll(Datafile.class, null);
+				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
+				sqlite.initializeInstance(_config);
+				final List<Datafile> list = sqlite.listAll(Datafile.class, null);
 
 				assertTrue("Datafiles - database entries", list.size() == 18);
 
@@ -60,7 +63,7 @@ public class Datafile implements AbstractBean {
 					assertTrue("Datafiles - Reference Name", exist);
 				}
 
-				for (Datafile datafile : list) {
+				for (final Datafile datafile : list) {
 					assertTrue("Datafiles - Concatenated reference ", datafile.getDatafile().getName()
 							.equals(datafile.getReference().substring(datafile.getReference().indexOf('.'))));
 				}
