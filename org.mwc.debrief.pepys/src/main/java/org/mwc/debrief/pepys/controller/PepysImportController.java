@@ -248,7 +248,9 @@ public class PepysImportController {
 							} catch (final Exception e) {
 								e.printStackTrace();
 								final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
-								messageBox.setMessage(e.toString());
+								messageBox.setMessage(
+										"Please, check that the username, password and URL in the configuration file are correct.\n"
+												+ e.toString());
 								messageBox.setText("Error retrieving information from Database");
 								messageBox.open();
 							} finally {
@@ -289,7 +291,10 @@ public class PepysImportController {
 					}
 					if (showError) {
 						final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
-						messageBox.setMessage("Please, check database connection data\n" + errorMessage);
+
+						messageBox.setMessage(
+								"Please, check that the username, password and URL in the configuration file are correct.\n"
+										+ errorMessage);
 						messageBox.setText("Error in database.");
 						messageBox.open();
 
