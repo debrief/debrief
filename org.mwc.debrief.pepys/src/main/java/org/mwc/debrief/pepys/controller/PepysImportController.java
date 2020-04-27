@@ -287,7 +287,7 @@ public class PepysImportController {
 						errorMessage = DatabaseConnection.GENERIC_CONNECTION_ERROR;
 						showError = true;
 					} catch (Exception e) {
-						errorMessage = "You have incorrect database type.\nPlease provide the correct database type";
+						errorMessage = "You have incorrect database type.\nPlease provide the correct database type in the config file";
 						showError = true;
 					}
 					if (showError) {
