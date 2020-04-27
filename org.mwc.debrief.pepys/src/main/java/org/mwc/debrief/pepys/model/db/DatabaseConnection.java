@@ -76,7 +76,7 @@ public abstract class DatabaseConnection {
 
 	public static final String DEFAULT_DATABASE_FILE = DEFAULT_SQLITE_DATABASE_FILE;
 
-	public static final String GENERIC_CONNECTION_ERROR = "Debrief has been unable to connect to the database.";
+	public static final String GENERIC_CONNECTION_ERROR = "Please, check that the username, password and URL in the configuration file are correct.\nDebrief has been unable to connect to the database.";
 
 	protected HashMap<String, String> aliasRenamingMap = new HashMap<String, String>();
 

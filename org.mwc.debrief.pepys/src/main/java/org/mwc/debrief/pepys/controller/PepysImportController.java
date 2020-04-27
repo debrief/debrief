@@ -287,7 +287,7 @@ public class PepysImportController {
 						errorMessage = DatabaseConnection.GENERIC_CONNECTION_ERROR;
 						showError = true;
 					} catch (Exception e) {
-						errorMessage = "Incorrect format in the INI file specified";
+						errorMessage = "You have incorrect database type.\nPlease provide the correct database type";
 						showError = true;
 					}
 					if (showError) {
