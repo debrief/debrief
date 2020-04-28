@@ -5,7 +5,7 @@
  * (C) 2000-2020, Deep Blue C Technology Ltd
  *
  * This library is free software; you can redistribute it and/or
- * modify it under the terms of the Eclipse Public License v1.0
+ * modify it under the terms of the Eclipse  License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
  *
  * This library is distributed in the hope that it will be useful,
@@ -15,9 +15,15 @@
 
 package org.mwc.debrief.pepys.model;
 
+import java.beans.PropertyVetoException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Collection;
 
+import org.mwc.debrief.pepys.model.db.DatabaseConnection;
+import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.mwc.debrief.pepys.model.tree.TreeNode;
 import org.mwc.debrief.pepys.model.tree.TreeUtils.SearchTreeResult;
 
@@ -70,23 +76,19 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 
 	String getSearchResultsText();
 
-	TimePeriod getTimePeriod();
+	void loadDatabaseConfiguration(final DatabaseConfiguration _configuration)
+			throws FileNotFoundException, PropertyVetoException, IOException;
 
-	TreeNode getTreeModel();
+	void loadDatabaseConfiguration(final InputStream configurationFile)
+			throws FileNotFoundException, PropertyVetoException, IOException;
 
-	void removeDatafileTypeFilter(final TypeDomain typeToRemove);
-
-	void searchFromUser(final boolean _search);
-
-	void setArea(final WorldArea newArea);
+	void loadDefaultDatabaseConfiguration() throws PropertyVetoException, IOException;
 
 	void setCurrentViewport();
 
 	void setFilter(final String _newFilter);
 
 	void setHighlightedElement(final TreeNode node);
-
-	void setPepysConnectorBridge(final PepysConnectorBridge _bridge);
 
 	void setSearch(final String _newSearch);
 
@@ -95,4 +97,18 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 	void setTimePeriod(final TimePeriod newPeriod);
 
 	void updateTree();
+
+	DatabaseConnection getDatabaseConnection();
+
+	TimePeriod getTimePeriod();
+
+	TreeNode getTreeModel();
+
+	void removeDatafileTypeFilter(TypeDomain typeToRemove);
+
+	void searchFromUser(boolean _search);
+
+	void setArea(WorldArea newArea);
+
+	void setPepysConnectorBridge(PepysConnectorBridge _bridge);
 }

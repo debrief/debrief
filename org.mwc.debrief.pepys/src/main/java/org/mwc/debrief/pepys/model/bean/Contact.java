@@ -72,7 +72,7 @@ public class Contact implements AbstractBean, TreeStructurable {
 	private Privacy privacy;
 
 	private Date created_date;
-	
+
 	@Location
 	private WorldLocation location;
 

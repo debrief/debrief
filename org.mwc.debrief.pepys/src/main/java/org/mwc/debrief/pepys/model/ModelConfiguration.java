@@ -19,7 +19,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyVetoException;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -31,6 +33,10 @@ import org.mwc.debrief.pepys.model.bean.Comment;
 import org.mwc.debrief.pepys.model.bean.Contact;
 import org.mwc.debrief.pepys.model.bean.State;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
+import org.mwc.debrief.pepys.model.db.PostgresDatabaseConnection;
+import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
+import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
+import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.mwc.debrief.pepys.model.tree.TreeNode;
 import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 import org.mwc.debrief.pepys.model.tree.TreeUtils;
@@ -85,6 +91,8 @@ public class ModelConfiguration implements AbstractConfiguration {
 	public boolean searchFromUser = true;
 
 	private int treeOrderIndex = 0;
+
+	private DatabaseConnection databaseConnection;
 
 	public ModelConfiguration() {
 		final Calendar twentyYearsAgoCal = Calendar.getInstance();
@@ -235,7 +243,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	@Override
 	public boolean doTestQuery() throws SQLException {
-		return DatabaseConnection.getInstance().doTestQuery(new Class[] { Contact.class, State.class, Comment.class });
+		return databaseConnection.doTestQuery(new Class[] { Contact.class, State.class, Comment.class });
 	}
 
 	@Override
@@ -246,6 +254,11 @@ public class ModelConfiguration implements AbstractConfiguration {
 	@Override
 	public SearchTreeResult getCurrentSearchTreeResultModel() {
 		return currentSearchTreeResult;
+	}
+	
+	@Override
+	public DatabaseConnection getDatabaseConnection() {
+		return databaseConnection;
 	}
 
 	@Override
@@ -331,6 +344,53 @@ public class ModelConfiguration implements AbstractConfiguration {
 	@Override
 	public TreeNode getTreeModel() {
 		return treeModel;
+	}
+
+	@Override
+	public void loadDatabaseConfiguration(final DatabaseConfiguration _configuration)
+			throws FileNotFoundException, PropertyVetoException, IOException {
+		final HashMap<String, String> category = _configuration.getCategory(DatabaseConnection.CONFIGURATION_TAG);
+		if (category != null && category.containsKey(DatabaseConnection.CONFIGURATION_DATABASE_TYPE)) {
+			final String databaseType = category.get(DatabaseConnection.CONFIGURATION_DATABASE_TYPE);
+			if (databaseType != null) {
+				final DatabaseConnection conn;
+				switch (databaseType) {
+				case DatabaseConnection.POSTGRES:
+					conn = new PostgresDatabaseConnection();
+					break;
+				case DatabaseConnection.SQLITE:
+					conn = new SqliteDatabaseConnection();
+					break;
+				default:
+					conn = null;
+					break;
+				}
+				if (conn != null) {
+					conn.initializeInstance(_configuration);
+				}
+				databaseConnection = conn;
+			}
+		}
+	}
+
+	@Override
+	public void loadDatabaseConfiguration(final InputStream configurationFile)
+			throws PropertyVetoException, IOException {
+		final DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration();
+
+		ConfigurationReader.loadDatabaseConfiguration(databaseConfiguration, configurationFile);
+
+		loadDatabaseConfiguration(databaseConfiguration);
+	}
+
+	@Override
+	public void loadDefaultDatabaseConfiguration() throws PropertyVetoException, IOException {
+		final DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration();
+
+		ConfigurationReader.loadDatabaseConfiguration(databaseConfiguration,
+				System.getenv(DatabaseConnection.CONFIG_FILE_ENV_NAME), DatabaseConnection.DEFAULT_DATABASE_FILE);
+
+		loadDatabaseConfiguration(databaseConfiguration);
 	}
 
 	@Override

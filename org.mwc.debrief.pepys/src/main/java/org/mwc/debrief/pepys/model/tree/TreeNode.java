@@ -26,6 +26,7 @@ import java.util.TreeMap;
 import org.mwc.debrief.pepys.model.bean.State;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
+import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 
 import MWC.GenericData.HiResDate;
@@ -45,9 +46,11 @@ public class TreeNode {
 			List<State> list = null;
 			try {
 				final DatabaseConfiguration _config = new DatabaseConfiguration();
-				DatabaseConnection.loadDatabaseConfiguration(_config, DatabaseConnection.DEFAULT_SQLITE_DATABASE_FILE);
-				new SqliteDatabaseConnection().createInstance(_config);
-				list = DatabaseConnection.getInstance().listAll(State.class, null);
+				ConfigurationReader.loadDatabaseConfiguration(_config, DatabaseConnection.DEFAULT_SQLITE_DATABASE_FILE,
+						DatabaseConnection.DEFAULT_SQLITE_DATABASE_FILE);
+				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
+				sqlite.initializeInstance(_config);
+				list = sqlite.listAll(State.class, null);
 			} catch (final Exception e) {
 				fail("Failed retrieving data from Database");
 			}

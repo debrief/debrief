@@ -27,7 +27,6 @@ import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.model.TypeDomain;
 import org.mwc.debrief.pepys.model.bean.AbstractBean;
 import org.mwc.debrief.pepys.model.db.Condition;
-import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils;
 import org.mwc.debrief.pepys.model.tree.TreeNode.NodeType;
 
@@ -72,19 +71,19 @@ public class TreeUtils {
 			final Class<TreeStructurable> currentBeanType = domain.getDatatype();
 
 			if (AbstractBean.class.isAssignableFrom(currentBeanType) && domain.isChecked()) {
-				DatabaseConnection.getInstance().cleanRenamingBuffer();
+				configuration.getDatabaseConnection().cleanRenamingBuffer();
 				final ArrayList<Condition> conditions = new ArrayList<Condition>();
 
-				conditions.addAll(DatabaseConnection.getInstance().createPeriodFilter(configuration.getTimePeriod(),
+				conditions.addAll(configuration.getDatabaseConnection()
+						.createPeriodFilter(configuration.getTimePeriod(), currentBeanType));
+
+				conditions.addAll(configuration.getDatabaseConnection().createAreaFilter(configuration.getCurrentArea(),
 						currentBeanType));
 
-				conditions.addAll(DatabaseConnection.getInstance().createAreaFilter(configuration.getCurrentArea(),
+				conditions.addAll(configuration.getDatabaseConnection().createTextFilter(configuration.getFilter(),
 						currentBeanType));
 
-				conditions.addAll(
-						DatabaseConnection.getInstance().createTextFilter(configuration.getFilter(), currentBeanType));
-
-				final List<? extends TreeStructurable> currentItems = DatabaseConnection.getInstance()
+				final List<? extends TreeStructurable> currentItems = configuration.getDatabaseConnection()
 						.listAll(currentBeanType, conditions);
 				allItems.addAll(currentItems);
 			}

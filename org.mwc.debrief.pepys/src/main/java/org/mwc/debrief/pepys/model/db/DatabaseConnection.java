@@ -62,7 +62,6 @@ import MWC.GenericData.WorldLocation;
  * Created by Saul - saulhidalgoaular@gmail.com
  */
 public abstract class DatabaseConnection {
-	public static DatabaseConnection INSTANCE = null;
 	public static final boolean SHOW_SQL = true;
 	public static final String AND_CONNECTOR = " AND ";
 	public static final String OR_CONNECTOR = " OR ";
@@ -87,9 +86,7 @@ public abstract class DatabaseConnection {
 
 	public static final String DEFAULT_DATABASE_FILE = DEFAULT_SQLITE_DATABASE_FILE;
 
-	public static DatabaseConnection getInstance() {
-		return INSTANCE;
-	}
+	public static final String GENERIC_CONNECTION_ERROR = "Please, check that the username, password and URL in the configuration file are correct.\nDebrief has been unable to connect to the database.";
 
 	public static void loadDatabaseConfiguration(final DatabaseConfiguration _config,
 			final InputStream configurationStream) throws FileNotFoundException {
@@ -150,6 +147,13 @@ public abstract class DatabaseConnection {
 		aliasRenamingMap.clear();
 	}
 
+	protected void close() {
+		if (pool != null) {
+			pool.close();
+			pool = null;
+		}
+	}
+
 	public Collection<? extends Condition> createAreaFilter(final WorldArea currentArea, final Class<?> type) {
 		final ArrayList<Condition> conditions = new ArrayList<Condition>();
 
@@ -161,7 +165,7 @@ public abstract class DatabaseConnection {
 			final WorldLocation topRight = currentArea.getTopRight();
 			final WorldLocation bottomLeft = currentArea.getBottomLeft();
 
-			final String polygonArea = "POLYGON((" + topLeft.getLong() + " " + topLeft.getLat() + ","
+			final String polygonArea = "SRID=4326;POLYGON((" + topLeft.getLong() + " " + topLeft.getLat() + ","
 					+ bottomLeft.getLong() + " " + bottomLeft.getLat() + "," + bottomRight.getLong() + " "
 					+ bottomRight.getLat() + "," + topRight.getLong() + " " + topRight.getLat() + ","
 					+ topLeft.getLong() + " " + topLeft.getLat() + "))";
@@ -176,9 +180,6 @@ public abstract class DatabaseConnection {
 
 		return conditions;
 	}
-
-	public abstract DatabaseConnection createInstance(final DatabaseConfiguration _config)
-			throws PropertyVetoException, FileNotFoundException, IOException;
 
 	protected abstract String createLocationQuery(final String tableName, final String columnName);
 
@@ -298,8 +299,17 @@ public abstract class DatabaseConnection {
 
 	}
 
-	protected abstract void initialize(DatabaseConfiguration _config)
-			throws PropertyVetoException, FileNotFoundException, IOException;
+	protected void initialize(final DatabaseConfiguration _config)
+			throws PropertyVetoException, FileNotFoundException, IOException {
+		close();
+
+		// expected to be overwritten by the implementation
+	}
+
+	public void initializeInstance(final DatabaseConfiguration _config) throws PropertyVetoException, IOException {
+		databaseConfiguration = _config;
+		initialize(_config);
+	}
 
 	protected String intToString(final int _id) {
 		int id = _id;
@@ -446,10 +456,6 @@ public abstract class DatabaseConnection {
 		}
 		query.setLength(query.length() - 2);
 		return query.toString();
-	}
-
-	public void removeInstance() {
-		INSTANCE = null;
 	}
 
 	public <T> T storeFieldValue(final Class<T> type, final ResultSet resultSet, final String prefix)
