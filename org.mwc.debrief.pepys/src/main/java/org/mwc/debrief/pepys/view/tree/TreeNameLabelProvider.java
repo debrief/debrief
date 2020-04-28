@@ -15,17 +15,23 @@
 
 package org.mwc.debrief.pepys.view.tree;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.pepys.model.tree.TreeNode;
+import org.mwc.debrief.pepys.model.tree.TreeNode.NodeType;
 
 import MWC.GenericData.TimePeriod.BaseTimePeriod;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 public class TreeNameLabelProvider implements ILabelProvider {
 
+	private Map<NodeType, Image> imageCache = new HashMap<>();
+	
 	@Override
 	public void addListener(final ILabelProviderListener listener) {
 		return;
@@ -40,19 +46,22 @@ public class TreeNameLabelProvider implements ILabelProvider {
 	public Image getImage(final Object element) {
 		if (element instanceof TreeNode) {
 			final TreeNode node = (TreeNode) element;
-			if (node.getType().equals(TreeNode.NodeType.ROOT)) {
-				return DebriefPlugin.getImageDescriptor("/icons/16/database.png").createImage();
-			} else if (node.getType().equals(TreeNode.NodeType.PLATFORM)) {
-				return DebriefPlugin.getImageDescriptor("/icons/16/leg.png").createImage();
-			} else if (node.getType().equals(TreeNode.NodeType.MEASURE)) {
-				return DebriefPlugin.getImageDescriptor("/icons/16/measurement.png").createImage();
+			if (!imageCache.containsKey(node.getType())) {
+				if (node.getType().equals(TreeNode.NodeType.ROOT)) {
+					imageCache.put(node.getType(), DebriefPlugin.getImageDescriptor("/icons/16/database.png").createImage());
+				} else if (node.getType().equals(TreeNode.NodeType.PLATFORM)) {
+					imageCache.put(node.getType(), DebriefPlugin.getImageDescriptor("/icons/16/leg.png").createImage());
+				} else if (node.getType().equals(TreeNode.NodeType.MEASURE)) {
+					imageCache.put(node.getType(), DebriefPlugin.getImageDescriptor("/icons/16/measurement.png").createImage());
+				}
+				if (node.getType().equals(TreeNode.NodeType.DATAFILE)) {
+					imageCache.put(node.getType(), DebriefPlugin.getImageDescriptor("/icons/16/narrative_viewer.png").createImage());
+				}
+				if (node.getType().equals(TreeNode.NodeType.SENSOR)) {
+					imageCache.put(node.getType(), DebriefPlugin.getImageDescriptor("/icons/16/sensor.png").createImage());
+				}
 			}
-			if (node.getType().equals(TreeNode.NodeType.DATAFILE)) {
-				return DebriefPlugin.getImageDescriptor("/icons/16/narrative_viewer.png").createImage();
-			}
-			if (node.getType().equals(TreeNode.NodeType.SENSOR)) {
-				return DebriefPlugin.getImageDescriptor("/icons/16/sensor.png").createImage();
-			}
+			return imageCache.get(node.getType());
 		}
 		return null;
 	}

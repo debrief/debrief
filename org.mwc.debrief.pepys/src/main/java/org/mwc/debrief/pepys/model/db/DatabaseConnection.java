@@ -102,26 +102,32 @@ public abstract class DatabaseConnection {
 
 		final String configurationFile = System.getenv(CONFIG_FILE_ENV_NAME);
 
-		final InputStream configurationFileStream;
-		if (configurationFile != null) {
-			if (new File(configurationFile).isFile()) {
-				// Here we are simply load the file as given
-				configurationFileStream = new FileInputStream(new File(configurationFile));
-				;
+		InputStream configurationFileStream = null;
+		try {
+			if (configurationFile != null) {
+				if (new File(configurationFile).isFile()) {
+					// Here we are simply load the file as given
+					configurationFileStream = new FileInputStream(new File(configurationFile));
+					;
+				} else {
+					// show error:
+					// "Config file specified in "+ CONFIG_FILE_ENV_NAME + " environment variable
+					// not found:" + configurationFilename
+					throw new FileNotFoundException("DatabaseConnectionException requested file " + configurationFile
+							+ " but it is not a valid file");
+	
+				}
 			} else {
-				// show error:
-				// "Config file specified in "+ CONFIG_FILE_ENV_NAME + " environment variable
-				// not found:" + configurationFilename
-				throw new FileNotFoundException("DatabaseConnectionException requested file " + configurationFile
-						+ " but it is not a valid file");
-
+				configurationFileStream = OSUtils.getInputStreamResource(DatabaseConnection.class, _defaultConfigFile,
+						Activator.PLUGIN_ID);
 			}
-		} else {
-			configurationFileStream = OSUtils.getInputStreamResource(DatabaseConnection.class, _defaultConfigFile,
-					Activator.PLUGIN_ID);
+	
+			loadDatabaseConfiguration(_config, configurationFileStream);
+		}finally {
+			if (configurationFileStream != null) {
+				configurationFileStream.close();
+			}
 		}
-
-		loadDatabaseConfiguration(_config, configurationFileStream);
 	}
 
 	protected HashMap<String, String> aliasRenamingMap = new HashMap<String, String>();

@@ -267,11 +267,12 @@ public class PepysImportController {
 								}
 							}
 						}
-						item.setExpanded(true);
+						if (!item.getExpanded()) {
+							item.setExpanded(true);
+						}
 						view.getTree().refresh();
 					}
-
-					view.getTree().getTree().showItem(item);
+					view.getTree().getTree().setSelection(item);
 				}
 			}
 		});
