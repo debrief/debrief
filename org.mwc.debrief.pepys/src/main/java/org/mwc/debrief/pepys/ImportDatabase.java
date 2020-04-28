@@ -27,7 +27,6 @@ import org.mwc.debrief.pepys.controller.PepysImportController;
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.model.ModelConfiguration;
 import org.mwc.debrief.pepys.model.PepysConnectorBridge;
-import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.mwc.debrief.pepys.view.AbstractViewSWT;
 import org.mwc.debrief.pepys.view.PepysImportView;
 
