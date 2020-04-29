@@ -37,9 +37,10 @@ import org.mwc.debrief.pepys.model.db.PostgresDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
-import org.mwc.debrief.pepys.model.tree.TreeBuilder;
 import org.mwc.debrief.pepys.model.tree.TreeNode;
 import org.mwc.debrief.pepys.model.tree.TreeStructurable;
+import org.mwc.debrief.pepys.model.tree.TreeUtils;
+import org.mwc.debrief.pepys.model.tree.TreeUtils.SearchTreeResult;
 
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -69,6 +70,28 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	private String filterText = "";
 
+	private String searchText = "";
+
+	private int totalMatches = 0;
+
+	private int currentMatch = 0;
+
+	private TreeNode highlightedNode = null;
+
+	private SearchTreeResult currentSearchTreeResult = null;
+
+	private SearchTreeResult[] searchResults = null;
+
+	// When the user press the button search several times
+	// the model should be able to recognize it needs to find
+	// a following element.
+	// However, in case that the user selected a specific node
+	// let's search from there
+	// Saul.
+	public boolean searchFromUser = true;
+
+	private int treeOrderIndex = 0;
+
 	private DatabaseConnection databaseConnection;
 
 	public ModelConfiguration() {
@@ -76,6 +99,17 @@ public class ModelConfiguration implements AbstractConfiguration {
 		twentyYearsAgoCal.add(Calendar.YEAR, -20);
 
 		currentPeriod.setStartDTG(new HiResDate(twentyYearsAgoCal.getTime()));
+
+		addPropertyChangeListener(new PropertyChangeListener() {
+
+			@Override
+			public void propertyChange(final PropertyChangeEvent evt) {
+				if (SEARCH_PROPERTY.equals(evt.getPropertyName())) {
+					searchResults = TreeUtils.buildTreeSearchMap(getSearch(), getTreeModel());
+					getHereSearch();
+				}
+			}
+		});
 	}
 
 	@Override
@@ -96,12 +130,55 @@ public class ModelConfiguration implements AbstractConfiguration {
 			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException,
 			ClassNotFoundException, IOException {
 
-		currentItems = TreeBuilder.buildStructure(this);
+		currentItems = TreeUtils.buildStructure(this);
 		updateTree();
+		setSearch("");
 
 		if (_pSupport != null) {
 			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, TREE_MODEL, null, treeModel);
 			_pSupport.firePropertyChange(pce);
+		}
+	}
+
+	private void buildTreeOrder(final TreeNode treeModel, final HashMap<TreeNode, Integer> treeOrder) {
+		treeOrder.put(treeModel, treeOrderIndex++);
+		for (final TreeNode child : treeModel.getChildren()) {
+			buildTreeOrder(child, treeOrder);
+		}
+	}
+
+	private int calculateCurrentValue(final TreeNode highlightedNode, final int delta) {
+		final HashMap<TreeNode, Integer> treeOrder = new HashMap<TreeNode, Integer>();
+		treeOrderIndex = 0;
+		buildTreeOrder(getTreeModel(), treeOrder);
+		/*
+		 * int closest = 0; int closestDifference = 1 << 30; // This could be improved
+		 * doing a binary search. // But It will not reduce the linear order of the
+		 * calculation....
+		 * 
+		 * for (int i = 0; i < searchResults.length * 2; i++) { final int currentOrder =
+		 * treeOrder.get(searchResults[i % searchResults.length].getItem()); if
+		 * (Math.abs(currentOrder - desired) < closestDifference) { closestDifference =
+		 * Math.abs(currentOrder - desired); closest = i; } } return closest;
+		 */
+		final int desired = treeOrder.get(highlightedNode);
+		if (delta < 0) {
+			// We are going back, so, let's search the closest item AFTER
+			// the selected item by the user.
+			for (int i = searchResults.length - 1; i >= 0; i--) {
+				if (treeOrder.get(searchResults[i].getItem()) < desired) {
+					return i;
+				}
+			}
+			return searchResults.length - 1;
+		} else {
+			// It is the same, but the opposite but for next search
+			for (int i = 0; i < searchResults.length; i++) {
+				if (treeOrder.get(searchResults[i].getItem()) > desired) {
+					return i;
+				}
+			}
+			return 0;
 		}
 	}
 
@@ -175,6 +252,11 @@ public class ModelConfiguration implements AbstractConfiguration {
 	}
 
 	@Override
+	public SearchTreeResult getCurrentSearchTreeResultModel() {
+		return currentSearchTreeResult;
+	}
+	
+	@Override
 	public DatabaseConnection getDatabaseConnection() {
 		return databaseConnection;
 	}
@@ -197,6 +279,66 @@ public class ModelConfiguration implements AbstractConfiguration {
 	@Override
 	public String getFilter() {
 		return filterText;
+	}
+
+	@Override
+	public SearchTreeResult getHereSearch() {
+		final SearchTreeResult result = getSearch(0);
+		updateResultUI(result);
+		return result;
+	}
+
+	@Override
+	public SearchTreeResult getNextSearch() {
+		final SearchTreeResult result = getSearch(1);
+		updateResultUI(result);
+		return result;
+	}
+
+	@Override
+	public SearchTreeResult getPreviousSearch() {
+		final SearchTreeResult result = getSearch(-1);
+		updateResultUI(result);
+		return result;
+	}
+
+	@Override
+	public String getSearch() {
+		return searchText;
+	}
+
+	public SearchTreeResult getSearch(final int delta) {
+		if (searchResults != null) {
+			if (searchResults.length == 0) {
+				setSearchResults(0, 0);
+			} else {
+				int currentValue = currentMatch;
+				if (highlightedNode != null && searchFromUser) {
+					currentValue = calculateCurrentValue(highlightedNode, delta) - delta;
+				}
+				int desiredValue = currentValue + delta; // Ok, we are looking the next one.
+				desiredValue += searchResults.length; // Circular Search
+				desiredValue %= searchResults.length;
+				setSearchResults(desiredValue, searchResults.length);
+				searchFromUser = false;
+				return searchResults[desiredValue];
+			}
+		}else {
+			setSearchResults(-1, -1);
+		}
+		return null;
+	}
+
+	@Override
+	public String getSearchResultsText() {
+		if (currentMatch < 0 || totalMatches < 0) {
+			return "";
+		}
+		else if (totalMatches == 0) {
+			return "Not Found";
+		} else {
+			return (currentMatch + 1) + " / " + totalMatches;
+		}
 	}
 
 	@Override
@@ -269,6 +411,11 @@ public class ModelConfiguration implements AbstractConfiguration {
 	}
 
 	@Override
+	public void searchFromUser(final boolean _search) {
+		this.searchFromUser = _search;
+	}
+
+	@Override
 	public void setArea(final WorldArea newArea) {
 		final WorldArea oldArea = currentArea;
 		currentArea = newArea;
@@ -278,6 +425,10 @@ public class ModelConfiguration implements AbstractConfiguration {
 					currentArea);
 			_pSupport.firePropertyChange(pce);
 		}
+	}
+
+	public void setCurrentSearchTreeResult(final SearchTreeResult currentSearchTreeResult) {
+		this.currentSearchTreeResult = currentSearchTreeResult;
 	}
 
 	@Override
@@ -292,12 +443,17 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	@Override
 	public void setFilter(final String _newFilter) {
-		final String oldFilter = filterText;
 		filterText = _newFilter;
+	}
+
+	@Override
+	public void setHighlightedElement(final TreeNode node) {
+		final TreeNode oldHighlitedElement = this.highlightedNode;
+		this.highlightedNode = node;
 
 		if (_pSupport != null) {
-			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, FILTER_PROPERTY, oldFilter,
-					filterText);
+			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, HIGHLIGHT_PROPERTY,
+					oldHighlitedElement, node);
 			_pSupport.firePropertyChange(pce);
 		}
 	}
@@ -305,6 +461,32 @@ public class ModelConfiguration implements AbstractConfiguration {
 	@Override
 	public void setPepysConnectorBridge(final PepysConnectorBridge _bridge) {
 		this._bridge = _bridge;
+	}
+
+	@Override
+	public void setSearch(final String _newSearch) {
+		final String oldSearch = searchText;
+		searchText = _newSearch;
+
+		if (_pSupport != null) {
+			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, SEARCH_PROPERTY, oldSearch,
+					searchText);
+			_pSupport.firePropertyChange(pce);
+		}
+	}
+
+	@Override
+	public void setSearchResults(final int current, final int total) {
+		final String oldResults = getSearchResultsText();
+		this.currentMatch = current;
+		this.totalMatches = total;
+		final String newResults = getSearchResultsText();
+
+		if (_pSupport != null) {
+			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, SEARCH_RESULT_PROPERTY, oldResults,
+					newResults);
+			_pSupport.firePropertyChange(pce);
+		}
 	}
 
 	@Override
@@ -319,10 +501,17 @@ public class ModelConfiguration implements AbstractConfiguration {
 		}
 	}
 
+	public void updateResultUI(final SearchTreeResult searchResult) {
+		if (searchResult != null) {
+			setCurrentSearchTreeResult(searchResult);
+			setHighlightedElement(searchResult.getItem());
+		}
+	}
+
 	@Override
 	public void updateTree() {
 		if (currentItems != null) {
-			TreeBuilder.buildStructure(currentItems.toArray(new TreeStructurable[] {}), getTreeModel(), getFilter());
+			TreeUtils.buildStructure(currentItems.toArray(new TreeStructurable[] {}), getTreeModel());
 
 			if (_pSupport != null) {
 				final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, TREE_MODEL, null, treeModel);

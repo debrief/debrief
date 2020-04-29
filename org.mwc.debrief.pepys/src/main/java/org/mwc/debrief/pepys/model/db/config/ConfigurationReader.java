@@ -90,21 +90,27 @@ public class ConfigurationReader {
 	public static void loadDatabaseConfiguration(final DatabaseConfiguration _config, final String _desiredFile,
 			final String _defaultConfigFile) throws PropertyVetoException, IOException {
 
-		final InputStream configurationFileStream;
-		if (_desiredFile != null && new File(_desiredFile).isFile()) {
-			_config.setSourcePath(_desiredFile);
-			// Here we are simply load the file as given
-			configurationFileStream = new FileInputStream(new File(_desiredFile));
-		} else if (_defaultConfigFile != null) {
-			_config.setSourcePath(_defaultConfigFile);
-			configurationFileStream = OSUtils.getInputStreamResource(DatabaseConnection.class, _defaultConfigFile,
-					Activator.PLUGIN_ID);
-		} else {
-			throw new IOException(
-					"DatabaseConnectionException requested file " + _desiredFile + " but it is not a valid file");
+		InputStream configurationFileStream = null;
+		try {
+			if (_desiredFile != null && new File(_desiredFile).isFile()) {
+				_config.setSourcePath(_desiredFile);
+				// Here we are simply load the file as given
+				configurationFileStream = new FileInputStream(new File(_desiredFile));
+			} else if (_defaultConfigFile != null) {
+				_config.setSourcePath(_defaultConfigFile);
+				configurationFileStream = OSUtils.getInputStreamResource(DatabaseConnection.class, _defaultConfigFile,
+						Activator.PLUGIN_ID);
+			} else {
+				throw new IOException(
+						"DatabaseConnectionException requested file " + _desiredFile + " but it is not a valid file");
+			}
+	
+			loadDatabaseConfiguration(_config, configurationFileStream);
+		}finally {
+			if (configurationFileStream != null) {
+				configurationFileStream.close();
+			}
 		}
-
-		loadDatabaseConfiguration(_config, configurationFileStream);
 	}
 
 	public static void parseConfigurationFile(final DatabaseConfiguration configuration,

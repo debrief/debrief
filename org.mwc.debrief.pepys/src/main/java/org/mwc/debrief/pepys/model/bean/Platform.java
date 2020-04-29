@@ -1,5 +1,6 @@
 package org.mwc.debrief.pepys.model.bean;
 
+import org.mwc.debrief.pepys.model.db.annotation.Filterable;
 import org.mwc.debrief.pepys.model.db.annotation.Id;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
 
@@ -8,6 +9,7 @@ public class Platform implements AbstractBean {
 
 	@Id
 	private String platform_id;
+	@Filterable
 	private String name;
 
 	public Platform() {

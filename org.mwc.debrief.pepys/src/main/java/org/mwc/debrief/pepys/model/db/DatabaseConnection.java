@@ -16,8 +16,11 @@
 package org.mwc.debrief.pepys.model.db;
 
 import java.beans.PropertyVetoException;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -35,13 +38,18 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import org.mwc.debrief.model.utils.OSUtils;
+import org.mwc.debrief.pepys.Activator;
 import org.mwc.debrief.pepys.model.bean.AbstractBean;
 import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils;
+import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils.FieldsTable;
+import org.mwc.debrief.pepys.model.db.annotation.Filterable;
 import org.mwc.debrief.pepys.model.db.annotation.Id;
 import org.mwc.debrief.pepys.model.db.annotation.Location;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.OneToOne;
 import org.mwc.debrief.pepys.model.db.annotation.Time;
+import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
@@ -55,7 +63,9 @@ import MWC.GenericData.WorldLocation;
  */
 public abstract class DatabaseConnection {
 	public static final boolean SHOW_SQL = true;
-	public static final String WHERE_CONNECTOR = " AND ";
+	public static final String AND_CONNECTOR = " AND ";
+	public static final String OR_CONNECTOR = " OR ";
+	public static final String LIKE_CONNECTOR = " LIKE ";
 	public static final char ESCAPE_CHARACTER = '\'';
 
 	public static final String CONFIG_FILE_ENV_NAME = "PEPYS_CONFIG_FILE";
@@ -77,6 +87,48 @@ public abstract class DatabaseConnection {
 	public static final String DEFAULT_DATABASE_FILE = DEFAULT_SQLITE_DATABASE_FILE;
 
 	public static final String GENERIC_CONNECTION_ERROR = "Please, check that the username, password and URL in the configuration file are correct.\nDebrief has been unable to connect to the database.";
+
+	public static void loadDatabaseConfiguration(final DatabaseConfiguration _config,
+			final InputStream configurationStream) throws FileNotFoundException {
+		if (configurationStream != null) {
+			ConfigurationReader.parseConfigurationFile(_config, configurationStream);
+		} else {
+			throw new FileNotFoundException("DatabaseConnectionException we have received a null inputstream");
+		}
+	}
+
+	public static void loadDatabaseConfiguration(final DatabaseConfiguration _config, final String _defaultConfigFile)
+			throws PropertyVetoException, IOException {
+
+		final String configurationFile = System.getenv(CONFIG_FILE_ENV_NAME);
+
+		InputStream configurationFileStream = null;
+		try {
+			if (configurationFile != null) {
+				if (new File(configurationFile).isFile()) {
+					// Here we are simply load the file as given
+					configurationFileStream = new FileInputStream(new File(configurationFile));
+					;
+				} else {
+					// show error:
+					// "Config file specified in "+ CONFIG_FILE_ENV_NAME + " environment variable
+					// not found:" + configurationFilename
+					throw new FileNotFoundException("DatabaseConnectionException requested file " + configurationFile
+							+ " but it is not a valid file");
+	
+				}
+			} else {
+				configurationFileStream = OSUtils.getInputStreamResource(DatabaseConnection.class, _defaultConfigFile,
+						Activator.PLUGIN_ID);
+			}
+	
+			loadDatabaseConfiguration(_config, configurationFileStream);
+		}finally {
+			if (configurationFileStream != null) {
+				configurationFileStream.close();
+			}
+		}
+	}
 
 	protected HashMap<String, String> aliasRenamingMap = new HashMap<String, String>();
 
@@ -187,6 +239,38 @@ public abstract class DatabaseConnection {
 		return "";
 	}
 
+	public Collection<? extends Condition> createTextFilter(final String textFilter, final Class<?> type) {
+		final ArrayList<Condition> conditions = new ArrayList<Condition>();
+
+		if (textFilter != null && !textFilter.isEmpty()) {
+			final Collection<FieldsTable> filterableFields = AnnotationsUtils.getRecursiveFields(type, Filterable.class,
+					"");
+
+			final StringBuilder builder = new StringBuilder();
+			builder.append("(");
+			for (final FieldsTable field : filterableFields) {
+				builder.append("LOWER( ");
+				builder.append(getAlias(field.getTableName()));
+				builder.append(".");
+				builder.append(field.getFieldName());
+				builder.append(") ");
+				builder.append(LIKE_CONNECTOR);
+				builder.append(" ");
+				builder.append("\'%");
+				builder.append(textFilter.toLowerCase());
+				builder.append("%\'");
+				builder.append(" ");
+
+				builder.append(OR_CONNECTOR);
+			}
+			builder.setLength(builder.length() - OR_CONNECTOR.length());
+			builder.append(")");
+			conditions.add(new Condition(builder.toString()));
+		}
+
+		return conditions;
+	}
+
 	protected abstract WorldLocation createWorldLocation(final ResultSet result, final String columnName)
 			throws SQLException;
 
@@ -261,9 +345,9 @@ public abstract class DatabaseConnection {
 				queryBuilder.append(" WHERE ");
 				for (final Condition condition : conditions) {
 					queryBuilder.append(condition.getConditionQuery());
-					queryBuilder.append(WHERE_CONNECTOR);
+					queryBuilder.append(AND_CONNECTOR);
 				}
-				queryBuilder.setLength(queryBuilder.length() - WHERE_CONNECTOR.length());
+				queryBuilder.setLength(queryBuilder.length() - AND_CONNECTOR.length());
 			}
 
 			final String query = queryBuilder.toString();

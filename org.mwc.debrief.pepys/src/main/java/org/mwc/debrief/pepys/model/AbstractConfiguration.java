@@ -25,6 +25,7 @@ import java.util.Collection;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.mwc.debrief.pepys.model.tree.TreeNode;
+import org.mwc.debrief.pepys.model.tree.TreeUtils.SearchTreeResult;
 
 import MWC.GUI.hasPropertyListeners;
 import MWC.GenericData.TimePeriod;
@@ -39,7 +40,11 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 
 	static String TREE_MODEL = "TREE_MODEL";
 
-	static String FILTER_PROPERTY = "FILTER";
+	static String SEARCH_PROPERTY = "SEARCH";
+
+	static String HIGHLIGHT_PROPERTY = "HIGHTLIGHT";
+
+	static String SEARCH_RESULT_PROPERTY = "SEARCH_RESULT";
 
 	void addDatafileTypeFilter(final TypeDomain newType);
 
@@ -51,7 +56,7 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 
 	WorldArea getCurrentArea();
 
-	DatabaseConnection getDatabaseConnection();
+	SearchTreeResult getCurrentSearchTreeResultModel();
 
 	Collection<TypeDomain> getDatafileTypeFilters();
 
@@ -61,9 +66,15 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 
 	String getFilter();
 
-	TimePeriod getTimePeriod();
+	SearchTreeResult getHereSearch();
 
-	TreeNode getTreeModel();
+	SearchTreeResult getNextSearch();
+
+	SearchTreeResult getPreviousSearch();
+
+	String getSearch();
+
+	String getSearchResultsText();
 
 	void loadDatabaseConfiguration(final DatabaseConfiguration _configuration)
 			throws FileNotFoundException, PropertyVetoException, IOException;
@@ -73,17 +84,31 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 
 	void loadDefaultDatabaseConfiguration() throws PropertyVetoException, IOException;
 
-	void removeDatafileTypeFilter(final TypeDomain typeToRemove);
-
-	void setArea(final WorldArea newArea);
-
 	void setCurrentViewport();
 
 	void setFilter(final String _newFilter);
 
-	void setPepysConnectorBridge(final PepysConnectorBridge _bridge);
+	void setHighlightedElement(final TreeNode node);
+
+	void setSearch(final String _newSearch);
+
+	void setSearchResults(final int current, final int total);
 
 	void setTimePeriod(final TimePeriod newPeriod);
 
 	void updateTree();
+
+	DatabaseConnection getDatabaseConnection();
+
+	TimePeriod getTimePeriod();
+
+	TreeNode getTreeModel();
+
+	void removeDatafileTypeFilter(TypeDomain typeToRemove);
+
+	void searchFromUser(boolean _search);
+
+	void setArea(WorldArea newArea);
+
+	void setPepysConnectorBridge(PepysConnectorBridge _bridge);
 }
