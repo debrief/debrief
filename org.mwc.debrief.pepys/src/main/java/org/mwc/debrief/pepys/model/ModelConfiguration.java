@@ -323,13 +323,18 @@ public class ModelConfiguration implements AbstractConfiguration {
 				searchFromUser = false;
 				return searchResults[desiredValue];
 			}
+		}else {
+			setSearchResults(-1, -1);
 		}
 		return null;
 	}
 
 	@Override
 	public String getSearchResultsText() {
-		if (totalMatches == 0) {
+		if (currentMatch < 0 || totalMatches < 0) {
+			return "";
+		}
+		else if (totalMatches == 0) {
 			return "Not Found";
 		} else {
 			return (currentMatch + 1) + " / " + totalMatches;
