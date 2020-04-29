@@ -232,7 +232,7 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 
 		final GridData textSearchResultsGrid = new GridData();
 		this.textSearchResults = new Label(parent, SWT.PUSH);
-		this.textSearchResults.setText("            ");
+		this.textSearchResults.setText("                   ");
 		this.textSearchResults.setLayoutData(textSearchResultsGrid);
 
 		// TIME PERIOD
