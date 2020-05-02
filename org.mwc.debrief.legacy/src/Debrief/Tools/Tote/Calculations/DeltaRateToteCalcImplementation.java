@@ -13,17 +13,18 @@ public class DeltaRateToteCalcImplementation {
 
 	public static class DeltaRateToteCalcImplementationTest extends TestCase {
 
+		public final static long TIME_WINDOW = 1000L * 60; // 60 seconds;
+
 		public void testCalculation() throws ParseException {
-			final long timeWindow = 1000L * 60; // 60 seconds;
 			final String timeText = "22/04/09 17:59:58," + "22/04/09 18:00:06," + "22/04/09 18:00:14,"
 					+ "22/04/09 18:00:22," + "22/04/09 18:00:30," + "22/04/09 18:00:37," + "22/04/09 18:00:46,"
 					+ "22/04/09 18:00:54," + "22/04/09 18:01:02," + "22/04/09 18:01:10," + "22/04/09 18:01:18,"
 					+ "22/04/09 18:01:26," + "22/04/09 18:01:34";
 			final double[] measures = new double[] { 289.78, 289.61, 289.37, 289.18, 289, 289, 289.08, 289.38, 289.52,
 					289.6, 289.7, 289.73, 289.69 };
-			final double[] expectedAnswer = new double[] { 0.000226253464349, 0.000222222222222, 6.61375661376134E-05,
-					-6.29154795821912E-05, 0, 0, -1.40996569567961E-05, 0.000298735655878, 0.000501339929911,
-					0.000499370118418, 0.000598702443941, };
+			final double[] expectedAnswer = new double[] { 0, 0, 0.000226253464349, 0.000222222222222,
+					6.61375661376134E-05, -6.29154795821912E-05, 0, 0, -1.40996569567961E-05, 0.000298735655878,
+					0.000501339929911, 0.000499370118418, 0.000598702443941, };
 
 			final SimpleDateFormat format = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
 
@@ -38,7 +39,7 @@ public class DeltaRateToteCalcImplementation {
 				time[i] = new HiResDate(timeDate[i]);
 			}
 
-			final double[] deltaRateRate = DeltaRateToteCalcImplementation.calculate(measures, time, timeWindow);
+			final double[] deltaRateRate = DeltaRateToteCalcImplementation.calculate(measures, time, TIME_WINDOW);
 
 			assertArrayEquals("Delta Rate Tote Calculation Rate", expectedAnswer, deltaRateRate, 1e-5);
 		};
@@ -50,7 +51,8 @@ public class DeltaRateToteCalcImplementation {
 			// Let's calculate the delta rate
 			final double[] deltaRate = new double[measure.length];
 			for (int i = 1; i < deltaRate.length; i++) {
-				deltaRate[i] = (measure[i] - measure[i - 1]) / ((time[i].getMicros() - time[i - 1].getMicros()) / 1000.0 / 1000.0 - 1);
+				deltaRate[i] = (measure[i] - measure[i - 1])
+						/ ((time[i].getMicros() - time[i - 1].getMicros()) / 1000.0 / 1000.0 - 1);
 			}
 
 			// Let's calculate the delta rate in a period.
@@ -87,9 +89,9 @@ public class DeltaRateToteCalcImplementation {
 			}
 
 			// Let's calculate the delta rate
-			final double[] deltaRateRate = new double[measure.length - 2];
-			for (int i = 0; i < deltaRateRate.length; i++) {
-				deltaRateRate[i] = (average[i + 2] - average[i + 1])
+			final double[] deltaRateRate = new double[measure.length];
+			for (int i = 0; i < deltaRateRate.length - 2; i++) {
+				deltaRateRate[i + 2] = (average[i + 2] - average[i + 1])
 						/ ((time[i + 2].getMicros() - time[i + 1].getMicros()) / 1000.0 / 1000.0 - 1);
 			}
 			return deltaRateRate;

@@ -62,7 +62,9 @@ import org.jfree.data.xy.XYSeries;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Tote.StepControl;
+import Debrief.Tools.Tote.DeltaRateToteCalculation;
 import Debrief.Tools.Tote.toteCalculation;
+import Debrief.Tools.Tote.Calculations.DeltaRateToteCalcImplementation;
 import Debrief.Tools.Tote.Calculations.atbCalc;
 import Debrief.Tools.Tote.Calculations.bearingCalc;
 import Debrief.Tools.Tote.Calculations.bearingRateCalc;
@@ -348,25 +350,9 @@ public final class ShowTimeVariablePlot3 implements FilterOperation {
 		return res;
 	}
 
-	/**
-	 * @param theCalculation    we're currently performing
-	 * @param thisPrimary       the point on the primary track
-	 * @param thisSecondary     the point on the secondary track
-	 * @param currentTime       the current time
-	 * @param connectToPrevious whether to connect to the previous point
-	 * @param thisColor         the current colour
-	 * @param thisSeries        the data series we're building up
-	 * @param theAdder
-	 * @return
-	 */
-	private static boolean createDataPoint(final toteCalculation theCalculation, final Watchable thisPrimary,
-			final Watchable thisSecondary, final HiResDate currentTime, final boolean connectToPrevious,
-			final Color thisColor, final Series thisSeries, final ColouredDataItem.OffsetProvider provider,
-			final VersatileSeriesAdder theAdder) {
-		boolean connectToPrev = connectToPrevious;
-		// and perform the calculation
-		final double data = theCalculation.calculate(thisSecondary, thisPrimary, currentTime);
-
+	public static boolean createDataPoint(final double data, final Watchable thisSecondary, final HiResDate currentTime,
+			boolean connectToPrev, final Color thisColor, final Series thisSeries,
+			final ColouredDataItem.OffsetProvider provider, final VersatileSeriesAdder theAdder) {
 		// just check that a valid answer was returned (if we don't have data,
 		// then NaN is returned
 		if (Double.isNaN(data)) {
@@ -394,6 +380,29 @@ public final class ShowTimeVariablePlot3 implements FilterOperation {
 		}
 
 		return connectToPrev;
+	}
+
+	/**
+	 * @param theCalculation    we're currently performing
+	 * @param thisPrimary       the point on the primary track
+	 * @param thisSecondary     the point on the secondary track
+	 * @param currentTime       the current time
+	 * @param connectToPrevious whether to connect to the previous point
+	 * @param thisColor         the current colour
+	 * @param thisSeries        the data series we're building up
+	 * @param theAdder
+	 * @return
+	 */
+	private static boolean createDataPoint(final toteCalculation theCalculation, final Watchable thisPrimary,
+			final Watchable thisSecondary, final HiResDate currentTime, final boolean connectToPrevious,
+			final Color thisColor, final Series thisSeries, final ColouredDataItem.OffsetProvider provider,
+			final VersatileSeriesAdder theAdder) {
+		final boolean connectToPrev = connectToPrevious;
+		// and perform the calculation
+		final double data = theCalculation.calculate(thisSecondary, thisPrimary, currentTime);
+
+		return createDataPoint(data, thisSecondary, currentTime, connectToPrev, thisColor, thisSeries, provider,
+				theAdder);
 	}
 
 	/**
@@ -807,105 +816,192 @@ public final class ShowTimeVariablePlot3 implements FilterOperation {
 						// CASE 5 - with time data, non-relative calculation
 						// ////////////////////////////////////////////////
 
-						// ok, step through the list
-						final Iterator<Editable> it = secondaryItems.iterator();
+						if (theCalculation instanceof DeltaRateToteCalculation) {
+							// We need to check if it is a timed windows calculation.
+							// More information about it here:
+							// https://github.com/debrief/debrief/issues/4829
+							final DeltaRateToteCalculation deltaRateCalc = (DeltaRateToteCalculation) theCalculation;
 
-						// remember the last point - used to check if we're
-						// passing through
-						// zero degs
-						double lastSecondaryValue = Double.NaN; // we we're
-																// using NaN but
-																// it
-						// was failing the equality
-						// test
-						HiResDate lastTime = null;
-
-						Watchable prevFix = null;
-						Color previousColor = null;
-
-						while (it.hasNext()) {
-							final Watchable thisSecondary = (Watchable) it.next();
-
-							// if it's a fix, hide it if the parent segment is hidden
-							if (thisSecondary instanceof FixWrapper) {
-								final FixWrapper fw = (FixWrapper) thisSecondary;
-								final Editable parent = fw.getSegment();
-								if (parent != null && parent instanceof TrackSegment) {
-									final TrackSegment ts = (TrackSegment) parent;
-									if (!ts.getVisible()) {
-										connectToPrevious = false;
-
-										// ok, the parent segment is hidden, skip this point
-										continue;
-									}
-								}
+							final Iterator<Editable> it = secondaryItems.iterator();
+							final Watchable[] items = new Watchable[secondaryItems.size()];
+							final HiResDate[] times = new HiResDate[items.length];
+							for (int i = 0; i < items.length && it.hasNext(); i++) {
+								items[i] = (Watchable) it.next();
+								times[i] = items[i].getTime();
 							}
 
-							// what's the time of this data point?
-							final HiResDate currentTime = thisSecondary.getTime();
+							final double[] values = deltaRateCalc.calculate(items, times,
+									DeltaRateToteCalcImplementation.DeltaRateToteCalcImplementationTest.TIME_WINDOW);
 
-							// / get the colour
-							Color thisColor = thisSecondary.getColor();
+							Watchable prevFix = null;
+							Color previousColor = null;
 
-							// when we have an interpolated point, we would have to use the previous
-							// color
-							if (thisSecondary instanceof FixWrapper) {
-								final FixWrapper secondaryAsFixWrapper = ((FixWrapper) thisSecondary);
-								if (secondaryAsFixWrapper.isInterpolated()) {
-									final Color actualColor = secondaryAsFixWrapper.getActualColor();
-									if (actualColor == null && previousColor != null) {
-										thisColor = previousColor;
-									}
-								}
-							}
-							previousColor = thisColor;
+							for (int i = 0; i < items.length; i++) {
+								final Watchable thisSecondary = items[i];
 
-							// produce the new calculated value
-							final double thisVal = theCalculation.calculate(thisSecondary, null, currentTime);
+								// if it's a fix, hide it if the parent segment is hidden
+								if (thisSecondary instanceof FixWrapper) {
+									final FixWrapper fw = (FixWrapper) thisSecondary;
+									final Editable parent = fw.getSegment();
+									if (parent != null && parent instanceof TrackSegment) {
+										final TrackSegment ts = (TrackSegment) parent;
+										if (!ts.getVisible()) {
+											connectToPrevious = false;
 
-							// SPECIAL HANDLING - do we need to check if this
-							// data passes
-							// through 360 degs?
-							if (theCalculation.isWrappableData()) {
-								// add extra points, if we need to
-								connectToPrevious = insertWrappingPoints(lastSecondaryValue, thisVal, lastTime,
-										currentTime, thisColor, thisSeries, connectToPrevious, provider, theAdder,
-										myOperation._clipMax);
-							}
-
-							// is this fix visible?
-							if (thisSecondary.getVisible()) {
-								// the point on the primary track we work with
-								final Watchable thisPrimary = null;
-
-								// ok, check the segments. if the last segment was dynamic, and we're not,
-								// use the last color. Do we know the previous fix?
-								if (prevFix != null && thisSecondary instanceof FixWrapper) {
-									final FixWrapper fix = (FixWrapper) thisSecondary;
-									final TrackSegment thisSeg = fix.getSegment();
-									if (thisSeg != null) {
-										if (prevFix instanceof FixWrapper) {
-											final FixWrapper pFix = (FixWrapper) prevFix;
-											final TrackSegment prevSeg = pFix.getSegment();
-											// is it from a different segment?
-											if (!thisSeg.equals(prevSeg) && (prevSeg instanceof DynamicInfillSegment
-													&& !(thisSeg instanceof DynamicInfillSegment))) {
-												// ok, use the previous color
-												thisColor = prevFix.getColor();
-											}
+											// ok, the parent segment is hidden, skip this point
+											continue;
 										}
 									}
 								}
 
-								// and add the new data point (if we have to)
-								connectToPrevious = createDataPoint(theCalculation, thisPrimary, thisSecondary,
-										currentTime, connectToPrevious, thisColor, thisSeries, provider, theAdder);
-								lastSecondaryValue = thisVal;
-								lastTime = new HiResDate(currentTime);
+								// / get the colour
+								Color thisColor = thisSecondary.getColor();
 
-								prevFix = thisSecondary;
-							} // whether this point is visible
-						} // stepping through this secondary collection
+								// when we have an interpolated point, we would have to use the previous
+								// color
+								if (thisSecondary instanceof FixWrapper) {
+									final FixWrapper secondaryAsFixWrapper = ((FixWrapper) thisSecondary);
+									if (secondaryAsFixWrapper.isInterpolated()) {
+										final Color actualColor = secondaryAsFixWrapper.getActualColor();
+										if (actualColor == null && previousColor != null) {
+											thisColor = previousColor;
+										}
+									}
+								}
+								previousColor = thisColor;
+
+								// is this fix visible?
+								if (thisSecondary.getVisible()) {
+									// ok, check the segments. if the last segment was dynamic, and we're not,
+									// use the last color. Do we know the previous fix?
+									if (prevFix != null && thisSecondary instanceof FixWrapper) {
+										final FixWrapper fix = (FixWrapper) thisSecondary;
+										final TrackSegment thisSeg = fix.getSegment();
+										if (thisSeg != null) {
+											if (prevFix instanceof FixWrapper) {
+												final FixWrapper pFix = (FixWrapper) prevFix;
+												final TrackSegment prevSeg = pFix.getSegment();
+												// is it from a different segment?
+												if (!thisSeg.equals(prevSeg) && (prevSeg instanceof DynamicInfillSegment
+														&& !(thisSeg instanceof DynamicInfillSegment))) {
+													// ok, use the previous color
+													thisColor = prevFix.getColor();
+												}
+											}
+										}
+									}
+
+									// and add the new data point (if we have to)
+									connectToPrevious = createDataPoint(values[i], thisSecondary, times[i],
+											connectToPrevious, thisColor, thisSeries, provider, theAdder);
+
+									prevFix = thisSecondary;
+								} // whether this point is visible
+
+							} // iterate all items.
+
+						} else {
+							// Ok, it is a regular instantaneous calculation.
+							// ok, step through the list
+							final Iterator<Editable> it = secondaryItems.iterator();
+
+							// remember the last point - used to check if we're
+							// passing through
+							// zero degs
+							double lastSecondaryValue = Double.NaN; // we we're
+																	// using NaN but
+																	// it
+							// was failing the equality
+							// test
+							HiResDate lastTime = null;
+
+							Watchable prevFix = null;
+							Color previousColor = null;
+
+							while (it.hasNext()) {
+								final Watchable thisSecondary = (Watchable) it.next();
+
+								// if it's a fix, hide it if the parent segment is hidden
+								if (thisSecondary instanceof FixWrapper) {
+									final FixWrapper fw = (FixWrapper) thisSecondary;
+									final Editable parent = fw.getSegment();
+									if (parent != null && parent instanceof TrackSegment) {
+										final TrackSegment ts = (TrackSegment) parent;
+										if (!ts.getVisible()) {
+											connectToPrevious = false;
+
+											// ok, the parent segment is hidden, skip this point
+											continue;
+										}
+									}
+								}
+
+								// what's the time of this data point?
+								final HiResDate currentTime = thisSecondary.getTime();
+
+								// / get the colour
+								Color thisColor = thisSecondary.getColor();
+
+								// when we have an interpolated point, we would have to use the previous
+								// color
+								if (thisSecondary instanceof FixWrapper) {
+									final FixWrapper secondaryAsFixWrapper = ((FixWrapper) thisSecondary);
+									if (secondaryAsFixWrapper.isInterpolated()) {
+										final Color actualColor = secondaryAsFixWrapper.getActualColor();
+										if (actualColor == null && previousColor != null) {
+											thisColor = previousColor;
+										}
+									}
+								}
+								previousColor = thisColor;
+
+								// produce the new calculated value
+								final double thisVal = theCalculation.calculate(thisSecondary, null, currentTime);
+
+								// SPECIAL HANDLING - do we need to check if this
+								// data passes
+								// through 360 degs?
+								if (theCalculation.isWrappableData()) {
+									// add extra points, if we need to
+									connectToPrevious = insertWrappingPoints(lastSecondaryValue, thisVal, lastTime,
+											currentTime, thisColor, thisSeries, connectToPrevious, provider, theAdder,
+											myOperation._clipMax);
+								}
+
+								// is this fix visible?
+								if (thisSecondary.getVisible()) {
+									// the point on the primary track we work with
+									final Watchable thisPrimary = null;
+
+									// ok, check the segments. if the last segment was dynamic, and we're not,
+									// use the last color. Do we know the previous fix?
+									if (prevFix != null && thisSecondary instanceof FixWrapper) {
+										final FixWrapper fix = (FixWrapper) thisSecondary;
+										final TrackSegment thisSeg = fix.getSegment();
+										if (thisSeg != null) {
+											if (prevFix instanceof FixWrapper) {
+												final FixWrapper pFix = (FixWrapper) prevFix;
+												final TrackSegment prevSeg = pFix.getSegment();
+												// is it from a different segment?
+												if (!thisSeg.equals(prevSeg) && (prevSeg instanceof DynamicInfillSegment
+														&& !(thisSeg instanceof DynamicInfillSegment))) {
+													// ok, use the previous color
+													thisColor = prevFix.getColor();
+												}
+											}
+										}
+									}
+
+									// and add the new data point (if we have to)
+									connectToPrevious = createDataPoint(theCalculation, thisPrimary, thisSecondary,
+											currentTime, connectToPrevious, thisColor, thisSeries, provider, theAdder);
+									lastSecondaryValue = thisVal;
+									lastTime = new HiResDate(currentTime);
+
+									prevFix = thisSecondary;
+								} // whether this point is visible
+							} // stepping through this secondary collection
+						}
 					} // whether there was time-related data for this track
 				} // whether this was a relative calculation
 
