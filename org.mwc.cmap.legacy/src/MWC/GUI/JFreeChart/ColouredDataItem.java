@@ -70,15 +70,20 @@ public class ColouredDataItem extends TimeSeriesDataItem implements AttractiveDa
 	private static final long serialVersionUID = 1L;
 
 	/**
+	 * WARNING. DON'T ADD THE FINAL MODIFIER TO THE FOLLOWING FIELDS.
+	 * https://github.com/debrief/debrief/issues/4861
+	 * Saul 
+	 */
+	/**
 	 * the color for this item
 	 */
-	private Color _myColor = null;
+	private Color _myColor = null; // do not make final, it will xstream serialization
 
 	/**
 	 * whether to connect this data item to the previous one
 	 *
 	 */
-	private boolean _connectToPrevious = false;
+	private boolean _connectToPrevious = false; // do not make final, it will xstream serialization
 
 	/**
 	 * the provider for the time offset
@@ -89,9 +94,9 @@ public class ColouredDataItem extends TimeSeriesDataItem implements AttractiveDa
 	/**
 	 * whether the symbol is visible in the parent object for this data item
 	 */
-	private boolean _parentSymVisible = false;
+	private boolean _parentSymVisible = false; // do not make final, it will xstream serialization
 
-	private boolean _isFilled = false;
+	private boolean _isFilled = false; // do not make final, it will xstream serialization
 
 	/**
 	 * (optionally) store the Debrief item that is being represented by this chart
