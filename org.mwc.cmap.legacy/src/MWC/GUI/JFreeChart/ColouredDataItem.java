@@ -72,13 +72,13 @@ public class ColouredDataItem extends TimeSeriesDataItem implements AttractiveDa
 	/**
 	 * the color for this item
 	 */
-	private Color _myColor;
+	private Color _myColor = null;
 
 	/**
 	 * whether to connect this data item to the previous one
 	 *
 	 */
-	private boolean _connectToPrevious;
+	private boolean _connectToPrevious = false;
 
 	/**
 	 * the provider for the time offset
@@ -89,9 +89,9 @@ public class ColouredDataItem extends TimeSeriesDataItem implements AttractiveDa
 	/**
 	 * whether the symbol is visible in the parent object for this data item
 	 */
-	private final boolean _parentSymVisible;
+	private boolean _parentSymVisible = false;
 
-	private final boolean _isFilled;
+	private boolean _isFilled = false;
 
 	/**
 	 * (optionally) store the Debrief item that is being represented by this chart
