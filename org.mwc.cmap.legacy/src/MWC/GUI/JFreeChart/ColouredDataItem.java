@@ -78,7 +78,7 @@ public class ColouredDataItem extends TimeSeriesDataItem implements AttractiveDa
 	 * whether to connect this data item to the previous one
 	 *
 	 */
-	private final boolean _connectToPrevious;
+	private boolean _connectToPrevious;
 
 	/**
 	 * the provider for the time offset
