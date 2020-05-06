@@ -77,13 +77,13 @@ public class ColouredDataItem extends TimeSeriesDataItem implements AttractiveDa
 	/**
 	 * the color for this item
 	 */
-	private Color _myColor = null; // do not make final, it will xstream serialization
+	private Color _myColor = null; // do not make final, it will break the xstream serialization
 
 	/**
 	 * whether to connect this data item to the previous one
 	 *
 	 */
-	private boolean _connectToPrevious = false; // do not make final, it will xstream serialization
+	private boolean _connectToPrevious = false; // do not make final, it will break the xstream serialization
 
 	/**
 	 * the provider for the time offset
@@ -94,9 +94,9 @@ public class ColouredDataItem extends TimeSeriesDataItem implements AttractiveDa
 	/**
 	 * whether the symbol is visible in the parent object for this data item
 	 */
-	private boolean _parentSymVisible = false; // do not make final, it will xstream serialization
+	private boolean _parentSymVisible = false; // do not make final, it will break the xstream serialization
 
-	private boolean _isFilled = false; // do not make final, it will xstream serialization
+	private boolean _isFilled = false; // do not make final, it will break the xstream serialization
 
 	/**
 	 * (optionally) store the Debrief item that is being represented by this chart
