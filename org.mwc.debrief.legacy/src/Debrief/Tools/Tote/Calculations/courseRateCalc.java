@@ -77,17 +77,18 @@ package Debrief.Tools.Tote.Calculations;
 
 import java.text.DecimalFormat;
 
+import Debrief.Tools.Tote.DeltaRateToteCalculation;
 import MWC.Algorithms.Conversions;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 
-public final class courseCalc extends plainCalc {
+public final class courseRateCalc extends plainCalc implements DeltaRateToteCalculation {
 
 	/////////////////////////////////////////////////////////////
 	// constructor
 	////////////////////////////////////////////////////////////
-	public courseCalc() {
-		super(new DecimalFormat("000.0"), "Course", "degs");
+	public courseRateCalc() {
+		super(new DecimalFormat("000.0"), "Course Rate (abs)", "degs");
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -110,7 +111,7 @@ public final class courseCalc extends plainCalc {
 	 */
 	@Override
 	public final boolean isWrappableData() {
-		return true;
+		return false;
 	}
 
 	@Override
@@ -120,5 +121,15 @@ public final class courseCalc extends plainCalc {
 			return NOT_APPLICABLE;
 
 		return _myPattern.format(calculate(primary, secondary, time));
+	}
+
+	@Override
+	public double[] calculate(Watchable[] primary, HiResDate[] thisTime, long windowSizeMillis) {
+		final double[] measure = new double[primary.length];
+		for (int i = 0; i < primary.length; i++) {
+			measure[i] = Conversions.Rads2Degs(primary[i].getCourse());
+		}
+		
+		return DeltaRateToteCalcImplementation.calculate(measure, thisTime, windowSizeMillis);
 	}
 }

@@ -57,10 +57,12 @@ import Debrief.Tools.Tote.Calculations.atbCalc;
 import Debrief.Tools.Tote.Calculations.bearingCalc;
 import Debrief.Tools.Tote.Calculations.bearingRateCalc;
 import Debrief.Tools.Tote.Calculations.courseCalc;
+import Debrief.Tools.Tote.Calculations.courseRateCalc;
 import Debrief.Tools.Tote.Calculations.depthCalc;
 import Debrief.Tools.Tote.Calculations.rangeCalc;
 import Debrief.Tools.Tote.Calculations.relBearingCalc;
 import Debrief.Tools.Tote.Calculations.speedCalc;
+import Debrief.Tools.Tote.Calculations.speedRateCalc;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Defaults;
 import MWC.GUI.Editable;
@@ -116,7 +118,9 @@ public class GraphPanelToolbar extends JPanel {
 	private final CalculationHolder[] operations = new CalculationHolder[] {
 			new CalculationHolder(new depthCalc(), new DepthFormatter(), false, 0),
 			new CalculationHolder(new courseCalc(), new CourseFormatter(), false, 360),
+			new CalculationHolder(new courseRateCalc(), new CourseFormatter(), false, 0),
 			new CalculationHolder(new speedCalc(), null, false, 0),
+			new CalculationHolder(new speedRateCalc(), null, false, 0),
 			new CalculationHolder(new rangeCalc(), null, true, 0),
 			new CalculationHolder(new bearingCalc(), null, true, 360),
 			new CalculationHolder(new bearingRateCalc(), new BearingRateFormatter(), true, 180),

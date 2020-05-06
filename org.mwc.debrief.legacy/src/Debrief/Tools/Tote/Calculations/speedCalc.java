@@ -77,11 +77,10 @@ package Debrief.Tools.Tote.Calculations;
 
 import java.text.DecimalFormat;
 
-import Debrief.Tools.Tote.DeltaRateToteCalculation;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 
-public final class speedCalc extends plainCalc implements DeltaRateToteCalculation {
+public final class speedCalc extends plainCalc {
 
 	/////////////////////////////////////////////////////////////
 	// constructor
@@ -101,16 +100,6 @@ public final class speedCalc extends plainCalc implements DeltaRateToteCalculati
 			res = primary.getSpeed();
 		}
 		return res;
-	}
-
-	@Override
-	public double[] calculate(final Watchable[] primary, final HiResDate[] thisTime, final long windowSizeMillis) {
-		final double[] measure = new double[primary.length];
-		for (int i = 0; i < primary.length; i++) {
-			measure[i] = primary[i].getSpeed();
-		}
-
-		return DeltaRateToteCalcImplementation.calculate(measure, thisTime, windowSizeMillis);
 	}
 
 	/**

@@ -69,10 +69,12 @@ import Debrief.Tools.Tote.Calculations.atbCalc;
 import Debrief.Tools.Tote.Calculations.bearingCalc;
 import Debrief.Tools.Tote.Calculations.bearingRateCalc;
 import Debrief.Tools.Tote.Calculations.courseCalc;
+import Debrief.Tools.Tote.Calculations.courseRateCalc;
 import Debrief.Tools.Tote.Calculations.depthCalc;
 import Debrief.Tools.Tote.Calculations.rangeCalc;
 import Debrief.Tools.Tote.Calculations.relBearingCalc;
 import Debrief.Tools.Tote.Calculations.speedCalc;
+import Debrief.Tools.Tote.Calculations.speedRateCalc;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.ISecondaryTrack;
 import Debrief.Wrappers.Track.DynamicInfillSegment;
@@ -1259,8 +1261,10 @@ public final class ShowTimeVariablePlot3 implements FilterOperation {
 		_theOperations.addElement(new CalculationHolder(new depthCalc(), new DepthFormatter(), false, 0));
 
 		_theOperations.addElement(new CalculationHolder(new courseCalc(), new CourseFormatter(), false, 360));
+		_theOperations.addElement(new CalculationHolder(new courseRateCalc(), new CourseFormatter(), false, 0));
 
 		_theOperations.addElement(new CalculationHolder(new speedCalc(), null, false, 0));
+		_theOperations.addElement(new CalculationHolder(new speedRateCalc(), null, false, 0));
 		_theOperations.addElement(new CalculationHolder(new rangeCalc(), null, true, 0));
 		_theOperations.addElement(new CalculationHolder(new bearingCalc(), null, true, 360));
 		_theOperations.addElement(new CalculationHolder(new bearingRateCalc(), new BearingRateFormatter(), true, 180));
