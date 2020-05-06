@@ -21,7 +21,11 @@ import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -196,6 +200,19 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 		final GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 		gridData.horizontalSpan = 3;
 		titleLabel.setLayoutData(gridData);
+		final FontData[] titleFontData = this.titleLabel.getFont().getFontData();
+		for (int i = 0; i < titleFontData.length; i++) {
+			titleFontData[i].setHeight(20);
+		}
+		final Font fontTitle = new Font(parent.getDisplay(), titleFontData);
+		this.titleLabel.setFont(fontTitle);
+		this.titleLabel.addDisposeListener(new DisposeListener() {
+
+			@Override
+			public void widgetDisposed(final DisposeEvent e) {
+				fontTitle.dispose();
+			}
+		});
 
 		final GridData testConnectionGridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 		testConnectionGridData.horizontalAlignment = GridData.END;
@@ -359,9 +376,9 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 							final int offsetCheck; // WARNING. THIS MIGHT CHANGE ACCODING TO THE THEME. Saul
 							if (OSUtils.LINUX) {
 								offsetCheck = 19;
-							}else if (OSUtils.WIN) {
+							} else if (OSUtils.WIN) {
 								offsetCheck = 5;
-							}else {
+							} else {
 								offsetCheck = 19;
 							}
 
