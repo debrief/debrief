@@ -39,6 +39,12 @@ public class TreeNode {
 	public static enum NodeType {
 		ROOT, PLATFORM, MEASURE, SENSOR, DATAFILE
 	}
+	
+	public static final String STATE = "States";
+	
+	public static final String CONTACTS = "Contacts";
+	
+	public static final String COMMENT = "Comments";
 
 	public static class TreeNodeTest extends TestCase {
 
