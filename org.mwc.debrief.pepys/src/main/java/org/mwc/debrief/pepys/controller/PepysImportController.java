@@ -107,9 +107,9 @@ public class PepysImportController {
 	private final String SQLITE_FILE_SUFFIX = "sqlite";
 
 	public PepysImportController(final Shell parent, final AbstractConfiguration model, final AbstractViewSWT view) {
-		model.addDatafileTypeFilter(new TypeDomain(State.class, "States", true, IMAGE_PREFIX + "fix.png"));
-		model.addDatafileTypeFilter(new TypeDomain(Contact.class, "Contacts", true, IMAGE_PREFIX + "bearing.png"));
-		model.addDatafileTypeFilter(new TypeDomain(Comment.class, "Comments", true, IMAGE_PREFIX + "narrative.png"));
+		model.addDatafileTypeFilter(new TypeDomain(State.class, TreeNode.STATE, true, IMAGE_PREFIX + "fix.png"));
+		model.addDatafileTypeFilter(new TypeDomain(Contact.class, TreeNode.CONTACTS, true, IMAGE_PREFIX + "bearing.png"));
+		model.addDatafileTypeFilter(new TypeDomain(Comment.class, TreeNode.COMMENT, true, IMAGE_PREFIX + "narrative.png"));
 
 		_model = model;
 		_view = view;
