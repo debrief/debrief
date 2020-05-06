@@ -118,7 +118,7 @@ public class GraphPanelToolbar extends JPanel {
 	private final CalculationHolder[] operations = new CalculationHolder[] {
 			new CalculationHolder(new depthCalc(), new DepthFormatter(), false, 0),
 			new CalculationHolder(new courseCalc(), new CourseFormatter(), false, 360),
-			new CalculationHolder(new courseRateCalc(), new CourseFormatter(), false, 0),
+			new CalculationHolder(new courseRateCalc(), null, false, 0),
 			new CalculationHolder(new speedCalc(), null, false, 0),
 			new CalculationHolder(new speedRateCalc(), null, false, 0),
 			new CalculationHolder(new rangeCalc(), null, true, 0),

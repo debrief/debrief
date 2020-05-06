@@ -206,7 +206,7 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator {
 
 			_theOperations.addElement(new CalculationHolder(new depthCalc(), new DepthFormatter(), false, 0));
 			_theOperations.addElement(new CalculationHolder(new courseCalc(), new CourseFormatter(), false, 360));
-			_theOperations.addElement(new CalculationHolder(new courseRateCalc(), new CourseFormatter(), false, 0));
+			_theOperations.addElement(new CalculationHolder(new courseRateCalc(), null, false, 0));
 			_theOperations.addElement(new CalculationHolder(new speedCalc(), null, false, 0));
 			_theOperations.addElement(new CalculationHolder(new speedRateCalc(), null, false, 0));
 			_theOperations.addElement(new CalculationHolder(new rangeCalc(), null, true, 0));
