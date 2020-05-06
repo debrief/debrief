@@ -838,7 +838,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation {
 							Watchable prevFix = null;
 							Color previousColor = null;
 
-							for (int i = 0; i < items.length; i++) {
+							for (int i = 0; i < items.length && i < values.length; i++) {
 								final Watchable thisSecondary = items[i];
 
 								// if it's a fix, hide it if the parent segment is hidden
