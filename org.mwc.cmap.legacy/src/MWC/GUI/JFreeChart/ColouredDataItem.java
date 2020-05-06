@@ -71,8 +71,7 @@ public class ColouredDataItem extends TimeSeriesDataItem implements AttractiveDa
 
 	/**
 	 * WARNING. DON'T ADD THE FINAL MODIFIER TO THE FOLLOWING FIELDS.
-	 * https://github.com/debrief/debrief/issues/4861
-	 * Saul 
+	 * https://github.com/debrief/debrief/issues/4861 Saul
 	 */
 	/**
 	 * the color for this item
