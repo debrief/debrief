@@ -440,65 +440,13 @@ public final class ShowTimeVariablePlot3 implements FilterOperation {
 		// sort out the adder for what we're doing
 		if (HiResDate.inHiResProcessingMode()) {
 			theSeriesCollection = new TimeSeriesCollection();
-			theAdder = new VersatileSeriesAdder() {
-				@Override
-				public void add(final Series thisSeries, final HiResDate theTime, final double data,
-						final Color thisColor, final boolean connectToPrevious,
-						final ColouredDataItem.OffsetProvider provider1, final boolean parentIsVisible) {
-					// HI-RES NOT DONE - FixedMillisecond should be converted
-					// some-how to
-					// FixedMicroSecond
-					final TimeSeriesDataItem newItem = new ColouredDataItem(
-							new FixedMillisecond((long) (theTime.getMicros() / 1000d)), data, thisColor,
-							connectToPrevious, provider1, parentIsVisible, true);
-
-					// To change body of implemented methods use File | Settings
-					// | File
-					// Templates.
-					final TimeSeries theSeries = (TimeSeries) thisSeries;
-					theSeries.add(newItem);
-				}
-
-				@Override
-				public void addSeries(final AbstractSeriesDataset collection, final Series thisSeries,
-						final Color defaultColor) {
-					final TimeSeriesCollection coll = (TimeSeriesCollection) collection;
-					coll.addSeries((TimeSeries) thisSeries);
-
-				}
-			};
+			theAdder = createHiResProcessingAdder();
 
 		} else {
 			theSeriesCollection = new TimeSeriesCollection();
 
 			// right, just working with normal dates
-			theAdder = new VersatileSeriesAdder() {
-				@Override
-				public void add(final Series thisSeries, final HiResDate theTime, final double data,
-						final Color thisColor, final boolean connectToPrevious,
-						final ColouredDataItem.OffsetProvider provider1, final boolean parentIsVisible) {
-					// HI-RES NOT DONE - FixedMillisecond should be converted
-					// some-how to
-					// FixedMicroSecond
-					final ColouredDataItem newItem = new ColouredDataItem(
-							new FixedMillisecond(theTime.getDate().getTime()), data, thisColor, connectToPrevious,
-							provider1, parentIsVisible, true);
-
-					// To change body of implemented methods use File | Settings
-					// | File
-					// Templates.
-					final TimeSeries theSeries = (TimeSeries) thisSeries;
-					theSeries.add(newItem);
-				}
-
-				@Override
-				public void addSeries(final AbstractSeriesDataset collection, final Series thisSeries,
-						final Color defaultColor) {
-					final TimeSeriesCollection coll = (TimeSeriesCollection) collection;
-					coll.addSeries((TimeSeries) thisSeries);
-				}
-
-			};
+			theAdder = createNonHiResProcessingAdder();
 		}
 
 		// calculate the data variables for our tracks
@@ -1012,17 +960,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation {
 				// if the series if empty, set it to null, rather than create
 				// one of
 				// empty length
-				if (thisSeries instanceof XYSeries) {
-					final XYSeries ser = (XYSeries) thisSeries;
-					if (ser.getItemCount() == 0) {
-						thisSeries = null;
-					}
-				} else if (thisSeries instanceof TimeSeries) {
-					final TimeSeries ser = (TimeSeries) thisSeries;
-					if (ser.getItemCount() == 0) {
-						thisSeries = null;
-					}
-				}
+				thisSeries = nullSerieIfEmpty(thisSeries);
 
 				// did we find anything?
 				if (thisSeries != null) {
@@ -1038,6 +976,85 @@ public final class ShowTimeVariablePlot3 implements FilterOperation {
 		}
 
 		return theSeriesCollection;
+	}
+
+	public static Series nullSerieIfEmpty(Series thisSeries) {
+		if (thisSeries instanceof XYSeries) {
+			final XYSeries ser = (XYSeries) thisSeries;
+			if (ser.getItemCount() == 0) {
+				thisSeries = null;
+			}
+		} else if (thisSeries instanceof TimeSeries) {
+			final TimeSeries ser = (TimeSeries) thisSeries;
+			if (ser.getItemCount() == 0) {
+				thisSeries = null;
+			}
+		}
+		return thisSeries;
+	}
+
+	public static VersatileSeriesAdder createNonHiResProcessingAdder() {
+		VersatileSeriesAdder theAdder;
+		theAdder = new VersatileSeriesAdder() {
+			@Override
+			public void add(final Series thisSeries, final HiResDate theTime, final double data,
+					final Color thisColor, final boolean connectToPrevious,
+					final ColouredDataItem.OffsetProvider provider1, final boolean parentIsVisible) {
+				// HI-RES NOT DONE - FixedMillisecond should be converted
+				// some-how to
+				// FixedMicroSecond
+				final ColouredDataItem newItem = new ColouredDataItem(
+						new FixedMillisecond(theTime.getDate().getTime()), data, thisColor, connectToPrevious,
+						provider1, parentIsVisible, true);
+
+				// To change body of implemented methods use File | Settings
+				// | File
+				// Templates.
+				final TimeSeries theSeries = (TimeSeries) thisSeries;
+				theSeries.add(newItem);
+			}
+
+			@Override
+			public void addSeries(final AbstractSeriesDataset collection, final Series thisSeries,
+					final Color defaultColor) {
+				final TimeSeriesCollection coll = (TimeSeriesCollection) collection;
+				coll.addSeries((TimeSeries) thisSeries);
+			}
+
+		};
+		return theAdder;
+	}
+
+	public static VersatileSeriesAdder createHiResProcessingAdder() {
+		VersatileSeriesAdder theAdder;
+		theAdder = new VersatileSeriesAdder() {
+			@Override
+			public void add(final Series thisSeries, final HiResDate theTime, final double data,
+					final Color thisColor, final boolean connectToPrevious,
+					final ColouredDataItem.OffsetProvider provider1, final boolean parentIsVisible) {
+				// HI-RES NOT DONE - FixedMillisecond should be converted
+				// some-how to
+				// FixedMicroSecond
+				final TimeSeriesDataItem newItem = new ColouredDataItem(
+						new FixedMillisecond((long) (theTime.getMicros() / 1000d)), data, thisColor,
+						connectToPrevious, provider1, parentIsVisible, true);
+
+				// To change body of implemented methods use File | Settings
+				// | File
+				// Templates.
+				final TimeSeries theSeries = (TimeSeries) thisSeries;
+				theSeries.add(newItem);
+			}
+
+			@Override
+			public void addSeries(final AbstractSeriesDataset collection, final Series thisSeries,
+					final Color defaultColor) {
+				final TimeSeriesCollection coll = (TimeSeriesCollection) collection;
+				coll.addSeries((TimeSeries) thisSeries);
+
+			}
+		};
+		return theAdder;
 	}
 
 	/**
