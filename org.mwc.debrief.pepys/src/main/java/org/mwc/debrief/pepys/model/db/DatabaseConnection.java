@@ -171,7 +171,7 @@ public abstract class DatabaseConnection {
 			final WorldLocation topRight = currentArea.getTopRight();
 			final WorldLocation bottomLeft = currentArea.getBottomLeft();
 
-			final String polygonArea = "SRID=4326;POLYGON((" + topLeft.getLong() + " " + topLeft.getLat() + ","
+			final String polygonArea = getSRID() + "POLYGON((" + topLeft.getLong() + " " + topLeft.getLat() + ","
 					+ bottomLeft.getLong() + " " + bottomLeft.getLat() + "," + bottomRight.getLong() + " "
 					+ bottomRight.getLat() + "," + topRight.getLong() + " " + topRight.getLat() + ","
 					+ topLeft.getLong() + " " + topLeft.getLat() + "))";
@@ -188,6 +188,8 @@ public abstract class DatabaseConnection {
 	}
 
 	protected abstract String createLocationQuery(final String tableName, final String columnName);
+	
+	public abstract String getSRID();
 
 	public Collection<Condition> createPeriodFilter(final TimePeriod period, final Class<?> type) {
 		final ArrayList<Condition> conditions = new ArrayList<Condition>();

@@ -158,4 +158,12 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 		final String sql = "SELECT InitSpatialMetadata()";
 		statement.execute(sql);
 	}
+
+	@Override
+	/**
+	 * We need to disable the SRID for Sqlite.
+	 */
+	public String getSRID() {
+		return "";
+	}
 }
