@@ -39,13 +39,13 @@ public class DeltaRateToteCalcImplementation {
 				time[i] = new HiResDate(timeDate[i]);
 			}
 
-			final double[] deltaRateRate = DeltaRateToteCalcImplementation.calculate(measures, time, TIME_WINDOW);
+			final double[] deltaRateRate = DeltaRateToteCalcImplementation.calculateRate(measures, time, TIME_WINDOW);
 
 			assertArrayEquals("Delta Rate Tote Calculation Rate", expectedAnswer, deltaRateRate, 1e-5);
 		};
 	}
 
-	public static double[] calculate(final double[] measure, final HiResDate[] time, final long windowSizeMillis) {
+	public static double[] calculateRate(final double[] measure, final HiResDate[] time, final long windowSizeMillis) {
 		if (measure.length > 2 && time.length == measure.length) {
 
 			// Let's calculate the delta rate
@@ -55,48 +55,53 @@ public class DeltaRateToteCalcImplementation {
 						/ ((time[i].getMicros() - time[i - 1].getMicros()) / 1000.0 / 1000.0 - 1);
 			}
 
-			// Let's calculate the delta rate in a period.
-			final double[] deltaInPeriod = new double[measure.length];
-			final int[] countInPeriod = new int[measure.length];
-			double currentSum = 0;
-			int minSumIndex = 0;
-			int maxSumIndex = 0;
-			for (int i = 1; i < deltaInPeriod.length; i++) {
-				final long earlest = time[i].getMicros() - windowSizeMillis * 1000;
-				final long latest = time[i].getMicros() + windowSizeMillis * 1000;
-				while (minSumIndex < deltaRate.length && time[minSumIndex].getMicros() <= earlest) {
-					if (minSumIndex != maxSumIndex) {
-						currentSum -= deltaRate[minSumIndex];
-					}
-					++minSumIndex;
-
-					// In case the minimum pass the latest
-					maxSumIndex = Math.max(maxSumIndex, minSumIndex);
-				}
-
-				while (maxSumIndex < deltaRate.length && time[maxSumIndex].getMicros() < latest) {
-					currentSum += deltaRate[maxSumIndex];
-					++maxSumIndex;
-				}
-				deltaInPeriod[i] = currentSum;
-				countInPeriod[i] = maxSumIndex - minSumIndex;
-			}
-
-			// Let's calculate the average
-			final double[] average = new double[measure.length];
-			for (int i = 1; i < average.length; i++) {
-				average[i] = deltaInPeriod[i] / countInPeriod[i];
-			}
-
-			// Let's calculate the delta rate
-			final double[] deltaRateRate = new double[measure.length];
-			for (int i = 0; i < deltaRateRate.length - 2; i++) {
-				deltaRateRate[i + 2] = (average[i + 2] - average[i + 1])
-						/ ((time[i + 2].getMicros() - time[i + 1].getMicros()) / 1000.0 / 1000.0 - 1);
-			}
-			return deltaRateRate;
+			return deltaRate;
 		}
 		return new double[] {};
+	}
+
+	public static double[] calculateDeltaRateRate(final double[] measure, final HiResDate[] time,
+			final long windowSizeMillis, final double[] deltaRate) {
+		// Let's calculate the delta rate in a period.
+		final double[] deltaInPeriod = new double[measure.length];
+		final int[] countInPeriod = new int[measure.length];
+		double currentSum = 0;
+		int minSumIndex = 0;
+		int maxSumIndex = 0;
+		for (int i = 1; i < deltaInPeriod.length; i++) {
+			final long earlest = time[i].getMicros() - windowSizeMillis * 1000;
+			final long latest = time[i].getMicros() + windowSizeMillis * 1000;
+			while (minSumIndex < deltaRate.length && time[minSumIndex].getMicros() <= earlest) {
+				if (minSumIndex != maxSumIndex) {
+					currentSum -= deltaRate[minSumIndex];
+				}
+				++minSumIndex;
+
+				// In case the minimum pass the latest
+				maxSumIndex = Math.max(maxSumIndex, minSumIndex);
+			}
+
+			while (maxSumIndex < deltaRate.length && time[maxSumIndex].getMicros() < latest) {
+				currentSum += deltaRate[maxSumIndex];
+				++maxSumIndex;
+			}
+			deltaInPeriod[i] = currentSum;
+			countInPeriod[i] = maxSumIndex - minSumIndex;
+		}
+
+		// Let's calculate the average
+		final double[] average = new double[measure.length];
+		for (int i = 1; i < average.length; i++) {
+			average[i] = deltaInPeriod[i] / countInPeriod[i];
+		}
+
+		// Let's calculate the delta rate
+		final double[] deltaRateRate = new double[measure.length];
+		for (int i = 0; i < deltaRateRate.length - 2; i++) {
+			deltaRateRate[i + 2] = (average[i + 2] - average[i + 1])
+					/ ((time[i + 2].getMicros() - time[i + 1].getMicros()) / 1000.0 / 1000.0 - 1);
+		}
+		return deltaRateRate;
 	}
 
 }

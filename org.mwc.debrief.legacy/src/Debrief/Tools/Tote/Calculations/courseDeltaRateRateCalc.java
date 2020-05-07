@@ -82,13 +82,13 @@ import MWC.Algorithms.Conversions;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 
-public final class courseRateCalc extends plainCalc implements DeltaRateToteCalculation {
+public final class courseDeltaRateRateCalc extends plainCalc implements DeltaRateToteCalculation {
 
 	/////////////////////////////////////////////////////////////
 	// constructor
 	////////////////////////////////////////////////////////////
-	public courseRateCalc() {
-		super(new DecimalFormat("000.0"), "Course Rate (abs)", "degs/sec");
+	public courseDeltaRateRateCalc() {
+		super(new DecimalFormat("000.0"), "Course Delta Rate (abs)", "degs/sec/sec");
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -130,6 +130,7 @@ public final class courseRateCalc extends plainCalc implements DeltaRateToteCalc
 			measure[i] = Conversions.Rads2Degs(primary[i].getCourse());
 		}
 		
-		return DeltaRateToteCalcImplementation.calculateRate(measure, thisTime, windowSizeMillis);
+		final double[] deltaRate = DeltaRateToteCalcImplementation.calculateRate(measure, thisTime, windowSizeMillis);
+		return DeltaRateToteCalcImplementation.calculateDeltaRateRate(measure, thisTime, windowSizeMillis, deltaRate);
 	}
 }

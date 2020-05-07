@@ -88,7 +88,7 @@ public final class speedRateCalc extends plainCalc implements DeltaRateToteCalcu
 	////////////////////////////////////////////////////////////
 
 	public speedRateCalc() {
-		super(new DecimalFormat("00.00"), "Speed Rate (abs)", "Knots");
+		super(new DecimalFormat("00.00"), "Speed Rate (abs)", "Knots/sec");
 	}
 	/////////////////////////////////////////////////////////////
 	// member functions
@@ -110,7 +110,7 @@ public final class speedRateCalc extends plainCalc implements DeltaRateToteCalcu
 			measure[i] = primary[i].getSpeed();
 		}
 
-		return DeltaRateToteCalcImplementation.calculate(measure, thisTime, windowSizeMillis);
+		return DeltaRateToteCalcImplementation.calculateRate(measure, thisTime, windowSizeMillis);
 	}
 
 	/**

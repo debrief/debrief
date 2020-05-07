@@ -69,12 +69,14 @@ import Debrief.Tools.Tote.Calculations.atbCalc;
 import Debrief.Tools.Tote.Calculations.bearingCalc;
 import Debrief.Tools.Tote.Calculations.bearingRateCalc;
 import Debrief.Tools.Tote.Calculations.courseCalc;
+import Debrief.Tools.Tote.Calculations.courseDeltaRateRateCalc;
 import Debrief.Tools.Tote.Calculations.courseRateCalc;
 import Debrief.Tools.Tote.Calculations.depthCalc;
 import Debrief.Tools.Tote.Calculations.rangeCalc;
 import Debrief.Tools.Tote.Calculations.relBearingCalc;
 import Debrief.Tools.Tote.Calculations.speedCalc;
 import Debrief.Tools.Tote.Calculations.speedRateCalc;
+import Debrief.Tools.Tote.Calculations.speedRateRateCalc;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.ISecondaryTrack;
 import Debrief.Wrappers.Track.DynamicInfillSegment;
@@ -838,7 +840,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation {
 							Watchable prevFix = null;
 							Color previousColor = null;
 
-							for (int i = 0; i < items.length; i++) {
+							for (int i = 0; i < items.length && i < values.length; i++) {
 								final Watchable thisSecondary = items[i];
 
 								// if it's a fix, hide it if the parent segment is hidden
@@ -1262,9 +1264,11 @@ public final class ShowTimeVariablePlot3 implements FilterOperation {
 
 		_theOperations.addElement(new CalculationHolder(new courseCalc(), new CourseFormatter(), false, 360));
 		_theOperations.addElement(new CalculationHolder(new courseRateCalc(), null, false, 0));
+		_theOperations.addElement(new CalculationHolder(new courseDeltaRateRateCalc(), null, false, 0));
 
 		_theOperations.addElement(new CalculationHolder(new speedCalc(), null, false, 0));
 		_theOperations.addElement(new CalculationHolder(new speedRateCalc(), null, false, 0));
+		_theOperations.addElement(new CalculationHolder(new speedRateRateCalc(), null, false, 0));
 		_theOperations.addElement(new CalculationHolder(new rangeCalc(), null, true, 0));
 		_theOperations.addElement(new CalculationHolder(new bearingCalc(), null, true, 360));
 		_theOperations.addElement(new CalculationHolder(new bearingRateCalc(), new BearingRateFormatter(), true, 180));
