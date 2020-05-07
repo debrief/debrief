@@ -120,11 +120,7 @@ public class GraphPanelToolbar extends JPanel {
 	private final CalculationHolder[] operations = new CalculationHolder[] {
 			new CalculationHolder(new depthCalc(), new DepthFormatter(), false, 0),
 			new CalculationHolder(new courseCalc(), new CourseFormatter(), false, 360),
-			new CalculationHolder(new courseRateCalc(), null, false, 0),
-			new CalculationHolder(new courseDeltaRateRateCalc(), null, false, 0),
 			new CalculationHolder(new speedCalc(), null, false, 0),
-			new CalculationHolder(new speedRateCalc(), null, false, 0),
-			new CalculationHolder(new speedRateRateCalc(), null, false, 0),
 			new CalculationHolder(new rangeCalc(), null, true, 0),
 			new CalculationHolder(new bearingCalc(), null, true, 360),
 			new CalculationHolder(new bearingRateCalc(), new BearingRateFormatter(), true, 180),
