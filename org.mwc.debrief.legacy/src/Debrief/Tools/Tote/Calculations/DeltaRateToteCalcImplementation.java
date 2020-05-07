@@ -22,9 +22,13 @@ public class DeltaRateToteCalcImplementation {
 					+ "22/04/09 18:01:26," + "22/04/09 18:01:34";
 			final double[] measures = new double[] { 289.78, 289.61, 289.37, 289.18, 289, 289, 289.08, 289.38, 289.52,
 					289.6, 289.7, 289.73, 289.69 };
-			final double[] expectedAnswer = new double[] { 0, 0, 0.000226253464349, 0.000222222222222,
+			final double[] expectedDeltaRateAnswer = new double[] { 0, 0, 0.000226253464349, 0.000222222222222,
 					6.61375661376134E-05, -6.29154795821912E-05, 0, 0, -1.40996569567961E-05, 0.000298735655878,
 					0.000501339929911, 0.000499370118418, 0.000598702443941, };
+
+			final double[] expectedRate = new double[] { 0, -0.024285714285709, -0.034285714285716, -0.027142857142857,
+					-0.025714285714287, 0, 0.0099999999999, 0.042857142857145, 0.019999999999998, 0.011428571428577,
+					0.01428571428571, 0.004285714285719, -0.005714285714289 };
 
 			final SimpleDateFormat format = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
 
@@ -39,9 +43,14 @@ public class DeltaRateToteCalcImplementation {
 				time[i] = new HiResDate(timeDate[i]);
 			}
 
-			final double[] deltaRateRate = DeltaRateToteCalcImplementation.calculateRate(measures, time, TIME_WINDOW);
+			final double[] rate = DeltaRateToteCalcImplementation.calculateRate(measures, time, TIME_WINDOW);
 
-			assertArrayEquals("Delta Rate Tote Calculation Rate", expectedAnswer, deltaRateRate, 1e-5);
+			assertArrayEquals("Delta Rate Tote Calculation Rate", expectedRate, rate, 1e-5);
+
+			final double[] deltaRateRate = DeltaRateToteCalcImplementation.calculateDeltaRateRate(measures, time,
+					TIME_WINDOW, rate);
+
+			assertArrayEquals("Delta Rate Tote Calculation Rate", expectedDeltaRateAnswer, deltaRateRate, 1e-5);
 		};
 	}
 
