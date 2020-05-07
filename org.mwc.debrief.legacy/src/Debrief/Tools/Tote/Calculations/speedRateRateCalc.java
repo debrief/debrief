@@ -103,7 +103,6 @@ public final class speedRateRateCalc extends plainCalc implements DeltaRateToteC
 		return res;
 	}
 
-	@Override
 	public double[] calculate(final Watchable[] primary, final HiResDate[] thisTime, final long windowSizeMillis) {
 		final double[] measure = new double[primary.length];
 		for (int i = 0; i < primary.length; i++) {

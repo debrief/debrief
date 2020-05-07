@@ -123,7 +123,6 @@ public final class courseRateCalc extends plainCalc implements DeltaRateToteCalc
 		return _myPattern.format(calculate(primary, secondary, time));
 	}
 
-	@Override
 	public double[] calculate(Watchable[] primary, HiResDate[] thisTime, long windowSizeMillis) {
 		final double[] measure = new double[primary.length];
 		for (int i = 0; i < primary.length; i++) {
