@@ -104,6 +104,16 @@ public final class courseRateCalc extends plainCalc implements DeltaRateToteCalc
 		return res;
 	}
 
+	@Override
+	public double[] calculate(final Watchable[] primary, final HiResDate[] thisTime, final long windowSizeMillis) {
+		final double[] measure = new double[primary.length];
+		for (int i = 0; i < primary.length; i++) {
+			measure[i] = Conversions.Rads2Degs(primary[i].getCourse());
+		}
+
+		return DeltaRateToteCalcImplementation.calculateRate(measure, thisTime, windowSizeMillis);
+	}
+
 	/**
 	 * does this calculation require special bearing handling (prevent wrapping
 	 * through 360 degs)
@@ -121,14 +131,5 @@ public final class courseRateCalc extends plainCalc implements DeltaRateToteCalc
 			return NOT_APPLICABLE;
 
 		return _myPattern.format(calculate(primary, secondary, time));
-	}
-
-	public double[] calculate(Watchable[] primary, HiResDate[] thisTime, long windowSizeMillis) {
-		final double[] measure = new double[primary.length];
-		for (int i = 0; i < primary.length; i++) {
-			measure[i] = Conversions.Rads2Degs(primary[i].getCourse());
-		}
-		
-		return DeltaRateToteCalcImplementation.calculateRate(measure, thisTime, windowSizeMillis);
 	}
 }
