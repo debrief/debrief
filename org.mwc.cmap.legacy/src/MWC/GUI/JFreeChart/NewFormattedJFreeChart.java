@@ -24,9 +24,12 @@ import java.awt.Stroke;
 import java.beans.IntrospectionException;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.beans.PropertyDescriptor;
 import java.text.DateFormat;
 import java.util.ArrayList;
+
+import javax.swing.event.EventListenerList;
 
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
@@ -43,11 +46,13 @@ import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.StepperListener;
 import MWC.GUI.ToolParent;
+import MWC.GUI.hasPropertyListeners;
 import MWC.GUI.JFreeChart.DateAxisEditor.DatedRNFormatter;
 import MWC.GUI.Properties.GraphicSizePropertyEditor;
 import MWC.GUI.Properties.LineWidthPropertyEditor;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
+import MWC.Tools.Tote.DeltaRateToteCalculation;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 /**
@@ -56,7 +61,7 @@ import MWC.Utilities.TextFormatting.GMTDateFormat;
  * axis steps/sizes, labels
  * *******************************************************************
  */
-public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editable {
+public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editable, hasPropertyListeners {
 	public static class ChartDateFormatPropertyEditor extends MWC.GUI.Properties.DateFormatPropertyEditor {
 		static public final String AUTO_VALUE = "Auto";
 
@@ -121,6 +126,10 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 								"whether to plot times relative to an anchor value (tZero)", EditorType.TEMPORAL)
 								: null,
 
+						getDeltaRateToteCalculation() != null
+								? displayProp("WindowSize", "Window Size", "Window Size to calculate the delta rate",
+										EditorType.TEMPORAL)
+								: null,
 						displayProp("ShowSymbols", "Show symbols", "whether to show symbols at the data points",
 								EditorType.VISIBILITY),
 						displayExpertLongProp("SymbolSize", "Symbol size", "whether to show S/M/L symbols",
@@ -230,6 +239,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 			_applied = applied;
 		}
 	}
+	
 
 	public static String SYMBOL_PROPERTY = "SYMBOL_PROPERTY";
 
@@ -274,6 +284,8 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 
 	private String _labelFormat;
 
+	private final DeltaRateToteCalculation _calc;
+
 	/**
 	 * Constructs a chart.
 	 * <P>
@@ -286,11 +298,12 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 	 * @param createLegend a flag indicating whether or not a legend should be
 	 *                     created for the chart.
 	 */
-	public NewFormattedJFreeChart(final String title, final Font titleFont, final Plot plot,
-			final boolean createLegend) {
+	public NewFormattedJFreeChart(final String title, final Font titleFont, final Plot plot, final boolean createLegend,
+			final DeltaRateToteCalculation deltaRateToteCalc) {
 		super(title, titleFont, plot, createLegend);
 
 		_fixedDuration = new Duration(3, Duration.HOURS);
+		_calc = deltaRateToteCalc;
 
 		// update the line width's we're using
 		this.setDataLineWidth(_dataLineWidth);
@@ -323,16 +336,12 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 	 * @param stepper      the provider of the time offset
 	 */
 	public NewFormattedJFreeChart(final String title, final Font titleFont, final Plot plot, final boolean createLegend,
-			final StepperListener.StepperController stepper) {
+			final StepperListener.StepperController stepper, final DeltaRateToteCalculation deltaRateToteCalc) {
 
-		this(title, titleFont, plot, createLegend);
+		this(title, titleFont, plot, createLegend, deltaRateToteCalc);
 
 		_provider = new SwitchableTimeOffsetProvider(stepper);
 	}
-
-	// ////////////////////////////////////////////////
-	// member methods
-	// ////////////////////////////////////////////////
 
 	public void addPropertyChangeListener(final PropertyChangeListener listener) {
 		this._stateListeners.add(listener);
@@ -349,6 +358,14 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 	 */
 	public int getDataLineWidth() {
 		return _dataLineWidth;
+	}
+
+	// ////////////////////////////////////////////////
+	// member methods
+	// ////////////////////////////////////////////////
+
+	public DeltaRateToteCalculation getDeltaRateToteCalculation() {
+		return _calc;
 	}
 
 	public boolean getDisplayFixedDuration() {
@@ -472,6 +489,13 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 		return this.getTitle().getText();
 	}
 
+	public Duration getWindowSize() {
+		if (_calc != null) {
+			return new Duration(_calc.getWindowSizeMillis(), Duration.MILLISECONDS);
+		}
+		return new Duration(0, Duration.MILLISECONDS);
+	}
+
 	public String getX_AxisTitle() {
 		return getXYPlot().getDomainAxis().getLabel();
 	}
@@ -507,8 +531,8 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 		}
 	}
 
-	public boolean removePropertyChangeListener(final PropertyChangeListener listener) {
-		return this._stateListeners.remove(listener);
+	public void removePropertyChangeListener(final PropertyChangeListener listener) {
+		this._stateListeners.remove(listener);
 	}
 
 	public void setAxisFont(final Font axisFont) {
@@ -627,10 +651,6 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 
 	}
 
-	// ////////////////////////////////////////////////
-	// editable methods
-	// ////////////////////////////////////////////////
-
 	public void setShowLegend(final boolean showLegend) {
 		if (showLegend) {
 			if (!isShowLegend()) {
@@ -649,6 +669,10 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 
 		this.fireChartChanged();
 	}
+
+	// ////////////////////////////////////////////////
+	// editable methods
+	// ////////////////////////////////////////////////
 
 	public void setShowSymbols(final boolean showSymbols) {
 		final DefaultXYItemRenderer sx = (DefaultXYItemRenderer) getXYPlot().getRenderer();
@@ -685,6 +709,17 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 
 	public void setTitleText(final String text) {
 		this.getTitle().setText(text);
+	}
+	
+	public static final String WINDOW_SIZE_PROPERTY = "WINDOWS SIZE PROPERTY";
+
+	public void setWindowSize(final Duration _newWindowSize) {
+		if (_calc != null) {
+			final long oldValue = _newWindowSize.getMillis();
+			this._calc.setWindowSizeMillis(_newWindowSize.getMillis());
+			// ok, trigger redraw
+			notifyListenersStateChanged(this, WINDOW_SIZE_PROPERTY, oldValue, _newWindowSize.getMillis());
+		}
 	}
 
 	public void setX_AxisTitle(final String xTitle) {

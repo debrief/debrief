@@ -15,7 +15,7 @@
 
 package org.mwc.cmap.core.DataTypes.TrackData;
 
-import Debrief.Tools.Tote.toteCalculation;
+import MWC.Tools.Tote.toteCalculation;
 
 /**
  * @author ian.mayo

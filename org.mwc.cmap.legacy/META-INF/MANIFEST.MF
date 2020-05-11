@@ -225,6 +225,7 @@ Export-Package:
    org.codehaus.jackson,
    MWC.GUI",
  MWC.TacticalData.temporal,
+ MWC.Tools.Tote,
  MWC.Utilities.Errors;uses:="MWC.GUI",
  MWC.Utilities.Errors.Testing;uses:="junit.framework",
  MWC.Utilities.ReaderWriter;uses:="javax.swing,MWC.GUI",

@@ -13,7 +13,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *******************************************************************************/
 
-package Debrief.Tools.Tote;
+package MWC.Tools.Tote;
 
 import java.text.NumberFormat;
 

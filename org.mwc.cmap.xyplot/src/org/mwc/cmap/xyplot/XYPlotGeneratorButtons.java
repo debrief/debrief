@@ -54,7 +54,6 @@ import org.mwc.cmap.xyplot.wizards.DopplerPlotWizard;
 import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3;
 import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3.CalculationHolder;
 import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3.CalculationWizard;
-import Debrief.Tools.Tote.toteCalculation;
 import Debrief.Tools.Tote.Calculations.atbCalc;
 import Debrief.Tools.Tote.Calculations.bearingCalc;
 import Debrief.Tools.Tote.Calculations.bearingRateCalc;
@@ -82,6 +81,7 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WatchableList;
 import MWC.TacticalData.temporal.TimeProvider;
+import MWC.Tools.Tote.toteCalculation;
 
 /**
  * embedded class to generate menu-items for creating tactical plot
@@ -532,6 +532,11 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator {
 							@Override
 							public Layers getLayers() {
 								return theLayers;
+							}
+
+							@Override
+							public toteCalculation getToteCalc() {
+								return theHolder._theCalc;
 							}
 						};
 						return prov;

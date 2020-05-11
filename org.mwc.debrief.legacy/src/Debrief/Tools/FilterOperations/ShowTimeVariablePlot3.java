@@ -62,8 +62,8 @@ import org.jfree.data.xy.XYSeries;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Tote.StepControl;
-import Debrief.Tools.Tote.DeltaRateToteCalculation;
-import Debrief.Tools.Tote.toteCalculation;
+import MWC.Tools.Tote.DeltaRateToteCalculation;
+import MWC.Tools.Tote.toteCalculation;
 import Debrief.Tools.Tote.Calculations.DeltaRateToteCalcImplementation;
 import Debrief.Tools.Tote.Calculations.atbCalc;
 import Debrief.Tools.Tote.Calculations.bearingCalc;
@@ -783,7 +783,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation {
 							}
 
 							final double[] values = deltaRateCalc.calculate(items, times,
-									DeltaRateToteCalcImplementation.DeltaRateToteCalcImplementationTest.TIME_WINDOW);
+									deltaRateCalc.getWindowSizeMillis());
 
 							Watchable prevFix = null;
 							Color previousColor = null;
@@ -1444,7 +1444,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation {
 			}
 
 			_generatedJFreeChart = jChart = new NewFormattedJFreeChart(theTitle, JFreeChart.DEFAULT_TITLE_FONT, plot,
-					true, _theStepper);
+					true, _theStepper, null);
 
 			// ////////////////////////////////////////////////////
 			// get the data

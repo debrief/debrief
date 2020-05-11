@@ -189,7 +189,6 @@ import java.awt.Container;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import Debrief.Tools.Tote.toteCalculation;
 import Debrief.Tools.Tote.Calculations.atbCalc;
 import Debrief.Tools.Tote.Calculations.bearingCalc;
 import Debrief.Tools.Tote.Calculations.bearingRateCalc;
@@ -214,6 +213,7 @@ import MWC.GUI.StepperListener;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
+import MWC.Tools.Tote.toteCalculation;
 
 /**
  * parent class for analysis totes

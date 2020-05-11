@@ -1,4 +1,4 @@
-package Debrief.Tools.Tote;
+package MWC.Tools.Tote;
 
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
@@ -14,4 +14,8 @@ public interface DeltaRateToteCalculation extends toteCalculation {
 	 * @return
 	 */
 	public double[] calculate(Watchable[] primary, HiResDate[] thisTime, final long windowSizeMillis);
+	
+	public long getWindowSizeMillis();
+	
+	public void setWindowSizeMillis(final long newWindowSize);
 }

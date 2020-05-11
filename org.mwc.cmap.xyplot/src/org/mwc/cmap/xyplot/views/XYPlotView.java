@@ -125,6 +125,8 @@ import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.temporal.TimeProvider;
+import MWC.Tools.Tote.DeltaRateToteCalculation;
+import MWC.Tools.Tote.toteCalculation;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class XYPlotView extends ViewPart {
@@ -151,6 +153,8 @@ public class XYPlotView extends ViewPart {
 		 * @return
 		 */
 		Layers getLayers();
+
+		public toteCalculation getToteCalc();
 	}
 
 	// //////////////////////////////////////////////////
@@ -667,7 +671,7 @@ public class XYPlotView extends ViewPart {
 
 	@SuppressWarnings("deprecation")
 	private void fillThePlot(final String title, final String units, final formattingOperation theFormatter,
-			final AbstractSeriesDataset dataset) {
+			final AbstractSeriesDataset dataset, final toteCalculation toteCalc) {
 
 		final StepControl _theStepper = null;
 
@@ -762,7 +766,8 @@ public class XYPlotView extends ViewPart {
 		}
 
 		final boolean createLegend = dataset.getSeriesCount() > 1;
-		_thePlotArea = new NewFormattedJFreeChart(title, null, _thePlot, createLegend, _theStepper);
+		_thePlotArea = new NewFormattedJFreeChart(title, null, _thePlot, createLegend, _theStepper,
+				(toteCalc instanceof DeltaRateToteCalculation ? (DeltaRateToteCalculation) toteCalc : null));
 
 		// set the color of the area surrounding the plot
 		// - naah, don't bother. leave it in the application background color.
@@ -1379,7 +1384,7 @@ public class XYPlotView extends ViewPart {
 
 		if (dataset != null) {
 			// ok, fill in the plot
-			fillThePlot(title, units, theFormatter, dataset);
+			fillThePlot(title, units, theFormatter, dataset, null);
 		}
 	}
 
@@ -1403,8 +1408,9 @@ public class XYPlotView extends ViewPart {
 			if (ds != null) {
 				// store the dataset
 				_dataset = ds;
+				
 				// ok, fill in the plot
-				fillThePlot(_myTitle, _myUnits, _theFormatter, ds);
+				fillThePlot(_myTitle, _myUnits, _theFormatter, ds, prov.getToteCalc());
 			}
 		}
 

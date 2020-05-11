@@ -24,7 +24,7 @@ import java.util.Iterator;
 
 import javax.swing.JOptionPane;
 
-import Debrief.Tools.Tote.toteCalculation;
+import MWC.Tools.Tote.toteCalculation;
 // Copyright MWC 1999, Debrief 3 Project
 // $RCSfile: CopyTimeDataToClipboard.java,v $
 // @author $Author: Ian.Mayo $
