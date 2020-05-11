@@ -636,7 +636,7 @@ public class DebriefLiteApp implements FileDropListener {
 	private boolean _plotUpdating = false;
 
 	// Maybe this should go inside GeoToolMapRenderer
-	final float initialAlpha = 0.7f;
+	public final float initialAlpha = 0.7f;
 
 	private DebriefLiteApp() throws NoninvertibleTransformException {
 		_instance = this;
@@ -1402,8 +1402,8 @@ public class DebriefLiteApp implements FileDropListener {
 		timeManager.setTime(this, null, false);
 
 		// and the time format dropdown
-		DebriefRibbonTimeController.resetDateFormat();
 		DebriefRibbonView.resetToggleMenuStates();
+		DebriefRibbonTimeController.resetToggleMenuStates();
 		theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
 		// stop the timer
 		if (_stepControl.isPlaying()) {

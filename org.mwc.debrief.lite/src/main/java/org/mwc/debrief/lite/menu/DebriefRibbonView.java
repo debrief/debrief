@@ -28,10 +28,10 @@ import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JSlider;
 import javax.swing.event.ChangeListener;
 
 import org.geotools.swing.JMapPane;
+import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.custom.JRibbonLabel;
 import org.mwc.debrief.lite.custom.JRibbonSlider;
 import org.mwc.debrief.lite.custom.LabelComponentContentModel;
@@ -199,6 +199,7 @@ public class DebriefRibbonView {
 	private static Command zoominButton;
 	private static AdvancedZoomInAction zoomInAction;
 	private static JRadioButtonMenuItem[] unitRadioButton = new JRadioButtonMenuItem[WorldDistance.UnitLabels.length];
+	private static JRibbonSlider transparencySlider;
 
 	private static ComponentProjection<JRibbonSlider, SliderComponentContentModel> addAlphaSlider(
 			final ChangeListener alphaListener, final float alpha) {
@@ -211,11 +212,11 @@ public class DebriefRibbonView {
 				final Projection<JRibbonSlider, SliderComponentContentModel, ComponentPresentationModel> projection) -> JRibbonSlider::new;
 		final ComponentProjection<JRibbonSlider, SliderComponentContentModel> projection = new RibbonSliderProjection(
 				sliderModel, ComponentPresentationModel.withDefaults(), jribbonSlider);
-		final JSlider slider = projection.buildComponent();
-		slider.setToolTipText("Modify transparency");
-		slider.setBackground(Color.DARK_GRAY);
-		slider.setName("transparencyslider");
-		slider.setValue((int) (alpha * 100f));
+		transparencySlider = projection.buildComponent();
+		transparencySlider.setToolTipText("Modify transparency");
+		transparencySlider.setBackground(Color.DARK_GRAY);
+		transparencySlider.setName("transparencyslider");
+		transparencySlider.setValue((int) (alpha * 100f));
 		return projection;
 	}
 
@@ -341,6 +342,9 @@ public class DebriefRibbonView {
 		}
 		if(unitRadioButton.length>0) {
 			unitRadioButton[1].setSelected(true);
+		}
+		if(transparencySlider!=null) {
+			transparencySlider.setValue((int)(DebriefLiteApp.getInstance().initialAlpha*100f));
 		}
 		
 	}

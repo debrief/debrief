@@ -123,6 +123,7 @@ public class DebriefRibbonTimeController {
 	 * date formatting.
 	 *
 	 */
+	private static Command normalToggle;
 	protected static class DateFormatBinder {
 		protected LiteStepControl stepControl;
 		// protected JLabel minimumValue;
@@ -319,6 +320,8 @@ public class DebriefRibbonTimeController {
 	private static JFlowRibbonBand control;
 
 	private static AbstractCommandButton playButton;
+
+	private static Command square;
 
 	protected static void addTimeControllerTab(final JRibbon ribbon, final GeoToolMapRenderer _geoMapRenderer,
 			final LiteStepControl stepControl, final TimeManager timeManager, final PlotOperations operations,
@@ -725,7 +728,7 @@ public class DebriefRibbonTimeController {
 					}
 				}, null, tooltip_edit_normalmode_props);
 		final CommandToggleGroupModel displayModeGroup = new CommandToggleGroupModel();
-		final Command normalToggle = MenuUtils.addCommandToggleButton("Normal", "icons/48/normal.png",
+		normalToggle = MenuUtils.addCommandToggleButton("Normal", "icons/48/normal.png",
 				new CommandAction() {
 
 					@Override
@@ -883,7 +886,7 @@ public class DebriefRibbonTimeController {
 						}
 					}
 				}, null, props_square_highlighter);
-		final Command square = MenuUtils.addCommandToggleButton("Square", "icons/48/square.png", new CommandAction() {
+		square = MenuUtils.addCommandToggleButton("Square", "icons/48/square.png", new CommandAction() {
 
 			@Override
 			public void commandActivated(final CommandActionEvent e) {
@@ -1017,5 +1020,21 @@ public class DebriefRibbonTimeController {
 				playButton.setIcon(imageIcon);
 		});
 
+	}
+	public static void resetToggleMenuStates() {
+		resetDateFormat();
+		if(normalToggle!=null)
+		{
+			normalToggle.setToggleSelected(true);
+		}
+		if(square!=null)
+		{
+			square.setToggleSelected(true);
+		}
+		if(timeFilterRangeModel!=null)
+		{
+			timeFilterRangeModel.setMinimum(0);
+			timeFilterRangeModel.setMaximum(1);
+		}
 	}
 }
