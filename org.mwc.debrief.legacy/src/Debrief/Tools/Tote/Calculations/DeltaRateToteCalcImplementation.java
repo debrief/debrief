@@ -56,21 +56,19 @@ public class DeltaRateToteCalcImplementation {
 
 	public static double[] calculateRate(final double[] measure, final HiResDate[] time, final long windowSizeMillis) {
 		if (measure.length > 2 && time.length == measure.length) {
-
 			// Let's calculate the delta rate
 			final double[] deltaRate = new double[measure.length];
 			for (int i = 1; i < deltaRate.length; i++) {
-				deltaRate[i] = (measure[i] - measure[i - 1])
-						/ ((time[i].getMicros() - time[i - 1].getMicros()) / 1000.0 / 1000.0 - 1);
+				deltaRate[i] = Math.abs((measure[i] - measure[i - 1])
+						/ ((time[i].getMicros() - time[i - 1].getMicros()) / 1000.0 / 1000.0 - 1));
 			}
-
 			return deltaRate;
 		}
 		return new double[] {};
 	}
 
-	public static double[] calculateDeltaRateRate(final double[] measure, final HiResDate[] time,
-			final long windowSizeMillis, final double[] deltaRate) {
+	public static double[] caculateAverageRate(final double[] measure, final HiResDate[] time, final long windowSizeMillis,
+			final double[] deltaRate) {
 		// Let's calculate the delta rate in a period.
 		final double[] deltaInPeriod = new double[measure.length];
 		final int[] countInPeriod = new int[measure.length];
@@ -103,7 +101,11 @@ public class DeltaRateToteCalcImplementation {
 		for (int i = 1; i < average.length; i++) {
 			average[i] = deltaInPeriod[i] / countInPeriod[i];
 		}
+		return average;
+	}
 
+	public static double[] calculateDeltaRateRate(final double[] measure, final HiResDate[] time,
+			final long windowSizeMillis, final double[] average) {
 		// Let's calculate the delta rate
 		final double[] deltaRateRate = new double[measure.length];
 		for (int i = 0; i < deltaRateRate.length - 2; i++) {

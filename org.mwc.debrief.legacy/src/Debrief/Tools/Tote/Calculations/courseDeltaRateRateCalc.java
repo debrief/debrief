@@ -17,21 +17,16 @@ package Debrief.Tools.Tote.Calculations;
 
 import java.text.DecimalFormat;
 
-import MWC.Algorithms.Conversions;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
-import MWC.Tools.Tote.DeltaRateToteCalculation;
 
-public final class courseDeltaRateRateCalc extends plainCalc implements DeltaRateToteCalculation {
+public final class courseDeltaRateRateCalc extends courseDeltaAverageCalc {
 
-	private long windowSizeInMilli;
-	
 	/////////////////////////////////////////////////////////////
 	// constructor
 	////////////////////////////////////////////////////////////
 	public courseDeltaRateRateCalc() {
-		super(new DecimalFormat("000.0"), "Course Delta Rate (abs)", "degs/sec/sec");
-		windowSizeInMilli = DeltaRateToteCalcImplementation.DeltaRateToteCalcImplementationTest.TIME_WINDOW;
+		super(new DecimalFormat("000.0"), "Absolute Course Delta Rate (abs)", "degs/sec/sec");
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -39,51 +34,9 @@ public final class courseDeltaRateRateCalc extends plainCalc implements DeltaRat
 	////////////////////////////////////////////////////////////
 
 	@Override
-	public final double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime) {
-		double res = Conversions.Rads2Degs(primary.getCourse());
-		if (res < 0)
-			res += 360;
-
-		return res;
-	}
-
-	@Override
 	public double[] calculate(final Watchable[] primary, final HiResDate[] thisTime, final long windowSizeMillis) {
-		final double[] measure = new double[primary.length];
-		for (int i = 0; i < primary.length; i++) {
-			measure[i] = Conversions.Rads2Degs(primary[i].getCourse());
-		}
-
-		final double[] deltaRate = DeltaRateToteCalcImplementation.calculateRate(measure, thisTime, windowSizeMillis);
+		final double[] measure = createMeasures(primary);
+		final double[] deltaRate = super.calculate(primary, thisTime, windowSizeMillis); // Average
 		return DeltaRateToteCalcImplementation.calculateDeltaRateRate(measure, thisTime, windowSizeMillis, deltaRate);
-	}
-
-	/**
-	 * does this calculation require special bearing handling (prevent wrapping
-	 * through 360 degs)
-	 *
-	 */
-	@Override
-	public final boolean isWrappableData() {
-		return false;
-	}
-
-	@Override
-	public final String update(final Watchable primary, final Watchable secondary, final HiResDate time) {
-		// check we have data
-		if (primary == null)
-			return NOT_APPLICABLE;
-
-		return _myPattern.format(calculate(primary, secondary, time));
-	}
-
-	@Override
-	public long getWindowSizeMillis() {
-		return windowSizeInMilli;
-	}
-
-	@Override
-	public void setWindowSizeMillis(long newWindowSize) {
-		this.windowSizeInMilli = newWindowSize;
 	}
 }

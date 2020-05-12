@@ -773,6 +773,18 @@ public class XYPlotView extends ViewPart {
 		// - naah, don't bother. leave it in the application background color.
 		_thePlotArea.setBackgroundPaint(Color.white);
 
+		_thePlotArea.addPropertyChangeListener(new PropertyChangeListener() {
+			
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if (NewFormattedJFreeChart.WINDOW_SIZE_PROPERTY.equals(evt.getPropertyName())) {
+					final AbstractSeriesDataset newDs = _provider.getDataset(true);
+
+					_thePlot.setDataset((XYDataset) newDs);
+				}
+			}
+		});
+		
 		// ////////////////////////////////////////////////
 		// put the holder into one of our special items
 		// ////////////////////////////////////////////////

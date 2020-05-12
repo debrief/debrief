@@ -20,8 +20,9 @@ import java.text.DecimalFormat;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.Tools.Tote.DeltaRateToteCalculation;
+import MWC.Tools.Tote.TimeWindowRateCalculation;
 
-public final class speedRateRateCalc extends plainCalc implements DeltaRateToteCalculation {
+public final class speedRateRateCalc extends plainCalc implements TimeWindowRateCalculation {
 
 	private long windowSizeInMilli;
 	

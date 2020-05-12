@@ -22,21 +22,22 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.Tools.Tote.DeltaRateToteCalculation;
 
-public final class courseRateCalc extends plainCalc implements DeltaRateToteCalculation {
-
-	private long windowSizeInMilli;
+public class courseRateCalc extends plainCalc implements DeltaRateToteCalculation {
 	
 	/////////////////////////////////////////////////////////////
 	// constructor
 	////////////////////////////////////////////////////////////
 	public courseRateCalc() {
 		super(new DecimalFormat("000.0"), "Course Rate (abs)", "degs/sec");
-		windowSizeInMilli = DeltaRateToteCalcImplementation.DeltaRateToteCalcImplementationTest.TIME_WINDOW;
 	}
 
 	/////////////////////////////////////////////////////////////
 	// member functions
 	////////////////////////////////////////////////////////////
+
+	public courseRateCalc(DecimalFormat decimalFormat, String name, String unit) {
+		super(decimalFormat, name, unit);
+	}
 
 	@Override
 	public final double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime) {
@@ -49,12 +50,16 @@ public final class courseRateCalc extends plainCalc implements DeltaRateToteCalc
 
 	@Override
 	public double[] calculate(final Watchable[] primary, final HiResDate[] thisTime, final long windowSizeMillis) {
+		final double[] measure = createMeasures(primary);
+		return DeltaRateToteCalcImplementation.calculateRate(measure, thisTime, windowSizeMillis);
+	}
+
+	protected double[] createMeasures(final Watchable[] primary) {
 		final double[] measure = new double[primary.length];
 		for (int i = 0; i < primary.length; i++) {
 			measure[i] = Conversions.Rads2Degs(primary[i].getCourse());
 		}
-
-		return DeltaRateToteCalcImplementation.calculateRate(measure, thisTime, windowSizeMillis);
+		return measure;
 	}
 
 	/**
@@ -74,15 +79,5 @@ public final class courseRateCalc extends plainCalc implements DeltaRateToteCalc
 			return NOT_APPLICABLE;
 
 		return _myPattern.format(calculate(primary, secondary, time));
-	}
-
-	@Override
-	public long getWindowSizeMillis() {
-		return windowSizeInMilli;
-	}
-
-	@Override
-	public void setWindowSizeMillis(long newWindowSize) {
-		this.windowSizeInMilli = newWindowSize;
 	}
 }
