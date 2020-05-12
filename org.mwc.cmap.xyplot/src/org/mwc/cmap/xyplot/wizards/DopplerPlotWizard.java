@@ -23,11 +23,11 @@ import org.mwc.cmap.core.ui_support.wizards.SimplePageListWizard;
 import org.mwc.cmap.core.wizards.EnterStringPage;
 
 import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3.CalculationWizard;
-import Debrief.Tools.Tote.toteCalculation;
 import Debrief.Tools.Tote.Calculations.dopplerCalc;
 import MWC.Algorithms.Conversions;
 import MWC.GUI.Editable;
 import MWC.GenericData.WatchableList;
+import MWC.Tools.Tote.toteCalculation;
 
 public class DopplerPlotWizard implements CalculationWizard {
 

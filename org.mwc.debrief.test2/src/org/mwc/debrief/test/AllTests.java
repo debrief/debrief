@@ -126,12 +126,13 @@ import org.junit.runners.Suite;
 		org.mwc.debrief.pepys.model.bean.DatafileType.DatafileTypesTest.class,
 		org.mwc.debrief.pepys.model.bean.Privacy.PrivaciesTest.class,
 		org.mwc.debrief.pepys.model.bean.State.StatesTest.class,
-		org.mwc.debrief.pepys.model.tree.TreeNode.TreeNodeTest.class, 
-		org.mwc.debrief.pepys.model.bean.SensorType.SensorTypeTest.class, 
+		org.mwc.debrief.pepys.model.tree.TreeNode.TreeNodeTest.class,
+		org.mwc.debrief.pepys.model.bean.SensorType.SensorTypeTest.class,
 		org.mwc.debrief.pepys.model.bean.Sensor.SensorTest.class,
 		org.mwc.debrief.pepys.model.bean.Privacy.PrivaciesTest.class,
-		org.mwc.debrief.pepys.model.db.config.ConfigurationReader.ConfigurationReaderTest.class})
+		org.mwc.debrief.pepys.model.db.config.ConfigurationReader.ConfigurationReaderTest.class,
+		Debrief.Tools.Tote.Calculations.DeltaRateToteCalcImplementation.DeltaRateToteCalcImplementationTest.class })
 @RunWith(Suite.class)
-public class AllTests{
-	
+public class AllTests {
+
 }

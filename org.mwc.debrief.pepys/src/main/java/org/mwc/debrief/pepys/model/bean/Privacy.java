@@ -26,6 +26,7 @@ import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.Id;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
+import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 
 import junit.framework.TestCase;
@@ -38,14 +39,16 @@ public class Privacy implements AbstractBean {
 		public void testPrivaciesQuery() {
 			try {
 				final DatabaseConfiguration _config = new DatabaseConfiguration();
-				DatabaseConnection.loadDatabaseConfiguration(_config,
+				ConfigurationReader.loadDatabaseConfiguration(_config,
+						DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE,
 						DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE);
-				new SqliteDatabaseConnection().createInstance(_config);
-				final List<Privacy> list = DatabaseConnection.getInstance().listAll(Privacy.class, null);
+				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
+				sqlite.initializeInstance(_config);
+				final List<Privacy> list = sqlite.listAll(Privacy.class, null);
 
 				assertTrue("Privacies - database entries", list.size() == 4);
 
-				final Privacy privacy = DatabaseConnection.getInstance().listById(Privacy.class, 1);
+				final Privacy privacy = sqlite.listById(Privacy.class, 1);
 
 				assertTrue("Datafiletypes - database entries",
 						"1".equals(privacy.getPrivacy_id()) && "Public".equals(privacy.getName()));

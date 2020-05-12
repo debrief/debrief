@@ -26,9 +26,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.mwc.cmap.tote.TotePlugin;
 
-import Debrief.Tools.Tote.toteCalculation;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
+import MWC.Tools.Tote.toteCalculation;
 
 /**
  * convenience class which handles loading/creating extensions
