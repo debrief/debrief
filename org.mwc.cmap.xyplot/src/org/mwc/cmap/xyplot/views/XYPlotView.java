@@ -126,6 +126,7 @@ import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.temporal.TimeProvider;
 import MWC.Tools.Tote.DeltaRateToteCalculation;
+import MWC.Tools.Tote.TimeWindowRateCalculation;
 import MWC.Tools.Tote.toteCalculation;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
@@ -767,7 +768,7 @@ public class XYPlotView extends ViewPart {
 
 		final boolean createLegend = dataset.getSeriesCount() > 1;
 		_thePlotArea = new NewFormattedJFreeChart(title, null, _thePlot, createLegend, _theStepper,
-				(toteCalc instanceof DeltaRateToteCalculation ? (DeltaRateToteCalculation) toteCalc : null));
+				(toteCalc instanceof TimeWindowRateCalculation ? (TimeWindowRateCalculation) toteCalc : null));
 
 		// set the color of the area surrounding the plot
 		// - naah, don't bother. leave it in the application background color.

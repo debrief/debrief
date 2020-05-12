@@ -63,18 +63,21 @@ import org.jfree.data.xy.XYSeries;
 import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Tote.StepControl;
 import MWC.Tools.Tote.DeltaRateToteCalculation;
+import MWC.Tools.Tote.TimeWindowRateCalculation;
 import MWC.Tools.Tote.toteCalculation;
 import Debrief.Tools.Tote.Calculations.DeltaRateToteCalcImplementation;
 import Debrief.Tools.Tote.Calculations.atbCalc;
 import Debrief.Tools.Tote.Calculations.bearingCalc;
 import Debrief.Tools.Tote.Calculations.bearingRateCalc;
 import Debrief.Tools.Tote.Calculations.courseCalc;
+import Debrief.Tools.Tote.Calculations.courseDeltaAverageCalc;
 import Debrief.Tools.Tote.Calculations.courseDeltaRateRateCalc;
 import Debrief.Tools.Tote.Calculations.courseRateCalc;
 import Debrief.Tools.Tote.Calculations.depthCalc;
 import Debrief.Tools.Tote.Calculations.rangeCalc;
 import Debrief.Tools.Tote.Calculations.relBearingCalc;
 import Debrief.Tools.Tote.Calculations.speedCalc;
+import Debrief.Tools.Tote.Calculations.speedDeltaAverageCalc;
 import Debrief.Tools.Tote.Calculations.speedRateCalc;
 import Debrief.Tools.Tote.Calculations.speedRateRateCalc;
 import Debrief.Wrappers.FixWrapper;
@@ -782,8 +785,13 @@ public final class ShowTimeVariablePlot3 implements FilterOperation {
 								times[i] = items[i].getTime();
 							}
 
-							final double[] values = deltaRateCalc.calculate(items, times,
-									deltaRateCalc.getWindowSizeMillis());
+							final long timeWindow;
+							if (theCalculation instanceof TimeWindowRateCalculation) {
+								timeWindow = ((TimeWindowRateCalculation) deltaRateCalc).getWindowSizeMillis();
+							} else {
+								timeWindow = DeltaRateToteCalcImplementation.DeltaRateToteCalcImplementationTest.TIME_WINDOW;
+							}
+							final double[] values = deltaRateCalc.calculate(items, times, timeWindow);
 
 							Watchable prevFix = null;
 							Color previousColor = null;
@@ -997,15 +1005,14 @@ public final class ShowTimeVariablePlot3 implements FilterOperation {
 		VersatileSeriesAdder theAdder;
 		theAdder = new VersatileSeriesAdder() {
 			@Override
-			public void add(final Series thisSeries, final HiResDate theTime, final double data,
-					final Color thisColor, final boolean connectToPrevious,
-					final ColouredDataItem.OffsetProvider provider1, final boolean parentIsVisible) {
+			public void add(final Series thisSeries, final HiResDate theTime, final double data, final Color thisColor,
+					final boolean connectToPrevious, final ColouredDataItem.OffsetProvider provider1,
+					final boolean parentIsVisible) {
 				// HI-RES NOT DONE - FixedMillisecond should be converted
 				// some-how to
 				// FixedMicroSecond
-				final ColouredDataItem newItem = new ColouredDataItem(
-						new FixedMillisecond(theTime.getDate().getTime()), data, thisColor, connectToPrevious,
-						provider1, parentIsVisible, true);
+				final ColouredDataItem newItem = new ColouredDataItem(new FixedMillisecond(theTime.getDate().getTime()),
+						data, thisColor, connectToPrevious, provider1, parentIsVisible, true);
 
 				// To change body of implemented methods use File | Settings
 				// | File
@@ -1029,15 +1036,15 @@ public final class ShowTimeVariablePlot3 implements FilterOperation {
 		VersatileSeriesAdder theAdder;
 		theAdder = new VersatileSeriesAdder() {
 			@Override
-			public void add(final Series thisSeries, final HiResDate theTime, final double data,
-					final Color thisColor, final boolean connectToPrevious,
-					final ColouredDataItem.OffsetProvider provider1, final boolean parentIsVisible) {
+			public void add(final Series thisSeries, final HiResDate theTime, final double data, final Color thisColor,
+					final boolean connectToPrevious, final ColouredDataItem.OffsetProvider provider1,
+					final boolean parentIsVisible) {
 				// HI-RES NOT DONE - FixedMillisecond should be converted
 				// some-how to
 				// FixedMicroSecond
 				final TimeSeriesDataItem newItem = new ColouredDataItem(
-						new FixedMillisecond((long) (theTime.getMicros() / 1000d)), data, thisColor,
-						connectToPrevious, provider1, parentIsVisible, true);
+						new FixedMillisecond((long) (theTime.getMicros() / 1000d)), data, thisColor, connectToPrevious,
+						provider1, parentIsVisible, true);
 
 				// To change body of implemented methods use File | Settings
 				// | File
@@ -1280,11 +1287,11 @@ public final class ShowTimeVariablePlot3 implements FilterOperation {
 		_theOperations.addElement(new CalculationHolder(new depthCalc(), new DepthFormatter(), false, 0));
 
 		_theOperations.addElement(new CalculationHolder(new courseCalc(), new CourseFormatter(), false, 360));
-		_theOperations.addElement(new CalculationHolder(new courseRateCalc(), null, false, 0));
+		_theOperations.addElement(new CalculationHolder(new courseDeltaAverageCalc(), null, false, 0));
 		_theOperations.addElement(new CalculationHolder(new courseDeltaRateRateCalc(), null, false, 0));
 
 		_theOperations.addElement(new CalculationHolder(new speedCalc(), null, false, 0));
-		_theOperations.addElement(new CalculationHolder(new speedRateCalc(), null, false, 0));
+		_theOperations.addElement(new CalculationHolder(new speedDeltaAverageCalc(), null, false, 0));
 		_theOperations.addElement(new CalculationHolder(new speedRateRateCalc(), null, false, 0));
 		_theOperations.addElement(new CalculationHolder(new rangeCalc(), null, true, 0));
 		_theOperations.addElement(new CalculationHolder(new bearingCalc(), null, true, 360));

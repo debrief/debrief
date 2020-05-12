@@ -50,11 +50,11 @@ public class courseRateCalc extends plainCalc implements DeltaRateToteCalculatio
 
 	@Override
 	public double[] calculate(final Watchable[] primary, final HiResDate[] thisTime, final long windowSizeMillis) {
-		final double[] measure = createMeasures(primary);
+		final double[] measure = calculateMeasure(primary);
 		return DeltaRateToteCalcImplementation.calculateRate(measure, thisTime, windowSizeMillis);
 	}
 
-	protected double[] createMeasures(final Watchable[] primary) {
+	protected double[] calculateMeasure(final Watchable[] primary) {
 		final double[] measure = new double[primary.length];
 		for (int i = 0; i < primary.length; i++) {
 			measure[i] = Conversions.Rads2Degs(primary[i].getCourse());

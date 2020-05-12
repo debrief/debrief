@@ -58,6 +58,7 @@ import Debrief.Tools.Tote.Calculations.atbCalc;
 import Debrief.Tools.Tote.Calculations.bearingCalc;
 import Debrief.Tools.Tote.Calculations.bearingRateCalc;
 import Debrief.Tools.Tote.Calculations.courseCalc;
+import Debrief.Tools.Tote.Calculations.courseDeltaAverageCalc;
 import Debrief.Tools.Tote.Calculations.courseDeltaRateRateCalc;
 import Debrief.Tools.Tote.Calculations.courseRateCalc;
 import Debrief.Tools.Tote.Calculations.depthCalc;
@@ -65,6 +66,7 @@ import Debrief.Tools.Tote.Calculations.dopplerCalc;
 import Debrief.Tools.Tote.Calculations.rangeCalc;
 import Debrief.Tools.Tote.Calculations.relBearingCalc;
 import Debrief.Tools.Tote.Calculations.speedCalc;
+import Debrief.Tools.Tote.Calculations.speedDeltaAverageCalc;
 import Debrief.Tools.Tote.Calculations.speedRateCalc;
 import Debrief.Tools.Tote.Calculations.speedRateRateCalc;
 import Debrief.Wrappers.TacticalDataWrapper;
@@ -208,10 +210,10 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator {
 
 			_theOperations.addElement(new CalculationHolder(new depthCalc(), new DepthFormatter(), false, 0));
 			_theOperations.addElement(new CalculationHolder(new courseCalc(), new CourseFormatter(), false, 360));
-			_theOperations.addElement(new CalculationHolder(new courseRateCalc(), null, false, 0));
+			_theOperations.addElement(new CalculationHolder(new courseDeltaAverageCalc(), null, false, 0));
 			_theOperations.addElement(new CalculationHolder(new courseDeltaRateRateCalc(), null, false, 0));
 			_theOperations.addElement(new CalculationHolder(new speedCalc(), null, false, 0));
-			_theOperations.addElement(new CalculationHolder(new speedRateCalc(), null, false, 0));
+			_theOperations.addElement(new CalculationHolder(new speedDeltaAverageCalc(), null, false, 0));
 			_theOperations.addElement(new CalculationHolder(new speedRateRateCalc(), null, false, 0));
 			_theOperations.addElement(new CalculationHolder(new rangeCalc(), null, true, 0));
 			_theOperations.addElement(new CalculationHolder(new bearingCalc(), new CourseFormatter(), true, 360));

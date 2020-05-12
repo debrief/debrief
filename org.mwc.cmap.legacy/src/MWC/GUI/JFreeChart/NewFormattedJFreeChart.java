@@ -24,12 +24,9 @@ import java.awt.Stroke;
 import java.beans.IntrospectionException;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.beans.PropertyDescriptor;
 import java.text.DateFormat;
 import java.util.ArrayList;
-
-import javax.swing.event.EventListenerList;
 
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
@@ -53,6 +50,7 @@ import MWC.GUI.Properties.LineWidthPropertyEditor;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import MWC.Tools.Tote.DeltaRateToteCalculation;
+import MWC.Tools.Tote.TimeWindowRateCalculation;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 /**
@@ -284,7 +282,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 
 	private String _labelFormat;
 
-	private final DeltaRateToteCalculation _calc;
+	private final TimeWindowRateCalculation _calc;
 
 	/**
 	 * Constructs a chart.
@@ -299,7 +297,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 	 *                     created for the chart.
 	 */
 	public NewFormattedJFreeChart(final String title, final Font titleFont, final Plot plot, final boolean createLegend,
-			final DeltaRateToteCalculation deltaRateToteCalc) {
+			final TimeWindowRateCalculation deltaRateToteCalc) {
 		super(title, titleFont, plot, createLegend);
 
 		_fixedDuration = new Duration(3, Duration.HOURS);
@@ -336,7 +334,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 	 * @param stepper      the provider of the time offset
 	 */
 	public NewFormattedJFreeChart(final String title, final Font titleFont, final Plot plot, final boolean createLegend,
-			final StepperListener.StepperController stepper, final DeltaRateToteCalculation deltaRateToteCalc) {
+			final StepperListener.StepperController stepper, final TimeWindowRateCalculation deltaRateToteCalc) {
 
 		this(title, titleFont, plot, createLegend, deltaRateToteCalc);
 

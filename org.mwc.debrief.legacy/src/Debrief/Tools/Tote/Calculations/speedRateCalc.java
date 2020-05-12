@@ -21,9 +21,7 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.Tools.Tote.DeltaRateToteCalculation;
 
-public final class speedRateCalc extends plainCalc implements DeltaRateToteCalculation {
-
-	private long windowSizeInMilli;
+public class speedRateCalc extends plainCalc implements DeltaRateToteCalculation {
 
 	/////////////////////////////////////////////////////////////
 	// constructor
@@ -31,14 +29,17 @@ public final class speedRateCalc extends plainCalc implements DeltaRateToteCalcu
 
 	public speedRateCalc() {
 		super(new DecimalFormat("00.00"), "Speed Rate (abs)", "Knots/sec");
-		windowSizeInMilli = DeltaRateToteCalcImplementation.DeltaRateToteCalcImplementationTest.TIME_WINDOW;
 	}
 	/////////////////////////////////////////////////////////////
 	// member functions
 	////////////////////////////////////////////////////////////
 
+	public speedRateCalc(DecimalFormat decimalFormat, String description, String units) {
+		super(decimalFormat, description, units);
+	}
+
 	@Override
-	public final double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime) {
+	public double calculate(final Watchable primary, final Watchable secondary, final HiResDate thisTime) {
 		double res = 0.0;
 		if (primary != null) {
 			res = primary.getSpeed();
@@ -47,12 +48,17 @@ public final class speedRateCalc extends plainCalc implements DeltaRateToteCalcu
 	}
 
 	public double[] calculate(final Watchable[] primary, final HiResDate[] thisTime, final long windowSizeMillis) {
+		final double[] measure = calculateMeasure(primary);
+
+		return DeltaRateToteCalcImplementation.calculateRate(measure, thisTime, windowSizeMillis);
+	}
+
+	protected double[] calculateMeasure(final Watchable[] primary) {
 		final double[] measure = new double[primary.length];
 		for (int i = 0; i < primary.length; i++) {
 			measure[i] = primary[i].getSpeed();
 		}
-
-		return DeltaRateToteCalcImplementation.calculateRate(measure, thisTime, windowSizeMillis);
+		return measure;
 	}
 
 	/**
@@ -72,16 +78,5 @@ public final class speedRateCalc extends plainCalc implements DeltaRateToteCalcu
 			return NOT_APPLICABLE;
 
 		return _myPattern.format(calculate(primary, secondary, time));
-	}
-
-
-	@Override
-	public long getWindowSizeMillis() {
-		return windowSizeInMilli;
-	}
-
-	@Override
-	public void setWindowSizeMillis(long newWindowSize) {
-		this.windowSizeInMilli = newWindowSize;
 	}
 }

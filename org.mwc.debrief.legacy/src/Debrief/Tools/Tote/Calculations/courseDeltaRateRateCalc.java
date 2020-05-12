@@ -35,7 +35,7 @@ public final class courseDeltaRateRateCalc extends courseDeltaAverageCalc {
 
 	@Override
 	public double[] calculate(final Watchable[] primary, final HiResDate[] thisTime, final long windowSizeMillis) {
-		final double[] measure = createMeasures(primary);
+		final double[] measure = calculateMeasure(primary);
 		final double[] deltaRate = super.calculate(primary, thisTime, windowSizeMillis); // Average
 		return DeltaRateToteCalcImplementation.calculateDeltaRateRate(measure, thisTime, windowSizeMillis, deltaRate);
 	}
