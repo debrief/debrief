@@ -32,6 +32,9 @@ public class courseDeltaAverageCalc extends courseRateCalc implements TimeWindow
 	public double[] calculate(final Watchable[] primary, final HiResDate[] thisTime, final long windowSizeMillis) {
 		final double[] measure = calculateMeasure(primary);
 		final double[] deltaRate = super.calculate(primary, thisTime, windowSizeMillis);
+		if (windowSizeMillis == 0) {
+			return deltaRate; // We don't want to do the average;
+		}
 		return DeltaRateToteCalcImplementation.caculateAverageRate(measure, thisTime, windowSizeMillis, deltaRate);
 	}
 
