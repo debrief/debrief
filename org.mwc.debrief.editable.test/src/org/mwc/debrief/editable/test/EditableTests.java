@@ -404,7 +404,7 @@ public class EditableTests extends TestCase {
 			final XYPlot plot = new XYPlot();
 			final DefaultXYItemRenderer renderer = new DefaultXYItemRenderer();
 			plot.setRenderer(renderer);
-			editable = new NewFormattedJFreeChart("test", new java.awt.Font("Dialog", 0, 18), plot, false);
+			editable = new NewFormattedJFreeChart("test", new java.awt.Font("Dialog", 0, 18), plot, false, null);
 			break;
 		case "org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter":
 			final Editable[] edit = new Editable[1];

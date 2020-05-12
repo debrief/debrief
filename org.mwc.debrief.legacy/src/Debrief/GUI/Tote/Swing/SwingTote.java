@@ -196,7 +196,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import Debrief.Tools.Tote.toteCalculation;
 import Debrief.Wrappers.FixWrapper;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.DebriefColors;
@@ -205,6 +204,7 @@ import MWC.GUI.Tools.Swing.MyMetalToolBarUI;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
+import MWC.Tools.Tote.toteCalculation;
 
 /**
  * Swing implementation of a tote

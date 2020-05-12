@@ -71,13 +71,13 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.tote.TotePlugin;
 import org.mwc.cmap.tote.calculations.CalculationLoaderManager;
 
-import Debrief.Tools.Tote.toteCalculation;
 import Debrief.Wrappers.FixWrapper;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.TacticalData.TrackDataProvider.TrackDataListener;
 import MWC.TacticalData.temporal.TimeProvider;
+import MWC.Tools.Tote.toteCalculation;
 
 /**
  * View which provides a track tote. The track tote is a table of values who are
