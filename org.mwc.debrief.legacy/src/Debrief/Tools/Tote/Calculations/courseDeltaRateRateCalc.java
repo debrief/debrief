@@ -26,7 +26,7 @@ public final class courseDeltaRateRateCalc extends courseDeltaAverageCalc {
 	// constructor
 	////////////////////////////////////////////////////////////
 	public courseDeltaRateRateCalc() {
-		super(new DecimalFormat("000.0"), "Absolute Course Delta Rate (abs)", "degs/sec/sec");
+		super(new DecimalFormat("000.0"), "Delta Absolute Course Rate", "degs/sec/sec");
 	}
 
 	/////////////////////////////////////////////////////////////
