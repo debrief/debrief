@@ -53,7 +53,7 @@ public class speedRateCalc extends plainCalc implements DeltaRateToteCalculation
 		return DeltaRateToteCalcImplementation.calculateRate(measure, thisTime, windowSizeMillis);
 	}
 
-	protected double[] calculateMeasure(final Watchable[] primary) {
+	protected static double[] calculateMeasure(final Watchable[] primary) {
 		final double[] measure = new double[primary.length];
 		for (int i = 0; i < primary.length; i++) {
 			measure[i] = primary[i].getSpeed();
