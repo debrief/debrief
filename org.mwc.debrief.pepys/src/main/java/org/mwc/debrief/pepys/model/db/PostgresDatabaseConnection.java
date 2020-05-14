@@ -112,4 +112,9 @@ public class PostgresDatabaseConnection extends DatabaseConnection {
 				.unWrapperInnerConnection((NewProxyConnection) connection)).addDataType("box3d", PGbox3d.class);
 	}
 
+	@Override
+	public String getSRID() {
+		return "SRID=4326;";
+	}
+
 }
