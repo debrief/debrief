@@ -24,7 +24,7 @@ import java.util.Iterator;
 
 import javax.swing.JOptionPane;
 
-import Debrief.Tools.Tote.toteCalculation;
+import MWC.Tools.Tote.toteCalculation;
 // Copyright MWC 1999, Debrief 3 Project
 // $RCSfile: CopyTimeDataToClipboard.java,v $
 // @author $Author: Ian.Mayo $
@@ -113,11 +113,17 @@ import Debrief.Tools.Tote.Calculations.bearingCalc;
 import Debrief.Tools.Tote.Calculations.bearingRateCalc;
 import Debrief.Tools.Tote.Calculations.colorCalc;
 import Debrief.Tools.Tote.Calculations.courseCalc;
+import Debrief.Tools.Tote.Calculations.courseDeltaAverageCalc;
+import Debrief.Tools.Tote.Calculations.courseDeltaRateRateCalc;
+import Debrief.Tools.Tote.Calculations.courseRateCalc;
 import Debrief.Tools.Tote.Calculations.depthCalc;
 import Debrief.Tools.Tote.Calculations.plainCalc;
 import Debrief.Tools.Tote.Calculations.rangeCalc;
 import Debrief.Tools.Tote.Calculations.relBearingCalc;
 import Debrief.Tools.Tote.Calculations.speedCalc;
+import Debrief.Tools.Tote.Calculations.speedDeltaAverageCalc;
+import Debrief.Tools.Tote.Calculations.speedRateCalc;
+import Debrief.Tools.Tote.Calculations.speedRateRateCalc;
 import Debrief.Tools.Tote.Calculations.tidyTimeCalc;
 import Debrief.Tools.Tote.Calculations.timeCalc;
 import MWC.GUI.Editable;
@@ -174,7 +180,11 @@ public class CopyTimeDataToClipboard implements FilterOperation, ClipboardOwner 
 		_theOperations.addElement(new tidyTimeCalc());
 		_theOperations.addElement(new depthCalc());
 		_theOperations.addElement(new speedCalc());
+		_theOperations.addElement(new speedDeltaAverageCalc());
+		_theOperations.addElement(new speedRateRateCalc());
 		_theOperations.addElement(new courseCalc());
+		_theOperations.addElement(new courseDeltaAverageCalc());
+		_theOperations.addElement(new courseDeltaRateRateCalc());
 		_theOperations.addElement(new rangeCalc());
 		_theOperations.addElement(new bearingCalc());
 		_theOperations.addElement(new relBearingCalc());

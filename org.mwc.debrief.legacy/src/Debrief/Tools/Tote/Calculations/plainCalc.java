@@ -71,11 +71,10 @@ package Debrief.Tools.Tote.Calculations;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
-import Debrief.Tools.Tote.toteCalculation;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 
-abstract public class plainCalc implements toteCalculation {
+abstract public class plainCalc implements MWC.Tools.Tote.toteCalculation {
 	protected static final String NOT_APPLICABLE = " ";
 	/////////////////////////////////////////////////////////////
 	// member variables

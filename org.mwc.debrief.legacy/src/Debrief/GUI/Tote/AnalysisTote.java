@@ -189,15 +189,18 @@ import java.awt.Container;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import Debrief.Tools.Tote.toteCalculation;
 import Debrief.Tools.Tote.Calculations.atbCalc;
 import Debrief.Tools.Tote.Calculations.bearingCalc;
 import Debrief.Tools.Tote.Calculations.bearingRateCalc;
 import Debrief.Tools.Tote.Calculations.courseCalc;
+import Debrief.Tools.Tote.Calculations.courseDeltaRateRateCalc;
+import Debrief.Tools.Tote.Calculations.courseRateCalc;
 import Debrief.Tools.Tote.Calculations.depthCalc;
 import Debrief.Tools.Tote.Calculations.rangeCalc;
 import Debrief.Tools.Tote.Calculations.relBearingCalc;
 import Debrief.Tools.Tote.Calculations.speedCalc;
+import Debrief.Tools.Tote.Calculations.speedRateCalc;
+import Debrief.Tools.Tote.Calculations.speedRateRateCalc;
 import Debrief.Tools.Tote.Calculations.timeSecsCalc;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.CanvasType;
@@ -210,6 +213,7 @@ import MWC.GUI.StepperListener;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
+import MWC.Tools.Tote.toteCalculation;
 
 /**
  * parent class for analysis totes
@@ -293,7 +297,11 @@ abstract public class AnalysisTote implements Pane, StepperListener,
 		_theCalculationTypes.addElement(relBearingCalc.class);
 		_theCalculationTypes.addElement(atbCalc.class);
 		_theCalculationTypes.addElement(speedCalc.class);
+		_theCalculationTypes.addElement(speedRateCalc.class);
+		_theCalculationTypes.addElement(speedRateRateCalc.class);
 		_theCalculationTypes.addElement(courseCalc.class);
+		_theCalculationTypes.addElement(courseRateCalc.class);
+		_theCalculationTypes.addElement(courseDeltaRateRateCalc.class);
 		_theCalculationTypes.addElement(depthCalc.class);
 		_theCalculationTypes.addElement(bearingRateCalc.class);
 		_theCalculationTypes.addElement(timeSecsCalc.class);
