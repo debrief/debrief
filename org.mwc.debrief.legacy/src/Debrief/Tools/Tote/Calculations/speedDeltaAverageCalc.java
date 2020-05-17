@@ -6,8 +6,8 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.Tools.Tote.TimeWindowRateCalculation;
 
-public class speedDeltaAverageCalc extends speedRateCalc implements TimeWindowRateCalculation{
-	
+public class speedDeltaAverageCalc extends speedRateCalc implements TimeWindowRateCalculation {
+
 	private long windowSizeInMilli;
 
 	/////////////////////////////////////////////////////////////
@@ -22,7 +22,7 @@ public class speedDeltaAverageCalc extends speedRateCalc implements TimeWindowRa
 	// member functions
 	////////////////////////////////////////////////////////////
 
-	public speedDeltaAverageCalc(DecimalFormat decimalFormat, String description, String units) {
+	public speedDeltaAverageCalc(final DecimalFormat decimalFormat, final String description, final String units) {
 		super(decimalFormat, description, units);
 		windowSizeInMilli = DeltaRateToteCalcImplementation.DeltaRateToteCalcImplementationTest.TIME_WINDOW;
 	}
@@ -36,13 +36,13 @@ public class speedDeltaAverageCalc extends speedRateCalc implements TimeWindowRa
 		return res;
 	}
 
+	@Override
 	public double[] calculate(final Watchable[] primary, final HiResDate[] thisTime, final long windowSizeMillis) {
-		final double[] measure = calculateMeasure(primary);
 		final double[] deltaRate = super.calculate(primary, thisTime, windowSizeMillis);
 		if (windowSizeMillis == 0) {
 			return deltaRate; // We don't want to do the average;
 		}
-		return DeltaRateToteCalcImplementation.caculateAverageRate(measure, thisTime, windowSizeMillis, deltaRate);
+		return DeltaRateToteCalcImplementation.caculateAverageRate(thisTime, windowSizeMillis, deltaRate);
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class speedDeltaAverageCalc extends speedRateCalc implements TimeWindowRa
 	}
 
 	@Override
-	public void setWindowSizeMillis(long newWindowSize) {
+	public void setWindowSizeMillis(final long newWindowSize) {
 		this.windowSizeInMilli = newWindowSize;
 	}
 }

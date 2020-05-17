@@ -7,6 +7,6 @@ package MWC.Tools.Tote;
  */
 public interface TimeWindowRateCalculation extends DeltaRateToteCalculation {
 	public long getWindowSizeMillis();
-	
+
 	public void setWindowSizeMillis(final long newWindowSize);
 }

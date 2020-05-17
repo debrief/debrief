@@ -125,7 +125,6 @@ import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.temporal.TimeProvider;
-import MWC.Tools.Tote.DeltaRateToteCalculation;
 import MWC.Tools.Tote.TimeWindowRateCalculation;
 import MWC.Tools.Tote.toteCalculation;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
@@ -775,9 +774,9 @@ public class XYPlotView extends ViewPart {
 		_thePlotArea.setBackgroundPaint(Color.white);
 
 		_thePlotArea.addPropertyChangeListener(new PropertyChangeListener() {
-			
+
 			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
+			public void propertyChange(final PropertyChangeEvent evt) {
 				if (NewFormattedJFreeChart.WINDOW_SIZE_PROPERTY.equals(evt.getPropertyName())) {
 					final AbstractSeriesDataset newDs = _provider.getDataset(true);
 
@@ -785,7 +784,7 @@ public class XYPlotView extends ViewPart {
 				}
 			}
 		});
-		
+
 		// ////////////////////////////////////////////////
 		// put the holder into one of our special items
 		// ////////////////////////////////////////////////
@@ -1421,7 +1420,7 @@ public class XYPlotView extends ViewPart {
 			if (ds != null) {
 				// store the dataset
 				_dataset = ds;
-				
+
 				// ok, fill in the plot
 				fillThePlot(_myTitle, _myUnits, _theFormatter, ds, prov.getToteCalc());
 			}
