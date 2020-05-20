@@ -49,6 +49,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.model.ModelConfiguration;
+import org.mwc.debrief.pepys.model.PepsysException;
 import org.mwc.debrief.pepys.model.PepysConnectorBridge;
 import org.mwc.debrief.pepys.model.TypeDomain;
 import org.mwc.debrief.pepys.model.bean.Comment;
@@ -108,8 +109,10 @@ public class PepysImportController {
 
 	public PepysImportController(final Shell parent, final AbstractConfiguration model, final AbstractViewSWT view) {
 		model.addDatafileTypeFilter(new TypeDomain(State.class, TreeNode.STATE, true, IMAGE_PREFIX + "fix.png"));
-		model.addDatafileTypeFilter(new TypeDomain(Contact.class, TreeNode.CONTACTS, true, IMAGE_PREFIX + "bearing.png"));
-		model.addDatafileTypeFilter(new TypeDomain(Comment.class, TreeNode.COMMENT, true, IMAGE_PREFIX + "narrative.png"));
+		model.addDatafileTypeFilter(
+				new TypeDomain(Contact.class, TreeNode.CONTACTS, true, IMAGE_PREFIX + "bearing.png"));
+		model.addDatafileTypeFilter(
+				new TypeDomain(Comment.class, TreeNode.COMMENT, true, IMAGE_PREFIX + "narrative.png"));
 
 		_model = model;
 		_view = view;
@@ -314,6 +317,12 @@ public class PepysImportController {
 							try {
 								updateAreaView2Model(model, view);
 								model.apply();
+							} catch (final PepsysException e) {
+								e.printStackTrace();
+								final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
+								messageBox.setMessage(e.getMessage());
+								messageBox.setText(e.getTitle());
+								messageBox.open();
 							} catch (final Exception e) {
 								e.printStackTrace();
 								final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);

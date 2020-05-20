@@ -49,6 +49,8 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 	void addDatafileTypeFilter(final TypeDomain newType);
 
 	void apply() throws Exception;
+	
+	public void validate() throws Exception;
 
 	void doImport();
 

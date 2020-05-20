@@ -266,6 +266,14 @@ public interface TimePeriod extends java.io.Serializable, Cloneable {
 			return res;
 		}
 
+		/**
+		 * returns true if the start day is before or equals to the end date
+		 */
+		@Override
+		public boolean isConsistent() {
+			return _startDTG.getMicros() <= _endDTG.getMicros();
+		}
+
 	}
 
 	public static class TestTimePeriod extends TestCase {
@@ -391,4 +399,10 @@ public interface TimePeriod extends java.io.Serializable, Cloneable {
 	 * @return
 	 */
 	public boolean isInvalid();
+	
+	/**
+	 * True if the end date is after the start day
+	 * @return
+	 */
+	public boolean isConsistent();
 }

@@ -126,10 +126,9 @@ public class ModelConfiguration implements AbstractConfiguration {
 	}
 
 	@Override
-	public void apply() throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException,
-			ClassNotFoundException, IOException {
+	public void apply() throws Exception {
 
+		validate();
 		currentItems = TreeUtils.buildStructure(this);
 		updateTree();
 		setSearch("");
@@ -517,6 +516,13 @@ public class ModelConfiguration implements AbstractConfiguration {
 				final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, TREE_MODEL, null, treeModel);
 				_pSupport.firePropertyChange(pce);
 			}
+		}
+	}
+
+	@Override
+	public void validate() throws Exception {
+		if (!currentPeriod.isConsistent()) {
+			throw new PepsysException("Date validation", "Please, select a start date which is before the end or on the same date of the end date");
 		}
 	}
 }
