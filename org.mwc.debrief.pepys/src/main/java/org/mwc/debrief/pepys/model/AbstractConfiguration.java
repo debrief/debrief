@@ -49,8 +49,6 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 	void addDatafileTypeFilter(final TypeDomain newType);
 
 	void apply() throws Exception;
-	
-	public void validate() throws Exception;
 
 	void doImport();
 
@@ -59,6 +57,8 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 	WorldArea getCurrentArea();
 
 	SearchTreeResult getCurrentSearchTreeResultModel();
+
+	DatabaseConnection getDatabaseConnection();
 
 	Collection<TypeDomain> getDatafileTypeFilters();
 
@@ -78,6 +78,10 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 
 	String getSearchResultsText();
 
+	TimePeriod getTimePeriod();
+
+	TreeNode getTreeModel();
+
 	void loadDatabaseConfiguration(final DatabaseConfiguration _configuration)
 			throws FileNotFoundException, PropertyVetoException, IOException;
 
@@ -86,11 +90,19 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 
 	void loadDefaultDatabaseConfiguration() throws PropertyVetoException, IOException;
 
+	void removeDatafileTypeFilter(TypeDomain typeToRemove);
+
+	void searchFromUser(boolean _search);
+
+	void setArea(WorldArea newArea);
+
 	void setCurrentViewport();
 
 	void setFilter(final String _newFilter);
 
 	void setHighlightedElement(final TreeNode node);
+
+	void setPepysConnectorBridge(PepysConnectorBridge _bridge);
 
 	void setSearch(final String _newSearch);
 
@@ -100,17 +112,5 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 
 	void updateTree();
 
-	DatabaseConnection getDatabaseConnection();
-
-	TimePeriod getTimePeriod();
-
-	TreeNode getTreeModel();
-
-	void removeDatafileTypeFilter(TypeDomain typeToRemove);
-
-	void searchFromUser(boolean _search);
-
-	void setArea(WorldArea newArea);
-
-	void setPepysConnectorBridge(PepysConnectorBridge _bridge);
+	public void validate() throws Exception;
 }

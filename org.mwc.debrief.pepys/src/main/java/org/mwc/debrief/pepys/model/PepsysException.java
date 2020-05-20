@@ -18,25 +18,26 @@ package org.mwc.debrief.pepys.model;
 public class PepsysException extends Exception {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -1990428413735762653L;
 
-	private String title;
-	private String message;
+	private final String title;
+	private final String message;
 
-	public PepsysException(String title, String message) {
+	public PepsysException(final String title, final String message) {
 		super();
 		this.title = title;
 		this.message = message;
 	}
 
-	public String getTitle() {
-		return title;
-	}
-
+	@Override
 	public String getMessage() {
 		return message;
+	}
+
+	public String getTitle() {
+		return title;
 	}
 
 }
