@@ -521,7 +521,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 	public void validate() throws Exception {
 		if (!currentPeriod.isConsistent()) {
 			throw new PepsysException("Date validation",
-					"Please, select a start date which is before the end or on the same date of the end date");
+					"The Start date-time must be before the End date-time");
 		}
 	}
 }
