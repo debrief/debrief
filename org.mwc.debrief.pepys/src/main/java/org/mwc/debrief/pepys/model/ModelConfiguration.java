@@ -22,7 +22,6 @@ import java.beans.PropertyVetoException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -126,10 +125,9 @@ public class ModelConfiguration implements AbstractConfiguration {
 	}
 
 	@Override
-	public void apply() throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException,
-			ClassNotFoundException, IOException {
+	public void apply() throws Exception {
 
+		validate();
 		currentItems = TreeUtils.buildStructure(this);
 		updateTree();
 		setSearch("");
@@ -155,7 +153,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 		 * int closest = 0; int closestDifference = 1 << 30; // This could be improved
 		 * doing a binary search. // But It will not reduce the linear order of the
 		 * calculation....
-		 * 
+		 *
 		 * for (int i = 0; i < searchResults.length * 2; i++) { final int currentOrder =
 		 * treeOrder.get(searchResults[i % searchResults.length].getItem()); if
 		 * (Math.abs(currentOrder - desired) < closestDifference) { closestDifference =
@@ -255,7 +253,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 	public SearchTreeResult getCurrentSearchTreeResultModel() {
 		return currentSearchTreeResult;
 	}
-	
+
 	@Override
 	public DatabaseConnection getDatabaseConnection() {
 		return databaseConnection;
@@ -323,7 +321,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 				searchFromUser = false;
 				return searchResults[desiredValue];
 			}
-		}else {
+		} else {
 			setSearchResults(-1, -1);
 		}
 		return null;
@@ -333,8 +331,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 	public String getSearchResultsText() {
 		if (currentMatch < 0 || totalMatches < 0) {
 			return "";
-		}
-		else if (totalMatches == 0) {
+		} else if (totalMatches == 0) {
 			return "Not Found";
 		} else {
 			return (currentMatch + 1) + " / " + totalMatches;
@@ -517,6 +514,14 @@ public class ModelConfiguration implements AbstractConfiguration {
 				final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, TREE_MODEL, null, treeModel);
 				_pSupport.firePropertyChange(pce);
 			}
+		}
+	}
+
+	@Override
+	public void validate() throws Exception {
+		if (!currentPeriod.isConsistent()) {
+			throw new PepsysException("Date validation",
+					"The Start date-time must be before the End date-time");
 		}
 	}
 }

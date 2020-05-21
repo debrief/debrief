@@ -267,7 +267,7 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 		this.startLabel.setLayoutData(gridData);
 
 		this.startDate = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.DROP_DOWN | CDT.DATE_SHORT);
-		this.startDate.setPattern("dd/MM/yyyy");
+		this.startDate.setPattern("dd/MM/yyyy  ");
 		this.startDate.setSelection(model.getTimePeriod().getStartDTG().getDate());
 
 		this.startTime = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.SPINNER | CDT.TIME_MEDIUM);
@@ -278,7 +278,7 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 		this.endLabel.setLayoutData(gridData);
 
 		this.endDate = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.DROP_DOWN | CDT.DATE_SHORT);
-		this.endDate.setPattern("dd/MM/yyyy");
+		this.endDate.setPattern("dd/MM/yyyy  ");
 		this.endDate.setSelection(model.getTimePeriod().getEndDTG().getDate());
 
 		this.endTime = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.SPINNER | CDT.TIME_MEDIUM);
