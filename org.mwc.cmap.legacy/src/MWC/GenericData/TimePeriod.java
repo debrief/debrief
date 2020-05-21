@@ -200,7 +200,7 @@ public interface TimePeriod extends java.io.Serializable, Cloneable {
 		 */
 		@Override
 		public boolean isConsistent() {
-			return _startDTG.getMicros() <= _endDTG.getMicros();
+			return _startDTG.getMicros() < _endDTG.getMicros();
 		}
 
 		/**
