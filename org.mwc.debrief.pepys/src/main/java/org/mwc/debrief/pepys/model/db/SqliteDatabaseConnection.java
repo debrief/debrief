@@ -124,7 +124,7 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 			nativeFolderPath = new File(System.getProperty("java.io.tmpdir") + "/native/");
 		}
 		// Let's load the libraries in the initialization.
-		NativeLibrariesLoader.loadBundledXuggler(nativeFolderPath, new ModSpatialiteAssigner() {
+		NativeLibrariesLoader.loadBundledSpatialite(nativeFolderPath, new ModSpatialiteAssigner() {
 
 			@Override
 			public void assign(final String path) {
