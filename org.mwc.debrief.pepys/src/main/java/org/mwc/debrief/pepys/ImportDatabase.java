@@ -55,7 +55,7 @@ public class ImportDatabase extends CoreEditorAction {
 
 		final Shell shell = new Shell(PlatformUI.getWorkbench().getDisplay(),
 				SWT.APPLICATION_MODAL | SWT.MIN | SWT.CLOSE | SWT.RESIZE | SWT.MAX);
-		shell.setMinimumSize(1200, 850);
+		shell.setMinimumSize(600, 400);
 		final AbstractConfiguration configurationModel = new ModelConfiguration();
 		final AbstractViewSWT view = new PepysImportView(configurationModel, shell);
 

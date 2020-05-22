@@ -348,6 +348,8 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 		treeGrid.verticalAlignment = GridData.FILL;
 		treeGrid.grabExcessVerticalSpace = true;
 		treeGrid.horizontalSpan = 5;
+		treeGrid.widthHint = 850;
+		treeGrid.heightHint = 600;
 
 		final TreeNameLabelProvider labelProvider = new TreeNameLabelProvider();
 		this.tree = new CheckboxTreeViewer(parent, SWT.BORDER);
