@@ -82,7 +82,7 @@ public class PepysImportController {
 			final AbstractViewSWT view = new PepysImportView(model, shell);
 
 			new PepysImportController(shell, model, view);
-		} catch (final PropertyVetoException | IOException e) {
+		} catch (final PropertyVetoException | IOException | PepsysException e) {
 			e.printStackTrace();
 		}
 
@@ -524,7 +524,7 @@ public class PepysImportController {
 									messageBox.open();
 
 									return;
-								} catch (PropertyVetoException | IOException e) {
+								} catch (PropertyVetoException | IOException | PepsysException e) {
 									final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
 									messageBox.setMessage(
 											"Unable to load database specified in the configuration file\n" + fileName);
