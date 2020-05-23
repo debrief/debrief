@@ -358,6 +358,26 @@ public class PepysImportController {
 				if (event.type == SWT.Selection) {
 					boolean showError = false;
 					String errorMessage = "";
+					final String ENV_VARIABLE = DatabaseConnection.CONFIG_FILE_ENV_NAME;
+					final String envVariableValue = ModelConfiguration.getEnvironmentVariable();
+					final String fileInUse = model.getDatabaseConnection().getDatabaseConfiguration().getLoaderOption()
+							.getPath();
+					final String configurationToUse = model.getDatabaseConnection().getDatabaseConfiguration()
+							.getLoaderOption().getType().name();
+
+					final StringBuilder messageToUser = new StringBuilder();
+					messageToUser.append("\n\n");
+					messageToUser.append("Value of the Environment Variable ");
+					messageToUser.append(ENV_VARIABLE);
+					messageToUser.append(" = ");
+					messageToUser.append(envVariableValue);
+					messageToUser.append("\n");
+					messageToUser.append("File in use: ");
+					messageToUser.append(fileInUse);
+					messageToUser.append("\n");
+					messageToUser.append("Configuration in use: ");
+					messageToUser.append(configurationToUse);
+
 					try {
 						showError = !model.doTestQuery();
 						errorMessage = "Database didn't contain the basic State, Contacts or Comments";
@@ -366,21 +386,21 @@ public class PepysImportController {
 
 						errorMessage = DatabaseConnection.GENERIC_CONNECTION_ERROR;
 						showError = true;
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						errorMessage = "You have incorrect database type.\nPlease provide the correct database type in the config file";
 						showError = true;
 					}
 					if (showError) {
 						final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
 
-						messageBox.setMessage(errorMessage);
+						messageBox.setMessage(errorMessage + messageToUser);
 						messageBox.setText("DebriefNG");
 						messageBox.open();
 
 						return;
 					} else {
 						final MessageBox messageBox = new MessageBox(_parent, SWT.OK);
-						messageBox.setMessage("Successful database connection");
+						messageBox.setMessage("Successful database connection" + messageToUser);
 						messageBox.setText("Debrief NG");
 						messageBox.open();
 

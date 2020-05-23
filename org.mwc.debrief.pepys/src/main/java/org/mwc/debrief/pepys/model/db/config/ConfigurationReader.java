@@ -2,17 +2,11 @@ package org.mwc.debrief.pepys.model.db.config;
 
 import java.beans.PropertyVetoException;
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Scanner;
-
-import org.mwc.debrief.model.utils.OSUtils;
-import org.mwc.debrief.pepys.Activator;
-import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 
 import junit.framework.TestCase;
 

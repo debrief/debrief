@@ -55,6 +55,10 @@ public class ModelConfiguration implements AbstractConfiguration {
 		boolean isAcceptable(final TreeStructurable _item);
 	}
 
+	public static String getEnvironmentVariable() {
+		return System.getenv(DatabaseConnection.CONFIG_FILE_ENV_NAME);
+	}
+
 	private PropertyChangeSupport _pSupport = null;
 
 	private final ArrayList<TypeDomain> currentDatatype = new ArrayList<TypeDomain>();
@@ -94,8 +98,6 @@ public class ModelConfiguration implements AbstractConfiguration {
 	private int treeOrderIndex = 0;
 
 	private DatabaseConnection databaseConnection;
-
-	private DatabaseConfiguration _databaseConfigurationUsed;
 
 	public ModelConfiguration() {
 		final Calendar twentyYearsAgoCal = Calendar.getInstance();
@@ -395,9 +397,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 		ConfigurationReader.loadDatabaseConfiguration(databaseConfiguration,
 
-				new LoaderOption[] {
-						new LoaderOption(LoaderType.ENV_VARIABLE,
-								System.getenv(DatabaseConnection.CONFIG_FILE_ENV_NAME)),
+				new LoaderOption[] { new LoaderOption(LoaderType.ENV_VARIABLE, getEnvironmentVariable()),
 						new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_DATABASE_FILE) });
 
 		loadDatabaseConfiguration(databaseConfiguration);

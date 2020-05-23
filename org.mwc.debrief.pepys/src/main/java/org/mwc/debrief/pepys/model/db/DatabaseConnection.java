@@ -115,15 +115,15 @@ public abstract class DatabaseConnection {
 					// not found:" + configurationFilename
 					throw new FileNotFoundException("DatabaseConnectionException requested file " + configurationFile
 							+ " but it is not a valid file");
-	
+
 				}
 			} else {
 				configurationFileStream = OSUtils.getInputStreamResource(DatabaseConnection.class, _defaultConfigFile,
 						Activator.PLUGIN_ID);
 			}
-	
+
 			loadDatabaseConfiguration(_config, configurationFileStream);
-		}finally {
+		} finally {
 			if (configurationFileStream != null) {
 				configurationFileStream.close();
 			}
@@ -188,8 +188,6 @@ public abstract class DatabaseConnection {
 	}
 
 	protected abstract String createLocationQuery(final String tableName, final String columnName);
-	
-	public abstract String getSRID();
 
 	public Collection<Condition> createPeriodFilter(final TimePeriod period, final Class<?> type) {
 		final ArrayList<Condition> conditions = new ArrayList<Condition>();
@@ -306,6 +304,12 @@ public abstract class DatabaseConnection {
 		return aliasRenamingMap.get(realTableName);
 
 	}
+
+	public DatabaseConfiguration getDatabaseConfiguration() {
+		return databaseConfiguration;
+	}
+
+	public abstract String getSRID();
 
 	protected void initialize(final DatabaseConfiguration _config)
 			throws PropertyVetoException, FileNotFoundException, IOException {
