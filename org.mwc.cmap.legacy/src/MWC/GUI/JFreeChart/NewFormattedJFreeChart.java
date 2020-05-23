@@ -128,6 +128,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 								? displayProp("WindowSize", "Window Size", "Window Size to calculate the delta rate",
 										EditorType.TEMPORAL)
 								: null,
+						displayProp("CentreWindow", "Centre Window", "Centre Window", EditorType.TEMPORAL),
 						displayProp("ShowSymbols", "Show symbols", "whether to show symbols at the data points",
 								EditorType.VISIBILITY),
 						displayExpertLongProp("SymbolSize", "Symbol size", "whether to show S/M/L symbols",
@@ -617,6 +618,25 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 		if (legend != null) {
 			legend.setItemFont(legendFont);
 		}
+	}
+	
+	public void setCentreWindow(final boolean val) {
+		final XYPlot plot = getXYPlot();
+		if (plot != null && plot instanceof StepperXYPlot) {
+			final StepperXYPlot xyPlot = (StepperXYPlot) plot;
+
+			xyPlot.setCentreWindow(val);
+		}
+	}
+	
+	public boolean getCentreWindow() {
+		final XYPlot plot = getXYPlot();
+		if (plot != null && plot instanceof StepperXYPlot) {
+			final StepperXYPlot xyPlot = (StepperXYPlot) plot;
+
+			return xyPlot.isCentreWindow();
+		}
+		return false;
 	}
 
 	/**

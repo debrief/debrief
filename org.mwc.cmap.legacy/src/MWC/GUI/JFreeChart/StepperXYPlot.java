@@ -165,7 +165,7 @@ public class StepperXYPlot extends XYPlot implements StepperListener {
 				}
 
 				if (isGrowWithTime()) {
-					final long endMillis = theTime / 1000;
+					long endMillis = theTime / 1000;
 					long startMillis;
 
 					if (_fixedDuration != null) {
@@ -174,6 +174,13 @@ public class StepperXYPlot extends XYPlot implements StepperListener {
 						startMillis = (long) dateAxis.getLowerBound();
 					}
 
+					// In case we need to centre it, we simply add the difference
+					if (isCentreWindow()) {
+						final long halfDuration = _fixedDuration.getMillis() / 2L;
+						startMillis += halfDuration;
+						endMillis += halfDuration;
+					}
+					
 					final Date startDate = new Date(startMillis);
 					final Date endDate = new Date(endMillis);
 
@@ -218,6 +225,16 @@ public class StepperXYPlot extends XYPlot implements StepperListener {
 
 	public boolean isGrowWithTime() {
 		return _growWithTime;
+	}
+	
+	private boolean _centreWindow;
+	
+	public boolean isCentreWindow() {
+		return _centreWindow;
+	}
+	
+	public void setCentreWindow(final boolean val) {
+		this._centreWindow = val;
 	}
 
 	/**
