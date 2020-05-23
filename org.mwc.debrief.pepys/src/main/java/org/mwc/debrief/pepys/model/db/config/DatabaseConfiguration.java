@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
+import org.mwc.debrief.pepys.model.db.config.LoaderOption.LoaderType;
 
 public class DatabaseConfiguration {
 
@@ -14,13 +15,14 @@ public class DatabaseConfiguration {
 			databaseTag.put(SqliteDatabaseConnection.CONFIGURATION_DB_NAME, path);
 			databaseTag.put(DatabaseConnection.CONFIGURATION_DATABASE_TYPE, DatabaseConnection.SQLITE);
 			_config.categories.put(DatabaseConnection.CONFIGURATION_TAG, databaseTag);
+			_config.setLoaderOption(new LoaderOption(LoaderType.DRAG_AND_DROP_SQLITE, path));
 			return _config;
 		}
 	}
 
 	private final HashMap<String, HashMap<String, String>> categories = new HashMap<>();
 
-	private String _sourcePath;
+	private LoaderOption _loaderOption;
 
 	public DatabaseConfiguration() {
 
@@ -40,11 +42,12 @@ public class DatabaseConfiguration {
 		return null;
 	}
 
-	public String getSourcePath() {
-		return _sourcePath;
+	public LoaderOption getLoaderOption() {
+		return _loaderOption;
 	}
 
-	public void setSourcePath(final String _sourcePath) {
-		this._sourcePath = _sourcePath;
+	public void setLoaderOption(LoaderOption _loaderOption) {
+		this._loaderOption = _loaderOption;
 	}
+	
 }

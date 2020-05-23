@@ -58,6 +58,8 @@ import org.mwc.debrief.pepys.model.bean.State;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
+import org.mwc.debrief.pepys.model.db.config.LoaderOption;
+import org.mwc.debrief.pepys.model.db.config.LoaderOption.LoaderType;
 import org.mwc.debrief.pepys.model.tree.TreeNode;
 import org.mwc.debrief.pepys.view.AbstractViewSWT;
 import org.mwc.debrief.pepys.view.PepysImportView;
@@ -74,8 +76,8 @@ public class PepysImportController {
 		final Shell shell = new Shell(display);
 		try {
 			final DatabaseConfiguration _config = new DatabaseConfiguration();
-			ConfigurationReader.loadDatabaseConfiguration(_config, DatabaseConnection.DEFAULT_SQLITE_DATABASE_FILE,
-					DatabaseConnection.DEFAULT_SQLITE_DATABASE_FILE);
+			ConfigurationReader.loadDatabaseConfiguration(_config, new LoaderOption[] {
+					new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
 
 			final AbstractConfiguration model = new ModelConfiguration();
 			model.loadDatabaseConfiguration(_config);
@@ -501,7 +503,8 @@ public class PepysImportController {
 									if (fileName.toLowerCase().endsWith(INI_FILE_SUFFIX)) {
 										// Lets try to load the file as a configuration file.
 										_config = new DatabaseConfiguration();
-										ConfigurationReader.loadDatabaseConfiguration(_config, fileName, null);
+										ConfigurationReader.loadDatabaseConfiguration(_config, new LoaderOption[] {
+												new LoaderOption(LoaderType.DRAG_AND_DROP_INI, fileName) });
 
 									} else if (fileName.toLowerCase().endsWith(SQLITE_FILE_SUFFIX)) {
 										_config = DatabaseConfiguration.DatabaseConfigurationFactory
@@ -517,8 +520,8 @@ public class PepysImportController {
 									}
 									model.loadDatabaseConfiguration(_config);
 									final MessageBox messageBox = new MessageBox(_parent, SWT.OK | SWT.OK);
-									final String filePath = _config.getSourcePath() == null ? ""
-											: _config.getSourcePath();
+									final String filePath = _config.getLoaderOption().getPath() == null ? ""
+											: _config.getLoaderOption().getPath();
 									messageBox.setMessage("File loaded successfully\n" + filePath);
 									messageBox.setText("File processing finished successfully");
 									messageBox.open();

@@ -36,6 +36,8 @@ import org.mwc.debrief.pepys.model.db.PostgresDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
+import org.mwc.debrief.pepys.model.db.config.LoaderOption;
+import org.mwc.debrief.pepys.model.db.config.LoaderOption.LoaderType;
 import org.mwc.debrief.pepys.model.tree.TreeNode;
 import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 import org.mwc.debrief.pepys.model.tree.TreeUtils;
@@ -92,6 +94,8 @@ public class ModelConfiguration implements AbstractConfiguration {
 	private int treeOrderIndex = 0;
 
 	private DatabaseConnection databaseConnection;
+
+	private DatabaseConfiguration _databaseConfigurationUsed;
 
 	public ModelConfiguration() {
 		final Calendar twentyYearsAgoCal = Calendar.getInstance();
@@ -390,7 +394,11 @@ public class ModelConfiguration implements AbstractConfiguration {
 		final DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration();
 
 		ConfigurationReader.loadDatabaseConfiguration(databaseConfiguration,
-				System.getenv(DatabaseConnection.CONFIG_FILE_ENV_NAME), DatabaseConnection.DEFAULT_DATABASE_FILE);
+
+				new LoaderOption[] {
+						new LoaderOption(LoaderType.ENV_VARIABLE,
+								System.getenv(DatabaseConnection.CONFIG_FILE_ENV_NAME)),
+						new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_DATABASE_FILE) });
 
 		loadDatabaseConfiguration(databaseConfiguration);
 	}
@@ -520,8 +528,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 	@Override
 	public void validate() throws Exception {
 		if (!currentPeriod.isConsistent()) {
-			throw new PepsysException("Date validation",
-					"The Start date-time must be before the End date-time");
+			throw new PepsysException("Date validation", "The Start date-time must be before the End date-time");
 		}
 	}
 }

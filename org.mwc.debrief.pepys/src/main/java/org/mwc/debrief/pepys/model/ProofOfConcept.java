@@ -28,13 +28,15 @@ import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
+import org.mwc.debrief.pepys.model.db.config.LoaderOption;
+import org.mwc.debrief.pepys.model.db.config.LoaderOption.LoaderType;
 
 public class ProofOfConcept {
 	public static void main(final String[] args) {
 		try {
 			final DatabaseConfiguration _config = new DatabaseConfiguration();
-			ConfigurationReader.loadDatabaseConfiguration(_config, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE,
-					DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE);
+			ConfigurationReader.loadDatabaseConfiguration(_config, new LoaderOption[] {
+					new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
 			final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
 			sqlite.initializeInstance(_config);
 			final List list2 = sqlite.listAll(DatafileType.class, null);

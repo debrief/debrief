@@ -87,26 +87,37 @@ public class ConfigurationReader {
 		}
 	}
 
-	public static void loadDatabaseConfiguration(final DatabaseConfiguration _config, final String _desiredFile,
-			final String _defaultConfigFile) throws PropertyVetoException, IOException {
+	/**
+	 * Try to load the option to the database configuration
+	 * 
+	 * @param _config
+	 * @param option
+	 * @throws PropertyVetoException
+	 * @throws IOException
+	 */
+	public static void loadDatabaseConfiguration(final DatabaseConfiguration _config, final LoaderOption[] _options)
+			throws PropertyVetoException, IOException {
 
 		InputStream configurationFileStream = null;
+		final StringBuilder filesTried = new StringBuilder();
 		try {
-			if (_desiredFile != null && new File(_desiredFile).isFile()) {
-				_config.setSourcePath(_desiredFile);
-				// Here we are simply load the file as given
-				configurationFileStream = new FileInputStream(new File(_desiredFile));
-			} else if (_defaultConfigFile != null) {
-				_config.setSourcePath(_defaultConfigFile);
-				configurationFileStream = OSUtils.getInputStreamResource(DatabaseConnection.class, _defaultConfigFile,
-						Activator.PLUGIN_ID);
-			} else {
-				throw new IOException(
-						"DatabaseConnectionException requested file " + _desiredFile + " but it is not a valid file");
+			for (LoaderOption option : _options) {
+				filesTried.append(option.getPath());
+				filesTried.append(", ");
+				if (option.isValid()) {
+					configurationFileStream = option.getInputStream();
+					_config.setLoaderOption(option);
+					break;
+				}
 			}
-	
+
+			if (configurationFileStream == null) {
+				throw new IOException("DatabaseConnectionException requested file " + filesTried.toString().trim()
+						+ " but it is not a valid file");
+			}
+
 			loadDatabaseConfiguration(_config, configurationFileStream);
-		}finally {
+		} finally {
 			if (configurationFileStream != null) {
 				configurationFileStream.close();
 			}
