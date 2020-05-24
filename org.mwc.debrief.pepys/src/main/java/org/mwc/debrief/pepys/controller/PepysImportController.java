@@ -275,6 +275,11 @@ public class PepysImportController {
 						}
 						view.getTree().refresh();
 					}
+					
+					// There is a bug in Window which does not
+					// update the selection if it is the same node.
+					// So, we need to force an update 
+					view.getTree().getTree().deselectAll();
 					view.getTree().getTree().setSelection(item);
 				}
 			}

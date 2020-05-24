@@ -445,12 +445,11 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	@Override
 	public void setHighlightedElement(final TreeNode node) {
-		final TreeNode oldHighlitedElement = this.highlightedNode;
 		this.highlightedNode = node;
 
 		if (_pSupport != null) {
 			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, HIGHLIGHT_PROPERTY,
-					oldHighlitedElement, node);
+					null, node);
 			_pSupport.firePropertyChange(pce);
 		}
 	}
