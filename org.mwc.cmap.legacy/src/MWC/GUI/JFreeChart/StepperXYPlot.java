@@ -206,7 +206,7 @@ public class StepperXYPlot extends XYPlot implements StepperListener {
 			}
 
 			// ok, finally draw the line - if we're not showing the growing plot
-			if (!isGrowWithTime())
+			if (!isGrowWithTime() || (isGrowWithTime() && isCentreWindow()))
 				plotStepperLine(g2, linePosition, dataArea);
 
 		}
