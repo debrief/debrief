@@ -26,6 +26,7 @@ import org.mwc.cmap.plotViewer.actions.CoreEditorAction;
 import org.mwc.debrief.pepys.controller.PepysImportController;
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.model.ModelConfiguration;
+import org.mwc.debrief.pepys.model.PepsysException;
 import org.mwc.debrief.pepys.model.PepysConnectorBridge;
 import org.mwc.debrief.pepys.view.AbstractViewSWT;
 import org.mwc.debrief.pepys.view.PepysImportView;
@@ -55,7 +56,7 @@ public class ImportDatabase extends CoreEditorAction {
 
 		final Shell shell = new Shell(PlatformUI.getWorkbench().getDisplay(),
 				SWT.APPLICATION_MODAL | SWT.MIN | SWT.CLOSE | SWT.RESIZE | SWT.MAX);
-		shell.setMinimumSize(1200, 850);
+		shell.setMinimumSize(600, 400);
 		final AbstractConfiguration configurationModel = new ModelConfiguration();
 		final AbstractViewSWT view = new PepysImportView(configurationModel, shell);
 
@@ -68,6 +69,15 @@ public class ImportDatabase extends CoreEditorAction {
 			final MessageBox messageBox = new MessageBox(shell, SWT.ERROR | SWT.OK);
 			messageBox.setMessage("Debrief has been unable to load the configuration file\n" + e.toString());
 			messageBox.setText("Error in database configuration file.");
+			messageBox.open();
+
+			return;
+		} catch (PepsysException e) {
+			e.printStackTrace();
+
+			final MessageBox messageBox = new MessageBox(shell, SWT.ERROR | SWT.OK);
+			messageBox.setMessage(e.getMessage());
+			messageBox.setText(e.getTitle());
 			messageBox.open();
 
 			return;

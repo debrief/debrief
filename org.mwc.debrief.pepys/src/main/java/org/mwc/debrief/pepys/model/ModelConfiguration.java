@@ -350,7 +350,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	@Override
 	public void loadDatabaseConfiguration(final DatabaseConfiguration _configuration)
-			throws FileNotFoundException, PropertyVetoException, IOException {
+			throws FileNotFoundException, PropertyVetoException, IOException, PepsysException {
 		final HashMap<String, String> category = _configuration.getCategory(DatabaseConnection.CONFIGURATION_TAG);
 		if (category != null && category.containsKey(DatabaseConnection.CONFIGURATION_DATABASE_TYPE)) {
 			final String databaseType = category.get(DatabaseConnection.CONFIGURATION_DATABASE_TYPE);
@@ -377,7 +377,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	@Override
 	public void loadDatabaseConfiguration(final InputStream configurationFile)
-			throws PropertyVetoException, IOException {
+			throws PropertyVetoException, IOException, PepsysException {
 		final DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration();
 
 		ConfigurationReader.loadDatabaseConfiguration(databaseConfiguration, configurationFile);
@@ -386,7 +386,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 	}
 
 	@Override
-	public void loadDefaultDatabaseConfiguration() throws PropertyVetoException, IOException {
+	public void loadDefaultDatabaseConfiguration() throws PropertyVetoException, IOException, PepsysException {
 		final DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration();
 
 		ConfigurationReader.loadDatabaseConfiguration(databaseConfiguration,
@@ -519,8 +519,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 	@Override
 	public void validate() throws Exception {
 		if (!currentPeriod.isConsistent()) {
-			throw new PepsysException("Date validation",
-					"The Start date-time must be before the End date-time");
+			throw new PepsysException("Date validation", "The Start date-time must be before the End date-time");
 		}
 	}
 }
