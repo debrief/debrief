@@ -83,12 +83,12 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 	TreeNode getTreeModel();
 
 	void loadDatabaseConfiguration(final DatabaseConfiguration _configuration)
-			throws FileNotFoundException, PropertyVetoException, IOException;
+			throws FileNotFoundException, PropertyVetoException, IOException, PepsysException;
 
 	void loadDatabaseConfiguration(final InputStream configurationFile)
-			throws FileNotFoundException, PropertyVetoException, IOException;
+			throws FileNotFoundException, PropertyVetoException, IOException, PepsysException;
 
-	void loadDefaultDatabaseConfiguration() throws PropertyVetoException, IOException;
+	void loadDefaultDatabaseConfiguration() throws PropertyVetoException, IOException, PepsysException;
 
 	void removeDatafileTypeFilter(TypeDomain typeToRemove);
 
