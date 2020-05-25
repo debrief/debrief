@@ -27,6 +27,14 @@ public class speedRateCalc extends plainCalc implements DeltaRateToteCalculation
 	// constructor
 	////////////////////////////////////////////////////////////
 
+	protected static double[] calculateMeasure(final Watchable[] primary) {
+		final double[] measure = new double[primary.length];
+		for (int i = 0; i < primary.length; i++) {
+			measure[i] = primary[i].getSpeed();
+		}
+		return measure;
+	}
+
 	public speedRateCalc() {
 		super(new DecimalFormat("00.00"), "Speed Rate (abs)", "Knots/sec");
 	}
@@ -34,7 +42,7 @@ public class speedRateCalc extends plainCalc implements DeltaRateToteCalculation
 	// member functions
 	////////////////////////////////////////////////////////////
 
-	public speedRateCalc(DecimalFormat decimalFormat, String description, String units) {
+	public speedRateCalc(final DecimalFormat decimalFormat, final String description, final String units) {
 		super(decimalFormat, description, units);
 	}
 
@@ -47,18 +55,11 @@ public class speedRateCalc extends plainCalc implements DeltaRateToteCalculation
 		return res;
 	}
 
+	@Override
 	public double[] calculate(final Watchable[] primary, final HiResDate[] thisTime, final long windowSizeMillis) {
 		final double[] measure = calculateMeasure(primary);
 
-		return DeltaRateToteCalcImplementation.calculateRate(measure, thisTime, windowSizeMillis);
-	}
-
-	protected static double[] calculateMeasure(final Watchable[] primary) {
-		final double[] measure = new double[primary.length];
-		for (int i = 0; i < primary.length; i++) {
-			measure[i] = primary[i].getSpeed();
-		}
-		return measure;
+		return DeltaRateToteCalcImplementation.calculateRate(measure, thisTime);
 	}
 
 	/**
