@@ -24,6 +24,7 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Properties;
 
+import org.mwc.debrief.pepys.model.PepsysException;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.postgis.PGbox3d;
 import org.postgis.PGgeometry;
@@ -81,7 +82,8 @@ public class PostgresDatabaseConnection extends DatabaseConnection {
 	}
 
 	@Override
-	protected void initialize(final DatabaseConfiguration _config) throws PropertyVetoException, IOException {
+	protected void initialize(final DatabaseConfiguration _config)
+			throws PropertyVetoException, IOException, PepsysException {
 		super.initialize(_config);
 
 		final Properties props = new Properties();

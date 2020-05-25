@@ -42,7 +42,7 @@ public class NativeLibrariesLoader {
 	
 	public static Set<String> previouslyLoaded = new HashSet<>();
 
-	public static void loadBundledXuggler(final File nativeLibrariesDirectory, final ModSpatialiteAssigner assigner)
+	public static void loadBundledSpatialite(final File nativeLibrariesDirectory, final ModSpatialiteAssigner assigner)
 			throws IOException {
 		if (!previouslyLoaded.contains(nativeLibrariesDirectory.getAbsolutePath())) {
 			nativeLibrariesDirectory.mkdirs();

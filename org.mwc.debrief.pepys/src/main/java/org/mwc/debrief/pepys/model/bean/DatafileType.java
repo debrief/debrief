@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import org.mwc.debrief.pepys.model.PepsysException;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.Id;
@@ -62,7 +63,7 @@ public class DatafileType implements AbstractBean {
 
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
-					| ClassNotFoundException | IOException e) {
+					| ClassNotFoundException | IOException | PepsysException e) {
 				e.printStackTrace();
 				fail("Couldn't connect to database or query error");
 			}
