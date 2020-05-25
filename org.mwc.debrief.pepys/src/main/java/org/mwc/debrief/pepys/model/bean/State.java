@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.mwc.debrief.pepys.model.PepsysException;
 import org.mwc.debrief.pepys.model.db.Condition;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
@@ -54,7 +55,7 @@ public class State implements AbstractBean, TreeStructurable {
 				assertTrue("States - database entries", list2.size() == 402);
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
-					| ClassNotFoundException | IOException e) {
+					| ClassNotFoundException | IOException | PepsysException e) {
 				e.printStackTrace();
 				fail("Couldn't connect to database or query error");
 			}
