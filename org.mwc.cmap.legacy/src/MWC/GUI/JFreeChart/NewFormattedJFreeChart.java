@@ -15,8 +15,6 @@
 
 package MWC.GUI.JFreeChart;
 
-//import com.jrefinery.chart.*;
-
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -238,7 +236,6 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 			_applied = applied;
 		}
 	}
-	
 
 	public static String SYMBOL_PROPERTY = "SYMBOL_PROPERTY";
 
@@ -250,6 +247,8 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 	public static final String CHART_LABEL_FORMAT = "ChartLabelFormat";
 
 	private static ToolParent _toolParent;
+
+	public static final String WINDOW_SIZE_PROPERTY = "WINDOWS SIZE PROPERTY";
 
 	public static void initialise(final ToolParent toolParent) {
 		_toolParent = toolParent;
@@ -275,15 +274,36 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 	 */
 	private SwitchableTimeOffsetProvider _provider = null;
 
-	private Duration _fixedDuration;
-
 	// ////////////////////////////////////////////////
 	// constructor
 	// ////////////////////////////////////////////////
 
+	private Duration _fixedDuration;
+
 	private String _labelFormat;
 
 	private final TimeWindowRateCalculation _calc;
+
+	/**
+	 * Constructs a chart.
+	 * <P>
+	 * Note that the ChartFactory class contains static methods that will return a
+	 * ready-made chart.
+	 *
+	 * @param title        the main chart title.
+	 * @param titleFont    the font for displaying the chart title.
+	 * @param plot         controller of the visual representation of the data.
+	 * @param createLegend a flag indicating whether or not a legend should be
+	 *                     created for the chart.
+	 * @param stepper      the provider of the time offset
+	 */
+	public NewFormattedJFreeChart(final String title, final Font titleFont, final Plot plot, final boolean createLegend,
+			final StepperListener.StepperController stepper, final TimeWindowRateCalculation deltaRateToteCalc) {
+
+		this(title, titleFont, plot, createLegend, deltaRateToteCalc);
+
+		_provider = new SwitchableTimeOffsetProvider(stepper);
+	}
 
 	/**
 	 * Constructs a chart.
@@ -321,27 +341,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 		setLabelFormat(theFormat);
 	}
 
-	/**
-	 * Constructs a chart.
-	 * <P>
-	 * Note that the ChartFactory class contains static methods that will return a
-	 * ready-made chart.
-	 *
-	 * @param title        the main chart title.
-	 * @param titleFont    the font for displaying the chart title.
-	 * @param plot         controller of the visual representation of the data.
-	 * @param createLegend a flag indicating whether or not a legend should be
-	 *                     created for the chart.
-	 * @param stepper      the provider of the time offset
-	 */
-	public NewFormattedJFreeChart(final String title, final Font titleFont, final Plot plot, final boolean createLegend,
-			final StepperListener.StepperController stepper, final TimeWindowRateCalculation deltaRateToteCalc) {
-
-		this(title, titleFont, plot, createLegend, deltaRateToteCalc);
-
-		_provider = new SwitchableTimeOffsetProvider(stepper);
-	}
-
+	@Override
 	public void addPropertyChangeListener(final PropertyChangeListener listener) {
 		this._stateListeners.add(listener);
 	}
@@ -349,6 +349,10 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 	public Font getAxisFont() {
 		return this.getXYPlot().getRangeAxis().getLabelFont();
 	}
+
+	// ////////////////////////////////////////////////
+	// member methods
+	// ////////////////////////////////////////////////
 
 	/**
 	 * the width of the data line
@@ -358,10 +362,6 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 	public int getDataLineWidth() {
 		return _dataLineWidth;
 	}
-
-	// ////////////////////////////////////////////////
-	// member methods
-	// ////////////////////////////////////////////////
 
 	public DeltaRateToteCalculation getDeltaRateToteCalculation() {
 		return _calc;
@@ -530,6 +530,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 		}
 	}
 
+	@Override
 	public void removePropertyChangeListener(final PropertyChangeListener listener) {
 		this._stateListeners.remove(listener);
 	}
@@ -669,6 +670,10 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 
 	}
 
+	// ////////////////////////////////////////////////
+	// editable methods
+	// ////////////////////////////////////////////////
+
 	public void setShowLegend(final boolean showLegend) {
 		if (showLegend) {
 			if (!isShowLegend()) {
@@ -687,10 +692,6 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 
 		this.fireChartChanged();
 	}
-
-	// ////////////////////////////////////////////////
-	// editable methods
-	// ////////////////////////////////////////////////
 
 	public void setShowSymbols(final boolean showSymbols) {
 		final DefaultXYItemRenderer sx = (DefaultXYItemRenderer) getXYPlot().getRenderer();
@@ -728,8 +729,6 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 	public void setTitleText(final String text) {
 		this.getTitle().setText(text);
 	}
-	
-	public static final String WINDOW_SIZE_PROPERTY = "WINDOWS SIZE PROPERTY";
 
 	public void setWindowSize(final Duration _newWindowSize) {
 		if (_calc != null) {
