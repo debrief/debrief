@@ -77,13 +77,20 @@ public class StepperXYPlot extends XYPlot implements StepperListener {
 	 */
 	private boolean _showLine = true;
 
+	/**
+	 * Time frame in case we are using a fix Duration.
+	 */
 	private Duration _fixedDuration;
+	
+	/**
+	 * whether to see window of time "around" the current time,
+	 * using the _fixedDuration time frame.
+	 */
+	private boolean _centreWindow;
 
 	// ////////////////////////////////////////////////
 	// constructor
 	// ////////////////////////////////////////////////
-
-	private boolean _centreWindow;
 
 	// ////////////////////////////////////////////////
 	// over-ride painting support
