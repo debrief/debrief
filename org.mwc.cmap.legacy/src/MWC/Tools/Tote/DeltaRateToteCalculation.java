@@ -7,7 +7,7 @@ public interface DeltaRateToteCalculation extends toteCalculation {
 
 	/**
 	 * Produce the calculated average using the time windows given
-	 * 
+	 *
 	 * @param primary
 	 * @param thisTime
 	 * @param windowSizeMillis

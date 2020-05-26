@@ -70,7 +70,7 @@ public class ProofOfConcept {
 			// }
 		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 				| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
-				| ClassNotFoundException | IOException e) {
+				| ClassNotFoundException | IOException | PepsysException e) {
 			e.printStackTrace();
 		}
 	}

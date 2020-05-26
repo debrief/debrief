@@ -60,14 +60,12 @@ import Debrief.Tools.Tote.Calculations.bearingRateCalc;
 import Debrief.Tools.Tote.Calculations.courseCalc;
 import Debrief.Tools.Tote.Calculations.courseDeltaAverageCalc;
 import Debrief.Tools.Tote.Calculations.courseDeltaRateRateCalc;
-import Debrief.Tools.Tote.Calculations.courseRateCalc;
 import Debrief.Tools.Tote.Calculations.depthCalc;
 import Debrief.Tools.Tote.Calculations.dopplerCalc;
 import Debrief.Tools.Tote.Calculations.rangeCalc;
 import Debrief.Tools.Tote.Calculations.relBearingCalc;
 import Debrief.Tools.Tote.Calculations.speedCalc;
 import Debrief.Tools.Tote.Calculations.speedDeltaAverageCalc;
-import Debrief.Tools.Tote.Calculations.speedRateCalc;
 import Debrief.Tools.Tote.Calculations.speedRateRateCalc;
 import Debrief.Wrappers.TacticalDataWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
@@ -301,6 +299,53 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator {
 				return;
 			} else {
 				final Action viewPlot = new Action("View XY plot") {
+					public DatasetProvider createDatasetProvider(final Layers theLayers,
+							final ShowTimeVariablePlot3.CalculationHolder theHolder, final WatchableList thePrimary,
+							final Vector<WatchableList> theTracks, final HiResDate finalStart,
+							final HiResDate finalEnd) {
+						final DatasetProvider prov = new DatasetProvider() {
+
+							@Override
+							public AbstractSeriesDataset getDataset(final boolean liveUpdates) {
+								// it isn't obvious which end time value to use
+								final HiResDate newEnd;
+
+								// if we're tracking live updates, then we need to work to the time of the last
+								// point on the primary track
+								if (!liveUpdates) {
+									// not live - that's easy then
+									newEnd = finalEnd;
+								} else {
+									// do we have a primary track?
+									if (thePrimary != null && thePrimary.getStartDTG() != null
+											&& !thePrimary.getStartDTG().equals(thePrimary.getEndDTG())) {
+										// yes, we can take the time from the primary
+										newEnd = thePrimary.getEndDTG();
+									} else {
+										// ok, we'll have to loop through the data
+										// work out the last time
+										final HiResDate thisEnd = getEarliestEndTime(theTracks);
+										newEnd = thisEnd != null ? thisEnd : finalEnd;
+									}
+								}
+
+								return ShowTimeVariablePlot3.getDataSeries(thePrimary, theHolder, theTracks, finalStart,
+										newEnd, null);
+							}
+
+							@Override
+							public Layers getLayers() {
+								return theLayers;
+							}
+
+							@Override
+							public toteCalculation getToteCalc() {
+								return theHolder._theCalc;
+							}
+						};
+						return prov;
+					}
+
 					@Override
 					public void run() {
 
@@ -495,53 +540,6 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator {
 							e.printStackTrace();
 						}
 
-					}
-
-					public DatasetProvider createDatasetProvider(final Layers theLayers,
-							final ShowTimeVariablePlot3.CalculationHolder theHolder, final WatchableList thePrimary,
-							final Vector<WatchableList> theTracks, final HiResDate finalStart,
-							final HiResDate finalEnd) {
-						final DatasetProvider prov = new DatasetProvider() {
-
-							@Override
-							public AbstractSeriesDataset getDataset(final boolean liveUpdates) {
-								// it isn't obvious which end time value to use
-								final HiResDate newEnd;
-
-								// if we're tracking live updates, then we need to work to the time of the last
-								// point on the primary track
-								if (!liveUpdates) {
-									// not live - that's easy then
-									newEnd = finalEnd;
-								} else {
-									// do we have a primary track?
-									if (thePrimary != null && thePrimary.getStartDTG() != null
-											&& !thePrimary.getStartDTG().equals(thePrimary.getEndDTG())) {
-										// yes, we can take the time from the primary
-										newEnd = thePrimary.getEndDTG();
-									} else {
-										// ok, we'll have to loop through the data
-										// work out the last time
-										final HiResDate thisEnd = getEarliestEndTime(theTracks);
-										newEnd = thisEnd != null ? thisEnd : finalEnd;
-									}
-								}
-
-								return ShowTimeVariablePlot3.getDataSeries(thePrimary, theHolder, theTracks,
-										finalStart, newEnd, null);
-							}
-
-							@Override
-							public Layers getLayers() {
-								return theLayers;
-							}
-
-							@Override
-							public toteCalculation getToteCalc() {
-								return theHolder._theCalc;
-							}
-						};
-						return prov;
 					}
 
 				};

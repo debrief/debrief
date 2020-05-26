@@ -40,6 +40,7 @@ import java.util.List;
 
 import org.mwc.debrief.model.utils.OSUtils;
 import org.mwc.debrief.pepys.Activator;
+import org.mwc.debrief.pepys.model.PepsysException;
 import org.mwc.debrief.pepys.model.bean.AbstractBean;
 import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils;
 import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils.FieldsTable;
@@ -312,13 +313,14 @@ public abstract class DatabaseConnection {
 	public abstract String getSRID();
 
 	protected void initialize(final DatabaseConfiguration _config)
-			throws PropertyVetoException, FileNotFoundException, IOException {
+			throws PropertyVetoException, FileNotFoundException, IOException, PepsysException {
 		close();
 
 		// expected to be overwritten by the implementation
 	}
 
-	public void initializeInstance(final DatabaseConfiguration _config) throws PropertyVetoException, IOException {
+	public void initializeInstance(final DatabaseConfiguration _config)
+			throws PropertyVetoException, IOException, PepsysException {
 		databaseConfiguration = _config;
 		initialize(_config);
 	}

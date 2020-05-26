@@ -23,7 +23,19 @@ import MWC.GenericData.Watchable;
 import MWC.Tools.Tote.DeltaRateToteCalculation;
 
 public class courseRateCalc extends plainCalc implements DeltaRateToteCalculation {
-	
+
+	protected static double[] calculateMeasure(final Watchable[] primary) {
+		final double[] measure = new double[primary.length];
+		for (int i = 0; i < primary.length; i++) {
+			measure[i] = Conversions.Rads2Degs(primary[i].getCourse());
+		}
+		return measure;
+	}
+
+	/////////////////////////////////////////////////////////////
+	// member functions
+	////////////////////////////////////////////////////////////
+
 	/////////////////////////////////////////////////////////////
 	// constructor
 	////////////////////////////////////////////////////////////
@@ -31,11 +43,7 @@ public class courseRateCalc extends plainCalc implements DeltaRateToteCalculatio
 		super(new DecimalFormat("000.0"), "Course Rate (abs)", "degs/sec");
 	}
 
-	/////////////////////////////////////////////////////////////
-	// member functions
-	////////////////////////////////////////////////////////////
-
-	public courseRateCalc(DecimalFormat decimalFormat, String name, String unit) {
+	public courseRateCalc(final DecimalFormat decimalFormat, final String name, final String unit) {
 		super(decimalFormat, name, unit);
 	}
 
@@ -51,15 +59,7 @@ public class courseRateCalc extends plainCalc implements DeltaRateToteCalculatio
 	@Override
 	public double[] calculate(final Watchable[] primary, final HiResDate[] thisTime, final long windowSizeMillis) {
 		final double[] measure = calculateMeasure(primary);
-		return DeltaRateToteCalcImplementation.calculateRate(measure, thisTime, windowSizeMillis);
-	}
-
-	protected static double[] calculateMeasure(final Watchable[] primary) {
-		final double[] measure = new double[primary.length];
-		for (int i = 0; i < primary.length; i++) {
-			measure[i] = Conversions.Rads2Degs(primary[i].getCourse());
-		}
-		return measure;
+		return DeltaRateToteCalcImplementation.calculateRate(measure, thisTime);
 	}
 
 	/**

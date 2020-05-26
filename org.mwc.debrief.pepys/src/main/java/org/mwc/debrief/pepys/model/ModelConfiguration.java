@@ -356,7 +356,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	@Override
 	public void loadDatabaseConfiguration(final DatabaseConfiguration _configuration)
-			throws FileNotFoundException, PropertyVetoException, IOException {
+			throws FileNotFoundException, PropertyVetoException, IOException, PepsysException {
 		final HashMap<String, String> category = _configuration.getCategory(DatabaseConnection.CONFIGURATION_TAG);
 		if (category != null && category.containsKey(DatabaseConnection.CONFIGURATION_DATABASE_TYPE)) {
 			final String databaseType = category.get(DatabaseConnection.CONFIGURATION_DATABASE_TYPE);
@@ -383,7 +383,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	@Override
 	public void loadDatabaseConfiguration(final InputStream configurationFile)
-			throws PropertyVetoException, IOException {
+			throws PropertyVetoException, IOException, PepsysException {
 		final DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration();
 
 		ConfigurationReader.loadDatabaseConfiguration(databaseConfiguration, configurationFile);
@@ -392,7 +392,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 	}
 
 	@Override
-	public void loadDefaultDatabaseConfiguration() throws PropertyVetoException, IOException {
+	public void loadDefaultDatabaseConfiguration() throws PropertyVetoException, IOException, PepsysException {
 		final DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration();
 
 		ConfigurationReader.loadDatabaseConfiguration(databaseConfiguration,
@@ -453,12 +453,11 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	@Override
 	public void setHighlightedElement(final TreeNode node) {
-		final TreeNode oldHighlitedElement = this.highlightedNode;
 		this.highlightedNode = node;
 
 		if (_pSupport != null) {
 			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, HIGHLIGHT_PROPERTY,
-					oldHighlitedElement, node);
+					null, node);
 			_pSupport.firePropertyChange(pce);
 		}
 	}
