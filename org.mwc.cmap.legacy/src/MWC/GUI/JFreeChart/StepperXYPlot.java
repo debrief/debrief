@@ -83,6 +83,12 @@ public class StepperXYPlot extends XYPlot implements StepperListener {
 	// constructor
 	// ////////////////////////////////////////////////
 
+	private boolean _centreWindow;
+
+	// ////////////////////////////////////////////////
+	// over-ride painting support
+	// ////////////////////////////////////////////////
+
 	/**
 	 * Constructs an XYPlot with the specified axes (other attributes take default
 	 * values).
@@ -101,10 +107,6 @@ public class StepperXYPlot extends XYPlot implements StepperListener {
 			_myStepper.addStepperListener(this);
 		}
 	}
-
-	// ////////////////////////////////////////////////
-	// over-ride painting support
-	// ////////////////////////////////////////////////
 
 	/**
 	 * Draws the XY plot on a Java 2D graphics device (such as the screen or a
@@ -180,7 +182,7 @@ public class StepperXYPlot extends XYPlot implements StepperListener {
 						startMillis += halfDuration;
 						endMillis += halfDuration;
 					}
-					
+
 					final Date startDate = new Date(startMillis);
 					final Date endDate = new Date(endMillis);
 
@@ -223,18 +225,12 @@ public class StepperXYPlot extends XYPlot implements StepperListener {
 		return _myStepper.getTimeZero();
 	}
 
-	public boolean isGrowWithTime() {
-		return _growWithTime;
-	}
-	
-	private boolean _centreWindow;
-	
 	public boolean isCentreWindow() {
 		return _centreWindow;
 	}
-	
-	public void setCentreWindow(final boolean val) {
-		this._centreWindow = val;
+
+	public boolean isGrowWithTime() {
+		return _growWithTime;
 	}
 
 	/**
@@ -279,6 +275,10 @@ public class StepperXYPlot extends XYPlot implements StepperListener {
 	@Override
 	public void reset() {
 		// don't worry about it, ignore
+	}
+
+	public void setCentreWindow(final boolean val) {
+		this._centreWindow = val;
 	}
 
 	public void setFixedDuration(final Duration dur) {
