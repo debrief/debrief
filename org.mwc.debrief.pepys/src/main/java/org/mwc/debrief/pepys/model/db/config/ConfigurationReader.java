@@ -82,7 +82,8 @@ public class ConfigurationReader {
 	}
 
 	/**
-	 * Try to load the option to the database configuration
+	 * Try to load the option to the database configuration.
+	 * It will try the first one, then the second one, etc
 	 * 
 	 * @param _config
 	 * @param option
@@ -118,6 +119,11 @@ public class ConfigurationReader {
 		}
 	}
 
+	/**
+	 * Given an InputStream, It loads it, and stores it in the DatabaseCondiguration
+	 * @param configuration Where to store the configuration
+	 * @param inputStream Where to read the configuration from
+	 */
 	public static void parseConfigurationFile(final DatabaseConfiguration configuration,
 			final InputStream inputStream) {
 		final Scanner scanner = new Scanner(inputStream);

@@ -395,6 +395,8 @@ public class ModelConfiguration implements AbstractConfiguration {
 	public void loadDefaultDatabaseConfiguration() throws PropertyVetoException, IOException, PepsysException {
 		final DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration();
 
+		// Here we are going to try to load the environmental variable,
+		// and if it not found, we try the default configuration
 		ConfigurationReader.loadDatabaseConfiguration(databaseConfiguration,
 
 				new LoaderOption[] { new LoaderOption(LoaderType.ENV_VARIABLE, getEnvironmentVariable()),

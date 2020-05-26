@@ -22,6 +22,10 @@ public class DatabaseConfiguration {
 
 	private final HashMap<String, HashMap<String, String>> categories = new HashMap<>();
 
+	/**
+	 * Field to specify where we are reading the database from and what type of
+	 * configuration it is.
+	 */
 	private LoaderOption _loaderOption;
 
 	public DatabaseConfiguration() {
@@ -49,5 +53,5 @@ public class DatabaseConfiguration {
 	public void setLoaderOption(LoaderOption _loaderOption) {
 		this._loaderOption = _loaderOption;
 	}
-	
+
 }
