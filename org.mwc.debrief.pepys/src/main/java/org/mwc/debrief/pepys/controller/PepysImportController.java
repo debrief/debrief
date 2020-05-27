@@ -376,7 +376,7 @@ public class PepysImportController {
 					messageToUser.append(ENV_VARIABLE);
 					messageToUser.append(": ");
 					messageToUser.append(envVariableValue);
-					if (!configurationToUse.equals(LoaderType.ENV_VARIABLE)) {
+					if (!configurationToUse.equals(LoaderType.ENV_VARIABLE.name())) {
 						messageToUser.append(" (INVALID FILE)");
 					}
 					messageToUser.append("\n\n");
