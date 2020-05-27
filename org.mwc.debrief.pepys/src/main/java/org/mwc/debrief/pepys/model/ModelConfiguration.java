@@ -397,10 +397,18 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 		// Here we are going to try to load the environmental variable,
 		// and if it not found, we try the default configuration
+
+		final String envVariable = getEnvironmentVariable();
+		final LoaderOption option;
+		if (envVariable == null) {
+			option = new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_DATABASE_FILE);
+		} else {
+			option = new LoaderOption(LoaderType.ENV_VARIABLE, getEnvironmentVariable());
+		}
+
 		ConfigurationReader.loadDatabaseConfiguration(databaseConfiguration,
 
-				new LoaderOption[] { new LoaderOption(LoaderType.ENV_VARIABLE, getEnvironmentVariable()),
-						new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_DATABASE_FILE) });
+				new LoaderOption[] { option });
 
 		loadDatabaseConfiguration(databaseConfiguration);
 	}
@@ -458,8 +466,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 		this.highlightedNode = node;
 
 		if (_pSupport != null) {
-			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, HIGHLIGHT_PROPERTY,
-					null, node);
+			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, HIGHLIGHT_PROPERTY, null, node);
 			_pSupport.firePropertyChange(pce);
 		}
 	}
