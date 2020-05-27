@@ -97,7 +97,7 @@ public abstract class DatabaseConnection {
 			throw new FileNotFoundException("DatabaseConnectionException we have received a null inputstream");
 		}
 	}
-
+	
 	public static void loadDatabaseConfiguration(final DatabaseConfiguration _config, final String _defaultConfigFile)
 			throws PropertyVetoException, IOException {
 

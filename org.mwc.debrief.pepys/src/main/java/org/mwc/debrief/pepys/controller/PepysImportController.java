@@ -374,9 +374,12 @@ public class PepysImportController {
 					messageToUser.append("\n\n");
 					messageToUser.append("Value of the Environment Variable ");
 					messageToUser.append(ENV_VARIABLE);
-					messageToUser.append(" = ");
+					messageToUser.append(": ");
 					messageToUser.append(envVariableValue);
-					messageToUser.append("\n");
+					if (!configurationToUse.equals(LoaderType.ENV_VARIABLE)) {
+						messageToUser.append(" (INVALID FILE)");
+					}
+					messageToUser.append("\n\n");
 					messageToUser.append("File in use: ");
 					messageToUser.append(fileInUse);
 					messageToUser.append("\n");

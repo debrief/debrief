@@ -102,7 +102,13 @@ public class ConfigurationReader {
 				if (option.isValid()) {
 					configurationFileStream = option.getInputStream();
 					_config.setLoaderOption(option);
-					break;
+					
+
+					loadDatabaseConfiguration(_config, configurationFileStream);
+					
+					if (DatabaseConfiguration.isValid(_config)) {
+						break;
+					}
 				}
 			}
 
@@ -111,7 +117,6 @@ public class ConfigurationReader {
 						+ " but it is not a valid file");
 			}
 
-			loadDatabaseConfiguration(_config, configurationFileStream);
 		} finally {
 			if (configurationFileStream != null) {
 				configurationFileStream.close();

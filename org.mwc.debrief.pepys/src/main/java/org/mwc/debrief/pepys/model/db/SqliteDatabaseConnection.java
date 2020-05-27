@@ -138,7 +138,7 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 		} catch (Exception e) {
 			throw new PepsysException("Database Import",
 					"Error while loading the database libraries. Please, check that the \"native\" "
-					+ "folder is in \"org.mwc.debrief.pepys\", containing the SQL Spatial Lite Libraries");
+							+ "folder is in \"org.mwc.debrief.pepys\", containing the SQL Spatial Lite Libraries");
 		}
 	}
 
@@ -174,5 +174,23 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 	 */
 	public String getSRID() {
 		return "";
+	}
+
+	/**
+	 * Method that receives a DatabaseConfiguration and checks if it suits to this
+	 * type of connection.
+	 * 
+	 * @param _config
+	 * @return
+	 */
+	public static boolean validateDatabaseConfiguration(final DatabaseConfiguration _config) {
+		try {
+			final HashMap<String, String> databaseTagConnection = _config
+					.getCategory(DatabaseConnection.CONFIGURATION_TAG);
+			return (databaseTagConnection.get(DatabaseConnection.CONFIGURATION_DATABASE_TYPE)
+					.equals(DatabaseConnection.SQLITE) && databaseTagConnection.containsKey(CONFIGURATION_DB_NAME));
+		} catch (Exception e) {
+			return false;
+		}
 	}
 }

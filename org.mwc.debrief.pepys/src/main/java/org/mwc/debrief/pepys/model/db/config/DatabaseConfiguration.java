@@ -3,6 +3,7 @@ package org.mwc.debrief.pepys.model.db.config;
 import java.util.HashMap;
 
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
+import org.mwc.debrief.pepys.model.db.PostgresDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.config.LoaderOption.LoaderType;
 
@@ -52,6 +53,29 @@ public class DatabaseConfiguration {
 
 	public void setLoaderOption(LoaderOption _loaderOption) {
 		this._loaderOption = _loaderOption;
+	}
+
+	public static boolean isValid(final DatabaseConfiguration _config) {
+		if (!_config.categories.containsKey(DatabaseConnection.CONFIGURATION_TAG)) {
+			return false;
+		}
+		final HashMap<String, String> category = _config.categories.get(DatabaseConnection.CONFIGURATION_TAG);
+		if (!category.containsKey(DatabaseConnection.CONFIGURATION_DATABASE_TYPE)) {
+			return false;
+		}
+		
+		final String databaseType = category.get(DatabaseConnection.CONFIGURATION_DATABASE_TYPE);
+		if (databaseType != null) {
+			switch (databaseType) {
+			case DatabaseConnection.POSTGRES:
+				return PostgresDatabaseConnection.validateDatabaseConfiguration(_config);
+			case DatabaseConnection.SQLITE:
+				return SqliteDatabaseConnection.validateDatabaseConfiguration(_config);
+			default:
+				return false;
+			}
+		}
+		return false;
 	}
 
 }
