@@ -277,10 +277,10 @@ public class PepysImportController {
 						}
 						view.getTree().refresh();
 					}
-					
+
 					// There is a bug in Window which does not
 					// update the selection if it is the same node.
-					// So, we need to force an update 
+					// So, we need to force an update
 					view.getTree().getTree().deselectAll();
 					view.getTree().getTree().setSelection(item);
 				}
@@ -365,10 +365,21 @@ public class PepysImportController {
 					String errorMessage = "";
 					final String ENV_VARIABLE = DatabaseConnection.CONFIG_FILE_ENV_NAME;
 					final String envVariableValue = ModelConfiguration.getEnvironmentVariable();
-					final String fileInUse = model.getDatabaseConnection().getDatabaseConfiguration().getLoaderOption()
-							.getPath();
-					final String configurationToUse = model.getDatabaseConnection().getDatabaseConfiguration()
-							.getLoaderOption().getType().name();
+					String fileInUse = "N/A";
+					try {
+						fileInUse = model.getDatabaseConnection().getDatabaseConfiguration().getLoaderOption()
+								.getPath();
+					} catch (final Exception e) {
+
+					}
+
+					String configurationToUse = "N/A";
+					try {
+						configurationToUse = model.getDatabaseConnection().getDatabaseConfiguration().getLoaderOption()
+								.getType().name();
+					} catch (final Exception e) {
+
+					}
 
 					final StringBuilder messageToUser = new StringBuilder();
 					messageToUser.append("\n\n");
@@ -377,7 +388,7 @@ public class PepysImportController {
 					messageToUser.append(": ");
 					messageToUser.append(envVariableValue);
 					if (!configurationToUse.equals(LoaderType.ENV_VARIABLE.name())) {
-						messageToUser.append(" (INVALID FILE)");
+						messageToUser.append(" (FILE NOT IN USE)");
 					}
 					messageToUser.append("\n\n");
 					messageToUser.append("File in use: ");
