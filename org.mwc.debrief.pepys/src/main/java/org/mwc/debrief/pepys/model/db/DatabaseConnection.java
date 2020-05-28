@@ -97,7 +97,7 @@ public abstract class DatabaseConnection {
 			throw new FileNotFoundException("DatabaseConnectionException we have received a null inputstream");
 		}
 	}
-
+	
 	public static void loadDatabaseConfiguration(final DatabaseConfiguration _config, final String _defaultConfigFile)
 			throws PropertyVetoException, IOException {
 
@@ -189,8 +189,6 @@ public abstract class DatabaseConnection {
 	}
 
 	protected abstract String createLocationQuery(final String tableName, final String columnName);
-
-	public abstract String getSRID();
 
 	public Collection<Condition> createPeriodFilter(final TimePeriod period, final Class<?> type) {
 		final ArrayList<Condition> conditions = new ArrayList<Condition>();
@@ -307,6 +305,12 @@ public abstract class DatabaseConnection {
 		return aliasRenamingMap.get(realTableName);
 
 	}
+
+	public DatabaseConfiguration getDatabaseConfiguration() {
+		return databaseConfiguration;
+	}
+
+	public abstract String getSRID();
 
 	protected void initialize(final DatabaseConfiguration _config)
 			throws PropertyVetoException, FileNotFoundException, IOException, PepsysException {

@@ -36,6 +36,8 @@ import org.mwc.debrief.pepys.model.db.PostgresDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
+import org.mwc.debrief.pepys.model.db.config.LoaderOption;
+import org.mwc.debrief.pepys.model.db.config.LoaderOption.LoaderType;
 import org.mwc.debrief.pepys.model.tree.TreeNode;
 import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 import org.mwc.debrief.pepys.model.tree.TreeUtils;
@@ -51,6 +53,10 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	interface InternTreeItemFiltering {
 		boolean isAcceptable(final TreeStructurable _item);
+	}
+
+	public static String getEnvironmentVariable() {
+		return System.getenv(DatabaseConnection.CONFIG_FILE_ENV_NAME);
 	}
 
 	private PropertyChangeSupport _pSupport = null;
@@ -389,8 +395,20 @@ public class ModelConfiguration implements AbstractConfiguration {
 	public void loadDefaultDatabaseConfiguration() throws PropertyVetoException, IOException, PepsysException {
 		final DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration();
 
+		// Here we are going to try to load the environmental variable,
+		// and if it not found, we try the default configuration
+
+		final String envVariable = getEnvironmentVariable();
+		final LoaderOption option;
+		if (envVariable == null) {
+			option = new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_DATABASE_FILE);
+		} else {
+			option = new LoaderOption(LoaderType.ENV_VARIABLE, getEnvironmentVariable());
+		}
+
 		ConfigurationReader.loadDatabaseConfiguration(databaseConfiguration,
-				System.getenv(DatabaseConnection.CONFIG_FILE_ENV_NAME), DatabaseConnection.DEFAULT_DATABASE_FILE);
+
+				new LoaderOption[] { option });
 
 		loadDatabaseConfiguration(databaseConfiguration);
 	}
@@ -448,8 +466,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 		this.highlightedNode = node;
 
 		if (_pSupport != null) {
-			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, HIGHLIGHT_PROPERTY,
-					null, node);
+			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, HIGHLIGHT_PROPERTY, null, node);
 			_pSupport.firePropertyChange(pce);
 		}
 	}
