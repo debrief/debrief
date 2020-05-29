@@ -465,6 +465,14 @@ public class PepysImportController {
 			}
 		});
 
+		view.getTree().addCheckStateListener(new ICheckStateListener() {
+
+			@Override
+			public void checkStateChanged(CheckStateChangedEvent event) {
+				view.getImportButton().setEnabled(model.getTreeModel().countCheckedItems() > 0);
+			}
+		});
+
 		view.getSearchText().addModifyListener(new ModifyListener() {
 
 			@Override

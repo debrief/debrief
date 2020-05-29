@@ -23,7 +23,7 @@ public interface AbstractViewSWT {
 
 	CDateTime getEndTime();
 
-	Widget getImportButton();
+	Button getImportButton();
 
 	Text getSearchText();
 

@@ -227,5 +227,13 @@ public class TreeNode {
 	public void setParent(final TreeNode parent) {
 		this.parent = parent;
 	}
+	
+	public int countCheckedItems() {
+		int total = isChecked() && !items.isEmpty() ? 1 : 0;
+		for (final TreeNode child : children.values()) {
+			total += child.countCheckedItems();
+		}
+		return total;
+	}
 
 }
