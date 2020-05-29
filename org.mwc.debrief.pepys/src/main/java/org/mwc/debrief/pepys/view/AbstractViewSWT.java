@@ -17,13 +17,21 @@ public interface AbstractViewSWT {
 
 	CWorldLocation getBottomRightLocation();
 
+	ArrayList<Button> getDataTypesCheckBox();
+
 	Composite getDataTypesComposite();
 
 	CDateTime getEndDate();
 
 	CDateTime getEndTime();
 
+	Text getFilterText();
+
 	Button getImportButton();
+
+	Button getSearchNextButton();
+
+	Button getSearchPreviousButton();
 
 	Text getSearchText();
 
@@ -33,20 +41,12 @@ public interface AbstractViewSWT {
 
 	Widget getTestConnectionButton();
 
+	Label getTextSearchResults();
+
 	CWorldLocation getTopLeftLocation();
 
 	CheckboxTreeViewer getTree();
 
 	Widget getUseCurrentViewportButton();
-
-	Label getTextSearchResults();
-
-	ArrayList<Button> getDataTypesCheckBox();
-
-	Text getFilterText();
-
-	Button getSearchNextButton();
-
-	Button getSearchPreviousButton();
 
 }

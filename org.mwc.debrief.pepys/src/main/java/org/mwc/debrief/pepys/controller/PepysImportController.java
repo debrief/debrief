@@ -468,7 +468,7 @@ public class PepysImportController {
 		view.getTree().addCheckStateListener(new ICheckStateListener() {
 
 			@Override
-			public void checkStateChanged(CheckStateChangedEvent event) {
+			public void checkStateChanged(final CheckStateChangedEvent event) {
 				view.getImportButton().setEnabled(model.getTreeModel().countCheckedItems() > 0);
 			}
 		});
