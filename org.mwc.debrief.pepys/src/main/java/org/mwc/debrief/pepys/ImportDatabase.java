@@ -73,6 +73,9 @@ public class ImportDatabase extends CoreEditorAction {
 
 			return;
 		} catch (PepsysException e) {
+			/**
+			 * in case that something rise, we are going to show that message to the user.
+			 */
 			e.printStackTrace();
 
 			final MessageBox messageBox = new MessageBox(shell, SWT.ERROR | SWT.OK);
