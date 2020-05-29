@@ -349,7 +349,13 @@ public class PepysImportController {
 			@Override
 			public void handleEvent(final Event event) {
 				if (event.type == SWT.Selection) {
-					model.doImport();
+					final int importedItems = model.doImport();
+					final MessageBox messageBox = new MessageBox(_parent, SWT.OK);
+					messageBox.setMessage("Successful imported " + importedItems + " items");
+					messageBox.setText("Debrief NG");
+					messageBox.open();
+
+					return;
 				}
 			}
 		});
