@@ -324,6 +324,7 @@ public class PepysImportController {
 							try {
 								updateAreaView2Model(model, view);
 								model.apply();
+								view.getImportButton().setEnabled(false);
 							} catch (final PepsysException e) {
 								e.printStackTrace();
 								final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
