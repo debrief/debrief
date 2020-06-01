@@ -50,7 +50,7 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 
 	void apply() throws Exception;
 
-	void doImport();
+	int doImport();
 
 	boolean doTestQuery() throws SQLException;
 

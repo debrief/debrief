@@ -42,12 +42,6 @@ public class TreeNode {
 		ROOT, PLATFORM, MEASURE, SENSOR, DATAFILE
 	}
 
-	public static final String STATE = "States";
-
-	public static final String CONTACTS = "Contacts";
-
-	public static final String COMMENT = "Comments";
-
 	public static class TreeNodeTest extends TestCase {
 
 		public void testTreeNode() {
@@ -100,6 +94,12 @@ public class TreeNode {
 		}
 	}
 
+	public static final String STATE = "States";
+
+	public static final String CONTACTS = "Contacts";
+
+	public static final String COMMENT = "Comments";
+
 	private static final String ADD_VALUE = "ADD_VALUE";
 
 	private final NodeType type;
@@ -150,6 +150,14 @@ public class TreeNode {
 		items.add(item);
 
 		_pSupport.firePropertyChange(ADD_VALUE, null, item);
+	}
+
+	public int countCheckedItems() {
+		int total = isChecked() && !items.isEmpty() ? 1 : 0;
+		for (final TreeNode child : children.values()) {
+			total += child.countCheckedItems();
+		}
+		return total;
 	}
 
 	@Override

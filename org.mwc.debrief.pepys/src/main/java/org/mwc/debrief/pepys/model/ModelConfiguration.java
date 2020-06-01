@@ -187,15 +187,16 @@ public class ModelConfiguration implements AbstractConfiguration {
 	}
 
 	@Override
-	public void doImport() {
+	public int doImport() {
 		if (_bridge == null) {
 			/**
 			 * In case we don't have a bridge to Full Debrief, it means we are probably
 			 * running an unit test (or the deattached version, then simply do a mockup
 			 * import process (print to sout) :)
 			 */
-			doImportProcessMockup(treeModel);
+			return doImportProcessMockup(treeModel);
 		} else {
+			int total = 0;
 			/**
 			 * Import process receives a filter method which is used to confirm if the node
 			 * is going to be imported to Debrief.
@@ -204,45 +205,58 @@ public class ModelConfiguration implements AbstractConfiguration {
 			 * import only the Contact nodes. It will ensure that we will have already all
 			 * the related tracks.
 			 */
-			doImport(treeModel, new InternTreeItemFiltering() {
+			total += doImport(treeModel, new InternTreeItemFiltering() {
 
 				@Override
 				public boolean isAcceptable(final TreeStructurable _item) {
 					return !(_item instanceof Contact);
 				}
 			});
-			doImport(treeModel, new InternTreeItemFiltering() {
+			total += doImport(treeModel, new InternTreeItemFiltering() {
 
 				@Override
 				public boolean isAcceptable(final TreeStructurable _item) {
 					return _item instanceof Contact;
 				}
 			});
+			return total;
 		}
 	}
 
-	private void doImport(final TreeNode treeModel, final InternTreeItemFiltering filter) {
+	private int doImport(final TreeNode treeModel, final InternTreeItemFiltering filter) {
+		int total = 0;
+		// I have created this boolean because we have can several items imported in the same
+		// data file
+		boolean imported = false;
 		if (treeModel.isChecked()) {
 			for (final TreeStructurable item : treeModel.getItems()) {
 				if (filter.isAcceptable(item)) {
+					imported = true;
 					item.doImport(_bridge.getLayers());
 				}
 			}
 		}
-		for (final TreeNode child : treeModel.getChildren()) {
-			doImport(child, filter);
+		if (imported) {
+			++total;
 		}
+		for (final TreeNode child : treeModel.getChildren()) {
+			total += doImport(child, filter);
+		}
+		return total;
 	}
 
-	private void doImportProcessMockup(final TreeNode treeModel) {
+	private int doImportProcessMockup(final TreeNode treeModel) {
+		int total = 0;
 		if (treeModel.isChecked()) {
+			++total;
 			for (final TreeStructurable item : treeModel.getItems()) {
 				System.out.println("Importing " + treeModel.getName() + " -> " + item);
 			}
 		}
 		for (final TreeNode child : treeModel.getChildren()) {
-			doImportProcessMockup(child);
+			total += doImportProcessMockup(child);
 		}
+		return total;
 	}
 
 	@Override

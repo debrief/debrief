@@ -324,6 +324,7 @@ public class PepysImportController {
 							try {
 								updateAreaView2Model(model, view);
 								model.apply();
+								view.getImportButton().setEnabled(false);
 							} catch (final PepsysException e) {
 								e.printStackTrace();
 								final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
@@ -351,7 +352,13 @@ public class PepysImportController {
 			@Override
 			public void handleEvent(final Event event) {
 				if (event.type == SWT.Selection) {
-					model.doImport();
+					final int importedItems = model.doImport();
+					final MessageBox messageBox = new MessageBox(_parent, SWT.OK);
+					messageBox.setMessage(importedItems + " data files have been successfully imported");
+					messageBox.setText("Database Import");
+					messageBox.open();
+
+					return;
 				}
 			}
 		});
@@ -456,6 +463,14 @@ public class PepysImportController {
 				if (event.getElement() instanceof TreeNode) {
 					((TreeNode) event.getElement()).setChecked(event.getChecked());
 				}
+			}
+		});
+
+		view.getTree().addCheckStateListener(new ICheckStateListener() {
+
+			@Override
+			public void checkStateChanged(final CheckStateChangedEvent event) {
+				view.getImportButton().setEnabled(model.getTreeModel().countCheckedItems() > 0);
 			}
 		});
 
