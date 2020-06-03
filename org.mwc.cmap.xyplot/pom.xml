@@ -24,6 +24,6 @@
   </parent>
   <groupId>org.mwc.debrief</groupId>
   <artifactId>org.mwc.cmap.xyplot</artifactId>
-  <version>1.0.68</version>
+  <version>1.0.69</version>
   <packaging>eclipse-plugin</packaging>
 </project>
