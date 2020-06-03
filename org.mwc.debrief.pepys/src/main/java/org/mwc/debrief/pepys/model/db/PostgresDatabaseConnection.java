@@ -24,6 +24,7 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Properties;
 
+import org.mwc.debrief.pepys.model.PepsysException;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.postgis.PGbox3d;
 import org.postgis.PGgeometry;
@@ -39,6 +40,11 @@ import MWC.GenericData.WorldLocation;
 
 public class PostgresDatabaseConnection extends DatabaseConnection {
 
+	private static final String DB_NAME_TAG = "db_name";
+	private static final String DB_PORT_TAG = "db_port";
+	private static final String DB_HOST_TAG = "db_host";
+	private static final String DB_PASSWORD_TAG = "db_password";
+	private static final String DB_USERNAME_TAG = "db_username";
 	private static final String HOST_HEADER = "jdbc:postgresql://";
 
 	public PostgresDatabaseConnection() {
@@ -81,21 +87,22 @@ public class PostgresDatabaseConnection extends DatabaseConnection {
 	}
 
 	@Override
-	protected void initialize(final DatabaseConfiguration _config) throws PropertyVetoException, IOException {
+	protected void initialize(final DatabaseConfiguration _config)
+			throws PropertyVetoException, IOException, PepsysException {
 		super.initialize(_config);
 
 		final Properties props = new Properties();
 		final HashMap<String, String> databaseTagConnection = _config.getCategory(DatabaseConnection.CONFIGURATION_TAG);
 
-		props.setProperty("user", databaseTagConnection.get("db_username"));
-		props.setProperty("password", databaseTagConnection.get("db_password"));
+		props.setProperty("user", databaseTagConnection.get(DB_USERNAME_TAG));
+		props.setProperty("password", databaseTagConnection.get(DB_PASSWORD_TAG));
 		props.setProperty("ssl", "false");
 
 		pool = new ComboPooledDataSource();
 		pool.setCheckoutTimeout(TIME_OUT);
 		pool.setDriverClass("org.postgresql.Driver");
-		final String completePath = HOST_HEADER + databaseTagConnection.get("db_host") + ":"
-				+ databaseTagConnection.get("db_port") + "/" + databaseTagConnection.get("db_name");
+		final String completePath = HOST_HEADER + databaseTagConnection.get(DB_HOST_TAG) + ":"
+				+ databaseTagConnection.get(DB_PORT_TAG) + "/" + databaseTagConnection.get(DB_NAME_TAG);
 		pool.setJdbcUrl(completePath);
 		pool.setProperties(props);
 	}
@@ -110,6 +117,32 @@ public class PostgresDatabaseConnection extends DatabaseConnection {
 				.unWrapperInnerConnection((NewProxyConnection) connection)).addDataType("geometry", PGgeometry.class);
 		((org.postgresql.PGConnection) NewProxyConnectionUnwrapper
 				.unWrapperInnerConnection((NewProxyConnection) connection)).addDataType("box3d", PGbox3d.class);
+	}
+
+	@Override
+	public String getSRID() {
+		return "SRID=4326;";
+	}
+
+	/**
+	 * Method that receives a DatabaseConfiguration and checks if it suits to this
+	 * type of connection.
+	 * 
+	 * @param _config
+	 * @return
+	 */
+	public static boolean validateDatabaseConfiguration(final DatabaseConfiguration _config) {
+		try {
+			final HashMap<String, String> databaseTagConnection = _config
+					.getCategory(DatabaseConnection.CONFIGURATION_TAG);
+			return (databaseTagConnection.get(DatabaseConnection.CONFIGURATION_DATABASE_TYPE)
+					.equals(DatabaseConnection.POSTGRES) && databaseTagConnection.containsKey(DB_USERNAME_TAG)
+					&& databaseTagConnection.containsKey(DB_PASSWORD_TAG)
+					&& databaseTagConnection.containsKey(DB_HOST_TAG) && databaseTagConnection.containsKey(DB_PORT_TAG)
+					&& databaseTagConnection.containsKey(DB_NAME_TAG));
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 }

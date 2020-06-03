@@ -22,7 +22,6 @@ import java.beans.PropertyVetoException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -37,6 +36,8 @@ import org.mwc.debrief.pepys.model.db.PostgresDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
+import org.mwc.debrief.pepys.model.db.config.LoaderOption;
+import org.mwc.debrief.pepys.model.db.config.LoaderOption.LoaderType;
 import org.mwc.debrief.pepys.model.tree.TreeNode;
 import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 import org.mwc.debrief.pepys.model.tree.TreeUtils;
@@ -52,6 +53,10 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	interface InternTreeItemFiltering {
 		boolean isAcceptable(final TreeStructurable _item);
+	}
+
+	public static String getEnvironmentVariable() {
+		return System.getenv(DatabaseConnection.CONFIG_FILE_ENV_NAME);
 	}
 
 	private PropertyChangeSupport _pSupport = null;
@@ -126,10 +131,9 @@ public class ModelConfiguration implements AbstractConfiguration {
 	}
 
 	@Override
-	public void apply() throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException, PropertyVetoException, SQLException,
-			ClassNotFoundException, IOException {
+	public void apply() throws Exception {
 
+		validate();
 		currentItems = TreeUtils.buildStructure(this);
 		updateTree();
 		setSearch("");
@@ -155,7 +159,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 		 * int closest = 0; int closestDifference = 1 << 30; // This could be improved
 		 * doing a binary search. // But It will not reduce the linear order of the
 		 * calculation....
-		 * 
+		 *
 		 * for (int i = 0; i < searchResults.length * 2; i++) { final int currentOrder =
 		 * treeOrder.get(searchResults[i % searchResults.length].getItem()); if
 		 * (Math.abs(currentOrder - desired) < closestDifference) { closestDifference =
@@ -183,15 +187,16 @@ public class ModelConfiguration implements AbstractConfiguration {
 	}
 
 	@Override
-	public void doImport() {
+	public int doImport() {
 		if (_bridge == null) {
 			/**
 			 * In case we don't have a bridge to Full Debrief, it means we are probably
 			 * running an unit test (or the deattached version, then simply do a mockup
 			 * import process (print to sout) :)
 			 */
-			doImportProcessMockup(treeModel);
+			return doImportProcessMockup(treeModel);
 		} else {
+			int total = 0;
 			/**
 			 * Import process receives a filter method which is used to confirm if the node
 			 * is going to be imported to Debrief.
@@ -200,45 +205,58 @@ public class ModelConfiguration implements AbstractConfiguration {
 			 * import only the Contact nodes. It will ensure that we will have already all
 			 * the related tracks.
 			 */
-			doImport(treeModel, new InternTreeItemFiltering() {
+			total += doImport(treeModel, new InternTreeItemFiltering() {
 
 				@Override
 				public boolean isAcceptable(final TreeStructurable _item) {
 					return !(_item instanceof Contact);
 				}
 			});
-			doImport(treeModel, new InternTreeItemFiltering() {
+			total += doImport(treeModel, new InternTreeItemFiltering() {
 
 				@Override
 				public boolean isAcceptable(final TreeStructurable _item) {
 					return _item instanceof Contact;
 				}
 			});
+			return total;
 		}
 	}
 
-	private void doImport(final TreeNode treeModel, final InternTreeItemFiltering filter) {
+	private int doImport(final TreeNode treeModel, final InternTreeItemFiltering filter) {
+		int total = 0;
+		// I have created this boolean because we have can several items imported in the same
+		// data file
+		boolean imported = false;
 		if (treeModel.isChecked()) {
 			for (final TreeStructurable item : treeModel.getItems()) {
 				if (filter.isAcceptable(item)) {
+					imported = true;
 					item.doImport(_bridge.getLayers());
 				}
 			}
 		}
-		for (final TreeNode child : treeModel.getChildren()) {
-			doImport(child, filter);
+		if (imported) {
+			++total;
 		}
+		for (final TreeNode child : treeModel.getChildren()) {
+			total += doImport(child, filter);
+		}
+		return total;
 	}
 
-	private void doImportProcessMockup(final TreeNode treeModel) {
+	private int doImportProcessMockup(final TreeNode treeModel) {
+		int total = 0;
 		if (treeModel.isChecked()) {
+			++total;
 			for (final TreeStructurable item : treeModel.getItems()) {
 				System.out.println("Importing " + treeModel.getName() + " -> " + item);
 			}
 		}
 		for (final TreeNode child : treeModel.getChildren()) {
-			doImportProcessMockup(child);
+			total += doImportProcessMockup(child);
 		}
+		return total;
 	}
 
 	@Override
@@ -255,7 +273,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 	public SearchTreeResult getCurrentSearchTreeResultModel() {
 		return currentSearchTreeResult;
 	}
-	
+
 	@Override
 	public DatabaseConnection getDatabaseConnection() {
 		return databaseConnection;
@@ -323,7 +341,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 				searchFromUser = false;
 				return searchResults[desiredValue];
 			}
-		}else {
+		} else {
 			setSearchResults(-1, -1);
 		}
 		return null;
@@ -333,8 +351,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 	public String getSearchResultsText() {
 		if (currentMatch < 0 || totalMatches < 0) {
 			return "";
-		}
-		else if (totalMatches == 0) {
+		} else if (totalMatches == 0) {
 			return "Not Found";
 		} else {
 			return (currentMatch + 1) + " / " + totalMatches;
@@ -353,7 +370,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	@Override
 	public void loadDatabaseConfiguration(final DatabaseConfiguration _configuration)
-			throws FileNotFoundException, PropertyVetoException, IOException {
+			throws FileNotFoundException, PropertyVetoException, IOException, PepsysException {
 		final HashMap<String, String> category = _configuration.getCategory(DatabaseConnection.CONFIGURATION_TAG);
 		if (category != null && category.containsKey(DatabaseConnection.CONFIGURATION_DATABASE_TYPE)) {
 			final String databaseType = category.get(DatabaseConnection.CONFIGURATION_DATABASE_TYPE);
@@ -380,7 +397,7 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	@Override
 	public void loadDatabaseConfiguration(final InputStream configurationFile)
-			throws PropertyVetoException, IOException {
+			throws PropertyVetoException, IOException, PepsysException {
 		final DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration();
 
 		ConfigurationReader.loadDatabaseConfiguration(databaseConfiguration, configurationFile);
@@ -389,11 +406,23 @@ public class ModelConfiguration implements AbstractConfiguration {
 	}
 
 	@Override
-	public void loadDefaultDatabaseConfiguration() throws PropertyVetoException, IOException {
+	public void loadDefaultDatabaseConfiguration() throws PropertyVetoException, IOException, PepsysException {
 		final DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration();
 
+		// Here we are going to try to load the environmental variable,
+		// and if it not found, we try the default configuration
+
+		final String envVariable = getEnvironmentVariable();
+		final LoaderOption option;
+		if (envVariable == null) {
+			option = new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_DATABASE_FILE);
+		} else {
+			option = new LoaderOption(LoaderType.ENV_VARIABLE, getEnvironmentVariable());
+		}
+
 		ConfigurationReader.loadDatabaseConfiguration(databaseConfiguration,
-				System.getenv(DatabaseConnection.CONFIG_FILE_ENV_NAME), DatabaseConnection.DEFAULT_DATABASE_FILE);
+
+				new LoaderOption[] { option });
 
 		loadDatabaseConfiguration(databaseConfiguration);
 	}
@@ -448,12 +477,10 @@ public class ModelConfiguration implements AbstractConfiguration {
 
 	@Override
 	public void setHighlightedElement(final TreeNode node) {
-		final TreeNode oldHighlitedElement = this.highlightedNode;
 		this.highlightedNode = node;
 
 		if (_pSupport != null) {
-			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, HIGHLIGHT_PROPERTY,
-					oldHighlitedElement, node);
+			final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, HIGHLIGHT_PROPERTY, null, node);
 			_pSupport.firePropertyChange(pce);
 		}
 	}
@@ -517,6 +544,13 @@ public class ModelConfiguration implements AbstractConfiguration {
 				final java.beans.PropertyChangeEvent pce = new PropertyChangeEvent(this, TREE_MODEL, null, treeModel);
 				_pSupport.firePropertyChange(pce);
 			}
+		}
+	}
+
+	@Override
+	public void validate() throws Exception {
+		if (!currentPeriod.isConsistent()) {
+			throw new PepsysException("Date validation", "The Start date-time must be before the End date-time");
 		}
 	}
 }

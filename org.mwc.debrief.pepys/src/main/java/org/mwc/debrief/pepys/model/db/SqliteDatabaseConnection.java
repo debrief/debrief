@@ -27,6 +27,7 @@ import java.util.HashMap;
 import org.mwc.debrief.model.utils.NativeLibrariesLoader;
 import org.mwc.debrief.model.utils.NativeLibrariesLoader.ModSpatialiteAssigner;
 import org.mwc.debrief.pepys.Activator;
+import org.mwc.debrief.pepys.model.PepsysException;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.sqlite.SQLiteConfig;
 
@@ -89,7 +90,8 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 	}
 
 	@Override
-	protected void initialize(final DatabaseConfiguration _config) throws PropertyVetoException, IOException {
+	protected void initialize(final DatabaseConfiguration _config)
+			throws PropertyVetoException, IOException, PepsysException {
 		super.initialize(_config);
 		// enabling dynamic extension loading
 		// absolutely required by SpatiaLite
@@ -123,14 +125,21 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 			// Let's use a temporary folder
 			nativeFolderPath = new File(System.getProperty("java.io.tmpdir") + "/native/");
 		}
-		// Let's load the libraries in the initialization.
-		NativeLibrariesLoader.loadBundledXuggler(nativeFolderPath, new ModSpatialiteAssigner() {
 
-			@Override
-			public void assign(final String path) {
-				modSpatialiteName = path;
-			}
-		});
+		try {
+			// Let's load the libraries in the initialization.
+			NativeLibrariesLoader.loadBundledSpatialite(nativeFolderPath, new ModSpatialiteAssigner() {
+
+				@Override
+				public void assign(final String path) {
+					modSpatialiteName = path;
+				}
+			});
+		} catch (Exception e) {
+			throw new PepsysException("Database Import",
+					"Error while loading the database libraries. Please, check that the \"native\" "
+							+ "folder is in \"org.mwc.debrief.pepys\", containing the SQL Spatial Lite Libraries");
+		}
 	}
 
 	@Override
@@ -157,5 +166,31 @@ public class SqliteDatabaseConnection extends DatabaseConnection {
 		// GEOMETRY_COLUMNS
 		final String sql = "SELECT InitSpatialMetadata()";
 		statement.execute(sql);
+	}
+
+	@Override
+	/**
+	 * We need to disable the SRID for Sqlite.
+	 */
+	public String getSRID() {
+		return "";
+	}
+
+	/**
+	 * Method that receives a DatabaseConfiguration and checks if it suits to this
+	 * type of connection.
+	 * 
+	 * @param _config
+	 * @return
+	 */
+	public static boolean validateDatabaseConfiguration(final DatabaseConfiguration _config) {
+		try {
+			final HashMap<String, String> databaseTagConnection = _config
+					.getCategory(DatabaseConnection.CONFIGURATION_TAG);
+			return (databaseTagConnection.get(DatabaseConnection.CONFIGURATION_DATABASE_TYPE)
+					.equals(DatabaseConnection.SQLITE) && databaseTagConnection.containsKey(CONFIGURATION_DB_NAME));
+		} catch (Exception e) {
+			return false;
+		}
 	}
 }

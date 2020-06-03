@@ -49,6 +49,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.pepys.model.AbstractConfiguration;
 import org.mwc.debrief.pepys.model.ModelConfiguration;
+import org.mwc.debrief.pepys.model.PepsysException;
 import org.mwc.debrief.pepys.model.PepysConnectorBridge;
 import org.mwc.debrief.pepys.model.TypeDomain;
 import org.mwc.debrief.pepys.model.bean.Comment;
@@ -57,6 +58,8 @@ import org.mwc.debrief.pepys.model.bean.State;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
+import org.mwc.debrief.pepys.model.db.config.LoaderOption;
+import org.mwc.debrief.pepys.model.db.config.LoaderOption.LoaderType;
 import org.mwc.debrief.pepys.model.tree.TreeNode;
 import org.mwc.debrief.pepys.view.AbstractViewSWT;
 import org.mwc.debrief.pepys.view.PepysImportView;
@@ -73,15 +76,15 @@ public class PepysImportController {
 		final Shell shell = new Shell(display);
 		try {
 			final DatabaseConfiguration _config = new DatabaseConfiguration();
-			ConfigurationReader.loadDatabaseConfiguration(_config, DatabaseConnection.DEFAULT_SQLITE_DATABASE_FILE,
-					DatabaseConnection.DEFAULT_SQLITE_DATABASE_FILE);
+			ConfigurationReader.loadDatabaseConfiguration(_config, new LoaderOption[] {
+					new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
 
 			final AbstractConfiguration model = new ModelConfiguration();
 			model.loadDatabaseConfiguration(_config);
 			final AbstractViewSWT view = new PepysImportView(model, shell);
 
 			new PepysImportController(shell, model, view);
-		} catch (final PropertyVetoException | IOException e) {
+		} catch (final PropertyVetoException | IOException | PepsysException e) {
 			e.printStackTrace();
 		}
 
@@ -108,8 +111,10 @@ public class PepysImportController {
 
 	public PepysImportController(final Shell parent, final AbstractConfiguration model, final AbstractViewSWT view) {
 		model.addDatafileTypeFilter(new TypeDomain(State.class, TreeNode.STATE, true, IMAGE_PREFIX + "fix.png"));
-		model.addDatafileTypeFilter(new TypeDomain(Contact.class, TreeNode.CONTACTS, true, IMAGE_PREFIX + "bearing.png"));
-		model.addDatafileTypeFilter(new TypeDomain(Comment.class, TreeNode.COMMENT, true, IMAGE_PREFIX + "narrative.png"));
+		model.addDatafileTypeFilter(
+				new TypeDomain(Contact.class, TreeNode.CONTACTS, true, IMAGE_PREFIX + "bearing.png"));
+		model.addDatafileTypeFilter(
+				new TypeDomain(Comment.class, TreeNode.COMMENT, true, IMAGE_PREFIX + "narrative.png"));
 
 		_model = model;
 		_view = view;
@@ -272,6 +277,11 @@ public class PepysImportController {
 						}
 						view.getTree().refresh();
 					}
+
+					// There is a bug in Window which does not
+					// update the selection if it is the same node.
+					// So, we need to force an update
+					view.getTree().getTree().deselectAll();
 					view.getTree().getTree().setSelection(item);
 				}
 			}
@@ -314,6 +324,13 @@ public class PepysImportController {
 							try {
 								updateAreaView2Model(model, view);
 								model.apply();
+								view.getImportButton().setEnabled(false);
+							} catch (final PepsysException e) {
+								e.printStackTrace();
+								final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
+								messageBox.setMessage(e.getMessage());
+								messageBox.setText(e.getTitle());
+								messageBox.open();
 							} catch (final Exception e) {
 								e.printStackTrace();
 								final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
@@ -335,7 +352,13 @@ public class PepysImportController {
 			@Override
 			public void handleEvent(final Event event) {
 				if (event.type == SWT.Selection) {
-					model.doImport();
+					final int importedItems = model.doImport();
+					final MessageBox messageBox = new MessageBox(_parent, SWT.OK);
+					messageBox.setMessage(importedItems + " data files have been successfully imported");
+					messageBox.setText("Database Import");
+					messageBox.open();
+
+					return;
 				}
 			}
 		});
@@ -347,6 +370,40 @@ public class PepysImportController {
 				if (event.type == SWT.Selection) {
 					boolean showError = false;
 					String errorMessage = "";
+					final String ENV_VARIABLE = DatabaseConnection.CONFIG_FILE_ENV_NAME;
+					final String envVariableValue = ModelConfiguration.getEnvironmentVariable();
+					String fileInUse = "N/A";
+					try {
+						fileInUse = model.getDatabaseConnection().getDatabaseConfiguration().getLoaderOption()
+								.getPath();
+					} catch (final Exception e) {
+
+					}
+
+					String configurationToUse = "N/A";
+					try {
+						configurationToUse = model.getDatabaseConnection().getDatabaseConfiguration().getLoaderOption()
+								.getType().name();
+					} catch (final Exception e) {
+
+					}
+
+					final StringBuilder messageToUser = new StringBuilder();
+					messageToUser.append("\n\n");
+					messageToUser.append("Value of the Environment Variable ");
+					messageToUser.append(ENV_VARIABLE);
+					messageToUser.append(": ");
+					messageToUser.append(envVariableValue);
+					if (!configurationToUse.equals(LoaderType.ENV_VARIABLE.name())) {
+						messageToUser.append(" (FILE NOT IN USE)");
+					}
+					messageToUser.append("\n\n");
+					messageToUser.append("File in use: ");
+					messageToUser.append(fileInUse);
+					messageToUser.append("\n");
+					messageToUser.append("Configuration in use: ");
+					messageToUser.append(configurationToUse);
+
 					try {
 						showError = !model.doTestQuery();
 						errorMessage = "Database didn't contain the basic State, Contacts or Comments";
@@ -355,21 +412,21 @@ public class PepysImportController {
 
 						errorMessage = DatabaseConnection.GENERIC_CONNECTION_ERROR;
 						showError = true;
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						errorMessage = "You have incorrect database type.\nPlease provide the correct database type in the config file";
 						showError = true;
 					}
 					if (showError) {
 						final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
 
-						messageBox.setMessage(errorMessage);
+						messageBox.setMessage(errorMessage + messageToUser);
 						messageBox.setText("DebriefNG");
 						messageBox.open();
 
 						return;
 					} else {
 						final MessageBox messageBox = new MessageBox(_parent, SWT.OK);
-						messageBox.setMessage("Successful database connection");
+						messageBox.setMessage("Successful database connection" + messageToUser);
 						messageBox.setText("Debrief NG");
 						messageBox.open();
 
@@ -406,6 +463,14 @@ public class PepysImportController {
 				if (event.getElement() instanceof TreeNode) {
 					((TreeNode) event.getElement()).setChecked(event.getChecked());
 				}
+			}
+		});
+
+		view.getTree().addCheckStateListener(new ICheckStateListener() {
+
+			@Override
+			public void checkStateChanged(final CheckStateChangedEvent event) {
+				view.getImportButton().setEnabled(model.getTreeModel().countCheckedItems() > 0);
 			}
 		});
 
@@ -492,7 +557,8 @@ public class PepysImportController {
 									if (fileName.toLowerCase().endsWith(INI_FILE_SUFFIX)) {
 										// Lets try to load the file as a configuration file.
 										_config = new DatabaseConfiguration();
-										ConfigurationReader.loadDatabaseConfiguration(_config, fileName, null);
+										ConfigurationReader.loadDatabaseConfiguration(_config, new LoaderOption[] {
+												new LoaderOption(LoaderType.DRAG_AND_DROP_INI, fileName) });
 
 									} else if (fileName.toLowerCase().endsWith(SQLITE_FILE_SUFFIX)) {
 										_config = DatabaseConfiguration.DatabaseConfigurationFactory
@@ -508,14 +574,14 @@ public class PepysImportController {
 									}
 									model.loadDatabaseConfiguration(_config);
 									final MessageBox messageBox = new MessageBox(_parent, SWT.OK | SWT.OK);
-									final String filePath = _config.getSourcePath() == null ? ""
-											: _config.getSourcePath();
+									final String filePath = _config.getLoaderOption().getPath() == null ? ""
+											: _config.getLoaderOption().getPath();
 									messageBox.setMessage("File loaded successfully\n" + filePath);
 									messageBox.setText("File processing finished successfully");
 									messageBox.open();
 
 									return;
-								} catch (PropertyVetoException | IOException e) {
+								} catch (PropertyVetoException | IOException | PepsysException e) {
 									final MessageBox messageBox = new MessageBox(_parent, SWT.ERROR | SWT.OK);
 									messageBox.setMessage(
 											"Unable to load database specified in the configuration file\n" + fileName);

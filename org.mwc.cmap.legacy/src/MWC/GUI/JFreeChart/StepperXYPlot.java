@@ -77,10 +77,23 @@ public class StepperXYPlot extends XYPlot implements StepperListener {
 	 */
 	private boolean _showLine = true;
 
+	/**
+	 * Time frame in case we are using a fix Duration.
+	 */
 	private Duration _fixedDuration;
+	
+	/**
+	 * whether to see window of time "around" the current time,
+	 * using the _fixedDuration time frame.
+	 */
+	private boolean _centreWindow;
 
 	// ////////////////////////////////////////////////
 	// constructor
+	// ////////////////////////////////////////////////
+
+	// ////////////////////////////////////////////////
+	// over-ride painting support
 	// ////////////////////////////////////////////////
 
 	/**
@@ -101,10 +114,6 @@ public class StepperXYPlot extends XYPlot implements StepperListener {
 			_myStepper.addStepperListener(this);
 		}
 	}
-
-	// ////////////////////////////////////////////////
-	// over-ride painting support
-	// ////////////////////////////////////////////////
 
 	/**
 	 * Draws the XY plot on a Java 2D graphics device (such as the screen or a
@@ -165,13 +174,20 @@ public class StepperXYPlot extends XYPlot implements StepperListener {
 				}
 
 				if (isGrowWithTime()) {
-					final long endMillis = theTime / 1000;
+					long endMillis = theTime / 1000;
 					long startMillis;
 
 					if (_fixedDuration != null) {
 						startMillis = endMillis - _fixedDuration.getMillis();
 					} else {
 						startMillis = (long) dateAxis.getLowerBound();
+					}
+
+					// In case we need to centre it, we simply add the difference
+					if (isCentreWindow()) {
+						final long halfDuration = _fixedDuration.getMillis() / 2L;
+						startMillis += halfDuration;
+						endMillis += halfDuration;
 					}
 
 					final Date startDate = new Date(startMillis);
@@ -199,7 +215,7 @@ public class StepperXYPlot extends XYPlot implements StepperListener {
 			}
 
 			// ok, finally draw the line - if we're not showing the growing plot
-			if (!isGrowWithTime())
+			if (!isGrowWithTime() || (isGrowWithTime() && isCentreWindow()))
 				plotStepperLine(g2, linePosition, dataArea);
 
 		}
@@ -214,6 +230,10 @@ public class StepperXYPlot extends XYPlot implements StepperListener {
 			return null;
 		}
 		return _myStepper.getTimeZero();
+	}
+
+	public boolean isCentreWindow() {
+		return _centreWindow;
 	}
 
 	public boolean isGrowWithTime() {
@@ -262,6 +282,10 @@ public class StepperXYPlot extends XYPlot implements StepperListener {
 	@Override
 	public void reset() {
 		// don't worry about it, ignore
+	}
+
+	public void setCentreWindow(final boolean val) {
+		this._centreWindow = val;
 	}
 
 	public void setFixedDuration(final Duration dur) {

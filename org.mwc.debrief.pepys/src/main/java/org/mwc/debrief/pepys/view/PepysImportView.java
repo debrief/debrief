@@ -267,10 +267,11 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 		this.startLabel.setLayoutData(gridData);
 
 		this.startDate = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.DROP_DOWN | CDT.DATE_SHORT);
-		this.startDate.setPattern("dd/MM/yyyy");
+		this.startDate.setPattern("dd/MM/yyyy  ");
 		this.startDate.setSelection(model.getTimePeriod().getStartDTG().getDate());
 
 		this.startTime = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.SPINNER | CDT.TIME_MEDIUM);
+		this.startTime.setPattern("hh:mm:ss a ");
 		this.startTime.setSelection(model.getTimePeriod().getStartDTG().getDate());
 
 		this.endLabel = new Label(timePeriodItem.getBody(), SWT.NONE);
@@ -278,10 +279,11 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 		this.endLabel.setLayoutData(gridData);
 
 		this.endDate = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.DROP_DOWN | CDT.DATE_SHORT);
-		this.endDate.setPattern("dd/MM/yyyy");
+		this.endDate.setPattern("dd/MM/yyyy  ");
 		this.endDate.setSelection(model.getTimePeriod().getEndDTG().getDate());
 
 		this.endTime = new CDateTime(timePeriodItem.getBody(), CDT.BORDER | CDT.SPINNER | CDT.TIME_MEDIUM);
+		this.endTime.setPattern("hh:mm:ss a ");
 		this.endTime.setSelection(model.getTimePeriod().getEndDTG().getDate());
 
 		// AREA
@@ -348,6 +350,8 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 		treeGrid.verticalAlignment = GridData.FILL;
 		treeGrid.grabExcessVerticalSpace = true;
 		treeGrid.horizontalSpan = 5;
+		treeGrid.widthHint = 400;
+		treeGrid.heightHint = 300;
 
 		final TreeNameLabelProvider labelProvider = new TreeNameLabelProvider();
 		this.tree = new CheckboxTreeViewer(parent, SWT.BORDER);
@@ -450,6 +454,7 @@ public class PepysImportView extends Dialog implements AbstractViewSWT {
 		this.importButton.setText("Import");
 		this.importButton.setLayoutData(importGridDataButton);
 		this.importButton.setImage(DebriefPlugin.getImageDescriptor("/icons/24/import.png").createImage());
+		this.importButton.setEnabled(false);
 
 		importGridDataButton.widthHint = 120;
 		importGridDataButton.heightHint = 40;

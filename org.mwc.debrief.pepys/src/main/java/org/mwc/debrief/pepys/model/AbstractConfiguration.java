@@ -50,13 +50,15 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 
 	void apply() throws Exception;
 
-	void doImport();
+	int doImport();
 
 	boolean doTestQuery() throws SQLException;
 
 	WorldArea getCurrentArea();
 
 	SearchTreeResult getCurrentSearchTreeResultModel();
+
+	DatabaseConnection getDatabaseConnection();
 
 	Collection<TypeDomain> getDatafileTypeFilters();
 
@@ -76,19 +78,31 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 
 	String getSearchResultsText();
 
+	TimePeriod getTimePeriod();
+
+	TreeNode getTreeModel();
+
 	void loadDatabaseConfiguration(final DatabaseConfiguration _configuration)
-			throws FileNotFoundException, PropertyVetoException, IOException;
+			throws FileNotFoundException, PropertyVetoException, IOException, PepsysException;
 
 	void loadDatabaseConfiguration(final InputStream configurationFile)
-			throws FileNotFoundException, PropertyVetoException, IOException;
+			throws FileNotFoundException, PropertyVetoException, IOException, PepsysException;
 
-	void loadDefaultDatabaseConfiguration() throws PropertyVetoException, IOException;
+	void loadDefaultDatabaseConfiguration() throws PropertyVetoException, IOException, PepsysException;
+
+	void removeDatafileTypeFilter(TypeDomain typeToRemove);
+
+	void searchFromUser(boolean _search);
+
+	void setArea(WorldArea newArea);
 
 	void setCurrentViewport();
 
 	void setFilter(final String _newFilter);
 
 	void setHighlightedElement(final TreeNode node);
+
+	void setPepysConnectorBridge(PepysConnectorBridge _bridge);
 
 	void setSearch(final String _newSearch);
 
@@ -98,17 +112,5 @@ public interface AbstractConfiguration extends hasPropertyListeners {
 
 	void updateTree();
 
-	DatabaseConnection getDatabaseConnection();
-
-	TimePeriod getTimePeriod();
-
-	TreeNode getTreeModel();
-
-	void removeDatafileTypeFilter(TypeDomain typeToRemove);
-
-	void searchFromUser(boolean _search);
-
-	void setArea(WorldArea newArea);
-
-	void setPepysConnectorBridge(PepysConnectorBridge _bridge);
+	public void validate() throws Exception;
 }

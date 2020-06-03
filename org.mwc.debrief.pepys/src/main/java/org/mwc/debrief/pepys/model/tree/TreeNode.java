@@ -28,6 +28,8 @@ import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
+import org.mwc.debrief.pepys.model.db.config.LoaderOption;
+import org.mwc.debrief.pepys.model.db.config.LoaderOption.LoaderType;
 
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -39,12 +41,6 @@ public class TreeNode {
 	public static enum NodeType {
 		ROOT, PLATFORM, MEASURE, SENSOR, DATAFILE
 	}
-	
-	public static final String STATE = "States";
-	
-	public static final String CONTACTS = "Contacts";
-	
-	public static final String COMMENT = "Comments";
 
 	public static class TreeNodeTest extends TestCase {
 
@@ -52,8 +48,8 @@ public class TreeNode {
 			List<State> list = null;
 			try {
 				final DatabaseConfiguration _config = new DatabaseConfiguration();
-				ConfigurationReader.loadDatabaseConfiguration(_config, DatabaseConnection.DEFAULT_SQLITE_DATABASE_FILE,
-						DatabaseConnection.DEFAULT_SQLITE_DATABASE_FILE);
+				ConfigurationReader.loadDatabaseConfiguration(_config, new LoaderOption[] {
+						new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_SQLITE_DATABASE_FILE) });
 				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
 				sqlite.initializeInstance(_config);
 				list = sqlite.listAll(State.class, null);
@@ -97,6 +93,12 @@ public class TreeNode {
 			assertTrue("Retrieving child1child2 correctly", child1child2.equals(child1.getChild(child1child2Name)));
 		}
 	}
+
+	public static final String STATE = "States";
+
+	public static final String CONTACTS = "Contacts";
+
+	public static final String COMMENT = "Comments";
 
 	private static final String ADD_VALUE = "ADD_VALUE";
 
@@ -148,6 +150,14 @@ public class TreeNode {
 		items.add(item);
 
 		_pSupport.firePropertyChange(ADD_VALUE, null, item);
+	}
+
+	public int countCheckedItems() {
+		int total = isChecked() && !items.isEmpty() ? 1 : 0;
+		for (final TreeNode child : children.values()) {
+			total += child.countCheckedItems();
+		}
+		return total;
 	}
 
 	@Override

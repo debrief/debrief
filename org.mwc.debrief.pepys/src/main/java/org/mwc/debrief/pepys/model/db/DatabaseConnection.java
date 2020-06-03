@@ -40,6 +40,7 @@ import java.util.List;
 
 import org.mwc.debrief.model.utils.OSUtils;
 import org.mwc.debrief.pepys.Activator;
+import org.mwc.debrief.pepys.model.PepsysException;
 import org.mwc.debrief.pepys.model.bean.AbstractBean;
 import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils;
 import org.mwc.debrief.pepys.model.db.annotation.AnnotationsUtils.FieldsTable;
@@ -96,7 +97,7 @@ public abstract class DatabaseConnection {
 			throw new FileNotFoundException("DatabaseConnectionException we have received a null inputstream");
 		}
 	}
-
+	
 	public static void loadDatabaseConfiguration(final DatabaseConfiguration _config, final String _defaultConfigFile)
 			throws PropertyVetoException, IOException {
 
@@ -115,15 +116,15 @@ public abstract class DatabaseConnection {
 					// not found:" + configurationFilename
 					throw new FileNotFoundException("DatabaseConnectionException requested file " + configurationFile
 							+ " but it is not a valid file");
-	
+
 				}
 			} else {
 				configurationFileStream = OSUtils.getInputStreamResource(DatabaseConnection.class, _defaultConfigFile,
 						Activator.PLUGIN_ID);
 			}
-	
+
 			loadDatabaseConfiguration(_config, configurationFileStream);
-		}finally {
+		} finally {
 			if (configurationFileStream != null) {
 				configurationFileStream.close();
 			}
@@ -171,7 +172,7 @@ public abstract class DatabaseConnection {
 			final WorldLocation topRight = currentArea.getTopRight();
 			final WorldLocation bottomLeft = currentArea.getBottomLeft();
 
-			final String polygonArea = "SRID=4326;POLYGON((" + topLeft.getLong() + " " + topLeft.getLat() + ","
+			final String polygonArea = getSRID() + "POLYGON((" + topLeft.getLong() + " " + topLeft.getLat() + ","
 					+ bottomLeft.getLong() + " " + bottomLeft.getLat() + "," + bottomRight.getLong() + " "
 					+ bottomRight.getLat() + "," + topRight.getLong() + " " + topRight.getLat() + ","
 					+ topLeft.getLong() + " " + topLeft.getLat() + "))";
@@ -305,14 +306,21 @@ public abstract class DatabaseConnection {
 
 	}
 
+	public DatabaseConfiguration getDatabaseConfiguration() {
+		return databaseConfiguration;
+	}
+
+	public abstract String getSRID();
+
 	protected void initialize(final DatabaseConfiguration _config)
-			throws PropertyVetoException, FileNotFoundException, IOException {
+			throws PropertyVetoException, FileNotFoundException, IOException, PepsysException {
 		close();
 
 		// expected to be overwritten by the implementation
 	}
 
-	public void initializeInstance(final DatabaseConfiguration _config) throws PropertyVetoException, IOException {
+	public void initializeInstance(final DatabaseConfiguration _config)
+			throws PropertyVetoException, IOException, PepsysException {
 		databaseConfiguration = _config;
 		initialize(_config);
 	}

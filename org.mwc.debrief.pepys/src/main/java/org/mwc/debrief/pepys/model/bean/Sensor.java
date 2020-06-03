@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import org.mwc.debrief.pepys.model.PepsysException;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.FieldName;
@@ -15,6 +16,8 @@ import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
 import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
+import org.mwc.debrief.pepys.model.db.config.LoaderOption;
+import org.mwc.debrief.pepys.model.db.config.LoaderOption.LoaderType;
 
 import junit.framework.TestCase;
 
@@ -25,9 +28,8 @@ public class Sensor implements AbstractBean, Comparable<Sensor> {
 		public void testSensorQuery() {
 			try {
 				final DatabaseConfiguration _config = new DatabaseConfiguration();
-				ConfigurationReader.loadDatabaseConfiguration(_config,
-						DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE,
-						DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE);
+				ConfigurationReader.loadDatabaseConfiguration(_config, new LoaderOption[] {
+						new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
 				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
 				sqlite.initializeInstance(_config);
 				final List<Sensor> list = sqlite.listAll(Sensor.class, null);
@@ -39,7 +41,7 @@ public class Sensor implements AbstractBean, Comparable<Sensor> {
 				assertTrue("States - database entries", "Frigate".equals(plantFormSensor.getName()));
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
-					| ClassNotFoundException | IOException e) {
+					| ClassNotFoundException | IOException | PepsysException e) {
 				e.printStackTrace();
 				fail("Couldn't connect to database or query error");
 			}
