@@ -935,6 +935,9 @@
 
         <command defaultHandler="org.mwc.cmap.plotViewer.actions.ZoomOut"
             id="org.mwc.debrief.core.ZoomOut" name="Zoom &amp;Out"> </command>
+            
+        <command defaultHandler="org.mwc.cmap.plotViewer.actions.ImportDatabase"
+            id="org.mwc.debrief.core.Pepys" name="&amp;Import from Database"> </command>
 
         <command defaultHandler="org.mwc.cmap.plotViewer.actions.FitToWindow"
             id="org.mwc.debrief.core.FitToWindow" name="&amp;Fit to window"> </command>

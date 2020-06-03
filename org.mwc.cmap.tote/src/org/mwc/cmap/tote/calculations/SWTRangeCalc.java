@@ -17,9 +17,9 @@ package org.mwc.cmap.tote.calculations;
 
 import java.text.NumberFormat;
 
-import Debrief.Tools.Tote.toteCalculation;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
+import MWC.Tools.Tote.toteCalculation;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /**

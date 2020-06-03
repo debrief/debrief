@@ -89,6 +89,11 @@ public interface TimePeriod extends java.io.Serializable, Cloneable {
 		private HiResDate _startDTG = INVALID_DATE;
 		private HiResDate _endDTG = INVALID_DATE;
 
+		public BaseTimePeriod() {
+			_startDTG = new HiResDate();
+			_endDTG = new HiResDate();
+		}
+
 		/////////////////////////////////////////////////////////////
 		// constructor
 		////////////////////////////////////////////////////////////
@@ -109,7 +114,7 @@ public interface TimePeriod extends java.io.Serializable, Cloneable {
 		public final boolean contains(final HiResDate other) {
 			boolean res = false;
 
-			if (_startDTG.equals(INVALID_DATE) && _endDTG.equals(INVALID_DATE)) {
+			if (isInvalid()) {
 				res = true;
 			} else if ((_startDTG.lessThanOrEqualTo(other)) && (_endDTG.greaterThanOrEqualTo(other))) {
 				res = true;
@@ -125,7 +130,11 @@ public interface TimePeriod extends java.io.Serializable, Cloneable {
 			if (obj == this)
 				return true;
 			final TimePeriod tp = (TimePeriod) obj;
-			return (tp.getStartDTG().equals(this.getStartDTG()) && tp.getEndDTG().equals(this.getEndDTG()));
+
+			return ((tp.getStartDTG() == null && this.getStartDTG() == null)
+					|| (tp.getStartDTG() != null && tp.getStartDTG().equals(this.getStartDTG())))
+					&& ((tp.getEndDTG() == null && this.getEndDTG() == null)
+							|| (tp.getEndDTG() != null && tp.getEndDTG().equals(this.getEndDTG())));
 		}
 
 		/**
@@ -184,6 +193,24 @@ public interface TimePeriod extends java.io.Serializable, Cloneable {
 			final long endP = Math.min(this.getEndDTG().getMicros(), thisP.getEndDTG().getMicros());
 			final TimePeriod result = new BaseTimePeriod(new HiResDate(0, startP), new HiResDate(0, endP));
 			return result;
+		}
+
+		/**
+		 * returns true if the start day is before or equals to the end date
+		 */
+		@Override
+		public boolean isConsistent() {
+			return _startDTG.getMicros() < _endDTG.getMicros();
+		}
+
+		/**
+		 * True if getEndDTG() and getStartDTG() are null
+		 * 
+		 * @return
+		 */
+		@Override
+		public boolean isInvalid() {
+			return _startDTG == INVALID_DATE && _endDTG == INVALID_DATE;
 		}
 
 		/**
@@ -346,6 +373,20 @@ public interface TimePeriod extends java.io.Serializable, Cloneable {
 	TimePeriod intersects(TimePeriod thisP);
 
 	/**
+	 * True if the end date is after the start day
+	 * 
+	 * @return
+	 */
+	public boolean isConsistent();
+
+	/**
+	 * True if getEndDTG() and getStartDTG() are null
+	 * 
+	 * @return
+	 */
+	public boolean isInvalid();
+
+	/**
 	 * see if this time period overlaps the one provided
 	 */
 	public boolean overlaps(HiResDate start, HiResDate end);
@@ -370,5 +411,4 @@ public interface TimePeriod extends java.io.Serializable, Cloneable {
 	 */
 	@Override
 	public String toString();
-
 }

@@ -29,6 +29,7 @@
 package MWC.GenericData;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -236,5 +237,46 @@ public class HiResDate implements Serializable, Comparable<HiResDate> {
 	public String toString() {
 		return MWC.Utilities.TextFormatting.FormatRNDateTime.toString(this.getDate().getTime()) + ":"
 				+ super.toString();
+	}
+	
+	/**
+	 * Method that copies the Hours, Minute, Second and Millisecond from source to target
+	 * @param source
+	 * @param target
+	 * @return
+	 */
+	public static HiResDate copyOnlyTime(final HiResDate source, final HiResDate target) {
+		final Calendar targetCalendar = Calendar.getInstance();
+		targetCalendar.setTime(target.getDate());
+		
+		final Calendar sourceCalendar = Calendar.getInstance();
+		sourceCalendar.setTime(source.getDate());
+		
+		targetCalendar.set(Calendar.HOUR_OF_DAY, sourceCalendar.get(Calendar.HOUR_OF_DAY));
+		targetCalendar.set(Calendar.MINUTE, sourceCalendar.get(Calendar.MINUTE));
+		targetCalendar.set(Calendar.SECOND, sourceCalendar.get(Calendar.SECOND));
+		targetCalendar.set(Calendar.MILLISECOND, sourceCalendar.get(Calendar.MILLISECOND));
+		
+		return new HiResDate(targetCalendar.getTimeInMillis(), source._micros % 1000);
+	}
+
+	/**
+	 * Method that copies the Year, Month and Day from source to target
+	 * @param source
+	 * @param target
+	 * @return
+	 */
+	public static HiResDate copyOnlyDate(final HiResDate source, final HiResDate target) {
+		final Calendar targetCalendar = Calendar.getInstance();
+		targetCalendar.setTime(target.getDate());
+		
+		final Calendar sourceCalendar = Calendar.getInstance();
+		sourceCalendar.setTime(source.getDate());
+		
+		targetCalendar.set(Calendar.YEAR, sourceCalendar.get(Calendar.YEAR));
+		targetCalendar.set(Calendar.MONTH, sourceCalendar.get(Calendar.MONTH));
+		targetCalendar.set(Calendar.DAY_OF_MONTH, sourceCalendar.get(Calendar.DAY_OF_MONTH));
+		
+		return new HiResDate(targetCalendar.getTimeInMillis(), target._micros % 1000);
 	}
 }

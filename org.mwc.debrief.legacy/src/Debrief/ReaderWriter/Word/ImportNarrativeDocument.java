@@ -319,6 +319,15 @@ public class ImportNarrativeDocument {
 		}
 	}
 
+	public static class NarrativeHelperRetVal {
+		public ImportNarrativeEnum narrativeEnum;
+		public List<String> selectedNarrativeTypes;
+	}
+
+	public static interface NarrativeTypeHelper {
+		List<String> getSelectedNarrativeTypes(final Map<String, Integer> narrativeTypes);
+	}
+
 	private static class NarrEntry {
 		/**
 		 * what is the last valid time we have. if time fields are missing we will
@@ -662,20 +671,63 @@ public class ImportNarrativeDocument {
 		private final static String no_metadata_path = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/FCS_narrative_no_metadata.doc";
 
 		private final static String ownship_track = "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
+		private final static String ownship_track_test = "../org.mwc.cmap.combined.feature/root_installs/sample_data/boattest.rep";
 
 		private final static TrimNarrativeHelper only_in_period = new TrimNarrativeHelper() {
 
 			@Override
-			public ImportNarrativeEnum findWhatToImport() {
-				return ImportNarrativeEnum.TRIMMED_DATA;
+			public NarrativeHelperRetVal findWhatToImport(final Map<String, Integer> narrativeTypes) {
+				final NarrativeHelperRetVal retVal = new NarrativeHelperRetVal();
+				retVal.narrativeEnum = ImportNarrativeEnum.TRIMMED_DATA;
+				// retVal.selectedNarrativeTypes =
+				// (List<String>)Arrays.asList(narrativeTypes.keySet().toArray(new
+				// String[narrativeTypes.size()]));
+				return retVal;
+			}
+		};
+
+		private final static TrimNarrativeHelper only_selected_types = new TrimNarrativeHelper() {
+
+			@Override
+			public NarrativeHelperRetVal findWhatToImport(final Map<String, Integer> narrativeTypes) {
+				final NarrativeHelperRetVal retVal = new NarrativeHelperRetVal();
+				retVal.narrativeEnum = ImportNarrativeEnum.ALL_DATA;
+				retVal.selectedNarrativeTypes = new ArrayList<>();
+				retVal.selectedNarrativeTypes.add("CAT COMMENT");
+				return retVal;
+			}
+		};
+		private final static TrimNarrativeHelper only_selected_trimmed_data_types = new TrimNarrativeHelper() {
+
+			@Override
+			public NarrativeHelperRetVal findWhatToImport(final Map<String, Integer> narrativeTypes) {
+				final NarrativeHelperRetVal retVal = new NarrativeHelperRetVal();
+				retVal.narrativeEnum = ImportNarrativeEnum.TRIMMED_DATA;
+				retVal.selectedNarrativeTypes = new ArrayList<>();
+				retVal.selectedNarrativeTypes.add("OOW COMMENT");
+				return retVal;
 			}
 		};
 
 		private final static TrimNarrativeHelper allow_all = new TrimNarrativeHelper() {
 
 			@Override
-			public ImportNarrativeEnum findWhatToImport() {
-				return ImportNarrativeEnum.ALL_DATA;
+			public NarrativeHelperRetVal findWhatToImport(final Map<String, Integer> narrativeTypes) {
+				final NarrativeHelperRetVal retVal = new NarrativeHelperRetVal();
+				retVal.narrativeEnum = ImportNarrativeEnum.ALL_DATA;
+				// retVal.selectedNarrativeTypes =
+				// (List<String>)Arrays.asList(narrativeTypes.keySet().toArray(new
+				// String[narrativeTypes.size()]));
+				return retVal;
+			}
+		};
+		private final static TrimNarrativeHelper cancelled_import = new TrimNarrativeHelper() {
+
+			@Override
+			public NarrativeHelperRetVal findWhatToImport(final Map<String, Integer> narrativeTypes) {
+				final NarrativeHelperRetVal retVal = new NarrativeHelperRetVal();
+				retVal.narrativeEnum = ImportNarrativeEnum.CANCEL;
+				return retVal;
 			}
 		};
 
@@ -1235,7 +1287,6 @@ public class ImportNarrativeDocument {
 
 		}
 
-		@SuppressWarnings("deprecation")
 		public static void testParseDate() {
 
 			final String goodDate = "000000";
@@ -1246,15 +1297,19 @@ public class ImportNarrativeDocument {
 
 			// ok, get the narrative type
 			final NarrEntry thisN1 = NarrEntry.create(testDate1, 1);
-			assertEquals("year", 116, thisN1.dtg.getDate().getYear());
-			assertEquals("month", 8, thisN1.dtg.getDate().getMonth());
-			assertEquals("day", 16, thisN1.dtg.getDate().getDate());
+			final Date date = thisN1.dtg.getDate();
+			final Calendar instance = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+			instance.setTime(date);
+			assertEquals("year", 2016, instance.get(Calendar.YEAR));
+			assertEquals("month", 8, instance.get(Calendar.MONTH));
+			assertEquals("day", 16, instance.get(Calendar.DAY_OF_MONTH));
 			// removed the next line - it's failing on the CI build,
 			// because of a timezone difference
-			// assertEquals("hour", 10, thisN1.dtg.getDate().getHours()); // not 9, since
+
+			assertEquals("hour", 9, instance.get(Calendar.HOUR_OF_DAY)); // not 9, since
 			// we're BST
-			assertEquals("min", 9, thisN1.dtg.getDate().getMinutes());
-			assertEquals("sec", 0, thisN1.dtg.getDate().getSeconds());
+			assertEquals("min", 9, instance.get(Calendar.MINUTE));
+			assertEquals("sec", 0, instance.get(Calendar.SECOND));
 			assertEquals("platform", "HMS NONSUCH", thisN1.platform);
 			assertEquals("content", "SOME COMMENT", thisN1.text);
 
@@ -1262,15 +1317,18 @@ public class ImportNarrativeDocument {
 			final String testDate2 = "161006\tSOME COMMENT 2 ";
 			// ok, get the narrative type
 			final NarrEntry thisN2 = NarrEntry.create(testDate2, 1);
-			assertEquals("year", 116, thisN2.dtg.getDate().getYear());
-			assertEquals("month", 8, thisN2.dtg.getDate().getMonth());
-			assertEquals("day", 16, thisN2.dtg.getDate().getDate());
+			final Date date2 = thisN2.dtg.getDate();
+			final Calendar instance2 = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+			instance2.setTime(date2);
+			assertEquals("year", 2016, instance2.get(Calendar.YEAR));
+			assertEquals("month", 8, instance2.get(Calendar.MONTH));
+			assertEquals("day", 16, instance2.get(Calendar.DAY_OF_MONTH));
 			// removed the next line - it's failing on the CI build,
 			// because of a timezone difference
-			// assertEquals("hour", 11, thisN2.dtg.getDate().getHours()); // not 10, we're
+			assertEquals("hour", 10, instance2.get(Calendar.HOUR_OF_DAY)); // not 10, we're
 			// BST
-			assertEquals("min", 6, thisN2.dtg.getDate().getMinutes());
-			assertEquals("sec", 0, thisN2.dtg.getDate().getSeconds());
+			assertEquals("min", 6, instance2.get(Calendar.MINUTE));
+			assertEquals("sec", 0, instance2.get(Calendar.SECOND));
 			assertEquals("platform", "HMS NONSUCH", thisN2.platform);
 			assertEquals("content", "SOME COMMENT 2", thisN2.text);
 			assertFalse("flag", thisN2.appendedToPrevious);
@@ -1582,6 +1640,18 @@ public class ImportNarrativeDocument {
 			assertEquals("have items", 5, narrLayer.size());
 		}
 
+		private final TrimNarrativeHelper only_fcs_types = new TrimNarrativeHelper() {
+
+			@Override
+			public NarrativeHelperRetVal findWhatToImport(final Map<String, Integer> narrativeTypes) {
+				final NarrativeHelperRetVal retVal = new NarrativeHelperRetVal();
+				retVal.narrativeEnum = ImportNarrativeEnum.ALL_DATA;
+				retVal.selectedNarrativeTypes = new ArrayList<>();
+				retVal.selectedNarrativeTypes.add("FCS");
+				return retVal;
+			}
+		};
+
 		@SuppressWarnings("unused")
 		private String messageStr = null;
 
@@ -1603,10 +1673,109 @@ public class ImportNarrativeDocument {
 			});
 			setNarrativeHelper(null);
 		}
+
+		public void testCancelImportNarrativeTypes() throws Exception {
+			final String testFile = dummy_doc_path;
+			final File testI = new File(testFile);
+			assertTrue(testI.exists());
+
+			final InputStream is = new FileInputStream(testI);
+			final Layers tLayers = new Layers();
+			final ImportNarrativeDocument importer = new ImportNarrativeDocument(tLayers);
+			ImportNarrativeDocument.setNarrativeHelper(cancelled_import);
+			final HWPFDocument doc = new HWPFDocument(is);
+			final ArrayList<String> strings = importFromWord(doc);
+			importer.processThese(strings);
+			final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(LayerHandler.NARRATIVE_LAYER);
+			assertNull(narrLayer);
+		}
+
+		public void testImportAllNarrativeTypes() throws Exception {
+			final String testFile = dummy_doc_path;
+			final File testI = new File(testFile);
+			assertTrue(testI.exists());
+
+			final InputStream is = new FileInputStream(testI);
+			final Layers tLayers = new Layers();
+			final ImportNarrativeDocument importer = new ImportNarrativeDocument(tLayers);
+			final HWPFDocument doc = new HWPFDocument(is);
+			final ArrayList<String> strings = importFromWord(doc);
+			importer.processThese(strings);
+			final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(LayerHandler.NARRATIVE_LAYER);
+			assertNotNull(narrLayer);
+			assertEquals(narrLayer.size(), 13);
+		}
+
+		public void testImportSelectedNarrativeFCSTypes() throws Exception {
+			final String testFile = valid_doc_path;
+			final File testI = new File(testFile);
+			assertTrue(testI.exists());
+
+			final InputStream is = new FileInputStream(testI);
+			final Layers tLayers = new Layers();
+			final ImportNarrativeDocument importer = new ImportNarrativeDocument(tLayers);
+			ImportNarrativeDocument.setNarrativeHelper(only_fcs_types);
+			final List<String> selectedTypes = new ArrayList<>();
+			selectedTypes.add("FCS");
+			importer.setSelectedNarrativeTypes(selectedTypes);
+			final HWPFDocument doc = new HWPFDocument(is);
+			final ArrayList<String> strings = importFromWord(doc);
+			importer.processThese(strings);
+			final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(LayerHandler.NARRATIVE_LAYER);
+			assertNotNull(narrLayer);
+			assertEquals(narrLayer.size(), 18);
+
+		}
+
+		public void testImportSelectedNarrativeNonFCSTypes() throws Exception {
+			final String testFile = dummy_doc_path;
+			final File testI = new File(testFile);
+			assertTrue(testI.exists());
+
+			final InputStream is = new FileInputStream(testI);
+			final Layers tLayers = new Layers();
+			final ImportNarrativeDocument importer = new ImportNarrativeDocument(tLayers);
+			ImportNarrativeDocument.setNarrativeHelper(only_selected_types);
+			final HWPFDocument doc = new HWPFDocument(is);
+			final ArrayList<String> strings = importFromWord(doc);
+			importer.processThese(strings);
+			final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(LayerHandler.NARRATIVE_LAYER);
+			assertNotNull(narrLayer);
+			assertEquals(narrLayer.size(), 5);
+		}
+
+		public void testImportSelectedTypesWithOuterPeriod() throws Exception {
+			final Layers tLayers = new Layers();
+
+			// start off with the ownship track
+			final File boatFile = new File(ownship_track_test);
+			assertTrue(boatFile.exists());
+			final InputStream bs = new FileInputStream(boatFile);
+
+			final ImportReplay trackImporter = new ImportReplay();
+			ImportReplay.initialise(new ImportReplay.testImport.TestParent(ImportReplay.IMPORT_AS_OTG, 0L));
+			trackImporter.importThis(ownship_track_test, bs, tLayers);
+
+			assertEquals("read in track", 1, tLayers.size());
+			final String testFile = valid_doc_path;
+			final File testI = new File(testFile);
+			assertTrue(testI.exists());
+
+			final InputStream is = new FileInputStream(testI);
+			final ImportNarrativeDocument importer = new ImportNarrativeDocument(tLayers);
+			ImportNarrativeDocument.setNarrativeHelper(only_selected_trimmed_data_types);
+			final HWPFDocument doc = new HWPFDocument(is);
+			final ArrayList<String> strings = importFromWord(doc);
+			importer.processThese(strings);
+			final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(LayerHandler.NARRATIVE_LAYER);
+			assertNotNull(narrLayer);
+			assertEquals(narrLayer.size(), 285);
+
+		}
 	}
 
 	public static interface TrimNarrativeHelper {
-		ImportNarrativeEnum findWhatToImport();
+		NarrativeHelperRetVal findWhatToImport(Map<String, Integer> narrativeTypes);
 	}
 
 	/**
@@ -1920,13 +2089,15 @@ public class ImportNarrativeDocument {
 	 * keep track of the last successfully imported narrative entry if we've just
 	 * received a plain text block, we'll add it to the previous one *
 	 */
-	private NarrativeEntry _lastEntry;
+	private NarrEntry _lastNarrEntry;
 
 	/**
 	 * keep track of track names that we have matched
 	 *
 	 */
 	Map<String, String> nameMatches = new HashMap<String, String>();
+
+	private List<String> selectedNarrativeTypes;
 
 	public ImportNarrativeDocument(final Layers target) {
 		_layers = target;
@@ -1941,6 +2112,61 @@ public class ImportNarrativeDocument {
 		}
 	}
 
+	private boolean addEntries(final List<NarrEntry> narrativeEntries, final List<String> selectedNarrativeTypes,
+			final TimePeriod outerPeriod) {
+		boolean dataAdded = false;
+		// do this on the selected narratives
+		for (final NarrEntry thisN : narrativeEntries) {
+
+			// do we know the outer time period?
+			if (outerPeriod != null && thisN.dtg != null) {
+				// check it's in the currently loaded time period
+				if (!outerPeriod.contains(thisN.dtg)) {
+					// ok, it's not in our period
+					continue;
+				}
+			}
+
+			// did we process anything?
+			if (thisN.type != null && (selectedNarrativeTypes == null || selectedNarrativeTypes.contains(thisN.type))) {
+				// ok, process the entry
+				switch (thisN.type) {
+				case "FCS": {
+					// add a narrative entry
+					addEntry(thisN);
+					// create track for this
+					try {
+						addFCS(thisN);
+					} catch (final StringIndexOutOfBoundsException e) {
+						// don't worry about panicking, it may not be an FCS after all
+					} catch (final NumberFormatException e) {
+						// don't worry about panicking, it may not be an FCS after all
+					}
+				}
+
+					// ok, take note that we've added something
+					dataAdded = true;
+					break;
+				default: {
+					// ok, just add a narrative entry for anything not recognised
+					// add a narrative entry
+					addEntry(thisN);
+					// ok, take note that we've added something
+					dataAdded = true;
+
+					break;
+
+				}
+				}
+			} else if (thisN.platform != null && (thisN.type == null || thisN.type.isBlank())) {
+				addEntry(thisN);
+				// ok, take note that we've added something
+				dataAdded = true;
+			}
+		}
+		return dataAdded;
+	}
+
 	private void addEntry(final NarrEntry thisN) {
 		final NarrativeWrapper nw = getNarrativeLayer();
 		String hisTrack = trackFor(thisN.platform, thisN.platform);
@@ -1951,9 +2177,6 @@ public class ImportNarrativeDocument {
 		}
 
 		final NarrativeEntry ne = new NarrativeEntry(hisTrack, thisN.type, new HiResDate(thisN.dtg), thisN.text);
-
-		// remember that entry, in case we get incomplete text inthe future
-		_lastEntry = ne;
 
 		// try to color the entry
 		final Layer host = _layers.findLayer(trackFor(thisN.platform));
@@ -2059,6 +2282,42 @@ public class ImportNarrativeDocument {
 		}
 	}
 
+	/**
+	 * check with the helper function what the user wants to import
+	 *
+	 * @param typeVsCount      types of entry, with count of instances
+	 * @param narrativeEntries list of narratives
+	 * @return
+	 */
+	private boolean checkWhatToImport(final Map<String, Integer> typeVsCount, final List<NarrEntry> narrativeEntries) {
+		final boolean dataAdded;
+		final NarrativeHelperRetVal whatToImport = trimNarrativeHelper.findWhatToImport(typeVsCount);
+		if (whatToImport.narrativeEnum != ImportNarrativeEnum.CANCEL) {
+			if (typeVsCount != null && !typeVsCount.isEmpty()) {
+				final TimePeriod outerPeriod;
+
+				// find the outer time period - we only load data into the current time period
+				if (whatToImport.narrativeEnum == ImportNarrativeEnum.CANCEL) {
+					// if cancelled then do nothing.
+					outerPeriod = null;
+				} else if (whatToImport.narrativeEnum == ImportNarrativeEnum.ALL_DATA) {
+					outerPeriod = null;
+				} else {
+					outerPeriod = outerPeriodFor(_layers);
+				}
+
+				selectedNarrativeTypes = whatToImport.selectedNarrativeTypes;
+				dataAdded = addEntries(narrativeEntries, selectedNarrativeTypes, outerPeriod);
+			} else {
+				questionHelper.showMessage("Narrative Types", "No narrative types found, there is nothing to import");
+				dataAdded = false;
+			}
+		} else {
+			dataAdded = false;
+		}
+		return dataAdded;
+	}
+
 	private NarrativeWrapper getNarrativeLayer() {
 		NarrativeWrapper nw = (NarrativeWrapper) _layers.findLayer(LayerHandler.NARRATIVE_LAYER);
 
@@ -2080,36 +2339,17 @@ public class ImportNarrativeDocument {
 		if (strings.isEmpty()) {
 			return;
 		}
-		boolean proceed = true;
-		ImportNarrativeEnum whatToImport = null;
-		if (trimNarrativeHelper != null) {
-			whatToImport = trimNarrativeHelper.findWhatToImport();
-		} else {
-			whatToImport = ImportNarrativeEnum.TRIMMED_DATA;
-		}
-		// keep track of if we've added anything
-		boolean dataAdded = false;
+		final Map<String, Integer> typeVsCount = new HashMap<>();
+		final boolean proceed = true;
 
 		// maximum number of follow-on-sentences to use
 		final int MAX_APPENDED = 6;
 
 		int appendedToPreviousCtr = 0;
 
-		TimePeriod outerPeriod = null;
-
-		// find the outer time period - we only load data into the current time period
-		if (whatToImport == ImportNarrativeEnum.CANCEL) {
-			proceed = false;
-			// if cancelled then do nothing.
-		} else if (whatToImport == ImportNarrativeEnum.ALL_DATA) {
-			outerPeriod = null;
-		} else {
-			outerPeriod = outerPeriodFor(_layers);
-		}
-
 		// see if we have an index for start of records
 		final int START_INDEX = indexOfStart(strings);
-
+		final List<NarrEntry> narrativeEntries = new ArrayList<NarrEntry>();
 		// ok, now we can loop through the strings
 		if (proceed) {
 			int ctr = 0;
@@ -2152,27 +2392,15 @@ public class ImportNarrativeDocument {
 						break;
 					}
 
-					// do we know the outer time period?
-					if (outerPeriod != null && thisN.dtg != null) {
-						// check it's in the currently loaded time period
-						if (!outerPeriod.contains(thisN.dtg)) {
-//             System.out.println(thisN.dtg.getDate() + " is not between " +
-//             outerPeriod.getStartDTG().getDate() + " and " + outerPeriod.getEndDTG().getDate());
-
-							// ok, it's not in our period
-							continue;
-						}
-					}
-
 					// is it just text, that we will append
 					if (thisN.appendedToPrevious && appendedToPreviousCtr < MAX_APPENDED) {
 						// hmm, just check if this is an FCS
 
 						// do we have a previous one?
-						if (_lastEntry != null) {
+						if (_lastNarrEntry != null) {
 							final String newText = thisN.text;
 
-							_lastEntry.setEntry(_lastEntry.getEntry() + "\n" + newText);
+							_lastNarrEntry.text = _lastNarrEntry.text + "\n" + newText;
 
 							// ok, keep track of how many times we've appended
 							appendedToPreviousCtr++;
@@ -2184,53 +2412,48 @@ public class ImportNarrativeDocument {
 						// clear the appended flag
 						appendedToPreviousCtr = 0;
 					}
-
-					// did we process anything?
+					final String type;
 					if (thisN.type != null) {
-						// ok, process the entry
-						switch (thisN.type) {
-						case "FCS": {
-							// add a narrative entry
-							addEntry(thisN);
-
-							// create track for this
-							try {
-								addFCS(thisN);
-							} catch (final StringIndexOutOfBoundsException e) {
-								// don't worry about panicking, it may not be an FCS after all
-							} catch (final NumberFormatException e) {
-								// don't worry about panicking, it may not be an FCS after all
-							}
-
-							// ok, take note that we've added something
-							dataAdded = true;
-
-							break;
-						}
-						default: {
-							// ok, just add a narrative entry for anything not recognised
-
-							// add a narrative entry
-							addEntry(thisN);
-
-							// ok, take note that we've added something
-							dataAdded = true;
-
-							break;
-
-						}
-						}
+						type = thisN.type;
+					} else if (thisN.platform != null) {
+						type = "None";
+					} else {
+						type = null;
 					}
+					if (type != null) {
+						if (typeVsCount.get(type) == null) {
+							typeVsCount.put(type, 1);
+						} else {
+							typeVsCount.put(type, typeVsCount.get(type) + 1);
+						}
+						// remember that entry, in case we get incomplete text inthe future
+						_lastNarrEntry = thisN;
+						narrativeEntries.add(thisN);
+					}
+
 				} catch (final Exception e) {
 					logThisError(ToolParent.WARNING, "Failed whilst parsing line:" + text, e);
-
 				}
 			}
-
-			if (dataAdded) {
-				_layers.fireModified(getNarrativeLayer());
-			}
 		}
+		// keep track of if we've added anything
+		final boolean dataAdded;
+
+		if (trimNarrativeHelper != null) {
+			// ask the user what to do
+			dataAdded = checkWhatToImport(typeVsCount, narrativeEntries);
+		} else {
+			// if dialog is not displayed then trim to time period. add all entries
+			final TimePeriod outerPeriod = outerPeriodFor(_layers);
+			dataAdded = addEntries(narrativeEntries, null, outerPeriod);
+		}
+		if (dataAdded) {
+			_layers.fireModified(getNarrativeLayer());
+		}
+	}
+
+	public void setSelectedNarrativeTypes(final List<String> selectedNarrativeTypes) {
+		this.selectedNarrativeTypes = selectedNarrativeTypes;
 	}
 
 	/**

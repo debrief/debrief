@@ -24,6 +24,6 @@
   </parent>
   <groupId>org.mwc.debrief</groupId>
   <artifactId>org.mwc.asset.ScenarioPlotter</artifactId>
-  <version>1.0.19</version>
+  <version>1.0.20</version>
   <packaging>eclipse-plugin</packaging>
 </project>

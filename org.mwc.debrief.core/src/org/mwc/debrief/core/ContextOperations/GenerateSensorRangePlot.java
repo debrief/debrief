@@ -43,7 +43,6 @@ import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextIte
 import org.mwc.cmap.xyplot.views.XYPlotView;
 import org.mwc.debrief.core.DebriefPlugin;
 
-import Debrief.Tools.Tote.toteCalculation;
 import Debrief.Tools.Tote.Calculations.rangeCalc;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;

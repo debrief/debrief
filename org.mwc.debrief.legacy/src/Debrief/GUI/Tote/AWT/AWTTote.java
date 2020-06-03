@@ -112,12 +112,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Enumeration;
 
-import Debrief.Tools.Tote.toteCalculation;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.AWT.AWTPropertiesPanel;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
+import MWC.Tools.Tote.toteCalculation;
 
 /**
  * AWT implementation of a tote

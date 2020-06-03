@@ -473,6 +473,9 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider {
 		if (!isRunningTests()) {
 			ImportNarrativeDocument.setNarrativeHelper(new ImportNarrativeHelper());
 		}
+		
+		
+		
 
 		// tell the additional data that we can help
 		AdditionalDataHandler.setExportHelper(new ExportProvider() {
