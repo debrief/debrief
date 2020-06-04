@@ -22,13 +22,18 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import org.mwc.debrief.pepys.model.PepsysException;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.FieldName;
+import org.mwc.debrief.pepys.model.db.annotation.Filterable;
 import org.mwc.debrief.pepys.model.db.annotation.Id;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
+import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
+import org.mwc.debrief.pepys.model.db.config.LoaderOption;
+import org.mwc.debrief.pepys.model.db.config.LoaderOption.LoaderType;
 
 import junit.framework.TestCase;
 
@@ -40,10 +45,11 @@ public class Datafile implements AbstractBean {
 		public void testDatafilesQuery() {
 			try {
 				final DatabaseConfiguration _config = new DatabaseConfiguration();
-				DatabaseConnection.loadDatabaseConfiguration(_config,
-						DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE);
-				new SqliteDatabaseConnection().createInstance(_config);
-				final List<Datafile> list = DatabaseConnection.getInstance().listAll(Datafile.class, null);
+				ConfigurationReader.loadDatabaseConfiguration(_config, new LoaderOption[] {
+						new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
+				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
+				sqlite.initializeInstance(_config);
+				final List<Datafile> list = sqlite.listAll(Datafile.class, null);
 
 				assertTrue("Datafiles - database entries", list.size() == 18);
 
@@ -60,13 +66,13 @@ public class Datafile implements AbstractBean {
 					assertTrue("Datafiles - Reference Name", exist);
 				}
 
-				for (Datafile datafile : list) {
+				for (final Datafile datafile : list) {
 					assertTrue("Datafiles - Concatenated reference ", datafile.getDatafile().getName()
 							.equals(datafile.getReference().substring(datafile.getReference().indexOf('.'))));
 				}
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
-					| ClassNotFoundException | IOException e) {
+					| ClassNotFoundException | IOException | PepsysException e) {
 				e.printStackTrace();
 				fail("Couldn't connect to database or query error:" + e);
 			}
@@ -82,6 +88,7 @@ public class Datafile implements AbstractBean {
 	@ManyToOne
 	@FieldName(name = "datafile_type_id")
 	private DatafileType datafile;
+	@Filterable
 	private String reference;
 	private String url;
 

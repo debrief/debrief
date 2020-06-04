@@ -1,6 +1,9 @@
 package org.mwc.debrief.pepys.model.db.config;
 
+import java.beans.PropertyVetoException;
 import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -69,6 +72,63 @@ public class ConfigurationReader {
 		return str != null && str.startsWith(DEMILITER) && str.endsWith(DEMILITER);
 	}
 
+	public static void loadDatabaseConfiguration(final DatabaseConfiguration _config,
+			final InputStream configurationStream) throws FileNotFoundException {
+		if (configurationStream != null) {
+			ConfigurationReader.parseConfigurationFile(_config, configurationStream);
+		} else {
+			throw new FileNotFoundException("DatabaseConnectionException we have received a null inputstream");
+		}
+	}
+
+	/**
+	 * Try to load the option to the database configuration.
+	 * It will try the first one, then the second one, etc
+	 * 
+	 * @param _config
+	 * @param option
+	 * @throws PropertyVetoException
+	 * @throws IOException
+	 */
+	public static void loadDatabaseConfiguration(final DatabaseConfiguration _config, final LoaderOption[] _options)
+			throws PropertyVetoException, IOException {
+
+		InputStream configurationFileStream = null;
+		final StringBuilder filesTried = new StringBuilder();
+		try {
+			for (LoaderOption option : _options) {
+				filesTried.append(option.getPath());
+				filesTried.append(", ");
+				if (option.isValid()) {
+					configurationFileStream = option.getInputStream();
+					_config.setLoaderOption(option);
+					
+
+					loadDatabaseConfiguration(_config, configurationFileStream);
+					
+					if (DatabaseConfiguration.isValid(_config)) {
+						break;
+					}
+				}
+			}
+
+			if (configurationFileStream == null) {
+				throw new IOException("DatabaseConnectionException requested file " + filesTried.toString().trim()
+						+ " but it is not a valid file");
+			}
+
+		} finally {
+			if (configurationFileStream != null) {
+				configurationFileStream.close();
+			}
+		}
+	}
+
+	/**
+	 * Given an InputStream, It loads it, and stores it in the DatabaseCondiguration
+	 * @param configuration Where to store the configuration
+	 * @param inputStream Where to read the configuration from
+	 */
 	public static void parseConfigurationFile(final DatabaseConfiguration configuration,
 			final InputStream inputStream) {
 		final Scanner scanner = new Scanner(inputStream);
@@ -119,5 +179,4 @@ public class ConfigurationReader {
 		}
 		return new String(strArray);
 	}
-
 }

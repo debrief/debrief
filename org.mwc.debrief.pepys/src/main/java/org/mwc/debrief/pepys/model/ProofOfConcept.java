@@ -25,14 +25,24 @@ import org.mwc.debrief.pepys.model.bean.Datafile;
 import org.mwc.debrief.pepys.model.bean.DatafileType;
 import org.mwc.debrief.pepys.model.bean.State;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
+import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
+import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
+import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
+import org.mwc.debrief.pepys.model.db.config.LoaderOption;
+import org.mwc.debrief.pepys.model.db.config.LoaderOption.LoaderType;
 
 public class ProofOfConcept {
 	public static void main(final String[] args) {
 		try {
-			final List list2 = DatabaseConnection.getInstance().listAll(DatafileType.class, null);
-			final List list = DatabaseConnection.getInstance().listAll(Datafile.class, null);
+			final DatabaseConfiguration _config = new DatabaseConfiguration();
+			ConfigurationReader.loadDatabaseConfiguration(_config, new LoaderOption[] {
+					new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
+			final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
+			sqlite.initializeInstance(_config);
+			final List list2 = sqlite.listAll(DatafileType.class, null);
+			final List list = sqlite.listAll(Datafile.class, null);
 
-			final List list3 = DatabaseConnection.getInstance().listAll(State.class, null);
+			final List list3 = sqlite.listAll(State.class, null);
 
 			// final List list4 = DatabaseConnection.getInstance().listAll(State.class,
 			// "source_id = 16");
@@ -60,7 +70,7 @@ public class ProofOfConcept {
 			// }
 		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 				| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
-				| ClassNotFoundException | IOException e) {
+				| ClassNotFoundException | IOException | PepsysException e) {
 			e.printStackTrace();
 		}
 	}

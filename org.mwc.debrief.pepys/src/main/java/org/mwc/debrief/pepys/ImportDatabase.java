@@ -17,7 +17,6 @@ package org.mwc.debrief.pepys;
 
 import java.beans.PropertyVetoException;
 import java.io.IOException;
-import java.util.HashMap;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
@@ -25,11 +24,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.plotViewer.actions.CoreEditorAction;
 import org.mwc.debrief.pepys.controller.PepysImportController;
+import org.mwc.debrief.pepys.model.AbstractConfiguration;
+import org.mwc.debrief.pepys.model.ModelConfiguration;
+import org.mwc.debrief.pepys.model.PepsysException;
 import org.mwc.debrief.pepys.model.PepysConnectorBridge;
-import org.mwc.debrief.pepys.model.db.DatabaseConnection;
-import org.mwc.debrief.pepys.model.db.PostgresDatabaseConnection;
-import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
-import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
+import org.mwc.debrief.pepys.view.AbstractViewSWT;
+import org.mwc.debrief.pepys.view.PepysImportView;
 
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
@@ -56,34 +56,12 @@ public class ImportDatabase extends CoreEditorAction {
 
 		final Shell shell = new Shell(PlatformUI.getWorkbench().getDisplay(),
 				SWT.APPLICATION_MODAL | SWT.MIN | SWT.CLOSE | SWT.RESIZE | SWT.MAX);
-		shell.setMinimumSize(600, 450);
-		final DatabaseConfiguration databaseConfiguration = new DatabaseConfiguration();
-		try {
-			DatabaseConnection.loadDatabaseConfiguration(databaseConfiguration,
-					DatabaseConnection.DEFAULT_DATABASE_FILE);
+		shell.setMinimumSize(600, 400);
+		final AbstractConfiguration configurationModel = new ModelConfiguration();
+		final AbstractViewSWT view = new PepysImportView(configurationModel, shell);
 
-			final HashMap<String, String> category = databaseConfiguration
-					.getCategory(DatabaseConnection.CONFIGURATION_TAG);
-			if (category != null && category.containsKey(DatabaseConnection.CONFIGURATION_DATABASE_TYPE)) {
-				final String databaseType = category.get(DatabaseConnection.CONFIGURATION_DATABASE_TYPE);
-				if (databaseType != null) {
-					final DatabaseConnection conn;
-					switch (databaseType) {
-					case DatabaseConnection.POSTGRES:
-						conn = new PostgresDatabaseConnection();
-						break;
-					case DatabaseConnection.SQLITE:
-						conn = new SqliteDatabaseConnection();
-						break;
-					default:
-						conn = null;
-						break;
-					}
-					if (conn != null) {
-						conn.createInstance(databaseConfiguration);
-					}
-				}
-			}
+		try {
+			configurationModel.loadDefaultDatabaseConfiguration();
 		} catch (IOException | PropertyVetoException e) {
 			// Invalid Database Configuration error
 			e.printStackTrace();
@@ -94,14 +72,24 @@ public class ImportDatabase extends CoreEditorAction {
 			messageBox.open();
 
 			return;
+		} catch (PepsysException e) {
+			/**
+			 * in case that something rise, we are going to show that message to the user.
+			 */
+			e.printStackTrace();
+
+			final MessageBox messageBox = new MessageBox(shell, SWT.ERROR | SWT.OK);
+			messageBox.setMessage(e.getMessage());
+			messageBox.setText(e.getTitle());
+			messageBox.open();
+
+			return;
 		}
 
-		if (DatabaseConnection.getInstance() != null) {
-			new PepysImportController(shell, pepysBridge);
+		new PepysImportController(shell, configurationModel, view, pepysBridge);
 
-			shell.pack();
-			shell.open();
-		}
+		shell.pack();
+		shell.open();
 	}
 
 }

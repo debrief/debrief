@@ -5,7 +5,7 @@
  * (C) 2000-2020, Deep Blue C Technology Ltd
  *
  * This library is free software; you can redistribute it and/or
- * modify it under the terms of the Eclipse Public License v1.0
+ * modify it under the terms of the Eclipse  License v1.0
  * (http://www.eclipse.org/legal/epl-v10.html)
  *
  * This library is distributed in the hope that it will be useful,
@@ -15,10 +15,17 @@
 
 package org.mwc.debrief.pepys.model;
 
+import java.beans.PropertyVetoException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Collection;
 
+import org.mwc.debrief.pepys.model.db.DatabaseConnection;
+import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
 import org.mwc.debrief.pepys.model.tree.TreeNode;
+import org.mwc.debrief.pepys.model.tree.TreeUtils.SearchTreeResult;
 
 import MWC.GUI.hasPropertyListeners;
 import MWC.GenericData.TimePeriod;
@@ -27,47 +34,83 @@ import MWC.GenericData.WorldLocation;
 
 public interface AbstractConfiguration extends hasPropertyListeners {
 
-	public static String AREA_PROPERTY = "AREA";
+	static String AREA_PROPERTY = "AREA";
 
-	public static String PERIOD_PROPERTY = "PERIOD";
+	static String PERIOD_PROPERTY = "PERIOD";
 
-	public static String TREE_MODEL = "TREE_MODEL";
+	static String TREE_MODEL = "TREE_MODEL";
 
-	public static String FILTER_PROPERTY = "FILTER";
+	static String SEARCH_PROPERTY = "SEARCH";
 
-	public void addDatafileTypeFilter(final TypeDomain newType);
+	static String HIGHLIGHT_PROPERTY = "HIGHTLIGHT";
 
-	public void apply() throws Exception;
+	static String SEARCH_RESULT_PROPERTY = "SEARCH_RESULT";
 
-	public void doImport();
+	void addDatafileTypeFilter(final TypeDomain newType);
 
-	public boolean doTestQuery() throws SQLException;
+	void apply() throws Exception;
 
-	public WorldArea getCurrentArea();
+	int doImport();
 
-	public Collection<TypeDomain> getDatafileTypeFilters();
+	boolean doTestQuery() throws SQLException;
 
-	public WorldLocation getDefaultBottomRight();
+	WorldArea getCurrentArea();
 
-	public WorldLocation getDefaultTopLeft();
+	SearchTreeResult getCurrentSearchTreeResultModel();
 
-	public String getFilter();
+	DatabaseConnection getDatabaseConnection();
 
-	public TimePeriod getTimePeriod();
+	Collection<TypeDomain> getDatafileTypeFilters();
 
-	public TreeNode getTreeModel();
+	WorldLocation getDefaultBottomRight();
 
-	public void removeDatafileTypeFilter(final TypeDomain typeToRemove);
+	WorldLocation getDefaultTopLeft();
 
-	public void setArea(final WorldArea newArea);
+	String getFilter();
 
-	public void setCurrentViewport();
+	SearchTreeResult getHereSearch();
 
-	public void setFilter(final String _newFilter);
+	SearchTreeResult getNextSearch();
 
-	public void setPepysConnectorBridge(final PepysConnectorBridge _bridge);
+	SearchTreeResult getPreviousSearch();
 
-	public void setTimePeriod(final TimePeriod newPeriod);
+	String getSearch();
 
-	public void updateTree();
+	String getSearchResultsText();
+
+	TimePeriod getTimePeriod();
+
+	TreeNode getTreeModel();
+
+	void loadDatabaseConfiguration(final DatabaseConfiguration _configuration)
+			throws FileNotFoundException, PropertyVetoException, IOException, PepsysException;
+
+	void loadDatabaseConfiguration(final InputStream configurationFile)
+			throws FileNotFoundException, PropertyVetoException, IOException, PepsysException;
+
+	void loadDefaultDatabaseConfiguration() throws PropertyVetoException, IOException, PepsysException;
+
+	void removeDatafileTypeFilter(TypeDomain typeToRemove);
+
+	void searchFromUser(boolean _search);
+
+	void setArea(WorldArea newArea);
+
+	void setCurrentViewport();
+
+	void setFilter(final String _newFilter);
+
+	void setHighlightedElement(final TreeNode node);
+
+	void setPepysConnectorBridge(PepysConnectorBridge _bridge);
+
+	void setSearch(final String _newSearch);
+
+	void setSearchResults(final int current, final int total);
+
+	void setTimePeriod(final TimePeriod newPeriod);
+
+	void updateTree();
+
+	public void validate() throws Exception;
 }

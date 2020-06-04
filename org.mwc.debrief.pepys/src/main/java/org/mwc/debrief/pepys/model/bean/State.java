@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.mwc.debrief.pepys.model.PepsysException;
 import org.mwc.debrief.pepys.model.db.Condition;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
@@ -18,7 +19,10 @@ import org.mwc.debrief.pepys.model.db.annotation.Location;
 import org.mwc.debrief.pepys.model.db.annotation.ManyToOne;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
 import org.mwc.debrief.pepys.model.db.annotation.Time;
+import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
+import org.mwc.debrief.pepys.model.db.config.LoaderOption;
+import org.mwc.debrief.pepys.model.db.config.LoaderOption.LoaderType;
 import org.mwc.debrief.pepys.model.tree.TreeStructurable;
 
 import Debrief.Wrappers.FixWrapper;
@@ -38,20 +42,21 @@ public class State implements AbstractBean, TreeStructurable {
 		public void testStatesQuery() {
 			try {
 				final DatabaseConfiguration _config = new DatabaseConfiguration();
-				DatabaseConnection.loadDatabaseConfiguration(_config,
-						DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE);
-				new SqliteDatabaseConnection().createInstance(_config);
-				final List<State> list = DatabaseConnection.getInstance().listAll(State.class, null);
+				ConfigurationReader.loadDatabaseConfiguration(_config, new LoaderOption[] {
+						new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
+				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
+				sqlite.initializeInstance(_config);
+				final List<State> list = sqlite.listAll(State.class, null);
 
 				assertTrue("States - database entries", list.size() == 12209);
 
-				final List<State> list2 = DatabaseConnection.getInstance().listAll(State.class,
+				final List<State> list2 = sqlite.listAll(State.class,
 						Arrays.asList(new Condition[] { new Condition("source_id = 18") }));
 
 				assertTrue("States - database entries", list2.size() == 402);
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
-					| ClassNotFoundException | IOException e) {
+					| ClassNotFoundException | IOException | PepsysException e) {
 				e.printStackTrace();
 				fail("Couldn't connect to database or query error");
 			}
@@ -87,15 +92,15 @@ public class State implements AbstractBean, TreeStructurable {
 
 	@Override
 	public void doImport(final Layers _layers) {
-	  // see if the track is in already
-	  final String trackName = getPlatform().getName();
+		// see if the track is in already
+		final String trackName = getPlatform().getName();
 		final Layer target = _layers.findLayer(trackName, true);
 		final TrackWrapper track;
 		if (target != null && target instanceof TrackWrapper) {
-		  // ok, use it
+			// ok, use it
 			track = (TrackWrapper) target;
 		} else {
-		  // create a new track
+			// create a new track
 			track = new TrackWrapper();
 			track.setName(trackName);
 			// and store it
@@ -103,8 +108,7 @@ public class State implements AbstractBean, TreeStructurable {
 		}
 
 		// create the wrapper for this annotation
-		final FixWrapper fixWrapper = new FixWrapper(
-				new Fix(new HiResDate(time.getTime()), location, course, speed));
+		final FixWrapper fixWrapper = new FixWrapper(new Fix(new HiResDate(time.getTime()), location, course, speed));
 		fixWrapper.setName(time.toString());
 		track.add(fixWrapper);
 	}

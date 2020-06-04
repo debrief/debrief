@@ -22,11 +22,15 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import org.mwc.debrief.pepys.model.PepsysException;
 import org.mwc.debrief.pepys.model.db.DatabaseConnection;
 import org.mwc.debrief.pepys.model.db.SqliteDatabaseConnection;
 import org.mwc.debrief.pepys.model.db.annotation.Id;
 import org.mwc.debrief.pepys.model.db.annotation.TableName;
+import org.mwc.debrief.pepys.model.db.config.ConfigurationReader;
 import org.mwc.debrief.pepys.model.db.config.DatabaseConfiguration;
+import org.mwc.debrief.pepys.model.db.config.LoaderOption;
+import org.mwc.debrief.pepys.model.db.config.LoaderOption.LoaderType;
 
 import junit.framework.TestCase;
 
@@ -38,10 +42,11 @@ public class DatafileType implements AbstractBean {
 		public void testDatafileTypesQuery() {
 			try {
 				final DatabaseConfiguration _config = new DatabaseConfiguration();
-				DatabaseConnection.loadDatabaseConfiguration(_config,
-						DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE);
-				new SqliteDatabaseConnection().createInstance(_config);
-				final List<DatafileType> list = DatabaseConnection.getInstance().listAll(DatafileType.class, null);
+				ConfigurationReader.loadDatabaseConfiguration(_config, new LoaderOption[] {
+						new LoaderOption(LoaderType.DEFAULT_FILE, DatabaseConnection.DEFAULT_SQLITE_TEST_DATABASE_FILE) });
+				final SqliteDatabaseConnection sqlite = new SqliteDatabaseConnection();
+				sqlite.initializeInstance(_config);
+				final List<DatafileType> list = sqlite.listAll(DatafileType.class, null);
 
 				assertTrue("Datafiletypes - database entries", list.size() == 7);
 
@@ -59,7 +64,7 @@ public class DatafileType implements AbstractBean {
 
 			} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
 					| IllegalArgumentException | InvocationTargetException | PropertyVetoException | SQLException
-					| ClassNotFoundException | IOException e) {
+					| ClassNotFoundException | IOException | PepsysException e) {
 				e.printStackTrace();
 				fail("Couldn't connect to database or query error");
 			}
