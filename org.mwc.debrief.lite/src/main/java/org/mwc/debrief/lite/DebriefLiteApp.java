@@ -84,6 +84,7 @@ import org.mwc.debrief.lite.menu.DebriefRibbon;
 import org.mwc.debrief.lite.menu.DebriefRibbonFile;
 import org.mwc.debrief.lite.menu.DebriefRibbonInsert;
 import org.mwc.debrief.lite.menu.DebriefRibbonTimeController;
+import org.mwc.debrief.lite.menu.DebriefRibbonView;
 import org.mwc.debrief.lite.menu.MenuUtils;
 import org.mwc.debrief.lite.outline.OutlinePanelView;
 import org.mwc.debrief.lite.util.DoSaveAs;
@@ -635,7 +636,7 @@ public class DebriefLiteApp implements FileDropListener {
 	private boolean _plotUpdating = false;
 
 	// Maybe this should go inside GeoToolMapRenderer
-	final float initialAlpha = 0.7f;
+	public final float initialAlpha = 0.7f;
 
 	private DebriefLiteApp() throws NoninvertibleTransformException {
 		_instance = this;
@@ -1401,8 +1402,9 @@ public class DebriefLiteApp implements FileDropListener {
 		timeManager.setTime(this, null, false);
 
 		// and the time format dropdown
-		DebriefRibbonTimeController.resetDateFormat();
-
+		DebriefRibbonView.resetToggleMenuStates();
+		DebriefRibbonTimeController.resetToggleMenuStates();
+		theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
 		// stop the timer
 		if (_stepControl.isPlaying()) {
 			_stepControl.startStepping(false);
@@ -1418,6 +1420,7 @@ public class DebriefLiteApp implements FileDropListener {
 		// put some backdrop data back in
 		loadBackdropdata(_theLayers);
 		resetUndoBuffer();
+		
 		graphPanelView.reset();
 		graphPanel.setCollapsed(true);
 	}

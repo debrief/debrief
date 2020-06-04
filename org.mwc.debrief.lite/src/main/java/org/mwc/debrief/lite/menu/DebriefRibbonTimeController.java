@@ -118,11 +118,6 @@ import MWC.TacticalData.temporal.PlotOperations;
 import MWC.TacticalData.temporal.TimeManager;
 
 public class DebriefRibbonTimeController {
-	/**
-	 * Class that binds the Time Filter and Time Label. It is used to update the
-	 * date formatting.
-	 *
-	 */
 	protected static class DateFormatBinder {
 		protected LiteStepControl stepControl;
 		// protected JLabel minimumValue;
@@ -287,6 +282,28 @@ public class DebriefRibbonTimeController {
 		}
 	}
 
+	/**
+	 * Class that binds the Time Filter and Time Label. It is used to update the
+	 * date formatting.
+	 *
+	 */
+	private static Command normalToggle;
+	final private static String tooltip_edit_snailmode_props = "Edit Snail Display Mode Properties";
+	final private static String tooltip_edit_normalmode_props = "Edit Normal Display Mode Properties";
+	final private static RichTooltip normalmode_tooltip = RichTooltip.builder().setTitle(tooltip_edit_normalmode_props)
+			.build();
+	final private static RichTooltip snailmode_tooltip = RichTooltip.builder().setTitle(tooltip_edit_snailmode_props)
+			.build();
+	final private static String props_square_highlighter = "Edit Square Highlighter Properties";
+
+	final private static String props_symbol_highlighter = "Edit Symbol Highlighter Properties";
+
+	final private static RichTooltip symbol_tooltip = RichTooltip.builder().setTitle(props_symbol_highlighter).build();
+
+	final private static RichTooltip square_tooltip = RichTooltip.builder().setTitle(props_square_highlighter).build();
+
+	private static LiteStepControl liteStepControl;
+
 	private static final String START_TEXT = "Start playing";
 
 	private static final String STOP_TEXT = "Stop playing";
@@ -320,17 +337,24 @@ public class DebriefRibbonTimeController {
 
 	private static AbstractCommandButton playButton;
 
+	private static Command square;
+
+	private static CommandButtonProjection<Command> properties;
+
+	private static CommandButtonProjection<Command> symbolProps;
+
 	protected static void addTimeControllerTab(final JRibbon ribbon, final GeoToolMapRenderer _geoMapRenderer,
 			final LiteStepControl stepControl, final TimeManager timeManager, final PlotOperations operations,
 			final Layers layers, final UndoBuffer undoBuffer, final Runnable normalPainter, final Runnable snailPainter,
 			final Runnable refresh) {
-		final JRibbonBand displayMode = createDisplayMode(normalPainter, snailPainter, stepControl, layers, undoBuffer);
+		liteStepControl = stepControl;
+		final JRibbonBand displayMode = createDisplayMode(normalPainter, snailPainter, layers, undoBuffer);
 
-		final JRibbonBand highlighter = createHighlighter(stepControl, refresh, layers, undoBuffer);
+		final JRibbonBand highlighter = createHighlighter(refresh, layers, undoBuffer);
 
-		final JRibbonBand filterToTime = createFilterToTime(stepControl, operations, timeManager);
+		final JRibbonBand filterToTime = createFilterToTime(operations, timeManager);
 
-		control = createControl(stepControl, timeManager, layers, undoBuffer, operations);
+		control = createControl(timeManager, layers, undoBuffer, operations);
 
 		final RibbonTask timeTask = new RibbonTask("Time", displayMode, highlighter, control, filterToTime);
 		ribbon.addTask(timeTask);
@@ -348,8 +372,8 @@ public class DebriefRibbonTimeController {
 		}
 	}
 
-	private static JFlowRibbonBand createControl(final LiteStepControl stepControl, final TimeManager timeManager,
-			final Layers layers, final UndoBuffer undoBuffer, final PlotOperations operations) {
+	private static JFlowRibbonBand createControl(final TimeManager timeManager, final Layers layers,
+			final UndoBuffer undoBuffer, final PlotOperations operations) {
 		final JFlowRibbonBand control = new JFlowRibbonBand("Control", null);
 
 		final JPanel controlPanel = new JPanel();
@@ -371,7 +395,7 @@ public class DebriefRibbonTimeController {
 				new CommandAction() {
 					@Override
 					public void commandActivated(final CommandActionEvent e) {
-						stepControl.doStep(false, true);
+						liteStepControl.doStep(false, true);
 					}
 				}, PresentationPriority.LOW, "Large step backwards");
 		rewindCommand.project().buildComponent().setName("rewind");
@@ -380,7 +404,7 @@ public class DebriefRibbonTimeController {
 
 					@Override
 					public void commandActivated(final CommandActionEvent e) {
-						stepControl.doStep(false, false);
+						liteStepControl.doStep(false, false);
 					}
 				}, PresentationPriority.LOW, "Small step backwards");
 		backCommand.project().buildComponent().setName("back");
@@ -389,9 +413,9 @@ public class DebriefRibbonTimeController {
 			@Override
 			public void commandActivated(final CommandActionEvent e) {
 				playButton = e.getButtonSource();
-				final boolean isPlaying = stepControl.isPlaying();
+				final boolean isPlaying = liteStepControl.isPlaying();
 
-				stepControl.startStepping(!isPlaying);
+				liteStepControl.startStepping(!isPlaying);
 
 				// now update the play button UI
 				updatePlayBtnUI(playButton, isPlaying);
@@ -414,7 +438,7 @@ public class DebriefRibbonTimeController {
 
 					@Override
 					public void commandActivated(final CommandActionEvent e) {
-						stepControl.doStep(true, false);
+						liteStepControl.doStep(true, false);
 					}
 				}, PresentationPriority.LOW, "Small step forwards");
 		forwardCommand.project().buildComponent().setName("forward");
@@ -424,7 +448,7 @@ public class DebriefRibbonTimeController {
 
 					@Override
 					public void commandActivated(final CommandActionEvent e) {
-						stepControl.doStep(true, true);
+						liteStepControl.doStep(true, true);
 					}
 				}, PresentationPriority.LOW, "Large step forwards");
 		fastForwardCommand.project().buildComponent().setName("fastforward");
@@ -444,7 +468,7 @@ public class DebriefRibbonTimeController {
 					@Override
 					public void commandActivated(final CommandActionEvent e) {
 						ToolbarOwner owner = null;
-						final ToolParent parent = stepControl.getParent();
+						final ToolParent parent = liteStepControl.getParent();
 						if (parent instanceof ToolbarOwner) {
 							owner = (ToolbarOwner) parent;
 						}
@@ -454,8 +478,8 @@ public class DebriefRibbonTimeController {
 						} else {
 							parentLayer = null;
 						}
-						final PropertiesDialog dialog = new PropertiesDialog(stepControl.getInfo(), layers, undoBuffer,
-								parent, owner, parentLayer);
+						final PropertiesDialog dialog = new PropertiesDialog(liteStepControl.getInfo(), layers,
+								undoBuffer, parent, owner, parentLayer);
 						dialog.setSize(400, 500);
 						dialog.setLocationRelativeTo(null);
 						dialog.setVisible(true);
@@ -579,7 +603,7 @@ public class DebriefRibbonTimeController {
 				timeLabelModel.setText(newText);
 			}
 		};
-		stepControl.setTimeLabel(label);
+		liteStepControl.setTimeLabel(label);
 
 		// we also need to listen to the slider
 
@@ -601,13 +625,13 @@ public class DebriefRibbonTimeController {
 			}
 
 			private void updateTimeController() {
-				stepControl.startStepping(false);
+				liteStepControl.startStepping(false);
 				boolean hasTracks = false;
 				boolean hasNarratives = false;
 				boolean hasStart = false;
 				boolean hasEnd = false;
 
-				final Enumeration<Editable> lIter = stepControl.getLayers().elements();
+				final Enumeration<Editable> lIter = liteStepControl.getLayers().elements();
 				while (lIter.hasMoreElements()) {
 					final Editable next = lIter.nextElement();
 					if (next instanceof TrackWrapper) {
@@ -658,7 +682,7 @@ public class DebriefRibbonTimeController {
 		};
 
 		// we also need to listen out for the stepper control mode changing
-		stepControl.addStepperListener(new LiteStepperListener(playCommand.project().buildComponent()) {
+		liteStepControl.addStepperListener(new LiteStepperListener(playCommand.project().buildComponent()) {
 
 			@Override
 			public void reset() {
@@ -666,9 +690,9 @@ public class DebriefRibbonTimeController {
 			}
 		});
 
-		stepControl.getLayers().addDataExtendedListener(updateTimeController);
-		stepControl.getLayers().addDataModifiedListener(updateTimeController);
-		stepControl.getLayers().addDataReformattedListener(updateTimeController);
+		liteStepControl.getLayers().addDataExtendedListener(updateTimeController);
+		liteStepControl.getLayers().addDataModifiedListener(updateTimeController);
+		liteStepControl.getLayers().addDataReformattedListener(updateTimeController);
 
 		DebriefLiteApp.getInstance().addStateListener(new PropertyChangeListener() {
 			@Override
@@ -688,52 +712,44 @@ public class DebriefRibbonTimeController {
 	}
 
 	private static JRibbonBand createDisplayMode(final Runnable normalPainter, final Runnable snailPainter,
-			final LiteStepControl stepcontrol, final Layers layers, final UndoBuffer undoBuffer) {
-		final String tooltip_edit_snailmode_props = "Edit Snail Display Mode Properties";
-		final String tooltip_edit_normalmode_props = "Edit Normal Display Mode Properties";
-		final RichTooltip normalmode_tooltip = RichTooltip.builder().setTitle(tooltip_edit_normalmode_props).build();
-		final RichTooltip snailmode_tooltip = RichTooltip.builder().setTitle(tooltip_edit_snailmode_props).build();
+			final Layers layers, final UndoBuffer undoBuffer) {
 
 		final JRibbonBand displayMode = new JRibbonBand("Display Mode", null);
 		final ArrayList<Command> commands = new ArrayList<>();
-		final CommandButtonProjection<Command> properties = MenuUtils.createCommand("Properties",
-				"icons/16/properties.png", new CommandAction() {
+		properties = MenuUtils.createCommand("Properties", "icons/16/properties.png", new CommandAction() {
 
-					@Override
-					public void commandActivated(final CommandActionEvent e) {
-						if (stepcontrol instanceof LiteStepControl) {
-							ToolbarOwner owner = null;
-							final ToolParent parent = (stepcontrol).getParent();
-							if (parent instanceof ToolbarOwner) {
-								owner = (ToolbarOwner) parent;
-							}
-							final Layer parentLayer;
-							if (parent instanceof Layer) {
-								parentLayer = (Layer) parent;
-							} else {
-								parentLayer = null;
-							}
-							final StepperListener stepper = stepcontrol.getCurrentPainter();
-							if (stepper instanceof TotePainter) {
-								final PropertiesDialog dialog = new PropertiesDialog(((TotePainter) stepper).getInfo(),
-										layers, undoBuffer, parent, owner, parentLayer);
-								dialog.setSize(400, 500);
-								dialog.setLocationRelativeTo(null);
-								dialog.setVisible(true);
-							}
-						}
-					}
-				}, null, tooltip_edit_normalmode_props);
+			@Override
+			public void commandActivated(final CommandActionEvent e) {
+				ToolbarOwner owner = null;
+				final ToolParent parent = liteStepControl.getParent();
+				if (parent instanceof ToolbarOwner) {
+					owner = (ToolbarOwner) parent;
+				}
+				final Layer parentLayer;
+				if (parent instanceof Layer) {
+					parentLayer = (Layer) parent;
+				} else {
+					parentLayer = null;
+				}
+				final StepperListener stepper = liteStepControl.getCurrentPainter();
+				if (stepper instanceof TotePainter) {
+					final PropertiesDialog dialog = new PropertiesDialog(((TotePainter) stepper).getInfo(), layers,
+							undoBuffer, parent, owner, parentLayer);
+					dialog.setSize(400, 500);
+					dialog.setLocationRelativeTo(null);
+					dialog.setVisible(true);
+				}
+			}
+		}, null, tooltip_edit_normalmode_props);
 		final CommandToggleGroupModel displayModeGroup = new CommandToggleGroupModel();
-		final Command normalToggle = MenuUtils.addCommandToggleButton("Normal", "icons/48/normal.png",
-				new CommandAction() {
+		normalToggle = MenuUtils.addCommandToggleButton("Normal", "icons/48/normal.png", new CommandAction() {
 
-					@Override
-					public void commandActivated(final CommandActionEvent e) {
-						normalPainter.run();
-						properties.getContentModel().setActionRichTooltip(normalmode_tooltip);
-					}
-				}, displayMode, PresentationPriority.TOP, true, displayModeGroup, true);
+			@Override
+			public void commandActivated(final CommandActionEvent e) {
+				normalPainter.run();
+				properties.getContentModel().setActionRichTooltip(normalmode_tooltip);
+			}
+		}, displayMode, PresentationPriority.TOP, true, displayModeGroup, true);
 
 		final Command snailToggle = MenuUtils.addCommandToggleButton("Snail", "icons/48/snail.png",
 				new CommandAction() {
@@ -751,12 +767,12 @@ public class DebriefRibbonTimeController {
 		displayMode.addRibbonCommand(properties, PresentationPriority.TOP);
 		commands.add(properties.getContentModel());
 
-		stepcontrol.getPainterManager().getInfo().addPropertyChangeListener(new PropertyChangeListener() {
+		liteStepControl.getPainterManager().getInfo().addPropertyChangeListener(new PropertyChangeListener() {
 
 			@Override
 			public void propertyChange(final PropertyChangeEvent event) {
 				if (StepControl.PROPERTY_PAINTER.equals(event.getPropertyName())) {
-					final StepperListener stepper = stepcontrol.getPainterManager().getCurrentPainterObject();
+					final StepperListener stepper = liteStepControl.getPainterManager().getCurrentPainterObject();
 
 					if (stepper instanceof SnailPainter2 && !snailToggle.isToggleSelected()) {
 						snailToggle.setToggleSelected(true);
@@ -784,15 +800,14 @@ public class DebriefRibbonTimeController {
 		return displayMode;
 	}
 
-	private static JRibbonBand createFilterToTime(final LiteStepControl stepControl, final PlotOperations operations,
-			final TimeManager timeManager) {
+	private static JRibbonBand createFilterToTime(final PlotOperations operations, final TimeManager timeManager) {
 		final JRibbonBand timePeriod = new JRibbonBand("Filter to time", null);
 
 		final Calendar start = new GregorianCalendar(1995, 11, 12);
 		final Calendar end = new GregorianCalendar(1995, 11, 12);
 		// Now we create the components for the sliders
 		timeFilterRangeModel = SliderComponentContentModel.builder().setEnabled(false).setMinimum(start).setMaximum(end)
-				.setChangeListener(new SliderListener(operations, timeManager, stepControl)).build();
+				.setChangeListener(new SliderListener(operations, timeManager, liteStepControl)).build();
 
 		final ComponentSupplier<JRibbonRangeSlider, SliderComponentContentModel, ComponentPresentationModel> timeRangeSlider = (
 				final Projection<JRibbonRangeSlider, SliderComponentContentModel, ComponentPresentationModel> projection) -> JRibbonRangeSlider::new;
@@ -807,7 +822,7 @@ public class DebriefRibbonTimeController {
 		final RibbonRangeDisplayPanelProjection rangeDisplayProjection = new RibbonRangeDisplayPanelProjection(
 				rangeDisplayModel, ComponentPresentationModel.withDefaults(), rangeLabel);
 		rangeDisplayProjection.buildComponent();
-		formatBinder.stepControl = stepControl;
+		formatBinder.stepControl = liteStepControl;
 		formatBinder.rangeDisplayModel = rangeDisplayModel;
 		formatBinder.slider = filterTimeRangeSlider;
 		formatBinder.timeManager = timeManager;
@@ -819,11 +834,11 @@ public class DebriefRibbonTimeController {
 		// rangeDisplayModel.setBackgroundColor(Color.white);
 		// tie in to the stepper
 		final SliderControls iSlider = new LiteSliderControls(filterTimeRangeSlider);
-		stepControl.setSliderControls(iSlider);
+		liteStepControl.setSliderControls(iSlider);
 
 		// listen out for time being reset
 		// we also need to listen out for the stepper control mode changing
-		stepControl.addStepperListener(new LiteStepperListener(null) {
+		liteStepControl.addStepperListener(new LiteStepperListener(null) {
 
 			@Override
 			public void reset() {
@@ -847,84 +862,72 @@ public class DebriefRibbonTimeController {
 		return timePeriod;
 	}
 
-	private static JRibbonBand createHighlighter(final LiteStepControl stepcontrol, final Runnable refresh,
-			final Layers layers, final UndoBuffer undoBuffer) {
+	private static JRibbonBand createHighlighter(final Runnable refresh, final Layers layers,
+			final UndoBuffer undoBuffer) {
 		final JRibbonBand highlighter = new JRibbonBand("Highlighter", null);
-		final String props_square_highlighter = "Edit Square Highlighter Properties";
-		final String props_symbol_highlighter = "Edit Symbol Highlighter Properties";
-		final RichTooltip symbol_tooltip = RichTooltip.builder().setTitle(props_symbol_highlighter).build();
-		final RichTooltip square_tooltip = RichTooltip.builder().setTitle(props_square_highlighter).build();
 		final ArrayList<Command> commands = new ArrayList<>();
 		final CommandToggleGroupModel highlighterGroup = new CommandToggleGroupModel();
-		final CommandButtonProjection<Command> properties = MenuUtils.createCommand("Properties",
-				"icons/16/properties.png", new CommandAction() {
-
-					@Override
-					public void commandActivated(final CommandActionEvent e) {
-						if (stepcontrol instanceof LiteStepControl) {
-							ToolbarOwner owner = null;
-							final ToolParent parent = stepcontrol.getParent();
-
-							if (parent instanceof ToolbarOwner) {
-								owner = (ToolbarOwner) parent;
-							}
-							final Layer parentLayer;
-							if (parent instanceof Layer) {
-								parentLayer = (Layer) parent;
-							} else {
-								parentLayer = null;
-							}
-							final PropertiesDialog dialog = new PropertiesDialog(
-									stepcontrol.getCurrentHighlighter().getInfo(), layers, undoBuffer, parent, owner,
-									parentLayer);
-							dialog.setSize(400, 500);
-							dialog.setLocationRelativeTo(null);
-							dialog.setVisible(true);
-						}
-					}
-				}, null, props_square_highlighter);
-		final Command square = MenuUtils.addCommandToggleButton("Square", "icons/48/square.png", new CommandAction() {
+		symbolProps = MenuUtils.createCommand("Properties", "icons/16/properties.png", new CommandAction() {
 
 			@Override
 			public void commandActivated(final CommandActionEvent e) {
-				if (stepcontrol instanceof LiteStepControl) {
-					stepcontrol.setHighlighter((stepcontrol).getRectangleHighlighter().toString());
-					properties.getContentModel().setActionRichTooltip(square_tooltip);
-					refresh.run();
+				ToolbarOwner owner = null;
+				final ToolParent parent = liteStepControl.getParent();
+
+				if (parent instanceof ToolbarOwner) {
+					owner = (ToolbarOwner) parent;
 				}
+				final Layer parentLayer;
+				if (parent instanceof Layer) {
+					parentLayer = (Layer) parent;
+				} else {
+					parentLayer = null;
+				}
+				final PropertiesDialog dialog = new PropertiesDialog(liteStepControl.getCurrentHighlighter().getInfo(),
+						layers, undoBuffer, parent, owner, parentLayer);
+				dialog.setSize(400, 500);
+				dialog.setLocationRelativeTo(null);
+				dialog.setVisible(true);
+			}
+		}, null, props_square_highlighter);
+		square = MenuUtils.addCommandToggleButton("Square", "icons/48/square.png", new CommandAction() {
+
+			@Override
+			public void commandActivated(final CommandActionEvent e) {
+				liteStepControl.setHighlighter((liteStepControl).getRectangleHighlighter().toString());
+				symbolProps.getContentModel().setActionRichTooltip(square_tooltip);
+				refresh.run();
 			}
 		}, highlighter, PresentationPriority.TOP, true, highlighterGroup, true);
 		commands.add(square);
 		final Command symbol = MenuUtils.addCommandToggleButton("Symbol", "icons/48/shape.png", new CommandAction() {
 			@Override
 			public void commandActivated(final CommandActionEvent e) {
-				if (stepcontrol instanceof LiteStepControl) {
-					stepcontrol.setHighlighter(stepcontrol.getSymbolHighlighter().toString());
-					properties.getContentModel().setActionRichTooltip(symbol_tooltip);
-					refresh.run();
-				}
+				liteStepControl.setHighlighter(liteStepControl.getSymbolHighlighter().toString());
+				symbolProps.getContentModel().setActionRichTooltip(symbol_tooltip);
+				refresh.run();
 			}
 		}, highlighter, PresentationPriority.TOP, true, highlighterGroup, false);
 		commands.add(symbol);
-		stepcontrol.getPainterManager().getInfo().addPropertyChangeListener(new PropertyChangeListener() {
+		liteStepControl.getPainterManager().getInfo().addPropertyChangeListener(new PropertyChangeListener() {
 
 			@Override
 			public void propertyChange(final PropertyChangeEvent event) {
 				if (StepControl.PROPERTY_HIGHLIGHTER.equals(event.getPropertyName())) {
-					final PlotHighlighter highlighter = stepcontrol.getCurrentHighlighter();
+					final PlotHighlighter highlighter = liteStepControl.getCurrentHighlighter();
 					if (highlighter instanceof SymbolHighlighter && !symbol.isToggleSelected()) {
 						symbol.setToggleSelected(true);
-						properties.getContentModel().setActionRichTooltip(symbol_tooltip);
+						symbolProps.getContentModel().setActionRichTooltip(symbol_tooltip);
 					} else if (highlighter instanceof RectangleHighlight && !square.isToggleSelected()) {
 						square.setToggleSelected(true);
-						properties.getContentModel().setActionRichTooltip(square_tooltip);
+						symbolProps.getContentModel().setActionRichTooltip(square_tooltip);
 					}
 				}
 			}
 		});
 
-		highlighter.addRibbonCommand(properties, PresentationPriority.TOP);
-		commands.add(properties.getContentModel());
+		highlighter.addRibbonCommand(symbolProps, PresentationPriority.TOP);
+		commands.add(symbolProps.getContentModel());
 
 		highlighter.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(highlighter));
 
@@ -972,6 +975,26 @@ public class DebriefRibbonTimeController {
 
 	}
 
+	public static void resetToggleMenuStates() {
+		resetDateFormat();
+		if (normalToggle != null) {
+			normalToggle.setToggleSelected(true);
+			normalToggle.getAction().commandActivated(null);
+			liteStepControl.getCurrentPainter().reset();
+			properties.getContentModel().setActionRichTooltip(normalmode_tooltip);
+
+		}
+		if (square != null) {
+			square.setToggleSelected(true);
+			square.getAction().commandActivated(null);
+			symbolProps.getContentModel().setActionRichTooltip(symbol_tooltip);
+		}
+		if (timeFilterRangeModel != null) {
+			timeFilterRangeModel.setMinimum(0);
+			timeFilterRangeModel.setMaximum(1);
+		}
+	}
+
 	/**
 	 * convenience class to bulk enable/disable controls in a panel
 	 *
@@ -984,10 +1007,6 @@ public class DebriefRibbonTimeController {
 		timeFilterRangeModel.setEnabled(enabled);
 		formatCommandButton.getContentModel().setActionEnabled(enabled);
 
-	}
-
-	private static void setTopCommandsEnabled(final List<Command> commands, final boolean enabled) {
-		commands.forEach(command -> command.setActionEnabled(enabled));
 	}
 
 	public static void updatePlayBtnUI(final AbstractCommandButton playCommandButton, final boolean isPlaying) {

@@ -28,10 +28,10 @@ import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JSlider;
 import javax.swing.event.ChangeListener;
 
 import org.geotools.swing.JMapPane;
+import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.custom.JRibbonLabel;
 import org.mwc.debrief.lite.custom.JRibbonSlider;
 import org.mwc.debrief.lite.custom.LabelComponentContentModel;
@@ -196,6 +196,11 @@ public class DebriefRibbonView {
 
 	}
 
+	private static Command zoominButton;
+	private static AdvancedZoomInAction zoomInAction;
+	private static JRadioButtonMenuItem[] unitRadioButton = new JRadioButtonMenuItem[WorldDistance.UnitLabels.length];
+	private static JRibbonSlider transparencySlider;
+
 	private static ComponentProjection<JRibbonSlider, SliderComponentContentModel> addAlphaSlider(
 			final ChangeListener alphaListener, final float alpha) {
 
@@ -207,11 +212,11 @@ public class DebriefRibbonView {
 				final Projection<JRibbonSlider, SliderComponentContentModel, ComponentPresentationModel> projection) -> JRibbonSlider::new;
 		final ComponentProjection<JRibbonSlider, SliderComponentContentModel> projection = new RibbonSliderProjection(
 				sliderModel, ComponentPresentationModel.withDefaults(), jribbonSlider);
-		final JSlider slider = projection.buildComponent();
-		slider.setToolTipText("Modify transparency");
-		slider.setBackground(Color.DARK_GRAY);
-		slider.setName("transparencyslider");
-		slider.setValue((int) (alpha * 100f));
+		transparencySlider = projection.buildComponent();
+		transparencySlider.setToolTipText("Modify transparency");
+		transparencySlider.setBackground(Color.DARK_GRAY);
+		transparencySlider.setName("transparencyslider");
+		transparencySlider.setValue((int) (alpha * 100f));
 		return projection;
 	}
 
@@ -265,46 +270,8 @@ public class DebriefRibbonView {
 		viewBand.startGroup();
 		MenuUtils.addCommandToggleButton("Pan", "icons/24/hand.png", new PanCommandAction(mapPane), viewBand,
 				PresentationPriority.TOP, true, mouseModeGroup, false);
-		final AdvancedZoomInAction zoomInAction = new AdvancedZoomInAction(mapPane);
-		// MenuUtils.addCommandToggleButton("Pan", "icons/24/hand.png", new PanAction(
-		// mapPane)
-		// {
-		//
-		// /**
-		// *
-		// */
-		// private static final long serialVersionUID = 1072919666918011233L;
-		//
-		// @Override
-		// public void actionPerformed(final ActionEvent ev)
-		// {
-		// getMapPane().setCursorTool(new PanTool()
-		// {
-		//
-		// @Override
-		// public void onMouseDragged(final MapMouseEvent ev)
-		// {
-		// if (ev.getButton() != MouseEvent.BUTTON3)
-		// {
-		// super.onMouseDragged(ev);
-		// }
-		// }
-		//
-		// @Override
-		// public void onMousePressed(final MapMouseEvent ev)
-		// {
-		//
-		// if (ev.getButton() != MouseEvent.BUTTON3)
-		// {
-		// super.onMousePressed(ev);
-		// }
-		// }
-		// });
-		// }
-		//
-		// }, viewBand, RibbonElementPriority.TOP, true, mouseModeGroup, false);
-		// final ZoomInAction zoomInAction = new AdvancedZoomInAction(mapPane);
-		MenuUtils.addCommandToggleButton("Zoom In", "icons/24/zoomin.png", zoomInAction, viewBand,
+		zoomInAction = new AdvancedZoomInAction(mapPane);
+		zoominButton = MenuUtils.addCommandToggleButton("Zoom In", "icons/24/zoomin.png", zoomInAction, viewBand,
 				PresentationPriority.TOP, true, mouseModeGroup, true);
 		final RangeBearingAction rangeAction = new RangeBearingAction(mapPane, false, statusBar, transform);
 
@@ -321,13 +288,13 @@ public class DebriefRibbonView {
 				geoMapRenderer.getMap().repaint();
 			}
 		};
-
+		
 		for (int i = 0; i < WorldDistance.UnitLabels.length; i++) {
-			final JRadioButtonMenuItem unitRadioButton = new JRadioButtonMenuItem(WorldDistance.UnitLabels[i]);
-			unitRadioButton.setSelected(RangeBearingTool.getBearingUnit() == i);
-			unitRadioButton.addActionListener(changeUnits);
-			menu.add(unitRadioButton);
-			unitsGroup.add(unitRadioButton);
+			unitRadioButton[i] = new JRadioButtonMenuItem(WorldDistance.UnitLabels[i]);
+			unitRadioButton[i].setSelected(RangeBearingTool.getBearingUnit() == i);
+			unitRadioButton[i].addActionListener(changeUnits);
+			menu.add(unitRadioButton[i]);
+			unitsGroup.add(unitRadioButton[i]);
 		}
 
 		ImageWrapperResizableIcon imageIcon = null;
@@ -366,5 +333,19 @@ public class DebriefRibbonView {
 
 		viewBand.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(viewBand));
 		return viewBand;
+	}
+
+	public static void resetToggleMenuStates() {
+		if(zoominButton!=null) {
+			zoominButton.setToggleSelected(true);
+			zoomInAction.actionPerformed(null);
+		}
+		if(unitRadioButton.length>0) {
+			unitRadioButton[1].setSelected(true);
+		}
+		if(transparencySlider!=null) {
+			transparencySlider.setValue((int)(DebriefLiteApp.getInstance().initialAlpha*100f));
+		}
+		
 	}
 }
