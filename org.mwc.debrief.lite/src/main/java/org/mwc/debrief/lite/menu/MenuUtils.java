@@ -29,7 +29,6 @@ import org.mwc.debrief.lite.util.ResizableIconFactory;
 import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandButtonPresentationState;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
-import org.pushingpixels.flamingo.api.common.JCommandToggleButton;
 import org.pushingpixels.flamingo.api.common.RichTooltip;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.common.model.Command;
@@ -116,17 +115,17 @@ public class MenuUtils {
 		return projectionModel;
 	}
 
-	public static JCommandToggleButton addCommandToggleButton(final String commandName, final String imagePath,
-			final CommandAction actionToAdd, final CommandButtonPresentationState priority, final String tooltip) {
-		final CommandButtonProjection<Command> projectionModel = createCommand(commandName, imagePath, actionToAdd,
-				null, tooltip);
-
-		final JCommandToggleButton commandButton = new JCommandToggleButton(projectionModel);
-		commandButton.setName(commandName);
-		commandButton.setPresentationState(priority);
-		return commandButton;
-	}
-
+	/*
+	 * public static JCommandToggleButton addCommandToggleButton(final String
+	 * commandName, final String imagePath, final CommandAction actionToAdd, final
+	 * CommandButtonPresentationState priority, final String tooltip) { final
+	 * CommandButtonProjection<Command> projectionModel = createCommand(commandName,
+	 * imagePath, actionToAdd, null, tooltip);
+	 * 
+	 * final JCommandToggleButton commandButton = new
+	 * JCommandToggleButton(projectionModel); commandButton.setName(commandName);
+	 * commandButton.setPresentationState(priority); return commandButton; }
+	 */
 	public static Command addCommandToggleButton(final String commandName, final String imagePath,
 			final CommandAction actionToAdd, final JRibbonBand mapBand, final PresentationPriority priority,
 			final boolean isToggle, final CommandToggleGroupModel group, final boolean toggleSelected) {

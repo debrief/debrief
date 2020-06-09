@@ -19,7 +19,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 
-import org.pushingpixels.neon.icon.ResizableIcon;
+import org.pushingpixels.neon.api.icon.ResizableIcon;
+
 
 /**
  * @author Ayesha
