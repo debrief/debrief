@@ -187,11 +187,11 @@ public class TestMenus extends BaseTestCase
     assertNotNull(newButton.getPopupCallback().getPopupPanel(newButton));
     JPopupPanel panel = (JPopupPanel)newButton.getPopupCallback().getPopupPanel(newButton);
     assertEquals(panel.getComponentCount(),1);
-//    JCommandMenuButton saveButton = (JCommandMenuButton)TestUtils.getChildNamed(panel, "save");
-//    assertEquals("Save",saveButton.getText());
-//    JCommandMenuButton saveAsButton = (JCommandMenuButton)TestUtils.getChildNamed(panel, "saveas");
-//    assertEquals("Save As",saveAsButton.getText());
-//    
+    JCommandButton saveButton = (JCommandButton)TestUtils.getChildNamed(panel, "save");
+    assertEquals("Save",saveButton.getText());
+    JCommandButton saveAsButton = (JCommandButton)TestUtils.getChildNamed(panel, "saveas");
+    assertEquals("Save As",saveAsButton.getText());
+    
     @SuppressWarnings("unchecked")
     JScrollablePanel<JCommandButton> scrollPanel = (JScrollablePanel<JCommandButton>)panel.getComponent(0);
     //3 as there is a panel to which the command buttons are added.
