@@ -146,15 +146,15 @@ public class TestMenus extends BaseTestCase
       if(!item.isEmpty())
       {
         if(isToggleButton) {
-//          assertTrue(liteBand.getComponent(i) instanceof JCommandToggleButton);
-//          JCommandToggleButton newButton = ((JCommandToggleButton)liteBand.getComponent(i));
-//          assertTrue(newButton.getText().equals(item));
-//          if(Arrays.asList(disabledButtons).contains(newButton.getText())) {
-//            assertFalse(newButton.isEnabled());
-//          }
-//          else {
-//            assertTrue(newButton.isEnabled());
-//          }
+          assertTrue(liteBand.getComponent(i) instanceof JCommandButton);
+          JCommandButton newButton = ((JCommandButton)liteBand.getComponent(i));
+          assertTrue(newButton.getText().equals(item));
+          if(Arrays.asList(disabledButtons).contains(newButton.getText())) {
+            assertFalse(newButton.isEnabled());
+          }
+          else {
+            assertTrue(newButton.isEnabled());
+          }
         }
         else {
           assertTrue(liteBand.getComponent(i) instanceof JCommandButton);
