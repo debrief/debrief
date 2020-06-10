@@ -172,6 +172,7 @@ public class DebriefRibbonView {
 		viewBand.addRibbonCommand(
 				Command.builder().setText("Rng/Brg").setIconFactory(ResizableIconFactory.factory(imageIcon))
 						.setAction(rangeAction)
+						.setToggle()
 						.setActionRichTooltip(RichTooltip.builder().setTitle("Select Range Bearing").build())
 						.setSecondaryContentModel(popupMenuContentModel).build().project(CommandButtonPresentationModel
 								.builder().setPopupKeyTip("X").setTextClickAction().build()),
