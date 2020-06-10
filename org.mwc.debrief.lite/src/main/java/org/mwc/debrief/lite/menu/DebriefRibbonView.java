@@ -16,18 +16,11 @@
 package org.mwc.debrief.lite.menu;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Image;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
-import javax.swing.JPopupMenu;
-import javax.swing.JRadioButtonMenuItem;
 import javax.swing.event.ChangeListener;
 
 import org.geotools.swing.JMapPane;
@@ -41,7 +34,6 @@ import org.mwc.debrief.lite.custom.SliderComponentContentModel;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.gui.ZoomOut;
-import org.mwc.debrief.lite.gui.custom.SubstanceCommandToggleWithMenuButtonUI;
 import org.mwc.debrief.lite.map.AdvancedZoomInAction;
 import org.mwc.debrief.lite.map.DragElementAction;
 import org.mwc.debrief.lite.map.DragElementTool;
@@ -52,17 +44,15 @@ import org.mwc.debrief.lite.map.RangeBearingTool;
 import org.mwc.debrief.lite.util.ResizableIconFactory;
 import org.mwc.debrief.lite.view.actions.PanCommandAction;
 import org.opengis.referencing.operation.MathTransform;
-import org.pushingpixels.flamingo.api.common.AbstractCommandButton;
-import org.pushingpixels.flamingo.api.common.JCommandButton;
-import org.pushingpixels.flamingo.api.common.JCommandMenuButton;
-import org.pushingpixels.flamingo.api.common.JCommandToggleButton;
-import org.pushingpixels.flamingo.api.common.JCommandToggleMenuButton;
+import org.pushingpixels.flamingo.api.common.CommandAction;
+import org.pushingpixels.flamingo.api.common.CommandActionEvent;
+import org.pushingpixels.flamingo.api.common.RichTooltip;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.common.model.Command;
-import org.pushingpixels.flamingo.api.common.model.Command.Builder;
 import org.pushingpixels.flamingo.api.common.model.CommandButtonPresentationModel;
+import org.pushingpixels.flamingo.api.common.model.CommandGroup;
+import org.pushingpixels.flamingo.api.common.model.CommandMenuContentModel;
 import org.pushingpixels.flamingo.api.common.model.CommandToggleGroupModel;
-import org.pushingpixels.flamingo.api.common.popup.model.CommandPopupMenuPresentationModel;
 import org.pushingpixels.flamingo.api.common.projection.CommandButtonProjection;
 import org.pushingpixels.flamingo.api.common.projection.Projection;
 import org.pushingpixels.flamingo.api.common.projection.Projection.ComponentSupplier;
@@ -78,127 +68,9 @@ import MWC.GUI.Layers;
 import MWC.GenericData.WorldDistance;
 
 public class DebriefRibbonView {
-	public static class CustomBuilder extends Builder {
-		private JPopupMenu popMenu;
-
-		public CustomBuilder() {
-
-		}
-
-		@Override
-		public Command build() {
-			final Command command = new CustomCommand();
-			configureBaseCommand(command);
-
-			return command;
-		}
-
-		@Override
-		protected void configureBaseCommand(final Command command) {
-			super.configureBaseCommand(command);
-			if (command instanceof CustomCommand) {
-				((CustomCommand) command).setPopMenu(this.popMenu);
-			}
-		}
-
-		public Builder setPopMenu(final JPopupMenu popMenu) {
-			this.popMenu = popMenu;
-			return this;
-		}
-
-	}
-
-	public static class CustomCommand extends Command {
-		private JPopupMenu popMenu;
-
-		public CustomCommand() {
-
-		}
-
-		public JPopupMenu getPopMenu() {
-			return popMenu;
-		}
-
-		@Override
-		public CommandButtonProjection<Command> project(final CommandButtonPresentationModel commandPresentation) {
-			return new CustomCommandButtonProjection(this, commandPresentation);
-		}
-
-		public void setPopMenu(final JPopupMenu popMenu) {
-			this.popMenu = popMenu;
-		}
-	}
-
-	public static class CustomCommandButtonProjection extends CommandButtonProjection {
-
-		private static <M extends Command> ComponentSupplier<AbstractCommandButton, M, CommandButtonPresentationModel> getDefaultSupplier() {
-			return (final Projection<AbstractCommandButton, M, CommandButtonPresentationModel> projection) -> {
-				if (projection.getPresentationModel().isMenu()) {
-					return projection.getContentModel().isToggle() ? JCommandToggleMenuButton::new
-							: JCommandMenuButton::new;
-				} else {
-					return projection.getContentModel().isToggle() ? JCommandToggleWithMenuButton::new
-							: JCommandButton::new;
-				}
-			};
-		}
-
-		public CustomCommandButtonProjection(final Command command,
-				final CommandButtonPresentationModel commandPresentation) {
-			super(command, commandPresentation, getDefaultSupplier());
-		}
-	}
-
-	public static class JCommandToggleWithMenuButton extends JCommandToggleButton {
-
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = -4029977054020995335L;
-
-		public JCommandToggleWithMenuButton(
-				final Projection<AbstractCommandButton, ? extends Command, CommandButtonPresentationModel> projection) {
-			super(projection);
-
-			addMouseListener(new MouseAdapter() {
-
-				@Override
-				public void mouseClicked(final MouseEvent e) {
-					if (!SubstanceCommandToggleWithMenuButtonUI.MENU_INDICATOR_POLYGON.contains(e.getPoint())) {
-						super.mouseClicked(e);
-					} else {
-						final JPopupMenu popMenu = getPopupMenu();
-
-						if (popMenu != null) {
-							final Component component = (Component) e.getSource();
-							popMenu.show(component, 0, 0);
-
-							final Point p = component.getLocationOnScreen();
-							popMenu.setLocation(p.x, p.y + component.getHeight());
-						}
-					}
-				}
-
-			});
-		}
-
-		public JPopupMenu getPopupMenu() {
-			if (command instanceof CustomCommand) {
-				return ((CustomCommand) command).getPopMenu();
-			}
-			return null;
-		}
-
-		@Override
-		public void updateUI() {
-			this.setUI(SubstanceCommandToggleWithMenuButtonUI.createUI(this));
-		}
-
-	}
-
 	private static Command zoominButton;
 	private static AdvancedZoomInAction zoomInAction;
-	private static JRadioButtonMenuItem[] unitRadioButton = new JRadioButtonMenuItem[WorldDistance.UnitLabels.length];
+	final static List<Command> rangeBearingUnitPopupCommands = new ArrayList<>();
 	private static JRibbonSlider transparencySlider;
 
 	private static ComponentProjection<JRibbonSlider, SliderComponentContentModel> addAlphaSlider(
@@ -238,8 +110,6 @@ public class DebriefRibbonView {
 				final Projection<JRibbonLabel, LabelComponentContentModel, ComponentPresentationModel> projection2) -> JRibbonLabel::new;
 		final RibbonLabelProjection timeLabelProjection = new RibbonLabelProjection(timeLabelModel,
 				ComponentPresentationModel.withDefaults(), jTimeLabel);
-		// final JLabel timeLabel = timeLabelProjection.buildComponent();
-		// timeLabel.setPreferredSize(new Dimension(40,18));
 		layersMenu.addRibbonComponent(timeLabelProjection);
 		final RibbonTask viewTask = new RibbonTask("View", mouseMode, mapCommands, layersMenu);
 		ribbon.addTask(viewTask);
@@ -274,50 +144,45 @@ public class DebriefRibbonView {
 		zoominButton = MenuUtils.addCommandToggleButton("Zoom In", "icons/24/zoomin.png", zoomInAction, viewBand,
 				PresentationPriority.TOP, true, mouseModeGroup, true);
 		final RangeBearingAction rangeAction = new RangeBearingAction(mapPane, false, statusBar, transform);
-
-		final JPopupMenu menu = new JPopupMenu();
-		// ButtonGroup for radio buttons
-		final ButtonGroup unitsGroup = new ButtonGroup();
-
-		final ActionListener changeUnits = new ActionListener() {
-
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				final String unit = e.getActionCommand();
-				RangeBearingTool.setBearingUnit(WorldDistance.getUnitIndexFor(unit));
-				geoMapRenderer.getMap().repaint();
-			}
-		};
 		
-		for (int i = 0; i < WorldDistance.UnitLabels.length; i++) {
-			unitRadioButton[i] = new JRadioButtonMenuItem(WorldDistance.UnitLabels[i]);
-			unitRadioButton[i].setSelected(RangeBearingTool.getBearingUnit() == i);
-			unitRadioButton[i].addActionListener(changeUnits);
-			menu.add(unitRadioButton[i]);
-			unitsGroup.add(unitRadioButton[i]);
-		}
-
+		
 		ImageWrapperResizableIcon imageIcon = null;
 		final Image zoominImage = MenuUtils.createImage("icons/24/rng_brg.png");
 		imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, MenuUtils.ICON_SIZE_16);
+		for (int i = 0; i < WorldDistance.UnitLabels.length; i++) {
+			rangeBearingUnitPopupCommands.add(Command.builder().setText(WorldDistance.UnitLabels[i]).setToggle()
+					.build());
+			rangeBearingUnitPopupCommands.get(i).setToggleSelected(RangeBearingTool.getBearingUnit() == i);
+		}
 
-		// final Command.Builder builder = Command.builder()
-		final CustomBuilder builder = new CustomBuilder();
-		builder.setPopMenu(menu).setText("Rng/Brg").setIconFactory(ResizableIconFactory.factory(imageIcon))
-				.setAction(rangeAction);
-		// .setTitleClickAction();
-
-		builder.setToggle();
-		builder.setToggleSelected(false);
-		builder.inToggleGroup(mouseModeGroup);
-		final Command command = builder.build();
-		final CommandButtonProjection<Command> projectionModel = command
-				.project(CommandButtonPresentationModel.builder().setActionKeyTip("NA")
-						// .setPopupCallback(popupCallback)
-						.setPopupMenuPresentationModel(
-								CommandPopupMenuPresentationModel.builder().setMaxVisibleMenuCommands(4).build())
-						.build());
-		viewBand.addRibbonCommand(projectionModel, PresentationPriority.TOP);
+		CommandMenuContentModel popupMenuContentModel = new CommandMenuContentModel(
+				new CommandGroup(rangeBearingUnitPopupCommands));
+		CommandButtonProjection<Command> rangeBearingCommand = 
+				Command.builder().setText("Rng/Brg").setIconFactory(ResizableIconFactory.factory(imageIcon))
+						.setAction(rangeAction)
+						.setToggle().inToggleGroup(mouseModeGroup)
+						.setActionRichTooltip(RichTooltip.builder().setTitle("Select Range Bearing").build())
+						.setSecondaryContentModel(popupMenuContentModel).build().project(CommandButtonPresentationModel
+								.builder().setPopupKeyTip("X").setTextClickAction().build());
+		final CommandAction changeUnits = new CommandAction() {
+			
+			@Override
+			public void commandActivated(CommandActionEvent e) {
+				final String unit = e.getCommand().getText();
+				RangeBearingTool.setBearingUnit(WorldDistance.getUnitIndexFor(unit));
+				geoMapRenderer.getMap().repaint();
+				setSelectedBearingUnit(WorldDistance.getUnitIndexFor(unit));
+				rangeBearingCommand.getContentModel().setToggleSelected(true);
+				rangeAction.actionPerformed(null);
+				
+				
+			}
+		};
+		rangeBearingUnitPopupCommands.forEach((c)->{
+			c.setAction(changeUnits);
+		});
+		
+		viewBand.addRibbonCommand(rangeBearingCommand,PresentationPriority.TOP);
 
 		final DragElementAction dragWholeFeatureInAction = new DragElementAction(mapPane,
 				new DragWholeFeatureElementTool(layers, projection, mapPane));
@@ -336,16 +201,25 @@ public class DebriefRibbonView {
 	}
 
 	public static void resetToggleMenuStates() {
-		if(zoominButton!=null) {
+		if (zoominButton != null) {
 			zoominButton.setToggleSelected(true);
 			zoomInAction.actionPerformed(null);
 		}
-		if(unitRadioButton.length>0) {
-			unitRadioButton[1].setSelected(true);
+		if (!rangeBearingUnitPopupCommands.isEmpty()) {
+			setSelectedBearingUnit(WorldDistance.YARDS);
 		}
-		if(transparencySlider!=null) {
-			transparencySlider.setValue((int)(DebriefLiteApp.getInstance().initialAlpha*100f));
+		if (transparencySlider != null) {
+			transparencySlider.setValue((int) (DebriefLiteApp.getInstance().initialAlpha * 100f));
 		}
+
+	}
+
+	private static void setSelectedBearingUnit(int i) {
+		final String unit = WorldDistance.getLabelFor(i);
+		rangeBearingUnitPopupCommands.forEach((c)->{
+			boolean var = (c.getText().equals(unit))?true:false;
+			c.setToggleSelected(var);
+		});
 		
 	}
 }
