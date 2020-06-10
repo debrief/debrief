@@ -145,27 +145,15 @@ public class DebriefRibbonView {
 				PresentationPriority.TOP, true, mouseModeGroup, true);
 		final RangeBearingAction rangeAction = new RangeBearingAction(mapPane, false, statusBar, transform);
 		
-		final CommandAction changeUnits = new CommandAction() {
-			
-			@Override
-			public void commandActivated(CommandActionEvent e) {
-				final String unit = e.getCommand().getText();
-				RangeBearingTool.setBearingUnit(WorldDistance.getUnitIndexFor(unit));
-				geoMapRenderer.getMap().repaint();
-				setSelectedBearingUnit(WorldDistance.getUnitIndexFor(unit));
-				
-			}
-		};
+		
 		ImageWrapperResizableIcon imageIcon = null;
 		final Image zoominImage = MenuUtils.createImage("icons/24/rng_brg.png");
 		imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, MenuUtils.ICON_SIZE_16);
 		for (int i = 0; i < WorldDistance.UnitLabels.length; i++) {
 			rangeBearingUnitPopupCommands.add(Command.builder().setText(WorldDistance.UnitLabels[i]).setToggle()
-					.setAction(changeUnits).build());
+					.build());
 			rangeBearingUnitPopupCommands.get(i).setToggleSelected(RangeBearingTool.getBearingUnit() == i);
 		}
-
-		
 
 		CommandMenuContentModel popupMenuContentModel = new CommandMenuContentModel(
 				new CommandGroup(rangeBearingUnitPopupCommands));
@@ -176,6 +164,24 @@ public class DebriefRibbonView {
 						.setActionRichTooltip(RichTooltip.builder().setTitle("Select Range Bearing").build())
 						.setSecondaryContentModel(popupMenuContentModel).build().project(CommandButtonPresentationModel
 								.builder().setPopupKeyTip("X").setTextClickAction().build());
+		final CommandAction changeUnits = new CommandAction() {
+			
+			@Override
+			public void commandActivated(CommandActionEvent e) {
+				final String unit = e.getCommand().getText();
+				RangeBearingTool.setBearingUnit(WorldDistance.getUnitIndexFor(unit));
+				geoMapRenderer.getMap().repaint();
+				setSelectedBearingUnit(WorldDistance.getUnitIndexFor(unit));
+				rangeBearingCommand.getContentModel().setToggleSelected(true);
+				rangeAction.actionPerformed(null);
+				
+				
+			}
+		};
+		rangeBearingUnitPopupCommands.forEach((c)->{
+			c.setAction(changeUnits);
+		});
+		
 		viewBand.addRibbonCommand(rangeBearingCommand,PresentationPriority.TOP);
 
 		final DragElementAction dragWholeFeatureInAction = new DragElementAction(mapPane,
