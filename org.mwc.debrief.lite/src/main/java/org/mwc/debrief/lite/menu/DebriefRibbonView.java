@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JLabel;
-import javax.swing.JRadioButtonMenuItem;
 import javax.swing.event.ChangeListener;
 
 import org.geotools.swing.JMapPane;
@@ -40,6 +39,7 @@ import org.mwc.debrief.lite.map.DragElementAction;
 import org.mwc.debrief.lite.map.DragElementTool;
 import org.mwc.debrief.lite.map.DragWholeFeatureElementTool;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
+import org.mwc.debrief.lite.map.RangeBearingAction;
 import org.mwc.debrief.lite.map.RangeBearingTool;
 import org.mwc.debrief.lite.util.ResizableIconFactory;
 import org.mwc.debrief.lite.view.actions.PanCommandAction;
@@ -142,6 +142,7 @@ public class DebriefRibbonView {
 		zoomInAction = new AdvancedZoomInAction(mapPane);
 		zoominButton = MenuUtils.addCommandToggleButton("Zoom In", "icons/24/zoomin.png", zoomInAction, viewBand,
 				PresentationPriority.TOP, true, mouseModeGroup, true);
+		final RangeBearingAction rangeAction = new RangeBearingAction(mapPane, false, statusBar, transform);
 		
 		final CommandAction changeUnits = new CommandAction() {
 			
@@ -170,7 +171,7 @@ public class DebriefRibbonView {
 
 		viewBand.addRibbonCommand(
 				Command.builder().setText("Rng/Brg").setIconFactory(ResizableIconFactory.factory(imageIcon))
-						.setAction((CommandActionEvent e) -> System.out.println("Cut!"))
+						.setAction(rangeAction)
 						.setActionRichTooltip(RichTooltip.builder().setTitle("Select Range Bearing").build())
 						.setSecondaryContentModel(popupMenuContentModel).build().project(CommandButtonPresentationModel
 								.builder().setPopupKeyTip("X").setTextClickAction().build()),
