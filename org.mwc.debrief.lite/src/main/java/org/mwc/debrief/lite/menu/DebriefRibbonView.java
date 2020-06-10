@@ -53,6 +53,7 @@ import org.pushingpixels.flamingo.api.common.model.CommandButtonPresentationMode
 import org.pushingpixels.flamingo.api.common.model.CommandGroup;
 import org.pushingpixels.flamingo.api.common.model.CommandMenuContentModel;
 import org.pushingpixels.flamingo.api.common.model.CommandToggleGroupModel;
+import org.pushingpixels.flamingo.api.common.projection.CommandButtonProjection;
 import org.pushingpixels.flamingo.api.common.projection.Projection;
 import org.pushingpixels.flamingo.api.common.projection.Projection.ComponentSupplier;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
@@ -168,15 +169,14 @@ public class DebriefRibbonView {
 
 		CommandMenuContentModel popupMenuContentModel = new CommandMenuContentModel(
 				new CommandGroup(rangeBearingUnitPopupCommands));
-
-		viewBand.addRibbonCommand(
+		CommandButtonProjection<Command> rangeBearingCommand = 
 				Command.builder().setText("Rng/Brg").setIconFactory(ResizableIconFactory.factory(imageIcon))
 						.setAction(rangeAction)
-						.setToggle()
+						.setToggle().inToggleGroup(mouseModeGroup)
 						.setActionRichTooltip(RichTooltip.builder().setTitle("Select Range Bearing").build())
 						.setSecondaryContentModel(popupMenuContentModel).build().project(CommandButtonPresentationModel
-								.builder().setPopupKeyTip("X").setTextClickAction().build()),
-				PresentationPriority.TOP);
+								.builder().setPopupKeyTip("X").setTextClickAction().build());
+		viewBand.addRibbonCommand(rangeBearingCommand,PresentationPriority.TOP);
 
 		final DragElementAction dragWholeFeatureInAction = new DragElementAction(mapPane,
 				new DragWholeFeatureElementTool(layers, projection, mapPane));
