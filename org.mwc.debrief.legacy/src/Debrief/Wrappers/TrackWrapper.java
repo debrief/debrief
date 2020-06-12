@@ -451,7 +451,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 
 		final String failedMsg = checkOverlappingLegs(target, subjects);
 		if (failedMsg != null) {
-			MessageProvider.Base.show("Merge tracks", failedMsg, MessageProvider.ERROR);
+			MessageProvider.Base.show("Group Tracks", failedMsg, MessageProvider.ERROR);
 			return;
 		}
 
@@ -594,7 +594,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 					if (overlappedLegs.length() > 0) {
 						overlappedLegs.setLength(overlappedLegs.length() - MESSAGE_JOINER.length());
 					}
-					return "Message: Cannot group tracks. The following legs from \"" + secondaryOverlappedTrack
+					return "Cannot group tracks. The following legs from \"" + secondaryOverlappedTrack
 							+ "\" overlap with legs in \"" + primaryOverlappedTrack + "\":\n"
 							+ overlappedLegs.toString().trim();
 				}
