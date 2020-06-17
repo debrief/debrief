@@ -65,6 +65,7 @@ import org.pushingpixels.flamingo.api.ribbon.synapse.projection.ComponentProject
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.Layers;
+import MWC.GUI.ToolParent;
 import MWC.GenericData.WorldDistance;
 
 public class DebriefRibbonView {
@@ -94,9 +95,9 @@ public class DebriefRibbonView {
 
 	protected static void addViewTab(final JRibbon ribbon, final GeoToolMapRenderer geoMapRenderer, final Layers layers,
 			final JLabel statusBar, final GeoToolMapProjection projection, final MathTransform transform,
-			final ChangeListener alphaListener, final float alpha) {
-		final JRibbonBand mouseMode = createMouseModes(geoMapRenderer, statusBar, layers, projection, transform);
-		final JRibbonBand mapCommands = createMapCommands(geoMapRenderer, layers, projection);
+			final ChangeListener alphaListener, final float alpha,final ToolParent toolParent) {
+		final JRibbonBand mouseMode = createMouseModes(geoMapRenderer, statusBar, layers, projection, transform,toolParent);
+		final JRibbonBand mapCommands = createMapCommands(geoMapRenderer, layers, projection,toolParent);
 
 		// and the slider
 		final JRibbonBand layersMenu = new JRibbonBand("Background", null);
@@ -116,13 +117,14 @@ public class DebriefRibbonView {
 	}
 
 	private static JRibbonBand createMapCommands(final GeoToolMapRenderer geoMapRenderer, final Layers layers,
-			final PlainProjection projection) {
+			final PlainProjection projection,ToolParent parent) {
 		final JMapPane mapPane = (JMapPane) geoMapRenderer.getMap();
 		final JRibbonBand commandBand = new JRibbonBand("Map commands", null);
 		commandBand.startGroup();
-		MenuUtils.addCommand("Zoom Out", "icons/24/zoomout.png", new ZoomOut(mapPane), commandBand,
+		ZoomOut zoomoutAction = new ZoomOut(mapPane,parent);
+		MenuUtils.addCommand("Zoom Out", "icons/24/zoomout.png", zoomoutAction, commandBand,
 				PresentationPriority.TOP, "Zoom out to reduce size of plot");
-		final FitToWindow doFit = new FitToWindow(layers, mapPane, projection);
+		final FitToWindow doFit = new FitToWindow(layers, mapPane, projection,parent);
 		MenuUtils.addCommand("Fit to Window", "icons/24/fit_to_win.png", doFit, commandBand, null,
 				"Fit the plot to available space");
 		commandBand.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(commandBand));
@@ -130,7 +132,7 @@ public class DebriefRibbonView {
 	}
 
 	private static JRibbonBand createMouseModes(final GeoToolMapRenderer geoMapRenderer, final JLabel statusBar,
-			final Layers layers, final GeoToolMapProjection projection, final MathTransform transform) {
+			final Layers layers, final GeoToolMapProjection projection, final MathTransform transform,final ToolParent toolParent) {
 		final JRibbonBand viewBand = new JRibbonBand("Mouse mode", null);
 		final JMapPane mapPane = (JMapPane) geoMapRenderer.getMap();
 
@@ -138,9 +140,11 @@ public class DebriefRibbonView {
 		final CommandToggleGroupModel mouseModeGroup = new CommandToggleGroupModel();
 
 		viewBand.startGroup();
-		MenuUtils.addCommandToggleButton("Pan", "icons/24/hand.png", new PanCommandAction(mapPane), viewBand,
+		PanCommandAction panAction = new PanCommandAction(mapPane,toolParent);
+		MenuUtils.addCommandToggleButton("Pan", "icons/24/hand.png", panAction, viewBand,
 				PresentationPriority.TOP, true, mouseModeGroup, false);
-		zoomInAction = new AdvancedZoomInAction(mapPane);
+		
+		zoomInAction = new AdvancedZoomInAction(mapPane,toolParent);
 		zoominButton = MenuUtils.addCommandToggleButton("Zoom In", "icons/24/zoomin.png", zoomInAction, viewBand,
 				PresentationPriority.TOP, true, mouseModeGroup, true);
 		final RangeBearingAction rangeAction = new RangeBearingAction(mapPane, false, statusBar, transform);

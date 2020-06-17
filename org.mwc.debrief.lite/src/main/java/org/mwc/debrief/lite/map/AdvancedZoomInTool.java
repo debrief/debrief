@@ -26,24 +26,37 @@ import org.geotools.swing.event.MapMouseEvent;
 import org.geotools.swing.tool.ZoomInTool;
 import org.locationtech.jts.geom.Coordinate;
 import org.mwc.debrief.lite.DebriefLiteApp;
+import org.mwc.debrief.lite.gui.ViewAction;
+
+import MWC.GUI.ToolParent;
 
 public class AdvancedZoomInTool extends ZoomInTool {
 
 	private final Point startPosDevice;
 	private final Point2D startPosWorld;
 	private boolean dragged;
+	private ToolParent _toolParent;
+	
+	private ViewAction actionDetails;
 
-	public AdvancedZoomInTool() {
+	public AdvancedZoomInTool(ToolParent parent) {
 		super();
 		startPosDevice = new Point();
 		startPosWorld = new DirectPosition2D();
 		dragged = false;
+		_toolParent = parent;
 	}
 
 	@Override
 	public void onMouseClicked(final MapMouseEvent e) {
 		if (e.getButton() != MouseEvent.BUTTON3) {
+			actionDetails = new ViewAction(getMapPane());
+			actionDetails.setLastProjectionArea(DebriefLiteApp.getInstance().getProjectionArea());
 			super.onMouseClicked(e);
+			actionDetails.setNewProjectionArea(DebriefLiteApp.getInstance().getProjectionArea());
+			if(actionDetails.isUndoable() && _toolParent != null) {
+				_toolParent.addActionToBuffer(actionDetails);
+			}
 		}
 	}
 
@@ -60,7 +73,10 @@ public class AdvancedZoomInTool extends ZoomInTool {
 
 	@Override
 	public void onMousePressed(final MapMouseEvent ev) {
+		
 		if (ev.getButton() != MouseEvent.BUTTON3) {
+			actionDetails = new ViewAction(getMapPane());
+			actionDetails.setLastProjectionArea(DebriefLiteApp.getInstance().getProjectionArea());
 			startPosDevice.setLocation(ev.getPoint());
 			startPosWorld.setLocation(ev.getWorldPos());
 			super.onMousePressed(ev);
@@ -85,6 +101,12 @@ public class AdvancedZoomInTool extends ZoomInTool {
 				performZoomOut(ev);
 			}
 			DebriefLiteApp.getInstance().updateProjectionArea();
+			if(actionDetails!=null) {
+				actionDetails.setNewProjectionArea(DebriefLiteApp.getInstance().getProjectionArea());
+				if(_toolParent!=null && actionDetails.isUndoable()) {
+					_toolParent.addActionToBuffer(actionDetails);
+				}
+			}
 		}
 	}
 
@@ -129,4 +151,5 @@ public class AdvancedZoomInTool extends ZoomInTool {
 			ev.getSource().setDisplayArea(newMapArea);
 		}
 	}
+
 }
