@@ -50,7 +50,7 @@ public class ZoomOut extends AbstractAction implements CommandAction {
 	@Override
 	public void actionPerformed(final ActionEvent e) {
 		_currentViewArea = DebriefLiteApp.getInstance().getProjectionArea();
-		actionDetails = new ViewAction(_map);
+		actionDetails = new ViewAction(_map,"Zoom out");
 		actionDetails.setLastProjectionArea(_currentViewArea);
 		Rectangle paneArea = _map.getVisibleRect();
 		// get the centre of the viewport

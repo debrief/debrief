@@ -30,9 +30,11 @@ public class ViewAction implements Action {
 	private WorldArea _lastProjectionArea;
 	private WorldArea _newProjectionArea;
 	private MapPane _map;
+	private String _actionName;
 	
-	public ViewAction(MapPane map) {
+	public ViewAction(MapPane map,String actionName) {
 		_map = map;
+		_actionName = actionName;
 	}
 	@Override
 	public void execute() {
@@ -76,6 +78,13 @@ public class ViewAction implements Action {
 		
 		DebriefLiteApp.getInstance().getProjection().setDataArea(projectionArea);
 		DebriefLiteApp.getInstance().updateProjectionArea();
+	}
+	public void setActionName(String _actionName) {
+		this._actionName = _actionName;
+	}
+	public String toString() {
+		final String res = _actionName ;
+		return res;
 	}
 
 }

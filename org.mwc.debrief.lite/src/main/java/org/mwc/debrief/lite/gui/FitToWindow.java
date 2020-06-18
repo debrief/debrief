@@ -116,7 +116,7 @@ public class FitToWindow extends AbstractAction implements CommandAction {
 
 	@Override
 	public void actionPerformed(final ActionEvent e) {
-		viewActionDetails = new ViewAction(_map);
+		viewActionDetails = new ViewAction(_map,"Fit to window");
 		viewActionDetails.setLastProjectionArea(DebriefLiteApp.getInstance().getProjectionArea());
 		//System.out.println("Last projectionArea:"+viewActionDetails.getLastProjectionArea());
 		fitToWindow(_layers, _map, _projection);

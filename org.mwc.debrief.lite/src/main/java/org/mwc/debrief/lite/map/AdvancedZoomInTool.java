@@ -50,7 +50,7 @@ public class AdvancedZoomInTool extends ZoomInTool {
 	@Override
 	public void onMouseClicked(final MapMouseEvent e) {
 		if (e.getButton() != MouseEvent.BUTTON3) {
-			actionDetails = new ViewAction(getMapPane());
+			actionDetails = new ViewAction(getMapPane(),"Zoom In");
 			actionDetails.setLastProjectionArea(DebriefLiteApp.getInstance().getProjectionArea());
 			super.onMouseClicked(e);
 			actionDetails.setNewProjectionArea(DebriefLiteApp.getInstance().getProjectionArea());
@@ -75,7 +75,7 @@ public class AdvancedZoomInTool extends ZoomInTool {
 	public void onMousePressed(final MapMouseEvent ev) {
 		
 		if (ev.getButton() != MouseEvent.BUTTON3) {
-			actionDetails = new ViewAction(getMapPane());
+			actionDetails = new ViewAction(getMapPane(),"Zoom In");
 			actionDetails.setLastProjectionArea(DebriefLiteApp.getInstance().getProjectionArea());
 			startPosDevice.setLocation(ev.getPoint());
 			startPosWorld.setLocation(ev.getWorldPos());
@@ -98,6 +98,7 @@ public class AdvancedZoomInTool extends ZoomInTool {
 					super.onMouseReleased(ev);
 				}
 			} else {
+				actionDetails.setActionName("Zoom out");
 				performZoomOut(ev);
 			}
 			DebriefLiteApp.getInstance().updateProjectionArea();

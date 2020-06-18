@@ -49,7 +49,7 @@ public class DebriefPanTool extends PanTool{
 	@Override
 	public void onMousePressed(MapMouseEvent ev) {
 		super.onMousePressed(ev);
-		actionDetails = new ViewAction(getMapPane());
+		actionDetails = new ViewAction(getMapPane(),"Pan");
 		actionDetails.setLastProjectionArea(DebriefLiteApp.getInstance().getProjectionArea());
 		System.out.println("Last projectionArea:"+actionDetails.getNewProjectionArea());
 	}

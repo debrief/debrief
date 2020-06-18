@@ -189,11 +189,11 @@ public class DebriefRibbonView {
 		viewBand.addRibbonCommand(rangeBearingCommand,PresentationPriority.TOP);
 
 		final DragElementAction dragWholeFeatureInAction = new DragElementAction(mapPane,
-				new DragWholeFeatureElementTool(layers, projection, mapPane));
+				new DragWholeFeatureElementTool(layers, projection, mapPane,toolParent));
 		MenuUtils.addCommandToggleButton("Drag Whole Feature", "icons/24/select_feature.png", dragWholeFeatureInAction,
 				viewBand, PresentationPriority.TOP, true, mouseModeGroup, false);
 		final DragElementAction dragElementInAction = new DragElementAction(mapPane,
-				new DragElementTool(layers, projection, mapPane));
+				new DragElementTool(layers, projection, mapPane,toolParent));
 		MenuUtils.addCommandToggleButton("Drag Element", "icons/24/select_component.png", dragElementInAction, viewBand,
 				PresentationPriority.TOP, true, mouseModeGroup, false);
 
