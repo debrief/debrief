@@ -32,18 +32,64 @@ import MWC.GenericData.WorldVector;
 
 public class DragWholeFeatureElementTool extends GenericDragTool {
 
+	private class DragWholeFeatureAction implements Action {
+		DraggableItem _itemToDrag;
+		WorldVector _theOffset;
+		Layers _layers;
+		Layer _parentLayer;
+
+		public DragWholeFeatureAction(final WorldVector theOffset, final DraggableItem theTrack, final Layers theLayers,
+				final Layer parentLayer) {
+			_theOffset = theOffset;
+			_itemToDrag = theTrack;
+			_layers = theLayers;
+			_parentLayer = parentLayer;
+		}
+
+		@Override
+		public void execute() {
+			_itemToDrag.shift(_theOffset);
+			_mapPane.repaint();
+		}
+
+		@Override
+		public boolean isRedoable() {
+			return true;
+		}
+
+		@Override
+		public boolean isUndoable() {
+			return true;
+		}
+
+		@Override
+		public String toString() {
+			final String res = "Drag " + _itemToDrag.getName() + _theOffset.toString();
+			return res;
+		}
+
+		@Override
+		public void undo() {
+			final WorldVector reverseVector = _theOffset.generateInverse();
+			_itemToDrag.shift(reverseVector);
+			_layers.fireModified(_parentLayer);
+		}
+
+	}
+
 	/**
 	 * the thing we're currently hovering over
 	 */
-	
-	private ToolParent _toolParent;
+
+	private final ToolParent _toolParent;
 	private DraggableItem _hoverTarget;
 	private WorldLocation _lastLocation;
 	private WorldLocation _startLocation;
-	private Point _startPoint,_lastPoint;
+
+	private Point _startPoint, _lastPoint;
 
 	public DragWholeFeatureElementTool(final Layers layers, final GeoToolMapProjection projection,
-			final JMapPane mapPane,ToolParent parent) {
+			final JMapPane mapPane, final ToolParent parent) {
 		super(layers, projection, mapPane);
 		_toolParent = parent;
 	}
@@ -58,12 +104,12 @@ public class DragWholeFeatureElementTool extends GenericDragTool {
 	public void onMouseDragged(final MapMouseEvent ev) {
 		if (panning) {
 			if ((_startPoint != null) && (_hoverTarget != null)) {
-				if(_lastPoint == null) {
-					//the first time
+				if (_lastPoint == null) {
+					// the first time
 					_lastLocation = _startLocation;
 				}
 
-				_lastPoint=new Point(ev.getPoint().x,ev.getPoint().y);
+				_lastPoint = new Point(ev.getPoint().x, ev.getPoint().y);
 				final Point pos = mouseDelta(ev.getPoint());
 
 				if (!pos.equals(panePos)) {
@@ -82,27 +128,6 @@ public class DragWholeFeatureElementTool extends GenericDragTool {
 					panePos = pos;
 				}
 			}
-		}
-	}
-
-	@Override
-	public void onMouseReleased(MapMouseEvent ev) {
-		super.onMouseReleased(ev);
-		if(_lastLocation != null && _startLocation != null) {
-			final WorldVector forward = _lastLocation.subtract(_startLocation);
-
-			// put it into our action
-			final DragWholeFeatureAction dta = new DragWholeFeatureAction(forward, _hoverTarget, 
-					layers, _parentLayer);
-
-			if(dta!=null && dta.isUndoable() && _toolParent!=null) {
-				_toolParent.addActionToBuffer(dta);
-			}
-			_startPoint = null;
-			_lastPoint = null;
-			_lastLocation = null;
-			_startLocation = null;
-			_hoverTarget = null;
 		}
 	}
 
@@ -161,47 +186,24 @@ public class DragWholeFeatureElementTool extends GenericDragTool {
 			}
 		}
 	}
-	
-	private class DragWholeFeatureAction implements Action{
-		DraggableItem _itemToDrag;
-		WorldVector _theOffset;
-		Layers _layers;
-		Layer _parentLayer;
-		public DragWholeFeatureAction(final WorldVector theOffset, final DraggableItem theTrack, final Layers theLayers,
-										final Layer parentLayer) {
-			_theOffset = theOffset;
-			_itemToDrag = theTrack;
-			_layers = theLayers;
-			_parentLayer = parentLayer;
-		}
-		
-		@Override
-		public void execute() {
-			_itemToDrag.shift(_theOffset);
-			_mapPane.repaint();			
-		}
 
-		@Override
-		public boolean isRedoable() {
-			return true;
-		}
+	@Override
+	public void onMouseReleased(final MapMouseEvent ev) {
+		super.onMouseReleased(ev);
+		if (_lastLocation != null && _startLocation != null) {
+			final WorldVector forward = _lastLocation.subtract(_startLocation);
 
-		@Override
-		public boolean isUndoable() {
-			return true;
-		}
+			// put it into our action
+			final DragWholeFeatureAction dta = new DragWholeFeatureAction(forward, _hoverTarget, layers, _parentLayer);
 
-		@Override
-		public void undo() {
-			final WorldVector reverseVector = _theOffset.generateInverse();
-			_itemToDrag.shift(reverseVector);
-			_layers.fireModified(_parentLayer);			
+			if (dta != null && dta.isUndoable() && _toolParent != null) {
+				_toolParent.addActionToBuffer(dta);
+			}
+			_startPoint = null;
+			_lastPoint = null;
+			_lastLocation = null;
+			_startLocation = null;
+			_hoverTarget = null;
 		}
-		
-		public String toString() {
-			final String res = "Drag " + _itemToDrag.getName() + _theOffset.toString();
-			return res;
-		}
-		
 	}
 }

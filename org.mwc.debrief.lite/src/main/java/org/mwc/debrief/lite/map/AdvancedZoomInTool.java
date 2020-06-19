@@ -35,11 +35,11 @@ public class AdvancedZoomInTool extends ZoomInTool {
 	private final Point startPosDevice;
 	private final Point2D startPosWorld;
 	private boolean dragged;
-	private ToolParent _toolParent;
-	
+	private final ToolParent _toolParent;
+
 	private ViewAction actionDetails;
 
-	public AdvancedZoomInTool(ToolParent parent) {
+	public AdvancedZoomInTool(final ToolParent parent) {
 		super();
 		startPosDevice = new Point();
 		startPosWorld = new DirectPosition2D();
@@ -50,11 +50,11 @@ public class AdvancedZoomInTool extends ZoomInTool {
 	@Override
 	public void onMouseClicked(final MapMouseEvent e) {
 		if (e.getButton() != MouseEvent.BUTTON3) {
-			actionDetails = new ViewAction(getMapPane(),"Zoom In");
+			actionDetails = new ViewAction(getMapPane(), "Zoom In");
 			actionDetails.setLastProjectionArea(DebriefLiteApp.getInstance().getProjectionArea());
 			super.onMouseClicked(e);
 			actionDetails.setNewProjectionArea(DebriefLiteApp.getInstance().getProjectionArea());
-			if(actionDetails.isUndoable() && _toolParent != null) {
+			if (actionDetails.isUndoable() && _toolParent != null) {
 				_toolParent.addActionToBuffer(actionDetails);
 			}
 		}
@@ -73,9 +73,9 @@ public class AdvancedZoomInTool extends ZoomInTool {
 
 	@Override
 	public void onMousePressed(final MapMouseEvent ev) {
-		
+
 		if (ev.getButton() != MouseEvent.BUTTON3) {
-			actionDetails = new ViewAction(getMapPane(),"Zoom In");
+			actionDetails = new ViewAction(getMapPane(), "Zoom In");
 			actionDetails.setLastProjectionArea(DebriefLiteApp.getInstance().getProjectionArea());
 			startPosDevice.setLocation(ev.getPoint());
 			startPosWorld.setLocation(ev.getWorldPos());
@@ -102,9 +102,9 @@ public class AdvancedZoomInTool extends ZoomInTool {
 				performZoomOut(ev);
 			}
 			DebriefLiteApp.getInstance().updateProjectionArea();
-			if(actionDetails!=null) {
+			if (actionDetails != null) {
 				actionDetails.setNewProjectionArea(DebriefLiteApp.getInstance().getProjectionArea());
-				if(_toolParent!=null && actionDetails.isUndoable()) {
+				if (_toolParent != null && actionDetails.isUndoable()) {
 					_toolParent.addActionToBuffer(actionDetails);
 				}
 			}

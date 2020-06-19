@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.lite.gui;
 
@@ -29,16 +29,25 @@ public class ViewAction implements Action {
 
 	private WorldArea _lastProjectionArea;
 	private WorldArea _newProjectionArea;
-	private MapPane _map;
+	private final MapPane _map;
 	private String _actionName;
-	
-	public ViewAction(MapPane map,String actionName) {
+
+	public ViewAction(final MapPane map, final String actionName) {
 		_map = map;
 		_actionName = actionName;
 	}
+
 	@Override
 	public void execute() {
 		resetProjectionArea(_newProjectionArea);
+	}
+
+	public WorldArea getLastProjectionArea() {
+		return _lastProjectionArea;
+	}
+
+	public WorldArea getNewProjectionArea() {
+		return _newProjectionArea;
 	}
 
 	@Override
@@ -51,40 +60,40 @@ public class ViewAction implements Action {
 		return true;
 	}
 
-	@Override
-	public void undo() {
-		resetProjectionArea(_lastProjectionArea);
-	}
-	public void setLastProjectionArea(WorldArea lastProjectionArea) {
-		_lastProjectionArea = lastProjectionArea;
-	}
-	public void setNewProjectionArea(WorldArea newProjectionArea) {
-		_newProjectionArea = newProjectionArea;
-	}
-	public WorldArea getLastProjectionArea() {
-		return _lastProjectionArea;
-	}
-	public WorldArea getNewProjectionArea() {
-		return _newProjectionArea;
-	}
-	
-	public void resetProjectionArea(WorldArea projectionArea) {
-		System.out.println("Setting projection area to:"+projectionArea);
-		final ReferencedEnvelope bounds = MapUtils.convertToPaneArea(projectionArea, _map.getMapContent().getCoordinateReferenceSystem());
+	public void resetProjectionArea(final WorldArea projectionArea) {
+		// System.out.println("Setting projection area to:"+projectionArea);
+		final ReferencedEnvelope bounds = MapUtils.convertToPaneArea(projectionArea,
+				_map.getMapContent().getCoordinateReferenceSystem());
 		_map.getMapContent().getViewport().setBounds(bounds);
 		// force repaint
 		final ReferencedEnvelope paneArea = _map.getDisplayArea();
 		_map.setDisplayArea(paneArea);
-		
+
 		DebriefLiteApp.getInstance().getProjection().setDataArea(projectionArea);
 		DebriefLiteApp.getInstance().updateProjectionArea();
 	}
-	public void setActionName(String _actionName) {
+
+	public void setActionName(final String _actionName) {
 		this._actionName = _actionName;
 	}
+
+	public void setLastProjectionArea(final WorldArea lastProjectionArea) {
+		_lastProjectionArea = lastProjectionArea;
+	}
+
+	public void setNewProjectionArea(final WorldArea newProjectionArea) {
+		_newProjectionArea = newProjectionArea;
+	}
+
+	@Override
 	public String toString() {
-		final String res = _actionName ;
+		final String res = _actionName;
 		return res;
+	}
+
+	@Override
+	public void undo() {
+		resetProjectionArea(_lastProjectionArea);
 	}
 
 }

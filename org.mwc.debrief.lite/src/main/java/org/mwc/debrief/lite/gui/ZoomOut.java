@@ -22,7 +22,6 @@ import javax.swing.AbstractAction;
 
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.Envelope2D;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.swing.JMapPane;
 import org.locationtech.jts.geom.Coordinate;
 import org.mwc.debrief.lite.DebriefLiteApp;
@@ -39,20 +38,21 @@ public class ZoomOut extends AbstractAction implements CommandAction {
 	private static final long serialVersionUID = 1L;
 	private final JMapPane _map;
 	private WorldArea _currentViewArea;
-	private ToolParent _toolParent;
+	private final ToolParent _toolParent;
 	private ViewAction actionDetails;
-	public ZoomOut(final JMapPane map,ToolParent parent) {
+
+	public ZoomOut(final JMapPane map, final ToolParent parent) {
 		_map = map;
 		_toolParent = parent;
-		
+
 	}
 
 	@Override
 	public void actionPerformed(final ActionEvent e) {
 		_currentViewArea = DebriefLiteApp.getInstance().getProjectionArea();
-		actionDetails = new ViewAction(_map,"Zoom out");
+		actionDetails = new ViewAction(_map, "Zoom out");
 		actionDetails.setLastProjectionArea(_currentViewArea);
-		Rectangle paneArea = _map.getVisibleRect();
+		final Rectangle paneArea = _map.getVisibleRect();
 		// get the centre of the viewport
 		final Coordinate centre = _map.getMapContent().getViewport().getBounds().centre();
 		final Point2D mapPos = new Point2D.Double(centre.x, centre.y);
@@ -70,10 +70,10 @@ public class ZoomOut extends AbstractAction implements CommandAction {
 			newMapArea.setFrameFromCenter(mapPos, corner);
 			_map.setDisplayArea(newMapArea);
 		}
-		
+
 		DebriefLiteApp.getInstance().updateProjectionArea();
 		actionDetails.setNewProjectionArea(DebriefLiteApp.getInstance().getProjectionArea());
-		System.out.println("Projection area after zoom/redo:"+DebriefLiteApp.getInstance().getProjectionArea());
+		System.out.println("Projection area after zoom/redo:" + DebriefLiteApp.getInstance().getProjectionArea());
 	}
 
 	@Override
@@ -109,5 +109,5 @@ public class ZoomOut extends AbstractAction implements CommandAction {
 //		DebriefLiteApp.getInstance().updateProjectionArea();
 //		System.out.println("After undo:"+DebriefLiteApp.getInstance().getProjectionArea());
 //	}
-	
+
 }

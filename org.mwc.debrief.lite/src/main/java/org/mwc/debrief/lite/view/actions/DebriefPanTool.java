@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.lite.view.actions;
 
@@ -25,34 +25,34 @@ import MWC.GUI.ToolParent;
  * @author Ayesha
  *
  */
-public class DebriefPanTool extends PanTool{
-	
-	private ToolParent _toolParent;
+public class DebriefPanTool extends PanTool {
+
+	private final ToolParent _toolParent;
 	int curIndex;
 	private ViewAction actionDetails;
-	DebriefPanTool(ToolParent parent){
+
+	DebriefPanTool(final ToolParent parent) {
 		_toolParent = parent;
 	}
-	
+
+	@Override
+	public void onMousePressed(final MapMouseEvent ev) {
+		super.onMousePressed(ev);
+		actionDetails = new ViewAction(getMapPane(), "Pan");
+		actionDetails.setLastProjectionArea(DebriefLiteApp.getInstance().getProjectionArea());
+		System.out.println("Last projectionArea:" + actionDetails.getNewProjectionArea());
+	}
+
 	@Override
 	public void onMouseReleased(final MapMouseEvent ev) {
 		super.onMouseReleased(ev);
 		DebriefLiteApp.getInstance().updateProjectionArea();
-		
+
 		actionDetails.setNewProjectionArea(DebriefLiteApp.getInstance().getProjectionArea());
-		System.out.println("new projectionArea:"+actionDetails.getLastProjectionArea());
-		if(_toolParent!=null){
+		System.out.println("new projectionArea:" + actionDetails.getLastProjectionArea());
+		if (_toolParent != null) {
 			_toolParent.addActionToBuffer(actionDetails);
 		}
 	}
-	
-	@Override
-	public void onMousePressed(MapMouseEvent ev) {
-		super.onMousePressed(ev);
-		actionDetails = new ViewAction(getMapPane(),"Pan");
-		actionDetails.setLastProjectionArea(DebriefLiteApp.getInstance().getProjectionArea());
-		System.out.println("Last projectionArea:"+actionDetails.getNewProjectionArea());
-	}
 
-	
 }
