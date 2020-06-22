@@ -331,7 +331,7 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 	@Override
 	public void setLineStyle(final int style) {
 		final BasicStroke stk = MWC.GUI.Canvas.Swing.SwingCanvas.getStrokeFor(style);
-		final BasicStroke stk2 = new BasicStroke(getLineWidth(), stk.getEndCap(), stk.getLineJoin());
+		final BasicStroke stk2 = new BasicStroke(getLineWidth(), stk.getEndCap(), stk.getLineJoin(),stk.getMiterLimit(),stk.getDashArray(),stk.getDashPhase());
 		final Graphics2D g2 = (Graphics2D) _dest;
 		g2.setStroke(stk2);
 	}
