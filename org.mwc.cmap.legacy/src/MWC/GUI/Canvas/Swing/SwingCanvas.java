@@ -343,20 +343,20 @@ public class SwingCanvas extends javax.swing.JComponent implements CanvasType, E
 	static synchronized public java.awt.BasicStroke getStrokeFor(final int style) {
 		if (_myLineStyles == null) {
 			_myLineStyles = new java.util.HashMap<Integer, BasicStroke>(5);
-			_myLineStyles.put(new Integer(MWC.GUI.CanvasType.SOLID), new java.awt.BasicStroke(1,
-					java.awt.BasicStroke.CAP_BUTT, java.awt.BasicStroke.JOIN_MITER, 1, new float[] { 5, 0 }, 0));
-			_myLineStyles.put(new Integer(MWC.GUI.CanvasType.DOTTED), new java.awt.BasicStroke(1,
-					java.awt.BasicStroke.CAP_BUTT, java.awt.BasicStroke.JOIN_MITER, 1, new float[] { 2, 6 }, 0));
-			_myLineStyles.put(new Integer(MWC.GUI.CanvasType.DOT_DASH), new java.awt.BasicStroke(1,
-					java.awt.BasicStroke.CAP_BUTT, java.awt.BasicStroke.JOIN_MITER, 1, new float[] { 4, 4, 12, 4 }, 0));
-			_myLineStyles.put(new Integer(MWC.GUI.CanvasType.SHORT_DASHES), new java.awt.BasicStroke(1,
-					java.awt.BasicStroke.CAP_BUTT, java.awt.BasicStroke.JOIN_MITER, 1, new float[] { 6, 6 }, 0));
-			_myLineStyles.put(new Integer(MWC.GUI.CanvasType.LONG_DASHES), new java.awt.BasicStroke(1,
-					java.awt.BasicStroke.CAP_BUTT, java.awt.BasicStroke.JOIN_MITER, 1, new float[] { 12, 6 }, 0));
-			_myLineStyles.put(new Integer(MWC.GUI.CanvasType.UNCONNECTED), new java.awt.BasicStroke(1));
+			_myLineStyles.put(MWC.GUI.CanvasType.SOLID, new BasicStroke(1,
+					BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1, new float[] { 5, 0 }, 0));
+			_myLineStyles.put(MWC.GUI.CanvasType.DOTTED, new BasicStroke(1,
+					BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1, new float[] { 2, 6 }, 0));
+			_myLineStyles.put(MWC.GUI.CanvasType.DOT_DASH, new BasicStroke(1,
+					BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1, new float[] { 4, 4, 12, 4 }, 0));
+			_myLineStyles.put(MWC.GUI.CanvasType.SHORT_DASHES, new BasicStroke(1,
+					BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1, new float[] { 4,4,4,4,12,4 }, 0));
+			_myLineStyles.put(MWC.GUI.CanvasType.LONG_DASHES, new BasicStroke(1,
+					BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1, new float[] { 12, 6 }, 0));
+			_myLineStyles.put(MWC.GUI.CanvasType.UNCONNECTED, new BasicStroke(1));
 		}
 
-		return _myLineStyles.get(new Integer(style));
+		return _myLineStyles.get(style);
 	}
 
 	private final Object LOCK = new Object();
