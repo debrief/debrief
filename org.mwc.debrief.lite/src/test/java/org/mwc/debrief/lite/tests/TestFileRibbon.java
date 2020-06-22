@@ -34,7 +34,6 @@ import org.mwc.debrief.lite.gui.custom.JXCollapsiblePaneWithTitle;
 import org.mwc.debrief.lite.menu.DebriefRibbonFile;
 import org.mwc.debrief.lite.utils.TestUtils;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
-import org.pushingpixels.flamingo.api.common.JCommandMenuButton;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.flamingo.internal.ui.ribbon.JBandControlPanel;
 
@@ -633,9 +632,9 @@ public class TestFileRibbon extends BaseTestCase
       @Override
       public void run()
       {
-//        final JCommandButton saveButton = TestUtils.getSaveMainButton();
-//        saveButton.doPopupClick();
-        JCommandMenuButton saveAs = TestUtils.getSaveASButton();
+        final JCommandButton saveButton = TestUtils.getSaveMainButton();
+        saveButton.doPopupClick();
+        JCommandButton saveAs = TestUtils.getSaveASButton();
         saveAs.doActionClick();
         
         

@@ -22,8 +22,8 @@ import java.beans.PropertyChangeSupport;
 
 import org.pushingpixels.flamingo.api.common.RichTooltip;
 import org.pushingpixels.flamingo.api.ribbon.synapse.model.ComponentContentModel;
-import org.pushingpixels.neon.icon.ResizableIcon;
-import org.pushingpixels.neon.icon.ResizableIcon.Factory;
+import org.pushingpixels.neon.api.icon.ResizableIcon;
+import org.pushingpixels.neon.api.icon.ResizableIcon.Factory;
 
 /**
  * @author Ayesha
