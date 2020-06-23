@@ -22,22 +22,76 @@ import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GUI.Shapes.DraggableItem.LocationConstruct;
 import MWC.GUI.Shapes.FindNearest;
+import MWC.GUI.Tools.Action;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
 public class DragWholeFeatureElementTool extends GenericDragTool {
 
+	private class DragWholeFeatureAction implements Action {
+		DraggableItem _itemToDrag;
+		WorldVector _theOffset;
+		Layers _layers;
+		Layer _parentLayer;
+
+		public DragWholeFeatureAction(final WorldVector theOffset, final DraggableItem theTrack, final Layers theLayers,
+				final Layer parentLayer) {
+			_theOffset = theOffset;
+			_itemToDrag = theTrack;
+			_layers = theLayers;
+			_parentLayer = parentLayer;
+		}
+
+		@Override
+		public void execute() {
+			_itemToDrag.shift(_theOffset);
+			_mapPane.repaint();
+		}
+
+		@Override
+		public boolean isRedoable() {
+			return true;
+		}
+
+		@Override
+		public boolean isUndoable() {
+			return true;
+		}
+
+		@Override
+		public String toString() {
+			final String res = "Drag " + _itemToDrag.getName() + _theOffset.toString();
+			return res;
+		}
+
+		@Override
+		public void undo() {
+			final WorldVector reverseVector = _theOffset.generateInverse();
+			_itemToDrag.shift(reverseVector);
+			_layers.fireModified(_parentLayer);
+		}
+
+	}
+
 	/**
 	 * the thing we're currently hovering over
 	 */
-	protected DraggableItem _hoverTarget;
+
+	private final ToolParent _toolParent;
+	private DraggableItem _hoverTarget;
+	private WorldLocation _lastLocation;
+	private WorldLocation _startLocation;
+
+	private Point _startPoint, _lastPoint;
 
 	public DragWholeFeatureElementTool(final Layers layers, final GeoToolMapProjection projection,
-			final JMapPane mapPane) {
+			final JMapPane mapPane, final ToolParent parent) {
 		super(layers, projection, mapPane);
+		_toolParent = parent;
 	}
 
 	/**
@@ -49,22 +103,30 @@ public class DragWholeFeatureElementTool extends GenericDragTool {
 	@Override
 	public void onMouseDragged(final MapMouseEvent ev) {
 		if (panning) {
-			final Point pos = mouseDelta(ev.getPoint());
-
-			if (!pos.equals(panePos)) {
-				final WorldLocation cursorLoc = _projection.toWorld(panePos);
-
-				if (_hoverTarget != null) {
-					final WorldLocation newLocation = new WorldLocation(_projection.toWorld(pos));
-
-					// now work out the vector from the last place plotted to the current
-					// place
-					final WorldVector offset = newLocation.subtract(cursorLoc);
-
-					_hoverTarget.shift(offset);
-					_mapPane.repaint();
+			if ((_startPoint != null) && (_hoverTarget != null)) {
+				if (_lastPoint == null) {
+					// the first time
+					_lastLocation = _startLocation;
 				}
-				panePos = pos;
+
+				_lastPoint = new Point(ev.getPoint().x, ev.getPoint().y);
+				final Point pos = mouseDelta(ev.getPoint());
+
+				if (!pos.equals(panePos)) {
+					final WorldLocation cursorLoc = _projection.toWorld(panePos);
+
+					if (_hoverTarget != null) {
+						final WorldLocation newLocation = new WorldLocation(_projection.toWorld(pos));
+
+						// now work out the vector from the last place plotted to the current
+						// place
+						final WorldVector offset = newLocation.subtract(cursorLoc);
+						_lastLocation = newLocation;
+						_hoverTarget.shift(offset);
+						_mapPane.repaint();
+					}
+					panePos = pos;
+				}
 			}
 		}
 	}
@@ -78,7 +140,9 @@ public class DragWholeFeatureElementTool extends GenericDragTool {
 	@Override
 	public void onMousePressed(final MapMouseEvent ev) {
 		super.onMousePressed(ev);
-
+		_startPoint = new Point(ev.getPoint().x, ev.getPoint().y);
+		_lastPoint = null;
+		_startLocation = new WorldLocation(_projection.toWorld(new java.awt.Point(ev.getPoint().x, ev.getPoint().y)));
 		if (LiteMapPane.isMapViewportAcceptable(_mapPane) && !panning) {
 			panePos = mouseDelta(ev.getPoint());
 
@@ -120,6 +184,26 @@ public class DragWholeFeatureElementTool extends GenericDragTool {
 					_parentLayer = currentNearest._topLayer;
 				}
 			}
+		}
+	}
+
+	@Override
+	public void onMouseReleased(final MapMouseEvent ev) {
+		super.onMouseReleased(ev);
+		if (_lastLocation != null && _startLocation != null) {
+			final WorldVector forward = _lastLocation.subtract(_startLocation);
+
+			// put it into our action
+			final DragWholeFeatureAction dta = new DragWholeFeatureAction(forward, _hoverTarget, layers, _parentLayer);
+
+			if (dta != null && dta.isUndoable() && _toolParent != null) {
+				_toolParent.addActionToBuffer(dta);
+			}
+			_startPoint = null;
+			_lastPoint = null;
+			_lastLocation = null;
+			_startLocation = null;
+			_hoverTarget = null;
 		}
 	}
 }

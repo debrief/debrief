@@ -45,7 +45,7 @@ public class DebriefRibbon {
 		DebriefRibbonLite.addLiteTab(ribbon, session, resetAction, exitAction, collapseAction, path);
 		DebriefRibbonFile.addFileTab(ribbon, geoMapRenderer, session, resetAction);
 		DebriefRibbonView.addViewTab(ribbon, geoMapRenderer, layers, statusBar, projection, transform, alphaListener,
-				alpha);
+				alpha,parent);
 		DebriefRibbonInsert.addInsertTab(ribbon, geoMapRenderer, layers, null, parent);
 		DebriefRibbonTimeController.addTimeControllerTab(ribbon, geoMapRenderer, stepControl, timeManager, operations,
 				layers, session.getUndoBuffer(), normalPainter, snailPainter, refresh);
