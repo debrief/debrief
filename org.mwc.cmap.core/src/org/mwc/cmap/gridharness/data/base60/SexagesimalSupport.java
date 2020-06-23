@@ -202,7 +202,7 @@ public class SexagesimalSupport {
 
 		@Override
 		public Sexagesimal parse(final String text, final boolean forLongitudeNotLatitude) throws ParseException {
-			String theText = text;
+			String theText = text.replaceAll("\\s+","");
 			theText = theText.trim();
 			final int hemi = getHemisphereSignum(theText, forLongitudeNotLatitude);
 			theText = theText.substring(0, theText.length() - 1).trim();
