@@ -21,6 +21,8 @@ import org.geotools.swing.action.ZoomInAction;
 import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
 
+import MWC.GUI.ToolParent;
+
 /**
  * use our advanced zoom in tool, that also support zoom out
  *
@@ -34,13 +36,15 @@ public class AdvancedZoomInAction extends ZoomInAction implements CommandAction 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public AdvancedZoomInAction(final MapPane mapPane) {
+	private ToolParent _toolParent;
+	public AdvancedZoomInAction(final MapPane mapPane,final ToolParent parent) {
 		super(mapPane);
+		_toolParent = parent;
 	}
 
 	@Override
 	public void actionPerformed(final ActionEvent ev) {
-		getMapPane().setCursorTool(new AdvancedZoomInTool());
+		getMapPane().setCursorTool(new AdvancedZoomInTool(_toolParent));
 	}
 
 	@Override
