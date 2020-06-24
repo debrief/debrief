@@ -153,13 +153,14 @@ import java.util.Vector;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ExtendedCanvasType;
+import MWC.GUI.Layer;
 import MWC.GUI.PlainWrapper;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
-public class EllipseShape extends PlainShape implements Editable {
+public class EllipseShape extends PlainShape implements Editable,HasDraggableComponents {
 
 	//////////////////////////////////////////////////
 	// member variables
@@ -598,5 +599,67 @@ public class EllipseShape extends PlainShape implements Editable {
 		final WorldLocation oldCentre = getCentre();
 		final WorldLocation newCentre = oldCentre.add(vector);
 		setCentre(newCentre);
+
+		// and calc the new summary data
+		calcPoints();
+
+		// and inform the parent (so it can move the label)
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
 	}
+
+	@Override
+	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc, ComponentConstruct currentNearest,
+			Layer parentLayer) {
+		checkThisOne(_theCentre, cursorLoc, currentNearest, this, parentLayer);
+
+		// now for the more difficult one. See if it is on the radius.
+		// - how far is it from the centre
+		final WorldVector vec = cursorLoc.subtract(_theCentre);
+		final WorldDistance sep = new WorldDistance(vec);
+
+		// ahh, now subtract the radius from this separation
+		final WorldDistance newSep1 = new WorldDistance(
+				Math.abs(sep.getValueIn(WorldDistance.YARDS) - this._theMaxima.getValueIn(WorldDistance.YARDS)),
+				WorldDistance.YARDS);
+
+		// now we have to wrap this operation in a made-up location
+		final WorldLocation dragCentre = new WorldLocation(cursorLoc) {
+			private static final long serialVersionUID = 100L;
+
+			@Override
+			public void addToMe(final WorldVector delta) {
+				// ok - process the drag
+				super.addToMe(delta);
+				// ok, what's this distance from the origin?
+				final WorldVector newSep1 = subtract(_theCentre);
+				final WorldDistance dist = new WorldDistance(newSep1);
+				setMaxima(dist);
+
+				// WorldDistance newDist = new
+				// WorldDistance(dist.getValueIn(WorldDistance.YARDS) + _theRadius,
+				// WorldDistance.YARDS);
+				// hmm, are we going in or out?
+				// now, change the radius to this
+			}
+		};
+		// try range
+		currentNearest.checkMe(this, newSep1, null, parentLayer, dragCentre);
+
+
+		
+	}
+
+	@Override
+	public void shift(final WorldLocation feature, final WorldVector vector) {
+		// ok, just shift it...
+		feature.addToMe(vector);
+
+		// and calc the new summary data
+		calcPoints();
+
+		// and inform the parent (so it can move the label)
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
+
+	}
+	
 }
