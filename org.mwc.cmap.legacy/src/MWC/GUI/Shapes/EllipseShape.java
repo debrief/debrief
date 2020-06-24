@@ -222,6 +222,12 @@ public class EllipseShape extends PlainShape implements Editable,HasDraggableCom
 	 * the centre of this Ellipse
 	 */
 	private WorldLocation _theCentre;
+	
+	private WorldLocation _topPoint;
+	private WorldLocation _bottomPoint;
+	
+	private WorldLocation _midLeft;
+	private WorldLocation _midRight;
 
 	/**
 	 * the maxima of this Ellipse (in degs)
@@ -269,7 +275,29 @@ public class EllipseShape extends PlainShape implements Editable,HasDraggableCom
 		_theOrientation = theOrient;
 		_theMinima = theMinima;
 		_theMaxima = theMaxima;
+		final double maxDist = Math.max(_theMaxima.getValueIn(WorldDistance.DEGS),
+				_theMinima.getValueIn(WorldDistance.DEGS));
 
+		// create & extend to top left
+		_topPoint = _theCentre.add(new WorldVector(0, maxDist, 0));
+		_topPoint.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270), maxDist, 0));
+
+		// create & extend to bottom right
+		_bottomPoint = _theCentre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(180), maxDist, 0));
+		_bottomPoint.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90), maxDist, 0));
+		
+		final double minDist = Math.min(_theMaxima.getValueIn(WorldDistance.DEGS),
+				_theMinima.getValueIn(WorldDistance.DEGS));
+
+		// create & extend to top left
+		_midLeft = _theCentre.add(new WorldVector(0, minDist, 0));
+		_midLeft.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270), minDist, 0));
+
+		// create & extend to bottom right
+		_midRight = _theCentre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(180), minDist, 0));
+		_midRight.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90), minDist, 0));
+		
+		
 		// now represented our Ellipse as an area
 		calcPoints();
 	}
@@ -289,6 +317,7 @@ public class EllipseShape extends PlainShape implements Editable,HasDraggableCom
 		final double orient = MWC.Algorithms.Conversions.Degs2Rads(_theOrientation);
 
 		for (int i = 0; i <= CircleShape.NUM_SEGMENTS; i++) {
+			
 			// produce the current bearing
 			final double this_brg = (360.0 / CircleShape.NUM_SEGMENTS * i) / 180.0 * Math.PI;
 
@@ -610,20 +639,28 @@ public class EllipseShape extends PlainShape implements Editable,HasDraggableCom
 	@Override
 	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc, ComponentConstruct currentNearest,
 			Layer parentLayer) {
-		checkThisOne(_theCentre, cursorLoc, currentNearest, this, parentLayer);
+		checkThisOne(_topPoint, cursorLoc, currentNearest, this, parentLayer);
+		checkThisOne(_bottomPoint, cursorLoc, currentNearest, this, parentLayer);
+		checkThisOne(_midLeft, cursorLoc, currentNearest, this, parentLayer);
+		checkThisOne(_midRight, cursorLoc, currentNearest, this, parentLayer);
+		
 
 		// now for the more difficult one. See if it is on the radius.
 		// - how far is it from the centre
 		final WorldVector vec = cursorLoc.subtract(_theCentre);
 		final WorldDistance sep = new WorldDistance(vec);
 
-		// ahh, now subtract the radius from this separation
+		// ahh, now subtract the maxima from this separation
 		final WorldDistance newSep1 = new WorldDistance(
 				Math.abs(sep.getValueIn(WorldDistance.YARDS) - this._theMaxima.getValueIn(WorldDistance.YARDS)),
 				WorldDistance.YARDS);
-
+		
+		final WorldDistance newSep2 = new WorldDistance(
+				Math.abs(sep.getValueIn(WorldDistance.YARDS) - this._theMinima.getValueIn(WorldDistance.YARDS)),
+				WorldDistance.YARDS);
+		
 		// now we have to wrap this operation in a made-up location
-		final WorldLocation dragCentre = new WorldLocation(cursorLoc) {
+		final WorldLocation dragMaxima = new WorldLocation(cursorLoc) {
 			private static final long serialVersionUID = 100L;
 
 			@Override
@@ -631,7 +668,7 @@ public class EllipseShape extends PlainShape implements Editable,HasDraggableCom
 				// ok - process the drag
 				super.addToMe(delta);
 				// ok, what's this distance from the origin?
-				final WorldVector newSep1 = subtract(_theCentre);
+				final WorldVector newSep1 = subtract(_topPoint);
 				final WorldDistance dist = new WorldDistance(newSep1);
 				setMaxima(dist);
 
@@ -642,8 +679,30 @@ public class EllipseShape extends PlainShape implements Editable,HasDraggableCom
 				// now, change the radius to this
 			}
 		};
+		final WorldLocation dragMinima = new WorldLocation(cursorLoc) {
+			private static final long serialVersionUID = 100L;
+
+			@Override
+			public void addToMe(final WorldVector delta) {
+				// ok - process the drag
+				super.addToMe(delta);
+				// ok, what's this distance from the origin?
+				final WorldVector newSep1 = subtract(_midLeft);
+				final WorldDistance dist = new WorldDistance(newSep1);
+				setMinima(dist);
+
+				// WorldDistance newDist = new
+				// WorldDistance(dist.getValueIn(WorldDistance.YARDS) + _theRadius,
+				// WorldDistance.YARDS);
+				// hmm, are we going in or out?
+				// now, change the radius to this
+			}
+		};
+		
+		
 		// try range
-		currentNearest.checkMe(this, newSep1, null, parentLayer, dragCentre);
+		currentNearest.checkMe(this, newSep1, null, parentLayer, dragMaxima);
+		currentNearest.checkMe(this, newSep2, null, parentLayer, dragMinima);
 
 
 		
