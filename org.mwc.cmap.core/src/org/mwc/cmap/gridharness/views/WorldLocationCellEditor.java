@@ -56,6 +56,24 @@ public class WorldLocationCellEditor extends CellEditor implements MultiControlC
 			super.verifyText(e);
 		}
 	}
+	
+	/**
+	 * This is a FormattedText class which gives more flexibility
+	 * to the user input, for example, adding extra spaces or leading
+	 * zeroes.
+	 *
+	 */
+	private static class FormattedTextWithoutValid extends FormattedText{
+
+		public FormattedTextWithoutValid(Composite parent, int style) {
+			super(parent, style);
+		}
+		
+		@Override
+		public boolean isValid() {
+			return true;
+		}
+	}
 
 	private FormattedText myLatitude;
 
@@ -76,8 +94,8 @@ public class WorldLocationCellEditor extends CellEditor implements MultiControlC
 		rows.pack = false;
 		panel.setLayout(rows);
 
-		myLatitude = new FormattedText(panel, SWT.BORDER);
-		myLongitude = new FormattedText(panel, SWT.BORDER);
+		myLatitude = new FormattedTextWithoutValid(panel, SWT.BORDER);
+		myLongitude = new FormattedTextWithoutValid(panel, SWT.BORDER);
 
 		myLatitude.setFormatter(new IgnoreTabsMaskFormatter(getFormat().getNebulaPattern(false)));
 		myLongitude.setFormatter(new IgnoreTabsMaskFormatter(getFormat().getNebulaPattern(true)));

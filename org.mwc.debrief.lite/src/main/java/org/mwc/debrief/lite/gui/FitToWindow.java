@@ -23,6 +23,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.swing.JMapPane;
+import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.map.LiteMapPane;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
@@ -96,26 +97,40 @@ public class FitToWindow extends AbstractAction implements CommandAction {
 		}
 	}
 
+	private ViewAction viewActionDetails;
+
 	private final Layers _layers;
 
 	private final JMapPane _map;
 
 	private final PlainProjection _projection;
 
-	public FitToWindow(final Layers layers, final JMapPane map, final PlainProjection projection) {
+	private final ToolParent _toolParent;
+
+	public FitToWindow(final Layers layers, final JMapPane map, final PlainProjection projection,
+			final ToolParent parent) {
 		_layers = layers;
 		_map = map;
 		_projection = projection;
+		_toolParent = parent;
 	}
 
 	@Override
 	public void actionPerformed(final ActionEvent e) {
+		viewActionDetails = new ViewAction(_map, "Fit to window");
+		viewActionDetails.setLastProjectionArea(DebriefLiteApp.getInstance().getProjectionArea());
+		// System.out.println("Last
+		// projectionArea:"+viewActionDetails.getLastProjectionArea());
 		fitToWindow(_layers, _map, _projection);
+		viewActionDetails.setNewProjectionArea(DebriefLiteApp.getInstance().getProjectionArea());
+
 	}
 
 	@Override
 	public void commandActivated(final CommandActionEvent e) {
 		actionPerformed(e);
+		if (viewActionDetails.isUndoable() && _toolParent != null) {
+			_toolParent.addActionToBuffer(viewActionDetails);
+		}
 	}
-
 }
