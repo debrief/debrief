@@ -1124,7 +1124,7 @@ public class DebriefLiteApp implements FileDropListener {
 			_theLayers.fireReformatted(null);
 
 			// and the spatial bounds
-			new FitToWindow(_theLayers, mapPane, projection).actionPerformed(null);
+			new FitToWindow(_theLayers, mapPane, projection,null).actionPerformed(null);
 		} catch (final FileNotFoundException e) {
 			app.logError(ToolParent.ERROR, "Failed to read DPF File", e);
 			MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file", "Failed to read DPF File" + e.getMessage());
@@ -1218,7 +1218,7 @@ public class DebriefLiteApp implements FileDropListener {
 								theTote.assignWatchables(true);
 
 								// and the spatial bounds
-								final FitToWindow fitMe = new FitToWindow(_theLayers, mapPane, projection);
+								final FitToWindow fitMe = new FitToWindow(_theLayers, mapPane, projection,null);
 								fitMe.actionPerformed(null);
 							}
 						});
@@ -1491,6 +1491,31 @@ public class DebriefLiteApp implements FileDropListener {
 		newArea.normalise();
 
 		projection.setDataArea(newArea);
+	}
+	
+	public WorldArea getProjectionArea() {
+		final DirectPosition2D upperCorner = (DirectPosition2D) mapPane.getDisplayArea().getUpperCorner();
+		final DirectPosition2D bottomCorner = (DirectPosition2D) mapPane.getDisplayArea().getLowerCorner();
+
+		if (bottomCorner.getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84
+				&& upperCorner.getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84) {
+			try {
+				geoMapRenderer.getTransform().transform(upperCorner, upperCorner);
+				geoMapRenderer.getTransform().transform(bottomCorner, bottomCorner);
+			} catch (MismatchedDimensionException | TransformException e) {
+				Application.logError2(ToolParent.ERROR, "Failure in projection transform", e);
+			}
+		}
+
+		final WorldLocation topLocation = new WorldLocation(upperCorner.getY(), upperCorner.getX(), 0);
+		final WorldLocation bottomLocation = new WorldLocation(bottomCorner.getY(), bottomCorner.getX(), 0);
+		final WorldArea newArea = new WorldArea(topLocation, bottomLocation);
+		newArea.normalise();
+
+		return newArea;
+	}
+	public GeoToolMapProjection getProjection() {
+		return projection;
 	}
 
 }

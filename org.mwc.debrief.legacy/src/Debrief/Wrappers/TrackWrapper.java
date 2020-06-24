@@ -448,6 +448,13 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 	 */
 	public static void groupTracks(final TrackWrapper target, final Layers theLayers, final Layer[] parents,
 			final Editable[] subjects) {
+
+		final String failedMsg = checkOverlappingLegs(target, subjects);
+		if (failedMsg != null) {
+			MessageProvider.Base.show("Group Tracks", failedMsg, MessageProvider.ERROR);
+			return;
+		}
+
 		// ok, loop through the subjects, adding them onto the target
 		for (int i = 0; i < subjects.length; i++) {
 			final Layer thisL = (Layer) subjects[i];
@@ -509,6 +516,92 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 				}
 			}
 		}
+	}
+
+	/**
+	 * Method to check legs overlapping in Track Segments
+	 * 
+	 * @param target   Primary TrackWrapper
+	 * @param subjects Secondary TracksWrappers
+	 * @return
+	 */
+	private static String checkOverlappingLegs(final TrackWrapper target, final Editable[] subjects) {
+		final StringBuilder overlappedLegs = new StringBuilder();
+		String primaryOverlappedTrack = null;
+		String secondaryOverlappedTrack = null;
+		final String MESSAGE_JOINER = ", ";
+
+		for (Editable subject : subjects) {
+			if (subject != target && subject != null && subject instanceof TrackWrapper) {
+				final ArrayList<DynamicInfillSegment> segmentsToDelete = new ArrayList<DynamicInfillSegment>();
+				final TrackWrapper secondaryTrack = (TrackWrapper) subject;
+				final SegmentList primarySegments = target.getSegments();
+				final SegmentList secondarySegments = secondaryTrack.getSegments();
+
+				final Collection<Editable> primaryLegs = primarySegments.getData();
+				final Collection<Editable> secondaryLegs = secondarySegments.getData();
+
+				// for each leg, compare it to all the legs in the first track. If it overlaps
+				// with a leg that's not a dynamic infill, remember the leg in the second
+				// track's name
+				for (Editable primaryLeg : primaryLegs) {
+					if (primaryLeg instanceof TrackSegment) {
+						final TrackSegment primarySegment = (TrackSegment) primaryLeg;
+						final TimePeriod primaryPeriod = new TimePeriod.BaseTimePeriod(primarySegment.startDTG(),
+								primarySegment.endDTG());
+						for (Editable secondaryLeg : secondaryLegs) {
+							if (secondaryLeg instanceof TrackSegment) {
+								final TrackSegment secondarySegment = (TrackSegment) secondaryLeg;
+								// Now let's compare the Periods
+								final TimePeriod secondaryPeriod = new TimePeriod.BaseTimePeriod(
+										secondarySegment.startDTG(), secondarySegment.endDTG());
+								if (primaryPeriod.overlaps(secondaryPeriod)) {
+									// Ok, We overlapped.
+									if (secondaryLeg instanceof DynamicInfillSegment) {
+										segmentsToDelete.add((DynamicInfillSegment) secondarySegment);
+									} else {
+										// We have nothing to do, just show a message to the user.
+										secondaryOverlappedTrack = secondaryTrack.getName();
+										primaryOverlappedTrack = target.getName();
+										for (Editable item : secondarySegment.getData()) {
+											if (item instanceof FixWrapper) {
+												final HiResDate time = ((FixWrapper) item).getTime();
+												if (time.greaterThanOrEqualTo(primaryPeriod.getStartDTG()) &&
+														time.lessThanOrEqualTo(primaryPeriod.getEndDTG())) {
+
+													overlappedLegs.append(item.getName());
+													overlappedLegs.append(MESSAGE_JOINER);
+												}
+													
+											}
+										}
+										
+									}
+								}
+							}
+						}
+					}
+				}
+
+				if (overlappedLegs.length() == 0) {
+					// Perfect, we don't have any error.
+
+					// Just delete it if it is a DynamicInFill
+					for (TrackSegment segmentToDelete : segmentsToDelete) {
+						secondaryTrack.removeElement(segmentToDelete);
+					}
+				} else {
+					if (overlappedLegs.length() > 0) {
+						overlappedLegs.setLength(overlappedLegs.length() - MESSAGE_JOINER.length());
+					}
+					return "Cannot group tracks. The following legs from \"" + secondaryOverlappedTrack
+							+ "\" overlap with legs in \"" + primaryOverlappedTrack + "\":\n"
+							+ overlappedLegs.toString().trim();
+				}
+			}
+		}
+
+		return null;
 	}
 
 	/**
