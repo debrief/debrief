@@ -353,7 +353,7 @@ public class ScalePainter implements Plottable, Serializable, ExcludeFromRightCl
 	@Override
 	public int compareTo(final Plottable arg0) {
 		final Plottable other = arg0;
-		return this.getName().compareTo(other.getName());
+		return Integer.valueOf(System.identityHashCode(this)).compareTo(System.identityHashCode(other));
 	}
 
 	/**
@@ -414,7 +414,7 @@ public class ScalePainter implements Plottable, Serializable, ExcludeFromRightCl
 	 *         class
 	 */
 	public Integer getLocation() {
-		return new Integer(_location);
+		return Integer.valueOf(_location);
 	}
 
 	/**
@@ -433,7 +433,7 @@ public class ScalePainter implements Plottable, Serializable, ExcludeFromRightCl
 	 * @return the max value
 	 */
 	public Long getScaleMax() {
-		return new Long(_scaleMax);
+		return Long.valueOf(_scaleMax);
 	}
 
 	/**
@@ -442,7 +442,7 @@ public class ScalePainter implements Plottable, Serializable, ExcludeFromRightCl
 	 * @return the step size
 	 */
 	public Long getScaleStep() {
-		return new Long(_scaleStep);
+		return Long.valueOf(_scaleStep);
 	}
 
 	/**
@@ -903,4 +903,11 @@ public class ScalePainter implements Plottable, Serializable, ExcludeFromRightCl
 		return getName();
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if(obj==this) {
+			return true;
+		}
+		return false;
+	}
 }
