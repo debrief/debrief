@@ -224,10 +224,8 @@ public class EllipseShape extends PlainShape implements Editable, HasDraggableCo
 	private WorldLocation _theCentre;
 
 	private final WorldLocation _topPoint;
-	private final WorldLocation _bottomPoint;
 
 	private final WorldLocation _midLeft;
-	private final WorldLocation _midRight;
 
 	/**
 	 * the maxima of this Ellipse (in degs)
@@ -283,8 +281,8 @@ public class EllipseShape extends PlainShape implements Editable, HasDraggableCo
 		_topPoint.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270), maxDist, 0));
 
 		// create & extend to bottom right
-		_bottomPoint = _theCentre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(180), maxDist, 0));
-		_bottomPoint.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90), maxDist, 0));
+//		_bottomPoint = _theCentre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(180), maxDist, 0));
+//		_bottomPoint.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90), maxDist, 0));
 
 		final double minDist = Math.min(_theMaxima.getValueIn(WorldDistance.DEGS),
 				_theMinima.getValueIn(WorldDistance.DEGS));
@@ -294,8 +292,8 @@ public class EllipseShape extends PlainShape implements Editable, HasDraggableCo
 		_midLeft.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270), minDist, 0));
 
 		// create & extend to bottom right
-		_midRight = _theCentre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(180), minDist, 0));
-		_midRight.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90), minDist, 0));
+//		_midRight = _theCentre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(180), minDist, 0));
+//		_midRight.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90), minDist, 0));
 
 		// now represented our Ellipse as an area
 		calcPoints();
@@ -380,9 +378,7 @@ public class EllipseShape extends PlainShape implements Editable, HasDraggableCo
 	public void findNearestHotSpotIn(final Point cursorPos, final WorldLocation cursorLoc,
 			final ComponentConstruct currentNearest, final Layer parentLayer) {
 		checkThisOne(_topPoint, cursorLoc, currentNearest, this, parentLayer);
-		checkThisOne(_bottomPoint, cursorLoc, currentNearest, this, parentLayer);
 		checkThisOne(_midLeft, cursorLoc, currentNearest, this, parentLayer);
-		checkThisOne(_midRight, cursorLoc, currentNearest, this, parentLayer);
 
 		// now for the more difficult one. See if it is on the radius.
 		// - how far is it from the centre
@@ -407,7 +403,7 @@ public class EllipseShape extends PlainShape implements Editable, HasDraggableCo
 				// ok - process the drag
 				super.addToMe(delta);
 				// ok, what's this distance from the origin?
-				final WorldVector newSep1 = subtract(_topPoint);
+				final WorldVector newSep1 = subtract(_theCentre);
 				final WorldDistance dist = new WorldDistance(newSep1);
 				setMaxima(dist);
 
@@ -426,7 +422,7 @@ public class EllipseShape extends PlainShape implements Editable, HasDraggableCo
 				// ok - process the drag
 				super.addToMe(delta);
 				// ok, what's this distance from the origin?
-				final WorldVector newSep1 = subtract(_midLeft);
+				final WorldVector newSep1 = subtract(_theCentre);
 				final WorldDistance dist = new WorldDistance(newSep1);
 				setMinima(dist);
 
