@@ -281,8 +281,6 @@ public class EllipseShape extends PlainShape implements Editable, HasDraggableCo
 		_topPoint.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270), maxDist, 0));
 
 		// create & extend to bottom right
-//		_bottomPoint = _theCentre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(180), maxDist, 0));
-//		_bottomPoint.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90), maxDist, 0));
 
 		final double minDist = Math.min(_theMaxima.getValueIn(WorldDistance.DEGS),
 				_theMinima.getValueIn(WorldDistance.DEGS));
@@ -290,10 +288,6 @@ public class EllipseShape extends PlainShape implements Editable, HasDraggableCo
 		// create & extend to top left
 		_midLeft = _theCentre.add(new WorldVector(0, minDist, 0));
 		_midLeft.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270), minDist, 0));
-
-		// create & extend to bottom right
-//		_midRight = _theCentre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(180), minDist, 0));
-//		_midRight.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90), minDist, 0));
 
 		// now represented our Ellipse as an area
 		calcPoints();
