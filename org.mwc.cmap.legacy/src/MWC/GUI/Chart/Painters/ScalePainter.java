@@ -353,7 +353,7 @@ public class ScalePainter implements Plottable, Serializable, ExcludeFromRightCl
 	@Override
 	public int compareTo(final Plottable arg0) {
 		final Plottable other = arg0;
-		return Integer.valueOf(System.identityHashCode(this)).compareTo(System.identityHashCode(other));
+		return Integer.valueOf(hashCode()).compareTo(other.hashCode());
 	}
 
 	/**
@@ -908,6 +908,17 @@ public class ScalePainter implements Plottable, Serializable, ExcludeFromRightCl
 		if(obj==this) {
 			return true;
 		}
+		if(obj instanceof Plottable) {
+			Plottable p = (Plottable)obj;
+			if(compareTo(p)==0) {
+				return true;
+			}
+		}
 		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return System.identityHashCode(this);
 	}
 }
