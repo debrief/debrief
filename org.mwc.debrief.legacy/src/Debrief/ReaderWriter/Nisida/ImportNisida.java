@@ -21,6 +21,7 @@ import Debrief.Wrappers.TrackWrapper;
 import MWC.Algorithms.Conversions;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
@@ -218,6 +219,7 @@ public class ImportNisida {
 			TrackWrapper track = (TrackWrapper) status.getLayers().findLayer(platformName);
 			if(track == null) {
 				track = new TrackWrapper();
+				track.setColor(DebriefColors.RED);
 				track.setName(platformName);
 				status.getLayers().addThisLayer(track);
 			}
