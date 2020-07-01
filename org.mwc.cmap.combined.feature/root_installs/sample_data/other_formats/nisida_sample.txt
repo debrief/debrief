@@ -1,3 +1,8 @@
+
+/IRRELEVANT PREVIOUS LINES/
+some other line, too
+
+with blank line
 UNIT/ADRI/OCT03/SRF/
 POS/ 
 311002Z/3623.00N/00412.02E/GPS/359/03/-/ 
