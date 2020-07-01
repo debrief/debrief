@@ -24,19 +24,17 @@ import junit.framework.TestCase;
 
 public class ImportNisidaTest extends TestCase {
 	private final String nisida_track = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/nisida_sample.txt";
-	private final String not_nisida_track = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/CLOG_Trial_sample.txt";
+	private final String not_nisida_track = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/CLOG_Trial.txt";
 
 	public void testCanLoad() throws FileNotFoundException {
-		ImportNisida importer = new ImportNisida();
-		assertTrue(importer.canLoadThisFile(new FileInputStream(nisida_track)));
-		assertFalse(importer.canLoadThisFile(new FileInputStream(not_nisida_track)));
+		assertTrue(ImportNisida.canLoadThisFile(new FileInputStream(nisida_track)));
+		assertFalse(ImportNisida.canLoadThisFile(new FileInputStream(not_nisida_track)));
 	}
 	
 	public void testLoad() throws FileNotFoundException {
-		ImportNisida importer = new ImportNisida();
 		FileInputStream fis = new FileInputStream(nisida_track);
 		final Layers layers = new Layers();
-		importer.importThis(fis, layers);
+		ImportNisida.importThis(fis, layers);
 		
 		assertEquals("created layers", 4, layers.size());
 		Layer ownshipLayer = layers.findLayer("ADRI");
