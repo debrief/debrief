@@ -18,6 +18,8 @@ import java.util.regex.Pattern;
 
 import Debrief.ReaderWriter.Nisida.ImportNisida.ImportNisidaError;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Layers;
+import MWC.GenericData.WorldLocation;
 
 /**
  * Nisida Format Importer
@@ -32,16 +34,16 @@ public class ImportNisida {
 			this.type = type;
 			this.message = message;
 		}
+
+		public String getType() {
+			return type;
+		}
+
+		public String getMessage() {
+			return message;
+		}
 	}
-
-	/**
-	 * This regex matches anything that isn't a slash, or the empty string between
-	 * two slashes See:
-	 * https://stackoverflow.com/questions/62600563/regex-to-match-entries-between-slashes-but-not-slashes-including-empty-entrie
-	 * for some discussion
-	 */
-	final static String SLASH_SPLIT_REGEX = "[^/]+|(?<=/)(?=/)";
-
+	
 	final static Map<String, String> SENSOR_CODE_TO_NAME = new HashMap<String, String>();
 
 	static {
@@ -64,8 +66,6 @@ public class ImportNisida {
 		POS_SOURCE_TO_NAME.put("DR", "Dead Recknoning");
 		POS_SOURCE_TO_NAME.put("IN", "Inertial");
 	}
-
-	private int currentLineNo;
 
 	private String lastEntryWithText;
 
@@ -102,26 +102,39 @@ public class ImportNisida {
 		return false;
 	}
 
-	public void loadThisLine(final Object dataStore, final int lineNumber, final String line, final Object datafile,
-			final String changeId) {
-		this.currentLineNo = lineNumber;
+	/**
+	 * Method that should be called to load the NISIDA file
+	 * @param is
+	 */
+	public void importThis(final InputStream is, final Layers layers) {
+		final BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
+		try {
+			String nisidaLine;
+			int lineNumber = 1;
+			while ((nisidaLine = br.readLine()) != null) {
+				loadThisLine(layers, lineNumber, nisidaLine);
+				++lineNumber;
+			}
+		} catch (IOException e) {
+			// There were problems reading the file. It cannot be loaded.
+		}
+	}
+	
+	private void loadThisLine(final Layers layers, final int lineNumber, final String line) {
 		if (line.startsWith("UNIT/")) {
 			/**
 			 * Handle UNIT line giving month, year and platform Format is:
 			 * UNIT/ADRI/OCT03/SRF/
 			 */
-			final Pattern regex = Pattern.compile(SLASH_SPLIT_REGEX);
-			final Matcher matcher = regex.matcher(line);
+			final String[] tokens = line.split("/");
 
-			matcher.find();
-
-			final String platformName = matcher.group(1);
+			final String platformName = tokens[1];
 
 			// TODO
 			// FIND THE PLATFORM.
 
-			final String dateString = matcher.group(2);
+			final String dateString = tokens[2];
 			final DateFormat dateFormatter = new SimpleDateFormat("MMMyy");
 			try {
 				final Date date = dateFormatter.parse(dateString);
@@ -139,7 +152,7 @@ public class ImportNisida {
 			 */
 
 			if (this.lastEntryWithText == null) {
-				this.errors.add(new ImportNisidaError("Error on line " + this.currentLineNo,
+				this.errors.add(new ImportNisidaError("Error on line " + lineNumber,
 						"Line continuation not immediately after valid line: " + line));
 				return;
 			}
@@ -151,7 +164,6 @@ public class ImportNisida {
 				textToAdd = line.substring(2);
 			}
 
-			
 		} else if (line.length() > 7 && line.charAt(7) == '/' && allNumbersDigit(line.substring(0, 6))) {
 			/**
 			 * Check whether line starts with something like "311206Z/" (a timestamp and a
@@ -167,10 +179,7 @@ public class ImportNisida {
 			this.lastEntryWithText = null;
 
 			// Split line by slash
-			final Pattern regex = Pattern.compile(SLASH_SPLIT_REGEX);
-			final Matcher matcher = regex.matcher(line);
-
-			matcher.find();
+			final String[] tokens = line.split("/");
 
 			this.timestamp = parseTimestamp(matcher.group(0));
 
@@ -184,7 +193,7 @@ public class ImportNisida {
 					 * Comments, and is present in the example
 					 */
 
-					processNarrative(dataStore, datafile, changeId);
+					processNarrative(layers);
 				} else if ("DET".equals(operationUpper)) {
 					processDetection(dataStore, datafile, changeId);
 				} else if ("ATT".equals(operationUpper)) {
@@ -214,8 +223,14 @@ public class ImportNisida {
 	}
 
 	private void processPosition(Object dataStore, Object datafile, String changeId) {
-		// TODO Auto-generated method stub
-
+		final String posSourceMatched = matcher.group(3);
+		if (!POS_SOURCE_TO_NAME.containsKey(posSourceMatched)) {
+			this.errors.add(new ImportNisidaError("Error on line " + this.currentLineNo, "Invalid position source value: " + posSourceMatched));
+		}
+		final String posSource = POS_SOURCE_TO_NAME.get(posSourceMatched);
+		// TODO add posSource to sensor types
+		
+		
 	}
 
 	private void processEnvironment(Object dataStore, Object datafile, String changeId) {
@@ -285,4 +300,7 @@ public class ImportNisida {
 		}
 	}
 
+	public WorldLocation parseLocation() {
+		return null;
+	}
 }
