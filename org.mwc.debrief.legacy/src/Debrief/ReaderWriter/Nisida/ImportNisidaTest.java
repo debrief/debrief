@@ -17,6 +17,7 @@ package Debrief.ReaderWriter.Nisida;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
+import Debrief.ReaderWriter.Nisida.ImportNisida.NisidaLoadState;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -31,6 +32,15 @@ public class ImportNisidaTest extends TestCase {
 	public void testCanLoad() throws FileNotFoundException {
 		assertTrue(ImportNisida.canLoadThisFile(new FileInputStream(nisida_track)));
 		assertFalse(ImportNisida.canLoadThisFile(new FileInputStream(not_nisida_track)));
+	}
+
+
+	public void testParseValue() {
+		Layers layers = new Layers();
+		NisidaLoadState status = new NisidaLoadState(layers);
+		assertEquals(ImportNisida.valueFor("1230", status), 1230d);
+		assertEquals(ImportNisida.valueFor("-", status), null);
+		assertEquals(ImportNisida.valueFor("", status), null);
 	}
 	
 	public void testParseLocation() {
