@@ -18,15 +18,19 @@ import java.util.regex.Pattern;
 
 import Debrief.ReaderWriter.Nisida.ImportNisida.ImportNisidaError;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
+import MWC.TacticalData.NarrativeEntry;
+import MWC.TacticalData.NarrativeWrapper;
 
 /**
  * Nisida Format Importer
  */
 public class ImportNisida {
 
-	public class ImportNisidaError {
+	public static class ImportNisidaError {
 		private String type;
 		private String message;
 
@@ -43,7 +47,7 @@ public class ImportNisida {
 			return message;
 		}
 	}
-	
+
 	final static Map<String, String> SENSOR_CODE_TO_NAME = new HashMap<String, String>();
 
 	static {
@@ -67,26 +71,99 @@ public class ImportNisida {
 		POS_SOURCE_TO_NAME.put("IN", "Inertial");
 	}
 
-	private String lastEntryWithText;
+	public static class NisidaLoadState {
 
-	private int month;
+		private String lastEntryWithText;
 
-	private int year;
+		private int month;
 
-	private TrackWrapper platform;
+		private int year;
 
-	private Date timestamp;
+		private TrackWrapper platform;
 
-	private List<ImportNisidaError> errors = new ArrayList<ImportNisida.ImportNisidaError>();
+		private List<ImportNisidaError> errors = new ArrayList<ImportNisida.ImportNisidaError>();
+
+		private Date timestamp;
+		
+		private int lineNumber;
+		
+		private Layers layers;
+
+		public NisidaLoadState(final Layers _layers) {
+			this.layers = _layers;
+		}
+
+		public String getLastEntryWithText() {
+			return lastEntryWithText;
+		}
+
+		public void setLastEntryWithText(String lastEntryWithText) {
+			this.lastEntryWithText = lastEntryWithText;
+		}
+
+		public int getMonth() {
+			return month;
+		}
+
+		public void setMonth(int month) {
+			this.month = month;
+		}
+
+		public int getYear() {
+			return year;
+		}
+
+		public void setYear(int year) {
+			this.year = year;
+		}
+
+		public TrackWrapper getPlatform() {
+			return platform;
+		}
+
+		public void setPlatform(TrackWrapper platform) {
+			this.platform = platform;
+		}
+
+		public List<ImportNisidaError> getErrors() {
+			return errors;
+		}
+
+		public void setErrors(List<ImportNisidaError> errors) {
+			this.errors = errors;
+		}
+
+		public Date getTimestamp() {
+			return timestamp;
+		}
+
+		public void setTimestamp(Date timestamp) {
+			this.timestamp = timestamp;
+		}
+
+		public int getLineNumber() {
+			return lineNumber;
+		}
+
+		public void setLineNumber(int lineNumber) {
+			this.lineNumber = lineNumber;
+		}
+
+		public Layers getLayers() {
+			return layers;
+		}
+
+		
+	}
 
 	/**
 	 * Nisida Importer
 	 */
 	public ImportNisida() {
-		errors.clear();
+
 	}
 
-	public boolean canLoadThisFile(final InputStream is) {
+	public static boolean canLoadThisFile(final InputStream is) {
 		final BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
 		try {
@@ -104,24 +181,28 @@ public class ImportNisida {
 
 	/**
 	 * Method that should be called to load the NISIDA file
+	 * 
 	 * @param is
 	 */
-	public void importThis(final InputStream is, final Layers layers) {
+	public static void importThis(final InputStream is, final Layers layers) {
 		final BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
 		try {
 			String nisidaLine;
 			int lineNumber = 1;
+			final NisidaLoadState status = new NisidaLoadState(layers);
 			while ((nisidaLine = br.readLine()) != null) {
-				loadThisLine(layers, lineNumber, nisidaLine);
+				status.setLineNumber(lineNumber);
+				loadThisLine(nisidaLine, status);
 				++lineNumber;
 			}
 		} catch (IOException e) {
 			// There were problems reading the file. It cannot be loaded.
 		}
 	}
-	
-	private void loadThisLine(final Layers layers, final int lineNumber, final String line) {
+
+	private static void loadThisLine(final String line,
+			final NisidaLoadState status) {
 		if (line.startsWith("UNIT/")) {
 			/**
 			 * Handle UNIT line giving month, year and platform Format is:
@@ -140,8 +221,8 @@ public class ImportNisida {
 				final Date date = dateFormatter.parse(dateString);
 				final Calendar calendar = Calendar.getInstance();
 				calendar.setTime(date);
-				this.month = calendar.get(Calendar.MONTH);
-				this.year = calendar.get(Calendar.YEAR);
+				status.setMonth(calendar.get(Calendar.MONTH));
+				status.setYear(calendar.get(Calendar.YEAR));
 			} catch (ParseException e) {
 
 			}
@@ -151,8 +232,8 @@ public class ImportNisida {
 			 * line to the content field of the previous entry
 			 */
 
-			if (this.lastEntryWithText == null) {
-				this.errors.add(new ImportNisidaError("Error on line " + lineNumber,
+			if (status.getLastEntryWithText() == null) {
+				status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber(),
 						"Line continuation not immediately after valid line: " + line));
 				return;
 			}
@@ -176,15 +257,15 @@ public class ImportNisida {
 			 * directly after an entry we processed, then we will raise an error rather than
 			 * add to the incorrect entry
 			 */
-			this.lastEntryWithText = null;
+			status.setLastEntryWithText(null);
 
 			// Split line by slash
 			final String[] tokens = line.split("/");
 
-			this.timestamp = parseTimestamp(matcher.group(0));
+			status.setTimestamp(parseTimestamp(tokens[0], status));
 
 			try {
-				final String operation = matcher.group(1);
+				final String operation = tokens[1];
 				final String operationUpper = operation.toUpperCase();
 				if ("NAR".equals(operationUpper) || "COC".equals(operationUpper)) {
 					/**
@@ -193,8 +274,8 @@ public class ImportNisida {
 					 * Comments, and is present in the example
 					 */
 
-					processNarrative(layers);
-				} else if ("DET".equals(operationUpper)) {
+					processNarrative(tokens, status);
+				} /*else if ("DET".equals(operationUpper)) {
 					processDetection(dataStore, datafile, changeId);
 				} else if ("ATT".equals(operationUpper)) {
 					processAttack(dataStore, datafile, changeId);
@@ -208,12 +289,12 @@ public class ImportNisida {
 					processEnvironment(dataStore, datafile, changeId);
 				} else if ("GPS".equals(operationUpper) || "DR".equals(operationUpper) || "IN".equals(operationUpper)) {
 					processPosition(dataStore, datafile, changeId);
-				} else {
-					this.errors.add(new ImportNisidaError("Error on line " + this.currentLineNo,
+				} */else {
+					status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber(),
 							"Line does not match any known message format: " + line));
 				}
 			} catch (Exception e) {
-				this.errors.add(new ImportNisidaError("Error on line " + this.currentLineNo,
+				status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber(),
 						"General error processing line - " + line));
 			}
 		} else {
@@ -222,15 +303,39 @@ public class ImportNisida {
 		}
 	}
 
-	private void processPosition(Object dataStore, Object datafile, String changeId) {
-		final String posSourceMatched = matcher.group(3);
-		if (!POS_SOURCE_TO_NAME.containsKey(posSourceMatched)) {
-			this.errors.add(new ImportNisidaError("Error on line " + this.currentLineNo, "Invalid position source value: " + posSourceMatched));
+	private static void processNarrative(final String[] _tokens,
+			final NisidaLoadState status) {
+		final String commentText = _tokens[2];
+
+		Layer dest = status.getLayers().findLayer(NarrativeEntry.NARRATIVE_LAYER, true);
+		if (dest == null) {
+			dest = new NarrativeWrapper(NarrativeEntry.NARRATIVE_LAYER);
+
+			// add it to the manager
+			status.getLayers().addThisLayer(dest);
 		}
-		final String posSource = POS_SOURCE_TO_NAME.get(posSourceMatched);
+
+		final NarrativeEntry entry = new NarrativeEntry(status.getPlatform().getName(),
+				new HiResDate(parseTimestamp(_tokens[0], status)), commentText);
+
+		if ("NAR".equals(_tokens[1])) {
+			entry.setType("Narrative");
+		} else if ("COC".equals(_tokens[1])) {
+			entry.setType("CO Comments");
+		}
+
+		dest.add(entry);
+	}
+
+	private void processPosition(Object dataStore, Object datafile, String changeId) {
+		/*final String posSourceMatched = matcher.group(3);
+		if (!POS_SOURCE_TO_NAME.containsKey(posSourceMatched)) {
+			this.errors.add(new ImportNisidaError("Error on line " + this.currentLineNo,
+					"Invalid position source value: " + posSourceMatched));
+		}*/
+		//final String posSource = POS_SOURCE_TO_NAME.get(posSourceMatched);
 		// TODO add posSource to sensor types
-		
-		
+
 	}
 
 	private void processEnvironment(Object dataStore, Object datafile, String changeId) {
@@ -263,11 +368,6 @@ public class ImportNisida {
 
 	}
 
-	private void processNarrative(Object dataStore, Object datafile, String changeId) {
-		// TODO Auto-generated method stub
-
-	}
-
 	public static boolean allNumbersDigit(final String text) {
 		for (char ch : text.toCharArray()) {
 			if (!Character.isDigit(ch)) {
@@ -277,9 +377,9 @@ public class ImportNisida {
 		return true;
 	}
 
-	public Date parseTimestamp(final String timestampText) {
+	public static Date parseTimestamp(final String timestampText, final NisidaLoadState status) {
 		if (timestampText.charAt(timestampText.length() - 1) != 'Z') {
-			this.errors.add(new ImportNisidaError("Error on line " + this.currentLineNo + ".",
+			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
 					"Invalid format for timestamp - missing Z character: " + timestampText));
 			return null;
 		}
@@ -290,10 +390,10 @@ public class ImportNisida {
 			final int minute = Integer.parseInt(timestampText.substring(4, 6));
 
 			final Calendar calendar = Calendar.getInstance();
-			calendar.set(year, month, day - 1, hour, minute);
+			calendar.set(status.getYear(), status.getMonth(), day - 1, hour, minute);
 			return calendar.getTime();
 		} catch (Exception e) {
-			this.errors.add(new ImportNisidaError("Error on line " + this.currentLineNo + ".",
+			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
 					"Invalid format for timestamp - day, hour or min could not be converted to float: "
 							+ timestampText));
 			return null;
