@@ -1069,7 +1069,6 @@ public class DebriefLiteApp implements FileDropListener {
 						handleImportTIFFile(file);
 					} else {
 						// try nisida format - we can't rely on filename
-						ImportNisida nImport  = new ImportNisida();
 						FileInputStream fis = new FileInputStream(file);
 						if(ImportNisida.canLoadThisFile(fis)) {
 							fis.close();
