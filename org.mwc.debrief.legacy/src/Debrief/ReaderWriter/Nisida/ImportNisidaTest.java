@@ -36,23 +36,23 @@ public class ImportNisidaTest extends TestCase {
 
 
 	public void testParseValue() {
-		Layers layers = new Layers();
-		NisidaLoadState status = new NisidaLoadState(layers);
+		NisidaLoadState status = new NisidaLoadState(null);
 		assertEquals(ImportNisida.valueFor("1230", status), 1230d);
 		assertEquals(ImportNisida.valueFor("-", status), null);
 		assertEquals(ImportNisida.valueFor("", status), null);
 	}
 	
 	public void testParseLocation() {
-		assertEquals(ImportNisida.parseDegrees("1230.00N"), 12.5);
-		assertEquals(ImportNisida.parseDegrees("1230.00S"), -12.5);
-		assertEquals(ImportNisida.parseDegrees("01230.00E"), 12.5);
-		assertEquals(ImportNisida.parseDegrees("01230.00W"), -12.5);
+		NisidaLoadState status = new NisidaLoadState(null);
+		assertEquals(ImportNisida.parseDegrees("1230.00N", status), 12.5);
+		assertEquals(ImportNisida.parseDegrees("1230.00S", status), -12.5);
+		assertEquals(ImportNisida.parseDegrees("01230.00E", status), 12.5);
+		assertEquals(ImportNisida.parseDegrees("01230.00W", status), -12.5);
 		// try some weird formats
-		assertEquals(ImportNisida.parseDegrees("1230.0000N"), 12.5);
-		assertEquals(ImportNisida.parseDegrees("1230.0000N"), 12.5);
-		assertEquals(ImportNisida.parseDegrees("1230.00E"), 12.5);
-		assertEquals(ImportNisida.parseDegrees("1230.00W"), -12.5);
+		assertEquals(ImportNisida.parseDegrees("1230.0000N", status), 12.5);
+		assertEquals(ImportNisida.parseDegrees("1230.0000N", status), 12.5);
+		assertEquals(ImportNisida.parseDegrees("1230.00E", status), 12.5);
+		assertEquals(ImportNisida.parseDegrees("1230.00W", status), -12.5);
 	}
 	
 	public void testLoad() throws FileNotFoundException {
