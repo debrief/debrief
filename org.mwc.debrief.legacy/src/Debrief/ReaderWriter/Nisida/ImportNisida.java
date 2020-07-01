@@ -17,11 +17,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import Debrief.ReaderWriter.Nisida.ImportNisida.ImportNisidaError;
+import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.Algorithms.Conversions;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
+import MWC.TacticalData.Fix;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
 
@@ -211,9 +214,15 @@ public class ImportNisida {
 			final String[] tokens = line.split("/");
 
 			final String platformName = tokens[1];
-
-			// TODO
+			
 			// FIND THE PLATFORM.
+			TrackWrapper track = (TrackWrapper) status.getLayers().findLayer(platformName);
+			if(track == null) {
+				track = new TrackWrapper();
+				track.setName(platformName);
+				status.getLayers().addThisLayer(track);
+			}
+			status.setPlatform(track);
 
 			final String dateString = tokens[2];
 			final DateFormat dateFormatter = new SimpleDateFormat("MMMyy");
@@ -290,6 +299,12 @@ public class ImportNisida {
 				} else if ("GPS".equals(operationUpper) || "DR".equals(operationUpper) || "IN".equals(operationUpper)) {
 					processPosition(dataStore, datafile, changeId);
 				} */else {
+					// ok, it's probably a position.
+					final String nextToken = tokens[2];
+					if(operationUpper.endsWith("N") || operationUpper.endsWith("S")) {
+						// ok, it's a position
+						processPosition(tokens, status);
+					}
 					status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber(),
 							"Line does not match any known message format: " + line));
 				}
@@ -303,9 +318,9 @@ public class ImportNisida {
 		}
 	}
 
-	private static void processNarrative(final String[] _tokens,
+	private static void processNarrative(final String[] tokens,
 			final NisidaLoadState status) {
-		final String commentText = _tokens[2];
+		final String commentText = tokens[2];
 
 		Layer dest = status.getLayers().findLayer(NarrativeEntry.NARRATIVE_LAYER, true);
 		if (dest == null) {
@@ -316,18 +331,49 @@ public class ImportNisida {
 		}
 
 		final NarrativeEntry entry = new NarrativeEntry(status.getPlatform().getName(),
-				new HiResDate(parseTimestamp(_tokens[0], status)), commentText);
+				new HiResDate(parseTimestamp(tokens[0], status)), commentText);
 
-		if ("NAR".equals(_tokens[1])) {
+		if ("NAR".equals(tokens[1])) {
 			entry.setType("Narrative");
-		} else if ("COC".equals(_tokens[1])) {
+		} else if ("COC".equals(tokens[1])) {
 			entry.setType("CO Comments");
 		}
 
 		dest.add(entry);
 	}
+	
+	public static double parseDegrees(final String value) {
+		final int point = value.indexOf(".");
+		final String minString = value.substring(point - 2, value.length() - 1);
+		final double mins = Double.parseDouble(minString);
+		final String degString = value.substring(0, point - 2);
+		final double degs = Double.parseDouble(degString);
+		final String suffix = value.substring(value.length() - 1, value.length());
+		final double scalar = suffix.toUpperCase().equals("N") || suffix.toUpperCase().equals("E") ? 1d : -1d;
+		final double res = scalar * (degs + mins / 60d);
+		return res;
+	}
+	
+	public static Double valueFor(final String value, final NisidaLoadState status) {
+		final Double res;
+		if(value.length() == 0) {
+			res = null;
+		} else if(value.equals("-")) {
+			res = null;
+		} else {
+			try {
+				res = Double.parseDouble(value);				
+			} catch (NumberFormatException nfe) {
+				status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber(),
+						"Failed to parse numeric field - " + value));
+				return null;
+			}
+		}
+		return res;
+	}
 
-	private void processPosition(Object dataStore, Object datafile, String changeId) {
+	private static void processPosition(final String[] tokens, final NisidaLoadState status) {
+		
 		/*final String posSourceMatched = matcher.group(3);
 		if (!POS_SOURCE_TO_NAME.containsKey(posSourceMatched)) {
 			this.errors.add(new ImportNisidaError("Error on line " + this.currentLineNo,
@@ -336,6 +382,37 @@ public class ImportNisida {
 		//final String posSource = POS_SOURCE_TO_NAME.get(posSourceMatched);
 		// TODO add posSource to sensor types
 
+		// sample:
+		// 311002Z/3623.00N/00412.02E/GPS/359/03/-/ 
+		final HiResDate dtg = new HiResDate(status.timestamp);
+		final WorldLocation location = new WorldLocation(parseDegrees(tokens[1]), parseDegrees(tokens[2]), 0d);
+		
+		final String source = tokens[3];
+		final Double courseVal = valueFor(tokens[4], status);
+		final Double speedVal = valueFor(tokens[5], status);
+		final Double depthVal = valueFor(tokens[6], status);
+		
+		Fix fix = new Fix(dtg, location, 0d, 0d);
+		if(courseVal != null) {
+			fix.setCourse(Math.toRadians(courseVal));
+		}
+		if(speedVal != null) {
+			fix.setSpeed(Conversions.Kts2Yps(speedVal));
+		}
+		if(depthVal != null) {
+			fix.getLocation().setDepth(depthVal);
+		}
+		FixWrapper res = new FixWrapper(fix);
+		
+		// sort out the sensor
+		final String sourceName = POS_SOURCE_TO_NAME.get(source);
+		if(sourceName != null) {
+			res.setLabel(sourceName);
+		} else {
+			res.setLabel(source);
+		}
+		
+		status.getPlatform().addFix(res);		
 	}
 
 	private void processEnvironment(Object dataStore, Object datafile, String changeId) {

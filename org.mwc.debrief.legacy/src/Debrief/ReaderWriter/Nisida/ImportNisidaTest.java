@@ -20,6 +20,8 @@ import java.io.FileNotFoundException;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.TacticalData.NarrativeEntry;
+import MWC.TacticalData.NarrativeWrapper;
 import junit.framework.TestCase;
 
 public class ImportNisidaTest extends TestCase {
@@ -31,12 +33,33 @@ public class ImportNisidaTest extends TestCase {
 		assertFalse(ImportNisida.canLoadThisFile(new FileInputStream(not_nisida_track)));
 	}
 	
+	public void testParseLocation() {
+		assertEquals(ImportNisida.parseDegrees("1230.00N"), 12.5);
+		assertEquals(ImportNisida.parseDegrees("1230.00S"), -12.5);
+		assertEquals(ImportNisida.parseDegrees("01230.00E"), 12.5);
+		assertEquals(ImportNisida.parseDegrees("01230.00W"), -12.5);
+		// try some weird formats
+		assertEquals(ImportNisida.parseDegrees("1230.0000N"), 12.5);
+		assertEquals(ImportNisida.parseDegrees("1230.0000N"), 12.5);
+		assertEquals(ImportNisida.parseDegrees("1230.00E"), 12.5);
+		assertEquals(ImportNisida.parseDegrees("1230.00W"), -12.5);
+	}
+	
 	public void testLoad() throws FileNotFoundException {
 		FileInputStream fis = new FileInputStream(nisida_track);
 		final Layers layers = new Layers();
 		ImportNisida.importThis(fis, layers);
 		
-		assertEquals("created layers", 4, layers.size());
+		assertEquals("created layers", 2, layers.size());
+		
+		// check the narrative entries
+		Layer narrativeLayer = layers.findLayer(NarrativeEntry.NARRATIVE_LAYER);
+		assertNotNull("found narratives");
+		assertTrue("of correct type", narrativeLayer instanceof NarrativeWrapper);
+		NarrativeWrapper narratives = (NarrativeWrapper) narrativeLayer;
+		assertEquals("found entries", 3, narratives.size());
+		
+		
 		Layer ownshipLayer = layers.findLayer("ADRI");
 		assertNotNull("created O/S track", ownshipLayer);
 		assertTrue("is track wrapper", ownshipLayer instanceof TrackWrapper);
