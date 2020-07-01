@@ -13,10 +13,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import Debrief.ReaderWriter.Nisida.ImportNisida.ImportNisidaError;
+import org.apache.poi.ss.formula.functions.NumericFunction;
+
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.Algorithms.Conversions;
@@ -342,18 +341,37 @@ public class ImportNisida {
 		dest.add(entry);
 	}
 	
-	public static double parseDegrees(final String value) {
-		final int point = value.indexOf(".");
-		final String minString = value.substring(point - 2, value.length() - 1);
-		final double mins = Double.parseDouble(minString);
-		final String degString = value.substring(0, point - 2);
-		final double degs = Double.parseDouble(degString);
-		final String suffix = value.substring(value.length() - 1, value.length());
-		final double scalar = suffix.toUpperCase().equals("N") || suffix.toUpperCase().equals("E") ? 1d : -1d;
-		final double res = scalar * (degs + mins / 60d);
-		return res;
+	/** parse lat/long value in degrees, using NISIDA position structure
+	 * 
+	 * @param value string to parse
+	 * @param status 
+	 * @return double value, -ve if West/South
+	 */
+	public static Double parseDegrees(final String value, NisidaLoadState status) {
+		try {
+			final int point = value.indexOf(".");
+			final String minString = value.substring(point - 2, value.length() - 1);
+			final double mins = Double.parseDouble(minString);
+			final String degString = value.substring(0, point - 2);
+			final double degs = Double.parseDouble(degString);
+			final String suffix = value.substring(value.length() - 1, value.length());
+			final double scalar = suffix.toUpperCase().equals("N") || suffix.toUpperCase().equals("E") ? 1d : -1d;
+			final double res = scalar * (degs + mins / 60d);
+			return res;
+		} catch (NumberFormatException nfe) {
+			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber(),
+					"Failed to parse numeric field - " + value));
+			return null;
+		}
+
 	}
 	
+	/** parse the string, with Nisida standard states for missing data ("-" or "")
+	 * 
+	 * @param value string to be parsed
+	 * @param status supporter object
+	 * @return double value, or null if field is empty
+	 */
 	public static Double valueFor(final String value, final NisidaLoadState status) {
 		final Double res;
 		if(value.length() == 0) {
@@ -373,46 +391,41 @@ public class ImportNisida {
 	}
 
 	private static void processPosition(final String[] tokens, final NisidaLoadState status) {
-		
-		/*final String posSourceMatched = matcher.group(3);
-		if (!POS_SOURCE_TO_NAME.containsKey(posSourceMatched)) {
-			this.errors.add(new ImportNisidaError("Error on line " + this.currentLineNo,
-					"Invalid position source value: " + posSourceMatched));
-		}*/
-		//final String posSource = POS_SOURCE_TO_NAME.get(posSourceMatched);
-		// TODO add posSource to sensor types
-
 		// sample:
 		// 311002Z/3623.00N/00412.02E/GPS/359/03/-/ 
 		final HiResDate dtg = new HiResDate(status.timestamp);
-		final WorldLocation location = new WorldLocation(parseDegrees(tokens[1]), parseDegrees(tokens[2]), 0d);
-		
-		final String source = tokens[3];
-		final Double courseVal = valueFor(tokens[4], status);
-		final Double speedVal = valueFor(tokens[5], status);
-		final Double depthVal = valueFor(tokens[6], status);
-		
-		Fix fix = new Fix(dtg, location, 0d, 0d);
-		if(courseVal != null) {
-			fix.setCourse(Math.toRadians(courseVal));
+		final Double latVal = parseDegrees(tokens[1], status);
+		final Double longVal = parseDegrees(tokens[2], status);
+		if(dtg != null && latVal != null && longVal != null) {
+			final WorldLocation location = new WorldLocation(latVal, longVal, 0d);
+			
+			final String source = tokens[3];
+			final Double courseVal = valueFor(tokens[4], status);
+			final Double speedVal = valueFor(tokens[5], status);
+			final Double depthVal = valueFor(tokens[6], status);
+			
+			Fix fix = new Fix(dtg, location, 0d, 0d);
+			if(courseVal != null) {
+				fix.setCourse(Math.toRadians(courseVal));
+			}
+			if(speedVal != null) {
+				fix.setSpeed(Conversions.Kts2Yps(speedVal));
+			}
+			if(depthVal != null) {
+				fix.getLocation().setDepth(depthVal);
+			}
+			FixWrapper res = new FixWrapper(fix);
+			
+			// sort out the sensor
+			final String sourceName = POS_SOURCE_TO_NAME.get(source);
+			if(sourceName != null) {
+				res.setLabel(sourceName);
+			} else {
+				res.setLabel(source);
+			}
+			
+			status.getPlatform().addFix(res);			
 		}
-		if(speedVal != null) {
-			fix.setSpeed(Conversions.Kts2Yps(speedVal));
-		}
-		if(depthVal != null) {
-			fix.getLocation().setDepth(depthVal);
-		}
-		FixWrapper res = new FixWrapper(fix);
-		
-		// sort out the sensor
-		final String sourceName = POS_SOURCE_TO_NAME.get(source);
-		if(sourceName != null) {
-			res.setLabel(sourceName);
-		} else {
-			res.setLabel(source);
-		}
-		
-		status.getPlatform().addFix(res);		
 	}
 
 	private void processEnvironment(Object dataStore, Object datafile, String changeId) {
