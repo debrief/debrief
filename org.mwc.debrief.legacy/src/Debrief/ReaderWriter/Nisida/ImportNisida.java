@@ -262,7 +262,7 @@ public class ImportNisida {
 			} else {
 				operationUpper3 = "";
 			}
-			if ("NAR".equals(operationUpper) || "COC".equals(operationUpper)) {
+			if (isNarrativeOrCoc(operationUpper)) {
 				/**
 				 * The COC and NAR messages have the same format COC isn't actually described in
 				 * the documentation for the format, but seems to be Commanding Officer
@@ -274,7 +274,7 @@ public class ImportNisida {
 				processDetection(tokens, status);
 			} else if ("ATT".equals(operationUpper)) {
 				processAttack(tokens, status);
-			} else if ("DIP".equals(operationUpper) || "SSQ".equals(operationUpper)) {
+			} else if (isDipOrBoy(operationUpper)) {
 				processDipOrBoy(tokens, status);
 			} else if ("EXP".equals(operationUpper)) {
 				processMastexposure(tokens, status);
@@ -282,12 +282,11 @@ public class ImportNisida {
 				processSensor(tokens, status);
 			} else if ("ENV".equals(operationUpper)) {
 				processEnvironment(tokens, status);
-			} else if ("GPS".equals(operationUpper3) || "DR".equals(operationUpper3)
-					|| "IN".equals(operationUpper3)) {
+			} else if (isPositionProcess(operationUpper3)) {
 				processPosition(tokens, status);
 			} else {
 				// ok, it's probably a position.
-				if (operationUpper.endsWith("N") || operationUpper.endsWith("S")) {
+				if (isNorthOrSouth(operationUpper)) {
 					// ok, it's a position
 					processPosition(tokens, status);
 				}
@@ -298,6 +297,23 @@ public class ImportNisida {
 			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber(),
 					"General error processing line - " + line));
 		}
+	}
+
+	protected static boolean isNorthOrSouth(final String process) {
+		return process.endsWith("N") || process.endsWith("S");
+	}
+
+	protected static boolean isNarrativeOrCoc(final String process) {
+		return "NAR".equals(process) || "COC".equals(process);
+	}
+
+	protected static boolean isDipOrBoy(final String process) {
+		return "DIP".equals(process) || "SSQ".equals(process);
+	}
+
+	protected static boolean isPositionProcess(final String process) {
+		return "GPS".equals(process) || "DR".equals(process)
+				|| "IN".equals(process);
 	}
 
 	protected static void processContinue(final String line, final NisidaLoadState status) {
