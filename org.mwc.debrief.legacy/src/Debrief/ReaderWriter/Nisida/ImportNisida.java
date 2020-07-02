@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -197,12 +196,13 @@ public class ImportNisida {
 		final BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
 		try {
+			final SimpleDateFormat dateFormatter = new SimpleDateFormat("MMMyy");
 			String nisidaLine;
 			int lineNumber = 1;
 			final NisidaLoadState status = new NisidaLoadState(layers);
 			while ((nisidaLine = br.readLine()) != null) {
 				status.setLineNumber(lineNumber);
-				loadThisLine(nisidaLine, status);
+				loadThisLine(nisidaLine, status, dateFormatter);
 				++lineNumber;
 			}
 		} catch (IOException e) {
@@ -210,7 +210,8 @@ public class ImportNisida {
 		}
 	}
 
-	private static void loadThisLine(final String line, final NisidaLoadState status) {
+	private static void loadThisLine(final String line, final NisidaLoadState status,
+			final SimpleDateFormat dateFormatter) {
 		if (line.startsWith("UNIT/")) {
 			/**
 			 * Handle UNIT line giving month, year and platform Format is:
@@ -231,7 +232,7 @@ public class ImportNisida {
 			status.setPlatform(track);
 
 			final String dateString = tokens[2];
-			final DateFormat dateFormatter = new SimpleDateFormat("MMMyy");
+
 			try {
 				final Date date = dateFormatter.parse(dateString);
 				final Calendar calendar = Calendar.getInstance();
@@ -293,7 +294,7 @@ public class ImportNisida {
 				final String operationUpper3;
 				if (tokens.length > 3) {
 					operationUpper3 = tokens[3].toUpperCase();
-				}else {
+				} else {
 					operationUpper3 = "";
 				}
 				if ("NAR".equals(operationUpper) || "COC".equals(operationUpper)) {
@@ -316,7 +317,8 @@ public class ImportNisida {
 					processSensor(tokens, status);
 				} else if ("ENV".equals(operationUpper)) {
 					processEnvironment(tokens, status);
-				} else if ("GPS".equals(operationUpper3) || "DR".equals(operationUpper3) || "IN".equals(operationUpper3)) {
+				} else if ("GPS".equals(operationUpper3) || "DR".equals(operationUpper3)
+						|| "IN".equals(operationUpper3)) {
 					processPosition(tokens, status);
 				} else {
 					// ok, it's probably a position.
