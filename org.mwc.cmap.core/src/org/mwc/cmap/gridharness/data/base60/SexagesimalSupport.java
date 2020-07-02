@@ -202,7 +202,7 @@ public class SexagesimalSupport {
 
 		@Override
 		public Sexagesimal parse(final String text, final boolean forLongitudeNotLatitude) throws ParseException {
-			String theText = text.replaceAll("\\s+","");
+			String theText = text.replaceAll("\\s+", "");
 			theText = theText.trim();
 			final int hemi = getHemisphereSignum(theText, forLongitudeNotLatitude);
 			theText = theText.substring(0, theText.length() - 1).trim();
@@ -234,10 +234,12 @@ public class SexagesimalSupport {
 	public static double combineToDegrees(final double degree, final double minutes, final double seconds,
 			final int hemi) {
 		if (!isValidMinutes(minutes)) {
-			throw new IllegalArgumentException("Illegal value of minutes: " + minutes);
+			throw new IllegalArgumentException("The inserted value {" + minutes
+					+ "} is not valid minute. Please insert valid minutes from 0 till 59");
 		}
 		if (!isValidSeconds(seconds)) {
-			throw new IllegalArgumentException("Illegal value of seconds: " + seconds);
+			throw new IllegalArgumentException("The inserted value {" + seconds
+					+ "} is not valid second. Please insert valid second from 0 till 59");
 		}
 		return hemi * (degree + minutes / MINUTES_IN_DEGREE + seconds / MINUTES_IN_DEGREE / SECONDS_IN_MINUTE);
 	}
