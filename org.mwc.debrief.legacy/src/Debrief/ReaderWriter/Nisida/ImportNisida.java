@@ -294,17 +294,18 @@ public class ImportNisida {
 					processDetection(tokens, status);
 				} else if ("ATT".equals(operationUpper)) {
 					processAttack(tokens, status);
-				} /*
-					 * else if ("DIP".equals(operationUpper) || "SSQ".equals(operationUpper)) {
-					 * processDipOrBoy(dataStore, datafile, changeId); } else if
-					 * ("EXP".equals(operationUpper)) { processMastexposure(dataStore, datafile,
-					 * changeId); } else if ("SEN".equals(operationUpper)) {
-					 * processSensor(dataStore, datafile, changeId); } else if
-					 * ("ENV".equals(operationUpper)) { processEnvironment(dataStore, datafile,
-					 * changeId); } else if ("GPS".equals(operationUpper) ||
-					 * "DR".equals(operationUpper) || "IN".equals(operationUpper)) {
-					 * processPosition(dataStore, datafile, changeId); }
-					 */
+				} else if ("DIP".equals(operationUpper) || "SSQ".equals(operationUpper)) {
+					processDipOrBoy(tokens, status);
+				} else if ("EXP".equals(operationUpper)) {
+					processMastexposure(tokens, status);
+				} else if ("SEN".equals(operationUpper)) {
+					processSensor(tokens, status);
+				} else if ("ENV".equals(operationUpper)) {
+					processEnvironment(tokens, status);
+				} else if ("GPS".equals(operationUpper) || "DR".equals(operationUpper) || "IN".equals(operationUpper)) {
+					processPosition(tokens, status);
+				}
+
 				else {
 					// ok, it's probably a position.
 					final String nextToken = tokens[2];
@@ -444,22 +445,22 @@ public class ImportNisida {
 		}
 	}
 
-	private void processEnvironment(Object dataStore, Object datafile, String changeId) {
+	private static void processEnvironment(final String[] tokens, final NisidaLoadState status) {
 		// TODO Auto-generated method stub
 
 	}
 
-	private void processSensor(Object dataStore, Object datafile, String changeId) {
+	private static void processSensor(final String[] tokens, final NisidaLoadState status) {
 		// TODO Auto-generated method stub
 
 	}
 
-	private void processMastexposure(Object dataStore, Object datafile, String changeId) {
+	private static void processMastexposure(final String[] tokens, final NisidaLoadState status) {
 		// TODO Auto-generated method stub
 
 	}
 
-	private void processDipOrBoy(Object dataStore, Object datafile, String changeId) {
+	private static void processDipOrBoy(final String[] tokens, final NisidaLoadState status) {
 		// TODO Auto-generated method stub
 
 	}
@@ -499,7 +500,7 @@ public class ImportNisida {
 			dest.add(labelWrapper);
 
 			// This is a comment, with "Attack" as Comment-Type
-			
+
 			Layer narrativeDest = status.getLayers().findLayer(NarrativeEntry.NARRATIVE_LAYER, true);
 			if (narrativeDest == null) {
 				narrativeDest = new NarrativeWrapper(NarrativeEntry.NARRATIVE_LAYER);
@@ -514,7 +515,7 @@ public class ImportNisida {
 			entry.setType("Attack");
 
 			narrativeDest.add(entry);
-			
+
 		} else {
 			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
 					"Invalid amount of fields. Expected format should be: [DayTime/ATT/WPN/TGT Bearing/TGT RNGE in NM/TN / Own Lat/ Own Lon /Position Source /Remarks/"));
