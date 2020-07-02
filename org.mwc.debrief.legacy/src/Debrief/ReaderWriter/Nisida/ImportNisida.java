@@ -290,6 +290,12 @@ public class ImportNisida {
 			try {
 				final String operation = tokens[1];
 				final String operationUpper = operation.toUpperCase();
+				final String operationUpper3;
+				if (tokens.length > 3) {
+					operationUpper3 = tokens[3].toUpperCase();
+				}else {
+					operationUpper3 = "";
+				}
 				if ("NAR".equals(operationUpper) || "COC".equals(operationUpper)) {
 					/**
 					 * The COC and NAR messages have the same format COC isn't actually described in
@@ -310,11 +316,10 @@ public class ImportNisida {
 					processSensor(tokens, status);
 				} else if ("ENV".equals(operationUpper)) {
 					processEnvironment(tokens, status);
-				} else if ("GPS".equals(operationUpper) || "DR".equals(operationUpper) || "IN".equals(operationUpper)) {
+				} else if ("GPS".equals(operationUpper3) || "DR".equals(operationUpper3) || "IN".equals(operationUpper3)) {
 					processPosition(tokens, status);
 				} else {
 					// ok, it's probably a position.
-					final String nextToken = tokens[2];
 					if (operationUpper.endsWith("N") || operationUpper.endsWith("S")) {
 						// ok, it's a position
 						processPosition(tokens, status);
