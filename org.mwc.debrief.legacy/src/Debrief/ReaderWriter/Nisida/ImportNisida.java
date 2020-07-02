@@ -340,7 +340,7 @@ public class ImportNisida {
 			type = "Narrative";
 		} else if ("COC".equals(tokens[1])) {
 			type = "CO Comments";
-		}else {
+		} else {
 			type = tokens[1];
 		}
 		createNarrative(commentText, type, status);
@@ -456,11 +456,50 @@ public class ImportNisida {
 		// or
 		// 312100Z/SSQ/33/05/2/3605.00N/00512.12E/ASW BUOY TEXT/
 		// format:
-		// [DayTime Mark/DIP/Dip NR/ Ball Depth in m/Time Break/Dip Lat/Dip Lon / Remarks/
+		// [DayTime Mark/DIP/Dip NR/ Ball Depth in m/Time Break/Dip Lat/Dip Lon /
+		// Remarks/
 		// or
-		// [DayTime Drop/SSQ/ Buoy NR/Hydro Depth in m/Buoy LifeSetting in hrs /Buoy Lat/Buoy Lon/Remarks/]
+		// [DayTime Drop/SSQ/ Buoy NR/Hydro Depth in m/Buoy LifeSetting in hrs /Buoy
+		// Lat/Buoy Lon/Remarks/]
 
-		
+		if (tokens.length >= 8) {
+
+			// This is a comment (NarrativeEntry). As with other comments, we can use the
+			// current track name as “track”.
+			final String operation = tokens[1];
+			final String operationUpper = operation.toUpperCase();
+			final String type;
+			final String layer;
+			if ("DIP".equals(operationUpper)) {
+				type = "DIP";
+				layer = "DIPs";
+			} else if ("SSQ".equals(operationUpper)) {
+				type = "Buoy-Drop";
+				layer = "Buoys";
+			} else {
+				// this will never happen
+				type = operationUpper;
+				layer = "";
+			}
+
+			createNarrative(tokens[9], type, status);
+
+			final WorldLocation location = parseLocation(tokens[5], tokens[6], status);
+			final LabelWrapper labelWrapper = new LabelWrapper(tokens[7], location, null);
+			Layer dest = status.getLayers().findLayer(layer, true);
+			if (dest == null) {
+				dest = new NarrativeWrapper(layer);
+
+				// add it to the manager
+				status.getLayers().addThisLayer(dest);
+			}
+			dest.add(labelWrapper);
+			
+		} else {
+			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
+					"Invalid amount of fields. Expected format should be 10 fields at least."));
+			return;
+		}
 	}
 
 	private static void processAttack(final String[] tokens, final NisidaLoadState status) {
@@ -508,8 +547,9 @@ public class ImportNisida {
 		}
 
 	}
-	
-	private static void createNarrative(final String narrativeText, final String narrativeType, final NisidaLoadState status) {
+
+	private static void createNarrative(final String narrativeText, final String narrativeType,
+			final NisidaLoadState status) {
 		Layer narrativeDest = status.getLayers().findLayer(NarrativeEntry.NARRATIVE_LAYER, true);
 		if (narrativeDest == null) {
 			narrativeDest = new NarrativeWrapper(NarrativeEntry.NARRATIVE_LAYER);
@@ -546,11 +586,11 @@ public class ImportNisida {
 		} else {
 			trackNumberString = "";
 		}
-		
+
 		final String sensorName;
 		if (!SENSOR_CODE_TO_NAME.containsKey(sensorCodeToken)) {
 			sensorName = sensorCodeToken;
-		}else {
+		} else {
 			sensorName = SENSOR_CODE_TO_NAME.get(sensorCodeToken) + "-" + trackNumberString;
 		}
 
@@ -595,22 +635,24 @@ public class ImportNisida {
 			theSensor = new SensorWrapper(sensorName);
 			status.getPlatform().add(theSensor);
 		}
-		
+
 		// Let's get the range & bearing
 		final Double bearing = valueFor(tokens[3], status);
 		final Double rangeVal = valueFor(tokens[4], status);
-		final WorldDistance range = rangeVal != null ? new WorldDistance(rangeVal, MWC.GenericData.WorldDistance.NM) : null;
+		final WorldDistance range = rangeVal != null ? new WorldDistance(rangeVal, MWC.GenericData.WorldDistance.NM)
+				: null;
 
 		// calculate target location
 		final WorldLocation tgtLocation;
-		if(bearing != null && range != null) {
+		if (bearing != null && range != null) {
 			tgtLocation = ownLocation.add(new WorldVector(Math.toRadians(bearing), range, null));
 		} else {
 			tgtLocation = null;
 		}
-		
-		final SensorContactWrapper contact = new SensorContactWrapper(status.getPlatform().getName(), new HiResDate(status.getTimestamp()),
-				range, bearing, tgtLocation, null, sensorName, 0, theSensor.getName());
+
+		final SensorContactWrapper contact = new SensorContactWrapper(status.getPlatform().getName(),
+				new HiResDate(status.getTimestamp()), range, bearing, tgtLocation, null, sensorName, 0,
+				theSensor.getName());
 		theSensor.add(contact);
 	}
 
