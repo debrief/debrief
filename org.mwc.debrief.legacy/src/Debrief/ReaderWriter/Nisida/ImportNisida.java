@@ -15,8 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.poi.ss.formula.functions.NumericFunction;
-
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
@@ -28,7 +26,9 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
@@ -549,15 +549,15 @@ public class ImportNisida {
 		} else {
 			trackNumberString = "";
 		}
-		final String sensorName = SENSOR_CODE_TO_NAME.get(sensorCodeToken) + trackNumberString;
+		final String sensorName = SENSOR_CODE_TO_NAME.get(sensorCodeToken) + "-" + trackNumberString;
 
 		/**
 		 * Create a FixWrapper on the parent track for the “Own Lat/OwnLon” position.
 		 * Course/speed are zeroes
 		 */
 
-		final WorldLocation location = parseLocation(tokens[6], tokens[7], status);
-		final Fix fix = new Fix(new HiResDate(status.timestamp), location, 0d, 0d);
+		final WorldLocation ownLocation = parseLocation(tokens[6], tokens[7], status);
+		final Fix fix = new Fix(new HiResDate(status.timestamp), ownLocation, 0d, 0d);
 		final FixWrapper res = new FixWrapper(fix);
 
 		// sort out the sensor
@@ -568,7 +568,7 @@ public class ImportNisida {
 		} else {
 			res.setLabel(source);
 		}
-
+		// store the new position
 		status.getPlatform().addFix(res);
 
 		/**
@@ -592,13 +592,22 @@ public class ImportNisida {
 			theSensor = new SensorWrapper(sensorName);
 			status.getPlatform().add(theSensor);
 		}
-
-		// Let's get the bearing
+		
+		// Let's get the range & bearing
 		final Double bearing = valueFor(tokens[3], status);
+		final Double rangeVal = valueFor(tokens[4], status);
+		final WorldDistance range = rangeVal != null ? new WorldDistance(rangeVal, MWC.GenericData.WorldDistance.NM) : null;
 
-		final SensorContactWrapper contact = new SensorContactWrapper(status.getPlatform().getName(),
-				new HiResDate(status.getTimestamp()), null, bearing, location, null, sensorName, 0,
-				theSensor.getName());
+		// calculate target location
+		final WorldLocation tgtLocation;
+		if(bearing != null && range != null) {
+			tgtLocation = ownLocation.add(new WorldVector(Math.toRadians(bearing), range, null));
+		} else {
+			tgtLocation = null;
+		}
+		
+		final SensorContactWrapper contact = new SensorContactWrapper(status.getPlatform().getName(), new HiResDate(status.getTimestamp()),
+				range, bearing, tgtLocation, null, sensorName, 0, theSensor.getName());
 		theSensor.add(contact);
 	}
 
