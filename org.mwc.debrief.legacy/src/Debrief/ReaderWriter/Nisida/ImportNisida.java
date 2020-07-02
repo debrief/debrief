@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +18,11 @@ import java.util.Map;
 import org.apache.poi.ss.formula.functions.NumericFunction;
 
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.Algorithms.Conversions;
+import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.DebriefColors;
@@ -87,9 +91,9 @@ public class ImportNisida {
 		private List<ImportNisidaError> errors = new ArrayList<ImportNisida.ImportNisidaError>();
 
 		private Date timestamp;
-		
+
 		private int lineNumber;
-		
+
 		private Layers layers;
 
 		public NisidaLoadState(final Layers _layers) {
@@ -156,7 +160,6 @@ public class ImportNisida {
 			return layers;
 		}
 
-		
 	}
 
 	/**
@@ -204,8 +207,7 @@ public class ImportNisida {
 		}
 	}
 
-	private static void loadThisLine(final String line,
-			final NisidaLoadState status) {
+	private static void loadThisLine(final String line, final NisidaLoadState status) {
 		if (line.startsWith("UNIT/")) {
 			/**
 			 * Handle UNIT line giving month, year and platform Format is:
@@ -214,10 +216,10 @@ public class ImportNisida {
 			final String[] tokens = line.split("/");
 
 			final String platformName = tokens[1];
-			
+
 			// FIND THE PLATFORM.
 			TrackWrapper track = (TrackWrapper) status.getLayers().findLayer(platformName);
-			if(track == null) {
+			if (track == null) {
 				track = new TrackWrapper();
 				track.setColor(DebriefColors.RED);
 				track.setName(platformName);
@@ -285,24 +287,24 @@ public class ImportNisida {
 					 */
 
 					processNarrative(tokens, status);
-				} /*else if ("DET".equals(operationUpper)) {
-					processDetection(dataStore, datafile, changeId);
-				} else if ("ATT".equals(operationUpper)) {
-					processAttack(dataStore, datafile, changeId);
-				} else if ("DIP".equals(operationUpper) || "SSQ".equals(operationUpper)) {
-					processDipOrBoy(dataStore, datafile, changeId);
-				} else if ("EXP".equals(operationUpper)) {
-					processMastexposure(dataStore, datafile, changeId);
-				} else if ("SEN".equals(operationUpper)) {
-					processSensor(dataStore, datafile, changeId);
-				} else if ("ENV".equals(operationUpper)) {
-					processEnvironment(dataStore, datafile, changeId);
-				} else if ("GPS".equals(operationUpper) || "DR".equals(operationUpper) || "IN".equals(operationUpper)) {
-					processPosition(dataStore, datafile, changeId);
-				} */else {
+				} else if ("DET".equals(operationUpper)) {
+					processDetection(tokens, status);
+				} /*
+					 * else if ("ATT".equals(operationUpper)) { processAttack(dataStore, datafile,
+					 * changeId); } else if ("DIP".equals(operationUpper) ||
+					 * "SSQ".equals(operationUpper)) { processDipOrBoy(dataStore, datafile,
+					 * changeId); } else if ("EXP".equals(operationUpper)) {
+					 * processMastexposure(dataStore, datafile, changeId); } else if
+					 * ("SEN".equals(operationUpper)) { processSensor(dataStore, datafile,
+					 * changeId); } else if ("ENV".equals(operationUpper)) {
+					 * processEnvironment(dataStore, datafile, changeId); } else if
+					 * ("GPS".equals(operationUpper) || "DR".equals(operationUpper) ||
+					 * "IN".equals(operationUpper)) { processPosition(dataStore, datafile,
+					 * changeId); }
+					 */else {
 					// ok, it's probably a position.
 					final String nextToken = tokens[2];
-					if(operationUpper.endsWith("N") || operationUpper.endsWith("S")) {
+					if (operationUpper.endsWith("N") || operationUpper.endsWith("S")) {
 						// ok, it's a position
 						processPosition(tokens, status);
 					}
@@ -319,8 +321,7 @@ public class ImportNisida {
 		}
 	}
 
-	private static void processNarrative(final String[] tokens,
-			final NisidaLoadState status) {
+	private static void processNarrative(final String[] tokens, final NisidaLoadState status) {
 		final String commentText = tokens[2];
 
 		Layer dest = status.getLayers().findLayer(NarrativeEntry.NARRATIVE_LAYER, true);
@@ -342,11 +343,12 @@ public class ImportNisida {
 
 		dest.add(entry);
 	}
-	
-	/** parse lat/long value in degrees, using NISIDA position structure
+
+	/**
+	 * parse lat/long value in degrees, using NISIDA position structure
 	 * 
-	 * @param value string to parse
-	 * @param status 
+	 * @param value  string to parse
+	 * @param status
 	 * @return double value, -ve if West/South
 	 */
 	public static Double parseDegrees(final String value, NisidaLoadState status) {
@@ -367,22 +369,23 @@ public class ImportNisida {
 		}
 
 	}
-	
-	/** parse the string, with Nisida standard states for missing data ("-" or "")
+
+	/**
+	 * parse the string, with Nisida standard states for missing data ("-" or "")
 	 * 
-	 * @param value string to be parsed
+	 * @param value  string to be parsed
 	 * @param status supporter object
 	 * @return double value, or null if field is empty
 	 */
 	public static Double valueFor(final String value, final NisidaLoadState status) {
 		final Double res;
-		if(value.length() == 0) {
+		if (value.length() == 0) {
 			res = null;
-		} else if(value.equals("-")) {
+		} else if (value.equals("-")) {
 			res = null;
 		} else {
 			try {
-				res = Double.parseDouble(value);				
+				res = Double.parseDouble(value);
 			} catch (NumberFormatException nfe) {
 				status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber(),
 						"Failed to parse numeric field - " + value));
@@ -394,39 +397,39 @@ public class ImportNisida {
 
 	private static void processPosition(final String[] tokens, final NisidaLoadState status) {
 		// sample:
-		// 311002Z/3623.00N/00412.02E/GPS/359/03/-/ 
+		// 311002Z/3623.00N/00412.02E/GPS/359/03/-/
 		final HiResDate dtg = new HiResDate(status.timestamp);
 		final Double latVal = parseDegrees(tokens[1], status);
 		final Double longVal = parseDegrees(tokens[2], status);
-		if(dtg != null && latVal != null && longVal != null) {
+		if (dtg != null && latVal != null && longVal != null) {
 			final WorldLocation location = new WorldLocation(latVal, longVal, 0d);
-			
+
 			final String source = tokens[3];
 			final Double courseVal = valueFor(tokens[4], status);
 			final Double speedVal = valueFor(tokens[5], status);
 			final Double depthVal = valueFor(tokens[6], status);
-			
+
 			Fix fix = new Fix(dtg, location, 0d, 0d);
-			if(courseVal != null) {
+			if (courseVal != null) {
 				fix.setCourse(Math.toRadians(courseVal));
 			}
-			if(speedVal != null) {
+			if (speedVal != null) {
 				fix.setSpeed(Conversions.Kts2Yps(speedVal));
 			}
-			if(depthVal != null) {
+			if (depthVal != null) {
 				fix.getLocation().setDepth(depthVal);
 			}
 			FixWrapper res = new FixWrapper(fix);
-			
+
 			// sort out the sensor
 			final String sourceName = POS_SOURCE_TO_NAME.get(source);
-			if(sourceName != null) {
+			if (sourceName != null) {
 				res.setLabel(sourceName);
 			} else {
 				res.setLabel(source);
 			}
-			
-			status.getPlatform().addFix(res);			
+
+			status.getPlatform().addFix(res);
 		}
 	}
 
@@ -455,9 +458,83 @@ public class ImportNisida {
 
 	}
 
-	private void processDetection(Object dataStore, Object datafile, String changeId) {
-		// TODO Auto-generated method stub
+	private static void processDetection(final String[] tokens, final NisidaLoadState status) {
+		// sample:
+		// [DayTime/DET/DetectingSensor/Bearing/Range in NM/TN/Own Lat/Own Lon/Position Source/Remarks/]
+		// 311200Z/DET/RDR/23/20/777/3602.02N/00412.12E/GPS/DETECTION RECORD
+		
 
+		/**
+		 *  Create a sensor using the expanded `Sensor Code` name plus the track number (TN). 
+		 */
+		final String sensorCodeToken = tokens[2];
+		if (!SENSOR_CODE_TO_NAME.containsKey(sensorCodeToken)) {
+			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
+					"Invalid sensor code: " + sensorCodeToken));
+			return;
+		}
+
+		
+		final Double trackNumber = valueFor(tokens[5], status);
+		
+		final String trackNumberString;
+		if (trackNumber != null) {
+			trackNumberString = " " + trackNumber;
+		}else {
+			trackNumberString = "";
+		}
+		final String sensorName = SENSOR_CODE_TO_NAME.get(sensorCodeToken) + trackNumberString;
+
+		/**
+		 *  Create a FixWrapper on the parent track for the “Own Lat/OwnLon” position. Course/speed are zeroes
+		 */
+		final Double latVal = parseDegrees(tokens[6], status);
+		final Double longVal = parseDegrees(tokens[7], status);
+
+		final WorldLocation location = new WorldLocation(latVal, longVal, 0d);
+		final Fix fix = new Fix(new HiResDate(status.timestamp), location, 0d, 0d);
+		final FixWrapper res = new FixWrapper(fix);
+
+		// sort out the sensor
+		final String source = tokens[8];
+		final String sourceName = POS_SOURCE_TO_NAME.get(source);
+		if (sourceName != null) {
+			res.setLabel(sourceName);
+		} else {
+			res.setLabel(source);
+		}
+
+		status.getPlatform().addFix(res);
+		
+
+		/**
+		 * Ok, we now create the ContactWrapper.
+		 */
+		
+		final Enumeration<Editable> enumer = status.getPlatform().getSensors().elements();
+		
+		// search the sensor in the platform
+		SensorWrapper theSensor = null;
+		while(enumer.hasMoreElements()) {
+			final SensorWrapper currentSensor = (SensorWrapper) enumer.nextElement();
+			if (currentSensor.getName().equals(sensorName)) {
+				theSensor = currentSensor;
+				break;
+			}
+		}
+		
+		// we didn't find it, let's create a new sensor then
+		if (theSensor == null) {
+			theSensor = new SensorWrapper(sensorName);
+			status.getPlatform().add(theSensor);
+		}
+		
+		// Let's get the bearing
+		final Double bearing = valueFor(tokens[3], status);
+		
+		final SensorContactWrapper contact = new SensorContactWrapper(status.getPlatform().getName(), new HiResDate(status.getTimestamp()),
+				null, bearing, location, null, sensorName, 0, theSensor.getName());
+		theSensor.add(contact);
 	}
 
 	public static boolean allNumbersDigit(final String text) {
@@ -485,9 +562,10 @@ public class ImportNisida {
 			calendar.set(status.getYear(), status.getMonth(), day - 1, hour, minute);
 			return calendar.getTime();
 		} catch (Exception e) {
-			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
-					"Invalid format for timestamp - day, hour or min could not be converted to float: "
-							+ timestampText));
+			status.getErrors()
+					.add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
+							"Invalid format for timestamp - day, hour or min could not be converted to float: "
+									+ timestampText));
 			return null;
 		}
 	}
