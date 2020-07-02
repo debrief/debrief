@@ -335,25 +335,15 @@ public class ImportNisida {
 	 */
 	private static void processNarrative(final String[] tokens, final NisidaLoadState status) {
 		final String commentText = tokens[2];
-
-		Layer dest = status.getLayers().findLayer(NarrativeEntry.NARRATIVE_LAYER, true);
-		if (dest == null) {
-			dest = new NarrativeWrapper(NarrativeEntry.NARRATIVE_LAYER);
-
-			// add it to the manager
-			status.getLayers().addThisLayer(dest);
-		}
-
-		final NarrativeEntry entry = new NarrativeEntry(status.getPlatform().getName(),
-				new HiResDate(parseTimestamp(tokens[0], status)), commentText);
-
+		final String type;
 		if ("NAR".equals(tokens[1])) {
-			entry.setType("Narrative");
+			type = "Narrative";
 		} else if ("COC".equals(tokens[1])) {
-			entry.setType("CO Comments");
+			type = "CO Comments";
+		}else {
+			type = tokens[1];
 		}
-
-		dest.add(entry);
+		createNarrative(commentText, type, status);
 	}
 
 	/**
@@ -461,8 +451,16 @@ public class ImportNisida {
 	}
 
 	private static void processDipOrBoy(final String[] tokens, final NisidaLoadState status) {
-		// TODO Auto-generated method stub
+		// sample:
+		// 311305Z/DIP/5/23/14:00/3502.02N/00502.06E/ASW DIP EXAMPLE/
+		// or
+		// 312100Z/SSQ/33/05/2/3605.00N/00512.12E/ASW BUOY TEXT/
+		// format:
+		// [DayTime Mark/DIP/Dip NR/ Ball Depth in m/Time Break/Dip Lat/Dip Lon / Remarks/
+		// or
+		// [DayTime Drop/SSQ/ Buoy NR/Hydro Depth in m/Buoy LifeSetting in hrs /Buoy Lat/Buoy Lon/Remarks/]
 
+		
 	}
 
 	private static void processAttack(final String[] tokens, final NisidaLoadState status) {
@@ -501,20 +499,7 @@ public class ImportNisida {
 
 			// This is a comment, with "Attack" as Comment-Type
 
-			Layer narrativeDest = status.getLayers().findLayer(NarrativeEntry.NARRATIVE_LAYER, true);
-			if (narrativeDest == null) {
-				narrativeDest = new NarrativeWrapper(NarrativeEntry.NARRATIVE_LAYER);
-
-				// add it to the manager
-				status.getLayers().addThisLayer(narrativeDest);
-			}
-
-			final NarrativeEntry entry = new NarrativeEntry(status.getPlatform().getName(),
-					new HiResDate(parseTimestamp(tokens[0], status)), tokens[9]);
-
-			entry.setType("Attack");
-
-			narrativeDest.add(entry);
+			createNarrative(tokens[9], "Attack", status);
 
 		} else {
 			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
@@ -522,6 +507,23 @@ public class ImportNisida {
 			return;
 		}
 
+	}
+	
+	private static void createNarrative(final String narrativeText, final String narrativeType, final NisidaLoadState status) {
+		Layer narrativeDest = status.getLayers().findLayer(NarrativeEntry.NARRATIVE_LAYER, true);
+		if (narrativeDest == null) {
+			narrativeDest = new NarrativeWrapper(NarrativeEntry.NARRATIVE_LAYER);
+
+			// add it to the manager
+			status.getLayers().addThisLayer(narrativeDest);
+		}
+
+		final NarrativeEntry entry = new NarrativeEntry(status.getPlatform().getName(),
+				new HiResDate(status.getTimestamp()), narrativeText);
+
+		entry.setType(narrativeType);
+
+		narrativeDest.add(entry);
 	}
 
 	private static void processDetection(final String[] tokens, final NisidaLoadState status) {
