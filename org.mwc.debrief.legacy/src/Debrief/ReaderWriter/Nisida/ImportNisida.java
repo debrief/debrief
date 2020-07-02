@@ -213,63 +213,19 @@ public class ImportNisida {
 	private static void loadThisLine(final String line, final NisidaLoadState status,
 			final SimpleDateFormat dateFormatter) {
 		if (line.startsWith("UNIT/")) {
-			/**
-			 * Handle UNIT line giving month, year and platform Format is:
-			 * UNIT/ADRI/OCT03/SRF/
-			 */
-			final String[] tokens = line.split("/");
-
-			final String platformName = tokens[1];
-
-			// FIND THE PLATFORM.
-			TrackWrapper track = (TrackWrapper) status.getLayers().findLayer(platformName);
-			if (track == null) {
-				track = new TrackWrapper();
-				track.setColor(DebriefColors.RED);
-				track.setName(platformName);
-				status.getLayers().addThisLayer(track);
-			}
-			status.setPlatform(track);
-
-			final String dateString = tokens[2];
-
-			try {
-				final Date date = dateFormatter.parse(dateString);
-				final Calendar calendar = Calendar.getInstance();
-				calendar.setTime(date);
-				status.setMonth(calendar.get(Calendar.MONTH));
-				status.setYear(calendar.get(Calendar.YEAR));
-			} catch (ParseException e) {
-				status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber(),
-						"Parse error in the date: " + dateString));
-			}
+			processUnit(line, status, dateFormatter);
 		} else if (line.startsWith("//")) {
 			/**
 			 * This is a continuation of the previous line, so add whatever else is in this
 			 * line to the content field of the previous entry
 			 */
-
 			if (status.getLastEntryWithText() == null) {
 				status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber(),
 						"Line continuation not immediately after valid line: " + line));
 				return;
 			}
 
-			final String textToAdd;
-			if (line.endsWith("/")) {
-				textToAdd = line.substring(2, line.length() - 1);
-			} else {
-				textToAdd = line.substring(2);
-			}
-
-			final Object lastEntry = status.getLastEntryWithText();
-			if (lastEntry instanceof NarrativeEntry) {
-				final NarrativeEntry lastNarrative = (NarrativeEntry) lastEntry;
-				lastNarrative.setEntry(lastNarrative.getEntry() + textToAdd);
-			} else if (lastEntry instanceof SensorContactWrapper) {
-				final SensorContactWrapper lastContact = (SensorContactWrapper) lastEntry;
-				lastContact.setComment(lastContact.getComment() + textToAdd);
-			}
+			processContinue(line, status);
 		} else if (line.length() > 7 && line.charAt(7) == '/' && allNumbersDigit(line.substring(0, 6))) {
 			/**
 			 * Check whether line starts with something like "311206Z/" (a timestamp and a
@@ -337,6 +293,58 @@ public class ImportNisida {
 		} else {
 			// Not a line we recognise, so just skip to next one
 			return;
+		}
+	}
+
+	protected static void processContinue(final String line, final NisidaLoadState status) {
+		final String textToAdd;
+		if (line.endsWith("/")) {
+			textToAdd = line.substring(2, line.length() - 1);
+		} else {
+			textToAdd = line.substring(2);
+		}
+
+		final Object lastEntry = status.getLastEntryWithText();
+		if (lastEntry instanceof NarrativeEntry) {
+			final NarrativeEntry lastNarrative = (NarrativeEntry) lastEntry;
+			lastNarrative.setEntry(lastNarrative.getEntry() + textToAdd);
+		} else if (lastEntry instanceof SensorContactWrapper) {
+			final SensorContactWrapper lastContact = (SensorContactWrapper) lastEntry;
+			lastContact.setComment(lastContact.getComment() + textToAdd);
+		}
+	}
+
+	protected static void processUnit(final String line, final NisidaLoadState status,
+			final SimpleDateFormat dateFormatter) {
+		/**
+		 * Handle UNIT line giving month, year and platform Format is:
+		 * UNIT/ADRI/OCT03/SRF/
+		 */
+		final String[] tokens = line.split("/");
+
+		final String platformName = tokens[1];
+
+		// FIND THE PLATFORM.
+		TrackWrapper track = (TrackWrapper) status.getLayers().findLayer(platformName);
+		if (track == null) {
+			track = new TrackWrapper();
+			track.setColor(DebriefColors.RED);
+			track.setName(platformName);
+			status.getLayers().addThisLayer(track);
+		}
+		status.setPlatform(track);
+
+		final String dateString = tokens[2];
+
+		try {
+			final Date date = dateFormatter.parse(dateString);
+			final Calendar calendar = Calendar.getInstance();
+			calendar.setTime(date);
+			status.setMonth(calendar.get(Calendar.MONTH));
+			status.setYear(calendar.get(Calendar.YEAR));
+		} catch (ParseException e) {
+			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber(),
+					"Parse error in the date: " + dateString));
 		}
 	}
 
