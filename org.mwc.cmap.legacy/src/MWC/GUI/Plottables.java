@@ -329,8 +329,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType, Prop
 		clearCachedName();
 
 		// right, add it.
-		boolean added = _thePlottables.add(thePlottable);
-		System.out.println("Added successfully " + added);
+		_thePlottables.add(thePlottable);
 
 		// does it have info?
 		if (thePlottable.getInfo() != null) {
