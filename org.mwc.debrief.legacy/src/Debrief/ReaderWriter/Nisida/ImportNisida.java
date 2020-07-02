@@ -227,72 +227,76 @@ public class ImportNisida {
 
 			processContinue(line, status);
 		} else if (line.length() > 7 && line.charAt(7) == '/' && allNumbersDigit(line.substring(0, 6))) {
-			/**
-			 * Check whether line starts with something like "311206Z/" (a timestamp and a
-			 * slash) Checking like this is faster than using regular expressions on each
-			 * line
-			 */
-
-			/**
-			 * Reset last_entry_with_text, so that if continuation characters aren't
-			 * directly after an entry we processed, then we will raise an error rather than
-			 * add to the incorrect entry
-			 */
-			status.setLastEntryWithText(null);
-
-			// Split line by slash
-			final String[] tokens = line.split("/");
-
-			status.setTimestamp(parseTimestamp(tokens[0], status));
-
-			try {
-				final String operation = tokens[1];
-				final String operationUpper = operation.toUpperCase();
-				final String operationUpper3;
-				if (tokens.length > 3) {
-					operationUpper3 = tokens[3].toUpperCase();
-				} else {
-					operationUpper3 = "";
-				}
-				if ("NAR".equals(operationUpper) || "COC".equals(operationUpper)) {
-					/**
-					 * The COC and NAR messages have the same format COC isn't actually described in
-					 * the documentation for the format, but seems to be Commanding Officer
-					 * Comments, and is present in the example
-					 */
-
-					processNarrative(tokens, status);
-				} else if ("DET".equals(operationUpper)) {
-					processDetection(tokens, status);
-				} else if ("ATT".equals(operationUpper)) {
-					processAttack(tokens, status);
-				} else if ("DIP".equals(operationUpper) || "SSQ".equals(operationUpper)) {
-					processDipOrBoy(tokens, status);
-				} else if ("EXP".equals(operationUpper)) {
-					processMastexposure(tokens, status);
-				} else if ("SEN".equals(operationUpper)) {
-					processSensor(tokens, status);
-				} else if ("ENV".equals(operationUpper)) {
-					processEnvironment(tokens, status);
-				} else if ("GPS".equals(operationUpper3) || "DR".equals(operationUpper3)
-						|| "IN".equals(operationUpper3)) {
-					processPosition(tokens, status);
-				} else {
-					// ok, it's probably a position.
-					if (operationUpper.endsWith("N") || operationUpper.endsWith("S")) {
-						// ok, it's a position
-						processPosition(tokens, status);
-					}
-					status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber(),
-							"Line does not match any known message format: " + line));
-				}
-			} catch (Exception e) {
-				status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber(),
-						"General error processing line - " + line));
-			}
+			processOperation(line, status);
 		} else {
 			// Not a line we recognise, so just skip to next one
 			return;
+		}
+	}
+
+	protected static void processOperation(final String line, final NisidaLoadState status) {
+		/**
+		 * Check whether line starts with something like "311206Z/" (a timestamp and a
+		 * slash) Checking like this is faster than using regular expressions on each
+		 * line
+		 */
+
+		/**
+		 * Reset last_entry_with_text, so that if continuation characters aren't
+		 * directly after an entry we processed, then we will raise an error rather than
+		 * add to the incorrect entry
+		 */
+		status.setLastEntryWithText(null);
+
+		// Split line by slash
+		final String[] tokens = line.split("/");
+
+		status.setTimestamp(parseTimestamp(tokens[0], status));
+
+		try {
+			final String operation = tokens[1];
+			final String operationUpper = operation.toUpperCase();
+			final String operationUpper3;
+			if (tokens.length > 3) {
+				operationUpper3 = tokens[3].toUpperCase();
+			} else {
+				operationUpper3 = "";
+			}
+			if ("NAR".equals(operationUpper) || "COC".equals(operationUpper)) {
+				/**
+				 * The COC and NAR messages have the same format COC isn't actually described in
+				 * the documentation for the format, but seems to be Commanding Officer
+				 * Comments, and is present in the example
+				 */
+
+				processNarrative(tokens, status);
+			} else if ("DET".equals(operationUpper)) {
+				processDetection(tokens, status);
+			} else if ("ATT".equals(operationUpper)) {
+				processAttack(tokens, status);
+			} else if ("DIP".equals(operationUpper) || "SSQ".equals(operationUpper)) {
+				processDipOrBoy(tokens, status);
+			} else if ("EXP".equals(operationUpper)) {
+				processMastexposure(tokens, status);
+			} else if ("SEN".equals(operationUpper)) {
+				processSensor(tokens, status);
+			} else if ("ENV".equals(operationUpper)) {
+				processEnvironment(tokens, status);
+			} else if ("GPS".equals(operationUpper3) || "DR".equals(operationUpper3)
+					|| "IN".equals(operationUpper3)) {
+				processPosition(tokens, status);
+			} else {
+				// ok, it's probably a position.
+				if (operationUpper.endsWith("N") || operationUpper.endsWith("S")) {
+					// ok, it's a position
+					processPosition(tokens, status);
+				}
+				status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber(),
+						"Line does not match any known message format: " + line));
+			}
+		} catch (Exception e) {
+			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber(),
+					"General error processing line - " + line));
 		}
 	}
 
