@@ -18,6 +18,7 @@ import java.util.Map;
 import org.apache.poi.ss.formula.functions.NumericFunction;
 
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -78,9 +79,11 @@ public class ImportNisida {
 		POS_SOURCE_TO_NAME.put("IN", "Inertial");
 	}
 
+	public static String ATTACKS_LAYER = "Attacks";
+
 	public static class NisidaLoadState {
 
-		private String lastEntryWithText;
+		private Object lastEntryWithText;
 
 		private int month;
 
@@ -100,11 +103,11 @@ public class ImportNisida {
 			this.layers = _layers;
 		}
 
-		public String getLastEntryWithText() {
+		public Object getLastEntryWithText() {
 			return lastEntryWithText;
 		}
 
-		public void setLastEntryWithText(String lastEntryWithText) {
+		public void setLastEntryWithText(Object lastEntryWithText) {
 			this.lastEntryWithText = lastEntryWithText;
 		}
 
@@ -289,19 +292,20 @@ public class ImportNisida {
 					processNarrative(tokens, status);
 				} else if ("DET".equals(operationUpper)) {
 					processDetection(tokens, status);
+				} else if ("ATT".equals(operationUpper)) {
+					processAttack(tokens, status);
 				} /*
-					 * else if ("ATT".equals(operationUpper)) { processAttack(dataStore, datafile,
-					 * changeId); } else if ("DIP".equals(operationUpper) ||
-					 * "SSQ".equals(operationUpper)) { processDipOrBoy(dataStore, datafile,
-					 * changeId); } else if ("EXP".equals(operationUpper)) {
-					 * processMastexposure(dataStore, datafile, changeId); } else if
-					 * ("SEN".equals(operationUpper)) { processSensor(dataStore, datafile,
-					 * changeId); } else if ("ENV".equals(operationUpper)) {
-					 * processEnvironment(dataStore, datafile, changeId); } else if
-					 * ("GPS".equals(operationUpper) || "DR".equals(operationUpper) ||
-					 * "IN".equals(operationUpper)) { processPosition(dataStore, datafile,
-					 * changeId); }
-					 */else {
+					 * else if ("DIP".equals(operationUpper) || "SSQ".equals(operationUpper)) {
+					 * processDipOrBoy(dataStore, datafile, changeId); } else if
+					 * ("EXP".equals(operationUpper)) { processMastexposure(dataStore, datafile,
+					 * changeId); } else if ("SEN".equals(operationUpper)) {
+					 * processSensor(dataStore, datafile, changeId); } else if
+					 * ("ENV".equals(operationUpper)) { processEnvironment(dataStore, datafile,
+					 * changeId); } else if ("GPS".equals(operationUpper) ||
+					 * "DR".equals(operationUpper) || "IN".equals(operationUpper)) {
+					 * processPosition(dataStore, datafile, changeId); }
+					 */
+				else {
 					// ok, it's probably a position.
 					final String nextToken = tokens[2];
 					if (operationUpper.endsWith("N") || operationUpper.endsWith("S")) {
@@ -321,6 +325,13 @@ public class ImportNisida {
 		}
 	}
 
+	/**
+	 * Process Nisida narrative Format [DayTime/NAR/Narrative /] sample
+	 * 311056Z/NAR/TEXT FOR NARRATIVE PURPOSES/
+	 * 
+	 * @param tokens input split in tokens
+	 * @param status class status
+	 */
 	private static void processNarrative(final String[] tokens, final NisidaLoadState status) {
 		final String commentText = tokens[2];
 
@@ -453,19 +464,74 @@ public class ImportNisida {
 
 	}
 
-	private void processAttack(Object dataStore, Object datafile, String changeId) {
-		// TODO Auto-generated method stub
+	private static void processAttack(final String[] tokens, final NisidaLoadState status) {
+		// Sample:
+		// 311206Z/ATT/OTHER/63/12/775/3623.23N/00500.25E/GPS/TEXT FOR ATTAC
+		// K/
+		// [DayTime/ATT/WPN/TGT Bearing/TGT RNGE in NM/TN / Own Lat/ Own Lon /Position
+		// Source /Remarks/]
+
+		// capture another “FixWrapper” for Own lat/lon
+
+		if (tokens.length >= 10) {
+			final WorldLocation location = parseLocation(tokens[6], tokens[7], status);
+			final Fix fix = new Fix(new HiResDate(status.timestamp), location, 0d, 0d);
+			final FixWrapper res = new FixWrapper(fix);
+
+			// sort out the sensor
+			final String source = tokens[8];
+			final String sourceName = POS_SOURCE_TO_NAME.get(source);
+			if (sourceName != null) {
+				res.setLabel(sourceName);
+			} else {
+				res.setLabel(source);
+			}
+
+			// It will also be a LabelWrapper in an "Attacks" layer.
+			final LabelWrapper labelWrapper = new LabelWrapper(tokens[9], location, null);
+			Layer dest = status.getLayers().findLayer(ATTACKS_LAYER, true);
+			if (dest == null) {
+				dest = new NarrativeWrapper(ATTACKS_LAYER);
+
+				// add it to the manager
+				status.getLayers().addThisLayer(dest);
+			}
+			dest.add(labelWrapper);
+
+			// This is a comment, with "Attack" as Comment-Type
+			
+			Layer narrativeDest = status.getLayers().findLayer(NarrativeEntry.NARRATIVE_LAYER, true);
+			if (narrativeDest == null) {
+				narrativeDest = new NarrativeWrapper(NarrativeEntry.NARRATIVE_LAYER);
+
+				// add it to the manager
+				status.getLayers().addThisLayer(narrativeDest);
+			}
+
+			final NarrativeEntry entry = new NarrativeEntry(status.getPlatform().getName(),
+					new HiResDate(parseTimestamp(tokens[0], status)), tokens[9]);
+
+			entry.setType("Attack");
+
+			narrativeDest.add(entry);
+			
+		} else {
+			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
+					"Invalid amount of fields. Expected format should be: [DayTime/ATT/WPN/TGT Bearing/TGT RNGE in NM/TN / Own Lat/ Own Lon /Position Source /Remarks/"));
+			return;
+		}
 
 	}
 
 	private static void processDetection(final String[] tokens, final NisidaLoadState status) {
 		// sample:
-		// [DayTime/DET/DetectingSensor/Bearing/Range in NM/TN/Own Lat/Own Lon/Position Source/Remarks/]
+		// [DayTime/DET/DetectingSensor/Bearing/Range in NM/TN/Own Lat/Own Lon/Position
+		// Source/Remarks/]
 		// 311200Z/DET/RDR/23/20/777/3602.02N/00412.12E/GPS/DETECTION RECORD
-		
 
 		/**
-		 *  Create a sensor using the expanded `Sensor Code` name plus the track number (TN). 
+		 * Create a sensor using the expanded `Sensor Code` name plus the track number
+		 * (TN).
 		 */
 		final String sensorCodeToken = tokens[2];
 		if (!SENSOR_CODE_TO_NAME.containsKey(sensorCodeToken)) {
@@ -474,24 +540,22 @@ public class ImportNisida {
 			return;
 		}
 
-		
 		final Double trackNumber = valueFor(tokens[5], status);
-		
+
 		final String trackNumberString;
 		if (trackNumber != null) {
 			trackNumberString = " " + trackNumber;
-		}else {
+		} else {
 			trackNumberString = "";
 		}
 		final String sensorName = SENSOR_CODE_TO_NAME.get(sensorCodeToken) + trackNumberString;
 
 		/**
-		 *  Create a FixWrapper on the parent track for the “Own Lat/OwnLon” position. Course/speed are zeroes
+		 * Create a FixWrapper on the parent track for the “Own Lat/OwnLon” position.
+		 * Course/speed are zeroes
 		 */
-		final Double latVal = parseDegrees(tokens[6], status);
-		final Double longVal = parseDegrees(tokens[7], status);
 
-		final WorldLocation location = new WorldLocation(latVal, longVal, 0d);
+		final WorldLocation location = parseLocation(tokens[6], tokens[7], status);
 		final Fix fix = new Fix(new HiResDate(status.timestamp), location, 0d, 0d);
 		final FixWrapper res = new FixWrapper(fix);
 
@@ -505,35 +569,35 @@ public class ImportNisida {
 		}
 
 		status.getPlatform().addFix(res);
-		
 
 		/**
 		 * Ok, we now create the ContactWrapper.
 		 */
-		
+
 		final Enumeration<Editable> enumer = status.getPlatform().getSensors().elements();
-		
+
 		// search the sensor in the platform
 		SensorWrapper theSensor = null;
-		while(enumer.hasMoreElements()) {
+		while (enumer.hasMoreElements()) {
 			final SensorWrapper currentSensor = (SensorWrapper) enumer.nextElement();
 			if (currentSensor.getName().equals(sensorName)) {
 				theSensor = currentSensor;
 				break;
 			}
 		}
-		
+
 		// we didn't find it, let's create a new sensor then
 		if (theSensor == null) {
 			theSensor = new SensorWrapper(sensorName);
 			status.getPlatform().add(theSensor);
 		}
-		
+
 		// Let's get the bearing
 		final Double bearing = valueFor(tokens[3], status);
-		
-		final SensorContactWrapper contact = new SensorContactWrapper(status.getPlatform().getName(), new HiResDate(status.getTimestamp()),
-				null, bearing, location, null, sensorName, 0, theSensor.getName());
+
+		final SensorContactWrapper contact = new SensorContactWrapper(status.getPlatform().getName(),
+				new HiResDate(status.getTimestamp()), null, bearing, location, null, sensorName, 0,
+				theSensor.getName());
 		theSensor.add(contact);
 	}
 
@@ -570,7 +634,12 @@ public class ImportNisida {
 		}
 	}
 
-	public WorldLocation parseLocation() {
-		return null;
+	public static WorldLocation parseLocation(final String latString, final String longString,
+			final NisidaLoadState status) {
+		final Double latVal = parseDegrees(latString, status);
+		final Double longVal = parseDegrees(longString, status);
+
+		final WorldLocation location = new WorldLocation(latVal, longVal, 0d);
+		return location;
 	}
 }
