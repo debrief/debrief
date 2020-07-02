@@ -260,6 +260,14 @@ public class ImportNisida {
 				textToAdd = line.substring(2);
 			}
 
+			final Object lastEntry = status.getLastEntryWithText();
+			if (lastEntry instanceof NarrativeEntry) {
+				final NarrativeEntry lastNarrative = (NarrativeEntry) lastEntry;
+				lastNarrative.setEntry(lastNarrative.getEntry() + textToAdd);
+			} else if (lastEntry instanceof SensorContactWrapper) {
+				final SensorContactWrapper lastContact = (SensorContactWrapper) lastEntry;
+				lastContact.setComment(lastContact.getComment() + textToAdd);
+			}
 		} else if (line.length() > 7 && line.charAt(7) == '/' && allNumbersDigit(line.substring(0, 6))) {
 			/**
 			 * Check whether line starts with something like "311206Z/" (a timestamp and a
@@ -304,9 +312,7 @@ public class ImportNisida {
 					processEnvironment(tokens, status);
 				} else if ("GPS".equals(operationUpper) || "DR".equals(operationUpper) || "IN".equals(operationUpper)) {
 					processPosition(tokens, status);
-				}
-
-				else {
+				} else {
 					// ok, it's probably a position.
 					final String nextToken = tokens[2];
 					if (operationUpper.endsWith("N") || operationUpper.endsWith("S")) {
@@ -343,7 +349,8 @@ public class ImportNisida {
 		} else {
 			type = tokens[1];
 		}
-		createNarrative(commentText, type, status);
+		final NarrativeEntry newNarrative = createNarrative(commentText, type, status);
+		status.setLastEntryWithText(newNarrative);
 	}
 
 	/**
@@ -443,7 +450,8 @@ public class ImportNisida {
 		// coverage in octals/ PSR in yds/ Layerdepth in m/ PRR in NM /Remarks/ ]
 
 		if (tokens.length >= 11) {
-			createNarrative(tokens[10], "Environment", status);
+			final NarrativeEntry newNarrative = createNarrative(tokens[10], "Environment", status);
+			status.setLastEntryWithText(newNarrative);
 		} else {
 			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
 					"Invalid amount of fields. Expected format should be 11 fields at least."));
@@ -458,7 +466,8 @@ public class ImportNisida {
 		// [DayTime/SEN/Sensor/Time on/Time off/Remarks/]
 
 		if (tokens.length >= 6) {
-			createNarrative(tokens[5], "Sensor Activation", status);
+			final NarrativeEntry newNarrative = createNarrative(tokens[5], "Sensor Activation", status);
+			status.setLastEntryWithText(newNarrative);
 		} else {
 			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
 					"Invalid amount of fields. Expected format should be 6 fields at least."));
@@ -474,7 +483,9 @@ public class ImportNisida {
 		//
 
 		if (tokens.length >= 6) {
-			createNarrative(tokens[5], "Mast-Exposure", status);
+			final NarrativeEntry newNarrative = createNarrative(tokens[5], "Mast-Exposure", status);
+			status.setLastEntryWithText(newNarrative);
+
 		} else {
 			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
 					"Invalid amount of fields. Expected format should be 6 fields at least."));
@@ -514,7 +525,8 @@ public class ImportNisida {
 				layer = "";
 			}
 
-			createNarrative(tokens[9], type, status);
+			final NarrativeEntry newNarrativeEntry = createNarrative(tokens[9], type, status);
+			status.setLastEntryWithText(newNarrativeEntry);
 
 			final WorldLocation location = parseLocation(tokens[5], tokens[6], status);
 			final LabelWrapper labelWrapper = new LabelWrapper(tokens[7], location, null);
@@ -570,7 +582,9 @@ public class ImportNisida {
 
 			// This is a comment, with "Attack" as Comment-Type
 
-			createNarrative(tokens[9], "Attack", status);
+			final NarrativeEntry newNarrative = createNarrative(tokens[9], "Attack", status);
+			// let's save the new narrative as a last
+			status.setLastEntryWithText(newNarrative);
 
 		} else {
 			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
@@ -580,7 +594,7 @@ public class ImportNisida {
 
 	}
 
-	private static void createNarrative(final String narrativeText, final String narrativeType,
+	private static NarrativeEntry createNarrative(final String narrativeText, final String narrativeType,
 			final NisidaLoadState status) {
 		Layer narrativeDest = status.getLayers().findLayer(NarrativeEntry.NARRATIVE_LAYER, true);
 		if (narrativeDest == null) {
@@ -596,6 +610,8 @@ public class ImportNisida {
 		entry.setType(narrativeType);
 
 		narrativeDest.add(entry);
+
+		return entry;
 	}
 
 	private static void processDetection(final String[] tokens, final NisidaLoadState status) {
@@ -686,6 +702,8 @@ public class ImportNisida {
 				new HiResDate(status.getTimestamp()), range, bearing, tgtLocation, null, sensorName, 0,
 				theSensor.getName());
 		theSensor.add(contact);
+		contact.setComment(tokens[9]);
+		status.setLastEntryWithText(contact);
 	}
 
 	public static boolean allNumbersDigit(final String text) {
