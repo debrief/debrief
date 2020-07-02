@@ -535,11 +535,6 @@ public class ImportNisida {
 		 * (TN).
 		 */
 		final String sensorCodeToken = tokens[2];
-		if (!SENSOR_CODE_TO_NAME.containsKey(sensorCodeToken)) {
-			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
-					"Invalid sensor code: " + sensorCodeToken));
-			return;
-		}
 
 		final Double trackNumber = valueFor(tokens[5], status);
 
@@ -549,7 +544,13 @@ public class ImportNisida {
 		} else {
 			trackNumberString = "";
 		}
-		final String sensorName = SENSOR_CODE_TO_NAME.get(sensorCodeToken) + "-" + trackNumberString;
+		
+		final String sensorName;
+		if (!SENSOR_CODE_TO_NAME.containsKey(sensorCodeToken)) {
+			sensorName = sensorCodeToken;
+		}else {
+			sensorName = SENSOR_CODE_TO_NAME.get(sensorCodeToken) + "-" + trackNumberString;
+		}
 
 		/**
 		 * Create a FixWrapper on the parent track for the “Own Lat/OwnLon” position.
