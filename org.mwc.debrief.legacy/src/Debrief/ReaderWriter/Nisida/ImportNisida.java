@@ -441,8 +441,18 @@ public class ImportNisida {
 	}
 
 	private static void processSensor(final String[] tokens, final NisidaLoadState status) {
-		// TODO Auto-generated method stub
-
+		// sample:
+		// 311300Z/SEN/TAS/-/13:00/SENSOR TIME OFF EXAMPLE/
+		// format:
+		// [DayTime/SEN/Sensor/Time on/Time off/Remarks/] 
+		
+		if (tokens.length >= 6) {
+			createNarrative(tokens[5], "Sensor Activation", status);
+		}else {
+			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
+					"Invalid amount of fields. Expected format should be 6 fields at least."));
+			return;
+		}
 	}
 
 	private static void processMastexposure(final String[] tokens, final NisidaLoadState status) {
