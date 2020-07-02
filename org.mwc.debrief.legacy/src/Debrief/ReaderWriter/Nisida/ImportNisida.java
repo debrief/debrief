@@ -530,7 +530,7 @@ public class ImportNisida {
 				layer = "";
 			}
 
-			final NarrativeEntry newNarrativeEntry = createNarrative(tokens[9], type, status);
+			final NarrativeEntry newNarrativeEntry = createNarrative(tokens[7], type, status);
 			status.setLastEntryWithText(newNarrativeEntry);
 
 			final WorldLocation location = parseLocation(tokens[5], tokens[6], status);
