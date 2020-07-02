@@ -610,7 +610,7 @@ public class ImportNisida {
 		}
 
 		final NarrativeEntry entry = new NarrativeEntry(status.getPlatform().getName(),
-				new HiResDate(status.getTimestamp()), narrativeText);
+				new HiResDate(status.getTimestamp()), narrativeText.trim());
 
 		entry.setType(narrativeType);
 
@@ -642,7 +642,7 @@ public class ImportNisida {
 
 		final String sensorName;
 		if (!SENSOR_CODE_TO_NAME.containsKey(sensorCodeToken)) {
-			sensorName = sensorCodeToken;
+			sensorName = sensorCodeToken + "-" + trackNumberString;
 		} else {
 			sensorName = SENSOR_CODE_TO_NAME.get(sensorCodeToken) + "-" + trackNumberString;
 		}
