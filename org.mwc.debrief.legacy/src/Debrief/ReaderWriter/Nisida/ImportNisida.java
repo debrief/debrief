@@ -240,7 +240,8 @@ public class ImportNisida {
 				status.setMonth(calendar.get(Calendar.MONTH));
 				status.setYear(calendar.get(Calendar.YEAR));
 			} catch (ParseException e) {
-
+				status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber(),
+						"Parse error in the date: " + dateString));
 			}
 		} else if (line.startsWith("//")) {
 			/**
