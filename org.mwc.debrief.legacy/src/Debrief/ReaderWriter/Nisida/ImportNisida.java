@@ -436,19 +436,30 @@ public class ImportNisida {
 	}
 
 	private static void processEnvironment(final String[] tokens, final NisidaLoadState status) {
-		// TODO Auto-generated method stub
+		// sample:
+		// 311212Z/ENV/12/12/5/5/3/12/12/22/ENVIRONMENT TEXT/
+		// format:
+		// [DayTime/ENV/Windcourse/Windspeed in kts/ Seastate/Visibility in NM/ cloud
+		// coverage in octals/ PSR in yds/ Layerdepth in m/ PRR in NM /Remarks/ ]
 
+		if (tokens.length >= 11) {
+			createNarrative(tokens[10], "Environment", status);
+		} else {
+			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
+					"Invalid amount of fields. Expected format should be 11 fields at least."));
+			return;
+		}
 	}
 
 	private static void processSensor(final String[] tokens, final NisidaLoadState status) {
 		// sample:
 		// 311300Z/SEN/TAS/-/13:00/SENSOR TIME OFF EXAMPLE/
 		// format:
-		// [DayTime/SEN/Sensor/Time on/Time off/Remarks/] 
-		
+		// [DayTime/SEN/Sensor/Time on/Time off/Remarks/]
+
 		if (tokens.length >= 6) {
 			createNarrative(tokens[5], "Sensor Activation", status);
-		}else {
+		} else {
 			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
 					"Invalid amount of fields. Expected format should be 6 fields at least."));
 			return;
@@ -459,12 +470,12 @@ public class ImportNisida {
 		// sample:
 		// 171000Z/EXP/PER/10:00/-/FULLY CHARGED AND READY TO KILL/
 		// format:
-		// [DayTime /EXP/ Mast /Time up/Time down/Remarks/] 
-		// 
+		// [DayTime /EXP/ Mast /Time up/Time down/Remarks/]
+		//
 
 		if (tokens.length >= 6) {
 			createNarrative(tokens[5], "Mast-Exposure", status);
-		}else {
+		} else {
 			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
 					"Invalid amount of fields. Expected format should be 6 fields at least."));
 			return;
@@ -515,7 +526,7 @@ public class ImportNisida {
 				status.getLayers().addThisLayer(dest);
 			}
 			dest.add(labelWrapper);
-			
+
 		} else {
 			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
 					"Invalid amount of fields. Expected format should be 8 fields at least."));
