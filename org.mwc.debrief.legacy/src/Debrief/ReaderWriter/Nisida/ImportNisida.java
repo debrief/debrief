@@ -446,8 +446,19 @@ public class ImportNisida {
 	}
 
 	private static void processMastexposure(final String[] tokens, final NisidaLoadState status) {
-		// TODO Auto-generated method stub
+		// sample:
+		// 171000Z/EXP/PER/10:00/-/FULLY CHARGED AND READY TO KILL/
+		// format:
+		// [DayTime /EXP/ Mast /Time up/Time down/Remarks/] 
+		// 
 
+		if (tokens.length >= 6) {
+			createNarrative(tokens[5], "Mast-Exposure", status);
+		}else {
+			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
+					"Invalid amount of fields. Expected format should be 6 fields at least."));
+			return;
+		}
 	}
 
 	private static void processDipOrBoy(final String[] tokens, final NisidaLoadState status) {
@@ -497,7 +508,7 @@ public class ImportNisida {
 			
 		} else {
 			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
-					"Invalid amount of fields. Expected format should be 10 fields at least."));
+					"Invalid amount of fields. Expected format should be 8 fields at least."));
 			return;
 		}
 	}
