@@ -60,20 +60,20 @@ public class ImportNisidaTest extends TestCase {
 		final Layers layers = new Layers();
 		ImportNisida.importThis(fis, layers);
 		
-		assertEquals("created layers", 2, layers.size());
+		assertEquals("created layers", 5, layers.size());
 		
 		// check the narrative entries
 		Layer narrativeLayer = layers.findLayer(NarrativeEntry.NARRATIVE_LAYER);
 		assertNotNull("found narratives");
 		assertTrue("of correct type", narrativeLayer instanceof NarrativeWrapper);
 		NarrativeWrapper narratives = (NarrativeWrapper) narrativeLayer;
-		assertEquals("found entries", 3, narratives.size());
+		assertEquals("found entries", 10, narratives.size());
 		
 		
 		Layer ownshipLayer = layers.findLayer("ADRI");
 		assertNotNull("created O/S track", ownshipLayer);
 		assertTrue("is track wrapper", ownshipLayer instanceof TrackWrapper);
 		TrackWrapper ownship = (TrackWrapper) ownshipLayer;
-		assertEquals("correct number of points", 4, ownship.numFixes());
+		assertEquals("correct number of points", 5, ownship.numFixes());
 	}
 }
