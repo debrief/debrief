@@ -24,6 +24,6 @@
   </parent>
   <groupId>org.mwc.debrief</groupId>
   <artifactId>org.mwc.cmap.combined.feature</artifactId>
-  <version>1.1.13</version>
+  <version>1.1.14</version>
   <packaging>eclipse-feature</packaging>
 </project>
