@@ -15,6 +15,8 @@
 
 package org.mwc.debrief.core.loaders;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import org.eclipse.core.runtime.IAdaptable;
@@ -33,6 +35,24 @@ public class NisidaLoader extends CoreLoader {
 	public NisidaLoader() {
 		super("Nisida", null);
 	}
+
+	
+	
+	@Override
+	public boolean canLoad(String fileName) {
+		if(super.canLoad(fileName)) {
+			try {
+				return ImportNisida.canLoadThisFile(new FileInputStream(fileName));
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+				return false;
+			}
+		} else {
+			return false;			
+		}
+	}
+
+
 
 	/*
 	 * (non-Javadoc)
