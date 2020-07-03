@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
@@ -379,7 +380,6 @@ public class ImportNisida {
 	 * @param status class status
 	 */
 	private static void processNarrative(final String[] tokens, final NisidaLoadState status) {
-		final String commentText = tokens[2];
 		final String type;
 		if ("NAR".equals(tokens[1])) {
 			type = "Narrative";
@@ -388,7 +388,7 @@ public class ImportNisida {
 		} else {
 			type = tokens[1];
 		}
-		final NarrativeEntry newNarrative = createNarrative(commentText, type, status);
+		final NarrativeEntry newNarrative = createNarrative(Arrays.copyOfRange(tokens, 2, tokens.length), type, status);
 		status.setLastEntryWithText(newNarrative);
 	}
 
@@ -488,12 +488,12 @@ public class ImportNisida {
 		// [DayTime/ENV/Windcourse/Windspeed in kts/ Seastate/Visibility in NM/ cloud
 		// coverage in octals/ PSR in yds/ Layerdepth in m/ PRR in NM /Remarks/ ]
 
-		if (tokens.length >= 11) {
-			final NarrativeEntry newNarrative = createNarrative(tokens[10], "Environment", status);
+		if (tokens.length >= 2) {
+			final NarrativeEntry newNarrative = createNarrative(Arrays.copyOfRange(tokens, 2, tokens.length), "Environment", status);
 			status.setLastEntryWithText(newNarrative);
 		} else {
 			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
-					"Invalid amount of fields. Expected format should be 11 fields at least."));
+					"Invalid amount of fields. Expected format should be 2 fields at least."));
 			return;
 		}
 	}
@@ -504,12 +504,12 @@ public class ImportNisida {
 		// format:
 		// [DayTime/SEN/Sensor/Time on/Time off/Remarks/]
 
-		if (tokens.length >= 6) {
-			final NarrativeEntry newNarrative = createNarrative(tokens[5], "Sensor Activation", status);
+		if (tokens.length >= 2) {
+			final NarrativeEntry newNarrative = createNarrative(Arrays.copyOfRange(tokens, 2, tokens.length), "Sensor Activation", status);
 			status.setLastEntryWithText(newNarrative);
 		} else {
 			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
-					"Invalid amount of fields. Expected format should be 6 fields at least."));
+					"Invalid amount of fields. Expected format should be 2 fields at least."));
 			return;
 		}
 	}
@@ -521,13 +521,13 @@ public class ImportNisida {
 		// [DayTime /EXP/ Mast /Time up/Time down/Remarks/]
 		//
 
-		if (tokens.length >= 6) {
-			final NarrativeEntry newNarrative = createNarrative(tokens[5], "Mast-Exposure", status);
+		if (tokens.length >= 2) {
+			final NarrativeEntry newNarrative = createNarrative(Arrays.copyOfRange(tokens, 2, tokens.length), "Mast-Exposure", status);
 			status.setLastEntryWithText(newNarrative);
 
 		} else {
 			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
-					"Invalid amount of fields. Expected format should be 6 fields at least."));
+					"Invalid amount of fields. Expected format should be 2 fields at least."));
 			return;
 		}
 	}
@@ -544,7 +544,7 @@ public class ImportNisida {
 		// [DayTime Drop/SSQ/ Buoy NR/Hydro Depth in m/Buoy LifeSetting in hrs /Buoy
 		// Lat/Buoy Lon/Remarks/]
 
-		if (tokens.length >= 8) {
+		if (tokens.length >= 7) {
 
 			// This is a comment (NarrativeEntry). As with other comments, we can use the
 			// current track name as “track”.
@@ -564,7 +564,7 @@ public class ImportNisida {
 				layer = "";
 			}
 
-			final NarrativeEntry newNarrativeEntry = createNarrative(tokens[7], type, status);
+			final NarrativeEntry newNarrativeEntry = createNarrative(Arrays.copyOfRange(tokens, 2, tokens.length), type, status);
 			status.setLastEntryWithText(newNarrativeEntry);
 
 			final WorldLocation location = parseLocation(tokens[5], tokens[6], status);
@@ -581,7 +581,7 @@ public class ImportNisida {
 
 		} else {
 			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
-					"Invalid amount of fields. Expected format should be 8 fields at least."));
+					"Invalid amount of fields. Expected format should be 7 fields at least."));
 			return;
 		}
 	}
@@ -595,7 +595,7 @@ public class ImportNisida {
 
 		// capture another “FixWrapper” for Own lat/lon
 
-		if (tokens.length >= 10) {
+		if (tokens.length >= 9) {
 			final WorldLocation location = parseLocation(tokens[6], tokens[7], status);
 			final Fix fix = new Fix(new HiResDate(status.timestamp), location, 0d, 0d);
 			final FixWrapper res = new FixWrapper(fix);
@@ -623,7 +623,7 @@ public class ImportNisida {
 
 			// This is a comment, with "Attack" as Comment-Type
 
-			final NarrativeEntry newNarrative = createNarrative(tokens[9], "Attack", status);
+			final NarrativeEntry newNarrative = createNarrative(Arrays.copyOfRange(tokens, 2, tokens.length), "Attack", status);
 			// let's save the new narrative as a last
 			status.setLastEntryWithText(newNarrative);
 
@@ -635,7 +635,7 @@ public class ImportNisida {
 
 	}
 
-	private static NarrativeEntry createNarrative(final String narrativeText, final String narrativeType,
+	private static NarrativeEntry createNarrative(final String[] text, final String narrativeType,
 			final NisidaLoadState status) {
 		Layer narrativeDest = status.getLayers().findLayer(NarrativeEntry.NARRATIVE_LAYER, true);
 		if (narrativeDest == null) {
@@ -645,8 +645,17 @@ public class ImportNisida {
 			status.getLayers().addThisLayer(narrativeDest);
 		}
 
+		final StringBuilder narrativeTextBuilder = new StringBuilder();
+		for (String t : text) {
+			narrativeTextBuilder.append("/");
+			narrativeTextBuilder.append(t);
+		}
+		String finalText = narrativeTextBuilder.toString(); 
+		if (finalText.length() > 1) {
+			finalText = finalText.substring(1);
+		}
 		final NarrativeEntry entry = new NarrativeEntry(status.getPlatform().getName(),
-				new HiResDate(status.getTimestamp()), narrativeText.trim());
+				new HiResDate(status.getTimestamp()), finalText.trim());
 
 		entry.setType(narrativeType);
 
