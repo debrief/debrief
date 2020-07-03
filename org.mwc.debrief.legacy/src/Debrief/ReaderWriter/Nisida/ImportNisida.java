@@ -176,10 +176,12 @@ public class ImportNisida {
 
 		try {
 			String nisidaLine;
-			while ((nisidaLine = br.readLine()) != null) {
+			int lineNumber = 0;
+			while ((nisidaLine = br.readLine()) != null && lineNumber < 50) {
 				if (nisidaLine != null && nisidaLine.startsWith("UNIT/")) {
 					return true;
 				}
+				++lineNumber;
 			}
 		} catch (IOException e) {
 			// There were problems reading the file. It cannot be loaded.
