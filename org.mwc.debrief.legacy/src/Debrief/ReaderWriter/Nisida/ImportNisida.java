@@ -14,6 +14,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.LabelWrapper;
@@ -575,6 +576,8 @@ public class ImportNisida {
 			final WorldLocation location = parseLocation(tokens[5], tokens[6], status);
 			final LabelWrapper labelWrapper = new LabelWrapper(tokens[0], location, DebriefColors.RED);
 			labelWrapper.setSymbolType(symbol);
+			labelWrapper.setStartDTG(new HiResDate(status.getTimestamp()));
+			labelWrapper.setEndDTG(new HiResDate(status.getTimestamp()));
 			Layer dest = status.getLayers().findLayer(layer, true);
 			if (dest == null) {
 				dest = new BaseLayer();
@@ -618,6 +621,8 @@ public class ImportNisida {
 			// It will also be a LabelWrapper in an "Attacks" layer.
 			final LabelWrapper labelWrapper = new LabelWrapper(tokens[0], location, DebriefColors.RED);
 			labelWrapper.setSymbolType(SymbolFactory.DATUM);
+			labelWrapper.setStartDTG(fix.getTime());
+			labelWrapper.setEndDTG(fix.getTime());
 			Layer dest = status.getLayers().findLayer(ATTACKS_LAYER, true);
 			if (dest == null) {
 				dest = new BaseLayer();
@@ -785,7 +790,9 @@ public class ImportNisida {
 			final int minute = Integer.parseInt(timestampText.substring(4, 6));
 
 			final Calendar calendar = Calendar.getInstance();
-			calendar.set(status.getYear(), status.getMonth(), day - 1, hour, minute);
+			calendar.clear();
+			calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
+			calendar.set(status.getYear(), status.getMonth(), day, hour, minute);
 			return calendar.getTime();
 		} catch (Exception e) {
 			status.getErrors()
