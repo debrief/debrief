@@ -84,6 +84,7 @@ import org.mwc.debrief.lite.menu.DebriefRibbon;
 import org.mwc.debrief.lite.menu.DebriefRibbonFile;
 import org.mwc.debrief.lite.menu.DebriefRibbonInsert;
 import org.mwc.debrief.lite.menu.DebriefRibbonTimeController;
+import org.mwc.debrief.lite.menu.DebriefRibbonView;
 import org.mwc.debrief.lite.menu.MenuUtils;
 import org.mwc.debrief.lite.outline.OutlinePanelView;
 import org.mwc.debrief.lite.util.DoSaveAs;
@@ -102,6 +103,7 @@ import Debrief.GUI.Tote.Painters.PainterManager;
 import Debrief.GUI.Tote.Painters.SnailPainter2;
 import Debrief.GUI.Tote.Painters.TotePainter;
 import Debrief.ReaderWriter.NMEA.ImportNMEA;
+import Debrief.ReaderWriter.Nisida.ImportNisida;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
 import Debrief.ReaderWriter.XML.SessionHandler;
@@ -635,7 +637,7 @@ public class DebriefLiteApp implements FileDropListener {
 	private boolean _plotUpdating = false;
 
 	// Maybe this should go inside GeoToolMapRenderer
-	final float initialAlpha = 0.7f;
+	public final float initialAlpha = 0.7f;
 
 	private DebriefLiteApp() throws NoninvertibleTransformException {
 		_instance = this;
@@ -672,7 +674,7 @@ public class DebriefLiteApp implements FileDropListener {
 		geoMapRenderer = new GeoToolMapRenderer(initialAlpha, mapComponent, projection.getDataTransform().inverse());
 
 		final FileDropSupport dropSupport = new FileDropSupport();
-		dropSupport.setFileDropListener(this, " .REP, .XML, .DSF, .DTF, .DPF, .LOG, .TIF");
+		dropSupport.setFileDropListener(this, " .REP, .XML, .DSF, .DTF, .DPF, .LOG, .TIF, .TXT");
 
 		// provide some file helpers
 		ImportReplay.initialise(app);
@@ -1066,8 +1068,15 @@ public class DebriefLiteApp implements FileDropListener {
 					} else if (suff.equalsIgnoreCase(".TIF")) {
 						handleImportTIFFile(file);
 					} else {
-						Trace.trace("This file type not handled:" + suff);
-						DialogFactory.showMessage("Open Debrief file", "This file type not handled:" + suff);
+						// try nisida format - we can't rely on filename
+						FileInputStream fis = new FileInputStream(file);
+						if(ImportNisida.canLoadThisFile(fis)) {
+							fis.close();
+							handleImportNisidaFile(file);
+						} else {
+							Trace.trace("This file type not handled:" + suff);
+							DialogFactory.showMessage("Open Debrief file", "This file type not handled:" + suff);
+						}
 					}
 				}
 			}
@@ -1123,7 +1132,7 @@ public class DebriefLiteApp implements FileDropListener {
 			_theLayers.fireReformatted(null);
 
 			// and the spatial bounds
-			new FitToWindow(_theLayers, mapPane, projection).actionPerformed(null);
+			new FitToWindow(_theLayers, mapPane, projection,null).actionPerformed(null);
 		} catch (final FileNotFoundException e) {
 			app.logError(ToolParent.ERROR, "Failed to read DPF File", e);
 			MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file", "Failed to read DPF File" + e.getMessage());
@@ -1168,6 +1177,32 @@ public class DebriefLiteApp implements FileDropListener {
 		enableFileCloseButton(true);
 	}
 
+	private void handleImportNisidaFile(final File file) throws FileNotFoundException {
+		final FileInputStream fis = new FileInputStream(file);
+		try {
+			ImportNisida.importThis(fis, _theLayers);
+		} finally {
+			try {
+				fis.close();
+			} catch (final IOException e) {
+				getDefault().logError(ToolParent.ERROR, "Failed to close NMEA file", e);
+			}
+		}
+
+		final TimePeriod period = _theLayers.getTimePeriod();
+		_myOperations.setPeriod(period);
+		timeManager.setPeriod(this, period);
+		if (period != null) {
+			timeManager.setTime(this, period.getStartDTG(), true);
+		}
+
+		_theLayers.fireModified(null);
+
+		// also tell the layers they've been reformatted
+		_theLayers.fireReformatted(null);
+		enableFileCloseButton(true);
+	}
+	
 	private void enableFileCloseButton(boolean b) {
 		DebriefRibbonFile.closeButton.getContentModel().setActionEnabled(b);
 		
@@ -1217,7 +1252,7 @@ public class DebriefLiteApp implements FileDropListener {
 								theTote.assignWatchables(true);
 
 								// and the spatial bounds
-								final FitToWindow fitMe = new FitToWindow(_theLayers, mapPane, projection);
+								final FitToWindow fitMe = new FitToWindow(_theLayers, mapPane, projection,null);
 								fitMe.actionPerformed(null);
 							}
 						});
@@ -1401,8 +1436,9 @@ public class DebriefLiteApp implements FileDropListener {
 		timeManager.setTime(this, null, false);
 
 		// and the time format dropdown
-		DebriefRibbonTimeController.resetDateFormat();
-
+		DebriefRibbonView.resetToggleMenuStates();
+		DebriefRibbonTimeController.resetToggleMenuStates();
+		theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
 		// stop the timer
 		if (_stepControl.isPlaying()) {
 			_stepControl.startStepping(false);
@@ -1418,6 +1454,7 @@ public class DebriefLiteApp implements FileDropListener {
 		// put some backdrop data back in
 		loadBackdropdata(_theLayers);
 		resetUndoBuffer();
+		
 		graphPanelView.reset();
 		graphPanel.setCollapsed(true);
 	}
@@ -1488,6 +1525,31 @@ public class DebriefLiteApp implements FileDropListener {
 		newArea.normalise();
 
 		projection.setDataArea(newArea);
+	}
+	
+	public WorldArea getProjectionArea() {
+		final DirectPosition2D upperCorner = (DirectPosition2D) mapPane.getDisplayArea().getUpperCorner();
+		final DirectPosition2D bottomCorner = (DirectPosition2D) mapPane.getDisplayArea().getLowerCorner();
+
+		if (bottomCorner.getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84
+				&& upperCorner.getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84) {
+			try {
+				geoMapRenderer.getTransform().transform(upperCorner, upperCorner);
+				geoMapRenderer.getTransform().transform(bottomCorner, bottomCorner);
+			} catch (MismatchedDimensionException | TransformException e) {
+				Application.logError2(ToolParent.ERROR, "Failure in projection transform", e);
+			}
+		}
+
+		final WorldLocation topLocation = new WorldLocation(upperCorner.getY(), upperCorner.getX(), 0);
+		final WorldLocation bottomLocation = new WorldLocation(bottomCorner.getY(), bottomCorner.getX(), 0);
+		final WorldArea newArea = new WorldArea(topLocation, bottomLocation);
+		newArea.normalise();
+
+		return newArea;
+	}
+	public GeoToolMapProjection getProjection() {
+		return projection;
 	}
 
 }

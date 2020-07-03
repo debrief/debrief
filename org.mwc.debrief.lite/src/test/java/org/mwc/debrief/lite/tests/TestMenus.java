@@ -26,8 +26,6 @@ import org.mwc.debrief.lite.utils.TestUtils;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
 import org.pushingpixels.flamingo.api.common.JCommandButtonStrip;
-import org.pushingpixels.flamingo.api.common.JCommandMenuButton;
-import org.pushingpixels.flamingo.api.common.JCommandToggleButton;
 import org.pushingpixels.flamingo.api.common.JScrollablePanel;
 import org.pushingpixels.flamingo.api.common.popup.JPopupPanel;
 import org.pushingpixels.flamingo.api.ribbon.AbstractRibbonBand;
@@ -148,8 +146,8 @@ public class TestMenus extends BaseTestCase
       if(!item.isEmpty())
       {
         if(isToggleButton) {
-          assertTrue(liteBand.getComponent(i) instanceof JCommandToggleButton);
-          JCommandToggleButton newButton = ((JCommandToggleButton)liteBand.getComponent(i));
+          assertTrue(liteBand.getComponent(i) instanceof JCommandButton);
+          JCommandButton newButton = ((JCommandButton)liteBand.getComponent(i));
           assertTrue(newButton.getText().equals(item));
           if(Arrays.asList(disabledButtons).contains(newButton.getText())) {
             assertFalse(newButton.isEnabled());
@@ -189,9 +187,9 @@ public class TestMenus extends BaseTestCase
     assertNotNull(newButton.getPopupCallback().getPopupPanel(newButton));
     JPopupPanel panel = (JPopupPanel)newButton.getPopupCallback().getPopupPanel(newButton);
     assertEquals(panel.getComponentCount(),1);
-    JCommandMenuButton saveButton = (JCommandMenuButton)TestUtils.getChildNamed(panel, "save");
+    JCommandButton saveButton = (JCommandButton)TestUtils.getChildNamed(panel, "save");
     assertEquals("Save",saveButton.getText());
-    JCommandMenuButton saveAsButton = (JCommandMenuButton)TestUtils.getChildNamed(panel, "saveas");
+    JCommandButton saveAsButton = (JCommandButton)TestUtils.getChildNamed(panel, "saveas");
     assertEquals("Save As",saveAsButton.getText());
     
     @SuppressWarnings("unchecked")

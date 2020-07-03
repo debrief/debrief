@@ -129,6 +129,7 @@ Export-Package:
    MWC.GenericData",
  Debrief.ReaderWriter.FlatFile.DopplerShift;uses:="MWC.GenericData",
  Debrief.ReaderWriter.NMEA;uses:="junit.framework,MWC.GUI",
+ Debrief.ReaderWriter.Nisida,
  Debrief.ReaderWriter.PCArgos;
   uses:="MWC.GUI.Properties,
    MWC.Utilities.ReaderWriter,

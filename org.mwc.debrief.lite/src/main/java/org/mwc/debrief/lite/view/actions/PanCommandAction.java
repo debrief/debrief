@@ -19,11 +19,11 @@ import java.awt.event.ActionEvent;
 
 import org.geotools.swing.MapPane;
 import org.geotools.swing.action.PanAction;
-import org.geotools.swing.event.MapMouseEvent;
-import org.geotools.swing.tool.PanTool;
-import org.mwc.debrief.lite.DebriefLiteApp;
 import org.pushingpixels.flamingo.api.common.CommandAction;
 import org.pushingpixels.flamingo.api.common.CommandActionEvent;
+
+import MWC.GUI.ToolParent;
+import MWC.GUI.Tools.Action;
 
 /**
  * @author Ayesha
@@ -35,27 +35,28 @@ public class PanCommandAction extends PanAction implements CommandAction {
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	private ToolParent _toolParent;
+	private DebriefPanTool _panTool;
 
-	public PanCommandAction(final MapPane mapPane) {
+	public PanCommandAction(final MapPane mapPane,ToolParent parent) {
 		super(mapPane);
-		// TODO Auto-generated constructor stub
+		_toolParent = parent;
+		_panTool = new DebriefPanTool(_toolParent);
 	}
 
 	@Override
 	public void actionPerformed(final ActionEvent ev) {
-		getMapPane().setCursorTool(new PanTool() {
-
-			@Override
-			public void onMouseReleased(final MapMouseEvent ev) {
-				super.onMouseReleased(ev);
-				DebriefLiteApp.getInstance().updateProjectionArea();
-			}
-
-		});
+		getMapPane().setCursorTool(_panTool);
 	}
 
 	@Override
 	public void commandActivated(final CommandActionEvent e) {
 		actionPerformed(e);
+	}
+
+	@Override
+	public final String toString() {
+		return _panTool.toString();
 	}
 }

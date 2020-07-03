@@ -31,7 +31,6 @@ import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.custom.JRibbonLabel;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButtonStrip;
-import org.pushingpixels.flamingo.api.common.JCommandMenuButton;
 import org.pushingpixels.flamingo.api.common.JScrollablePanel;
 import org.pushingpixels.flamingo.api.common.popup.JPopupPanel;
 import org.pushingpixels.flamingo.api.ribbon.AbstractRibbonBand;
@@ -170,12 +169,12 @@ public class TestUtils
     return combo;
   }
   
-  public static JCommandMenuButton getSaveButton()
+  public static JCommandButton getSaveButton()
   {
     JBandControlPanel liteBand = (JBandControlPanel)getRibbonBand(1,0).getComponent(0);
     JCommandButton saveButton = ((JCommandButton)liteBand.getComponent(2));
     JPopupPanel panel = (JPopupPanel)saveButton.getPopupCallback().getPopupPanel(saveButton);
-    JCommandMenuButton saveDDButton =(JCommandMenuButton)((JPanel)((JPanel)((JScrollablePanel)panel.getComponent(0)).getComponent(0)).getComponent(0)).getComponent(0);
+    JCommandButton saveDDButton =(JCommandButton)((JPanel)((JPanel)((JScrollablePanel)panel.getComponent(0)).getComponent(0)).getComponent(0)).getComponent(0);
     
     saveDDButton.setFireActionOnRollover(true);
     System.out.println("Save Button:"+saveDDButton);
@@ -189,13 +188,13 @@ public class TestUtils
     return saveButton;
   }
   
-  public static JCommandMenuButton getSaveASButton()
+  public static JCommandButton getSaveASButton()
   {
     JBandControlPanel liteBand = (JBandControlPanel)getRibbonBand(1,0).getComponent(0);
     JCommandButton saveButton = ((JCommandButton)liteBand.getComponent(2));
     JPopupPanel panel = (JPopupPanel)saveButton.getPopupCallback().getPopupPanel(saveButton);
     
-    JCommandMenuButton saveDDButton =(JCommandMenuButton)((JPanel)((JPanel)((JScrollablePanel)panel.getComponent(0)).getComponent(0)).getComponent(0)).getComponent(1);
+    JCommandButton saveDDButton =(JCommandButton)((JPanel)((JPanel)((JScrollablePanel)panel.getComponent(0)).getComponent(0)).getComponent(0)).getComponent(1);
     saveDDButton.setFireActionOnRollover(true);
     System.out.println("Save Button:"+saveDDButton);
     return saveDDButton;
@@ -218,14 +217,14 @@ public class TestUtils
     JFlowBandControlPanel panel = (JFlowBandControlPanel)getRibbonBand(4,2).getComponent(0);
     return (JCommandButton)panel.getComponent(2);
   }
-//  public static JCommandMenuButton getSaveAsButton()
-//  {
-//    JBandControlPanel liteBand = (JBandControlPanel)getRibbonBand(1,0).getComponent(0);
-//    JCommandButton saveButton = ((JCommandButton)liteBand.getComponent(2));
-//    JPopupPanel panel = (JPopupPanel)saveButton.getPopupCallback().getPopupPanel(saveButton);
-//    JCommandMenuButton saveDDButton = (JCommandMenuButton)TestUtils.getChildNamed(panel, "saveas");
-//    return saveDDButton;
-//  }
+  public static JCommandButton getSaveAsButton()
+  {
+    JBandControlPanel liteBand = (JBandControlPanel)getRibbonBand(1,0).getComponent(0);
+    JCommandButton saveButton = ((JCommandButton)liteBand.getComponent(2));
+    JPopupPanel panel = (JPopupPanel)saveButton.getPopupCallback().getPopupPanel(saveButton);
+    JCommandButton saveDDButton = (JCommandButton)TestUtils.getChildNamed(panel, "saveas");
+    return saveDDButton;
+  }
   
   
 }
