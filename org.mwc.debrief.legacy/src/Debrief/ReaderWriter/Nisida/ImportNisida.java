@@ -26,6 +26,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.DebriefColors;
+import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -552,16 +553,20 @@ public class ImportNisida {
 			final String operationUpper = operation.toUpperCase();
 			final String type;
 			final String layer;
+			final String symbol;
 			if ("DIP".equals(operationUpper)) {
 				type = "DIP";
 				layer = "DIPs";
+				symbol = "svg:" + SymbolFactory.BUOY_1;
 			} else if ("SSQ".equals(operationUpper)) {
 				type = "Buoy-Drop";
 				layer = "Buoys";
+				symbol = "svg:" + SymbolFactory.BUOY_2;
 			} else {
 				// this will never happen
 				type = operationUpper;
 				layer = "";
+				symbol = "";
 			}
 
 			final NarrativeEntry newNarrativeEntry = createNarrative(Arrays.copyOfRange(tokens, 2, tokens.length), type, status);
@@ -569,6 +574,7 @@ public class ImportNisida {
 
 			final WorldLocation location = parseLocation(tokens[5], tokens[6], status);
 			final LabelWrapper labelWrapper = new LabelWrapper(tokens[0], location, DebriefColors.RED);
+			labelWrapper.setSymbolType(symbol);
 			Layer dest = status.getLayers().findLayer(layer, true);
 			if (dest == null) {
 				dest = new BaseLayer();
@@ -611,6 +617,7 @@ public class ImportNisida {
 
 			// It will also be a LabelWrapper in an "Attacks" layer.
 			final LabelWrapper labelWrapper = new LabelWrapper(tokens[0], location, DebriefColors.RED);
+			labelWrapper.setSymbolType(SymbolFactory.DATUM);
 			Layer dest = status.getLayers().findLayer(ATTACKS_LAYER, true);
 			if (dest == null) {
 				dest = new BaseLayer();
