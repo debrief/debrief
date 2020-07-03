@@ -568,7 +568,7 @@ public class ImportNisida {
 			status.setLastEntryWithText(newNarrativeEntry);
 
 			final WorldLocation location = parseLocation(tokens[5], tokens[6], status);
-			final LabelWrapper labelWrapper = new LabelWrapper(tokens[7], location, DebriefColors.RED);
+			final LabelWrapper labelWrapper = new LabelWrapper(tokens[0], location, DebriefColors.RED);
 			Layer dest = status.getLayers().findLayer(layer, true);
 			if (dest == null) {
 				dest = new BaseLayer();
@@ -610,7 +610,7 @@ public class ImportNisida {
 			}
 
 			// It will also be a LabelWrapper in an "Attacks" layer.
-			final LabelWrapper labelWrapper = new LabelWrapper(tokens[9], location, DebriefColors.RED);
+			final LabelWrapper labelWrapper = new LabelWrapper(tokens[0], location, DebriefColors.RED);
 			Layer dest = status.getLayers().findLayer(ATTACKS_LAYER, true);
 			if (dest == null) {
 				dest = new BaseLayer();
