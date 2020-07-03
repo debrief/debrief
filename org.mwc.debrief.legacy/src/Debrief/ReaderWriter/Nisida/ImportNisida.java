@@ -176,9 +176,9 @@ public class ImportNisida {
 	}
 
 	public static boolean canLoadThisFile(final InputStream is) {
-		final BufferedReader br = new BufferedReader(new InputStreamReader(is));
-
 		try {
+			final BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
 			String nisidaLine;
 			int lineNumber = 0;
 			while ((nisidaLine = br.readLine()) != null && lineNumber < 50) {
@@ -198,14 +198,14 @@ public class ImportNisida {
 	 * 
 	 * @param is
 	 */
-	public static void importThis(final InputStream is, final Layers layers) {
+	public static NisidaLoadState importThis(final InputStream is, final Layers layers) {
 		final BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
+		final NisidaLoadState status = new NisidaLoadState(layers);
 		try {
 			final SimpleDateFormat dateFormatter = new SimpleDateFormat("MMMyy");
 			String nisidaLine;
 			int lineNumber = 1;
-			final NisidaLoadState status = new NisidaLoadState(layers);
 			while ((nisidaLine = br.readLine()) != null) {
 				status.setLineNumber(lineNumber);
 				loadThisLine(nisidaLine, status, dateFormatter);
@@ -214,9 +214,10 @@ public class ImportNisida {
 		} catch (IOException e) {
 			// There were problems reading the file. It cannot be loaded.
 		}
+		return status;
 	}
 
-	private static void loadThisLine(final String line, final NisidaLoadState status,
+	protected static void loadThisLine(final String line, final NisidaLoadState status,
 			final SimpleDateFormat dateFormatter) {
 		if (line.startsWith("UNIT/")) {
 			processUnit(line, status, dateFormatter);
@@ -550,34 +551,33 @@ public class ImportNisida {
 		// [DayTime Drop/SSQ/ Buoy NR/Hydro Depth in m/Buoy LifeSetting in hrs /Buoy
 		// Lat/Buoy Lon/Remarks/]
 
+		// This is a comment (NarrativeEntry). As with other comments, we can use the
+		// current track name as “track”.
+		final String operation = tokens[1];
+		final String operationUpper = operation.toUpperCase();
+		final String type;
+		final String layer;
+		final String symbol;
+		if ("DIP".equals(operationUpper)) {
+			type = "DIP";
+			layer = "DIPs";
+			symbol = "svg:" + SymbolFactory.BUOY_1;
+		} else if ("SSQ".equals(operationUpper)) {
+			type = "Buoy-Drop";
+			layer = "Buoys";
+			symbol = "svg:" + SymbolFactory.BUOY_2;
+		} else {
+			// this will never happen
+			type = operationUpper;
+			layer = "";
+			symbol = "";
+		}
+
+		final NarrativeEntry newNarrativeEntry = createNarrative(Arrays.copyOfRange(tokens, 2, tokens.length), type,
+				status);
+		status.setLastEntryWithText(newNarrativeEntry);
+
 		if (tokens.length >= 7) {
-
-			// This is a comment (NarrativeEntry). As with other comments, we can use the
-			// current track name as “track”.
-			final String operation = tokens[1];
-			final String operationUpper = operation.toUpperCase();
-			final String type;
-			final String layer;
-			final String symbol;
-			if ("DIP".equals(operationUpper)) {
-				type = "DIP";
-				layer = "DIPs";
-				symbol = "svg:" + SymbolFactory.BUOY_1;
-			} else if ("SSQ".equals(operationUpper)) {
-				type = "Buoy-Drop";
-				layer = "Buoys";
-				symbol = "svg:" + SymbolFactory.BUOY_2;
-			} else {
-				// this will never happen
-				type = operationUpper;
-				layer = "";
-				symbol = "";
-			}
-
-			final NarrativeEntry newNarrativeEntry = createNarrative(Arrays.copyOfRange(tokens, 2, tokens.length), type,
-					status);
-			status.setLastEntryWithText(newNarrativeEntry);
-
 			final WorldLocation location = parseLocation(tokens[5], tokens[6], status);
 			final LabelWrapper labelWrapper = new LabelWrapper(tokens[0], location, DebriefColors.RED);
 			labelWrapper.setSymbolType(symbol);
@@ -611,6 +611,15 @@ public class ImportNisida {
 
 		// capture another “FixWrapper” for Own lat/lon
 
+
+		// This is a comment, with "Attack" as Comment-Type
+
+		final NarrativeEntry newNarrative = createNarrative(Arrays.copyOfRange(tokens, 2, tokens.length), "Attack",
+				status);
+		// let's save the new narrative as a last
+		status.setLastEntryWithText(newNarrative);
+		
+		
 		if (tokens.length >= 9) {
 			final WorldLocation location = parseLocation(tokens[6], tokens[7], status);
 			final Fix fix = new Fix(new HiResDate(status.timestamp), location, 0d, 0d);
@@ -641,20 +650,11 @@ public class ImportNisida {
 				}
 				dest.add(labelWrapper);
 			}
-
-			// This is a comment, with "Attack" as Comment-Type
-
-			final NarrativeEntry newNarrative = createNarrative(Arrays.copyOfRange(tokens, 2, tokens.length), "Attack",
-					status);
-			// let's save the new narrative as a last
-			status.setLastEntryWithText(newNarrative);
-
 		} else {
 			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
-					"Invalid amount of fields. Expected format should be: [DayTime/ATT/WPN/TGT Bearing/TGT RNGE in NM/TN / Own Lat/ Own Lon /Position Source /Remarks/"));
+					"Invalid amount of fields. Expected format should be: [DayTime/ATT/WPN/TGT Bearing/TGT RNGE in NM/TN / Own Lat/ Own Lon /Position Source /Remarks/. LabelWrapper and FixWrapper were not created"));
 			return;
 		}
-
 	}
 
 	private static NarrativeEntry createNarrative(final String[] text, final String narrativeType,
@@ -691,95 +691,101 @@ public class ImportNisida {
 	}
 
 	private static void processDetection(final String[] tokens, final NisidaLoadState status) {
-		// sample:
-		// [DayTime/DET/DetectingSensor/Bearing/Range in NM/TN/Own Lat/Own Lon/Position
-		// Source/Remarks/]
-		// 311200Z/DET/RDR/23/20/777/3602.02N/00412.12E/GPS/DETECTION RECORD
+		if (tokens.length >= 10) {
+			// sample:
+			// [DayTime/DET/DetectingSensor/Bearing/Range in NM/TN/Own Lat/Own Lon/Position
+			// Source/Remarks/]
+			// 311200Z/DET/RDR/23/20/777/3602.02N/00412.12E/GPS/DETECTION RECORD
 
-		/**
-		 * Create a sensor using the expanded `Sensor Code` name plus the track number
-		 * (TN).
-		 */
-		final String sensorCodeToken = tokens[2];
+			/**
+			 * Create a sensor using the expanded `Sensor Code` name plus the track number
+			 * (TN).
+			 */
+			final String sensorCodeToken = tokens[2];
 
-		final Double trackNumber = valueFor(tokens[5], status);
+			final Double trackNumber = valueFor(tokens[5], status);
 
-		final String trackNumberString;
-		if (trackNumber != null) {
-			trackNumberString = " " + trackNumber;
-		} else {
-			trackNumberString = "";
-		}
-
-		final String sensorName;
-		if (!SENSOR_CODE_TO_NAME.containsKey(sensorCodeToken)) {
-			sensorName = sensorCodeToken + "-" + trackNumberString;
-		} else {
-			sensorName = SENSOR_CODE_TO_NAME.get(sensorCodeToken) + "-" + trackNumberString;
-		}
-
-		/**
-		 * Create a FixWrapper on the parent track for the “Own Lat/OwnLon” position.
-		 * Course/speed are zeroes
-		 */
-
-		final WorldLocation ownLocation = parseLocation(tokens[6], tokens[7], status);
-		final Fix fix = new Fix(new HiResDate(status.timestamp), ownLocation, 0d, 0d);
-		final FixWrapper res = new FixWrapper(fix);
-
-		// sort out the sensor
-		final String source = tokens[8];
-		final String sourceName = POS_SOURCE_TO_NAME.get(source);
-		if (sourceName != null) {
-			res.setLabel(sourceName);
-		} else {
-			res.setLabel(source);
-		}
-		// store the new position
-		status.getPlatform().addFix(res);
-
-		/**
-		 * Ok, we now create the ContactWrapper.
-		 */
-
-		final Enumeration<Editable> enumer = status.getPlatform().getSensors().elements();
-
-		// search the sensor in the platform
-		SensorWrapper theSensor = null;
-		while (enumer.hasMoreElements()) {
-			final SensorWrapper currentSensor = (SensorWrapper) enumer.nextElement();
-			if (currentSensor.getName().equals(sensorName)) {
-				theSensor = currentSensor;
-				break;
+			final String trackNumberString;
+			if (trackNumber != null) {
+				trackNumberString = " " + trackNumber;
+			} else {
+				trackNumberString = "";
 			}
-		}
 
-		// we didn't find it, let's create a new sensor then
-		if (theSensor == null) {
-			theSensor = new SensorWrapper(sensorName);
-			status.getPlatform().add(theSensor);
-		}
+			final String sensorName;
+			if (!SENSOR_CODE_TO_NAME.containsKey(sensorCodeToken)) {
+				sensorName = sensorCodeToken + "-" + trackNumberString;
+			} else {
+				sensorName = SENSOR_CODE_TO_NAME.get(sensorCodeToken) + "-" + trackNumberString;
+			}
 
-		// Let's get the range & bearing
-		final Double bearing = valueFor(tokens[3], status);
-		final Double rangeVal = valueFor(tokens[4], status);
-		final WorldDistance range = rangeVal != null ? new WorldDistance(rangeVal, MWC.GenericData.WorldDistance.NM)
-				: null;
+			/**
+			 * Create a FixWrapper on the parent track for the “Own Lat/OwnLon” position.
+			 * Course/speed are zeroes
+			 */
 
-		// calculate target location
-		final WorldLocation tgtLocation;
-		if (bearing != null && range != null) {
-			tgtLocation = ownLocation.add(new WorldVector(Math.toRadians(bearing), range, null));
+			final WorldLocation ownLocation = parseLocation(tokens[6], tokens[7], status);
+			final Fix fix = new Fix(new HiResDate(status.timestamp), ownLocation, 0d, 0d);
+			final FixWrapper res = new FixWrapper(fix);
+
+			// sort out the sensor
+			final String source = tokens[8];
+			final String sourceName = POS_SOURCE_TO_NAME.get(source);
+			if (sourceName != null) {
+				res.setLabel(sourceName);
+			} else {
+				res.setLabel(source);
+			}
+			// store the new position
+			status.getPlatform().addFix(res);
+
+			/**
+			 * Ok, we now create the ContactWrapper.
+			 */
+
+			final Enumeration<Editable> enumer = status.getPlatform().getSensors().elements();
+
+			// search the sensor in the platform
+			SensorWrapper theSensor = null;
+			while (enumer.hasMoreElements()) {
+				final SensorWrapper currentSensor = (SensorWrapper) enumer.nextElement();
+				if (currentSensor.getName().equals(sensorName)) {
+					theSensor = currentSensor;
+					break;
+				}
+			}
+
+			// we didn't find it, let's create a new sensor then
+			if (theSensor == null) {
+				theSensor = new SensorWrapper(sensorName);
+				status.getPlatform().add(theSensor);
+			}
+
+			// Let's get the range & bearing
+			final Double bearing = valueFor(tokens[3], status);
+			final Double rangeVal = valueFor(tokens[4], status);
+			final WorldDistance range = rangeVal != null ? new WorldDistance(rangeVal, MWC.GenericData.WorldDistance.NM)
+					: null;
+
+			// calculate target location
+			final WorldLocation tgtLocation;
+			if (bearing != null && range != null) {
+				tgtLocation = ownLocation.add(new WorldVector(Math.toRadians(bearing), range, null));
+			} else {
+				tgtLocation = null;
+			}
+
+			final SensorContactWrapper contact = new SensorContactWrapper(status.getPlatform().getName(),
+					new HiResDate(status.getTimestamp()), range, bearing, tgtLocation, null, sensorName, 0,
+					theSensor.getName());
+			theSensor.add(contact);
+			contact.setComment(tokens[9]);
+			status.setLastEntryWithText(contact);
 		} else {
-			tgtLocation = null;
+			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
+					"Invalid amount of fields. Expected format should be: [DayTime/DET/DetectingSensor/Bearing/Range in NM/TN/Own Lat/Own Lon/Position Source/Remarks/"));
+			return;
 		}
-
-		final SensorContactWrapper contact = new SensorContactWrapper(status.getPlatform().getName(),
-				new HiResDate(status.getTimestamp()), range, bearing, tgtLocation, null, sensorName, 0,
-				theSensor.getName());
-		theSensor.add(contact);
-		contact.setComment(tokens[9]);
-		status.setLastEntryWithText(contact);
 	}
 
 	public static boolean allNumbersDigit(final String text) {
