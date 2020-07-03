@@ -20,6 +20,7 @@ import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.Algorithms.Conversions;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -570,7 +571,8 @@ public class ImportNisida {
 			final LabelWrapper labelWrapper = new LabelWrapper(tokens[7], location, null);
 			Layer dest = status.getLayers().findLayer(layer, true);
 			if (dest == null) {
-				dest = new NarrativeWrapper(layer);
+				dest = new BaseLayer();
+				dest.setName(layer);
 
 				// add it to the manager
 				status.getLayers().addThisLayer(dest);
@@ -611,7 +613,8 @@ public class ImportNisida {
 			final LabelWrapper labelWrapper = new LabelWrapper(tokens[9], location, null);
 			Layer dest = status.getLayers().findLayer(ATTACKS_LAYER, true);
 			if (dest == null) {
-				dest = new NarrativeWrapper(ATTACKS_LAYER);
+				dest = new BaseLayer();
+				dest.setName(ATTACKS_LAYER);
 
 				// add it to the manager
 				status.getLayers().addThisLayer(dest);
