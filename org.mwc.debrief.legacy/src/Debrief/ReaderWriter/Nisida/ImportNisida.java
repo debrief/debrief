@@ -318,8 +318,7 @@ public class ImportNisida {
 	}
 
 	protected static boolean isPositionProcess(final String process) {
-		return "GPS".equals(process) || "DR".equals(process)
-				|| "IN".equals(process);
+		return "GPS".equals(process) || "DR".equals(process) || "IN".equals(process);
 	}
 
 	protected static void processContinue(final String line, final NisidaLoadState status) {
@@ -351,14 +350,16 @@ public class ImportNisida {
 		final String platformName = tokens[1];
 
 		// FIND THE PLATFORM.
-		TrackWrapper track = (TrackWrapper) status.getLayers().findLayer(platformName);
-		if (track == null) {
-			track = new TrackWrapper();
-			track.setColor(DebriefColors.RED);
-			track.setName(platformName);
-			status.getLayers().addThisLayer(track);
+		if (status.getLayers() != null) {
+			TrackWrapper track = (TrackWrapper) status.getLayers().findLayer(platformName);
+			if (track == null) {
+				track = new TrackWrapper();
+				track.setColor(DebriefColors.RED);
+				track.setName(platformName);
+				status.getLayers().addThisLayer(track);
+			}
+			status.setPlatform(track);
 		}
-		status.setPlatform(track);
 
 		final String dateString = tokens[2];
 
@@ -491,7 +492,8 @@ public class ImportNisida {
 		// coverage in octals/ PSR in yds/ Layerdepth in m/ PRR in NM /Remarks/ ]
 
 		if (tokens.length >= 2) {
-			final NarrativeEntry newNarrative = createNarrative(Arrays.copyOfRange(tokens, 2, tokens.length), "Environment", status);
+			final NarrativeEntry newNarrative = createNarrative(Arrays.copyOfRange(tokens, 2, tokens.length),
+					"Environment", status);
 			status.setLastEntryWithText(newNarrative);
 		} else {
 			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
@@ -507,7 +509,8 @@ public class ImportNisida {
 		// [DayTime/SEN/Sensor/Time on/Time off/Remarks/]
 
 		if (tokens.length >= 2) {
-			final NarrativeEntry newNarrative = createNarrative(Arrays.copyOfRange(tokens, 2, tokens.length), "Sensor Activation", status);
+			final NarrativeEntry newNarrative = createNarrative(Arrays.copyOfRange(tokens, 2, tokens.length),
+					"Sensor Activation", status);
 			status.setLastEntryWithText(newNarrative);
 		} else {
 			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
@@ -524,7 +527,8 @@ public class ImportNisida {
 		//
 
 		if (tokens.length >= 2) {
-			final NarrativeEntry newNarrative = createNarrative(Arrays.copyOfRange(tokens, 2, tokens.length), "Mast-Exposure", status);
+			final NarrativeEntry newNarrative = createNarrative(Arrays.copyOfRange(tokens, 2, tokens.length),
+					"Mast-Exposure", status);
 			status.setLastEntryWithText(newNarrative);
 
 		} else {
@@ -570,7 +574,8 @@ public class ImportNisida {
 				symbol = "";
 			}
 
-			final NarrativeEntry newNarrativeEntry = createNarrative(Arrays.copyOfRange(tokens, 2, tokens.length), type, status);
+			final NarrativeEntry newNarrativeEntry = createNarrative(Arrays.copyOfRange(tokens, 2, tokens.length), type,
+					status);
 			status.setLastEntryWithText(newNarrativeEntry);
 
 			final WorldLocation location = parseLocation(tokens[5], tokens[6], status);
@@ -578,15 +583,17 @@ public class ImportNisida {
 			labelWrapper.setSymbolType(symbol);
 			labelWrapper.setStartDTG(new HiResDate(status.getTimestamp()));
 			labelWrapper.setEndDTG(new HiResDate(status.getTimestamp()));
-			Layer dest = status.getLayers().findLayer(layer, true);
-			if (dest == null) {
-				dest = new BaseLayer();
-				dest.setName(layer);
+			if (status.getLayers() != null) {
+				Layer dest = status.getLayers().findLayer(layer, true);
+				if (dest == null) {
+					dest = new BaseLayer();
+					dest.setName(layer);
 
-				// add it to the manager
-				status.getLayers().addThisLayer(dest);
+					// add it to the manager
+					status.getLayers().addThisLayer(dest);
+				}
+				dest.add(labelWrapper);
 			}
-			dest.add(labelWrapper);
 
 		} else {
 			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
@@ -623,19 +630,22 @@ public class ImportNisida {
 			labelWrapper.setSymbolType(SymbolFactory.DATUM);
 			labelWrapper.setStartDTG(fix.getTime());
 			labelWrapper.setEndDTG(fix.getTime());
-			Layer dest = status.getLayers().findLayer(ATTACKS_LAYER, true);
-			if (dest == null) {
-				dest = new BaseLayer();
-				dest.setName(ATTACKS_LAYER);
+			if (status.getLayers() != null) {
+				Layer dest = status.getLayers().findLayer(ATTACKS_LAYER, true);
+				if (dest == null) {
+					dest = new BaseLayer();
+					dest.setName(ATTACKS_LAYER);
 
-				// add it to the manager
-				status.getLayers().addThisLayer(dest);
+					// add it to the manager
+					status.getLayers().addThisLayer(dest);
+				}
+				dest.add(labelWrapper);
 			}
-			dest.add(labelWrapper);
 
 			// This is a comment, with "Attack" as Comment-Type
 
-			final NarrativeEntry newNarrative = createNarrative(Arrays.copyOfRange(tokens, 2, tokens.length), "Attack", status);
+			final NarrativeEntry newNarrative = createNarrative(Arrays.copyOfRange(tokens, 2, tokens.length), "Attack",
+					status);
 			// let's save the new narrative as a last
 			status.setLastEntryWithText(newNarrative);
 
@@ -649,31 +659,35 @@ public class ImportNisida {
 
 	private static NarrativeEntry createNarrative(final String[] text, final String narrativeType,
 			final NisidaLoadState status) {
-		Layer narrativeDest = status.getLayers().findLayer(NarrativeEntry.NARRATIVE_LAYER, true);
-		if (narrativeDest == null) {
-			narrativeDest = new NarrativeWrapper(NarrativeEntry.NARRATIVE_LAYER);
+		if (status.getLayers() != null) {
+			Layer narrativeDest = status.getLayers().findLayer(NarrativeEntry.NARRATIVE_LAYER, true);
+			if (narrativeDest == null) {
+				narrativeDest = new NarrativeWrapper(NarrativeEntry.NARRATIVE_LAYER);
 
-			// add it to the manager
-			status.getLayers().addThisLayer(narrativeDest);
+				// add it to the manager
+				status.getLayers().addThisLayer(narrativeDest);
+			}
+
+			final StringBuilder narrativeTextBuilder = new StringBuilder();
+			for (String t : text) {
+				narrativeTextBuilder.append("/");
+				narrativeTextBuilder.append(t);
+			}
+			String finalText = narrativeTextBuilder.toString();
+			if (finalText.length() > 1) {
+				finalText = finalText.substring(1);
+			}
+			final NarrativeEntry entry = new NarrativeEntry(status.getPlatform().getName(),
+					new HiResDate(status.getTimestamp()), finalText.trim());
+
+			entry.setType(narrativeType);
+
+			narrativeDest.add(entry);
+
+			return entry;
+		} else {
+			return null;
 		}
-
-		final StringBuilder narrativeTextBuilder = new StringBuilder();
-		for (String t : text) {
-			narrativeTextBuilder.append("/");
-			narrativeTextBuilder.append(t);
-		}
-		String finalText = narrativeTextBuilder.toString(); 
-		if (finalText.length() > 1) {
-			finalText = finalText.substring(1);
-		}
-		final NarrativeEntry entry = new NarrativeEntry(status.getPlatform().getName(),
-				new HiResDate(status.getTimestamp()), finalText.trim());
-
-		entry.setType(narrativeType);
-
-		narrativeDest.add(entry);
-
-		return entry;
 	}
 
 	private static void processDetection(final String[] tokens, final NisidaLoadState status) {
