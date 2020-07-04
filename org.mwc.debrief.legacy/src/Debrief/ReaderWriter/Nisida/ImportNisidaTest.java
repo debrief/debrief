@@ -82,7 +82,7 @@ public class ImportNisidaTest extends TestCase {
 
 		final InputStream targetStream = new ByteArrayInputStream(inputFileContent.getBytes());
 		final Layers layers = new Layers();
-		final NisidaLoadState status = ImportNisida.importThis(targetStream, layers);
+		ImportNisida.importThis(targetStream, layers);
 
 		assertEquals("Correct Layer Unit", 1, layers.size());
 		final Layer ownshipLayer = layers.findLayer("ADRI");
