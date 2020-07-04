@@ -197,35 +197,31 @@ public class ImportNisida {
 
 	private static NarrativeEntry createNarrative(final String[] text, final String narrativeType,
 			final NisidaLoadState status) {
-		if (status.getLayers() != null) {
-			Layer narrativeDest = status.getLayers().findLayer(NarrativeEntry.NARRATIVE_LAYER, true);
-			if (narrativeDest == null) {
-				narrativeDest = new NarrativeWrapper(NarrativeEntry.NARRATIVE_LAYER);
+		Layer narrativeDest = status.getLayers().findLayer(NarrativeEntry.NARRATIVE_LAYER, true);
+		if (narrativeDest == null) {
+			narrativeDest = new NarrativeWrapper(NarrativeEntry.NARRATIVE_LAYER);
 
-				// add it to the manager
-				status.getLayers().addThisLayer(narrativeDest);
-			}
-
-			final StringBuilder narrativeTextBuilder = new StringBuilder();
-			for (final String t : text) {
-				narrativeTextBuilder.append("/");
-				narrativeTextBuilder.append(t);
-			}
-			String finalText = narrativeTextBuilder.toString();
-			if (finalText.length() > 1) {
-				finalText = finalText.substring(1);
-			}
-			final NarrativeEntry entry = new NarrativeEntry(status.getPlatform().getName(),
-					new HiResDate(status.getTimestamp()), finalText.trim());
-
-			entry.setType(narrativeType);
-
-			narrativeDest.add(entry);
-
-			return entry;
-		} else {
-			return null;
+			// add it to the manager
+			status.getLayers().addThisLayer(narrativeDest);
 		}
+
+		final StringBuilder narrativeTextBuilder = new StringBuilder();
+		for (final String t : text) {
+			narrativeTextBuilder.append("/");
+			narrativeTextBuilder.append(t);
+		}
+		String finalText = narrativeTextBuilder.toString();
+		if (finalText.length() > 1) {
+			finalText = finalText.substring(1);
+		}
+		final NarrativeEntry entry = new NarrativeEntry(status.getPlatform().getName(),
+				new HiResDate(status.getTimestamp()), finalText.trim());
+
+		entry.setType(narrativeType);
+
+		narrativeDest.add(entry);
+
+		return entry;
 	}
 
 	/**
@@ -388,17 +384,15 @@ public class ImportNisida {
 			labelWrapper.setSymbolType(SymbolFactory.DATUM);
 			labelWrapper.setStartDTG(fix.getTime());
 			labelWrapper.setEndDTG(fix.getTime());
-			if (status.getLayers() != null) {
-				Layer dest = status.getLayers().findLayer(ATTACKS_LAYER, true);
-				if (dest == null) {
-					dest = new BaseLayer();
-					dest.setName(ATTACKS_LAYER);
+			Layer dest = status.getLayers().findLayer(ATTACKS_LAYER, true);
+			if (dest == null) {
+				dest = new BaseLayer();
+				dest.setName(ATTACKS_LAYER);
 
-					// add it to the manager
-					status.getLayers().addThisLayer(dest);
-				}
-				dest.add(labelWrapper);
+				// add it to the manager
+				status.getLayers().addThisLayer(dest);
 			}
+			dest.add(labelWrapper);
 		} else {
 			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
 					"Invalid amount of fields. Expected format should be: [DayTime/ATT/WPN/TGT Bearing/TGT RNGE in NM/TN / Own Lat/ Own Lon /Position Source /Remarks/. LabelWrapper and FixWrapper were not created"));
@@ -566,17 +560,15 @@ public class ImportNisida {
 			labelWrapper.setSymbolType(symbol);
 			labelWrapper.setStartDTG(new HiResDate(status.getTimestamp()));
 			labelWrapper.setEndDTG(new HiResDate(status.getTimestamp()));
-			if (status.getLayers() != null) {
-				Layer dest = status.getLayers().findLayer(layer, true);
-				if (dest == null) {
-					dest = new BaseLayer();
-					dest.setName(layer);
+			Layer dest = status.getLayers().findLayer(layer, true);
+			if (dest == null) {
+				dest = new BaseLayer();
+				dest.setName(layer);
 
-					// add it to the manager
-					status.getLayers().addThisLayer(dest);
-				}
-				dest.add(labelWrapper);
+				// add it to the manager
+				status.getLayers().addThisLayer(dest);
 			}
+			dest.add(labelWrapper);
 
 		} else {
 			status.getErrors().add(new ImportNisidaError("Error on line " + status.getLineNumber() + ".",
@@ -773,16 +765,14 @@ public class ImportNisida {
 		final String platformName = tokens[1];
 
 		// FIND THE PLATFORM.
-		if (status.getLayers() != null) {
-			TrackWrapper track = (TrackWrapper) status.getLayers().findLayer(platformName);
-			if (track == null) {
-				track = new TrackWrapper();
-				track.setColor(DebriefColors.RED);
-				track.setName(platformName);
-				status.getLayers().addThisLayer(track);
-			}
-			status.setPlatform(track);
+		TrackWrapper track = (TrackWrapper) status.getLayers().findLayer(platformName);
+		if (track == null) {
+			track = new TrackWrapper();
+			track.setColor(DebriefColors.RED);
+			track.setName(platformName);
+			status.getLayers().addThisLayer(track);
 		}
+		status.setPlatform(track);
 
 		final String dateString = tokens[2];
 
